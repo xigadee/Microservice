@@ -173,7 +173,6 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Xigadee.Azure.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Properties\ApacheLicense-2.0.txt" />
