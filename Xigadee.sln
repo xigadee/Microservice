@@ -21,6 +21,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Api.Client", "Xigad
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Api.Server", "Xigadee.Api.Server\Xigadee.Api.Server.csproj", "{C39CD117-3863-4E8C-9BD0-043E5F1FB67C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Nuget", "Nuget", "{DF074D99-F6D7-46E3-9B7B-A21C03B52B39}"
+EndProject
+Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "NuGet.Xigadee.Core", "NuGet.Xigadee.Core\NuGet.Xigadee.Core.nuproj", "{E5040663-C2A6-4760-B024-1ABFD2F3ADD0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,8 +67,15 @@ Global
 		{C39CD117-3863-4E8C-9BD0-043E5F1FB67C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C39CD117-3863-4E8C-9BD0-043E5F1FB67C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C39CD117-3863-4E8C-9BD0-043E5F1FB67C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5040663-C2A6-4760-B024-1ABFD2F3ADD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5040663-C2A6-4760-B024-1ABFD2F3ADD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5040663-C2A6-4760-B024-1ABFD2F3ADD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5040663-C2A6-4760-B024-1ABFD2F3ADD0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E5040663-C2A6-4760-B024-1ABFD2F3ADD0} = {DF074D99-F6D7-46E3-9B7B-A21C03B52B39}
 	EndGlobalSection
 EndGlobal
