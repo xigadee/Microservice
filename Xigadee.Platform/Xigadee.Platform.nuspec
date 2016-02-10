@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Xigadee.Platform</id>
+    <version>0.9.0</version>
+    <title>Xigadee PLatform library</title>
+    <authors>Paul Stancer, Guy Steel</authors>
+    <owners>Information Management Group Ltd / Hitachi Consulting Ltd</owners>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>Xigadee Platform library.</description>
+    <summary>This is the Xigadee Platform library used to build Microservices.</summary>
+    <copyright>Copyright (c) Information Management Group / Hitachi Consulting 2012-2016</copyright>
+  </metadata>
+  <!--<files>
+    <file src="bin\$configuration$\net46\$id$.dll" target="lib\net46\" />
+    <file src="bin\$configuration$\net46\$id$.pdb" target="lib\net46\" />
+  </files>-->
+</package>
