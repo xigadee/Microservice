@@ -16,10 +16,12 @@ namespace Xigadee
         , IEventSource, IServiceLogger
     {
         private ILoggerExtended mLogger;
+        private EventSourcePolicy mPolicy;
 
-        public EventSourceContainer(IEnumerable<IEventSource> eventSources, int? overloadThreshold = 500)
+        public EventSourceContainer(EventSourcePolicy policy, IEnumerable<IEventSource> eventSources, int? overloadThreshold = 500)
             : base(eventSources, overloadThreshold)
         {
+            mPolicy = policy;
         }
 
         public ILoggerExtended Logger

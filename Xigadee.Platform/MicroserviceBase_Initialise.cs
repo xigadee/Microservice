@@ -85,7 +85,6 @@ namespace Xigadee
             return new SchedulerPolicy();;
         }
         #endregion    
-
         #region InitialiseEventSourceContainer(List<IEventSource> eventSources)
         /// <summary>
         /// THis method returns the default scheduler container.
@@ -93,9 +92,18 @@ namespace Xigadee
         /// <returns>The default scheduler.</returns>
         protected virtual EventSourceContainer InitialiseEventSourceContainer(List<IEventSource> eventSources)
         {
-            return new EventSourceContainer(eventSources);
+            return new EventSourceContainer(PolicyEventSource(), eventSources);
         }
-        #endregion        
+        /// <summary>
+        /// This is the eveent source policy.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual EventSourcePolicy PolicyEventSource()
+        {
+            return new EventSourcePolicy();
+        }
+        #endregion
+
         #region InitialiseLoggerContainer(List<ILogger> loggers)
         /// <summary>
         /// THis method returns the default scheduler container.
