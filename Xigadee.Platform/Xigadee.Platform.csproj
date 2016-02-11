@@ -82,6 +82,9 @@
     <Compile Include="MicroserviceBase_Statistics.cs" />
     <Compile Include="Policy\AutotunePolicy.cs" />
     <Compile Include="Policy\PolicyBase.cs" />
+    <Compile Include="Populator\ConfigBase.cs" />
+    <Compile Include="Populator\IPopulator.cs" />
+    <Compile Include="Populator\PopulatorBase.cs" />
     <Compile Include="Scheduler\SchedulerPolicy.cs" />
     <Compile Include="Scheduler\SchedulerStatistics.cs" />
     <Compile Include="Trackers\Exceptions\MessageHandlerNotResolvedException.cs" />

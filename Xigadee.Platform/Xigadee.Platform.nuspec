@@ -10,7 +10,7 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Xigadee Platform library.</description>
     <summary>This is the Xigadee Platform library used to build Microservices.</summary>
-    <copyright>Copyright (c) Information Management Group / Hitachi Consulting 2012-2016</copyright>
+    <copyright>Copyright (c) Information Management Group part of Hitachi Consulting 2012-2016</copyright>
   </metadata>
   <!--<files>
     <file src="bin\$configuration$\net46\$id$.dll" target="lib\net46\" />
