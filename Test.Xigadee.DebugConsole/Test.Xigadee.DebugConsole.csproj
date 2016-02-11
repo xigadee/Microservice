@@ -90,10 +90,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Entities\Blah.cs" />
-    <Compile Include="Entities\Blah2.cs" />
-    <Compile Include="Entities\ComplexKey.cs" />
-    <Compile Include="Entities\MondayMorningBlues.cs" />
+    <Compile Include="Persistence\Entities\Blah.cs" />
+    <Compile Include="Persistence\Entities\Blah2.cs" />
+    <Compile Include="Persistence\Entities\ComplexKey.cs" />
+    <Compile Include="Persistence\Entities\MondayMorningBlues.cs" />
     <Compile Include="Microservice\MicroserviceExamples.cs" />
     <Compile Include="Persistence\PersistenceManagers.cs" />
     <Compile Include="Program.cs" />
