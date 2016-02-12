@@ -66,6 +66,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="DirectChannel\DirectChannelCommunicator.cs" />
+    <Compile Include="DirectChannel\TcpDirectChannel.cs" />
     <Compile Include="Http\HttpDirectListener.cs" />
     <Compile Include="Http\HttpDirectSender.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

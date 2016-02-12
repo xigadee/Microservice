@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class DirectChannelBase
+    public class TcpDirectChannel
     {
     }
 }
