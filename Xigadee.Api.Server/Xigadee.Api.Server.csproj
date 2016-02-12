@@ -7,8 +7,8 @@
     <ProjectGuid>{C39CD117-3863-4E8C-9BD0-043E5F1FB67C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IMGroup.Microservice.Api</RootNamespace>
-    <AssemblyName>IMGroup.Microservice.Api.Server</AssemblyName>
+    <RootNamespace>Xigadee</RootNamespace>
+    <AssemblyName>Xigadee.Api.Server</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
