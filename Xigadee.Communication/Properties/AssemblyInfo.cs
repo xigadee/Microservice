@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Xigadee.Communication")]
-[assembly: AssemblyDescription("IMGroup Microservice Communication")]
+[assembly: AssemblyDescription("Xigadee Communication")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyProduct("Xigadee.Communication")]
 [assembly: AssemblyCulture("")]

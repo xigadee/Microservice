@@ -210,7 +210,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Xigadee.Core.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Cache\" />
