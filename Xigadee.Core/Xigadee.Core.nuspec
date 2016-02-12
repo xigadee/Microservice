@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Xigadee.Core</id>
+    <version>$version$</version>
+    <title>Xigadee Core Library</title>
+    <authors>Paul Stancer, Guy Steel</authors>
+    <owners>Information Management Group Ltd part of Hitachi Consulting</owners>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <projectUrl>http://xigadee.com</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Xigadee Core library which is used to make microservice conponents.</description>
+    <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
+    <copyright>Copyright IMGroup 2012-2016</copyright>
+    <tags>Xigadee Microservice Azure</tags>
+  </metadata>
+</package>
