@@ -11,7 +11,6 @@ namespace Test.Xigadee
             //service.RegisterEventSource(new EventHubEventSource("es1", connection, "es1"));
             //service.RegisterEventSource(new QueueEventSource("datapump", connection, "datapump"));
             service.RegisterEventSource(new AzureStorageEventSource(storageCreds, service.Statistics.Name, resourceProfile: mResourceBlob));
-            service.RegisterEventSource(new AzureStorageEventSourceAvro(storageCreds, service.Statistics.Name, resourceProfile: mResourceBlob));
         }
 
         static void InitialiseLoggers(MicroserviceBase service)
