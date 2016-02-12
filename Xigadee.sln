@@ -25,6 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{B8CB3AD9-A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.DebugConsole", "Test.Xigadee.DebugConsole\Test.Xigadee.DebugConsole.csproj", "{F81F3402-897C-40AE-832C-7EF1000D2595}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee", "Test.Xigadee\Test.Xigadee.csproj", "{C523008A-BAF6-418D-8822-48E0820A427D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,11 +73,16 @@ Global
 		{F81F3402-897C-40AE-832C-7EF1000D2595}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F81F3402-897C-40AE-832C-7EF1000D2595}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F81F3402-897C-40AE-832C-7EF1000D2595}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C523008A-BAF6-418D-8822-48E0820A427D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C523008A-BAF6-418D-8822-48E0820A427D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C523008A-BAF6-418D-8822-48E0820A427D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C523008A-BAF6-418D-8822-48E0820A427D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F81F3402-897C-40AE-832C-7EF1000D2595} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
+		{C523008A-BAF6-418D-8822-48E0820A427D} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 	EndGlobalSection
 EndGlobal
