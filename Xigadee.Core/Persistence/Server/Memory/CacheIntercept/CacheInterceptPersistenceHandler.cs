@@ -16,8 +16,6 @@ namespace Xigadee
     public class CacheInterceptPersistenceHandler<K, E>: PersistenceMessageHandlerBase<K, E, PersistenceStatistics>
         where K : IEquatable<K>
     {
-
-
         protected override Task ProcessCreate(PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
         {
             throw new NotImplementedException();
