@@ -11,7 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Xigadee Communication library contains communication channels that do not require Azure components.</description>
     <releaseNotes>Initial push.</releaseNotes>
-    <copyright>Copyright IMGroup 2012-2016</copyright>
+    <copyright>Copyright © Information Management Group 2012-2016</copyright>
     <tags>Xigadee Microservice Azure</tags>
     <dependencies>
       <dependency id="Newtonsoft.Json" version="8.0.2"/>

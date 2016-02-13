@@ -11,7 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>The Xigadee Console Helper library is used to help spin up quick console based test beds for Microservice based applications.</description>
     <releaseNotes>Initial test package.</releaseNotes>
-    <copyright>Copyright IMGroup 2012-2016</copyright>
+    <copyright>Copyright © Information Management Group 2012-2016</copyright>
     <tags>Xigadee Microservice Azure</tags>
   </metadata>
 </package>

@@ -123,8 +123,6 @@
     <Compile Include="Filters\WebApiApimAuthentication.cs" />
     <Compile Include="Filters\WebApiAzureBlobLoggingFilter.cs" />
     <Compile Include="Filters\WebApiVersionHeaderFilter.cs" />
-    <Compile Include="MicroserviceConnector.cs" />
-    <Compile Include="ODataApiPersistenceControllerBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -11,7 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>The Xigadee Core library is used to construct conponents for the Microservice.</description>
     <releaseNotes>Initial test package.</releaseNotes>
-    <copyright>Copyright IMGroup 2012-2016</copyright>
+    <copyright>Copyright © Information Management Group 2012-2016</copyright>
     <tags>Xigadee Microservice Azure</tags>
     <dependencies>
       <dependency id="Newtonsoft.Json" version="8.0.2"/>
