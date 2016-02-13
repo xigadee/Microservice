@@ -24,6 +24,21 @@ namespace Test.Xigadee
     /// </summary>
     internal class PopulatorServer: PopulatorConsoleBase<MicroserviceServer>
     {
+        static readonly VersionPolicy<MondayMorningBlues> mVersionBlues =
+            new VersionPolicy<MondayMorningBlues>(e => e.VersionId.ToString("N").ToLowerInvariant(), e => e.VersionId = Guid.NewGuid());
+
+        static VersionPolicy<Blah2> mVersionBlah2 =
+            new VersionPolicy<Blah2>((e) => e.VersionId.ToString("N").ToLowerInvariant(), (e) => e.VersionId = Guid.NewGuid());
+
+        protected override void RegisterCommands()
+        {
+            base.RegisterCommands();
+
+            var initiator = new PersistenceSharedService<Guid, MondayMorningBlues>(Channels.Internal) { ChannelId = Channels.TestB };
+
+            Service.RegisterCommand(initiator);
+
+        }
 
         protected override void RegisterCommunication()
         {

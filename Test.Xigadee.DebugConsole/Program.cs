@@ -67,6 +67,7 @@ namespace Test.Xigadee
 
             server.Start();
         }
+
         static void InitialiseMicroserviceServerStressTest(int processes)
         {
             server = new MicroserviceServer();

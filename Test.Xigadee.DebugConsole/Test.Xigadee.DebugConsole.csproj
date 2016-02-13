@@ -93,6 +93,7 @@
     <Compile Include="Commands\Jobs\DoNothingJob.cs" />
     <Compile Include="Commands\Jobs\DelayProcessingJob.cs" />
     <Compile Include="Commands\Jobs\TestMasterJob2.cs" />
+    <Compile Include="Microservice\Channels.cs" />
     <Compile Include="Microservice\ConfigConsole.cs" />
     <Compile Include="Microservice\PopulatorConsoleBase.cs" />
     <Compile Include="Commands\Persistence\Entities\Blah.cs" />

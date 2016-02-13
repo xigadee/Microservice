@@ -25,17 +25,42 @@ namespace Test.Xigadee
     internal class PopulatorClient: PopulatorConsoleBase<MicroserviceClient>
     {
 
+        protected override void RegisterCommands()
+        {
+            base.RegisterCommands();
+
+            var persistence = Service.RegisterCommand(
+                new PersistenceMessageInitiator<Guid, MondayMorningBlues>()
+                {
+                      ChannelId = Channels.TestB
+                    , ResponseChannelId = Channels.Interserve
+                });
+
+            var persistence2 = Service.RegisterCommand(
+                new PersistenceMessageInitiator<Guid, Blah2>()
+                {
+                      ChannelId = Channels.TestB
+                    , ResponseChannelId = Channels.Interserve
+                });
+        }
+
         protected override void RegisterCommunication()
         {
             base.RegisterCommunication();
 
-            Service.RegisterListener(new AzureSBQueueListener("testa", Config.ServiceBusConnection
-                , "testa", ListenerPartitionConfig.Init(0, 1)
+            Service.RegisterListener(new AzureSBQueueListener(Channels.TestA
+                , Config.ServiceBusConnection
+                , Channels.TestA
+                , ListenerPartitionConfig.Init(0, 1)
                 , resourceProfiles: new[] { mResourceDocDb, mResourceBlob }));
 
-            Service.RegisterSender(new AzureSBQueueSender("testb", Config.ServiceBusConnection
-                , "testb", SenderPartitionConfig.Init(0, 1)));
+            Service.RegisterSender(new AzureSBQueueSender(Channels.TestB
+                , Config.ServiceBusConnection
+                , Channels.TestB
+                , SenderPartitionConfig.Init(0, 1)));
 
         }
+
+
     }
 }

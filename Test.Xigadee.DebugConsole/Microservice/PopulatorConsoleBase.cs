@@ -16,20 +16,58 @@ namespace Test.Xigadee
 
         protected override void RegisterCommunication()
         {
-            base.RegisterCommunication();
+            Service.RegisterListener(new AzureSBTopicListener(
+                  Channels.Interserve
+                , Config.ServiceBusConnection
+                , Channels.Interserve
+                , deleteOnStop: false
+                , priorityPartitions: ListenerPartitionConfig.Default
+                , mappingChannelId: "mychannel"));
 
-            Service.RegisterListener(new AzureSBTopicListener("interserv", Config.ServiceBusConnection
-                , "interserv",
-                deleteOnStop: false, priorityPartitions: ListenerPartitionConfig.Default, mappingChannelId: "mychannel"));
+            Service.RegisterSender(new AzureSBTopicSender(
+                  Channels.Interserve
+                , Config.ServiceBusConnection
+                , Channels.Interserve
+                , priorityPartitions: SenderPartitionConfig.Default));
 
-            Service.RegisterSender(new AzureSBTopicSender("interserv", Config.ServiceBusConnection
-                , "interserv", priorityPartitions: SenderPartitionConfig.Default));
+            Service.RegisterListener(new AzureSBTopicListener(
+                  Channels.MasterJob
+                , Config.ServiceBusConnection
+                , Channels.MasterJob
+                , ListenerPartitionConfig.Init(2)));
 
+            Service.RegisterSender(new AzureSBTopicSender(
+                  Channels.MasterJob
+                , Config.ServiceBusConnection
+                , Channels.MasterJob
+                , SenderPartitionConfig.Init(2)));
+        }
 
-            Service.RegisterListener(new AzureSBTopicListener("masterjob", Config.ServiceBusConnection
-                , "masterjob", ListenerPartitionConfig.Init(2)));
-            Service.RegisterSender(new AzureSBTopicSender("masterjob", Config.ServiceBusConnection
-                , "masterjob", SenderPartitionConfig.Init(2)));
+        protected override void RegisterCommands()
+        {
+            Service.RegisterCommand(new TestMasterJob(Channels.MasterJob));
+            Service.RegisterCommand(new TestMasterJob2(Channels.MasterJob));
+
+            Service.RegisterCommand(new DelayedProcessingJob());
+        }
+
+        protected override void RegisterEventSources()
+        {
+            Service.RegisterEventSource(new AzureStorageEventSource(
+                  Config.Storage
+                , Service.Name
+                , resourceProfile: mResourceBlob));
+
+        }
+        protected override void RegisterLogging()
+        {
+            base.RegisterLogging();
+
+            Service.RegisterLogger(new TraceEventLogger());
+            Service.RegisterLogger(new AzureStorageLogger(
+                  Config.Storage
+                , Service.Name
+                , resourceProfile: mResourceBlob));
 
         }
     }
