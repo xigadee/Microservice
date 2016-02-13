@@ -8,11 +8,12 @@ namespace Xigadee
 {
     /// <summary>
     /// This message handler is used to intercept persistence messages and to return a memory cached 
-    /// version of the entity if there is one stored.
+    /// version of the entity if there is one stored. For messages that cannot be cached, the original message will be 
+    /// passed to the actual persistence manager.
     /// </summary>
-    /// <typeparam name="K"></typeparam>
-    /// <typeparam name="E"></typeparam>
-    public class CacheRedirectPersistenceHandler<K, E>: PersistenceMessageHandlerBase<K, E, PersistenceStatistics>
+    /// <typeparam name="K">The key type.</typeparam>
+    /// <typeparam name="E">The entity type.</typeparam>
+    public class CacheInterceptPersistenceHandler<K, E>: PersistenceMessageHandlerBase<K, E, PersistenceStatistics>
         where K : IEquatable<K>
     {
 

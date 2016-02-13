@@ -2,7 +2,7 @@
 
 namespace Xigadee
 {
-    public class PersistenceRetryPolicy
+    public class PersistenceRetryPolicy:PolicyBase
     {
         private readonly Func<TransmissionPayload, int> mMaximumRetries;
         private readonly Func<TransmissionPayload, int, TimeSpan> mDelayBetweenRetries;

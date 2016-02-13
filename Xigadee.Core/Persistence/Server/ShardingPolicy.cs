@@ -9,7 +9,7 @@ namespace Xigadee
     /// This class is used to shard the collection based on the key passed.
     /// </summary>
     /// <typeparam name="K">The collection key type.</typeparam>
-    public class ShardingPolicy<K>
+    public class ShardingPolicy<K>:PolicyBase
         where K : IEquatable<K>
     {
         #region Declarations

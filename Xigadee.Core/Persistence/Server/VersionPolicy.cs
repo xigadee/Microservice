@@ -9,7 +9,7 @@ namespace Xigadee
     /// This class handles version support for the entity.
     /// </summary>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class VersionPolicy<E>
+    public class VersionPolicy<E>:PolicyBase
     {
         #region Declarations
         private readonly Func<E, string> mEntityVersionAsString;
