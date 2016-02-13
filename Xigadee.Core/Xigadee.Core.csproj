@@ -130,6 +130,7 @@
     <Compile Include="Persistence\Server\DocumentDb\PersistenceManagerHandlerDocumentDb.cs" />
     <Compile Include="Persistence\Server\File\PersistenceManagerHandlerFileSystem.cs" />
     <Compile Include="Persistence\Server\JSON\PersistenceManagerHandlerJsonBase.cs" />
+    <Compile Include="Persistence\Server\Memory\CacheRedirectPersistenceHandler.cs" />
     <Compile Include="Persistence\Server\Memory\PersistenceManagerHandlerMemory.cs" />
     <Compile Include="Persistence\Server\PersistenceRetryPolicy.cs" />
     <Compile Include="Persistence\Server\SQL\PersistenceManagerHandlerSqlBase.cs" />
