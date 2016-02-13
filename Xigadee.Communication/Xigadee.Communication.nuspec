@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Xigadee.Communication</id>
+    <version>$version$</version>
+    <title>Xigadee Communication Library</title>
+    <authors>Paul Stancer, Guy Steel</authors>
+    <owners>Information Management Group Ltd part of Hitachi Consulting</owners>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <projectUrl>http://xigadee.com</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Xigadee Communication library contains communication channels that do not require Azure components.</description>
+    <releaseNotes>Initial push.</releaseNotes>
+    <copyright>Copyright IMGroup 2012-2016</copyright>
+    <tags>Xigadee Microservice Azure</tags>
+    <dependencies>
+      <dependency id="Xigadee.Core"/>
+    </dependencies>
+  </metadata>
+</package>
