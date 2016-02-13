@@ -29,14 +29,14 @@ namespace Test.Xigadee
         {
             base.RegisterCommands();
 
-            var persistence = Service.RegisterCommand(
+            Persistence = (IRepositoryAsync<Guid, MondayMorningBlues>)Service.RegisterCommand(
                 new PersistenceMessageInitiator<Guid, MondayMorningBlues>()
                 {
                       ChannelId = Channels.TestB
                     , ResponseChannelId = Channels.Interserve
                 });
 
-            var persistence2 = Service.RegisterCommand(
+            Service.RegisterCommand(
                 new PersistenceMessageInitiator<Guid, Blah2>()
                 {
                       ChannelId = Channels.TestB

@@ -7,12 +7,13 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    internal abstract class PopulatorConsoleBase<M>:PopulatorBase<M, ConfigConsole>
-        where M : MicroserviceBase, new()
+    internal abstract class PopulatorConsoleBase<M>: PopulatorBase<M, ConfigConsole>, IPopulatorConsole where M : MicroserviceBase, new()
     {
 
         protected ResourceProfile mResourceDocDb = new ResourceProfile("DocDB");
         protected ResourceProfile mResourceBlob = new ResourceProfile("Blob");
+
+        public IRepositoryAsync<Guid, MondayMorningBlues> Persistence { get; protected set; }
 
         protected override void RegisterCommunication()
         {
@@ -59,6 +60,7 @@ namespace Test.Xigadee
                 , resourceProfile: mResourceBlob));
 
         }
+
         protected override void RegisterLogging()
         {
             base.RegisterLogging();

@@ -29,8 +29,7 @@ namespace Test.Xigadee
 
             var id = new Guid("5ac0802f-7768-433c-bc54-975940964363");
             var value = id.ToByteArray();
-            int push = (value[0] >> 6)-1;
-            
+            int push = (value[0] >> 6)-1;        
 
             var switches = args.CommandArgsParse();
             int processes = switches.ContainsKey("processes") ? int.Parse(switches["processes"]) : Environment.ProcessorCount*4*4*2;
@@ -46,7 +45,7 @@ namespace Test.Xigadee
                     , (m, o) =>
                     {
                         testid = Guid.NewGuid();
-                        var result = sPersistence.Create(new MondayMorningBlues { Id = testid, ContentId = testid, VersionId = versionid, Message = DateTime.Now.ToString(), NotEnoughCoffee = true }, new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
+                        var result = sService.Persistence.Create(new MondayMorningBlues { Id = testid, ContentId = testid, VersionId = versionid, Message = DateTime.Now.ToString(), NotEnoughCoffee = true }, new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
                         versionid = result.Entity.VersionId;
                         PersistenceLog("Create", result.IsSuccess);
                     }
@@ -55,7 +54,7 @@ namespace Test.Xigadee
                 , new ConsoleOption("Read document db entity"
                     , (m, o) =>
                     {
-                        var result = sPersistence.Read(testid, new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
+                        var result = sService.Persistence.Read(testid, new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
                         PersistenceLog("Read", result.IsSuccess);
                     }
                     , enabled: (m, o) => mPersistenceStatus() == 2
@@ -63,7 +62,7 @@ namespace Test.Xigadee
                 , new ConsoleOption("Update document db entity"
                     , (m, o) =>
                     {
-                        var result = sPersistence.Update(new MondayMorningBlues() { Id = testid, ContentId = testid, VersionId = versionid, Message = "Hello mom2", NotEnoughCoffee = false }, new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
+                        var result = sService.Persistence.Update(new MondayMorningBlues() { Id = testid, ContentId = testid, VersionId = versionid, Message = "Hello mom2", NotEnoughCoffee = false }, new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
                         //var result = sPersistence.Update(new MondayMorningBlues() { ContentId = testid, VersionId = versionid, Message = "Hello mom2", NotEnoughCoffee = false }, new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
                         PersistenceLog("Update", result.IsSuccess);
                         if (result.IsSuccess)
@@ -76,7 +75,7 @@ namespace Test.Xigadee
                 , new ConsoleOption("Delete document db entity"
                     , (m, o) =>
                     {
-                        var result = sPersistence.Delete(testid, new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5), VersionId = versionid.ToString() }).Result;
+                        var result = sService.Persistence.Delete(testid, new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5), VersionId = versionid.ToString() }).Result;
                         PersistenceLog("Delete", result.IsSuccess);
                     }
                     , enabled: (m, o) => mPersistenceStatus() == 2
@@ -90,7 +89,7 @@ namespace Test.Xigadee
                         {
                             try
                             {
-                                var result = sPersistence.Create(
+                                var result = sService.Persistence.Create(
                                     new MondayMorningBlues() { ContentId = Guid.NewGuid(), Message = i.ToString(), NotEnoughCoffee = true }
                                     , new RepositorySettings()
                                     {

@@ -34,22 +34,35 @@ namespace Test.Xigadee
         {
             base.RegisterCommands();
 
-            var initiator = new PersistenceSharedService<Guid, MondayMorningBlues>(Channels.Internal) { ChannelId = Channels.TestB };
+            Persistence = (IRepositoryAsync<Guid, MondayMorningBlues>)Service.RegisterCommand
+                (
+                    new PersistenceSharedService<Guid, MondayMorningBlues>(Channels.Internal)
+                    { ChannelId = Channels.TestB }
+                );
 
-            Service.RegisterCommand(initiator);
+            Service.RegisterCommand(new PersistenceMondayMorningBlues(
+                  Config.DocDbCredentials
+                , Config.DocDbDatabase
+                , o => o.Id
+                , versionMaker: mVersionBlues
+                , resourceProfile: mResourceDocDb)
+            {
+                ChannelId = Channels.TestB
+            });
 
+            Service.RegisterCommand(new DoNothingJob { ChannelId = Channels.TestB });
         }
 
         protected override void RegisterCommunication()
         {
             base.RegisterCommunication();
 
-            Service.RegisterListener(new AzureSBQueueListener("testb"
-                , Config.ServiceBusConnection, "testb", ListenerPartitionConfig.Init(0, 1)
+            Service.RegisterListener(new AzureSBQueueListener(Channels.TestB
+                , Config.ServiceBusConnection, Channels.TestB, ListenerPartitionConfig.Init(0, 1)
                 , resourceProfiles: new[] { mResourceDocDb, mResourceBlob }));
 
-            Service.RegisterSender(new AzureSBQueueSender("testa"
-                , Config.ServiceBusConnection, "testa", SenderPartitionConfig.Init(0, 1)));
+            Service.RegisterSender(new AzureSBQueueSender(Channels.TestA
+                , Config.ServiceBusConnection, Channels.TestA, SenderPartitionConfig.Init(0, 1)));
 
         }
     }

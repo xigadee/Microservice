@@ -95,6 +95,7 @@
     <Compile Include="Commands\Jobs\TestMasterJob2.cs" />
     <Compile Include="Microservice\Channels.cs" />
     <Compile Include="Microservice\ConfigConsole.cs" />
+    <Compile Include="Microservice\IPopulatorConsole.cs" />
     <Compile Include="Microservice\PopulatorConsoleBase.cs" />
     <Compile Include="Commands\Persistence\Entities\Blah.cs" />
     <Compile Include="Commands\Persistence\Entities\Blah2.cs" />
@@ -104,9 +105,6 @@
     <Compile Include="Microservice\PopulatorServer.cs" />
     <Compile Include="Microservice\PopulatorClient.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Program_Commands.cs" />
-    <Compile Include="Program_Comms.cs" />
-    <Compile Include="Program_Logging.cs" />
     <Compile Include="Program_Menu.cs" />
     <Compile Include="Program_Status.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

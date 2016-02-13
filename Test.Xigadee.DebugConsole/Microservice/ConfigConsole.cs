@@ -17,5 +17,10 @@ namespace Test.Xigadee
         public string ServiceBusConnection { get; set; }
 
         public StorageCredentials Storage { get; set; }
+
+        public DocumentDbConnection DocDbCredentials { get; set; }
+
+        public string DocDbDatabase { get; set; }
+
     }
 }

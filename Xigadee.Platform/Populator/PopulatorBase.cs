@@ -41,8 +41,6 @@ namespace Xigadee
 
         }
 
-
-
         #region ServiceStatisticsIssued(object sender, StatisticsEventArgs e)
         /// <summary>
         /// This method is called when the service statistics are issued by the underlying service. 
@@ -70,7 +68,6 @@ namespace Xigadee
         /// <param name="statistics">The statistics.</param>
         protected virtual void ServiceStatisticsProcess(M service, MicroserviceStatistics statistics)
         {
-
         }
 
 
@@ -130,6 +127,16 @@ namespace Xigadee
             RegisterCacheHandlers();
 
             RegisterCommunication();
+        }
+
+        public virtual void Start()
+        {
+            Service.Start();
+        }
+
+        public virtual void Stop()
+        {
+            Service.Stop();
         }
 
         protected virtual void RegisterBoundaryLogger()
