@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Xigadee.Api.Client.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Properties\ApacheLicense-2.0.txt" />

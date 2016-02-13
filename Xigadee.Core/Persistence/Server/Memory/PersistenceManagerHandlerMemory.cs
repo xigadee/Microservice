@@ -24,7 +24,7 @@ namespace Xigadee
         /// <summary>
         /// This container holds the entities.
         /// </summary>
-        protected ConcurrentDictionary<K, E> mContainer;
+        protected ConcurrentDictionary<K, JsonHolder<K>> mContainer;
         /// <summary>
         /// This container holds the key references.
         /// </summary>
@@ -47,11 +47,17 @@ namespace Xigadee
 
         protected override void StartInternal()
         {
+            mContainer = new ConcurrentDictionary<K, JsonHolder<K>>();
+            mContainerReference = new ConcurrentDictionary<string, K>();
             base.StartInternal();
         }
 
         protected override void StopInternal()
         {
+            mContainerReference.Clear();
+            mContainer.Clear();
+            mContainerReference = null;
+            mContainer = null;
             base.StopInternal();
         }
 
