@@ -4,7 +4,7 @@
     <id>Xigadee.Core</id>
     <version>$version$</version>
     <title>Xigadee Core Library</title>
-    <authors>Paul Stancer, Guy Steel</authors>
+    <authors>Xigadee, Paul Stancer, Guy Steel</authors>
     <owners>Information Management Group Ltd part of Hitachi Consulting</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <projectUrl>http://xigadee.com</projectUrl>
@@ -14,7 +14,7 @@
     <copyright>Copyright IMGroup 2012-2016</copyright>
     <tags>Xigadee Microservice Azure</tags>
     <dependencies>
-      <dependency id="Newtonsoft.Json"/>
+      <dependency id="Newtonsoft.Json" version="8.0.2"/>
     </dependencies>
   </metadata>
 </package>

@@ -4,7 +4,7 @@
     <id>Xigadee.Azure</id>
     <version>$version$</version>
     <title>Xigadee Azure Library</title>
-    <authors>Paul Stancer, Guy Steel</authors>
+    <authors>Xigadee, Paul Stancer, Guy Steel</authors>
     <owners>Information Management Group Ltd part of Hitachi Consulting</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <projectUrl>http://xigadee.com</projectUrl>
@@ -14,11 +14,11 @@
     <copyright>Copyright IMGroup 2012-2016</copyright>
     <tags>Xigadee Microservice Azure</tags>
     <dependencies>
-      <dependency id="Newtonsoft.Json"/>
+      <dependency id="Newtonsoft.Json" version="8.0.2"/>
       <dependency id="Xigadee.Core"/>
-      <dependency id="Microsoft.Azure.DocumentDB"/>
-      <dependency id="WindowsAzure.ServiceBus"/>
-      <dependency id="WindowsAzure.Storage"/>
+      <dependency id="Microsoft.Azure.DocumentDB" version="1.5.2"/>
+      <dependency id="WindowsAzure.ServiceBus" version="3.1.3"/>
+      <dependency id="WindowsAzure.Storage" version="6.2.0"/>
     </dependencies>
   </metadata>
 </package>
