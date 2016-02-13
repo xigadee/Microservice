@@ -90,6 +90,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Jobs\DoNothingJob.cs" />
+    <Compile Include="Jobs\DelayProcessingJob.cs" />
+    <Compile Include="Jobs\TestMasterJob2.cs" />
     <Compile Include="Microservice\ConfigConsole.cs" />
     <Compile Include="Microservice\PopulatorConsoleBase.cs" />
     <Compile Include="Persistence\Entities\Blah.cs" />

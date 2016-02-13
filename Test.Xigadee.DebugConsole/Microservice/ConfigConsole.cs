@@ -13,5 +13,6 @@ namespace Test.Xigadee
     internal class ConfigConsole:ConfigBase
     {
 
+        public string ServiceBusConnection { get; set; }
     }
 }

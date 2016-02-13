@@ -13,11 +13,10 @@ namespace Xigadee
         where M : MicroserviceBase, new()
         where C : ConfigBase, new()
     {
-
         #region Declarations
         protected IList<ResourceProfile> mResourceProfiles = new List<ResourceProfile>();
         #endregion
-
+        #region Constructor
         /// <summary>
         /// This is the default constructor that creates.
         /// </summary>
@@ -29,7 +28,8 @@ namespace Xigadee
             Service.StopRequested += ServiceStopRequested;
             Service.StopCompleted += ServiceStopCompleted;
             Service.StatisticsIssued += ServiceStatisticsIssued;
-        }
+        } 
+        #endregion
 
         protected virtual void ServiceStopCompleted(object sender, StopEventArgs e)
         {
@@ -120,7 +120,6 @@ namespace Xigadee
             RegisterBoundaryLogger();
             RegisterResourceProfiles();
             RegisterSerializers();
-            RegisterCacheHandlers();
             RegisterTelemetry();
             RegisterLogging();
             RegisterEventSources();
@@ -128,6 +127,7 @@ namespace Xigadee
 
             RegisterCommands();
             RegisterPersistenceHandlers();
+            RegisterCacheHandlers();
 
             RegisterCommunication();
         }
@@ -142,6 +142,10 @@ namespace Xigadee
 
         }
 
+        /// <summary>
+        /// This method registers the serializers. By default the JsonContractSerializer is registered.
+        /// Overload this method if you do not want to use this serializer.
+        /// </summary>
         protected virtual void RegisterSerializers()
         {
             Service.RegisterPayloadSerializer(new JsonContractSerializer());

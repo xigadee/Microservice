@@ -24,5 +24,18 @@ namespace Test.Xigadee
     /// </summary>
     internal class PopulatorServer: PopulatorConsoleBase<MicroserviceServer>
     {
+
+        protected override void RegisterCommunication()
+        {
+            base.RegisterCommunication();
+
+            Service.RegisterListener(new AzureSBQueueListener("testb"
+                , Config.ServiceBusConnection, "testb", ListenerPartitionConfig.Init(0, 1)
+                , resourceProfiles: new[] { mResourceDocDb, mResourceBlob }));
+
+            Service.RegisterSender(new AzureSBQueueSender("testa"
+                , Config.ServiceBusConnection, "testa", SenderPartitionConfig.Init(0, 1)));
+
+        }
     }
 }
