@@ -68,9 +68,9 @@
     <Compile Include="Command\CommandRequestTracker.cs" />
     <Compile Include="Command\CommandStatistics.cs" />
     <Compile Include="Command\CommandTimeoutSchedule.cs" />
-    <Compile Include="Command\Command_MasterJob.cs" />
     <Compile Include="Command\Command_Job.cs" />
     <Compile Include="Command\Command_Initiator.cs" />
+    <Compile Include="Command\Command_Statistics.cs" />
     <Compile Include="Communication\Interfaces\IBoundaryLogger.cs" />
     <Compile Include="Communication\PartitionConfig\ListenerPartitionConfig.cs" />
     <Compile Include="Communication\PartitionConfig\PartitionConfig.cs" />
@@ -94,10 +94,9 @@
     <Compile Include="IStatisticsBase.cs" />
     <Compile Include="Job\JobBase.cs" />
     <Compile Include="Job\JobConfiguration.cs" />
-    <Compile Include="Job\MasterJobHolder.cs" />
-    <Compile Include="Job\MasterJobState.cs" />
-    <Compile Include="Job\MasterJobStatus.cs" />
-    <Compile Include="Job\StandbyPartner.cs" />
+    <Compile Include="Command\MasterJob\MasterJobHolder.cs" />
+    <Compile Include="Command\MasterJob\MasterJobState.cs" />
+    <Compile Include="Command\MasterJob\StandbyPartner.cs" />
     <Compile Include="Logging\DispatcherLoggerDirection.cs" />
     <Compile Include="Logging\DocumentDbLogger.cs" />
     <Compile Include="Logging\FileStorageLoggingBase.cs" />

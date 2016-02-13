@@ -29,7 +29,5 @@ namespace Xigadee
         {
             Interlocked.Add(ref mTimeouts, timeouts);
         }
-
-
     }
 }

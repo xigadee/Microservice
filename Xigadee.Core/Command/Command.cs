@@ -10,12 +10,17 @@ using System.Threading;
 namespace Xigadee
 {
     /// <summary>
-    /// This command is the base implementation that allows multiple commands to be handled within a single container.
+    /// This command is the base implementation that allows multiple commands to be handled 
+    /// within a single container.
     /// </summary>
     public abstract partial class CommandBase<S>: ServiceBase<S>, IMessageHandler
         where S : CommandStatistics, new()
     {
         #region Declarations
+        /// <summary>
+        /// This is the command policy.
+        /// </summary>
+        protected CommandPolicy mPolicy;
         /// <summary>
         /// This is the concurrent dictionary that contains the supported commands.
         /// </summary>
@@ -25,24 +30,52 @@ namespace Xigadee
         /// Implement IMessageHandlerDynamic to enable this feature.
         /// </summary>
         public event EventHandler<CommandChange> OnCommandChange;
+        /// <summary>
+        /// This is the job timer
+        /// </summary>
+        protected List<Schedule> mSchedules;
         #endregion
         #region Constructor
         /// <summary>
         /// This is the default constructor that calls the CommandsRegister function.
         /// </summary>
-        public CommandBase()
+        public CommandBase(CommandPolicy policy = null)
         {
+            mPolicy = policy ?? new CommandPolicy();
             mSupported = new Dictionary<MessageFilterWrapper, CommandHandler>();
+            mSchedules = new List<Schedule>();
+
+            if (mPolicy.IsMasterJob)
+                MasterJobInitialise();
+
+            if (mPolicy.HasTimerPoll)
+                TimerPollSchedulesRegister();
         }
         #endregion
 
         #region StartInternal/StopInternal
         protected override void StartInternal()
         {
+            try
+            {
+                mScheduleTimeout = new CommandTimeoutSchedule(ProcessTimeouts,
+                    string.Format("{0} Initiator Timeout", GetType().Name))
+                {
+                    InitialWait = TimeSpan.FromSeconds(10),
+                    Frequency = TimeSpan.FromSeconds(5)
+                };
+
+                Scheduler.Register(mScheduleTimeout);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         protected override void StopInternal()
         {
+            Scheduler.Unregister(mScheduleTimeout);
         }
         #endregion
 
@@ -50,7 +83,17 @@ namespace Xigadee
         /// <summary>
         /// This method should be implemented to populate supported commands.
         /// </summary>
-        public abstract void CommandsRegister();
+        public virtual void CommandsRegister()
+        {
+            //Check whether the ResponseId has been set, and if so then register the command.
+            if (ResponseId != null)
+                CommandRegister(ResponseId, ProcessResponse);
+
+            if (mPolicy.IsMasterJob)
+            {
+                CommandRegister(NegotiationChannelId, NegotiationMessageType, null, MasterJobStateNotificationIncoming);
+            }
+        }
         #endregion
 
         #region CommandRegister<C>...
@@ -356,24 +399,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region StatisticsRecalculate()
-        /// <summary>
-        /// This override lists the handlers supported for each handler.
-        /// </summary>
-        protected override void StatisticsRecalculate()
-        {
-            base.StatisticsRecalculate();
-
-            try
-            {
-                mStatistics.SupportedHandlers = mSupported.Select((h) => string.Format("{0}.{1} {2}", h.Key.Header.ToKey(), h.Key.ClientId, h.Key.IsDeadLetter ? "DL" : "")).ToList();
-            }
-            catch (Exception)
-            {
-                //We don't want to throw an exception here.
-            }
-        }
-        #endregion
     }
 }
 

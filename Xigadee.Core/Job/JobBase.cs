@@ -55,8 +55,8 @@ namespace Xigadee
         /// <param name="config">The job configuration class.</param>
         protected JobBase(JobConfiguration config)
         {
-            mSchedules = new List<Schedule>();
             mConfig = config ?? new JobConfiguration();
+            mSchedules = new List<Schedule>();
             mStandbyPartner = new ConcurrentDictionary<string, StandbyPartner>();
 
             if (mConfig.IsMasterJob) 

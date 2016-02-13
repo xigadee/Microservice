@@ -14,6 +14,7 @@ namespace Xigadee
         /// </summary>
         public CommandStatistics() : base()
         {
+            MasterJob = new MasterJobStatistics();
         }
         #endregion
 
@@ -31,5 +32,8 @@ namespace Xigadee
         }
 
         public List<string> SupportedHandlers { get; set; }
+
+        public MasterJobStatistics MasterJob { get; set; }
+
     }
 }
