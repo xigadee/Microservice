@@ -64,6 +64,7 @@
     </Compile>
     <Compile Include="Collections\CollectionContainer.cs" />
     <Compile Include="Command\Command.cs" />
+    <Compile Include="Command\Test\CommandTestContainer.cs" />
     <Compile Include="Command\CommandPolicy.cs" />
     <Compile Include="Command\CommandRequestTracker.cs" />
     <Compile Include="Command\CommandStatistics.cs" />
@@ -84,6 +85,7 @@
     <Compile Include="Exceptions\StorageThrottlingException.cs" />
     <Compile Include="Interfaces\Communication\IMessaging.cs" />
     <Compile Include="Interfaces\ICache.cs" />
+    <Compile Include="Interfaces\ICommand.cs" />
     <Compile Include="Interfaces\ILoggerExtended.cs" />
     <Compile Include="Interfaces\IPersistenceMessageInitiator.cs" />
     <Compile Include="Interfaces\IPersistenceSharedService.cs" />
