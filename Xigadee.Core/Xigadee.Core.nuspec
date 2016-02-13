@@ -13,5 +13,8 @@
     <releaseNotes>Initial test package.</releaseNotes>
     <copyright>Copyright IMGroup 2012-2016</copyright>
     <tags>Xigadee Microservice Azure</tags>
+    <dependencies>
+      <dependency id="Newtonsoft.Json"/>
+    </dependencies>
   </metadata>
 </package>

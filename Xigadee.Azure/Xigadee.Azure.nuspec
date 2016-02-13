@@ -14,7 +14,11 @@
     <copyright>Copyright IMGroup 2012-2016</copyright>
     <tags>Xigadee Microservice Azure</tags>
     <dependencies>
+      <dependency id="Newtonsoft.Json"/>
       <dependency id="Xigadee.Core"/>
+      <dependency id="Microsoft.Azure.DocumentDB"/>
+      <dependency id="WindowsAzure.ServiceBus"/>
+      <dependency id="WindowsAzure.Storage"/>
     </dependencies>
   </metadata>
 </package>

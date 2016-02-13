@@ -14,7 +14,9 @@
     <copyright>Copyright IMGroup 2012-2016</copyright>
     <tags>Xigadee Microservice Azure</tags>
     <dependencies>
+      <dependency id="Newtonsoft.Json"/>
       <dependency id="Xigadee.Core"/>
+      <dependency id="Microsoft.Owin.Host.SystemWeb"/>
     </dependencies>
   </metadata>
 </package>
