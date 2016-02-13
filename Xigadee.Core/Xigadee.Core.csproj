@@ -153,7 +153,7 @@
     <Compile Include="Persistence\Policy\ShardingPolicy.cs" />
     <Compile Include="Persistence\Policy\VersionPolicy.cs" />
     <Compile Include="PolicyBase.cs" />
-    <Compile Include="RequestTracker\RequestTracker.cs" />
+    <Compile Include="Command\RequestTracker\RequestTracker.cs" />
     <Compile Include="Entities\Schedule.cs" />
     <Compile Include="Entities\TransmissionPayload.cs" />
     <Compile Include="Exceptions\ServiceAlreadyStartedException.cs" />
@@ -188,7 +188,7 @@
     <Compile Include="Communication\MessagingListenerBase.cs" />
     <Compile Include="Communication\MessagingSenderBase.cs" />
     <Compile Include="Communication\MessagingServiceBase.cs" />
-    <Compile Include="RequestTracker\RequestTrackerContainer.cs" />
+    <Compile Include="Command\RequestTracker\RequestTrackerContainer.cs" />
     <Compile Include="ResourceTracker\Interfaces\IResourceBase.cs" />
     <Compile Include="ResourceTracker\Interfaces\IResourceConsumer.cs" />
     <Compile Include="ResourceTracker\Interfaces\IResourceRequestRateLimiter.cs" />

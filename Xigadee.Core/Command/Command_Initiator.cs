@@ -20,9 +20,7 @@ namespace Xigadee
         /// This is the inititator timeout schedule.
         /// </summary>
         protected CommandTimeoutSchedule mScheduleTimeout;
-        #endregion
 
-        #region Events
         public event EventHandler<TransmissionPayload> OnTimedOutRequest;
 
         public event EventHandler<TransmissionPayload> OnTimedOutResponse;
@@ -120,7 +118,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region ProcessTimeout()
+        #region --> ProcessTimeout()
         /// <summary>
         /// This method is used to process any payloadRs timeouts.
         /// </summary>
@@ -136,7 +134,7 @@ namespace Xigadee
                 timedOutRequests.ForEach(tr => OnTimedOutRequest(this, tr.Payload));
         }
         #endregion
-        #region ProcessResponse(TransmissionPayload payload, List<TransmissionPayload> responses)
+        #region --> ProcessResponse(TransmissionPayload payload, List<TransmissionPayload> responses)
         /// <summary>
         /// This method processes the returning messages.
         /// </summary>
