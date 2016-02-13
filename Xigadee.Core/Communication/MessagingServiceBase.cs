@@ -9,9 +9,10 @@ namespace Xigadee
     /// <summary>
     /// This is the generic base class for messaging services.
     /// </summary>
-    /// <typeparam name="C">The client type.</typeparam>
-    /// <typeparam name="M">The client message type.</typeparam>
-    /// <typeparam name="H">The clientholder type.</typeparam>
+    /// <typeparam name="C">The client class type.</typeparam>
+    /// <typeparam name="M">The client message class type.</typeparam>
+    /// <typeparam name="H">The client holder class type.</typeparam>
+    /// <typeparam name="P">The partition configuration class type.</typeparam>
     public abstract class MessagingServiceBase<C, M, H, P> : ServiceBase<StatusBase>, IMessaging,
         IPayloadSerializerConsumer, IServiceOriginator, IServiceLogger
         where H: ClientHolder<C, M>, new()
@@ -326,7 +327,5 @@ namespace Xigadee
             Logger.LogException(string.Format("{0}/{1}", GetType().Name, method), ex);
         }
         #endregion
-
-
     }
 }
