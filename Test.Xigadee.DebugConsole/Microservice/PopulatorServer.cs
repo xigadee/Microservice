@@ -24,10 +24,10 @@ namespace Test.Xigadee
     /// </summary>
     internal class PopulatorServer: PopulatorConsoleBase<MicroserviceServer>
     {
-        static readonly VersionPolicy<MondayMorningBlues> mVersionBlues =
+        readonly VersionPolicy<MondayMorningBlues> mVersionBlues =
             new VersionPolicy<MondayMorningBlues>(e => e.VersionId.ToString("N").ToLowerInvariant(), e => e.VersionId = Guid.NewGuid());
 
-        static VersionPolicy<Blah2> mVersionBlah2 =
+        readonly VersionPolicy<Blah2> mVersionBlah2 =
             new VersionPolicy<Blah2>((e) => e.VersionId.ToString("N").ToLowerInvariant(), (e) => e.VersionId = Guid.NewGuid());
 
         protected override void RegisterCommands()

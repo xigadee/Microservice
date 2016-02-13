@@ -6,6 +6,10 @@ namespace Test.Xigadee
     partial class Program
     {
 
+        static int serverStatus = 0;
+
+        static int clientStatus = 0;
+
         static void ServerStatusChanged(object sender, StatusChangedEventArgs e)
         {
             ServiceStatusChanged(ref serverStatus, sender, e);

@@ -10,9 +10,6 @@ namespace Test.Xigadee
 
         static ConsoleMenu sPersistenceMenu;
 
-        static int serverStatus = 0;
-
-        static int clientStatus = 0;
 
         static Func<int> mPersistenceStatus;
 
@@ -111,6 +108,7 @@ namespace Test.Xigadee
                     , enabled: (m, o) => mPersistenceStatus() == 2
                     )
                     );
+
 
             sMainMenu = new ConsoleMenu(
                 "Xigadee Microservice Scrathpad Test Console"

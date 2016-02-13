@@ -25,7 +25,7 @@ namespace Test.Xigadee
             client = new PopulatorClient();
             client.Service.StatusChanged += ClientStatusChanged;
 
-            client.Service.Start();
+            client.Start();
         }
 
         static void InitialiseMicroserviceServer(int processes)
@@ -35,7 +35,7 @@ namespace Test.Xigadee
             server.Service.StartRequested += ServerStartRequested;
             server.Service.StatusChanged += ServerStatusChanged;
 
-            server.Service.Start();
+            server.Start();
         }
 
         static void InitialiseMicroserviceServerStressTest(int processes)
@@ -48,7 +48,7 @@ namespace Test.Xigadee
             server.Service.StatusChanged += ServerStatusChanged;
 
 
-            server.Service.Start();
+            server.Start();
         }
 
         private static void Server_StopRequested(object sender, StopEventArgs e)
