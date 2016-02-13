@@ -10,11 +10,11 @@ namespace Xigadee
 
         public DateTime? InitialTime { get; set; }
 
-        public bool IsMasterJob { get; set; }
+        public virtual bool IsMasterJob { get; set; }
 
-        public bool HasTimerPoll { get; set; }
+        public virtual bool HasTimerPoll { get; set; }
 
-        public bool IsLongRunningJob { get; set; }
+        public virtual bool IsLongRunningJob { get; set; }
 
         public int MasterJobNegotiationChannelPriority { get; set; }
 

@@ -55,14 +55,7 @@ namespace Xigadee
         {
             try
             {
-                mScheduleTimeout = new CommandTimeoutSchedule(ProcessTimeouts,
-                    string.Format("{0} Initiator Timeout", GetType().Name))
-                {
-                    InitialWait = TimeSpan.FromSeconds(10),
-                    Frequency = TimeSpan.FromSeconds(5)
-                };
-
-                Scheduler.Register(mScheduleTimeout);
+                CommandRequestTimeoutStart();
             }
             catch (Exception ex)
             {
@@ -72,7 +65,7 @@ namespace Xigadee
 
         protected override void StopInternal()
         {
-            Scheduler.Unregister(mScheduleTimeout);
+            CommandRequestTimeoutStop();
         }
         #endregion
 
@@ -371,6 +364,15 @@ namespace Xigadee
         {
             get;
             set;
+        }
+        #endregion
+        #region Scheduler
+        /// <summary>
+        /// This is the scheduler. It is needed to process request timeouts.
+        /// </summary>
+        public virtual IScheduler Scheduler
+        {
+            get; set;
         }
         #endregion
 

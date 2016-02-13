@@ -28,6 +28,23 @@ namespace Xigadee
         public event EventHandler<TransmissionPayload> OnTimedOutResponse;
         #endregion
 
+        protected virtual void CommandRequestTimeoutStart()
+        {
+            mScheduleTimeout = new CommandTimeoutSchedule(ProcessTimeouts,
+                string.Format("{0} Command Timeout", GetType().Name))
+            {
+                InitialWait = TimeSpan.FromSeconds(10),
+                Frequency = TimeSpan.FromSeconds(5)
+            };
+
+            Scheduler.Register(mScheduleTimeout);
+        }
+
+        protected virtual void CommandRequestTimeoutStop()
+        {
+            Scheduler.Unregister(mScheduleTimeout);
+        }
+
         #region Dispatcher
         /// <summary>
         /// This is the link to the Microservice dispatcher.
@@ -100,16 +117,6 @@ namespace Xigadee
             var response = processPayload(tracker.Tcs.Task.Status, payloadRs, false);
 
             return response;
-        }
-        #endregion
-
-        #region Scheduler
-        /// <summary>
-        /// This is the scheduler. It is needed to process request timeouts.
-        /// </summary>
-        public virtual IScheduler Scheduler
-        {
-            get; set;
         }
         #endregion
 
