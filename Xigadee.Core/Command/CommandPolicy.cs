@@ -4,11 +4,26 @@ namespace Xigadee
 {
     public class CommandPolicy:PolicyBase
     {
+        public CommandPolicy()
+        {
+            RequestTimeoutInitialWait = TimeSpan.FromSeconds(10);
+            RequestTimeoutPollFrequency = TimeSpan.FromSeconds(5);
+        }
+
         public TimeSpan? Interval { get; set; }
 
         public TimeSpan? InitialWait { get; set; }
 
         public DateTime? InitialTime { get; set; }
+
+        /// <summary>
+        /// This is the the initial wait time before the request timeout poll starts. The default value is 10 seconds.
+        /// </summary>
+        public TimeSpan RequestTimeoutInitialWait { get; set; }
+        /// <summary>
+        /// This is the frequency that request time outs are calculated. The default value is 5 seconds.
+        /// </summary>
+        public TimeSpan RequestTimeoutPollFrequency { get; set; }
 
         public virtual bool IsMasterJob { get; set; }
 

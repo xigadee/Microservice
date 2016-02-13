@@ -31,8 +31,8 @@ namespace Xigadee
             mScheduleTimeout = new CommandTimeoutSchedule(ProcessTimeouts,
                 string.Format("{0} Command Timeout", GetType().Name))
             {
-                InitialWait = TimeSpan.FromSeconds(10),
-                Frequency = TimeSpan.FromSeconds(5)
+                InitialWait = mPolicy.RequestTimeoutInitialWait,
+                Frequency = mPolicy.RequestTimeoutPollFrequency
             };
 
             Scheduler.Register(mScheduleTimeout);
@@ -43,16 +43,6 @@ namespace Xigadee
             Scheduler.Unregister(mScheduleTimeout);
         }
 
-        #region Dispatcher
-        /// <summary>
-        /// This is the link to the Microservice dispatcher.
-        /// </summary>
-        public Action<IService, TransmissionPayload> Dispatcher
-        {
-            get;
-            set;
-        }
-        #endregion
         #region ChannelId
         /// <summary>
         /// The channel id.
