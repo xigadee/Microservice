@@ -90,16 +90,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Jobs\DoNothingJob.cs" />
-    <Compile Include="Jobs\DelayProcessingJob.cs" />
-    <Compile Include="Jobs\TestMasterJob2.cs" />
+    <Compile Include="Commands\Jobs\DoNothingJob.cs" />
+    <Compile Include="Commands\Jobs\DelayProcessingJob.cs" />
+    <Compile Include="Commands\Jobs\TestMasterJob2.cs" />
     <Compile Include="Microservice\ConfigConsole.cs" />
     <Compile Include="Microservice\PopulatorConsoleBase.cs" />
-    <Compile Include="Persistence\Entities\Blah.cs" />
-    <Compile Include="Persistence\Entities\Blah2.cs" />
-    <Compile Include="Persistence\Entities\ComplexKey.cs" />
-    <Compile Include="Persistence\Entities\MondayMorningBlues.cs" />
-    <Compile Include="Persistence\PersistenceManagers.cs" />
+    <Compile Include="Commands\Persistence\Entities\Blah.cs" />
+    <Compile Include="Commands\Persistence\Entities\Blah2.cs" />
+    <Compile Include="Commands\Persistence\Entities\ComplexKey.cs" />
+    <Compile Include="Commands\Persistence\Entities\MondayMorningBlues.cs" />
+    <Compile Include="Commands\Persistence\PersistenceManagers.cs" />
     <Compile Include="Microservice\PopulatorServer.cs" />
     <Compile Include="Microservice\PopulatorClient.cs" />
     <Compile Include="Program.cs" />
@@ -109,7 +109,7 @@
     <Compile Include="Program_Menu.cs" />
     <Compile Include="Program_Status.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Jobs\TestMasterJob.cs" />
+    <Compile Include="Commands\Jobs\TestMasterJob.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
