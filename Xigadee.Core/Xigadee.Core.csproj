@@ -109,11 +109,13 @@
     <Compile Include="MessageHandler\CommandHandlerStatistics.cs" />
     <Compile Include="MessageHandler\MessageHandlerStatistics.cs" />
     <Compile Include="MessageInitiator\MessageInitiatorTimeoutSchedule.cs" />
+    <Compile Include="Persistence\Cache\EntityCacheAsyncPolicy.cs" />
+    <Compile Include="Persistence\Cache\EntityCacheCollection.cs" />
     <Compile Include="Persistence\Cache\EntityCacheHolderState.cs" />
     <Compile Include="Persistence\Cache\EntityCacheHolder.cs" />
     <Compile Include="Persistence\Cache\EntityCacheResult.cs" />
     <Compile Include="Persistence\Cache\EntityCacheChangeEventArgs.cs" />
-    <Compile Include="Persistence\Cache\EntityCacheBase.cs" />
+    <Compile Include="Persistence\Cache\EntityCacheAsyncBase.cs" />
     <Compile Include="Persistence\Cache\EntityCacheStatistics.cs" />
     <Compile Include="Persistence\Cache\EntityChangeReference.cs" />
     <Compile Include="Persistence\Cache\IEntityCacheAsync.cs" />

@@ -4,10 +4,17 @@ using System.Threading;
 #endregion
 namespace Xigadee
 {
+    /// <summary>
+    /// This class is used to hold a specific entity in the collection, and hold the associated
+    /// metadata for the entity.
+    /// </summary>
+    /// <typeparam name="K">The entity key type.</typeparam>
+    /// <typeparam name="E">The entity type.</typeparam>
     public class EntityCacheHoldar<K, E> 
         where K : IEquatable<K>
         where E : class
     {
+        #region Declarations
         private readonly ManualResetEvent mWait;
 
         public readonly K Key;
@@ -20,7 +27,8 @@ namespace Xigadee
 
         private int mWaiting = 0;
 
-        private int? mResponseCode = null;
+        private int? mResponseCode = null; 
+        #endregion
 
         public EntityCacheHoldar(K key, TimeSpan? span = null)
         {

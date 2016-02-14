@@ -13,11 +13,16 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public abstract class EntityCacheBase<K, E>: JobBase<EntityCacheStatistics>, IRequireSharedServices, IEntityCacheAsync<K, E>
+    public abstract class EntityCacheAsyncBase<K, E>: JobBase<EntityCacheStatistics>, 
+        IRequireSharedServices, IEntityCacheAsync<K, E>
         where K : IEquatable<K>
         where E : class
     {
         #region Declarations
+        /// <summary>
+        /// This is the cache configuration policy.
+        /// </summary>
+        public EntityCacheAsyncPolicy mPolicy;
         /// <summary>
         /// The resource consumer 
         /// </summary>
@@ -34,7 +39,9 @@ namespace Xigadee
         protected readonly ConcurrentDictionary<K, EntityCacheHoldar<K, E>> mEntities;
 
         protected long mAdded = 0;
+
         protected long mRemoved = 0;
+
         protected long mWaitCycles = 0;
 
         protected DateTime? mLastScheduleTime = null;
@@ -49,7 +56,7 @@ namespace Xigadee
         /// <param name="initialWait"></param>
         /// <param name="initialTime"></param>
         /// <param name="trackEvents"></param>
-        protected EntityCacheBase(TimeSpan? interval = null, TimeSpan? initialWait = null, DateTime? initialTime = null
+        protected EntityCacheAsyncBase(TimeSpan? interval = null, TimeSpan? initialWait = null, DateTime? initialTime = null
             , bool trackEvents = false, int maxCount = 200000, ResourceProfile resourceProfile = null, TimeSpan? defaultTTL = null)
             : base(JobConfiguration.ToJob(interval ?? TimeSpan.FromMinutes(5), initialWait ?? TimeSpan.FromSeconds(5), initialTime))
         {
