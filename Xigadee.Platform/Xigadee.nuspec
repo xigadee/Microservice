@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>Xigadee.Platform</id>
+    <id>Xigadee</id>
     <version>$version$</version>
-    <title>Xigadee Platform Library</title>
+    <title>Xigadee Microservice platform library</title>
     <authors>Xigadee, Paul Stancer, Guy Steel</authors>
     <owners>Information Management Group Ltd part of Hitachi Consulting</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>

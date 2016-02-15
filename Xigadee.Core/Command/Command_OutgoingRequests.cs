@@ -15,7 +15,7 @@ namespace Xigadee
         /// <summary>
         /// This is the tracker used to record outgoing messages.
         /// </summary>
-        protected RequestTrackerContainer<CommandRequestTracker> mTracker;
+        protected RequestTrackerContainer<CommandOutgoingRequestTracker> mTracker;
         /// <summary>
         /// This is the inititator timeout schedule.
         /// </summary>
@@ -26,19 +26,15 @@ namespace Xigadee
         public event EventHandler<TransmissionPayload> OnTimedOutResponse;
         #endregion
 
-        protected virtual void CommandRequestTimeoutStart()
+        protected virtual void OutgoingRequestsTimeoutStart()
         {
-            mScheduleTimeout = new CommandTimeoutSchedule(ProcessTimeouts,
-                string.Format("{0} Command Timeout", GetType().Name))
-            {
-                InitialWait = mPolicy.RequestTimeoutInitialWait,
-                Frequency = mPolicy.RequestTimeoutPollFrequency
-            };
+            mScheduleTimeout = new CommandTimeoutSchedule(OutgoingRequestsProcessTimeouts, mPolicy.OutgoingRequestsTimeoutPoll,
+                string.Format("{0} Command Timeout", GetType().Name));
 
             Scheduler.Register(mScheduleTimeout);
         }
 
-        protected virtual void CommandRequestTimeoutStop()
+        protected virtual void OutgoingRequestsTimeoutStop()
         {
             Scheduler.Unregister(mScheduleTimeout);
         }
@@ -85,7 +81,7 @@ namespace Xigadee
 
             //TaskScheduler taskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
-            var tracker = (CommandRequestTracker)mTracker.ProcessMessage(this, payloadRq);
+            var tracker = (CommandOutgoingRequestTracker)mTracker.ProcessMessage(this, payloadRq);
 
             if (processAsync)
             {
@@ -108,13 +104,13 @@ namespace Xigadee
         }
         #endregion
 
-        #region --> ProcessTimeout()
+        #region --> OutgoingRequestsProcessTimeouts()
         /// <summary>
         /// This method is used to process any payloadRs timeouts.
         /// </summary>
-        public virtual async Task ProcessTimeouts(Schedule schedule, CancellationToken token)
+        public virtual async Task OutgoingRequestsProcessTimeouts(Schedule schedule, CancellationToken token)
         {
-            List<CommandRequestTracker> timedOutRequests = mTracker.ProcessTimeout(h => h.Tcs.SetCanceled());
+            List<CommandOutgoingRequestTracker> timedOutRequests = mTracker.ProcessTimeout(h => h.Tcs.SetCanceled());
 
             var timeoutSchedule = schedule as TimeoutSchedule;
             if (timeoutSchedule != null)
@@ -124,13 +120,13 @@ namespace Xigadee
                 timedOutRequests.ForEach(tr => OnTimedOutRequest(this, tr.Payload));
         }
         #endregion
-        #region --> ProcessResponse(TransmissionPayload payload, List<TransmissionPayload> responses)
+        #region --> OutgoingRequestsProcessResponse(TransmissionPayload payload, List<TransmissionPayload> responses)
         /// <summary>
         /// This method processes the returning messages.
         /// </summary>
         /// <param name="payload">The incoming payload.</param>
         /// <param name="responses">The responses collection is not currently used.</param>
-        protected virtual async Task ProcessResponse(TransmissionPayload payload, List<TransmissionPayload> responses)
+        protected virtual async Task OutgoingRequestsProcessResponse(TransmissionPayload payload, List<TransmissionPayload> responses)
         {
             string id = payload.Message.CorrelationKey;
 
@@ -138,7 +134,7 @@ namespace Xigadee
             if (id == null)
                 return;
 
-            CommandRequestTracker holder = null;
+            CommandOutgoingRequestTracker holder = null;
             if (mTracker.Remove(id, out holder))
             {
                 //This next method signal to the waiting request that it has completed.

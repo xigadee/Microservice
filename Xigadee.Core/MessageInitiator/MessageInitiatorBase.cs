@@ -47,7 +47,7 @@ namespace Xigadee
 
             try
             {
-                mScheduleTimeout = new TimeoutSchedule(ProcessTimeouts,
+                mScheduleTimeout = new TimeoutSchedule(OutgoingRequestsProcessTimeouts,
                     string.Format("{0} Initiator Timeout", GetType().Name))
                 {
                     InitialWait = TimeSpan.FromSeconds(10),
@@ -177,7 +177,7 @@ namespace Xigadee
         /// <summary>
         /// This method is used to process any payloadRs timeouts.
         /// </summary>
-        public virtual async Task ProcessTimeouts(Schedule schedule, CancellationToken token)
+        public virtual async Task OutgoingRequestsProcessTimeouts(Schedule schedule, CancellationToken token)
         {
             List<RT> timedOutRequests = mTracker.ProcessTimeout(h=>h.Tcs.SetCanceled());
 

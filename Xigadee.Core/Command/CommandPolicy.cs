@@ -6,38 +6,23 @@ namespace Xigadee
     {
         public CommandPolicy()
         {
-            RequestTimeoutInitialWait = TimeSpan.FromSeconds(10);
-            RequestTimeoutPollFrequency = TimeSpan.FromSeconds(5);
         }
 
-        public virtual TimeSpan? Interval { get; set; }
 
-        public virtual TimeSpan? InitialWait { get; set; }
+        //Outgoing Request
+        public virtual bool OutgoingRequestsEnabled { get; set; } = false;
 
-        public virtual DateTime? InitialTime { get; set; }
+        public virtual CommandTimerPoll OutgoingRequestsTimeoutPoll { get; set; } = new CommandTimerPoll();
 
-        public virtual bool RequireCommandRequestTracking { get; set; } = false;
+        //Job Poll
+        public virtual bool JobPollEnabled { get; set; } = false;
 
-        public virtual CommandTimerPoll CommandRequestTimeoutPoll { get; set; }
-        /// <summary>
-        /// This is the the initial wait time before the request timeout poll starts. The default value is 10 seconds.
-        /// </summary>
-        public virtual TimeSpan RequestTimeoutInitialWait { get; set; }
-        /// <summary>
-        /// This is the frequency that request time outs are calculated. The default value is 5 seconds.
-        /// </summary>
-        public virtual TimeSpan RequestTimeoutPollFrequency { get; set; }
+        public virtual CommandTimerPoll JobPollSchedule { get; set; } = new CommandTimerPoll();
 
-        //JobPoll
-        public virtual bool RequireJobPoll { get; set; }
+        public virtual bool JobPollIsLongRunning { get; set; } = false;
 
-        public virtual CommandTimerPoll JobPollSchedule { get; set; }
-
-        public virtual bool JobPollIsLongRunning { get; set; }
-
-
-        //MasterJob
-        public virtual bool RequireMasterJob { get; set; }
+        //Master Job
+        public virtual bool MasterJobEnabled { get; set; }
 
         public virtual int MasterJobNegotiationChannelPriority { get; set; }
 
@@ -47,19 +32,19 @@ namespace Xigadee
 
         public virtual string MasterJobName { get; set; }
 
+
+
         public static CommandPolicy ToJob(TimeSpan? interval, TimeSpan? initialWait, DateTime? initialTime, bool isLongRunningJob = false)
         {
-            return new CommandPolicy { RequireJobPoll = true, InitialTime = initialTime, InitialWait = initialWait, Interval = interval, RequireMasterJob = false, JobPollIsLongRunning = isLongRunningJob };
+            return new CommandPolicy { JobPollEnabled = true, JobPollIsLongRunning = isLongRunningJob, MasterJobEnabled = false };
         }
 
         public static CommandPolicy ToMasterJob(string negotiationChannelId, string negotiationChannelType = null, int negotiationChannelPriority = 1, string name = null)
         {
             return new CommandPolicy()
             {
-                InitialWait = TimeSpan.FromSeconds(2)
-                , RequireJobPoll = true
-                , Interval = TimeSpan.FromSeconds(20)
-                , RequireMasterJob = true
+                  JobPollEnabled = true
+                , MasterJobEnabled = true
                 , MasterJobNegotiationChannelId = negotiationChannelId
                 , MasterJobNegotiationChannelType = negotiationChannelType
                 , MasterJobNegotiationChannelPriority = negotiationChannelPriority

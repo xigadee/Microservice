@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class CommandRequestTracker:RequestTracker
+    public class CommandOutgoingRequestTracker:RequestTracker
     {
-        public CommandRequestTracker():base()
+        public CommandOutgoingRequestTracker():base()
         {
             Tcs = new TaskCompletionSource<TransmissionPayload>();
         }

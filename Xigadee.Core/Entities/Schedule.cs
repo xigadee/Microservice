@@ -41,13 +41,13 @@ namespace Xigadee
         }
         #endregion
 
+
         public override string Name
         {
             get
             {
                 return base.Name;
             }
-
             set
             {
                 base.Name = value;

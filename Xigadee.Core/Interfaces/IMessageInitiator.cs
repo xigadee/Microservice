@@ -16,6 +16,6 @@ namespace Xigadee
         /// <summary>
         /// This method is called to calculate expired requests.
         /// </summary>
-        Task ProcessTimeouts(Schedule schedule, CancellationToken token);
+        Task OutgoingRequestsProcessTimeouts(Schedule schedule, CancellationToken token);
     }
 }

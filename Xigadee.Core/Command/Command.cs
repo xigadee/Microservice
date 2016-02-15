@@ -43,10 +43,10 @@ namespace Xigadee
             mSupported = new Dictionary<MessageFilterWrapper, CommandHandler>();
             mSchedules = new List<Schedule>();
 
-            if (mPolicy.RequireMasterJob)
+            if (mPolicy.MasterJobEnabled)
                 MasterJobInitialise();
 
-            if (mPolicy.RequireJobPoll)
+            if (mPolicy.JobPollEnabled)
                 TimerPollSchedulesRegister();
         }
         #endregion
@@ -56,8 +56,8 @@ namespace Xigadee
         {
             try
             {
-                if (mPolicy.RequireCommandRequestTracking)
-                    CommandRequestTimeoutStart();
+                if (mPolicy.OutgoingRequestsEnabled)
+                    OutgoingRequestsTimeoutStart();
             }
             catch (Exception ex)
             {
@@ -67,7 +67,8 @@ namespace Xigadee
 
         protected override void StopInternal()
         {
-            CommandRequestTimeoutStop();
+            if (mPolicy.OutgoingRequestsEnabled)
+                OutgoingRequestsTimeoutStop();
         }
         #endregion
 
@@ -79,9 +80,9 @@ namespace Xigadee
         {
             //Check whether the ResponseId has been set, and if so then register the command.
             if (ResponseId != null)
-                CommandRegister(ResponseId, ProcessResponse);
+                CommandRegister(ResponseId, OutgoingRequestsProcessResponse);
 
-            if (mPolicy.RequireMasterJob)
+            if (mPolicy.MasterJobEnabled)
             {
                 CommandRegister(NegotiationChannelId, NegotiationMessageType, null, MasterJobStateNotificationIncoming);
             }

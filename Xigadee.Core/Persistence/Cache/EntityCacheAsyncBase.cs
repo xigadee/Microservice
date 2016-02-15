@@ -99,11 +99,8 @@ namespace Xigadee
         /// <param name="config">The job configuration</param>
         protected override void TimerPollSchedulesRegister()
         {
-            var job = new Schedule(ScheduleExpireEntities, $"EntityCacheHandlerBase: {typeof(E).Name} Expire Entities")
+            var job = new CommandSchedule(ScheduleExpireEntities, mPolicy.OutgoingRequestsTimeoutPoll, $"EntityCacheHandlerBase: {typeof(E).Name} Expire Entities")
             {
-                Frequency = mPolicy.Interval,
-                InitialWait = mPolicy.InitialWait,
-                InitialTime = mPolicy.InitialTime,
                 IsLongRunning = mPolicy.JobPollIsLongRunning
             };
 
