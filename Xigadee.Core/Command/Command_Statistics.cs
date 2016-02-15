@@ -19,8 +19,8 @@ namespace Xigadee
             {
                 mStatistics.SupportedHandlers = mSupported.Select((h) => string.Format("{0}.{1} {2}", h.Key.Header.ToKey(), h.Key.ClientId, h.Key.IsDeadLetter ? "DL" : "")).ToList();
 
-                mStatistics.MasterJob.Active = mPolicy.IsMasterJob;
-                if (mPolicy.IsMasterJob)
+                mStatistics.MasterJob.Active = mPolicy.RequireMasterJob;
+                if (mPolicy.RequireMasterJob)
                 {
                     mStatistics.MasterJob.Server = string.Format("{0} @ {1:o}", mCurrentMasterServiceId, mCurrentMasterReceiveTime);
                     mStatistics.MasterJob.Status = string.Format("Status={0} Channel={1}/{2} Type={3}", State.ToString(), NegotiationChannelId, NegotiationChannelPriority, NegotiationMessageType);

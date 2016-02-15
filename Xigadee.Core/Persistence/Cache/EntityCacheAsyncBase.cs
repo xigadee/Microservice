@@ -104,7 +104,7 @@ namespace Xigadee
                 Frequency = mPolicy.Interval,
                 InitialWait = mPolicy.InitialWait,
                 InitialTime = mPolicy.InitialTime,
-                IsLongRunning = mPolicy.IsLongRunningJob
+                IsLongRunning = mPolicy.JobPollIsLongRunning
             };
 
             mSchedules.Add(job);

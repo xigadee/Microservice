@@ -43,10 +43,10 @@ namespace Xigadee
             mSupported = new Dictionary<MessageFilterWrapper, CommandHandler>();
             mSchedules = new List<Schedule>();
 
-            if (mPolicy.IsMasterJob)
+            if (mPolicy.RequireMasterJob)
                 MasterJobInitialise();
 
-            if (mPolicy.HasTimerPoll)
+            if (mPolicy.RequireJobPoll)
                 TimerPollSchedulesRegister();
         }
         #endregion
@@ -81,7 +81,7 @@ namespace Xigadee
             if (ResponseId != null)
                 CommandRegister(ResponseId, ProcessResponse);
 
-            if (mPolicy.IsMasterJob)
+            if (mPolicy.RequireMasterJob)
             {
                 CommandRegister(NegotiationChannelId, NegotiationMessageType, null, MasterJobStateNotificationIncoming);
             }
@@ -238,7 +238,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region In -> ProcessMessage(TransmissionPayload payload, List<TransmissionPayload> responses)
+        #region Dispatcher In -> ProcessMessage(TransmissionPayload payload, List<TransmissionPayload> responses)
         /// <summary>
         /// This method is called to process and incoming message.
         /// </summary>
