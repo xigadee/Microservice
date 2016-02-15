@@ -15,7 +15,7 @@ namespace Xigadee
         protected long mAdded = 0;
         protected long mRemoved = 0;
 
-        protected readonly ConcurrentDictionary<K, EntityCacheHoldar<K, E>> mEntities;
+        protected readonly ConcurrentDictionary<K, EntityCacheHolder<K, E>> mEntities;
 
         public EntityCacheCollection()
         {
@@ -30,7 +30,7 @@ namespace Xigadee
         /// <param name="key">The item key.</param>
         protected virtual bool Remove(K key)
         {
-            EntityCacheHoldar<K, E> holder;
+            EntityCacheHolder<K, E> holder;
             if (mEntities.TryRemove(key, out holder))
             {
                 holder.Cancel();

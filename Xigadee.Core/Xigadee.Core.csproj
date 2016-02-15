@@ -229,9 +229,7 @@
     <None Include="packages.config" />
     <None Include="Xigadee.Core.nuspec" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Cache\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Properties\ApacheLicense-2.0.txt" />
   </ItemGroup>

@@ -10,7 +10,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The entity key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class EntityCacheHoldar<K, E> 
+    public class EntityCacheHolder<K, E> 
         where K : IEquatable<K>
         where E : class
     {
@@ -30,7 +30,7 @@ namespace Xigadee
         private int? mResponseCode = null; 
         #endregion
 
-        public EntityCacheHoldar(K key, TimeSpan? span = null)
+        public EntityCacheHolder(K key, TimeSpan? span = null)
         {
             mWait = new ManualResetEvent(false);
             mWait.Reset();

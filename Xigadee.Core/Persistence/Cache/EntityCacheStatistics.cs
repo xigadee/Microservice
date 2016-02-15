@@ -6,7 +6,7 @@ namespace Xigadee
     /// <summary>
     /// This class the entity cache statistics
     /// </summary>
-    public class EntityCacheStatistics:JobStatistics
+    public class EntityCacheStatistics:CommandStatistics
     {
         #region Declarations
         private StatsContainer mStatsCreateUpdate;

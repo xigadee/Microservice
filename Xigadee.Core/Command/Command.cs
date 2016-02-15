@@ -10,14 +10,15 @@ namespace Xigadee
     /// This command is the base implementation that allows multiple commands to be handled 
     /// within a single container.
     /// </summary>
-    public abstract partial class CommandBase<S>: ServiceBase<S>, ICommand
+    public abstract partial class CommandBase<S,P>: ServiceBase<S>, ICommand
         where S : CommandStatistics, new()
+        where P : CommandPolicy, new()
     {
         #region Declarations
         /// <summary>
         /// This is the command policy.
         /// </summary>
-        protected CommandPolicy mPolicy;
+        protected readonly P mPolicy;
         /// <summary>
         /// This is the concurrent dictionary that contains the supported commands.
         /// </summary>
@@ -36,9 +37,9 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor that calls the CommandsRegister function.
         /// </summary>
-        public CommandBase(CommandPolicy policy = null)
+        public CommandBase(P policy = null)
         {
-            mPolicy = policy ?? new CommandPolicy();
+            mPolicy = policy ?? new P();
             mSupported = new Dictionary<MessageFilterWrapper, CommandHandler>();
             mSchedules = new List<Schedule>();
 
@@ -55,7 +56,8 @@ namespace Xigadee
         {
             try
             {
-                CommandRequestTimeoutStart();
+                if (mPolicy.RequireCommandRequestTracking)
+                    CommandRequestTimeoutStart();
             }
             catch (Exception ex)
             {

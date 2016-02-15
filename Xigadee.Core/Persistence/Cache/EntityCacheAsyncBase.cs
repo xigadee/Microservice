@@ -13,16 +13,12 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public abstract class EntityCacheAsyncBase<K, E>: JobBase<EntityCacheStatistics>, 
+    public abstract class EntityCacheAsyncBase<K, E>: CommandBase<EntityCacheStatistics, EntityCacheAsyncPolicy>, 
         IRequireSharedServices, IEntityCacheAsync<K, E>
         where K : IEquatable<K>
         where E : class
     {
         #region Declarations
-        /// <summary>
-        /// This is the cache configuration policy.
-        /// </summary>
-        public EntityCacheAsyncPolicy mPolicy;
         /// <summary>
         /// The resource consumer 
         /// </summary>
@@ -32,11 +28,8 @@ namespace Xigadee
 
         protected ISharedService mSharedServices;
 
-        protected readonly bool mTrackEvents;
 
-        protected readonly int mMaxCount;
-
-        protected readonly ConcurrentDictionary<K, EntityCacheHoldar<K, E>> mEntities;
+        protected readonly ConcurrentDictionary<K, EntityCacheHolder<K, E>> mEntities;
 
         protected long mAdded = 0;
 
@@ -46,26 +39,35 @@ namespace Xigadee
 
         protected DateTime? mLastScheduleTime = null;
 
-        protected readonly TimeSpan? mDefaultTTL;
         #endregion
         #region Constructor
         /// <summary>
-        /// This is the default constructor for the cache handler.
+        /// 
         /// </summary>
-        /// <param name="interval"></param>
-        /// <param name="initialWait"></param>
-        /// <param name="initialTime"></param>
-        /// <param name="trackEvents"></param>
-        protected EntityCacheAsyncBase(TimeSpan? interval = null, TimeSpan? initialWait = null, DateTime? initialTime = null
-            , bool trackEvents = false, int maxCount = 200000, ResourceProfile resourceProfile = null, TimeSpan? defaultTTL = null)
-            : base(JobConfiguration.ToJob(interval ?? TimeSpan.FromMinutes(5), initialWait ?? TimeSpan.FromSeconds(5), initialTime))
+        /// <param name="policy">This is the default configuration policy.</param>
+        /// <param name="resourceProfile">This is the optional resource profile that can be used to teack and limit resources.</param>
+        public EntityCacheAsyncBase(EntityCacheAsyncPolicy policy, ResourceProfile resourceProfile = null) :base(policy)
         {
+            if (policy == null)
+                throw new ArgumentNullException("EntityCacheAsyncPolicy cannot be null");
+
             mResourceProfile = resourceProfile ?? new ResourceProfile(string.Format("Cache_{0}", typeof(E).Name));
-            mTrackEvents = trackEvents;
-            mMaxCount = maxCount;
-            mEntities = new ConcurrentDictionary<K, EntityCacheHoldar<K, E>>();
-            mDefaultTTL = defaultTTL??TimeSpan.FromDays(2);
+            mEntities = new ConcurrentDictionary<K, EntityCacheHolder<K, E>>();
         }
+        ///// <summary>
+        ///// This is the default constructor for the cache handler.
+        ///// </summary>
+        ///// <param name="interval"></param>
+        ///// <param name="initialWait"></param>
+        ///// <param name="initialTime"></param>
+        ///// <param name="trackEvents"></param>
+        //protected EntityCacheAsyncBase(TimeSpan? interval = null, TimeSpan? initialWait = null, DateTime? initialTime = null
+        //    , bool trackEvents = false, int maxCount = 200000, ResourceProfile resourceProfile = null, TimeSpan? defaultTTL = null)
+        //    : base(JobConfiguration.ToJob(interval ?? TimeSpan.FromMinutes(5), initialWait ?? TimeSpan.FromSeconds(5), initialTime))
+        //{
+        //    mResourceProfile = resourceProfile ?? new ResourceProfile(string.Format("Cache_{0}", typeof(E).Name));
+        //    mEntities = new ConcurrentDictionary<K, EntityCacheHolder<K, E>>();
+        //}
         #endregion
 
         #region StatisticsRecalculate()
@@ -78,8 +80,8 @@ namespace Xigadee
 
             mStatistics.CurrentCached = mEntities.Count;
             mStatistics.CurrentCachedEntities = mEntities.Values.Where((e) => e.Entity != null).LongCount();
-            mStatistics.CurrentCacheLimit = mMaxCount;
-            mStatistics.TrackEvents = mTrackEvents;
+            mStatistics.CurrentCacheLimit = mPolicy.EntityCacheLimit;
+            mStatistics.TrackEvents = mPolicy.EntityChangeTrackEvents;
             mStatistics.WaitCycles = mWaitCycles;
             mStatistics.Removed = mRemoved;
             mStatistics.Added = mAdded;
@@ -95,20 +97,20 @@ namespace Xigadee
         /// This method register the job expiry task.
         /// </summary>
         /// <param name="config">The job configuration</param>
-        protected override void TimerPollSchedulesRegister(JobConfiguration config)
+        protected override void TimerPollSchedulesRegister()
         {
             var job = new Schedule(ScheduleExpireEntities, $"EntityCacheHandlerBase: {typeof(E).Name} Expire Entities")
             {
-                Frequency = config.Interval,
-                InitialWait = config.InitialWait,
-                InitialTime = config.InitialTime,
-                IsLongRunning = config.IsLongRunningJob
+                Frequency = mPolicy.Interval,
+                InitialWait = mPolicy.InitialWait,
+                InitialTime = mPolicy.InitialTime,
+                IsLongRunning = mPolicy.IsLongRunningJob
             };
 
             mSchedules.Add(job);
         } 
         #endregion
-        #region ScheduleExpireEntities(Schedule schedule, CancellationToken cancel)
+        #region --> ScheduleExpireEntities(Schedule schedule, CancellationToken cancel)
         /// <summary>
         /// Remove the expired references.
         /// </summary>
@@ -122,7 +124,7 @@ namespace Xigadee
                 mLastScheduleTime = now;
                 var expired = mEntities.Values.Where(e => e.Expiry < now).ToList();
                 expired.ForEach(v => Remove(v.Key));
-                int reduce = mEntities.Count - mMaxCount;
+                int reduce = mEntities.Count - mPolicy.EntityCacheLimit;
                 if (reduce > 0)
                 {
                     //We're still over capacity, so remove records based on their low hitcount and take the ones
@@ -189,21 +191,24 @@ namespace Xigadee
         /// </summary>
         public override void CommandsRegister()
         {
-            if (mTrackEvents)
+            if (mPolicy.EntityChangeTrackEvents)
                 EntityChangeEventCommandsRegister();
         }
         #endregion
-
+        #region EntityChangeEventCommandsRegister()
         /// <summary>
-        /// This method 
+        /// This method registers the listener commands for system wide entity changes.
         /// </summary>
         public virtual void EntityChangeEventCommandsRegister()
         {
-            throw new NotImplementedException("Track Events are active, but EntityChangeEventCommandsRegister is not implemented.");
-            //CommandRegister(Channels.InterserviceChannelId, typeof(E).Name, EntityActions.Create, EntityChangeNotification);
-            //CommandRegister(Channels.InterserviceChannelId, typeof(E).Name, EntityActions.Update, EntityChangeNotification);
-            //CommandRegister(Channels.InterserviceChannelId, typeof(E).Name, EntityActions.Delete, EntityChangeNotification);
-        }
+            if (string.IsNullOrWhiteSpace(mPolicy.EntityChangeEventsChannel))
+                throw new NotSupportedException("EntityChangeTrackEvents is set as active, but the EntityChangeEventsChannel is not defined.");
+
+            CommandRegister(mPolicy.EntityChangeEventsChannel, typeof(E).Name, EntityActions.Create, EntityChangeNotification);
+            CommandRegister(mPolicy.EntityChangeEventsChannel, typeof(E).Name, EntityActions.Update, EntityChangeNotification);
+            CommandRegister(mPolicy.EntityChangeEventsChannel, typeof(E).Name, EntityActions.Delete, EntityChangeNotification);
+        } 
+        #endregion
 
         #region Remove(K key)
         /// <summary>
@@ -212,7 +217,7 @@ namespace Xigadee
         /// <param name="key">The item key.</param>
         protected virtual void Remove(K key)
         {
-            EntityCacheHoldar<K, E> holder;
+            EntityCacheHolder<K, E> holder;
             if (mEntities.TryRemove(key, out holder))
             {
                 holder.Cancel();
@@ -289,7 +294,7 @@ namespace Xigadee
         /// <param name="traceId">The resource traceid</param>
         /// <param name="status">The final status.</param>
         /// <returns></returns>
-        private void Gatekeeper(EntityCacheHoldar<K, E> cacheHolder, Guid traceId, out ResourceRequestResult status, int attempts = 5)
+        private void Gatekeeper(EntityCacheHolder<K, E> cacheHolder, Guid traceId, out ResourceRequestResult status, int attempts = 5)
         {
             int retryStart = Environment.TickCount;
 
@@ -316,11 +321,11 @@ namespace Xigadee
         /// </summary>
         /// <param name="key">The key to retrieve.</param>
         /// <returns>The cache holder.</returns>
-        protected async Task<EntityCacheHoldar<K, E>> TryGetCacheHolder(K key)
+        protected async Task<EntityCacheHolder<K, E>> TryGetCacheHolder(K key)
         {
             var traceId = mResourceConsumer.Start("TryGetCacheHolder", Guid.NewGuid());
             ResourceRequestResult status = ResourceRequestResult.Unknown;
-            EntityCacheHoldar<K, E> cacheHolder;
+            EntityCacheHolder<K, E> cacheHolder;
             int start = mStatistics.ActiveIncrement();
 
             try
@@ -332,7 +337,7 @@ namespace Xigadee
                     //Get the cache holder, and if it already exists, see if you need to wait.
                     if (!mEntities.TryGetValue(key, out cacheHolder))
                     {
-                        var temp = new EntityCacheHoldar<K, E>(key, mDefaultTTL);
+                        var temp = new EntityCacheHolder<K, E>(key, mPolicy.EntityDefaultTTL);
                         if (mEntities.TryAdd(key, temp))
                         {
                             //Ok, the entity is not in the cache, so let's go and get the entity.

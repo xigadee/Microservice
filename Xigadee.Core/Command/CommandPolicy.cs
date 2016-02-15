@@ -10,20 +10,22 @@ namespace Xigadee
             RequestTimeoutPollFrequency = TimeSpan.FromSeconds(5);
         }
 
-        public TimeSpan? Interval { get; set; }
+        public virtual bool RequireCommandRequestTracking { get; set; } = false;
 
-        public TimeSpan? InitialWait { get; set; }
+        public virtual TimeSpan? Interval { get; set; }
 
-        public DateTime? InitialTime { get; set; }
+        public virtual TimeSpan? InitialWait { get; set; }
+
+        public virtual DateTime? InitialTime { get; set; }
 
         /// <summary>
         /// This is the the initial wait time before the request timeout poll starts. The default value is 10 seconds.
         /// </summary>
-        public TimeSpan RequestTimeoutInitialWait { get; set; }
+        public virtual TimeSpan RequestTimeoutInitialWait { get; set; }
         /// <summary>
         /// This is the frequency that request time outs are calculated. The default value is 5 seconds.
         /// </summary>
-        public TimeSpan RequestTimeoutPollFrequency { get; set; }
+        public virtual TimeSpan RequestTimeoutPollFrequency { get; set; }
 
         public virtual bool IsMasterJob { get; set; }
 
@@ -31,13 +33,13 @@ namespace Xigadee
 
         public virtual bool IsLongRunningJob { get; set; }
 
-        public int MasterJobNegotiationChannelPriority { get; set; }
+        public virtual int MasterJobNegotiationChannelPriority { get; set; }
 
-        public string MasterJobNegotiationChannelId { get; set; }
+        public virtual string MasterJobNegotiationChannelId { get; set; }
 
-        public string MasterJobNegotiationChannelType { get; set; }
+        public virtual string MasterJobNegotiationChannelType { get; set; }
 
-        public string MasterJobName { get; set; }
+        public virtual string MasterJobName { get; set; }
 
         public static CommandPolicy ToJob(TimeSpan? interval, TimeSpan? initialWait, DateTime? initialTime, bool isLongRunningJob = false)
         {
