@@ -64,6 +64,7 @@
     </Compile>
     <Compile Include="Collections\CollectionContainer.cs" />
     <Compile Include="Command\Command.cs" />
+    <Compile Include="Command\CommandTimerPoll.cs" />
     <Compile Include="Command\Test\CommandTestContainer.cs" />
     <Compile Include="Command\CommandPolicy.cs" />
     <Compile Include="Command\Helper\CommandRequestTracker.cs" />

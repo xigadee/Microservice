@@ -2,15 +2,6 @@
 
 namespace Xigadee
 {
-    public class TimerPollSettings
-    {
-        public virtual TimeSpan? Interval { get; set; } = TimeSpan.FromSeconds(5);
-
-        public virtual TimeSpan? InitialWait { get; set; } = TimeSpan.FromSeconds(10);
-
-        public virtual DateTime? InitialTime { get; set; } = null;
-    }
-
     public class CommandPolicy:PolicyBase
     {
         public CommandPolicy()
@@ -28,7 +19,7 @@ namespace Xigadee
 
         public virtual bool RequireCommandRequestTracking { get; set; } = false;
 
-        public virtual TimerPollSettings CommandRequestTimeoutPoll { get; set; }
+        public virtual CommandTimerPoll CommandRequestTimeoutPoll { get; set; }
         /// <summary>
         /// This is the the initial wait time before the request timeout poll starts. The default value is 10 seconds.
         /// </summary>
@@ -41,7 +32,7 @@ namespace Xigadee
         //JobPoll
         public virtual bool RequireJobPoll { get; set; }
 
-        public virtual TimerPollSettings JobPollSchedule { get; set; }
+        public virtual CommandTimerPoll JobPollSchedule { get; set; }
 
         public virtual bool JobPollIsLongRunning { get; set; }
 
