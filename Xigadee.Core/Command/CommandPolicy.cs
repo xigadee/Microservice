@@ -10,7 +10,6 @@ namespace Xigadee
             RequestTimeoutPollFrequency = TimeSpan.FromSeconds(5);
         }
 
-
         public virtual TimeSpan? Interval { get; set; }
 
         public virtual TimeSpan? InitialWait { get; set; }
