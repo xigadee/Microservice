@@ -45,11 +45,12 @@ namespace Xigadee
                 //Shortcut for external messages
                 if (externalOnly)
                 {
-                    //isSuccess = await ProcessExternalMessageSenders(requestPayload);
                     isSuccess = await mCommunication.Send(requestPayload);
                     if (!isSuccess)
-                        //mLogger.Log(requestPayload.ToPayloadLogEvent());
-                        mLogger.LogPayload(requestPayload, ex:new SenderNotResolvedException(requestPayload)); 
+                    {
+                        OnProcessRequestUnresolved(requestPayload);
+                        mLogger.LogPayload(requestPayload, ex: new SenderNotResolvedException(requestPayload));
+                    }
                     return;
                 }
 
@@ -63,7 +64,8 @@ namespace Xigadee
                 {
                     //OK, we have an problem. We log this as an error and get out of here
                     mLogger.LogPayload(requestPayload, ex:new MessageHandlerNotResolvedException(requestPayload));
-                    isSuccess = this.ConfigurationOptions.UnhandledMessagesIgnore;
+                    OnProcessRequestUnresolved(requestPayload);
+                    isSuccess = ConfigurationOptions.UnhandledMessagesIgnore;
                     return;
                 }
                 else if (!resolveInternal)
@@ -99,10 +101,12 @@ namespace Xigadee
             catch (TransmissionPayloadException pyex)
             {
                 mLogger.LogPayload(pyex.Payload, ex: pyex, level: LoggingLevel.Warning);
+                OnProcessRequestError(pyex.Payload, pyex);
             }
             catch (Exception ex)
             {
                 mLogger.LogException(string.Format("Unable to process {0}", requestPayload != null ? requestPayload.Message : null), ex);
+                OnProcessRequestError(requestPayload, ex);
             }
             finally
             {

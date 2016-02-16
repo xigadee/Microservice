@@ -23,9 +23,38 @@ namespace Xigadee
 
         public event EventHandler<StatisticsEventArgs> StatisticsIssued;
 
+        public event EventHandler<ProcessRequestUnresolvedEventArgs> ProcessRequestUnresolved;
+
+        public event EventHandler<ProcessRequestErrorEventArgs> ProcessRequestError;
+
         //public event EventHandler<AutotuneEventArgs> AutotuneEvent;
 
-        //public event EventHandler<ErrorEventArgs> ErrorDetected;
+
+        protected virtual void OnProcessRequestUnresolved(TransmissionPayload payload)
+        {
+            try
+            {
+                if (ProcessRequestUnresolved != null)
+                    ProcessRequestUnresolved(this, new ProcessRequestUnresolvedEventArgs() { Payload = payload });
+            }
+            catch (Exception ex)
+            {
+                mLogger.LogException("OnUnhandledRequest / external exception thrown on event", ex);
+            }
+        }
+
+        protected virtual void OnProcessRequestError(TransmissionPayload payload, Exception pex)
+        {
+            try
+            {
+                if (ProcessRequestError != null)
+                    ProcessRequestError(this, new ProcessRequestErrorEventArgs() { Payload = payload, Ex = pex });
+            }
+            catch (Exception ex)
+            {
+                mLogger.LogException("OnUnhandledRequest / external exception thrown on event", ex);
+            }
+        }
 
         protected virtual void OnStartRequested()
         {
@@ -92,6 +121,16 @@ namespace Xigadee
                 mLogger.LogException("Action_OnStatistics / external exception thrown on event", ex);
             }
         } 
+    }
+
+    public class ProcessRequestUnresolvedEventArgs: EventArgs
+    {
+        public TransmissionPayload Payload { get; set; }
+    }
+
+    public class ProcessRequestErrorEventArgs: ProcessRequestUnresolvedEventArgs
+    {
+        public Exception Ex { get; set; }
     }
 
     public class StartEventArgs: EventArgs

@@ -34,7 +34,7 @@ namespace Xigadee
         {
             try
             {
-                float? current = await mCpuStats.SystemProcessorUsagePercentage(Process.GetCurrentProcess().ProcessName);
+                float? current = await mCpuStats.SystemProcessorUsagePercentage(System.Diagnostics.Process.GetCurrentProcess().ProcessName);
 
                 if (!current.HasValue && mAutotuneProcessorCurrentMissCount<5)
                 {

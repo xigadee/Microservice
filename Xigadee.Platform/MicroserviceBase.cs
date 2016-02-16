@@ -72,6 +72,8 @@ namespace Xigadee
         /// </summary>
         protected List<IPayloadSerializer> mPayloadSerializers;
 
+        protected List<PolicyBase> mPolicySettings;
+
         protected readonly string mServiceVersionId;
         protected readonly string mServiceEngineVersionId;
 
@@ -85,9 +87,11 @@ namespace Xigadee
         /// This is the default Unity ServiceLocator based constructor.
         /// </summary>
         public MicroserviceBase(MicroserviceConfigurationOptions options = null
-            , string name = null, string serviceId = null)
+            , string name = null, string serviceId = null, IEnumerable<PolicyBase> policySettings = null)
             : base(name)
         {
+            mPolicySettings = policySettings?.ToList()??new List<PolicyBase>();
+
             mStartTime = DateTime.UtcNow;
             mMachineName = Environment.MachineName;
 
