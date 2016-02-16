@@ -148,7 +148,6 @@
     <Compile Include="Persistence\Server\Memory\CacheIntercept\CacheInterceptPolicy.cs" />
     <Compile Include="Persistence\Server\Memory\PersistenceManagerHandlerMemory.cs" />
     <Compile Include="Persistence\Policy\PersistenceRetryPolicy.cs" />
-    <Compile Include="Persistence\Server\SQL\PersistenceManagerHandlerSqlBase.cs" />
     <Compile Include="Persistence\Server\PersistenceMessageHandlerBase.cs" />
     <Compile Include="Persistence\Server\PersistenceRepositoryHolder.cs" />
     <Compile Include="Persistence\Client\PersistenceSharedService.cs" />

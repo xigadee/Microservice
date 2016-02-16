@@ -44,7 +44,6 @@ namespace Test.Xigadee
             Assert.IsTrue(isFaulted);
 
             mService.ProcessRequestUnresolved -= del;
-
         }
 
     }
