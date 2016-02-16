@@ -147,12 +147,9 @@ namespace Xigadee
         public MicroserviceStatistics Statistics { get; set; }
     }
 
-    //public class AutotuneEventArgs: EventArgs
-    //{
+    public class AutotuneEventArgs: EventArgs
+    {
 
-    //}
-    //public abstract class ErrorEventArgs: EventArgs
-    //{
+    }
 
-    //}
 }
