@@ -218,7 +218,7 @@ namespace Xigadee
 
                 //Start the handlers in decending priority
                 mComponents.Commands
-                    .OrderByDescending((h) => h.Priority)
+                    .OrderByDescending((h) => h.StartupPriority)
                     .ForEach(h => ServiceStart(h));
 
                 //OK, start the loop to start processing requests and picking up messages from the listeners.
@@ -265,7 +265,7 @@ namespace Xigadee
 
             //Ok, stop the commands.
             mComponents.Commands
-                .OrderBy((h) => h.Priority)
+                .OrderBy((h) => h.StartupPriority)
                 .ForEach(h => ServiceStop(h));
 
             ServiceStop(mComponents);

@@ -4,12 +4,8 @@ using System.Linq;
 #endregion
 namespace Xigadee
 {
-    /// <summary>
-    /// This command is the base implementation that allows multiple commands to be handled within a single container.
-    /// </summary>
     public abstract partial class CommandBase<S, P>
     {
-        #region StatisticsRecalculate()
         /// <summary>
         /// This override lists the handlers supported for each handler.
         /// </summary>
@@ -33,6 +29,5 @@ namespace Xigadee
                 mStatistics.Ex = ex;
             }
         }
-        #endregion
     }
 }

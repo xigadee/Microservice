@@ -2,55 +2,29 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Linq;
 #endregion
 namespace Xigadee
 {
-    /// <summary>
-    /// This command is the base implementation that allows multiple commands to be handled within a single container.
-    /// </summary>
-    public abstract class MessageHandlerBase<S> : ServiceBase<S>, IMessageHandler
-        where S : MessageHandlerStatistics, new()
+    public abstract partial class CommandBase<S, P>
     {
-        #region Declarations
-        /// <summary>
-        /// This is the concurrent dictionary that contains the supported commands.
-        /// </summary>
-        protected Dictionary<MessageFilterWrapper, CommandHandler> mSupported;
-        /// <summary>
-        /// This event is used by the component container to discover when a command is registered or deregistered.
-        /// Implement IMessageHandlerDynamic to enable this feature.
-        /// </summary>
-        public event EventHandler<CommandChange> OnCommandChange;
-        #endregion
-        #region Constructor
-        /// <summary>
-        /// This is the default constructor that calls the CommandsRegister function.
-        /// </summary>
-        public MessageHandlerBase()
-        {
-            mSupported = new Dictionary<MessageFilterWrapper, CommandHandler>();
-        }
-        #endregion
-
-        #region StartInternal/StopInternal
-        protected override void StartInternal()
-        {
-        }
-
-        protected override void StopInternal()
-        {
-        } 
-        #endregion
-
         #region CommandsRegister()
         /// <summary>
         /// This method should be implemented to populate supported commands.
         /// </summary>
-        public abstract void CommandsRegister();
+        public virtual void CommandsRegister()
+        {
+            //Check whether the ResponseId has been set, and if so then register the command.
+            if (ResponseId != null)
+                CommandRegister(ResponseId, OutgoingRequestsProcessResponse);
+
+            if (mPolicy.MasterJobEnabled)
+            {
+                CommandRegister(NegotiationChannelId, NegotiationMessageType, null, MasterJobStateNotificationIncoming);
+            }
+        }
         #endregion
 
         #region CommandRegister<C>...
@@ -110,7 +84,7 @@ namespace Xigadee
             var wrapper = new MessageFilterWrapper(key);
 
             CommandRegister(wrapper, action, deadLetterAction, exceptionAction);
-        } 
+        }
         /// <summary>
         /// This method registers a particular command.
         /// </summary>
@@ -126,9 +100,9 @@ namespace Xigadee
             if (key == null)
                 throw new ArgumentNullException("CommandRegister: key cannot be null");
 
-            Func<TransmissionPayload, List<TransmissionPayload>, Task>  command = async (sm, lsm) =>
+            Func<TransmissionPayload, List<TransmissionPayload>, Task> command = async (sm, lsm) =>
             {
-                bool error=false;
+                bool error = false;
                 Exception actionEx = null;
                 try
                 {
@@ -203,7 +177,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region In -> ProcessMessage(TransmissionPayload payload, List<TransmissionPayload> responses)
+        #region Dispatcher In -> ProcessMessage(TransmissionPayload payload, List<TransmissionPayload> responses)
         /// <summary>
         /// This method is called to process and incoming message.
         /// </summary>
@@ -234,7 +208,7 @@ namespace Xigadee
             {
                 mStatistics.ActiveDecrement(start);
             }
-        } 
+        }
         #endregion
 
         #region SupportedResolve...
@@ -266,7 +240,7 @@ namespace Xigadee
 
             command = null;
             return false;
-        } 
+        }
         #endregion
 
         #region SupportsMessage(ServiceMessageHeader header)
@@ -289,90 +263,7 @@ namespace Xigadee
         public virtual List<MessageFilterWrapper> SupportedMessageTypes()
         {
             return mSupported.Keys.ToList();
-        } 
-        #endregion
-
-        #region PayloadSerializer
-        /// <summary>
-        /// This is the requestPayload serializer used across the system.
-        /// </summary>
-        public IPayloadSerializationContainer PayloadSerializer
-        {
-            get;
-            set;
-        } 
-        #endregion
-
-        #region EventSource
-        /// <summary>
-        /// This is the event source writer.
-        /// </summary>
-        public IEventSource EventSource
-        {
-            get;
-            set;
-        } 
-        #endregion
-        #region OriginatorId
-        /// <summary>
-        /// This is the service originator Id.
-        /// </summary>
-        public string OriginatorId
-        {
-            get;
-            set;
-        } 
-        #endregion
-        #region Logger
-        /// <summary>
-        /// This is the logger for the message handler.
-        /// </summary>
-        public ILoggerExtended Logger
-        {
-            get;
-            set;
-        } 
-        #endregion
-
-        #region Items
-        /// <summary>
-        /// This returns the list of handlers for logging purposes.
-        /// </summary>
-        public IEnumerable<CommandHandler> Items
-        {
-            get
-            {
-                return mSupported.Values;
-            }
         }
-        #endregion
-        #region Priority
-        /// <summary>
-        /// This is the message handler priority used when starting up.
-        /// </summary>
-        public int StartupPriority
-        {
-            get; set;
-        }
-        #endregion
-
-        #region StatisticsRecalculate()
-        /// <summary>
-        /// This override lists the handlers supported for each handler.
-        /// </summary>
-        protected override void StatisticsRecalculate()
-        {
-            base.StatisticsRecalculate();
-
-            try
-            {
-                mStatistics.SupportedHandlers = mSupported.Select((h) => string.Format("{0}.{1} {2}", h.Key.Header.ToKey(), h.Key.ClientId, h.Key.IsDeadLetter ? "DL" : "")).ToList();
-            }
-            catch (Exception)
-            {
-                //We don't want to throw an exception here.
-            }
-        } 
         #endregion
     }
 }

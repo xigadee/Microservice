@@ -8,6 +8,10 @@ namespace Xigadee
         {
         }
 
+        /// <summary>
+        /// This is the command startup prioroty.
+        /// </summary>
+        public int? StartupPriority { get; set; }
 
         //Outgoing Request
         public virtual bool OutgoingRequestsEnabled { get; set; } = false;

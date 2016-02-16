@@ -65,7 +65,8 @@ namespace Xigadee
         IEnumerable<CommandHandler> Items { get; }
         /// <summary>
         /// This is the handler priority used when starting and stopping services.
+        /// The higher the value, the sooner the command will be started relative to the other commands with lower priorities.
         /// </summary>
-        int Priority { get; set; }
+        int StartupPriority { get; set; }
     }
 }
