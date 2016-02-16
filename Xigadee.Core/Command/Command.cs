@@ -6,6 +6,20 @@ using System.Threading.Tasks;
 #endregion
 namespace Xigadee
 {
+    public abstract class CommandBase: CommandBase<CommandStatistics, CommandPolicy>
+    {
+        public CommandBase(CommandPolicy policy = null) : base(policy)
+        {
+        }
+    }
+
+    public abstract class CommandBase<S>: CommandBase<S, CommandPolicy>
+        where S : CommandStatistics, new()
+    {
+        public CommandBase(CommandPolicy policy = null) : base(policy)
+        {
+        }
+    }
     /// <summary>
     /// This command is the base implementation that allows multiple commands to be handled 
     /// within a single container.

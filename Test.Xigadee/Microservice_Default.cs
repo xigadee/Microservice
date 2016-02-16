@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Xigadee;
@@ -6,25 +7,11 @@ using Xigadee;
 namespace Test.Xigadee
 {
     [TestClass]
-    public class Microservice_Default
+    public class Microservice_Default: MicroService_Setup
     {
-        MicroserviceBase mService;
-
-        [TestInitialize]
-        public void Initialise()
-        {
-            mService = new MicroserviceBase();
-            mService.Start();
-        }
-
-        [TestCleanup]
-        public void Cleanup()
-        {
-            mService.Stop();
-        }
 
         [TestMethod]
-        public void UnhandledMessage()
+        public void UnhandledMessageCheck()
         {
             ManualResetEvent reset = new ManualResetEvent(false);
 
@@ -45,6 +32,34 @@ namespace Test.Xigadee
 
             mService.ProcessRequestUnresolved -= del;
         }
+
+        [TestMethod]
+        public void GoodMessageCheck()
+        {
+            ManualResetEvent reset = new ManualResetEvent(false);
+
+            bool isSuccess = false;
+
+            var del = new EventHandler<Tuple<TransmissionPayload, List<TransmissionPayload>>>((sender, e) =>
+            {
+                isSuccess = true;
+                reset.Set();
+            });
+
+            mCommand.OnExecute += del;
+
+            mService.Process<IDoSomething>(options: ProcessOptions.RouteInternal);
+            reset.WaitOne();
+
+            Assert.IsTrue(isSuccess);
+
+            mCommand.OnExecute -= del;
+        }
+    }
+
+    [Contract("MyChannel", "Do", "Something")]
+    public interface IDoSomething: IMessageContract
+    {
 
     }
 }

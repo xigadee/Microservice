@@ -50,7 +50,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="EventTestCommand.cs" />
     <Compile Include="Microservice_Default.cs" />
+    <Compile Include="MicroService_Setup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -104,6 +104,7 @@ namespace Xigadee
             return new ServiceMessageHeader(keys[0], keys[1], keys[2]);
         }
 
+
         public bool Equals(ServiceMessageHeader other)
         {
             return ToKey() == other.ToKey();

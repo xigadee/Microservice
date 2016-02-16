@@ -60,6 +60,28 @@ namespace Xigadee
         /// <summary>
         /// This method creates a service message and injects it in to the execution path and bypasses the listener infrastructure.
         /// </summary>
+        /// <typeparam name="C">The message contract.</typeparam>
+        /// <param name="package">The objet package to process.</param>
+        /// <param name="ChannelPriority">The prioirty that the message should be processed. The default is 1. If this message is not a valid value, it will be matched to the nearest valid value.</param>
+        /// <param name="options">The process options.</param>
+        /// <param name="release">The release action which is called when the payload has been executed.</param>
+        /// <param name="isDeadLetterMessage">A flag indicating whether the message is a deadletter replay. These messages may be treated differently
+        /// by the receiving commands.</param>
+        public void Process<C>(object package = null
+            , int ChannelPriority = 1
+            , ProcessOptions options = ProcessOptions.RouteExternal | ProcessOptions.RouteInternal
+            , Action<bool, Guid> release = null
+            , bool isDeadLetterMessage = false)
+            where C : IMessageContract
+        {
+            string channelId, messageType, actionType;
+            ServiceMessageHelper.ExtractContractInfo<C>(out channelId, out messageType, out actionType);
+
+            Process(channelId, messageType, actionType, package, ChannelPriority, options, release, isDeadLetterMessage);
+        }
+        /// <summary>
+        /// This method creates a service message and injects it in to the execution path and bypasses the listener infrastructure.
+        /// </summary>
         /// <param name="ChannelId">The incoming channel. This must be supplied.</param>
         /// <param name="MessageType">The message type. This may be null.</param>
         /// <param name="ActionType">The message action. This may be null.</param>
@@ -69,7 +91,6 @@ namespace Xigadee
         /// <param name="release">The release action which is called when the payload has been executed.</param>
         /// <param name="isDeadLetterMessage">A flag indicating whether the message is a deadletter replay. These messages may be treated differently
         /// by the receiving commands.</param>
-
         public void Process(string ChannelId, string MessageType = null, string ActionType = null
             , object package = null
             , int ChannelPriority = 1
@@ -80,6 +101,7 @@ namespace Xigadee
             var header = new ServiceMessageHeader(ChannelId, MessageType, ActionType);
             Process(header, package, ChannelPriority, options, release, isDeadLetterMessage);
         }
+
         /// <summary>
         /// This method creates a service message and injects it in to the execution path and bypasses the listener infrastructure.
         /// </summary>
