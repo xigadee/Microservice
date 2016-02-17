@@ -8,8 +8,7 @@ Write-Host "BUILD_SOURCESDIRECTORY contents:"
 gci $Env:BUILD_SOURCESDIRECTORY
 $url = "$($env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI)$env:SYSTEM_TEAMPROJECTID/_apis/build/definitions/$($env:SYSTEM_DEFINITIONID)?api-version=2.0"
 Write-Host "URL: $url"
-Write-Host "BUILD_SOURCEVERSION contents:"
-gci $Env:BUILD_SOURCEVERSION
-Write-Host "BUILD_SOURCEVERSION contents:"
-gci $Env:BUILD_BUILDNUMBER
+Write-Host "BUILD_SOURCEVERSION contents: $Env:BUILD_SOURCEVERSION"
+Write-Host "BUILD_SOURCEVERSION contents: $Env:BUILD_BUILDNUMBER"
+
 Write-Host "Over and out."
