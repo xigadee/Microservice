@@ -4,9 +4,7 @@ param(
 	[bool]$updatepackages = $false
 )
 
-
-function Output-Folder {
-	param([string]$folder = $null)
+function Output-Folder([string]$folder = $null) {
 	Write-Host $folder -foregroundcolor cyan
 }
 
