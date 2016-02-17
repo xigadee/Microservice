@@ -1,6 +1,9 @@
-Get-ChildItem *.cs -recurse |
-    Foreach-Object {
-        $c = ($_ | Get-Content) 
-        $c = $c -replace '<add key="Environment" value="Dev"/>','<add key="Environment" value="Demo"/>'
-        [IO.File]::WriteAllText($_.FullName, ($c -join "`r`n"))
-    }
+Write-Host "Hello World from $Env:AGENT_NAME."
+Write-Host "My ID is $Env:AGENT_ID."
+Write-Host "AGENT_WORKFOLDER contents:"
+gci $Env:AGENT_WORKFOLDER
+Write-Host "AGENT_BUILDDIRECTORY contents:"
+gci $Env:AGENT_BUILDDIRECTORY
+Write-Host "BUILD_SOURCESDIRECTORY contents:"
+gci $Env:BUILD_SOURCESDIRECTORY
+Write-Host "Over and out."
