@@ -15,6 +15,6 @@ Write-Host "Nuget Version:" $nugetversion;
 Get-ChildItem -Path "..\*\*.nuspec" -Recurse | ForEach-Object -Process {Write-Host $_.name -foregroundcolor cyan}
 
 Get-ChildItem -Path "..\*\*.nuspec" -Recurse | ForEach-Object -Process {
-    (Get-Content $_) -Replace '$nugetversion$', $nugetversion | Set-Content $_
+    (Get-Content $_) -Replace '{ps1.replace}', $nugetversion | Set-Content $_
 }
 Write-Host "Over and out."
