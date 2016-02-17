@@ -4,8 +4,11 @@ param(
 	[bool]$updatepackages = $false
 )
 
-function Output-Folder([string]$folder = $null, [string]$name = $null) {
+function Output-Folder([string]$fullname = $null, [string]$name = $null) {
+
+	$folder = split-path $fullname
 	Write-Host $folder -foregroundcolor cyan -nonewline
+	Write-Host " - " -nonewline
 	Write-Host $name -foregroundcolor red
 }
 
