@@ -134,7 +134,8 @@ namespace Xigadee
                 {
                     if (andFlag) sb.Append(" AND ");
                     andFlag = true;
-                    sb.AppendFormat("{0}=\'{1}\'", id, val);
+                    //FIX: Case sensitive pattern matchin in ServiceBus.
+                    sb.AppendFormat("{0}=\'{1}\'", id, val.ToLowerInvariant());
                 }
             };
 

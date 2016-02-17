@@ -18,6 +18,23 @@ namespace Xigadee
             client.MessageSignal = MessageSignal;
         }
 
+
+        #region ToSafeLower(string value)
+        /// <summary>
+        /// This method is to fix an issue on service bus where filters are case sensitive
+        /// but our message types and action types are not.
+        /// </summary>
+        /// <param name="value">The incoming value.</param>
+        /// <returns>The outgoing lowercase value.</returns>
+        private static string ToSafeLower(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return null;
+
+            return value.ToLowerInvariant();
+        } 
+        #endregion
+
         #region MessagePack(ServiceMessage sMessage)
         /// <summary>
         /// This method packs the ServiceMessage in to the BrokeredMessage format
@@ -41,9 +58,10 @@ namespace Xigadee
             bMessage.Properties.Add("ResponseChannelId", sMessage.ResponseChannelId);
             bMessage.Properties.Add("ResponseChannelPriority", sMessage.ResponseChannelPriority.ToString());
 
-            bMessage.Properties.Add("ChannelId", sMessage.ChannelId);
-            bMessage.Properties.Add("MessageType", sMessage.MessageType);
-            bMessage.Properties.Add("ActionType", sMessage.ActionType);
+            //FIX: Case sensitive pattern matchin in ServiceBus.
+            bMessage.Properties.Add("ChannelId", ToSafeLower(sMessage.ChannelId));
+            bMessage.Properties.Add("MessageType", ToSafeLower(sMessage.MessageType));
+            bMessage.Properties.Add("ActionType", ToSafeLower(sMessage.ActionType));
 
             bMessage.Properties.Add("IsNoop", sMessage.IsNoop ? "1" : "0");
             bMessage.Properties.Add("IsReplay", sMessage.IsReplay ? "1" : "0");
