@@ -7,8 +7,14 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
+    [Contract("MyChannel", "Do", "Something1")]
+    public interface IDoSomething1: IMessageContract{}
+
+    [Contract("MyChannel", "Do", "Something2")]
+    public interface IDoSomething2: IMessageContract{}
+
     [TestClass]
-    public class Microservice_Default: TestPopulator<TestMicroservice, TestConfig>
+    public class Microservice_Validate_CommandRouting: TestPopulator<TestMicroservice, TestConfig>
     {
         protected EventTestCommand<IDoSomething1> mCommand1;
         protected EventTestCommand<IDoSomething2> mCommand2;
@@ -22,42 +28,49 @@ namespace Test.Xigadee
 
 
         [TestMethod]
-        public void UnhandledMessageCheck()
-        {
-            ManualResetEvent reset = new ManualResetEvent(false);
-
-            bool isFaulted = false;
-
-            var del = new EventHandler<ProcessRequestUnresolvedEventArgs>((sender, e) =>
-            {
-                isFaulted = true;
-                reset.Set();
-            });
-
-            Service.ProcessRequestUnresolved += del;
-
-            Service.Process("Unknown", options: ProcessOptions.RouteInternal);
-            reset.WaitOne();
-
-            Assert.IsTrue(isFaulted);
-
-            Service.ProcessRequestUnresolved -= del;
-        }
-
-        [TestMethod]
-        public void VerifyCommands()
-        {
-            Assert.AreSame(Service.Commands.Count(),2);
-        }
-
-        [TestMethod]
-        public void GoodMessageCheck()
+        public void UnhandledRequestCheck()
         {
             try
             {
                 ManualResetEvent reset = new ManualResetEvent(false);
 
-                bool isSuccess = false;
+                bool isFaulted = false;
+
+                var del = new EventHandler<ProcessRequestUnresolvedEventArgs>((sender, e) =>
+                {
+                    isFaulted = true;
+                    reset.Set();
+                });
+
+                Service.ProcessRequestUnresolved += del;
+
+                Service.Process("Unknown", options: ProcessOptions.RouteInternal);
+                reset.WaitOne(5000);
+
+                Assert.IsTrue(isFaulted);
+
+                Service.ProcessRequestUnresolved -= del;
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+        }
+
+        [TestMethod]
+        public void VerifyCommandCount()
+        {
+            Assert.AreEqual(Service.Commands.Count(),2);
+        }
+
+        [TestMethod]
+        public void IDoSomething1CommandCheck()
+        {
+            bool isSuccess = false;
+
+            try
+            {
+                ManualResetEvent reset = new ManualResetEvent(false);
 
                 var del = new EventHandler<Tuple<TransmissionPayload, List<TransmissionPayload>>>((sender, e) =>
                 {
@@ -68,9 +81,7 @@ namespace Test.Xigadee
                 mCommand1.OnExecute += del;
 
                 Service.Process<IDoSomething1>(options: ProcessOptions.RouteInternal);
-                reset.WaitOne();
-
-                Assert.IsTrue(isSuccess);
+                reset.WaitOne(5000);
 
                 mCommand1.OnExecute -= del;
             }
@@ -79,18 +90,70 @@ namespace Test.Xigadee
                 Assert.Fail(ex.Message);
             }
 
+            Assert.IsTrue(isSuccess);
         }
-    }
 
-    [Contract("MyChannel", "Do", "Something1")]
-    public interface IDoSomething1: IMessageContract
-    {
+        //[TestMethod]
+        //public void VerifyCommandBroadcastCheck()
+        //{
+        //    int isSuccess = 2;
 
-    }
+        //    try
+        //    {
+        //        ManualResetEvent reset = new ManualResetEvent(false);
 
-    [Contract("MyChannel", "Do", "Something2")]
-    public interface IDoSomething2: IMessageContract
-    {
+        //        var del = new EventHandler<Tuple<TransmissionPayload, List<TransmissionPayload>>>((sender, e) =>
+        //        {
+        //            if (Interlocked.Decrement(ref isSuccess) == 0)
+        //                reset.Set();
+        //        });
 
+        //        mCommand1.OnExecute += del;
+        //        mCommand2.OnExecute += del;
+
+        //        Service.Process("MyChannel", "Do", options: ProcessOptions.RouteInternal);
+        //        reset.WaitOne(5000);
+
+
+        //        mCommand1.OnExecute -= del;
+        //        mCommand2.OnExecute -= del;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Assert.Fail(ex.Message);
+        //    }
+
+        //    Assert.IsTrue(isSuccess==0);
+        //}
+
+        [TestMethod]
+        public void IDoSomething2CommandCheck()
+        {
+            bool isSuccess = false;
+
+            try
+            {
+                ManualResetEvent reset = new ManualResetEvent(false);
+
+                var del = new EventHandler<Tuple<TransmissionPayload, List<TransmissionPayload>>>((sender, e) =>
+                {
+                    isSuccess = true;
+                    reset.Set();
+                });
+
+                mCommand2.OnExecute += del;
+
+                Service.Process<IDoSomething2>(options: ProcessOptions.RouteInternal);
+                reset.WaitOne(5000);
+
+                mCommand2.OnExecute -= del;
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+
+            Assert.IsTrue(isSuccess);
+        }
     }
 }
