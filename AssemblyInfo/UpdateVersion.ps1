@@ -5,7 +5,8 @@ param(
 )
 
 function Output-Folder([string]$folder = $null, [string]$name = $null) {
-	Write-Host $name -foregroundcolor cyan
+	Write-Host $folder -foregroundcolor cyan -nonewline
+	Write-Host $name -foregroundcolor red
 }
 
 Write-Host "BUILD_BUILDNUMBER contents: $Env:BUILD_BUILDNUMBER"
