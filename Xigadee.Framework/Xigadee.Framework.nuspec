@@ -15,7 +15,7 @@
     <tags>Xigadee Microservice Azure</tags>
     <dependencies>
       <dependency id="Newtonsoft.Json" version="8.0.2"/>
-      <dependency id="Xigadee.Core" version="{UpdateVersion.ps1.replace}"/>
+      <!--<dependency id="Xigadee.Core" version="{UpdateVersion.ps1.replace}"/>-->
     </dependencies>
   </metadata>
 </package>
