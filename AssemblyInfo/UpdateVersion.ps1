@@ -5,11 +5,8 @@ param(
 )
 
 
-Function Output-Folder 
-{
-	Param(
-	[string]$folder = $null
-	)
+function Output-Folder {
+	param([string]$folder = $null)
 	Write-Host $folder -foregroundcolor cyan
 }
 
