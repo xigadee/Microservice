@@ -3,6 +3,16 @@ param(
 	[string]$subversion = $null,
 	[bool]$updatepackages = $false
 )
+
+
+Function Output-Folder 
+{
+	Param(
+	[string]$folder = $null
+	)
+	Write-Host $folder -foregroundcolor cyan
+}
+
 Write-Host "BUILD_BUILDNUMBER contents: $Env:BUILD_BUILDNUMBER"
 
 #OK, if the version has not been passed in, then get it from the environment.
@@ -27,10 +37,3 @@ Get-ChildItem -Path "..\*\*.nuspec" -Recurse | ForEach-Object -Process {
 }
 
 Write-Host "All done here."
-
-Function Output-Folder {
-	Param(
-	[string]$folder = $null
-	)
-	Write-Host $folder -foregroundcolor cyan
-}
