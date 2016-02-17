@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Xigadee.Api.Server</id>
-    <version>$nugetversion$</version>
+    <version>{UpdateVersion.ps1.replace}</version>
     <title>Xigadee Api Server Library</title>
     <authors>Xigadee, Paul Stancer, Guy Steel</authors>
     <owners>Information Management Group Ltd part of Hitachi Consulting</owners>
@@ -15,7 +15,7 @@
     <tags>Xigadee Microservice Azure</tags>
     <dependencies>
       <dependency id="Newtonsoft.Json" version="8.0.2"/>
-      <dependency id="Xigadee.Core" version="$nugetversion$"/>
+      <dependency id="Xigadee.Core" version="{UpdateVersion.ps1.replace}"/>
     </dependencies>
   </metadata>
 </package>

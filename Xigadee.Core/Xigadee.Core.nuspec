@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Xigadee.Core</id>
-    <version>{ps1.replace}</version>
+    <version>{UpdateVersion.ps1.replace}</version>
     <title>Xigadee Core Library</title>
     <authors>Xigadee, Paul Stancer, Guy Steel</authors>
     <owners>Information Management Group Ltd part of Hitachi Consulting</owners>
