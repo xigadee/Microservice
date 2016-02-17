@@ -77,9 +77,9 @@
     <Compile Include="Logger\Interfaces\IActionQueue.cs" />
     <Compile Include="Logger\LoggerActionHolder.cs" />
     <Compile Include="Logger\LoggerStatistics.cs" />
-    <Compile Include="MicroserviceBase_Events.cs" />
-    <Compile Include="MicroserviceBase_Initialise.cs" />
-    <Compile Include="MicroserviceBase_Statistics.cs" />
+    <Compile Include="Microservice_Events.cs" />
+    <Compile Include="Microservice_Initialise.cs" />
+    <Compile Include="Microservice_Statistics.cs" />
     <Compile Include="Policy\AutotunePolicy.cs" />
     <Compile Include="Populator\ConfigBase.cs" />
     <Compile Include="Populator\IPopulator.cs" />
@@ -90,8 +90,8 @@
     <Compile Include="Trackers\Exceptions\SenderNotResolvedException.cs" />
     <Compile Include="Trackers\Exceptions\TransmissionPayloadException.cs" />
     <Compile Include="Logger\Loggers\TraceEventLogger.cs" />
-    <Compile Include="MicroserviceBase_Autotune.cs" />
-    <Compile Include="MicroserviceBase_TaskManager.cs" />
+    <Compile Include="Microservice_Autotune.cs" />
+    <Compile Include="Microservice_TaskManager.cs" />
     <Compile Include="MicroserviceConfigurationOptions.cs" />
     <Compile Include="EventSource\EventSourceContainer.cs" />
     <Compile Include="Logger\LoggerContainer.cs" />
@@ -108,9 +108,9 @@
     <Compile Include="Trackers\Resource\ResourceTrackerStatistics.cs" />
     <Compile Include="Trackers\Task\TaskTracker.cs" />
     <Compile Include="Telemetry\TelemetryContainer.cs" />
-    <Compile Include="MicroserviceBase.cs" />
-    <Compile Include="MicroserviceBase_Components.cs" />
-    <Compile Include="MicroserviceBase_Dispatcher.cs" />
+    <Compile Include="Microservice.cs" />
+    <Compile Include="Microservice_Components.cs" />
+    <Compile Include="Microservice_Dispatcher.cs" />
     <Compile Include="Trackers\Exceptions\EventSourceLogException.cs" />
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>

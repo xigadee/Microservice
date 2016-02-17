@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     //Dispatcher
-    public partial class MicroserviceBase
+    public partial class Microservice
     {
         #region -->Execute(TransmissionPayload requestPayload)
         /// <summary>

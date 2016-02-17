@@ -11,7 +11,7 @@ namespace Test.Xigadee
     /// <summary>
     /// This is the server Microservice.
     /// </summary>
-    public class MicroserviceServer: MicroserviceBase
+    public class MicroserviceServer: Microservice
     {
         public MicroserviceServer()
         {

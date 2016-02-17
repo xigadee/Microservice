@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     //Components
-    public partial class MicroserviceBase
+    public partial class Microservice
     {
         #region SharedServices
         /// <summary>

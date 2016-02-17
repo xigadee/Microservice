@@ -16,7 +16,7 @@ namespace Xigadee
     /// <summary>
     /// This class enables the communication fabric to be plugged in to existing code with minimal effort.
     /// </summary>
-    public partial class MicroserviceBase : ServiceBase<MicroserviceStatistics>
+    public partial class Microservice : ServiceBase<MicroserviceStatistics>
     {
         #region Declarations
         /// <summary>
@@ -86,7 +86,7 @@ namespace Xigadee
         /// <summary>
         /// This is the default Unity ServiceLocator based constructor.
         /// </summary>
-        public MicroserviceBase(MicroserviceConfigurationOptions options = null
+        public Microservice(MicroserviceConfigurationOptions options = null
             , string name = null, string serviceId = null, IEnumerable<PolicyBase> policySettings = null)
             : base(name)
         {

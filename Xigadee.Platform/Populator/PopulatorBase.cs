@@ -10,7 +10,7 @@ namespace Xigadee
     /// <typeparam name="M">The Microservice type.</typeparam>
     /// <typeparam name="C">The Configuration type.</typeparam>
     public abstract class PopulatorBase<M, C>: IPopulator
-        where M : MicroserviceBase, new()
+        where M : Microservice, new()
         where C : ConfigBase, new()
     {
         #region Declarations
@@ -91,7 +91,7 @@ namespace Xigadee
         /// <summary>
         /// This is the Microservice.
         /// </summary>
-        public MicroserviceBase Service { get; private set; }
+        public Microservice Service { get; private set; }
 
         /// <summary>
         /// This is the system configuration.

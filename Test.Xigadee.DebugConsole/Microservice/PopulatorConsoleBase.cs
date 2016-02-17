@@ -7,7 +7,7 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    internal abstract class PopulatorConsoleBase<M>: PopulatorBase<M, ConfigConsole>, IPopulatorConsole where M : MicroserviceBase, new()
+    internal abstract class PopulatorConsoleBase<M>: PopulatorBase<M, ConfigConsole>, IPopulatorConsole where M : Microservice, new()
     {
 
         protected ResourceProfile mResourceDocDb = new ResourceProfile("DocDB");

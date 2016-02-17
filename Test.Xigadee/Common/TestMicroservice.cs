@@ -7,7 +7,7 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    public class TestMicroservice:MicroserviceBase
+    public class TestMicroservice:Microservice
     {
     }
 }

@@ -22,7 +22,7 @@ namespace Test.Xigadee
 
         static void ServiceStatusChanged(ref int started, object sender, StatusChangedEventArgs e)
         {
-            var serv = sender as MicroserviceBase;
+            var serv = sender as Microservice;
 
             switch (e.StatusNew)
             {

@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     //Statistics
-    public partial class MicroserviceBase
+    public partial class Microservice
     {
         #region LogStatistics()
         /// <summary>

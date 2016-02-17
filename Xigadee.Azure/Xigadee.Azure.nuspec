@@ -13,7 +13,14 @@
     <releaseNotes>Initial push.</releaseNotes>
     <copyright>Copyright © Information Management Group 2012-2016</copyright>
     <tags>Xigadee Microservice Azure</tags>
-    <dependencies />
+    <dependencies>
+      <dependency id="WindowsAzure.ServiceBus" version="3.1.3" />
+      <dependency id="WindowsAzure.Storage" version="6.2.0" />
+      <dependency id="Newtonsoft.Json" version="8.0.2" />
+      <dependency id="Microsoft.Azure.DocumentDB" version="1.5.2" />
+      <dependency id="Microsoft.WindowsAzure.ConfigurationManager" version="3.2.1" />
+      <dependency id="Microsoft.WindowsAzure.Management.Monitoring" version="4.1.0" />
+    </dependencies>
   </metadata>
   <files>
     <file src="bin\Release\Xigadee*.dll" target="lib\net46\" />

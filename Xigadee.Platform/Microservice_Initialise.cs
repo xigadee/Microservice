@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     //TaskManager
-    public partial class MicroserviceBase
+    public partial class Microservice
     {
         #region InitialiseResourceTracker()
         /// <summary>

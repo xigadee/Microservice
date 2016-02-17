@@ -14,7 +14,7 @@ namespace Test.Xigadee
     /// <typeparam name="M">The microservice type.</typeparam>
     /// <typeparam name="C">The config type.</typeparam>
     public abstract class TestPopulator<M, C>: PopulatorBase<M, C>
-        where M : MicroserviceBase, new()
+        where M : Microservice, new()
         where C : ConfigBase, new()
     {
 

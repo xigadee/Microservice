@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     //Autotune
-    public partial class MicroserviceBase
+    public partial class Microservice
     {
         #region Declarations
         private CpuStats mCpuStats = new CpuStats();
