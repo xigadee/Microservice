@@ -36,8 +36,6 @@ namespace Xigadee
 
         public virtual string MasterJobName { get; set; }
 
-
-
         public static CommandPolicy ToJob(TimeSpan? interval, TimeSpan? initialWait, DateTime? initialTime, bool isLongRunningJob = false)
         {
             return new CommandPolicy { JobPollEnabled = true, JobPollIsLongRunning = isLongRunningJob, MasterJobEnabled = false };

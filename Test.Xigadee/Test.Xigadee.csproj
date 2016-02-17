@@ -51,7 +51,8 @@
   </Choose>
   <ItemGroup>
     <Compile Include="EventTestCommand.cs" />
-    <Compile Include="Microservice_Default.cs" />
+    <Compile Include="Microservice_Validate_CommandRequest.cs" />
+    <Compile Include="Microservice_Validate_CommandRouting.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\TestConfig.cs" />
     <Compile Include="Common\TestMicroservice.cs" />
