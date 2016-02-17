@@ -7,8 +7,8 @@ using System.Reflection;
 [assembly: AssemblyCopyright("Copyright (c) Information Management Group 2012-2016")]
 [assembly: AssemblyTrademark("")]
 
-[assembly: AssemblyVersion("0.9.9.0")]
-[assembly: AssemblyFileVersion("0.9.9.0")]
-[assembly: AssemblyInformationalVersion("0.9.10-alpha")]
+[assembly: AssemblyVersion("0.0.0.0")]
+[assembly: AssemblyFileVersion("0.0.0.0")]
+[assembly: AssemblyInformationalVersion("0.0.0.0")]
 
 
