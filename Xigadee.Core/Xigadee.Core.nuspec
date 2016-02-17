@@ -17,4 +17,8 @@
       <dependency id="Newtonsoft.Json" version="8.0.2"/>
     </dependencies>
   </metadata>
+  <files>
+    <file src="bin\$configuration$\$id$.dll" target="lib\net46\" />
+    <file src="bin\$configuration$\$id$.pdb" target="lib\net46\" />
+  </files>
 </package>
