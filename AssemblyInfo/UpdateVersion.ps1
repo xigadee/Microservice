@@ -4,8 +4,8 @@ param(
 	[bool]$updatepackages = $false
 )
 
-function Output-Folder([string]$folder = $null) {
-	Write-Host $folder -foregroundcolor cyan
+function Output-Folder([string]$folder = $null, [string]$name = $null) {
+	Write-Host $name -foregroundcolor cyan
 }
 
 Write-Host "BUILD_BUILDNUMBER contents: $Env:BUILD_BUILDNUMBER"
@@ -23,7 +23,7 @@ Write-Host "Nuget Version:" $nugetversion;
 
 #List out the NuSpec files in the solutuon
 Get-ChildItem -Path "..\*\*.nuspec" -Recurse | ForEach-Object -Process {
-	Output-Folder $_.name
+	Output-Folder $_.fullname $_.name
 }
 
 #Update the NuSpec files with the correct version
