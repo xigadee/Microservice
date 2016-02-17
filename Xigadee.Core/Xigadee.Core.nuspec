@@ -9,12 +9,9 @@
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <projectUrl>http://xigadee.com</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>The Xigadee Core library is used to construct conponents for the Microservice.</description>
+    <description>The Xigadee Core library is used to develop components for the Microservice.</description>
     <releaseNotes>Initial test package.</releaseNotes>
     <copyright>Copyright © Information Management Group 2012-2016</copyright>
     <tags>Xigadee Microservice Azure</tags>
-    <dependencies>
-      <dependency id="Newtonsoft.Json" version="8.0.2"/>
-    </dependencies>
   </metadata>
 </package>

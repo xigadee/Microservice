@@ -13,9 +13,5 @@
     <releaseNotes>Initial push.</releaseNotes>
     <copyright>Copyright © Information Management Group 2012-2016</copyright>
     <tags>Xigadee Microservice Azure</tags>
-    <dependencies>
-      <dependency id="Newtonsoft.Json" version="8.0.2"/>
-      <!--<dependency id="Xigadee.Core" version="{UpdateVersion.ps1.replace}"/>-->
-    </dependencies>
   </metadata>
 </package>
