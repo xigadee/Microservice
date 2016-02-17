@@ -10,5 +10,6 @@ $url = "$($env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI)$env:SYSTEM_TEAMPROJECTID/_api
 Write-Host "URL: $url"
 Write-Host "BUILD_SOURCEVERSION contents:"
 gci $Env:BUILD_SOURCEVERSION
-
+Write-Host "BUILD_SOURCEVERSION contents:"
+gci $Env:BUILD_BUILDNUMBER
 Write-Host "Over and out."
