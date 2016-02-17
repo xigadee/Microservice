@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Xigadee.Framework</id>
-    <version>$version$</version>
+    <version>$nugetversion$</version>
     <title>Xigadee component library specifically targetted to the .NET Framework</title>
     <authors>Xigadee, Paul Stancer, Guy Steel</authors>
     <owners>Information Management Group Ltd part of Hitachi Consulting</owners>
@@ -15,7 +15,7 @@
     <tags>Xigadee Microservice Azure</tags>
     <dependencies>
       <dependency id="Newtonsoft.Json" version="8.0.2"/>
-      <dependency id="Xigadee.Core" version="{ps1.replace}"/>
+      <dependency id="Xigadee.Core" version="$nugetversion$"/>
     </dependencies>
   </metadata>
 </package>

@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Xigadee.Console</id>
-    <version>$version$</version>
+    <version>$nugetversion$</version>
     <title>Xigadee Console Helper</title>
     <authors>Paul Stancer, Guy Steel</authors>
     <owners>Information Management Group Ltd part of Hitachi Consulting</owners>
