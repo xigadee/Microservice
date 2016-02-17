@@ -61,9 +61,9 @@
     <Content Include="Properties\ApacheLicense-2.0.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Xigadee\Xigadee.csproj">
+    <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj">
       <Project>{4f785b7b-1fdc-4dcc-9453-fe42447fded2}</Project>
-      <Name>Xigadee</Name>
+      <Name>Xigadee.Helper</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

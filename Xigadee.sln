@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee", "Xigadee\Xigadee.csproj", "{4F785B7B-1FDC-4DCC-9453-FE42447FDED2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Helper", "Xigadee\Xigadee.Helper.csproj", "{4F785B7B-1FDC-4DCC-9453-FE42447FDED2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Core", "Xigadee.Core\Xigadee.Core.csproj", "{F73B3423-992D-444D-A486-9C6A9D729900}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Platform", "Xigadee.Platform\Xigadee.Platform.csproj", "{4788FC0B-E692-4762-A4F4-AEAB2A77DA42}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee", "Xigadee.Platform\Xigadee.csproj", "{4788FC0B-E692-4762-A4F4-AEAB2A77DA42}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Communication", "Xigadee.Communication\Xigadee.Communication.csproj", "{7E70924F-C120-4259-8069-DA466AFE8BC1}"
 EndProject

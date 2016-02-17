@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Xigadee</RootNamespace>
-    <AssemblyName>Xigadee.Platform</AssemblyName>
+    <AssemblyName>Xigadee</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -133,9 +133,9 @@
       <Project>{f73b3423-992d-444d-a486-9c6a9d729900}</Project>
       <Name>Xigadee.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Xigadee\Xigadee.csproj">
+    <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj">
       <Project>{4f785b7b-1fdc-4dcc-9453-fe42447fded2}</Project>
-      <Name>Xigadee</Name>
+      <Name>Xigadee.Helper</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
