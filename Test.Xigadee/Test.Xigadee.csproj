@@ -52,8 +52,10 @@
   <ItemGroup>
     <Compile Include="EventTestCommand.cs" />
     <Compile Include="Microservice_Default.cs" />
-    <Compile Include="MicroService_Setup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Common\TestConfig.cs" />
+    <Compile Include="Common\TestMicroservice.cs" />
+    <Compile Include="Common\TestPopulatorBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xigadee.Core\Xigadee.Core.csproj">

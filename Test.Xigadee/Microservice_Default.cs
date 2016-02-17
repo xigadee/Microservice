@@ -7,8 +7,16 @@ using Xigadee;
 namespace Test.Xigadee
 {
     [TestClass]
-    public class Microservice_Default: MicroService_Setup
+    public class Microservice_Default: TestPopulator<TestMicroservice, TestConfig>
     {
+        protected EventTestCommand<IDoSomething> mCommand;
+
+        protected override void RegisterCommands()
+        {
+            base.RegisterCommands();
+            mCommand = (EventTestCommand<IDoSomething>)Service.RegisterCommand(new EventTestCommand<IDoSomething>());
+        }
+
 
         [TestMethod]
         public void UnhandledMessageCheck()
@@ -23,37 +31,45 @@ namespace Test.Xigadee
                 reset.Set();
             });
 
-            mService.ProcessRequestUnresolved += del;
+            Service.ProcessRequestUnresolved += del;
 
-            mService.Process("Unknown", options: ProcessOptions.RouteInternal);
+            Service.Process("Unknown", options: ProcessOptions.RouteInternal);
             reset.WaitOne();
 
             Assert.IsTrue(isFaulted);
 
-            mService.ProcessRequestUnresolved -= del;
+            Service.ProcessRequestUnresolved -= del;
         }
 
         [TestMethod]
         public void GoodMessageCheck()
         {
-            ManualResetEvent reset = new ManualResetEvent(false);
-
-            bool isSuccess = false;
-
-            var del = new EventHandler<Tuple<TransmissionPayload, List<TransmissionPayload>>>((sender, e) =>
+            try
             {
-                isSuccess = true;
-                reset.Set();
-            });
+                ManualResetEvent reset = new ManualResetEvent(false);
 
-            mCommand.OnExecute += del;
+                bool isSuccess = false;
 
-            mService.Process<IDoSomething>(options: ProcessOptions.RouteInternal);
-            reset.WaitOne();
+                var del = new EventHandler<Tuple<TransmissionPayload, List<TransmissionPayload>>>((sender, e) =>
+                {
+                    isSuccess = true;
+                    reset.Set();
+                });
 
-            Assert.IsTrue(isSuccess);
+                mCommand.OnExecute += del;
 
-            mCommand.OnExecute -= del;
+                Service.Process<IDoSomething>(options: ProcessOptions.RouteInternal);
+                reset.WaitOne();
+
+                Assert.IsTrue(isSuccess);
+
+                mCommand.OnExecute -= del;
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+
         }
     }
 
