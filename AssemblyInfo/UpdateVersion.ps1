@@ -17,11 +17,13 @@ Write-Host "Nuget Version:" $nugetversion;
 (Get-Content AssemblyInfo\SharedAssemblyInfo.cs).replace('0.0.0.0', $version) | Set-Content AssemblyInfo\SharedAssemblyInfo.cs
 
 #List out the NuSpec files in the solutuon
-Get-ChildItem -Path "..\*\*.nuspec" -Recurse | ForEach-Object -Process 
-{Write-Host $_.name}
+Get-ChildItem -Path "..\*\*.nuspec" -Recurse | ForEach-Object -Process {
+	Write-Host $_.name -foregroundcolor cyan
+}
 
 #Update the NuSpec files with the correct version
-Get-ChildItem -Path "..\*\*.nuspec" -Recurse | ForEach-Object -Process 
-{(Get-Content $_) -Replace '{UpdateVersion.ps1.replace}', $nugetversion | Set-Content $_}
+Get-ChildItem -Path "..\*\*.nuspec" -Recurse | ForEach-Object -Process {
+    (Get-Content $_) -Replace '{UpdateVersion.ps1.replace}', $nugetversion | Set-Content $_
+}
 
 Write-Host "All done here."
