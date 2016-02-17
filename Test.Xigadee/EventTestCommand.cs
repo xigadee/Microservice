@@ -7,6 +7,10 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
+    /// <summary>
+    /// This is a very simple command that 
+    /// </summary>
+    /// <typeparam name="I"></typeparam>
     public class EventTestCommand<I>: CommandBase
         where I : IMessageContract
     {
@@ -15,7 +19,7 @@ namespace Test.Xigadee
         /// </summary>
         public event EventHandler<Tuple<TransmissionPayload, List<TransmissionPayload>>> OnExecute;
 
-        public EventTestCommand() : base()
+        public EventTestCommand(CommandPolicy policy = null) : base(policy)
         {
 
         }
@@ -30,7 +34,7 @@ namespace Test.Xigadee
         /// This method is called when an entity of the cache type is updated or deleted.
         /// </summary>
         /// <param name="rq">The request.</param>
-        /// <param name="rs">The response.</param>
+        /// <param name="rs">The responses.</param>
         /// <returns></returns>
         protected virtual async Task ExecuteRequest(TransmissionPayload rq, List<TransmissionPayload> rs)
         {

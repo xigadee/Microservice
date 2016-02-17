@@ -88,6 +88,22 @@ namespace Xigadee
         }
         #endregion
 
+        #region Commands
+        /// <summary>
+        /// This is a list of jobs currently register in the service.
+        /// </summary>
+        public virtual IEnumerable<ICommand> Commands
+        {
+            get
+            {
+                if (mComponents == null)
+                    yield break;
+                else
+                    foreach (var command in mComponents.Commands.Where((c) => c is ICommand).Cast<ICommand>())
+                        yield return command;
+            }
+        }
+        #endregion
         #region Jobs
         /// <summary>
         /// This is a list of jobs currently register in the service.
@@ -102,7 +118,7 @@ namespace Xigadee
                     foreach (var job in mComponents.Jobs)
                         yield return job;
             }
-        } 
+        }
         #endregion
         #region MessageInitiators
         /// <summary>

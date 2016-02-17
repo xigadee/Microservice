@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Xigadee;
@@ -9,12 +10,14 @@ namespace Test.Xigadee
     [TestClass]
     public class Microservice_Default: TestPopulator<TestMicroservice, TestConfig>
     {
-        protected EventTestCommand<IDoSomething> mCommand;
+        protected EventTestCommand<IDoSomething1> mCommand1;
+        protected EventTestCommand<IDoSomething2> mCommand2;
 
         protected override void RegisterCommands()
         {
             base.RegisterCommands();
-            mCommand = (EventTestCommand<IDoSomething>)Service.RegisterCommand(new EventTestCommand<IDoSomething>());
+            mCommand1 = (EventTestCommand<IDoSomething1>)Service.RegisterCommand(new EventTestCommand<IDoSomething1>());
+            mCommand2 = (EventTestCommand<IDoSomething2>)Service.RegisterCommand(new EventTestCommand<IDoSomething2>());
         }
 
 
@@ -42,6 +45,12 @@ namespace Test.Xigadee
         }
 
         [TestMethod]
+        public void VerifyCommands()
+        {
+            Assert.AreSame(Service.Commands.Count(),2);
+        }
+
+        [TestMethod]
         public void GoodMessageCheck()
         {
             try
@@ -56,14 +65,14 @@ namespace Test.Xigadee
                     reset.Set();
                 });
 
-                mCommand.OnExecute += del;
+                mCommand1.OnExecute += del;
 
-                Service.Process<IDoSomething>(options: ProcessOptions.RouteInternal);
+                Service.Process<IDoSomething1>(options: ProcessOptions.RouteInternal);
                 reset.WaitOne();
 
                 Assert.IsTrue(isSuccess);
 
-                mCommand.OnExecute -= del;
+                mCommand1.OnExecute -= del;
             }
             catch (Exception ex)
             {
@@ -73,8 +82,14 @@ namespace Test.Xigadee
         }
     }
 
-    [Contract("MyChannel", "Do", "Something")]
-    public interface IDoSomething: IMessageContract
+    [Contract("MyChannel", "Do", "Something1")]
+    public interface IDoSomething1: IMessageContract
+    {
+
+    }
+
+    [Contract("MyChannel", "Do", "Something2")]
+    public interface IDoSomething2: IMessageContract
     {
 
     }
