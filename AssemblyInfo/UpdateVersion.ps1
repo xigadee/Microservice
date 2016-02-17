@@ -18,7 +18,7 @@ Write-Host "Nuget Version:" $nugetversion;
 
 #List out the NuSpec files in the solutuon
 Get-ChildItem -Path "..\*\*.nuspec" -Recurse | ForEach-Object -Process {
-	Write-Host $_.name -foregroundcolor cyan
+	Output-Folder $_.name
 }
 
 #Update the NuSpec files with the correct version
@@ -27,3 +27,10 @@ Get-ChildItem -Path "..\*\*.nuspec" -Recurse | ForEach-Object -Process {
 }
 
 Write-Host "All done here."
+
+Function Output-Folder {
+	Param(
+	[string]$folder = $null
+	)
+	Write-Host $folder -foregroundcolor cyan
+}
