@@ -29,6 +29,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee", "Test.Xigade
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Framework", "Xigadee.Framework\Xigadee.Framework.csproj", "{AF9B61BA-6A9C-4BD3-A87A-FB513188F21F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{35D469E5-1A0F-42E7-A51C-3B9A966CEF1E}"
+	ProjectSection(SolutionItems) = preProject
+		AssemblyInfo\UpdateVersion.ps1 = AssemblyInfo\UpdateVersion.ps1
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
