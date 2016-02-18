@@ -187,7 +187,7 @@ namespace Xigadee
                 if (list.Count > 1)
                 {
                     if (andFlag) sb.Append(" AND ");
-                    var listVals = string.Join(",", list.Select((i) => string.Format("\'{0}\'", i)));
+                    var listVals = string.Join(",", list.Select((i) => string.Format("\'{0}\'", i.ToLowerInvariant())));
 
                     sb.AppendFormat("{0} IN ({1})", "ActionType", listVals);
                 }

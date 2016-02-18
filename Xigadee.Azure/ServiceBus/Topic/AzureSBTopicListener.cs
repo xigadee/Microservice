@@ -237,7 +237,7 @@ namespace Xigadee
                 throw new ArgumentNullException("FilterToId - filter cannot be null.");
 
             // get the byte representation
-            var bytes = Encoding.ASCII.GetBytes(filter.SqlExpression);
+            var bytes = Encoding.UTF8.GetBytes(filter.SqlExpression);
 
             // create the md5 hash
             using (MD5 md5Hasher = MD5.Create())
