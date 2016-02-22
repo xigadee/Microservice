@@ -6,7 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Xml.Linq;
 #endregion
-namespace Xigadee.Api
+namespace Xigadee
 {
     /// <summary>
     /// This is the base provider class 

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml;
 #endregion
-namespace Xigadee.Api
+namespace Xigadee
 {
     /// <summary>
     /// This attribute can be used to decorate a class for transport to specify 

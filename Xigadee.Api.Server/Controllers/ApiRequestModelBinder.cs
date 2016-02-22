@@ -6,7 +6,7 @@ using System.Web;
 using System.Web.Http.Controllers;
 using System.Web.Http.ModelBinding;
 
-namespace Xigadee.Api
+namespace Xigadee
 {
     public class ApiRequestModelBinder : IModelBinder
     {

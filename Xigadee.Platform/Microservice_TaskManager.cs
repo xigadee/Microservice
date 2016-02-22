@@ -593,7 +593,7 @@ namespace Xigadee
         private void DequeueTasksAndExecute(int? slots = null)
         {
             try
-            {               
+            {
                 slots = slots ?? TaskSlotsAvailable;
                 if (slots > 0)
                     foreach(var dequeueTask in mTasksQueue.Dequeue(slots.Value))

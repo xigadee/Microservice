@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
 #endregion
-namespace Xigadee.Api
+namespace Xigadee
 {
     public class ApiResponse : IHttpActionResult
     {

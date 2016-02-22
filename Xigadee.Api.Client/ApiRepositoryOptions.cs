@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-namespace Xigadee.Api
+namespace Xigadee
 {
     /// <summary>
     /// This class inherits from RespositoryOptions and pretty much does the same thing.

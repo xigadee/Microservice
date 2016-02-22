@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace Xigadee.Api
+namespace Xigadee
 {
     /// <summary>
     /// Root Apim json returned from users operation

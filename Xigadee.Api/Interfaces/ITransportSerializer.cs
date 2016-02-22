@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Xigadee.Api
+namespace Xigadee
 {
     /// <summary>
     /// This is the base class that is used for serialization payload transmitted

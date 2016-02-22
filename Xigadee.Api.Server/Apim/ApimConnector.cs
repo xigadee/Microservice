@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 #endregion
-namespace Xigadee.Api
+namespace Xigadee
 {
     /// <summary>
     /// This class is used to retrieve the necessary details from the API Management interface.

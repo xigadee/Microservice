@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web.Http.Filters;
 
-namespace Xigadee.Api
+namespace Xigadee
 {
     /// <summary>
     /// This action filter adds the version header to the http output.

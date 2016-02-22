@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Web.Http.Filters;
 using System.Web.Http.Results;
 
-namespace Xigadee.Api
+namespace Xigadee
 {
     /// <summary>
     /// This is a test Apim authorization implementation.

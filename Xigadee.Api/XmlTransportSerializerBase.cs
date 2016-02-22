@@ -11,7 +11,7 @@ using System.Xml.Schema;
 using System.Xml.Serialization;
 
 #endregion
-namespace Xigadee.Api
+namespace Xigadee
 {
     /// <summary>
     /// This class is used to serialize and deserialize and validate the XML.

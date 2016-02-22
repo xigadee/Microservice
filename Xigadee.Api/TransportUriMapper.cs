@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Xigadee.Api
+namespace Xigadee
 {
     /// <summary>
     /// This class manages the Uri mapping for a particular key.

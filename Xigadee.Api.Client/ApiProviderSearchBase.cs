@@ -7,7 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-namespace Xigadee.Api
+namespace Xigadee
 {
     public abstract class ApiProviderSearchBase<K, E> : ProviderBase<K, E>
         where K : IEquatable<K>

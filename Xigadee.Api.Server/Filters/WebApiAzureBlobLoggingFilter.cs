@@ -18,7 +18,7 @@ using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json.Linq;
 #endregion
-namespace Xigadee.Api
+namespace Xigadee
 {
     /// <summary>
     /// This class logs the incoming request and subsequent response to the Azure Storage container.

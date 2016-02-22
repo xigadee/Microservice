@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Net.Http.Headers;
 
 #endregion
-namespace Xigadee.Api
+namespace Xigadee
 {
     /// <summary>
     /// This is the async provider base.

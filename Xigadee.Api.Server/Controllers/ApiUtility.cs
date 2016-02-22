@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Web.Http.Controllers;
 
-namespace Xigadee.Api
+namespace Xigadee
 {
     public static class ApiUtility
     {

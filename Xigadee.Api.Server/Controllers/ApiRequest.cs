@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http.ModelBinding;
 
-namespace Xigadee.Api
+namespace Xigadee
 {
     [ModelBinder(typeof(ApiRequestModelBinder))]
     public class ApiRequest

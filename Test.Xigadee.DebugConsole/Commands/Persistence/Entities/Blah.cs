@@ -1,5 +1,5 @@
 ﻿using System;
-using Xigadee.Api;
+using Xigadee;
 
 namespace Test.Xigadee
 {

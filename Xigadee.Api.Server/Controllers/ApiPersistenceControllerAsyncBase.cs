@@ -11,7 +11,7 @@ using System.Web.Http.ModelBinding;
 using System.Collections.Generic;
 
 #endregion
-namespace Xigadee.Api
+namespace Xigadee
 {
     /// <summary>
     /// This is the abstract base class that handle standard CRUD based interaction between the Web and the provider.

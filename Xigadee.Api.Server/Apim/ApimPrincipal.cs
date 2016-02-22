@@ -1,6 +1,6 @@
 ﻿using System.Security.Principal;
 
-namespace Xigadee.Api
+namespace Xigadee
 {
     public class ApimPrincipal : GenericPrincipal
     {

@@ -130,6 +130,8 @@ namespace Xigadee
 
             PersistenceCommandRegister<K, Tuple<K, string>>(EntityActions.Version, ProcessVersion);
             PersistenceCommandRegister<K, Tuple<K, string>>(EntityActions.VersionByRef, ProcessVersionByRef);
+
+            PersistenceCommandRegister<K, Tuple<K, string>>(EntityActions.Search, ProcessSearch);
         }
         #endregion
 
@@ -488,40 +490,76 @@ namespace Xigadee
         }
         #endregion
 
-        protected abstract Task ProcessCreate(
+        protected virtual async Task ProcessCreate(
             PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
-            TransmissionPayload prq, List<TransmissionPayload> prs);
+            TransmissionPayload prq, List<TransmissionPayload> prs)
+        {
+            rs.ResponseCode = 501;
+            rs.ResponseMessage = "Not implemented.";
+        }
 
-        protected abstract Task ProcessRead(
+        protected virtual async Task ProcessRead(
             PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
-            TransmissionPayload prq, List<TransmissionPayload> prs);
+            TransmissionPayload prq, List<TransmissionPayload> prs)
+        {
+            rs.ResponseCode = 501;
+            rs.ResponseMessage = "Not implemented.";
+        }
 
-        protected abstract Task ProcessReadByRef(
+        protected virtual async Task ProcessReadByRef(
             PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
-            TransmissionPayload prq, List<TransmissionPayload> prs);
+            TransmissionPayload prq, List<TransmissionPayload> prs)
+        {
+            rs.ResponseCode = 501;
+            rs.ResponseMessage = "Not implemented.";
+        }
 
-        protected abstract Task ProcessUpdate(
+        protected virtual async Task ProcessUpdate(
             PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
-            TransmissionPayload prq, List<TransmissionPayload> prs);
+            TransmissionPayload prq, List<TransmissionPayload> prs)
+        {
+            rs.ResponseCode = 501;
+            rs.ResponseMessage = "Not implemented.";
+        }
 
-        protected abstract Task ProcessDelete(
+        protected virtual async Task ProcessDelete(
             PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
-            TransmissionPayload prq, List<TransmissionPayload> prs);
+            TransmissionPayload prq, List<TransmissionPayload> prs)
+        {
+            rs.ResponseCode = 501;
+            rs.ResponseMessage = "Not implemented.";
+        }
 
-        protected abstract Task ProcessDeleteByRef(
+        protected virtual async Task ProcessDeleteByRef(
             PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
-            TransmissionPayload prq, List<TransmissionPayload> prs);
+            TransmissionPayload prq, List<TransmissionPayload> prs)
+        {
+            rs.ResponseCode = 501;
+            rs.ResponseMessage = "Not implemented.";
+        }
 
-        protected abstract Task ProcessVersion(
+        protected virtual async Task ProcessVersion(
             PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
-            TransmissionPayload prq, List<TransmissionPayload> prs);
+            TransmissionPayload prq, List<TransmissionPayload> prs)
+        {
+            rs.ResponseCode = 501;
+            rs.ResponseMessage = "Not implemented.";
+        }
 
-        protected abstract Task ProcessVersionByRef(
+        protected virtual async Task ProcessVersionByRef(
             PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
-            TransmissionPayload prq, List<TransmissionPayload> prs);
+            TransmissionPayload prq, List<TransmissionPayload> prs)
+        {
+            rs.ResponseCode = 501;
+            rs.ResponseMessage = "Not implemented.";
+        }
 
-        //protected abstract void ProcessSearch(
-        //    PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
-        //    TransmissionPayload prq, List<TransmissionPayload> prs);
+        protected virtual async Task ProcessSearch(
+            PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
+            TransmissionPayload prq, List<TransmissionPayload> prs)
+        {
+            rs.ResponseCode = 501;
+            rs.ResponseMessage = "Not implemented.";
+        }
     }
 }

@@ -5,7 +5,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Xigadee.Api
+namespace Xigadee
 {
     public class ApimIdentity : IIdentity
     {

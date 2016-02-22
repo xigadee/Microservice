@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 #endregion
-namespace Xigadee.Api
+namespace Xigadee
 {
     [Serializable]
     public class KeyMapperResolutionException : Exception

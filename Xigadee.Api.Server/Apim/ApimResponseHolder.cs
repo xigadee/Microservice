@@ -11,7 +11,7 @@ using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 using System.Web.Http.Results;
 #endregion
-namespace Xigadee.Api
+namespace Xigadee
 {
     public class ApimResponseHolder
     {

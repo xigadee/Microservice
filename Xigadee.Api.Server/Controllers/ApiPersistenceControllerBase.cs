@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.IO; 
 #endregion
-namespace Xigadee.Api
+namespace Xigadee
 {
     /// <summary>
     /// This is the abstract base class that handle standard CRUD based interaction between the Web and the provider.
