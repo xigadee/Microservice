@@ -98,12 +98,13 @@ namespace Xigadee
         /// </summary>
         public C Config { get; private set; }
 
+        #region ConfigInitiate(Func<string, string, string> resolver, bool resolverFirst)
         /// <summary>
-        /// This is the main method used to populate.
+        /// This method can be overriden to customise the config class.
         /// </summary>
-        /// <param name="resolver">The settings resolver.</param>
-        /// <param name="resolverFirst">A boolean property that determines whether the resolver is called first.</param>
-        public virtual void Populate(Func<string, string, string> resolver = null, bool resolverFirst = false)
+        /// <param name="resolver">The resolver function used to set the key values from the appropriate store.</param>
+        /// <param name="resolverFirst">A boolean property that determines whether the resolver is called first before falling back to the settings classes.</param>
+        protected virtual void ConfigInitiate(Func<string, string, string> resolver, bool resolverFirst)
         {
             Config = new C();
             if (resolver != null)
@@ -111,6 +112,17 @@ namespace Xigadee
                 Config.Resolver = resolver;
                 Config.ResolverFirst = resolverFirst;
             }
+        } 
+        #endregion
+
+        /// <summary>
+        /// This is the main method used to populate.
+        /// </summary>
+        /// <param name="resolver">The settings resolver.</param>
+        /// <param name="resolverFirst">A boolean property that determines whether the resolver is called first.</param>
+        public virtual void Populate(Func<string, string, string> resolver = null, bool resolverFirst = false)
+        {
+            ConfigInitiate(resolver, resolverFirst);
 
             ServiceConfigure();
 
@@ -120,11 +132,8 @@ namespace Xigadee
             RegisterTelemetry();
             RegisterLogging();
             RegisterEventSources();
-            RegisterSharedServices();
 
             RegisterCommands();
-            RegisterPersistenceHandlers();
-            RegisterCacheHandlers();
 
             RegisterCommunication();
         }
@@ -163,17 +172,7 @@ namespace Xigadee
 
         }
 
-        protected virtual void RegisterPersistenceHandlers()
-        {
-
-        }
-
         protected virtual void RegisterCommands()
-        {
-
-        }
-
-        protected virtual void RegisterCacheHandlers()
         {
 
         }
@@ -191,9 +190,5 @@ namespace Xigadee
 
         }
 
-        protected virtual void RegisterSharedServices()
-        {
-
-        }
     }
 }
