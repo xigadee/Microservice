@@ -28,18 +28,24 @@ namespace Xigadee
             Service.StopRequested += ServiceStopRequested;
             Service.StopCompleted += ServiceStopCompleted;
             Service.StatisticsIssued += ServiceStatisticsIssued;
-        } 
+        }
         #endregion
 
-        protected virtual void ServiceStopCompleted(object sender, StopEventArgs e)
-        {
+        /// <summary>
+        /// This method is called when the service issues new statistics.
+        /// You can use this method to log specific events or metrics.
+        /// </summary>
+        /// <param name="service">The issuing service.</param>
+        /// <param name="statistics">The statistics.</param>
+        protected virtual void ServiceStatisticsProcess(M service, MicroserviceStatistics statistics) { }
 
-        }
+        protected virtual void ServiceStartRequested(object sender, StartEventArgs e) { }
 
-        protected virtual void ServiceStopRequested(object sender, StopEventArgs e)
-        {
+        protected virtual void ServiceStartCompleted(object sender, StartEventArgs e) { }
 
-        }
+        protected virtual void ServiceStopCompleted(object sender, StopEventArgs e) { }
+
+        protected virtual void ServiceStopRequested(object sender, StopEventArgs e) { }
 
         #region ServiceStatisticsIssued(object sender, StatisticsEventArgs e)
         /// <summary>
@@ -60,44 +66,44 @@ namespace Xigadee
         }
         #endregion
 
+        #region Start/Stop
         /// <summary>
-        /// This method is called when the service issues new statistics.
-        /// You can use this method to log specific events or metrics.
+        /// This method starts the underlying Microservice.
         /// </summary>
-        /// <param name="service">The issuing service.</param>
-        /// <param name="statistics">The statistics.</param>
-        protected virtual void ServiceStatisticsProcess(M service, MicroserviceStatistics statistics)
+        public virtual void Start()
         {
+            Service.Start();
         }
-
-
-        protected virtual void ServiceStartRequested(object sender, StartEventArgs e)
+        /// <summary>
+        /// This method stops the underlying Microservice.
+        /// </summary>
+        public virtual void Stop()
         {
+            Service.Stop();
         }
+        #endregion
 
-        protected virtual void ServiceStartCompleted(object sender, StartEventArgs e)
-        {
 
-        }
 
+        #region Service
+        /// <summary>
+        /// This is the Microservice.
+        /// </summary>
+        public Microservice Service { get; private set; } 
+        #endregion
         /// <summary>
         /// This method is used to set the core Microservice settings.
         /// </summary>
         protected virtual void ServiceConfigure()
         {
-
         }
 
-        /// <summary>
-        /// This is the Microservice.
-        /// </summary>
-        public Microservice Service { get; private set; }
-
+        #region Config
         /// <summary>
         /// This is the system configuration.
         /// </summary>
-        public C Config { get; private set; }
-
+        public C Config { get; private set; } 
+        #endregion
         #region ConfigInitiate(Func<string, string, string> resolver, bool resolverFirst)
         /// <summary>
         /// This method can be overriden to customise the config class.
@@ -112,9 +118,10 @@ namespace Xigadee
                 Config.Resolver = resolver;
                 Config.ResolverFirst = resolverFirst;
             }
-        } 
+        }
         #endregion
 
+        #region Populate(Func<string, string, string> resolver = null, bool resolverFirst = false)
         /// <summary>
         /// This is the main method used to populate.
         /// </summary>
@@ -136,17 +143,9 @@ namespace Xigadee
             RegisterCommands();
 
             RegisterCommunication();
-        }
+        } 
+        #endregion
 
-        public virtual void Start()
-        {
-            Service.Start();
-        }
-
-        public virtual void Stop()
-        {
-            Service.Stop();
-        }
 
         protected virtual void RegisterBoundaryLogger()
         {
