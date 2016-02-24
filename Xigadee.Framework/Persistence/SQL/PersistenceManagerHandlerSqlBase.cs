@@ -53,7 +53,6 @@ namespace Xigadee
         /// </summary>
         protected Func<XElement, Tuple<K, string>> mVersionMaker;
         #endregion
-
         #region Constructor
         /// <summary>
         /// This is the default constructor with a manual connection string.
@@ -62,12 +61,13 @@ namespace Xigadee
         /// <param name="keyMaker">The key maker function.</param>
         /// <param name="entityMaker">The entity maker function.</param>
         /// <param name="versionMaker"></param>
-        protected PersistenceManagerHandlerSqlBase(string connection,
-            Func<E, K> keyMaker,
-            Func<XElement, E> entityMaker,
-            Func<XElement, Tuple<K, string>> versionMaker = null,
-            PersistenceRetryPolicy retryPolicy = null, 
-            ResourceProfile resourceProfile = null) : base(persistenceRetryPolicy: retryPolicy, resourceProfile: resourceProfile)
+        protected PersistenceManagerHandlerSqlBase(string connection
+            , Func<E, K> keyMaker
+            , Func<XElement, E> entityMaker
+            , Func<XElement, Tuple<K, string>> versionMaker = null
+            , PersistenceRetryPolicy retryPolicy = null
+            , ResourceProfile resourceProfile = null
+            , ICacheManager<K, E> cacheManager = null) : base(persistenceRetryPolicy: retryPolicy, resourceProfile: resourceProfile, cacheManager: cacheManager)
         {
             Connection = connection;
             mKeyMaker = keyMaker;

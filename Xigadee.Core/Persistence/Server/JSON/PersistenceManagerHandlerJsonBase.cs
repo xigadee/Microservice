@@ -4,9 +4,15 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Text;
 #endregion
 namespace Xigadee
 {
+    /// <summary>
+    /// This is the persistence manager base for JSON based information.
+    /// </summary>
+    /// <typeparam name="K">The key type.</typeparam>
+    /// <typeparam name="E">The entity type.</typeparam>
     public abstract class PersistenceManagerHandlerJsonBase<K, E>: PersistenceManagerHandlerJsonBase<K, E, PersistenceStatistics>
         where K : IEquatable<K>
     {
@@ -23,8 +29,9 @@ namespace Xigadee
             , VersionPolicy<E> versionPolicy = null
             , TimeSpan? defaultTimeout = null
             , PersistenceRetryPolicy persistenceRetryPolicy = null
-            , ResourceProfile resourceProfile = null) 
-            : base(entityName, versionPolicy, defaultTimeout, persistenceRetryPolicy: persistenceRetryPolicy, resourceProfile: resourceProfile)
+            , ResourceProfile resourceProfile = null
+            , ICacheManager<K, E> cacheManager = null) 
+            : base(entityName, versionPolicy, defaultTimeout, persistenceRetryPolicy: persistenceRetryPolicy, resourceProfile: resourceProfile, cacheManager: cacheManager)
         {
         }
         #endregion
@@ -60,7 +67,6 @@ namespace Xigadee
         /// </summary>
         protected readonly TimeSpan? mDefaultTimeout;
         #endregion
-
         #region Constructor
         /// <summary>
         /// This is the default constructor.
@@ -74,7 +80,8 @@ namespace Xigadee
             , VersionPolicy<E> versionPolicy = null
             , TimeSpan? defaultTimeout = null
             , PersistenceRetryPolicy persistenceRetryPolicy = null
-            , ResourceProfile resourceProfile = null) : base(persistenceRetryPolicy: persistenceRetryPolicy, resourceProfile:resourceProfile)
+            , ResourceProfile resourceProfile = null
+            , ICacheManager<K, E> cacheManager = null) : base(persistenceRetryPolicy: persistenceRetryPolicy, resourceProfile:resourceProfile, cacheManager: cacheManager)
         {
             mJsonSerializerSettings=new JsonSerializerSettings { TypeNameHandling=TypeNameHandling.Auto };
 
@@ -83,8 +90,15 @@ namespace Xigadee
             mEntityName=entityName??typeof(E).Name.ToLowerInvariant();
 
             mDefaultTimeout=defaultTimeout;
-        } 
+        }
         #endregion
+
+        protected virtual void OutputEntitySet(PersistenceRepositoryHolder<K, E> rs, string json)
+        {
+            rs.Entity = EntityMaker(json);
+            rs.Key = KeyMaker(rs.Entity);
+            rs.Settings.VersionId = mVersion.EntityVersionAsString(rs.Entity);
+        }
 
         #region EntityMaker(string jsonHolder)
         /// <summary>
@@ -170,5 +184,9 @@ namespace Xigadee
             return new JsonHolder<K>(key, version, jObj.ToString(), id);
         }
         #endregion
+
+        protected abstract void ProcessOutputEntity(K key, PersistenceRepositoryHolder<K, E> rs, IResponseHolder holderResponse);
+
+        protected abstract void ProcessOutputKey(PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, IResponseHolder holderResponse);
     }
 }

@@ -15,7 +15,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public abstract class PersistenceMessageHandlerAzureBlobStorageBase<K, E> : PersistenceManagerHandlerJsonBase<K, E>
+    public class PersistenceMessageHandlerAzureBlobStorageBase<K, E> : PersistenceManagerHandlerJsonBase<K, E>
         where K : IEquatable<K>
     {
         #region Declarations
@@ -30,7 +30,6 @@ namespace Xigadee
 
         #endregion
         #region Constructor
-
         /// <summary>
         /// This is the default constructor.
         /// </summary>
@@ -42,7 +41,7 @@ namespace Xigadee
         /// <param name="options">The optional blob request options.</param>
         /// <param name="context">The optional operation context.</param>
         /// <param name="retryPolicy">Persistence retry policy</param>
-        protected PersistenceMessageHandlerAzureBlobStorageBase(StorageCredentials credentials
+        public PersistenceMessageHandlerAzureBlobStorageBase(StorageCredentials credentials
             , Func<E, K> keyMaker
             , Func<K, string> idMaker
             , string entityName = null
@@ -52,8 +51,9 @@ namespace Xigadee
             , BlobRequestOptions options = null
             , OperationContext context = null
             , PersistenceRetryPolicy persistenceRetryPolicy = null
-            , ResourceProfile resourceProfile = null)
-            : base(entityName, versionPolicy, defaultTimeout, persistenceRetryPolicy:persistenceRetryPolicy, resourceProfile:resourceProfile)
+            , ResourceProfile resourceProfile = null
+            , ICacheManager<K, E> cacheManager = null)
+            : base(entityName, versionPolicy, defaultTimeout, persistenceRetryPolicy:persistenceRetryPolicy, resourceProfile:resourceProfile, cacheManager: cacheManager)
         {
             mDirectory = entityName ?? typeof(E).Name;
             mStorage = new StorageServiceBase(credentials, "persistence", accessType, options, context, defaultTimeout: defaultTimeout);
@@ -106,7 +106,7 @@ namespace Xigadee
                 , contentType: "application/json; charset=utf-8"
                 , version: jsonHolder.Version, directory: mDirectory);
 
-             ProcessOutputEntity(rs, result);
+             ProcessOutputEntity(jsonHolder.Key, rs, result);
         }
         #endregion
         #region ProcessRead
@@ -122,7 +122,7 @@ namespace Xigadee
         {
             var result = await mStorage.Read(mIdMaker(rq.Key), directory: mDirectory);
 
-            ProcessOutputEntity(rs, result);
+            ProcessOutputEntity(rq.Key, rs, result);
         }
         #endregion
 
@@ -144,7 +144,7 @@ namespace Xigadee
                 , contentType: "application/json; charset=utf-8"
                 , version: jsonHolder.Version, directory: mDirectory);
 
-            ProcessOutputEntity(rs, result);
+            ProcessOutputEntity(jsonHolder.Key, rs, result);
         }
         #endregion
         #region ProcessDelete
@@ -230,14 +230,13 @@ namespace Xigadee
         }
         #endregion
 
-        protected virtual void ProcessOutputEntity(PersistenceRepositoryHolder<K, E> rs, StorageResponseHolder holderResponse)
+        protected override void ProcessOutputEntity(K key, PersistenceRepositoryHolder<K, E> rs, IResponseHolder holderResponse)
         {
             if (holderResponse.IsSuccess)
             {
                 rs.ResponseCode = holderResponse.StatusCode;
-                rs.Entity = EntityMaker(Encoding.UTF8.GetString(holderResponse.Content));
-                rs.Key = KeyMaker(rs.Entity);
-                rs.Settings.VersionId = mVersion.EntityVersionAsString(rs.Entity);
+
+                OutputEntitySet(rs, holderResponse.Content);
             }
             else
             {
@@ -253,8 +252,8 @@ namespace Xigadee
             }
         }
 
-        protected virtual void ProcessOutputKey(PersistenceRepositoryHolder<K, Tuple<K, string>> rq,
-            PersistenceRepositoryHolder<K, Tuple<K, string>> rs, StorageResponseHolder holderResponse)
+        protected override void ProcessOutputKey(PersistenceRepositoryHolder<K, Tuple<K, string>> rq,
+            PersistenceRepositoryHolder<K, Tuple<K, string>> rs, IResponseHolder holderResponse)
         {
             rs.Key = rq.Key;
 
@@ -272,6 +271,5 @@ namespace Xigadee
                 rs.ResponseCode = 404;
             }
         }
-
     }
 }

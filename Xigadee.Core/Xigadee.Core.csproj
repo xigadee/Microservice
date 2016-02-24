@@ -62,6 +62,7 @@
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="CircuitBreaker\CircuitBreakerBase.cs" />
     <Compile Include="Collections\CollectionContainer.cs" />
     <Compile Include="Command\Command.cs" />
     <Compile Include="Command\CommandTimerPoll.cs" />
@@ -111,6 +112,7 @@
     <Compile Include="MessageHandler\CommandHandlerStatistics.cs" />
     <Compile Include="MessageHandler\MessageHandlerStatistics.cs" />
     <Compile Include="MessageInitiator\MessageInitiatorTimeoutSchedule.cs" />
+    <Compile Include="Persistence\CacheManager\NullCacheManager.cs" />
     <Compile Include="Persistence\Cache\EntityCacheAsyncPolicy.cs" />
     <Compile Include="Persistence\Cache\EntityCacheCollection.cs" />
     <Compile Include="Persistence\Cache\EntityCacheHolderState.cs" />
@@ -120,6 +122,7 @@
     <Compile Include="Persistence\Cache\EntityCacheAsyncBase.cs" />
     <Compile Include="Persistence\Cache\EntityCacheStatistics.cs" />
     <Compile Include="Persistence\Cache\EntityChangeReference.cs" />
+    <Compile Include="Persistence\CacheManager\ICacheManager.cs" />
     <Compile Include="Persistence\Cache\IEntityCacheAsync.cs" />
     <Compile Include="Persistence\Cache\EntityCacheReferenceTypeValueKey.cs" />
     <Compile Include="Persistence\Client\PersistenceMessageInitiatorBase.cs" />

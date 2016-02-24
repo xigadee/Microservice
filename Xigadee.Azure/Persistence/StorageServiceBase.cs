@@ -293,7 +293,7 @@ namespace Xigadee
                             access, mOptions, mContext, rq.CancelSet);
 
                         MetadataGet(rq.Blob, rs);
-                        rs.Content = body;
+                        rs.Data = body;
                     }
                     else
                         rq.CopyTo(rs);
@@ -346,7 +346,7 @@ namespace Xigadee
                         AccessCondition.GenerateIfMatchCondition(rq.ETag), mOptions, mContext, rq.CancelSet);
 
                     MetadataGet(rq.Blob, rs);
-                    rs.Content = body;
+                    rs.Data = body;
                     rs.IsSuccess = true;
                     rs.StatusCode = 200;
                 });
@@ -387,7 +387,7 @@ namespace Xigadee
                         AccessCondition.GenerateIfMatchCondition(rq.ETag), mOptions, mContext, rq.CancelSet);
 
                     MetadataGet(rq.Blob, rs);
-                    rs.Content = body;
+                    rs.Data = body;
 
                     rs.IsSuccess = true;
                     rs.StatusCode = 200;
@@ -412,9 +412,9 @@ namespace Xigadee
 
                         await rq.Blob.DownloadToStreamAsync(sData, rq.CancelSet);
 
-                        rs.Content = new byte[sData.Length];
+                        rs.Data = new byte[sData.Length];
                         sData.Position = 0;
-                        sData.Read(rs.Content, 0, rs.Content.Length);
+                        sData.Read(rs.Data, 0, rs.Data.Length);
                         MetadataGet(rq.Blob, rs);
                     }
                     else

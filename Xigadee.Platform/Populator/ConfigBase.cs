@@ -38,7 +38,6 @@ namespace Xigadee
             if (value != null)
                 return value;
 
-
             try
             {
                 value = value ?? ConfigurationManager.AppSettings[key];

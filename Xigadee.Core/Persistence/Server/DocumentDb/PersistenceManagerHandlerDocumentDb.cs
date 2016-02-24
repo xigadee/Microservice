@@ -97,8 +97,9 @@ namespace Xigadee
             , TimeSpan? defaultTimeout = null
             , ShardingPolicy<K> shardingPolicy = null
             , PersistenceRetryPolicy persistenceRetryPolicy = null
-            , ResourceProfile resourceProfile = null) 
-            : base(entityName, versionMaker, defaultTimeout, persistenceRetryPolicy: persistenceRetryPolicy, resourceProfile: resourceProfile)
+            , ResourceProfile resourceProfile = null
+            , ICacheManager<K, E> cacheManager = null) 
+            : base(entityName, versionMaker, defaultTimeout, persistenceRetryPolicy: persistenceRetryPolicy, resourceProfile: resourceProfile, cacheManager: cacheManager)
         {
             mConnection = connection;
             mDatabaseName = database;
@@ -371,7 +372,7 @@ namespace Xigadee
                 result.ETag = documentRq.ETag;
             }
 
-            ProcessOutputKey(rs, result);
+            ProcessOutputKey(rq, rs, result);
         }
         #endregion
         #region ProcessInternalVersion
@@ -387,7 +388,7 @@ namespace Xigadee
 
             var result = await Partition(key).Read(documentRq.DocumentId, rq.Timeout);
 
-            ProcessOutputKey(rs, result);
+            ProcessOutputKey(rq, rs, result);
         }
         #endregion
 
@@ -413,20 +414,20 @@ namespace Xigadee
         }
         #endregion
 
-        protected virtual void ProcessOutputEntity(K key, PersistenceRepositoryHolder<K, E> rs, ResponseHolder holderResponse)
+        protected override void ProcessOutputEntity(K key, PersistenceRepositoryHolder<K, E> rs, IResponseHolder holderResponse)
         {
             if (holderResponse.IsSuccess)
             {
-                rs.ResponseCode = (int)holderResponse.Response.StatusCode;
-                rs.Entity = EntityMaker(holderResponse.Content);
-                rs.Key = KeyMaker(rs.Entity);
-                rs.Settings.VersionId = mVersion.EntityVersionAsString(rs.Entity);
+                rs.ResponseCode = holderResponse.StatusCode;
+
+                OutputEntitySet(rs, holderResponse.Content);
+
                 rs.KeyReference = new Tuple<string, string>(rs.Key == null ? null : rs.Key.ToString(), rs.Settings.VersionId);
             }
             else
             {
                 rs.IsTimeout = holderResponse.IsTimeout;
-                rs.ResponseCode = holderResponse.Ex != null ? 500 : (int)holderResponse.Response.StatusCode;
+                rs.ResponseCode = holderResponse.Ex != null ? 500 : holderResponse.StatusCode;
 
                 if (holderResponse.Ex != null && !rs.IsTimeout)
                     Logger.LogException(string.Format("Error in DocDb persistence {0}-{1}", typeof (E).Name, key), holderResponse.Ex);
@@ -438,12 +439,12 @@ namespace Xigadee
             }
         }
 
-        protected virtual void ProcessOutputKey(
-            PersistenceRepositoryHolder<K, Tuple<K, string>> rs, ResponseHolder holderResponse)
+        protected override void ProcessOutputKey(PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, 
+            IResponseHolder holderResponse)
         {
             if (holderResponse.IsSuccess)
             {
-                rs.ResponseCode = (int)holderResponse.Response.StatusCode;
+                rs.ResponseCode = (int)holderResponse.StatusCode;
                 var entity = EntityMaker(holderResponse.Content);
                 rs.Key = KeyMaker(entity);
                 string version;
@@ -467,7 +468,7 @@ namespace Xigadee
         /// <typeparam name="ET"></typeparam>
         /// <param name="documentRq"></param>
         /// <param name="responseHolder"></param>
-        protected void SetDocumentRetrievalFailure<KT, ET>(ResponseHolder documentRq, PersistenceRepositoryHolder<KT, ET> responseHolder)
+        protected void SetDocumentRetrievalFailure<KT, ET>(ResponseHolderBase documentRq, PersistenceRepositoryHolder<KT, ET> responseHolder)
         {
             if (documentRq.IsSuccess)
                 return;

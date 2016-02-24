@@ -1,11 +1,9 @@
-﻿using System;
+﻿#region using
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-
+using System.Linq; 
+#endregion
 namespace Xigadee
 {
     /// <summary>
@@ -29,8 +27,22 @@ namespace Xigadee
 
             mResourceRateLimiters = new Dictionary<Guid, ResourceRateLimiter>();
             mResourceResourceConsumer = new Dictionary<Guid, ResourceConsumer>();
-        } 
+        }
         #endregion
+
+        #region Start/Stop/SharedServices
+        public ISharedService SharedServices
+        {
+            get
+            {
+                return mSharedServices;
+            }
+            set
+            {
+                mSharedServices = value;
+                value.RegisterService<IResourceTracker>(this);
+            }
+        }
 
         protected override void StartInternal()
         {
@@ -47,7 +59,8 @@ namespace Xigadee
             {
 
             }
-        }
+        } 
+        #endregion
 
         protected override void StatisticsRecalculate()
         {
@@ -67,7 +80,6 @@ namespace Xigadee
                 //We don't want to throw an exception here.
             }
         }
-
 
         protected ResourceStatistics ResourceCreate(ResourceProfile profile)
         {
@@ -108,17 +120,6 @@ namespace Xigadee
             return limiter;
         }
 
-        public ISharedService SharedServices
-        {
-            get
-            {
-                return mSharedServices;
-            }
-            set
-            {
-                mSharedServices = value;
-                value.RegisterService<IResourceTracker>(this);
-            }
-        }
+
     }
 }

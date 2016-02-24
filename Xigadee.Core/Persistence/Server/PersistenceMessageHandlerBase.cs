@@ -51,18 +51,22 @@ namespace Xigadee
 
         protected readonly ResourceProfile mResourceProfile;
 
+        protected readonly ICacheManager<K, E> mCacheManager;
         #endregion
-        
         #region Constructor
         /// <summary>
         /// This constructor specifies whether the service should be registered as a shared service
         /// that can be called directly by other message handler and Microservice components.
         /// </summary>
         /// <param name="persistenceRetryPolicy"></param>
-        protected PersistenceMessageHandlerBase(PersistenceRetryPolicy persistenceRetryPolicy = null, ResourceProfile resourceProfile = null)
+        protected PersistenceMessageHandlerBase(PersistenceRetryPolicy persistenceRetryPolicy = null
+            , ResourceProfile resourceProfile = null
+            , ICacheManager<K, E> cacheManager = null
+            )
         {
             mPersistenceRetryPolicy = persistenceRetryPolicy ?? new PersistenceRetryPolicy();
             mResourceProfile = resourceProfile;
+            mCacheManager = cacheManager ?? new NullCacheManager<K, E>();
         }
         #endregion
 
@@ -135,6 +139,7 @@ namespace Xigadee
         }
         #endregion
 
+        #region TimeoutCorrectCreateUpdate...
         /// <summary>
         /// This method can be overridden to correct timeouts for state changing requests and to log to the event source event on a timeout failure condition.
         /// This would be used when the underlying communication times out, but the action was ultimately successful.
@@ -150,7 +155,8 @@ namespace Xigadee
         {
             return false;
         }
-
+        #endregion
+        #region TimeoutCorrectDelete...
         /// <summary>
         /// This method can be overridden to correct timeouts for state changing requests and to log to the event source event on a timeout failure condition.
         /// This would be used when the underlying communication times out, but the action was ultimately successful.
@@ -163,9 +169,10 @@ namespace Xigadee
         /// <param name="l"></param>
         /// <returns>Return true if the message should logged </returns>
         protected virtual async Task<bool> TimeoutCorrectDelete(PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, TransmissionPayload m, List<TransmissionPayload> l)
-        {     
+        {
             return false;
-        }
+        } 
+        #endregion
 
         #region Log<KT, ET>...
         /// <summary>
@@ -490,6 +497,7 @@ namespace Xigadee
         }
         #endregion
 
+        #region ProcessCreate
         protected virtual async Task ProcessCreate(
             PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
@@ -497,7 +505,8 @@ namespace Xigadee
             rs.ResponseCode = 501;
             rs.ResponseMessage = "Not implemented.";
         }
-
+        #endregion
+        #region ProcessRead
         protected virtual async Task ProcessRead(
             PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
@@ -505,7 +514,8 @@ namespace Xigadee
             rs.ResponseCode = 501;
             rs.ResponseMessage = "Not implemented.";
         }
-
+        #endregion
+        #region ProcessReadByRef
         protected virtual async Task ProcessReadByRef(
             PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
@@ -513,7 +523,8 @@ namespace Xigadee
             rs.ResponseCode = 501;
             rs.ResponseMessage = "Not implemented.";
         }
-
+        #endregion
+        #region ProcessUpdate
         protected virtual async Task ProcessUpdate(
             PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
@@ -521,7 +532,9 @@ namespace Xigadee
             rs.ResponseCode = 501;
             rs.ResponseMessage = "Not implemented.";
         }
+        #endregion
 
+        #region ProcessDelete
         protected virtual async Task ProcessDelete(
             PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
@@ -529,7 +542,8 @@ namespace Xigadee
             rs.ResponseCode = 501;
             rs.ResponseMessage = "Not implemented.";
         }
-
+        #endregion
+        #region ProcessDeleteByRef
         protected virtual async Task ProcessDeleteByRef(
             PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
@@ -537,7 +551,9 @@ namespace Xigadee
             rs.ResponseCode = 501;
             rs.ResponseMessage = "Not implemented.";
         }
+        #endregion
 
+        #region ProcessVersion
         protected virtual async Task ProcessVersion(
             PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
@@ -545,7 +561,8 @@ namespace Xigadee
             rs.ResponseCode = 501;
             rs.ResponseMessage = "Not implemented.";
         }
-
+        #endregion
+        #region ProcessVersionByRef
         protected virtual async Task ProcessVersionByRef(
             PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
@@ -553,13 +570,16 @@ namespace Xigadee
             rs.ResponseCode = 501;
             rs.ResponseMessage = "Not implemented.";
         }
+        #endregion
 
+        #region ProcessSearch
         protected virtual async Task ProcessSearch(
             PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
             rs.ResponseCode = 501;
             rs.ResponseMessage = "Not implemented.";
-        }
+        } 
+        #endregion
     }
 }

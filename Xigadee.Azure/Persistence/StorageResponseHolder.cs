@@ -32,7 +32,7 @@ namespace Xigadee
         public CloudBlockBlob Blob { get; set; }
     }
 
-    public abstract class StorageHolderBase
+    public abstract class StorageHolderBase: IResponseHolder
     {
         public StorageHolderBase()
         {
@@ -49,13 +49,39 @@ namespace Xigadee
 
         public string ContentEncoding { get; set; }
 
-        public byte[] Content { get; set; }
+        public byte[] Data { get; set; }
+
+
 
         public Dictionary<string, string> Fields { get; set; }
 
         public DateTime? LastUpdated { get; set; }
 
         public bool IsDeleted { get; set; }
+
+        public string Content
+        {
+            get
+            {
+                return Encoding.UTF8.GetString(Data);
+            }
+
+            set
+            {
+                Data = Encoding.UTF8.GetBytes(value);
+            }
+        }
+
+        public Exception Ex
+        {
+            get;set;
+        }
+
+        public bool IsSuccess { get; set; }
+
+        public bool IsTimeout { get; set; }
+
+        public int StatusCode { get; set; }
 
         public void CopyTo(StorageHolderBase copyto)
         {
@@ -70,14 +96,6 @@ namespace Xigadee
     public class StorageResponseHolder: StorageHolderBase
     {
 
-        public bool IsSuccess { get; set; }
-
-
-        public bool IsTimeout { get; set; }
-
-        public int StatusCode { get; set; }
-
-        public Exception Ex { get; set; }
 
     }
 

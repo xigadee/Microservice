@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 #endregion
 namespace Xigadee
 {
-    public class ResponseHolder
+    public abstract class ResponseHolderBase: IResponseHolder
     {
-        public ResponseHolder()
+        public ResponseHolderBase()
         {
             Fields = new Dictionary<string, string>();
         }
@@ -18,6 +18,21 @@ namespace Xigadee
         public bool IsSuccess { get; set; }
 
         public bool IsTimeout { get; set; }
+
+        public abstract int StatusCode { get; }
+
+        public string Id { get; set; }
+
+        public string Content { get; set; }
+
+        public Exception Ex { get; set; }
+
+        public Dictionary<string, string> Fields { get; set; }
+    }
+
+    public class ResponseHolder: ResponseHolderBase
+    {
+
 
         public bool IsThrottled { get; set; }
 
@@ -29,11 +44,7 @@ namespace Xigadee
 
         public HttpResponseMessage Response { get; set; }
 
-        public string Id { get; set; }
-
-        public string Content { get; set; }
-
-        public Exception Ex { get; set; }
+        public override int StatusCode { get { return (Response != null?(int)Response.StatusCode: 0); } }
 
         public string DocumentId { get; set; }
 
@@ -43,7 +54,7 @@ namespace Xigadee
 
         public string SessionToken { get; set; }
 
-        public Dictionary<string, string> Fields { get; set; }
+
     }
 
     public class ResponseHolder<O> : ResponseHolder

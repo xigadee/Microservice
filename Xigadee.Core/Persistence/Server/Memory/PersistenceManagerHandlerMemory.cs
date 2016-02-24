@@ -100,5 +100,15 @@ namespace Xigadee
         {
             throw new NotImplementedException();
         }
+
+        protected override void ProcessOutputEntity(K key, PersistenceRepositoryHolder<K, E> rs, IResponseHolder holderResponse)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void ProcessOutputKey(PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, IResponseHolder holderResponse)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

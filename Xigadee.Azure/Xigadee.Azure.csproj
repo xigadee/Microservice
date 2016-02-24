@@ -136,6 +136,7 @@
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="CacheManager\RedisCacheManager.cs" />
     <Compile Include="EventSource\AzureStorageEventSource.cs" />
     <Compile Include="EventSource\EventHubEventSource.cs" />
     <Compile Include="Logger\AzureStorageLogger.cs" />

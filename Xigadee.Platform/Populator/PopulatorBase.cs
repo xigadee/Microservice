@@ -83,34 +83,34 @@ namespace Xigadee
         }
         #endregion
 
-
-
         #region Service
         /// <summary>
         /// This is the Microservice.
         /// </summary>
-        public Microservice Service { get; private set; } 
+        public Microservice Service { get; private set; }
         #endregion
+        #region ServiceInitialise()
         /// <summary>
         /// This method is used to set the core Microservice settings.
         /// </summary>
-        protected virtual void ServiceConfigure()
+        protected virtual void ServiceInitialise()
         {
-        }
+        } 
+        #endregion
 
         #region Config
         /// <summary>
         /// This is the system configuration.
         /// </summary>
-        public C Config { get; private set; } 
+        public C Config { get; private set; }
         #endregion
-        #region ConfigInitiate(Func<string, string, string> resolver, bool resolverFirst)
+        #region ConfigInitialise(Func<string, string, string> resolver, bool resolverFirst)
         /// <summary>
         /// This method can be overriden to customise the config class.
         /// </summary>
         /// <param name="resolver">The resolver function used to set the key values from the appropriate store.</param>
         /// <param name="resolverFirst">A boolean property that determines whether the resolver is called first before falling back to the settings classes.</param>
-        protected virtual void ConfigInitiate(Func<string, string, string> resolver, bool resolverFirst)
+        protected virtual void ConfigInitialise(Func<string, string, string> resolver, bool resolverFirst)
         {
             Config = new C();
             if (resolver != null)
@@ -129,9 +129,9 @@ namespace Xigadee
         /// <param name="resolverFirst">A boolean property that determines whether the resolver is called first.</param>
         public virtual void Populate(Func<string, string, string> resolver = null, bool resolverFirst = false)
         {
-            ConfigInitiate(resolver, resolverFirst);
+            ConfigInitialise(resolver, resolverFirst);
 
-            ServiceConfigure();
+            ServiceInitialise();
 
             RegisterBoundaryLogger();
             RegisterResourceProfiles();
