@@ -93,13 +93,6 @@ namespace Xigadee
         }
         #endregion
 
-        protected virtual void OutputEntitySet(PersistenceRepositoryHolder<K, E> rs, string json)
-        {
-            rs.Entity = EntityMaker(json);
-            rs.Key = KeyMaker(rs.Entity);
-            rs.Settings.VersionId = mVersion.EntityVersionAsString(rs.Entity);
-        }
-
         #region EntityMaker(string jsonHolder)
         /// <summary>
         /// This is a simple JSON deserialization method that returns an entity from the 
@@ -185,8 +178,58 @@ namespace Xigadee
         }
         #endregion
 
-        protected abstract void ProcessOutputEntity(K key, PersistenceRepositoryHolder<K, E> rs, IResponseHolder holderResponse);
+        #region ProcessOutputEntity...
+        /// <summary>
+        /// This method sets the entity and any associated metadata in to the response.
+        /// </summary>
+        /// <param name="key">The entity key.</param>
+        /// <param name="rq">The original request.</param>
+        /// <param name="rs">The outgoing response.</param>
+        /// <param name="holderResponse">The underlying storage response.</param>
+        protected virtual void ProcessOutputEntity(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs
+            , IResponseHolder holderResponse)
+        {
+            rs.ResponseCode = holderResponse.StatusCode;
 
-        protected abstract void ProcessOutputKey(PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, IResponseHolder holderResponse);
+            if (holderResponse.IsSuccess)
+            {
+                rs.Entity = EntityMaker(holderResponse.Content);
+                rs.Key = KeyMaker(rs.Entity);
+                rs.Settings.VersionId = mVersion?.EntityVersionAsString(rs.Entity);
+
+                rs.KeyReference = new Tuple<string, string>(rs.Key.ToString(), rs.Settings.VersionId);
+            }
+            else
+            {
+                if (holderResponse.Ex != null && !rs.IsTimeout)
+                    Logger.LogException(string.Format("Error in persistence {0}-{1}", typeof(E).Name, key), holderResponse.Ex);
+                else
+                    Logger.LogMessage(
+                        rs.IsTimeout ? LoggingLevel.Warning : LoggingLevel.Info,
+                        string.Format("Error in persistence {0}-{1}-{2}-{3}", typeof(E).Name, rs.ResponseCode, key,
+                            holderResponse.Ex != null ? holderResponse.Ex.ToString() : rs.ResponseMessage), typeof(E).Name);
+            }
+        }
+        #endregion
+
+        protected virtual void ProcessOutputKey(PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs
+            , IResponseHolder holderResponse)
+        {
+            rs.Key = rq.Key;
+            rs.ResponseCode = holderResponse.StatusCode;
+
+            if (holderResponse.IsSuccess)
+            {
+                rs.Settings.VersionId = holderResponse.VersionId;
+                rs.Entity = new Tuple<K, string>(rs.Key, holderResponse.VersionId);
+                rs.KeyReference = new Tuple<string, string>(rs.Key == null ? null : rs.Key.ToString(), holderResponse.VersionId);
+            }
+            else
+            {
+                rs.IsTimeout = holderResponse.IsTimeout;
+                //rs.ResponseCode = holderResponse.IsTimeout?408:404;
+            }
+        }
+
     }
 }

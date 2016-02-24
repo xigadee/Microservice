@@ -179,7 +179,7 @@ namespace Xigadee
 
             var result = await Partition(jsonHolder.Key).Create(jsonHolder.Json, rq.Timeout);
             
-            ProcessOutputEntity(jsonHolder.Key, rs, result);
+            ProcessOutputEntity(jsonHolder.Key, rq, rs, result);
         }
         #endregion
 
@@ -266,7 +266,7 @@ namespace Xigadee
                 //mCollection.Create(documentRq.DocumentId, jsonHolder.Json, rq.Timeout).Result;
             }
 
-            ProcessOutputEntity(jsonHolder.Key, rs, result);
+            ProcessOutputEntity(jsonHolder.Key, rq, rs, result);
         }
         #endregion
 
@@ -348,7 +348,7 @@ namespace Xigadee
 
             var result = await Partition(key).Read(documentRq.DocumentId, rq.Timeout);
 
-            ProcessOutputEntity(key, rs, result);
+            ProcessOutputEntity(key, rq, rs, result);
         }
         #endregion
         #region ProcessInternalDelete
@@ -414,50 +414,17 @@ namespace Xigadee
         }
         #endregion
 
-        protected override void ProcessOutputEntity(K key, PersistenceRepositoryHolder<K, E> rs, IResponseHolder holderResponse)
-        {
-            if (holderResponse.IsSuccess)
-            {
-                rs.ResponseCode = holderResponse.StatusCode;
-
-                OutputEntitySet(rs, holderResponse.Content);
-
-                rs.KeyReference = new Tuple<string, string>(rs.Key == null ? null : rs.Key.ToString(), rs.Settings.VersionId);
-            }
-            else
-            {
-                rs.IsTimeout = holderResponse.IsTimeout;
-                rs.ResponseCode = holderResponse.Ex != null ? 500 : holderResponse.StatusCode;
-
-                if (holderResponse.Ex != null && !rs.IsTimeout)
-                    Logger.LogException(string.Format("Error in DocDb persistence {0}-{1}", typeof (E).Name, key), holderResponse.Ex);
-                else
-                    Logger.LogMessage(
-                        rs.IsTimeout ? LoggingLevel.Warning : LoggingLevel.Info,
-                        string.Format("Error in DocDb persistence {0}-{1}-{2}-{3}", typeof(E).Name, rs.ResponseCode, key,
-                            holderResponse.Ex != null ? holderResponse.Ex.ToString() : rs.ResponseMessage), "DocDb");
-            }
-        }
-
         protected override void ProcessOutputKey(PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, 
             IResponseHolder holderResponse)
         {
             if (holderResponse.IsSuccess)
             {
-                rs.ResponseCode = (int)holderResponse.StatusCode;
                 var entity = EntityMaker(holderResponse.Content);
-                rs.Key = KeyMaker(entity);
-                string version;
-                holderResponse.Fields.TryGetValue(mVersion.VersionJsonMetadata.Key, out version);
-                rs.Settings.VersionId = version;
-                rs.Entity = new Tuple<K, string>(rs.Key, version);
-                rs.KeyReference = new Tuple<string, string>(rs.Key == null ? null : rs.Key.ToString(), version);
+                rq.Key = KeyMaker(entity);
+                holderResponse.VersionId = mVersion?.EntityVersionAsString(entity);
             }
-            else
-            {
-                rs.IsTimeout = holderResponse.IsTimeout;
-                rs.ResponseCode = 404;
-            }
+
+            base.ProcessOutputKey(rq,rs, holderResponse);
         }
 
         #region SetDocumentRetrievalFailure<KT,ET>(ResponseHolder documentRq, PersistenceRepositoryHolder<KT,ET> responseHolder)

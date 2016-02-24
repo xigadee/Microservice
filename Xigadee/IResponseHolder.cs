@@ -9,6 +9,7 @@ namespace Xigadee
         Exception Ex { get; set; }
         Dictionary<string, string> Fields { get; set; }
         string Id { get; set; }
+        string VersionId { get; set; }
         bool IsSuccess { get; set; }
         bool IsTimeout { get; set; }
         int StatusCode { get; }

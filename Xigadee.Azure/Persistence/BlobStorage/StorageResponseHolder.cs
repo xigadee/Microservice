@@ -51,8 +51,6 @@ namespace Xigadee
 
         public byte[] Data { get; set; }
 
-
-
         public Dictionary<string, string> Fields { get; set; }
 
         public DateTime? LastUpdated { get; set; }

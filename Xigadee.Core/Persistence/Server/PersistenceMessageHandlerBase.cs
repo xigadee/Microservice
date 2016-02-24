@@ -294,7 +294,7 @@ namespace Xigadee
         }
         #endregion
 
-
+        #region Profile
         protected virtual Guid ProfileStart(TransmissionPayload payload)
         {
             if (mResourceConsumer == null)
@@ -317,7 +317,8 @@ namespace Xigadee
                 return;
 
             mResourceConsumer.Retry(profileId, retryStart, reason);
-        }
+        } 
+        #endregion
 
         #region PersistenceCommandRegister<KT,ET>...
         /// <summary>

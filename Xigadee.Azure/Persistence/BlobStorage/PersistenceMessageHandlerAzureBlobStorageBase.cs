@@ -106,7 +106,7 @@ namespace Xigadee
                 , contentType: "application/json; charset=utf-8"
                 , version: jsonHolder.Version, directory: mDirectory);
 
-             ProcessOutputEntity(jsonHolder.Key, rs, result);
+            ProcessOutputEntity(jsonHolder.Key, rq, rs, result);
         }
         #endregion
         #region ProcessRead
@@ -122,7 +122,7 @@ namespace Xigadee
         {
             var result = await mStorage.Read(mIdMaker(rq.Key), directory: mDirectory);
 
-            ProcessOutputEntity(rq.Key, rs, result);
+            ProcessOutputEntity(rq.Key, rq, rs, result);
         }
         #endregion
 
@@ -144,7 +144,7 @@ namespace Xigadee
                 , contentType: "application/json; charset=utf-8"
                 , version: jsonHolder.Version, directory: mDirectory);
 
-            ProcessOutputEntity(jsonHolder.Key, rs, result);
+            ProcessOutputEntity(jsonHolder.Key, rq, rs, result);
         }
         #endregion
         #region ProcessDelete
@@ -230,46 +230,25 @@ namespace Xigadee
         }
         #endregion
 
-        protected override void ProcessOutputEntity(K key, PersistenceRepositoryHolder<K, E> rs, IResponseHolder holderResponse)
-        {
-            if (holderResponse.IsSuccess)
-            {
-                rs.ResponseCode = holderResponse.StatusCode;
 
-                OutputEntitySet(rs, holderResponse.Content);
-            }
-            else
-            {
-                rs.IsTimeout = holderResponse.IsTimeout;
-                rs.ResponseCode = holderResponse.Ex != null ? 500 : holderResponse.StatusCode;
+        //protected override void ProcessOutputKey(PersistenceRepositoryHolder<K, Tuple<K, string>> rq,
+        //    PersistenceRepositoryHolder<K, Tuple<K, string>> rs, IResponseHolder holderResponse)
+        //{
+        //    rs.Key = rq.Key;
 
-                if (holderResponse.Ex != null)
-                    Logger.LogException(
-                        string.Format("Error in blob storage persistence {0}-{1}", typeof(E).Name, rs.Key), holderResponse.Ex);
-                else
-                    Logger.LogMessage(LoggingLevel.Warning, 
-                        string.Format("Error in blob storage persistence {0}-{1}/{2}-{3}", typeof(E).Name, rs.Key, rs.ResponseCode, rs.ResponseMessage), "BlobStorage");
-            }
-        }
-
-        protected override void ProcessOutputKey(PersistenceRepositoryHolder<K, Tuple<K, string>> rq,
-            PersistenceRepositoryHolder<K, Tuple<K, string>> rs, IResponseHolder holderResponse)
-        {
-            rs.Key = rq.Key;
-
-            if (holderResponse.IsSuccess)
-            {
-                rs.ResponseCode = holderResponse.StatusCode;
-                string version;
-                holderResponse.Fields.TryGetValue(StorageServiceBase.cnMetaVersionId, out version);
-                rs.Settings.VersionId = version;
-                rs.Entity = new Tuple<K, string>(rs.Key, version);
-            }
-            else
-            {
-                rs.IsTimeout = holderResponse.IsTimeout;
-                rs.ResponseCode = 404;
-            }
-        }
+        //    if (holderResponse.IsSuccess)
+        //    {
+        //        rs.ResponseCode = holderResponse.StatusCode;
+        //        string version;
+        //        holderResponse.Fields.TryGetValue(StorageServiceBase.cnMetaVersionId, out version);
+        //        rs.Settings.VersionId = version;
+        //        rs.Entity = new Tuple<K, string>(rs.Key, version);
+        //    }
+        //    else
+        //    {
+        //        rs.IsTimeout = holderResponse.IsTimeout;
+        //        rs.ResponseCode = 404;
+        //    }
+        //}
     }
 }

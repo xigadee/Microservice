@@ -23,6 +23,8 @@ namespace Xigadee
 
         public string Id { get; set; }
 
+        public string VersionId { get; set; }
+
         public string Content { get; set; }
 
         public Exception Ex { get; set; }
