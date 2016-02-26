@@ -35,6 +35,18 @@ namespace Xigadee
     {
         #region Declarations
         /// <summary>
+        /// This function is used by optimistic locking, it is used to define the version id for the entity.
+        /// </summary>
+        protected readonly VersionPolicy<E> mVersion;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected readonly TimeSpan? mDefaultTimeout;
+
+        protected string mEntityName;
+
+        /// <summary>
         /// This function can be set to make the key from the entity.
         /// </summary>
         protected Func<E, K> mKeyMaker;
@@ -62,11 +74,19 @@ namespace Xigadee
         protected PersistenceMessageHandlerBase(PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
             , ICacheManager<K, E> cacheManager = null
+            , string entityName = null
+            , VersionPolicy<E> versionPolicy = null
+            , TimeSpan? defaultTimeout = null
+
             )
         {
+            mVersion = versionPolicy ?? new VersionPolicy<E>();
+            mDefaultTimeout = defaultTimeout;
+
             mPersistenceRetryPolicy = persistenceRetryPolicy ?? new PersistenceRetryPolicy();
             mResourceProfile = resourceProfile;
             mCacheManager = cacheManager ?? new NullCacheManager<K, E>();
+            mEntityName = entityName ?? typeof(E).Name.ToLowerInvariant();
         }
         #endregion
 
@@ -498,22 +518,51 @@ namespace Xigadee
         }
         #endregion
 
-        #region ProcessCreate
+        #region Create
         protected virtual async Task ProcessCreate(
             PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            rs.ResponseCode = 501;
-            rs.ResponseMessage = "Not implemented.";
+            var result = await CreateInternal(rq.Key, rq, rs, prq, prs);
+
+            if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
+                mCacheManager.Write(rq.Key, result);
+
+            ProcessOutputEntity(rq.Key, rq, rs, result);
         }
+
+        protected virtual async Task<IResponseHolder> CreateInternal(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
+            TransmissionPayload prq, List<TransmissionPayload> prs)
+        {
+            return new ResponseHolderBase() { StatusCode = 501, StatusMessage = "Not implemented." };
+        }
+
         #endregion
-        #region ProcessRead
+        #region Read
         protected virtual async Task ProcessRead(
             PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            rs.ResponseCode = 501;
-            rs.ResponseMessage = "Not implemented.";
+            IResponseHolder result = null;
+
+            if (mCacheManager.IsActive)
+                result = await mCacheManager.Read(rq.Key);
+
+            if (result == null || !result.IsSuccess)
+            {
+                result = await ReadInternal(rq.Key, rq, rs, prq, prs);
+
+                if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
+                    mCacheManager.Write(rq.Key, result);
+            }
+
+            ProcessOutputEntity(rq.Key, rq, rs, result);
+        }
+
+        protected async virtual Task<IResponseHolder> ReadInternal(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
+            TransmissionPayload prq, List<TransmissionPayload> prs)
+        {
+            return new ResponseHolderBase() { StatusCode = 501, StatusMessage = "Not implemented." };
         }
         #endregion
         #region ProcessReadByRef
@@ -525,13 +574,23 @@ namespace Xigadee
             rs.ResponseMessage = "Not implemented.";
         }
         #endregion
-        #region ProcessUpdate
+        #region Update
         protected virtual async Task ProcessUpdate(
             PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            rs.ResponseCode = 501;
-            rs.ResponseMessage = "Not implemented.";
+            var result = await UpdateInternal(rq.Key, rq, rs, prq, prs);
+
+            if (mCacheManager.IsActive && result.IsSuccess)
+                mCacheManager.Write(rq.Key, result);
+
+            ProcessOutputEntity(rq.Key, rq, rs, result);
+        }
+
+        protected virtual async Task<IResponseHolder> UpdateInternal(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
+            TransmissionPayload prq, List<TransmissionPayload> prs)
+        {
+            return new ResponseHolderBase() { StatusCode = 501, StatusMessage = "Not implemented." };
         }
         #endregion
 
@@ -540,8 +599,18 @@ namespace Xigadee
             PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            rs.ResponseCode = 501;
-            rs.ResponseMessage = "Not implemented.";
+            var result = await DeleteInternal(rq.Key, rq, rs, prq, prs);
+
+            if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
+                await mCacheManager.Delete(rq.Key);
+
+            ProcessOutputKey(rq, rs, result);
+        }
+
+        protected virtual async Task<IResponseHolder> DeleteInternal(K key, PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
+            TransmissionPayload prq, List<TransmissionPayload> prs)
+        {
+            return new ResponseHolderBase() { StatusCode = 501, StatusMessage = "Not implemented." };
         }
         #endregion
         #region ProcessDeleteByRef
@@ -559,8 +628,26 @@ namespace Xigadee
             PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            rs.ResponseCode = 501;
-            rs.ResponseMessage = "Not implemented.";
+            IResponseHolder result = null;
+
+            if (mCacheManager.IsActive)
+                result = await mCacheManager.VersionRead(rq.Key);
+
+            if (result == null || !result.IsSuccess)
+            {
+                result = await VersionInternal(rq.Key, rq, rs, prq, prs);
+
+                if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
+                    mCacheManager.VersionWrite(rq.Key, result);
+            }
+
+            ProcessOutputKey(rq, rs, result);
+        }
+
+        protected virtual async Task<IResponseHolder> VersionInternal(K key, PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
+            TransmissionPayload prq, List<TransmissionPayload> prs)
+        {
+            return new ResponseHolderBase() { StatusCode = 501, StatusMessage = "Not implemented." };
         }
         #endregion
         #region ProcessVersionByRef
@@ -580,7 +667,106 @@ namespace Xigadee
         {
             rs.ResponseCode = 501;
             rs.ResponseMessage = "Not implemented.";
-        } 
+        }
         #endregion
+
+        #region EntityMaker(string jsonHolder)
+        /// <summary>
+        /// This is a simple JSON deserialization method that returns an entity from the 
+        /// JSON representation from the DocumentDB repository.
+        /// </summary>
+        /// <param name="json">The JSON to convert.</param>
+        /// <returns>The object to return.</returns>
+        protected virtual E EntityMaker(string json)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+        #region KeyStringMaker(K key)
+        /// <summary>
+        /// This is a very simple key serializer to a string representation.
+        /// </summary>
+        /// <param name="key">The incoming key object.</param>
+        /// <returns>The output string.</returns>
+        protected virtual string KeyStringMaker(K key)
+        {
+            return string.Format("{0}.{1}", mEntityName, key.ToString());
+        }
+        #endregion
+        #region KeyMaker(E entity)
+        /// <summary>
+        /// This method intercepts and replaces the keymaker in the function has been set in the constructor.
+        /// </summary>
+        /// <param name="entity">The entity to convert.</param>
+        /// <returns>Returns the key from the entity.</returns>
+        protected virtual K KeyMaker(E entity)
+        {
+            if (mKeyMaker == null)
+                throw new NotImplementedException();
+
+            return mKeyMaker(entity);
+        }
+        #endregion
+
+        #region ProcessOutputEntity...
+        /// <summary>
+        /// This method sets the entity and any associated metadata in to the response.
+        /// </summary>
+        /// <param name="key">The entity key.</param>
+        /// <param name="rq">The original request.</param>
+        /// <param name="rs">The outgoing response.</param>
+        /// <param name="holderResponse">The underlying storage response.</param>
+        protected virtual void ProcessOutputEntity(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs
+            , IResponseHolder holderResponse)
+        {
+            rs.ResponseCode = holderResponse.StatusCode;
+
+            if (holderResponse.IsSuccess)
+            {
+                rs.Entity = EntityMaker(holderResponse.Content);
+                rs.Key = KeyMaker(rs.Entity);
+                rs.Settings.VersionId = mVersion?.EntityVersionAsString(rs.Entity);
+
+                rs.KeyReference = new Tuple<string, string>(rs.Key.ToString(), rs.Settings.VersionId);
+            }
+            else
+            {
+                if (holderResponse.Ex != null && !rs.IsTimeout)
+                    Logger.LogException(string.Format("Error in persistence {0}-{1}", typeof(E).Name, key), holderResponse.Ex);
+                else
+                    Logger.LogMessage(
+                        rs.IsTimeout ? LoggingLevel.Warning : LoggingLevel.Info,
+                        string.Format("Error in persistence {0}-{1}-{2}-{3}", typeof(E).Name, rs.ResponseCode, key,
+                            holderResponse.Ex != null ? holderResponse.Ex.ToString() : rs.ResponseMessage), typeof(E).Name);
+            }
+        }
+        #endregion
+        #region ProcessOutputKey...
+        /// <summary>
+        /// This method processes the common output method for key based operations such as delete and version.
+        /// </summary>
+        /// <param name="rq">The incoming request.</param>
+        /// <param name="rs">The outgoing response.</param>
+        /// <param name="holderResponse">The internal holder response.</param>
+        protected virtual void ProcessOutputKey(PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs
+            , IResponseHolder holderResponse)
+        {
+            rs.Key = rq.Key;
+            rs.ResponseCode = holderResponse.StatusCode;
+
+            if (holderResponse.IsSuccess)
+            {
+                rs.Settings.VersionId = holderResponse.VersionId;
+                rs.Entity = new Tuple<K, string>(rs.Key, holderResponse.VersionId);
+                rs.KeyReference = new Tuple<string, string>(rs.Key == null ? null : rs.Key.ToString(), holderResponse.VersionId);
+            }
+            else
+            {
+                rs.IsTimeout = holderResponse.IsTimeout;
+                //rs.ResponseCode = holderResponse.IsTimeout?408:404;
+            }
+        }
+        #endregion
+
     }
 }

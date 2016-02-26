@@ -13,6 +13,7 @@ namespace Xigadee
     /// </summary>
     public abstract class ConfigBase
     {
+        private object syncLock = new object();
         /// <summary>
         /// This is the configuration collection that holds the configuration keys.
         /// </summary>
@@ -42,7 +43,7 @@ namespace Xigadee
             {
                 value = value ?? ConfigurationManager.AppSettings[key];
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 // Unable to retrieve from app settings
             }
@@ -60,12 +61,16 @@ namespace Xigadee
         /// <returns>Returns the setting or the default.</returns>
         protected string PlatformOrConfigCache(string key, string defaultValue = null)
         {
-            if (!mConfig.ContainsKey(key))
+            lock (syncLock)
             {
-                mConfig.Add(key, PlatformOrConfig(key) ?? defaultValue);
+                if (!mConfig.ContainsKey(key))
+                {
+                    mConfig.Add(key, PlatformOrConfig(key) ?? defaultValue);
+                }
+
+                return mConfig[key];
             }
 
-            return mConfig[key];
         }
         /// <summary>
         /// This method resolves a specific value or insert the default value for boolean properties.
@@ -75,12 +80,15 @@ namespace Xigadee
         /// <returns>Returns the setting or the default as boolean false.</returns>
         protected virtual bool PlatformOrConfigCacheBool(string key, string defaultValue = null)
         {
-            if (!mConfig.ContainsKey(key))
+            lock (syncLock)
             {
-                mConfig.Add(key, PlatformOrConfig(key) ?? defaultValue);
-            }
+                if (!mConfig.ContainsKey(key))
+                {
+                    mConfig.Add(key, PlatformOrConfig(key) ?? defaultValue);
+                }
 
-            return Convert.ToBoolean(mConfig[key]);
+                return Convert.ToBoolean(mConfig[key]);
+            }
         }
 
         /// <summary>
@@ -91,12 +99,15 @@ namespace Xigadee
         /// <returns>Returns the setting or the default as boolean false.</returns>
         protected virtual int PlatformOrConfigCacheInt(string key, int? defaultValue = null)
         {
-            if (!mConfig.ContainsKey(key))
+            lock (syncLock)
             {
-                mConfig.Add(key, PlatformOrConfig(key) ?? defaultValue.ToString());
-            }
+                if (!mConfig.ContainsKey(key))
+                {
+                    mConfig.Add(key, PlatformOrConfig(key) ?? defaultValue.ToString());
+                }
 
-            return Convert.ToInt32(mConfig[key]);
+                return Convert.ToInt32(mConfig[key]);
+            }
         }
 
         /// <summary>

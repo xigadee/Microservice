@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 #endregion
 namespace Xigadee
 {
-    public abstract class ResponseHolderBase: IResponseHolder
+    public class ResponseHolderBase: IResponseHolder
     {
         public ResponseHolderBase()
         {
@@ -19,7 +19,9 @@ namespace Xigadee
 
         public bool IsTimeout { get; set; }
 
-        public abstract int StatusCode { get; }
+        public virtual int StatusCode { get; set; }
+
+        public virtual string StatusMessage { get; set; }
 
         public string Id { get; set; }
 

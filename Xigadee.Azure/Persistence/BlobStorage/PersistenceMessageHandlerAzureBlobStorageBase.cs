@@ -230,25 +230,5 @@ namespace Xigadee
         }
         #endregion
 
-
-        //protected override void ProcessOutputKey(PersistenceRepositoryHolder<K, Tuple<K, string>> rq,
-        //    PersistenceRepositoryHolder<K, Tuple<K, string>> rs, IResponseHolder holderResponse)
-        //{
-        //    rs.Key = rq.Key;
-
-        //    if (holderResponse.IsSuccess)
-        //    {
-        //        rs.ResponseCode = holderResponse.StatusCode;
-        //        string version;
-        //        holderResponse.Fields.TryGetValue(StorageServiceBase.cnMetaVersionId, out version);
-        //        rs.Settings.VersionId = version;
-        //        rs.Entity = new Tuple<K, string>(rs.Key, version);
-        //    }
-        //    else
-        //    {
-        //        rs.IsTimeout = holderResponse.IsTimeout;
-        //        rs.ResponseCode = 404;
-        //    }
-        //}
     }
 }

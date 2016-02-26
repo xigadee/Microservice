@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -24,6 +25,46 @@ namespace Xigadee
             {
                 return true;
             }
+        }
+
+        public Task<bool> CanRead(K key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Delete(K key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IResponseHolder> Read(K key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IResponseHolder> Read(string refType, string refValue)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IResponseHolder> VersionRead(K key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IResponseHolder> VersionRead(string refType, string refValue)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task VersionWrite(K key, IResponseHolder result)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Write(K key, IResponseHolder result)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -47,25 +47,13 @@ namespace Xigadee
         where S : PersistenceStatistics, new()
     {
         #region Declarations
-
         protected readonly JsonSerializerSettings mJsonSerializerSettings;
-
-        protected string mEntityName;
 
         /// <summary>
         /// This is the metadata key set for the entity type.
         /// </summary>
         protected readonly KeyValuePair<string, string> cnJsonMetadata_EntityType
             = new KeyValuePair<string, string>("$microservice.entitytype", "$microservice.entitytype");
-
-        /// <summary>
-        /// This function is used by optimistic locking, it is used to define the version id for the entity.
-        /// </summary>
-        protected readonly VersionPolicy<E> mVersion;
-        /// <summary>
-        /// 
-        /// </summary>
-        protected readonly TimeSpan? mDefaultTimeout;
         #endregion
         #region Constructor
         /// <summary>
@@ -81,15 +69,10 @@ namespace Xigadee
             , TimeSpan? defaultTimeout = null
             , PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
-            , ICacheManager<K, E> cacheManager = null) : base(persistenceRetryPolicy: persistenceRetryPolicy, resourceProfile:resourceProfile, cacheManager: cacheManager)
+            , ICacheManager<K, E> cacheManager = null) : 
+            base(persistenceRetryPolicy: persistenceRetryPolicy, resourceProfile:resourceProfile, cacheManager: cacheManager, entityName: entityName, versionPolicy: versionPolicy)
         {
             mJsonSerializerSettings=new JsonSerializerSettings { TypeNameHandling=TypeNameHandling.Auto };
-
-            mVersion=versionPolicy??new VersionPolicy<E>();
-
-            mEntityName=entityName??typeof(E).Name.ToLowerInvariant();
-
-            mDefaultTimeout=defaultTimeout;
         }
         #endregion
 
@@ -123,7 +106,6 @@ namespace Xigadee
             return string.Format("{0}.{1}", mEntityName, key.ToString());
         }
         #endregion
-
         #region KeyMaker(E entity)
         /// <summary>
         /// This method intercepts and replaces the keymaker in the function has been set in the constructor.
@@ -177,59 +159,6 @@ namespace Xigadee
             return new JsonHolder<K>(key, version, jObj.ToString(), id);
         }
         #endregion
-
-        #region ProcessOutputEntity...
-        /// <summary>
-        /// This method sets the entity and any associated metadata in to the response.
-        /// </summary>
-        /// <param name="key">The entity key.</param>
-        /// <param name="rq">The original request.</param>
-        /// <param name="rs">The outgoing response.</param>
-        /// <param name="holderResponse">The underlying storage response.</param>
-        protected virtual void ProcessOutputEntity(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs
-            , IResponseHolder holderResponse)
-        {
-            rs.ResponseCode = holderResponse.StatusCode;
-
-            if (holderResponse.IsSuccess)
-            {
-                rs.Entity = EntityMaker(holderResponse.Content);
-                rs.Key = KeyMaker(rs.Entity);
-                rs.Settings.VersionId = mVersion?.EntityVersionAsString(rs.Entity);
-
-                rs.KeyReference = new Tuple<string, string>(rs.Key.ToString(), rs.Settings.VersionId);
-            }
-            else
-            {
-                if (holderResponse.Ex != null && !rs.IsTimeout)
-                    Logger.LogException(string.Format("Error in persistence {0}-{1}", typeof(E).Name, key), holderResponse.Ex);
-                else
-                    Logger.LogMessage(
-                        rs.IsTimeout ? LoggingLevel.Warning : LoggingLevel.Info,
-                        string.Format("Error in persistence {0}-{1}-{2}-{3}", typeof(E).Name, rs.ResponseCode, key,
-                            holderResponse.Ex != null ? holderResponse.Ex.ToString() : rs.ResponseMessage), typeof(E).Name);
-            }
-        }
-        #endregion
-
-        protected virtual void ProcessOutputKey(PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs
-            , IResponseHolder holderResponse)
-        {
-            rs.Key = rq.Key;
-            rs.ResponseCode = holderResponse.StatusCode;
-
-            if (holderResponse.IsSuccess)
-            {
-                rs.Settings.VersionId = holderResponse.VersionId;
-                rs.Entity = new Tuple<K, string>(rs.Key, holderResponse.VersionId);
-                rs.KeyReference = new Tuple<string, string>(rs.Key == null ? null : rs.Key.ToString(), holderResponse.VersionId);
-            }
-            else
-            {
-                rs.IsTimeout = holderResponse.IsTimeout;
-                //rs.ResponseCode = holderResponse.IsTimeout?408:404;
-            }
-        }
 
     }
 }

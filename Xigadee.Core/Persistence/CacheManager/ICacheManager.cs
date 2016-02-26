@@ -19,9 +19,21 @@ namespace Xigadee
 
         bool IsActive { get; }
 
-        //Task<bool> CanRead(K key);
+        Task Write(K key, IResponseHolder result);
 
-        //Task<Tuple<bool, E>> Read(K key);
+        Task VersionWrite(K key, IResponseHolder result);
+
+        Task Delete(K key);
+
+        Task<bool> CanRead(K key);
+
+        Task<IResponseHolder> Read(K key);
+
+        Task<IResponseHolder> Read(string refType, string refValue);
+
+        Task<IResponseHolder> VersionRead(K key);
+
+        Task<IResponseHolder> VersionRead(string refType, string refValue);
 
         //Task<bool> Write(K key, E Entity, TimeSpan? expiry = null);
 
