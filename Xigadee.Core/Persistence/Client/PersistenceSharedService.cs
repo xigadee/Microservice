@@ -206,6 +206,14 @@ namespace Xigadee
         /// <returns></returns>
         protected virtual RepositoryHolder<KT, ET> ProcessResponse<KT, ET>(TaskStatus status, TransmissionPayload prs, bool async)
         {
+            if (prs == null)
+            {
+                mStatistics.ActiveDecrement(0);
+                mStatistics.ErrorIncrement();
+                Logger.LogMessage(LoggingLevel.Fatal, "RepositoryHolder - unexpected error: prs is null");
+                return new RepositoryHolder<KT, ET>(responseCode: 520, responseMessage: "RepositoryHolder - unexpected error (prs)");
+            }
+
             mStatistics.ActiveDecrement(prs.Extent);
 
             if (async)

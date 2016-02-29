@@ -686,10 +686,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="data">The string representation of the entity..</param>
         /// <returns>The object to return.</returns>
-        protected virtual E EntityMaker(string data)
-        {
-            throw new NotImplementedException();
-        }
+        protected abstract E EntityMaker(string data);
         #endregion
         #region KeyStringMaker(K key)
         /// <summary>
