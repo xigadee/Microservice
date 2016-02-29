@@ -25,11 +25,9 @@ namespace Xigadee
 
         Task Delete(K key);
 
-        Task<bool> CanRead(K key);
+        Task<IResponseHolder<E>> Read(K key);
 
-        Task<IResponseHolder> Read(K key);
-
-        Task<IResponseHolder> Read(string refType, string refValue);
+        Task<IResponseHolder<E>> Read(string refType, string refValue);
 
         Task<IResponseHolder> VersionRead(K key);
 

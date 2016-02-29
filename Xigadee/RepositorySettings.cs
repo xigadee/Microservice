@@ -112,6 +112,7 @@ namespace Xigadee
                 PreferSet("batchid", value);
             }
         }
+
         /// <summary>
         /// This is the optional source attached to the document,
         /// </summary>
@@ -140,7 +141,20 @@ namespace Xigadee
                 PreferSet("processasync", value ? "true" : "false");
             }
         }
-
+        /// <summary>
+        /// This shortcut method is used to inform the server to process to use the entity cache if available.
+        /// </summary>
+        public bool UseCache
+        {
+            get
+            {
+                return PreferGetBool("usecache", defaultValue: true);
+            }
+            set
+            {
+                PreferSet("usecache", value ? "true" : "false");
+            }
+        }
         /// <summary>
         /// Shortcut to retrieve the correlation id
         /// </summary>

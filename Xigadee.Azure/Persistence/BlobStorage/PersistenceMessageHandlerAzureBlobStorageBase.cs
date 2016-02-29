@@ -52,12 +52,15 @@ namespace Xigadee
             , OperationContext context = null
             , PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
-            , ICacheManager<K, E> cacheManager = null)
-            : base(entityName, versionPolicy, defaultTimeout, persistenceRetryPolicy:persistenceRetryPolicy, resourceProfile:resourceProfile, cacheManager: cacheManager)
+            , ICacheManager<K, E> cacheManager = null
+            , Func<E, IEnumerable<KeyValuePair<string, string>>> referenceMaker = null
+            )
+            : base(entityName, versionPolicy, defaultTimeout, persistenceRetryPolicy:persistenceRetryPolicy, resourceProfile:resourceProfile
+                  , cacheManager: cacheManager
+                  , keyMaker: keyMaker, referenceMaker:referenceMaker)
         {
             mDirectory = entityName ?? typeof(E).Name;
             mStorage = new StorageServiceBase(credentials, "persistence", accessType, options, context, defaultTimeout: defaultTimeout);
-            mKeyMaker = keyMaker;
             mIdMaker = idMaker;
         }
         #endregion

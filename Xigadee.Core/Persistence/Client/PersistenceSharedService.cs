@@ -27,6 +27,7 @@ namespace Xigadee
         where K : IEquatable<K>
     {
         #region Declarations
+        private ICacheManager<K, E> mCacheManager;
         /// <summary>
         /// This boolean property indicates whether the service is shared.
         /// </summary>
@@ -44,8 +45,9 @@ namespace Xigadee
         /// This is the default constructor for the shared service.
         /// </summary>
         /// <param name="responseChannel">This is the internal response channel that the message will listen on.</param>
-        public PersistenceSharedService(string responseChannel = "internalpersistence")
+        public PersistenceSharedService(string responseChannel = "internalpersistence", ICacheManager<K, E> cacheManager = null)
         {
+            mCacheManager = cacheManager?? new NullCacheManager<K,E>();
             mMessageType = typeof(E).Name;
             mResponseId = new MessageFilterWrapper(new ServiceMessageHeader(responseChannel, mMessageType));
             mResponseChannel = responseChannel;
@@ -100,6 +102,14 @@ namespace Xigadee
 
         public async Task<RepositoryHolder<K, E>> Read(K key, RepositorySettings settings = null)
         {
+            if (settings.UseCache && mCacheManager.IsActive)
+            {
+                var result = await mCacheManager.Read(key);
+                if (result.IsSuccess)
+                {
+                    return new RepositoryHolder<K, E>(key, responseCode: 200, entity: result.Entity) { IsCached = true };
+                }
+            }
             return await TransmitInternal(EntityActions.Read, new RepositoryHolder<K, E> { Key = key, Settings = settings });
         }
 

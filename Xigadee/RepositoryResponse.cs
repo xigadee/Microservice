@@ -67,6 +67,8 @@ namespace Xigadee
 
         public virtual bool IsSuccess { get { return ResponseCode >= 200 && ResponseCode <= 299; } }
 
+        public virtual bool IsCached { get;set; }
+
         public virtual bool IsFaulted { get { return ResponseCode >= 500 && ResponseCode <= 599; } }    
 
         public virtual string TraceId { get; set; }

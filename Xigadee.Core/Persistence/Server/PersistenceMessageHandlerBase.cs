@@ -50,6 +50,10 @@ namespace Xigadee
         /// This function can be set to make the key from the entity.
         /// </summary>
         protected Func<E, K> mKeyMaker;
+        /// <summary>
+        /// This function can be used to extract the references from an incoming entity to allow for caching.
+        /// </summary>
+        protected Func<E, IEnumerable<KeyValuePair<string,string>>> mReferenceMaker;
 
         /// <summary>
         /// The resource consumer 
@@ -77,9 +81,12 @@ namespace Xigadee
             , string entityName = null
             , VersionPolicy<E> versionPolicy = null
             , TimeSpan? defaultTimeout = null
-
+            , Func<E, K> keyMaker = null
+            , Func<E, IEnumerable<KeyValuePair<string, string>>> referenceMaker = null
             )
         {
+            mKeyMaker = keyMaker;
+            mReferenceMaker = referenceMaker;
             mVersion = versionPolicy ?? new VersionPolicy<E>();
             mDefaultTimeout = defaultTimeout;
 
@@ -538,6 +545,7 @@ namespace Xigadee
         }
 
         #endregion
+
         #region Read
         protected virtual async Task ProcessRead(
             PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
@@ -545,7 +553,7 @@ namespace Xigadee
         {
             IResponseHolder result = null;
 
-            if (mCacheManager.IsActive)
+            if (mCacheManager.IsActive && rq.Settings.UseCache)
                 result = await mCacheManager.Read(rq.Key);
 
             if (result == null || !result.IsSuccess)
@@ -565,7 +573,7 @@ namespace Xigadee
             return new ResponseHolderBase() { StatusCode = 501, StatusMessage = "Not implemented." };
         }
         #endregion
-        #region ProcessReadByRef
+        #region ReadByRef
         protected virtual async Task ProcessReadByRef(
             PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
@@ -574,6 +582,7 @@ namespace Xigadee
             rs.ResponseMessage = "Not implemented.";
         }
         #endregion
+
         #region Update
         protected virtual async Task ProcessUpdate(
             PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
@@ -594,7 +603,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region ProcessDelete
+        #region Delete
         protected virtual async Task ProcessDelete(
             PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
@@ -613,7 +622,7 @@ namespace Xigadee
             return new ResponseHolderBase() { StatusCode = 501, StatusMessage = "Not implemented." };
         }
         #endregion
-        #region ProcessDeleteByRef
+        #region DeleteByRef
         protected virtual async Task ProcessDeleteByRef(
             PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
@@ -623,7 +632,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region ProcessVersion
+        #region Version
         protected virtual async Task ProcessVersion(
             PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
@@ -650,7 +659,7 @@ namespace Xigadee
             return new ResponseHolderBase() { StatusCode = 501, StatusMessage = "Not implemented." };
         }
         #endregion
-        #region ProcessVersionByRef
+        #region VersionByRef
         protected virtual async Task ProcessVersionByRef(
             PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
@@ -660,7 +669,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region ProcessSearch
+        #region Search
         protected virtual async Task ProcessSearch(
             PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
@@ -675,9 +684,9 @@ namespace Xigadee
         /// This is a simple JSON deserialization method that returns an entity from the 
         /// JSON representation from the DocumentDB repository.
         /// </summary>
-        /// <param name="json">The JSON to convert.</param>
+        /// <param name="data">The string representation of the entity..</param>
         /// <returns>The object to return.</returns>
-        protected virtual E EntityMaker(string json)
+        protected virtual E EntityMaker(string data)
         {
             throw new NotImplementedException();
         }
@@ -705,6 +714,21 @@ namespace Xigadee
                 throw new NotImplementedException();
 
             return mKeyMaker(entity);
+        }
+        #endregion
+
+        #region ReferenceMaker(E entity)
+        /// <summary>
+        /// This method intercepts and replaces the keymaker in the function has been set in the constructor.
+        /// </summary>
+        /// <param name="entity">The entity to convert.</param>
+        /// <returns>Returns the key from the entity.</returns>
+        protected virtual IEnumerable<KeyValuePair<string,string>> ReferenceMaker(E entity)
+        {
+            if (mReferenceMaker == null)
+                return new KeyValuePair<string, string>[] { };
+
+            return mReferenceMaker(entity);
         }
         #endregion
 
@@ -767,6 +791,5 @@ namespace Xigadee
             }
         }
         #endregion
-
     }
 }

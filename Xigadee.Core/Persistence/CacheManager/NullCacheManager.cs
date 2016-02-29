@@ -27,22 +27,17 @@ namespace Xigadee
             }
         }
 
-        public Task<bool> CanRead(K key)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task Delete(K key)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IResponseHolder> Read(K key)
+        public Task<IResponseHolder<E>> Read(K key)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IResponseHolder> Read(string refType, string refValue)
+        public Task<IResponseHolder<E>> Read(string refType, string refValue)
         {
             throw new NotImplementedException();
         }

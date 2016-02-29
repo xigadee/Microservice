@@ -30,8 +30,13 @@ namespace Xigadee
             , TimeSpan? defaultTimeout = null
             , PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
-            , ICacheManager<K, E> cacheManager = null) 
-            : base(entityName, versionPolicy, defaultTimeout, persistenceRetryPolicy: persistenceRetryPolicy, resourceProfile: resourceProfile, cacheManager: cacheManager)
+            , ICacheManager<K, E> cacheManager = null
+            , Func<E, K> keyMaker = null
+            , Func<E, IEnumerable<KeyValuePair<string, string>>> referenceMaker = null
+
+            )
+            : base(entityName, versionPolicy, defaultTimeout, persistenceRetryPolicy: persistenceRetryPolicy, resourceProfile: resourceProfile
+                  , cacheManager: cacheManager, keyMaker:keyMaker, referenceMaker:referenceMaker)
         {
         }
         #endregion
@@ -64,13 +69,18 @@ namespace Xigadee
         /// <param name="defaultTimeout">The default timeout when making requests.</param>
         /// <param name="retryPolicy">The retry policy</param>
         protected PersistenceManagerHandlerJsonBase(
-            string entityName = null
+              string entityName = null
             , VersionPolicy<E> versionPolicy = null
             , TimeSpan? defaultTimeout = null
             , PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
-            , ICacheManager<K, E> cacheManager = null) : 
-            base(persistenceRetryPolicy: persistenceRetryPolicy, resourceProfile:resourceProfile, cacheManager: cacheManager, entityName: entityName, versionPolicy: versionPolicy)
+            , ICacheManager<K, E> cacheManager = null
+            , Func<E, K> keyMaker = null
+            , Func<E, IEnumerable<KeyValuePair<string, string>>> referenceMaker = null
+            ) : 
+            base(persistenceRetryPolicy: persistenceRetryPolicy, resourceProfile:resourceProfile
+                , cacheManager: cacheManager, entityName: entityName, versionPolicy: versionPolicy
+                , keyMaker:keyMaker, referenceMaker:referenceMaker)
         {
             mJsonSerializerSettings=new JsonSerializerSettings { TypeNameHandling=TypeNameHandling.Auto };
         }
@@ -83,7 +93,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="json">The JSON to convert.</param>
         /// <returns>The object to return.</returns>
-        protected virtual E EntityMaker(string json)
+        protected override E EntityMaker(string json)
         {
             // Remove the document db id field prior to deserializing
             var jObj = JObject.Parse(json);
@@ -93,31 +103,6 @@ namespace Xigadee
             var entity = JsonConvert.DeserializeObject<E>(jObj.ToString(Formatting.None), mJsonSerializerSettings);
 
             return entity;
-        }
-        #endregion
-        #region KeyStringMaker(K key)
-        /// <summary>
-        /// This is a very simple key serializer to a string representation.
-        /// </summary>
-        /// <param name="key">The incoming key object.</param>
-        /// <returns>The output string.</returns>
-        protected virtual string KeyStringMaker(K key)
-        {
-            return string.Format("{0}.{1}", mEntityName, key.ToString());
-        }
-        #endregion
-        #region KeyMaker(E entity)
-        /// <summary>
-        /// This method intercepts and replaces the keymaker in the function has been set in the constructor.
-        /// </summary>
-        /// <param name="entity">The entity to convert.</param>
-        /// <returns>Returns the key from the entity.</returns>
-        protected virtual K KeyMaker(E entity)
-        {
-            if (mKeyMaker==null)
-                throw new NotImplementedException();
-
-            return mKeyMaker(entity);
         }
         #endregion
 

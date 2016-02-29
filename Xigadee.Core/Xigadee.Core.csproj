@@ -112,6 +112,7 @@
     <Compile Include="MessageHandler\CommandHandlerStatistics.cs" />
     <Compile Include="MessageHandler\MessageHandlerStatistics.cs" />
     <Compile Include="MessageInitiator\MessageInitiatorTimeoutSchedule.cs" />
+    <Compile Include="Persistence\CacheManager\CacheManagerBase.cs" />
     <Compile Include="Persistence\CacheManager\NullCacheManager.cs" />
     <Compile Include="Persistence\Cache\EntityCacheAsyncPolicy.cs" />
     <Compile Include="Persistence\Cache\EntityCacheCollection.cs" />

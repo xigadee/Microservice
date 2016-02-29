@@ -1,5 +1,6 @@
 ﻿#region using
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Configuration;
 #endregion
@@ -17,7 +18,7 @@ namespace Xigadee
         /// <summary>
         /// This is the configuration collection that holds the configuration keys.
         /// </summary>
-        private readonly Dictionary<string, string> mConfig = new Dictionary<string, string>();
+        private readonly ConcurrentDictionary<string, string> mConfig = new ConcurrentDictionary<string, string>();
         /// <summary>
         /// This boolean property specifies whether the system should read from the internal collection
         /// or go straight to the azure/windows config setting.
@@ -61,16 +62,13 @@ namespace Xigadee
         /// <returns>Returns the setting or the default.</returns>
         protected string PlatformOrConfigCache(string key, string defaultValue = null)
         {
-            lock (syncLock)
+            string value = null;
+            if (!mConfig.TryGetValue(key, out value))
             {
-                if (!mConfig.ContainsKey(key))
-                {
-                    mConfig.Add(key, PlatformOrConfig(key) ?? defaultValue);
-                }
-
-                return mConfig[key];
+                value = mConfig.GetOrAdd(key, PlatformOrConfig(key) ?? defaultValue);
             }
 
+            return value;
         }
         /// <summary>
         /// This method resolves a specific value or insert the default value for boolean properties.
@@ -80,15 +78,7 @@ namespace Xigadee
         /// <returns>Returns the setting or the default as boolean false.</returns>
         protected virtual bool PlatformOrConfigCacheBool(string key, string defaultValue = null)
         {
-            lock (syncLock)
-            {
-                if (!mConfig.ContainsKey(key))
-                {
-                    mConfig.Add(key, PlatformOrConfig(key) ?? defaultValue);
-                }
-
-                return Convert.ToBoolean(mConfig[key]);
-            }
+            return Convert.ToBoolean(PlatformOrConfigCache(key, defaultValue));
         }
 
         /// <summary>
@@ -99,15 +89,7 @@ namespace Xigadee
         /// <returns>Returns the setting or the default as boolean false.</returns>
         protected virtual int PlatformOrConfigCacheInt(string key, int? defaultValue = null)
         {
-            lock (syncLock)
-            {
-                if (!mConfig.ContainsKey(key))
-                {
-                    mConfig.Add(key, PlatformOrConfig(key) ?? defaultValue.ToString());
-                }
-
-                return Convert.ToInt32(mConfig[key]);
-            }
+            return Convert.ToInt32(PlatformOrConfigCache(key, defaultValue?.ToString()));
         }
 
         /// <summary>

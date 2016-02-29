@@ -3,6 +3,11 @@ using System.Collections.Generic;
 
 namespace Xigadee
 {
+    public interface IResponseHolder<E>: IResponseHolder
+    {
+        E Entity { get; }
+    }
+
     public interface IResponseHolder
     {
         string Content { get; set; }
