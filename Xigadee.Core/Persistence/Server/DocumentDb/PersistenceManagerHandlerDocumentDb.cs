@@ -67,7 +67,6 @@ namespace Xigadee
         /// </summary>
         protected readonly string mCollectionName;
 
-        Func<RepositoryHolder<K, E>, JsonHolder<K>> mJsonMaker;
         /// <summary>
         /// This sharding policy is used to create the sharded collection.
         /// </summary>
@@ -98,14 +97,23 @@ namespace Xigadee
             , ShardingPolicy<K> shardingPolicy = null
             , PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
-            , ICacheManager<K, E> cacheManager = null) 
-            : base(entityName, versionMaker, defaultTimeout, persistenceRetryPolicy: persistenceRetryPolicy, resourceProfile: resourceProfile, cacheManager: cacheManager)
+            , ICacheManager<K, E> cacheManager = null
+            , Func<E, IEnumerable<KeyValuePair<string, string>>> referenceMaker = null
+            )
+            : base( entityName: entityName
+                  , versionPolicy: versionMaker
+                  , defaultTimeout: defaultTimeout
+                  , persistenceRetryPolicy: persistenceRetryPolicy
+                  , resourceProfile: resourceProfile
+                  , cacheManager: cacheManager
+                  , keyMaker: keyMaker
+                  , referenceMaker: referenceMaker
+                  , jsonMaker: jsonMaker
+                  )
         {
             mConnection = connection;
             mDatabaseName = database;
             mCollectionName = databaseCollection ?? typeof(E).Name;
-            mJsonMaker = jsonMaker;
-            mKeyMaker = keyMaker;
             mShardingPolicy = shardingPolicy??new ShardingPolicy<K>(mCollectionName, (k) => 0, 1, (i) => mCollectionName);
         }
         #endregion
@@ -120,20 +128,6 @@ namespace Xigadee
             throw new NotSupportedException("ResolveKeyFromString");
         }
 
-        #region JsonMaker(PersistenceRepositoryHolder<K, E> rq)
-        /// <summary>
-        /// This method intercepts the base JSON maker if the fuction has been set in the constructor.
-        /// </summary>
-        /// <param name="rq">The request.</param>
-        /// <returns>Returns a JSON holder.</returns>
-        protected override JsonHolder<K> JsonMaker(PersistenceRepositoryHolder<K, E> rq)
-        {
-            if (mJsonMaker == null)
-                return base.JsonMaker(rq);
-
-            return mJsonMaker(rq);
-        }
-        #endregion
 
         #region StartInternal()
         /// <summary>

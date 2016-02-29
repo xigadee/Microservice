@@ -27,6 +27,9 @@ namespace Xigadee
         where K : IEquatable<K>
     {
         #region Declarations
+        /// <summary>
+        /// This is the internal cache manager that can be set to redirect calls to the cache. 
+        /// </summary>
         private ICacheManager<K, E> mCacheManager;
         /// <summary>
         /// This boolean property indicates whether the service is shared.
@@ -110,11 +113,21 @@ namespace Xigadee
                     return new RepositoryHolder<K, E>(key, responseCode: 200, entity: result.Entity) { IsCached = true };
                 }
             }
+
             return await TransmitInternal(EntityActions.Read, new RepositoryHolder<K, E> { Key = key, Settings = settings });
         }
 
         public async Task<RepositoryHolder<K, E>> ReadByRef(string refKey, string refValue, RepositorySettings settings = null)
         {
+            //if (settings.UseCache && mCacheManager.IsActive)
+            //{
+            //    var result = await mCacheManager.Read(refKey, refValue);
+            //    if (result.IsSuccess)
+            //    {
+            //        return new RepositoryHolder<K, E>(result.k, responseCode: 200, entity: result.Entity) { IsCached = true };
+            //    }
+            //}
+
             return await TransmitInternal(EntityActions.ReadByRef, new RepositoryHolder<K, E> { KeyReference = new Tuple<string, string>(refKey, refValue), Settings = settings });
         }
 

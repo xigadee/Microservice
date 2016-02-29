@@ -10,7 +10,6 @@ namespace Test.Xigadee
 
         static ConsoleMenu sPersistenceMenu;
 
-
         static Func<int> mPersistenceStatus;
 
         static void PersistenceLog(string Action, bool success)

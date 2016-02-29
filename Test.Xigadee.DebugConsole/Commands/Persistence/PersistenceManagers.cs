@@ -6,18 +6,13 @@ namespace Test.Xigadee
 {
     public class PersistenceBlah2: PersistenceManagerHandlerDocumentDb<Guid, Blah2>
     {
-        //public PersistenceBlah2(
-        //    string account, string base64key, string database
-        //    , VersionPolicy<Blah2> versionMaker = null
-        //    )
-        //    :base (DocumentDbConnection.ToConnection(account, base64key)
-        //         , database, (b) => b.ContentId
-        //         , versionMaker: versionMaker
-        //         , defaultTimeout: TimeSpan.FromSeconds(1)
-        //         , databaseCollection: "Entities")
-        //{
-        //}
-        public PersistenceBlah2(DocumentDbConnection connection, string database, Func<Blah2, Guid> keyMaker, Func<RepositoryHolder<Guid, Blah2>, JsonHolder<Guid>> jsonMaker = null, string databaseCollection = null, string entityName = null, VersionPolicy<Blah2> versionMaker = null, TimeSpan? defaultTimeout = default(TimeSpan?)
+
+        public PersistenceBlah2(DocumentDbConnection connection, string database, Func<Blah2, Guid> keyMaker
+            , Func<RepositoryHolder<Guid, Blah2>, JsonHolder<Guid>> jsonMaker = null
+            , string databaseCollection = null
+            , string entityName = null
+            , VersionPolicy<Blah2> versionMaker = null
+            , TimeSpan? defaultTimeout = default(TimeSpan?)
             , ShardingPolicy<Guid> shardingPolicy = null
             , ResourceProfile resourceProfile = null) 
 

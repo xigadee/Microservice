@@ -49,11 +49,11 @@ namespace Xigadee
         /// <summary>
         /// This function can be set to make the key from the entity.
         /// </summary>
-        protected Func<E, K> mKeyMaker;
+        protected readonly Func<E, K> mKeyMaker;
         /// <summary>
         /// This function can be used to extract the references from an incoming entity to allow for caching.
         /// </summary>
-        protected Func<E, IEnumerable<KeyValuePair<string,string>>> mReferenceMaker;
+        protected readonly Func<E, IEnumerable<KeyValuePair<string,string>>> mReferenceMaker;
 
         /// <summary>
         /// The resource consumer 
@@ -75,7 +75,8 @@ namespace Xigadee
         /// that can be called directly by other message handler and Microservice components.
         /// </summary>
         /// <param name="persistenceRetryPolicy"></param>
-        protected PersistenceMessageHandlerBase(PersistenceRetryPolicy persistenceRetryPolicy = null
+        protected PersistenceMessageHandlerBase(
+              PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
             , ICacheManager<K, E> cacheManager = null
             , string entityName = null
@@ -708,7 +709,7 @@ namespace Xigadee
         protected virtual K KeyMaker(E entity)
         {
             if (mKeyMaker == null)
-                throw new NotImplementedException();
+                throw new NotImplementedException("mKeyMaker has not been set.");
 
             return mKeyMaker(entity);
         }

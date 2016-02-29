@@ -67,10 +67,14 @@ namespace Xigadee
             , Func<XElement, Tuple<K, string>> versionMaker = null
             , PersistenceRetryPolicy retryPolicy = null
             , ResourceProfile resourceProfile = null
-            , ICacheManager<K, E> cacheManager = null) : base(persistenceRetryPolicy: retryPolicy, resourceProfile: resourceProfile, cacheManager: cacheManager)
+            , ICacheManager<K, E> cacheManager = null) 
+            : base(
+                  persistenceRetryPolicy: retryPolicy
+                  , resourceProfile: resourceProfile
+                  , cacheManager: cacheManager
+                  , keyMaker: keyMaker)
         {
             Connection = connection;
-            mKeyMaker = keyMaker;
             mEntityMaker = entityMaker;
             mVersionMaker = versionMaker;
         }
