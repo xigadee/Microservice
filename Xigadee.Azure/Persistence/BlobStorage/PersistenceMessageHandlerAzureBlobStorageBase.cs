@@ -54,10 +54,17 @@ namespace Xigadee
             , ResourceProfile resourceProfile = null
             , ICacheManager<K, E> cacheManager = null
             , Func<E, IEnumerable<KeyValuePair<string, string>>> referenceMaker = null
+            , Func<RepositoryHolder<K, E>, JsonHolder<K>> jsonMaker = null
             )
-            : base(entityName, versionPolicy, defaultTimeout, persistenceRetryPolicy:persistenceRetryPolicy, resourceProfile:resourceProfile
+            : base(entityName:entityName
+                  , versionPolicy: versionPolicy
+                  , defaultTimeout: defaultTimeout
+                  , persistenceRetryPolicy:persistenceRetryPolicy
+                  , resourceProfile:resourceProfile
                   , cacheManager: cacheManager
-                  , keyMaker: keyMaker, referenceMaker:referenceMaker)
+                  , keyMaker: keyMaker
+                  , referenceMaker:referenceMaker
+                  , jsonMaker: jsonMaker)
         {
             mDirectory = entityName ?? typeof(E).Name;
             mStorage = new StorageServiceBase(credentials, "persistence", accessType, options, context, defaultTimeout: defaultTimeout);

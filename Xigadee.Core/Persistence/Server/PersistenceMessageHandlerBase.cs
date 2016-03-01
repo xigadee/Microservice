@@ -40,11 +40,13 @@ namespace Xigadee
         protected readonly VersionPolicy<E> mVersion;
 
         /// <summary>
-        /// 
+        /// This is the default time allowed when making a call to the underlying persistence layer.
         /// </summary>
         protected readonly TimeSpan? mDefaultTimeout;
-
-        protected string mEntityName;
+        /// <summary>
+        /// This is the entity name.
+        /// </summary>
+        protected readonly string mEntityName;
 
         /// <summary>
         /// This function can be set to make the key from the entity.
@@ -687,7 +689,10 @@ namespace Xigadee
         /// </summary>
         /// <param name="data">The string representation of the entity..</param>
         /// <returns>The object to return.</returns>
-        protected abstract E EntityMaker(string data);
+        protected virtual E EntityMaker(string data)
+        {
+            throw new NotImplementedException("EntityMaker is not implemented.");
+        }
         #endregion
         #region KeyStringMaker(K key)
         /// <summary>

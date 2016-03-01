@@ -66,7 +66,6 @@ namespace Xigadee
         /// This is the base documentDb collection naem
         /// </summary>
         protected readonly string mCollectionName;
-
         /// <summary>
         /// This sharding policy is used to create the sharded collection.
         /// </summary>
@@ -144,7 +143,6 @@ namespace Xigadee
             }
         }
         #endregion
-
         #region Partition(K key)
         /// <summary>
         /// This method uses the sharding policy to determine the appropriate collection for the key.

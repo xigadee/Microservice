@@ -33,10 +33,17 @@ namespace Xigadee
             , ICacheManager<K, E> cacheManager = null
             , Func<E, K> keyMaker = null
             , Func<E, IEnumerable<KeyValuePair<string, string>>> referenceMaker = null
-
+            , Func<RepositoryHolder<K, E>, JsonHolder<K>> jsonMaker = null
             )
-            : base(entityName, versionPolicy, defaultTimeout, persistenceRetryPolicy: persistenceRetryPolicy, resourceProfile: resourceProfile
-                  , cacheManager: cacheManager, keyMaker:keyMaker, referenceMaker:referenceMaker)
+            : base(entityName: entityName
+                  , versionPolicy: versionPolicy
+                  , defaultTimeout: defaultTimeout
+                  , persistenceRetryPolicy: persistenceRetryPolicy
+                  , resourceProfile: resourceProfile
+                  , cacheManager: cacheManager
+                  , keyMaker:keyMaker
+                  , referenceMaker:referenceMaker
+                  , jsonMaker: jsonMaker)
         {
         }
         #endregion
