@@ -533,7 +533,7 @@ namespace Xigadee
             PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            var result = await CreateInternal(rq.Key, rq, rs, prq, prs);
+            var result = await InternalCreate(rq.Key, rq, rs, prq, prs);
 
             if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
                 mCacheManager.Write(rq.Key, result);
@@ -541,7 +541,7 @@ namespace Xigadee
             ProcessOutputEntity(rq.Key, rq, rs, result);
         }
 
-        protected virtual async Task<IResponseHolder> CreateInternal(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
+        protected virtual async Task<IResponseHolder> InternalCreate(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
             return new ResponseHolderBase() { StatusCode = 501, StatusMessage = "Not implemented." };
@@ -561,7 +561,7 @@ namespace Xigadee
 
             if (result == null || !result.IsSuccess)
             {
-                result = await ReadInternal(rq.Key, rq, rs, prq, prs);
+                result = await InternalRead(rq.Key, rq, rs, prq, prs);
 
                 if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
                     mCacheManager.Write(rq.Key, result);
@@ -570,7 +570,7 @@ namespace Xigadee
             ProcessOutputEntity(rq.Key, rq, rs, result);
         }
 
-        protected async virtual Task<IResponseHolder> ReadInternal(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
+        protected async virtual Task<IResponseHolder> InternalRead(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
             return new ResponseHolderBase() { StatusCode = 501, StatusMessage = "Not implemented." };
@@ -591,7 +591,7 @@ namespace Xigadee
             PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            var result = await UpdateInternal(rq.Key, rq, rs, prq, prs);
+            var result = await InternalUpdate(rq.Key, rq, rs, prq, prs);
 
             if (mCacheManager.IsActive && result.IsSuccess)
                 mCacheManager.Write(rq.Key, result);
@@ -599,7 +599,7 @@ namespace Xigadee
             ProcessOutputEntity(rq.Key, rq, rs, result);
         }
 
-        protected virtual async Task<IResponseHolder> UpdateInternal(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
+        protected virtual async Task<IResponseHolder> InternalUpdate(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
             return new ResponseHolderBase() { StatusCode = 501, StatusMessage = "Not implemented." };
@@ -611,7 +611,7 @@ namespace Xigadee
             PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            var result = await DeleteInternal(rq.Key, rq, rs, prq, prs);
+            var result = await InternalDelete(rq.Key, rq, rs, prq, prs);
 
             if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
                 await mCacheManager.Delete(rq.Key);
@@ -619,7 +619,7 @@ namespace Xigadee
             ProcessOutputKey(rq, rs, result);
         }
 
-        protected virtual async Task<IResponseHolder> DeleteInternal(K key, PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
+        protected virtual async Task<IResponseHolder> InternalDelete(K key, PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
             return new ResponseHolderBase() { StatusCode = 501, StatusMessage = "Not implemented." };
@@ -647,7 +647,7 @@ namespace Xigadee
 
             if (result == null || !result.IsSuccess)
             {
-                result = await VersionInternal(rq.Key, rq, rs, prq, prs);
+                result = await InternalVersion(rq.Key, rq, rs, prq, prs);
 
                 if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
                     mCacheManager.VersionWrite(rq.Key, result);
@@ -656,7 +656,7 @@ namespace Xigadee
             ProcessOutputKey(rq, rs, result);
         }
 
-        protected virtual async Task<IResponseHolder> VersionInternal(K key, PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
+        protected virtual async Task<IResponseHolder> InternalVersion(K key, PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
             return new ResponseHolderBase() { StatusCode = 501, StatusMessage = "Not implemented." };

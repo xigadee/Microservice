@@ -62,10 +62,6 @@ namespace Xigadee
         #endregion
 
         #region Persistence shortcuts
-        public async Task<RepositoryHolder<K, E>> Create(E entity, RepositorySettings settings = null)
-        {
-            return await TransmitInternal(EntityActions.Create, new RepositoryHolder<K, E> { Entity = entity, Settings = settings });
-        }
 
         public async Task<RepositoryHolder<K, E>> Read(K key, RepositorySettings settings = null)
         {
@@ -75,6 +71,21 @@ namespace Xigadee
         public async Task<RepositoryHolder<K, E>> ReadByRef(string refKey, string refValue, RepositorySettings settings = null)
         {
             return await TransmitInternal(EntityActions.ReadByRef, new RepositoryHolder<K, E> { KeyReference = new Tuple<string, string>(refKey, refValue), Settings = settings });
+        }
+
+        public async Task<RepositoryHolder<K, Tuple<K, string>>> Version(K key, RepositorySettings settings = null)
+        {
+            return await TransmitInternal(EntityActions.Version, new RepositoryHolder<K, Tuple<K, string>> { Key = key, Settings = settings });
+        }
+
+        public async Task<RepositoryHolder<K, Tuple<K, string>>> VersionByRef(string refKey, string refValue, RepositorySettings settings = null)
+        {
+            return await TransmitInternal(EntityActions.VersionByRef, new RepositoryHolder<K, Tuple<K, string>> { KeyReference = new Tuple<string, string>(refKey, refValue), Settings = settings });
+        }
+
+        public async Task<RepositoryHolder<K, E>> Create(E entity, RepositorySettings settings = null)
+        {
+            return await TransmitInternal(EntityActions.Create, new RepositoryHolder<K, E> { Entity = entity, Settings = settings });
         }
 
         public async Task<RepositoryHolder<K, E>> Update(E entity, RepositorySettings settings = null)
@@ -92,15 +103,6 @@ namespace Xigadee
             return await TransmitInternal(EntityActions.DeleteByRef, new RepositoryHolder<K, Tuple<K, string>> { KeyReference = new Tuple<string, string>(refKey, refValue), Settings = settings });
         }
 
-        public async Task<RepositoryHolder<K, Tuple<K, string>>> Version(K key, RepositorySettings settings = null)
-        {
-            return await TransmitInternal(EntityActions.Version, new RepositoryHolder<K, Tuple<K, string>> { Key = key, Settings = settings });
-        }
-
-        public async Task<RepositoryHolder<K, Tuple<K, string>>> VersionByRef(string refKey, string refValue, RepositorySettings settings = null)
-        {
-            return await TransmitInternal(EntityActions.VersionByRef, new RepositoryHolder<K, Tuple<K, string>> { KeyReference = new Tuple<string, string>(refKey, refValue), Settings = settings });
-        }
         #endregion
 
         #region TransmitInternal<KT, ET>(string actionType, RepositoryHolder<KT, ET> rq)

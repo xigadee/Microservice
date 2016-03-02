@@ -105,14 +105,14 @@ namespace Xigadee
 
         public async Task<RepositoryHolder<K, E>> Read(K key, RepositorySettings settings = null)
         {
-            if (settings.UseCache && mCacheManager.IsActive)
-            {
-                var result = await mCacheManager.Read(key);
-                if (result.IsSuccess)
-                {
-                    return new RepositoryHolder<K, E>(key, responseCode: 200, entity: result.Entity) { IsCached = true };
-                }
-            }
+            //if (settings.UseCache && mCacheManager.IsActive)
+            //{
+            //    var result = await mCacheManager.Read(key);
+            //    if (result.IsSuccess)
+            //    {
+            //        return new RepositoryHolder<K, E>(key, responseCode: 200, entity: result.Entity) { IsCached = true };
+            //    }
+            //}
 
             return await TransmitInternal(EntityActions.Read, new RepositoryHolder<K, E> { Key = key, Settings = settings });
         }

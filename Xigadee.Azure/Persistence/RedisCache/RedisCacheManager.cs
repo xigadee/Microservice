@@ -3,20 +3,61 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using StackExchange.Redis;
 
 namespace Xigadee
 {
-    public class RedisCacheManager<K, E>: ICacheManager<K, E>
+    /// <summary>
+    /// This is the root cache.
+    /// </summary>
+    public class RedisCacheManager
+    {
+        /// <summary>
+        /// This is the static helper.
+        /// </summary>
+        /// <typeparam name="K"></typeparam>
+        /// <typeparam name="E"></typeparam>
+        /// <param name="connection"></param>
+        /// <returns></returns>
+        public static RedisCacheManager<K, E> Default<K, E>(string connection)
+            where K : IEquatable<K>
+        {
+            return new RedisCacheManager<K, E>(connection);
+        }
+    }
+
+    public class RedisCacheManager<K, E>: RedisCacheManager, ICacheManager<K, E>
         where K : IEquatable<K>
     {
-        private readonly bool mReadOnly;
+        private string mConnection;
 
-        public RedisCacheManager(string connection
-            , bool readOnly = true)
+        private Lazy<ConnectionMultiplexer> mLazyConnection;
+
+
+        public RedisCacheManager(string connection, bool readOnly = true)
         {
-            mReadOnly = readOnly;
+            mConnection = connection;
+            IsReadOnly = readOnly;
+
+            mLazyConnection
+            = new Lazy<ConnectionMultiplexer>(() =>
+            {
+                try
+                {
+                    return ConnectionMultiplexer.Connect(mConnection);
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+            }
+        );
         }
 
+        #region IsActive
+        /// <summary>
+        /// This property specifies that the cache can be used.
+        /// </summary>
         public bool IsActive
         {
             get
@@ -24,25 +65,55 @@ namespace Xigadee
                 return true;
             }
         }
-
+        #endregion
+        #region IsReadOnly
+        /// <summary>
+        /// This property specifies whether the cache should support Delete, Write and VersionWrite.
+        /// </summary>
         public bool IsReadOnly
         {
-            get
+            get;private set;
+        }
+        #endregion
+
+        public async Task<bool> Write(K key, string value)
+        {
+            try
             {
-                return mReadOnly;
+                IDatabase mRedisCacheDb = mLazyConnection.Value.GetDatabase();
+                RedisKey hashkey = typeof(E).Name.ToLowerInvariant(); ;
+                RedisValue redKey = key.ToString();
+                RedisValue redData = value;
+                
+                return await mRedisCacheDb.HashSetAsync(hashkey, redKey, redData, when: When.Always);
             }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
         }
 
-        public async Task Delete(K key)
+        public async Task Write(K key, IResponseHolder result)
         {
-            if (IsReadOnly)
+            if (IsReadOnly || !result.IsSuccess || result.IsTimeout)
                 return;
 
-            throw new NotImplementedException();
+            await Write(key, result.Content);
         }
 
         public async Task<IResponseHolder<E>> Read(K key)
         {
+            //IDatabase mRedisCacheDb = mLazyConnection.Value.GetDatabase();
+            //RedisKey hashkey = typeof(E).Name.ToLowerInvariant(); ;
+            //RedisValue redKey = key.ToString();
+
+            //var redValue = await mRedisCacheDb.HashGetAsync(hashkey, redKey);
+
+            //var result = new ResponseHolder<E>();
+
+            //return result;
+
             throw new NotImplementedException();
         }
 
@@ -69,12 +140,14 @@ namespace Xigadee
             throw new NotImplementedException();
         }
 
-        public async Task Write(K key, IResponseHolder result)
+
+        public async Task Delete(K key)
         {
             if (IsReadOnly)
                 return;
 
             throw new NotImplementedException();
         }
+
     }
 }

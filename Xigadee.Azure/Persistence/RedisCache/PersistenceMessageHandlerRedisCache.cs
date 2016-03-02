@@ -17,7 +17,7 @@ namespace Xigadee
         /// <param name="versionPolicy">The optional version and locking policy.</param>
         /// <param name="defaultTimeout">The default timeout when making requests.</param>
         /// <param name="retryPolicy">The retry policy</param>
-        protected PersistenceMessageHandlerRedisCache(Func<E, K> keyMaker
+        protected PersistenceMessageHandlerRedisCache(string redisConnection, Func<E, K> keyMaker
             , string entityName = null
             , VersionPolicy<E> versionPolicy = null
             , TimeSpan? defaultTimeout = null
@@ -27,8 +27,8 @@ namespace Xigadee
             , Func<E, IEnumerable<KeyValuePair<string, string>>> referenceMaker = null
 
             )
-            : base(keyMaker, entityName, versionPolicy, defaultTimeout, persistenceRetryPolicy: persistenceRetryPolicy, resourceProfile: resourceProfile
-                  , cacheManager: cacheManager, referenceMaker: referenceMaker)
+            : base(redisConnection, keyMaker, entityName, versionPolicy, defaultTimeout, persistenceRetryPolicy: persistenceRetryPolicy, resourceProfile: resourceProfile
+                  , referenceMaker: referenceMaker)
         {
         }
         #endregion
@@ -46,21 +46,45 @@ namespace Xigadee
         /// <param name="versionPolicy">The optional version and locking policy.</param>
         /// <param name="defaultTimeout">The default timeout when making requests.</param>
         /// <param name="retryPolicy">The retry policy</param>
-        protected PersistenceMessageHandlerRedisCache(Func<E, K> keyMaker
+        protected PersistenceMessageHandlerRedisCache(string redisConnection, Func<E, K> keyMaker
             , string entityName = null
             , VersionPolicy<E> versionPolicy = null
             , TimeSpan? defaultTimeout = null
             , PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
-            , ICacheManager<K, E> cacheManager = null
             , Func<E, IEnumerable<KeyValuePair<string, string>>> referenceMaker = null
 
             )
             : base(entityName, versionPolicy, defaultTimeout, persistenceRetryPolicy: persistenceRetryPolicy, resourceProfile: resourceProfile
-                  , cacheManager: cacheManager, keyMaker:keyMaker, referenceMaker:referenceMaker)
+                  , cacheManager: RedisCacheManager.Default<K,E>(redisConnection), keyMaker:keyMaker, referenceMaker:referenceMaker)
         {
         }
         #endregion
+
+        protected async override Task<IResponseHolder> InternalCreate(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
+        {
+            return new ResponseHolderBase() { StatusCode = 501, StatusMessage = "Not implemented." };
+        }
+
+        protected async override Task<IResponseHolder> InternalUpdate(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
+        {
+            return new ResponseHolderBase() { StatusCode = 501, StatusMessage = "Not implemented." };
+        }
+
+        protected async override Task<IResponseHolder> InternalRead(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
+        {
+            return new ResponseHolderBase() { StatusCode = 404, StatusMessage = "Not found." };
+        }
+
+        protected async override Task<IResponseHolder> InternalVersion(K key, PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
+        {
+            return new ResponseHolderBase() { StatusCode = 404, StatusMessage = "Not found." };
+        }
+
+        protected async override Task<IResponseHolder> InternalDelete(K key, PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
+        {
+            return new ResponseHolderBase() { StatusCode = 501, StatusMessage = "Not implemented." };
+        }
 
     }
 }
