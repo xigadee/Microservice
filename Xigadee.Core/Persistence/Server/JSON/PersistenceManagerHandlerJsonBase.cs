@@ -32,7 +32,7 @@ namespace Xigadee
             , ResourceProfile resourceProfile = null
             , ICacheManager<K, E> cacheManager = null
             , Func<E, K> keyMaker = null
-            , Func<E, IEnumerable<KeyValuePair<string, string>>> referenceMaker = null
+            , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             , Func<RepositoryHolder<K, E>, JsonHolder<K>> jsonMaker = null
             )
             : base(entityName: entityName
@@ -89,7 +89,7 @@ namespace Xigadee
             , ResourceProfile resourceProfile = null
             , ICacheManager<K, E> cacheManager = null
             , Func<E, K> keyMaker = null
-            , Func<E, IEnumerable<KeyValuePair<string, string>>> referenceMaker = null
+            , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             , Func<RepositoryHolder<K, E>, JsonHolder<K>> jsonMaker = null
             ) : 
             base( persistenceRetryPolicy: persistenceRetryPolicy
@@ -154,14 +154,14 @@ namespace Xigadee
             string id = KeyStringMaker(key);
             jObj["id"] = id;
 
-            jObj[cnJsonMetadata_EntityType.Key] = mEntityName;
+            jObj[cnJsonMetadata_EntityType.Key] = mTransform.EntityName;
 
             //Check for version support.
             string version = null;
-            if (mVersion.SupportsVersioning)
+            if (mTransform.Version.SupportsVersioning)
             {
-                version = mVersion.EntityVersionAsString(entity);
-                jObj[mVersion.VersionJsonMetadata.Key] = version;
+                version = mTransform.Version.EntityVersionAsString(entity);
+                jObj[mTransform.Version.VersionJsonMetadata.Key] = version;
             }
 
             return new JsonHolder<K>(key, version, jObj.ToString(), id);

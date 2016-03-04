@@ -18,7 +18,6 @@ namespace Test.Xigadee
                 , true, success ? EventLogEntryType.Information : EventLogEntryType.Error);
         }
 
-
         static void Main(string[] args)
         {
             mPersistenceStatus = () => 0;
@@ -37,7 +36,7 @@ namespace Test.Xigadee
 
             sPersistenceMenu = new ConsoleMenu(
                 "Persistence"
-                , new ConsoleOption("Create document db entity"
+                , new ConsoleOption("Create entity"
                     , (m, o) =>
                     {
                         testid = Guid.NewGuid();
@@ -47,7 +46,7 @@ namespace Test.Xigadee
                     }
                     , enabled: (m, o) => mPersistenceStatus() == 2
                     )
-                , new ConsoleOption("Read document db entity"
+                , new ConsoleOption("Read entity"
                     , (m, o) =>
                     {
                         var result = sService.Persistence.Read(testid, new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
@@ -55,7 +54,7 @@ namespace Test.Xigadee
                     }
                     , enabled: (m, o) => mPersistenceStatus() == 2
                     )
-                , new ConsoleOption("Update document db entity"
+                , new ConsoleOption("Update entity"
                     , (m, o) =>
                     {
                         var result = sService.Persistence.Update(new MondayMorningBlues() { Id = testid, ContentId = testid, VersionId = versionid, Message = "Hello mom2", NotEnoughCoffee = false }, new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
@@ -68,7 +67,7 @@ namespace Test.Xigadee
                     }
                     , enabled: (m, o) => mPersistenceStatus() == 2
                     )
-                , new ConsoleOption("Delete document db entity"
+                , new ConsoleOption("Delete entity"
                     , (m, o) =>
                     {
                         var result = sService.Persistence.Delete(testid, new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5), VersionId = versionid.ToString() }).Result;
@@ -76,7 +75,7 @@ namespace Test.Xigadee
                     }
                     , enabled: (m, o) => mPersistenceStatus() == 2
                     )
-                    , new ConsoleOption("Create 100000 document db entities async"
+                    , new ConsoleOption("Create 100000 entities async"
                     , (m, o) =>
                     {
                         var batchId = Guid.NewGuid().ToString("N").ToUpperInvariant();

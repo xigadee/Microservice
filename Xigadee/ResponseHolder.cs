@@ -61,7 +61,7 @@ namespace Xigadee
 
     }
 
-    public class ResponseHolder<O> : ResponseHolder
+    public class ResponseHolder<O> : ResponseHolder, IResponseHolder<O>
         where O:class
     {
         public O Entity { get; set; }

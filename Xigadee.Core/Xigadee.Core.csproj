@@ -113,6 +113,7 @@
     <Compile Include="MessageHandler\MessageHandlerStatistics.cs" />
     <Compile Include="MessageInitiator\MessageInitiatorTimeoutSchedule.cs" />
     <Compile Include="Persistence\CacheManager\CacheManagerBase.cs" />
+    <Compile Include="Persistence\CacheManager\CacheResponseHolder.cs" />
     <Compile Include="Persistence\CacheManager\NullCacheManager.cs" />
     <Compile Include="Persistence\Cache\EntityCacheAsyncPolicy.cs" />
     <Compile Include="Persistence\Cache\EntityCacheCollection.cs" />
@@ -128,6 +129,7 @@
     <Compile Include="Persistence\Cache\EntityCacheReferenceTypeValueKey.cs" />
     <Compile Include="Persistence\Client\PersistenceMessageInitiatorBase.cs" />
     <Compile Include="Persistence\EntityActions.cs" />
+    <Compile Include="Persistence\Server\EntityTransformHolder.cs" />
     <Compile Include="Persistence\PersistenceResponse.cs" />
     <Compile Include="Persistence\Interfaces\IPersistenceMessageHandler.cs" />
     <Compile Include="Persistence\Server\DocumentDb\Helper\Account.cs" />

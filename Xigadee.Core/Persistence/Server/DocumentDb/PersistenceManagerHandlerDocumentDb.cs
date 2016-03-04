@@ -97,7 +97,7 @@ namespace Xigadee
             , PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
             , ICacheManager<K, E> cacheManager = null
-            , Func<E, IEnumerable<KeyValuePair<string, string>>> referenceMaker = null
+            , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             )
             : base( entityName: entityName
                   , versionPolicy: versionMaker
@@ -232,10 +232,10 @@ namespace Xigadee
             string eTag = documentRq.ETag;
 
             //We check this in case optimistic locking has been turned on, but old versions don't support this yet.
-            if (mVersion.SupportsOptimisticLocking && documentRq.Fields.ContainsKey(mVersion.VersionJsonMetadata.Key))
+            if (mTransform.Version.SupportsOptimisticLocking && documentRq.Fields.ContainsKey(mTransform.Version.VersionJsonMetadata.Key))
             {
-                var currentVersionId = documentRq.Fields[mVersion.VersionJsonMetadata.Key];
-                if (currentVersionId != mVersion.EntityVersionAsString(rq.Entity))
+                var currentVersionId = documentRq.Fields[mTransform.Version.VersionJsonMetadata.Key];
+                if (currentVersionId != mTransform.Version.EntityVersionAsString(rq.Entity))
                 {
                     rs.ResponseCode = 409;
                     rs.ResponseMessage = "Conflict";
@@ -245,7 +245,7 @@ namespace Xigadee
                 }
 
                 //Set the new version id on the entity.
-                mVersion.EntityVersionUpdate(rq.Entity);
+                mTransform.Version.EntityVersionUpdate(rq.Entity);
                 jsonHolderUpdate = JsonMaker(rq);
             }
             else
@@ -253,7 +253,7 @@ namespace Xigadee
 
             var result = await Partition(jsonHolderUpdate.Key).Update(documentRq.DocumentId, jsonHolderUpdate.Json, rq.Timeout, eTag: eTag);
 
-            if (result.IsSuccess && mVersion.SupportsArchiving)
+            if (result.IsSuccess && mTransform.Version.SupportsArchiving)
             {
                 //mCollection.Create(documentRq.DocumentId, jsonHolder.Json, rq.Timeout).Result;
             }
@@ -397,8 +397,8 @@ namespace Xigadee
 
             var extractions = new List<KeyValuePair<string, string>>();
             extractions.Add(cnJsonMetadata_EntityType);
-            if (mVersion.SupportsVersioning)
-                extractions.Add(mVersion.VersionJsonMetadata);
+            if (mTransform.Version.SupportsVersioning)
+                extractions.Add(mTransform.Version.VersionJsonMetadata);
 
             var result = await Partition(key).ResolveDocumentId(id, timeout: timeout, extractionJPaths: extractions);
 
@@ -413,7 +413,7 @@ namespace Xigadee
             {
                 var entity = EntityMaker(holderResponse.Content);
                 rq.Key = KeyMaker(entity);
-                holderResponse.VersionId = mVersion?.EntityVersionAsString(entity);
+                holderResponse.VersionId = mTransform.Version?.EntityVersionAsString(entity);
             }
 
             base.ProcessOutputKey(rq,rs, holderResponse);
@@ -456,7 +456,7 @@ namespace Xigadee
             rs.Entity = response.Entity;
             rs.Key = response.Key;
             rs.KeyReference = response.KeyReference;
-            rs.ResponseCode = !mVersion.SupportsVersioning || jsonHolder.Version.Equals(mVersion.EntityVersionAsString(rs.Entity))
+            rs.ResponseCode = !mTransform.Version.SupportsVersioning || jsonHolder.Version.Equals(mTransform.Version.EntityVersionAsString(rs.Entity))
                 ? response.ResponseCode
                 : rs.ResponseCode;
 

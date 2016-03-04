@@ -24,8 +24,8 @@ namespace Test.Xigadee
         {
             var manager = RedisCacheManager.Default<string,WorkflowTest>("vrdevredis.redis.cache.windows.net:6380,password=5e3d540IhGPh/uPLTIfIIDaCRo3CIgR1T8rN9vVNlOg=,ssl=True,abortConnect=False");
 
-            var entity1 = new WorkflowTest() { Id = "Paul2" };
-            bool success = manager.Write(entity1.Id, "blur").Result;
+            //var entity1 = new WorkflowTest() { Id = "Paul2" };
+            //bool success = manager.Write(null, entity1.Id, "blur").Result;
         }
     }
 }

@@ -27,39 +27,36 @@ namespace Xigadee
             }
         }
 
-        public Task Delete(K key)
+        public async Task<bool> Delete(EntityTransformHolder<K, E> transform, K key)
         {
-            throw new NotImplementedException();
+            return false;
         }
 
-        public Task<IResponseHolder<E>> Read(K key)
+        public async Task<IResponseHolder<E>> Read(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
         {
-            throw new NotImplementedException();
+            return new PersistenceResponseHolder<E> { IsSuccess = false, StatusCode = 404 };
         }
 
-        public Task<IResponseHolder<E>> Read(string refType, string refValue)
+        public async Task<IResponseHolder<E>> Read(EntityTransformHolder<K, E> transform, K key)
         {
-            throw new NotImplementedException();
+            return new PersistenceResponseHolder<E> { IsSuccess = false, StatusCode = 404 };
         }
 
-        public Task<IResponseHolder> VersionRead(K key)
+        public async Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
         {
-            throw new NotImplementedException();
+            return new PersistenceResponseHolder { IsSuccess = false, StatusCode = 404 };
         }
 
-        public Task<IResponseHolder> VersionRead(string refType, string refValue)
+        public async Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, K key)
         {
-            throw new NotImplementedException();
+            return new PersistenceResponseHolder { IsSuccess = false, StatusCode = 404 };
         }
 
-        public Task VersionWrite(K key, IResponseHolder result)
+        public async Task<bool> Write(EntityTransformHolder<K, E> transform, E entity)
         {
-            throw new NotImplementedException();
+            return false;
         }
 
-        public Task Write(K key, IResponseHolder result)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }

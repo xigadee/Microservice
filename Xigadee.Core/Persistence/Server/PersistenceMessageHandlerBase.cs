@@ -24,6 +24,7 @@ namespace Xigadee
         #endregion
     }
 
+
     /// <summary>
     /// This is the base entity provider class.
     /// </summary>
@@ -35,27 +36,14 @@ namespace Xigadee
     {
         #region Declarations
         /// <summary>
-        /// This function is used by optimistic locking, it is used to define the version id for the entity.
+        /// This is the entity transform holder.
         /// </summary>
-        protected readonly VersionPolicy<E> mVersion;
+        protected readonly EntityTransformHolder<K,E> mTransform;
 
         /// <summary>
         /// This is the default time allowed when making a call to the underlying persistence layer.
         /// </summary>
         protected readonly TimeSpan? mDefaultTimeout;
-        /// <summary>
-        /// This is the entity name.
-        /// </summary>
-        protected readonly string mEntityName;
-
-        /// <summary>
-        /// This function can be set to make the key from the entity.
-        /// </summary>
-        protected readonly Func<E, K> mKeyMaker;
-        /// <summary>
-        /// This function can be used to extract the references from an incoming entity to allow for caching.
-        /// </summary>
-        protected readonly Func<E, IEnumerable<KeyValuePair<string,string>>> mReferenceMaker;
 
         /// <summary>
         /// The resource consumer 
@@ -85,18 +73,28 @@ namespace Xigadee
             , VersionPolicy<E> versionPolicy = null
             , TimeSpan? defaultTimeout = null
             , Func<E, K> keyMaker = null
-            , Func<E, IEnumerable<KeyValuePair<string, string>>> referenceMaker = null
+            , Func<string, E> entityMaker = null
+            , Func<K, string> idMaker = null
+            , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             )
         {
-            mKeyMaker = keyMaker;
-            mReferenceMaker = referenceMaker;
-            mVersion = versionPolicy ?? new VersionPolicy<E>();
+            mTransform = new EntityTransformHolder<K, E>();
+
+            if (idMaker == null)
+                idMaker = (i) => i.ToString();
+
+            mTransform.KeyMaker = keyMaker;
+            mTransform.IdMaker = idMaker; 
+            mTransform.ReferenceMaker = referenceMaker;
+            mTransform.Version = versionPolicy ?? new VersionPolicy<E>();
+            mTransform.EntityName = entityName ?? typeof(E).Name.ToLowerInvariant();
+            mTransform.Deserialize = entityMaker ?? EntityMaker;
+
             mDefaultTimeout = defaultTimeout;
 
             mPersistenceRetryPolicy = persistenceRetryPolicy ?? new PersistenceRetryPolicy();
             mResourceProfile = resourceProfile;
             mCacheManager = cacheManager ?? new NullCacheManager<K, E>();
-            mEntityName = entityName ?? typeof(E).Name.ToLowerInvariant();
         }
         #endregion
 
@@ -536,15 +534,15 @@ namespace Xigadee
             var result = await InternalCreate(rq.Key, rq, rs, prq, prs);
 
             if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
-                mCacheManager.Write(rq.Key, result);
+                mCacheManager.Write(mTransform, result.Entity);
 
             ProcessOutputEntity(rq.Key, rq, rs, result);
         }
 
-        protected virtual async Task<IResponseHolder> InternalCreate(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
+        protected virtual async Task<IResponseHolder<E>> InternalCreate(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            return new ResponseHolderBase() { StatusCode = 501, StatusMessage = "Not implemented." };
+            return new PersistenceResponseHolder<E>() { StatusCode = 501, IsSuccess = false };
         }
 
         #endregion
@@ -554,26 +552,26 @@ namespace Xigadee
             PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            IResponseHolder result = null;
+            IResponseHolder<E> result = null;
 
             if (mCacheManager.IsActive && rq.Settings.UseCache)
-                result = await mCacheManager.Read(rq.Key);
+                result = await mCacheManager.Read(mTransform, rq.Key);
 
             if (result == null || !result.IsSuccess)
             {
                 result = await InternalRead(rq.Key, rq, rs, prq, prs);
 
                 if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
-                    mCacheManager.Write(rq.Key, result);
+                    mCacheManager.Write(mTransform, result.Entity);
             }
 
             ProcessOutputEntity(rq.Key, rq, rs, result);
         }
 
-        protected async virtual Task<IResponseHolder> InternalRead(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
+        protected async virtual Task<IResponseHolder<E>> InternalRead(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            return new ResponseHolderBase() { StatusCode = 501, StatusMessage = "Not implemented." };
+            return new PersistenceResponseHolder<E>() { StatusCode = 501, IsSuccess = false };
         }
         #endregion
         #region ReadByRef
@@ -581,8 +579,25 @@ namespace Xigadee
             PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            rs.ResponseCode = 501;
-            rs.ResponseMessage = "Not implemented.";
+            IResponseHolder<E> result = null;
+
+            if (mCacheManager.IsActive && rq.Settings.UseCache)
+                result = await mCacheManager.Read(mTransform, rq.KeyReference);
+
+            if (result == null || !result.IsSuccess)
+            {
+                result = await InternalReadByRef(rq.KeyReference, rq, rs, prq, prs);
+
+                if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
+                    mCacheManager.Write(mTransform, result.Entity);
+            }
+        }
+
+        protected async virtual Task<IResponseHolder<E>> InternalReadByRef(Tuple<string, string> reference
+            , PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs
+            , TransmissionPayload prq, List<TransmissionPayload> prs)
+        {
+            return new PersistenceResponseHolder<E>() { StatusCode = 501, IsSuccess = false };
         }
         #endregion
 
@@ -594,15 +609,15 @@ namespace Xigadee
             var result = await InternalUpdate(rq.Key, rq, rs, prq, prs);
 
             if (mCacheManager.IsActive && result.IsSuccess)
-                mCacheManager.Write(rq.Key, result);
+                mCacheManager.Write(mTransform, result.Entity);
 
             ProcessOutputEntity(rq.Key, rq, rs, result);
         }
 
-        protected virtual async Task<IResponseHolder> InternalUpdate(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
+        protected virtual async Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            return new ResponseHolderBase() { StatusCode = 501, StatusMessage = "Not implemented." };
+            return new PersistenceResponseHolder<E>() { StatusCode = 501, IsSuccess = false};
         }
         #endregion
 
@@ -614,7 +629,7 @@ namespace Xigadee
             var result = await InternalDelete(rq.Key, rq, rs, prq, prs);
 
             if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
-                await mCacheManager.Delete(rq.Key);
+                await mCacheManager.Delete(mTransform, rq.Key);
 
             ProcessOutputKey(rq, rs, result);
         }
@@ -622,7 +637,7 @@ namespace Xigadee
         protected virtual async Task<IResponseHolder> InternalDelete(K key, PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            return new ResponseHolderBase() { StatusCode = 501, StatusMessage = "Not implemented." };
+            return new PersistenceResponseHolder() { StatusCode = 501, IsSuccess = false};
         }
         #endregion
         #region DeleteByRef
@@ -630,8 +645,14 @@ namespace Xigadee
             PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            rs.ResponseCode = 501;
-            rs.ResponseMessage = "Not implemented.";
+            var result = await InternalDeleteByRef(rq.KeyReference, rq, rs, prq, prs);
+
+            ProcessOutputKey(rq, rs, result);
+        }
+        protected virtual async Task<IResponseHolder> InternalDeleteByRef(Tuple<string, string> reference, PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
+            TransmissionPayload prq, List<TransmissionPayload> prs)
+        {
+            return new PersistenceResponseHolder() { StatusCode = 501, IsSuccess = false };
         }
         #endregion
 
@@ -643,23 +664,18 @@ namespace Xigadee
             IResponseHolder result = null;
 
             if (mCacheManager.IsActive)
-                result = await mCacheManager.VersionRead(rq.Key);
-
-            if (result == null || !result.IsSuccess)
-            {
+                result = await mCacheManager.VersionRead(mTransform, rq.Key);
+            else
                 result = await InternalVersion(rq.Key, rq, rs, prq, prs);
-
-                if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
-                    mCacheManager.VersionWrite(rq.Key, result);
-            }
 
             ProcessOutputKey(rq, rs, result);
         }
 
-        protected virtual async Task<IResponseHolder> InternalVersion(K key, PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
+        protected virtual async Task<IResponseHolder> InternalVersion(K key, 
+            PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            return new ResponseHolderBase() { StatusCode = 501, StatusMessage = "Not implemented." };
+            return new PersistenceResponseHolder() { StatusCode = 501, IsSuccess = false };
         }
         #endregion
         #region VersionByRef
@@ -667,8 +683,21 @@ namespace Xigadee
             PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            rs.ResponseCode = 501;
-            rs.ResponseMessage = "Not implemented.";
+            IResponseHolder result = null;
+
+            if (mCacheManager.IsActive)
+                result = await mCacheManager.VersionRead(mTransform, rq.KeyReference);
+            else
+                result = await InternalVersionByRef(rq.KeyReference, rq, rs, prq, prs);
+
+            ProcessOutputKey(rq, rs, result);
+        }
+
+        protected virtual async Task<IResponseHolder> InternalVersionByRef(Tuple<string, string> reference, 
+            PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
+            TransmissionPayload prq, List<TransmissionPayload> prs)
+        {
+            return new PersistenceResponseHolder() { StatusCode = 501, IsSuccess = false };
         }
         #endregion
 
@@ -702,7 +731,7 @@ namespace Xigadee
         /// <returns>The output string.</returns>
         protected virtual string KeyStringMaker(K key)
         {
-            return string.Format("{0}.{1}", mEntityName, key.ToString());
+            return string.Format("{0}.{1}", mTransform.EntityName, key.ToString());
         }
         #endregion
         #region KeyMaker(E entity)
@@ -713,10 +742,10 @@ namespace Xigadee
         /// <returns>Returns the key from the entity.</returns>
         protected virtual K KeyMaker(E entity)
         {
-            if (mKeyMaker == null)
+            if (mTransform.KeyMaker == null)
                 throw new NotImplementedException("mKeyMaker has not been set.");
 
-            return mKeyMaker(entity);
+            return mTransform.KeyMaker(entity);
         }
         #endregion
 
@@ -726,12 +755,12 @@ namespace Xigadee
         /// </summary>
         /// <param name="entity">The entity to convert.</param>
         /// <returns>Returns the key from the entity.</returns>
-        protected virtual IEnumerable<KeyValuePair<string,string>> ReferenceMaker(E entity)
+        protected virtual IEnumerable<Tuple<string,string>> ReferenceMaker(E entity)
         {
-            if (mReferenceMaker == null)
-                return new KeyValuePair<string, string>[] { };
+            if (mTransform.ReferenceMaker == null)
+                return new Tuple<string, string>[] { };
 
-            return mReferenceMaker(entity);
+            return mTransform.ReferenceMaker(entity);
         }
         #endregion
 
@@ -752,7 +781,7 @@ namespace Xigadee
             {
                 rs.Entity = EntityMaker(holderResponse.Content);
                 rs.Key = KeyMaker(rs.Entity);
-                rs.Settings.VersionId = mVersion?.EntityVersionAsString(rs.Entity);
+                rs.Settings.VersionId = mTransform.Version?.EntityVersionAsString(rs.Entity);
 
                 rs.KeyReference = new Tuple<string, string>(rs.Key.ToString(), rs.Settings.VersionId);
             }

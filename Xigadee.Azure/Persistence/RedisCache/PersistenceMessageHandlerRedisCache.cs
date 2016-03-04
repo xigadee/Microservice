@@ -24,7 +24,7 @@ namespace Xigadee
             , PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
             , ICacheManager<K, E> cacheManager = null
-            , Func<E, IEnumerable<KeyValuePair<string, string>>> referenceMaker = null
+            , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
 
             )
             : base(redisConnection, keyMaker, entityName, versionPolicy, defaultTimeout, persistenceRetryPolicy: persistenceRetryPolicy, resourceProfile: resourceProfile
@@ -52,7 +52,7 @@ namespace Xigadee
             , TimeSpan? defaultTimeout = null
             , PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
-            , Func<E, IEnumerable<KeyValuePair<string, string>>> referenceMaker = null
+            , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
 
             )
             : base(entityName, versionPolicy, defaultTimeout, persistenceRetryPolicy: persistenceRetryPolicy, resourceProfile: resourceProfile
@@ -61,29 +61,31 @@ namespace Xigadee
         }
         #endregion
 
-        protected async override Task<IResponseHolder> InternalCreate(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
+        protected async override Task<IResponseHolder<E>> InternalCreate(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            return new ResponseHolderBase() { StatusCode = 501, StatusMessage = "Not implemented." };
+            
+            return new PersistenceResponseHolder<E>() { StatusCode = 501, IsSuccess = false };
         }
 
-        protected async override Task<IResponseHolder> InternalUpdate(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
+        protected async override Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            return new ResponseHolderBase() { StatusCode = 501, StatusMessage = "Not implemented." };
+            return new PersistenceResponseHolder<E>() { StatusCode = 501, IsSuccess = false };
         }
 
-        protected async override Task<IResponseHolder> InternalRead(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
+        protected async override Task<IResponseHolder<E>> InternalRead(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            return new ResponseHolderBase() { StatusCode = 404, StatusMessage = "Not found." };
+            return new PersistenceResponseHolder<E>() { StatusCode = 404, IsSuccess = false };
         }
+
 
         protected async override Task<IResponseHolder> InternalVersion(K key, PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            return new ResponseHolderBase() { StatusCode = 404, StatusMessage = "Not found." };
+            return new PersistenceResponseHolder() { StatusCode = 404, IsSuccess = false};
         }
 
         protected async override Task<IResponseHolder> InternalDelete(K key, PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            return new ResponseHolderBase() { StatusCode = 501, StatusMessage = "Not implemented." };
+            return new PersistenceResponseHolder() { StatusCode = 501, IsSuccess = false };
         }
 
     }

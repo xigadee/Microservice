@@ -6,7 +6,6 @@ namespace Test.Xigadee
 {
     public class PersistenceBlah2: PersistenceManagerHandlerDocumentDb<Guid, Blah2>
     {
-
         public PersistenceBlah2(DocumentDbConnection connection, string database, Func<Blah2, Guid> keyMaker
             , Func<RepositoryHolder<Guid, Blah2>, JsonHolder<Guid>> jsonMaker = null
             , string databaseCollection = null
@@ -19,6 +18,14 @@ namespace Test.Xigadee
             : base(connection, database, keyMaker, jsonMaker, databaseCollection, entityName, versionMaker, defaultTimeout, shardingPolicy
                   , resourceProfile:resourceProfile)
         {
+        }
+    }
+
+    public class PersistenceMondayMorningBluesMemory: PersistenceMessageHandlerRedisCache<Guid, MondayMorningBlues>
+    {
+        public PersistenceMondayMorningBluesMemory(string redisConnection):base(redisConnection, (k) => k.Id)
+        {
+
         }
     }
 

@@ -7,52 +7,37 @@ using StackExchange.Redis;
 
 namespace Xigadee
 {
-    /// <summary>
-    /// This is the root cache.
-    /// </summary>
-    public class RedisCacheManager
-    {
-        /// <summary>
-        /// This is the static helper.
-        /// </summary>
-        /// <typeparam name="K"></typeparam>
-        /// <typeparam name="E"></typeparam>
-        /// <param name="connection"></param>
-        /// <returns></returns>
-        public static RedisCacheManager<K, E> Default<K, E>(string connection)
-            where K : IEquatable<K>
-        {
-            return new RedisCacheManager<K, E>(connection);
-        }
-    }
-
     public class RedisCacheManager<K, E>: RedisCacheManager, ICacheManager<K, E>
         where K : IEquatable<K>
     {
+        #region Declarations
         private string mConnection;
 
         private Lazy<ConnectionMultiplexer> mLazyConnection;
 
+        protected const string cnKeyVersion = "version";
+        protected const string cnKeyEntity = "entity";
+        #endregion
 
+        #region Constructor
         public RedisCacheManager(string connection, bool readOnly = true)
         {
             mConnection = connection;
             IsReadOnly = readOnly;
 
-            mLazyConnection
-            = new Lazy<ConnectionMultiplexer>(() =>
-            {
-                try
-                {
-                    return ConnectionMultiplexer.Connect(mConnection);
-                }
-                catch (Exception ex)
-                {
-                    throw;
-                }
-            }
-        );
-        }
+            mLazyConnection = new Lazy<ConnectionMultiplexer>(() =>
+             {
+                 try
+                 {
+                     return ConnectionMultiplexer.Connect(mConnection);
+                 }
+                 catch (Exception ex)
+                 {
+                     throw;
+                 }
+             });
+        } 
+        #endregion
 
         #region IsActive
         /// <summary>
@@ -76,78 +61,163 @@ namespace Xigadee
         }
         #endregion
 
-        public async Task<bool> Write(K key, string value)
+        protected virtual RedisKey RedisKeyGet(EntityTransformHolder<K, E> transform, K key)
+        {
+            return $"entity.{transform.EntityName}.{transform.IdMaker(key)}";
+        }
+
+        protected virtual RedisKey RedisReferenceGet(EntityTransformHolder<K, E> transform, string refType)
+        {
+            //entityreference.{entitytype}.{keytype i.e., EMAIL, ID etc.}
+            return $"entityreference.{transform.EntityName}.{refType.ToLowerInvariant()}";
+        }
+
+        public async Task<IResponseHolder<E>> Read(EntityTransformHolder<K, E> transform, K key)
         {
             try
             {
-                IDatabase mRedisCacheDb = mLazyConnection.Value.GetDatabase();
-                RedisKey hashkey = typeof(E).Name.ToLowerInvariant(); ;
-                RedisValue redKey = key.ToString();
-                RedisValue redData = value;
-                
-                return await mRedisCacheDb.HashSetAsync(hashkey, redKey, redData, when: When.Always);
+                IDatabase rDb = mLazyConnection.Value.GetDatabase();
+                RedisKey hashkey = RedisKeyGet(transform, key);
+
+                //Entity
+                RedisValue result = await rDb.HashGetAsync(hashkey, cnKeyEntity);
+
+                if (result.HasValue)
+                    return new PersistenceResponseHolder<E>() { StatusCode = 200, Content = result, IsSuccess = true, Entity = transform.Deserialize(result)};
+                else
+                    return new PersistenceResponseHolder<E>() { StatusCode = 404, IsSuccess = false };
             }
             catch (Exception ex)
             {
-                throw ex;
+                return new PersistenceResponseHolder<E>() { StatusCode = 500, IsSuccess = false };
+            }
+        }
+
+        public async Task<IResponseHolder<E>> Read(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
+        {
+            try
+            {
+                IDatabase rDb = mLazyConnection.Value.GetDatabase();
+                RedisKey hashkey = RedisReferenceGet(transform, reference.Item1);
+
+                //Entity
+                RedisValue result = await rDb.HashGetAsync(hashkey, cnKeyEntity);
+
+                if (result.HasValue)
+                    return new PersistenceResponseHolder<E>() { StatusCode = 200, Content = result, IsSuccess = true, Entity = transform.Deserialize(result) };
+                else
+                    return new PersistenceResponseHolder<E>() { StatusCode = 404, IsSuccess = false };
+            }
+            catch (Exception ex)
+            {
+                return new PersistenceResponseHolder<E>() { StatusCode = 500, IsSuccess = false };
+            }
+        }
+
+        public async Task<bool> Delete(EntityTransformHolder<K, E> transform, K key)
+        {
+            if (IsReadOnly)
+                return false;
+
+            try
+            {
+                IDatabase rDb = mLazyConnection.Value.GetDatabase();
+                IBatch batch = rDb.CreateBatch();
+
+                var tasks = new List<Task>();
+                RedisKey hashkey = RedisKeyGet(transform, key);
+
+                //Entity
+                tasks.Add(batch.HashDeleteAsync(hashkey, cnKeyEntity));
+                //Version
+                tasks.Add(batch.HashDeleteAsync(hashkey, cnKeyVersion));
+
+                batch.Execute();
+
+                await Task.WhenAll(tasks);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+
             }
 
+            return false;
         }
 
-        public async Task Write(K key, IResponseHolder result)
+        public async Task<bool> Write(EntityTransformHolder<K, E> transform, E entity)
         {
-            if (IsReadOnly || !result.IsSuccess || result.IsTimeout)
-                return;
+            try
+            {
+                K key = transform.KeyMaker(entity);
 
-            await Write(key, result.Content);
+                IDatabase rDb = mLazyConnection.Value.GetDatabase();
+                IBatch batch = rDb.CreateBatch();
+
+                var tasks = new List<Task>();
+                RedisKey hashkey = RedisKeyGet(transform, key);
+
+                //Entity
+                tasks.Add(batch.HashSetAsync(hashkey, cnKeyEntity, transform.Serialize(entity), when: When.Always));
+                //Version
+                tasks.Add(batch.HashSetAsync(hashkey, cnKeyVersion, transform.Version.EntityVersionAsString(entity), when: When.Always));
+
+                var references = transform.ReferenceMaker(entity);
+                if (references != null)
+                    references.ForEach((r) => tasks.Add(WriteReference(batch, transform, r, key)));
+
+                batch.Execute();
+
+                await Task.WhenAll(tasks);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return false;
         }
 
-        public async Task<IResponseHolder<E>> Read(K key)
+
+
+        protected virtual Task WriteReference(IBatch batch, EntityTransformHolder<K, E> transform, Tuple<string,string> reference, K key)
         {
-            //IDatabase mRedisCacheDb = mLazyConnection.Value.GetDatabase();
-            //RedisKey hashkey = typeof(E).Name.ToLowerInvariant(); ;
-            //RedisValue redKey = key.ToString();
+            //entityreference.{entitytype}.{keytype i.e., EMAIL, ID etc.}
+            RedisKey hashkey = RedisReferenceGet(transform, reference.Item1);
+            //Entity
+            return batch.HashSetAsync(hashkey, reference.Item2.ToLowerInvariant(), transform.IdMaker(key), when: When.Always);
+        }
 
-            //var redValue = await mRedisCacheDb.HashGetAsync(hashkey, redKey);
-
-            //var result = new ResponseHolder<E>();
-
-            //return result;
-
+        public async Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, K key)
+        {
             throw new NotImplementedException();
         }
 
-        public async Task<IResponseHolder<E>> Read(string refType, string refValue)
+        public async Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
         {
             throw new NotImplementedException();
         }
+    }
 
-        public async Task<IResponseHolder> VersionRead(K key)
+    /// <summary>
+    /// This is the root cache.
+    /// </summary>
+    public class RedisCacheManager
+    {
+        /// <summary>
+        /// This is the static helper.
+        /// </summary>
+        /// <typeparam name="K"></typeparam>
+        /// <typeparam name="E"></typeparam>
+        /// <param name="connection"></param>
+        /// <returns></returns>
+        public static RedisCacheManager<K, E> Default<K, E>(string connection)
+            where K : IEquatable<K>
         {
-            throw new NotImplementedException();
+            return new RedisCacheManager<K, E>(connection);
         }
-
-        public async Task<IResponseHolder> VersionRead(string refType, string refValue)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task VersionWrite(K key, IResponseHolder result)
-        {
-            if (IsReadOnly)
-                return;
-
-            throw new NotImplementedException();
-        }
-
-
-        public async Task Delete(K key)
-        {
-            if (IsReadOnly)
-                return;
-
-            throw new NotImplementedException();
-        }
-
     }
 }

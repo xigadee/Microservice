@@ -410,8 +410,8 @@ namespace Xigadee
 
             try
             {
-                if (mKeyMaker != null)
-                    rs.Key = mKeyMaker(entity);
+                if (mTransform.KeyMaker != null)
+                    rs.Key = mTransform.KeyMaker(entity);
 
                 if (mVersionMaker != null)
                     rs.Settings.VersionId = mVersionMaker(node).Item2;

@@ -53,7 +53,7 @@ namespace Xigadee
             , PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
             , ICacheManager<K, E> cacheManager = null
-            , Func<E, IEnumerable<KeyValuePair<string, string>>> referenceMaker = null
+            , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             , Func<RepositoryHolder<K, E>, JsonHolder<K>> jsonMaker = null
             )
             : base(entityName:entityName

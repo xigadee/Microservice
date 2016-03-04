@@ -4,7 +4,7 @@
     <id>Xigadee.Framework</id>
     <version>{UpdateVersion.ps1.replace}</version>
     <title>Xigadee component library specifically targetted to the .NET Framework</title>
-    <authors>Paul Stancer and Guy Steel at Information Management Group Ltd part of Hitachi Consulting.</authors>
+    <authors>Paul Stancer and Guy Steel at Information Management Group Ltd, part of Hitachi Consulting.</authors>
     <owners>Information Management Group Ltd part of Hitachi Consulting</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <projectUrl>http://xigadee.com</projectUrl>

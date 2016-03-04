@@ -26,19 +26,17 @@ namespace Xigadee
             }
         }
 
-        public abstract Task<IResponseHolder<E>> Read(K key);
+        public abstract Task<IResponseHolder<E>> Read(EntityTransformHolder<K, E> transform, Tuple<string, string> reference);
 
-        public abstract Task<IResponseHolder<E>> Read(string refType, string refValue);
+        public abstract Task<IResponseHolder<E>> Read(EntityTransformHolder<K, E> transform, K key);
 
-        public abstract Task<IResponseHolder> VersionRead(K key);
+        public abstract Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, Tuple<string, string> reference);
 
-        public abstract Task<IResponseHolder> VersionRead(string refType, string refValue);
+        public abstract Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, K key);
 
-        public abstract Task VersionWrite(K key, IResponseHolder result);
+        public abstract Task<bool> Write(EntityTransformHolder<K, E> transform, E entity);
 
-        public abstract Task Write(K key, IResponseHolder result);
-
-        public abstract Task Delete(K key);
+        public abstract Task<bool> Delete(EntityTransformHolder<K, E> transform, K key);
 
     }
 }
