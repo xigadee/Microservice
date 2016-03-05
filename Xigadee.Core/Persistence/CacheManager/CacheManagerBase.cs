@@ -11,6 +11,8 @@ namespace Xigadee
     {
         private readonly bool mReadOnly;
 
+        protected EntityTransformHolder<K, E> mTransform = null;
+
         protected CacheManagerBase(bool readOnly = true)
         {
             mReadOnly = readOnly;
@@ -18,7 +20,7 @@ namespace Xigadee
 
         public abstract bool IsActive { get; }
 
-        public bool IsReadOnly
+        public virtual bool IsReadOnly
         {
             get
             {
@@ -38,5 +40,35 @@ namespace Xigadee
 
         public abstract Task<bool> Delete(EntityTransformHolder<K, E> transform, K key);
 
+
+        public Task<bool> Write(E entity)
+        {
+            return Write(mTransform, entity);
+        }
+
+        public Task<bool> Delete(K key)
+        {
+            return Delete(mTransform, key);
+        }
+
+        public Task<IResponseHolder<E>> Read(K key)
+        {
+            return Read(mTransform, key);
+        }
+
+        public Task<IResponseHolder<E>> Read(Tuple<string, string> reference)
+        {
+            return Read(mTransform, reference);
+        }
+
+        public Task<IResponseHolder> VersionRead(K key)
+        {
+            return VersionRead(mTransform, key);
+        }
+
+        public Task<IResponseHolder> VersionRead(Tuple<string, string> reference)
+        {
+            return VersionRead(mTransform, reference);
+        }
     }
 }

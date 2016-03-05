@@ -11,9 +11,10 @@ namespace Xigadee
     /// <summary>
     /// This class is used to call the remote persistence manager,
     /// </summary>
-    /// <typeparam name="K"></typeparam>
-    /// <typeparam name="E"></typeparam>
-    public class PersistenceMessageInitiator<K, E> : MessageInitiatorBase<MessageInitiatorRequestTracker, MessageInitiatorStatistics>
+    /// <typeparam name="K">The key type.</typeparam>
+    /// <typeparam name="E">The entity type.</typeparam>
+    public class PersistenceMessageInitiator<K, E> 
+        : MessageInitiatorBase<MessageInitiatorRequestTracker, PersistenceMessageInitiatorStatistics>
         , IRepositoryAsync<K, E>, IPersistenceMessageInitiator
         where K : IEquatable<K>
     {
@@ -153,7 +154,6 @@ namespace Xigadee
         }
         #endregion
         #region ProcessResponse<KT, ET>(TaskStatus rType, TransmissionPayload payload, bool processAsync)
-
         /// <summary>
         /// This method process the response.
         /// </summary>
@@ -177,8 +177,7 @@ namespace Xigadee
                     case TaskStatus.RanToCompletion:
                         return PayloadSerializer.PayloadDeserialize<RepositoryHolder<KT, ET>>(payload);
                     case TaskStatus.Canceled:
-                        //return new RepositoryHolder<KT, ET>() { ResponseCode = 408, ResponseMessage = "Response timeout." };
-                    case TaskStatus.Faulted: //TODO:check that this works
+                    case TaskStatus.Faulted:
                         return new RepositoryHolder<KT, ET>() { ResponseCode = (int)PersistenceResponse.GatewayTimeout504, ResponseMessage = "Response timeout." };
                     default:
                         Logger.LogMessage(LoggingLevel.Error, "Unknown task response of " + rType);

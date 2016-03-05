@@ -13,6 +13,8 @@ namespace Xigadee
         #region Declarations
         private string mConnection;
 
+        private EntityTransformHolder<K, E> mTransform;
+
         private Lazy<ConnectionMultiplexer> mLazyConnection;
 
         protected const string cnKeyVersion = "version";
@@ -20,10 +22,11 @@ namespace Xigadee
         #endregion
 
         #region Constructor
-        public RedisCacheManager(string connection, bool readOnly = true)
+        public RedisCacheManager(string connection, bool readOnly = true, EntityTransformHolder<K, E> transform = null)
         {
             mConnection = connection;
             IsReadOnly = readOnly;
+            mTransform = transform;
 
             mLazyConnection = new Lazy<ConnectionMultiplexer>(() =>
              {
@@ -74,6 +77,8 @@ namespace Xigadee
 
         public async Task<IResponseHolder<E>> Read(EntityTransformHolder<K, E> transform, K key)
         {
+            if (transform == null)
+                throw new ArgumentNullException("The EntityTransformHolder cannot be null.");
             try
             {
                 IDatabase rDb = mLazyConnection.Value.GetDatabase();
@@ -95,6 +100,8 @@ namespace Xigadee
 
         public async Task<IResponseHolder<E>> Read(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
         {
+            if (transform == null)
+                throw new ArgumentNullException("The EntityTransformHolder cannot be null.");
             try
             {
                 IDatabase rDb = mLazyConnection.Value.GetDatabase();
@@ -116,6 +123,8 @@ namespace Xigadee
 
         public async Task<bool> Delete(EntityTransformHolder<K, E> transform, K key)
         {
+            if (transform == null)
+                throw new ArgumentNullException("The EntityTransformHolder cannot be null.");
             if (IsReadOnly)
                 return false;
 
@@ -146,8 +155,16 @@ namespace Xigadee
             return false;
         }
 
+        /// <summary>
+        /// This method writes the entity to the redis cache.
+        /// </summary>
+        /// <param name="transform">The transform object.</param>
+        /// <param name="entity">The entity to write.</param>
+        /// <returns>Returns true if the write was successful.</returns>
         public async Task<bool> Write(EntityTransformHolder<K, E> transform, E entity)
         {
+            if (transform == null)
+                throw new ArgumentNullException("The EntityTransformHolder cannot be null.");
             try
             {
                 K key = transform.KeyMaker(entity);
@@ -162,7 +179,7 @@ namespace Xigadee
                 tasks.Add(batch.HashSetAsync(hashkey, cnKeyEntity, transform.Serialize(entity), when: When.Always));
                 //Version
                 tasks.Add(batch.HashSetAsync(hashkey, cnKeyVersion, transform.Version.EntityVersionAsString(entity), when: When.Always));
-
+                
                 var references = transform.ReferenceMaker(entity);
                 if (references != null)
                     references.ForEach((r) => tasks.Add(WriteReference(batch, transform, r, key)));
@@ -191,6 +208,8 @@ namespace Xigadee
 
         public async Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, K key)
         {
+            if (transform == null)
+                throw new ArgumentNullException("The EntityTransformHolder cannot be null.");
             try
             {
                 IDatabase rDb = mLazyConnection.Value.GetDatabase();
@@ -212,6 +231,9 @@ namespace Xigadee
 
         public async Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
         {
+            if (transform == null)
+                throw new ArgumentNullException("The EntityTransformHolder cannot be null.");
+
             try
             {
                 IDatabase rDb = mLazyConnection.Value.GetDatabase();
@@ -229,6 +251,36 @@ namespace Xigadee
             {
                 return new PersistenceResponseHolder<E>() { StatusCode = 500, IsSuccess = false };
             }
+        }
+
+        public Task<bool> Write(E entity)
+        {
+            return Write(mTransform, entity);
+        }
+
+        public Task<bool> Delete(K key)
+        {
+            return Delete(mTransform, key);
+        }
+
+        public Task<IResponseHolder<E>> Read(K key)
+        {
+            return Read(mTransform, key);
+        }
+
+        public Task<IResponseHolder<E>> Read(Tuple<string, string> reference)
+        {
+            return Read(mTransform, reference);
+        }
+
+        public Task<IResponseHolder> VersionRead(K key)
+        {
+            return VersionRead(mTransform, key);
+        }
+
+        public Task<IResponseHolder> VersionRead(Tuple<string, string> reference)
+        {
+            return VersionRead(mTransform, reference);
         }
     }
 

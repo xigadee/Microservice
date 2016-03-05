@@ -6,41 +6,8 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class PersistenceMessageHandlerRedisCache<K, E>: PersistenceMessageHandlerRedisCache<K, E, PersistenceStatistics>
-        where K : IEquatable<K>
-    {
-        #region Constructor
-        /// <summary>
-        /// This is the default constructor.
-        /// </summary>
-        /// <param name="entityName">The entity name, derived from E if left null.</param>
-        /// <param name="versionPolicy">The optional version and locking policy.</param>
-        /// <param name="defaultTimeout">The default timeout when making requests.</param>
-        /// <param name="retryPolicy">The retry policy</param>
-        protected PersistenceMessageHandlerRedisCache(string redisConnection
-            , Func<E, K> keyMaker
-            , string entityName = null
-            , VersionPolicy<E> versionPolicy = null
-            , TimeSpan? defaultTimeout = null
-            , PersistenceRetryPolicy persistenceRetryPolicy = null
-            , ResourceProfile resourceProfile = null
-            , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
 
-            )
-            : base( redisConnection
-                  , keyMaker
-                  , entityName: entityName
-                  , versionPolicy: versionPolicy
-                  , defaultTimeout: defaultTimeout
-                  , persistenceRetryPolicy: persistenceRetryPolicy
-                  , resourceProfile: resourceProfile
-                  , referenceMaker: referenceMaker)
-        {
-        }
-        #endregion
-    }
-
-    public class PersistenceMessageHandlerRedisCache<K,E,S>: PersistenceManagerHandlerJsonBase<K, E>
+    public class PersistenceMessageHandlerRedisCache<K,E,S>: PersistenceManagerHandlerJsonBase<K,E,S>
         where K : IEquatable<K>
         where S : PersistenceStatistics, new()
     {
@@ -95,7 +62,6 @@ namespace Xigadee
             return await mCacheManager.Read(mTransform, key);
         }
 
-
         protected async override Task<IResponseHolder> InternalVersion(K key, PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
         {
             return await mCacheManager.VersionRead(mTransform, key);
@@ -109,5 +75,39 @@ namespace Xigadee
             return new PersistenceResponseHolder<E> { IsSuccess = false, StatusCode = 404 };
         }
 
+    }
+
+    public class PersistenceMessageHandlerRedisCache<K, E>: PersistenceMessageHandlerRedisCache<K, E, PersistenceStatistics>
+    where K : IEquatable<K>
+    {
+        #region Constructor
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="entityName">The entity name, derived from E if left null.</param>
+        /// <param name="versionPolicy">The optional version and locking policy.</param>
+        /// <param name="defaultTimeout">The default timeout when making requests.</param>
+        /// <param name="retryPolicy">The retry policy</param>
+        protected PersistenceMessageHandlerRedisCache(string redisConnection
+            , Func<E, K> keyMaker
+            , string entityName = null
+            , VersionPolicy<E> versionPolicy = null
+            , TimeSpan? defaultTimeout = null
+            , PersistenceRetryPolicy persistenceRetryPolicy = null
+            , ResourceProfile resourceProfile = null
+            , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
+
+            )
+            : base(redisConnection
+                  , keyMaker
+                  , entityName: entityName
+                  , versionPolicy: versionPolicy
+                  , defaultTimeout: defaultTimeout
+                  , persistenceRetryPolicy: persistenceRetryPolicy
+                  , resourceProfile: resourceProfile
+                  , referenceMaker: referenceMaker)
+        {
+        }
+        #endregion
     }
 }

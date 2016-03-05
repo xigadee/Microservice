@@ -9,20 +9,13 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This is the statistics class used to log persistence shared service requests.
-    /// </summary>
-    public class PersistenceSharedServiceStatistics:MessageInitiatorStatistics
-    {
-
-    }
-
-    /// <summary>
     /// This class is used to connect the internal persistence handler with other internal commands through the use of 
     /// Shared Services.
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class PersistenceSharedService<K, E>: MessageInitiatorBase<MessageInitiatorRequestTracker, PersistenceSharedServiceStatistics>
+    public class PersistenceSharedService<K, E>
+        : MessageInitiatorBase<MessageInitiatorRequestTracker, PersistenceSharedServiceStatistics>
         , IRepositoryAsync<K, E>, IRequireSharedServices, IPersistenceSharedService
         where K : IEquatable<K>
     {

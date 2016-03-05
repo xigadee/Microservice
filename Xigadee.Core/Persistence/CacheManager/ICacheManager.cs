@@ -19,16 +19,22 @@ namespace Xigadee
 
         bool IsActive { get; }
 
+        Task<bool> Write(E entity);
         Task<bool> Write(EntityTransformHolder<K, E> transform, E entity);
 
+        Task<bool> Delete(K key);
         Task<bool> Delete(EntityTransformHolder<K, E> transform, K key);
 
+        Task<IResponseHolder<E>> Read(K key);
         Task<IResponseHolder<E>> Read(EntityTransformHolder<K, E> transform, K key);
 
-        Task<IResponseHolder<E>> Read(EntityTransformHolder<K, E> transform, Tuple<string,string> reference);
+        Task<IResponseHolder<E>> Read(Tuple<string, string> reference);
+        Task<IResponseHolder<E>> Read(EntityTransformHolder<K, E> transform, Tuple<string, string> reference);
 
+        Task<IResponseHolder> VersionRead(K key);
         Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, K key);
 
+        Task<IResponseHolder> VersionRead(Tuple<string, string> reference);
         Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, Tuple<string, string> reference);
     }
 }

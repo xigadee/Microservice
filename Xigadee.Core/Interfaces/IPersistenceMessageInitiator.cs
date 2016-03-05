@@ -8,6 +8,6 @@ namespace Xigadee
 {
     public interface IPersistenceMessageInitiator: IStatisticsBase
     {
-        MessageInitiatorStatistics Statistics { get; }
+        PersistenceMessageInitiatorStatistics Statistics { get; }
     }
 }

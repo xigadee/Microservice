@@ -8,46 +8,7 @@ using System.Text;
 #endregion
 namespace Xigadee
 {
-    /// <summary>
-    /// This is the persistence manager base for JSON based information.
-    /// </summary>
-    /// <typeparam name="K">The key type.</typeparam>
-    /// <typeparam name="E">The entity type.</typeparam>
-    public abstract class PersistenceManagerHandlerJsonBase<K, E>: PersistenceManagerHandlerJsonBase<K, E, PersistenceStatistics>
-        where K : IEquatable<K>
-    {
-        #region Constructor
-        /// <summary>
-        /// This is the default constructor.
-        /// </summary>
-        /// <param name="entityName">The entity name, derived from E if left null.</param>
-        /// <param name="versionPolicy">The optional version and locking policy.</param>
-        /// <param name="defaultTimeout">The default timeout when making requests.</param>
-        /// <param name="retryPolicy">The retry policy</param>
-        protected PersistenceManagerHandlerJsonBase(
-            string entityName = null
-            , VersionPolicy<E> versionPolicy = null
-            , TimeSpan? defaultTimeout = null
-            , PersistenceRetryPolicy persistenceRetryPolicy = null
-            , ResourceProfile resourceProfile = null
-            , ICacheManager<K, E> cacheManager = null
-            , Func<E, K> keyMaker = null
-            , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
-            , Func<RepositoryHolder<K, E>, JsonHolder<K>> jsonMaker = null
-            )
-            : base(entityName: entityName
-                  , versionPolicy: versionPolicy
-                  , defaultTimeout: defaultTimeout
-                  , persistenceRetryPolicy: persistenceRetryPolicy
-                  , resourceProfile: resourceProfile
-                  , cacheManager: cacheManager
-                  , keyMaker:keyMaker
-                  , referenceMaker:referenceMaker
-                  , jsonMaker: jsonMaker)
-        {
-        }
-        #endregion
-    }
+
 
     /// <summary>
     /// This is the abstract base class for persistence services that use JSON and the serialization mechanism.
@@ -167,6 +128,47 @@ namespace Xigadee
             }
 
             return new JsonHolder<K>(key, version, jObj.ToString(), id);
+        }
+        #endregion
+    }
+
+    /// <summary>
+    /// This is the persistence manager base for JSON based information.
+    /// </summary>
+    /// <typeparam name="K">The key type.</typeparam>
+    /// <typeparam name="E">The entity type.</typeparam>
+    public abstract class PersistenceManagerHandlerJsonBase<K, E>: PersistenceManagerHandlerJsonBase<K, E, PersistenceStatistics>
+        where K : IEquatable<K>
+    {
+        #region Constructor
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="entityName">The entity name, derived from E if left null.</param>
+        /// <param name="versionPolicy">The optional version and locking policy.</param>
+        /// <param name="defaultTimeout">The default timeout when making requests.</param>
+        /// <param name="retryPolicy">The retry policy</param>
+        protected PersistenceManagerHandlerJsonBase(
+            string entityName = null
+            , VersionPolicy<E> versionPolicy = null
+            , TimeSpan? defaultTimeout = null
+            , PersistenceRetryPolicy persistenceRetryPolicy = null
+            , ResourceProfile resourceProfile = null
+            , ICacheManager<K, E> cacheManager = null
+            , Func<E, K> keyMaker = null
+            , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
+            , Func<RepositoryHolder<K, E>, JsonHolder<K>> jsonMaker = null
+            )
+            : base(entityName: entityName
+                  , versionPolicy: versionPolicy
+                  , defaultTimeout: defaultTimeout
+                  , persistenceRetryPolicy: persistenceRetryPolicy
+                  , resourceProfile: resourceProfile
+                  , cacheManager: cacheManager
+                  , keyMaker: keyMaker
+                  , referenceMaker: referenceMaker
+                  , jsonMaker: jsonMaker)
+        {
         }
         #endregion
     }

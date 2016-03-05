@@ -40,7 +40,9 @@ namespace Test.Xigadee
                     , (m, o) =>
                     {
                         testid = Guid.NewGuid();
-                        var result = sService.Persistence.Create(new MondayMorningBlues { Id = testid, ContentId = testid, VersionId = versionid, Message = DateTime.Now.ToString(), NotEnoughCoffee = true }, new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
+                        var result = sService.Persistence.Create(
+                            new MondayMorningBlues { Id = testid, ContentId = testid, VersionId = versionid, Message = DateTime.Now.ToString(), NotEnoughCoffee = true, Email="paul@hotmail.com" }
+                            , new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
                         if (result.IsSuccess)
                             versionid = result.Entity.VersionId;
                         PersistenceLog("Create", result.IsSuccess);

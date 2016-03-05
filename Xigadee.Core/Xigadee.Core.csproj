@@ -113,7 +113,9 @@
     <Compile Include="MessageHandler\MessageHandlerStatistics.cs" />
     <Compile Include="MessageInitiator\MessageInitiatorTimeoutSchedule.cs" />
     <Compile Include="Persistence\CacheManager\CacheManagerBase.cs" />
-    <Compile Include="Persistence\CacheManager\CacheResponseHolder.cs" />
+    <Compile Include="Persistence\Client\PersistenceMessageInitiatorStatistics.cs" />
+    <Compile Include="Persistence\Client\PersistenceSharedServiceStatistics.cs" />
+    <Compile Include="Persistence\PersistenceResponseHolder.cs" />
     <Compile Include="Persistence\CacheManager\NullCacheManager.cs" />
     <Compile Include="Persistence\Cache\EntityCacheAsyncPolicy.cs" />
     <Compile Include="Persistence\Cache\EntityCacheCollection.cs" />
@@ -127,7 +129,7 @@
     <Compile Include="Persistence\CacheManager\ICacheManager.cs" />
     <Compile Include="Persistence\Cache\IEntityCacheAsync.cs" />
     <Compile Include="Persistence\Cache\EntityCacheReferenceTypeValueKey.cs" />
-    <Compile Include="Persistence\Client\PersistenceMessageInitiatorBase.cs" />
+    <Compile Include="Persistence\Client\PersistenceMessageInitiator.cs" />
     <Compile Include="Persistence\EntityActions.cs" />
     <Compile Include="Persistence\Server\EntityTransformHolder.cs" />
     <Compile Include="Persistence\PersistenceResponse.cs" />

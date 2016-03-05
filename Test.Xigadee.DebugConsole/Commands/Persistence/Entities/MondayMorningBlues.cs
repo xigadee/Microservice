@@ -22,5 +22,7 @@ namespace Test.Xigadee
         public Guid VersionId { get; set; }
 
         public string Message { get; set; }
+
+        public string Email { get; set; }
     }
 }
