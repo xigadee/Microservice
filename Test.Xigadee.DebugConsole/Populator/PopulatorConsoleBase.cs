@@ -10,6 +10,22 @@ namespace Test.Xigadee
     internal abstract class PopulatorConsoleBase<M>: PopulatorBase<M, ConfigConsole>, IPopulatorConsole where M : Microservice, new()
     {
 
+        public override void Start()
+        {
+            try
+            {
+                Populate();
+
+                base.Start();
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
+        }
+
         protected ResourceProfile mResourceDocDb = new ResourceProfile("DocDB");
         protected ResourceProfile mResourceBlob = new ResourceProfile("Blob");
 

@@ -181,8 +181,6 @@ namespace Xigadee
             return false;
         }
 
-
-
         protected virtual Task WriteReference(IBatch batch, EntityTransformHolder<K, E> transform, Tuple<string,string> reference, K key)
         {
             //entityreference.{entitytype}.{keytype i.e., EMAIL, ID etc.}
@@ -193,12 +191,44 @@ namespace Xigadee
 
         public async Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, K key)
         {
-            throw new NotImplementedException();
+            try
+            {
+                IDatabase rDb = mLazyConnection.Value.GetDatabase();
+                RedisKey hashkey = RedisKeyGet(transform, key);
+
+                //Entity
+                RedisValue result = await rDb.HashGetAsync(hashkey, cnKeyVersion);
+
+                if (result.HasValue)
+                    return new PersistenceResponseHolder<E>() { StatusCode = 200, Content = result, IsSuccess = true, Entity = transform.Deserialize(result) };
+                else
+                    return new PersistenceResponseHolder<E>() { StatusCode = 404, IsSuccess = false };
+            }
+            catch (Exception ex)
+            {
+                return new PersistenceResponseHolder<E>() { StatusCode = 500, IsSuccess = false };
+            }
         }
 
         public async Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
         {
-            throw new NotImplementedException();
+            try
+            {
+                IDatabase rDb = mLazyConnection.Value.GetDatabase();
+                RedisKey hashkey = RedisReferenceGet(transform, reference.Item1);
+
+                //Entity
+                RedisValue result = await rDb.HashGetAsync(hashkey, cnKeyEntity);
+
+                if (result.HasValue)
+                    return new PersistenceResponseHolder<E>() { StatusCode = 200, Content = result, IsSuccess = true, Entity = transform.Deserialize(result) };
+                else
+                    return new PersistenceResponseHolder<E>() { StatusCode = 404, IsSuccess = false };
+            }
+            catch (Exception ex)
+            {
+                return new PersistenceResponseHolder<E>() { StatusCode = 500, IsSuccess = false };
+            }
         }
     }
 

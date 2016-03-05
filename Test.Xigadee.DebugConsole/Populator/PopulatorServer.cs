@@ -9,17 +9,6 @@ using Xigadee;
 namespace Test.Xigadee
 {
     /// <summary>
-    /// This is the server Microservice.
-    /// </summary>
-    public class MicroserviceServer: Microservice
-    {
-        public MicroserviceServer()
-        {
-            ServicePointManager.DefaultConnectionLimit = 50000;
-        }
-    }
-
-    /// <summary>
     /// This populator is used to configure the server Microservice.
     /// </summary>
     internal class PopulatorServer: PopulatorConsoleBase<MicroserviceServer>
@@ -40,12 +29,17 @@ namespace Test.Xigadee
                     { ChannelId = Channels.TestB }
                 );
 
+            //Service.RegisterCommand(new PersistenceMondayMorningBlues(
+            //      Config.DocDbCredentials
+            //    , Config.DocumentDbDatabase
+            //    , o => o.Id
+            //    , versionMaker: mVersionBlues
+            //    , resourceProfile: mResourceDocDb)
+            //{
+            //    ChannelId = Channels.TestB
+            //});
             Service.RegisterCommand(new PersistenceMondayMorningBlues(
-                  Config.DocDbCredentials
-                , Config.DocDbDatabase
-                , o => o.Id
-                , versionMaker: mVersionBlues
-                , resourceProfile: mResourceDocDb)
+                  Config.RedisCacheConnection)
             {
                 ChannelId = Channels.TestB
             });
@@ -57,12 +51,18 @@ namespace Test.Xigadee
         {
             base.RegisterCommunication();
 
-            Service.RegisterListener(new AzureSBQueueListener(Channels.TestB
-                , Config.ServiceBusConnection, Channels.TestB, ListenerPartitionConfig.Init(0, 1)
+            Service.RegisterListener(new AzureSBQueueListener(
+                  Channels.TestB
+                , Config.ServiceBusConnection
+                , Channels.TestB
+                , ListenerPartitionConfig.Init(0, 1)
                 , resourceProfiles: new[] { mResourceDocDb, mResourceBlob }));
 
-            Service.RegisterSender(new AzureSBQueueSender(Channels.TestA
-                , Config.ServiceBusConnection, Channels.TestA, SenderPartitionConfig.Init(0, 1)));
+            Service.RegisterSender(new AzureSBQueueSender(
+                  Channels.TestA
+                , Config.ServiceBusConnection
+                , Channels.TestA
+                , SenderPartitionConfig.Init(0, 1)));
 
         }
     }

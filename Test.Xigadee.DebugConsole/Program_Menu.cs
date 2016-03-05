@@ -134,7 +134,7 @@ namespace Test.Xigadee
                 , new ConsoleOption("Stop client"
                     , (m, o) =>
                     {
-                        Task.Run(() => client.Stop());
+                        Task.Run(() => sClient.Stop());
                     }
                     , enabled: (m, o) => clientStatus == 2
                    )
@@ -148,14 +148,14 @@ namespace Test.Xigadee
                 , new ConsoleOption("Start server (internal stress test)"
                     , (m, o) =>
                     {
-                        Task.Run(() => InitialiseMicroserviceServerStressTest(processes));
+                        Task.Run(() => InitialiseMicroserviceServer(processes));
                     }
                     , enabled: (m, o) => serverStatus == 0
                 )
                 , new ConsoleOption("Stop server"
                     , (m, o) =>
                     {
-                        Task.Run(() => server.Stop());
+                        Task.Run(() => sServer.Stop());
                     }
                     , enabled: (m, o) => serverStatus == 2
                    )

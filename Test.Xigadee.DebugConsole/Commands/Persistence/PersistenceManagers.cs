@@ -21,40 +21,29 @@ namespace Test.Xigadee
         }
     }
 
-    public class PersistenceMondayMorningBluesMemory: PersistenceMessageHandlerRedisCache<Guid, MondayMorningBlues>
+    public class PersistenceMondayMorningBlues: PersistenceMessageHandlerRedisCache<Guid, MondayMorningBlues>
     {
-        public PersistenceMondayMorningBluesMemory(string redisConnection):base(redisConnection, (k) => k.Id)
+        public PersistenceMondayMorningBlues(string redisConnection):base(redisConnection, (k) => k.Id)
         {
 
         }
     }
 
-    public class PersistenceMondayMorningBlues: PersistenceManagerHandlerDocumentDb<Guid, MondayMorningBlues>
-    {
-        public PersistenceMondayMorningBlues(DocumentDbConnection connection, string database, Func<MondayMorningBlues, Guid> keyMaker, 
-            Func<RepositoryHolder<Guid, MondayMorningBlues>, JsonHolder<Guid>> jsonMaker = null, 
-            string databaseCollection = null, string entityName = null, 
-            VersionPolicy<MondayMorningBlues> versionMaker = null, 
-            TimeSpan? defaultTimeout = default(TimeSpan?), 
-            ShardingPolicy<Guid> shardingPolicy = null,
-            ResourceProfile resourceProfile = null) 
-            : base(connection, database, keyMaker, jsonMaker, databaseCollection, entityName, versionMaker, defaultTimeout, shardingPolicy, resourceProfile: resourceProfile)
-        {
-        }
+    //public class PersistenceMondayMorningBlues: PersistenceManagerHandlerDocumentDb<Guid, MondayMorningBlues>
+    //public class PersistenceMondayMorningBlues: PersistenceMessageHandlerRedisCache<Guid, MondayMorningBlues>
+    //{
+    //    public PersistenceMondayMorningBlues(DocumentDbConnection connection, string database, Func<MondayMorningBlues, Guid> keyMaker, 
+    //        Func<RepositoryHolder<Guid, MondayMorningBlues>, JsonHolder<Guid>> jsonMaker = null, 
+    //        string databaseCollection = null, string entityName = null, 
+    //        VersionPolicy<MondayMorningBlues> versionMaker = null, 
+    //        TimeSpan? defaultTimeout = default(TimeSpan?), 
+    //        ShardingPolicy<Guid> shardingPolicy = null,
+    //        ResourceProfile resourceProfile = null) 
+    //        : base(connection, database, keyMaker, jsonMaker, databaseCollection, entityName, versionMaker, defaultTimeout, shardingPolicy, resourceProfile: resourceProfile)
+    //    {
+    //    }
 
-        //public PersistenceMondayMorningBlues(
-        //    string account, string base64key, string database
-        //    , VersionPolicy<MondayMorningBlues> versionMaker = null
-
-        //    )
-        //    :base (DocumentDbConnection.ToConnection(account, base64key)
-        //         , database, (b) => b.ContentId
-        //         , versionMaker: versionMaker
-        //         , defaultTimeout: TimeSpan.FromSeconds(1)
-        //         , databaseCollection: "Entities")
-        //{
-        //}
-    }
+    //}
 
     public class PersistenceMondayMorningBlues2: PersistenceMessageHandlerAzureBlobStorageBase<Guid, MondayMorningBlues>
     {

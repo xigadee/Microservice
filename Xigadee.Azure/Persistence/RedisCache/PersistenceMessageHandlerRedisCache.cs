@@ -17,17 +17,23 @@ namespace Xigadee
         /// <param name="versionPolicy">The optional version and locking policy.</param>
         /// <param name="defaultTimeout">The default timeout when making requests.</param>
         /// <param name="retryPolicy">The retry policy</param>
-        protected PersistenceMessageHandlerRedisCache(string redisConnection, Func<E, K> keyMaker
+        protected PersistenceMessageHandlerRedisCache(string redisConnection
+            , Func<E, K> keyMaker
             , string entityName = null
             , VersionPolicy<E> versionPolicy = null
             , TimeSpan? defaultTimeout = null
             , PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
-            , ICacheManager<K, E> cacheManager = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
 
             )
-            : base(redisConnection, keyMaker, entityName, versionPolicy, defaultTimeout, persistenceRetryPolicy: persistenceRetryPolicy, resourceProfile: resourceProfile
+            : base( redisConnection
+                  , keyMaker
+                  , entityName: entityName
+                  , versionPolicy: versionPolicy
+                  , defaultTimeout: defaultTimeout
+                  , persistenceRetryPolicy: persistenceRetryPolicy
+                  , resourceProfile: resourceProfile
                   , referenceMaker: referenceMaker)
         {
         }
@@ -46,7 +52,8 @@ namespace Xigadee
         /// <param name="versionPolicy">The optional version and locking policy.</param>
         /// <param name="defaultTimeout">The default timeout when making requests.</param>
         /// <param name="retryPolicy">The retry policy</param>
-        protected PersistenceMessageHandlerRedisCache(string redisConnection, Func<E, K> keyMaker
+        protected PersistenceMessageHandlerRedisCache(string redisConnection
+            , Func<E, K> keyMaker
             , string entityName = null
             , VersionPolicy<E> versionPolicy = null
             , TimeSpan? defaultTimeout = null
@@ -55,37 +62,51 @@ namespace Xigadee
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
 
             )
-            : base(entityName, versionPolicy, defaultTimeout, persistenceRetryPolicy: persistenceRetryPolicy, resourceProfile: resourceProfile
-                  , cacheManager: RedisCacheManager.Default<K,E>(redisConnection), keyMaker:keyMaker, referenceMaker:referenceMaker)
+            : base( entityName: entityName
+                  , versionPolicy: versionPolicy
+                  , defaultTimeout: defaultTimeout
+                  , persistenceRetryPolicy: persistenceRetryPolicy
+                  , resourceProfile: resourceProfile
+                  , cacheManager: RedisCacheManager.Default<K,E>(redisConnection)
+                  , keyMaker:keyMaker
+                  , referenceMaker:referenceMaker)
         {
         }
         #endregion
 
         protected async override Task<IResponseHolder<E>> InternalCreate(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
-        {
-            
-            return new PersistenceResponseHolder<E>() { StatusCode = 501, IsSuccess = false };
+        {          
+            if (await mCacheManager.Write(mTransform, rq.Entity))
+                return new PersistenceResponseHolder<E> { IsSuccess = true, StatusCode = 201, Entity = rq.Entity };
+
+            return new PersistenceResponseHolder<E> { IsSuccess = false, StatusCode = 409 };
         }
 
         protected async override Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            return new PersistenceResponseHolder<E>() { StatusCode = 501, IsSuccess = false };
+            if (await mCacheManager.Write(mTransform, rq.Entity))
+                return new PersistenceResponseHolder<E> { IsSuccess = true, StatusCode = 200, Entity = rq.Entity };
+
+            return new PersistenceResponseHolder<E> { IsSuccess = false, StatusCode = 409 };
         }
 
         protected async override Task<IResponseHolder<E>> InternalRead(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            return new PersistenceResponseHolder<E>() { StatusCode = 404, IsSuccess = false };
+            return await mCacheManager.Read(mTransform, key);
         }
 
 
         protected async override Task<IResponseHolder> InternalVersion(K key, PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            return new PersistenceResponseHolder() { StatusCode = 404, IsSuccess = false};
+            return await mCacheManager.VersionRead(mTransform, key);
         }
 
         protected async override Task<IResponseHolder> InternalDelete(K key, PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            return new PersistenceResponseHolder() { StatusCode = 501, IsSuccess = false };
+            if (await mCacheManager.Delete(mTransform, key))
+                return new PersistenceResponseHolder<E> { IsSuccess = true, StatusCode = 200 };
+
+            return new PersistenceResponseHolder<E> { IsSuccess = false, StatusCode = 404 };
         }
 
     }
