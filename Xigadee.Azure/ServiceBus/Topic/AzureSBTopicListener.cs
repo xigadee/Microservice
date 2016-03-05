@@ -17,7 +17,7 @@ namespace Xigadee
     /// <summary>
     /// The Azure ServiceBus topic listener. This listener will dynamically register itself based on the filter passed.
     /// </summary>
-    [DebuggerDisplay("Subscription={SubscriptionId}|{MappingChannelId} {ChannelId}/{ConnectionName}")]
+    [DebuggerDisplay("AzureSBTopicListener: Subscription={SubscriptionId}|{MappingChannelId} {ChannelId}")]
     public class AzureSBTopicListener : AzureSBListenerBase<SubscriptionClient,BrokeredMessage>
     {
         #region Declarations

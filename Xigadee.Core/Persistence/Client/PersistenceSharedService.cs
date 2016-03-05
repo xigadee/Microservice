@@ -223,6 +223,9 @@ namespace Xigadee
             {
                 mStatistics.ActiveDecrement(0);
                 mStatistics.ErrorIncrement();
+                if (status == TaskStatus.Canceled)
+                    return new RepositoryHolder<KT, ET>(responseCode: 504, responseMessage: "Task timed out.");
+
                 Logger.LogMessage(LoggingLevel.Fatal, "RepositoryHolder - unexpected error: prs is null");
                 return new RepositoryHolder<KT, ET>(responseCode: 520, responseMessage: "RepositoryHolder - unexpected error (prs)");
             }

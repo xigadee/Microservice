@@ -1,4 +1,5 @@
-﻿using Xigadee;
+﻿using System;
+using Xigadee;
 using Xigadee;
 
 namespace Test.Xigadee
@@ -38,6 +39,23 @@ namespace Test.Xigadee
             }
 
             sMainMenu.AddInfoMessage(string.Format("{0}={1}", serv.Statistics.Name, e.StatusNew.ToString()), true);
+        }
+
+
+        private static void ServerStopRequested(object sender, StopEventArgs e)
+        {
+
+        }
+
+        private static void ServerStartRequested(object sender, StartEventArgs e)
+        {
+            e.ConfigurationOptions.ConcurrentRequestsMax = 4;
+            e.ConfigurationOptions.ConcurrentRequestsMin = 1;
+            e.ConfigurationOptions.StatusLogFrequency = TimeSpan.FromSeconds(15);
+
+            //e.ConfigurationOptions.OverloadProcessLimit = 2;
+            //if (e.ConfigurationOptions.OverloadProcessLimit == 0)
+            //    e.ConfigurationOptions.OverloadProcessLimit = 11;        
         }
     }
 }

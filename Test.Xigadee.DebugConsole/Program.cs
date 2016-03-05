@@ -27,28 +27,13 @@ namespace Test.Xigadee
             sServer = new PopulatorServer();
             sService = sServer;
 
-            sServer.Service.StartRequested += ServerStartRequested;
-            sServer.Service.StopRequested += Server_StopRequested;
             sServer.Service.StatusChanged += ServerStatusChanged;
+
+            sServer.Service.StartRequested += ServerStartRequested;
+            sServer.Service.StopRequested += ServerStopRequested;
 
             sServer.Start();
         }
 
-
-        private static void Server_StopRequested(object sender, StopEventArgs e)
-        {
-
-        }
-
-        private static void ServerStartRequested(object sender, StartEventArgs e)
-        {
-            e.ConfigurationOptions.ConcurrentRequestsMax = 4;
-            e.ConfigurationOptions.ConcurrentRequestsMin = 1;
-            e.ConfigurationOptions.StatusLogFrequency = TimeSpan.FromSeconds(15);
-
-            //e.ConfigurationOptions.OverloadProcessLimit = 2;
-            //if (e.ConfigurationOptions.OverloadProcessLimit == 0)
-            //    e.ConfigurationOptions.OverloadProcessLimit = 11;        
-        }
     }
 }

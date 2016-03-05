@@ -5,13 +5,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks; 
+using System.Threading.Tasks;
+using System.Diagnostics;
 #endregion
 namespace Xigadee
 {
     /// <summary>
     /// This is the Azure service bus sender component used to transmit messages to a remote service.
     /// </summary>
+    [DebuggerDisplay("AzureSBQueueSender: {ChannelId}")]
     public class AzureSBQueueSender : AzureSBSenderBase<QueueClient,BrokeredMessage>
     {
         #region Declarations

@@ -103,6 +103,8 @@ namespace Xigadee
         {
             mJsonMaker = jsonMaker;
             mJsonSerializerSettings=new JsonSerializerSettings { TypeNameHandling=TypeNameHandling.Auto };
+            mTransform.Serialize = (e) => JsonMaker(e).Json;
+
         }
         #endregion
 

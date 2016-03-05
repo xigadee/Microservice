@@ -39,7 +39,7 @@ namespace Test.Xigadee
             //    ChannelId = Channels.TestB
             //});
             Service.RegisterCommand(new PersistenceMondayMorningBlues(
-                  Config.RedisCacheConnection)
+                  Config.RedisCacheConnection, mVersionBlues)
             {
                 ChannelId = Channels.TestB
             });

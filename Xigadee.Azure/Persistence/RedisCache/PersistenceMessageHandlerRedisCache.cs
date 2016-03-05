@@ -74,7 +74,7 @@ namespace Xigadee
         }
         #endregion
 
-        protected async override Task<IResponseHolder<E>> InternalCreate(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
+        protected async override Task<IResponseHolder<E>> InternalCreate(PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
         {          
             if (await mCacheManager.Write(mTransform, rq.Entity))
                 return new PersistenceResponseHolder<E> { IsSuccess = true, StatusCode = 201, Entity = rq.Entity };
@@ -82,7 +82,7 @@ namespace Xigadee
             return new PersistenceResponseHolder<E> { IsSuccess = false, StatusCode = 409 };
         }
 
-        protected async override Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
+        protected async override Task<IResponseHolder<E>> InternalUpdate(PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
         {
             if (await mCacheManager.Write(mTransform, rq.Entity))
                 return new PersistenceResponseHolder<E> { IsSuccess = true, StatusCode = 200, Entity = rq.Entity };

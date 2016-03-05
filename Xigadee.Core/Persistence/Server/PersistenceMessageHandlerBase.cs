@@ -85,7 +85,7 @@ namespace Xigadee
 
             mTransform.KeyMaker = keyMaker;
             mTransform.IdMaker = idMaker; 
-            mTransform.ReferenceMaker = referenceMaker;
+            mTransform.ReferenceMaker = referenceMaker ?? ((e) => new Tuple<string, string>[] { });
             mTransform.Version = versionPolicy ?? new VersionPolicy<E>();
             mTransform.EntityName = entityName ?? typeof(E).Name.ToLowerInvariant();
             mTransform.Deserialize = entityMaker ?? EntityMaker;
@@ -531,7 +531,7 @@ namespace Xigadee
             PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            var result = await InternalCreate(rq.Key, rq, rs, prq, prs);
+            var result = await InternalCreate(rq, rs, prq, prs);
 
             if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
                 mCacheManager.Write(mTransform, result.Entity);
@@ -539,7 +539,7 @@ namespace Xigadee
             ProcessOutputEntity(rq.Key, rq, rs, result);
         }
 
-        protected virtual async Task<IResponseHolder<E>> InternalCreate(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
+        protected virtual async Task<IResponseHolder<E>> InternalCreate(PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
             return new PersistenceResponseHolder<E>() { StatusCode = 501, IsSuccess = false };
@@ -606,7 +606,7 @@ namespace Xigadee
             PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            var result = await InternalUpdate(rq.Key, rq, rs, prq, prs);
+            var result = await InternalUpdate(rq, rs, prq, prs);
 
             if (mCacheManager.IsActive && result.IsSuccess)
                 mCacheManager.Write(mTransform, result.Entity);
@@ -614,7 +614,7 @@ namespace Xigadee
             ProcessOutputEntity(rq.Key, rq, rs, result);
         }
 
-        protected virtual async Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
+        protected virtual async Task<IResponseHolder<E>> InternalUpdate(PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
             return new PersistenceResponseHolder<E>() { StatusCode = 501, IsSuccess = false};
@@ -711,7 +711,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region EntityMaker(string jsonHolder)
+        #region EntityMaker(string data)
         /// <summary>
         /// This is a simple JSON deserialization method that returns an entity from the 
         /// JSON representation from the DocumentDB repository.
@@ -749,22 +749,39 @@ namespace Xigadee
         }
         #endregion
 
-        #region ReferenceMaker(E entity)
-        /// <summary>
-        /// This method intercepts and replaces the keymaker in the function has been set in the constructor.
-        /// </summary>
-        /// <param name="entity">The entity to convert.</param>
-        /// <returns>Returns the key from the entity.</returns>
-        protected virtual IEnumerable<Tuple<string,string>> ReferenceMaker(E entity)
-        {
-            if (mTransform.ReferenceMaker == null)
-                return new Tuple<string, string>[] { };
-
-            return mTransform.ReferenceMaker(entity);
-        }
-        #endregion
-
         #region ProcessOutputEntity...
+        /// <summary>
+        /// This method sets the entity and any associated metadata in to the response.
+        /// </summary>
+        /// <param name="key">The entity key.</param>
+        /// <param name="rq">The original request.</param>
+        /// <param name="rs">The outgoing response.</param>
+        /// <param name="holderResponse">The underlying storage response.</param>
+        protected virtual void ProcessOutputEntity(E entity, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs)
+        {
+            rs.Entity = entity;
+            rs.Key = KeyMaker(rs.Entity);
+            rs.Settings.VersionId = mTransform.Version?.EntityVersionAsString(rs.Entity);
+
+            rs.KeyReference = new Tuple<string, string>(rs.Key.ToString(), rs.Settings.VersionId);
+        }
+   
+        /// <summary>
+        /// This method sets the entity and any associated metadata in to the response.
+        /// </summary>
+        /// <param name="key">The entity key.</param>
+        /// <param name="rq">The original request.</param>
+        /// <param name="rs">The outgoing response.</param>
+        /// <param name="holderResponse">The underlying storage response.</param>
+        protected virtual void ProcessOutputEntity(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, IResponseHolder<E> holderResponse)
+        {
+            rs.ResponseCode = holderResponse.StatusCode;
+
+            if (holderResponse.IsSuccess)
+                ProcessOutputEntity(holderResponse.Entity, rq, rs);
+            else
+                ProcessOutputError(key, holderResponse, rs);
+        }
         /// <summary>
         /// This method sets the entity and any associated metadata in to the response.
         /// </summary>
@@ -778,25 +795,25 @@ namespace Xigadee
             rs.ResponseCode = holderResponse.StatusCode;
 
             if (holderResponse.IsSuccess)
-            {
-                rs.Entity = EntityMaker(holderResponse.Content);
-                rs.Key = KeyMaker(rs.Entity);
-                rs.Settings.VersionId = mTransform.Version?.EntityVersionAsString(rs.Entity);
-
-                rs.KeyReference = new Tuple<string, string>(rs.Key.ToString(), rs.Settings.VersionId);
-            }
+                ProcessOutputEntity(EntityMaker(holderResponse.Content), rq, rs);
             else
-            {
-                if (holderResponse.Ex != null && !rs.IsTimeout)
-                    Logger.LogException(string.Format("Error in persistence {0}-{1}", typeof(E).Name, key), holderResponse.Ex);
-                else
-                    Logger.LogMessage(
-                        rs.IsTimeout ? LoggingLevel.Warning : LoggingLevel.Info,
-                        string.Format("Error in persistence {0}-{1}-{2}-{3}", typeof(E).Name, rs.ResponseCode, key,
-                            holderResponse.Ex != null ? holderResponse.Ex.ToString() : rs.ResponseMessage), typeof(E).Name);
-            }
+                ProcessOutputError(key, holderResponse, rs);
         }
         #endregion
+
+        protected virtual void ProcessOutputError(K key, IResponseHolder holderResponse, PersistenceRepositoryHolder<K, E> rs)
+        {
+            if (holderResponse.Ex != null && !rs.IsTimeout)
+                Logger.LogException(string.Format("Error in persistence {0}-{1}", typeof(E).Name, key), holderResponse.Ex);
+            else
+                Logger.LogMessage(
+                    rs.IsTimeout ? LoggingLevel.Warning : LoggingLevel.Info,
+                    string.Format("Error in persistence {0}-{1}-{2}-{3}", typeof(E).Name, rs.ResponseCode, key,
+                        holderResponse.Ex != null ? holderResponse.Ex.ToString() : rs.ResponseMessage), typeof(E).Name);
+
+            rs.IsTimeout = holderResponse.IsTimeout;
+        }
+
         #region ProcessOutputKey...
         /// <summary>
         /// This method processes the common output method for key based operations such as delete and version.

@@ -3,13 +3,15 @@ using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 using System;
 using System.Collections.Generic;
-using System.Threading; 
+using System.Threading;
+using System.Diagnostics;
 #endregion
 namespace Xigadee
 {
     /// <summary>
     /// This is the Azure service bus queue listener class.
     /// </summary>
+    [DebuggerDisplay("AzureSBQueueListener: {MappingChannelId} {ChannelId}")]
     public class AzureSBQueueListener : AzureSBListenerBase<QueueClient,BrokeredMessage>
     {
         #region Constructor

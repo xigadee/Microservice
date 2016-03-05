@@ -10,7 +10,7 @@ using System.Diagnostics;
 #endregion
 namespace Xigadee
 {
-    [DebuggerDisplay("{ChannelId}/{ConnectionName}")]
+    [DebuggerDisplay("AzureSBTopicSender: {ChannelId}")]
     public class AzureSBTopicSender : AzureSBSenderBase<TopicClient,BrokeredMessage>
     {
         #region Constructor

@@ -30,7 +30,7 @@ namespace Test.Xigadee
             int processes = switches.ContainsKey("processes") ? int.Parse(switches["processes"]) : Environment.ProcessorCount*4*4*2;
 
             //var testid = Guid.NewGuid();
-            var versionid = Guid.NewGuid();
+            Guid versionid = Guid.NewGuid();
             var testid = new Guid("414f06b5-7c16-403a-acc5-40d2b18f08a1");
             //var testid = Guid.NewGuid();
 
@@ -41,7 +41,8 @@ namespace Test.Xigadee
                     {
                         testid = Guid.NewGuid();
                         var result = sService.Persistence.Create(new MondayMorningBlues { Id = testid, ContentId = testid, VersionId = versionid, Message = DateTime.Now.ToString(), NotEnoughCoffee = true }, new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
-                        versionid = result.Entity.VersionId;
+                        if (result.IsSuccess)
+                            versionid = result.Entity.VersionId;
                         PersistenceLog("Create", result.IsSuccess);
                     }
                     , enabled: (m, o) => mPersistenceStatus() == 2
