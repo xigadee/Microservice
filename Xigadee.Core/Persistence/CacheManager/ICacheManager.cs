@@ -16,7 +16,6 @@ namespace Xigadee
         where K : IEquatable<K>
     {
         bool IsReadOnly { get; }
-
         bool IsActive { get; }
 
         Task<bool> Write(E entity);

@@ -7,13 +7,11 @@ using StackExchange.Redis;
 
 namespace Xigadee
 {
-    public class RedisCacheManager<K, E>: RedisCacheManager, ICacheManager<K, E>
+    public class RedisCacheManager<K, E>: CacheManagerBase<K, E>
         where K : IEquatable<K>
     {
         #region Declarations
         private string mConnection;
-
-        private EntityTransformHolder<K, E> mTransform;
 
         private Lazy<ConnectionMultiplexer> mLazyConnection;
 
@@ -22,10 +20,9 @@ namespace Xigadee
         #endregion
 
         #region Constructor
-        public RedisCacheManager(string connection, bool readOnly = true, EntityTransformHolder<K, E> transform = null)
+        public RedisCacheManager(string connection, bool readOnly = true, EntityTransformHolder<K, E> transform = null):base(readOnly)
         {
             mConnection = connection;
-            IsReadOnly = readOnly;
             mTransform = transform;
 
             mLazyConnection = new Lazy<ConnectionMultiplexer>(() =>
@@ -46,7 +43,7 @@ namespace Xigadee
         /// <summary>
         /// This property specifies that the cache can be used.
         /// </summary>
-        public bool IsActive
+        public override bool IsActive
         {
             get
             {
@@ -54,28 +51,26 @@ namespace Xigadee
             }
         }
         #endregion
-        #region IsReadOnly
-        /// <summary>
-        /// This property specifies whether the cache should support Delete, Write and VersionWrite.
-        /// </summary>
-        public bool IsReadOnly
-        {
-            get;private set;
-        }
-        #endregion
 
         protected virtual RedisKey RedisKeyGet(EntityTransformHolder<K, E> transform, K key)
         {
-            return $"entity.{transform.EntityName}.{transform.IdMaker(key)}";
+            return $"entity.{transform.EntityName}.{transform.KeySerializer(key)}";
         }
 
-        protected virtual RedisKey RedisReferenceGet(EntityTransformHolder<K, E> transform, string refType)
+        protected virtual RedisKey RedisReferenceKeyGet(EntityTransformHolder<K, E> transform, string refType)
         {
             //entityreference.{entitytype}.{keytype i.e., EMAIL, ID etc.}
             return $"entityreference.{transform.EntityName}.{refType.ToLowerInvariant()}";
         }
 
-        public async Task<IResponseHolder<E>> Read(EntityTransformHolder<K, E> transform, K key)
+        #region Read(EntityTransformHolder<K, E> transform, K key)
+        /// <summary>
+        /// Reads the entity from the cache, if it is present.
+        /// </summary>
+        /// <param name="transform">The transform.</param>
+        /// <param name="key">The entity key.</param>
+        /// <returns>Returns the response holder.</returns>
+        public override async Task<IResponseHolder<E>> Read(EntityTransformHolder<K, E> transform, K key)
         {
             if (transform == null)
                 throw new ArgumentNullException("The EntityTransformHolder cannot be null.");
@@ -88,7 +83,7 @@ namespace Xigadee
                 RedisValue result = await rDb.HashGetAsync(hashkey, cnKeyEntity);
 
                 if (result.HasValue)
-                    return new PersistenceResponseHolder<E>() { StatusCode = 200, Content = result, IsSuccess = true, Entity = transform.Deserialize(result)};
+                    return new PersistenceResponseHolder<E>() { StatusCode = 200, Content = result, IsSuccess = true, Entity = transform.EntityDeserializer(result) };
                 else
                     return new PersistenceResponseHolder<E>() { StatusCode = 404, IsSuccess = false };
             }
@@ -97,31 +92,50 @@ namespace Xigadee
                 return new PersistenceResponseHolder<E>() { StatusCode = 500, IsSuccess = false };
             }
         }
-
-        public async Task<IResponseHolder<E>> Read(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
+        #endregion
+        #region Read(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
+        /// <summary>
+        /// Reads the entity from the cache using the entity reference.
+        /// </summary>
+        /// <param name="transform">The transform.</param>
+        /// <param name="reference">The key value pair.</param>
+        /// <returns>Returns the response holder.</returns>
+        public override async Task<IResponseHolder<E>> Read(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
         {
             if (transform == null)
                 throw new ArgumentNullException("The EntityTransformHolder cannot be null.");
             try
             {
                 IDatabase rDb = mLazyConnection.Value.GetDatabase();
-                RedisKey hashkey = RedisReferenceGet(transform, reference.Item1);
+                RedisKey hashkey = RedisReferenceKeyGet(transform, reference.Item1);
 
                 //Entity
-                RedisValue result = await rDb.HashGetAsync(hashkey, cnKeyEntity);
+                RedisValue result = await rDb.HashGetAsync(hashkey, reference.Item2.ToLowerInvariant());
 
-                if (result.HasValue)
-                    return new PersistenceResponseHolder<E>() { StatusCode = 200, Content = result, IsSuccess = true, Entity = transform.Deserialize(result) };
-                else
+                if (!result.HasValue)
                     return new PersistenceResponseHolder<E>() { StatusCode = 404, IsSuccess = false };
+
+                string[] items = result.ToString().Split('|');
+
+                K key = transform.KeyDeserializer(items[1]);
+
+                return await Read(transform, key);
             }
             catch (Exception ex)
             {
                 return new PersistenceResponseHolder<E>() { StatusCode = 500, IsSuccess = false };
             }
         }
+        #endregion
 
-        public async Task<bool> Delete(EntityTransformHolder<K, E> transform, K key)
+        #region Delete(EntityTransformHolder<K, E> transform, K key)
+        /// <summary>
+        /// This method deletes from the cache.
+        /// </summary>
+        /// <param name="transform">The transform.</param>
+        /// <param name="key">The entity key.</param>
+        /// <returns>Returns the response holder.</returns>
+        public override async Task<bool> Delete(EntityTransformHolder<K, E> transform, K key)
         {
             if (transform == null)
                 throw new ArgumentNullException("The EntityTransformHolder cannot be null.");
@@ -153,21 +167,24 @@ namespace Xigadee
             }
 
             return false;
-        }
+        } 
+        #endregion
 
+        #region Write(EntityTransformHolder<K, E> transform, E entity)
         /// <summary>
         /// This method writes the entity to the redis cache.
         /// </summary>
         /// <param name="transform">The transform object.</param>
         /// <param name="entity">The entity to write.</param>
         /// <returns>Returns true if the write was successful.</returns>
-        public async Task<bool> Write(EntityTransformHolder<K, E> transform, E entity)
+        public override async Task<bool> Write(EntityTransformHolder<K, E> transform, E entity)
         {
             if (transform == null)
                 throw new ArgumentNullException("The EntityTransformHolder cannot be null.");
             try
             {
                 K key = transform.KeyMaker(entity);
+                string version = transform.Version.EntityVersionAsString(entity);
 
                 IDatabase rDb = mLazyConnection.Value.GetDatabase();
                 IBatch batch = rDb.CreateBatch();
@@ -176,13 +193,13 @@ namespace Xigadee
                 RedisKey hashkey = RedisKeyGet(transform, key);
 
                 //Entity
-                tasks.Add(batch.HashSetAsync(hashkey, cnKeyEntity, transform.Serialize(entity), when: When.Always));
+                tasks.Add(batch.HashSetAsync(hashkey, cnKeyEntity, transform.EntitySerializer(entity), when: When.Always));
                 //Version
-                tasks.Add(batch.HashSetAsync(hashkey, cnKeyVersion, transform.Version.EntityVersionAsString(entity), when: When.Always));
-                
+                tasks.Add(batch.HashSetAsync(hashkey, cnKeyVersion, version, when: When.Always));
+
                 var references = transform.ReferenceMaker(entity);
                 if (references != null)
-                    references.ForEach((r) => tasks.Add(WriteReference(batch, transform, r, key)));
+                    references.ForEach((r) => tasks.Add(WriteReference(batch, transform, r, key, version)));
 
                 batch.Execute();
 
@@ -196,17 +213,35 @@ namespace Xigadee
             }
 
             return false;
-        }
+        } 
 
-        protected virtual Task WriteReference(IBatch batch, EntityTransformHolder<K, E> transform, Tuple<string,string> reference, K key)
+        /// <summary>
+        /// This method writes out the references for the entity.
+        /// </summary>
+        /// <param name="batch">The redis batch.</param>
+        /// <param name="transform">The entity transform.</param>
+        /// <param name="reference">The reference.</param>
+        /// <param name="key">The root key.</param>
+        /// <param name="version">The entity version.</param>
+        /// <returns>Returns an async task.</returns>
+        protected virtual Task WriteReference(IBatch batch, EntityTransformHolder<K, E> transform, Tuple<string,string> reference, K key, string version)
         {
             //entityreference.{entitytype}.{keytype i.e., EMAIL, ID etc.}
-            RedisKey hashkey = RedisReferenceGet(transform, reference.Item1);
-            //Entity
-            return batch.HashSetAsync(hashkey, reference.Item2.ToLowerInvariant(), transform.IdMaker(key), when: When.Always);
-        }
+            RedisKey hashkey = RedisReferenceKeyGet(transform, reference.Item1);
 
-        public async Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, K key)
+            string combined = $"{version}|{transform.KeySerializer(key)}";
+            //Entity
+            return batch.HashSetAsync(hashkey, reference.Item2.ToLowerInvariant(), combined, when: When.Always);
+        }
+        #endregion
+
+        /// <summary>
+        /// This method reads the version from the cache.
+        /// </summary>
+        /// <param name="transform">The entity transform.</param>
+        /// <param name="key">The entity key.</param>
+        /// <returns>Returns the async task.</returns>
+        public override async Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, K key)
         {
             if (transform == null)
                 throw new ArgumentNullException("The EntityTransformHolder cannot be null.");
@@ -219,7 +254,7 @@ namespace Xigadee
                 RedisValue result = await rDb.HashGetAsync(hashkey, cnKeyVersion);
 
                 if (result.HasValue)
-                    return new PersistenceResponseHolder<E>() { StatusCode = 200, Content = result, IsSuccess = true, Entity = transform.Deserialize(result) };
+                    return new PersistenceResponseHolder<E>() { StatusCode = 200, Content = result, IsSuccess = true, VersionId = result };
                 else
                     return new PersistenceResponseHolder<E>() { StatusCode = 404, IsSuccess = false };
             }
@@ -229,7 +264,7 @@ namespace Xigadee
             }
         }
 
-        public async Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
+        public override async Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
         {
             if (transform == null)
                 throw new ArgumentNullException("The EntityTransformHolder cannot be null.");
@@ -237,13 +272,13 @@ namespace Xigadee
             try
             {
                 IDatabase rDb = mLazyConnection.Value.GetDatabase();
-                RedisKey hashkey = RedisReferenceGet(transform, reference.Item1);
+                RedisKey hashkey = RedisReferenceKeyGet(transform, reference.Item1);
 
                 //Entity
                 RedisValue result = await rDb.HashGetAsync(hashkey, cnKeyEntity);
 
                 if (result.HasValue)
-                    return new PersistenceResponseHolder<E>() { StatusCode = 200, Content = result, IsSuccess = true, Entity = transform.Deserialize(result) };
+                    return new PersistenceResponseHolder<E>() { StatusCode = 200, Content = result, IsSuccess = true, Entity = transform.EntityDeserializer(result) };
                 else
                     return new PersistenceResponseHolder<E>() { StatusCode = 404, IsSuccess = false };
             }
@@ -253,41 +288,12 @@ namespace Xigadee
             }
         }
 
-        public Task<bool> Write(E entity)
-        {
-            return Write(mTransform, entity);
-        }
-
-        public Task<bool> Delete(K key)
-        {
-            return Delete(mTransform, key);
-        }
-
-        public Task<IResponseHolder<E>> Read(K key)
-        {
-            return Read(mTransform, key);
-        }
-
-        public Task<IResponseHolder<E>> Read(Tuple<string, string> reference)
-        {
-            return Read(mTransform, reference);
-        }
-
-        public Task<IResponseHolder> VersionRead(K key)
-        {
-            return VersionRead(mTransform, key);
-        }
-
-        public Task<IResponseHolder> VersionRead(Tuple<string, string> reference)
-        {
-            return VersionRead(mTransform, reference);
-        }
     }
 
     /// <summary>
     /// This is the root cache.
     /// </summary>
-    public class RedisCacheManager
+    public class RedisCacheHelper
     {
         /// <summary>
         /// This is the static helper.

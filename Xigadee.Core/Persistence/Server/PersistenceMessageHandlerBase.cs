@@ -8,23 +8,6 @@ using System.Threading.Tasks;
 #endregion
 namespace Xigadee
 {
-    public abstract class PersistenceMessageHandlerBase<K, E>: PersistenceMessageHandlerBase<K,E, PersistenceStatistics>
-    where K : IEquatable<K>
-    {
-        #region Constructor
-        /// <summary>
-        /// This constructor specifies whether the service should be registered as a shared service
-        /// that can be called directly by other message handler and Microservice components.
-        /// </summary>
-        /// <param name="persistenceRetryPolicy"></param>
-        protected PersistenceMessageHandlerBase(PersistenceRetryPolicy persistenceRetryPolicy = null, ResourceProfile resourceProfile = null)
-            :base(persistenceRetryPolicy, resourceProfile)
-        {
-        }
-        #endregion
-    }
-
-
     /// <summary>
     /// This is the base entity provider class.
     /// </summary>
@@ -73,22 +56,30 @@ namespace Xigadee
             , VersionPolicy<E> versionPolicy = null
             , TimeSpan? defaultTimeout = null
             , Func<E, K> keyMaker = null
-            , Func<string, E> entityMaker = null
-            , Func<K, string> idMaker = null
+            , Func<string, E> entityDeserializer = null
+            , Func<E, string> entitySerializer = null
+            , Func<K, string> keySerializer = null
+            , Func<string, K> keyDeserializer = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             )
         {
             mTransform = new EntityTransformHolder<K, E>();
 
-            if (idMaker == null)
-                idMaker = (i) => i.ToString();
+            if (keySerializer == null)
+                keySerializer = (i) => i.ToString();
 
             mTransform.KeyMaker = keyMaker;
-            mTransform.IdMaker = idMaker; 
+
+            mTransform.KeySerializer = keySerializer;
+            mTransform.KeyDeserializer = keyDeserializer;
+
             mTransform.ReferenceMaker = referenceMaker ?? ((e) => new Tuple<string, string>[] { });
             mTransform.Version = versionPolicy ?? new VersionPolicy<E>();
+
             mTransform.EntityName = entityName ?? typeof(E).Name.ToLowerInvariant();
-            mTransform.Deserialize = entityMaker ?? EntityMaker;
+
+            mTransform.EntityDeserializer = entityDeserializer ?? EntityDeserialize;
+            mTransform.EntitySerializer = entitySerializer ?? EntitySerialize;
 
             mDefaultTimeout = defaultTimeout;
 
@@ -711,18 +702,31 @@ namespace Xigadee
         }
         #endregion
 
-        #region EntityMaker(string data)
+        #region EntitySerialize(E entity)
         /// <summary>
         /// This is a simple JSON deserialization method that returns an entity from the 
         /// JSON representation from the DocumentDB repository.
         /// </summary>
         /// <param name="data">The string representation of the entity..</param>
         /// <returns>The object to return.</returns>
-        protected virtual E EntityMaker(string data)
+        protected virtual string EntitySerialize(E entity)
         {
-            throw new NotImplementedException("EntityMaker is not implemented.");
+            throw new NotImplementedException("EntitySerialize is not implemented.");
         }
         #endregion
+        #region EntityDeserialize(string data)
+        /// <summary>
+        /// This is a simple JSON deserialization method that returns an entity from the 
+        /// JSON representation from the DocumentDB repository.
+        /// </summary>
+        /// <param name="data">The string representation of the entity..</param>
+        /// <returns>The object to return.</returns>
+        protected virtual E EntityDeserialize(string data)
+        {
+            throw new NotImplementedException("EntityDeserialize is not implemented.");
+        }
+        #endregion
+
         #region KeyStringMaker(K key)
         /// <summary>
         /// This is a very simple key serializer to a string representation.
@@ -795,7 +799,7 @@ namespace Xigadee
             rs.ResponseCode = holderResponse.StatusCode;
 
             if (holderResponse.IsSuccess)
-                ProcessOutputEntity(EntityMaker(holderResponse.Content), rq, rs);
+                ProcessOutputEntity(EntityDeserialize(holderResponse.Content), rq, rs);
             else
                 ProcessOutputError(key, holderResponse, rs);
         }

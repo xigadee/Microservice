@@ -98,6 +98,10 @@ namespace Xigadee
             , ResourceProfile resourceProfile = null
             , ICacheManager<K, E> cacheManager = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
+            , Func<string, E> entityDeserializer = null
+            , Func<E, string> entitySerializer = null
+            , Func<K, string> keySerializer = null
+            , Func<string, K> keyDeserializer = null
             )
             : base( entityName: entityName
                   , versionPolicy: versionMaker
@@ -108,6 +112,10 @@ namespace Xigadee
                   , keyMaker: keyMaker
                   , referenceMaker: referenceMaker
                   , jsonMaker: jsonMaker
+                  , entityDeserializer: entityDeserializer
+                  , entitySerializer: entitySerializer
+                  , keySerializer: keySerializer
+                  , keyDeserializer: keyDeserializer
                   )
         {
             mConnection = connection;
@@ -411,7 +419,7 @@ namespace Xigadee
         {
             if (holderResponse.IsSuccess)
             {
-                var entity = EntityMaker(holderResponse.Content);
+                var entity = EntityDeserialize(holderResponse.Content);
                 rq.Key = KeyMaker(entity);
                 holderResponse.VersionId = mTransform.Version?.EntityVersionAsString(entity);
             }

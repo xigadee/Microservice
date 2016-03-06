@@ -29,11 +29,11 @@ namespace Xigadee
         /// <summary>
         /// This function can be set to make the key from the entity.
         /// </summary>
-        public Func<string, E> Deserialize { get; set; }        
+        public Func<string, E> EntityDeserializer { get; set; }        
         /// <summary>
         /// This function can be set to make the key from the entity.
         /// </summary>
-        public Func<E, string> Serialize { get; set; }
+        public Func<E, string> EntitySerializer { get; set; }
         /// <summary>
         /// This function can be used to extract the references from an incoming entity to allow for caching.
         /// </summary>
@@ -41,6 +41,10 @@ namespace Xigadee
         /// <summary>
         /// This method makes a string reference from the key.
         /// </summary>
-        public Func<K, string> IdMaker { get; set; }
+        public Func<K, string> KeySerializer { get; set; }
+        /// <summary>
+        /// This method deserializes the string version of the key to the object.
+        /// </summary>
+        public Func<string, K> KeyDeserializer { get; set; }
     }
 }

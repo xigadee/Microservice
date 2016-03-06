@@ -89,8 +89,6 @@ namespace Xigadee
         }
         #endregion
 
-
-
         #region PayloadSerializer
         /// <summary>
         /// This is the requestPayload serializer used across the system.

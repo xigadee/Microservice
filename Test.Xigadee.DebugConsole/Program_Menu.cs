@@ -57,6 +57,14 @@ namespace Test.Xigadee
                     }
                     , enabled: (m, o) => mPersistenceStatus() == 2
                     )
+                , new ConsoleOption("Read entity by reference"
+                    , (m, o) =>
+                    {
+                        var result = sService.Persistence.ReadByRef("email","paul@hotmail.com", new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
+                        PersistenceLog("Read", result.IsSuccess);
+                    }
+                    , enabled: (m, o) => mPersistenceStatus() == 2
+                    )
                 , new ConsoleOption("Update entity"
                     , (m, o) =>
                     {

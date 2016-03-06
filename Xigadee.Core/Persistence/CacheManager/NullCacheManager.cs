@@ -56,7 +56,5 @@ namespace Xigadee
         {
             return false;
         }
-
-
     }
 }

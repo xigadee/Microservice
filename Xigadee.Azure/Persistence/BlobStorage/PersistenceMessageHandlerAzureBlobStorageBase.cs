@@ -15,7 +15,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class PersistenceMessageHandlerAzureBlobStorageBase<K, E> : PersistenceManagerHandlerJsonBase<K, E>
+    public class PersistenceMessageHandlerAzureBlobStorageBase<K, E> : PersistenceManagerHandlerJsonBase<K, E, PersistenceStatistics>
         where K : IEquatable<K>
     {
         #region Declarations
