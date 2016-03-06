@@ -27,6 +27,11 @@ namespace Xigadee
             }
         }
 
+        public override async Task<bool> Delete(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
+        {
+            return false;
+        }
+
         public override async Task<bool> Delete(EntityTransformHolder<K, E> transform, K key)
         {
             return false;

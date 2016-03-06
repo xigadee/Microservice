@@ -13,7 +13,8 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public abstract class PersistenceMessageHandlerBase<K,E,S> : MessageHandlerBase<S>, IPersistenceMessageHandler, IRequireSharedServices
+    public abstract class PersistenceMessageHandlerBase<K,E,S> : MessageHandlerBase<S>, 
+        IPersistenceMessageHandler, IRequireSharedServices
         where K : IEquatable<K>
         where S : PersistenceStatistics, new()
     {
@@ -619,7 +620,7 @@ namespace Xigadee
         {
             var result = await InternalDelete(rq.Key, rq, rs, prq, prs);
 
-            if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
+            if (mCacheManager.IsActive && result.IsSuccess)
                 await mCacheManager.Delete(mTransform, rq.Key);
 
             ProcessOutputKey(rq, rs, result);
@@ -637,6 +638,9 @@ namespace Xigadee
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
             var result = await InternalDeleteByRef(rq.KeyReference, rq, rs, prq, prs);
+
+            if (mCacheManager.IsActive && result.IsSuccess)
+                await mCacheManager.Delete(mTransform, mTransform.KeyDeserializer(result.Id));
 
             ProcessOutputKey(rq, rs, result);
         }
@@ -656,7 +660,8 @@ namespace Xigadee
 
             if (mCacheManager.IsActive)
                 result = await mCacheManager.VersionRead(mTransform, rq.Key);
-            else
+
+            if (result == null || !result.IsSuccess)
                 result = await InternalVersion(rq.Key, rq, rs, prq, prs);
 
             ProcessOutputKey(rq, rs, result);
@@ -678,7 +683,8 @@ namespace Xigadee
 
             if (mCacheManager.IsActive)
                 result = await mCacheManager.VersionRead(mTransform, rq.KeyReference);
-            else
+
+            if (result == null || !result.IsSuccess)
                 result = await InternalVersionByRef(rq.KeyReference, rq, rs, prq, prs);
 
             ProcessOutputKey(rq, rs, result);

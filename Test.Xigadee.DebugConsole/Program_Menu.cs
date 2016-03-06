@@ -86,6 +86,14 @@ namespace Test.Xigadee
                     }
                     , enabled: (m, o) => mPersistenceStatus() == 2
                     )
+                , new ConsoleOption("Delete entity by reference"
+                    , (m, o) =>
+                    {
+                        var result = sService.Persistence.DeleteByRef("email", "paul@hotmail.com", new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5), VersionId = versionid.ToString() }).Result;
+                        PersistenceLog("Delete", result.IsSuccess);
+                    }
+                    , enabled: (m, o) => mPersistenceStatus() == 2
+                    )
                     , new ConsoleOption("Create 100000 entities async"
                     , (m, o) =>
                     {

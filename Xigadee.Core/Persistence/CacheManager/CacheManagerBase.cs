@@ -40,6 +40,8 @@ namespace Xigadee
 
         public abstract Task<bool> Delete(EntityTransformHolder<K, E> transform, K key);
 
+        public abstract Task<bool> Delete(EntityTransformHolder<K, E> transform, Tuple<string, string> reference);
+
 
         public Task<bool> Write(E entity)
         {
@@ -49,6 +51,11 @@ namespace Xigadee
         public Task<bool> Delete(K key)
         {
             return Delete(mTransform, key);
+        }
+
+        public Task<bool> Delete(Tuple<string, string> reference)
+        {
+            return Delete(mTransform, reference);
         }
 
         public Task<IResponseHolder<E>> Read(K key)
@@ -70,5 +77,7 @@ namespace Xigadee
         {
             return VersionRead(mTransform, reference);
         }
+
+
     }
 }

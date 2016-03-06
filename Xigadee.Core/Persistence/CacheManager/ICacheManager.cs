@@ -24,6 +24,9 @@ namespace Xigadee
         Task<bool> Delete(K key);
         Task<bool> Delete(EntityTransformHolder<K, E> transform, K key);
 
+        Task<bool> Delete(Tuple<string, string> reference);
+        Task<bool> Delete(EntityTransformHolder<K, E> transform, Tuple<string, string> reference);
+
         Task<IResponseHolder<E>> Read(K key);
         Task<IResponseHolder<E>> Read(EntityTransformHolder<K, E> transform, K key);
 

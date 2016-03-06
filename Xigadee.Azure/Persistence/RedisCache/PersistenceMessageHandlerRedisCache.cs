@@ -70,6 +70,11 @@ namespace Xigadee
             return await mCacheManager.VersionRead(mTransform, key);
         }
 
+        protected async override Task<IResponseHolder> InternalVersionByRef(Tuple<string, string> reference, PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
+        {
+            return await mCacheManager.VersionRead(mTransform, reference);
+        }
+
         protected async override Task<IResponseHolder> InternalDelete(K key, PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
         {
             if (await mCacheManager.Delete(mTransform, key))
@@ -77,6 +82,16 @@ namespace Xigadee
 
             return new PersistenceResponseHolder<E> { IsSuccess = false, StatusCode = 404 };
         }
+
+        protected async override Task<IResponseHolder> InternalDeleteByRef(Tuple<string, string> reference, PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
+        {
+            if (await mCacheManager.Delete(mTransform, reference))
+                return new PersistenceResponseHolder<E> { IsSuccess = true, StatusCode = 200 };
+
+            return new PersistenceResponseHolder<E> { IsSuccess = false, StatusCode = 404 };
+        }
+
+
 
     }
 
