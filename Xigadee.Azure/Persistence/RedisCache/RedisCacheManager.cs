@@ -81,8 +81,14 @@ namespace Xigadee
             return $"entityreference.{transform.EntityName}.{refType.ToLowerInvariant()}";
         }
         #endregion
-
-        private async Task<Tuple<bool, K, string>> ResolveReference(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
+        #region RedisResolveReference(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
+        /// <summary>
+        /// This private method is used to resolve a lookup reference from the cache.
+        /// </summary>
+        /// <param name="transform">The transform.</param>
+        /// <param name="reference">The tuple type/value pair.</param>
+        /// <returns>Returns triple with the first boolean property indicating success followed by the key and the version.</returns>
+        private async Task<Tuple<bool, K, string>> RedisResolveReference(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
         {
             try
             {
@@ -107,7 +113,8 @@ namespace Xigadee
             }
 
             return new Tuple<bool, K, string>(false, default(K), null);
-        }
+        } 
+        #endregion
 
         #region Write(EntityTransformHolder<K, E> transform, E entity)
         /// <summary>
@@ -220,7 +227,7 @@ namespace Xigadee
 
             try
             {
-                var resolve = await ResolveReference(transform, reference);
+                var resolve = await RedisResolveReference(transform, reference);
 
                 if (resolve.Item1)
                     return await Read(transform, resolve.Item2);
@@ -240,7 +247,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="transform">The transform.</param>
         /// <param name="key">The entity key.</param>
-        /// <returns>Returns the response holder.</returns>
+        /// <returns>Returns true if the entity was deleted from the cache.</returns>
         public override async Task<bool> Delete(EntityTransformHolder<K, E> transform, K key)
         {
             if (transform == null)
@@ -275,7 +282,13 @@ namespace Xigadee
             return false;
         }
         #endregion
-
+        #region Delete(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
+        /// <summary>
+        /// This method resolves the reference from the cache and then deletes the entity.
+        /// </summary>
+        /// <param name="transform">The transform.</param>
+        /// <param name="reference">The key/value reference pair.</param>
+        /// <returns>Returns true if the entity was deleted from the cache.</returns>
         public override async Task<bool> Delete(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
         {
             if (transform == null)
@@ -283,7 +296,7 @@ namespace Xigadee
 
             try
             {
-                var resolve = await ResolveReference(transform, reference);
+                var resolve = await RedisResolveReference(transform, reference);
 
                 if (resolve.Item1)
                     return await Delete(transform, resolve.Item2);
@@ -293,8 +306,8 @@ namespace Xigadee
             }
 
             return false;
-        }
-
+        } 
+        #endregion
 
         #region VersionRead(EntityTransformHolder<K, E> transform, K key)
         /// <summary>
@@ -326,8 +339,13 @@ namespace Xigadee
             }
         }
         #endregion
-
-
+        #region VersionRead(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
+        /// <summary>
+        /// This method returns the reference key and version for the suple reftype/value pair.
+        /// </summary>
+        /// <param name="transform">The transform.</param>
+        /// <param name="reference">The tuple reference.</param>
+        /// <returns>Returns the response holder with a response code of 200 if successful</returns>
         public override async Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
         {
             if (transform == null)
@@ -335,7 +353,7 @@ namespace Xigadee
 
             try
             {
-                var resolve = await ResolveReference(transform, reference);
+                var resolve = await RedisResolveReference(transform, reference);
 
                 if (resolve.Item1)
                     return new PersistenceResponseHolder<E>() { StatusCode = 200, IsSuccess = true, Id = transform.KeySerializer(resolve.Item2), VersionId = resolve.Item3 };
@@ -346,7 +364,8 @@ namespace Xigadee
             {
                 return new PersistenceResponseHolder<E>() { StatusCode = 500, IsSuccess = false };
             }
-        }
+        } 
+        #endregion
 
     }
 

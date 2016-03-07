@@ -242,6 +242,9 @@ namespace Xigadee
 
                     optionVal += page * pageLength;
 
+                    if (optionVal > Options.Count)
+                        continue;
+
                     var option = Options[optionVal];
 
                     if (option.FnEnabled(this, option) && option.Action != null)

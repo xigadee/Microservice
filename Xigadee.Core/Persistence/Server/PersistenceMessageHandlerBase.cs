@@ -23,24 +23,25 @@ namespace Xigadee
         /// This is the entity transform holder.
         /// </summary>
         protected readonly EntityTransformHolder<K,E> mTransform;
-
         /// <summary>
         /// This is the default time allowed when making a call to the underlying persistence layer.
         /// </summary>
         protected readonly TimeSpan? mDefaultTimeout;
-
         /// <summary>
         /// The resource consumer 
         /// </summary>
         protected IResourceConsumer mResourceConsumer;
-
         /// <summary>
         /// Specifies the persistence retry policy
         /// </summary>
         protected readonly PersistenceRetryPolicy mPersistenceRetryPolicy;
-
+        /// <summary>
+        /// This is the resoure profile for the persistence manager.
+        /// </summary>
         protected readonly ResourceProfile mResourceProfile;
-
+        /// <summary>
+        /// This is the cache manager.
+        /// </summary>
         protected readonly ICacheManager<K, E> mCacheManager;
         #endregion
         #region Constructor

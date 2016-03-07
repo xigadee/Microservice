@@ -43,8 +43,10 @@ namespace Test.Xigadee
                         var result = sService.Persistence.Create(
                             new MondayMorningBlues { Id = testid, ContentId = testid, VersionId = versionid, Message = DateTime.Now.ToString(), NotEnoughCoffee = true, Email="paul@hotmail.com" }
                             , new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
+
                         if (result.IsSuccess)
                             versionid = result.Entity.VersionId;
+
                         PersistenceLog("Create", result.IsSuccess);
                     }
                     , enabled: (m, o) => mPersistenceStatus() == 2
@@ -94,7 +96,7 @@ namespace Test.Xigadee
                     }
                     , enabled: (m, o) => mPersistenceStatus() == 2
                     )
-                    , new ConsoleOption("Create 100000 entities async"
+                , new ConsoleOption("Create 100000 entities async"
                     , (m, o) =>
                     {
                         var batchId = Guid.NewGuid().ToString("N").ToUpperInvariant();

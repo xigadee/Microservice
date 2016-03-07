@@ -87,11 +87,13 @@ namespace Xigadee
         /// This is the target time after which if exceeded the number of concurrent tasks should be decreased.
         /// </summary>
         public TimeSpan? ProcessingTimeTaskDecrease { get; set; }
+
         public float ProcessingTimeTaskDecreasePercentage { get; set; }
         /// <summary>
         /// This is the target time after which the number of concurrent tasks should be decreased.
         /// </summary>
         public TimeSpan? ProcessingTimeTaskIncrease { get; set; }
+
         public float ProcessingTimeTaskIncreasePercentage { get; set; }
         /// <summary>
         /// This is the frequency that status log entries are generated

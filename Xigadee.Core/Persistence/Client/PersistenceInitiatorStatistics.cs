@@ -9,13 +9,13 @@ namespace Xigadee
     /// <summary>
     /// This is the statistics class used to record the status of the command.
     /// </summary>
-    public class PersistenceMessageInitiatorStatistics: MessageInitiatorStatistics
+    public class PersistenceInitiatorStatistics: MessageInitiatorStatistics
     {
         #region Constructor
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        public PersistenceMessageInitiatorStatistics() : base()
+        public PersistenceInitiatorStatistics() : base()
         {
         }
         #endregion

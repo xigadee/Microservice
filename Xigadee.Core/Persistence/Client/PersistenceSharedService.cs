@@ -14,16 +14,11 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class PersistenceSharedService<K, E>
-        : MessageInitiatorBase<MessageInitiatorRequestTracker, PersistenceSharedServiceStatistics>
-        , IRepositoryAsync<K, E>, IRequireSharedServices, IPersistenceSharedService
+    public class PersistenceSharedService<K, E>: PersistenceInitiatorBase<K, E>
+        , IRequireSharedServices, IPersistenceSharedService
         where K : IEquatable<K>
     {
         #region Declarations
-        /// <summary>
-        /// This is the internal cache manager that can be set to redirect calls to the cache. 
-        /// </summary>
-        private ICacheManager<K, E> mCacheManager;
         /// <summary>
         /// This boolean property indicates whether the service is shared.
         /// </summary>
@@ -41,9 +36,8 @@ namespace Xigadee
         /// This is the default constructor for the shared service.
         /// </summary>
         /// <param name="responseChannel">This is the internal response channel that the message will listen on.</param>
-        public PersistenceSharedService(string responseChannel = "internalpersistence", ICacheManager<K, E> cacheManager = null)
+        public PersistenceSharedService(string responseChannel = "internalpersistence", ICacheManager<K, E> cacheManager = null):base(cacheManager)
         {
-            mCacheManager = cacheManager?? new NullCacheManager<K,E>();
             mMessageType = typeof(E).Name;
             mResponseId = new MessageFilterWrapper(new ServiceMessageHeader(responseChannel, mMessageType));
             mResponseChannel = responseChannel;
@@ -90,66 +84,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region Persistence shortcuts
-        public async Task<RepositoryHolder<K, E>> Create(E entity, RepositorySettings settings = null)
-        {
-            return await TransmitInternal(EntityActions.Create, new RepositoryHolder<K, E> { Entity = entity, Settings = settings });
-        }
-
-        public async Task<RepositoryHolder<K, E>> Read(K key, RepositorySettings settings = null)
-        {
-            //if (settings.UseCache && mCacheManager.IsActive)
-            //{
-            //    var result = await mCacheManager.Read(key);
-            //    if (result.IsSuccess)
-            //    {
-            //        return new RepositoryHolder<K, E>(key, responseCode: 200, entity: result.Entity) { IsCached = true };
-            //    }
-            //}
-
-            return await TransmitInternal(EntityActions.Read, new RepositoryHolder<K, E> { Key = key, Settings = settings });
-        }
-
-        public async Task<RepositoryHolder<K, E>> ReadByRef(string refKey, string refValue, RepositorySettings settings = null)
-        {
-            //if (settings.UseCache && mCacheManager.IsActive)
-            //{
-            //    var result = await mCacheManager.Read(refKey, refValue);
-            //    if (result.IsSuccess)
-            //    {
-            //        return new RepositoryHolder<K, E>(result.k, responseCode: 200, entity: result.Entity) { IsCached = true };
-            //    }
-            //}
-
-            return await TransmitInternal(EntityActions.ReadByRef, new RepositoryHolder<K, E> { KeyReference = new Tuple<string, string>(refKey, refValue), Settings = settings });
-        }
-
-        public async Task<RepositoryHolder<K, E>> Update(E entity, RepositorySettings settings = null)
-        {
-            return await TransmitInternal(EntityActions.Update, new RepositoryHolder<K, E> { Entity = entity, Settings = settings });
-        }
-
-        public async Task<RepositoryHolder<K, Tuple<K, string>>> Delete(K key, RepositorySettings settings = null)
-        {
-            return await TransmitInternal(EntityActions.Delete, new RepositoryHolder<K, Tuple<K, string>> { Key = key, Settings = settings });
-        }
-
-        public async Task<RepositoryHolder<K, Tuple<K, string>>> DeleteByRef(string refKey, string refValue, RepositorySettings settings = null)
-        {
-            return await TransmitInternal(EntityActions.DeleteByRef, new RepositoryHolder<K, Tuple<K, string>> { KeyReference = new Tuple<string, string>(refKey, refValue), Settings = settings });
-        }
-
-        public async Task<RepositoryHolder<K, Tuple<K, string>>> Version(K key, RepositorySettings settings = null)
-        {
-            return await TransmitInternal(EntityActions.Version, new RepositoryHolder<K, Tuple<K, string>> { Key = key, Settings = settings });
-        }
-
-        public async Task<RepositoryHolder<K, Tuple<K, string>>> VersionByRef(string refKey, string refValue, RepositorySettings settings = null)
-        {
-            return await TransmitInternal(EntityActions.VersionByRef, new RepositoryHolder<K, Tuple<K, string>> { KeyReference = new Tuple<string, string>(refKey, refValue), Settings = settings });
-        }
-        #endregion
-
         #region TransmitInternal<KT, ET>(string actionType, RepositoryHolder<KT, ET> rq)
         /// <summary>
         /// This method marshals the RepositoryHolder and transmits it to the remote Microservice.
@@ -159,10 +93,10 @@ namespace Xigadee
         /// <param Name="actionType">The action type.</param>
         /// <param Name="rq">The repository holder request.</param>
         /// <returns>Returns an async task that will be signalled when the request completes or times out.</returns>
-        protected async Task<RepositoryHolder<KT, ET>> TransmitInternal<KT, ET>(string actionType, RepositoryHolder<KT, ET> rq)
-            where KT : IEquatable<K>
+        protected override async Task<RepositoryHolder<KT, ET>> TransmitInternal<KT, ET>(string actionType, RepositoryHolder<KT, ET> rq, ProcessOptions? routing = null)
         {
             mStatistics.ActiveIncrement();
+
             var payloadRq = TransmissionPayload.Create();
             var payloadsRs = new List<TransmissionPayload>();
 
@@ -198,64 +132,6 @@ namespace Xigadee
             {
             }
         }
-        #endregion
-
-        #region ProcessResponse<KT, ET>(TaskStatus status, TransmissionPayload prs, bool async)
-        /// <summary>
-        /// This method is used to process the returning message response.
-        /// </summary>
-        /// <typeparam name="KT"></typeparam>
-        /// <typeparam name="ET"></typeparam>
-        /// <param name="status"></param>
-        /// <param name="prs"></param>
-        /// <param name="async"></param>
-        /// <returns></returns>
-        protected virtual RepositoryHolder<KT, ET> ProcessResponse<KT, ET>(TaskStatus status, TransmissionPayload prs, bool async)
-        {
-            if (prs == null)
-            {
-                mStatistics.ActiveDecrement(0);
-                mStatistics.ErrorIncrement();
-                if (status == TaskStatus.Canceled)
-                    return new RepositoryHolder<KT, ET>(responseCode: 504, responseMessage: "Task timed out.");
-
-                Logger.LogMessage(LoggingLevel.Fatal, "RepositoryHolder - unexpected error: prs is null");
-                return new RepositoryHolder<KT, ET>(responseCode: 520, responseMessage: "RepositoryHolder - unexpected error (prs)");
-            }
-
-            mStatistics.ActiveDecrement(prs.Extent);
-
-            if (async)
-                return new RepositoryHolder<KT, ET>(responseCode: 202, responseMessage: "Accepted");
-
-            switch (status)
-            {
-                case TaskStatus.RanToCompletion:
-                    if (prs.MessageObject != null)
-                        return prs.MessageObject as RepositoryHolder<KT, ET>;
-
-                    if (prs.Message.Blob == null)
-                        return new RepositoryHolder<KT, ET>(responseCode: 500, responseMessage: "Unexpected response (no payload)");
-
-                    try
-                    {
-                        var response = PayloadSerializer.PayloadDeserialize<RepositoryHolder<KT, ET>>(prs);
-                        return response;
-                    }
-                    catch (Exception ex)
-                    {
-                        mStatistics.ErrorIncrement();
-                        return new RepositoryHolder<KT, ET>(responseCode: 500, responseMessage: ex.Message);
-                    }
-                case TaskStatus.Canceled:
-                    mStatistics.ErrorIncrement();
-                    return new RepositoryHolder<KT, ET>(responseCode: 408, responseMessage: "Time out");
-                default:
-                    mStatistics.ErrorIncrement();
-                    return new RepositoryHolder<KT, ET>(responseCode: 500, responseMessage: status.ToString());
-
-            }
-        } 
         #endregion
     }
 }
