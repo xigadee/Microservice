@@ -26,7 +26,7 @@ namespace Test.Xigadee
     public class PersistenceMondayMorningBlues: PersistenceMessageHandlerRedisCache<Guid, MondayMorningBlues>
     {
         public PersistenceMondayMorningBlues(string redisConnection, VersionPolicy<MondayMorningBlues> versionPolicy = null) 
-            :base(redisConnection, (k) => k.Id, versionPolicy: versionPolicy, referenceMaker: References)
+            :base(redisConnection, (k) => k.Id, (s) => new Guid(s), versionPolicy: versionPolicy, referenceMaker: References)
         {
 
         }

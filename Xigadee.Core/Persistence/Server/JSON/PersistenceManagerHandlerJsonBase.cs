@@ -71,11 +71,20 @@ namespace Xigadee
         {
             mJsonMaker = jsonMaker;
             mJsonSerializerSettings=new JsonSerializerSettings { TypeNameHandling=TypeNameHandling.Auto };
-            mTransform.EntitySerializer = (e) => JsonMaker(e).Json;
-
         }
         #endregion
 
+        #region EntitySerialize(E entity)
+        /// <summary>
+        /// This method uses the Json serializer.
+        /// </summary>
+        /// <param name="entity">The entity to serialize.</param>
+        /// <returns>Returns the JSON representation of the object.</returns>
+        protected override string EntitySerialize(E entity)
+        {
+            return JsonMaker(entity).Json;
+        } 
+        #endregion
         #region EntityMaker(string jsonHolder)
         /// <summary>
         /// This is a simple JSON deserialization method that returns an entity from the 
@@ -138,51 +147,4 @@ namespace Xigadee
         }
         #endregion
     }
-
-    public static class JsonParser<E>
-    {
-        /// <summary>
-        /// This is the standard Json serialization settings.
-        /// </summary>
-        static readonly JsonSerializerSettings mJsonSerializerSettings;
-
-        static JsonParser()
-        {
-            mJsonSerializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
-        }
-
-        public static string Serialize(E entity)
-        {
-            var jObj = JObject.Parse(JsonConvert.SerializeObject(entity, mJsonSerializerSettings));
-
-            K key = KeyMaker(entity);
-            string id = KeyStringMaker(key);
-            jObj["id"] = id;
-
-            jObj[cnJsonMetadata_EntityType.Key] = mTransform.EntityName;
-
-            //Check for version support.
-            string version = null;
-            if (mTransform.Version.SupportsVersioning)
-            {
-                version = mTransform.Version.EntityVersionAsString(entity);
-                jObj[mTransform.Version.VersionJsonMetadata.Key] = version;
-            }
-
-            return new JsonHolder<K>(key, version, jObj.ToString(), id);
-        }
-
-        public static E Deserialize(string json)
-        {
-            // Remove the document db id field prior to deserializing
-            var jObj = JObject.Parse(json);
-            jObj.Remove("id");
-
-            //JObject jobj = JObject.
-            var entity = JsonConvert.DeserializeObject<E>(jObj.ToString(Formatting.None), mJsonSerializerSettings);
-
-            return entity;
-        }
-    }
-
 }

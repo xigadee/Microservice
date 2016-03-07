@@ -584,6 +584,8 @@ namespace Xigadee
                 if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
                     mCacheManager.Write(mTransform, result.Entity);
             }
+
+            ProcessOutputEntity(rq.Key, rq, rs, result);
         }
 
         protected async virtual Task<IResponseHolder<E>> InternalReadByRef(Tuple<string, string> reference

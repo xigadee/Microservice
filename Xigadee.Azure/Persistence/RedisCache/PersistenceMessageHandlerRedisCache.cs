@@ -19,13 +19,14 @@ namespace Xigadee
         /// <param name="retryPolicy">The retry policy</param>
         protected PersistenceMessageHandlerRedisCache(string redisConnection
             , Func<E, K> keyMaker
+            , Func<string, K> keyDeserializer
             , string entityName = null
             , VersionPolicy<E> versionPolicy = null
             , TimeSpan? defaultTimeout = null
             , PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
-
+            , Func<K, string> keySerializer = null
             )
             : base( entityName: entityName
                   , versionPolicy: versionPolicy
@@ -34,7 +35,9 @@ namespace Xigadee
                   , resourceProfile: resourceProfile
                   , cacheManager: RedisCacheHelper.Default<K,E>(redisConnection)
                   , keyMaker:keyMaker
-                  , referenceMaker:referenceMaker)
+                  , referenceMaker:referenceMaker
+                  , keySerializer: keySerializer
+                  , keyDeserializer: keyDeserializer)
         {
         }
         #endregion
