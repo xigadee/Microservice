@@ -54,25 +54,58 @@ namespace Xigadee
               PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
             , ICacheManager<K, E> cacheManager = null
+            , TimeSpan? defaultTimeout = null
             , string entityName = null
             , VersionPolicy<E> versionPolicy = null
-            , TimeSpan? defaultTimeout = null
             , Func<E, K> keyMaker = null
             , Func<string, E> entityDeserializer = null
             , Func<E, string> entitySerializer = null
             , Func<K, string> keySerializer = null
             , Func<string, K> keyDeserializer = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
+            ):this(persistenceRetryPolicy, resourceProfile, cacheManager, defaultTimeout
+                , EntityTransformCreate(entityName, versionPolicy, keyMaker, entityDeserializer, entitySerializer, keySerializer, keyDeserializer, referenceMaker))
+        {
+            mDefaultTimeout = defaultTimeout;
+            mPersistenceRetryPolicy = persistenceRetryPolicy ?? new PersistenceRetryPolicy();
+            mResourceProfile = resourceProfile;
+            mCacheManager = cacheManager ?? new NullCacheManager<K, E>();
+        }
+
+        /// <summary>
+        /// This constructor specifies whether the service should be registered as a shared service
+        /// that can be called directly by other message handler and Microservice components.
+        /// </summary>
+        protected PersistenceMessageHandlerBase(
+              PersistenceRetryPolicy persistenceRetryPolicy = null
+            , ResourceProfile resourceProfile = null
+            , ICacheManager<K, E> cacheManager = null
+            , TimeSpan? defaultTimeout = null
+            , EntityTransformHolder<K, E> entityTransform = null
             )
         {
-            mTransform = new EntityTransformHolder<K, E>();
+            mTransform = entityTransform ?? new EntityTransformHolder<K, E>();
 
-            if (keySerializer == null)
-                keySerializer = (i) => i.ToString();
+            mDefaultTimeout = defaultTimeout;
+            mPersistenceRetryPolicy = persistenceRetryPolicy ?? new PersistenceRetryPolicy();
+            mResourceProfile = resourceProfile;
+            mCacheManager = cacheManager ?? new NullCacheManager<K, E>();
+        }
+        #endregion
 
-            mTransform.KeyMaker = keyMaker;
+        public static EntityTransformHolder<K, E> EntityTransformCreate(
+              string entityName = null
+            , VersionPolicy<E> versionPolicy = null
+            , Func<E, K> keyMaker = null
+            , Func<string, E> entityDeserializer = null
+            , Func<E, string> entitySerializer = null
+            , Func<K, string> keySerializer = null
+            , Func<string, K> keyDeserializer = null
+            , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null)
+        {
+            var mTransform = new EntityTransformHolder<K, E>();
 
-            mTransform.KeySerializer = keySerializer;
+            mTransform.KeySerializer = keySerializer ?? ((i) => i.ToString());
             mTransform.KeyDeserializer = keyDeserializer;
 
             mTransform.ReferenceMaker = referenceMaker ?? ((e) => new Tuple<string, string>[] { });
@@ -80,16 +113,11 @@ namespace Xigadee
 
             mTransform.EntityName = entityName ?? typeof(E).Name.ToLowerInvariant();
 
-            mTransform.EntityDeserializer = entityDeserializer ?? EntityDeserialize;
-            mTransform.EntitySerializer = entitySerializer ?? EntitySerialize;
+            mTransform.EntityDeserializer = entityDeserializer;
+            mTransform.EntitySerializer = entitySerializer;
 
-            mDefaultTimeout = defaultTimeout;
-
-            mPersistenceRetryPolicy = persistenceRetryPolicy ?? new PersistenceRetryPolicy();
-            mResourceProfile = resourceProfile;
-            mCacheManager = cacheManager ?? new NullCacheManager<K, E>();
+            return mTransform;
         }
-        #endregion
 
         #region ChannelId
         /// <summary>
