@@ -39,45 +39,36 @@ namespace Xigadee
 
                 var message = MessagePack(payload);
                 await MessageTransmit(message);
-                if (BoundaryLogger != null)
-                    BoundaryLogger.Log(BoundaryLoggerDirection.Outgoing, payload);
+                BoundaryLogger?.Log(BoundaryLoggerDirection.Outgoing, payload);
                 fail = false;
             }
             catch (NoMatchingSubscriptionException nex)
             {
                 //OK, this happens when the remote transmitting party has closed or recycled.
-                LogException(string.Format("The sender has closed: {0}", payload.Message.CorrelationServiceId), nex);
-                if (BoundaryLogger != null)
-                    BoundaryLogger.Log(BoundaryLoggerDirection.Outgoing, payload, nex);
-
+                LogException($"The sender has closed: {payload.Message.CorrelationServiceId}", nex);
+                BoundaryLogger?.Log(BoundaryLoggerDirection.Outgoing, payload, nex);
             }
             catch (TimeoutException tex)
             {
                 LogException("TimeoutException (Transmit)", tex);
                 tryAgain = true;
-                if (BoundaryLogger != null)
-                    BoundaryLogger.Log(BoundaryLoggerDirection.Outgoing, payload, tex);
-
+                BoundaryLogger?.Log(BoundaryLoggerDirection.Outgoing, payload, tex);
             }
             catch (MessagingException dex)
             {
                 //OK, something has gone wrong with the Azure fabric.
                 LogException("Messaging Exception (Transmit)", dex);
                 //Let's reinitialise the client
-                if (FabricInitialize != null)
-                {
-                    FabricInitialize();
-                    tryAgain = true;
-                }
-                else
+                if (ClientReset == null)
                     throw;
+
+                ClientReset(dex);
+                tryAgain = true;
             }
             catch (Exception ex)
             {
                 LogException("Unhandled Exception (Transmit)", ex);
-                if (BoundaryLogger != null)
-                    BoundaryLogger.Log(BoundaryLoggerDirection.Outgoing, payload, ex);
-
+                BoundaryLogger?.Log(BoundaryLoggerDirection.Outgoing, payload, ex);
                 throw;
             }
             finally
@@ -86,15 +77,8 @@ namespace Xigadee
                     mStatistics.ExceptionHitIncrement();
             }
 
-            try
-            {
-                if (tryAgain)
-                    await Transmit(payload, retry++);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            if (tryAgain)
+                await Transmit(payload, ++retry);
         }
         #endregion
 
@@ -122,38 +106,28 @@ namespace Xigadee
         public override async Task<List<TransmissionPayload>> MessagesPull(int? count, int? wait, string mappingChannel = null)
         {
             List<TransmissionPayload> batch = null;
-            Guid? batchId = null;
+            Guid? batchId;
             try
             {
-                var intBatch = await MessageReceive(count, wait);
-
-                int items = intBatch != null ? intBatch.Count() : 0;
-
-                if (BoundaryLogger != null)
-                    batchId = BoundaryLogger.BatchPoll(count ?? -1, items, mappingChannel ?? Name);
-                //string.Format("{0}/{1}@{3} [{2}]", Type, Name, mappingChannel, Priority));
-
-                batch = intBatch
-                    .Select((m) => TransmissionPayloadUnpack(m, Priority, mappingChannel, batchId))
-                    .ToList();
+                var intBatch = (await MessageReceive(count, wait))?.ToList() ?? new List<M>();
+                batchId = BoundaryLogger?.BatchPoll(count ?? -1, intBatch.Count, mappingChannel ?? Name);
+                batch = intBatch.Select(m => TransmissionPayloadUnpack(m, Priority, mappingChannel, batchId)).ToList();
             }
             catch (MessagingException dex)
             {
                 //OK, something has gone wrong with the Azure fabric.
                 LogException("Messaging Exception (Transmit)", dex);
                 //Let's reinitialise the client
-                if (FabricInitialize != null)
-                {
-                    FabricInitialize();
-                }
-                else
+                if (ClientReset == null)
                     throw;
+
+                ClientReset(dex);
+                batch = batch ?? new List<TransmissionPayload>();
             }
             catch (TimeoutException tex)
             {
                 LogException("MessagesPull (Timeout)", tex);
-                if (batch == null)
-                    batch = new List<TransmissionPayload>();
+                batch = batch ?? new List<TransmissionPayload>();
             }
 
             LastTickCount = Environment.TickCount;
@@ -179,8 +153,7 @@ namespace Xigadee
             var payload =  PayloadRegisterAndCreate(message, serviceMessage);
 
             //Get the boundary logger to log the metadata.
-            if (BoundaryLogger != null)
-                BoundaryLogger.Log(BoundaryLoggerDirection.Incoming, payload, batchId: batchId);
+            BoundaryLogger?.Log(BoundaryLoggerDirection.Incoming, payload, batchId: batchId);
 
             return payload;
         }

@@ -35,7 +35,7 @@ namespace Xigadee
 
         public async Task<RepositoryHolder<K, E>> Read(K key, RepositorySettings settings = null)
         {
-            if (settings.UseCache && mCacheManager.IsActive)
+            if ((settings?.UseCache ?? false) && mCacheManager.IsActive)
             {
                 var result = await mCacheManager.Read(key);
                 if (result.IsSuccess)
@@ -49,7 +49,7 @@ namespace Xigadee
 
         public async Task<RepositoryHolder<K, E>> ReadByRef(string refKey, string refValue, RepositorySettings settings = null)
         {
-            //if (settings.UseCache && mCacheManager.IsActive)
+            //if ((settings?.UseCache ?? false) && mCacheManager.IsActive)
             //{
             //    var result = await mCacheManager.Read(new Tuple<string,string>(refKey, refValue));
             //    if (result.IsSuccess)
