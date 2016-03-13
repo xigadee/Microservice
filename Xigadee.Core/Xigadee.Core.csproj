@@ -115,6 +115,7 @@
     <Compile Include="Persistence\CacheManager\CacheManagerBase.cs" />
     <Compile Include="Persistence\Client\PersistenceInitiatorBase.cs" />
     <Compile Include="Persistence\Client\PersistenceInitiatorStatistics.cs" />
+    <Compile Include="Persistence\Server\PersistenceCommandPolicy.cs" />
     <Compile Include="Persistence\PersistenceResponseHolder.cs" />
     <Compile Include="Persistence\CacheManager\NullCacheManager.cs" />
     <Compile Include="Persistence\Cache\EntityCacheAsyncPolicy.cs" />
@@ -157,7 +158,7 @@
     <Compile Include="Persistence\Server\Memory\CacheIntercept\CacheInterceptPolicy.cs" />
     <Compile Include="Persistence\Server\Memory\PersistenceManagerHandlerMemory.cs" />
     <Compile Include="Persistence\Policy\PersistenceRetryPolicy.cs" />
-    <Compile Include="Persistence\Server\PersistenceMessageHandlerBase.cs" />
+    <Compile Include="Persistence\Server\PersistenceCommandBase.cs" />
     <Compile Include="Persistence\Server\PersistenceRepositoryHolder.cs" />
     <Compile Include="Persistence\Client\PersistenceSharedService.cs" />
     <Compile Include="Logging\LoggingStatistics.cs" />

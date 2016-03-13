@@ -90,7 +90,7 @@ namespace Xigadee
                 //If the holder is already polling then skip
                 if (holder.IsReserved)
                     continue;
-                //If the holder is infreuqnently returning data then it will start to 
+                //If the holder is infrequently returning data then it will start to 
                 //skip poll slots to speed up retrieval for the active slots
                 if (holder.ShouldSkip())
                     continue;

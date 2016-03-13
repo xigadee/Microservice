@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class PersistenceMessageHandlerRedisCache<K,E>: PersistenceManagerHandlerJsonBase<K,E, PersistenceStatistics>
+    public class PersistenceMessageHandlerRedisCache<K,E>: PersistenceManagerHandlerJsonBase<K,E, PersistenceStatistics, PersistenceCommandPolicy>
         where K : IEquatable<K>
     {
         #region Constructor

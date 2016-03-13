@@ -9,14 +9,15 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This is the base entity provider class.
+    /// This is the base abstract persistence provider class.
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public abstract class PersistenceMessageHandlerBase<K,E,S> : MessageHandlerBase<S>, 
+    public abstract class PersistenceCommandBase<K,E,S,P> : CommandBase<S,P>, 
         IPersistenceMessageHandler, IRequireSharedServices
         where K : IEquatable<K>
         where S : PersistenceStatistics, new()
+        where P : PersistenceCommandPolicy, new()
     {
         #region Declarations
         /// <summary>
@@ -50,7 +51,7 @@ namespace Xigadee
         /// that can be called directly by other message handler and Microservice components.
         /// </summary>
         /// <param name="persistenceRetryPolicy"></param>
-        protected PersistenceMessageHandlerBase(
+        protected PersistenceCommandBase(
               PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
             , ICacheManager<K, E> cacheManager = null
@@ -63,9 +64,10 @@ namespace Xigadee
             , Func<K, string> keySerializer = null
             , Func<string, K> keyDeserializer = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
-            ):this(persistenceRetryPolicy, resourceProfile, cacheManager, defaultTimeout
-                , EntityTransformCreate(entityName, versionPolicy, keyMaker, entityDeserializer, entitySerializer, keySerializer, keyDeserializer, referenceMaker))
+            )
         {
+            mTransform = EntityTransformCreate(entityName, versionPolicy, keyMaker, entityDeserializer, entitySerializer, keySerializer, keyDeserializer, referenceMaker);
+
             mDefaultTimeout = defaultTimeout;
             mPersistenceRetryPolicy = persistenceRetryPolicy ?? new PersistenceRetryPolicy();
             mResourceProfile = resourceProfile;
@@ -76,15 +78,17 @@ namespace Xigadee
         /// This constructor specifies whether the service should be registered as a shared service
         /// that can be called directly by other message handler and Microservice components.
         /// </summary>
-        protected PersistenceMessageHandlerBase(
-              PersistenceRetryPolicy persistenceRetryPolicy = null
+        protected PersistenceCommandBase(EntityTransformHolder<K, E> entityTransform
+            , PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
             , ICacheManager<K, E> cacheManager = null
             , TimeSpan? defaultTimeout = null
-            , EntityTransformHolder<K, E> entityTransform = null
             )
         {
-            mTransform = entityTransform ?? new EntityTransformHolder<K, E>();
+            if (entityTransform == null)
+                throw new ArgumentNullException("entityTransform cannot be null");
+
+            mTransform = entityTransform;
 
             mDefaultTimeout = defaultTimeout;
             mPersistenceRetryPolicy = persistenceRetryPolicy ?? new PersistenceRetryPolicy();
@@ -93,7 +97,7 @@ namespace Xigadee
         }
         #endregion
 
-        public static EntityTransformHolder<K, E> EntityTransformCreate(
+        protected virtual EntityTransformHolder<K, E> EntityTransformCreate(
               string entityName = null
             , VersionPolicy<E> versionPolicy = null
             , Func<E, K> keyMaker = null
@@ -147,6 +151,7 @@ namespace Xigadee
             if (resourceTracker != null && mResourceProfile != null)
                 mResourceConsumer = resourceTracker.RegisterConsumer(EntityType, mResourceProfile);
         }
+
         protected override void StopInternal()
         {
             mResourceConsumer = null;
@@ -343,7 +348,8 @@ namespace Xigadee
         }
         #endregion
 
-        #region Profile
+        #region ProfileStart/ProfileEnd/ProfileRetry
+
         protected virtual Guid ProfileStart(TransmissionPayload payload)
         {
             if (mResourceConsumer == null)

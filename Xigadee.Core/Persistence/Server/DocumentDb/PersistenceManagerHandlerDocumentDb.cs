@@ -45,7 +45,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class PersistenceManagerHandlerDocumentDb<K, E, S> : PersistenceManagerHandlerJsonBase<K, E, S>
+    public class PersistenceManagerHandlerDocumentDb<K, E, S> : PersistenceManagerHandlerJsonBase<K, E, S, PersistenceCommandPolicy>
         where K : IEquatable<K>
         where S : PersistenceStatistics, new()
     {

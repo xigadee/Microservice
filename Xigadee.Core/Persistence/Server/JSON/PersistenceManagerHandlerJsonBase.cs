@@ -13,9 +13,10 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K"></typeparam>
     /// <typeparam name="E"></typeparam>
-    public abstract class PersistenceManagerHandlerJsonBase<K, E, S>: PersistenceMessageHandlerBase<K, E, S>
+    public abstract class PersistenceManagerHandlerJsonBase<K, E, S, P>: PersistenceCommandBase<K, E, S, P>
         where K : IEquatable<K>
         where S : PersistenceStatistics, new()
+        where P : PersistenceCommandPolicy, new()
     {
         #region Declarations
         /// <summary>

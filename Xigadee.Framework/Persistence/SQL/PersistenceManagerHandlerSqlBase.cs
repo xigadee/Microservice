@@ -39,7 +39,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public abstract class PersistenceManagerHandlerSqlBase<K, E, S> : PersistenceMessageHandlerBase<K, E, S>
+    public abstract class PersistenceManagerHandlerSqlBase<K, E, S> : PersistenceCommandBase<K, E, S, PersistenceCommandPolicy>
         where K : IEquatable<K>
         where S : PersistenceStatistics, new()
     {

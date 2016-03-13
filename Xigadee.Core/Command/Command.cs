@@ -20,6 +20,7 @@ namespace Xigadee
         {
         }
     }
+
     /// <summary>
     /// This command is the base implementation that allows multiple commands to be handled 
     /// within a single container.
