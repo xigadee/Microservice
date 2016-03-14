@@ -286,7 +286,7 @@ namespace Xigadee
             try
             {
                 payloads = await Client.MessagesPull(LastReserved.Value, wait, mMappingChannel);
-                payloadCount = payloads.Count;
+                payloadCount = payloads?.Count ?? 0;
             }
             catch (Exception ex)
             {

@@ -172,7 +172,7 @@ namespace Xigadee
             mScheduler.Register(async (s, cancel) => await mTelemetry.Flush()
                 , TimeSpan.FromMinutes(15), "Telemetry Flush", TimeSpan.FromSeconds(10), isInternal: true);
 
-            // Flush the accumulated telemetry 
+            // Kills any overrunning tasks
             mScheduler.Register(async (s, cancel) => await TaskTimedoutKill()
                 , TimeSpan.FromMinutes(1), "Tasks timed out kill", TimeSpan.FromSeconds(1), isInternal: true);
         }

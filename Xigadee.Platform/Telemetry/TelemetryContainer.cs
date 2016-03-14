@@ -119,9 +119,9 @@ namespace Xigadee
 
         private static void LogTelemetry(ITelemetry telemetry, MessageCounterHolder messageCounterHolder)
         {
-            telemetry.TrackMetric(string.Format("{0}-AverageDelta", messageCounterHolder.Key), messageCounterHolder.AverageDelta.TotalMilliseconds);
-            telemetry.TrackMetric(string.Format("{0}-SuccessfulMessages", messageCounterHolder.Key), messageCounterHolder.SuccessfulMessages);
-            telemetry.TrackMetric(string.Format("{0}-FailedMessages", messageCounterHolder.Key), messageCounterHolder.FailedMessages);            
+            //telemetry.TrackMetric(string.Format("{0}-AverageDelta", messageCounterHolder.Key), messageCounterHolder.AverageDelta.TotalMilliseconds);
+            //telemetry.TrackMetric(string.Format("{0}-SuccessfulMessages", messageCounterHolder.Key), messageCounterHolder.SuccessfulMessages);
+            //telemetry.TrackMetric(string.Format("{0}-FailedMessages", messageCounterHolder.Key), messageCounterHolder.FailedMessages);            
         }
     }
 }
