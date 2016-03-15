@@ -44,7 +44,16 @@ namespace Xigadee
         public static QueueDescription QueueFabricInitialize(this AzureConnection conn, string name)
         {
             if (!conn.NamespaceManager.QueueExists(name))
-                return conn.NamespaceManager.CreateQueue(QueueDescriptionGet(name));
+            {
+                try
+                {
+                    return conn.NamespaceManager.CreateQueue(QueueDescriptionGet(name));
+                }
+                catch (MessagingEntityAlreadyExistsException)
+                {
+                    // Another service created it before we did - just retrieve the one it created
+                }
+            }
 
             return conn.NamespaceManager.GetQueue(name);
         }

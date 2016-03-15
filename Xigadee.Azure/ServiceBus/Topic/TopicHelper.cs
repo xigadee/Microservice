@@ -51,7 +51,16 @@ namespace Xigadee
         public static TopicDescription TopicFabricInitialize(this AzureConnection conn, string name)
         {
             if (!conn.NamespaceManager.TopicExists(name))
-                return conn.NamespaceManager.CreateTopic(TopicDescriptionGet(name));
+            {
+                try
+                {
+                    return conn.NamespaceManager.CreateTopic(TopicDescriptionGet(name));
+                }
+                catch (MessagingEntityAlreadyExistsException)
+                {
+                    // Another service created it before we did - just retrieve the one it created
+                }
+            }
 
             return conn.NamespaceManager.GetTopic(name);
         } 
@@ -64,7 +73,16 @@ namespace Xigadee
         public static SubscriptionDescription SubscriptionFabricInitialize(this AzureConnection conn, string name, string subscriptionId, TimeSpan? autoDelete = null)
         {
             if (!conn.NamespaceManager.SubscriptionExists(name, subscriptionId))
-                return conn.NamespaceManager.CreateSubscription(SubscriptionDescriptionGet(name, subscriptionId, autoDelete));
+            {
+                try
+                {
+                    return conn.NamespaceManager.CreateSubscription(SubscriptionDescriptionGet(name, subscriptionId, autoDelete));
+                }
+                catch (MessagingEntityAlreadyExistsException)
+                {
+                    // Another service created it before we did - just retrieve the one it created
+                }
+            }
 
             return conn.NamespaceManager.GetSubscription(name, subscriptionId);
         }
