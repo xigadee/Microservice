@@ -98,7 +98,15 @@ namespace Xigadee
         }
         #endregion
 
-        #region ProcessCreate
+        private PersistenceResponseHolder<E> PersistenceResponseFormat(StorageResponseHolder result)
+        {
+            if (result.IsSuccess)
+                return new PersistenceResponseHolder<E>() { StatusCode = result.StatusCode, Content = result.Content, IsSuccess = true, Entity = mTransform.EntityDeserializer(result.Content) };
+            else
+                return new PersistenceResponseHolder<E>() { StatusCode = result.IsTimeout ? 504 : result.StatusCode, IsSuccess = false, IsTimeout = result.IsTimeout };
+        }
+
+        #region InternalCreate
         /// <summary>
         /// Create
         /// </summary>
@@ -115,13 +123,10 @@ namespace Xigadee
                 , contentType: "application/json; charset=utf-8"
                 , version: jsonHolder.Version, directory: mDirectory);
 
-            if (result.IsSuccess)
-                return new PersistenceResponseHolder<E>() { StatusCode = result.StatusCode, Content = result.Content, IsSuccess = true, Entity = mTransform.EntityDeserializer(result.Content) };
-            else
-                return new PersistenceResponseHolder<E>() { StatusCode = result.StatusCode, IsSuccess = false };
+            return PersistenceResponseFormat(result);
         }
         #endregion
-        #region ProcessRead
+        #region InternalRead
         /// <summary>
         /// Read
         /// </summary>
@@ -133,13 +138,10 @@ namespace Xigadee
         {
             var result = await mStorage.Read(mIdMaker(rq.Key), directory: mDirectory);
 
-            if (result.IsSuccess)
-                return new PersistenceResponseHolder<E>() { StatusCode = result.StatusCode, Content = result.Content, IsSuccess = true, Entity = mTransform.EntityDeserializer(result.Content) };
-            else
-                return new PersistenceResponseHolder<E>() { StatusCode = result.StatusCode, IsSuccess = false };
+            return PersistenceResponseFormat(result);
         }
         #endregion
-        #region ProcessUpdate
+        #region InternalUpdate
         /// <summary>
         /// Update
         /// </summary>
@@ -147,8 +149,7 @@ namespace Xigadee
         /// <param name="rs">The response.</param>
         /// <param name="prq">The incoming payload.</param>
         /// <param name="prs">The outgoing payload.</param>
-        protected override async Task ProcessUpdate(PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
-            TransmissionPayload prq, List<TransmissionPayload> prs)
+        protected override async Task<IResponseHolder<E>> InternalUpdate(PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
         {
             var jsonHolder = JsonMaker(rq);
             var blob = Encoding.UTF8.GetBytes(jsonHolder.Json);
@@ -157,10 +158,10 @@ namespace Xigadee
                 , contentType: "application/json; charset=utf-8"
                 , version: jsonHolder.Version, directory: mDirectory);
 
-            ProcessOutputEntity(jsonHolder.Key, rq, rs, result);
+            return PersistenceResponseFormat(result);
         }
         #endregion
-        #region ProcessDelete
+        #region InternalDelete
         /// <summary>
         /// Delete request.
         /// </summary>
@@ -168,15 +169,14 @@ namespace Xigadee
         /// <param name="rs">The response.</param>
         /// <param name="prq">The incoming payload.</param>
         /// <param name="prs">The outgoing payload.</param>
-        protected override async Task ProcessDelete(PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
-            TransmissionPayload prq, List<TransmissionPayload> prs)
+        protected override async Task<IResponseHolder> InternalDelete(K key, PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
         {
             var result = await mStorage.Delete(mIdMaker(rq.Key), directory: mDirectory);
 
-            ProcessOutputKey(rq, rs, result);
+            return PersistenceResponseFormat(result);
         }
         #endregion
-        #region ProcessVersion
+        #region InternalVersion
         /// <summary>
         /// Version.
         /// </summary>
@@ -184,64 +184,13 @@ namespace Xigadee
         /// <param name="rs">The response.</param>
         /// <param name="prq">The incoming payload.</param>
         /// <param name="prs">The outgoing payload.</param>
-        protected override async Task ProcessVersion(PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
-            TransmissionPayload prq, List<TransmissionPayload> prs)
+        protected override async Task<IResponseHolder> InternalVersion(K key, PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
         {
             var result = await mStorage.Version(mIdMaker(rq.Key), directory: mDirectory);
 
-            ProcessOutputKey(rq, rs, result);
+            return PersistenceResponseFormat(result);
         }
-        #endregion
 
-        //Unsupported
-        #region ProcessReadByRef
-        /// <summary>
-        /// Read By Reference
-        /// </summary>
-        /// <param name="rq">The request.</param>
-        /// <param name="rs">The response.</param>
-        /// <param name="prq">The incoming payload.</param>
-        /// <param name="prs">The outgoing payload.</param>
-        protected override async Task ProcessReadByRef(PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
-            TransmissionPayload prq, List<TransmissionPayload> prs)
-        {
-            rs.ResponseCode = 405;
-            rs.ResponseMessage = "Read by reference not supported";
-            return;
-        }
         #endregion
-        #region ProcessDeleteByRef
-        /// <summary>
-        /// Delete by reference request.
-        /// </summary>
-        /// <param name="rq">The request.</param>
-        /// <param name="rs">The response.</param>
-        /// <param name="prq">The incoming payload.</param>
-        /// <param name="prs">The outgoing payload.</param>
-        protected override async Task ProcessDeleteByRef(PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
-            TransmissionPayload prq, List<TransmissionPayload> prs)
-        {
-            rs.ResponseCode = 405;
-            rs.ResponseMessage = "Read by reference not supported";
-            return;
-        }
-        #endregion
-        #region ProcessVersionByRef
-        /// <summary>
-        /// Version by reference.
-        /// </summary>
-        /// <param name="rq">The request.</param>
-        /// <param name="rs">The response.</param>
-        /// <param name="prq">The incoming payload.</param>
-        /// <param name="prs">The outgoing payload.</param>
-        protected override async Task ProcessVersionByRef(PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
-            TransmissionPayload prq, List<TransmissionPayload> prs)
-        {
-            rs.ResponseCode = 405;
-            rs.ResponseMessage = "Read by reference not supported";
-            return;
-        }
-        #endregion
-
     }
 }

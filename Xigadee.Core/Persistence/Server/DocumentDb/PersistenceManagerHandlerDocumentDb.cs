@@ -125,17 +125,6 @@ namespace Xigadee
         }
         #endregion
 
-        protected virtual async Task<ResponseHolder> ResolveDocumentIdByRef(Tuple<string, string> reference, TimeSpan? timeout = null)
-        {
-            throw new NotSupportedException("ResolveDocumentIdByRef");
-        }
-
-        protected virtual K ResolveKeyFromString(string id)
-        {
-            throw new NotSupportedException("ResolveKeyFromString");
-        }
-
-
         #region StartInternal()
         /// <summary>
         /// This override creates the document db databaseId and collection if they don't already exist.
@@ -172,7 +161,7 @@ namespace Xigadee
                 return new PersistenceResponseHolder<E>() { StatusCode = result.IsTimeout ? 504 : result.StatusCode, IsSuccess = false, IsTimeout = result.IsTimeout };
         }
 
-        #region ProcessCreate
+        #region InternalCreate
         /// <summary>
         /// Create
         /// </summary>
@@ -190,8 +179,7 @@ namespace Xigadee
             return PersistenceResponseFormat(result);
         }
         #endregion
-
-        #region ProcessRead
+        #region InternalRead
         /// <summary>
         /// Read
         /// </summary>
@@ -211,7 +199,7 @@ namespace Xigadee
             return PersistenceResponseFormat(result);
         }
         #endregion
-        #region ProcessUpdate
+        #region InternalUpdate
         /// <summary>
         /// Update
         /// </summary>
@@ -237,13 +225,7 @@ namespace Xigadee
                 var currentVersionId = documentRq.Fields[mTransform.Version.VersionJsonMetadata.Key];
 
                 if (currentVersionId != mTransform.Version.EntityVersionAsString(rq.Entity))
-                {
-                    rs.ResponseCode = 409;
-                    rs.ResponseMessage = "Conflict";
-                    rs.Key = jsonHolder.Key;
-                    rs.Settings.VersionId = currentVersionId;
-                    return;
-                }
+                    return new PersistenceResponseHolder<E>() { StatusCode = 409, IsSuccess = false, IsTimeout = false, VersionId = currentVersionId};
 
                 //Set the new version id on the entity.
                 mTransform.Version.EntityVersionUpdate(rq.Entity);
@@ -259,10 +241,10 @@ namespace Xigadee
                 //mCollection.Create(documentRq.DocumentId, jsonHolder.Json, rq.Timeout).Result;
             }
 
-            ProcessOutputEntity(jsonHolder.Key, rq, rs, result);
+            return PersistenceResponseFormat(result);
         }
         #endregion
-        #region ProcessDelete
+        #region InternalDelete
         /// <summary>
         /// Delete request.
         /// </summary>
@@ -270,15 +252,28 @@ namespace Xigadee
         /// <param name="rs">The response.</param>
         /// <param name="prq">The incoming payload.</param>
         /// <param name="prs">The outgoing payload.</param>
-        protected override async Task ProcessDelete(PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, 
-            TransmissionPayload prq, List<TransmissionPayload> prs)
+
+        protected override async Task<IResponseHolder> InternalDelete(K key, PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
         {
             var documentId = await ResolveDocumentIdByKey(rq.Key, rq.Timeout);
 
-            await ProcessInternalDelete(rq.Key, documentId, rq, rs, prq, prs);
+            if (!documentId.IsSuccess)
+                return PersistenceResponseFormat(documentId);
+
+            string eTag = documentId.ETag;
+            var result = await Partition(rq.Key).Delete(documentId.DocumentId, rq.Timeout, eTag: eTag);
+
+            if (result.IsSuccess)
+            {
+                //Switch the content over so that we can return the contentId and versionId.
+                result.Content = documentId.Content;
+                result.ETag = documentId.ETag;
+            }
+
+            return PersistenceResponseFormat(result);
         }
         #endregion
-        #region ProcessVersion
+        #region InternalVersion
         /// <summary>
         /// Version.
         /// </summary>
@@ -286,68 +281,16 @@ namespace Xigadee
         /// <param name="rs">The response.</param>
         /// <param name="prq">The incoming payload.</param>
         /// <param name="prs">The outgoing payload.</param>
-        protected override async Task ProcessVersion(PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, 
-            TransmissionPayload prq, List<TransmissionPayload> prs)
+        protected override async Task<IResponseHolder> InternalVersion(K key, PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
         {
             var documentId = await ResolveDocumentIdByKey(rq.Key, rq.Timeout);
-            await ProcessInternalVersion(rq.Key, documentId, rq, rs, prq, prs);
-        }
-        #endregion
 
-        #region ProcessInternalRead
-        protected virtual async Task ProcessInternalRead(K key, ResponseHolder documentRq,
-            PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
-            TransmissionPayload prq, List<TransmissionPayload> prs)
-        {
-            if (!documentRq.IsSuccess)
-            {
-                SetDocumentRetrievalFailure(documentRq, rs);
-                return;
-            }
+            if (!documentId.IsSuccess)
+                return PersistenceResponseFormat(documentId);
 
-            var result = await Partition(key).Read(documentRq.DocumentId, rq.Timeout);
+            var result = await Partition(rq.Key).Read(documentId.DocumentId, rq.Timeout);
 
-            ProcessOutputEntity(key, rq, rs, result);
-        }
-        #endregion
-        #region ProcessInternalDelete
-        protected virtual async Task ProcessInternalDelete(K key, ResponseHolder documentRq,
-            PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
-            TransmissionPayload prq, List<TransmissionPayload> prs)
-        {
-            if (!documentRq.IsSuccess)
-            {
-                SetDocumentRetrievalFailure(documentRq, rs);
-                return;
-            }
-
-            string eTag = documentRq.ETag;
-            var result = await Partition(key).Delete(documentRq.DocumentId, rq.Timeout, eTag: eTag);
-
-            if (result.IsSuccess)
-            {
-                //Switch the content over so that we can return the contentId and versionId.
-                result.Content = documentRq.Content;
-                result.ETag = documentRq.ETag;
-            }
-
-            ProcessOutputKey(rq, rs, result);
-        }
-        #endregion
-        #region ProcessInternalVersion
-        protected virtual async Task ProcessInternalVersion(K key, ResponseHolder documentRq,
-            PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
-            TransmissionPayload prq, List<TransmissionPayload> prs)
-        {
-            if (!documentRq.IsSuccess)
-            {
-                SetDocumentRetrievalFailure(documentRq, rs);
-                return;
-            }
-
-            var result = await Partition(key).Read(documentRq.DocumentId, rq.Timeout);
-
-            ProcessOutputKey(rq, rs, result);
+            return PersistenceResponseFormat(result);
         }
         #endregion
 
@@ -386,24 +329,6 @@ namespace Xigadee
             base.ProcessOutputKey(rq,rs, holderResponse);
         }
 
-        #region SetDocumentRetrievalFailure<KT,ET>(ResponseHolder documentRq, PersistenceRepositoryHolder<KT,ET> responseHolder)
-        /// <summary>
-        /// This method sets the correct response for a document retrieval failure.
-        /// </summary>
-        /// <typeparam name="KT"></typeparam>
-        /// <typeparam name="ET"></typeparam>
-        /// <param name="documentRq"></param>
-        /// <param name="responseHolder"></param>
-        protected void SetDocumentRetrievalFailure<KT, ET>(ResponseHolderBase documentRq, PersistenceRepositoryHolder<KT, ET> responseHolder)
-        {
-            if (documentRq.IsSuccess)
-                return;
-
-            responseHolder.ResponseCode = documentRq.IsTimeout ? 504 : 404;
-            responseHolder.ResponseMessage = documentRq.IsTimeout ? "Gateway Timeout" : "Not Found";
-            responseHolder.IsTimeout = documentRq.IsTimeout;
-        }
-        #endregion
 
         #region TimeoutCorrect
 
@@ -452,7 +377,6 @@ namespace Xigadee
         }
 
         #endregion
-
         #region RetrieveEntity
         /// <summary>
         /// Retrieves an entity using the supplied read action (read or read by ref) using the persistence retry policy
