@@ -40,7 +40,8 @@ namespace Xigadee
         /// <summary>
         /// This function can be set to make the key from the entity.
         /// </summary>
-        public override Func<string, E> EntityDeserializer { get; set; }        
+        public override Func<string, E> EntityDeserializer { get; set; }
+          
         /// <summary>
         /// This function can be set to make the key from the entity.
         /// </summary>
@@ -59,7 +60,6 @@ namespace Xigadee
             var jObj = JObject.Parse(json);
             jObj.Remove("id");
 
-            //JObject jobj = JObject.
             var entity = JsonConvert.DeserializeObject<E>(jObj.ToString(Formatting.None), SerializerSettings);
 
             return entity;

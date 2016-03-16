@@ -106,8 +106,7 @@ namespace Xigadee
         /// <param name="rs">The response.</param>
         /// <param name="prq">The incoming payload.</param>
         /// <param name="prs">The outgoing payload.</param>
-        protected override async Task ProcessCreate(PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
-            TransmissionPayload prq, List<TransmissionPayload> prs)
+        protected override async Task<IResponseHolder<E>> InternalCreate(PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
         {
             var jsonHolder = JsonMaker(rq);
             var blob = Encoding.UTF8.GetBytes(jsonHolder.Json);
@@ -116,7 +115,10 @@ namespace Xigadee
                 , contentType: "application/json; charset=utf-8"
                 , version: jsonHolder.Version, directory: mDirectory);
 
-            ProcessOutputEntity(jsonHolder.Key, rq, rs, result);
+            if (result.IsSuccess)
+                return new PersistenceResponseHolder<E>() { StatusCode = result.StatusCode, Content = result.Content, IsSuccess = true, Entity = mTransform.EntityDeserializer(result.Content) };
+            else
+                return new PersistenceResponseHolder<E>() { StatusCode = result.StatusCode, IsSuccess = false };
         }
         #endregion
         #region ProcessRead
@@ -127,15 +129,16 @@ namespace Xigadee
         /// <param name="rs">The response.</param>
         /// <param name="prq">The incoming payload.</param>
         /// <param name="prs">The outgoing payload.</param>
-        protected override async Task ProcessRead(PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
-            TransmissionPayload prq, List<TransmissionPayload> prs)
+        protected override async Task<IResponseHolder<E>> InternalRead(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
         {
             var result = await mStorage.Read(mIdMaker(rq.Key), directory: mDirectory);
 
-            ProcessOutputEntity(rq.Key, rq, rs, result);
+            if (result.IsSuccess)
+                return new PersistenceResponseHolder<E>() { StatusCode = result.StatusCode, Content = result.Content, IsSuccess = true, Entity = mTransform.EntityDeserializer(result.Content) };
+            else
+                return new PersistenceResponseHolder<E>() { StatusCode = result.StatusCode, IsSuccess = false };
         }
         #endregion
-
         #region ProcessUpdate
         /// <summary>
         /// Update

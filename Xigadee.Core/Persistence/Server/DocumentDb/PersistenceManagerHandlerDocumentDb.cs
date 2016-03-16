@@ -161,8 +161,16 @@ namespace Xigadee
         {
             var collection = mShardingPolicy.Resolve(key);
             return mHolders[collection].Collection;
-        } 
+        }
         #endregion
+
+        private PersistenceResponseHolder<E> PersistenceResponseFormat(ResponseHolder result)
+        {
+            if (result.IsSuccess)
+                return new PersistenceResponseHolder<E>() { StatusCode = result.StatusCode, Content = result.Content, IsSuccess = true, Entity = mTransform.EntityDeserializer(result.Content) };
+            else
+                return new PersistenceResponseHolder<E>() { StatusCode = result.IsTimeout ? 504 : result.StatusCode, IsSuccess = false, IsTimeout = result.IsTimeout };
+        }
 
         #region ProcessCreate
         /// <summary>
@@ -172,14 +180,14 @@ namespace Xigadee
         /// <param name="rs">The response.</param>
         /// <param name="prq">The incoming payload.</param>
         /// <param name="prs">The outgoing payload.</param>
-        protected override async Task ProcessCreate(PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
+        protected async override Task<IResponseHolder<E>> InternalCreate(PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, 
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
             var jsonHolder = JsonMaker(rq);
 
             var result = await Partition(jsonHolder.Key).Create(jsonHolder.Json, rq.Timeout);
-            
-            ProcessOutputEntity(jsonHolder.Key, rq, rs, result);
+
+            return PersistenceResponseFormat(result);
         }
         #endregion
 
@@ -191,30 +199,18 @@ namespace Xigadee
         /// <param name="rs">The response.</param>
         /// <param name="prq">The incoming payload.</param>
         /// <param name="prs">The outgoing payload.</param>
-        protected override async Task ProcessRead(PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
-            TransmissionPayload prq, List<TransmissionPayload> prs)
+        protected override async Task<IResponseHolder<E>> InternalRead(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            var documentId = await ResolveDocumentIdByKey(rq.Key, rq.Timeout);
-            await ProcessInternalRead(rq.Key, documentId, rq, rs, prq, prs);
-        }
-        #endregion
-        #region ProcessReadByRef
-        /// <summary>
-        /// Read By Reference
-        /// </summary>
-        /// <param name="rq">The request.</param>
-        /// <param name="rs">The response.</param>
-        /// <param name="prq">The incoming payload.</param>
-        /// <param name="prs">The outgoing payload.</param>
-        protected override async Task ProcessReadByRef(PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
-            TransmissionPayload prq, List<TransmissionPayload> prs)
-        {
-            var documentId = await ResolveDocumentIdByRef(rq.KeyReference, rq.Timeout);
-            K key = documentId.IsSuccess? ResolveKeyFromString(documentId.Id):default(K);
-            await ProcessInternalRead(key, documentId, rq, rs, prq, prs);
-        }
-        #endregion
+            var documentRq = await ResolveDocumentIdByKey(rq.Key, rq.Timeout);
 
+            if (!documentRq.IsSuccess)
+                return PersistenceResponseFormat(documentRq);
+
+            var result = await Partition(key).Read(documentRq.DocumentId, rq.Timeout);
+
+            return PersistenceResponseFormat(result);
+        }
+        #endregion
         #region ProcessUpdate
         /// <summary>
         /// Update
@@ -223,8 +219,7 @@ namespace Xigadee
         /// <param name="rs">The response.</param>
         /// <param name="prq">The incoming payload.</param>
         /// <param name="prs">The outgoing payload.</param>
-        protected override async Task ProcessUpdate(PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, 
-            TransmissionPayload prq, List<TransmissionPayload> prs)
+        protected override async Task<IResponseHolder<E>> InternalUpdate(PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
         {
             //409 Conflict
             JsonHolder<K> jsonHolder = JsonMaker(rq);
@@ -232,10 +227,7 @@ namespace Xigadee
 
             var documentRq = await ResolveDocumentIdByKey(jsonHolder.Key, rq.Timeout);
             if (!documentRq.IsSuccess)
-            {
-                SetDocumentRetrievalFailure(documentRq, rs);
-                return;
-            }
+                return PersistenceResponseFormat(documentRq);
 
             string eTag = documentRq.ETag;
 
@@ -243,6 +235,7 @@ namespace Xigadee
             if (mTransform.Version.SupportsOptimisticLocking && documentRq.Fields.ContainsKey(mTransform.Version.VersionJsonMetadata.Key))
             {
                 var currentVersionId = documentRq.Fields[mTransform.Version.VersionJsonMetadata.Key];
+
                 if (currentVersionId != mTransform.Version.EntityVersionAsString(rq.Entity))
                 {
                     rs.ResponseCode = 409;
@@ -269,7 +262,6 @@ namespace Xigadee
             ProcessOutputEntity(jsonHolder.Key, rq, rs, result);
         }
         #endregion
-
         #region ProcessDelete
         /// <summary>
         /// Delete request.
@@ -286,23 +278,6 @@ namespace Xigadee
             await ProcessInternalDelete(rq.Key, documentId, rq, rs, prq, prs);
         }
         #endregion
-        #region ProcessDeleteByRef
-        /// <summary>
-        /// Delete by reference request.
-        /// </summary>
-        /// <param name="rq">The request.</param>
-        /// <param name="rs">The response.</param>
-        /// <param name="prq">The incoming payload.</param>
-        /// <param name="prs">The outgoing payload.</param>
-        protected override async Task ProcessDeleteByRef(PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, 
-            TransmissionPayload prq, List<TransmissionPayload> prs)
-        {
-            var documentId = await ResolveDocumentIdByRef(rq.KeyReference, rq.Timeout);
-            K key = documentId.IsSuccess ? ResolveKeyFromString(documentId.Id) : default(K);
-            await ProcessInternalDelete(key, documentId, rq, rs, prq, prs);
-        }
-        #endregion
-
         #region ProcessVersion
         /// <summary>
         /// Version.
@@ -316,22 +291,6 @@ namespace Xigadee
         {
             var documentId = await ResolveDocumentIdByKey(rq.Key, rq.Timeout);
             await ProcessInternalVersion(rq.Key, documentId, rq, rs, prq, prs);
-        }
-        #endregion
-        #region ProcessVersionByRef
-        /// <summary>
-        /// Version by reference.
-        /// </summary>
-        /// <param name="rq">The request.</param>
-        /// <param name="rs">The response.</param>
-        /// <param name="prq">The incoming payload.</param>
-        /// <param name="prs">The outgoing payload.</param>
-        protected override async Task ProcessVersionByRef(PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, 
-            TransmissionPayload prq, List<TransmissionPayload> prs)
-        {
-            var documentId = await ResolveDocumentIdByRef(rq.KeyReference, rq.Timeout);
-            K key = documentId.IsSuccess ? ResolveKeyFromString(documentId.Id) : default(K);
-            await ProcessInternalVersion(key, documentId, rq, rs, prq, prs);
         }
         #endregion
 

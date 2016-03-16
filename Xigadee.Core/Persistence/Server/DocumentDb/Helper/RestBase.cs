@@ -212,6 +212,7 @@ namespace Xigadee
                         if (long.TryParse(rs.Response.Headers.GetValues("x-ms-request-charge").FirstOrDefault(), out charge))
                             rs.ResourceCharge = charge;
                     }
+
                     //x-ms-request-charge 
                     //Ok, we will if the autowait is true and the throttle time has been set
                     if (autoWaitOnThrottle && rs.IsThrottled && rs.ThrottleSuggestedWait.HasValue)

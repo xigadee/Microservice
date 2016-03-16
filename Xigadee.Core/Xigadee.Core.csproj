@@ -62,7 +62,7 @@
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="CircuitBreaker\CircuitBreakerBase.cs" />
+    <Compile Include="Persistence\CircuitBreaker\CircuitBreakerBase.cs" />
     <Compile Include="Collections\CollectionContainer.cs" />
     <Compile Include="Command\Command.cs" />
     <Compile Include="Command\CommandTimerPoll.cs" />
