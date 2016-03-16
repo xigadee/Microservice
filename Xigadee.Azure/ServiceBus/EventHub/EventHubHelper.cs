@@ -13,10 +13,7 @@ namespace Xigadee
     {
         public static EventHubDescription EventHubDescriptionGet(string tPath)
         {
-            return new EventHubDescription(tPath)
-            {
-                
-            };
+            return new EventHubDescription(tPath);
         }
 
         /// <summary>
@@ -24,9 +21,17 @@ namespace Xigadee
         /// </summary>
         public static void EventHubFabricInitialize(this AzureConnection conn, string name)
         {
-            if (!conn.NamespaceManager.EventHubExists(name))
-                conn.NamespaceManager.CreateEventHubIfNotExists(EventHubDescriptionGet(name));
-        }
+            if (conn.NamespaceManager.EventHubExists(name))
+                return;
 
+            try
+            {
+                conn.NamespaceManager.CreateEventHubIfNotExists(EventHubDescriptionGet(name));
+            }
+            catch (MessagingEntityAlreadyExistsException)
+            {
+                // Another service created it before we did - just use that one
+            }
+        }
     }
 }
