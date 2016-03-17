@@ -5,6 +5,11 @@ using System.Threading.Tasks;
 #endregion
 namespace Xigadee
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="K"></typeparam>
+    /// <typeparam name="E"></typeparam>
     public class PersistenceManagerHandlerDocumentDb<K, E>: PersistenceManagerHandlerDocumentDb<K, E, PersistenceStatistics>
         where K : IEquatable<K>
     {
@@ -40,11 +45,13 @@ namespace Xigadee
         }
         #endregion
     }
+
     /// <summary>
     /// This is the documentDb persistence handler base.
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
+    /// <typeparam name="S">The statistics class.</typeparam>
     public class PersistenceManagerHandlerDocumentDb<K, E, S> : PersistenceManagerHandlerJsonBase<K, E, S, PersistenceCommandPolicy>
         where K : IEquatable<K>
         where S : PersistenceStatistics, new()

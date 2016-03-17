@@ -736,6 +736,14 @@ namespace Xigadee
         #endregion
 
         #region Search
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="rq"></param>
+        /// <param name="rs"></param>
+        /// <param name="prq"></param>
+        /// <param name="prs"></param>
+        /// <returns></returns>
         protected virtual async Task ProcessSearch(
             PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)

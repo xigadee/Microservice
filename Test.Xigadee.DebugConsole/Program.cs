@@ -4,7 +4,7 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    partial class Program
+    static partial class Program
     {
         static PopulatorClient sClient;
 
@@ -12,28 +12,37 @@ namespace Test.Xigadee
 
         static IPopulatorConsole sService;
 
-        static void InitialiseMicroserviceClient(int processes, bool? internalComms = null)
+        static Func<int> mPersistenceStatus = () => 0;
+
+        static int sSlotCount;
+
+        static void Main(string[] args)
         {
-            sClient = new PopulatorClient();
-            sService = sClient;
+            var id = new Guid("5ac0802f-7768-433c-bc54-975940964363");
+            var value = id.ToByteArray();
+            int push = (value[0] >> 6) - 1;
 
-            sClient.Service.StatusChanged += ClientStatusChanged;
+            var switches = args.CommandArgsParse();
 
-            sClient.Start();
+            sState = new PersistenceState();
+
+            sSlotCount = switches.ContainsKey("processes") ? int.Parse(switches["processes"]) : Environment.ProcessorCount * 4 * 4 * 2;
+
+            //var testid = Guid.NewGuid();
+            sState.Versionid = Guid.NewGuid();
+            sState.Testid = new Guid("414f06b5-7c16-403a-acc5-40d2b18f08a1");
+            //var testid = Guid.NewGuid();
+
+            sMainMenu.Show(args, 9);
         }
 
-        static void InitialiseMicroserviceServer(int processes)
+        static PersistenceState sState;
+
+        class PersistenceState
         {
-            sServer = new PopulatorServer();
-            sService = sServer;
+            public Guid Versionid;
+            public Guid Testid;
 
-            sServer.Service.StatusChanged += ServerStatusChanged;
-
-            sServer.Service.StartRequested += ServerStartRequested;
-            sServer.Service.StopRequested += ServerStopRequested;
-
-            sServer.Start();
         }
-
     }
 }

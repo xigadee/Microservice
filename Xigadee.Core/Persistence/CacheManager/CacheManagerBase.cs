@@ -36,16 +36,16 @@ namespace Xigadee
 
         public abstract Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, K key);
 
-        public abstract Task<bool> Write(EntityTransformHolder<K, E> transform, E entity);
+        public abstract Task<bool> Write(EntityTransformHolder<K, E> transform, E entity, TimeSpan? expiry = null);
 
         public abstract Task<bool> Delete(EntityTransformHolder<K, E> transform, K key);
 
         public abstract Task<bool> Delete(EntityTransformHolder<K, E> transform, Tuple<string, string> reference);
 
 
-        public Task<bool> Write(E entity)
+        public Task<bool> Write(E entity, TimeSpan? expiry = null)
         {
-            return Write(mTransform, entity);
+            return Write(mTransform, entity, expiry);
         }
 
         public Task<bool> Delete(K key)
