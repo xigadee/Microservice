@@ -172,8 +172,15 @@ namespace Xigadee
         /// Gets or sets the status description.
         /// </summary>
         [DataMember]
-        public string StatusDescription { get; set; } 
+        public string StatusDescription { get; set; }
         #endregion
+
+        #region FabricDeliveryCount
+        /// <summary>
+        /// Gets or sets the time stamp.
+        /// </summary>
+        public int FabricDeliveryCount { get; set; }
+        #endregion        
 
         #region ToString()
         /// <summary>
