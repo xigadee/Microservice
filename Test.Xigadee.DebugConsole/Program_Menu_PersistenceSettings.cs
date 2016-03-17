@@ -8,7 +8,7 @@ namespace Test.Xigadee
     {
 
         static ConsoleMenu sPersistenceMenu = new ConsoleMenu(
-                "Xigadee Microservice Persistence options"
+                "Persistence store options"
                 , new ConsoleOption("Sql based"
                 , (m, o) =>
                 {

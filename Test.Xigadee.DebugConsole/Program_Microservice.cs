@@ -6,7 +6,7 @@ namespace Test.Xigadee
 {
     static partial class Program
     {
-        static void InitialiseMicroserviceClient(bool? internalComms = null)
+        static void InitialiseMicroserviceClient()
         {
             sClient = new PopulatorClient();
             sService = sClient;

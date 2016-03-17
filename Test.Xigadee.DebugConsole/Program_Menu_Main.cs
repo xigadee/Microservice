@@ -8,21 +8,7 @@ namespace Test.Xigadee
     {
         static ConsoleMenu sMainMenu = new ConsoleMenu(
                 "Xigadee Microservice Scrathpad Test Console"
-                , new ConsoleOption("Start client (internal)"
-                    , (m, o) =>
-                    {
-                        Task.Run(() => InitialiseMicroserviceClient(false));
-                    }
-                    , enabled: (m, o) => clientStatus == 0
-                )
-                , new ConsoleOption("Start client (external)"
-                    , (m, o) =>
-                    {
-                        Task.Run(() => InitialiseMicroserviceClient(true));
-                    }
-                    , enabled: (m, o) => clientStatus == 0
-                )
-                , new ConsoleOption("Start client (internal and external)"
+                , new ConsoleOption("Start client"
                     , (m, o) =>
                     {
                         Task.Run(() => InitialiseMicroserviceClient());
@@ -36,12 +22,12 @@ namespace Test.Xigadee
                     }
                     , enabled: (m, o) => clientStatus == 2
                    )
-                , new ConsoleOption("Set Persistence options"
+                , new ConsoleOption("Set Persistence storage options"
                     , (m, o) =>
                     {
                     }
                     , enabled: (m, o) => serverStatus == 0
-                    , childMenu: sPersistenceMenu
+                    , childMenu: sPersistenceSettingsMenu
                 )
                 , new ConsoleOption("Start server"
                     , (m, o) =>
@@ -58,19 +44,19 @@ namespace Test.Xigadee
                     , enabled: (m, o) => serverStatus == 2
                    )
                 , new ConsoleOption("Client Persistence methods"
-                , (m, o) =>
-                {
-                    mPersistenceStatus = () => clientStatus;
-                }
-                , childMenu: sPersistenceMenu
-                , enabled: (m, o) => clientStatus == 2)
+                    , (m, o) =>
+                    {
+                        mPersistenceStatus = () => clientStatus;
+                    }
+                    , childMenu: sPersistenceMenu
+                    , enabled: (m, o) => clientStatus == 2)
                 , new ConsoleOption("Server Shared Service Persistence methods"
-                , (m, o) =>
-                {
-                    mPersistenceStatus = () => serverStatus;
-                }
-                , childMenu: sPersistenceMenu
-                , enabled: (m, o) => serverStatus == 2)
+                    , (m, o) =>
+                    {
+                        mPersistenceStatus = () => serverStatus;
+                    }
+                    , childMenu: sPersistenceMenu
+                    , enabled: (m, o) => serverStatus == 2)
                 );
     }
 }
