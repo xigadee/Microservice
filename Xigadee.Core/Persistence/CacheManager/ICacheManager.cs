@@ -18,8 +18,8 @@ namespace Xigadee
         bool IsReadOnly { get; }
         bool IsActive { get; }
 
-        Task<bool> Write(E entity);
-        Task<bool> Write(EntityTransformHolder<K, E> transform, E entity);
+        Task<bool> Write(E entity, TimeSpan? expiry = null);
+        Task<bool> Write(EntityTransformHolder<K, E> transform, E entity, TimeSpan? expiry = null);
 
         Task<bool> Delete(K key);
         Task<bool> Delete(EntityTransformHolder<K, E> transform, K key);

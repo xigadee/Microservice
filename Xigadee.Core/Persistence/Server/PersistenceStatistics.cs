@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class PersistenceStatistics: MessageInitiatorStatistics
+    public class PersistenceStatistics: CommandStatistics
     {
         public override string Name
         {

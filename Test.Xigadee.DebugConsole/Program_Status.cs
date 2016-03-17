@@ -1,15 +1,22 @@
 ﻿using System;
+using System.Diagnostics;
 using Xigadee;
 using Xigadee;
 
 namespace Test.Xigadee
 {
-    partial class Program
+    static partial class Program
     {
 
         static int serverStatus = 0;
 
         static int clientStatus = 0;
+
+        static void PersistenceLog(string Action, bool success)
+        {
+            sPersistenceMenu.AddInfoMessage(string.Format("{0} {1}", Action, success ? "OK" : "Fail")
+                , true, success ? EventLogEntryType.Information : EventLogEntryType.Error);
+        }
 
         static void ServerStatusChanged(object sender, StatusChangedEventArgs e)
         {

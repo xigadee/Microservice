@@ -46,7 +46,6 @@ namespace Test.Xigadee
             }
         }
 
-
         public string DocumentDbName => PlatformOrConfigCache("DocumentDbName");
 
         public string DocumentDbKey => PlatformOrConfigCache("DocumentDbKey");

@@ -57,7 +57,7 @@ namespace Xigadee
             return new PersistenceResponseHolder { IsSuccess = false, StatusCode = 404 };
         }
 
-        public override async Task<bool> Write(EntityTransformHolder<K, E> transform, E entity)
+        public override async Task<bool> Write(EntityTransformHolder<K, E> transform, E entity, TimeSpan? expiry = null)
         {
             return false;
         }

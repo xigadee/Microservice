@@ -51,10 +51,11 @@ namespace Xigadee
         {
             //if ((settings?.UseCache ?? false) && mCacheManager.IsActive)
             //{
-            //    var result = await mCacheManager.Read(new Tuple<string,string>(refKey, refValue));
+            //    var result = await mCacheManager.Read(new Tuple<string, string>(refKey, refValue));
+
             //    if (result.IsSuccess)
             //    {
-            //        return new RepositoryHolder<K, E>(result.k, responseCode: 200, entity: result.Entity) { IsCached = true };
+            //        return new RepositoryHolder<K, E>(result.Entity, responseCode: 200, entity: result.Entity) { IsCached = true };
             //    }
             //}
 

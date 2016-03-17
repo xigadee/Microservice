@@ -113,17 +113,17 @@ namespace Xigadee
             }
 
             return new Tuple<bool, K, string>(false, default(K), null);
-        } 
+        }
         #endregion
 
-        #region Write(EntityTransformHolder<K, E> transform, E entity)
+        #region Write(EntityTransformHolder<K, E> transform, E entity, TimeSpan? expiry = null)
         /// <summary>
         /// This method writes the entity to the redis cache.
         /// </summary>
         /// <param name="transform">The transform holder.</param>
         /// <param name="entity">The entity to write.</param>
         /// <returns>Returns true if the write was successful.</returns>
-        public override async Task<bool> Write(EntityTransformHolder<K, E> transform, E entity)
+        public override async Task<bool> Write(EntityTransformHolder<K, E> transform, E entity, TimeSpan? expiry = null)
         {
             if (transform == null)
                 throw new ArgumentNullException("The EntityTransformHolder cannot be null.");
