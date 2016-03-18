@@ -21,11 +21,9 @@ namespace Test.Xigadee
                         Task.Run(() => sClient.Stop());
                     }
                     , enabled: (m, o) => clientStatus == 2
-                   )
+                )
                 , new ConsoleOption("Set Persistence storage options"
-                    , (m, o) =>
-                    {
-                    }
+                    , (m, o) =>{}
                     , enabled: (m, o) => serverStatus == 0
                     , childMenu: sPersistenceSettingsMenu
                 )
@@ -42,21 +40,23 @@ namespace Test.Xigadee
                         Task.Run(() => sServer.Stop());
                     }
                     , enabled: (m, o) => serverStatus == 2
-                   )
+                )
                 , new ConsoleOption("Client Persistence methods"
                     , (m, o) =>
                     {
                         mPersistenceStatus = () => clientStatus;
                     }
                     , childMenu: sPersistenceMenu
-                    , enabled: (m, o) => clientStatus == 2)
+                    , enabled: (m, o) => clientStatus == 2
+                )
                 , new ConsoleOption("Server Shared Service Persistence methods"
                     , (m, o) =>
                     {
                         mPersistenceStatus = () => serverStatus;
                     }
                     , childMenu: sPersistenceMenu
-                    , enabled: (m, o) => serverStatus == 2)
-                );
+                    , enabled: (m, o) => serverStatus == 2
+                )
+            );
     }
 }
