@@ -9,6 +9,7 @@ namespace Test.Xigadee
 {
     internal abstract class PopulatorConsoleBase<M>: PopulatorBase<M, ConfigConsole>, IPopulatorConsole where M : Microservice, new()
     {
+        public int Status { get; set; } = 0;
 
         public override void Start()
         {

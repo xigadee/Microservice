@@ -1,30 +1,39 @@
 ﻿#region using
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 #endregion
 namespace Xigadee
 {
+    #region CommandBase
+    /// <summary>
+    /// This is the standard command base constructor.
+    /// </summary>
     public abstract class CommandBase: CommandBase<CommandStatistics, CommandPolicy>
     {
         public CommandBase(CommandPolicy policy = null) : base(policy)
         {
         }
     }
-
+    #endregion
+    #region CommandBase<S>
+    /// <summary>
+    /// This is the extended command constructor that allows for custom statistics.
+    /// </summary>
+    /// <typeparam name="S">The statistics class type.</typeparam>
     public abstract class CommandBase<S>: CommandBase<S, CommandPolicy>
         where S : CommandStatistics, new()
     {
         public CommandBase(CommandPolicy policy = null) : base(policy)
         {
         }
-    }
+    } 
+    #endregion
 
     /// <summary>
-    /// This command is the base implementation that allows multiple commands to be handled 
-    /// within a single container.
+    /// This is the default custom command class that allows for full customization in policy and statistics.
     /// </summary>
+    /// <typeparam name="S">The statistics class type.</typeparam>
+    /// <typeparam name="P">The customer command policy.</typeparam>
     public abstract partial class CommandBase<S,P>: ServiceBase<S>, ICommand
         where S : CommandStatistics, new()
         where P : CommandPolicy, new()

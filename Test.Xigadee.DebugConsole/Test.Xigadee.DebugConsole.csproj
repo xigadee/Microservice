@@ -90,30 +90,34 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Commands\Jobs\DoNothingJob.cs" />
-    <Compile Include="Commands\Jobs\DelayProcessingJob.cs" />
-    <Compile Include="Commands\Jobs\TestMasterJob2.cs" />
+    <Compile Include="Jobs\DoNothingJob.cs" />
+    <Compile Include="Jobs\DelayProcessingJob.cs" />
+    <Compile Include="Jobs\TestMasterJob2.cs" />
     <Compile Include="Channels.cs" />
+    <Compile Include="Persistence\PersistenceSqlMondayMorningBlues.cs" />
+    <Compile Include="Persistence\PersistenceRedisMondayMorningBlues.cs" />
+    <Compile Include="Persistence\PersistenceBlobMondayMorningBlues.cs" />
+    <Compile Include="Persistence\PersistenceDocDbMondayMorningBlues.cs" />
     <Compile Include="Populator\ConfigConsole.cs" />
     <Compile Include="Populator\IPopulatorConsole.cs" />
     <Compile Include="Microservice\MicroserviceClient.cs" />
     <Compile Include="Microservice\MicroserviceServer.cs" />
     <Compile Include="Populator\PopulatorConsoleBase.cs" />
-    <Compile Include="Commands\Persistence\Entities\Blah.cs" />
-    <Compile Include="Commands\Persistence\Entities\Blah2.cs" />
-    <Compile Include="Commands\Persistence\Entities\ComplexKey.cs" />
-    <Compile Include="Commands\Persistence\Entities\MondayMorningBlues.cs" />
-    <Compile Include="Commands\Persistence\PersistenceManagers.cs" />
+    <Compile Include="Entities\Blah.cs" />
+    <Compile Include="Entities\Blah2.cs" />
+    <Compile Include="Entities\ComplexKey.cs" />
+    <Compile Include="Entities\MondayMorningBlues.cs" />
     <Compile Include="Populator\PopulatorServer.cs" />
     <Compile Include="Populator\PopulatorClient.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Program_Context.cs" />
     <Compile Include="Program_Menu_Main.cs" />
     <Compile Include="Program_Menu_Persistence.cs" />
     <Compile Include="Program_Menu_PersistenceSettings.cs" />
     <Compile Include="Program_Microservice.cs" />
     <Compile Include="Program_Status.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Commands\Jobs\TestMasterJob.cs" />
+    <Compile Include="Jobs\TestMasterJob.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

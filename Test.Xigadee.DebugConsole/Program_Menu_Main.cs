@@ -6,57 +6,60 @@ namespace Test.Xigadee
 {
     static partial class Program
     {
-        static ConsoleMenu sMainMenu = new ConsoleMenu(
+        static Lazy<ConsoleMenu> sMainMenu = new Lazy<ConsoleMenu>(
+            () => new ConsoleMenu(
                 "Xigadee Microservice Scrathpad Test Console"
                 , new ConsoleOption("Start client"
                     , (m, o) =>
                     {
                         Task.Run(() => InitialiseMicroserviceClient());
                     }
-                    , enabled: (m, o) => clientStatus == 0
+                    , enabled: (m, o) => sContext.Client.Status == 0
                 )
                 , new ConsoleOption("Stop client"
                     , (m, o) =>
                     {
-                        Task.Run(() => sClient.Stop());
+                        Task.Run(() => sContext.Client.Stop());
                     }
-                    , enabled: (m, o) => clientStatus == 2
+                    , enabled: (m, o) => sContext.Client.Status == 2
                 )
                 , new ConsoleOption("Set Persistence storage options"
-                    , (m, o) =>{}
-                    , enabled: (m, o) => serverStatus == 0
-                    , childMenu: sPersistenceSettingsMenu
+                    , (m, o) =>
+                    {
+                    }
+                    , enabled: (m, o) => sContext.Server.Status == 0
+                    , childMenu: sPersistenceSettingsMenu.Value
                 )
                 , new ConsoleOption("Start server"
                     , (m, o) =>
                     {
                         Task.Run(() => InitialiseMicroserviceServer());
                     }
-                    , enabled: (m, o) => serverStatus == 0
+                    , enabled: (m, o) => sContext.Server.Status == 0
                 )
                 , new ConsoleOption("Stop server"
                     , (m, o) =>
                     {
-                        Task.Run(() => sServer.Stop());
+                        Task.Run(() => sContext.Server.Stop());
                     }
-                    , enabled: (m, o) => serverStatus == 2
+                    , enabled: (m, o) => sContext.Server.Status == 2
                 )
                 , new ConsoleOption("Client Persistence methods"
                     , (m, o) =>
                     {
-                        mPersistenceStatus = () => clientStatus;
+                        sContext.PersistenceStatus = () => sContext.Client.Status;
                     }
-                    , childMenu: sPersistenceMenu
-                    , enabled: (m, o) => clientStatus == 2
+                    , childMenu: sPersistenceMenu.Value
+                    , enabled: (m, o) => sContext.Client.Status == 2
                 )
                 , new ConsoleOption("Server Shared Service Persistence methods"
                     , (m, o) =>
                     {
-                        mPersistenceStatus = () => serverStatus;
+                        sContext.PersistenceStatus = () => sContext.Server.Status;
                     }
-                    , childMenu: sPersistenceMenu
-                    , enabled: (m, o) => serverStatus == 2
+                    , childMenu: sPersistenceMenu.Value
+                    , enabled: (m, o) => sContext.Server.Status == 2
                 )
-            );
+            ));
     }
 }

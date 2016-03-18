@@ -1,53 +1,46 @@
 ﻿using System;
 using System.Diagnostics;
 using Xigadee;
-using Xigadee;
 
 namespace Test.Xigadee
 {
     static partial class Program
     {
-
-        static int serverStatus = 0;
-
-        static int clientStatus = 0;
-
         static void PersistenceLog(string Action, bool success)
         {
-            sPersistenceMenu.AddInfoMessage(string.Format("{0} {1}", Action, success ? "OK" : "Fail")
+            sPersistenceMenu.Value.AddInfoMessage(string.Format("{0} {1}", Action, success ? "OK" : "Fail")
                 , true, success ? EventLogEntryType.Information : EventLogEntryType.Error);
         }
 
         static void ServerStatusChanged(object sender, StatusChangedEventArgs e)
         {
-            ServiceStatusChanged(ref serverStatus, sender, e);
+            ServiceStatusChanged((v) => sContext.Server.Status = v, sender, e);
         }
 
         static void ClientStatusChanged(object sender, StatusChangedEventArgs e)
         {
-            ServiceStatusChanged(ref clientStatus, sender, e);
+            ServiceStatusChanged((v) => sContext.Client.Status = v, sender, e);
         }
 
-        static void ServiceStatusChanged(ref int started, object sender, StatusChangedEventArgs e)
+        static void ServiceStatusChanged(Action<int> started, object sender, StatusChangedEventArgs e)
         {
             var serv = sender as Microservice;
 
             switch (e.StatusNew)
             {
                 case ServiceStatus.Running:
-                    started = 2;
+                    started(2);
                     break;
                 case ServiceStatus.Stopped:
-                    started = 0;
+                    started(0);
                     break;
                 default:
-                    started = 1;
+                    started(1);
                     break;
             }
 
-            sMainMenu.AddInfoMessage(string.Format("{0}={1}", serv.Statistics.Name, e.StatusNew.ToString()), true);
+            sMainMenu.Value.AddInfoMessage(string.Format("{0}={1}", serv.Statistics.Name, e.StatusNew.ToString()), true);
         }
-
 
         private static void ServerStopRequested(object sender, StopEventArgs e)
         {

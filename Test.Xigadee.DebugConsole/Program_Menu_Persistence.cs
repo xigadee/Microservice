@@ -6,67 +6,90 @@ namespace Test.Xigadee
 {
     static partial class Program
     {
-        static ConsoleMenu sPersistenceSettingsMenu = new ConsoleMenu(
+        static Lazy<ConsoleMenu> sPersistenceMenu = new Lazy<ConsoleMenu>(
+            () => new ConsoleMenu(
            "Persistence"
             , new ConsoleOption("Create entity"
             , (m, o) =>
-            {
-                sState.Testid = Guid.NewGuid();
-                var result = sService.Persistence.Create(
-                    new MondayMorningBlues { Id = sState.Testid, ContentId = sState.Testid, VersionId = sState.Versionid, Message = DateTime.Now.ToString(), NotEnoughCoffee = true, Email = "paul@hotmail.com" }
-                    , new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
+                {
+                    sContext.Testid = Guid.NewGuid();
 
-                if (result.IsSuccess)
-                    sState.Versionid = result.Entity.VersionId;
+                    var result = sContext.Persistence.Create(
+                        new MondayMorningBlues
+                        {
+                            Id = sContext.Testid,
+                            ContentId = sContext.Testid,
+                            VersionId = sContext.Versionid,
+                            Message = DateTime.Now.ToString(),
+                            NotEnoughCoffee = true,
+                            Email = "paul@hotmail.com"
+                        }
+                        , new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
 
-                PersistenceLog("Create", result.IsSuccess);
-            }
-               , enabled: (m, o) => mPersistenceStatus() == 2
+                    if (result.IsSuccess)
+                        sContext.Versionid = result.Entity.VersionId;
+
+                    PersistenceLog("Create", result.IsSuccess);
+                }
+               , enabled: (m, o) => sContext.PersistenceStatus() == 2
                )
            , new ConsoleOption("Read entity"
                , (m, o) =>
                {
-                   var result = sService.Persistence.Read(sState.Testid, new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
+                   var result = sContext.Persistence.Read(sContext.Testid, new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
                    PersistenceLog("Read", result.IsSuccess);
                }
-               , enabled: (m, o) => mPersistenceStatus() == 2
+               , enabled: (m, o) => sContext.PersistenceStatus() == 2
                )
            , new ConsoleOption("Read entity by reference"
                , (m, o) =>
                {
-                   var result = sService.Persistence.ReadByRef("email", "paul@hotmail.com", new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
+                   var result = sContext.Persistence.ReadByRef("email", "paul@hotmail.com", new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
                    PersistenceLog("Read", result.IsSuccess);
                }
-               , enabled: (m, o) => mPersistenceStatus() == 2
+               , enabled: (m, o) => sContext.PersistenceStatus() == 2
                )
            , new ConsoleOption("Update entity"
                , (m, o) =>
                {
-                   var result = sService.Persistence.Update(new MondayMorningBlues() { Id = sState.Testid, ContentId = sState.Testid, VersionId = sState.Versionid, Message = "Hello mom2", NotEnoughCoffee = false }, new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
-                           //var result = sPersistence.Update(new MondayMorningBlues() { ContentId = testid, VersionId = versionid, Message = "Hello mom2", NotEnoughCoffee = false }, new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
-                           PersistenceLog("Update", result.IsSuccess);
-                   if (result.IsSuccess)
-                   {
-                       sState.Versionid = result.Entity.VersionId;
-                   }
+                   var result = sContext.Persistence.Update(
+                       new MondayMorningBlues()
+                       {
+                           Id = sContext.Testid,
+                           ContentId = sContext.Testid,
+                           VersionId = sContext.Versionid,
+                           Message = "Hello mom2",
+                           NotEnoughCoffee = false
+                       }
+                       , new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) })
+                       .Result;
+
+                    PersistenceLog("Update", result.IsSuccess);
+
+                    if (result.IsSuccess)
+                    {
+                        sContext.Versionid = result.Entity.VersionId;
+                    }
                }
-               , enabled: (m, o) => mPersistenceStatus() == 2
+               , enabled: (m, o) => sContext.PersistenceStatus() == 2
                )
            , new ConsoleOption("Delete entity"
                , (m, o) =>
                {
-                   var result = sService.Persistence.Delete(sState.Testid, new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5), VersionId = sState.Versionid.ToString() }).Result;
+                   var result = sContext.Persistence.Delete(sContext.Testid, 
+                       new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5), VersionId = sContext.Versionid.ToString() }).Result;
                    PersistenceLog("Delete", result.IsSuccess);
                }
-               , enabled: (m, o) => mPersistenceStatus() == 2
+               , enabled: (m, o) => sContext.PersistenceStatus() == 2
                )
            , new ConsoleOption("Delete entity by reference"
                , (m, o) =>
                {
-                   var result = sService.Persistence.DeleteByRef("email", "paul@hotmail.com", new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5), VersionId = sState.Versionid.ToString() }).Result;
+                   var result = sContext.Persistence.DeleteByRef("email", "paul@hotmail.com", 
+                       new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5), VersionId = sContext.Versionid.ToString() }).Result;
                    PersistenceLog("Delete", result.IsSuccess);
                }
-               , enabled: (m, o) => mPersistenceStatus() == 2
+               , enabled: (m, o) => sContext.PersistenceStatus() == 2
                )
            , new ConsoleOption("Create 100000 entities async"
                , (m, o) =>
@@ -77,7 +100,7 @@ namespace Test.Xigadee
                    {
                        try
                        {
-                           var result = sService.Persistence.Create(
+                           var result = sContext.Persistence.Create(
                                new MondayMorningBlues() { ContentId = Guid.NewGuid(), Message = i.ToString(), NotEnoughCoffee = true }
                                , new RepositorySettings()
                                {
@@ -96,9 +119,10 @@ namespace Test.Xigadee
 
                    PersistenceLog("100000 enqueued", true);
                }
-               , enabled: (m, o) => mPersistenceStatus() == 2
+               , enabled: (m, o) => sContext.PersistenceStatus() == 2
                )
-               );
+               )
+            );
 
     }
 }

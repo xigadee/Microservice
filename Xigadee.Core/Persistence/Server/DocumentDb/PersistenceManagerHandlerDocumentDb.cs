@@ -33,14 +33,22 @@ namespace Xigadee
             , Func<RepositoryHolder<K, E>, JsonHolder<K>> jsonMaker = null
             , string databaseCollection = null
             , string entityName = null
-            , VersionPolicy<E> versionMaker = null
+            , VersionPolicy<E> versionPolicy = null
             , TimeSpan? defaultTimeout = null
             , ShardingPolicy<K> shardingPolicy = null
             , PersistenceRetryPolicy persistenceRetryPolicy = null
+            , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             , ResourceProfile resourceProfile = null)
-            : base(connection, database, keyMaker, jsonMaker, databaseCollection, 
-                  entityName, versionMaker, defaultTimeout, shardingPolicy, 
-                  persistenceRetryPolicy: persistenceRetryPolicy, resourceProfile: resourceProfile)
+            : base(connection, database, keyMaker
+                  , jsonMaker: jsonMaker
+                  , databaseCollection: databaseCollection
+                  , entityName:entityName
+                  , versionPolicy: versionPolicy
+                  , defaultTimeout: defaultTimeout
+                  , shardingPolicy: shardingPolicy
+                  , referenceMaker: referenceMaker
+                  , persistenceRetryPolicy: persistenceRetryPolicy
+                  , resourceProfile: resourceProfile)
         {
         }
         #endregion
@@ -98,7 +106,7 @@ namespace Xigadee
             , Func<RepositoryHolder<K, E>, JsonHolder<K>> jsonMaker = null
             , string databaseCollection = null
             , string entityName = null
-            , VersionPolicy<E> versionMaker = null
+            , VersionPolicy<E> versionPolicy = null
             , TimeSpan? defaultTimeout = null
             , ShardingPolicy<K> shardingPolicy = null
             , PersistenceRetryPolicy persistenceRetryPolicy = null
@@ -111,7 +119,7 @@ namespace Xigadee
             , Func<string, K> keyDeserializer = null
             )
             : base( entityName: entityName
-                  , versionPolicy: versionMaker
+                  , versionPolicy: versionPolicy
                   , defaultTimeout: defaultTimeout
                   , persistenceRetryPolicy: persistenceRetryPolicy
                   , resourceProfile: resourceProfile
@@ -335,7 +343,6 @@ namespace Xigadee
 
             base.ProcessOutputKey(rq,rs, holderResponse);
         }
-
 
         #region TimeoutCorrect
 

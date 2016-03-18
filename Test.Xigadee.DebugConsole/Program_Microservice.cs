@@ -8,25 +8,25 @@ namespace Test.Xigadee
     {
         static void InitialiseMicroserviceClient()
         {
-            sClient = new PopulatorClient();
-            sService = sClient;
+            sContext.Client = new PopulatorClient();
+            sContext.Persistence = sContext.Client.Persistence;
 
-            sClient.Service.StatusChanged += ClientStatusChanged;
+            sContext.Client.Service.StatusChanged += ClientStatusChanged;
 
-            sClient.Start();
+            sContext.Client.Start();
         }
 
         static void InitialiseMicroserviceServer()
         {
-            sServer = new PopulatorServer();
-            sService = sServer;
+            sContext.Server = new PopulatorServer();
+            sContext.Persistence = sContext.Server.Persistence;
 
-            sServer.Service.StatusChanged += ServerStatusChanged;
+            sContext.Server.Service.StatusChanged += ServerStatusChanged;
 
-            sServer.Service.StartRequested += ServerStartRequested;
-            sServer.Service.StopRequested += ServerStopRequested;
+            sContext.Server.Service.StartRequested += ServerStartRequested;
+            sContext.Server.Service.StopRequested += ServerStopRequested;
 
-            sServer.Start();
+            sContext.Server.Start();
         }
     }
 }

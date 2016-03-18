@@ -29,20 +29,6 @@ namespace Test.Xigadee
                     { ChannelId = Channels.TestB }
                 );
 
-            //Service.RegisterCommand(new PersistenceMondayMorningBlues(
-            //      Config.DocDbCredentials
-            //    , Config.DocumentDbDatabase
-            //    , o => o.Id
-            //    , versionMaker: mVersionBlues
-            //    , resourceProfile: mResourceDocDb)
-            //{
-            //    ChannelId = Channels.TestB
-            //});
-            Service.RegisterCommand(new PersistenceMondayMorningBlues(
-                  Config.RedisCacheConnection, mVersionBlues)
-            {
-                ChannelId = Channels.TestB
-            });
 
             Service.RegisterCommand(new DoNothingJob { ChannelId = Channels.TestB });
         }
