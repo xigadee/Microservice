@@ -128,6 +128,8 @@ namespace Xigadee
 
             sMessage.Blob = bMessage.GetBody<byte[]>();
 
+            sMessage.FabricDeliveryCount = bMessage.DeliveryCount;
+
             return sMessage;
         }
         #endregion 
