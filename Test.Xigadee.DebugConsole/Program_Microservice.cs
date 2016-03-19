@@ -8,7 +8,7 @@ namespace Test.Xigadee
     {
         static void InitialiseMicroserviceClient()
         {
-            sContext.Client = new PopulatorClient();
+
             sContext.Persistence = sContext.Client.Persistence;
 
             sContext.Client.Service.StatusChanged += ClientStatusChanged;
@@ -18,7 +18,6 @@ namespace Test.Xigadee
 
         static void InitialiseMicroserviceServer()
         {
-            sContext.Server = new PopulatorServer();
             sContext.Persistence = sContext.Server.Persistence;
 
             sContext.Server.Service.StatusChanged += ServerStatusChanged;

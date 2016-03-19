@@ -66,11 +66,15 @@ namespace Xigadee
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             )
         {
-            mTransform = EntityTransformCreate(entityName, versionPolicy, keyMaker, entityDeserializer, entitySerializer, keySerializer, keyDeserializer, referenceMaker);
+            mTransform = EntityTransformCreate(entityName, versionPolicy, keyMaker, entityDeserializer
+                , entitySerializer, keySerializer, keyDeserializer, referenceMaker);
 
             mDefaultTimeout = defaultTimeout;
+
             mPersistenceRetryPolicy = persistenceRetryPolicy ?? new PersistenceRetryPolicy();
+
             mResourceProfile = resourceProfile;
+
             mCacheManager = cacheManager ?? new NullCacheManager<K, E>();
         }
 
@@ -78,7 +82,8 @@ namespace Xigadee
         /// This constructor specifies whether the service should be registered as a shared service
         /// that can be called directly by other message handler and Microservice components.
         /// </summary>
-        protected PersistenceCommandBase(EntityTransformHolder<K, E> entityTransform
+        protected PersistenceCommandBase(
+              EntityTransformHolder<K, E> entityTransform
             , PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
             , ICacheManager<K, E> cacheManager = null
@@ -91,8 +96,11 @@ namespace Xigadee
             mTransform = entityTransform;
 
             mDefaultTimeout = defaultTimeout;
+
             mPersistenceRetryPolicy = persistenceRetryPolicy ?? new PersistenceRetryPolicy();
+
             mResourceProfile = resourceProfile;
+
             mCacheManager = cacheManager ?? new NullCacheManager<K, E>();
         }
         #endregion

@@ -71,7 +71,7 @@ namespace Xigadee
                 )
         {
             mJsonMaker = jsonMaker;
-            mJsonSerializerSettings=new JsonSerializerSettings { TypeNameHandling=TypeNameHandling.Auto };
+            mJsonSerializerSettings = new JsonSerializerSettings { TypeNameHandling=TypeNameHandling.Auto };
         }
         #endregion
 

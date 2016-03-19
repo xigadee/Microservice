@@ -93,9 +93,5 @@ namespace Xigadee
 
             return new PersistenceResponseHolder<E> { IsSuccess = false, StatusCode = 404 };
         }
-
-
-
     }
-
 }

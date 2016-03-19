@@ -6,12 +6,13 @@ namespace Test.Xigadee
 {
     static partial class Program
     {
-
         static Context sContext;
 
         static void Main(string[] args)
         {
             sContext = new Context();
+            sContext.Client = new PopulatorClient();
+            sContext.Server = new PopulatorServer();
 
             var id = new Guid("5ac0802f-7768-433c-bc54-975940964363");
             var value = id.ToByteArray();
@@ -19,7 +20,8 @@ namespace Test.Xigadee
 
             var switches = args.CommandArgsParse();
 
-            sContext.SlotCount = switches.ContainsKey("processes") ? int.Parse(switches["processes"]) : Environment.ProcessorCount * 4 * 4 * 2;
+            sContext.SlotCount = switches.ContainsKey("processes") ? 
+                int.Parse(switches["processes"]) : Environment.ProcessorCount * 4 * 4 * 2;
 
             //var testid = Guid.NewGuid();
             sContext.Versionid = Guid.NewGuid();

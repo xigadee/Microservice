@@ -2,6 +2,9 @@
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This policy decides the persistence retry behavior.
+    /// </summary>
     public class PersistenceRetryPolicy:PolicyBase
     {
         private readonly Func<TransmissionPayload, int> mMaximumRetries;
