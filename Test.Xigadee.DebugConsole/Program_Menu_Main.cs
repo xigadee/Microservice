@@ -9,6 +9,12 @@ namespace Test.Xigadee
         static Lazy<ConsoleMenu> sMainMenu = new Lazy<ConsoleMenu>(
             () => new ConsoleMenu(
                 "Xigadee Microservice Scrathpad Test Console"
+                , new ConsoleOption("Load Settings"
+                    , (m, o) =>
+                    {
+                    }
+                    , enabled: (m, o) => sContext.Client.Status == 0
+                )
                 , new ConsoleOption("Start client"
                     , (m, o) =>
                     {
@@ -58,6 +64,20 @@ namespace Test.Xigadee
                         sContext.PersistenceStatus = () => sContext.Server.Status;
                     }
                     , childMenu: sPersistenceMenu.Value
+                    , enabled: (m, o) => sContext.Server.Status == 2
+                )
+                , new ConsoleOption("Client Stress Tests"
+                    , (m, o) =>
+                    {
+                    }
+                    , childMenu: sClientStressTestsMenu.Value
+                    , enabled: (m, o) => sContext.Client.Status == 2
+                )
+                , new ConsoleOption("Server Stress Tests"
+                    , (m, o) =>
+                    {
+                    }
+                    , childMenu: sClientStressTestsMenu.Value
                     , enabled: (m, o) => sContext.Server.Status == 2
                 )
             ));

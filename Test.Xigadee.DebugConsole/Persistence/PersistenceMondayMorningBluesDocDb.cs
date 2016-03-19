@@ -4,10 +4,10 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    public class PersistenceRedisMondayMorningBlues: PersistenceMessageHandlerRedisCache<Guid, MondayMorningBlues>
+    public class PersistenceMondayMorningBluesDocDb: PersistenceManagerHandlerDocumentDb<Guid, MondayMorningBlues>
     {
-        public PersistenceRedisMondayMorningBlues(string connection, VersionPolicy<MondayMorningBlues> versionPolicy = null)
-            : base(connection, (k) => k.Id, keyDeserializer: (s) => new Guid(s)
+        public PersistenceMondayMorningBluesDocDb(DocumentDbConnection connection, string name, VersionPolicy<MondayMorningBlues> versionPolicy = null)
+            : base(connection, name, (k) => k.Id
             , versionPolicy: versionPolicy
             , referenceMaker: References)
         {

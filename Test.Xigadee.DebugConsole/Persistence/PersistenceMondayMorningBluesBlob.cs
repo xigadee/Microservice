@@ -6,9 +6,9 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    public class PersistenceBlobMondayMorningBlues: PersistenceMessageHandlerAzureBlobStorageBase<Guid, MondayMorningBlues>
+    public class PersistenceMondayMorningBluesBlob: PersistenceMessageHandlerAzureBlobStorageBase<Guid, MondayMorningBlues>
     {
-        public PersistenceBlobMondayMorningBlues(StorageCredentials credentials, VersionPolicy<MondayMorningBlues> versionPolicy = null)
+        public PersistenceMondayMorningBluesBlob(StorageCredentials credentials, VersionPolicy<MondayMorningBlues> versionPolicy = null)
             : base(credentials, (k) => k.Id
             , idMaker: (s) => s.ToString()
             , versionPolicy: versionPolicy

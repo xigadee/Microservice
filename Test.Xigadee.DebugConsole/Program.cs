@@ -11,12 +11,10 @@ namespace Test.Xigadee
         static void Main(string[] args)
         {
             sContext = new Context();
-            sContext.Client = new PopulatorClient();
-            sContext.Server = new PopulatorServer();
 
-            var id = new Guid("5ac0802f-7768-433c-bc54-975940964363");
-            var value = id.ToByteArray();
-            int push = (value[0] >> 6) - 1;
+            //var id = new Guid("5ac0802f-7768-433c-bc54-975940964363");
+            //var value = id.ToByteArray();
+            //int push = (value[0] >> 6) - 1;
 
             var switches = args.CommandArgsParse();
 

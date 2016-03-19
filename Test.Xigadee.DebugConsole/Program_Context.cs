@@ -8,6 +8,12 @@ namespace Test.Xigadee
     {
         class Context
         {
+            public Context()
+            {
+                Client = new PopulatorClient();
+                Server = new PopulatorServer();
+            }
+
             public PopulatorClient Client;
 
             public PopulatorServer Server;

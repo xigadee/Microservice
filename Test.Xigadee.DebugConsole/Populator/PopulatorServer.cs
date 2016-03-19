@@ -29,7 +29,6 @@ namespace Test.Xigadee
                     { ChannelId = Channels.TestB }
                 );
 
-
             Service.RegisterCommand(new DoNothingJob { ChannelId = Channels.TestB });
         }
 
