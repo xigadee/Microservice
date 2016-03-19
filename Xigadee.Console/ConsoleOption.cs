@@ -16,8 +16,9 @@ namespace Xigadee
             , ConsoleMenu childMenu = null
             , Func<ConsoleMenu, ConsoleOption, bool> enabled = null
             , Func<ConsoleMenu, ConsoleOption, string> display = null
+            , Func<ConsoleMenu, ConsoleOption, bool> selected = null
             )
-            : this(text, childMenu, enabled, display)
+            : this(text, childMenu, enabled, display, selected)
         {
             Action = action;
         }
@@ -26,8 +27,9 @@ namespace Xigadee
             , ConsoleMenu childMenu
             , Func<ConsoleMenu, ConsoleOption, bool> enabled = null
             , Func<ConsoleMenu, ConsoleOption, string> display = null
+            , Func<ConsoleMenu, ConsoleOption, bool> selected = null
             )
-            : this(text, enabled, display)
+            : this(text, enabled, display, selected)
         {
             Menu = childMenu;
             IsChildMenu = childMenu != null;
@@ -36,12 +38,14 @@ namespace Xigadee
         protected ConsoleOption(string text
             , Func<ConsoleMenu, ConsoleOption, bool> enabled = null
             , Func<ConsoleMenu, ConsoleOption, string> display = null
+            , Func<ConsoleMenu, ConsoleOption, bool> selected = null
             )
         {
             Text = text;
             FnDisplay = display;
             FnEnabled = enabled ?? ((m, o) => true);
-        } 
+            FnSelected = selected;
+        }
         #endregion
 
         public string Text { get; set; }
@@ -49,6 +53,8 @@ namespace Xigadee
         public bool IsChildMenu { get; set; }
 
         public Func<ConsoleMenu, ConsoleOption, bool> FnEnabled { get; set; }
+
+        public Func<ConsoleMenu, ConsoleOption, bool> FnSelected { get; set; }
 
         public Func<ConsoleMenu, ConsoleOption, string> FnDisplay { get; set; }
 

@@ -22,6 +22,10 @@ namespace Test.Xigadee
 
             switch (sContext.PersistenceType)
             {
+                case PersistenceOptions.Sql:
+                    //sContext.Server.Service.RegisterCommand(
+                    //    new PersistenceMondayMorningBluesBlob(sContext.Server.Config.Storage));
+                    break;
                 case PersistenceOptions.Blob:
                     sContext.Server.Service.RegisterCommand(
                         new PersistenceMondayMorningBluesBlob(sContext.Server.Config.Storage));

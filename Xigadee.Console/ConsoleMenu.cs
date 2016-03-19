@@ -74,6 +74,10 @@ namespace Xigadee
 
                 System.Console.Write(new string(' ', Indent2));
                 string display = option.FnDisplay == null? option.Text:option.FnDisplay(this, option);
+
+                if (option.FnSelected != null)
+                    display = $"[{(option.FnSelected(this, option)? "x" : " ")}] " + display;
+
                 System.Console.WriteLine("{0}. {1}", i + 1, display);
             }
 

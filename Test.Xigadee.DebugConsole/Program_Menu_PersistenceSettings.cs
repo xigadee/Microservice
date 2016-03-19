@@ -8,7 +8,7 @@ namespace Test.Xigadee
     {
         enum PersistenceOptions
         {
-            //Sql,
+            Sql,
             DocumentDb,
             RedisCache,
             Blob
@@ -16,21 +16,22 @@ namespace Test.Xigadee
 
         static Lazy<ConsoleMenu> sPersistenceSettingsMenu = new Lazy<ConsoleMenu>(
             () => new ConsoleMenu(
-                $"Persistence store options ({sContext.PersistenceType.ToString()})"
-                //, new ConsoleOption("Sql based"
-                //    , (m, o) =>
-                //    {
-                //        sContext.PersistenceType = PersistenceOptions.Sql;
-                //    }
-                //    , enabled: (m, o) => clientStatus == 0
-                    
-                //)
+                $"Persistence store options"
+                , new ConsoleOption("Sql based"
+                    , (m, o) =>
+                    {
+                        sContext.PersistenceType = PersistenceOptions.Sql;
+                    }
+                    , enabled: (m, o) => true
+                    , selected: (m, o) => sContext.PersistenceType == PersistenceOptions.Sql
+                )
                 , new ConsoleOption("DocumentDb based"
                     , (m, o) =>
                     {
                         sContext.PersistenceType = PersistenceOptions.DocumentDb;
                     }
                     , enabled: (m, o) => true
+                    , selected: (m,o) => sContext.PersistenceType == PersistenceOptions.DocumentDb
                 )
                 , new ConsoleOption("Blob storage based"
                     , (m, o) =>
@@ -38,6 +39,7 @@ namespace Test.Xigadee
                         sContext.PersistenceType = PersistenceOptions.Blob;
                     }
                     , enabled: (m, o) => true
+                    , selected: (m, o) => sContext.PersistenceType == PersistenceOptions.Blob
                 )
                 , new ConsoleOption("Redis Cache based"
                     , (m, o) =>
@@ -45,9 +47,9 @@ namespace Test.Xigadee
                         sContext.PersistenceType = PersistenceOptions.RedisCache;
                     }
                     , enabled: (m, o) => true
+                    , selected: (m, o) => sContext.PersistenceType == PersistenceOptions.RedisCache
                 )
                 )
             );
-
     }
 }
