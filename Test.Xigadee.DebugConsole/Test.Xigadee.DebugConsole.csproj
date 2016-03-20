@@ -112,7 +112,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="Program_Context.cs" />
     <Compile Include="Program_Menu_Main.cs" />
-    <Compile Include="Program_Menu_Persistence.cs" />
+    <Compile Include="Program_Menu_PersistenceClient.cs" />
+    <Compile Include="Program_Menu_PersistenceServer.cs" />
     <Compile Include="Program_Menu_PersistenceSettings.cs" />
     <Compile Include="Program_Menu_StressTestsServer.cs" />
     <Compile Include="Program_Menu_StressTestsClient.cs" />

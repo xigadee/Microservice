@@ -148,6 +148,7 @@ namespace Xigadee
         }
         #endregion
 
+
         protected virtual void WriteEvent(D logEvent)
         {
             Items.ForEach((l) =>

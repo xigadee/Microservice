@@ -6,20 +6,30 @@ namespace Test.Xigadee
 {
     static partial class Program
     {
-        static void PersistenceLog(string Action, bool success)
+        static void PersistenceLog(ConsoleMenu menu, string Action, bool success)
         {
-            sPersistenceMenu.Value.AddInfoMessage(string.Format("{0} {1}", Action, success ? "OK" : "Fail")
+            menu.AddInfoMessage(string.Format("{0} {1}", Action, success ? "OK" : "Fail")
                 , true, success ? EventLogEntryType.Information : EventLogEntryType.Error);
         }
 
         static void ServerStatusChanged(object sender, StatusChangedEventArgs e)
         {
             ServiceStatusChanged((v) => sContext.Server.Status = v, sender, e);
+
+            if (e.StatusNew == ServiceStatus.Running)
+                sContext.Persistence = sContext.Server.Persistence;
+            else
+                sContext.Persistence = null;
         }
 
         static void ClientStatusChanged(object sender, StatusChangedEventArgs e)
         {
             ServiceStatusChanged((v) => sContext.Client.Status = v, sender, e);
+
+            if (e.StatusNew == ServiceStatus.Running)
+                sContext.Persistence = sContext.Client.Persistence;
+            else
+                sContext.Persistence = null;
         }
 
         static void ServiceStatusChanged(Action<int> started, object sender, StatusChangedEventArgs e)

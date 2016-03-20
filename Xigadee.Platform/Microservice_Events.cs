@@ -21,8 +21,14 @@ namespace Xigadee
         public event EventHandler<StopEventArgs> StopRequested;
         public event EventHandler<StopEventArgs> StopCompleted;
 
+        /// <summary>
+        /// This event will be triggered when the Microservice statistics have been calculated.
+        /// </summary>
         public event EventHandler<StatisticsEventArgs> StatisticsIssued;
 
+        /// <summary>
+        /// This event will be thrown if an incoming message cannot be resolved against a command.
+        /// </summary>
         public event EventHandler<ProcessRequestUnresolvedEventArgs> ProcessRequestUnresolved;
 
         public event EventHandler<ProcessRequestErrorEventArgs> ProcessRequestError;

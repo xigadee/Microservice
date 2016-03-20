@@ -1,6 +1,7 @@
 ﻿#region using
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -11,6 +12,7 @@ namespace Xigadee
     /// <summary>
     /// This is the tracker agent used to monitor jobs.
     /// </summary>
+    [DebuggerDisplay("{Type}/{Name}={ProcessSlot}@{Priority}|{Id}")]
     public class TaskTracker
     {
         public TaskTracker(TaskTrackerType type, TimeSpan? ttl)

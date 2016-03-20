@@ -36,21 +36,25 @@ namespace Xigadee
         /// <returns>The value or null if not resolved.</returns>
         protected virtual string PlatformOrConfig(string key)
         {
-            string value = ResolverFirst && Resolver != null ? Resolver(key, null) : null;
-            if (value != null)
-                return value;
+            string value = null;
 
-            try
-            {
-                value = value ?? ConfigurationManager.AppSettings[key];
-            }
-            catch (Exception ex)
-            {
-                // Unable to retrieve from app settings
-            }
+            if (ResolverFirst && Resolver != null)
+                value = Resolver(key, null);
 
-            if (Resolver != null)
-                value = Resolver(key, value);
+            if (value == null)
+            {
+                try
+                {
+                    value = ConfigurationManager.AppSettings[key];
+                }
+                catch (Exception ex)
+                {
+                    // Unable to retrieve from app settings
+                }
+
+                if (value == null && !ResolverFirst && Resolver != null)
+                    value = Resolver(key, null);
+            }
 
             return value;
         }

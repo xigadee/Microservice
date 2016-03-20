@@ -131,12 +131,6 @@ namespace Xigadee
             return mTransform;
         }
 
-        #region ChannelId
-        /// <summary>
-        /// This is the channelId that the message will be received on.
-        /// </summary>
-        public virtual string ChannelId { get; set; } 
-        #endregion
         #region EntityType
         /// <summary>
         /// This is the entity type Name used for matching request and payloadRs messages.

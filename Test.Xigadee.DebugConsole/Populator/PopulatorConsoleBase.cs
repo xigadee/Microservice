@@ -13,24 +13,9 @@ namespace Test.Xigadee
 
         public event EventHandler<CommandRegisterEventArgs> OnRegister;
 
-        public override void Start()
-        {
-            try
-            {
-                Populate();
+        public readonly ResourceProfile mResourceDocDb = new ResourceProfile("DocDB");
 
-                base.Start();
-            }
-            catch (Exception ex)
-            {
-
-                throw;
-            }
-
-        }
-
-        protected ResourceProfile mResourceDocDb = new ResourceProfile("DocDB");
-        protected ResourceProfile mResourceBlob = new ResourceProfile("Blob");
+        public readonly ResourceProfile mResourceBlob = new ResourceProfile("Blob");
 
         public IRepositoryAsync<Guid, MondayMorningBlues> Persistence { get; protected set; }
 
@@ -68,10 +53,10 @@ namespace Test.Xigadee
             if (OnRegister != null)
                 OnRegister(this, new CommandRegisterEventArgs(Service, Config));
 
-            Service.RegisterCommand(new TestMasterJob(Channels.MasterJob));
-            Service.RegisterCommand(new TestMasterJob2(Channels.MasterJob));
+            //Service.RegisterCommand(new TestMasterJob(Channels.MasterJob));
+            //Service.RegisterCommand(new TestMasterJob2(Channels.MasterJob));
 
-            Service.RegisterCommand(new DelayedProcessingJob());
+            //Service.RegisterCommand(new DelayedProcessingJob());
         }
 
         protected override void RegisterEventSources()
