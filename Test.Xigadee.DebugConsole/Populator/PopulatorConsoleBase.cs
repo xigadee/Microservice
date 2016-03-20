@@ -11,6 +11,8 @@ namespace Test.Xigadee
     {
         public int Status { get; set; } = 0;
 
+        public event EventHandler<CommandRegisterEventArgs> OnRegister;
+
         public override void Start()
         {
             try
@@ -63,6 +65,9 @@ namespace Test.Xigadee
 
         protected override void RegisterCommands()
         {
+            if (OnRegister != null)
+                OnRegister(this, new CommandRegisterEventArgs(Service, Config));
+
             Service.RegisterCommand(new TestMasterJob(Channels.MasterJob));
             Service.RegisterCommand(new TestMasterJob2(Channels.MasterJob));
 
@@ -89,5 +94,19 @@ namespace Test.Xigadee
                 , resourceProfile: mResourceBlob));
 
         }
+
+    }
+
+    public class CommandRegisterEventArgs: EventArgs
+    {
+        public CommandRegisterEventArgs(Microservice service, ConfigConsole config)
+        {
+            Service = service;
+            Config = config;
+        }
+
+        public Microservice Service { get; set; }
+
+        public ConfigConsole Config { get; set; }
     }
 }
