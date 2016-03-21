@@ -20,14 +20,18 @@ namespace Xigadee
 
         protected const string cnKeyVersion = "version";
         protected const string cnKeyEntity = "entity";
+
+        protected TimeSpan mEntityTtl;
         #endregion
 
         #region Constructor
-        public RedisCacheManager(string connection, bool readOnly = true, EntityTransformHolder<K, E> transform = null)
+        public RedisCacheManager(string connection, bool readOnly = true, EntityTransformHolder<K, E> transform = null, TimeSpan? entityTtl = null)
             :base(readOnly)
         {
             mConnection = connection;
             mTransform = transform ?? new EntityTransformHolder<K, E>(true);
+
+            mEntityTtl = entityTtl??TimeSpan.FromDays(2);
 
             mLazyConnection = new Lazy<ConnectionMultiplexer>(() =>
             {
@@ -145,6 +149,7 @@ namespace Xigadee
                 //Version
                 tasks.Add(batch.HashSetAsync(hashkey, cnKeyVersion, version, when: When.Always));
 
+                tasks.Add(batch.KeyExpireAsync(hashkey, mEntityTtl));
                 //Get any associated references for the entity.
                 var references = transform.ReferenceMaker(entity);
                 if (references != null)
