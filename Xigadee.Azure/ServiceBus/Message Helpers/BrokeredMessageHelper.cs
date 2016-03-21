@@ -68,7 +68,7 @@ namespace Xigadee
 
             bMessage.Properties.Add("CorrelationKey", sMessage.CorrelationKey);
             bMessage.CorrelationId = sMessage.CorrelationServiceId;
-            bMessage.Properties.Add("CorrelationServiceId", sMessage.CorrelationServiceId);
+            bMessage.Properties.Add("CorrelationServiceId", ToSafeLower(sMessage.CorrelationServiceId));
             bMessage.Properties.Add("CorrelationUTC", sMessage.CorrelationUTC.HasValue ? sMessage.CorrelationUTC.Value.ToString("o") : null);
 
             bMessage.Properties.Add("DispatcherTransitCount", sMessage.DispatcherTransitCount);

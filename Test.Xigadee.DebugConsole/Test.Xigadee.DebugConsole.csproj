@@ -100,8 +100,8 @@
     <Compile Include="Persistence\PersistenceMondayMorningBluesDocDb.cs" />
     <Compile Include="Populator\ConfigConsole.cs" />
     <Compile Include="Populator\IPopulatorConsole.cs" />
-    <Compile Include="Microservice\MicroserviceClient.cs" />
-    <Compile Include="Microservice\MicroserviceServer.cs" />
+    <Compile Include="Populator\MicroserviceClient.cs" />
+    <Compile Include="Populator\MicroserviceServer.cs" />
     <Compile Include="Populator\PopulatorConsoleBase.cs" />
     <Compile Include="Entities\Blah.cs" />
     <Compile Include="Entities\Blah2.cs" />

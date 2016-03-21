@@ -39,6 +39,14 @@ namespace Test.Xigadee
         {
             base.RegisterCommunication();
 
+            Service.RegisterListener(new AzureSBTopicListener(
+                  Channels.Interserve
+                , Config.ServiceBusConnection
+                , Channels.Interserve
+                , deleteOnStop: false
+                , listenOnOriginatorId: true
+                , priorityPartitions: ListenerPartitionConfig.Init(0, 1)));
+
             Service.RegisterListener(new AzureSBQueueListener(
                   Channels.TestA
                 , Config.ServiceBusConnection

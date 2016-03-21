@@ -22,20 +22,6 @@ namespace Test.Xigadee
         protected override void RegisterCommunication()
         {
             Service.RegisterListener(new AzureSBTopicListener(
-                  Channels.Interserve
-                , Config.ServiceBusConnection
-                , Channels.Interserve
-                , deleteOnStop: false
-                , priorityPartitions: ListenerPartitionConfig.Default
-                , mappingChannelId: "mychannel"));
-
-            Service.RegisterSender(new AzureSBTopicSender(
-                  Channels.Interserve
-                , Config.ServiceBusConnection
-                , Channels.Interserve
-                , priorityPartitions: SenderPartitionConfig.Default));
-
-            Service.RegisterListener(new AzureSBTopicListener(
                   Channels.MasterJob
                 , Config.ServiceBusConnection
                 , Channels.MasterJob
