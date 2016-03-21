@@ -25,22 +25,6 @@ namespace Xigadee
         /// </summary>
         protected readonly EntityTransformHolder<K,E> mTransform;
         /// <summary>
-        /// This is the default time allowed when making a call to the underlying persistence layer.
-        /// </summary>
-        protected readonly TimeSpan? mDefaultTimeout;
-        /// <summary>
-        /// The resource consumer 
-        /// </summary>
-        protected IResourceConsumer mResourceConsumer;
-        /// <summary>
-        /// Specifies the persistence retry policy
-        /// </summary>
-        protected readonly PersistenceRetryPolicy mPersistenceRetryPolicy;
-        /// <summary>
-        /// This is the resoure profile for the persistence manager.
-        /// </summary>
-        protected readonly ResourceProfile mResourceProfile;
-        /// <summary>
         /// This is the cache manager.
         /// </summary>
         protected readonly ICacheManager<K, E> mCacheManager;
@@ -66,14 +50,13 @@ namespace Xigadee
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             )
         {
-            mTransform = EntityTransformCreate(entityName, versionPolicy, keyMaker, entityDeserializer
-                , entitySerializer, keySerializer, keyDeserializer, referenceMaker);
+            mTransform = EntityTransformCreate(entityName, versionPolicy, keyMaker
+                , entityDeserializer, entitySerializer
+                , keySerializer, keyDeserializer, referenceMaker);
 
-            mDefaultTimeout = defaultTimeout;
-
-            mPersistenceRetryPolicy = persistenceRetryPolicy ?? new PersistenceRetryPolicy();
-
-            mResourceProfile = resourceProfile;
+            mPolicy.DefaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(5);
+            mPolicy.PersistenceRetryPolicy = persistenceRetryPolicy ?? new PersistenceRetryPolicy();
+            mPolicy.ResourceProfile = resourceProfile;
 
             mCacheManager = cacheManager ?? new NullCacheManager<K, E>();
         }
@@ -95,16 +78,28 @@ namespace Xigadee
 
             mTransform = entityTransform;
 
-            mDefaultTimeout = defaultTimeout;
-
-            mPersistenceRetryPolicy = persistenceRetryPolicy ?? new PersistenceRetryPolicy();
-
-            mResourceProfile = resourceProfile;
+            mPolicy.DefaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(5);
+            mPolicy.PersistenceRetryPolicy = persistenceRetryPolicy ?? new PersistenceRetryPolicy();
+            mPolicy.ResourceProfile = resourceProfile;
 
             mCacheManager = cacheManager ?? new NullCacheManager<K, E>();
         }
         #endregion
 
+        #region EntityTransformCreate...
+        /// <summary>
+        /// The transform holder manages the serialization and deserialization of the entity and key 
+        /// for the entity and key, and identifies the references for the entity.
+        /// </summary>
+        /// <param name="entityName">The entity name.</param>
+        /// <param name="versionPolicy">The version policy for the entity.</param>
+        /// <param name="keyMaker">The keymaker function that creates a key for the entity.</param>
+        /// <param name="entityDeserializer">The entity deserializer that converts the entity in to a string.</param>
+        /// <param name="entitySerializer">The entity serializer that turns a string representation in to an entity.</param>
+        /// <param name="keySerializer">The serializer that converts the key in to a string.</param>
+        /// <param name="keyDeserializer">The deserializer that converts a string in to a key.</param>
+        /// <param name="referenceMaker">A function that returns references from the entity in a set of string Tuples.</param>
+        /// <returns>Returns the transform holder.</returns>
         protected virtual EntityTransformHolder<K, E> EntityTransformCreate(
               string entityName = null
             , VersionPolicy<E> versionPolicy = null
@@ -116,6 +111,8 @@ namespace Xigadee
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null)
         {
             var mTransform = new EntityTransformHolder<K, E>();
+
+            mTransform.KeyMaker = keyMaker;
 
             mTransform.KeySerializer = keySerializer ?? ((i) => i.ToString());
             mTransform.KeyDeserializer = keyDeserializer;
@@ -129,7 +126,8 @@ namespace Xigadee
             mTransform.EntitySerializer = entitySerializer;
 
             return mTransform;
-        }
+        } 
+        #endregion
 
         #region EntityType
         /// <summary>
@@ -139,7 +137,7 @@ namespace Xigadee
         {
             get
             {
-                return typeof(E).Name;
+                return mTransform.EntityName;
             }
         }
         #endregion
@@ -150,13 +148,13 @@ namespace Xigadee
             base.StartInternal();
 
             var resourceTracker = SharedServices.GetService<IResourceTracker>();
-            if (resourceTracker != null && mResourceProfile != null)
-                mResourceConsumer = resourceTracker.RegisterConsumer(EntityType, mResourceProfile);
+            if (resourceTracker != null && mPolicy.ResourceProfile != null)
+                mPolicy.ResourceConsumer = resourceTracker.RegisterConsumer(EntityType, mPolicy.ResourceProfile);
         }
 
         protected override void StopInternal()
         {
-            mResourceConsumer = null;
+            mPolicy.ResourceConsumer = null;
 
             base.StopInternal();
         }
@@ -309,7 +307,6 @@ namespace Xigadee
         }
         #endregion
         #region LogEventSource<KT, ET>...
-
         /// <summary>
         /// This method logs entities to the event source. This method will try indefinitely
         /// as we do not want the Event Source to fail.
@@ -354,26 +351,22 @@ namespace Xigadee
 
         protected virtual Guid ProfileStart(TransmissionPayload payload)
         {
-            if (mResourceConsumer == null)
+            if (mPolicy.ResourceConsumer == null)
                 return Guid.NewGuid();
 
-            return mResourceConsumer.Start(payload.Message.ToKey(), payload.Id);
+            return mPolicy.ResourceConsumer.Start(payload.Message.ToKey(), payload.Id);
         }
 
         protected virtual void ProfileEnd(Guid profileId, int start, ResourceRequestResult result)
         {
-            if (mResourceConsumer == null)
-                return;
-
-            mResourceConsumer.End(profileId, start, result);
+            if (mPolicy.ResourceConsumer != null)
+                mPolicy.ResourceConsumer.End(profileId, start, result);
         }
 
         protected virtual void ProfileRetry(Guid profileId, int retryStart, ResourceRetryReason reason)
         {
-            if (mResourceConsumer == null)
-                return;
-
-            mResourceConsumer.Retry(profileId, retryStart, reason);
+            if (mPolicy.ResourceConsumer != null)
+                mPolicy.ResourceConsumer.Retry(profileId, retryStart, reason);
         } 
         #endregion
 
@@ -469,7 +462,7 @@ namespace Xigadee
                                     rq.Retry++;
                                 rq.IsTimeout = false;
 
-                                retryExceeded = m.Cancel.IsCancellationRequested || rq.Retry > mPersistenceRetryPolicy.GetMaximumRetries(m);
+                                retryExceeded = m.Cancel.IsCancellationRequested || rq.Retry > mPolicy.PersistenceRetryPolicy.GetMaximumRetries(m);
                             }
                             while (!retryExceeded);
 
@@ -755,57 +748,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region EntitySerialize(E entity)
-        /// <summary>
-        /// This is a simple JSON deserialization method that returns an entity from the 
-        /// JSON representation from the DocumentDB repository.
-        /// </summary>
-        /// <param name="data">The string representation of the entity..</param>
-        /// <returns>The object to return.</returns>
-        protected virtual string EntitySerialize(E entity)
-        {
-            throw new NotImplementedException("EntitySerialize is not implemented.");
-        }
-        #endregion
-        #region EntityDeserialize(string data)
-        /// <summary>
-        /// This is a simple JSON deserialization method that returns an entity from the 
-        /// JSON representation from the DocumentDB repository.
-        /// </summary>
-        /// <param name="data">The string representation of the entity..</param>
-        /// <returns>The object to return.</returns>
-        protected virtual E EntityDeserialize(string data)
-        {
-            throw new NotImplementedException("EntityDeserialize is not implemented.");
-        }
-        #endregion
-
-        #region KeyStringMaker(K key)
-        /// <summary>
-        /// This is a very simple key serializer to a string representation.
-        /// </summary>
-        /// <param name="key">The incoming key object.</param>
-        /// <returns>The output string.</returns>
-        protected virtual string KeyStringMaker(K key)
-        {
-            return string.Format("{0}.{1}", mTransform.EntityName, key.ToString());
-        }
-        #endregion
-        #region KeyMaker(E entity)
-        /// <summary>
-        /// This method intercepts and replaces the keymaker in the function has been set in the constructor.
-        /// </summary>
-        /// <param name="entity">The entity to convert.</param>
-        /// <returns>Returns the key from the entity.</returns>
-        protected virtual K KeyMaker(E entity)
-        {
-            if (mTransform.KeyMaker == null)
-                throw new NotImplementedException("mKeyMaker has not been set.");
-
-            return mTransform.KeyMaker(entity);
-        }
-        #endregion
-
         #region ProcessOutputEntity...
         /// <summary>
         /// This method sets the entity and any associated metadata in to the response.
@@ -817,7 +759,7 @@ namespace Xigadee
         protected virtual void ProcessOutputEntity(E entity, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs)
         {
             rs.Entity = entity;
-            rs.Key = KeyMaker(rs.Entity);
+            rs.Key = mTransform.KeyMaker(rs.Entity);
             rs.Settings.VersionId = mTransform.Version?.EntityVersionAsString(rs.Entity);
 
             rs.KeyReference = new Tuple<string, string>(rs.Key.ToString(), rs.Settings.VersionId);
@@ -852,7 +794,7 @@ namespace Xigadee
             rs.ResponseCode = holderResponse.StatusCode;
 
             if (holderResponse.IsSuccess)
-                ProcessOutputEntity(EntityDeserialize(holderResponse.Content), rq, rs);
+                ProcessOutputEntity(mTransform.EntityDeserializer(holderResponse.Content), rq, rs);
             else
                 ProcessOutputError(key, holderResponse, rs);
         }

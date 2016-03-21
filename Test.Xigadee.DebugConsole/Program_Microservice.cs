@@ -41,6 +41,7 @@ namespace Test.Xigadee
 
             return null;
         }
+
         static string ResolveClientSetting(string key, string value)
         {
             if (sClientSettings.ContainsKey(key))
@@ -65,17 +66,20 @@ namespace Test.Xigadee
                 case PersistenceOptions.Blob:
                     e.Service.RegisterCommand(
                         new PersistenceMondayMorningBluesBlob(e.Config.Storage
-                        , sContext.Server.VersionMondayMorningBlues));
+                        , sContext.Server.VersionMondayMorningBlues)
+                        { ChannelId = Channels.TestB });
                     break;
                 case PersistenceOptions.DocumentDb:
                     e.Service.RegisterCommand(
                         new PersistenceMondayMorningBluesDocDb(e.Config.DocDbCredentials, e.Config.DocumentDbName
-                        , sContext.Server.VersionMondayMorningBlues));
+                        , sContext.Server.VersionMondayMorningBlues)
+                        { ChannelId = Channels.TestB });
                     break;
                 case PersistenceOptions.RedisCache:
                     e.Service.RegisterCommand(
                         new PersistenceMondayMorningBluesRedis(e.Config.RedisCacheConnection
-                        , sContext.Server.VersionMondayMorningBlues));
+                        , sContext.Server.VersionMondayMorningBlues)
+                        { ChannelId = Channels.TestB });
                     break;
             }
         }

@@ -7,7 +7,7 @@ namespace Test.Xigadee
     public class PersistenceMondayMorningBluesDocDb: PersistenceManagerHandlerDocumentDb<Guid, MondayMorningBlues>
     {
         public PersistenceMondayMorningBluesDocDb(DocumentDbConnection connection, string name, VersionPolicy<MondayMorningBlues> versionPolicy = null)
-            : base(connection, name, (k) => k.Id
+            : base(connection, name, (k) => k.Id, (s) => new Guid(s)
             , versionPolicy: versionPolicy
             , referenceMaker: References)
         {

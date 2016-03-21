@@ -18,21 +18,6 @@ namespace Xigadee
         where S : PersistenceStatistics, new()
         where P : PersistenceCommandPolicy, new()
     {
-        #region Declarations
-        /// <summary>
-        /// This is the standard Json serialization settings.
-        /// </summary>
-        protected readonly JsonSerializerSettings mJsonSerializerSettings;
-        /// <summary>
-        /// This is the json maker function. If this is null, the default method is used.
-        /// </summary>
-        protected readonly Func<RepositoryHolder<K, E>, JsonHolder<K>> mJsonMaker;
-        /// <summary>
-        /// This is the metadata key set for the entity type.
-        /// </summary>
-        protected readonly KeyValuePair<string, string> cnJsonMetadata_EntityType
-            = new KeyValuePair<string, string>("$microservice.entitytype", "$microservice.entitytype");
-        #endregion
         #region Constructor
         /// <summary>
         /// This is the default constructor.
@@ -42,19 +27,16 @@ namespace Xigadee
         /// <param name="defaultTimeout">The default timeout when making requests.</param>
         /// <param name="retryPolicy">The retry policy</param>
         protected PersistenceManagerHandlerJsonBase(
-              string entityName = null
+              Func<E, K> keyMaker
+            , Func<string, K> keyDeserializer
+            , string entityName = null
             , VersionPolicy<E> versionPolicy = null
             , TimeSpan? defaultTimeout = null
             , PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
             , ICacheManager<K, E> cacheManager = null
-            , Func<E, K> keyMaker = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
-            , Func<RepositoryHolder<K, E>, JsonHolder<K>> jsonMaker = null
-            , Func<string, E> entityDeserializer = null
-            , Func<E, string> entitySerializer = null
             , Func<K, string> keySerializer = null
-            , Func<string, K> keyDeserializer = null
             ) : 
             base( persistenceRetryPolicy: persistenceRetryPolicy
                 , resourceProfile:resourceProfile
@@ -64,88 +46,32 @@ namespace Xigadee
                 , defaultTimeout: defaultTimeout
                 , keyMaker:keyMaker
                 , referenceMaker:referenceMaker
-                , entityDeserializer: entityDeserializer
-                , entitySerializer: entitySerializer
                 , keySerializer: keySerializer
                 , keyDeserializer: keyDeserializer
                 )
         {
-            mJsonMaker = jsonMaker;
-            mJsonSerializerSettings = new JsonSerializerSettings { TypeNameHandling=TypeNameHandling.Auto };
         }
         #endregion
 
-        #region EntitySerialize(E entity)
-        /// <summary>
-        /// This method uses the Json serializer.
-        /// </summary>
-        /// <param name="entity">The entity to serialize.</param>
-        /// <returns>Returns the JSON representation of the object.</returns>
-        protected override string EntitySerialize(E entity)
+        protected override EntityTransformHolder<K, E> EntityTransformCreate(
+              string entityName = null
+            , VersionPolicy<E> versionPolicy = null
+            , Func<E, K> keyMaker = null
+            , Func<string, E> entityDeserializer = null
+            , Func<E, string> entitySerializer = null
+            , Func<K, string> keySerializer = null
+            , Func<string, K> keyDeserializer = null
+            , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null)
         {
-            return JsonMaker(entity).Json;
-        } 
-        #endregion
-        #region EntityMaker(string jsonHolder)
-        /// <summary>
-        /// This is a simple JSON deserialization method that returns an entity from the 
-        /// JSON representation from the DocumentDB repository.
-        /// </summary>
-        /// <param name="json">The JSON to convert.</param>
-        /// <returns>The object to return.</returns>
-        protected override E EntityDeserialize(string json)
-        {
-            // Remove the document db id field prior to deserializing
-            var jObj = JObject.Parse(json);
-            jObj.Remove("id");
+            var mTransform = base.EntityTransformCreate(
+                  entityName, versionPolicy, keyMaker
+                , entityDeserializer, entitySerializer
+                , keySerializer, keyDeserializer, referenceMaker);
 
-            //JObject jobj = JObject.
-            var entity = JsonConvert.DeserializeObject<E>(jObj.ToString(Formatting.None), mJsonSerializerSettings);
+            mTransform.EntitySerializer = mTransform.JsonSerialize;
+            mTransform.EntityDeserializer = mTransform.JsonDeserialize;
 
-            return entity;
+            return mTransform;
         }
-        #endregion
-
-        #region JsonMaker(PersistenceRepositoryHolder<K, E> rq)
-        /// <summary>
-        /// This method converts in the incoming entity in to a JSON object.
-        /// </summary>
-        /// <param name="rq">The request type.</param>
-        /// <returns>Returns a JsonHolder object with the contentid, versionid and json body.</returns>
-        protected virtual JsonHolder<K> JsonMaker(PersistenceRepositoryHolder<K, E> rq)
-        {
-            if (mJsonMaker != null)
-                return mJsonMaker(rq);
-
-            return JsonMaker(rq.Entity);
-        }
-        #endregion
-        #region JsonMaker(E entity)
-        /// <summary>
-        /// This method converts in the incoming entity in to a JSON object.
-        /// </summary>
-        /// <param name="rq">The request type.</param>
-        /// <returns>Returns a JsonHolder object with the contentid, versionid and json body.</returns>
-        protected virtual JsonHolder<K> JsonMaker(E entity)
-        {
-            var jObj = JObject.Parse(JsonConvert.SerializeObject(entity, mJsonSerializerSettings));
-
-            K key = KeyMaker(entity);
-            string id = KeyStringMaker(key);
-            jObj["id"] = id;
-
-            jObj[cnJsonMetadata_EntityType.Key] = mTransform.EntityName;
-
-            //Check for version support.
-            string version = null;
-            if (mTransform.Version.SupportsVersioning)
-            {
-                version = mTransform.Version.EntityVersionAsString(entity);
-                jObj[mTransform.Version.VersionJsonMetadata.Key] = version;
-            }
-
-            return new JsonHolder<K>(key, version, jObj.ToString(), id);
-        }
-        #endregion
     }
 }

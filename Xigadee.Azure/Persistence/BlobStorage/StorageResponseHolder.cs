@@ -61,6 +61,9 @@ namespace Xigadee
         {
             get
             {
+                if (Data == null)
+                    return null;
+
                 return Encoding.UTF8.GetString(Data);
             }
 

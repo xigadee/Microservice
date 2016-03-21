@@ -9,8 +9,7 @@ namespace Test.Xigadee
     public class PersistenceMondayMorningBluesBlob: PersistenceMessageHandlerAzureBlobStorageBase<Guid, MondayMorningBlues>
     {
         public PersistenceMondayMorningBluesBlob(StorageCredentials credentials, VersionPolicy<MondayMorningBlues> versionPolicy = null)
-            : base(credentials, (k) => k.Id
-            , idMaker: (s) => s.ToString()
+            : base(credentials, (k) => k.Id, (s) => new Guid(s), keySerializer: (g) => g.ToString("N").ToUpperInvariant()
             , versionPolicy: versionPolicy
             , referenceMaker: References)
         {

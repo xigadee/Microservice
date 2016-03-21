@@ -20,7 +20,6 @@ namespace Xigadee
         /// <param name="connection">The documentDb connection.</param>
         /// <param name="database">The is the databaseId name. If the Db does not exist it will be created.</param>
         /// <param name="keyMaker">This function creates a key of type K from an entity of type E</param>
-        /// <param name="jsonMaker">This function can be used to override the default JSON creation functions.</param>
         /// <param name="databaseCollection">The is the collection name. If the collection does it exist it will be created. This will be used by the sharding policy to create multiple collections.</param>
         /// <param name="entityName">The entity name to be used in the collection. By default this will be set through reflection.</param>
         /// <param name="versionMaker">This function should be set to enforce optimistic locking.</param>
@@ -30,25 +29,29 @@ namespace Xigadee
         public PersistenceManagerHandlerDocumentDb(DocumentDbConnection connection
             , string database
             , Func<E, K> keyMaker
-            , Func<RepositoryHolder<K, E>, JsonHolder<K>> jsonMaker = null
+            , Func<string, K> keyDeserializer
             , string databaseCollection = null
+            , ShardingPolicy<K> shardingPolicy = null
             , string entityName = null
             , VersionPolicy<E> versionPolicy = null
             , TimeSpan? defaultTimeout = null
-            , ShardingPolicy<K> shardingPolicy = null
             , PersistenceRetryPolicy persistenceRetryPolicy = null
+            , ResourceProfile resourceProfile = null
+            , ICacheManager<K, E> cacheManager = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
-            , ResourceProfile resourceProfile = null)
-            : base(connection, database, keyMaker
-                  , jsonMaker: jsonMaker
+            , Func<K, string> keySerializer = null)
+            : base(connection, database, keyMaker, keyDeserializer
                   , databaseCollection: databaseCollection
+                  , shardingPolicy: shardingPolicy
                   , entityName:entityName
                   , versionPolicy: versionPolicy
                   , defaultTimeout: defaultTimeout
-                  , shardingPolicy: shardingPolicy
-                  , referenceMaker: referenceMaker
                   , persistenceRetryPolicy: persistenceRetryPolicy
-                  , resourceProfile: resourceProfile)
+                  , resourceProfile: resourceProfile
+                  , cacheManager: cacheManager
+                  , referenceMaker: referenceMaker
+                  , keySerializer: keySerializer
+                  )
         {
         }
         #endregion
@@ -103,20 +106,17 @@ namespace Xigadee
         public PersistenceManagerHandlerDocumentDb(DocumentDbConnection connection
             , string database
             , Func<E, K> keyMaker
-            , Func<RepositoryHolder<K, E>, JsonHolder<K>> jsonMaker = null
+            , Func<string, K> keyDeserializer
             , string databaseCollection = null
+            , ShardingPolicy<K> shardingPolicy = null
             , string entityName = null
             , VersionPolicy<E> versionPolicy = null
             , TimeSpan? defaultTimeout = null
-            , ShardingPolicy<K> shardingPolicy = null
             , PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
             , ICacheManager<K, E> cacheManager = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
-            , Func<string, E> entityDeserializer = null
-            , Func<E, string> entitySerializer = null
             , Func<K, string> keySerializer = null
-            , Func<string, K> keyDeserializer = null
             )
             : base( entityName: entityName
                   , versionPolicy: versionPolicy
@@ -126,9 +126,6 @@ namespace Xigadee
                   , cacheManager: cacheManager
                   , keyMaker: keyMaker
                   , referenceMaker: referenceMaker
-                  , jsonMaker: jsonMaker
-                  , entityDeserializer: entityDeserializer
-                  , entitySerializer: entitySerializer
                   , keySerializer: keySerializer
                   , keyDeserializer: keyDeserializer
                   )
@@ -151,7 +148,7 @@ namespace Xigadee
             mHolders = new Dictionary<string, CollectionHolder>();
             foreach (var collection in mShardingPolicy.Collections)
             {
-                mHolders.Add(collection, mConnection.ToCollectionHolder(mDatabaseName, collection, mDefaultTimeout, true));
+                mHolders.Add(collection, mConnection.ToCollectionHolder(mDatabaseName, collection, mPolicy.DefaultTimeout, true));
             }
         }
         #endregion
@@ -187,7 +184,7 @@ namespace Xigadee
         protected async override Task<IResponseHolder<E>> InternalCreate(PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, 
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            var jsonHolder = JsonMaker(rq);
+            var jsonHolder = mTransform.JsonMaker(rq.Entity);
 
             var result = await Partition(jsonHolder.Key).Create(jsonHolder.Json, rq.Timeout);
 
@@ -225,7 +222,7 @@ namespace Xigadee
         protected override async Task<IResponseHolder<E>> InternalUpdate(PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
         {
             //409 Conflict
-            JsonHolder<K> jsonHolder = JsonMaker(rq);
+            JsonHolder<K> jsonHolder = mTransform.JsonMaker(rq.Entity);
             JsonHolder<K> jsonHolderUpdate;
 
             var documentRq = await ResolveDocumentIdByKey(jsonHolder.Key, rq.Timeout);
@@ -244,7 +241,7 @@ namespace Xigadee
 
                 //Set the new version id on the entity.
                 mTransform.Version.EntityVersionUpdate(rq.Entity);
-                jsonHolderUpdate = JsonMaker(rq);
+                jsonHolderUpdate = mTransform.JsonMaker(rq.Entity);
             }
             else
                 jsonHolderUpdate = jsonHolder;
@@ -318,10 +315,10 @@ namespace Xigadee
         /// <returns>Returns the _rid value.</returns>
         protected virtual async Task<ResponseHolder> ResolveDocumentIdByKey(K key, TimeSpan? timeout = null)
         {
-            string id = KeyStringMaker(key);
+            string id = mTransform.KeyStringMaker(key);
 
             var extractions = new List<KeyValuePair<string, string>>();
-            extractions.Add(cnJsonMetadata_EntityType);
+            extractions.Add(mTransform.JsonMetadata_EntityType);
             if (mTransform.Version.SupportsVersioning)
                 extractions.Add(mTransform.Version.VersionJsonMetadata);
 
@@ -336,8 +333,8 @@ namespace Xigadee
         {
             if (holderResponse.IsSuccess)
             {
-                var entity = EntityDeserialize(holderResponse.Content);
-                rq.Key = KeyMaker(entity);
+                var entity = mTransform.EntityDeserializer(holderResponse.Content);
+                rq.Key = mTransform.KeyMaker(entity);
                 holderResponse.VersionId = mTransform.Version?.EntityVersionAsString(entity);
             }
 
@@ -352,7 +349,7 @@ namespace Xigadee
             if (rq.Entity == null)
                 return false;
 
-            var jsonHolder = JsonMaker(rq);
+            var jsonHolder = mTransform.JsonMaker(rq.Entity);
             var request = new PersistenceRepositoryHolder<K, E> {Key = jsonHolder.Key, Timeout = rq.Timeout};
             var response = new PersistenceRepositoryHolder<K, E>();
 
@@ -406,7 +403,7 @@ namespace Xigadee
             Func<PersistenceRepositoryHolder<K, E>, PersistenceRepositoryHolder<K, E>, TransmissionPayload, List<TransmissionPayload>, Task> readAction)
         {
             int numberOfRetries = 0;
-            int maximumRetries = mPersistenceRetryPolicy.GetMaximumRetries(m);
+            int maximumRetries = mPolicy.PersistenceRetryPolicy.GetMaximumRetries(m);
             while (numberOfRetries < maximumRetries && !m.Cancel.IsCancellationRequested)
             {
                 await readAction(rq, rs, m, l);
@@ -414,7 +411,7 @@ namespace Xigadee
                 if (rs.Entity != null || rs.ResponseCode == 404)
                     return rs.Entity != null;
 
-                await Task.Delay(mPersistenceRetryPolicy.GetDelayBetweenRetries(m, numberOfRetries));
+                await Task.Delay(mPolicy.PersistenceRetryPolicy.GetDelayBetweenRetries(m, numberOfRetries));
                 numberOfRetries++;
             }
 

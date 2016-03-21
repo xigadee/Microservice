@@ -149,7 +149,6 @@
     <Compile Include="Persistence\Server\File\TransactionalNTFS\TxFFile.cs" />
     <Compile Include="Persistence\Server\File\TransactionalNTFS\TxFTransaction.cs" />
     <Compile Include="Persistence\Server\File\TransactionalNTFS\WinApiHelper.cs" />
-    <Compile Include="Persistence\Server\JSON\JsonEntityTransformHolder.cs" />
     <Compile Include="Persistence\Server\JSON\JsonHolder.cs" />
     <Compile Include="Persistence\Server\DocumentDb\PersistenceManagerHandlerDocumentDb.cs" />
     <Compile Include="Persistence\Server\File\PersistenceManagerHandlerFileSystem.cs" />

@@ -7,7 +7,7 @@ namespace Test.Xigadee
     public class PersistenceMondayMorningBluesRedis: PersistenceMessageHandlerRedisCache<Guid, MondayMorningBlues>
     {
         public PersistenceMondayMorningBluesRedis(string connection, VersionPolicy<MondayMorningBlues> versionPolicy = null)
-            : base(connection, (k) => k.Id, keyDeserializer: (s) => new Guid(s)
+            : base(connection, (k) => k.Id, (s) => new Guid(s)
             , versionPolicy: versionPolicy
             , referenceMaker: References)
         {
