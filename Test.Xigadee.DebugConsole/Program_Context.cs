@@ -29,6 +29,10 @@ namespace Test.Xigadee
             public Guid Versionid;
 
             public Guid Testid;
+
+            public bool ClientCacheEnabled { get; set; }
+
+            public bool ServerCacheEnabled { get; set; }
         }
     }
 }

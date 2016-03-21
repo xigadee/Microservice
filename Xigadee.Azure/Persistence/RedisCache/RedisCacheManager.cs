@@ -381,10 +381,10 @@ namespace Xigadee
         /// <typeparam name="E"></typeparam>
         /// <param name="connection"></param>
         /// <returns></returns>
-        public static RedisCacheManager<K, E> Default<K, E>(string connection)
+        public static RedisCacheManager<K, E> Default<K, E>(string connection, bool readOnly = false)
             where K : IEquatable<K>
         {
-            return new RedisCacheManager<K, E>(connection);
+            return new RedisCacheManager<K, E>(connection, readOnly);
         }
     }
 }

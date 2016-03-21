@@ -57,6 +57,13 @@ namespace Test.Xigadee
 
         private static void Server_OnRegister(object sender, CommandRegisterEventArgs e)
         {
+            ICacheManager<Guid, MondayMorningBlues> cacheManager = null;
+
+            if (sContext.ServerCacheEnabled)
+            {
+                cacheManager = RedisCacheHelper.Default<Guid, MondayMorningBlues>(e.Config.RedisCacheConnection);
+            }
+
             switch (sContext.PersistenceType)
             {
                 case PersistenceOptions.Sql:
@@ -66,19 +73,19 @@ namespace Test.Xigadee
                 case PersistenceOptions.Blob:
                     e.Service.RegisterCommand(
                         new PersistenceMondayMorningBluesBlob(e.Config.Storage
-                        , sContext.Server.VersionMondayMorningBlues)
+                        , sContext.Server.VersionMondayMorningBlues, cacheManager)
                         { ChannelId = Channels.TestB });
                     break;
                 case PersistenceOptions.DocumentDb:
                     e.Service.RegisterCommand(
                         new PersistenceMondayMorningBluesDocDb(e.Config.DocDbCredentials, e.Config.DocumentDbName
-                        , sContext.Server.VersionMondayMorningBlues)
+                        , sContext.Server.VersionMondayMorningBlues, cacheManager)
                         { ChannelId = Channels.TestB });
                     break;
                 case PersistenceOptions.RedisCache:
                     e.Service.RegisterCommand(
                         new PersistenceMondayMorningBluesRedis(e.Config.RedisCacheConnection
-                        , sContext.Server.VersionMondayMorningBlues)
+                        , sContext.Server.VersionMondayMorningBlues, cacheManager)
                         { ChannelId = Channels.TestB });
                     break;
             }
