@@ -27,7 +27,7 @@ namespace Xigadee
             :base(readOnly)
         {
             mConnection = connection;
-            mTransform = transform;
+            mTransform = transform ?? new EntityTransformHolder<K, E>(true);
 
             mLazyConnection = new Lazy<ConnectionMultiplexer>(() =>
             {
@@ -90,27 +90,28 @@ namespace Xigadee
         /// <returns>Returns triple with the first boolean property indicating success followed by the key and the version.</returns>
         private async Task<Tuple<bool, K, string>> RedisResolveReference(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
         {
-            try
-            {
-                IDatabase rDb = mLazyConnection.Value.GetDatabase();
-                RedisKey hashkey = RedisReferenceKeyGet(transform, reference.Item1);
-
-                //Entity
-                RedisValue result = await rDb.HashGetAsync(hashkey, reference.Item2.ToLowerInvariant());
-
-                if (result.HasValue)
+            if (transform.KeyDeserializer != null)
+                try
                 {
-                    string[] items = result.ToString().Split('|');
+                    IDatabase rDb = mLazyConnection.Value.GetDatabase();
+                    RedisKey hashkey = RedisReferenceKeyGet(transform, reference.Item1);
 
-                    K key = transform.KeyDeserializer(items[1]);
+                    //Entity
+                    RedisValue result = await rDb.HashGetAsync(hashkey, reference.Item2.ToLowerInvariant());
 
                     if (result.HasValue)
-                        return new Tuple<bool, K, string>(true, key, items[0]);
+                    {
+                        string[] items = result.ToString().Split('|');
+
+                        K key = transform.KeyDeserializer(items[1]);
+
+                        if (result.HasValue)
+                            return new Tuple<bool, K, string>(true, key, items[0]);
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-            }
+                catch (Exception ex)
+                {
+                }
 
             return new Tuple<bool, K, string>(false, default(K), null);
         }
@@ -366,7 +367,6 @@ namespace Xigadee
             }
         } 
         #endregion
-
     }
 
     /// <summary>

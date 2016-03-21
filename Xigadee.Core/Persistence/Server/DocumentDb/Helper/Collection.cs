@@ -149,6 +149,7 @@ namespace Xigadee
                 else
                 {
                     holder.IsSuccess = false;
+                    holder.StatusCode = 404;
                 }
             }
             else

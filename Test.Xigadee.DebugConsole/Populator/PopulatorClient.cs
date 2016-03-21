@@ -20,8 +20,10 @@ namespace Test.Xigadee
         {
             base.RegisterCommands();
 
+            var cacheManager = new RedisCacheManager<Guid, MondayMorningBlues>(Config.RedisCacheConnection, true);
+
             Persistence = (IRepositoryAsync<Guid, MondayMorningBlues>)Service.RegisterCommand(
-                new PersistenceMessageInitiator<Guid, MondayMorningBlues>()
+                new PersistenceMessageInitiator<Guid, MondayMorningBlues>(cacheManager)
                 {
                       ChannelId = Channels.TestB
                     , ResponseChannelId = Channels.Interserve

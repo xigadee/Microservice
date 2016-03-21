@@ -24,6 +24,16 @@ namespace Xigadee
         public static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
         #endregion
 
+        public EntityTransformHolder(bool jsonMode = false)
+        {
+            if (jsonMode)
+            {
+                EntityDeserializer = JsonDeserialize;
+                EntitySerializer = JsonSerialize;
+                KeySerializer = (k) => k.ToString();
+                EntityName = typeof(E).Name.ToLowerInvariant();
+            }
+        }
         /// <summary>
         /// This function is used by optimistic locking, it is used to define the version id for the entity.
         /// </summary>
@@ -61,7 +71,6 @@ namespace Xigadee
         /// </summary>
         public virtual Func<string, K> KeyDeserializer { get; set; }
 
-
         #region JsonDeserialize(string json)
         /// <summary>
         /// This is a simple JSON deserialization method that returns an entity from the 
@@ -75,6 +84,7 @@ namespace Xigadee
             var jObj = JObject.Parse(json);
 
             jObj.Remove("id");
+
             jObj.Remove(JsonMetadata_EntityType.Key);
 
             if (Version != null)
