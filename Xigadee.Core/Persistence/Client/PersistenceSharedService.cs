@@ -103,7 +103,7 @@ namespace Xigadee
             bool processAsync = rq.Settings == null ? false : rq.Settings.ProcessAsync;
             payloadRq.Options = ProcessOptions.RouteInternal;
             var message = payloadRq.Message;
-
+            payloadRq.MaxProcessingTime = rq.Settings?.WaitTime;
             payloadRq.MessageObject = rq;
             message.ChannelId = ChannelId;
             message.ChannelPriority = processAsync ? 0:-1;

@@ -486,7 +486,7 @@ namespace Xigadee
                 while (MessagePumpActive)
                 {
                     //Pause 50ms if set or until another process signals continue.
-                    mPauseCheck.Wait(50);
+                    mPauseCheck.Wait(200);
 
                     try
                     {
