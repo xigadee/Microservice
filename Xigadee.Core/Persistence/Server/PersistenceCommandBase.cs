@@ -553,12 +553,14 @@ namespace Xigadee
             PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
+            K key = mTransform.KeyMaker(rq.Entity);
+
             var result = await InternalCreate(rq, rs, prq, prs);
 
             if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
                 mCacheManager.Write(mTransform, result.Entity);
 
-            ProcessOutputEntity(rq.Key, rq, rs, result);
+            ProcessOutputEntity(key, rq, rs, result);
         }
 
         protected virtual async Task<IResponseHolder<E>> InternalCreate(PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
@@ -630,12 +632,14 @@ namespace Xigadee
             PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,
             TransmissionPayload prq, List<TransmissionPayload> prs)
         {
+            K key = mTransform.KeyMaker(rq.Entity);
+
             var result = await InternalUpdate(rq, rs, prq, prs);
 
             if (mCacheManager.IsActive && result.IsSuccess)
                 mCacheManager.Write(mTransform, result.Entity);
 
-            ProcessOutputEntity(rq.Key, rq, rs, result);
+            ProcessOutputEntity(key, rq, rs, result);
         }
 
         protected virtual async Task<IResponseHolder<E>> InternalUpdate(PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs,

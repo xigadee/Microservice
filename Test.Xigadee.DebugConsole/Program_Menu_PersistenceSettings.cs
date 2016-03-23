@@ -10,6 +10,7 @@ namespace Test.Xigadee
         {
             Sql,
             DocumentDb,
+            DocumentDbSdk,
             RedisCache,
             Blob
         }
@@ -31,7 +32,15 @@ namespace Test.Xigadee
                         sContext.PersistenceType = PersistenceOptions.DocumentDb;
                     }
                     , enabled: (m, o) => true
-                    , selected: (m,o) => sContext.PersistenceType == PersistenceOptions.DocumentDb
+                    , selected: (m, o) => sContext.PersistenceType == PersistenceOptions.DocumentDb
+                )
+                , new ConsoleOption("DocumentDb Sdk based Persistence"
+                    , (m, o) =>
+                    {
+                        sContext.PersistenceType = PersistenceOptions.DocumentDbSdk;
+                    }
+                    , enabled: (m, o) => false
+                    , selected: (m, o) => sContext.PersistenceType == PersistenceOptions.DocumentDbSdk
                 )
                 , new ConsoleOption("Blob storage based Persistence"
                     , (m, o) =>

@@ -82,6 +82,13 @@ namespace Test.Xigadee
                         , sContext.Server.VersionMondayMorningBlues, cacheManager)
                         { ChannelId = Channels.TestB });
                     break;
+                case PersistenceOptions.DocumentDbSdk:
+                    e.Service.RegisterCommand(
+                        new PersistenceMondayMorningBluesDocDb(e.Config.DocDbCredentials, e.Config.DocumentDbName
+                        , sContext.Server.VersionMondayMorningBlues, cacheManager)
+                        { ChannelId = Channels.TestB });
+                    break;
+
                 case PersistenceOptions.RedisCache:
                     e.Service.RegisterCommand(
                         new PersistenceMondayMorningBluesRedis(e.Config.RedisCacheConnection
