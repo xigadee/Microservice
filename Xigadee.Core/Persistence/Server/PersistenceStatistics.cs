@@ -35,5 +35,7 @@ namespace Xigadee
         public long Retries {get { return mRetries; } }
 
         private long mRetries;
+
+        public string[] RequestsInPlay { get; set; }
     }
 }

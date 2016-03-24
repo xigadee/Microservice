@@ -1,7 +1,9 @@
 ﻿#region using
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 #endregion
 namespace Xigadee
@@ -26,6 +28,8 @@ namespace Xigadee
         /// This is the cache manager.
         /// </summary>
         protected readonly ICacheManager<K, E> mCacheManager;
+
+        protected readonly ConcurrentDictionary<Guid, IPersistenceRequestHolder> mInPlay;
         #endregion
         #region Constructor
         /// <summary>
@@ -51,6 +55,8 @@ namespace Xigadee
             mTransform = EntityTransformCreate(entityName, versionPolicy, keyMaker
                 , entityDeserializer, entitySerializer
                 , keySerializer, keyDeserializer, referenceMaker);
+
+            mInPlay = new ConcurrentDictionary<Guid, IPersistenceRequestHolder>();
 
             mPolicy.DefaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(5);
             mPolicy.PersistenceRetryPolicy = persistenceRetryPolicy ?? new PersistenceRetryPolicy();
@@ -346,29 +352,61 @@ namespace Xigadee
 
         #region ProfileStart/ProfileEnd/ProfileRetry
 
-        protected virtual Guid ProfileStart(TransmissionPayload payload)
+        protected virtual PersistenceRequestHolder<KT, ET> ProfileStart<KT, ET>(TransmissionPayload prq, List<TransmissionPayload> prs)
         {
+            Guid profileId;
             if (mPolicy.ResourceConsumer == null)
-                return Guid.NewGuid();
+                profileId = Guid.NewGuid();
+            else
+                profileId =  mPolicy.ResourceConsumer.Start(prq.Message.ToKey(), prq.Id);
 
-            return mPolicy.ResourceConsumer.Start(payload.Message.ToKey(), payload.Id);
+            var holder = new PersistenceRequestHolder<KT, ET>(profileId, prq, prs);
+
+            mInPlay.TryAdd(holder.profileId, holder);
+
+            return holder;
         }
 
-        protected virtual void ProfileEnd(Guid profileId, int start, ResourceRequestResult reason)
+        protected virtual void ProfileEnd<KT, ET>(PersistenceRequestHolder<KT, ET> holder)
         {
             if (mPolicy.ResourceConsumer != null)
-                mPolicy.ResourceConsumer.End(profileId, start, reason);
+                mPolicy.ResourceConsumer.End(holder.profileId, holder.start, holder.result ?? ResourceRequestResult.Unknown);
+
+            IPersistenceRequestHolder ok;
+            mInPlay.TryRemove(holder.profileId, out ok);
         }
 
-        protected virtual void ProfileRetry(Guid profileId, int retryStart, ResourceRetryReason reason)
+        protected virtual void ProfileRetry<KT, ET>(PersistenceRequestHolder<KT, ET> holder, int retryStart)
         {
             if (mPolicy.ResourceConsumer != null)
-                mPolicy.ResourceConsumer.Retry(profileId, retryStart, reason);
+                mPolicy.ResourceConsumer.Retry(holder.profileId, retryStart, holder.rs.ShouldRetry ? ResourceRetryReason.Other : ResourceRetryReason.Timeout);
+
+            holder.Retry(retryStart);
+            mStatistics.RetryIncrement();
+
         }
         #endregion
 
-        protected class PersistenceRequestHolder<KT, ET>
+        #region class ->> PersistenceRequestHolder<KT, ET>
+
+        protected interface IPersistenceRequestHolder
         {
+            Guid profileId { get; }
+
+            int start{ get; }
+
+            string Profile { get; }
+        }
+
+        /// <summary>
+        /// This class is used to hold the incoming persistence request while it is being processed.
+        /// </summary>
+        /// <typeparam name="KT">The key type.</typeparam>
+        /// <typeparam name="ET">The entity type.</typeparam>
+        protected class PersistenceRequestHolder<KT, ET>: IPersistenceRequestHolder
+        {
+            private int mRetry;
+
             public PersistenceRequestHolder(Guid profileId, TransmissionPayload prq, List<TransmissionPayload> prs)
             {
                 this.profileId = profileId;
@@ -390,12 +428,27 @@ namespace Xigadee
 
             public List<TransmissionPayload> prs;
 
-            public int start;
+            public int start { get; private set; }
 
-            public Guid profileId;
+            public Guid profileId { get; private set; }
 
             public ResourceRequestResult? result;
-        }
+
+            public void Retry(int retryStart)
+            {
+                Interlocked.Increment(ref mRetry);
+            }
+
+            public string Profile
+            {
+                get
+                {
+                    return "";
+                }
+            }
+        } 
+
+        #endregion
 
         #region PersistenceCommandRegister<KT,ET>...
         /// <summary>
@@ -418,7 +471,7 @@ namespace Xigadee
         {
             Func<TransmissionPayload, List<TransmissionPayload>, Task> actionPayload = async (m, l) =>
             {
-                var holder = new PersistenceRequestHolder<KT,ET>(ProfileStart(m), m, l);
+                var holder = ProfileStart<KT,ET>(m, l);
 
                 try
                 {
@@ -476,9 +529,7 @@ namespace Xigadee
                                 if (!holder.rs.IsTimeout && !holder.rs.ShouldRetry)
                                     break;
 
-                                ProfileRetry(holder.profileId, attempt, holder.rs.ShouldRetry?ResourceRetryReason.Other:ResourceRetryReason.Timeout);
-
-                                mStatistics.RetryIncrement();
+                                ProfileRetry(holder, attempt);
 
                                 Logger.LogMessage(LoggingLevel.Info
                                     , string.Format("Timeout occured for {0} {1} for request:{2}", EntityType, actionType, holder.rq)
@@ -571,7 +622,7 @@ namespace Xigadee
                 }
                 finally
                 {
-                    ProfileEnd(holder.profileId, holder.start, holder.result ?? ResourceRequestResult.Unknown);
+                    ProfileEnd(holder);
                 }
             };
 
