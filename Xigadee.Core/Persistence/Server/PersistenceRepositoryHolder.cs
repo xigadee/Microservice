@@ -10,6 +10,8 @@ namespace Xigadee
 {
     public class PersistenceRepositoryHolder<K, E> : RepositoryHolder<K, E>
     {
+        private RepositoryHolder<object, object> rqTemp;
+
         public PersistenceRepositoryHolder(RepositoryHolder<K, E> holder = null)
         {
             IsTimeout = false;
@@ -26,6 +28,11 @@ namespace Xigadee
                 this.ResponseMessage = holder.ResponseMessage;
                 this.TraceId = holder.TraceId;
             }
+        }
+
+        public PersistenceRepositoryHolder(RepositoryHolder<object, object> rqTemp)
+        {
+            this.rqTemp = rqTemp;
         }
 
         public TimeSpan? Timeout { get; set; }

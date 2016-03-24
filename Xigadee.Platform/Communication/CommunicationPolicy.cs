@@ -14,10 +14,11 @@ namespace Xigadee
     {
         public CommunicationPolicy()
         {
-            ClientPriorityRecaculateFrequency = TimeSpan.FromMinutes(10);
+            ClientPriorityRecalculateFrequency = TimeSpan.FromMinutes(10);
             PriorityAlgorithm = new DefaultClientPollSlotAllocationAlgorithm();
         }
-        public TimeSpan ClientPriorityRecaculateFrequency { get; set; } 
+
+        public TimeSpan ClientPriorityRecalculateFrequency { get; set; } 
 
         public virtual ClientPollSlotAllocationAlgorithm PriorityAlgorithm { get; set; } 
     }

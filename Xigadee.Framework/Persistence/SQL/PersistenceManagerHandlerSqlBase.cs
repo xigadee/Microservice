@@ -325,79 +325,71 @@ namespace Xigadee
         #endregion
 
         #region ProcessCreate
-        protected override async Task ProcessCreate(PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, 
-            TransmissionPayload prq, List<TransmissionPayload> prs)
+        protected override async Task ProcessCreate(PersistenceRequestHolder<K, E> holder)
         {
             await CommandTemplateXml(Connection, StoredProcedureCreate,
-                sqlCmd => DbSerializeEntity(rq.Entity, sqlCmd),
-                (node, sqlParam) => ProcessOutput(node, rs, rq), rs);
+                sqlCmd => DbSerializeEntity(holder.rq.Entity, sqlCmd),
+                (node, sqlParam) => ProcessOutput(node, holder.rs, holder.rq), holder.rs);
         }
         #endregion
         #region ProcessRead
-        protected override async Task ProcessRead(PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, 
-            TransmissionPayload prq, List<TransmissionPayload> prs)
+        protected override async Task ProcessRead(PersistenceRequestHolder<K, E> holder)
         {
             await CommandTemplateXml(Connection, StoredProcedureRead,
-                sqlCmd => DbSerializeKey(rq.Key, sqlCmd),
-                (node, sqlParam) => ProcessOutput(node, rs, rq), rs);
+                sqlCmd => DbSerializeKey(holder.rq.Key, sqlCmd),
+                (node, sqlParam) => ProcessOutput(node, holder.rs, holder.rq), holder.rs);
         }
         #endregion
         #region ProcessReadByRef
-        protected override async Task ProcessReadByRef(PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, 
-            TransmissionPayload prq, List<TransmissionPayload> prs)
+        protected override async Task ProcessReadByRef(PersistenceRequestHolder<K, E> holder)
         {
             await CommandTemplateXml(Connection, StoredProcedureReadByRef,
-                sqlCmd => DbSerializeKeyReference(rq.KeyReference, sqlCmd),
-                (node, sqlParam) => ProcessOutput(node, rs, rq), rs);
+                sqlCmd => DbSerializeKeyReference(holder.rq.KeyReference, sqlCmd),
+                (node, sqlParam) => ProcessOutput(node, holder.rs, holder.rq), holder.rs);
         }
         #endregion
         #region ProcessUpdate
-        protected override async Task ProcessUpdate(PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, 
-            TransmissionPayload prq, List<TransmissionPayload> prs)
+        protected override async Task ProcessUpdate(PersistenceRequestHolder<K, E> holder)
         {
             await CommandTemplateXml(Connection, StoredProcedureUpdate,
-                sqlCmd => DbSerializeEntity(rq.Entity, sqlCmd),
-                (node, sqlParam) => ProcessOutput(node, rs, rq), rs);
+                sqlCmd => DbSerializeEntity(holder.rq.Entity, sqlCmd),
+                (node, sqlParam) => ProcessOutput(node, holder.rs, holder.rq), holder.rs);
         }
         #endregion
         #region ProcessDelete
-        protected override async Task ProcessDelete(PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, 
-            TransmissionPayload prq, List<TransmissionPayload> prs)
+        protected override async Task ProcessDelete(PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
             await CommandTemplateXml(Connection, StoredProcedureDelete,
-                sqlCmd => DbSerializeKey(rq.Key, sqlCmd),
-                (node, sqlParam) => ProcessOutput(node, rs, rq), rs);
+                sqlCmd => DbSerializeKey(holder.rq.Key, sqlCmd),
+                (node, sqlParam) => ProcessOutput(node, holder.rs, holder.rq), holder.rs);
         }
         #endregion
         #region ProcessDeleteByRef
-        protected override async Task ProcessDeleteByRef(PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, 
-            TransmissionPayload prq, List<TransmissionPayload> prs)
+        protected override async Task ProcessDeleteByRef(PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
             await CommandTemplateXml(Connection, StoredProcedureDeleteByRef,
-                sqlCmd => DbSerializeKeyReference(rq.KeyReference, sqlCmd),
-                (node, sqlParam) => ProcessOutput(node, rs, rq), rs);
+                sqlCmd => DbSerializeKeyReference(holder.rq.KeyReference, sqlCmd),
+                (node, sqlParam) => ProcessOutput(node, holder.rs, holder.rq), holder.rs);
         }
         #endregion
         #region ProcessVersion
-        protected override async Task ProcessVersion(PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, 
-            TransmissionPayload prq, List<TransmissionPayload> prs)
+        protected override async Task ProcessVersion(PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
             await CommandTemplateXml(Connection, StoredProcedureVersion,
-                sqlCmd => DbSerializeKey(rq.Key, sqlCmd),
-                (node, sqlParam) => ProcessOutput(node, rs, rq), rs);
+                sqlCmd => DbSerializeKey(holder.rq.Key, sqlCmd),
+                (node, sqlParam) => ProcessOutput(node, holder.rs, holder.rq), holder.rs);
         }
         #endregion
         #region ProcessVersionByRef
-        protected override async Task ProcessVersionByRef(PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, 
-            TransmissionPayload prq, List<TransmissionPayload> prs)
+        protected override async Task ProcessVersionByRef(PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
             await CommandTemplateXml(Connection, StoredProcedureVersionByRef,
-                sqlCmd => DbSerializeKeyReference(rq.KeyReference, sqlCmd),
-                (node, sqlParam) => ProcessOutput(node, rs, rq), rs);
+                sqlCmd => DbSerializeKeyReference(holder.rq.KeyReference, sqlCmd),
+                (node, sqlParam) => ProcessOutput(node, holder.rs, holder.rq), holder.rs);
         }
         #endregion
 
-        #region Process Sql Output
+        #region ProcessOutput...
 
         private E ProcessOutput(XElement node, PersistenceRepositoryHolder<K, E> rs, PersistenceRepositoryHolder<K, E> rq)
         {

@@ -38,26 +38,45 @@ namespace Xigadee
 
         private int mPolls, mPollsSuccess;
 
+        private decimal? mPollTimeReduceRatio;
+
         IResourceRequestRateLimiter mLimiter;
 
         /// <summary>
         /// This is the maximum wait time that the client can wait before it is polled.
         /// </summary>
-        TimeSpan mMaxPermittedPollWait;
+        TimeSpan mMaxAllowedPollWait;
+        /// <summary>
+        /// This is the minimum wait time that the client should wait before it is polled.
+        /// </summary>
+        TimeSpan mMinExpectedPollWait;
 
         #endregion
         #region Constructor
         /// <summary>
         /// This is the main constructor.
         /// </summary>
+        /// <param name="resourceTracker">The resource tracker.</param>
         /// <param name="client">The client to hold.</param>
+        /// <param name="mappingChannelId">The mapping channel.param>
+        /// <param name="maxAllowedPollWait">The maximum permitted poll length.</param>
         public ClientPriorityHolder(IResourceTracker resourceTracker
-            , ClientHolder client, string mappingChannelId, TimeSpan? maxPermittedPollWait = null)
+            , ClientHolder client, string mappingChannelId
+            , TimeSpan? maxAllowedPollWait = null
+            , TimeSpan? minExpectedPollWait = null
+            , decimal? pollTimeReduceRatio = 0.75M
+            )
         {
             if (client == null)
                 throw new ArgumentNullException("Client");
 
-            mMaxPermittedPollWait = maxPermittedPollWait ?? TimeSpan.FromSeconds(1);
+            mPollTimeReduceRatio = pollTimeReduceRatio;
+
+            mMaxAllowedPollWait = maxAllowedPollWait ?? TimeSpan.FromSeconds(1);
+            mMinExpectedPollWait = minExpectedPollWait ?? TimeSpan.FromMilliseconds(100);
+
+            if (mMinExpectedPollWait > mMaxAllowedPollWait)
+                mMinExpectedPollWait = mMaxAllowedPollWait;
 
             mLimiter = resourceTracker.RegisterRequestRateLimiter(client.Name, client.ResourceProfiles);
             mMappingChannel = mappingChannelId;
@@ -129,11 +148,11 @@ namespace Xigadee
         public long? PriorityQueueLength { get; private set; }
         #endregion
 
-        #region LastPollTimeAged
+        #region LastPollTimeSpan
         /// <summary>
         /// This is the calcualted time span from the last time the priority was calculated.
         /// </summary>
-        public TimeSpan? LastPollTimeAged
+        public TimeSpan? LastPollTimeSpan
         {
             get
             {
@@ -143,6 +162,35 @@ namespace Xigadee
                 return TimeSpan.FromMilliseconds(StatsContainer.CalculateDelta(Environment.TickCount, LastPollTickCount.Value));
             }
         }
+        #endregion
+        #region CalculatedMaximumPollWait
+        /// <summary>
+        /// This method is used to reduce the poll interval when the client reaches a certain success threshold
+        /// for polling frequency, which is set of an increasing scale at 75%.
+        /// </summary>
+        public TimeSpan CalculatedMaximumPollWait
+        {
+            get
+            {
+                var rate = PollSuccessRate;
+                //If we have a poll success rate under the threshold then return the maximum value.
+                if (!mPollTimeReduceRatio.HasValue || rate < mPollTimeReduceRatio.Value)
+                    return mMaxAllowedPollWait;
+
+                decimal adjustRatio = ((1M - rate) /(1M - mPollTimeReduceRatio.Value)); //This tends to 0 when the rate hits 100%
+
+                double minTime = mMinExpectedPollWait.TotalMilliseconds;
+                double maxTime = mMaxAllowedPollWait.TotalMilliseconds;
+                double difference = maxTime - minTime;
+
+                if (difference <= 0)
+                    return TimeSpan.FromMilliseconds(minTime);
+
+                double newWait = (double)((decimal)difference * adjustRatio);
+
+                return TimeSpan.FromMilliseconds(minTime + newWait);
+            }
+        } 
         #endregion
 
         #region LastPollTickCount
@@ -185,12 +233,18 @@ namespace Xigadee
         /// <returns>Returns true if the poll should be skipped.</returns>
         public bool ShouldSkip()
         {
-            var lastPoll = LastPollTimeAged;
-            if (lastPoll.HasValue && lastPoll.Value > mMaxPermittedPollWait)
-            {
-                return false;
-            }
+            //Get the timespan since the last poll
+            var lastPollTimeSpan = LastPollTimeSpan;
 
+            //Check whether we have waited the minimum poll time, if not skip
+            if (lastPollTimeSpan.HasValue && lastPollTimeSpan.Value < mMinExpectedPollWait)
+                return true;
+
+            //Check whether we have waited over maximum poll time, then poll
+            if (lastPollTimeSpan.HasValue && lastPollTimeSpan.Value > CalculatedMaximumPollWait)
+                return false;
+
+            //Check whether the skip count is greater that zero, and if so then skip
             if (Interlocked.Decrement(ref mSkipCount) > 0)
                 return true;
 
@@ -268,14 +322,16 @@ namespace Xigadee
             return false;
         }
         #endregion
-        #region Poll(int wait = 50)
+        #region Poll()
         /// <summary>
         /// This method is used to Poll the connection for waiting messages.
         /// </summary>
         /// <param name="wait">The time to wait, by default 50 ms.</param>
         /// <returns>Returns a list of TransmissionPayload objects to process.</returns>
-        public async Task<List<TransmissionPayload>> Poll(int wait = 50)
+        public async Task<List<TransmissionPayload>> Poll()
         {
+            int wait = (int)mMinExpectedPollWait.TotalMilliseconds;
+
             Interlocked.Add(ref mPollAttempted, LastReserved.Value);
             Interlocked.Add(ref mPollAttemptedBatch, LastReserved.Value);
 
@@ -465,7 +521,7 @@ namespace Xigadee
                 mStatistics.CapacityPercentage = CapacityPercentage;
                 mStatistics.PriorityCurrent = PriorityCurrent;
                 mStatistics.Status = string.Format("Ratio: {0}/{1} Failed:{2} Hits:{3}/{4}", mPollAchieved, mPollAttempted, mPollException, mPollIn, mPollOut);
-                mStatistics.PollLast = LastPollTimeAged;
+                mStatistics.PollLast = LastPollTimeSpan;
                 mStatistics.Name = Client.DebugStatus;
                 mStatistics.Client = Client.Statistics;
                 mStatistics.MappingChannel = mMappingChannel;

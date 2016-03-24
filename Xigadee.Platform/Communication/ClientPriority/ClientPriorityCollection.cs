@@ -65,6 +65,7 @@ namespace Xigadee
         /// This method returns the next client in the poll chain if one is available.
         /// </summary>
         /// <param name="available">The number of available slots.</param>
+        /// <param name="recoverSlots">This action is called when a poll has completed to recover the reserved slots for other polling clients.</param>
         /// <param name="context">The slot context.</param>
         /// <returns>Returns true if a slot has been reserved.</returns>
         public bool TakeNext(int available, Action<int> recoverSlots, out HolderSlotContext context)

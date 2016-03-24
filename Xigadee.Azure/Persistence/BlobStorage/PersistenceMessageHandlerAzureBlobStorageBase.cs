@@ -98,10 +98,12 @@ namespace Xigadee
         private PersistenceResponseHolder<E> PersistenceResponseFormat(StorageResponseHolder result)
         {
             if (result.IsSuccess)
+            {
                 if (result.Content != null)
                     return new PersistenceResponseHolder<E>() { StatusCode = result.StatusCode, Content = result.Content, IsSuccess = true, Entity = mTransform.EntityDeserializer(result.Content), VersionId = result.VersionId };
-            else
-                    return new PersistenceResponseHolder<E>() { StatusCode = result.StatusCode, IsSuccess = true, VersionId = result.VersionId};
+                else
+                    return new PersistenceResponseHolder<E>() { StatusCode = result.StatusCode, IsSuccess = true, VersionId = result.VersionId };
+            }
             else
                 return new PersistenceResponseHolder<E>() { StatusCode = result.IsTimeout ? 504 : result.StatusCode, IsSuccess = false, IsTimeout = result.IsTimeout };
         }
@@ -114,9 +116,9 @@ namespace Xigadee
         /// <param name="rs">The response.</param>
         /// <param name="prq">The incoming payload.</param>
         /// <param name="prs">The outgoing payload.</param>
-        protected override async Task<IResponseHolder<E>> InternalCreate(PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
+        protected override async Task<IResponseHolder<E>> InternalCreate(PersistenceRequestHolder<K, E> holder)
         {
-            var jsonHolder = mTransform.JsonMaker(rq.Entity);
+            var jsonHolder = mTransform.JsonMaker(holder.rq.Entity);
             var blob = Encoding.UTF8.GetBytes(jsonHolder.Json);
 
             var result = await mStorage.Create(mStorageIdMaker(jsonHolder.Key), blob
@@ -134,9 +136,9 @@ namespace Xigadee
         /// <param name="rs">The response.</param>
         /// <param name="prq">The incoming payload.</param>
         /// <param name="prs">The outgoing payload.</param>
-        protected override async Task<IResponseHolder<E>> InternalRead(K key, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
+        protected override async Task<IResponseHolder<E>> InternalRead(K key, PersistenceRequestHolder<K, E> holder)
         {
-            var result = await mStorage.Read(mStorageIdMaker(rq.Key), directory: mDirectory);
+            var result = await mStorage.Read(mStorageIdMaker(holder.rq.Key), directory: mDirectory);
 
             return PersistenceResponseFormat(result);
         }
@@ -149,9 +151,9 @@ namespace Xigadee
         /// <param name="rs">The response.</param>
         /// <param name="prq">The incoming payload.</param>
         /// <param name="prs">The outgoing payload.</param>
-        protected override async Task<IResponseHolder<E>> InternalUpdate(PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
+        protected override async Task<IResponseHolder<E>> InternalUpdate(PersistenceRequestHolder<K, E> holder)
         {
-            var jsonHolder = mTransform.JsonMaker(rq.Entity);
+            var jsonHolder = mTransform.JsonMaker(holder.rq.Entity);
             var blob = Encoding.UTF8.GetBytes(jsonHolder.Json);
 
             var result = await mStorage.Update(mStorageIdMaker(jsonHolder.Key), blob
@@ -169,9 +171,9 @@ namespace Xigadee
         /// <param name="rs">The response.</param>
         /// <param name="prq">The incoming payload.</param>
         /// <param name="prs">The outgoing payload.</param>
-        protected override async Task<IResponseHolder> InternalDelete(K key, PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
+        protected override async Task<IResponseHolder> InternalDelete(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            var result = await mStorage.Delete(mStorageIdMaker(rq.Key), directory: mDirectory);
+            var result = await mStorage.Delete(mStorageIdMaker(holder.rq.Key), directory: mDirectory);
 
             return PersistenceResponseFormat(result);
         }
@@ -184,9 +186,9 @@ namespace Xigadee
         /// <param name="rs">The response.</param>
         /// <param name="prq">The incoming payload.</param>
         /// <param name="prs">The outgoing payload.</param>
-        protected override async Task<IResponseHolder> InternalVersion(K key, PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, TransmissionPayload prq, List<TransmissionPayload> prs)
+        protected override async Task<IResponseHolder> InternalVersion(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            var result = await mStorage.Version(mStorageIdMaker(rq.Key), directory: mDirectory);
+            var result = await mStorage.Version(mStorageIdMaker(holder.rq.Key), directory: mDirectory);
 
             return PersistenceResponseFormat(result);
         }

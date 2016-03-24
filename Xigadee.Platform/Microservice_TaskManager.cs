@@ -704,14 +704,14 @@ namespace Xigadee
                 Interlocked.Increment(ref mTasksKilled);
                 Interlocked.Increment(ref mTasksKilledTotal);           
             }
-        } 
+        }
         #endregion
 
         #region ListenersProcess(bool singleHop = false)
         /// <summary>
         /// This method is used to create tasks to dequeue data from the listeners.
         /// </summary>
-        /// <param name="hops">The number of tasks to run.</param>
+        /// <param name="singleHop">A boolean value indicating whether we should only poll a single hop.</param>
         private void ListenersProcess(bool singleHop = false)
         {
             //Ok, we don't receive any messages until the system is running.
@@ -731,16 +731,17 @@ namespace Xigadee
                 if (singleHop)
                     break;
             }
-        } 
+        }
         #endregion
         #region ListenerProcessClientPayloads(ListenerClient container, TransmissionPayload payload)
         /// <summary>
         /// This method processes the individual payload and passes it to be exectued.
         /// </summary>
-        /// <param name="payload">The payload to process.</param>
+        /// <param name="clientId">The clientId that has been polled.</param>
+        /// <param name="payloads">The payloads to process.</param>
         private void ListenerProcessClientPayloads(Guid clientId, List<TransmissionPayload> payloads)
         {
-            if (payloads == null)
+            if (payloads == null || payloads.Count == 0)
                 return;
 
             foreach (var payload in payloads)

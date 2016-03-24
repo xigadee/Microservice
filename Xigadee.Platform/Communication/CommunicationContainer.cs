@@ -132,7 +132,7 @@ namespace Xigadee
 
                 // Flush the accumulated telemetry 
                 mClientRecalculateSchedule = Scheduler.Register(async (s, cancel) => await ListenersPriorityRecalculate()
-                    , mPolicy.ClientPriorityRecaculateFrequency, "Communication Listeners Priority Recalculate", TimeSpan.FromMinutes(1), isInternal: true);
+                    , mPolicy.ClientPriorityRecalculateFrequency, "Communication Listeners Priority Recalculate", TimeSpan.FromMinutes(1), isInternal: true);
 
             }
             catch (Exception ex)

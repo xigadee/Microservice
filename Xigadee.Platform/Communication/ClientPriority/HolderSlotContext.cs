@@ -35,9 +35,14 @@ namespace Xigadee
 
         public int? Actual { get; private set; }
 
-        public async Task<List<TransmissionPayload>> Poll(int wait = 50)
+        #region Poll()
+        /// <summary>
+        /// This method is used to poll the underlying client and return any outstanding messages.
+        /// </summary>
+        /// <returns>Returns a list of payloads from the underlying communication layer.</returns>
+        public async Task<List<TransmissionPayload>> Poll()
         {
-            var items = await mHolder.Poll(wait);
+            var items = await mHolder.Poll();
             if (items != null)
             {
                 Actual = items.Count;
@@ -45,7 +50,8 @@ namespace Xigadee
             }
 
             return items;
-        }
+        } 
+        #endregion
 
         public void Release(bool exception)
         {
