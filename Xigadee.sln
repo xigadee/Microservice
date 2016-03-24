@@ -34,6 +34,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{35D4
 		AssemblyInfo\UpdateVersion.ps1 = AssemblyInfo\UpdateVersion.ps1
 	EndProjectSection
 EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Test.Xigadee.Sql", "Test.Xigadee.Sql\Test.Xigadee.Sql.sqlproj", "{FE000961-2CD9-49C4-9C6D-B8A5AAAC1844}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,6 +90,12 @@ Global
 		{AF9B61BA-6A9C-4BD3-A87A-FB513188F21F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF9B61BA-6A9C-4BD3-A87A-FB513188F21F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF9B61BA-6A9C-4BD3-A87A-FB513188F21F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE000961-2CD9-49C4-9C6D-B8A5AAAC1844}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE000961-2CD9-49C4-9C6D-B8A5AAAC1844}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE000961-2CD9-49C4-9C6D-B8A5AAAC1844}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{FE000961-2CD9-49C4-9C6D-B8A5AAAC1844}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE000961-2CD9-49C4-9C6D-B8A5AAAC1844}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE000961-2CD9-49C4-9C6D-B8A5AAAC1844}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -95,5 +103,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{F81F3402-897C-40AE-832C-7EF1000D2595} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 		{C523008A-BAF6-418D-8822-48E0820A427D} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
+		{FE000961-2CD9-49C4-9C6D-B8A5AAAC1844} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 	EndGlobalSection
 EndGlobal
