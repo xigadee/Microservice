@@ -209,14 +209,15 @@ namespace Xigadee
         /// <param Name="id">The entity key.</param>
         /// <returns></returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities")]
-        protected async Task<PersistenceResponseHolder<ET>> SqlCommandTemplate<KT, ET>(
+        protected async Task<R> SqlCommandTemplate<R>(
             string DbConnection, 
             string commandname,
             Action<SqlCommand> act,
-            Func<XElement, SqlParameter, ET> conv)
+            Func<XElement, SqlParameter, R> conv)
+            where R : PersistenceResponseHolder, new()
         {
             SqlParameter paramReturnValue = null;
-            var rs = new PersistenceResponseHolder<ET>();
+            R rs = default(R);
             try
             {
                 using (SqlConnection cn = new SqlConnection(DbConnection))
@@ -235,7 +236,6 @@ namespace Xigadee
 
                     sqlCmd.Parameters.Add(paramReturnValue);
 
-                    ET data = default(ET);
                     try
                     {
                         using (XmlReader xmlR = await sqlCmd.ExecuteXmlReaderAsync())
@@ -250,10 +250,10 @@ namespace Xigadee
                                 }
 
                                 if (node != null)
-                                    data = conv(node, paramReturnValue);
+                                    rs = conv(node, paramReturnValue);
                             }
                             else
-                                data = conv(null, paramReturnValue);
+                                rs = conv(null, paramReturnValue);
                         }
                     }
                     catch (InvalidOperationException)
@@ -263,7 +263,7 @@ namespace Xigadee
                             || (int)paramReturnValue.Value == 0)
                             throw;
 
-                        data = conv(null, paramReturnValue);
+                        rs = conv(null, paramReturnValue);
                     }
 
 
@@ -272,8 +272,8 @@ namespace Xigadee
 
                     if (rs.StatusCode == 401)
                         Logger.LogMessage(LoggingLevel.Error, string.Format("Sql DB action {0} failed: ", commandname), "SQL");
-                    else
-                        rs.Entity = data;
+                    //else
+                    //    rs.Entity = data;
                 }
             }
             catch (Exception)
@@ -294,10 +294,9 @@ namespace Xigadee
 
         protected override async Task<IResponseHolder<E>> InternalCreate(PersistenceRequestHolder<K, E> holder)
         {
-            return await SqlCommandTemplate(Connection
-                , StoredProcedureCreate
+            return await SqlCommandTemplate<PersistenceResponseHolder<E>>(Connection, StoredProcedureCreate
                 , sqlCmd => DbSerializeEntity(holder.rq.Entity, sqlCmd)
-                , (node, sqlParam) => ProcessOutput(node, holder.rs, holder.rq)
+                , (node, sqlParam) => ProcessOutputEntity(node, holder.rs, holder.rq)
                 );
 
         }
@@ -305,10 +304,9 @@ namespace Xigadee
         #region ProcessRead
         protected override async Task<IResponseHolder<E>> InternalRead(K key, PersistenceRequestHolder<K, E> holder)
         {
-            return await SqlCommandTemplate(Connection
-                , StoredProcedureRead
+            return await SqlCommandTemplate<PersistenceResponseHolder<E>>(Connection, StoredProcedureRead
                 , sqlCmd => DbSerializeKey(key, sqlCmd)
-                , (node, sqlParam) => ProcessOutput(node, holder.rs, holder.rq)
+                , (node, sqlParam) => ProcessOutputEntity(node, holder.rs, holder.rq)
                 );
 
         }
@@ -317,69 +315,62 @@ namespace Xigadee
 
         protected override async Task<IResponseHolder<E>> InternalReadByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, E> holder)
         {
-            return await SqlCommandTemplate(Connection
-                , StoredProcedureReadByRef
+            return await SqlCommandTemplate<PersistenceResponseHolder<E>>(Connection, StoredProcedureReadByRef
                 , sqlCmd => DbSerializeKeyReference(reference, sqlCmd)
-                , (node, sqlParam) => ProcessOutput(node, holder.rs, holder.rq)
+                , (node, sqlParam) => ProcessOutputEntity(node, holder.rs, holder.rq)
                 );
         }
         #endregion
         #region ProcessUpdate
         protected override async Task<IResponseHolder<E>> InternalUpdate(PersistenceRequestHolder<K, E> holder)
         {
-            return await SqlCommandTemplate(Connection
-                , StoredProcedureUpdate
+            return await SqlCommandTemplate<PersistenceResponseHolder<E>>(Connection, StoredProcedureUpdate
                 , sqlCmd => DbSerializeEntity(holder.rq.Entity, sqlCmd)
-                , (node, sqlParam) => ProcessOutput(node, holder.rs, holder.rq)
+                , (node, sqlParam) => ProcessOutputEntity(node, holder.rs, holder.rq)
                 );
         }
         #endregion
         #region ProcessDelete
         protected override async Task<IResponseHolder> InternalDelete(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return await SqlCommandTemplate(Connection
-                , StoredProcedureDelete
+            return await SqlCommandTemplate<PersistenceResponseHolder>(Connection, StoredProcedureDelete
                 , sqlCmd => DbSerializeKey(key, sqlCmd)
-                , (node, sqlParam) => ProcessOutput(node, holder.rs, holder.rq)
+                , (node, sqlParam) => ProcessOutputKey(node, holder.rs, holder.rq)
                 );
         }
         #endregion
         #region ProcessDeleteByRef
         protected override async Task<IResponseHolder> InternalDeleteByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return await SqlCommandTemplate(Connection
-                , StoredProcedureDeleteByRef
+            return await SqlCommandTemplate<PersistenceResponseHolder>(Connection, StoredProcedureDeleteByRef
                 , sqlCmd => DbSerializeKeyReference(reference, sqlCmd)
-                , (node, sqlParam) => ProcessOutput(node, holder.rs, holder.rq)
+                , (node, sqlParam) => ProcessOutputKey(node, holder.rs, holder.rq)
                 );
         }
         #endregion
         #region ProcessVersion
         protected override async Task<IResponseHolder> InternalVersion(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return await SqlCommandTemplate(Connection
-                , StoredProcedureVersion
+            return await SqlCommandTemplate<PersistenceResponseHolder>(Connection, StoredProcedureVersion
                 , sqlCmd => DbSerializeKey(key, sqlCmd)
-                , (node, sqlParam) => ProcessOutput(node, holder.rs, holder.rq)
+                , (node, sqlParam) => ProcessOutputKey(node, holder.rs, holder.rq)
                 );
         }
 
         #endregion
         #region ProcessVersionByRef
-
         protected override async Task<IResponseHolder> InternalVersionByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return await SqlCommandTemplate(Connection, 
-                StoredProcedureVersionByRef,
-                sqlCmd => DbSerializeKeyReference(holder.rq.KeyReference, sqlCmd),
-                (node, sqlParam) => ProcessOutput(node, holder.rs, holder.rq)
+            return await SqlCommandTemplate<PersistenceResponseHolder>(Connection, StoredProcedureVersionByRef
+                , sqlCmd => DbSerializeKeyReference(holder.rq.KeyReference, sqlCmd)
+                , (node, sqlParam) => ProcessOutputKey(node, holder.rs, holder.rq)
                 );
         }
         #endregion
 
         #region ProcessOutput...
 
-        private E ProcessOutput(XElement node, 
+        private E ProcessOutputEntity(XElement node, 
             PersistenceRepositoryHolder<K, E> rs, PersistenceRepositoryHolder<K, E> rq)
         {
             if (node == null)
@@ -407,7 +398,7 @@ namespace Xigadee
             return entity;
         }
 
-        private Tuple<K, string> ProcessOutput(XElement node, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, PersistenceRepositoryHolder<K, Tuple<K, string>> rq)
+        private Tuple<K, string> ProcessOutputKey(XElement node, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, PersistenceRepositoryHolder<K, Tuple<K, string>> rq)
         {
 
             if (node == null)

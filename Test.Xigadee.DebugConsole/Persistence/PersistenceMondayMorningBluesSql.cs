@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using Microsoft.WindowsAzure.Storage.Auth;
 using Xigadee;
@@ -23,14 +24,17 @@ namespace Test.Xigadee
             return new Tuple<string, string>[] { };
         }
 
-        public override void DbSerializeEntity(MondayMorningBlues entity, SqlCommand cmd)
-        {
-            throw new NotImplementedException();
-        }
-
         public override void DbSerializeKey(Guid key, SqlCommand cmd)
         {
-            throw new NotImplementedException();
+            cmd.Parameters.Add("@ExternalId", System.Data.SqlDbType.UniqueIdentifier).Value = key;
         }
+
+        public override void DbSerializeEntity(MondayMorningBlues entity, SqlCommand cmd)
+        {
+            cmd.Parameters.Add("@ExternalId", System.Data.SqlDbType.UniqueIdentifier).Value = entity.Id;
+            cmd.Parameters.Add("@Data", SqlDbType.Xml).Value = mTransform.EntitySerializer(entity);
+        }
+
+
     }
 }

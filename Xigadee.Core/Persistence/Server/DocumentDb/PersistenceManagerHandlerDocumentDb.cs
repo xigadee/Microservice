@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 #endregion
 namespace Xigadee
 {
+    #region PersistenceManagerHandlerDocumentDb<K, E>
     /// <summary>
-    /// 
+    /// This is the REST based documentDb persistence handler class.
     /// </summary>
     /// <typeparam name="K"></typeparam>
     /// <typeparam name="E"></typeparam>
@@ -43,7 +44,7 @@ namespace Xigadee
             : base(connection, database, keyMaker, keyDeserializer
                   , databaseCollection: databaseCollection
                   , shardingPolicy: shardingPolicy
-                  , entityName:entityName
+                  , entityName: entityName
                   , versionPolicy: versionPolicy
                   , defaultTimeout: defaultTimeout
                   , persistenceRetryPolicy: persistenceRetryPolicy
@@ -56,9 +57,10 @@ namespace Xigadee
         }
         #endregion
     }
+    #endregion
 
     /// <summary>
-    /// This is the documentDb persistence handler base.
+    /// This is the REST based documentDb persistence handler class.
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>

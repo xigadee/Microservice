@@ -1,11 +1,11 @@
-﻿CREATE PROCEDURE [External].[MondayMorningBluesDelete]
-	 @ExternalId UNIQUEIDENTIFIER
+﻿CREATE PROCEDURE [External].[MondayMorningBluesDeleteByReference]
+	 @Email NVARCHAR(150)
 AS
 BEGIN
 
 	DECLARE @Id BIGINT,@ResolveStatus INT
 
-	EXEC @ResolveStatus = [dbo].[MondayMorningBlues_Resolve] @ExternalId, @Id OUTPUT
+	EXEC @ResolveStatus = [dbo].[MondayMorningBlues_ResolveByRef] @Email, @Id OUTPUT
 	if (@ResolveStatus != 200)
 		RETURN @ResolveStatus;
 	
@@ -25,5 +25,4 @@ BEGIN
 		 --EXEC [dbo].[DatabaseLog_Create] @ErrorXml
 		 RETURN 500;
 	END CATCH	
-
 END
