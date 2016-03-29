@@ -1,11 +1,11 @@
 ﻿#region using
-using Microsoft.ServiceBus;
-using Microsoft.ServiceBus.Messaging;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks; 
+using Microsoft.ServiceBus.Messaging;
+
 #endregion
 namespace Xigadee
 {
@@ -92,7 +92,7 @@ namespace Xigadee
         public static List<SqlFilter> SqlFilter(List<MessageFilterWrapper> supportedMessageTypes, string channelId, string mappingChannelId = null)
         {
             if (channelId == null)
-                throw new ArgumentNullException("SqlFilter - channelId cannot be null.");
+                throw new ArgumentNullException(nameof(channelId), "SqlFilter - channelId cannot be null.");
 
             var filters = new List<SqlFilter>();
 
@@ -104,15 +104,15 @@ namespace Xigadee
 
             if (messages.Count > 0)
             {
-                var types = messages.Select((m) => m.Header.MessageType).Distinct().ToList();
+                var types = messages.Select(m => m.Header.MessageType).Distinct().ToList();
 
                 foreach (var type in types)
                 {
                     var actionTypes = messages
-                        .Where((m) => m.Header.ChannelId == channelToScan && m.Header.MessageType == type)
-                        .Select((m) => m.Header.ActionType).ToArray();
+                        .Where(m => m.Header.ChannelId == channelToScan && m.Header.MessageType == type)
+                        .Select(m => m.Header.ActionType).ToArray();
 
-                    filters.Add(SqlFilterQuery(ChannelId: channelId, MessageType: type, ActionType: actionTypes));
+                    filters.Add(SqlFilterQuery(channelId: channelId, messageType: type, actionType: actionTypes));
                 }
             }
 
@@ -130,10 +130,10 @@ namespace Xigadee
             return new SqlFilter(sb.ToString());
         }
 
-        public static SqlFilter SqlFilterQuery(string ClientId = null, string ChannelId = null, string MessageType = null, string[] ActionType = null)
+        public static SqlFilter SqlFilterQuery(string clientId = null, string channelId = null, string messageType = null, string[] actionType = null)
         {
             StringBuilder sb = new StringBuilder();
-            SqlFilterQueryStatement(sb, ClientId, ChannelId, MessageType, ActionType);
+            SqlFilterQueryStatement(sb, clientId, channelId, messageType, actionType);
             return new SqlFilter(sb.ToString());
         }
 
@@ -171,8 +171,7 @@ namespace Xigadee
 
         }
 
-        public static void SqlFilterQueryStatement(StringBuilder sb
-            , string ClientId = null, string ChannelId = null, string MessageType = null, string[] ActionType = null)
+        public static void SqlFilterQueryStatement(StringBuilder sb , string clientId = null, string channelId = null, string messageType = null, string[] actionType = null)
         {
             bool andFlag = false;
 
@@ -182,22 +181,23 @@ namespace Xigadee
                 {
                     if (andFlag) sb.Append(" AND ");
                     andFlag = true;
-                    sb.AppendFormat("{0}=\'{1}\'", id, val);
+                    //FIX: Case sensitive pattern matching in ServiceBus.
+                    sb.AppendFormat("{0}=\'{1}\'", id, val.ToLowerInvariant());
                 }
             };
 
-            if (!string.IsNullOrEmpty(ClientId))
-                sqlParam("CorrelationServiceId", ClientId);
+            if (!string.IsNullOrEmpty(clientId))
+                sqlParam("CorrelationServiceId", clientId);
 
-            if (!string.IsNullOrEmpty(ChannelId))
-                sqlParam("ChannelId", ChannelId);
+            if (!string.IsNullOrEmpty(channelId))
+                sqlParam("ChannelId", channelId);
 
-            if (!string.IsNullOrEmpty(MessageType))
-                sqlParam("MessageType", MessageType);
+            if (!string.IsNullOrEmpty(messageType))
+                sqlParam("MessageType", messageType);
 
-            if (ActionType != null)
+            if (actionType != null)
             {
-                var list = ActionType.Where((s) => !string.IsNullOrEmpty(s)).ToList();
+                var list = actionType.Where(s => !string.IsNullOrEmpty(s)).ToList();
 
                 if (list.Count == 0)
                     return;
@@ -205,7 +205,7 @@ namespace Xigadee
                 if (list.Count > 1)
                 {
                     if (andFlag) sb.Append(" AND ");
-                    var listVals = string.Join(",", list.Select((i) => string.Format("\'{0}\'", i.ToLowerInvariant())));
+                    var listVals = string.Join(",", list.Select(i => $"\'{i.ToLowerInvariant()}\'"));
 
                     sb.AppendFormat("{0} IN ({1})", "ActionType", listVals);
                 }
@@ -213,7 +213,6 @@ namespace Xigadee
                     sqlParam("ActionType", list[0]);
 
             }
-
         }
     }
 }

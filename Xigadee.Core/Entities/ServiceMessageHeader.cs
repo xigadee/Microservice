@@ -12,29 +12,33 @@ namespace Xigadee
     [DebuggerDisplay("Header={ChannelId}({MessageType}|{ActionType})")]
     public struct ServiceMessageHeader:IEquatable<ServiceMessageHeader>
     {
-        private string mChannelId, mMessageType, mActionType;
+        private readonly string mChannelId;
+        private readonly string mMessageType;
+        private readonly string mActionType;
 
-        public ServiceMessageHeader(string ChannelId, string MessageType = null, string ActionType = null)
+        public ServiceMessageHeader(string channelId, string messageType = null, string actionType = null)
         {
-            mChannelId = ChannelId;
-            mMessageType = MessageType;
-            mActionType = ActionType;
+            mChannelId = channelId;
+            mMessageType = messageType;
+            mActionType = actionType;
         }
 
-        public bool IsPartialKey { get { return mActionType == null || mMessageType == null || mChannelId == null; } }
+        public bool IsPartialKey => mActionType == null || mMessageType == null || mChannelId == null;
 
         /// <summary>
         /// The channel id
         /// </summary>
-        public string ChannelId { get { return mChannelId; } }
+        public string ChannelId => mChannelId;
+
         /// <summary>
         /// The message channelId.
         /// </summary>
-        public string MessageType { get { return mMessageType; } }
+        public string MessageType => mMessageType;
+
         /// <summary>
         /// The action channelId.
         /// </summary>
-        public string ActionType { get { return mActionType; } }
+        public string ActionType => mActionType;
 
         public string ToPartialKey()
         {
@@ -82,6 +86,7 @@ namespace Xigadee
         /// <summary>
         /// This method returns a two-part command request in to a single request.
         /// </summary>
+        /// <param name="channelId"></param>
         /// <param name="messageType">The command channelId.</param>
         /// <param name="actionType">The command action.</param>
         /// <returns>Returns the key.</returns>
