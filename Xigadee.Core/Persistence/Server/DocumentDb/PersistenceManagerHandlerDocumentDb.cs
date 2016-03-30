@@ -193,17 +193,15 @@ namespace Xigadee
         }
         #endregion
         #region InternalRead
+
         /// <summary>
         /// Read
         /// </summary>
-        /// <param name="rq">The request.</param>
-        /// <param name="rs">The response.</param>
-        /// <param name="prq">The incoming payload.</param>
-        /// <param name="prs">The outgoing payload.</param>
-        protected override async Task<IResponseHolder<E>> InternalRead(K key,
-            PersistenceRequestHolder<K, E> holder)
+        /// <param name="key"></param>
+        /// <param name="holder"></param>
+        protected override async Task<IResponseHolder<E>> InternalRead(K key, PersistenceRequestHolder<K, E> holder)
         {
-            var documentRq = await ResolveDocumentIdByKey(holder.rq.Key, holder.rq.Timeout);
+            var documentRq = await ResolveDocumentIdByKey(key, holder.rq.Timeout);
 
             if (!documentRq.IsSuccess)
                 return PersistenceResponseFormat(documentRq);
