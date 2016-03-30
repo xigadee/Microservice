@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -149,7 +150,7 @@ namespace Xigadee
                 else
                 {
                     holder.IsSuccess = false;
-                    holder.StatusCode = 404;
+                    holder.Response = new HttpResponseMessage(HttpStatusCode.NotFound);
                 }
             }
             else
