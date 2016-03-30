@@ -30,6 +30,8 @@ namespace Test.Xigadee
             }
         }
 
+        public string SqlConnection => PlatformOrConfigCache("SqlConnection");
+
         public StorageCredentials Storage
         {
             get

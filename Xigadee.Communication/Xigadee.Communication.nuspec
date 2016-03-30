@@ -3,7 +3,7 @@
   <metadata>
     <id>Xigadee.Communication</id>
     <version>{UpdateVersion.ps1.replace}</version>
-    <title>Xigadee Communication Library</title>
+    <title>Xigadee Microservice accelerator - Communication Library</title>
     <authors>Paul Stancer and Guy Steel at Information Management Group Ltd, part of Hitachi Consulting.</authors>
     <owners>Information Management Group Ltd part of Hitachi Consulting</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
