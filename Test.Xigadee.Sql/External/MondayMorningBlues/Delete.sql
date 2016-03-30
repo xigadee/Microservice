@@ -3,9 +3,9 @@
 AS
 BEGIN
 
-	DECLARE @Id BIGINT,@ResolveStatus INT
+	DECLARE @Id BIGINT,@ResolveStatus INT, @VersionId UNIQUEIDENTIFIER
 
-	EXEC @ResolveStatus = [dbo].[MondayMorningBlues_Resolve] @ExternalId, @Id OUTPUT
+	EXEC @ResolveStatus = [dbo].[MondayMorningBlues_Resolve] @ExternalId, @Id OUTPUT, @VersionId OUTPUT
 	if (@ResolveStatus != 200)
 		RETURN @ResolveStatus;
 	
@@ -16,13 +16,13 @@ BEGIN
 		WHERE [Id] = @Id
 
 		COMMIT TRAN
-
-		RETURN 200	
+		IF (@@ROWCOUNT > 0)
+			RETURN 200;
+		ELSE 
+			RETURN 404;	
 	END TRY
 	BEGIN CATCH	
-		 --DECLARE @ErrorXml XML = (SELECT [Core].[fnFormatError]())
 		 ROLLBACK TRAN
-		 --EXEC [dbo].[DatabaseLog_Create] @ErrorXml
 		 RETURN 500;
 	END CATCH	
 

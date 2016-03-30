@@ -11,8 +11,9 @@ using System.Xml.Linq;
 #endregion
 namespace Xigadee
 {
+    #region PersistenceManagerHandlerSqlBase<K, E>...
     /// <summary>
-    /// This is the default SQL persistence manager.
+    /// This is the default SQL persistence manager for XML based Stored Procedure interaction.
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
@@ -32,15 +33,16 @@ namespace Xigadee
             Func<XElement, E> entityMaker,
             Func<XElement, Tuple<K, string>> versionMaker = null,
             PersistenceRetryPolicy retryPolicy = null,
-            ResourceProfile resourceProfile = null) 
+            ResourceProfile resourceProfile = null)
             : base(connection, keyMaker, entityMaker, versionMaker, retryPolicy, resourceProfile)
         {
         }
         #endregion
-    }
+    } 
+    #endregion
 
     /// <summary>
-    /// This is the default SQL persistence manager.
+    /// This is the default SQL persistence manager for XML based Stored Procedure interaction.
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
@@ -201,7 +203,6 @@ namespace Xigadee
         }
         #endregion
 
-
         #region SqlCommandTemplate<KT,ET>...
         /// <summary>
         /// This method is used to read an entity from the system.
@@ -209,15 +210,15 @@ namespace Xigadee
         /// <param Name="id">The entity key.</param>
         /// <returns></returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities")]
-        protected async Task<R> SqlCommandTemplate<R>(
+        protected async Task<R> SqlCommandTemplateXml<R>(
             string DbConnection, 
             string commandname,
             Action<SqlCommand> act,
-            Func<XElement, SqlParameter, R> conv)
+            Action<XElement, R> conv)
             where R : PersistenceResponseHolder, new()
         {
             SqlParameter paramReturnValue = null;
-            R rs = default(R);
+            R rs = new R();
             try
             {
                 using (SqlConnection cn = new SqlConnection(DbConnection))
@@ -235,6 +236,7 @@ namespace Xigadee
                     paramReturnValue.Direction = ParameterDirection.ReturnValue;
 
                     sqlCmd.Parameters.Add(paramReturnValue);
+                    XElement node = null;
 
                     try
                     {
@@ -242,18 +244,12 @@ namespace Xigadee
                         {
                             if (xmlR.Read())
                             {
-                                XElement node = null;
-
                                 while (xmlR.ReadState != ReadState.EndOfFile)
                                 {
                                     node = XElement.Load(xmlR, LoadOptions.None);
                                 }
-
-                                if (node != null)
-                                    rs = conv(node, paramReturnValue);
                             }
-                            else
-                                rs = conv(null, paramReturnValue);
+
                         }
                     }
                     catch (InvalidOperationException)
@@ -262,18 +258,17 @@ namespace Xigadee
                             || paramReturnValue.Value == null 
                             || (int)paramReturnValue.Value == 0)
                             throw;
-
-                        rs = conv(null, paramReturnValue);
                     }
 
 
                     if (paramReturnValue != null && paramReturnValue.Value != null)
+                    {
                         rs.StatusCode = (int)paramReturnValue.Value;
+                        conv(node, rs);
+                    }
 
                     if (rs.StatusCode == 401)
                         Logger.LogMessage(LoggingLevel.Error, string.Format("Sql DB action {0} failed: ", commandname), "SQL");
-                    //else
-                    //    rs.Entity = data;
                 }
             }
             catch (Exception)
@@ -290,135 +285,116 @@ namespace Xigadee
         }
         #endregion
 
-        #region ProcessCreate
+        #region InternalCreate
 
         protected override async Task<IResponseHolder<E>> InternalCreate(PersistenceRequestHolder<K, E> holder)
         {
-            return await SqlCommandTemplate<PersistenceResponseHolder<E>>(Connection, StoredProcedureCreate
+            return await SqlCommandTemplateXml<PersistenceResponseHolder<E>>(Connection, StoredProcedureCreate
                 , sqlCmd => DbSerializeEntity(holder.rq.Entity, sqlCmd)
-                , (node, sqlParam) => ProcessOutputEntity(node, holder.rs, holder.rq)
+                , (node, rs) => ProcessOutputEntity(node, rs)
                 );
 
         }
         #endregion
-        #region ProcessRead
+        #region InternalRead
         protected override async Task<IResponseHolder<E>> InternalRead(K key, PersistenceRequestHolder<K, E> holder)
         {
-            return await SqlCommandTemplate<PersistenceResponseHolder<E>>(Connection, StoredProcedureRead
+            return await SqlCommandTemplateXml<PersistenceResponseHolder<E>>(Connection, StoredProcedureRead
                 , sqlCmd => DbSerializeKey(key, sqlCmd)
-                , (node, sqlParam) => ProcessOutputEntity(node, holder.rs, holder.rq)
+                , (node, rs) => ProcessOutputEntity(node, rs)
                 );
-
         }
         #endregion
-        #region ProcessReadByRef
+        #region InternalReadByRef
 
         protected override async Task<IResponseHolder<E>> InternalReadByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, E> holder)
         {
-            return await SqlCommandTemplate<PersistenceResponseHolder<E>>(Connection, StoredProcedureReadByRef
+            return await SqlCommandTemplateXml<PersistenceResponseHolder<E>>(Connection, StoredProcedureReadByRef
                 , sqlCmd => DbSerializeKeyReference(reference, sqlCmd)
-                , (node, sqlParam) => ProcessOutputEntity(node, holder.rs, holder.rq)
+                , (node, rs) => ProcessOutputEntity(node, rs)
                 );
         }
         #endregion
-        #region ProcessUpdate
+        #region InternalUpdate
         protected override async Task<IResponseHolder<E>> InternalUpdate(PersistenceRequestHolder<K, E> holder)
         {
-            return await SqlCommandTemplate<PersistenceResponseHolder<E>>(Connection, StoredProcedureUpdate
+            return await SqlCommandTemplateXml<PersistenceResponseHolder<E>>(Connection, StoredProcedureUpdate
                 , sqlCmd => DbSerializeEntity(holder.rq.Entity, sqlCmd)
-                , (node, sqlParam) => ProcessOutputEntity(node, holder.rs, holder.rq)
+                , (node, rs) => ProcessOutputEntity(node, rs)
                 );
         }
         #endregion
-        #region ProcessDelete
+        #region InternalDelete
         protected override async Task<IResponseHolder> InternalDelete(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return await SqlCommandTemplate<PersistenceResponseHolder>(Connection, StoredProcedureDelete
+            return await SqlCommandTemplateXml<PersistenceResponseHolder>(Connection, StoredProcedureDelete
                 , sqlCmd => DbSerializeKey(key, sqlCmd)
-                , (node, sqlParam) => ProcessOutputKey(node, holder.rs, holder.rq)
+                , (node, rs) => ProcessOutputKey(node, rs)
                 );
         }
         #endregion
-        #region ProcessDeleteByRef
+        #region InternalDeleteByRef
         protected override async Task<IResponseHolder> InternalDeleteByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return await SqlCommandTemplate<PersistenceResponseHolder>(Connection, StoredProcedureDeleteByRef
+            return await SqlCommandTemplateXml<PersistenceResponseHolder>(Connection, StoredProcedureDeleteByRef
                 , sqlCmd => DbSerializeKeyReference(reference, sqlCmd)
-                , (node, sqlParam) => ProcessOutputKey(node, holder.rs, holder.rq)
+                , (node, rs) => ProcessOutputKey(node, rs)
                 );
         }
         #endregion
-        #region ProcessVersion
+        #region InternalVersion
         protected override async Task<IResponseHolder> InternalVersion(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return await SqlCommandTemplate<PersistenceResponseHolder>(Connection, StoredProcedureVersion
+            return await SqlCommandTemplateXml<PersistenceResponseHolder>(Connection, StoredProcedureVersion
                 , sqlCmd => DbSerializeKey(key, sqlCmd)
-                , (node, sqlParam) => ProcessOutputKey(node, holder.rs, holder.rq)
+                , (node, rs) => ProcessOutputKey(node, rs)
                 );
         }
 
         #endregion
-        #region ProcessVersionByRef
+        #region InternalVersionByRef
         protected override async Task<IResponseHolder> InternalVersionByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return await SqlCommandTemplate<PersistenceResponseHolder>(Connection, StoredProcedureVersionByRef
+            return await SqlCommandTemplateXml<PersistenceResponseHolder>(Connection, StoredProcedureVersionByRef
                 , sqlCmd => DbSerializeKeyReference(holder.rq.KeyReference, sqlCmd)
-                , (node, sqlParam) => ProcessOutputKey(node, holder.rs, holder.rq)
+                , (node, rs) => ProcessOutputKey(node, rs)
                 );
         }
         #endregion
 
-        #region ProcessOutput...
+        #region ProcessOutputEntity(XElement node, PersistenceResponseHolder<E> rs)
 
-        private E ProcessOutputEntity(XElement node, 
-            PersistenceRepositoryHolder<K, E> rs, PersistenceRepositoryHolder<K, E> rq)
+        protected virtual void ProcessOutputEntity(XElement node, PersistenceResponseHolder<E> rs)
         {
             if (node == null)
-                return default(E);
+                return;
 
-            var entity = mEntityMaker(node);
-            rs.Key = rq.Key;
-            rs.KeyReference = rq.KeyReference;
+            rs.Entity = mEntityMaker(node);
+            rs.Content = node.ToString();
 
             try
             {
-                if (mTransform.KeyMaker != null)
-                    rs.Key = mTransform.KeyMaker(entity);
-
                 if (mVersionMaker != null)
-                    rs.Settings.VersionId = mVersionMaker(node).Item2;
+                    rs.VersionId = mVersionMaker(node).Item2;
             }
             catch (Exception)
             {
                 // Unable to retrieve a key for this entity (might be a collection with no key)
             }
 
-            rs.KeyReference = new Tuple<string, string>(rs.Key == null ? null : rs.Key.ToString(), rs.Settings == null ? null : rs.Settings.VersionId);
-
-            return entity;
         }
+        #endregion
 
-        private Tuple<K, string> ProcessOutputKey(XElement node, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, PersistenceRepositoryHolder<K, Tuple<K, string>> rq)
+        #region ProcessOutputKey(XElement node, PersistenceResponseHolder rs)
+
+        protected virtual void ProcessOutputKey(XElement node, PersistenceResponseHolder rs)
         {
 
-            if (node == null)
-                return default(Tuple<K, string>);
+            if (node != null)
+                rs.VersionId = mVersionMaker(node).Item2;
 
-            rs.Key = rq.Key;
-            rs.KeyReference = rq.KeyReference;
 
-            if (mVersionMaker == null)
-                return default(Tuple<K, string>);
 
-            var version = mVersionMaker(node);
-            if (version == null)
-                return default(Tuple<K, string>);
-
-            rs.Key = version.Item1;
-            rs.Settings.VersionId = version.Item2;
-            rs.KeyReference = new Tuple<string, string>(version.Item1 == null ? null : version.Item1.ToString(), version.Item2);
-
-            return version;
         }
 
         #endregion
