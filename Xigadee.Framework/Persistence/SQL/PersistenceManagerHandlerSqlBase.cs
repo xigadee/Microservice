@@ -182,8 +182,8 @@ namespace Xigadee
         /// <param name="cmd">The command.</param>
         public virtual void DbSerializeKeyReference(Tuple<string, string> key, SqlCommand cmd)
         {
-            cmd.Parameters.Add("RefType", SqlDbType.NVarChar, 50).Value = key.Item1;
-            cmd.Parameters.Add("RefValue", SqlDbType.NVarChar, 255).Value = key.Item2;
+            cmd.Parameters.Add("@RefType", SqlDbType.NVarChar, 50).Value = key.Item1;
+            cmd.Parameters.Add("@RefValue", SqlDbType.NVarChar, 255).Value = key.Item2;
         }
         /// <summary>
         /// This method serializes the entity in to the SqlCommand.

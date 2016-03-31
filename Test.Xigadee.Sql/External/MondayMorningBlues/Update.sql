@@ -3,9 +3,9 @@
 	,@Data XML
 AS
 BEGIN
-	DECLARE @Id BIGINT,@ResolveStatus INT
+	DECLARE @Id BIGINT, @ResolveStatus INT, @VersionId UNIQUEIDENTIFIER
 
-	EXEC @ResolveStatus = [dbo].[MondayMorningBlues_Resolve] @ExternalId, @Id OUTPUT
+	EXEC @ResolveStatus = [dbo].[MondayMorningBlues_Resolve] @ExternalId, @Id OUTPUT, @VersionId OUTPUT
 	if (@ResolveStatus != 200)
 		RETURN 404;
 

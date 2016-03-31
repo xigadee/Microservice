@@ -30,6 +30,8 @@ namespace Test.Xigadee
 
             public Guid Testid;
 
+            public string TestByRef;
+
             public bool ClientCacheEnabled { get; set; }
 
             public bool ServerCacheEnabled { get; set; }

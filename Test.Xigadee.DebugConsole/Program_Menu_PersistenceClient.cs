@@ -13,6 +13,7 @@ namespace Test.Xigadee
             , (m, o) =>
                 {
                     sContext.Testid = Guid.NewGuid();
+                    sContext.TestByRef = $"paul+{sContext.Testid.ToString("N")}@hotmail.com";
 
                     var result = sContext.Client.Persistence.Create(
                         new MondayMorningBlues
@@ -22,7 +23,7 @@ namespace Test.Xigadee
                             VersionId = sContext.Versionid,
                             Message = DateTime.Now.ToString(),
                             NotEnoughCoffee = true,
-                            Email = $"paul+{sContext.Testid.ToString("N")}@hotmail.com"
+                            Email = sContext.TestByRef
                         }
                         , new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
 
@@ -44,7 +45,7 @@ namespace Test.Xigadee
            , new ConsoleOption("Read entity by reference"
                , (m, o) =>
                {
-                   var result = sContext.Client.Persistence.ReadByRef("email", "paul@hotmail.com", new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
+                   var result = sContext.Client.Persistence.ReadByRef("EMAIL", sContext.TestByRef, new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
                    PersistenceLog(m, "Read", result.IsSuccess);
                }
                , enabled: (m, o) => sContext.PersistenceStatus() == 2
@@ -59,7 +60,8 @@ namespace Test.Xigadee
                            ContentId = sContext.Testid,
                            VersionId = sContext.Versionid,
                            Message = "Hello mom2",
-                           NotEnoughCoffee = false
+                           NotEnoughCoffee = false,
+                           Email = sContext.TestByRef
                        }
                        , new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) })
                        .Result;
@@ -85,8 +87,7 @@ namespace Test.Xigadee
            , new ConsoleOption("Delete entity by reference"
                , (m, o) =>
                {
-                   var result = sContext.Client.Persistence.DeleteByRef("email", "paul@hotmail.com", 
-                       new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5), VersionId = sContext.Versionid.ToString() }).Result;
+                   var result = sContext.Client.Persistence.DeleteByRef("EMAIL", sContext.TestByRef, new RepositorySettings { WaitTime = TimeSpan.FromMinutes(5), VersionId = sContext.Versionid.ToString() }).Result;
                    PersistenceLog(m, "Delete", result.IsSuccess);
                }
                , enabled: (m, o) => sContext.PersistenceStatus() == 2
