@@ -51,5 +51,15 @@ namespace Test.Xigadee
             return entity;
         }
 
+        #region Version
+
+        public static Tuple<Guid, string> ToVersion(XElement node)
+        {
+            return new Tuple<Guid, string>(
+                ConversionHelper.ToGuid(node.Attribute("ExternalId")) ?? Guid.Empty,
+                ConversionHelper.NodeNullable(node.Attribute("VersionId")));
+        }
+
+        #endregion
     }
 }

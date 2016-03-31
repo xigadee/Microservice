@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [External].[MondayMorningBluesVersionByReference]
+﻿CREATE PROCEDURE [External].[MondayMorningBluesVersionByRef]
 	  @RefType NVARCHAR(50)
 	, @RefValue NVARCHAR(255)
 AS

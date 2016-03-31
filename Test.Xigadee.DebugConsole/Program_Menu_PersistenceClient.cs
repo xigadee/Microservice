@@ -92,6 +92,23 @@ namespace Test.Xigadee
                }
                , enabled: (m, o) => sContext.PersistenceStatus() == 2
                )
+           , new ConsoleOption("Version entity"
+               , (m, o) =>
+               {
+                   var result = sContext.Client.Persistence.Version(sContext.Testid,
+                       new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5), VersionId = sContext.Versionid.ToString() }).Result;
+                   PersistenceLog(m, "Version", result.IsSuccess);
+               }
+               , enabled: (m, o) => sContext.PersistenceStatus() == 2
+               )
+           , new ConsoleOption("Version entity by reference"
+               , (m, o) =>
+               {
+                   var result = sContext.Client.Persistence.VersionByRef("EMAIL", sContext.TestByRef, new RepositorySettings { WaitTime = TimeSpan.FromMinutes(5), VersionId = sContext.Versionid.ToString() }).Result;
+                   PersistenceLog(m, "Version By Ref", result.IsSuccess);
+               }
+               , enabled: (m, o) => sContext.PersistenceStatus() == 2
+               )
            , new ConsoleOption("Create 100000 entities async"
                , (m, o) =>
                {
