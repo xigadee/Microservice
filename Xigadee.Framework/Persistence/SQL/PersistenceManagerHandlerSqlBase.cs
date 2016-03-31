@@ -21,13 +21,24 @@ namespace Xigadee
         where K : IEquatable<K>
     {
         #region Constructor
+
         /// <summary>
         /// This is the default constructor with a manual connection string.
         /// </summary>
         /// <param name="connection">The sql datbase connection.</param>
         /// <param name="keyMaker">The key maker function.</param>
+        /// <param name="keyDeserializer"></param>
         /// <param name="xmlEntityDeserializer">The entity maker function.</param>
+        /// <param name="xmlEntitySerializer"></param>
         /// <param name="xmlVersionMaker"></param>
+        /// <param name="entityName"></param>
+        /// <param name="versionPolicy"></param>
+        /// <param name="defaultTimeout"></param>
+        /// <param name="persistenceRetryPolicy"></param>
+        /// <param name="resourceProfile"></param>
+        /// <param name="cacheManager"></param>
+        /// <param name="referenceMaker"></param>
+        /// <param name="keySerializer"></param>
         protected PersistenceManagerHandlerSqlBase(string connection
             , Func<E, K> keyMaker
             , Func<string, K> keyDeserializer
@@ -87,13 +98,24 @@ namespace Xigadee
         protected Func<XElement, Tuple<K, string>> mXmlVersionMaker;
         #endregion
         #region Constructor
+
         /// <summary>
         /// This is the default constructor with a manual connection string.
         /// </summary>
         /// <param name="connection">The sql datbase connection.</param>
         /// <param name="keyMaker">The key maker function.</param>
-        /// <param name="xmlEntityMaker">The entity maker function.</param>
+        /// <param name="xmlEntitySerializer"></param>
         /// <param name="xmlVersionMaker"></param>
+        /// <param name="keyDeserializer"></param>
+        /// <param name="xmlEntityDeserializer"></param>
+        /// <param name="entityName"></param>
+        /// <param name="versionPolicy"></param>
+        /// <param name="defaultTimeout"></param>
+        /// <param name="persistenceRetryPolicy"></param>
+        /// <param name="resourceProfile"></param>
+        /// <param name="cacheManager"></param>
+        /// <param name="referenceMaker"></param>
+        /// <param name="keySerializer"></param>
         protected PersistenceManagerHandlerSqlBase(string connection
             , Func<E, K> keyMaker
             , Func<string, K> keyDeserializer
@@ -139,24 +161,25 @@ namespace Xigadee
         {
             var transform =  base.EntityTransformCreate(entityName, versionPolicy, keyMaker, entityDeserializer, entitySerializer, keySerializer, keyDeserializer, referenceMaker);
 
-            transform.EntityDeserializer = (s) => mXmlEntityDeserializer(XElement.Parse(s));
-            transform.EntitySerializer = (e) => mXmlEntitySerializer(e).ToString();
+            transform.EntityDeserializer = s => mXmlEntityDeserializer(XElement.Parse(s));
+            transform.EntitySerializer = e => mXmlEntitySerializer(e).ToString();
 
             return transform;
         }
 
         #region Abstract methods
+
         /// <summary>
         /// This method serializes the entity key in to the Sql command.
         /// </summary>
-        /// <param Name="key">The key.</param>
-        /// <param Name="cmd">The command.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="cmd">The command.</param>
         public abstract void DbSerializeKey(K key, SqlCommand cmd);
         /// <summary>
         /// This method serializes the entity key in to the Sql command.
         /// </summary>
-        /// <param Name="key">The key.</param>
-        /// <param Name="cmd">The command.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="cmd">The command.</param>
         public virtual void DbSerializeKeyReference(Tuple<string, string> key, SqlCommand cmd)
         {
             cmd.Parameters.Add("RefType", SqlDbType.NVarChar, 50).Value = key.Item1;
@@ -254,14 +277,19 @@ namespace Xigadee
         #endregion
 
         #region SqlCommandTemplate<KT,ET>...
+
         /// <summary>
         /// This method is used to read an entity from the system.
         /// </summary>
         /// <param Name="id">The entity key.</param>
+        /// <param name="dbConnection"></param>
+        /// <param name="commandname"></param>
+        /// <param name="act"></param>
+        /// <param name="conv"></param>
         /// <returns></returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities")]
         protected async Task<R> SqlCommandTemplateXml<R>(
-            string DbConnection, 
+            string dbConnection, 
             string commandname,
             Action<SqlCommand> act,
             Action<string, R> conv)
@@ -271,19 +299,23 @@ namespace Xigadee
             R rs = new R();
             try
             {
-                using (SqlConnection cn = new SqlConnection(DbConnection))
+                using (SqlConnection cn = new SqlConnection(dbConnection))
                 {
                     cn.Open();
-                    SqlCommand sqlCmd = new SqlCommand(commandname);
-                    sqlCmd.CommandType = CommandType.StoredProcedure;
-                    sqlCmd.Connection = cn;
+                    SqlCommand sqlCmd = new SqlCommand(commandname)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                        Connection = cn
+                    };
 
                     act(sqlCmd);
 
-                    paramReturnValue = new SqlParameter();
-                    paramReturnValue.ParameterName = "@return_value";
-                    paramReturnValue.SqlDbType = SqlDbType.Int;
-                    paramReturnValue.Direction = ParameterDirection.ReturnValue;
+                    paramReturnValue = new SqlParameter
+                    {
+                        ParameterName = "@return_value",
+                        SqlDbType = SqlDbType.Int,
+                        Direction = ParameterDirection.ReturnValue
+                    };
 
                     sqlCmd.Parameters.Add(paramReturnValue);
 
@@ -306,28 +338,25 @@ namespace Xigadee
                             xmlData = sb.ToString();
                         }
                     }
-                    catch (InvalidOperationException ioex)
+                    catch (InvalidOperationException)
                     {
-                        if (paramReturnValue == null 
-                            || paramReturnValue.Value == null 
-                            || (int)paramReturnValue.Value == 0)
+                        if (paramReturnValue.Value == null || (int)paramReturnValue.Value == 0)
                             throw;
                     }
 
-
-                    if (paramReturnValue != null && paramReturnValue.Value != null)
+                    if (paramReturnValue.Value != null)
                     {
                         rs.StatusCode = (int)paramReturnValue.Value;
                         conv(xmlData, rs);
                     }
 
                     if (rs.StatusCode == 401)
-                        Logger.LogMessage(LoggingLevel.Error, string.Format("Sql DB action {0} failed: ", commandname), "SQL");
+                        Logger.LogMessage(LoggingLevel.Error, $"Sql DB action {commandname} failed: ", "SQL");
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                if (paramReturnValue != null && paramReturnValue.Value != null)
+                if (paramReturnValue?.Value != null)
                     rs.StatusCode = (int)paramReturnValue.Value;
                 else
                     rs.StatusCode = 500;
@@ -345,7 +374,7 @@ namespace Xigadee
         {
             return await SqlCommandTemplateXml<PersistenceResponseHolder<E>>(Connection, StoredProcedureCreate
                 , sqlCmd => DbSerializeEntity(holder.rq.Entity, sqlCmd)
-                , (node, rs) => ProcessOutputEntity(node, rs)
+                , ProcessOutputEntity
                 );
 
         }
@@ -355,7 +384,7 @@ namespace Xigadee
         {
             return await SqlCommandTemplateXml<PersistenceResponseHolder<E>>(Connection, StoredProcedureRead
                 , sqlCmd => DbSerializeKey(key, sqlCmd)
-                , (node, rs) => ProcessOutputEntity(node, rs)
+                , ProcessOutputEntity
                 );
         }
         #endregion
@@ -365,7 +394,7 @@ namespace Xigadee
         {
             return await SqlCommandTemplateXml<PersistenceResponseHolder<E>>(Connection, StoredProcedureReadByRef
                 , sqlCmd => DbSerializeKeyReference(reference, sqlCmd)
-                , (node, rs) => ProcessOutputEntity(node, rs)
+                , ProcessOutputEntity
                 );
         }
         #endregion
@@ -374,7 +403,7 @@ namespace Xigadee
         {
             return await SqlCommandTemplateXml<PersistenceResponseHolder<E>>(Connection, StoredProcedureUpdate
                 , sqlCmd => DbSerializeEntity(holder.rq.Entity, sqlCmd)
-                , (node, rs) => ProcessOutputEntity(node, rs)
+                , ProcessOutputEntity
                 );
         }
         #endregion
@@ -383,7 +412,7 @@ namespace Xigadee
         {
             return await SqlCommandTemplateXml<PersistenceResponseHolder>(Connection, StoredProcedureDelete
                 , sqlCmd => DbSerializeKey(key, sqlCmd)
-                , (node, rs) => ProcessOutputKey(node, rs)
+                , ProcessOutputKey
                 );
         }
         #endregion
@@ -392,7 +421,7 @@ namespace Xigadee
         {
             return await SqlCommandTemplateXml<PersistenceResponseHolder>(Connection, StoredProcedureDeleteByRef
                 , sqlCmd => DbSerializeKeyReference(reference, sqlCmd)
-                , (node, rs) => ProcessOutputKey(node, rs)
+                , ProcessOutputKey
                 );
         }
         #endregion
@@ -401,7 +430,7 @@ namespace Xigadee
         {
             return await SqlCommandTemplateXml<PersistenceResponseHolder>(Connection, StoredProcedureVersion
                 , sqlCmd => DbSerializeKey(key, sqlCmd)
-                , (node, rs) => ProcessOutputKey(node, rs)
+                , ProcessOutputKey
                 );
         }
 
@@ -411,7 +440,7 @@ namespace Xigadee
         {
             return await SqlCommandTemplateXml<PersistenceResponseHolder>(Connection, StoredProcedureVersionByRef
                 , sqlCmd => DbSerializeKeyReference(holder.rq.KeyReference, sqlCmd)
-                , (node, rs) => ProcessOutputKey(node, rs)
+                , ProcessOutputKey
                 );
         }
         #endregion
