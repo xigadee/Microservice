@@ -68,8 +68,8 @@ namespace Test.Xigadee
             {
                 case PersistenceOptions.Sql:
                     sContext.Server.Service.RegisterCommand(
-                        new PersistenceMondayMorningBluesSql(e.Config.SqlConnection)
-                        //, sContext.Server.VersionMondayMorningBlues, cacheManager)
+                        new PersistenceMondayMorningBluesSql(e.Config.SqlConnection
+                        , sContext.Server.VersionMondayMorningBlues, cacheManager)
                         { ChannelId = Channels.TestB });
                     break;
                 case PersistenceOptions.Blob:

@@ -10,12 +10,17 @@ namespace Test.Xigadee
 {
     public class PersistenceMondayMorningBluesSql: PersistenceManagerHandlerSqlBase<Guid, MondayMorningBlues>
     {
-        public PersistenceMondayMorningBluesSql(string sqlConnection)
+        public PersistenceMondayMorningBluesSql(string sqlConnection
+            , VersionPolicy<MondayMorningBlues> versionPolicy = null
+            , ICacheManager<Guid, MondayMorningBlues> cacheManager = null)
             : base(
                   sqlConnection
                   , (k) => k.Id
                   , (s) => new Guid(s)
-                  , (x) => new MondayMorningBlues())
+                  , MondayMorningBluesHelper.ToMondayMorningBlues
+                  , MondayMorningBluesHelper.ToXml
+                  , versionPolicy: versionPolicy
+                  , cacheManager: cacheManager)
         {
 
         }

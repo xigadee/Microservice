@@ -26,12 +26,13 @@ namespace Xigadee
         /// </summary>
         /// <param name="connection">The sql datbase connection.</param>
         /// <param name="keyMaker">The key maker function.</param>
-        /// <param name="xmlEntityMaker">The entity maker function.</param>
+        /// <param name="xmlEntityDeserializer">The entity maker function.</param>
         /// <param name="xmlVersionMaker"></param>
         protected PersistenceManagerHandlerSqlBase(string connection
             , Func<E, K> keyMaker
             , Func<string, K> keyDeserializer
-            , Func<XElement, E> xmlEntityMaker
+            , Func<XElement, E> xmlEntityDeserializer
+            , Func<E, XElement> xmlEntitySerializer
             , Func<XElement, Tuple<K, string>> xmlVersionMaker = null
             , string entityName = null
             , VersionPolicy<E> versionPolicy = null
@@ -45,7 +46,8 @@ namespace Xigadee
             : base(connection
                   , keyMaker
                   , keyDeserializer
-                  , xmlEntityMaker
+                  , xmlEntityDeserializer
+                  , xmlEntitySerializer
                   , xmlVersionMaker: xmlVersionMaker
                   , entityName: entityName
                   , versionPolicy: versionPolicy
@@ -76,11 +78,13 @@ namespace Xigadee
         /// <summary>
         /// This function is used to create the entity.
         /// </summary>
-        protected Func<XElement, E> mEntityMaker;
+        protected Func<XElement, E> mXmlEntityDeserializer;
+
+        protected Func<E, XElement> mXmlEntitySerializer;
         /// <summary>
         /// This function creates the version maker.
         /// </summary>
-        protected Func<XElement, Tuple<K, string>> mVersionMaker;
+        protected Func<XElement, Tuple<K, string>> mXmlVersionMaker;
         #endregion
         #region Constructor
         /// <summary>
@@ -93,7 +97,8 @@ namespace Xigadee
         protected PersistenceManagerHandlerSqlBase(string connection
             , Func<E, K> keyMaker
             , Func<string, K> keyDeserializer
-            , Func<XElement, E> xmlEntityMaker
+            , Func<XElement, E> xmlEntityDeserializer
+            , Func<E, XElement> xmlEntitySerializer
             , Func<XElement, Tuple<K, string>> xmlVersionMaker = null
             , string entityName = null
             , VersionPolicy<E> versionPolicy = null
@@ -117,8 +122,9 @@ namespace Xigadee
                   )
         {
             Connection = connection;
-            mEntityMaker = xmlEntityMaker;
-            mVersionMaker = xmlVersionMaker;
+            mXmlEntityDeserializer = xmlEntityDeserializer;
+            mXmlEntitySerializer = xmlEntitySerializer;
+            mXmlVersionMaker = xmlVersionMaker;
         }
         #endregion
 
@@ -128,6 +134,16 @@ namespace Xigadee
         /// </summary>
         public string Connection { get; set; }
         #endregion
+
+        protected override EntityTransformHolder<K, E> EntityTransformCreate(string entityName = null, VersionPolicy<E> versionPolicy = null, Func<E, K> keyMaker = null, Func<string, E> entityDeserializer = null, Func<E, string> entitySerializer = null, Func<K, string> keySerializer = null, Func<string, K> keyDeserializer = null, Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null)
+        {
+            var transform =  base.EntityTransformCreate(entityName, versionPolicy, keyMaker, entityDeserializer, entitySerializer, keySerializer, keyDeserializer, referenceMaker);
+
+            transform.EntityDeserializer = (s) => mXmlEntityDeserializer(XElement.Parse(s));
+            transform.EntitySerializer = (e) => mXmlEntitySerializer(e).ToString();
+
+            return transform;
+        }
 
         #region Abstract methods
         /// <summary>
@@ -248,7 +264,7 @@ namespace Xigadee
             string DbConnection, 
             string commandname,
             Action<SqlCommand> act,
-            Action<XElement, R> conv)
+            Action<string, R> conv)
             where R : PersistenceResponseHolder, new()
         {
             SqlParameter paramReturnValue = null;
@@ -270,23 +286,27 @@ namespace Xigadee
                     paramReturnValue.Direction = ParameterDirection.ReturnValue;
 
                     sqlCmd.Parameters.Add(paramReturnValue);
-                    XElement node = null;
+
+                    string xmlData = null;
 
                     try
                     {
                         using (XmlReader xmlR = await sqlCmd.ExecuteXmlReaderAsync())
                         {
-                            if (xmlR.Read())
+                            StringBuilder sb = new StringBuilder();
+
+                            if (xmlR != null)
                             {
-                                while (xmlR.ReadState != ReadState.EndOfFile)
+                                while (xmlR.ReadState != ReadState.EndOfFile && xmlR.Read())
                                 {
-                                    node = XElement.Load(xmlR, LoadOptions.None);
+                                    sb.AppendLine(xmlR.ReadOuterXml());
                                 }
                             }
 
+                            xmlData = sb.ToString();
                         }
                     }
-                    catch (InvalidOperationException)
+                    catch (InvalidOperationException ioex)
                     {
                         if (paramReturnValue == null 
                             || paramReturnValue.Value == null 
@@ -298,14 +318,14 @@ namespace Xigadee
                     if (paramReturnValue != null && paramReturnValue.Value != null)
                     {
                         rs.StatusCode = (int)paramReturnValue.Value;
-                        conv(node, rs);
+                        conv(xmlData, rs);
                     }
 
                     if (rs.StatusCode == 401)
                         Logger.LogMessage(LoggingLevel.Error, string.Format("Sql DB action {0} failed: ", commandname), "SQL");
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 if (paramReturnValue != null && paramReturnValue.Value != null)
                     rs.StatusCode = (int)paramReturnValue.Value;
@@ -397,19 +417,19 @@ namespace Xigadee
         #endregion
 
         #region ProcessOutputEntity(XElement node, PersistenceResponseHolder<E> rs)
-
-        protected virtual void ProcessOutputEntity(XElement node, PersistenceResponseHolder<E> rs)
+        protected virtual void ProcessOutputEntity(string data, PersistenceResponseHolder<E> rs)
         {
-            if (node == null)
-                return;
+            if (string.IsNullOrEmpty(data))
+                return; 
 
-            rs.Entity = mEntityMaker(node);
-            rs.Content = node.ToString();
+
+            rs.Entity = mTransform.EntityDeserializer(data);
+            rs.Content = data;
 
             try
             {
-                if (mVersionMaker != null)
-                    rs.VersionId = mVersionMaker(node).Item2;
+                if (mTransform.Version != null)
+                    rs.VersionId = mTransform.Version.EntityVersionAsString(rs.Entity);
             }
             catch (Exception)
             {
@@ -419,17 +439,18 @@ namespace Xigadee
         }
         #endregion
         #region ProcessOutputKey(XElement node, PersistenceResponseHolder rs)
-
-        protected virtual void ProcessOutputKey(XElement node, PersistenceResponseHolder rs)
+        protected virtual void ProcessOutputKey(string data, PersistenceResponseHolder rs)
         {
+            if (string.IsNullOrEmpty(data))
+                return;
 
-            if (node != null)
-                rs.VersionId = mVersionMaker(node).Item2;
+            XElement node = XElement.Parse(data);
 
-
-
+            if (mXmlVersionMaker != null)
+                rs.VersionId = mXmlVersionMaker(node).Item2;
         }
-
         #endregion
+
+
     }
 }
