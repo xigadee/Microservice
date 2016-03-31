@@ -11,18 +11,11 @@ namespace Test.Xigadee
             , ICacheManager<Guid, MondayMorningBlues> cacheManager = null)
             : base(connection, name, (k) => k.Id, (s) => new Guid(s)
             , versionPolicy: versionPolicy
-            , referenceMaker: References
+            , referenceMaker: MondayMorningBluesHelper.ToReferences
             , cacheManager: cacheManager)
         {
 
         }
 
-        static IEnumerable<Tuple<string, string>> References(MondayMorningBlues entity)
-        {
-            if (entity != null && !string.IsNullOrEmpty(entity.Email))
-                return new[] { new Tuple<string, string>("email", entity.Email) };
-
-            return new Tuple<string, string>[] { };
-        }
     }
 }

@@ -109,6 +109,7 @@
     <Compile Include="Jobs\DelayProcessingJob.cs" />
     <Compile Include="Jobs\TestMasterJob2.cs" />
     <Compile Include="Channels.cs" />
+    <Compile Include="Persistence\MondayMorningBluesHelper.cs" />
     <Compile Include="Persistence\PersistenceMondayMorningBluesSql.cs" />
     <Compile Include="Persistence\PersistenceMondayMorningBluesRedis.cs" />
     <Compile Include="Persistence\PersistenceMondayMorningBluesBlob.cs" />

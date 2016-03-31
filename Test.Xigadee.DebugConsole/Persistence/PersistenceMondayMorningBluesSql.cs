@@ -11,17 +11,13 @@ namespace Test.Xigadee
     public class PersistenceMondayMorningBluesSql: PersistenceManagerHandlerSqlBase<Guid, MondayMorningBlues>
     {
         public PersistenceMondayMorningBluesSql(string sqlConnection)
-            : base(sqlConnection, (k) => k.Id, (x) => new MondayMorningBlues())
+            : base(
+                  sqlConnection
+                  , (k) => k.Id
+                  , (s) => new Guid(s)
+                  , (x) => new MondayMorningBlues())
         {
 
-        }
-
-        static IEnumerable<Tuple<string, string>> References(MondayMorningBlues entity)
-        {
-            if (entity != null && !string.IsNullOrEmpty(entity.Email))
-                return new[] { new Tuple<string, string>("email", entity.Email) };
-
-            return new Tuple<string, string>[] { };
         }
 
         public override void DbSerializeKey(Guid key, SqlCommand cmd)
@@ -34,7 +30,5 @@ namespace Test.Xigadee
             cmd.Parameters.Add("@ExternalId", System.Data.SqlDbType.UniqueIdentifier).Value = entity.Id;
             cmd.Parameters.Add("@Data", SqlDbType.Xml).Value = mTransform.EntitySerializer(entity);
         }
-
-
     }
 }
