@@ -22,7 +22,7 @@ namespace Test.Xigadee
                             VersionId = sContext.Versionid,
                             Message = DateTime.Now.ToString(),
                             NotEnoughCoffee = true,
-                            Email = "paul@hotmail.com"
+                            Email = $"paul+{sContext.Testid.ToString("N")}@hotmail.com"
                         }
                         , new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
 
