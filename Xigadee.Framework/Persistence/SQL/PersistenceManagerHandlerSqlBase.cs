@@ -26,15 +26,36 @@ namespace Xigadee
         /// </summary>
         /// <param name="connection">The sql datbase connection.</param>
         /// <param name="keyMaker">The key maker function.</param>
-        /// <param name="entityMaker">The entity maker function.</param>
-        /// <param name="versionMaker"></param>
-        protected PersistenceManagerHandlerSqlBase(string connection,
-            Func<E, K> keyMaker,
-            Func<XElement, E> entityMaker,
-            Func<XElement, Tuple<K, string>> versionMaker = null,
-            PersistenceRetryPolicy retryPolicy = null,
-            ResourceProfile resourceProfile = null)
-            : base(connection, keyMaker, entityMaker, versionMaker, retryPolicy, resourceProfile)
+        /// <param name="xmlEntityMaker">The entity maker function.</param>
+        /// <param name="xmlVersionMaker"></param>
+        protected PersistenceManagerHandlerSqlBase(string connection
+            , Func<E, K> keyMaker
+            , Func<string, K> keyDeserializer
+            , Func<XElement, E> xmlEntityMaker
+            , Func<XElement, Tuple<K, string>> xmlVersionMaker = null
+            , string entityName = null
+            , VersionPolicy<E> versionPolicy = null
+            , TimeSpan? defaultTimeout = null
+            , PersistenceRetryPolicy persistenceRetryPolicy = null
+            , ResourceProfile resourceProfile = null
+            , ICacheManager<K, E> cacheManager = null
+            , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
+            , Func<K, string> keySerializer = null
+            )
+            : base(connection
+                  , keyMaker
+                  , keyDeserializer
+                  , xmlEntityMaker
+                  , xmlVersionMaker: xmlVersionMaker
+                  , entityName: entityName
+                  , versionPolicy: versionPolicy
+                  , defaultTimeout: defaultTimeout
+                  , persistenceRetryPolicy: persistenceRetryPolicy
+                  , resourceProfile: resourceProfile
+                  , cacheManager: cacheManager
+                  , referenceMaker: referenceMaker
+                  , keySerializer: keySerializer
+                  )
         {
         }
         #endregion
@@ -67,24 +88,37 @@ namespace Xigadee
         /// </summary>
         /// <param name="connection">The sql datbase connection.</param>
         /// <param name="keyMaker">The key maker function.</param>
-        /// <param name="entityMaker">The entity maker function.</param>
-        /// <param name="versionMaker"></param>
+        /// <param name="xmlEntityMaker">The entity maker function.</param>
+        /// <param name="xmlVersionMaker"></param>
         protected PersistenceManagerHandlerSqlBase(string connection
             , Func<E, K> keyMaker
-            , Func<XElement, E> entityMaker
-            , Func<XElement, Tuple<K, string>> versionMaker = null
-            , PersistenceRetryPolicy retryPolicy = null
+            , Func<string, K> keyDeserializer
+            , Func<XElement, E> xmlEntityMaker
+            , Func<XElement, Tuple<K, string>> xmlVersionMaker = null
+            , string entityName = null
+            , VersionPolicy<E> versionPolicy = null
+            , TimeSpan? defaultTimeout = null
+            , PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
-            , ICacheManager<K, E> cacheManager = null) 
-            : base(
-                  persistenceRetryPolicy: retryPolicy
+            , ICacheManager<K, E> cacheManager = null
+            , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
+            , Func<K, string> keySerializer = null
+            ) 
+            : base( persistenceRetryPolicy: persistenceRetryPolicy
                   , resourceProfile: resourceProfile
                   , cacheManager: cacheManager
-                  , keyMaker: keyMaker)
+                  , defaultTimeout: defaultTimeout
+                  , entityName: entityName
+                  , versionPolicy: versionPolicy
+                  , keyMaker:keyMaker
+                  , keySerializer: keySerializer
+                  , keyDeserializer: keyDeserializer
+                  , referenceMaker: referenceMaker
+                  )
         {
             Connection = connection;
-            mEntityMaker = entityMaker;
-            mVersionMaker = versionMaker;
+            mEntityMaker = xmlEntityMaker;
+            mVersionMaker = xmlVersionMaker;
         }
         #endregion
 
@@ -384,7 +418,6 @@ namespace Xigadee
 
         }
         #endregion
-
         #region ProcessOutputKey(XElement node, PersistenceResponseHolder rs)
 
         protected virtual void ProcessOutputKey(XElement node, PersistenceResponseHolder rs)

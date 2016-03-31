@@ -40,7 +40,8 @@ namespace Xigadee
             , ResourceProfile resourceProfile = null
             , ICacheManager<K, E> cacheManager = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
-            , Func<K, string> keySerializer = null)
+            , Func<K, string> keySerializer = null
+            )
             : base(connection, database, keyMaker, keyDeserializer
                   , databaseCollection: databaseCollection
                   , shardingPolicy: shardingPolicy
