@@ -347,6 +347,7 @@ namespace Xigadee
                     if (paramReturnValue.Value != null)
                     {
                         rs.StatusCode = (int)paramReturnValue.Value;
+                        rs.IsSuccess = rs.StatusCode >= 200 && rs.StatusCode <= 299;
                         conv(xmlData, rs);
                     }
 
