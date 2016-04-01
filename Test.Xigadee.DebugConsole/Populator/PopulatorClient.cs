@@ -25,7 +25,7 @@ namespace Test.Xigadee
             Persistence = (IRepositoryAsync<Guid, MondayMorningBlues>)Service.RegisterCommand(
                 new PersistenceMessageInitiator<Guid, MondayMorningBlues>(cacheManager)
                 {
-                      ChannelId = Channels.TestB
+                    ChannelId = Channels.TestB
                     , ResponseChannelId = Channels.Interserve
                 });
 

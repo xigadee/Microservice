@@ -13,8 +13,6 @@ namespace Test.Xigadee
 
         static void MicroserviceClientStart()
         {
-            sContext.Persistence = sContext.Client.Persistence;
-
             sContext.Client.Service.StatusChanged += ClientStatusChanged;
 
             sContext.Client.Populate(ResolveClientSetting, true);

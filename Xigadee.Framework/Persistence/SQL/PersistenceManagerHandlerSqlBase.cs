@@ -87,10 +87,12 @@ namespace Xigadee
     {
         #region Declaration
         /// <summary>
-        /// This function is used to create the entity.
+        /// This function is used to deserialize the entity from XML.
         /// </summary>
         protected Func<XElement, E> mXmlEntityDeserializer;
-
+        /// <summary>
+        /// This function is used to serialize the entity in to XML.
+        /// </summary>
         protected Func<E, XElement> mXmlEntitySerializer;
         /// <summary>
         /// This function creates the version maker.
@@ -98,7 +100,6 @@ namespace Xigadee
         protected Func<XElement, Tuple<K, string>> mXmlVersionMaker;
         #endregion
         #region Constructor
-
         /// <summary>
         /// This is the default constructor with a manual connection string.
         /// </summary>
@@ -338,7 +339,7 @@ namespace Xigadee
                             xmlData = sb.ToString();
                         }
                     }
-                    catch (InvalidOperationException)
+                    catch (InvalidOperationException ioex)
                     {
                         if (paramReturnValue.Value == null || (int)paramReturnValue.Value == 0)
                             throw;
@@ -355,7 +356,7 @@ namespace Xigadee
                         Logger.LogMessage(LoggingLevel.Error, $"Sql DB action {commandname} failed: ", "SQL");
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 if (paramReturnValue?.Value != null)
                     rs.StatusCode = (int)paramReturnValue.Value;
@@ -370,7 +371,6 @@ namespace Xigadee
         #endregion
 
         #region InternalCreate
-
         protected override async Task<IResponseHolder<E>> InternalCreate(PersistenceRequestHolder<K, E> holder)
         {
             return await SqlCommandTemplateXml<PersistenceResponseHolder<E>>(Connection, StoredProcedureCreate

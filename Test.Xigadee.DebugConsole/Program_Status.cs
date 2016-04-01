@@ -15,21 +15,11 @@ namespace Test.Xigadee
         static void ServerStatusChanged(object sender, StatusChangedEventArgs e)
         {
             ServiceStatusChanged((v) => sContext.Server.Status = v, sender, e);
-
-            if (e.StatusNew == ServiceStatus.Running)
-                sContext.Persistence = sContext.Server.Persistence;
-            else
-                sContext.Persistence = null;
         }
 
         static void ClientStatusChanged(object sender, StatusChangedEventArgs e)
         {
             ServiceStatusChanged((v) => sContext.Client.Status = v, sender, e);
-
-            if (e.StatusNew == ServiceStatus.Running)
-                sContext.Persistence = sContext.Client.Persistence;
-            else
-                sContext.Persistence = null;
         }
 
         static void ServiceStatusChanged(Action<int> started, object sender, StatusChangedEventArgs e)

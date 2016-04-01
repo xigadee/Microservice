@@ -46,8 +46,6 @@ namespace Test.Xigadee
                 Message = ConversionHelper.NodeNullable(node.Attribute("Message")),
             };
 
-
-
             return entity;
         }
 
