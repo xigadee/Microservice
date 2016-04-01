@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [dbo].[FnMondayMorningBlues]
+﻿CREATE FUNCTION [dbo].[fnMondayMorningBlues]
 (
 	@Id BIGINT
 )

@@ -13,7 +13,7 @@ BEGIN
 	if (@ResolveStatus != 200)
 		RETURN @ResolveStatus;
 
-	SELECT [dbo].[FnMondayMorningBlues] (@Id)
+	SELECT [dbo].[fnMondayMorningBlues] (@Id)
 	 
 	RETURN 200;
 END

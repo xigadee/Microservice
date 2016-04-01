@@ -48,7 +48,7 @@ BEGIN
 		 RETURN 500;
 	END CATCH
 	
-	SELECT [dbo].[FnMondayMorningBlues] (@Id)
+	SELECT [dbo].[fnMondayMorningBlues] (@Id)
 
 	RETURN 201;
 END

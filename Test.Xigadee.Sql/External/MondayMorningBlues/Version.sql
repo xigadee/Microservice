@@ -11,7 +11,7 @@ BEGIN
 	if (@ResolveStatus != 200)
 		RETURN @ResolveStatus;
 
-	SELECT [dbo].[FnEntityVersion] (@ExternalId, @VersionId)
+	SELECT [dbo].[fnEntityVersion] (@ExternalId, @VersionId)
 	 
 	RETURN 200;
 END

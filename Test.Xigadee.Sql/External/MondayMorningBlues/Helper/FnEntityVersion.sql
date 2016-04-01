@@ -1,8 +1,7 @@
 ﻿CREATE FUNCTION [dbo].[fnEntityVersion]
 (
-	@VersionId UNIQUEIDENTIFIER,
-	@ExternalId UNIQUEIDENTIFIER
-
+	@ExternalId UNIQUEIDENTIFIER,
+	@VersionId UNIQUEIDENTIFIER
 )
 RETURNS XML
 AS

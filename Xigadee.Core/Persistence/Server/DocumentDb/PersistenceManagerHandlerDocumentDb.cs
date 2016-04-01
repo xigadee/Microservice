@@ -168,13 +168,20 @@ namespace Xigadee
         }
         #endregion
 
+        #region PersistenceResponseFormat(ResponseHolder result)
+        /// <summary>
+        /// This method sets the response holder based on the results holder.
+        /// </summary>
+        /// <param name="result">The documentDb result holder.</param>
+        /// <returns>Returns the persistence holder.</returns>
         private PersistenceResponseHolder<E> PersistenceResponseFormat(ResponseHolder result)
         {
             if (result.IsSuccess)
                 return new PersistenceResponseHolder<E>() { StatusCode = result.StatusCode, Content = result.Content, IsSuccess = true, Entity = mTransform.EntityDeserializer(result.Content) };
             else
                 return new PersistenceResponseHolder<E>() { StatusCode = result.IsTimeout ? 504 : result.StatusCode, IsSuccess = false, IsTimeout = result.IsTimeout };
-        }
+        } 
+        #endregion
 
         #region InternalCreate
         /// <summary>

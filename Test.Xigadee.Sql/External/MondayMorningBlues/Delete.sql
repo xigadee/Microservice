@@ -10,18 +10,22 @@ BEGIN
 		RETURN @ResolveStatus;
 	
 	BEGIN TRY;
-		DECLARE @OutputXml XML = (SELECT [dbo].[FnMondayMorningBlues] (@Id))
-
 		BEGIN TRAN;
-			DELETE FROM [dbo].[MondayMorningBlues]
-			WHERE [Id] = @Id
+
+		DELETE FROM [dbo].[MondayMorningBlues]
+		WHERE [Id] = @Id
+
 		COMMIT TRAN
 				
-		SELECT @OutputXml
-		RETURN 200	
+		IF (@@ROWCOUNT = 0)
+			RETURN 404;
 	END TRY
 	BEGIN CATCH	
 		 ROLLBACK TRAN
 		 RETURN 500;
 	END CATCH	
+	
+	SELECT [dbo].[fnEntityVersion] (@ExternalId, @VersionId)
+	 
+	RETURN 200;
 END

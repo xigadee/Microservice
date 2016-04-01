@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [External].[MondayMorningBluesDeleteByReference]
+﻿CREATE PROCEDURE [External].[MondayMorningBluesDeleteByRef]
 	  @RefType NVARCHAR(50)
 	, @RefValue NVARCHAR(255)
 AS
@@ -18,16 +18,11 @@ BEGIN
 		RETURN @ResolveStatus;
 	
 	BEGIN TRY;
-		BEGIN TRAN;
 
 		DELETE FROM [dbo].[MondayMorningBlues]
 		WHERE [Id] = @Id
 
-		COMMIT TRAN
-
-		IF (@@ROWCOUNT > 0)
-			RETURN 200;
-		ELSE 
+		IF (@@ROWCOUNT = 0)
 			RETURN 404;
 
 	END TRY
@@ -35,4 +30,8 @@ BEGIN
 		 ROLLBACK TRAN
 		 RETURN 500;
 	END CATCH	
+
+	SELECT [dbo].[fnEntityVersion] (@ExternalId, @VersionId)
+	 
+	RETURN 200;
 END

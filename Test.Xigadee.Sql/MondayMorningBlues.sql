@@ -6,7 +6,7 @@
     [NotEnoughCoffee] BIT NOT NULL DEFAULT 0, 
     [NotEnoughSleep] BIT NOT NULL DEFAULT 0, 
     [Message] NVARCHAR(250) NULL, 
-    [Email] NVARCHAR(150) NULL, 
+    [Email] NVARCHAR(255) NULL, 
     [ContentId] UNIQUEIDENTIFIER NOT NULL,
 	[DateCreated] DATETIME NOT NULL DEFAULT(GETUTCDATE()),
 	[DateUpdated] DATETIME NULL 

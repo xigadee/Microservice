@@ -891,6 +891,8 @@ namespace Xigadee
             , IResponseHolder holderResponse)
         {
             rs.Key = rq.Key;
+            rs.KeyReference = rq.KeyReference;
+
             rs.ResponseCode = holderResponse.StatusCode;
 
             if (holderResponse.IsSuccess)
@@ -902,7 +904,6 @@ namespace Xigadee
             else
             {
                 rs.IsTimeout = holderResponse.IsTimeout;
-                //rs.ResponseCode = holderResponse.IsTimeout?408:404;
             }
         }
         #endregion

@@ -1,11 +1,12 @@
 ﻿CREATE PROCEDURE [dbo].[MondayMorningBlues_ResolveByRef]
-	@Email NVARCHAR(150),
+	@Email NVARCHAR(255),
 	@Id BIGINT OUTPUT,
 	@ExternalId UNIQUEIDENTIFIER OUTPUT,
 	@VersionId UNIQUEIDENTIFIER OUTPUT
 AS
 BEGIN
-	SELECT @Id=Id, @ExternalId = ExternalId, @VersionId=VersionId FROM [dbo].[MondayMorningBlues] 
+	SELECT @Id=Id, @ExternalId = ExternalId, @VersionId=VersionId 
+	FROM [dbo].[MondayMorningBlues] 
 	WHERE [Email] IS NOT NULL AND [Email]=@Email
 
 	IF (@@ROWCOUNT>0)
