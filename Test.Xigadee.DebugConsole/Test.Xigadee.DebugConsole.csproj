@@ -105,15 +105,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Context\Context.cs" />
+    <Compile Include="Context\ContextHelper.cs" />
     <Compile Include="Jobs\DoNothingJob.cs" />
     <Compile Include="Jobs\DelayProcessingJob.cs" />
     <Compile Include="Jobs\TestMasterJob2.cs" />
-    <Compile Include="Channels.cs" />
+    <Compile Include="Communication\Channels.cs" />
     <Compile Include="Persistence\MondayMorningBluesHelper.cs" />
+    <Compile Include="Persistence\PersistenceMondayMorningBluesMemory.cs" />
     <Compile Include="Persistence\PersistenceMondayMorningBluesSql.cs" />
     <Compile Include="Persistence\PersistenceMondayMorningBluesRedis.cs" />
     <Compile Include="Persistence\PersistenceMondayMorningBluesBlob.cs" />
     <Compile Include="Persistence\PersistenceMondayMorningBluesDocDb.cs" />
+    <Compile Include="Persistence\PersistenceOptions.cs" />
     <Compile Include="Populator\ConfigConsole.cs" />
     <Compile Include="Populator\IPopulatorConsole.cs" />
     <Compile Include="Populator\MicroserviceClient.cs" />
@@ -126,7 +130,6 @@
     <Compile Include="Populator\PopulatorServer.cs" />
     <Compile Include="Populator\PopulatorClient.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Program_Context.cs" />
     <Compile Include="Program_Entity.cs" />
     <Compile Include="Program_Menu_Main.cs" />
     <Compile Include="Program_Menu_Persistence.cs" />

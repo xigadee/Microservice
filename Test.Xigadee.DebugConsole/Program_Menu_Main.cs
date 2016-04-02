@@ -6,38 +6,6 @@ namespace Test.Xigadee
 {
     static partial class Program
     {
-        static Lazy<ConsoleMenu> sPersistenceMenuServer = new Lazy<ConsoleMenu>(
-        () => new ConsoleMenu(
-            "Persistence"
-            , Create(sContext.ServerPersistence)
-            , Read(sContext.ServerPersistence)
-            , ReadByReference(sContext.ServerPersistence)
-            , Update(sContext.ServerPersistence)
-            , Delete(sContext.ServerPersistence)
-            , DeleteByReference(sContext.ServerPersistence)
-            , Version(sContext.ServerPersistence)
-            , VersionByReference(sContext.ServerPersistence)
-            , StressTest(sContext.ServerPersistence)
-
-           )
-        );
-
-        static Lazy<ConsoleMenu> sPersistenceMenuClient = new Lazy<ConsoleMenu>(
-            () => new ConsoleMenu(
-               "Persistence"
-                    , Create(sContext.ClientPersistence)
-                    , Read(sContext.ClientPersistence)
-                    , ReadByReference(sContext.ClientPersistence)
-                    , Update(sContext.ClientPersistence)
-                    , Delete(sContext.ClientPersistence)
-                    , DeleteByReference(sContext.ClientPersistence)
-                    , Version(sContext.ClientPersistence)
-                    , VersionByReference(sContext.ClientPersistence)
-                    , StressTest(sContext.ClientPersistence)
-
-                   )
-                );
-
         static Lazy<ConsoleMenu> sMainMenu = new Lazy<ConsoleMenu>(
             () => new ConsoleMenu(
                 "Xigadee Microservice Scrathpad Test Console"
@@ -114,5 +82,37 @@ namespace Test.Xigadee
                     , enabled: (m, o) => sContext.Server.Status == 2
                 )
             ));
+
+        static Lazy<ConsoleMenu> sPersistenceMenuServer = new Lazy<ConsoleMenu>(
+            () => new ConsoleMenu(
+                "Persistence"
+                , Create(sContext.ServerPersistence)
+                , Read(sContext.ServerPersistence)
+                , ReadByReference(sContext.ServerPersistence)
+                , Update(sContext.ServerPersistence)
+                , Delete(sContext.ServerPersistence)
+                , DeleteByReference(sContext.ServerPersistence)
+                , Version(sContext.ServerPersistence)
+                , VersionByReference(sContext.ServerPersistence)
+                , StressTest(sContext.ServerPersistence)
+
+               )
+            );
+
+        static Lazy<ConsoleMenu> sPersistenceMenuClient = new Lazy<ConsoleMenu>(
+            () => new ConsoleMenu(
+               "Persistence"
+                    , Create(sContext.ClientPersistence)
+                    , Read(sContext.ClientPersistence)
+                    , ReadByReference(sContext.ClientPersistence)
+                    , Update(sContext.ClientPersistence)
+                    , Delete(sContext.ClientPersistence)
+                    , DeleteByReference(sContext.ClientPersistence)
+                    , Version(sContext.ClientPersistence)
+                    , VersionByReference(sContext.ClientPersistence)
+                    , StressTest(sContext.ClientPersistence)
+
+                   )
+                );
     }
 }

@@ -7,10 +7,6 @@ namespace Test.Xigadee
 {
     static partial class Program
     {
-        static Dictionary<string, string> sServerSettings = new Dictionary<string, string>();
-
-        static Dictionary<string, string> sClientSettings = new Dictionary<string, string>();
-
         static void MicroserviceClientStart()
         {
             sContext.Client.Service.StatusChanged += ClientStatusChanged;
@@ -86,6 +82,12 @@ namespace Test.Xigadee
                     e.Service.RegisterCommand(
                         new PersistenceMondayMorningBluesDocDb(e.Config.DocDbCredentials, e.Config.DocumentDbName
                         , sContext.Server.VersionMondayMorningBlues, cacheManager)
+                        { ChannelId = Channels.TestB });
+                    break;
+                case PersistenceOptions.Memory:
+                    e.Service.RegisterCommand(
+                        new PersistenceMondayMorningBluesMemory(
+                          sContext.Server.VersionMondayMorningBlues, cacheManager)
                         { ChannelId = Channels.TestB });
                     break;
 

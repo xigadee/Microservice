@@ -6,15 +6,6 @@ namespace Test.Xigadee
 {
     static partial class Program
     {
-        enum PersistenceOptions
-        {
-            Sql,
-            DocumentDb,
-            DocumentDbSdk,
-            RedisCache,
-            Blob
-        }
-
         static Lazy<ConsoleMenu> sPersistenceSettingsMenu = new Lazy<ConsoleMenu>(
             () => new ConsoleMenu(
                 $"Persistence store options"
@@ -57,6 +48,14 @@ namespace Test.Xigadee
                     }
                     , enabled: (m, o) => true
                     , selected: (m, o) => sContext.PersistenceType == PersistenceOptions.RedisCache
+                )
+                , new ConsoleOption("Memory based Persistence"
+                    , (m, o) =>
+                    {
+                        sContext.PersistenceType = PersistenceOptions.Memory;
+                    }
+                    , enabled: (m, o) => true
+                    , selected: (m, o) => sContext.PersistenceType == PersistenceOptions.Memory
                 )
                 , new ConsoleOption("Client RedisCache enabled"
                     , (m, o) =>

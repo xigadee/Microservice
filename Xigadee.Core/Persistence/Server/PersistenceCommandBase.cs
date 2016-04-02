@@ -1,5 +1,4 @@
 ﻿#region using
-
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -351,7 +350,14 @@ namespace Xigadee
         #endregion
 
         #region ProfileStart/ProfileEnd/ProfileRetry
-
+        /// <summary>
+        /// This method starts the request profile and creates the request holder with the profile id.
+        /// </summary>
+        /// <typeparam name="KT">The key type.</typeparam>
+        /// <typeparam name="ET">The entity type.</typeparam>
+        /// <param name="prq">The incoming request.</param>
+        /// <param name="prs">The outgoing response.</param>
+        /// <returns>Returns the new request holder.</returns>
         protected virtual PersistenceRequestHolder<KT, ET> ProfileStart<KT, ET>(TransmissionPayload prq, List<TransmissionPayload> prs)
         {
             Guid profileId;
@@ -366,7 +372,12 @@ namespace Xigadee
 
             return holder;
         }
-
+        /// <summary>
+        /// This method marks the incoming request as complete.
+        /// </summary>
+        /// <typeparam name="KT">The key type.</typeparam>
+        /// <typeparam name="ET">The entity type.</typeparam>
+        /// <param name="holder">The request holder.</param>
         protected virtual void ProfileEnd<KT, ET>(PersistenceRequestHolder<KT, ET> holder)
         {
             if (mPolicy.ResourceConsumer != null)
@@ -376,12 +387,20 @@ namespace Xigadee
             mInPlay.TryRemove(holder.profileId, out ok);
         }
 
+        /// <summary>
+        /// This is called when the request is retried due to an underlying storage issue.
+        /// </summary>
+        /// <typeparam name="KT">The key type.</typeparam>
+        /// <typeparam name="ET">The entity type.</typeparam>
+        /// <param name="holder">The request holder.</param>
+        /// <param name="retryStart">The tick count of the retry point.</param>
         protected virtual void ProfileRetry<KT, ET>(PersistenceRequestHolder<KT, ET> holder, int retryStart)
         {
             if (mPolicy.ResourceConsumer != null)
                 mPolicy.ResourceConsumer.Retry(holder.profileId, retryStart, holder.rs.ShouldRetry ? ResourceRetryReason.Other : ResourceRetryReason.Timeout);
 
             holder.Retry(retryStart);
+
             mStatistics.RetryIncrement();
 
         }
