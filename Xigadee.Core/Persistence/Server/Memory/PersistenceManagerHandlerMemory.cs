@@ -124,9 +124,11 @@ namespace Xigadee
 
         protected override async Task<IResponseHolder<E>> InternalCreate(PersistenceRequestHolder<K, E> holder)
         {
-            var jsonHolder = mTransform.JsonMaker(holder.rq.Entity);
+            E entity = holder.rq.Entity;
+            var jsonHolder = mTransform.JsonMaker(entity);
+            K key = mTransform.KeyMaker(entity);
 
-            bool success = mContainer.TryAdd(holder.rq.Key, jsonHolder);
+            bool success = mContainer.TryAdd(key, jsonHolder);
 
             if (success)
                 return new PersistenceResponseHolder<E>()
@@ -139,15 +141,32 @@ namespace Xigadee
             else
                 return new PersistenceResponseHolder<E>()
                 {
-                      StatusCode = 400
+                      StatusCode = 412
                     , IsSuccess = false
                     , IsTimeout = false
                 };
         }
 
-        protected override Task<IResponseHolder<E>> InternalRead(K key, PersistenceRequestHolder<K, E> holder)
+        protected override async Task<IResponseHolder<E>> InternalRead(K key, PersistenceRequestHolder<K, E> holder)
         {
-            return base.InternalRead(key, holder);
+            JsonHolder<K> jsonHolder;
+            bool success = mContainer.TryGetValue(key, out jsonHolder);
+
+            if (success)
+                return new PersistenceResponseHolder<E>()
+                {
+                      StatusCode = 200
+                    , Content = jsonHolder.Json
+                    , IsSuccess = true
+                    , Entity = mTransform.EntityDeserializer(jsonHolder.Json)
+                };
+            else
+                return new PersistenceResponseHolder<E>()
+                {
+                      StatusCode = 404
+                    , IsSuccess = false
+                    , IsTimeout = false
+                };
         }
 
         protected override Task<IResponseHolder<E>> InternalReadByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, E> holder)
@@ -155,9 +174,29 @@ namespace Xigadee
             return base.InternalReadByRef(reference, holder);
         }
 
-        protected override Task<IResponseHolder<E>> InternalUpdate(PersistenceRequestHolder<K, E> holder)
+        protected override async Task<IResponseHolder<E>> InternalUpdate(PersistenceRequestHolder<K, E> holder)
         {
-            return base.InternalUpdate(holder);
+            //E entity = holder.rq.Entity;
+            //var jsonHolder = mTransform.JsonMaker(entity);
+            //K key = mTransform.KeyMaker(entity);
+
+            //bool success = mContainer.TryUpdate(key, jsonHolder, 
+
+            //if (success)
+            //    return new PersistenceResponseHolder<E>()
+            //    {
+            //        StatusCode = 201
+            //        , Content = jsonHolder.Json
+            //        , IsSuccess = true
+            //        , Entity = mTransform.EntityDeserializer(jsonHolder.Json)
+            //    };
+            //else
+                return new PersistenceResponseHolder<E>()
+                {
+                    StatusCode = 412
+                    , IsSuccess = false
+                    , IsTimeout = false
+                };
         }
 
         protected override Task<IResponseHolder> InternalDelete(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
