@@ -143,8 +143,7 @@ namespace Xigadee
                 tasks.Add(batch.KeyExpireAsync(hashkey, mEntityTtl));
                 //Get any associated references for the entity.
                 var references = transform.ReferenceMaker(entity);
-                if (references != null)
-                    references.ForEach((r) => tasks.Add(WriteReference(batch, transform, r, key, version)));
+                references?.ForEach((r) => tasks.AddRange(WriteReference(batch, transform, r, key, version)));
 
                 batch.Execute();
 
@@ -169,14 +168,18 @@ namespace Xigadee
         /// <param name="key">The root key.</param>
         /// <param name="version">The entity version.</param>
         /// <returns>Returns an async task.</returns>
-        protected virtual Task WriteReference(IBatch batch, EntityTransformHolder<K, E> transform, Tuple<string,string> reference, K key, string version)
+        protected virtual List<Task> WriteReference(IBatch batch, EntityTransformHolder<K, E> transform, Tuple<string,string> reference, K key, string version)
         {
             //entityreference.{entitytype}.{keytype i.e., EMAIL, ID etc.}
             RedisKey hashkey = RedisReferenceKeyGet(transform, reference.Item1);
 
             string combined = $"{version}|{transform.KeySerializer(key)}";
             //Entity
-            return batch.HashSetAsync(hashkey, reference.Item2.ToLowerInvariant(), combined, when: When.Always);
+            return new List<Task>(2)
+            {
+                batch.HashSetAsync(hashkey, reference.Item2.ToLowerInvariant(), combined, when: When.Always),
+                batch.KeyExpireAsync(hashkey, mEntityTtl)
+            };
         }
         #endregion
 
