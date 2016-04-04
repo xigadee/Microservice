@@ -35,7 +35,7 @@ namespace Xigadee
 
         public async Task<RepositoryHolder<K, E>> Read(K key, RepositorySettings settings = null)
         {
-            if ((settings?.UseCache ?? false) && mCacheManager.IsActive)
+            if ((settings?.UseCache ?? true) && mCacheManager.IsActive)
             {
                 var result = await mCacheManager.Read(key);
                 if (result.IsSuccess)
