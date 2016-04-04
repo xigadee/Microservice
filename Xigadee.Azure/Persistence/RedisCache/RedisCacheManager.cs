@@ -14,9 +14,9 @@ namespace Xigadee
         where K : IEquatable<K>
     {
         #region Declarations
-        private string mConnection;
+        private readonly string mConnection;
 
-        private Lazy<ConnectionMultiplexer> mLazyConnection;
+        private readonly Lazy<ConnectionMultiplexer> mLazyConnection;
 
         protected const string cnKeyVersion = "version";
         protected const string cnKeyEntity = "entity";
@@ -32,18 +32,7 @@ namespace Xigadee
             mTransform = transform ?? new EntityTransformHolder<K, E>(true);
 
             mEntityTtl = entityTtl??TimeSpan.FromDays(2);
-
-            mLazyConnection = new Lazy<ConnectionMultiplexer>(() =>
-            {
-                try
-                {
-                    return ConnectionMultiplexer.Connect(mConnection);
-                }
-                catch (Exception ex)
-                {
-                    throw;
-                }
-            });
+            mLazyConnection = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(mConnection));
         } 
         #endregion
 
@@ -122,11 +111,13 @@ namespace Xigadee
         #endregion
 
         #region Write(EntityTransformHolder<K, E> transform, E entity, TimeSpan? expiry = null)
+
         /// <summary>
         /// This method writes the entity to the redis cache.
         /// </summary>
         /// <param name="transform">The transform holder.</param>
         /// <param name="entity">The entity to write.</param>
+        /// <param name="expiry"></param>
         /// <returns>Returns true if the write was successful.</returns>
         public override async Task<bool> Write(EntityTransformHolder<K, E> transform, E entity, TimeSpan? expiry = null)
         {
@@ -161,9 +152,9 @@ namespace Xigadee
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
+                // Don't raise an exception here
             }
 
             return false;
@@ -385,11 +376,12 @@ namespace Xigadee
         /// <typeparam name="K"></typeparam>
         /// <typeparam name="E"></typeparam>
         /// <param name="connection"></param>
+        /// <param name="readOnly"></param>
+        /// <param name="entityTtl"></param>
         /// <returns></returns>
-        public static RedisCacheManager<K, E> Default<K, E>(string connection, bool readOnly = false)
-            where K : IEquatable<K>
+        public static RedisCacheManager<K, E> Default<K, E>(string connection, bool readOnly = false, TimeSpan? entityTtl = null) where K : IEquatable<K>
         {
-            return new RedisCacheManager<K, E>(connection, readOnly);
+            return new RedisCacheManager<K, E>(connection, readOnly, entityTtl: entityTtl);
         }
     }
 }
