@@ -20,6 +20,7 @@
       <dependency id="Microsoft.Azure.DocumentDB" version="1.5.2" />
       <dependency id="Microsoft.WindowsAzure.ConfigurationManager" version="3.2.1" />
       <dependency id="Microsoft.WindowsAzure.Management.Monitoring" version="4.1.0" />
+      <dependency id="StackExchange.Redis" version="1.0.488" />
     </dependencies>
   </metadata>
   <files>
