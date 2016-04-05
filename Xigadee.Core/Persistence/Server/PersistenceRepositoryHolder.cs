@@ -20,14 +20,16 @@ namespace Xigadee
 
             if (holder != null)
             {
-                this.Entity = holder.Entity;
-                this.Key = holder.Key;
-                this.KeyReference = holder.KeyReference;
-                this.Settings = holder.Settings;
-                this.ResponseCode = holder.ResponseCode;
-                this.ResponseMessage = holder.ResponseMessage;
-                this.TraceId = holder.TraceId;
+                Entity = holder.Entity;
+                Key = holder.Key;
+                KeyReference = holder.KeyReference;
+                Settings = holder.Settings;
+                ResponseCode = holder.ResponseCode;
+                ResponseMessage = holder.ResponseMessage;
+                TraceId = holder.TraceId;
             }
+
+            Settings = Settings ?? new RepositorySettings();
         }
 
         public PersistenceRepositoryHolder(RepositoryHolder<object, object> rqTemp)
