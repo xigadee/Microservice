@@ -12,7 +12,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public abstract class PersistenceCommandBase<K,E,S,P> : CommandBase<S,P>, 
+    public abstract class PersistenceCommandBase<K, E, S, P> : CommandBase<S, P>,
         IPersistenceMessageHandler, IRequireSharedServices
         where K : IEquatable<K>
         where S : PersistenceStatistics, new()
@@ -23,7 +23,7 @@ namespace Xigadee
         /// <summary>
         /// This is the entity transform holder.
         /// </summary>
-        protected readonly EntityTransformHolder<K,E> mTransform;
+        protected readonly EntityTransformHolder<K, E> mTransform;
         /// <summary>
         /// This is the cache manager.
         /// </summary>
@@ -118,7 +118,7 @@ namespace Xigadee
         /// <param name="keySerializer">The serializer that converts the key in to a string.</param>
         /// <param name="keyDeserializer">The deserializer that converts a string in to a key.</param>
         /// <param name="referenceMaker">A function that returns references from the entity in a set of string Tuples.</param>
-        /// <param name="referenceHashMaker">A function that returns a cache safe hash of the reference tuple</param>
+        /// <param name="referenceHashMaker">A function that creates a safe hash from the reference tuple</param>
         /// <returns>Returns the transform holder.</returns>
         protected virtual EntityTransformHolder<K, E> EntityTransformCreate(
               string entityName = null
@@ -135,10 +135,10 @@ namespace Xigadee
 
             mTransform.KeyMaker = keyMaker;
 
-            mTransform.KeySerializer = keySerializer ?? (i => i.ToString());
+            mTransform.KeySerializer = keySerializer ?? ((i) => i.ToString());
             mTransform.KeyDeserializer = keyDeserializer;
 
-            mTransform.ReferenceMaker = referenceMaker ?? (e => new Tuple<string, string>[] { });
+            mTransform.ReferenceMaker = referenceMaker ?? ((e) => new Tuple<string, string>[] { });
             mTransform.ReferenceHashMaker = referenceHashMaker ?? (r => $"{r.Item1.ToLowerInvariant()}.{r.Item2.ToLowerInvariant()}");
             mTransform.Version = versionPolicy ?? new VersionPolicy<E>();
 
@@ -148,7 +148,7 @@ namespace Xigadee
             mTransform.EntitySerializer = entitySerializer;
 
             return mTransform;
-        } 
+        }
         #endregion
 
         #region EntityType
@@ -189,7 +189,7 @@ namespace Xigadee
         public virtual ISharedService SharedServices
         {
             get; set;
-        } 
+        }
         #endregion
 
         #region CommandsRegister()
@@ -247,7 +247,7 @@ namespace Xigadee
         protected virtual async Task<bool> TimeoutCorrectDelete(PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
             return false;
-        } 
+        }
         #endregion
 
         #region Log<KT, ET>...
@@ -265,9 +265,9 @@ namespace Xigadee
         protected void Log<KT, ET>(string action, PersistenceRequestHolder<KT, ET> holder
             , LoggingLevel loggingLevel = LoggingLevel.Info, string message = null, string category = null)
         {
-            var logEvent = new PersistencePayloadLogEvent(holder.prq, holder.rq, holder.rs, loggingLevel) {Message = message ?? string.Empty, Category = category};
+            var logEvent = new PersistencePayloadLogEvent(holder.prq, holder.rq, holder.rs, loggingLevel) { Message = message ?? string.Empty, Category = category };
             Logger.Log(logEvent);
-        } 
+        }
         #endregion
         #region LogException<KT, ET>...
         /// <summary>
@@ -323,7 +323,7 @@ namespace Xigadee
         protected async virtual Task LogEventSource<KT, ET>(string actionType, PersistenceRequestHolder<KT, ET> holder)
         {
             // Only pass through the entity if is of the correct entity type. ET might be an entity or it might be a Tuple<K, string>> in which case pass a null  
-            E entity = typeof (ET) == typeof (E) ? (E)Convert.ChangeType(holder.rs.Entity, typeof(E)) : default(E);
+            E entity = typeof(ET) == typeof(E) ? (E)Convert.ChangeType(holder.rs.Entity, typeof(E)) : default(E);
             await LogEventSource(actionType, holder.prq.Message.OriginatorKey, holder.rs.Key, entity, holder.rq.Settings);
         }
         #endregion
@@ -383,7 +383,7 @@ namespace Xigadee
             if (mPolicy.ResourceConsumer == null)
                 profileId = Guid.NewGuid();
             else
-                profileId =  mPolicy.ResourceConsumer.Start(prq.Message.ToKey(), prq.Id);
+                profileId = mPolicy.ResourceConsumer.Start(prq.Message.ToKey(), prq.Id);
 
             var holder = new PersistenceRequestHolder<KT, ET>(profileId, prq, prs);
 
@@ -431,7 +431,7 @@ namespace Xigadee
         {
             Guid profileId { get; }
 
-            int start{ get; }
+            int start { get; }
 
             string Profile { get; }
         }
@@ -441,7 +441,7 @@ namespace Xigadee
         /// </summary>
         /// <typeparam name="KT">The key type.</typeparam>
         /// <typeparam name="ET">The entity type.</typeparam>
-        protected class PersistenceRequestHolder<KT, ET>: IPersistenceRequestHolder
+        protected class PersistenceRequestHolder<KT, ET> : IPersistenceRequestHolder
         {
             private int mRetry;
 
@@ -484,7 +484,7 @@ namespace Xigadee
                     return "";
                 }
             }
-        } 
+        }
 
         #endregion
 
@@ -509,7 +509,7 @@ namespace Xigadee
         {
             Func<TransmissionPayload, List<TransmissionPayload>, Task> actionPayload = async (m, l) =>
             {
-                var holder = ProfileStart<KT,ET>(m, l);
+                var holder = ProfileStart<KT, ET>(m, l);
 
                 try
                 {
@@ -668,7 +668,7 @@ namespace Xigadee
                 channelId = ChannelId ?? string.Empty;
 
             if (entityType == null)
-                entityType=EntityType;
+                entityType = EntityType;
 
             CommandRegister(
                   channelId.ToLowerInvariant()
@@ -757,7 +757,7 @@ namespace Xigadee
 
             var result = await InternalUpdate(key, holder);
 
-            if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
+            if (mCacheManager.IsActive && result.IsSuccess)
                 mCacheManager.Write(mTransform, result.Entity);
 
             ProcessOutputEntity(key, holder.rq, holder.rs, result);
@@ -881,7 +881,7 @@ namespace Xigadee
 
             rs.KeyReference = new Tuple<string, string>(rs.Key.ToString(), rs.Settings.VersionId);
         }
-   
+
         /// <summary>
         /// This method sets the entity and any associated metadata in to the response.
         /// </summary>
@@ -934,7 +934,7 @@ namespace Xigadee
                         holderResponse.Ex != null ? holderResponse.Ex.ToString() : rs.ResponseMessage), typeof(E).Name);
 
             rs.IsTimeout = holderResponse.IsTimeout;
-        } 
+        }
         #endregion
         #region ProcessOutputKey...
         /// <summary>

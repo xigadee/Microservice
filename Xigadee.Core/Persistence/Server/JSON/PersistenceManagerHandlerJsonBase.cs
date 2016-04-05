@@ -13,7 +13,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K"></typeparam>
     /// <typeparam name="E"></typeparam>
-    public abstract class PersistenceManagerHandlerJsonBase<K, E, S, P>: PersistenceCommandBase<K, E, S, P>
+    public abstract class PersistenceManagerHandlerJsonBase<K, E, S, P> : PersistenceCommandBase<K, E, S, P>
         where K : IEquatable<K>
         where S : PersistenceStatistics, new()
         where P : PersistenceCommandPolicy, new()
@@ -46,16 +46,16 @@ namespace Xigadee
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             , Func<Tuple<string, string>, string> referenceHashMaker = null
             , Func<K, string> keySerializer = null
-            ) : 
-            base( persistenceRetryPolicy: persistenceRetryPolicy
-                , resourceProfile:resourceProfile
+            ) :
+            base(persistenceRetryPolicy: persistenceRetryPolicy
+                , resourceProfile: resourceProfile
                 , cacheManager: cacheManager
                 , entityName: entityName
                 , versionPolicy: versionPolicy
                 , defaultTimeout: defaultTimeout
-                , keyMaker:keyMaker
-                , referenceMaker:referenceMaker
-                , referenceHashMaker:referenceHashMaker
+                , keyMaker: keyMaker
+                , referenceMaker: referenceMaker
+                , referenceHashMaker: referenceHashMaker
                 , keySerializer: keySerializer
                 , keyDeserializer: keyDeserializer
                 )
@@ -64,6 +64,7 @@ namespace Xigadee
         #endregion
 
         #region EntityTransformCreate...
+
         /// <summary>
         /// This method sets the Json serializer as the primary transform mechanism.
         /// </summary>
@@ -75,6 +76,7 @@ namespace Xigadee
         /// <param name="keySerializer"></param>
         /// <param name="keyDeserializer"></param>
         /// <param name="referenceMaker"></param>
+        /// <param name="referenceHashMaker"></param>
         /// <returns></returns>
         protected override EntityTransformHolder<K, E> EntityTransformCreate(
               string entityName = null
@@ -84,7 +86,7 @@ namespace Xigadee
             , Func<E, string> entitySerializer = null
             , Func<K, string> keySerializer = null
             , Func<string, K> keyDeserializer = null
-            , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null 
+            , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             , Func<Tuple<string, string>, string> referenceHashMaker = null)
         {
             var mTransform = base.EntityTransformCreate(
@@ -96,7 +98,7 @@ namespace Xigadee
             mTransform.EntityDeserializer = mTransform.JsonDeserialize;
 
             return mTransform;
-        } 
+        }
         #endregion
     }
 }

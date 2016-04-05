@@ -16,7 +16,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class PersistenceManagerHandlerMemory<K, E>: PersistenceManagerHandlerMemory<K, E, PersistenceStatistics>
+    public class PersistenceManagerHandlerMemory<K, E> : PersistenceManagerHandlerMemory<K, E, PersistenceStatistics>
         where K : IEquatable<K>
     {
         #region Constructor
@@ -55,7 +55,7 @@ namespace Xigadee
                   , resourceProfile: resourceProfile
                   , cacheManager: cacheManager
                   , referenceMaker: referenceMaker
-                  , referenceHashMaker:referenceHashMaker
+                  , referenceHashMaker : referenceHashMaker
                   , keySerializer: keySerializer
                   )
         {
@@ -73,7 +73,7 @@ namespace Xigadee
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
     /// <typeparam name="S">An extended statistics class.</typeparam>
-    public abstract class PersistenceManagerHandlerMemory<K, E, S>: PersistenceManagerHandlerJsonBase<K, E, S, PersistenceCommandPolicy>
+    public abstract class PersistenceManagerHandlerMemory<K, E, S> : PersistenceManagerHandlerJsonBase<K, E, S, PersistenceCommandPolicy>
         where K : IEquatable<K>
         where S : PersistenceStatistics, new()
     {
@@ -212,12 +212,14 @@ namespace Xigadee
             //        , Entity = mTransform.EntityDeserializer(jsonHolder.Json)
             //    };
             //else
-                return new PersistenceResponseHolder<E>()
-                {
-                      StatusCode = 412
-                    , IsSuccess = false
-                    , IsTimeout = false
-                };
+            return new PersistenceResponseHolder<E>()
+            {
+                StatusCode = 412
+                ,
+                IsSuccess = false
+                ,
+                IsTimeout = false
+            };
         }
 
         protected override async Task<IResponseHolder> InternalDelete(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
@@ -235,7 +237,7 @@ namespace Xigadee
         {
             K key;
             if (!ReferenceGet(reference, out key))
-                return new PersistenceResponseHolder<E>(){ StatusCode = 404, IsSuccess = false, IsTimeout = false };
+                return new PersistenceResponseHolder<E>() { StatusCode = 404, IsSuccess = false, IsTimeout = false };
 
             return await InternalDelete(key, holder);
         }
