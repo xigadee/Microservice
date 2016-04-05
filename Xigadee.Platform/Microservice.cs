@@ -96,6 +96,7 @@ namespace Xigadee
             mMachineName = Environment.MachineName;
 
             mServiceId = string.IsNullOrEmpty(serviceId)?Guid.NewGuid().ToString("N").ToUpperInvariant(): serviceId;
+
             mName = string.IsNullOrEmpty(name)? GetType().Name:name;
 
             mExternalServiceId = string.Format("{0}_{1}_{2:yyyyMMddHHmm}_{3}", mName, mMachineName, mStartTime, mServiceId);

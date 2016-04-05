@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 #endregion
@@ -65,6 +63,7 @@ namespace Xigadee
         #endregion
     }
     #endregion
+
     /// <summary>
     /// This persistence class is used to hold entities in memory during the lifetime of the 
     /// Microservice and does not persist to any backing store.
@@ -87,7 +86,9 @@ namespace Xigadee
         /// This container holds the key references.
         /// </summary>
         protected ConcurrentDictionary<string, K> mContainerReference;
-
+        /// <summary>
+        /// This lock is used when modifying references.
+        /// </summary>
         protected ReaderWriterLockSlim mReferenceModifyLock;
         #endregion
         #region Constructor
@@ -104,10 +105,10 @@ namespace Xigadee
             , Func<K, string> keySerializer = null)
             : base(keyMaker, keyDeserializer, entityName, versionPolicy, defaultTimeout, persistenceRetryPolicy, resourceProfile, cacheManager, referenceMaker, referenceHashMaker, keySerializer)
         {
-        } 
+        }
         #endregion
 
-
+        #region Start/Stop
         protected override void StartInternal()
         {
             mContainer = new ConcurrentDictionary<K, JsonHolder<K>>();
@@ -126,65 +127,79 @@ namespace Xigadee
             mContainer = null;
             base.StopInternal();
         }
+        #endregion
 
+        /// <summary>
+        /// This method gets a key for a given reference.
+        /// </summary>
+        /// <param name="reference">The reference tuple.</param>
+        /// <param name="key">The out key.</param>
+        /// <returns>Returns true if the reference is found and the key is set.</returns>
+        protected virtual bool ReferenceGet(Tuple<string, string> reference, out K key)
+        {
+            key = default(K);
+            return false;
+        }
 
-        protected override async Task<IResponseHolder<E>> InternalCreate(PersistenceRequestHolder<K, E> holder)
+        protected virtual void ReferenceSet(K key, List<Tuple<string, string>> references)
+        {
+        }
+
+        protected virtual void ReferencesRemove(K key)
+        {
+        }
+
+        PersistenceResponseHolder<E> ResponseSet(PersistenceResponseCode responseCode, string content = null, E entity = default(E))
+        {
+            var holder = new PersistenceResponseHolder<E>() { StatusCode = (int)responseCode };
+
+            holder.IsSuccess = holder.StatusCode >= 200 && holder.StatusCode <= 299;
+            holder.Entity = entity;
+            holder.Content = content;
+
+            return holder;
+        }
+
+        protected override async Task<IResponseHolder<E>> InternalCreate(K key
+            , PersistenceRequestHolder<K, E> holder)
         {
             E entity = holder.rq.Entity;
             var jsonHolder = mTransform.JsonMaker(entity);
-            K key = mTransform.KeyMaker(entity);
 
             bool success = mContainer.TryAdd(key, jsonHolder);
 
             if (success)
-                return new PersistenceResponseHolder<E>()
-                {
-                      StatusCode = 201
-                    , Content = jsonHolder.Json
-                    , IsSuccess = true
-                    , Entity = mTransform.EntityDeserializer(jsonHolder.Json)
-                };
+                return ResponseSet(PersistenceResponseCode.Created_201, jsonHolder.Json, mTransform.EntityDeserializer(jsonHolder.Json));
             else
-                return new PersistenceResponseHolder<E>()
-                {
-                      StatusCode = 412
-                    , IsSuccess = false
-                    , IsTimeout = false
-                };
+                return ResponseSet(PersistenceResponseCode.Conflict_412);
         }
 
-        protected override async Task<IResponseHolder<E>> InternalRead(K key, PersistenceRequestHolder<K, E> holder)
+        protected override async Task<IResponseHolder<E>> InternalRead(K key
+            , PersistenceRequestHolder<K, E> holder)
         {
             JsonHolder<K> jsonHolder;
             bool success = mContainer.TryGetValue(key, out jsonHolder);
 
             if (success)
-                return new PersistenceResponseHolder<E>()
-                {
-                      StatusCode = 200
-                    , Content = jsonHolder.Json
-                    , IsSuccess = true
-                    , Entity = mTransform.EntityDeserializer(jsonHolder.Json)
-                };
+                return ResponseSet(PersistenceResponseCode.Success_200, jsonHolder.Json, mTransform.EntityDeserializer(jsonHolder.Json));
             else
-                return new PersistenceResponseHolder<E>()
-                {
-                      StatusCode = 404
-                    , IsSuccess = false
-                    , IsTimeout = false
-                };
+                return ResponseSet(PersistenceResponseCode.NotFound_404);
         }
 
-        protected override Task<IResponseHolder<E>> InternalReadByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, E> holder)
+        protected override async Task<IResponseHolder<E>> InternalReadByRef(Tuple<string, string> reference
+            , PersistenceRequestHolder<K, E> holder)
         {
-            return base.InternalReadByRef(reference, holder);
+            K key;
+            if (!ReferenceGet(reference, out key))
+                return ResponseSet(PersistenceResponseCode.NotFound_404);
+
+            return await InternalRead(key, holder);
         }
 
-        protected override async Task<IResponseHolder<E>> InternalUpdate(PersistenceRequestHolder<K, E> holder)
+        protected override async Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRequestHolder<K, E> holder)
         {
             //E entity = holder.rq.Entity;
             //var jsonHolder = mTransform.JsonMaker(entity);
-            //K key = mTransform.KeyMaker(entity);
 
             //bool success = mContainer.TryUpdate(key, jsonHolder, 
 
@@ -199,30 +214,50 @@ namespace Xigadee
             //else
                 return new PersistenceResponseHolder<E>()
                 {
-                    StatusCode = 412
+                      StatusCode = 412
                     , IsSuccess = false
                     , IsTimeout = false
                 };
         }
 
-        protected override Task<IResponseHolder> InternalDelete(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
+        protected override async Task<IResponseHolder> InternalDelete(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return base.InternalDelete(key, holder);
+            JsonHolder<K> value;
+            if (!mContainer.TryRemove(key, out value))
+                return ResponseSet(PersistenceResponseCode.NotFound_404);
+
+            ReferencesRemove(key);
+            return ResponseSet(PersistenceResponseCode.Success_200);
         }
 
-        protected override Task<IResponseHolder> InternalDeleteByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
+        protected override async Task<IResponseHolder> InternalDeleteByRef(Tuple<string, string> reference
+            , PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return base.InternalDeleteByRef(reference, holder);
+            K key;
+            if (!ReferenceGet(reference, out key))
+                return new PersistenceResponseHolder<E>(){ StatusCode = 404, IsSuccess = false, IsTimeout = false };
+
+            return await InternalDelete(key, holder);
         }
 
-        protected override Task<IResponseHolder> InternalVersion(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
+        protected override async Task<IResponseHolder> InternalVersion(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return base.InternalVersion(key, holder);
+            JsonHolder<K> jsonHolder;
+            bool success = mContainer.TryGetValue(key, out jsonHolder);
+
+            if (success)
+                return ResponseSet(PersistenceResponseCode.Success_200, jsonHolder.Json, mTransform.EntityDeserializer(jsonHolder.Json));
+            else
+                return ResponseSet(PersistenceResponseCode.NotFound_404);
         }
 
-        protected override Task<IResponseHolder> InternalVersionByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
+        protected override async Task<IResponseHolder> InternalVersionByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return base.InternalVersionByRef(reference, holder);
+            K key;
+            if (!ReferenceGet(reference, out key))
+                return ResponseSet(PersistenceResponseCode.NotFound_404);
+
+            return await InternalVersion(key, holder);
         }
 
     }

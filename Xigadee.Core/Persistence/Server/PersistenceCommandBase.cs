@@ -18,6 +18,7 @@ namespace Xigadee
         where S : PersistenceStatistics, new()
         where P : PersistenceCommandPolicy, new()
     {
+
         #region Declarations
         /// <summary>
         /// This is the entity transform holder.
@@ -682,7 +683,7 @@ namespace Xigadee
         {
             K key = mTransform.KeyMaker(holder.rq.Entity);
 
-            var result = await InternalCreate(holder);
+            var result = await InternalCreate(key, holder);
 
             if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
                 mCacheManager.Write(mTransform, result.Entity);
@@ -690,9 +691,10 @@ namespace Xigadee
             ProcessOutputEntity(key, holder.rq, holder.rs, result);
         }
 
-        protected virtual async Task<IResponseHolder<E>> InternalCreate(PersistenceRequestHolder<K, E> holder)
+        protected virtual async Task<IResponseHolder<E>> InternalCreate(K key, PersistenceRequestHolder<K, E> holder)
         {
-            return new PersistenceResponseHolder<E>() { StatusCode = 501, IsSuccess = false };
+            return new PersistenceResponseHolder<E>()
+            { StatusCode = (int)PersistenceResponseCode.NotImplemented_501, IsSuccess = false };
         }
 
         #endregion
@@ -718,7 +720,8 @@ namespace Xigadee
 
         protected async virtual Task<IResponseHolder<E>> InternalRead(K key, PersistenceRequestHolder<K, E> holder)
         {
-            return new PersistenceResponseHolder<E>() { StatusCode = 501, IsSuccess = false };
+            return new PersistenceResponseHolder<E>()
+            { StatusCode = (int)PersistenceResponseCode.NotImplemented_501, IsSuccess = false };
         }
         #endregion
         #region ReadByRef
@@ -742,7 +745,8 @@ namespace Xigadee
 
         protected async virtual Task<IResponseHolder<E>> InternalReadByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, E> holder)
         {
-            return new PersistenceResponseHolder<E>() { StatusCode = 501, IsSuccess = false };
+            return new PersistenceResponseHolder<E>()
+            { StatusCode = (int)PersistenceResponseCode.NotImplemented_501, IsSuccess = false };
         }
         #endregion
 
@@ -751,7 +755,7 @@ namespace Xigadee
         {
             K key = mTransform.KeyMaker(holder.rq.Entity);
 
-            var result = await InternalUpdate(holder);
+            var result = await InternalUpdate(key, holder);
 
             if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
                 mCacheManager.Write(mTransform, result.Entity);
@@ -759,9 +763,10 @@ namespace Xigadee
             ProcessOutputEntity(key, holder.rq, holder.rs, result);
         }
 
-        protected virtual async Task<IResponseHolder<E>> InternalUpdate(PersistenceRequestHolder<K, E> holder)
+        protected virtual async Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRequestHolder<K, E> holder)
         {
-            return new PersistenceResponseHolder<E>() { StatusCode = 501, IsSuccess = false};
+            return new PersistenceResponseHolder<E>()
+            { StatusCode = (int)PersistenceResponseCode.NotImplemented_501, IsSuccess = false };
         }
         #endregion
 
@@ -778,7 +783,8 @@ namespace Xigadee
 
         protected virtual async Task<IResponseHolder> InternalDelete(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return new PersistenceResponseHolder() { StatusCode = 501, IsSuccess = false};
+            return new PersistenceResponseHolder()
+            { StatusCode = (int)PersistenceResponseCode.NotImplemented_501, IsSuccess = false };
         }
         #endregion
         #region DeleteByRef
@@ -793,7 +799,8 @@ namespace Xigadee
         }
         protected virtual async Task<IResponseHolder> InternalDeleteByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return new PersistenceResponseHolder() { StatusCode = 501, IsSuccess = false };
+            return new PersistenceResponseHolder()
+            { StatusCode = (int)PersistenceResponseCode.NotImplemented_501, IsSuccess = false };
         }
         #endregion
 
@@ -813,7 +820,8 @@ namespace Xigadee
 
         protected virtual async Task<IResponseHolder> InternalVersion(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return new PersistenceResponseHolder() { StatusCode = 501, IsSuccess = false };
+            return new PersistenceResponseHolder()
+            { StatusCode = (int)PersistenceResponseCode.NotImplemented_501, IsSuccess = false };
         }
         #endregion
         #region VersionByRef
@@ -836,7 +844,8 @@ namespace Xigadee
 
         protected virtual async Task<IResponseHolder> InternalVersionByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return new PersistenceResponseHolder() { StatusCode = 501, IsSuccess = false };
+            return new PersistenceResponseHolder()
+            { StatusCode = (int)PersistenceResponseCode.NotImplemented_501, IsSuccess = false };
         }
         #endregion
 
@@ -851,7 +860,7 @@ namespace Xigadee
         /// <returns></returns>
         protected virtual async Task ProcessSearch(PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            holder.rs.ResponseCode = 501;
+            holder.rs.ResponseCode = (int)PersistenceResponseCode.NotImplemented_501;
             holder.rs.ResponseMessage = "Not implemented.";
         }
         #endregion
@@ -907,7 +916,13 @@ namespace Xigadee
                 ProcessOutputError(key, holderResponse, rs);
         }
         #endregion
-
+        #region ProcessOutputError(K key, IResponseHolder holderResponse, PersistenceRepositoryHolder<K, E> rs)
+        /// <summary>
+        /// This method is used to format the response when the request is not successful.
+        /// </summary>
+        /// <param name="key">The entity key.</param>
+        /// <param name="holderResponse">The response.</param>
+        /// <param name="rs">The repository holder.</param>
         protected virtual void ProcessOutputError(K key, IResponseHolder holderResponse, PersistenceRepositoryHolder<K, E> rs)
         {
             if (holderResponse.Ex != null && !rs.IsTimeout)
@@ -919,8 +934,8 @@ namespace Xigadee
                         holderResponse.Ex != null ? holderResponse.Ex.ToString() : rs.ResponseMessage), typeof(E).Name);
 
             rs.IsTimeout = holderResponse.IsTimeout;
-        }
-
+        } 
+        #endregion
         #region ProcessOutputKey...
         /// <summary>
         /// This method processes the common output method for key based operations such as delete and version.

@@ -7,11 +7,13 @@ using System.Text;
 
 namespace Xigadee
 {
+
     [DebuggerDisplay("QueueTracker - Levels: {mLevels} Capacity: {DebugCapacity}")]
     public class QueueTrackerContainer<Q>: ServiceBase<QueueTrackerStatistics>
         where Q : IQueueTracker, new()
     {
         private readonly Dictionary<int, Q> mTasksQueue;
+
         private readonly int mLevels;
 
         public QueueTrackerContainer(int levels = 3)

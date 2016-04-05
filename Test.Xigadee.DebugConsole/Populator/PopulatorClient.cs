@@ -1,21 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using Xigadee;
 
 namespace Test.Xigadee
 {
-
-
     /// <summary>
     /// This is the client populator. This is used to configure and start the Microservice.
     /// </summary>
     internal class PopulatorClient: PopulatorConsoleBase<MicroserviceClient>
     {
-
         protected override void RegisterCommands()
         {
             base.RegisterCommands();
@@ -63,7 +55,5 @@ namespace Test.Xigadee
                 , SenderPartitionConfig.Init(0, 1)));
 
         }
-
-
     }
 }

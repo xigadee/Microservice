@@ -359,10 +359,7 @@ namespace Xigadee
                 //While we have a thread see if there is work to enqueue.
                 DequeueTasksAndExecute();
 
-                //This method polls the next priority listener if needed.
-                ListenersProcess(true);
-
-                //Signal the loop to proceed in case it is waiting.
+                //Signal the poll loop to proceed in case it is waiting.
                 mPauseCheck.Set();
             }
             catch (Exception)
@@ -720,17 +717,18 @@ namespace Xigadee
 
             HolderSlotContext context;
 
-            int oldTaskSlotsAvailable = TaskSlotsAvailable - mTasksQueue.Count;
+            int listenerTaskSlotsAvailable = TaskSlotsAvailable - mTasksQueue.Count;
 
-            while (mCommunication.ListenerClientNext(oldTaskSlotsAvailable, out context))
-            {
-                TaskTracker tracker = TrackerCreateFromListenerContext(context);
+            if (listenerTaskSlotsAvailable > 0)
+                while (mCommunication.ListenerClientNext(listenerTaskSlotsAvailable, out context))
+                {
+                    TaskTracker tracker = TrackerCreateFromListenerContext(context);
 
-                ExecuteOrEnqueue(tracker);
+                    ExecuteOrEnqueue(tracker);
 
-                if (singleHop)
-                    break;
-            }
+                    if (singleHop)
+                        break;
+                }
         }
         #endregion
         #region ListenerProcessClientPayloads(ListenerClient container, TransmissionPayload payload)
