@@ -180,18 +180,16 @@ namespace Xigadee
                 return new PersistenceResponseHolder<E>() { StatusCode = result.StatusCode, Content = result.Content, IsSuccess = true, Entity = mTransform.EntityDeserializer(result.Content) };
             else
                 return new PersistenceResponseHolder<E>() { StatusCode = result.IsTimeout ? 504 : result.StatusCode, IsSuccess = false, IsTimeout = result.IsTimeout };
-        } 
+        }
         #endregion
 
         #region InternalCreate
         /// <summary>
         /// Create
         /// </summary>
-        /// <param name="rq">The request.</param>
-        /// <param name="rs">The response.</param>
-        /// <param name="prq">The incoming payload.</param>
-        /// <param name="prs">The outgoing payload.</param>
-        protected async override Task<IResponseHolder<E>> InternalCreate(PersistenceRequestHolder<K, E> holder)
+        /// <param name="key"></param>
+        /// <param name="holder"></param>
+        protected async override Task<IResponseHolder<E>> InternalCreate(K key, PersistenceRequestHolder<K, E> holder)
         {
             var jsonHolder = mTransform.JsonMaker(holder.rq.Entity);
 
@@ -201,7 +199,6 @@ namespace Xigadee
         }
         #endregion
         #region InternalRead
-
         /// <summary>
         /// Read
         /// </summary>
@@ -221,13 +218,11 @@ namespace Xigadee
         #endregion
         #region InternalUpdate
         /// <summary>
-        /// Update
+        /// This method performs a documentDb update.
         /// </summary>
-        /// <param name="rq">The request.</param>
-        /// <param name="rs">The response.</param>
-        /// <param name="prq">The incoming payload.</param>
-        /// <param name="prs">The outgoing payload.</param>
-        protected override async Task<IResponseHolder<E>> InternalUpdate(PersistenceRequestHolder<K, E> holder)
+        /// <param name="key">The entity key.</param>
+        /// <param name="holder">The request holder.</param>
+        protected override async Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRequestHolder<K, E> holder)
         {
             //409 Conflict
             JsonHolder<K> jsonHolder = mTransform.JsonMaker(holder.rq.Entity);

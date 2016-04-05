@@ -20,6 +20,5 @@ namespace Test.Xigadee
                 Email = email
             };
         }
-
     }
 }

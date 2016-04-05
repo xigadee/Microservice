@@ -14,12 +14,12 @@ namespace Test.Xigadee
 
         static void ServerStatusChanged(object sender, StatusChangedEventArgs e)
         {
-            ServiceStatusChanged((v) => sContext.Server.Status = v, sender, e);
+            ServiceStatusChanged((v) => sServerContext.Server.Status = v, sender, e);
         }
 
         static void ClientStatusChanged(object sender, StatusChangedEventArgs e)
         {
-            ServiceStatusChanged((v) => sContext.Client.Status = v, sender, e);
+            ServiceStatusChanged((v) => sServerContext.Client.Status = v, sender, e);
         }
 
         static void ServiceStatusChanged(Action<int> started, object sender, StatusChangedEventArgs e)

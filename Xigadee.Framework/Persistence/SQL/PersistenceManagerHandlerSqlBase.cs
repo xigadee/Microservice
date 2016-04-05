@@ -278,7 +278,6 @@ namespace Xigadee
         #endregion
 
         #region SqlCommandTemplate<KT,ET>...
-
         /// <summary>
         /// This method is used to read an entity from the system.
         /// </summary>
@@ -365,7 +364,7 @@ namespace Xigadee
         #endregion
 
         #region InternalCreate
-        protected override async Task<IResponseHolder<E>> InternalCreate(PersistenceRequestHolder<K, E> holder)
+        protected override async Task<IResponseHolder<E>> InternalCreate(K key, PersistenceRequestHolder<K, E> holder)
         {
             var rs = await SqlCommandTemplateXml<PersistenceResponseHolder<E>>(Connection
                 , StoredProcedureCreate
@@ -391,7 +390,6 @@ namespace Xigadee
         }
         #endregion
         #region InternalReadByRef
-
         protected override async Task<IResponseHolder<E>> InternalReadByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, E> holder)
         {
             var rs =  await SqlCommandTemplateXml<PersistenceResponseHolder<E>>(Connection
@@ -405,7 +403,7 @@ namespace Xigadee
         }
         #endregion
         #region InternalUpdate
-        protected override async Task<IResponseHolder<E>> InternalUpdate(PersistenceRequestHolder<K, E> holder)
+        protected override async Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRequestHolder<K, E> holder)
         {
             var rs = await SqlCommandTemplateXml<PersistenceResponseHolder<E>>(Connection
                 , StoredProcedureUpdate

@@ -8,12 +8,14 @@ using System.Threading.Tasks;
 #endregion
 namespace Xigadee
 {
-
     /// <summary>
     /// This class holds the current status of the Microservice container.
     /// </summary>
     public class MicroserviceStatistics: MessagingStatistics, ILogStoreName
     {
+        /// <summary>
+        /// This is the statistics default constructor.
+        /// </summary>
         public MicroserviceStatistics():base()
         {
             Tasks = new TaskStatistics();
@@ -35,6 +37,11 @@ namespace Xigadee
                 base.Name = value;
             }
         }
+
+        /// <summary>
+        /// This is the environment tag, i.e production, UAT, SIT, staging etc. 
+        /// </summary>
+        public string Environment { get; set; }
 
         /// <summary>
         /// This is the current status of the service.

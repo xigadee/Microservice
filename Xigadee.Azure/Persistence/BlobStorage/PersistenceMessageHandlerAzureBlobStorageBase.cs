@@ -116,7 +116,7 @@ namespace Xigadee
         /// <param name="rs">The response.</param>
         /// <param name="prq">The incoming payload.</param>
         /// <param name="prs">The outgoing payload.</param>
-        protected override async Task<IResponseHolder<E>> InternalCreate(PersistenceRequestHolder<K, E> holder)
+        protected override async Task<IResponseHolder<E>> InternalCreate(K key, PersistenceRequestHolder<K, E> holder)
         {
             var jsonHolder = mTransform.JsonMaker(holder.rq.Entity);
             var blob = Encoding.UTF8.GetBytes(jsonHolder.Json);
@@ -151,7 +151,7 @@ namespace Xigadee
         /// <param name="rs">The response.</param>
         /// <param name="prq">The incoming payload.</param>
         /// <param name="prs">The outgoing payload.</param>
-        protected override async Task<IResponseHolder<E>> InternalUpdate(PersistenceRequestHolder<K, E> holder)
+        protected override async Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRequestHolder<K, E> holder)
         {
             var jsonHolder = mTransform.JsonMaker(holder.rq.Entity);
             var blob = Encoding.UTF8.GetBytes(jsonHolder.Json);

@@ -153,14 +153,13 @@
     <Compile Include="Persistence\Server\DocumentDb\PersistenceManagerHandlerDocumentDb.cs" />
     <Compile Include="Persistence\Server\File\PersistenceManagerHandlerFileSystem.cs" />
     <Compile Include="Persistence\Server\JSON\PersistenceManagerHandlerJsonBase.cs" />
-    <Compile Include="Persistence\Server\Memory\CacheIntercept\CacheInterceptPersistenceHandler.cs" />
-    <Compile Include="Persistence\Server\Memory\CacheIntercept\CacheInterceptPolicy.cs" />
     <Compile Include="Persistence\Server\Memory\PersistenceManagerHandlerMemory.cs" />
     <Compile Include="Persistence\Policy\PersistenceRetryPolicy.cs" />
     <Compile Include="Persistence\Server\PersistenceCommandBase.cs" />
     <Compile Include="Persistence\Server\PersistenceRepositoryHolder.cs" />
     <Compile Include="Persistence\Client\PersistenceSharedService.cs" />
     <Compile Include="Logging\LoggingStatistics.cs" />
+    <Compile Include="Persistence\Server\PersistenceResponse.cs" />
     <Compile Include="Persistence\Server\PersistenceStatistics.cs" />
     <Compile Include="Persistence\Policy\ShardingPolicy.cs" />
     <Compile Include="Persistence\Policy\VersionPolicy.cs" />

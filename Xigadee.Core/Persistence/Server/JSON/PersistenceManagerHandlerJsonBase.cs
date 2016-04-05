@@ -53,6 +53,19 @@ namespace Xigadee
         }
         #endregion
 
+        #region EntityTransformCreate...
+        /// <summary>
+        /// This method sets the Json serializer as the primary transform mechanism.
+        /// </summary>
+        /// <param name="entityName"></param>
+        /// <param name="versionPolicy"></param>
+        /// <param name="keyMaker"></param>
+        /// <param name="entityDeserializer"></param>
+        /// <param name="entitySerializer"></param>
+        /// <param name="keySerializer"></param>
+        /// <param name="keyDeserializer"></param>
+        /// <param name="referenceMaker"></param>
+        /// <returns></returns>
         protected override EntityTransformHolder<K, E> EntityTransformCreate(
               string entityName = null
             , VersionPolicy<E> versionPolicy = null
@@ -72,6 +85,7 @@ namespace Xigadee
             mTransform.EntityDeserializer = mTransform.JsonDeserialize;
 
             return mTransform;
-        }
+        } 
+        #endregion
     }
 }

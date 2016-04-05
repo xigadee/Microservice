@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -11,5 +7,13 @@ namespace Xigadee
     /// </summary>
     public abstract class CircuitBreakerBase
     {
+    }
+
+    [Flags()]
+    public enum CircuitBreakerState:int
+    {
+        Open = 1,
+        Closed = 2,
+        HalfOpen = 3
     }
 }

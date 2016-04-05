@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Xigadee
@@ -42,7 +40,7 @@ namespace Xigadee
         }
         #endregion
 
-        protected async override Task<IResponseHolder<E>> InternalCreate(PersistenceRequestHolder<K, E> holder)
+        protected async override Task<IResponseHolder<E>> InternalCreate(K key, PersistenceRequestHolder<K, E> holder)
         {          
             if (await mCacheManager.Write(mTransform, holder.rq.Entity))
                 return new PersistenceResponseHolder<E> { IsSuccess = true, StatusCode = 201, Entity = holder.rq.Entity };
@@ -50,7 +48,7 @@ namespace Xigadee
             return new PersistenceResponseHolder<E> { IsSuccess = false, StatusCode = 409 };
         }
 
-        protected async override Task<IResponseHolder<E>> InternalUpdate(PersistenceRequestHolder<K, E> holder)
+        protected async override Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRequestHolder<K, E> holder)
         {
             if (await mCacheManager.Write(mTransform, holder.rq.Entity))
                 return new PersistenceResponseHolder<E> { IsSuccess = true, StatusCode = 200, Entity = holder.rq.Entity };

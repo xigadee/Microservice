@@ -12,66 +12,66 @@ namespace Test.Xigadee
                 , new ConsoleOption("Sql based Persistence"
                     , (m, o) =>
                     {
-                        sContext.PersistenceType = PersistenceOptions.Sql;
+                        sServerContext.PersistenceType = PersistenceOptions.Sql;
                     }
                     , enabled: (m, o) => true
-                    , selected: (m, o) => sContext.PersistenceType == PersistenceOptions.Sql
+                    , selected: (m, o) => sServerContext.PersistenceType == PersistenceOptions.Sql
                 )
                 , new ConsoleOption("DocumentDb based Persistence"
                     , (m, o) =>
                     {
-                        sContext.PersistenceType = PersistenceOptions.DocumentDb;
+                        sServerContext.PersistenceType = PersistenceOptions.DocumentDb;
                     }
                     , enabled: (m, o) => true
-                    , selected: (m, o) => sContext.PersistenceType == PersistenceOptions.DocumentDb
+                    , selected: (m, o) => sServerContext.PersistenceType == PersistenceOptions.DocumentDb
                 )
                 , new ConsoleOption("DocumentDb Sdk based Persistence"
                     , (m, o) =>
                     {
-                        sContext.PersistenceType = PersistenceOptions.DocumentDbSdk;
+                        sServerContext.PersistenceType = PersistenceOptions.DocumentDbSdk;
                     }
                     , enabled: (m, o) => false
-                    , selected: (m, o) => sContext.PersistenceType == PersistenceOptions.DocumentDbSdk
+                    , selected: (m, o) => sServerContext.PersistenceType == PersistenceOptions.DocumentDbSdk
                 )
                 , new ConsoleOption("Blob storage based Persistence"
                     , (m, o) =>
                     {
-                        sContext.PersistenceType = PersistenceOptions.Blob;
+                        sServerContext.PersistenceType = PersistenceOptions.Blob;
                     }
                     , enabled: (m, o) => true
-                    , selected: (m, o) => sContext.PersistenceType == PersistenceOptions.Blob
+                    , selected: (m, o) => sServerContext.PersistenceType == PersistenceOptions.Blob
                 )
                 , new ConsoleOption("Redis Cache based Persistence"
                     , (m, o) =>
                     {
-                        sContext.PersistenceType = PersistenceOptions.RedisCache;
+                        sServerContext.PersistenceType = PersistenceOptions.RedisCache;
                     }
                     , enabled: (m, o) => true
-                    , selected: (m, o) => sContext.PersistenceType == PersistenceOptions.RedisCache
+                    , selected: (m, o) => sServerContext.PersistenceType == PersistenceOptions.RedisCache
                 )
                 , new ConsoleOption("Memory based Persistence"
                     , (m, o) =>
                     {
-                        sContext.PersistenceType = PersistenceOptions.Memory;
+                        sServerContext.PersistenceType = PersistenceOptions.Memory;
                     }
                     , enabled: (m, o) => true
-                    , selected: (m, o) => sContext.PersistenceType == PersistenceOptions.Memory
+                    , selected: (m, o) => sServerContext.PersistenceType == PersistenceOptions.Memory
                 )
                 , new ConsoleOption("Client RedisCache enabled"
                     , (m, o) =>
                     {
-                        sContext.ClientCacheEnabled = !sContext.ClientCacheEnabled;
+                        sServerContext.ClientCacheEnabled = !sServerContext.ClientCacheEnabled;
                     }
                     , enabled: (m, o) => true
-                    , selected: (m, o) => sContext.ClientCacheEnabled
+                    , selected: (m, o) => sServerContext.ClientCacheEnabled
                 )
                 , new ConsoleOption("Server RedisCache enabled"
                     , (m, o) =>
                     {
-                        sContext.ServerCacheEnabled = !sContext.ServerCacheEnabled;
+                        sServerContext.ServerCacheEnabled = !sServerContext.ServerCacheEnabled;
                     }
                     , enabled: (m, o) => true
-                    , selected: (m, o) => sContext.ServerCacheEnabled
+                    , selected: (m, o) => sServerContext.ServerCacheEnabled
                 )
                 )
             );
