@@ -31,11 +31,24 @@ namespace Xigadee
         protected readonly ConcurrentDictionary<Guid, IPersistenceRequestHolder> mInPlay;
         #endregion
         #region Constructor
+
         /// <summary>
         /// This constructor specifies whether the service should be registered as a shared service
         /// that can be called directly by other message handler and Microservice components.
         /// </summary>
         /// <param name="persistenceRetryPolicy"></param>
+        /// <param name="resourceProfile"></param>
+        /// <param name="cacheManager"></param>
+        /// <param name="defaultTimeout"></param>
+        /// <param name="entityName"></param>
+        /// <param name="versionPolicy"></param>
+        /// <param name="keyMaker"></param>
+        /// <param name="entityDeserializer"></param>
+        /// <param name="entitySerializer"></param>
+        /// <param name="keySerializer"></param>
+        /// <param name="keyDeserializer"></param>
+        /// <param name="referenceMaker"></param>
+        /// <param name="referenceHashMaker"></param>
         protected PersistenceCommandBase(
               PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
@@ -49,11 +62,12 @@ namespace Xigadee
             , Func<K, string> keySerializer = null
             , Func<string, K> keyDeserializer = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
+            , Func<Tuple<string, string>, string> referenceHashMaker = null
             )
         {
             mTransform = EntityTransformCreate(entityName, versionPolicy, keyMaker
                 , entityDeserializer, entitySerializer
-                , keySerializer, keyDeserializer, referenceMaker);
+                , keySerializer, keyDeserializer, referenceMaker, referenceHashMaker);
 
             mInPlay = new ConcurrentDictionary<Guid, IPersistenceRequestHolder>();
 
@@ -90,6 +104,7 @@ namespace Xigadee
         #endregion
 
         #region EntityTransformCreate...
+
         /// <summary>
         /// The transform holder manages the serialization and deserialization of the entity and key 
         /// for the entity and key, and identifies the references for the entity.
@@ -102,6 +117,7 @@ namespace Xigadee
         /// <param name="keySerializer">The serializer that converts the key in to a string.</param>
         /// <param name="keyDeserializer">The deserializer that converts a string in to a key.</param>
         /// <param name="referenceMaker">A function that returns references from the entity in a set of string Tuples.</param>
+        /// <param name="referenceHashMaker">A function that returns a cache safe hash of the reference tuple</param>
         /// <returns>Returns the transform holder.</returns>
         protected virtual EntityTransformHolder<K, E> EntityTransformCreate(
               string entityName = null
@@ -111,16 +127,18 @@ namespace Xigadee
             , Func<E, string> entitySerializer = null
             , Func<K, string> keySerializer = null
             , Func<string, K> keyDeserializer = null
-            , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null)
+            , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
+            , Func<Tuple<string, string>, string> referenceHashMaker = null)
         {
             var mTransform = new EntityTransformHolder<K, E>();
 
             mTransform.KeyMaker = keyMaker;
 
-            mTransform.KeySerializer = keySerializer ?? ((i) => i.ToString());
+            mTransform.KeySerializer = keySerializer ?? (i => i.ToString());
             mTransform.KeyDeserializer = keyDeserializer;
 
-            mTransform.ReferenceMaker = referenceMaker ?? ((e) => new Tuple<string, string>[] { });
+            mTransform.ReferenceMaker = referenceMaker ?? (e => new Tuple<string, string>[] { });
+            mTransform.ReferenceHashMaker = referenceHashMaker ?? (r => $"{r.Item1.ToLowerInvariant()}.{r.Item2.ToLowerInvariant()}");
             mTransform.Version = versionPolicy ?? new VersionPolicy<E>();
 
             mTransform.EntityName = entityName ?? typeof(E).Name.ToLowerInvariant();
@@ -735,7 +753,7 @@ namespace Xigadee
 
             var result = await InternalUpdate(holder);
 
-            if (mCacheManager.IsActive && result.IsSuccess)
+            if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
                 mCacheManager.Write(mTransform, result.Entity);
 
             ProcessOutputEntity(key, holder.rq, holder.rs, result);
@@ -807,7 +825,11 @@ namespace Xigadee
                 result = await mCacheManager.VersionRead(mTransform, holder.rq.KeyReference);
 
             if (result == null || !result.IsSuccess)
+            {
                 result = await InternalVersionByRef(holder.rq.KeyReference, holder);
+                if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
+                    mCacheManager.WriteReference(mTransform, holder.rq.KeyReference, holder.rq.Key, result.VersionId);
+            }
 
             ProcessOutputKey(holder.rq, holder.rs, result);
         }

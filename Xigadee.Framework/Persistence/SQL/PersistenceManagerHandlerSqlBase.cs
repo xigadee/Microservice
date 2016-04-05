@@ -38,6 +38,7 @@ namespace Xigadee
         /// <param name="resourceProfile"></param>
         /// <param name="cacheManager"></param>
         /// <param name="referenceMaker"></param>
+        /// <param name="referenceHashMaker"></param>
         /// <param name="keySerializer"></param>
         protected PersistenceManagerHandlerSqlBase(string connection
             , Func<E, K> keyMaker
@@ -52,6 +53,7 @@ namespace Xigadee
             , ResourceProfile resourceProfile = null
             , ICacheManager<K, E> cacheManager = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
+            , Func<Tuple<string, string>, string> referenceHashMaker = null
             , Func<K, string> keySerializer = null
             )
             : base(connection
@@ -67,6 +69,7 @@ namespace Xigadee
                   , resourceProfile: resourceProfile
                   , cacheManager: cacheManager
                   , referenceMaker: referenceMaker
+                  , referenceHashMaker:referenceHashMaker
                   , keySerializer: keySerializer
                   )
         {
@@ -100,6 +103,7 @@ namespace Xigadee
         protected Func<XElement, Tuple<K, string>> mXmlVersionMaker;
         #endregion
         #region Constructor
+
         /// <summary>
         /// This is the default constructor with a manual connection string.
         /// </summary>
@@ -116,6 +120,7 @@ namespace Xigadee
         /// <param name="resourceProfile"></param>
         /// <param name="cacheManager"></param>
         /// <param name="referenceMaker"></param>
+        /// <param name="referenceHashMaker"></param>
         /// <param name="keySerializer"></param>
         protected PersistenceManagerHandlerSqlBase(string connection
             , Func<E, K> keyMaker
@@ -130,6 +135,7 @@ namespace Xigadee
             , ResourceProfile resourceProfile = null
             , ICacheManager<K, E> cacheManager = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
+            , Func<Tuple<string, string>, string> referenceHashMaker = null
             , Func<K, string> keySerializer = null
             ) 
             : base( persistenceRetryPolicy: persistenceRetryPolicy
@@ -142,6 +148,7 @@ namespace Xigadee
                   , keySerializer: keySerializer
                   , keyDeserializer: keyDeserializer
                   , referenceMaker: referenceMaker
+                  , referenceHashMaker : referenceHashMaker
                   )
         {
             Connection = connection;
@@ -158,9 +165,9 @@ namespace Xigadee
         public string Connection { get; set; }
         #endregion
 
-        protected override EntityTransformHolder<K, E> EntityTransformCreate(string entityName = null, VersionPolicy<E> versionPolicy = null, Func<E, K> keyMaker = null, Func<string, E> entityDeserializer = null, Func<E, string> entitySerializer = null, Func<K, string> keySerializer = null, Func<string, K> keyDeserializer = null, Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null)
+        protected override EntityTransformHolder<K, E> EntityTransformCreate(string entityName = null, VersionPolicy<E> versionPolicy = null, Func<E, K> keyMaker = null, Func<string, E> entityDeserializer = null, Func<E, string> entitySerializer = null, Func<K, string> keySerializer = null, Func<string, K> keyDeserializer = null, Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null, Func<Tuple<string, string>, string> referenceHashMaker = null)
         {
-            var transform =  base.EntityTransformCreate(entityName, versionPolicy, keyMaker, entityDeserializer, entitySerializer, keySerializer, keyDeserializer, referenceMaker);
+            var transform =  base.EntityTransformCreate(entityName, versionPolicy, keyMaker, entityDeserializer, entitySerializer, keySerializer, keyDeserializer, referenceMaker, referenceHashMaker);
 
             transform.EntityDeserializer = s => mXmlEntityDeserializer(XElement.Parse(s));
             transform.EntitySerializer = e => mXmlEntitySerializer(e).ToString();

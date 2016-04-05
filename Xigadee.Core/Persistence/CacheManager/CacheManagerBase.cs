@@ -20,13 +20,7 @@ namespace Xigadee
 
         public abstract bool IsActive { get; }
 
-        public virtual bool IsReadOnly
-        {
-            get
-            {
-                return mReadOnly;
-            }
-        }
+        public virtual bool IsReadOnly => mReadOnly;
 
         public abstract Task<IResponseHolder<E>> Read(EntityTransformHolder<K, E> transform, Tuple<string, string> reference);
 
@@ -38,14 +32,20 @@ namespace Xigadee
 
         public abstract Task<bool> Write(EntityTransformHolder<K, E> transform, E entity, TimeSpan? expiry = null);
 
+        public abstract Task<bool> WriteReference(EntityTransformHolder<K, E> transform, Tuple<string, string> reference, K key, string version, TimeSpan? expiry = null);
+
         public abstract Task<bool> Delete(EntityTransformHolder<K, E> transform, K key);
 
         public abstract Task<bool> Delete(EntityTransformHolder<K, E> transform, Tuple<string, string> reference);
 
-
         public Task<bool> Write(E entity, TimeSpan? expiry = null)
         {
             return Write(mTransform, entity, expiry);
+        }
+
+        public Task<bool> WriteReference(Tuple<string, string> reference, K key, string version,TimeSpan? expiry = null)
+        {
+            return WriteReference(mTransform, reference, key, version, expiry);
         }
 
         public Task<bool> Delete(K key)
@@ -77,7 +77,5 @@ namespace Xigadee
         {
             return VersionRead(mTransform, reference);
         }
-
-
     }
 }

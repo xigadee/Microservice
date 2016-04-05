@@ -10,13 +10,20 @@ namespace Xigadee
         where K : IEquatable<K>
     {
         #region Constructor
+
         /// <summary>
         /// This is the default constructor.
         /// </summary>
+        /// <param name="keyDeserializer"></param>
         /// <param name="entityName">The entity name, derived from E if left null.</param>
         /// <param name="versionPolicy">The optional version and locking policy.</param>
         /// <param name="defaultTimeout">The default timeout when making requests.</param>
-        /// <param name="retryPolicy">The retry policy</param>
+        /// <param name="redisConnection"></param>
+        /// <param name="keyMaker"></param>
+        /// <param name="persistenceRetryPolicy"></param>
+        /// <param name="resourceProfile"></param>
+        /// <param name="referenceMaker"></param>
+        /// <param name="keySerializer"></param>
         protected PersistenceMessageHandlerRedisCache(string redisConnection
             , Func<E, K> keyMaker
             , Func<string, K> keyDeserializer

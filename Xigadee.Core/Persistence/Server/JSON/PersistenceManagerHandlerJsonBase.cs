@@ -19,13 +19,21 @@ namespace Xigadee
         where P : PersistenceCommandPolicy, new()
     {
         #region Constructor
+
         /// <summary>
         /// This is the default constructor.
         /// </summary>
+        /// <param name="keyDeserializer"></param>
         /// <param name="entityName">The entity name, derived from E if left null.</param>
         /// <param name="versionPolicy">The optional version and locking policy.</param>
         /// <param name="defaultTimeout">The default timeout when making requests.</param>
-        /// <param name="retryPolicy">The retry policy</param>
+        /// <param name="keyMaker"></param>
+        /// <param name="persistenceRetryPolicy"></param>
+        /// <param name="resourceProfile"></param>
+        /// <param name="cacheManager"></param>
+        /// <param name="referenceMaker"></param>
+        /// <param name="referenceHashMaker"></param>
+        /// <param name="keySerializer"></param>
         protected PersistenceManagerHandlerJsonBase(
               Func<E, K> keyMaker
             , Func<string, K> keyDeserializer
@@ -36,6 +44,7 @@ namespace Xigadee
             , ResourceProfile resourceProfile = null
             , ICacheManager<K, E> cacheManager = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
+            , Func<Tuple<string, string>, string> referenceHashMaker = null
             , Func<K, string> keySerializer = null
             ) : 
             base( persistenceRetryPolicy: persistenceRetryPolicy
@@ -46,6 +55,7 @@ namespace Xigadee
                 , defaultTimeout: defaultTimeout
                 , keyMaker:keyMaker
                 , referenceMaker:referenceMaker
+                , referenceHashMaker:referenceHashMaker
                 , keySerializer: keySerializer
                 , keyDeserializer: keyDeserializer
                 )
@@ -61,12 +71,13 @@ namespace Xigadee
             , Func<E, string> entitySerializer = null
             , Func<K, string> keySerializer = null
             , Func<string, K> keyDeserializer = null
-            , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null)
+            , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null 
+            , Func<Tuple<string, string>, string> referenceHashMaker = null)
         {
             var mTransform = base.EntityTransformCreate(
                   entityName, versionPolicy, keyMaker
                 , entityDeserializer, entitySerializer
-                , keySerializer, keyDeserializer, referenceMaker);
+                , keySerializer, keyDeserializer, referenceMaker, referenceHashMaker);
 
             mTransform.EntitySerializer = mTransform.JsonSerialize;
             mTransform.EntityDeserializer = mTransform.JsonDeserialize;

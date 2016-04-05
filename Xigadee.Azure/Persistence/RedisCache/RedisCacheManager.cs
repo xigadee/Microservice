@@ -20,6 +20,7 @@ namespace Xigadee
 
         protected const string cnKeyVersion = "version";
         protected const string cnKeyEntity = "entity";
+        protected const string cnKeyEntityId = "entityId";
 
         protected TimeSpan mEntityTtl;
         #endregion
@@ -62,16 +63,17 @@ namespace Xigadee
         }
         #endregion
         #region RedisReferenceKeyGet(EntityTransformHolder<K, E> transform, string refType)
+
         /// <summary>
         /// This method creates the reference collection key for an entity reference.
         /// </summary>
         /// <param name="transform">The transform object.</param>
-        /// <param name="refType">The reference key type, i.e. email, externalid, etc.</param>
+        /// <param name="referenceHash">The hash of the reference i.e. email.brian@hotmail.com / custoemerid.123456</param>
         /// <returns>Returns the appropriate redis key.</returns>
-        protected virtual RedisKey RedisReferenceKeyGet(EntityTransformHolder<K, E> transform, string refType)
+        protected virtual RedisKey RedisReferenceKeyGet(EntityTransformHolder<K, E> transform, string referenceHash)
         {
-            //entityreference.{entitytype}.{keytype i.e., EMAIL, ID etc.}
-            return $"entityreference.{transform.EntityName}.{refType.ToLowerInvariant()}";
+            //entityreference.{entitytype}.{keytype i.e., EMAIL, ID etc.}.{brian@hotmail.com}
+            return $"entityreference.{transform.EntityName}.{referenceHash}";
         }
         #endregion
         #region RedisResolveReference(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
@@ -87,23 +89,19 @@ namespace Xigadee
                 try
                 {
                     IDatabase rDb = mLazyConnection.Value.GetDatabase();
-                    RedisKey hashkey = RedisReferenceKeyGet(transform, reference.Item1);
+                    RedisKey hashkey = RedisReferenceKeyGet(transform, transform.ReferenceHashMaker(reference));
 
                     //Entity
-                    RedisValue result = await rDb.HashGetAsync(hashkey, reference.Item2.ToLowerInvariant());
-
-                    if (result.HasValue)
+                    RedisValue enitityId = await rDb.HashGetAsync(hashkey, cnKeyEntityId);
+                    if (enitityId.HasValue)
                     {
-                        string[] items = result.ToString().Split('|');
-
-                        K key = transform.KeyDeserializer(items[1]);
-
-                        if (result.HasValue)
-                            return new Tuple<bool, K, string>(true, key, items[0]);
+                        K key = transform.KeyDeserializer(enitityId);
+                        return new Tuple<bool, K, string>(true, key, await rDb.HashGetAsync(hashkey, cnKeyVersion));
                     }
                 }
                 catch (Exception ex)
                 {
+                    // Don't raise an exception here
                 }
 
             return new Tuple<bool, K, string>(false, default(K), null);
@@ -122,7 +120,7 @@ namespace Xigadee
         public override async Task<bool> Write(EntityTransformHolder<K, E> transform, E entity, TimeSpan? expiry = null)
         {
             if (transform == null)
-                throw new ArgumentNullException("The EntityTransformHolder cannot be null.");
+                throw new ArgumentNullException(nameof(transform), "The EntityTransformHolder cannot be null.");
 
             try
             {
@@ -143,7 +141,7 @@ namespace Xigadee
                 tasks.Add(batch.KeyExpireAsync(hashkey, mEntityTtl));
                 //Get any associated references for the entity.
                 var references = transform.ReferenceMaker(entity);
-                references?.ForEach(r => tasks.Add(WriteReference(batch, transform, r, key, version)));
+                references?.ForEach(r => tasks.AddRange(WriteReference(batch, transform, r, key, version)));
 
                 batch.Execute();
 
@@ -157,7 +155,40 @@ namespace Xigadee
             }
 
             return false;
-        } 
+        }
+
+        /// <summary>
+        /// This method writes out the references for the entity.
+        /// </summary>
+        /// <param name="transform">The entity transform.</param>
+        /// <param name="reference">The reference.</param>
+        /// <param name="key">The root key.</param>
+        /// <param name="version">The entity version.</param>
+        /// <param name="expiry">Optional expiry timespan for the key</param>
+        /// <returns>Returns an async task.</returns>
+        public override async Task<bool> WriteReference(EntityTransformHolder<K, E> transform, Tuple<string, string> reference, K key, string version, TimeSpan? expiry = null)
+        {
+            if (transform == null)
+                throw new ArgumentNullException(nameof(transform), "The EntityTransformHolder cannot be null.");
+
+            try
+            {
+                IDatabase rDb = mLazyConnection.Value.GetDatabase();
+                IBatch batch = rDb.CreateBatch();
+                var tasks = new List<Task>(WriteReference(batch, transform, reference, key, version, expiry));
+                batch.Execute();
+
+                await Task.WhenAll(tasks);
+
+                return true;
+            }
+            catch (Exception)
+            {
+                // Don't raise an exception here
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// This method writes out the references for the entity.
@@ -167,16 +198,18 @@ namespace Xigadee
         /// <param name="reference">The reference.</param>
         /// <param name="key">The root key.</param>
         /// <param name="version">The entity version.</param>
+        /// <param name="expiry">Expiry time of the key</param>
         /// <returns>Returns an async task.</returns>
-        protected virtual Task WriteReference(IBatch batch, EntityTransformHolder<K, E> transform, Tuple<string,string> reference, K key, string version)
+        protected virtual List<Task> WriteReference(IBatch batch, EntityTransformHolder<K, E> transform, Tuple<string,string> reference, K key, string version, TimeSpan? expiry = null)
         {
             //entityreference.{entitytype}.{keytype i.e., EMAIL, ID etc.}
-            RedisKey hashkey = RedisReferenceKeyGet(transform, reference.Item1);
-
-            string combined = $"{version}|{transform.KeySerializer(key)}";
-            
-            //Entity
-            return batch.HashSetAsync(hashkey, reference.Item2.ToLowerInvariant(), combined, when: When.Always);
+            RedisKey hashkey = RedisReferenceKeyGet(transform, transform.ReferenceHashMaker(reference));
+            return new List<Task>(3)
+            {
+                batch.HashSetAsync(hashkey, cnKeyEntityId, transform.KeySerializer(key), when: When.Always),
+                batch.HashSetAsync(hashkey, cnKeyVersion, version, when: When.Always),
+                batch.KeyExpireAsync(hashkey, expiry ?? mEntityTtl)
+            };
         }
         #endregion
 
