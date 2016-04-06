@@ -92,8 +92,8 @@ namespace Xigadee
                 , entityDeserializer, entitySerializer
                 , keySerializer, keyDeserializer, referenceMaker, referenceHashMaker);
 
-            transform.EntitySerializer = mTransform.JsonSerialize;
-            transform.EntityDeserializer = mTransform.JsonDeserialize;
+            transform.EntitySerializer = transform.JsonSerialize;
+            transform.EntityDeserializer = transform.JsonDeserialize;
 
             return transform;
         }
