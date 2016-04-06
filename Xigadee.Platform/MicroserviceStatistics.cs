@@ -83,7 +83,7 @@ namespace Xigadee
         /// </summary>
         public string MachineName { get; set; }
 
-        public TaskTrackerStatistics Tasks { get; set; }
+        public TaskManagerStatistics Tasks { get; set; }
 
         /// <summary>
         /// This is the current configuration for the Microservice.

@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class TaskTrackerStatistics: MessagingStatistics
+    public class TaskManagerStatistics: MessagingStatistics
     {
-        public TaskTrackerStatistics()
+        public TaskManagerStatistics()
         {
         }
 

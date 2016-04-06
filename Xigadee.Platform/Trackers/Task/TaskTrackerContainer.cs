@@ -20,7 +20,7 @@ namespace Xigadee
     /// <summary>
     /// This container holds the current tasks being processed on the system and calculates the availabile slots for the supported priority levels.
     /// </summary>
-    public class TaskTrackerContainer: ServiceBase<TaskTrackerStatistics>
+    public class TaskManager: ServiceBase<TaskManagerStatistics>
     {
         #region Declarations
         private ConcurrentDictionary<string, ProcessHolder> mProcesses;
@@ -37,7 +37,7 @@ namespace Xigadee
         /// </summary>
         private ManualResetEventSlim mPauseCheck = new ManualResetEventSlim();
 
-        private TaskTrackerPolicy mPolicy;
+        private TaskManagerPolicy mPolicy;
 
         private CpuStats mCpuStats = new CpuStats();
 
@@ -92,16 +92,16 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        public TaskTrackerContainer(int levels
+        public TaskManager(int levels
             , Func<TransmissionPayload, Task> dispatcher, int tasksMaxConcurrent
             , TimeSpan? processKillOverrunGracePeriod = null
-            , TaskTrackerPolicy policy = null
-            ) : base(nameof(TaskTrackerContainer))
+            , TaskManagerPolicy policy = null
+            ) : base(nameof(TaskManager))
         {
             if (dispatcher == null)
-                throw new ArgumentNullException($"{nameof(TaskTrackerContainer)}: dispatcher can not be null");
+                throw new ArgumentNullException($"{nameof(TaskManager)}: dispatcher can not be null");
 
-            mPolicy = policy ?? new TaskTrackerPolicy();
+            mPolicy = policy ?? new TaskManagerPolicy();
 
             mLevels = levels;
             mTasksActive = new int[levels];
@@ -532,7 +532,7 @@ namespace Xigadee
             set
             {
                 if (value <= 0)
-                    throw new ArgumentOutOfRangeException($"{nameof(TaskTrackerContainer)}: TasksMaxConcurrent must be a positive integer.");
+                    throw new ArgumentOutOfRangeException($"{nameof(TaskManager)}: TasksMaxConcurrent must be a positive integer.");
 
                 mTasksMaxConcurrent = value;
             }

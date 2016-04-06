@@ -86,12 +86,12 @@ namespace Xigadee
         }
         #endregion   
          
-        protected virtual TaskTrackerContainer InitialiseTaskTrackerContainer()
+        protected virtual TaskManager InitialiseTaskManager()
         {
-            var taskTracker =  new TaskTrackerContainer(4, Execute
+            var taskTracker =  new TaskManager(4, Execute
                 , ConfigurationOptions.ConcurrentRequestsMax
                 , ConfigurationOptions.ProcessKillOverrunGracePeriod
-                , PolicyTracker());
+                , PolicyTaskManager());
 
             taskTracker.BulkheadReserve(3, 2);
             taskTracker.BulkheadReserve(2, 2);
@@ -102,9 +102,9 @@ namespace Xigadee
         }
 
 
-        protected virtual TaskTrackerPolicy PolicyTracker()
+        protected virtual TaskManagerPolicy PolicyTaskManager()
         {
-            return new TaskTrackerPolicy(); ;
+            return new TaskManagerPolicy(); ;
         }
 
         #region InitialiseEventSourceContainer(List<IEventSource> eventSources)

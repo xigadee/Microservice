@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class TaskTrackerPolicy:PolicyBase
+    public class TaskManagerPolicy:PolicyBase
     {
-        public TaskTrackerPolicy()
+        public TaskManagerPolicy()
         {
 
         }

@@ -19,7 +19,7 @@ namespace Xigadee
         /// <summary>
         /// This class contains the running tasks and provides a breakdown of the current availability for new tasks.
         /// </summary>
-        private TaskTrackerContainer mTaskContainer;
+        private TaskManager mTaskContainer;
         /// <summary>
         /// This is the scheduler container.
         /// </summary>
@@ -234,7 +234,7 @@ namespace Xigadee
         /// </summary>
         protected virtual void TaskManagerInitialise()
         {
-            mTaskContainer = InitialiseTaskTrackerContainer();
+            mTaskContainer = InitialiseTaskManager();
 
             mScheduler = InitialiseSchedulerContainer();
         }
