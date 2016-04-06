@@ -91,7 +91,6 @@
     <Compile Include="Trackers\Exceptions\SenderNotResolvedException.cs" />
     <Compile Include="Trackers\Exceptions\TransmissionPayloadException.cs" />
     <Compile Include="Logger\Loggers\TraceEventLogger.cs" />
-    <Compile Include="Microservice_Autotune.cs" />
     <Compile Include="Microservice_TaskManager.cs" />
     <Compile Include="MicroserviceConfigurationOptions.cs" />
     <Compile Include="EventSource\EventSourceContainer.cs" />
@@ -141,6 +140,7 @@
       <Name>Xigadee.Helper</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="BeforeBuild">

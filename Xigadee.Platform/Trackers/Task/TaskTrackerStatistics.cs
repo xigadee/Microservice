@@ -9,6 +9,9 @@ namespace Xigadee
 {
     public class TaskTrackerStatistics: MessagingStatistics
     {
+        public TaskTrackerStatistics()
+        {
+        }
 
         private long mTimeouts;
 
@@ -16,5 +19,29 @@ namespace Xigadee
         {
             Interlocked.Add(ref mTimeouts, count);
         }
+
+        public ICpuStats Cpu { get; set; }
+
+        public int Active { get; set; }
+
+        public int Internal { get; set; }
+
+        public int SlotsAvailable { get; set; }
+
+        public int Killed { get; set; }
+
+        public long KilledDidReturn { get; set; }
+
+        public long KilledTotal { get; set; }
+
+        public List<string> Running { get; set; }
+
+        public bool AutotuneActive { get; set; }
+
+        public int TasksMaxConcurrent { get; set; }
+
+        public int OverloadTasksConcurrent { get; set; }
+
+        public QueueTrackerStatistics Queues { get; set; }
     }
 }

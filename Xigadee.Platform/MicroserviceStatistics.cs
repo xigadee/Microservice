@@ -18,8 +18,6 @@ namespace Xigadee
         /// </summary>
         public MicroserviceStatistics():base()
         {
-            Tasks = new TaskStatistics();
-            Autotune = new AutotuneStatistics();
         }
 
         /// <summary>
@@ -85,12 +83,7 @@ namespace Xigadee
         /// </summary>
         public string MachineName { get; set; }
 
-        public TaskStatistics Tasks { get; set; }
-
-
-        public AutotuneStatistics Autotune { get; set; }
-
-        public ICpuStats Cpu { get; set; }
+        public TaskTrackerStatistics Tasks { get; set; }
 
         /// <summary>
         /// This is the current configuration for the Microservice.
@@ -111,9 +104,6 @@ namespace Xigadee
         public LoggerStatistics Logger { get; set; }
 
         public EventSourceStatistics EventSource { get; set; }
-
-        public QueueTrackerStatistics Queues { get; set; }
-
 
         private long mTimeouts;
 
@@ -154,29 +144,6 @@ namespace Xigadee
         public string EngineVersionId { get; set; }
     }
 
-    public class AutotuneStatistics
-    {
-        public bool Active { get; set; }
 
-        public int TasksMaxConcurrent { get; set; }
 
-        public int OverloadTasksConcurrent { get; set; }
-    }
-
-    public class TaskStatistics
-    {
-        public int Active { get; set; }
-
-        public int Internal { get; set; }
-
-        public int SlotsAvailable { get; set; }
-
-        public int Killed { get; set; }
-
-        public long KilledDidReturn { get; set; }
-
-        public long KilledTotal { get; set; }
-
-        public List<string> Running { get; set; }
-    }
 }

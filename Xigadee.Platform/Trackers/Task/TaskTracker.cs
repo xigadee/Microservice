@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This is the tracker agent used to monitor jobs.
+    /// This is the tracker agent used to trace queued and executing jobs.
     /// </summary>
     [DebuggerDisplay("{Type}/{Name}={ProcessSlot}@{Priority}|{Id}")]
     public class TaskTracker

@@ -8,12 +8,47 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    public class ProcessHolder
+    {
+        public int Priority { get; set; }
+
+        public Action Execute { get; set; }
+
+        public string Name { get; set; }
+    }
+
     /// <summary>
     /// This container holds the current tasks being processed on the system and calculates the availabile slots for the supported priority levels.
     /// </summary>
     public class TaskTrackerContainer: ServiceBase<TaskTrackerStatistics>
     {
         #region Declarations
+        private ConcurrentDictionary<string, ProcessHolder> mProcesses;
+        /// <summary>
+        /// This is the message pump that loops around the various options.
+        /// </summary>
+        private Thread mMessagePump;
+        /// <summary>
+        /// This boolean property indicates whether the message pump is active.
+        /// </summary>
+        private bool MessagePumpActive { get; set; }
+        /// <summary>
+        /// This is the manual reset lock that is triggered when a job completes.
+        /// </summary>
+        private ManualResetEventSlim mPauseCheck = new ManualResetEventSlim();
+
+        private TaskTrackerPolicy mPolicy;
+
+        private CpuStats mCpuStats = new CpuStats();
+
+        private DateTime? mAutotuneLastProcessorTime = null;
+
+        private int mAutotuneTasksMaxConcurrent = 0;
+        private int mAutotuneTasksMinConcurrent = 0;
+        private int mAutotuneOverloadTasksConcurrent = 0;
+
+        private long mAutotuneProcessorCurrentMissCount = 0;
+
         /// <summary>
         /// This is the priority task queue.
         /// </summary>
@@ -37,6 +72,8 @@ namespace Xigadee
 
         private int[] mTasksBulkheadReservation;
 
+        private int mLoopPauseTimeInMs = 200;
+
         private long mProcessSlot = 0;
         /// <summary>
         /// This is the current count of the killed tasks that have been freed up because the task has failed to return.
@@ -55,15 +92,23 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        public TaskTrackerContainer(int levels, Func<TransmissionPayload, Task> dispatcher, int tasksMaxConcurrent, TimeSpan? processKillOverrunGracePeriod = null) : base(nameof(TaskTrackerContainer))
+        public TaskTrackerContainer(int levels
+            , Func<TransmissionPayload, Task> dispatcher, int tasksMaxConcurrent
+            , TimeSpan? processKillOverrunGracePeriod = null
+            , TaskTrackerPolicy policy = null
+            ) : base(nameof(TaskTrackerContainer))
         {
             if (dispatcher == null)
                 throw new ArgumentNullException($"{nameof(TaskTrackerContainer)}: dispatcher can not be null");
+
+            mPolicy = policy ?? new TaskTrackerPolicy();
 
             mLevels = levels;
             mTasksActive = new int[levels];
             mTasksBulkheadReservation = new int[levels];
             mTasksQueue = new QueueTrackerContainer<QueueTracker>(levels);
+
+            mProcesses = new ConcurrentDictionary<string, ProcessHolder>();
 
             TasksMaxConcurrent = tasksMaxConcurrent;
 
@@ -75,6 +120,135 @@ namespace Xigadee
         }
         #endregion
 
+        #region StartInternal()
+        /// <summary>
+        /// This override starts the message pump.
+        /// </summary>
+        protected override void StartInternal()
+        {
+            mMessagePump = new Thread(new ParameterizedThreadStart(ProcessLoop));
+
+            LoopReset();
+
+            mMessagePump.Start();
+        } 
+        #endregion
+        #region StopInternal()
+        /// <summary>
+        /// This override stops the message pump.
+        /// </summary>
+        protected override void StopInternal()
+        {
+            MessagePumpActive = false;
+
+            LoopSet();
+
+            mMessagePump.Join();
+        }
+        #endregion
+
+        public void ProcessUnregister(string name)
+        {
+            ProcessHolder value;
+            mProcesses.TryRemove(name, out value);
+        }
+
+        public void ProcessRegister(string name, int priority, Action execute)
+        {
+            var process = new ProcessHolder() { Priority = priority, Name = name, Execute = execute };
+
+            mProcesses.AddOrUpdate(name, process, (n,o) => process);
+        }
+
+        private void ProcessExecute(ProcessHolder process)
+        {
+            try
+            {
+                process.Execute();
+            }
+            catch (Exception ex)
+            {
+                LogException($"ProcessExecute failed: {process.Name}", ex);
+            }
+        }
+
+        #region -->ProcessLoop(object state)
+        /// <summary>
+        /// This is the message loop that receives messages.
+        /// </summary>
+        /// <param name="state">This is not used.</param>
+        protected void ProcessLoop(object state)
+        {
+            MessagePumpActive = true;
+
+            try
+            {
+                //Loop to infinity until an exception is called for the thread or MessagePumpActive is set to false.
+                while (MessagePumpActive)
+                {
+                    //Pause 50ms if set or until another process signals continue.
+                    LoopPause();
+
+                    try
+                    {
+                        //Timeout any overdue tasks.
+                        TaskTimedoutCancel();
+
+                        //Execute any registered processes
+                        mProcesses.Values
+                            .OrderByDescending((p) => p.Priority)
+                            .ForEach((p) => ProcessExecute(p));
+
+                        //Process waiting messages.
+                        DequeueTasksAndExecute();
+
+                    }
+                    catch (Exception tex)
+                    {
+                        LogException("ProcessLoop unhandled exception", tex);
+                    }
+
+                    //Reset the reset event to pause the thread.
+                    LoopReset();
+                }
+            }
+            catch (ThreadAbortException)
+            {
+                //OK, we're shutting down.
+                MessagePumpActive = false;
+                //LogMessage(LoggingLevel.Info, "Thread aborting, shutting down", "Messaging");
+            }
+            catch (Exception ex)
+            {
+                LogException("TaskManager (Unhandled)", ex);
+            }
+            finally
+            {
+                //Cancel any remaining tasks as the loop is leaving.
+                TasksCancel();
+            }
+        }
+        #endregion
+
+
+        #region Loop methods
+        public void LoopPause()
+        {
+            mPauseCheck.Wait(mLoopPauseTimeInMs);
+        }
+
+        public void LoopReset()
+        {
+            mPauseCheck.Reset();
+        }
+
+        public void LoopSet()
+        {
+            mPauseCheck.Set();
+        } 
+        #endregion
+
+        #region StatisticsRecalculate()
         /// <summary>
         /// This method sets the statistics.
         /// </summary>
@@ -82,7 +256,42 @@ namespace Xigadee
         {
             base.StatisticsRecalculate();
 
-        }
+            try
+            {
+                mStatistics.Cpu = mCpuStats;
+
+                mStatistics.AutotuneActive = mPolicy.Supported;
+                mStatistics.TasksMaxConcurrent = mAutotuneTasksMaxConcurrent;
+                mStatistics.OverloadTasksConcurrent = mAutotuneOverloadTasksConcurrent;
+
+                if (mTaskRequests != null)
+                {
+                    mStatistics.Active = mTaskRequests.Count;
+                    mStatistics.SlotsAvailable = TaskSlotsAvailable;
+                }
+
+                mStatistics.Internal = mTasksInternal;
+
+                mStatistics.Killed = mTasksKilled;
+                mStatistics.KilledTotal = mTasksKilledTotal;
+                mStatistics.KilledDidReturn = mTasksKilledDidReturn;
+
+                if (mTaskRequests != null) mStatistics.Running =
+                    mTaskRequests.Values
+                    .Where((t) => t.ProcessSlot.HasValue)
+                    .OrderByDescending((t) => t.ProcessSlot.Value)
+                    .Select((t) => t.Debug)
+                    .ToList();
+
+                if (mTasksQueue != null) mStatistics.Queues = mTasksQueue.Statistics;
+
+            }
+            catch (Exception ex)
+            {
+                mStatistics.Ex = ex;
+            }
+        } 
+        #endregion
 
         private void LogException(string message, Exception ex = null)
         {
@@ -111,7 +320,7 @@ namespace Xigadee
         } 
         #endregion
 
-        #region ExecuteOrEnqueue(TaskTracker tracker)
+        #region --> ExecuteOrEnqueue(TaskTracker tracker)
         /// <summary>
         /// This method is used to execute a tracker on enqueue until there are task slots available.
         /// </summary>
@@ -129,11 +338,11 @@ namespace Xigadee
             DequeueTasksAndExecute();
         }
         #endregion
-        #region DequeueTasksAndExecute(int? slots = null)
+        #region --> DequeueTasksAndExecute(int? slots = null)
         /// <summary>
         /// This method processes the tasks that resides in the queue, dequeuing the highest priority first.
         /// </summary>
-        private void DequeueTasksAndExecute(int? slots = null)
+        public void DequeueTasksAndExecute(int? slots = null)
         {
             try
             {
@@ -148,6 +357,7 @@ namespace Xigadee
             }
         }
         #endregion
+
         #region ExecuteTask(TaskTracker tracker)
         /// <summary>
         /// This method sets the task on to a Task for execution and calls the end method on completion.
@@ -219,7 +429,6 @@ namespace Xigadee
         /// <param name="tex">Any exception that was caught as the task executed.</param>
         private void ExecuteTaskComplete(TaskTracker tracker, bool failed, Exception tex)
         {
-
             try
             {
                 TaskTracker outTracker;
@@ -259,14 +468,13 @@ namespace Xigadee
             }
 
             //Check if there are any queued tasks that can fill up the empty slot that is now available.
-            DequeueTasksAndExecute();
-
             try
             {
                 //While we have a thread see if there is work to enqueue.
+                DequeueTasksAndExecute();
 
                 //Signal the poll loop to proceed in case it is waiting.
-                //mPauseCheck.Set();
+                LoopSet();
             }
             catch (Exception)
             {
@@ -297,6 +505,16 @@ namespace Xigadee
             get { return mTasksMaxConcurrent - (mTaskRequests.Count - mTasksInternal - mTasksKilled); }
         }
         #endregion
+        #region TaskSlotsAvailableNet
+        /// <summary>
+        /// This figure is the number of remaining task slots available after the number of queued tasks have been removed.
+        /// </summary>
+        public int TaskSlotsAvailableNet
+        {
+            get { return TaskSlotsAvailable - mTasksQueue.Count; }
+        }
+        #endregion
+   
         #region TasksMaxConcurrent
         /// <summary>
         /// This is the maximum number of concurrent tasks that can execure in parallel.
@@ -317,7 +535,14 @@ namespace Xigadee
         } 
         #endregion
 
-        #region TaskTimedoutKill()
+        #region TasksActive
+        /// <summary>
+        /// This is a count all all the current active requests.
+        /// </summary>
+        public int TasksActive { get { return mTaskRequests.Count; } }
+        #endregion
+
+        #region --> TaskTimedoutKill()
         /// <summary>
         /// This method is used to kill the overrun tasks when it has exceeded the configured cancel time.
         /// </summary>
@@ -339,7 +564,7 @@ namespace Xigadee
             }
         }
         #endregion
-        #region TaskTimedoutCancel()
+        #region --> TaskTimedoutCancel()
         /// <summary>
         /// This method stops all timedout tasks.
         /// </summary>
@@ -358,7 +583,7 @@ namespace Xigadee
             }
         }
         #endregion
-        #region TasksCancel()
+        #region --> TasksCancel()
         /// <summary>
         /// This method stops all current jobs.
         /// </summary>
@@ -373,6 +598,7 @@ namespace Xigadee
                 expired.ForEach((t) => TaskCancel(t));
         }
         #endregion
+
         #region TaskCancel(TaskTracker tracker)
         /// <summary>
         /// This method cancels the specific tracker.
@@ -417,21 +643,68 @@ namespace Xigadee
         }
         #endregion
 
-        protected override void StartInternal()
-        {
-        }
 
-        protected override void StopInternal()
-        {
-        }
-
-
-
-        #region Count
+        #region Autotune()
         /// <summary>
-        /// This is a count all all the current active requests.
+        /// This method is used to reduce or increase the processes currently active based on the target CPU percentage.
         /// </summary>
-        public int Count { get { return mTaskRequests.Count; } } 
+        public virtual async Task Autotune()
+        {
+            try
+            {
+                float? current = await mCpuStats.SystemProcessorUsagePercentage(System.Diagnostics.Process.GetCurrentProcess().ProcessName);
+
+                if (!current.HasValue && mAutotuneProcessorCurrentMissCount < 5)
+                {
+                    Interlocked.Increment(ref mAutotuneProcessorCurrentMissCount);
+                    return;
+                }
+
+                if (!mPolicy.Supported)
+                    return;
+
+                mAutotuneProcessorCurrentMissCount = 0;
+                float processpercentage = current.HasValue ? (float)current.Value : 0.01F;
+
+                //Do we need to scale down
+                if ((processpercentage > mPolicy.ProcessorTargetLevelPercentage)
+                    || (mAutotuneTasksMaxConcurrent > mPolicy.ConcurrentRequestsMin))
+                {
+                    Interlocked.Decrement(ref mAutotuneTasksMaxConcurrent);
+                    if (mAutotuneTasksMaxConcurrent < 0)
+                        mAutotuneTasksMaxConcurrent = 0;
+                }
+                //Do we need to scale up
+                if ((processpercentage <= mPolicy.ProcessorTargetLevelPercentage)
+                    && (mAutotuneTasksMaxConcurrent < mPolicy.ConcurrentRequestsMax))
+                {
+                    Interlocked.Increment(ref mAutotuneTasksMaxConcurrent);
+                    if (mAutotuneTasksMaxConcurrent > mPolicy.ConcurrentRequestsMax)
+                        mAutotuneTasksMaxConcurrent = mPolicy.ConcurrentRequestsMax;
+                }
+
+                int AutotuneOverloadTasksCurrent = mAutotuneTasksMaxConcurrent / 10;
+
+                if (AutotuneOverloadTasksCurrent > mPolicy.OverloadProcessLimitMax)
+                {
+                    mAutotuneOverloadTasksConcurrent = mPolicy.OverloadProcessLimitMax;
+                }
+                else if (AutotuneOverloadTasksCurrent < mPolicy.OverloadProcessLimitMin)
+                {
+                    mAutotuneOverloadTasksConcurrent = mPolicy.OverloadProcessLimitMin;
+                }
+                else
+                {
+                    mAutotuneOverloadTasksConcurrent = AutotuneOverloadTasksCurrent;
+                }
+            }
+            catch (Exception ex)
+            {
+                //Autotune should not throw an exceptions
+                LogException("Autotune threw an exception.", ex);
+            }
+        }
         #endregion
+
     }
 }

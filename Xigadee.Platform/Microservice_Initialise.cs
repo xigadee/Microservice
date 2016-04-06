@@ -80,16 +80,33 @@ namespace Xigadee
             return new SchedulerContainer(PolicyScheduler());
         }
 
-        protected virtual TaskTrackerContainer InitialiseTaskContainer()
-        {
-            return new TaskTrackerContainer(4, Execute, ConfigurationOptions.ConcurrentRequestsMax, ConfigurationOptions.ProcessKillOverrunGracePeriod);
-        }
-
         protected virtual SchedulerPolicy PolicyScheduler()
         {
             return new SchedulerPolicy();;
         }
-        #endregion    
+        #endregion   
+         
+        protected virtual TaskTrackerContainer InitialiseTaskTrackerContainer()
+        {
+            var taskTracker =  new TaskTrackerContainer(4, Execute
+                , ConfigurationOptions.ConcurrentRequestsMax
+                , ConfigurationOptions.ProcessKillOverrunGracePeriod
+                , PolicyTracker());
+
+            taskTracker.BulkheadReserve(3, 2);
+            taskTracker.BulkheadReserve(2, 2);
+            taskTracker.BulkheadReserve(1, 8);
+            taskTracker.BulkheadReserve(0, 0);
+
+            return taskTracker;
+        }
+
+
+        protected virtual TaskTrackerPolicy PolicyTracker()
+        {
+            return new TaskTrackerPolicy(); ;
+        }
+
         #region InitialiseEventSourceContainer(List<IEventSource> eventSources)
         /// <summary>
         /// THis method returns the default scheduler container.
