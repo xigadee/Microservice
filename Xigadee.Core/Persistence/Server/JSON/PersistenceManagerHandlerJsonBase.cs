@@ -1,10 +1,8 @@
 ﻿#region using
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Text;
+
 #endregion
 namespace Xigadee
 {
@@ -89,15 +87,15 @@ namespace Xigadee
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             , Func<Tuple<string, string>, string> referenceHashMaker = null)
         {
-            var mTransform = base.EntityTransformCreate(
+            var transform = base.EntityTransformCreate(
                   entityName, versionPolicy, keyMaker
                 , entityDeserializer, entitySerializer
                 , keySerializer, keyDeserializer, referenceMaker, referenceHashMaker);
 
-            mTransform.EntitySerializer = mTransform.JsonSerialize;
-            mTransform.EntityDeserializer = mTransform.JsonDeserialize;
+            transform.EntitySerializer = mTransform.JsonSerialize;
+            transform.EntityDeserializer = mTransform.JsonDeserialize;
 
-            return mTransform;
+            return transform;
         }
         #endregion
     }
