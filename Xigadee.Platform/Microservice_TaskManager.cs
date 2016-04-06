@@ -246,11 +246,14 @@ namespace Xigadee
         /// </summary>
         protected virtual void TaskManagerStart()
         {
-            mTaskContainer.ProcessRegister("SchedulesProcess", 10, SchedulesProcess);
+            mTaskContainer.ProcessRegister("SchedulesProcess", mTaskContainer.LevelMax+1, SchedulesProcess);
 
-            mTaskContainer.ProcessRegister("ListenersProcess", 1, () => ListenersProcess(0));
+            for (int l = mTaskContainer.LevelMin; l <= mTaskContainer.LevelMax; l++)
+            {
+                mTaskContainer.ProcessRegister($"ListenersProcess: {l}", l, () => ListenersProcess(l));
+            }
 
-            mTaskContainer.ProcessRegister("OverloadCheck", 0, OverloadCheck);
+            mTaskContainer.ProcessRegister("OverloadCheck", mTaskContainer.LevelMin-1, OverloadCheck);
 
             mTaskContainer.Start();
         }
@@ -353,11 +356,11 @@ namespace Xigadee
         }
         #endregion
 
-        #region ListenersProcess(bool singleHop = false)
+        #region ListenersProcess(int priorityLevel)
         /// <summary>
         /// This method is used to create tasks to dequeue data from the listeners.
         /// </summary>
-        /// <param name="singleHop">A boolean value indicating whether we should only poll a single hop.</param>
+        /// <param name="priorityLevel">This property specifies the priority level that should be processed..</param>
         private void ListenersProcess(int priorityLevel)
         {
             bool singleHop = false;

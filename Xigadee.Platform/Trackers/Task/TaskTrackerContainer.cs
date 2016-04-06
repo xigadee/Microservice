@@ -120,6 +120,10 @@ namespace Xigadee
         }
         #endregion
 
+        public int LevelMin { get { return 0; } }
+
+        public int LevelMax { get { return mLevels - 1; } }
+
         #region StartInternal()
         /// <summary>
         /// This override starts the message pump.
