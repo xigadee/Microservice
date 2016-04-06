@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Linq; 
+using System.Xml.Linq;
 #endregion
 namespace Xigadee
 {
@@ -17,7 +17,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public abstract class PersistenceManagerHandlerSqlBase<K, E>: PersistenceManagerHandlerSqlBase<K, E, PersistenceStatistics>
+    public abstract class PersistenceManagerHandlerSqlBase<K, E> : PersistenceManagerHandlerSqlBase<K, E, PersistenceStatistics>
         where K : IEquatable<K>
     {
         #region Constructor
@@ -38,6 +38,7 @@ namespace Xigadee
         /// <param name="resourceProfile"></param>
         /// <param name="cacheManager"></param>
         /// <param name="referenceMaker"></param>
+        /// <param name="referenceHashMaker"></param>
         /// <param name="keySerializer"></param>
         protected PersistenceManagerHandlerSqlBase(string connection
             , Func<E, K> keyMaker
@@ -52,6 +53,7 @@ namespace Xigadee
             , ResourceProfile resourceProfile = null
             , ICacheManager<K, E> cacheManager = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
+            , Func<Tuple<string, string>, string> referenceHashMaker = null
             , Func<K, string> keySerializer = null
             )
             : base(connection
@@ -67,12 +69,13 @@ namespace Xigadee
                   , resourceProfile: resourceProfile
                   , cacheManager: cacheManager
                   , referenceMaker: referenceMaker
+                  , referenceHashMaker: referenceHashMaker
                   , keySerializer: keySerializer
                   )
         {
         }
         #endregion
-    } 
+    }
     #endregion
 
     /// <summary>
@@ -100,6 +103,7 @@ namespace Xigadee
         protected Func<XElement, Tuple<K, string>> mXmlVersionMaker;
         #endregion
         #region Constructor
+
         /// <summary>
         /// This is the default constructor with a manual connection string.
         /// </summary>
@@ -117,6 +121,7 @@ namespace Xigadee
         /// <param name="cacheManager"></param>
         /// <param name="referenceMaker"></param>
         /// <param name="keySerializer"></param>
+        /// <param name="referenceHashMaker"></param>
         protected PersistenceManagerHandlerSqlBase(string connection
             , Func<E, K> keyMaker
             , Func<string, K> keyDeserializer
@@ -131,17 +136,19 @@ namespace Xigadee
             , ICacheManager<K, E> cacheManager = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             , Func<K, string> keySerializer = null
-            ) 
-            : base( persistenceRetryPolicy: persistenceRetryPolicy
+            , Func<Tuple<string, string>, string> referenceHashMaker = null
+            )
+            : base(persistenceRetryPolicy: persistenceRetryPolicy
                   , resourceProfile: resourceProfile
                   , cacheManager: cacheManager
                   , defaultTimeout: defaultTimeout
                   , entityName: entityName
                   , versionPolicy: versionPolicy
-                  , keyMaker:keyMaker
+                  , keyMaker: keyMaker
                   , keySerializer: keySerializer
                   , keyDeserializer: keyDeserializer
                   , referenceMaker: referenceMaker
+                  , referenceHashMaker: referenceHashMaker
                   )
         {
             Connection = connection;
@@ -158,9 +165,9 @@ namespace Xigadee
         public string Connection { get; set; }
         #endregion
 
-        protected override EntityTransformHolder<K, E> EntityTransformCreate(string entityName = null, VersionPolicy<E> versionPolicy = null, Func<E, K> keyMaker = null, Func<string, E> entityDeserializer = null, Func<E, string> entitySerializer = null, Func<K, string> keySerializer = null, Func<string, K> keyDeserializer = null, Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null)
+        protected override EntityTransformHolder<K, E> EntityTransformCreate(string entityName = null, VersionPolicy<E> versionPolicy = null, Func<E, K> keyMaker = null, Func<string, E> entityDeserializer = null, Func<E, string> entitySerializer = null, Func<K, string> keySerializer = null, Func<string, K> keyDeserializer = null, Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null, Func<Tuple<string, string>, string> referenceHashMaker = null)
         {
-            var transform =  base.EntityTransformCreate(entityName, versionPolicy, keyMaker, entityDeserializer, entitySerializer, keySerializer, keyDeserializer, referenceMaker);
+            var transform = base.EntityTransformCreate(entityName, versionPolicy, keyMaker, entityDeserializer, entitySerializer, keySerializer, keyDeserializer, referenceMaker, referenceHashMaker);
 
             transform.EntityDeserializer = s => mXmlEntityDeserializer(XElement.Parse(s));
             transform.EntitySerializer = e => mXmlEntitySerializer(e).ToString();
@@ -289,7 +296,7 @@ namespace Xigadee
         /// <returns></returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities")]
         protected async Task<R> SqlCommandTemplateXml<R>(
-            string dbConnection, 
+            string dbConnection,
             string commandname,
             Action<SqlCommand> act)
             where R : PersistenceResponseHolder, new()
@@ -392,7 +399,7 @@ namespace Xigadee
         #region InternalReadByRef
         protected override async Task<IResponseHolder<E>> InternalReadByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, E> holder)
         {
-            var rs =  await SqlCommandTemplateXml<PersistenceResponseHolder<E>>(Connection
+            var rs = await SqlCommandTemplateXml<PersistenceResponseHolder<E>>(Connection
                 , StoredProcedureReadByRef
                 , sqlCmd => DbSerializeKeyReference(reference, sqlCmd)
                 );
@@ -418,7 +425,7 @@ namespace Xigadee
         #region InternalDelete
         protected override async Task<IResponseHolder> InternalDelete(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            var rs =  await SqlCommandTemplateXml<PersistenceResponseHolder>(Connection
+            var rs = await SqlCommandTemplateXml<PersistenceResponseHolder>(Connection
                 , StoredProcedureDelete
                 , sqlCmd => DbSerializeKey(key, sqlCmd)
                 );
@@ -473,7 +480,7 @@ namespace Xigadee
         protected virtual void ProcessOutputEntity(PersistenceRequestHolder<K, E> holder, PersistenceResponseHolder<E> rs)
         {
             if (string.IsNullOrEmpty(rs.Content))
-                return; 
+                return;
 
 
             rs.Entity = mTransform.EntityDeserializer(rs.Content);
@@ -491,7 +498,7 @@ namespace Xigadee
         }
         #endregion
         #region ProcessOutputKey(XElement node, PersistenceResponseHolder rs)
-        protected virtual void ProcessOutputKey(bool isByReference, PersistenceRequestHolder<K, Tuple<K,string>> holder, PersistenceResponseHolder rs)
+        protected virtual void ProcessOutputKey(bool isByReference, PersistenceRequestHolder<K, Tuple<K, string>> holder, PersistenceResponseHolder rs)
         {
             if (string.IsNullOrEmpty(rs.Content))
                 return;

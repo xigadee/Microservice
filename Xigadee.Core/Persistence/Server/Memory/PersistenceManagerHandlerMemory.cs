@@ -16,22 +16,25 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class PersistenceManagerHandlerMemory<K, E>: PersistenceManagerHandlerMemory<K, E, PersistenceStatistics>
+    public class PersistenceManagerHandlerMemory<K, E> : PersistenceManagerHandlerMemory<K, E, PersistenceStatistics>
         where K : IEquatable<K>
     {
         #region Constructor
+
         /// <summary>
         /// This is the document db persistence agent.
         /// </summary>
-        /// <param name="connection">The documentDb connection.</param>
-        /// <param name="database">The is the databaseId name. If the Db does not exist it will be created.</param>
         /// <param name="keyMaker">This function creates a key of type K from an entity of type E</param>
-        /// <param name="databaseCollection">The is the collection name. If the collection does it exist it will be created. This will be used by the sharding policy to create multiple collections.</param>
+        /// <param name="keyDeserializer"></param>
         /// <param name="entityName">The entity name to be used in the collection. By default this will be set through reflection.</param>
-        /// <param name="versionMaker">This function should be set to enforce optimistic locking.</param>
+        /// <param name="versionPolicy"></param>
         /// <param name="defaultTimeout">This is the default timeout period to be used when connecting to documentDb.</param>
-        /// <param name="shardingPolicy">This is sharding policy used to choose the appropriate collection from the key presented.</param>
-        /// <param name="retryPolicy"></param>
+        /// <param name="persistenceRetryPolicy"></param>
+        /// <param name="resourceProfile"></param>
+        /// <param name="cacheManager"></param>
+        /// <param name="referenceMaker"></param>
+        /// <param name="referenceHashMaker"></param>
+        /// <param name="keySerializer"></param>
         public PersistenceManagerHandlerMemory(Func<E, K> keyMaker
             , Func<string, K> keyDeserializer
             , string entityName = null
@@ -41,6 +44,7 @@ namespace Xigadee
             , ResourceProfile resourceProfile = null
             , ICacheManager<K, E> cacheManager = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
+            , Func<Tuple<string, string>, string> referenceHashMaker = null
             , Func<K, string> keySerializer = null
             )
             : base(keyMaker, keyDeserializer
@@ -51,6 +55,7 @@ namespace Xigadee
                   , resourceProfile: resourceProfile
                   , cacheManager: cacheManager
                   , referenceMaker: referenceMaker
+                  , referenceHashMaker : referenceHashMaker
                   , keySerializer: keySerializer
                   )
         {
@@ -68,7 +73,7 @@ namespace Xigadee
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
     /// <typeparam name="S">An extended statistics class.</typeparam>
-    public abstract class PersistenceManagerHandlerMemory<K, E, S>: PersistenceManagerHandlerJsonBase<K, E, S, PersistenceCommandPolicy>
+    public abstract class PersistenceManagerHandlerMemory<K, E, S> : PersistenceManagerHandlerJsonBase<K, E, S, PersistenceCommandPolicy>
         where K : IEquatable<K>
         where S : PersistenceStatistics, new()
     {
@@ -96,8 +101,9 @@ namespace Xigadee
             , ResourceProfile resourceProfile = null
             , ICacheManager<K, E> cacheManager = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
+            , Func<Tuple<string, string>, string> referenceHashMaker = null
             , Func<K, string> keySerializer = null)
-            : base(keyMaker, keyDeserializer, entityName, versionPolicy, defaultTimeout, persistenceRetryPolicy, resourceProfile, cacheManager, referenceMaker, keySerializer)
+            : base(keyMaker, keyDeserializer, entityName, versionPolicy, defaultTimeout, persistenceRetryPolicy, resourceProfile, cacheManager, referenceMaker, referenceHashMaker, keySerializer)
         {
         }
         #endregion
@@ -206,12 +212,14 @@ namespace Xigadee
             //        , Entity = mTransform.EntityDeserializer(jsonHolder.Json)
             //    };
             //else
-                return new PersistenceResponseHolder<E>()
-                {
-                      StatusCode = 412
-                    , IsSuccess = false
-                    , IsTimeout = false
-                };
+            return new PersistenceResponseHolder<E>()
+            {
+                StatusCode = 412
+                ,
+                IsSuccess = false
+                ,
+                IsTimeout = false
+            };
         }
 
         protected override async Task<IResponseHolder> InternalDelete(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
@@ -229,7 +237,7 @@ namespace Xigadee
         {
             K key;
             if (!ReferenceGet(reference, out key))
-                return new PersistenceResponseHolder<E>(){ StatusCode = 404, IsSuccess = false, IsTimeout = false };
+                return new PersistenceResponseHolder<E>() { StatusCode = 404, IsSuccess = false, IsTimeout = false };
 
             return await InternalDelete(key, holder);
         }

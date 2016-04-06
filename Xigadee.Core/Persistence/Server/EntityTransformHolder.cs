@@ -59,6 +59,10 @@ namespace Xigadee
         /// </summary>
         public virtual Func<E, IEnumerable<Tuple<string, string>>> ReferenceMaker { get; set; }
         /// <summary>
+        /// This function can be used to make a hash from the References passed in.
+        /// </summary>
+        public virtual Func<Tuple<string, string>, string> ReferenceHashMaker { get; set; }
+        /// <summary>
         /// This method makes a string reference from the key.
         /// </summary>
         public virtual Func<K, string> KeySerializer { get; set; }

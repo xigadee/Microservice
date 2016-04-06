@@ -20,7 +20,8 @@ namespace Xigadee
 
         Task<bool> Write(E entity, TimeSpan? expiry = null);
         Task<bool> Write(EntityTransformHolder<K, E> transform, E entity, TimeSpan? expiry = null);
-
+        Task<bool> WriteReference(Tuple<string, string> reference, K key, string version, TimeSpan? expiry = null);
+        Task<bool> WriteReference(EntityTransformHolder<K, E> transform, Tuple<string, string> reference, K key, string version, TimeSpan? expiry = null);
         Task<bool> Delete(K key);
         Task<bool> Delete(EntityTransformHolder<K, E> transform, K key);
 

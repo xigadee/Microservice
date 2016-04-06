@@ -8,58 +8,50 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K"></typeparam>
     /// <typeparam name="E"></typeparam>
-    public class NullCacheManager<K, E>: CacheManagerBase<K, E>
-        where K : IEquatable<K>
+    public class NullCacheManager<K, E>: CacheManagerBase<K, E> where K : IEquatable<K>
     {
-        public override bool IsActive
+        public override bool IsActive => false;
+
+        public override bool IsReadOnly => true;
+
+        public override Task<bool> Delete(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
         {
-            get
-            {
-                return false;
-            }
+            return Task.FromResult(false);
         }
 
-        public override bool IsReadOnly
+        public override Task<bool> Delete(EntityTransformHolder<K, E> transform, K key)
         {
-            get
-            {
-                return true;
-            }
+            return Task.FromResult(false);
         }
 
-        public override async Task<bool> Delete(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
+        public override Task<IResponseHolder<E>> Read(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
         {
-            return false;
+            return Task.FromResult(new PersistenceResponseHolder<E> { IsSuccess = false, StatusCode = 404 } as IResponseHolder<E>);
         }
 
-        public override async Task<bool> Delete(EntityTransformHolder<K, E> transform, K key)
+        public override Task<IResponseHolder<E>> Read(EntityTransformHolder<K, E> transform, K key)
         {
-            return false;
+            return Task.FromResult(new PersistenceResponseHolder<E> { IsSuccess = false, StatusCode = 404 } as IResponseHolder<E>);
         }
 
-        public override async Task<IResponseHolder<E>> Read(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
+        public override Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
         {
-            return new PersistenceResponseHolder<E> { IsSuccess = false, StatusCode = 404 };
+            return Task.FromResult(new PersistenceResponseHolder<E> { IsSuccess = false, StatusCode = 404 } as IResponseHolder);
         }
 
-        public override async Task<IResponseHolder<E>> Read(EntityTransformHolder<K, E> transform, K key)
+        public override Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, K key)
         {
-            return new PersistenceResponseHolder<E> { IsSuccess = false, StatusCode = 404 };
+            return Task.FromResult(new PersistenceResponseHolder<E> { IsSuccess = false, StatusCode = 404 } as IResponseHolder);
         }
 
-        public override async Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
+        public override Task<bool> Write(EntityTransformHolder<K, E> transform, E entity, TimeSpan? expiry = null)
         {
-            return new PersistenceResponseHolder { IsSuccess = false, StatusCode = 404 };
+            return Task.FromResult(false);
         }
 
-        public override async Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, K key)
+        public override Task<bool> WriteReference(EntityTransformHolder<K, E> transform, Tuple<string, string> reference, K key, string version, TimeSpan? expiry = null)
         {
-            return new PersistenceResponseHolder { IsSuccess = false, StatusCode = 404 };
-        }
-
-        public override async Task<bool> Write(EntityTransformHolder<K, E> transform, E entity, TimeSpan? expiry = null)
-        {
-            return false;
+            return Task.FromResult(false);
         }
     }
 }

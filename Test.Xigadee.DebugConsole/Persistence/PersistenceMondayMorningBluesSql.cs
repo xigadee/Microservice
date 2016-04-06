@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using Xigadee;
@@ -18,10 +19,18 @@ namespace Test.Xigadee
                   , MondayMorningBluesHelper.ToXml
                   , MondayMorningBluesHelper.ToVersion
                   , versionPolicy: versionPolicy
-                  , cacheManager: cacheManager)
+                  , cacheManager: cacheManager
+                  , referenceMaker: ReferenceMaker)
         {
 
         }
+
+        #region ReferenceMaker
+        static IEnumerable<Tuple<string, string>> ReferenceMaker(MondayMorningBlues mondayMorningBlues)
+        {
+            return new List<Tuple<string,string>>{ new Tuple<string,string> ("EMAIL", mondayMorningBlues.Email) };
+        }
+        #endregion
 
         public override void DbSerializeKey(Guid key, SqlCommand cmd)
         {
