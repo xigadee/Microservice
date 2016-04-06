@@ -85,7 +85,9 @@ namespace Xigadee
         /// This counter holds the current actve overload process threads.
         /// </summary>
         public int OverloadProcessCount { get { return mOverloadProcessCount; } }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public long OverloadProcessHits { get { return mOverloadProcessHits; } }
 
 

@@ -201,11 +201,11 @@ namespace Xigadee
         /// </summary>
         /// <param name="context">The client holder context.</param>
         /// <returns>Returns a tracker of type payload.</returns>
-        private TaskTracker TrackerCreateFromListenerContext(HolderSlotContext context)
+        private TaskTracker TrackerCreateFromListenerContext(HolderSlotContext context, int? priority = null)
         {
             TaskTracker tracker = new TaskTracker(TaskTrackerType.ListenerPoll, TimeSpan.FromSeconds(30))
             {
-                Priority = TaskTracker.PriorityInternal,
+                Priority = priority ?? TaskTracker.PriorityInternal,
                 Context = context,
                 Name = context.Name
             };
@@ -246,17 +246,26 @@ namespace Xigadee
         /// </summary>
         protected virtual void TaskManagerStart()
         {
-            mTaskContainer.ProcessRegister("SchedulesProcess", mTaskContainer.LevelMax+1, SchedulesProcess);
+            TaskManagerProcessRegister();
+
+            mTaskContainer.Start();
+        }
+        #endregion
+        #region TaskManagerProcessRegister()
+        /// <summary>
+        /// 
+        /// </summary>
+        protected virtual void TaskManagerProcessRegister()
+        {
+            mTaskContainer.ProcessRegister("SchedulesProcess", mTaskContainer.LevelMax + 1, SchedulesProcess);
 
             for (int l = mTaskContainer.LevelMin; l <= mTaskContainer.LevelMax; l++)
             {
                 mTaskContainer.ProcessRegister($"ListenersProcess: {l}", l, () => ListenersProcess(l));
             }
 
-            mTaskContainer.ProcessRegister("OverloadCheck", mTaskContainer.LevelMin-1, OverloadCheck);
-
-            mTaskContainer.Start();
-        }
+            mTaskContainer.ProcessRegister("OverloadCheck", mTaskContainer.LevelMin - 1, OverloadCheck);
+        } 
         #endregion
         #region TaskManagerStop()
         /// <summary>
@@ -290,17 +299,17 @@ namespace Xigadee
         /// <param name="process">The process to check.</param>
         protected virtual void OverloadCheck(IActionQueue process)
         {
-            //if (!process.Overloaded || process.OverloadProcessCount >= mAutotuneOverloadTasksConcurrent)
-            //    return;
+            if (!process.Overloaded)// || process.OverloadProcessCount >= mAutotuneOverloadTasksConcurrent)
+                return;
 
-            //TaskTracker tracker = new TaskTracker(TaskTrackerType.Overload, null);
-            //tracker.Name = process.GetType().Name;
-            //tracker.Caller = process.GetType().Name;
-            //tracker.IsLongRunning = true;
-            //tracker.Priority = 3;
-            //tracker.Execute = async (token) => await process.OverloadProcess(ConfigurationOptions.OverloadProcessTimeInMs);
+            TaskTracker tracker = new TaskTracker(TaskTrackerType.Overload, null);
+            tracker.Name = process.GetType().Name;
+            tracker.Caller = process.GetType().Name;
+            tracker.IsLongRunning = true;
+            tracker.Priority = 3;
+            tracker.Execute = async (token) => await process.OverloadProcess(ConfigurationOptions.OverloadProcessTimeInMs);
 
-            //mTaskContainer.ExecuteOrEnqueue(tracker);
+            mTaskContainer.ExecuteOrEnqueue(tracker);
         }
         #endregion
 
@@ -370,18 +379,20 @@ namespace Xigadee
 
             HolderSlotContext context;
 
-            int listenerTaskSlotsAvailable = mTaskContainer.TaskSlotsAvailableNet;
+            int listenerTaskSlotsAvailable = mTaskContainer.TaskSlotsAvailableNet(priorityLevel);
 
-            if (listenerTaskSlotsAvailable > 0)
-                while (mCommunication.ListenerClientNext(listenerTaskSlotsAvailable, out context))
-                {
-                    TaskTracker tracker = TrackerCreateFromListenerContext(context);
+            while (listenerTaskSlotsAvailable > 0
+                && mCommunication.ListenerClientNext(priorityLevel, listenerTaskSlotsAvailable, out context))
+            {
+                TaskTracker tracker = TrackerCreateFromListenerContext(context, priorityLevel);
 
-                    mTaskContainer.ExecuteOrEnqueue(tracker);
+                mTaskContainer.ExecuteOrEnqueue(tracker);
 
-                    if (singleHop)
-                        break;
-                }
+                if (singleHop)
+                    break;
+
+                listenerTaskSlotsAvailable = mTaskContainer.TaskSlotsAvailableNet(priorityLevel);
+            }
         }
         #endregion
         #region ListenerProcessClientPayloads(ListenerClient container, TransmissionPayload payload)

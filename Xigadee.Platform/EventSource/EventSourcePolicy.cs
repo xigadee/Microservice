@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This method sets the policy for the event source.
+    /// </summary>
     public class EventSourcePolicy:PolicyBase
     {
+
     }
 }

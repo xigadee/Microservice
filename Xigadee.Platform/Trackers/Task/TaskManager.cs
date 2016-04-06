@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -8,14 +9,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class ProcessHolder
-    {
-        public int Priority { get; set; }
 
-        public Action Execute { get; set; }
-
-        public string Name { get; set; }
-    }
 
     /// <summary>
     /// This container holds the current tasks being processed on the system and calculates the availabile slots for the supported priority levels.
@@ -35,7 +29,7 @@ namespace Xigadee
         /// <summary>
         /// This is the manual reset lock that is triggered when a job completes.
         /// </summary>
-        private ManualResetEventSlim mPauseCheck = new ManualResetEventSlim();
+        private ManualResetEventSlim mPauseCheck;
 
         private TaskManagerPolicy mPolicy;
 
@@ -46,7 +40,6 @@ namespace Xigadee
         private int mAutotuneTasksMaxConcurrent = 0;
         private int mAutotuneTasksMinConcurrent = 0;
         private int mAutotuneOverloadTasksConcurrent = 0;
-
         private long mAutotuneProcessorCurrentMissCount = 0;
 
         /// <summary>
@@ -57,22 +50,22 @@ namespace Xigadee
         /// This dictionary holds active jobs.
         /// </summary>
         private ConcurrentDictionary<Guid, TaskTracker> mTaskRequests;
-
+        /// <summary>
+        /// This function contains a reference to the Dispather which is used to process a task.
+        /// </summary>
         private Func<TransmissionPayload, Task> Dispatcher;
-
+        /// <summary>
+        /// This is the number of priority level defined in the Task Manager.
+        /// </summary>
         private int mLevels;
 
         private int mTasksMaxConcurrent;
         /// <summary>
         /// This is the current count of the internal running tasks.
         /// </summary>
-        private int mTasksInternal = 0;
+        private TaskPrioritySettings mPriorityInternal;
 
-        private int[] mTasksActive;
-
-        private int[] mTasksBulkheadReservation;
-
-        private int mLoopPauseTimeInMs = 200;
+        private TaskPrioritySettings[] mPriorityStatus;
 
         private long mProcessSlot = 0;
         /// <summary>
@@ -93,8 +86,7 @@ namespace Xigadee
         /// This is the default constructor.
         /// </summary>
         public TaskManager(int levels
-            , Func<TransmissionPayload, Task> dispatcher, int tasksMaxConcurrent
-            , TimeSpan? processKillOverrunGracePeriod = null
+            , Func<TransmissionPayload, Task> dispatcher
             , TaskManagerPolicy policy = null
             ) : base(nameof(TaskManager))
         {
@@ -103,26 +95,41 @@ namespace Xigadee
 
             mPolicy = policy ?? new TaskManagerPolicy();
 
+            mPauseCheck = new ManualResetEventSlim();
+
             mLevels = levels;
-            mTasksActive = new int[levels];
-            mTasksBulkheadReservation = new int[levels];
+
+            mPriorityInternal = new TaskPrioritySettings(TaskTracker.PriorityInternal);
+
+            mPriorityStatus = new TaskPrioritySettings[levels];
+            Enumerable.Range(0, levels).ForEach((l) => mPriorityStatus[l] = new TaskPrioritySettings(l));
+            
             mTasksQueue = new QueueTrackerContainer<QueueTracker>(levels);
 
             mProcesses = new ConcurrentDictionary<string, ProcessHolder>();
 
-            TasksMaxConcurrent = tasksMaxConcurrent;
+            TasksMaxConcurrent = policy.ConcurrentRequestsMax;
 
             Dispatcher = dispatcher;
 
-            mProcessKillOverrunGracePeriod = processKillOverrunGracePeriod ?? TimeSpan.FromSeconds(15);
+            mProcessKillOverrunGracePeriod = policy.ProcessKillOverrunGracePeriod ?? TimeSpan.FromSeconds(15);
 
             mTaskRequests = new ConcurrentDictionary<Guid, TaskTracker>();
         }
         #endregion
 
-        public int LevelMin { get { return 0; } }
-
-        public int LevelMax { get { return mLevels - 1; } }
+        #region LevelMin
+        /// <summary>
+        /// This is the minimum task priority level.
+        /// </summary>
+        public int LevelMin { get { return 0; } } 
+        #endregion
+        #region LevelMax
+        /// <summary>
+        /// This is the maximum task priority level.
+        /// </summary>
+        public int LevelMax { get { return mLevels - 1; } } 
+        #endregion
 
         #region StartInternal()
         /// <summary>
@@ -151,19 +158,36 @@ namespace Xigadee
         }
         #endregion
 
+        #region ProcessRegister(string name, int priority, Action execute)
+        /// <summary>
+        /// This method registers a process to be polled as part of the process loop.
+        /// </summary>
+        /// <param name="name">The process name. If this is already used, then it will be replaced.</param>
+        /// <param name="priority">The process priority.</param>
+        /// <param name="execute">The execute action.</param>
+        public void ProcessRegister(string name, int priority, Action execute)
+        {
+            var process = new ProcessHolder() { Priority = priority, Name = name, Execute = execute };
+
+            mProcesses.AddOrUpdate(name, process, (n, o) => process);
+        }
+        #endregion
+        #region ProcessUnregister(string name)
+        /// <summary>
+        /// This method removes a process from the Process collection.
+        /// </summary>
+        /// <param name="name">The process name.</param>
         public void ProcessUnregister(string name)
         {
             ProcessHolder value;
             mProcesses.TryRemove(name, out value);
         }
-
-        public void ProcessRegister(string name, int priority, Action execute)
-        {
-            var process = new ProcessHolder() { Priority = priority, Name = name, Execute = execute };
-
-            mProcesses.AddOrUpdate(name, process, (n,o) => process);
-        }
-
+        #endregion
+        #region ProcessExecute(ProcessHolder process)
+        /// <summary>
+        /// This method executes a particular process syncronously, and catches any exceptions that might be thrown.
+        /// </summary>
+        /// <param name="process">The process to execute.</param>
         private void ProcessExecute(ProcessHolder process)
         {
             try
@@ -174,14 +198,14 @@ namespace Xigadee
             {
                 LogException($"ProcessExecute failed: {process.Name}", ex);
             }
-        }
-
-        #region -->ProcessLoop(object state)
+        } 
+        #endregion
+        #region ProcessLoop(object state)
         /// <summary>
         /// This is the message loop that receives messages.
         /// </summary>
         /// <param name="state">This is not used.</param>
-        protected void ProcessLoop(object state)
+        private void ProcessLoop(object state)
         {
             MessagePumpActive = true;
 
@@ -195,25 +219,27 @@ namespace Xigadee
 
                     try
                     {
+
+                        //Reset the reset event to pause the thread.
+                        //However this will be set if any new tasks are enqueued in the following code.
+                        LoopReset(); 
+                        
                         //Timeout any overdue tasks.
                         TaskTimedoutCancel();
+
+                        //Process waiting messages.
+                        DequeueTasksAndExecute();
+
 
                         //Execute any registered processes
                         mProcesses.Values
                             .OrderByDescending((p) => p.Priority)
                             .ForEach((p) => ProcessExecute(p));
-
-                        //Process waiting messages.
-                        DequeueTasksAndExecute();
-
                     }
                     catch (Exception tex)
                     {
                         LogException("ProcessLoop unhandled exception", tex);
                     }
-
-                    //Reset the reset event to pause the thread.
-                    LoopReset();
                 }
             }
             catch (ThreadAbortException)
@@ -234,19 +260,18 @@ namespace Xigadee
         }
         #endregion
 
-
         #region Loop methods
-        public void LoopPause()
+        private void LoopPause()
         {
-            mPauseCheck.Wait(mLoopPauseTimeInMs);
+            mPauseCheck.Wait(mPolicy.LoopPauseTimeInMs);
         }
 
-        public void LoopReset()
+        private void LoopReset()
         {
             mPauseCheck.Reset();
         }
 
-        public void LoopSet()
+        private void LoopSet()
         {
             mPauseCheck.Set();
         } 
@@ -264,7 +289,7 @@ namespace Xigadee
             {
                 mStatistics.Cpu = mCpuStats;
 
-                mStatistics.AutotuneActive = mPolicy.Supported;
+                mStatistics.AutotuneActive = mPolicy.AutotuneEnabled;
                 mStatistics.TasksMaxConcurrent = mAutotuneTasksMaxConcurrent;
                 mStatistics.OverloadTasksConcurrent = mAutotuneOverloadTasksConcurrent;
 
@@ -274,18 +299,23 @@ namespace Xigadee
                     mStatistics.SlotsAvailable = TaskSlotsAvailable;
                 }
 
-                mStatistics.Internal = mTasksInternal;
-
                 mStatistics.Killed = mTasksKilled;
                 mStatistics.KilledTotal = mTasksKilledTotal;
                 mStatistics.KilledDidReturn = mTasksKilledDidReturn;
 
-                if (mTaskRequests != null) mStatistics.Running =
-                    mTaskRequests.Values
-                    .Where((t) => t.ProcessSlot.HasValue)
-                    .OrderByDescending((t) => t.ProcessSlot.Value)
-                    .Select((t) => t.Debug)
-                    .ToList();
+                if (mPriorityStatus != null)
+                    mStatistics.Levels = mPriorityStatus
+                        .Union(new TaskPrioritySettings[] { mPriorityInternal })
+                        .OrderByDescending((s) => s.Level)
+                        .Select((s) => s.Debug)
+                        .ToArray();
+
+                if (mTaskRequests != null)
+                    mStatistics.Running = mTaskRequests.Values
+                        .Where((t) => t.ProcessSlot.HasValue)
+                        .OrderBy((t) => t.ProcessSlot.Value)
+                        .Select((t) => t.Debug)
+                        .ToArray();
 
                 if (mTasksQueue != null) mStatistics.Queues = mTasksQueue.Statistics;
 
@@ -312,13 +342,13 @@ namespace Xigadee
         /// <returns>Returns true if the reservation has been set.</returns>
         public bool BulkheadReserve(int level, int slotCount)
         {
-            if (level < 0 || level > mLevels - 1)
+            if (level < LevelMin || level > LevelMax)
                 return false;
 
             if (slotCount < 0)
                 return false;
 
-            mTasksBulkheadReservation[level] = slotCount;
+            mPriorityStatus[level].BulkHeadReservation = slotCount;
 
             return true;
         } 
@@ -378,9 +408,9 @@ namespace Xigadee
                 tracker.UTCExecute = DateTime.UtcNow;
 
                 if (tracker.IsInternal)
-                    Interlocked.Increment(ref mTasksInternal);
+                    Interlocked.Increment(ref mPriorityInternal.Active);
                 else
-                    Interlocked.Increment(ref mTasksActive[tracker.Priority.Value]);
+                    Interlocked.Increment(ref mPriorityStatus[tracker.Priority.Value].Active);
 
                 try
                 {
@@ -440,9 +470,9 @@ namespace Xigadee
                 {
                     //Remove the internal task count.
                     if (outTracker.IsInternal)
-                        Interlocked.Decrement(ref mTasksInternal);
+                        Interlocked.Decrement(ref mPriorityInternal.Active);
                     else
-                        Interlocked.Decrement(ref mTasksActive[tracker.Priority.Value]);
+                        Interlocked.Decrement(ref mPriorityStatus[tracker.Priority.Value].Active);
 
 
                     if (tracker.IsKilled)
@@ -474,10 +504,7 @@ namespace Xigadee
             //Check if there are any queued tasks that can fill up the empty slot that is now available.
             try
             {
-                //While we have a thread see if there is work to enqueue.
-                DequeueTasksAndExecute();
-
-                //Signal the poll loop to proceed in case it is waiting.
+                //Signal the poll loop to proceed in case it is waiting, this will check for any pending tasks that require processing.
                 LoopSet();
             }
             catch (Exception)
@@ -506,16 +533,16 @@ namespace Xigadee
         /// </summary>
         public int TaskSlotsAvailable
         {
-            get { return mTasksMaxConcurrent - (mTaskRequests.Count - mTasksInternal - mTasksKilled); }
+            get { return mTasksMaxConcurrent - (mTaskRequests.Count - mPriorityInternal.Active - mTasksKilled); }
         }
         #endregion
         #region TaskSlotsAvailableNet
         /// <summary>
         /// This figure is the number of remaining task slots available after the number of queued tasks have been removed.
         /// </summary>
-        public int TaskSlotsAvailableNet
+        public int TaskSlotsAvailableNet(int priorityLevel)
         {
-            get { return TaskSlotsAvailable - mTasksQueue.Count; }
+            return TaskSlotsAvailable - mTasksQueue.Count;
         }
         #endregion
    
@@ -664,7 +691,7 @@ namespace Xigadee
                     return;
                 }
 
-                if (!mPolicy.Supported)
+                if (!mPolicy.AutotuneEnabled)
                     return;
 
                 mAutotuneProcessorCurrentMissCount = 0;
@@ -710,5 +737,41 @@ namespace Xigadee
         }
         #endregion
 
+        protected class ProcessHolder
+        {
+            public int Priority { get; set; }
+
+            public Action Execute { get; set; }
+
+            public string Name { get; set; }
+        }
+
+        /// <summary>
+        /// This class is used to hold the priority settings.
+        /// </summary>
+        [DebuggerDisplay("{Debug}")]
+        protected class TaskPrioritySettings
+        {
+            public TaskPrioritySettings(int level)
+            {
+                Level = level;
+            }
+
+            public readonly int Level;
+
+            public long Count;
+
+            public int Active;
+
+            public int BulkHeadReservation;
+
+            public string Debug
+            {
+                get
+                {
+                    return $"Level={Level} Hits={Count} Active={Active} Reserved={BulkHeadReservation}";
+                }
+            }
+        }
     }
 }

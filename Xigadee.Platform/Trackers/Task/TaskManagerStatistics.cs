@@ -22,9 +22,9 @@ namespace Xigadee
 
         public ICpuStats Cpu { get; set; }
 
+
         public int Active { get; set; }
 
-        public int Internal { get; set; }
 
         public int SlotsAvailable { get; set; }
 
@@ -34,7 +34,9 @@ namespace Xigadee
 
         public long KilledTotal { get; set; }
 
-        public List<string> Running { get; set; }
+        public string[] Levels { get; set; }
+
+        public string[] Running { get; set; }
 
         public bool AutotuneActive { get; set; }
 
