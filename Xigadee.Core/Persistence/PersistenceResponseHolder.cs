@@ -8,13 +8,33 @@ namespace Xigadee
 {
     public class PersistenceResponseHolder<E>: PersistenceResponseHolder, IResponseHolder<E>
     {
+        public PersistenceResponseHolder():base()
+        {
+
+        }
+        public PersistenceResponseHolder(PersistenceResponse? status = null, string content = null, E entity = default(E)):base(status, content)
+        {
+            Entity = entity;
+        }
+
         public E Entity
         {
             get; set;
         }
     }
+
     public class PersistenceResponseHolder: IResponseHolder
     {
+        public PersistenceResponseHolder(PersistenceResponse? status = null, string content = null):this()
+        {
+            if (status.HasValue)
+            {
+                StatusCode = (int)status.Value;
+                IsSuccess = StatusCode>=200 || StatusCode <= 299;
+            }
+            Content = content;
+        }
+
         public PersistenceResponseHolder()
         {
             Fields = new Dictionary<string, string>();

@@ -80,6 +80,11 @@ namespace Xigadee
             return new SchedulerContainer(PolicyScheduler());
         }
 
+        protected virtual TaskTrackerContainer InitialiseTaskContainer()
+        {
+            return new TaskTrackerContainer(4, Execute, ConfigurationOptions.ConcurrentRequestsMax, ConfigurationOptions.ProcessKillOverrunGracePeriod);
+        }
+
         protected virtual SchedulerPolicy PolicyScheduler()
         {
             return new SchedulerPolicy();;

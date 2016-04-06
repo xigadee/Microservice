@@ -149,16 +149,6 @@ namespace Xigadee
         {
         }
 
-        PersistenceResponseHolder<E> ResponseSet(PersistenceResponseCode responseCode, string content = null, E entity = default(E))
-        {
-            var holder = new PersistenceResponseHolder<E>() { StatusCode = (int)responseCode };
-
-            holder.IsSuccess = holder.StatusCode >= 200 && holder.StatusCode <= 299;
-            holder.Entity = entity;
-            holder.Content = content;
-
-            return holder;
-        }
 
         protected override async Task<IResponseHolder<E>> InternalCreate(K key
             , PersistenceRequestHolder<K, E> holder)
@@ -169,9 +159,9 @@ namespace Xigadee
             bool success = mContainer.TryAdd(key, jsonHolder);
 
             if (success)
-                return ResponseSet(PersistenceResponseCode.Created_201, jsonHolder.Json, mTransform.EntityDeserializer(jsonHolder.Json));
+                return new PersistenceResponseHolder<E>(PersistenceResponse.Created201, jsonHolder.Json, mTransform.EntityDeserializer(jsonHolder.Json));
             else
-                return ResponseSet(PersistenceResponseCode.Conflict_412);
+                return new PersistenceResponseHolder<E>(PersistenceResponse.Conflict409);
         }
 
         protected override async Task<IResponseHolder<E>> InternalRead(K key
@@ -181,9 +171,9 @@ namespace Xigadee
             bool success = mContainer.TryGetValue(key, out jsonHolder);
 
             if (success)
-                return ResponseSet(PersistenceResponseCode.Success_200, jsonHolder.Json, mTransform.EntityDeserializer(jsonHolder.Json));
+                return new PersistenceResponseHolder<E>(PersistenceResponse.Ok200, jsonHolder.Json, mTransform.EntityDeserializer(jsonHolder.Json));
             else
-                return ResponseSet(PersistenceResponseCode.NotFound_404);
+                return new PersistenceResponseHolder<E>(PersistenceResponse.NotFound404);
         }
 
         protected override async Task<IResponseHolder<E>> InternalReadByRef(Tuple<string, string> reference
@@ -191,7 +181,7 @@ namespace Xigadee
         {
             K key;
             if (!ReferenceGet(reference, out key))
-                return ResponseSet(PersistenceResponseCode.NotFound_404);
+                return new PersistenceResponseHolder<E>(PersistenceResponse.NotFound404);
 
             return await InternalRead(key, holder);
         }
@@ -226,10 +216,10 @@ namespace Xigadee
         {
             JsonHolder<K> value;
             if (!mContainer.TryRemove(key, out value))
-                return ResponseSet(PersistenceResponseCode.NotFound_404);
+                return new PersistenceResponseHolder(PersistenceResponse.NotFound404);
 
             ReferencesRemove(key);
-            return ResponseSet(PersistenceResponseCode.Success_200);
+            return new PersistenceResponseHolder(PersistenceResponse.Ok200);
         }
 
         protected override async Task<IResponseHolder> InternalDeleteByRef(Tuple<string, string> reference
@@ -248,16 +238,16 @@ namespace Xigadee
             bool success = mContainer.TryGetValue(key, out jsonHolder);
 
             if (success)
-                return ResponseSet(PersistenceResponseCode.Success_200, jsonHolder.Json, mTransform.EntityDeserializer(jsonHolder.Json));
+                return new PersistenceResponseHolder(PersistenceResponse.Ok200, jsonHolder.Json);
             else
-                return ResponseSet(PersistenceResponseCode.NotFound_404);
+                return new PersistenceResponseHolder(PersistenceResponse.NotFound404);
         }
 
         protected override async Task<IResponseHolder> InternalVersionByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
             K key;
             if (!ReferenceGet(reference, out key))
-                return ResponseSet(PersistenceResponseCode.NotFound_404);
+                return new PersistenceResponseHolder(PersistenceResponse.NotFound404);
 
             return await InternalVersion(key, holder);
         }

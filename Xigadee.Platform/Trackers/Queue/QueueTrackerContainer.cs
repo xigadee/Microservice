@@ -12,13 +12,23 @@ namespace Xigadee
     public class QueueTrackerContainer<Q>: ServiceBase<QueueTrackerStatistics>
         where Q : IQueueTracker, new()
     {
+        #region Declarations
         private readonly Dictionary<int, Q> mTasksQueue;
 
         private readonly int mLevels;
 
+        private int[] mActive;
+        #endregion
+        #region Constructor
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="levels">The number of priority levels supported by the collection. The default is 3.</param>
         public QueueTrackerContainer(int levels = 3)
         {
             mLevels = levels;
+            mActive = new int[levels];
+
             mTasksQueue = new Dictionary<int, Q>();
             Enumerable.Range(0, levels).ForEach((i) =>
             {
@@ -26,7 +36,8 @@ namespace Xigadee
                 queue.Statistics.Name = string.Format("Queue {0}", i);
                 mTasksQueue.Add(i, queue);
             });
-        }
+        } 
+        #endregion
 
         protected override void StatisticsRecalculate()
         {
@@ -46,6 +57,7 @@ namespace Xigadee
                     if (!mTasksQueue[priority].IsEmpty)
                         return false;
                 }
+
                 return true;
             }
         }
@@ -60,18 +72,17 @@ namespace Xigadee
 
         public void Enqueue(TaskTracker tracker)
         {
-            int priority = tracker.Priority??mLevels - 1;
+
             var payload = tracker.Context as TransmissionPayload;
+
+            int priority = tracker.Priority??mLevels - 1;
             if (payload != null)
-            {
                 priority = payload.Message.ChannelPriority;
-            }
 
             if (priority > mLevels - 1)
                 priority = mLevels - 1;
 
-            if (!tracker.Priority.HasValue)
-                tracker.Priority = priority;
+            tracker.Priority = priority;
 
             mTasksQueue[priority].Enqueue(tracker);
         }

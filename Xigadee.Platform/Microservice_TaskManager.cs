@@ -17,9 +17,13 @@ namespace Xigadee
     {
         #region Declarations
         /// <summary>
+        /// This class contains the running tasks and provides a breakdown of the current availability for new tasks.
+        /// </summary>
+        private TaskTrackerContainer mTaskContainer;
+        /// <summary>
         /// This is the scheduler container.
         /// </summary>
-        SchedulerContainer mScheduler;
+        private SchedulerContainer mScheduler;
         /// <summary>
         /// This queue holds pending jobs.
         /// </summary>
@@ -171,8 +175,8 @@ namespace Xigadee
         /// <summary>
         /// This method takes incoming messages from the initiators.
         /// </summary>
-        /// <param name="service">The calling service.</param>
         /// <param name="payload">The payload to process.</param>
+        /// <param name="callerName">This is the name of the calling party. It is primarily used for debug and trace reasons.</param>
         protected virtual void ExecuteOrEnqueue(TransmissionPayload payload, string callerName)
         {     
             TaskTracker tracker = TrackerCreateFromPayload(payload, callerName);
@@ -196,7 +200,6 @@ namespace Xigadee
             return new TaskTracker(TaskTrackerType.Payload, payload.MaxProcessingTime)
             {
                 IsLongRunning = false,
-                IsInternal = priority == -1,
                 Priority = priority,
                 Name = payload.Message.ToKey(),
                 Context = payload,
@@ -208,7 +211,7 @@ namespace Xigadee
         /// <summary>
         /// This private method builds the payload consistently for the incoming payload.
         /// </summary>
-        /// <param name="payload">The payload to add to a tracker.</param>
+        /// <param name="schedule">The schedule to add to a tracker.</param>
         /// <returns>Returns a tracker of type payload.</returns>
         private TaskTracker TrackerCreateFromSchedule(Schedule schedule)
         {
@@ -216,7 +219,7 @@ namespace Xigadee
             tracker.IsLongRunning = schedule.IsLongRunning;
 
             if (schedule.IsInternal)
-                tracker.IsInternal = true;
+                tracker.Priority = TaskTracker.PriorityInternal;
             else
                 tracker.Priority = 2;
 
@@ -388,8 +391,11 @@ namespace Xigadee
         /// </summary>
         protected virtual void ProcessLoopInitialise()
         {
-            mTaskRequests = new ConcurrentDictionary<Guid, TaskTracker>();
+            mTaskContainer = InitialiseTaskContainer();
+
             mScheduler = InitialiseSchedulerContainer();
+
+            mTaskRequests = new ConcurrentDictionary<Guid, TaskTracker>();
             mTasksQueue = InitialiseQueueTracker();
         }
         #endregion
@@ -461,7 +467,6 @@ namespace Xigadee
             tracker.Caller = process.GetType().Name;
             tracker.IsLongRunning = true;
             tracker.Priority = 3;
-            tracker.IsInternal = false;
             tracker.Execute = async (token) => await process.OverloadProcess(ConfigurationOptions.OverloadProcessTimeInMs);
 
             ExecuteOrEnqueue(tracker);
@@ -585,7 +590,7 @@ namespace Xigadee
 
         #region DequeueTasksAndExecute(int? slots = null)
         /// <summary>
-        /// This method processes the tasks that resides in the queue.
+        /// This method processes the tasks that resides in the queue, dequeuing the highest priority first.
         /// </summary>
         private void DequeueTasksAndExecute(int? slots = null)
         {
@@ -804,7 +809,7 @@ namespace Xigadee
         {
             TaskTracker tracker = new TaskTracker(TaskTrackerType.ListenerPoll, TimeSpan.FromSeconds(30))
             {
-                IsInternal = true,
+                Priority = TaskTracker.PriorityInternal,
                 Context = context,
                 Name = context.Name
             };

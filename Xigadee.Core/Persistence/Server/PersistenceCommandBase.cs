@@ -693,8 +693,7 @@ namespace Xigadee
 
         protected virtual async Task<IResponseHolder<E>> InternalCreate(K key, PersistenceRequestHolder<K, E> holder)
         {
-            return new PersistenceResponseHolder<E>()
-            { StatusCode = (int)PersistenceResponseCode.NotImplemented_501, IsSuccess = false };
+            return new PersistenceResponseHolder<E>(PersistenceResponse.NotImplemented501);
         }
 
         #endregion
@@ -720,8 +719,7 @@ namespace Xigadee
 
         protected async virtual Task<IResponseHolder<E>> InternalRead(K key, PersistenceRequestHolder<K, E> holder)
         {
-            return new PersistenceResponseHolder<E>()
-            { StatusCode = (int)PersistenceResponseCode.NotImplemented_501, IsSuccess = false };
+            return new PersistenceResponseHolder<E>(PersistenceResponse.NotImplemented501);
         }
         #endregion
         #region ReadByRef
@@ -745,8 +743,7 @@ namespace Xigadee
 
         protected async virtual Task<IResponseHolder<E>> InternalReadByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, E> holder)
         {
-            return new PersistenceResponseHolder<E>()
-            { StatusCode = (int)PersistenceResponseCode.NotImplemented_501, IsSuccess = false };
+            return new PersistenceResponseHolder<E>(PersistenceResponse.NotImplemented501);
         }
         #endregion
 
@@ -765,8 +762,7 @@ namespace Xigadee
 
         protected virtual async Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRequestHolder<K, E> holder)
         {
-            return new PersistenceResponseHolder<E>()
-            { StatusCode = (int)PersistenceResponseCode.NotImplemented_501, IsSuccess = false };
+            return new PersistenceResponseHolder<E>(PersistenceResponse.NotImplemented501);
         }
         #endregion
 
@@ -783,8 +779,7 @@ namespace Xigadee
 
         protected virtual async Task<IResponseHolder> InternalDelete(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return new PersistenceResponseHolder()
-            { StatusCode = (int)PersistenceResponseCode.NotImplemented_501, IsSuccess = false };
+            return new PersistenceResponseHolder(PersistenceResponse.NotImplemented501);
         }
         #endregion
         #region DeleteByRef
@@ -799,8 +794,7 @@ namespace Xigadee
         }
         protected virtual async Task<IResponseHolder> InternalDeleteByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return new PersistenceResponseHolder()
-            { StatusCode = (int)PersistenceResponseCode.NotImplemented_501, IsSuccess = false };
+            return new PersistenceResponseHolder(PersistenceResponse.NotImplemented501);
         }
         #endregion
 
@@ -820,8 +814,7 @@ namespace Xigadee
 
         protected virtual async Task<IResponseHolder> InternalVersion(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return new PersistenceResponseHolder()
-            { StatusCode = (int)PersistenceResponseCode.NotImplemented_501, IsSuccess = false };
+            return new PersistenceResponseHolder(PersistenceResponse.NotImplemented501);
         }
         #endregion
         #region VersionByRef
@@ -844,8 +837,7 @@ namespace Xigadee
 
         protected virtual async Task<IResponseHolder> InternalVersionByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return new PersistenceResponseHolder()
-            { StatusCode = (int)PersistenceResponseCode.NotImplemented_501, IsSuccess = false };
+            return new PersistenceResponseHolder(PersistenceResponse.NotImplemented501);
         }
         #endregion
 
@@ -860,7 +852,7 @@ namespace Xigadee
         /// <returns></returns>
         protected virtual async Task ProcessSearch(PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            holder.rs.ResponseCode = (int)PersistenceResponseCode.NotImplemented_501;
+            holder.rs.ResponseCode = (int)PersistenceResponse.NotImplemented501;
             holder.rs.ResponseMessage = "Not implemented.";
         }
         #endregion

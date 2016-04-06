@@ -107,6 +107,7 @@
     <Compile Include="Trackers\Queue\QueueTrackerStatistics.cs" />
     <Compile Include="Trackers\Resource\ResourceTracker.cs" />
     <Compile Include="Trackers\Resource\ResourceTrackerStatistics.cs" />
+    <Compile Include="Trackers\Task\TaskTrackerStatistics.cs" />
     <Compile Include="Trackers\Task\TaskTracker.cs" />
     <Compile Include="Telemetry\TelemetryContainer.cs" />
     <Compile Include="Microservice.cs" />
@@ -118,6 +119,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Trackers\Exceptions\TransitCountExceededException.cs" />
+    <Compile Include="Trackers\Task\TaskTrackerContainer.cs" />
     <Compile Include="Trackers\Task\TaskTrackerType.cs" />
   </ItemGroup>
   <ItemGroup>
