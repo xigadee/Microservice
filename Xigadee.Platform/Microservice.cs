@@ -134,10 +134,10 @@ namespace Xigadee
             if (ConfigurationOptions.ConcurrentRequestsMax == 0)
                 ConfigurationOptions.ConcurrentRequestsMax = 1;
 
-            mAutotuneTasksMinConcurrent = ConfigurationOptions.ConcurrentRequestsMin;
-            mAutotuneTasksMaxConcurrent = ConfigurationOptions.ConcurrentRequestsMax;
+            //mAutotuneTasksMinConcurrent = ConfigurationOptions.ConcurrentRequestsMin;
+            //mAutotuneTasksMaxConcurrent = ConfigurationOptions.ConcurrentRequestsMax;
 
-            mAutotuneOverloadTasksConcurrent = ConfigurationOptions.OverloadProcessLimitMax;
+            //mAutotuneOverloadTasksConcurrent = ConfigurationOptions.OverloadProcessLimitMax;
         } 
         #endregion
 
@@ -166,7 +166,7 @@ namespace Xigadee
                 , ConfigurationOptions.StatusLogFrequency, "Status Poll", TimeSpan.FromSeconds(15), isInternal:true);
 
             //Set the status log frequency.
-            mScheduler.Register(async (s, cancel) => await Autotune()
+            mScheduler.Register(async (s, cancel) => await mTaskContainer.Autotune()
                 , TimeSpan.FromSeconds(1), "Autotune", TimeSpan.FromSeconds(10), isInternal: true);
 
             // Flush the accumulated telemetry 
@@ -174,7 +174,7 @@ namespace Xigadee
                 , TimeSpan.FromMinutes(15), "Telemetry Flush", TimeSpan.FromSeconds(10), isInternal: true);
 
             // Kills any overrunning tasks
-            mScheduler.Register(async (s, cancel) => await TaskTimedoutKill()
+            mScheduler.Register(async (s, cancel) => await mTaskContainer.TaskTimedoutKill()
                 , TimeSpan.FromMinutes(1), "Tasks timed out kill", TimeSpan.FromSeconds(1), isInternal: true);
         }
         #endregion
@@ -192,7 +192,7 @@ namespace Xigadee
             ConfigurationInitialise();
 
             //This initialises the process loop.
-            ProcessLoopInitialise();
+            TaskManagerInitialise();
 
             //This method populates the components in the service.
             ComponentsPopulate();
@@ -227,7 +227,7 @@ namespace Xigadee
                     .ForEach(h => ServiceStart(h));
 
                 //OK, start the loop to start processing requests and picking up messages from the listeners.
-                ProcessLoopStart();
+                TaskManagerStart();
 
                 //Now start the listeners and deadletter listeners
                 mCommunication.ListenersStart();
@@ -275,7 +275,7 @@ namespace Xigadee
 
             ServiceStop(mComponents);
 
-            ProcessLoopStop();
+            TaskManagerStop();
 
             //Stop the sender
             mCommunication.SendersStop();

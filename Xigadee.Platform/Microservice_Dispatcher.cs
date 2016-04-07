@@ -21,7 +21,7 @@ namespace Xigadee
         /// You can override this task in your service to help debug the messages that are passing 
         /// though.
         /// </summary>
-        /// <param name="requestPayload">The request payloadRq.</param>
+        /// <param name="requestPayload">The request payload.</param>
         protected virtual async Task Execute(TransmissionPayload requestPayload)
         {
             int timerStart = mStatistics.ActiveIncrement();

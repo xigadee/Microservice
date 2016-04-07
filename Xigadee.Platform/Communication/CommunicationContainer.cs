@@ -252,10 +252,11 @@ namespace Xigadee
         /// <summary>
         /// This method is called by the Microservice to reserve a listener for processing.
         /// </summary>
+        /// <param name="priority">The poll priority.</param>
         /// <param name="slotsAvailable">The number of slots currently available.</param>
-        /// <param name="holderId">The output guid of the listener.</param>
+        /// <param name="holderId">The output Guid of the listener.</param>
         /// <returns></returns>
-        public bool ListenerClientNext(int slotsAvailable, out HolderSlotContext holderId)
+        public bool ListenerClientNext(int priority, int slotsAvailable, out HolderSlotContext holderId)
         {
             holderId = null;
 

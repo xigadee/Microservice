@@ -57,30 +57,7 @@ namespace Xigadee
                 mStatistics.Configuration = ConfigurationOptions;
                 mStatistics.StartTime = mStartTime;
 
-                if (mTaskRequests != null)
-                {
-                    mStatistics.Tasks.Active = mTaskRequests.Count;
-                    mStatistics.Tasks.SlotsAvailable = TaskSlotsAvailable;
-                }
-
-                mStatistics.Tasks.Internal = mTasksInternal;
-
-                mStatistics.Tasks.Killed = mTasksKilled;
-                mStatistics.Tasks.KilledTotal = mTasksKilledTotal;
-                mStatistics.Tasks.KilledDidReturn = mTasksKilledDidReturn;
-
-                if (mTaskRequests != null) mStatistics.Tasks.Running =
-                    mTaskRequests.Values
-                    .Where((t) => t.ProcessSlot.HasValue)
-                    .OrderByDescending((t) => t.ProcessSlot.Value)
-                    .Select((t) => t.Debug)
-                    .ToList();
-
-                mStatistics.Cpu = mCpuStats;
-
-                mStatistics.Autotune.Active = ConfigurationOptions.SupportAutotune;
-                mStatistics.Autotune.TasksMaxConcurrent = mAutotuneTasksMaxConcurrent;
-                mStatistics.Autotune.OverloadTasksConcurrent = mAutotuneOverloadTasksConcurrent;
+                if (mTaskContainer != null) mStatistics.Tasks = mTaskContainer.Statistics;
 
                 if (mLogger != null) mStatistics.Logger = mLogger.Statistics;
 
@@ -92,11 +69,7 @@ namespace Xigadee
 
                 if (mComponents != null) mStatistics.Components = mComponents.Statistics;
 
-                if (mTasksQueue != null) mStatistics.Queues = mTasksQueue.Statistics;
-
                 if (mScheduler != null) mStatistics.Scheduler = mScheduler.Statistics;
-
-
 
             }
             catch (Exception ex)

@@ -82,9 +82,49 @@ namespace Xigadee
 
         protected virtual SchedulerPolicy PolicyScheduler()
         {
-            return new SchedulerPolicy();;
+            var policy = new SchedulerPolicy();
+            
+            //policy.DefaultPollInMs = ConfigurationOptions.
+
+            return policy;
         }
-        #endregion    
+        #endregion
+
+        #region InitialiseTaskManager()
+        /// <summary>
+        /// This method creates the task manager and sets the default bulkhead reservations.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual TaskManager InitialiseTaskManager()
+        {
+            var taskTracker = new TaskManager(4, Execute, PolicyTaskManager());
+
+            taskTracker.BulkheadReserve(3, 1);
+            taskTracker.BulkheadReserve(2, 2);
+            taskTracker.BulkheadReserve(1, 8);
+            taskTracker.BulkheadReserve(0, 0);
+
+            return taskTracker;
+        }
+
+        /// <summary>
+        /// This method retrieves the policy for the task manager.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual TaskManagerPolicy PolicyTaskManager()
+        {
+            var policy = new TaskManagerPolicy();
+
+            policy.ConcurrentRequestsMax = ConfigurationOptions.ConcurrentRequestsMax;
+            policy.ConcurrentRequestsMin = ConfigurationOptions.ConcurrentRequestsMin;
+            policy.AutotuneEnabled = ConfigurationOptions.SupportAutotune;
+            policy.ProcessKillOverrunGracePeriod = ConfigurationOptions.ProcessKillOverrunGracePeriod;
+            policy.ProcessorTargetLevelPercentage = ConfigurationOptions.ProcessorTargetLevelPercentage;
+
+            return policy;
+        } 
+        #endregion
+
         #region InitialiseEventSourceContainer(List<IEventSource> eventSources)
         /// <summary>
         /// THis method returns the default scheduler container.
