@@ -131,23 +131,20 @@ namespace Xigadee
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             , Func<Tuple<string, string>, string> referenceHashMaker = null)
         {
-            var mTransform = new EntityTransformHolder<K, E>();
+            var transform = new EntityTransformHolder<K, E>
+            {
+                KeyMaker = keyMaker,
+                KeySerializer = keySerializer ?? (i => i.ToString()),
+                KeyDeserializer = keyDeserializer,
+                ReferenceMaker = referenceMaker ?? (e => new Tuple<string, string>[] {}),
+                ReferenceHashMaker = referenceHashMaker ?? (r => $"{r.Item1.ToLowerInvariant()}.{r.Item2.ToLowerInvariant()}"),
+                Version = versionPolicy ?? new VersionPolicy<E>(),
+                EntityName = entityName ?? typeof (E).Name.ToLowerInvariant(),
+                EntityDeserializer = entityDeserializer,
+                EntitySerializer = entitySerializer
+            };
 
-            mTransform.KeyMaker = keyMaker;
-
-            mTransform.KeySerializer = keySerializer ?? ((i) => i.ToString());
-            mTransform.KeyDeserializer = keyDeserializer;
-
-            mTransform.ReferenceMaker = referenceMaker ?? ((e) => new Tuple<string, string>[] { });
-            mTransform.ReferenceHashMaker = referenceHashMaker ?? (r => $"{r.Item1.ToLowerInvariant()}.{r.Item2.ToLowerInvariant()}");
-            mTransform.Version = versionPolicy ?? new VersionPolicy<E>();
-
-            mTransform.EntityName = entityName ?? typeof(E).Name.ToLowerInvariant();
-
-            mTransform.EntityDeserializer = entityDeserializer;
-            mTransform.EntitySerializer = entitySerializer;
-
-            return mTransform;
+            return transform;
         }
         #endregion
 
