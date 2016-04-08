@@ -359,7 +359,7 @@ namespace Xigadee
                 RedisValue result = await rDb.HashGetAsync(hashkey, cnKeyVersion);
 
                 if (result.HasValue)
-                    return new PersistenceResponseHolder<E>() { StatusCode = 200, Content = result, IsSuccess = true, VersionId = result };
+                    return new PersistenceResponseHolder<E>() { StatusCode = 200, IsSuccess = true, VersionId = result, Id = transform.KeySerializer(key) };
                 else
                     return new PersistenceResponseHolder<E>() { StatusCode = 404, IsSuccess = false };
             }

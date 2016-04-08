@@ -740,7 +740,7 @@ namespace Xigadee
 
         protected async virtual Task<IResponseHolder<E>> InternalReadByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, E> holder)
         {
-            return new PersistenceResponseHolder<E>(PersistenceResponse.NotImplemented501);
+            return new PersistenceResponseHolder<E>(PersistenceResponse.NotImplemented501) { IsSuccess = false };
         }
         #endregion
 
@@ -759,7 +759,7 @@ namespace Xigadee
 
         protected virtual async Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRequestHolder<K, E> holder)
         {
-            return new PersistenceResponseHolder<E>(PersistenceResponse.NotImplemented501);
+            return new PersistenceResponseHolder<E>(PersistenceResponse.NotImplemented501) { IsSuccess = false };
         }
         #endregion
 
@@ -776,7 +776,7 @@ namespace Xigadee
 
         protected virtual async Task<IResponseHolder> InternalDelete(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return new PersistenceResponseHolder(PersistenceResponse.NotImplemented501);
+            return new PersistenceResponseHolder(PersistenceResponse.NotImplemented501) { IsSuccess = false };
         }
         #endregion
         #region DeleteByRef
@@ -791,7 +791,7 @@ namespace Xigadee
         }
         protected virtual async Task<IResponseHolder> InternalDeleteByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return new PersistenceResponseHolder(PersistenceResponse.NotImplemented501);
+            return new PersistenceResponseHolder(PersistenceResponse.NotImplemented501) { IsSuccess = false };
         }
         #endregion
 
@@ -811,7 +811,7 @@ namespace Xigadee
 
         protected virtual async Task<IResponseHolder> InternalVersion(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return new PersistenceResponseHolder(PersistenceResponse.NotImplemented501);
+            return new PersistenceResponseHolder(PersistenceResponse.NotImplemented501) { IsSuccess = false };
         }
         #endregion
         #region VersionByRef
@@ -828,13 +828,15 @@ namespace Xigadee
                 if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
                     mCacheManager.WriteReference(mTransform, holder.rq.KeyReference, holder.rq.Key, result.VersionId);
             }
+            else
+                holder.rq.Key = mTransform.KeyDeserializer(result.Id); // Pass back the entities actual id in the key field
 
             ProcessOutputKey(holder.rq, holder.rs, result);
         }
 
         protected virtual async Task<IResponseHolder> InternalVersionByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return new PersistenceResponseHolder(PersistenceResponse.NotImplemented501);
+            return new PersistenceResponseHolder(PersistenceResponse.NotImplemented501) { IsSuccess = false };
         }
         #endregion
 

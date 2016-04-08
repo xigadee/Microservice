@@ -336,9 +336,16 @@ namespace Xigadee
         {
             if (holderResponse.IsSuccess)
             {
-                var entity = mTransform.EntityDeserializer(holderResponse.Content);
-                rq.Key = mTransform.KeyMaker(entity);
-                holderResponse.VersionId = mTransform.Version?.EntityVersionAsString(entity);
+                if (!string.IsNullOrEmpty(holderResponse.Content))
+                {
+                    var entity = mTransform.EntityDeserializer(holderResponse.Content);
+                    rq.Key = mTransform.KeyMaker(entity);
+                    holderResponse.VersionId = mTransform.Version?.EntityVersionAsString(entity);
+                }
+                else
+                {
+                    rq.Key = mTransform.KeyDeserializer(holderResponse.Id);
+                }
             }
 
             base.ProcessOutputKey(rq,rs, holderResponse);
