@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public abstract class PersistenceInitiatorBase<K, E>
-        : MessageInitiatorBase<MessageInitiatorRequestTracker, PersistenceInitiatorStatistics>, IRepositoryAsync<K, E>
+    public abstract class PersistenceInitiatorBase<K, E> : MessageInitiatorBase<MessageInitiatorRequestTracker, PersistenceInitiatorStatistics>, IRepositoryAsync<K, E>
         where K : IEquatable<K>
     {
         #region Declarations
@@ -49,15 +48,17 @@ namespace Xigadee
 
         public async Task<RepositoryHolder<K, E>> ReadByRef(string refKey, string refValue, RepositorySettings settings = null)
         {
-            //if ((settings?.UseCache ?? false) && mCacheManager.IsActive)
-            //{
-            //    var result = await mCacheManager.Read(new Tuple<string, string>(refKey, refValue));
-
-            //    if (result.IsSuccess)
-            //    {
-            //        return new RepositoryHolder<K, E>(result.Entity, responseCode: 200, entity: result.Entity) { IsCached = true };
-            //    }
-            //}
+            if ((settings?.UseCache ?? true) && mCacheManager.IsActive)
+            {
+                // Do a version read initially to check it is there and get the key (not returned in a read by ref)
+                var resultVersion = await mCacheManager.VersionRead(new Tuple<string, string>(refKey, refValue));
+                if (resultVersion.IsSuccess)
+                {
+                    var resultRead = await mCacheManager.Read(new Tuple<string, string>(refKey, refValue));
+                    if (resultRead.IsSuccess)
+                        return new RepositoryHolder<K, E>(resultVersion.Entity.Item1, responseCode: 200, entity: resultRead.Entity) { IsCached = true };
+                }
+            }
 
             return await TransmitInternal(EntityActions.ReadByRef, new RepositoryHolder<K, E> { KeyReference = new Tuple<string, string>(refKey, refValue), Settings = settings });
         }
@@ -79,11 +80,29 @@ namespace Xigadee
 
         public async Task<RepositoryHolder<K, Tuple<K, string>>> Version(K key, RepositorySettings settings = null)
         {
+            if ((settings?.UseCache ?? true) && mCacheManager.IsActive)
+            {
+                var result = await mCacheManager.VersionRead(key);
+                if (result.IsSuccess)
+                {
+                    return new RepositoryHolder<K, Tuple<K, string>>(result.Entity.Item1, responseCode: 200, entity: result.Entity) { IsCached = true };
+                }
+            }
+
             return await TransmitInternal(EntityActions.Version, new RepositoryHolder<K, Tuple<K, string>> { Key = key, Settings = settings });
         }
 
         public async Task<RepositoryHolder<K, Tuple<K, string>>> VersionByRef(string refKey, string refValue, RepositorySettings settings = null)
         {
+            if ((settings?.UseCache ?? true) && mCacheManager.IsActive)
+            {
+                var result = await mCacheManager.VersionRead(new Tuple<string,string>(refKey, refValue));
+                if (result.IsSuccess)
+                {
+                    return new RepositoryHolder<K, Tuple<K, string>>(result.Entity.Item1, responseCode: 200, entity: result.Entity) { IsCached = true };
+                }
+            }
+
             return await TransmitInternal(EntityActions.VersionByRef, new RepositoryHolder<K, Tuple<K, string>> { KeyReference = new Tuple<string, string>(refKey, refValue), Settings = settings });
         }
 

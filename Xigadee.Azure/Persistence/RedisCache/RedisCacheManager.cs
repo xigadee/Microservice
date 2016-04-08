@@ -10,8 +10,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class RedisCacheManager<K, E>: CacheManagerBase<K, E>
-        where K : IEquatable<K>
+    public class RedisCacheManager<K, E>: CacheManagerBase<K, E> where K : IEquatable<K>
     {
         #region Declarations
         private readonly string mConnection;
@@ -41,13 +40,8 @@ namespace Xigadee
         /// <summary>
         /// This property specifies that the cache can be used.
         /// </summary>
-        public override bool IsActive
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool IsActive => true;
+
         #endregion
 
         #region RedisKeyGet(EntityTransformHolder<K, E> transform, K key)
@@ -99,7 +93,7 @@ namespace Xigadee
                         return new Tuple<bool, K, string>(true, key, await rDb.HashGetAsync(hashkey, cnKeyVersion));
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // Don't raise an exception here
                 }
@@ -131,14 +125,16 @@ namespace Xigadee
                 IBatch batch = rDb.CreateBatch();
                 RedisKey hashkey = RedisKeyGet(transform, key);
 
-                var tasks = new List<Task>();
+                var tasks = new List<Task>
+                {
+                    batch.HashSetAsync(hashkey, cnKeyEntity, transform.EntitySerializer(entity), when: When.Always),
+                    batch.HashSetAsync(hashkey, cnKeyVersion, version, when: When.Always),
+                    batch.KeyExpireAsync(hashkey, mEntityTtl)
+                };
 
                 //Entity
-                tasks.Add(batch.HashSetAsync(hashkey, cnKeyEntity, transform.EntitySerializer(entity), when: When.Always));
                 //Version
-                tasks.Add(batch.HashSetAsync(hashkey, cnKeyVersion, version, when: When.Always));
 
-                tasks.Add(batch.KeyExpireAsync(hashkey, mEntityTtl));
                 //Get any associated references for the entity.
                 var references = transform.ReferenceMaker(entity);
                 references?.ForEach(r => tasks.AddRange(WriteReference(batch, transform, r, key, version)));
@@ -223,7 +219,7 @@ namespace Xigadee
         public override async Task<IResponseHolder<E>> Read(EntityTransformHolder<K, E> transform, K key)
         {
             if (transform == null)
-                throw new ArgumentNullException("The EntityTransformHolder cannot be null.");
+                throw new ArgumentNullException(nameof(transform), "The EntityTransformHolder cannot be null.");
             try
             {
                 IDatabase rDb = mLazyConnection.Value.GetDatabase();
@@ -233,13 +229,13 @@ namespace Xigadee
                 RedisValue result = await rDb.HashGetAsync(hashkey, cnKeyEntity);
 
                 if (result.HasValue)
-                    return new PersistenceResponseHolder<E>() { StatusCode = 200, Content = result, IsSuccess = true, Entity = transform.EntityDeserializer(result) };
-                else
-                    return new PersistenceResponseHolder<E>() { StatusCode = 404, IsSuccess = false };
+                    return new PersistenceResponseHolder<E> { StatusCode = 200, Content = result, IsSuccess = true, Entity = transform.EntityDeserializer(result) };
+
+                return new PersistenceResponseHolder<E> { StatusCode = 404, IsSuccess = false };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return new PersistenceResponseHolder<E>() { StatusCode = 500, IsSuccess = false };
+                return new PersistenceResponseHolder<E> { StatusCode = 500, IsSuccess = false };
             }
         }
         #endregion
@@ -253,7 +249,7 @@ namespace Xigadee
         public override async Task<IResponseHolder<E>> Read(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
         {
             if (transform == null)
-                throw new ArgumentNullException("The EntityTransformHolder cannot be null.");
+                throw new ArgumentNullException(nameof(transform), "The EntityTransformHolder cannot be null.");
 
             try
             {
@@ -264,7 +260,7 @@ namespace Xigadee
 
                 return new PersistenceResponseHolder<E>() { StatusCode = 404, IsSuccess = false };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new PersistenceResponseHolder<E>() { StatusCode = 500, IsSuccess = false };
             }
@@ -281,7 +277,8 @@ namespace Xigadee
         public override async Task<bool> Delete(EntityTransformHolder<K, E> transform, K key)
         {
             if (transform == null)
-                throw new ArgumentNullException("The EntityTransformHolder cannot be null.");
+                throw new ArgumentNullException(nameof(transform), "The EntityTransformHolder cannot be null.");
+
             if (IsReadOnly)
                 return false;
 
@@ -304,9 +301,9 @@ namespace Xigadee
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
+                // Don't raise an exception here
             }
 
             return false;
@@ -322,7 +319,7 @@ namespace Xigadee
         public override async Task<bool> Delete(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
         {
             if (transform == null)
-                throw new ArgumentNullException("The EntityTransformHolder cannot be null.");
+                throw new ArgumentNullException(nameof(transform), "The EntityTransformHolder cannot be null.");
 
             try
             {
@@ -331,8 +328,9 @@ namespace Xigadee
                 if (resolve.Item1)
                     return await Delete(transform, resolve.Item2);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
+                // Don't raise and exception here
             }
 
             return false;
@@ -346,10 +344,10 @@ namespace Xigadee
         /// <param name="transform">The entity transform.</param>
         /// <param name="key">The entity key.</param>
         /// <returns>Returns the async task.</returns>
-        public override async Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, K key)
+        public override async Task<IResponseHolder<Tuple<K, string>>> VersionRead(EntityTransformHolder<K, E> transform, K key)
         {
             if (transform == null)
-                throw new ArgumentNullException("The EntityTransformHolder cannot be null.");
+                throw new ArgumentNullException(nameof(transform), "The EntityTransformHolder cannot be null.");
             try
             {
                 IDatabase rDb = mLazyConnection.Value.GetDatabase();
@@ -359,13 +357,13 @@ namespace Xigadee
                 RedisValue result = await rDb.HashGetAsync(hashkey, cnKeyVersion);
 
                 if (result.HasValue)
-                    return new PersistenceResponseHolder<E>() { StatusCode = 200, IsSuccess = true, VersionId = result, Id = transform.KeySerializer(key) };
-                else
-                    return new PersistenceResponseHolder<E>() { StatusCode = 404, IsSuccess = false };
+                    return new PersistenceResponseHolder<Tuple<K, string>> { StatusCode = 200, IsSuccess = true, VersionId = result, Id = transform.KeySerializer(key), Entity = new Tuple<K, string>(key, result)};
+
+                return new PersistenceResponseHolder<Tuple<K, string>> { StatusCode = 404, IsSuccess = false };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return new PersistenceResponseHolder<E>() { StatusCode = 500, IsSuccess = false };
+                return new PersistenceResponseHolder<Tuple<K, string>> { StatusCode = 500, IsSuccess = false };
             }
         }
         #endregion
@@ -376,23 +374,23 @@ namespace Xigadee
         /// <param name="transform">The transform.</param>
         /// <param name="reference">The tuple reference.</param>
         /// <returns>Returns the response holder with a response code of 200 if successful</returns>
-        public override async Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
+        public override async Task<IResponseHolder<Tuple<K, string>>> VersionRead(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
         {
             if (transform == null)
-                throw new ArgumentNullException("The EntityTransformHolder cannot be null.");
+                throw new ArgumentNullException(nameof(transform), "The EntityTransformHolder cannot be null.");
 
             try
             {
                 var resolve = await RedisResolveReference(transform, reference);
 
                 if (resolve.Item1)
-                    return new PersistenceResponseHolder<E>() { StatusCode = 200, IsSuccess = true, Id = transform.KeySerializer(resolve.Item2), VersionId = resolve.Item3 };
+                    return new PersistenceResponseHolder<Tuple<K, string>> { StatusCode = 200, IsSuccess = true, Id = transform.KeySerializer(resolve.Item2), VersionId = resolve.Item3, Entity = new Tuple<K, string>(resolve.Item2, resolve.Item3 )};
 
-                return new PersistenceResponseHolder<E>() { StatusCode = 404, IsSuccess = false };
+                return new PersistenceResponseHolder<Tuple<K, string>> { StatusCode = 404, IsSuccess = false };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return new PersistenceResponseHolder<E>() { StatusCode = 500, IsSuccess = false };
+                return new PersistenceResponseHolder<Tuple<K, string>> { StatusCode = 500, IsSuccess = false };
             }
         } 
         #endregion

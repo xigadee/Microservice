@@ -32,10 +32,12 @@ namespace Xigadee
         private readonly string mResponseChannel;
         #endregion
         #region Constructor
+
         /// <summary>
         /// This is the default constructor for the shared service.
         /// </summary>
         /// <param name="responseChannel">This is the internal response channel that the message will listen on.</param>
+        /// <param name="cacheManager"></param>
         public PersistenceSharedService(string responseChannel = "internalpersistence", ICacheManager<K, E> cacheManager = null):base(cacheManager)
         {
             mMessageType = typeof(E).Name;
@@ -85,22 +87,23 @@ namespace Xigadee
         #endregion
 
         #region TransmitInternal<KT, ET>(string actionType, RepositoryHolder<KT, ET> rq)
+
         /// <summary>
         /// This method marshals the RepositoryHolder and transmits it to the remote Microservice.
         /// </summary>
         /// <typeparam Name="KT">The key type.</typeparam>
         /// <typeparam Name="ET">The entity type.</typeparam>
-        /// <param Name="actionType">The action type.</param>
-        /// <param Name="rq">The repository holder request.</param>
+        /// <param name="actionType">The action type.</param>
+        /// <param name="rq">The repository holder request.</param>
+        /// <param name="routing"></param>
         /// <returns>Returns an async task that will be signalled when the request completes or times out.</returns>
         protected override async Task<RepositoryHolder<KT, ET>> TransmitInternal<KT, ET>(string actionType, RepositoryHolder<KT, ET> rq, ProcessOptions? routing = null)
         {
             mStatistics.ActiveIncrement();
 
             var payloadRq = TransmissionPayload.Create();
-            var payloadsRs = new List<TransmissionPayload>();
 
-            bool processAsync = rq.Settings == null ? false : rq.Settings.ProcessAsync;
+            bool processAsync = rq.Settings?.ProcessAsync ?? false;
             payloadRq.Options = ProcessOptions.RouteInternal;
             var message = payloadRq.Message;
             payloadRq.MaxProcessingTime = rq.Settings?.WaitTime;
@@ -114,7 +117,7 @@ namespace Xigadee
 
             message.Blob = PayloadSerializer.PayloadSerialize(rq);
 
-            return await TransmitAsync<RepositoryHolder<KT, ET>>(payloadRq, ProcessResponse<KT, ET>, processAsync: processAsync);
+            return await TransmitAsync(payloadRq, ProcessResponse<KT, ET>, processAsync: processAsync);
         }
         #endregion
 

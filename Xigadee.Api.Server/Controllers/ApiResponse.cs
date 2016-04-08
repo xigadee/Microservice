@@ -31,6 +31,8 @@ namespace Xigadee
 
         public HttpStatusCode StatusCode { get; set; }
 
+        public bool? IsCached { get; set; }
+
         public Task<HttpResponseMessage> ExecuteAsync(CancellationToken cancellationToken)
         {
             HttpResponseMessage response = new HttpResponseMessage()
@@ -49,6 +51,9 @@ namespace Xigadee
 
             if (VersionId != null)
                 response.Headers.Add("X-IMG-VersionId", VersionId);
+
+            if (IsCached ?? false)
+                response.Headers.Add("X-IMG-IsCached", "1");
 
             return Task.FromResult(response);
         }

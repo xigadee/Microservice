@@ -26,9 +26,9 @@ namespace Xigadee
 
         public abstract Task<IResponseHolder<E>> Read(EntityTransformHolder<K, E> transform, K key);
 
-        public abstract Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, Tuple<string, string> reference);
+        public abstract Task<IResponseHolder<Tuple<K, string>>> VersionRead(EntityTransformHolder<K, E> transform, Tuple<string, string> reference);
 
-        public abstract Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, K key);
+        public abstract Task<IResponseHolder<Tuple<K, string>>> VersionRead(EntityTransformHolder<K, E> transform, K key);
 
         public abstract Task<bool> Write(EntityTransformHolder<K, E> transform, E entity, TimeSpan? expiry = null);
 
@@ -68,12 +68,12 @@ namespace Xigadee
             return Read(mTransform, reference);
         }
 
-        public Task<IResponseHolder> VersionRead(K key)
+        public Task<IResponseHolder<Tuple<K, string>>> VersionRead(K key)
         {
             return VersionRead(mTransform, key);
         }
 
-        public Task<IResponseHolder> VersionRead(Tuple<string, string> reference)
+        public Task<IResponseHolder<Tuple<K, string>>> VersionRead(Tuple<string, string> reference)
         {
             return VersionRead(mTransform, reference);
         }

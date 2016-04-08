@@ -30,9 +30,12 @@ namespace Xigadee
             {
                 EntityDeserializer = JsonDeserialize;
                 EntitySerializer = JsonSerialize;
-                KeySerializer = (k) => k.ToString();
-                EntityName = typeof(E).Name.ToLowerInvariant();
             }
+
+            // Set sensible defaults
+            KeySerializer = k => k.ToString();
+            EntityName = typeof(E).Name.ToLowerInvariant();
+            ReferenceHashMaker = t => $"{t.Item1.ToLowerInvariant()}.{t.Item2.ToLowerInvariant()}";
         }
         /// <summary>
         /// This function is used by optimistic locking, it is used to define the version id for the entity.

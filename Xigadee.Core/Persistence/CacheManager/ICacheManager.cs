@@ -34,10 +34,10 @@ namespace Xigadee
         Task<IResponseHolder<E>> Read(Tuple<string, string> reference);
         Task<IResponseHolder<E>> Read(EntityTransformHolder<K, E> transform, Tuple<string, string> reference);
 
-        Task<IResponseHolder> VersionRead(K key);
-        Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, K key);
+        Task<IResponseHolder<Tuple<K, string>>> VersionRead(K key);
+        Task<IResponseHolder<Tuple<K,string>>> VersionRead(EntityTransformHolder<K, E> transform, K key);
 
-        Task<IResponseHolder> VersionRead(Tuple<string, string> reference);
-        Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, Tuple<string, string> reference);
+        Task<IResponseHolder<Tuple<K, string>>> VersionRead(Tuple<string, string> reference);
+        Task<IResponseHolder<Tuple<K, string>>> VersionRead(EntityTransformHolder<K, E> transform, Tuple<string, string> reference);
     }
 }

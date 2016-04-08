@@ -34,14 +34,14 @@ namespace Xigadee
             return Task.FromResult(new PersistenceResponseHolder<E> { IsSuccess = false, StatusCode = 404 } as IResponseHolder<E>);
         }
 
-        public override Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
+        public override Task<IResponseHolder<Tuple<K, string>>> VersionRead(EntityTransformHolder<K, E> transform, Tuple<string, string> reference)
         {
-            return Task.FromResult(new PersistenceResponseHolder<E> { IsSuccess = false, StatusCode = 404 } as IResponseHolder);
+            return Task.FromResult(new PersistenceResponseHolder<Tuple<K, string>> { IsSuccess = false, StatusCode = 404 } as IResponseHolder<Tuple<K, string>>);
         }
 
-        public override Task<IResponseHolder> VersionRead(EntityTransformHolder<K, E> transform, K key)
+        public override Task<IResponseHolder<Tuple<K, string>>> VersionRead(EntityTransformHolder<K, E> transform, K key)
         {
-            return Task.FromResult(new PersistenceResponseHolder<E> { IsSuccess = false, StatusCode = 404 } as IResponseHolder);
+            return Task.FromResult(new PersistenceResponseHolder<E> { IsSuccess = false, StatusCode = 404 } as IResponseHolder<Tuple<K, string>>);
         }
 
         public override Task<bool> Write(EntityTransformHolder<K, E> transform, E entity, TimeSpan? expiry = null)

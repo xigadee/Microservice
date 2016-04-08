@@ -404,6 +404,9 @@ namespace Xigadee
                 response.VersionId = responseHolder.KeyReference.Item2;
             }
 
+            if (responseHolder.IsCached)
+                response.IsCached = true;
+
             return response;
         }
         #endregion
