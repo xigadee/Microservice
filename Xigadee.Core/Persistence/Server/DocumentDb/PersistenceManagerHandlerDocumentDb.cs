@@ -177,7 +177,7 @@ namespace Xigadee
         private PersistenceResponseHolder<E> PersistenceResponseFormat(ResponseHolder result)
         {
             if (result.IsSuccess)
-                return new PersistenceResponseHolder<E>() { StatusCode = result.StatusCode, Content = result.Content, IsSuccess = true, Entity = mTransform.EntityDeserializer(result.Content) };
+                return new PersistenceResponseHolder<E>() { StatusCode = result.StatusCode, Content = result.Content, IsSuccess = true, Entity = mTransform.PersistenceEntitySerializer.Deserializer(result.Content) };
             else
                 return new PersistenceResponseHolder<E>() { StatusCode = result.IsTimeout ? 504 : result.StatusCode, IsSuccess = false, IsTimeout = result.IsTimeout };
         }
@@ -338,7 +338,7 @@ namespace Xigadee
             {
                 if (!string.IsNullOrEmpty(holderResponse.Content))
                 {
-                    var entity = mTransform.EntityDeserializer(holderResponse.Content);
+                    var entity = mTransform.PersistenceEntitySerializer.Deserializer(holderResponse.Content);
                     rq.Key = mTransform.KeyMaker(entity);
                     holderResponse.VersionId = mTransform.Version?.EntityVersionAsString(entity);
                 }

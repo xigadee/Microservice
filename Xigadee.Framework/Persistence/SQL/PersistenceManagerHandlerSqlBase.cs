@@ -28,8 +28,8 @@ namespace Xigadee
         /// <param name="connection">The sql datbase connection.</param>
         /// <param name="keyMaker">The key maker function.</param>
         /// <param name="keyDeserializer"></param>
-        /// <param name="xmlEntityDeserializer">The entity maker function.</param>
-        /// <param name="xmlEntitySerializer"></param>
+        /// <param name="persistenceEntitySerializer">The entity serializer for persistence.</param>
+        /// <param name="cachingEntitySerializer">The entity serializer for caching</param>
         /// <param name="xmlVersionMaker"></param>
         /// <param name="entityName"></param>
         /// <param name="versionPolicy"></param>
@@ -43,8 +43,8 @@ namespace Xigadee
         protected PersistenceManagerHandlerSqlBase(string connection
             , Func<E, K> keyMaker
             , Func<string, K> keyDeserializer
-            , Func<XElement, E> xmlEntityDeserializer
-            , Func<E, XElement> xmlEntitySerializer
+            , EntitySerializer<E> persistenceEntitySerializer = null
+            , EntitySerializer<E> cachingEntitySerializer = null
             , Func<XElement, Tuple<K, string>> xmlVersionMaker = null
             , string entityName = null
             , VersionPolicy<E> versionPolicy = null
@@ -59,8 +59,8 @@ namespace Xigadee
             : base(connection
                   , keyMaker
                   , keyDeserializer
-                  , xmlEntityDeserializer
-                  , xmlEntitySerializer
+                  , persistenceEntitySerializer
+                  , cachingEntitySerializer
                   , xmlVersionMaker: xmlVersionMaker
                   , entityName: entityName
                   , versionPolicy: versionPolicy
@@ -90,13 +90,13 @@ namespace Xigadee
     {
         #region Declaration
         /// <summary>
-        /// This function is used to deserialize the entity from XML.
+        /// Serialize the entity for persistence.
         /// </summary>
-        protected Func<XElement, E> mXmlEntityDeserializer;
+        protected EntitySerializer<E> mPersistenceEntitySerializer;
         /// <summary>
-        /// This function is used to serialize the entity in to XML.
+        /// Serializer the entity for caching.
         /// </summary>
-        protected Func<E, XElement> mXmlEntitySerializer;
+        protected EntitySerializer<E> mCacheEntitySerializer;
         /// <summary>
         /// This function creates the version maker.
         /// </summary>
@@ -109,10 +109,10 @@ namespace Xigadee
         /// </summary>
         /// <param name="connection">The sql datbase connection.</param>
         /// <param name="keyMaker">The key maker function.</param>
-        /// <param name="xmlEntitySerializer"></param>
+        /// <param name="persistenceEntitySerializer"></param>
+        /// <param name="cachingEntitySerializer"></param>
         /// <param name="xmlVersionMaker"></param>
         /// <param name="keyDeserializer"></param>
-        /// <param name="xmlEntityDeserializer"></param>
         /// <param name="entityName"></param>
         /// <param name="versionPolicy"></param>
         /// <param name="defaultTimeout"></param>
@@ -125,8 +125,8 @@ namespace Xigadee
         protected PersistenceManagerHandlerSqlBase(string connection
             , Func<E, K> keyMaker
             , Func<string, K> keyDeserializer
-            , Func<XElement, E> xmlEntityDeserializer
-            , Func<E, XElement> xmlEntitySerializer
+            , EntitySerializer<E> persistenceEntitySerializer = null
+            , EntitySerializer<E> cachingEntitySerializer = null
             , Func<XElement, Tuple<K, string>> xmlVersionMaker = null
             , string entityName = null
             , VersionPolicy<E> versionPolicy = null
@@ -145,6 +145,8 @@ namespace Xigadee
                   , entityName: entityName
                   , versionPolicy: versionPolicy
                   , keyMaker: keyMaker
+                  , persistenceEntitySerializer: persistenceEntitySerializer
+                  , cachingEntitySerializer: cachingEntitySerializer
                   , keySerializer: keySerializer
                   , keyDeserializer: keyDeserializer
                   , referenceMaker: referenceMaker
@@ -152,8 +154,8 @@ namespace Xigadee
                   )
         {
             Connection = connection;
-            mXmlEntityDeserializer = xmlEntityDeserializer;
-            mXmlEntitySerializer = xmlEntitySerializer;
+            mPersistenceEntitySerializer = persistenceEntitySerializer;
+            mCacheEntitySerializer = cachingEntitySerializer ?? mTransform?.CacheEntitySerializer;
             mXmlVersionMaker = xmlVersionMaker;
         }
         #endregion
@@ -165,12 +167,10 @@ namespace Xigadee
         public string Connection { get; set; }
         #endregion
 
-        protected override EntityTransformHolder<K, E> EntityTransformCreate(string entityName = null, VersionPolicy<E> versionPolicy = null, Func<E, K> keyMaker = null, Func<string, E> entityDeserializer = null, Func<E, string> entitySerializer = null, Func<K, string> keySerializer = null, Func<string, K> keyDeserializer = null, Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null, Func<Tuple<string, string>, string> referenceHashMaker = null)
+        protected override EntityTransformHolder<K, E> EntityTransformCreate(string entityName = null, VersionPolicy<E> versionPolicy = null, Func<E, K> keyMaker = null, EntitySerializer<E> persistenceEntitySerializer = null, EntitySerializer<E> cacheEntitySerializer = null, Func<K, string> keySerializer = null, Func<string, K> keyDeserializer = null, Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null, Func<Tuple<string, string>, string> referenceHashMaker = null)
         {
-            var transform = base.EntityTransformCreate(entityName, versionPolicy, keyMaker, entityDeserializer, entitySerializer, keySerializer, keyDeserializer, referenceMaker, referenceHashMaker);
-
-            transform.EntityDeserializer = s => mXmlEntityDeserializer(XElement.Parse(s));
-            transform.EntitySerializer = e => mXmlEntitySerializer(e).ToString();
+            var transform = base.EntityTransformCreate(entityName, versionPolicy, keyMaker, persistenceEntitySerializer, cacheEntitySerializer, keySerializer, keyDeserializer, referenceMaker, referenceHashMaker);
+            transform.CacheEntitySerializer = mCacheEntitySerializer ?? new EntitySerializer<E>(transform.JsonSerialize, transform.JsonDeserialize);
 
             return transform;
         }
@@ -483,7 +483,7 @@ namespace Xigadee
                 return;
 
 
-            rs.Entity = mTransform.EntityDeserializer(rs.Content);
+            rs.Entity = mTransform.PersistenceEntitySerializer.Deserializer(rs.Content);
 
             try
             {

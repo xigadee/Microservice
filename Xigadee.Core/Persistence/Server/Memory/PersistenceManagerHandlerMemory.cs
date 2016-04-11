@@ -159,7 +159,7 @@ namespace Xigadee
             bool success = mContainer.TryAdd(key, jsonHolder);
 
             if (success)
-                return new PersistenceResponseHolder<E>(PersistenceResponse.Created201, jsonHolder.Json, mTransform.EntityDeserializer(jsonHolder.Json));
+                return new PersistenceResponseHolder<E>(PersistenceResponse.Created201, jsonHolder.Json, mTransform.PersistenceEntitySerializer.Deserializer(jsonHolder.Json));
             else
                 return new PersistenceResponseHolder<E>(PersistenceResponse.Conflict409);
         }
@@ -171,7 +171,7 @@ namespace Xigadee
             bool success = mContainer.TryGetValue(key, out jsonHolder);
 
             if (success)
-                return new PersistenceResponseHolder<E>(PersistenceResponse.Ok200, jsonHolder.Json, mTransform.EntityDeserializer(jsonHolder.Json));
+                return new PersistenceResponseHolder<E>(PersistenceResponse.Ok200, jsonHolder.Json, mTransform.PersistenceEntitySerializer.Deserializer(jsonHolder.Json));
             else
                 return new PersistenceResponseHolder<E>(PersistenceResponse.NotFound404);
         }
@@ -199,7 +199,7 @@ namespace Xigadee
             //        StatusCode = 201
             //        , Content = jsonHolder.Json
             //        , IsSuccess = true
-            //        , Entity = mTransform.EntityDeserializer(jsonHolder.Json)
+            //        , Entity = mTransform.PersistenceEntityDeserializer(jsonHolder.Json)
             //    };
             //else
             return new PersistenceResponseHolder<E>()
