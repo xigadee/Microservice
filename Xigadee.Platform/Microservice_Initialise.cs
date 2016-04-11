@@ -27,6 +27,7 @@ namespace Xigadee
             return new ResourceTracker();
         } 
         #endregion
+
         #region InitialiseQueueTracker()
         /// <summary>
         /// This method returns the default queue trackers, which includes 4 independent priority queues.
@@ -50,6 +51,7 @@ namespace Xigadee
             return new CommandContainer();
         } 
         #endregion
+
         #region InitialiseCommunicationContainer()
         /// <summary>
         /// This method creates the communication container. This container comtains all the 
@@ -70,9 +72,10 @@ namespace Xigadee
             return new CommunicationPolicy();
         }
         #endregion
+
         #region InitialiseSchedulerContainer()
         /// <summary>
-        /// THis method returns the default scheduler container.
+        /// This method returns the default scheduler container.
         /// </summary>
         /// <returns>The default scheduler.</returns>
         protected virtual SchedulerContainer InitialiseSchedulerContainer()
@@ -154,6 +157,7 @@ namespace Xigadee
             return new LoggerContainer(loggers);
         }
         #endregion
+
         #region InitialiseTelemetryContainer(List<ITelemetry> telemetries)
         /// <summary>
         /// THis method returns the default scheduler container.
@@ -164,6 +168,7 @@ namespace Xigadee
             return new TelemetryContainer(telemetries);
         }
         #endregion
+
         #region InitialiseSerializationContainer(List<IPayloadSerializer> payloadSerializers)
         /// <summary>
         /// THis method returns the default scheduler container.

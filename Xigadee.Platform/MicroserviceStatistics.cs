@@ -20,6 +20,7 @@ namespace Xigadee
         {
         }
 
+        #region Name
         /// <summary>
         /// This override places the name at the top of the JSON
         /// </summary>
@@ -34,7 +35,8 @@ namespace Xigadee
             {
                 base.Name = value;
             }
-        }
+        } 
+        #endregion
 
         /// <summary>
         /// This is the environment tag, i.e production, UAT, SIT, staging etc. 
@@ -82,7 +84,9 @@ namespace Xigadee
         /// This is the machine name on the device.
         /// </summary>
         public string MachineName { get; set; }
-
+        /// <summary>
+        /// This is the task manager statistics.
+        /// </summary>
         public TaskManagerStatistics Tasks { get; set; }
 
         /// <summary>

@@ -29,9 +29,21 @@ namespace Xigadee
             : base(null)
         {
             mPolicy = policy ?? new SchedulerPolicy();
-        } 
+        }
         #endregion
 
+        #region Register...
+        /// <summary>
+        /// This method registers a schedule.
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="frequency"></param>
+        /// <param name="name"></param>
+        /// <param name="initialWait"></param>
+        /// <param name="initialTime"></param>
+        /// <param name="shouldPoll"></param>
+        /// <param name="isInternal"></param>
+        /// <returns>Returns the new schedule after it has been added to the collection.</returns>
         public Schedule Register(Func<Schedule, CancellationToken, Task> action
             , TimeSpan? frequency
             , string name = null
@@ -52,7 +64,11 @@ namespace Xigadee
 
             return Register(schedule);
         }
-
+        /// <summary>
+        /// This method registers a schedule.
+        /// </summary>
+        /// <param name="schedule">The schedule object.</param>
+        /// <returns>Returns the schedule after it has been added to the schedule collection.</returns>
         public Schedule Register(Schedule schedule)
         {
             schedule.Recalculate();
@@ -60,7 +76,8 @@ namespace Xigadee
             Add(schedule);
 
             return schedule;
-        }
+        } 
+        #endregion
 
         #region Unregister(Schedule schedule)
         /// <summary>
