@@ -18,7 +18,6 @@ namespace Xigadee
         where S : PersistenceStatistics, new()
         where P : PersistenceCommandPolicy, new()
     {
-
         #region Declarations
         /// <summary>
         /// This is the entity transform holder.
@@ -32,7 +31,6 @@ namespace Xigadee
         protected readonly ConcurrentDictionary<Guid, IPersistenceRequestHolder> mInPlay;
         #endregion
         #region Constructor
-
         /// <summary>
         /// This constructor specifies whether the service should be registered as a shared service
         /// that can be called directly by other message handler and Microservice components.

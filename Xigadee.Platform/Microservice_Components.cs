@@ -108,6 +108,7 @@ namespace Xigadee
         /// <summary>
         /// This is a list of jobs currently register in the service.
         /// </summary>
+        [Obsolete("Use Commands instead.")]
         public virtual IEnumerable<IJob> Jobs
         {
             get
@@ -124,6 +125,7 @@ namespace Xigadee
         /// <summary>
         /// This is a list of message initiators currently register in the service.
         /// </summary>
+        [Obsolete("Use Commands instead.")]
         public virtual IEnumerable<IMessageInitiator> MessageInitiators
         {
             get
@@ -134,12 +136,13 @@ namespace Xigadee
                     foreach (var mi in mComponents.MessageInitiators)
                         yield return mi;
             }
-        } 
+        }
         #endregion
         #region MessageHandlers
         /// <summary>
         /// This is a list of message handlers currently register in the service.
         /// </summary>
+        [Obsolete("Use Commands instead.")]
         public virtual IEnumerable<IMessageHandler> MessageHandlers
         {
             get

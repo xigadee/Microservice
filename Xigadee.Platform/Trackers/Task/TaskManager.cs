@@ -80,6 +80,8 @@ namespace Xigadee
         /// This is the time that a process is marked as killed after it has been marked as cancelled.
         /// </summary>
         private TimeSpan mProcessKillOverrunGracePeriod;
+
+        private TaskAvailabilityHolder mAvailabilityHolder;
         #endregion
         #region Constructor
         /// <summary>
@@ -115,6 +117,8 @@ namespace Xigadee
             mProcessKillOverrunGracePeriod = policy.ProcessKillOverrunGracePeriod ?? TimeSpan.FromSeconds(15);
 
             mTaskRequests = new ConcurrentDictionary<Guid, TaskTracker>();
+
+            mAvailabilityHolder = new TaskAvailabilityHolder();
         }
         #endregion
 
@@ -158,6 +162,12 @@ namespace Xigadee
         }
         #endregion
 
+
+        public void ProcessRegister(string name, Action<TaskAvailabilityHolder> execute)
+        {
+
+        }
+
         #region ProcessRegister(string name, int priority, Action execute)
         /// <summary>
         /// This method registers a process to be polled as part of the process loop.
@@ -167,7 +177,7 @@ namespace Xigadee
         /// <param name="execute">The execute action.</param>
         public void ProcessRegister(string name, int priority, Action execute)
         {
-            var process = new ProcessHolder() { Priority = priority, Name = name, Execute = execute };
+            var process = new ProcessHolder() { Priority = priority, Name = name, Execute = (h) => execute() };
 
             mProcesses.AddOrUpdate(name, process, (n, o) => process);
         }
@@ -192,7 +202,7 @@ namespace Xigadee
         {
             try
             {
-                process.Execute();
+                process.Execute(mAvailabilityHolder);
             }
             catch (Exception ex)
             {
@@ -737,12 +747,28 @@ namespace Xigadee
         }
         #endregion
 
+
+        public class TaskAvailabilityHolder
+        {
+
+        }
+
+        /// <summary>
+        /// This class holders a registered process that will be polled as part of the thread loop.
+        /// </summary>
         protected class ProcessHolder
         {
+            /// <summary>
+            /// The process priority.
+            /// </summary>
             public int Priority { get; set; }
-
-            public Action Execute { get; set; }
-
+            /// <summary>
+            /// The execute action.
+            /// </summary>
+            public Action<TaskAvailabilityHolder> Execute { get; set; }
+            /// <summary>
+            /// The unique process name.
+            /// </summary>
             public string Name { get; set; }
         }
 

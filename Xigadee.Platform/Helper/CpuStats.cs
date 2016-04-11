@@ -11,7 +11,7 @@ namespace Xigadee
 {
     public interface ICpuStats
     {
-        DateTime? CalculationTime { get; }
+        DateTime? CalculationTimeLast { get; }
         long CalculationMissCount { get; }
         string CalculationMissException { get; }
         float? ServicePercentage { get; }
@@ -34,7 +34,9 @@ namespace Xigadee
     {
 
         PerformanceCounter mCpuTotal = null;
+
         PerformanceCounter mCpuProcess = null;
+
         private int mMissCount;
 
         public CpuStats()
@@ -43,16 +45,19 @@ namespace Xigadee
             ProcessorType = Environment.Is64BitProcess ? "64 Bit" : "32 Bit";
         }
 
-
         public float? ServicePercentage { get; private set; }
-        public DateTime? CalculationTime { get; private set; }
+
+        public DateTime? CalculationTimeLast { get; private set; }
+
         public long CalculationMissCount { get { return mMissCount; } }
+
         public string CalculationMissException { get; private set; }
 
         public int ProcessorCount { get; private set; }
 
         public string ProcessorType { get; private set; }
 
+        public string ProcessName { get; private set; }
 
         #region SystemProcessorUsagePercentage(string name)
         /// <summary>
@@ -63,11 +68,13 @@ namespace Xigadee
         {
             try
             {
-                if (name == null)
-                    name = Process.GetCurrentProcess().ProcessName;
+                if (name == null || ProcessName == null)
+                    ProcessName = Process.GetCurrentProcess().ProcessName;
+
+                var categories = PerformanceCounterCategory.GetCategories();
 
                 if (mCpuProcess == null)
-                    mCpuProcess = new PerformanceCounter("Process", "% Processor Time", name);
+                    mCpuProcess = new PerformanceCounter("Process", "% Processor Time", ProcessName);
                 if (mCpuTotal == null)
                     mCpuTotal = new PerformanceCounter("Process", "% Processor Time", "_Total");
 
@@ -87,7 +94,7 @@ namespace Xigadee
                 ServicePercentage = null;
             }
 
-            CalculationTime = DateTime.UtcNow;
+            CalculationTimeLast = DateTime.UtcNow;
             return ServicePercentage;
         }
         #endregion
