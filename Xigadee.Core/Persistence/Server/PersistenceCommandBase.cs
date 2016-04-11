@@ -747,6 +747,11 @@ namespace Xigadee
         {
             K key = mTransform.KeyMaker(holder.rq.Entity);
 
+            // Remove from the cache first to ensure no change of ending up with a stale cached item
+            // if the write to cache fails for any reason
+            if (mCacheManager.IsActive)
+                mCacheManager.Delete(mTransform, key);
+
             var result = await InternalUpdate(key, holder);
 
             if (mCacheManager.IsActive && result.IsSuccess)
