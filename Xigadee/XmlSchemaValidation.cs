@@ -49,7 +49,7 @@ namespace Xigadee
                 });
 
                 if (schemaCheckError)
-                    errors = sb.ToString();
+                    errors = $"{xml} errored with {sb}";
 
                 return (!schemaCheckError);
             }
