@@ -163,9 +163,11 @@ namespace Xigadee
         #endregion
 
 
-        public void ProcessRegister(string name, Action<TaskAvailabilityHolder> execute)
+        public void ProcessRegister(string name, int priority, Action<TaskAvailabilityHolder> execute)
         {
+            var process = new ProcessHolder() { Priority = priority, Name = name, Execute = execute };
 
+            mProcesses.AddOrUpdate(name, process, (n, o) => process);
         }
 
         #region ProcessRegister(string name, int priority, Action execute)
@@ -177,9 +179,7 @@ namespace Xigadee
         /// <param name="execute">The execute action.</param>
         public void ProcessRegister(string name, int priority, Action execute)
         {
-            var process = new ProcessHolder() { Priority = priority, Name = name, Execute = (h) => execute() };
-
-            mProcesses.AddOrUpdate(name, process, (n, o) => process);
+            ProcessRegister(name, priority, (h) => execute());
         }
         #endregion
         #region ProcessUnregister(string name)
@@ -210,6 +210,7 @@ namespace Xigadee
             }
         } 
         #endregion
+
         #region ProcessLoop(object state)
         /// <summary>
         /// This is the message loop that receives messages.
