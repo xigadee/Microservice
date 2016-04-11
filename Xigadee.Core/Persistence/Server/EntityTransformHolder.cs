@@ -32,9 +32,15 @@ namespace Xigadee
 
             // Set sensible defaults
             CacheEntitySerializer = new EntitySerializer<E>(JsonSerialize, JsonDeserialize);
-            KeySerializer = k => k.ToString();
             EntityName = typeof(E).Name.ToLowerInvariant();
             ReferenceHashMaker = t => $"{t.Item1.ToLowerInvariant()}.{t.Item2.ToLowerInvariant()}";
+
+            // Handle the most common key types of string and guid for deserializing the key from string
+            KeySerializer = k => k.ToString();
+            if (typeof (K) == typeof(string))
+                KeyDeserializer = s => (K)(object)(s);
+            else if (typeof(K) == typeof(Guid))
+                KeyDeserializer = s => (K)(object)Guid.Parse(s);
         }
         /// <summary>
         /// This function is used by optimistic locking, it is used to define the version id for the entity.
