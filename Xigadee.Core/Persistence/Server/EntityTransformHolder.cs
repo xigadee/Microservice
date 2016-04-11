@@ -10,8 +10,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class EntityTransformHolder<K, E>
-        where K : IEquatable<K>
+    public class EntityTransformHolder<K, E> where K : IEquatable<K>
     {
         #region Declarations
         /// <summary>
@@ -28,11 +27,11 @@ namespace Xigadee
         {
             if (jsonMode)
             {
-                EntityDeserializer = JsonDeserialize;
-                EntitySerializer = JsonSerialize;
+                PersistenceEntitySerializer = new EntitySerializer<E>(JsonSerialize, JsonDeserialize);
             }
 
             // Set sensible defaults
+            CacheEntitySerializer = new EntitySerializer<E>(JsonSerialize, JsonDeserialize);
             KeySerializer = k => k.ToString();
             EntityName = typeof(E).Name.ToLowerInvariant();
             ReferenceHashMaker = t => $"{t.Item1.ToLowerInvariant()}.{t.Item2.ToLowerInvariant()}";
@@ -50,13 +49,13 @@ namespace Xigadee
         /// </summary>
         public virtual Func<E, K> KeyMaker { get; set; }
         /// <summary>
-        /// This function can be set to make the key from the entity.
+        /// This is the serializer used to store and retrieve the entity from persistence.
         /// </summary>
-        public virtual Func<string, E> EntityDeserializer { get; set; }        
+        public virtual EntitySerializer<E> PersistenceEntitySerializer { get; set; }
         /// <summary>
-        /// This function can be set to make the key from the entity.
+        /// This is the serializer used to store and retrieve the entity for caching.
         /// </summary>
-        public virtual Func<E, string> EntitySerializer { get; set; }
+        public virtual EntitySerializer<E> CacheEntitySerializer { get; set; }
         /// <summary>
         /// This function can be used to extract the references from an incoming entity to allow for caching.
         /// </summary>
@@ -72,7 +71,7 @@ namespace Xigadee
         /// <summary>
         /// This method is used to create a unique string format for the persistence store.
         /// </summary>
-        public virtual Func<K, string> KeyStringMaker => (k) => string.Format("{0}.{1}", EntityName, KeySerializer(k));
+        public virtual Func<K, string> KeyStringMaker => k => $"{EntityName}.{KeySerializer(k)}";
         /// <summary>
         /// This method deserializes the string version of the key to the object.
         /// </summary>

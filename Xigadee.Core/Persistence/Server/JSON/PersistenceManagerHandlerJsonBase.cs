@@ -69,8 +69,8 @@ namespace Xigadee
         /// <param name="entityName"></param>
         /// <param name="versionPolicy"></param>
         /// <param name="keyMaker"></param>
-        /// <param name="entityDeserializer"></param>
-        /// <param name="entitySerializer"></param>
+        /// <param name="persistenceEntitySerializer"></param>
+        /// <param name="cachingEntitySerializer"></param>
         /// <param name="keySerializer"></param>
         /// <param name="keyDeserializer"></param>
         /// <param name="referenceMaker"></param>
@@ -80,8 +80,8 @@ namespace Xigadee
               string entityName = null
             , VersionPolicy<E> versionPolicy = null
             , Func<E, K> keyMaker = null
-            , Func<string, E> entityDeserializer = null
-            , Func<E, string> entitySerializer = null
+            , EntitySerializer<E> persistenceEntitySerializer = null
+            , EntitySerializer<E> cachingEntitySerializer = null
             , Func<K, string> keySerializer = null
             , Func<string, K> keyDeserializer = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
@@ -89,11 +89,11 @@ namespace Xigadee
         {
             var transform = base.EntityTransformCreate(
                   entityName, versionPolicy, keyMaker
-                , entityDeserializer, entitySerializer
+                , persistenceEntitySerializer, cachingEntitySerializer
                 , keySerializer, keyDeserializer, referenceMaker, referenceHashMaker);
 
-            transform.EntitySerializer = transform.JsonSerialize;
-            transform.EntityDeserializer = transform.JsonDeserialize;
+            // Use Json for both persistence and caching serialization
+            transform.PersistenceEntitySerializer = transform.CacheEntitySerializer = new EntitySerializer<E>(transform.JsonSerialize, transform.JsonDeserialize);
 
             return transform;
         }

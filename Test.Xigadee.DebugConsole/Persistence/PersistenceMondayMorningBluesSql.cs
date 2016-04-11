@@ -15,9 +15,8 @@ namespace Test.Xigadee
                   sqlConnection
                   , (k) => k.Id
                   , (s) => new Guid(s)
-                  , MondayMorningBluesHelper.ToMondayMorningBlues
-                  , MondayMorningBluesHelper.ToXml
-                  , MondayMorningBluesHelper.ToVersion
+                  , new EntitySerializer<MondayMorningBlues>(MondayMorningBluesHelper.ToXml, MondayMorningBluesHelper.ToMondayMorningBlues)
+                  , xmlVersionMaker: MondayMorningBluesHelper.ToVersion
                   , versionPolicy: versionPolicy
                   , cacheManager: cacheManager
                   , referenceMaker: ReferenceMaker)
@@ -40,7 +39,7 @@ namespace Test.Xigadee
         public override void DbSerializeEntity(MondayMorningBlues entity, SqlCommand cmd)
         {
             cmd.Parameters.Add("@ExternalId", SqlDbType.UniqueIdentifier).Value = entity.Id;
-            cmd.Parameters.Add("@Data", SqlDbType.Xml).Value = mTransform.EntitySerializer(entity);
+            cmd.Parameters.Add("@Data", SqlDbType.Xml).Value = mTransform.PersistenceEntitySerializer.Serializer(entity);
         }
     }
 }

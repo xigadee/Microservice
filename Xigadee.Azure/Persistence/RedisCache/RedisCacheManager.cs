@@ -127,7 +127,7 @@ namespace Xigadee
 
                 var tasks = new List<Task>
                 {
-                    batch.HashSetAsync(hashkey, cnKeyEntity, transform.EntitySerializer(entity), when: When.Always),
+                    batch.HashSetAsync(hashkey, cnKeyEntity, transform.CacheEntitySerializer.Serializer(entity), when: When.Always),
                     batch.HashSetAsync(hashkey, cnKeyVersion, version, when: When.Always),
                     batch.KeyExpireAsync(hashkey, mEntityTtl)
                 };
@@ -229,7 +229,7 @@ namespace Xigadee
                 RedisValue result = await rDb.HashGetAsync(hashkey, cnKeyEntity);
 
                 if (result.HasValue)
-                    return new PersistenceResponseHolder<E> { StatusCode = 200, Content = result, IsSuccess = true, Entity = transform.EntityDeserializer(result) };
+                    return new PersistenceResponseHolder<E> { StatusCode = 200, Content = result, IsSuccess = true, Entity = transform.CacheEntitySerializer.Deserializer(result) };
 
                 return new PersistenceResponseHolder<E> { StatusCode = 404, IsSuccess = false };
             }

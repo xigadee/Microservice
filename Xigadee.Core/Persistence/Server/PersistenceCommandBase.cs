@@ -44,8 +44,8 @@ namespace Xigadee
         /// <param name="entityName"></param>
         /// <param name="versionPolicy"></param>
         /// <param name="keyMaker"></param>
-        /// <param name="entityDeserializer"></param>
-        /// <param name="entitySerializer"></param>
+        /// <param name="persistenceEntitySerializer"></param>
+        /// <param name="cachingEntitySerializer"></param>
         /// <param name="keySerializer"></param>
         /// <param name="keyDeserializer"></param>
         /// <param name="referenceMaker"></param>
@@ -58,8 +58,8 @@ namespace Xigadee
             , string entityName = null
             , VersionPolicy<E> versionPolicy = null
             , Func<E, K> keyMaker = null
-            , Func<string, E> entityDeserializer = null
-            , Func<E, string> entitySerializer = null
+            , EntitySerializer<E> persistenceEntitySerializer = null
+            , EntitySerializer<E> cachingEntitySerializer = null
             , Func<K, string> keySerializer = null
             , Func<string, K> keyDeserializer = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
@@ -67,7 +67,7 @@ namespace Xigadee
             )
         {
             mTransform = EntityTransformCreate(entityName, versionPolicy, keyMaker
-                , entityDeserializer, entitySerializer
+                , persistenceEntitySerializer, cachingEntitySerializer
                 , keySerializer, keyDeserializer, referenceMaker, referenceHashMaker);
 
             mInPlay = new ConcurrentDictionary<Guid, IPersistenceRequestHolder>();
@@ -113,8 +113,8 @@ namespace Xigadee
         /// <param name="entityName">The entity name.</param>
         /// <param name="versionPolicy">The version policy for the entity.</param>
         /// <param name="keyMaker">The keymaker function that creates a key for the entity.</param>
-        /// <param name="entityDeserializer">The entity deserializer that converts the entity in to a string.</param>
-        /// <param name="entitySerializer">The entity serializer that turns a string representation in to an entity.</param>
+        /// <param name="persistenceEntitySerializer">Used to serialize / deserialize for persistence</param>
+        /// <param name="cachingEntitySerializer">Used to serialize / deserialize for caching</param>
         /// <param name="keySerializer">The serializer that converts the key in to a string.</param>
         /// <param name="keyDeserializer">The deserializer that converts a string in to a key.</param>
         /// <param name="referenceMaker">A function that returns references from the entity in a set of string Tuples.</param>
@@ -124,8 +124,8 @@ namespace Xigadee
               string entityName = null
             , VersionPolicy<E> versionPolicy = null
             , Func<E, K> keyMaker = null
-            , Func<string, E> entityDeserializer = null
-            , Func<E, string> entitySerializer = null
+            , EntitySerializer<E> persistenceEntitySerializer = null
+            , EntitySerializer<E> cachingEntitySerializer = null
             , Func<K, string> keySerializer = null
             , Func<string, K> keyDeserializer = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
@@ -140,8 +140,8 @@ namespace Xigadee
                 ReferenceHashMaker = referenceHashMaker ?? (r => $"{r.Item1.ToLowerInvariant()}.{r.Item2.ToLowerInvariant()}"),
                 Version = versionPolicy ?? new VersionPolicy<E>(),
                 EntityName = entityName ?? typeof (E).Name.ToLowerInvariant(),
-                EntityDeserializer = entityDeserializer,
-                EntitySerializer = entitySerializer
+                PersistenceEntitySerializer = persistenceEntitySerializer,
+                CacheEntitySerializer = cachingEntitySerializer,
             };
 
             return transform;
@@ -902,7 +902,7 @@ namespace Xigadee
             rs.ResponseCode = holderResponse.StatusCode;
 
             if (holderResponse.IsSuccess)
-                ProcessOutputEntity(mTransform.EntityDeserializer(holderResponse.Content), rq, rs);
+                ProcessOutputEntity(mTransform.PersistenceEntitySerializer.Deserializer(holderResponse.Content), rq, rs);
             else
                 ProcessOutputError(key, holderResponse, rs);
         }

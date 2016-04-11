@@ -100,7 +100,7 @@ namespace Xigadee
             if (result.IsSuccess)
             {
                 if (result.Content != null)
-                    return new PersistenceResponseHolder<E>() { StatusCode = result.StatusCode, Content = result.Content, IsSuccess = true, Entity = mTransform.EntityDeserializer(result.Content), VersionId = result.VersionId };
+                    return new PersistenceResponseHolder<E>() { StatusCode = result.StatusCode, Content = result.Content, IsSuccess = true, Entity = mTransform.PersistenceEntitySerializer.Deserializer(result.Content), VersionId = result.VersionId };
                 else
                     return new PersistenceResponseHolder<E>() { StatusCode = result.StatusCode, IsSuccess = true, VersionId = result.VersionId };
             }
