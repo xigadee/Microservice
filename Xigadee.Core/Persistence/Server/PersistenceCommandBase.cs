@@ -747,6 +747,11 @@ namespace Xigadee
         {
             K key = mTransform.KeyMaker(holder.rq.Entity);
 
+            // Remove from the cache first to ensure no change of ending up with a stale cached item
+            // if the write to cache fails for any reason
+            if (mCacheManager.IsActive)
+                mCacheManager.Delete(mTransform, key);
+
             var result = await InternalUpdate(key, holder);
 
             if (mCacheManager.IsActive && result.IsSuccess)
@@ -802,7 +807,11 @@ namespace Xigadee
                 result = await mCacheManager.VersionRead(mTransform, holder.rq.Key);
 
             if (result == null || !result.IsSuccess)
+            {
                 result = await InternalVersion(holder.rq.Key, holder);
+                if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
+                    mCacheManager.WriteVersion(mTransform, holder.rq.Key, result.VersionId);
+            }
 
             ProcessOutputKey(holder.rq, holder.rs, result);
         }

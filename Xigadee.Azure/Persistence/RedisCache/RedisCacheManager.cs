@@ -127,13 +127,13 @@ namespace Xigadee
 
                 var tasks = new List<Task>
                 {
+                    //Entity
                     batch.HashSetAsync(hashkey, cnKeyEntity, transform.CacheEntitySerializer.Serializer(entity), when: When.Always),
+                    //Version
                     batch.HashSetAsync(hashkey, cnKeyVersion, version, when: When.Always),
-                    batch.KeyExpireAsync(hashkey, mEntityTtl)
+                    // Expiry
+                    batch.KeyExpireAsync(hashkey, expiry ?? mEntityTtl)
                 };
-
-                //Entity
-                //Version
 
                 //Get any associated references for the entity.
                 var references = transform.ReferenceMaker(entity);
@@ -185,6 +185,44 @@ namespace Xigadee
 
             return false;
         }
+        /// <summary>
+        /// Writes the version out for the entity key
+        /// </summary>
+        /// <param name="transform"></param>
+        /// <param name="key"></param>
+        /// <param name="version"></param>
+        /// <param name="expiry"></param>
+        /// <returns></returns>
+        public override async Task<bool> WriteVersion(EntityTransformHolder<K, E> transform, K key, string version, TimeSpan? expiry = null)
+        {
+            if (transform == null)
+                throw new ArgumentNullException(nameof(transform), "The EntityTransformHolder cannot be null.");
+
+            try
+            {
+                IDatabase rDb = mLazyConnection.Value.GetDatabase();
+                IBatch batch = rDb.CreateBatch();
+                RedisKey hashkey = RedisKeyGet(transform, key);
+
+                var tasks = new List<Task>
+                {
+                    //Version
+                    batch.HashSetAsync(hashkey, cnKeyVersion, version, when: When.Always),
+                    // Expiry
+                    batch.KeyExpireAsync(hashkey, expiry ?? mEntityTtl)
+                };
+                batch.Execute();
+
+                await Task.WhenAll(tasks);
+
+                return true;
+            }
+            catch (Exception)
+            {
+                // Don't raise an exception here
+            }
+            return false;
+        }
 
         /// <summary>
         /// This method writes out the references for the entity.
@@ -229,7 +267,10 @@ namespace Xigadee
                 RedisValue result = await rDb.HashGetAsync(hashkey, cnKeyEntity);
 
                 if (result.HasValue)
-                    return new PersistenceResponseHolder<E> { StatusCode = 200, Content = result, IsSuccess = true, Entity = transform.CacheEntitySerializer.Deserializer(result) };
+                {
+                    var entity = transform.CacheEntitySerializer.Deserializer(result);
+                    return new PersistenceResponseHolder<E> { StatusCode = 200, Content = result, IsSuccess = true, Entity = entity, Id = transform.KeySerializer(key), VersionId = transform.Version?.EntityVersionAsString(entity) };
+                }
 
                 return new PersistenceResponseHolder<E> { StatusCode = 404, IsSuccess = false };
             }
