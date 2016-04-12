@@ -30,8 +30,7 @@ namespace Xigadee
 
         protected ICollection ContainerInternal
         {
-            get
-            { return mContainer; }
+            get{ return mContainer; }
         }
 
         protected CollectionContainerBase(IEnumerable<I> items)

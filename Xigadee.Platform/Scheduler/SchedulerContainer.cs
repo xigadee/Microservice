@@ -12,7 +12,7 @@ namespace Xigadee
     /// <summary>
     /// This class holds the schedule jobs within the Microservice.
     /// </summary>
-    public class SchedulerContainer : CollectionContainerBase<Schedule, SchedulerStatistics>, IScheduler
+    public class SchedulerContainer : CollectionContainerBase<Schedule, SchedulerStatistics>, IScheduler, ITaskManagerProcess, IServiceLogger
     {
         #region Declarations
         /// <summary>
@@ -113,5 +113,100 @@ namespace Xigadee
         //    }
         //}
         //#endregion
+
+        #region Logger
+        /// <summary>
+        /// This is the system wide logger.
+        /// </summary>
+        public ILoggerExtended Logger
+        {
+            get; set;
+        }
+        #endregion
+
+        #region CanProcess()
+        /// <summary>
+        /// Check whether we have any schedules.
+        /// </summary>
+        /// <returns>Returns true of we can process.</returns>
+        public bool CanProcess()
+        {
+            return Count > 0;
+        }
+        #endregion
+
+        #region Process(TaskManagerAvailability availability)
+        /// <summary>
+        /// This method processes any outstanding schedules and created a new task.
+        /// </summary>
+        public void Process(TaskManagerAvailability availability)
+        {
+            foreach (Schedule schedule in Items.Where((c) => c.ShouldPoll))
+            {
+                if (schedule.Active)
+                {
+                    schedule.PollSkip();
+                    continue;
+                }
+
+                schedule.Start();
+
+                TaskTracker tracker = TaskTrackerCreate(schedule);
+
+                tracker.Execute = async (token) =>
+                {
+                    try
+                    {
+                        await schedule.Execute(token);
+                    }
+                    catch (Exception ex)
+                    {
+                        //mLogger.LogException(string.Format("Schedule failed: {0}", schedule.Name), ex);
+                    }
+                };
+
+                tracker.ExecuteComplete = ScheduleComplete;
+
+                availability.ExecuteOrEnqueue(tracker);
+            }
+        }
+        #endregion
+
+        #region TaskTrackerCreate(Schedule schedule)
+        /// <summary>
+        /// This private method builds the payload consistently for the incoming payload.
+        /// </summary>
+        /// <param name="schedule">The schedule to add to a tracker.</param>
+        /// <returns>Returns a tracker of type payload.</returns>
+        private TaskTracker TaskTrackerCreate(Schedule schedule)
+        {
+            TaskTracker tracker = new TaskTracker(TaskTrackerType.Schedule, null);
+            tracker.IsLongRunning = schedule.IsLongRunning;
+
+            if (schedule.IsInternal)
+                tracker.Priority = TaskTracker.PriorityInternal;
+            else
+                tracker.Priority = 2;
+
+            tracker.Context = schedule;
+            tracker.Name = schedule.Name;
+
+            return tracker;
+        }
+        #endregion
+        #region ScheduleComplete(Task task, TaskTracker tracker)
+        /// <summary>
+        /// This method is used to complete a schedule request and to 
+        /// recalculate the next schedule.
+        /// </summary>
+        /// <param name="tracker">The tracker object.</param>
+        private void ScheduleComplete(TaskTracker tracker, bool failed, Exception ex)
+        {
+            var schedule = tracker.Context as Schedule;
+
+            schedule.Complete(!failed, isException: failed, lastEx: ex, exceptionTime: DateTime.UtcNow);
+        }
+        #endregion
+
     }
 }

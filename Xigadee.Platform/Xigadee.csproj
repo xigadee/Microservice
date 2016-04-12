@@ -73,6 +73,7 @@
     <Compile Include="EventSource\EventSourceStatistics.cs" />
     <Compile Include="Helper\CpuStats.cs" />
     <Compile Include="Logger\ActionQueueCollectionBase.cs" />
+    <Compile Include="Logger\ActionQueuePolicy.cs" />
     <Compile Include="Logger\ActionQueueStatistics.cs" />
     <Compile Include="Logger\Loggers\EventLogLogger.cs" />
     <Compile Include="Logger\Interfaces\IActionQueue.cs" />
@@ -106,6 +107,9 @@
     <Compile Include="Trackers\Queue\QueueTrackerStatistics.cs" />
     <Compile Include="Trackers\Resource\ResourceTracker.cs" />
     <Compile Include="Trackers\Resource\ResourceTrackerStatistics.cs" />
+    <Compile Include="Trackers\Task\ITaskManagerProcess.cs" />
+    <Compile Include="Trackers\Task\TaskManagerAvailability.cs" />
+    <Compile Include="Trackers\Task\TaskManagerProcessContext.cs" />
     <Compile Include="Trackers\Task\TaskManagerStatistics.cs" />
     <Compile Include="Trackers\Task\TaskTracker.cs" />
     <Compile Include="Telemetry\TelemetryContainer.cs" />

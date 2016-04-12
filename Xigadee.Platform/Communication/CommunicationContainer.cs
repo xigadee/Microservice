@@ -13,8 +13,8 @@ namespace Xigadee
     /// <summary>
     /// This container holds all the communication components (sender/listener/bidirectional) for the Microservice.
     /// </summary>
-    public class CommunicationContainer: ServiceBase<CommunicationStatistics>
-        , IServiceOriginator, IServiceLogger, IPayloadSerializerConsumer, IRequireSharedServices, IRequireScheduler
+    public class CommunicationContainer: ServiceBase<CommunicationStatistics>, 
+        IServiceOriginator, IServiceLogger, IPayloadSerializerConsumer, IRequireSharedServices, IRequireScheduler, ITaskManagerProcess
     {
         #region Declarations
         /// <summary>
@@ -186,7 +186,7 @@ namespace Xigadee
         public void SendersStop()
         {
             mSenders.ForEach(l => ServiceStop(l));
-        } 
+        }
         #endregion
 
         #region ServiceStart(object service)
@@ -223,7 +223,7 @@ namespace Xigadee
                 Logger.LogException("Communication/ServiceStart" + service.ToString(), ex);
                 throw;
             }
-        } 
+        }
         #endregion
 
         #region Logging
@@ -363,7 +363,7 @@ namespace Xigadee
             {
 
             }
-        } 
+        }
         #endregion
 
         #region Logger
@@ -421,7 +421,7 @@ namespace Xigadee
         public IScheduler Scheduler
         {
             get; set;
-        } 
+        }
         #endregion
 
         #region RegisterSupportedMessages()
@@ -451,7 +451,7 @@ namespace Xigadee
             mListenerClients = ClientsPopulate();
 
             ListenersPriorityRecalculate().Wait();
-        } 
+        }
         #endregion
 
         #region Send(TransmissionPayload requestPayload)
@@ -511,5 +511,147 @@ namespace Xigadee
             return newMap;
         }
         #endregion
+
+        #region Process(TaskManagerAvailability availability)
+        /// <summary>
+        /// This method processes any outstanding schedules and created a new task.
+        /// </summary>
+        public void Process(TaskManagerAvailability availability)
+        {
+
+        }
+
+        public bool CanProcess()
+        {
+
+            return false;
+        }
+        #endregion
+
+        //#region TrackerCreateFromListenerContext(HolderSlotContext context)
+        ///// <summary>
+        ///// This private method builds the payload consistently for the incoming payload.
+        ///// </summary>
+        ///// <param name="context">The client holder context.</param>
+        ///// <returns>Returns a tracker of type payload.</returns>
+        //private TaskTracker TrackerCreateFromListenerContext(HolderSlotContext context, int? priority = null)
+        //{
+        //    TaskTracker tracker = new TaskTracker(TaskTrackerType.ListenerPoll, TimeSpan.FromSeconds(30))
+        //    {
+        //        Priority = priority ?? TaskTracker.PriorityInternal,
+        //        Context = context,
+        //        Name = context.Name
+        //    };
+
+        //    tracker.Execute = async t =>
+        //    {
+        //        var currentContext = ((HolderSlotContext)tracker.Context);
+
+        //        var payloads = await currentContext.Poll();
+
+        //        ListenerProcessClientPayloads(currentContext.Id, payloads);
+        //    };
+
+        //    tracker.ExecuteComplete = (tr, failed, ex) =>
+        //    {
+        //        ((HolderSlotContext)tracker.Context).Release(failed);
+        //    };
+
+        //    return tracker;
+        //}
+        //#endregion
+
+        //#region ListenersProcess(int priorityLevel, TaskManagerAvailability availability)
+        ///// <summary>
+        ///// This method is used to create tasks to dequeue data from the listeners.
+        ///// </summary>
+        ///// <param name="priorityLevel">This property specifies the priority level that should be processed..</param>
+        //private void ListenersProcess(int priorityLevel, TaskManagerAvailability availability)
+        //{
+        //    bool singleHop = false;
+        //    //Ok, we don't receive any messages until the system is running.
+        //    if (Status != ServiceStatus.Running)
+        //        return;
+
+        //    HolderSlotContext context;
+
+        //    int listenerTaskSlotsAvailable = TaskSlotsAvailableNet(priorityLevel);
+
+        //    while (listenerTaskSlotsAvailable > 0
+        //        && ListenerClientNext(priorityLevel, listenerTaskSlotsAvailable, out context))
+        //    {
+        //        TaskTracker tracker = TrackerCreateFromListenerContext(context, priorityLevel);
+
+        //        availability.ExecuteOrEnqueue(tracker);
+
+        //        if (singleHop)
+        //            break;
+
+        //        listenerTaskSlotsAvailable = mTaskContainer.TaskSlotsAvailableNet(priorityLevel);
+        //    }
+        //}
+        //#endregion
+        //#region ListenerProcessClientPayloads(ListenerClient container, TransmissionPayload payload)
+        ///// <summary>
+        ///// This method processes the individual payload and passes it to be exectued.
+        ///// </summary>
+        ///// <param name="clientId">The clientId that has been polled.</param>
+        ///// <param name="payloads">The payloads to process.</param>
+        //private void ListenerProcessClientPayloads(Guid clientId, List<TransmissionPayload> payloads)
+        //{
+        //    if (payloads == null || payloads.Count == 0)
+        //        return;
+
+        //    foreach (var payload in payloads)
+        //        ListenerProcessClientPayload(clientId, payload);
+        //}
+        //#endregion
+        //#region ListenerProcessClientPayload(ClientHolder client, TransmissionPayload payload)
+        ///// <summary>
+        ///// This method processes an individual payload returned from a client.
+        ///// </summary>
+        ///// <param name="clientId">The originating client.</param>
+        ///// <param name="payload">The payload.</param>
+        //private void ListenerProcessClientPayload(Guid clientId, TransmissionPayload payload)
+        //{
+        //    try
+        //    {
+        //        if (payload.Message.ChannelPriority < 0)
+        //            payload.Message.ChannelPriority = 0;
+
+        //        QueueTimeLog(clientId, payload.Message.EnqueuedTimeUTC);
+        //        ActiveIncrement(clientId);
+
+        //        TaskTracker tracker = TrackerCreateFromPayload(payload, payload.Source);
+
+        //        tracker.ExecuteComplete = (tr, failed, ex) =>
+        //        {
+        //            try
+        //            {
+        //                var contextPayload = tr.Context as TransmissionPayload;
+
+        //                ActiveDecrement(clientId, tr.TickCount);
+
+        //                if (failed)
+        //                    ErrorIncrement(clientId);
+
+        //                contextPayload.Signal(!failed);
+        //            }
+        //            catch (Exception exin)
+        //            {
+        //                //mLogger.LogException(string.Format("Payload completion error-{0}", payload), exin);
+        //            }
+        //        };
+
+        //        mTaskContainer.ExecuteOrEnqueue(tracker);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        mLogger.LogException(string.Format("ProcessClientPayload: unhandled error {0}/{1}-{2}", payload.Source, payload.Message.CorrelationKey, payload), ex);
+        //        payload.SignalFail();
+        //    }
+
+        //}
+        //#endregion
     }
 }
