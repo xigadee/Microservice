@@ -15,84 +15,6 @@ namespace Xigadee
     //TaskManager
     public partial class Microservice
     {
-        #region InitialiseResourceTracker()
-        /// <summary>
-        /// This method creates the default resource tracker for the Microservice.
-        /// Resource trackers are used to limit incoming messages that use a particular resource
-        /// that is overloaded.
-        /// </summary>
-        /// <returns>Returns the resource tracker.</returns>
-        protected virtual ResourceTracker InitialiseResourceTracker()
-        {
-            return new ResourceTracker();
-        } 
-        #endregion
-
-        #region InitialiseQueueTracker()
-        /// <summary>
-        /// This method returns the default queue trackers, which includes 4 independent priority queues.
-        /// </summary>
-        /// <returns>The Queue tracker container.</returns>
-        protected virtual QueueTrackerContainer<QueueTracker> InitialiseQueueTracker()
-        {
-            return new QueueTrackerContainer<QueueTracker>(4);
-        }
-        #endregion
-
-        #region InitialiseComponentContainer()
-        /// <summary>
-        /// This method creates the component container.
-        /// This container holds the jobs, message initiators and handlers and is used to 
-        /// assign incoming requests to the appropriate command.
-        /// </summary>
-        /// <returns>Returns the container.</returns>
-        protected virtual CommandContainer InitialiseCommandsContainer()
-        {
-            return new CommandContainer();
-        } 
-        #endregion
-
-        #region InitialiseCommunicationContainer()
-        /// <summary>
-        /// This method creates the communication container. This container comtains all the 
-        /// listeners and senders registered on the service, and assigns priority when polling for 
-        /// new incoming requests.
-        /// </summary>
-        /// <returns>The communication container.</returns>
-        protected virtual CommunicationContainer InitialiseCommunicationContainer()
-        {
-            return new CommunicationContainer(PolicyCommunication());
-        }
-        /// <summary>
-        /// This is the policy used to set the communication component settings.
-        /// </summary>
-        /// <returns></returns>
-        protected virtual CommunicationPolicy PolicyCommunication()
-        {
-            return new CommunicationPolicy();
-        }
-        #endregion
-
-        #region InitialiseSchedulerContainer()
-        /// <summary>
-        /// This method returns the default scheduler container.
-        /// </summary>
-        /// <returns>The default scheduler.</returns>
-        protected virtual SchedulerContainer InitialiseSchedulerContainer()
-        {
-            return new SchedulerContainer(PolicyScheduler());
-        }
-
-        protected virtual SchedulerPolicy PolicyScheduler()
-        {
-            var policy = new SchedulerPolicy();
-            
-            //policy.DefaultPollInMs = ConfigurationOptions.
-
-            return policy;
-        }
-        #endregion
-
         #region InitialiseTaskManager()
         /// <summary>
         /// This method creates the task manager and sets the default bulkhead reservations.
@@ -128,6 +50,84 @@ namespace Xigadee
         } 
         #endregion
 
+
+        #region InitialiseResourceTracker()
+        /// <summary>
+        /// This method creates the default resource tracker for the Microservice.
+        /// Resource trackers are used to limit incoming messages that use a particular resource
+        /// that is overloaded.
+        /// </summary>
+        /// <returns>Returns the resource tracker.</returns>
+        protected virtual ResourceTracker InitialiseResourceTracker()
+        {
+            var container = new ResourceTracker();
+
+            return container;
+        } 
+        #endregion
+
+
+        #region InitialiseComponentContainer()
+        /// <summary>
+        /// This method creates the component container.
+        /// This container holds the jobs, message initiators and handlers and is used to 
+        /// assign incoming requests to the appropriate command.
+        /// </summary>
+        /// <returns>Returns the container.</returns>
+        protected virtual CommandContainer InitialiseCommandsContainer()
+        {
+            var container = new CommandContainer();
+
+            return container;
+        } 
+        #endregion
+
+        #region InitialiseCommunicationContainer()
+        /// <summary>
+        /// This method creates the communication container. This container comtains all the 
+        /// listeners and senders registered on the service, and assigns priority when polling for 
+        /// new incoming requests.
+        /// </summary>
+        /// <returns>The communication container.</returns>
+        protected virtual CommunicationContainer InitialiseCommunicationContainer()
+        {
+            var container = new CommunicationContainer(PolicyCommunication());
+
+            return container;
+        }
+        /// <summary>
+        /// This is the policy used to set the communication component settings.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual CommunicationPolicy PolicyCommunication()
+        {
+            return new CommunicationPolicy();
+        }
+        #endregion
+
+        #region InitialiseSchedulerContainer()
+        /// <summary>
+        /// This method returns the default scheduler container.
+        /// </summary>
+        /// <returns>The default scheduler.</returns>
+        protected virtual SchedulerContainer InitialiseSchedulerContainer()
+        {
+            var container = new SchedulerContainer(PolicyScheduler());
+
+            return container;
+        }
+
+        protected virtual SchedulerPolicy PolicyScheduler()
+        {
+            var policy = new SchedulerPolicy();
+            
+            //policy.DefaultPollInMs = ConfigurationOptions.
+
+            return policy;
+        }
+        #endregion
+
+
         #region InitialiseEventSourceContainer(List<IEventSource> eventSources)
         /// <summary>
         /// THis method returns the default scheduler container.
@@ -135,7 +135,9 @@ namespace Xigadee
         /// <returns>The default scheduler.</returns>
         protected virtual EventSourceContainer InitialiseEventSourceContainer(List<IEventSource> eventSources)
         {
-            return new EventSourceContainer(PolicyEventSource(), eventSources);
+            var container = new EventSourceContainer(PolicyEventSource(), eventSources);
+
+            return container;
         }
         /// <summary>
         /// This is the eveent source policy.
@@ -154,7 +156,9 @@ namespace Xigadee
         /// <returns>The default scheduler.</returns>
         protected virtual LoggerContainer InitialiseLoggerContainer(List<ILogger> loggers)
         {
-            return new LoggerContainer(loggers);
+            var container = new LoggerContainer(loggers);
+
+            return container;
         }
         #endregion
 
@@ -165,7 +169,9 @@ namespace Xigadee
         /// <returns>The default scheduler.</returns>
         protected virtual TelemetryContainer InitialiseTelemetryContainer(List<ITelemetry> telemetries)
         {
-            return new TelemetryContainer(telemetries);
+            var container = new TelemetryContainer(telemetries);
+
+            return container;
         }
         #endregion
 
@@ -175,9 +181,10 @@ namespace Xigadee
         /// </summary>
         protected virtual SerializationContainer InitialiseSerializationContainer(List<IPayloadSerializer> payloadSerializers)
         {
-            return new SerializationContainer(payloadSerializers);
+            var container = new SerializationContainer(payloadSerializers);
+
+            return container;
         }
         #endregion
-        
     }
 }

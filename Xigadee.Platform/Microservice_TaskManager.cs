@@ -239,7 +239,6 @@ namespace Xigadee
             mScheduler = InitialiseSchedulerContainer();
         }
         #endregion
-
         #region TaskManagerStart()
         /// <summary>
         /// This method starts the processing process loop.
@@ -248,24 +247,8 @@ namespace Xigadee
         {
             TaskManagerProcessRegister();
 
-            mTaskContainer.Start();
+            ServiceStart(mTaskContainer);
         }
-        #endregion
-        #region TaskManagerProcessRegister()
-        /// <summary>
-        /// 
-        /// </summary>
-        protected virtual void TaskManagerProcessRegister()
-        {
-            mTaskContainer.ProcessRegister("SchedulesProcess", mTaskContainer.LevelMax + 1, SchedulesProcess);
-
-            for (int l = mTaskContainer.LevelMin; l <= mTaskContainer.LevelMax; l++)
-            {
-                mTaskContainer.ProcessRegister($"ListenersProcess: {l}", l, () => ListenersProcess(l));
-            }
-
-            mTaskContainer.ProcessRegister("OverloadCheck", mTaskContainer.LevelMin - 1, OverloadCheck);
-        } 
         #endregion
         #region TaskManagerStop()
         /// <summary>
@@ -273,51 +256,35 @@ namespace Xigadee
         /// </summary>
         protected virtual void TaskManagerStop()
         {
-            mTaskContainer.Stop();
+            ServiceStop(mTaskContainer);
         }
         #endregion
 
-        #region OverloadCheck...
-        private void OverloadCheck()
-        {
-            try
-            {
-                //If the eventsource or logger queues are overloaded, 
-                //then assign tasks to it to slow down processing of incoming or queued requests.
-                OverloadCheck(mEventSource);
-                OverloadCheck(mLogger);
-            }
-            catch (Exception ex)
-            {
-                mLogger.LogException("ExecuteTaskComplete/ OverloadCheck has faulted", ex);
-            }
-        }
-
+        #region TaskManagerProcessRegister()
         /// <summary>
-        /// This method checks whether the process is overloaded and schedules a long running task to reduce the overload.
+        /// 
         /// </summary>
-        /// <param name="process">The process to check.</param>
-        protected virtual void OverloadCheck(IActionQueue process)
+        protected virtual void TaskManagerProcessRegister()
         {
-            if (!process.Overloaded)// || process.OverloadProcessCount >= mAutotuneOverloadTasksConcurrent)
-                return;
+            mTaskContainer.ProcessRegister("SchedulesProcess", mTaskContainer.LevelMax + 1, mScheduler);
 
-            TaskTracker tracker = new TaskTracker(TaskTrackerType.Overload, null);
-            tracker.Name = process.GetType().Name;
-            tracker.Caller = process.GetType().Name;
-            tracker.IsLongRunning = true;
-            tracker.Priority = 3;
-            tracker.Execute = async (token) => await process.OverloadProcess(ConfigurationOptions.OverloadProcessTimeInMs);
+            for (int l = mTaskContainer.LevelMin; l <= mTaskContainer.LevelMax; l++)
+            {
+                mTaskContainer.ProcessRegister($"ListenersProcess: {l}", l, mCommunication);
+            }
 
-            mTaskContainer.ExecuteOrEnqueue(tracker);
+            mTaskContainer.ProcessRegister("Overload Check EventSource", mTaskContainer.LevelMin - 1, mEventSource);
+
+            mTaskContainer.ProcessRegister("Overload Check Logger", mTaskContainer.LevelMin - 2, mLogger);
         }
         #endregion
+
 
         #region SchedulesProcess()
         /// <summary>
         /// This method processes any outstanding schedules and created a new task.
         /// </summary>
-        private void SchedulesProcess()
+        private void SchedulesProcess(TaskManagerAvailability availability)
         {
             var items = mScheduler.Items.Where((c) => c.ShouldPoll);
 
@@ -365,12 +332,12 @@ namespace Xigadee
         }
         #endregion
 
-        #region ListenersProcess(int priorityLevel)
+        #region ListenersProcess(int priorityLevel, TaskManagerAvailability availability)
         /// <summary>
         /// This method is used to create tasks to dequeue data from the listeners.
         /// </summary>
         /// <param name="priorityLevel">This property specifies the priority level that should be processed..</param>
-        private void ListenersProcess(int priorityLevel)
+        private void ListenersProcess(int priorityLevel, TaskManagerAvailability availability)
         {
             bool singleHop = false;
             //Ok, we don't receive any messages until the system is running.

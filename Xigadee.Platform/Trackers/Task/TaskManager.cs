@@ -1,23 +1,23 @@
-﻿using System;
+﻿#region using
+using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-
+using System.Threading.Tasks; 
+#endregion
 namespace Xigadee
 {
-
-
     /// <summary>
     /// This container holds the current tasks being processed on the system and calculates the availabile slots for the supported priority levels.
     /// </summary>
-    public class TaskManager: ServiceBase<TaskManagerStatistics>
+    public class TaskManager: ServiceBase<TaskManagerStatistics>, IServiceLogger
     {
         #region Declarations
-        private ConcurrentDictionary<string, ProcessHolder> mProcesses;
+        /// <summary>
+        /// This is a collection of the current active processes on the system.
+        /// </summary>
+        private ConcurrentDictionary<string, TaskManagerProcessContext> mProcesses;
         /// <summary>
         /// This is the message pump that loops around the various options.
         /// </summary>
@@ -30,9 +30,13 @@ namespace Xigadee
         /// This is the manual reset lock that is triggered when a job completes.
         /// </summary>
         private ManualResetEventSlim mPauseCheck;
-
+        /// <summary>
+        /// This is the setting policy for the task manager.
+        /// </summary>
         private TaskManagerPolicy mPolicy;
-
+        /// <summary>
+        /// This is the CpuStats holder. It is used to report statistics and to hold trigger autotune events.
+        /// </summary>
         private CpuStats mCpuStats = new CpuStats();
 
         private DateTime? mAutotuneLastProcessorTime = null;
@@ -76,12 +80,6 @@ namespace Xigadee
         private long mTasksKilledTotal = 0;
 
         private long mTasksKilledDidReturn = 0;
-        /// <summary>
-        /// This is the time that a process is marked as killed after it has been marked as cancelled.
-        /// </summary>
-        private TimeSpan mProcessKillOverrunGracePeriod;
-
-        private TaskAvailabilityHolder mAvailabilityHolder;
         #endregion
         #region Constructor
         /// <summary>
@@ -108,17 +106,16 @@ namespace Xigadee
             
             mTasksQueue = new QueueTrackerContainer<QueueTracker>(levels);
 
-            mProcesses = new ConcurrentDictionary<string, ProcessHolder>();
+            mProcesses = new ConcurrentDictionary<string, TaskManagerProcessContext>();
 
             TasksMaxConcurrent = policy.ConcurrentRequestsMax;
 
             Dispatcher = dispatcher;
 
-            mProcessKillOverrunGracePeriod = policy.ProcessKillOverrunGracePeriod ?? TimeSpan.FromSeconds(15);
+            if (!mPolicy.ProcessKillOverrunGracePeriod.HasValue)
+                mPolicy.ProcessKillOverrunGracePeriod = TimeSpan.FromSeconds(15);
 
             mTaskRequests = new ConcurrentDictionary<Guid, TaskTracker>();
-
-            mAvailabilityHolder = new TaskAvailabilityHolder();
         }
         #endregion
 
@@ -161,133 +158,6 @@ namespace Xigadee
             mMessagePump.Join();
         }
         #endregion
-
-
-        public void ProcessRegister(string name, int priority, Action<TaskAvailabilityHolder> execute)
-        {
-            var process = new ProcessHolder() { Priority = priority, Name = name, Execute = execute };
-
-            mProcesses.AddOrUpdate(name, process, (n, o) => process);
-        }
-
-        #region ProcessRegister(string name, int priority, Action execute)
-        /// <summary>
-        /// This method registers a process to be polled as part of the process loop.
-        /// </summary>
-        /// <param name="name">The process name. If this is already used, then it will be replaced.</param>
-        /// <param name="priority">The process priority.</param>
-        /// <param name="execute">The execute action.</param>
-        public void ProcessRegister(string name, int priority, Action execute)
-        {
-            ProcessRegister(name, priority, (h) => execute());
-        }
-        #endregion
-        #region ProcessUnregister(string name)
-        /// <summary>
-        /// This method removes a process from the Process collection.
-        /// </summary>
-        /// <param name="name">The process name.</param>
-        public void ProcessUnregister(string name)
-        {
-            ProcessHolder value;
-            mProcesses.TryRemove(name, out value);
-        }
-        #endregion
-        #region ProcessExecute(ProcessHolder process)
-        /// <summary>
-        /// This method executes a particular process syncronously, and catches any exceptions that might be thrown.
-        /// </summary>
-        /// <param name="process">The process to execute.</param>
-        private void ProcessExecute(ProcessHolder process)
-        {
-            try
-            {
-                process.Execute(mAvailabilityHolder);
-            }
-            catch (Exception ex)
-            {
-                LogException($"ProcessExecute failed: {process.Name}", ex);
-            }
-        } 
-        #endregion
-
-        #region ProcessLoop(object state)
-        /// <summary>
-        /// This is the message loop that receives messages.
-        /// </summary>
-        /// <param name="state">This is not used.</param>
-        private void ProcessLoop(object state)
-        {
-            MessagePumpActive = true;
-
-            try
-            {
-                //Loop to infinity until an exception is called for the thread or MessagePumpActive is set to false.
-                while (MessagePumpActive)
-                {
-                    //Pause 50ms if set or until another process signals continue.
-                    LoopPause();
-
-                    try
-                    {
-
-                        //Reset the reset event to pause the thread.
-                        //However this will be set if any new tasks are enqueued in the following code.
-                        LoopReset(); 
-                        
-                        //Timeout any overdue tasks.
-                        TaskTimedoutCancel();
-
-                        //Process waiting messages.
-                        DequeueTasksAndExecute();
-
-
-                        //Execute any registered processes
-                        mProcesses.Values
-                            .OrderByDescending((p) => p.Priority)
-                            .ForEach((p) => ProcessExecute(p));
-                    }
-                    catch (Exception tex)
-                    {
-                        LogException("ProcessLoop unhandled exception", tex);
-                    }
-                }
-            }
-            catch (ThreadAbortException)
-            {
-                //OK, we're shutting down.
-                MessagePumpActive = false;
-                //LogMessage(LoggingLevel.Info, "Thread aborting, shutting down", "Messaging");
-            }
-            catch (Exception ex)
-            {
-                LogException("TaskManager (Unhandled)", ex);
-            }
-            finally
-            {
-                //Cancel any remaining tasks as the loop is leaving.
-                TasksCancel();
-            }
-        }
-        #endregion
-
-        #region Loop methods
-        private void LoopPause()
-        {
-            mPauseCheck.Wait(mPolicy.LoopPauseTimeInMs);
-        }
-
-        private void LoopReset()
-        {
-            mPauseCheck.Reset();
-        }
-
-        private void LoopSet()
-        {
-            mPauseCheck.Set();
-        } 
-        #endregion
-
         #region StatisticsRecalculate()
         /// <summary>
         /// This method sets the statistics.
@@ -338,9 +208,149 @@ namespace Xigadee
         } 
         #endregion
 
-        private void LogException(string message, Exception ex = null)
+        /// <summary>
+        /// This method initialises a particular process before it is first executed, if an exception is thrown the process is disabled.
+        /// </summary>
+        /// <param name="context">The process to execute.</param>
+        private void ProcessInitialise(TaskManagerProcessContext context)
         {
+
         }
+
+        #region ProcessRegister(string name, int priority, Action execute)
+        /// <summary>
+        /// This method registers a process to be polled as part of the process loop.
+        /// </summary>
+        /// <param name="name">The process name. If this is already used, then it will be replaced.</param>
+        /// <param name="ordinal">The order the registered processes are polled higher is first.</param>
+        /// <param name="execute">The execute action.</param>
+        public void ProcessRegister(string name, int ordinal, ITaskManagerProcess process)
+        {
+            ProcessRegister<object>(name, ordinal, process);
+        }
+
+        public void ProcessRegister<C>(string name, int ordinal, ITaskManagerProcess process, C context = default(C))
+        {
+            var holder = new TaskManagerProcessContext<C>(name) { Ordinal = ordinal, Process = process, Context = context };
+
+            mProcesses.AddOrUpdate(name, holder, (n, o) => holder);
+        }
+        #endregion
+        #region ProcessUnregister(string name)
+        /// <summary>
+        /// This method removes a process from the Process collection.
+        /// </summary>
+        /// <param name="name">The process name.</param>
+        public void ProcessUnregister(string name)
+        {
+            TaskManagerProcessContext value;
+            mProcesses.TryRemove(name, out value);
+        }
+        #endregion
+        #region ProcessExecute(ProcessHolder process)
+        /// <summary>
+        /// This method executes a particular process syncronously, and catches any exceptions that might be thrown.
+        /// </summary>
+        /// <param name="context">The process to execute.</param>
+        private void ProcessExecute(TaskManagerProcessContext context)
+        {
+            try
+            {
+                if (context.Process.CanProcess())
+                    context.Process.Process(CalculateAvailability());
+            }
+            catch (Exception ex)
+            {
+                LogException($"ProcessExecute failed: {context.Name}", ex);
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// This method passes an object to the polling party that can be used to enqueue jobs.
+        /// </summary>
+        /// <returns>Returns a new availability object.</returns>
+        protected virtual TaskManagerAvailability CalculateAvailability()
+        {
+            return new TaskManagerAvailability(ExecuteOrEnqueue);
+        }
+
+        #region ProcessLoop(object state)
+        /// <summary>
+        /// This is the message loop that receives messages.
+        /// </summary>
+        /// <param name="state">This is not used.</param>
+        private void ProcessLoop(object state)
+        {
+            MessagePumpActive = true;
+
+            try
+            {
+                //Loop to infinity until an exception is called for the thread or MessagePumpActive is set to false.
+                while (MessagePumpActive)
+                {
+                    //Pause 50ms if set or until another process signals continue.
+                    LoopPause();
+
+                    try
+                    {
+
+                        //Reset the reset event to pause the thread.
+                        //However this will be set if any new tasks are enqueued in the following code.
+                        LoopReset(); 
+                        
+                        //Timeout any overdue tasks.
+                        TaskTimedoutCancel();
+
+                        //Process waiting messages.
+                        DequeueTasksAndExecute();
+
+                        //Execute any registered processes
+                        mProcesses.Values
+                            .OrderByDescending((p) => p.Ordinal)
+                            .ForEach((p) => ProcessExecute(p));
+                    }
+                    catch (Exception tex)
+                    {
+                        LogException("ProcessLoop unhandled exception", tex);
+                    }
+                }
+            }
+            catch (ThreadAbortException)
+            {
+                //OK, we're shutting down.
+                MessagePumpActive = false;
+                //LogMessage(LoggingLevel.Info, "Thread aborting, shutting down", "Messaging");
+            }
+            catch (Exception ex)
+            {
+                LogException("TaskManager (Unhandled)", ex);
+            }
+            finally
+            {
+                //Cancel any remaining tasks as the loop is leaving.
+                TasksCancel();
+            }
+        }
+        #endregion
+
+        #region Loop methods
+        private void LoopPause()
+        {
+            mPauseCheck.Wait(mPolicy.LoopPauseTimeInMs);
+        }
+
+        private void LoopReset()
+        {
+            mPauseCheck.Reset();
+        }
+
+        private void LoopSet()
+        {
+            mPauseCheck.Set();
+        } 
+        #endregion
+
 
         #region BulkheadReserve(int level, int slotCount)
         /// <summary>
@@ -584,6 +594,17 @@ namespace Xigadee
         public int TasksActive { get { return mTaskRequests.Count; } }
         #endregion
 
+        #region Logger
+        public ILoggerExtended Logger
+        {
+            get; set;
+        }
+        private void LogException(string message, Exception ex = null)
+        {
+            Logger?.LogException(message, ex);
+        } 
+        #endregion
+
         #region --> TaskTimedoutKill()
         /// <summary>
         /// This method is used to kill the overrun tasks when it has exceeded the configured cancel time.
@@ -601,7 +622,7 @@ namespace Xigadee
             if (cancelled != null && cancelled.Count > 0)
             {
                 cancelled
-                    .Where((t) => t.CancelledTime.HasValue && ((DateTime.UtcNow - t.CancelledTime.Value) > mProcessKillOverrunGracePeriod))
+                    .Where((t) => t.CancelledTime.HasValue && ((DateTime.UtcNow - t.CancelledTime.Value) > mPolicy.ProcessKillOverrunGracePeriod))
                     .ForEach((t) => TaskKill(t));
             }
         }
@@ -685,7 +706,6 @@ namespace Xigadee
         }
         #endregion
 
-
         #region Autotune()
         /// <summary>
         /// This method is used to reduce or increase the processes currently active based on the target CPU percentage.
@@ -747,31 +767,6 @@ namespace Xigadee
             }
         }
         #endregion
-
-
-        public class TaskAvailabilityHolder
-        {
-
-        }
-
-        /// <summary>
-        /// This class holders a registered process that will be polled as part of the thread loop.
-        /// </summary>
-        protected class ProcessHolder
-        {
-            /// <summary>
-            /// The process priority.
-            /// </summary>
-            public int Priority { get; set; }
-            /// <summary>
-            /// The execute action.
-            /// </summary>
-            public Action<TaskAvailabilityHolder> Execute { get; set; }
-            /// <summary>
-            /// The unique process name.
-            /// </summary>
-            public string Name { get; set; }
-        }
 
         /// <summary>
         /// This class is used to hold the priority settings.

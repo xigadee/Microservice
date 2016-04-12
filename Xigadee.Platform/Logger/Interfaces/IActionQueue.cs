@@ -12,6 +12,6 @@ namespace Xigadee
 
         int QueueLength { get; }
 
-        Task<int> OverloadProcess(int timespaninms);
+        Task<int> OverloadProcess();
     }
 }

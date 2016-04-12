@@ -12,16 +12,14 @@ namespace Xigadee
     /// The Event Source is used to track all changes of state for a Microservice so that the system can be 
     /// reconstructed if there is a failure to any primary systems.
     /// </summary>
-    public class EventSourceContainer : ActionQueueCollectionBase<Action<IEventSource>, IEventSource, EventSourceStatistics>
+    public class EventSourceContainer : ActionQueueCollectionBase<Action<IEventSource>, IEventSource, EventSourceStatistics, EventSourcePolicy>
         , IEventSource, IServiceLogger
     {
         private ILoggerExtended mLogger;
-        private EventSourcePolicy mPolicy;
 
-        public EventSourceContainer(EventSourcePolicy policy, IEnumerable<IEventSource> eventSources, int? overloadThreshold = 500)
-            : base(eventSources, overloadThreshold)
+        public EventSourceContainer(EventSourcePolicy policy, IEnumerable<IEventSource> eventSources)
+            : base(eventSources, policy)
         {
-            mPolicy = policy;
         }
 
         public ILoggerExtended Logger
@@ -78,7 +76,9 @@ namespace Xigadee
                         throw;
                     }
                 }
+
                 await Task.Delay(TimeSpan.FromMilliseconds(numberOfRetries * 100));
+
                 numberOfRetries++;
             }
         }
