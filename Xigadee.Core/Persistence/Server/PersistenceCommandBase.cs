@@ -301,6 +301,7 @@ namespace Xigadee
             }
 
             holder.rs.ResponseCode = 500;
+            holder.rs.ResponseMessage = ex.Message;
         }
         #endregion
 
@@ -642,9 +643,7 @@ namespace Xigadee
                         m.SignalFail();
                         rsPayload.Message.Status = "500";
                         rsPayload.Message.StatusDescription = ex.Message;
-                        Logger.LogException(
-                            string.Format("Error processing message (was cancelled({0}))-{1}-{2}-{3}", m.Cancel.IsCancellationRequested, EntityType, actionType, holder.rq)
-                            , ex);
+                        Logger.LogException($"Error processing message (was cancelled({m.Cancel.IsCancellationRequested}))-{EntityType}-{actionType}-{holder.rq}", ex);
                         holder.result = ResourceRequestResult.Exception;
                     }
 
@@ -924,12 +923,11 @@ namespace Xigadee
         protected virtual void ProcessOutputError(K key, IResponseHolder holderResponse, PersistenceRepositoryHolder<K, E> rs)
         {
             if (holderResponse.Ex != null && !rs.IsTimeout)
-                Logger.LogException(string.Format("Error in persistence {0}-{1}", typeof(E).Name, key), holderResponse.Ex);
+                Logger.LogException($"Error in persistence {typeof (E).Name}-{key}", holderResponse.Ex);
             else
                 Logger.LogMessage(
                     rs.IsTimeout ? LoggingLevel.Warning : LoggingLevel.Info,
-                    string.Format("Error in persistence {0}-{1}-{2}-{3}", typeof(E).Name, rs.ResponseCode, key,
-                        holderResponse.Ex != null ? holderResponse.Ex.ToString() : rs.ResponseMessage), typeof(E).Name);
+                    $"Error in persistence {typeof (E).Name}-{rs.ResponseCode}-{key}-{holderResponse.Ex?.ToString() ?? rs.ResponseMessage}", typeof(E).Name);
 
             rs.IsTimeout = holderResponse.IsTimeout;
         }

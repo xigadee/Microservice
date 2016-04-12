@@ -352,11 +352,14 @@ namespace Xigadee
                 }
             }
             catch (Exception ex)
-            { 
+            {
                 if (paramReturnValue?.Value != null)
-                    rs.StatusCode = (int)paramReturnValue.Value;
+                    rs.StatusCode = (int) paramReturnValue.Value;
                 else
+                {
                     rs.StatusCode = 500;
+                    rs.Ex = ex;
+                }
 
                 throw;
             }
