@@ -39,7 +39,7 @@ namespace Xigadee
                 var result = await mCacheManager.Read(key);
                 if (result.IsSuccess)
                 {
-                    return new RepositoryHolder<K, E>(key, responseCode: 200, entity: result.Entity) { IsCached = true };
+                    return new RepositoryHolder<K, E>(key, new Tuple<string, string>(result.Id, result.VersionId), responseCode: 200, entity: result.Entity) { IsCached = true };
                 }
             }
 
@@ -56,7 +56,7 @@ namespace Xigadee
                 {
                     var resultRead = await mCacheManager.Read(new Tuple<string, string>(refKey, refValue));
                     if (resultRead.IsSuccess)
-                        return new RepositoryHolder<K, E>(resultVersion.Entity.Item1, responseCode: 200, entity: resultRead.Entity) { IsCached = true };
+                        return new RepositoryHolder<K, E>(resultVersion.Entity.Item1, new Tuple<string, string>(resultVersion.Id, resultVersion.VersionId), responseCode: 200, entity: resultRead.Entity) { IsCached = true };
                 }
             }
 
@@ -85,7 +85,7 @@ namespace Xigadee
                 var result = await mCacheManager.VersionRead(key);
                 if (result.IsSuccess)
                 {
-                    return new RepositoryHolder<K, Tuple<K, string>>(result.Entity.Item1, responseCode: 200, entity: result.Entity) { IsCached = true };
+                    return new RepositoryHolder<K, Tuple<K, string>>(result.Entity.Item1, new Tuple<string, string>(result.Id, result.VersionId), responseCode: 200, entity: result.Entity) { IsCached = true };
                 }
             }
 
@@ -99,7 +99,7 @@ namespace Xigadee
                 var result = await mCacheManager.VersionRead(new Tuple<string,string>(refKey, refValue));
                 if (result.IsSuccess)
                 {
-                    return new RepositoryHolder<K, Tuple<K, string>>(result.Entity.Item1, responseCode: 200, entity: result.Entity) { IsCached = true };
+                    return new RepositoryHolder<K, Tuple<K, string>>(result.Entity.Item1, new Tuple<string, string>(result.Id, result.VersionId), responseCode: 200, entity: result.Entity) { IsCached = true };
                 }
             }
 
