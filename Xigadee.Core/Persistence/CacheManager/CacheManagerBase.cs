@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public abstract class CacheManagerBase<K, E>: ICacheManager<K, E>
-        where K : IEquatable<K>
+    public abstract class CacheManagerBase<K, E>: ICacheManager<K, E> where K : IEquatable<K>
     {
         private readonly bool mReadOnly;
 
@@ -34,6 +33,8 @@ namespace Xigadee
 
         public abstract Task<bool> WriteReference(EntityTransformHolder<K, E> transform, Tuple<string, string> reference, K key, string version, TimeSpan? expiry = null);
 
+        public abstract Task<bool> WriteVersion(EntityTransformHolder<K, E> transform, K key, string version, TimeSpan? expiry = null);
+
         public abstract Task<bool> Delete(EntityTransformHolder<K, E> transform, K key);
 
         public abstract Task<bool> Delete(EntityTransformHolder<K, E> transform, Tuple<string, string> reference);
@@ -46,6 +47,12 @@ namespace Xigadee
         public Task<bool> WriteReference(Tuple<string, string> reference, K key, string version,TimeSpan? expiry = null)
         {
             return WriteReference(mTransform, reference, key, version, expiry);
+        }
+
+        public Task<bool> WriteVersion(K key, string version, TimeSpan? expiry = null)
+        {
+            return WriteVersion(mTransform, key, version, expiry);
+
         }
 
         public Task<bool> Delete(K key)

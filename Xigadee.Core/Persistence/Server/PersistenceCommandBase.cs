@@ -807,7 +807,11 @@ namespace Xigadee
                 result = await mCacheManager.VersionRead(mTransform, holder.rq.Key);
 
             if (result == null || !result.IsSuccess)
+            {
                 result = await InternalVersion(holder.rq.Key, holder);
+                if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
+                    mCacheManager.WriteVersion(mTransform, holder.rq.Key, result.VersionId);
+            }
 
             ProcessOutputKey(holder.rq, holder.rs, result);
         }

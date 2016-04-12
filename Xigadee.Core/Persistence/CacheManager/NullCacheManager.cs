@@ -18,7 +18,6 @@ namespace Xigadee
         {
             return Task.FromResult(false);
         }
-
         public override Task<bool> Delete(EntityTransformHolder<K, E> transform, K key)
         {
             return Task.FromResult(false);
@@ -50,6 +49,11 @@ namespace Xigadee
         }
 
         public override Task<bool> WriteReference(EntityTransformHolder<K, E> transform, Tuple<string, string> reference, K key, string version, TimeSpan? expiry = null)
+        {
+            return Task.FromResult(false);
+        }
+
+        public override Task<bool> WriteVersion(EntityTransformHolder<K, E> transform, K key, string version, TimeSpan? expiry = null)
         {
             return Task.FromResult(false);
         }
