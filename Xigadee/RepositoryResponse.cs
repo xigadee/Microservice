@@ -75,7 +75,7 @@ namespace Xigadee
 
         public override string ToString()
         {
-            return string.Format("KeyReference={0}|ResponseCode={1}|ResponseMessage={2}|TraceId={3}", KeyReference, ResponseCode, ResponseMessage, TraceId);
+            return $"KeyReference={KeyReference}|ResponseCode={ResponseCode}|ResponseMessage={ResponseMessage}|TraceId={TraceId}|CorrelationId={Settings?.CorrelationId}";
         }
     }
 }

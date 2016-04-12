@@ -135,7 +135,16 @@ namespace Xigadee
         /// </summary>
         /// <param name="rq">The incoming request.</param>
         /// <param name="ex">The exception.</param>
-        protected virtual void LogException(ApiRequest rq, Exception ex) { } 
+        protected virtual void LogException(ApiRequest rq, Exception ex) { }
+        #endregion
+
+        #region LogMessage
+        /// <summary>
+        /// This method logs any processing messages.
+        /// </summary>
+        /// <param name="loggingLevel">Logging level of the message</param>
+        /// <param name="message">The log message</param>
+        protected virtual void LogMessage(LoggingLevel loggingLevel, string message) { }
         #endregion
 
         #region EntityValidate(ApiRequest rq, E entity)
@@ -389,6 +398,7 @@ namespace Xigadee
                 case 504:
                     return StatusCode(HttpStatusCode.GatewayTimeout);
                 default:
+                    LogMessage(LoggingLevel.Error, $"Unexpected error occurred {responseHolder}");
                     return StatusCode(HttpStatusCode.InternalServerError);
             }
 
