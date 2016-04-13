@@ -95,7 +95,7 @@ namespace Xigadee
                 var apiRequest = actionContext.ActionArguments.Values.FirstOrDefault(
                         aa => aa != null && aa.GetType() == typeof (ApiRequest)) as ApiRequest;
 
-                if (apiRequest != null && apiRequest.Options != null)
+                if (apiRequest?.Options != null)
                     apiRequest.Options.CorrelationId = correlationId;
             }
             catch (Exception)
@@ -132,28 +132,26 @@ namespace Xigadee
 
                 var refDirectory = mEntityContainer.GetDirectoryReference(folder);
                 var refEntityDirectory =
-                    refDirectory.GetDirectoryReference(FormatDirectoryName(correlationId, principal, response));
+                    refDirectory.GetDirectoryReference(FormatDirectoryName(correlationId, principal, request.Method, response));
 
                 if ((mLevel & LoggingFilterLevel.Exception) > 0 && exception != null)
-                    tasks.Add(UploadBlob(refEntityDirectory, exception,
-                        string.Format("{0}.exception.json", correlationId), cancellationToken));
+                    tasks.Add(UploadBlob(refEntityDirectory, exception, $"{correlationId}.exception.json", cancellationToken));
 
                 if ((mLevel & LoggingFilterLevel.Request) > 0)
                     tasks.Add(UploadBlob(refEntityDirectory, new HttpRequestWrapper(request, principal),
-                        string.Format("{0}.request.json", correlationId), cancellationToken));
+                        $"{correlationId}.request.json", cancellationToken));
 
                 if ((mLevel & LoggingFilterLevel.Response) > 0)
                     tasks.Add(UploadBlob(refEntityDirectory, new HttpResponseWrapper(response),
-                        string.Format("{0}.response.json", correlationId), cancellationToken));
+                        $"{correlationId}.response.json", cancellationToken));
 
                 if ((mLevel & LoggingFilterLevel.RequestContent) > 0)
                     tasks.Add(UploadContentBlob(refEntityDirectory, request.Content,
-                        string.Format("{0}.request.content", correlationId), cancellationToken));
+                        $"{correlationId}.request.content", cancellationToken));
 
                 if ((mLevel & LoggingFilterLevel.ResponseContent) > 0)
                     tasks.Add(UploadContentBlob(refEntityDirectory, response.Content,
-                        string.Format("{0}.response.content", correlationId), cancellationToken));
-
+                        $"{correlationId}.response.content", cancellationToken));
             }
 
             await Task.WhenAll(tasks);
@@ -199,18 +197,18 @@ namespace Xigadee
             }
         }
 
-        private static string FormatDirectoryName(string correlationId, IPrincipal principal, HttpResponseMessage responseMessage)
+        private static string FormatDirectoryName(string correlationId, IPrincipal principal, HttpMethod requestMethod, HttpResponseMessage responseMessage)
         {
-            var directoryName = string.Empty;
+            var directoryName = "UNKNOWN";
             if (principal != null)
             {
                 var apimIdentity = principal.Identity as ApimIdentity;
-                if (apimIdentity != null && !string.IsNullOrEmpty(apimIdentity.Source))
-                    directoryName = string.Format("{0}.", apimIdentity.Source);
+                if (!string.IsNullOrEmpty(apimIdentity?.Source))
+                    directoryName = $"{apimIdentity.Source}.";
             }
 
-            return string.Format("{0}/{1}.{2}", directoryName,
-                responseMessage != null ? (int) responseMessage.StatusCode : 0, correlationId);
+            // CMS/GET.200.05.04785AB98F8843C7BC972F27CF1E5C68
+            return $"{directoryName}/{requestMethod}.{(responseMessage != null ? (int) responseMessage.StatusCode : 0)}.{DateTime.UtcNow.ToString("ss")}.{correlationId}";
         }
 
         #region Request Wrapper
@@ -220,30 +218,15 @@ namespace Xigadee
             private readonly HttpRequestMessage mRequestMessage;
             private readonly IPrincipal mRequestPrincipal;
 
-            public HttpRequestHeaders Headers
-            {
-                get { return mRequestMessage.Headers; }                
-            }
+            public HttpRequestHeaders Headers => mRequestMessage.Headers;
 
-            public HttpContentHeaders ContentHeaders
-            {
-                get { return mRequestMessage.Content == null ? null : mRequestMessage.Content.Headers; }
-            }
+            public HttpContentHeaders ContentHeaders => mRequestMessage.Content?.Headers;
 
-            public HttpMethod Method
-            {
-                get { return mRequestMessage.Method; }
-            }
+            public HttpMethod Method => mRequestMessage.Method;
 
-            public Uri RequestUri
-            {
-                get { return mRequestMessage.RequestUri; }
-            }
+            public Uri RequestUri => mRequestMessage.RequestUri;
 
-            public IIdentity Identity
-            {
-                get { return mRequestPrincipal == null ? null : mRequestPrincipal.Identity; }
-            }
+            public IIdentity Identity => mRequestPrincipal?.Identity;
 
             public string ClientIPAddress
             {
@@ -281,21 +264,12 @@ namespace Xigadee
         {
             private readonly HttpResponseMessage mResponseMessage;
 
-            public HttpResponseHeaders Headers
-            {
-                get { return mResponseMessage.Headers; }
-            }
+            public HttpResponseHeaders Headers => mResponseMessage.Headers;
 
-            public HttpContentHeaders ContentHeaders
-            {
-                get { return mResponseMessage.Content == null ? null : mResponseMessage.Content.Headers; }
-            }
+            public HttpContentHeaders ContentHeaders => mResponseMessage.Content?.Headers;
 
 
-            public HttpStatusCode StatusCode
-            {
-                get { return mResponseMessage.StatusCode; }
-            }
+            public HttpStatusCode StatusCode => mResponseMessage.StatusCode;
 
             public HttpResponseWrapper(HttpResponseMessage responseMessage)
             {
