@@ -175,6 +175,10 @@ namespace Xigadee
                 else if (State <= MasterJobState.TakingControl)
                     State = MasterJobState.Inactive;
             }
+            else if (!string.IsNullOrEmpty(rq.Message.ActionType))
+            {
+                Logger.LogMessage(LoggingLevel.Warning, $"{rq.Message.ActionType} is not a valid negotiating action type for master job", "MasterJob");
+            }
         }
 
         #endregion
