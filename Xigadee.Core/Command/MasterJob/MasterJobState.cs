@@ -12,15 +12,15 @@ namespace Xigadee
     /// </summary>
     public static class MasterJobStates
     {
-        public const string WhoIsMaster = "WHOISMASTER";
-        public const string RequestingControl1 = "REQUESTINGCONTROL1";
-        public const string RequestingControl2 = "REQUESTINGCONTROL2";
-        public const string TakingControl = "TAKINGCONTROL";
+        public const string WhoIsMaster = "whoismaster";
+        public const string RequestingControl1 = "requestingcontrol1";
+        public const string RequestingControl2 = "requestingcontrol2";
+        public const string TakingControl = "takingcontrol";
 
-        public const string IAmMaster = "IAMMASTER";
-        public const string IAmStandby = "IAMSTANDBY";
+        public const string IAmMaster = "iammaster";
+        public const string IAmStandby = "iamstandby";
 
-        public const string ResyncMaster = "RESYNCMASTER";
+        public const string ResyncMaster = "resyncmaster";
     }
 
     /// <summary>

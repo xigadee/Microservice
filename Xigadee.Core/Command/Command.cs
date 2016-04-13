@@ -61,9 +61,10 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor that calls the CommandsRegister function.
         /// </summary>
-        public CommandBase(P policy = null)
+        protected CommandBase(P policy = null)
         {
             mPolicy = policy ?? new P();
+            mCurrentMasterPollAttempts = 0;
             mSupported = new Dictionary<MessageFilterWrapper, CommandHandler>();
             mSchedules = new List<Schedule>();
 
