@@ -111,6 +111,7 @@
     <Compile Include="Trackers\Task\TaskAvailability.cs" />
     <Compile Include="Trackers\Task\ITaskAvailability.cs" />
     <Compile Include="Trackers\Task\ITaskManagerProcess.cs" />
+    <Compile Include="Trackers\Task\TaskAvailabilityStatistics.cs" />
     <Compile Include="Trackers\Task\TaskManagerProcessContext.cs" />
     <Compile Include="Trackers\Task\TaskManagerStatistics.cs" />
     <Compile Include="Trackers\Task\TaskPrioritySettings.cs" />

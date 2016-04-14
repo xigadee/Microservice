@@ -22,27 +22,13 @@ namespace Xigadee
 
         public ICpuStats Cpu { get; set; }
 
-
-        public int Active { get; set; }
-
-
-        public int SlotsAvailable { get; set; }
-
-        public int Killed { get; set; }
-
-        public long KilledDidReturn { get; set; }
-
-        public long KilledTotal { get; set; }
-
-        public string[] Levels { get; set; }
+        public TaskAvailabilityStatistics Availability { get; set; }
 
         public string[] Running { get; set; }
 
         public bool AutotuneActive { get; set; }
 
-        public int TasksMaxConcurrent { get; set; }
-
-        public int OverloadTasksConcurrent { get; set; }
+        public int TaskCount { get; set; }
 
         public QueueTrackerStatistics Queues { get; set; }
     }

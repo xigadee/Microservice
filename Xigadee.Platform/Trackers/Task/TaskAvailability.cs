@@ -11,9 +11,13 @@ namespace Xigadee
     /// <summary>
     /// This is a transient class that shows the current task slot availability.
     /// </summary>
-    public class TaskAvailability: ITaskAvailability
+    public class TaskAvailability: StatisticsBase<TaskAvailabilityStatistics>, ITaskAvailability
     {
         #region Declarations
+        /// <summary>
+        /// This collection holds a reference to the active tasks to ensure that returning or killed processes are not counted twice.
+        /// </summary>
+        private ConcurrentDictionary<long, Guid> mActiveBag;
         /// <summary>
         /// This is the current count of the internal running tasks.
         /// </summary>
@@ -23,16 +27,21 @@ namespace Xigadee
         /// </summary>
         private TaskManagerPrioritySettings[] mPriorityStatus;
 
-        private int mActive = 0;
-
+        /// <summary>
+        /// This is the incremental process counter.
+        /// </summary>
         private long mProcessSlot = 0;
 
         /// <summary>
         /// This is the current count of the killed tasks that have been freed up because the task has failed to return.
         /// </summary>
         private int mTasksKilled = 0;
-
+        /// <summary>
+        /// This is the number of killed processes that did return.
+        /// </summary>
         private long mTasksKilledDidReturn = 0;
+
+        private readonly int mTasksMaxConcurrent;
         #endregion
         #region Constructor
         /// <summary>
@@ -43,14 +52,42 @@ namespace Xigadee
         public TaskAvailability(int levels, int maxConcurrent)
         {
             Levels = levels;
-            TasksMaxConcurrent = maxConcurrent;
+            mTasksMaxConcurrent = maxConcurrent;
 
             mPriorityInternal = new TaskManagerPrioritySettings(TaskTracker.PriorityInternal);
 
             mPriorityStatus = new TaskManagerPrioritySettings[levels];
             Enumerable.Range(0, levels).ForEach((l) => mPriorityStatus[l] = new TaskManagerPrioritySettings(l));
+
+            mActiveBag = new ConcurrentDictionary<long, Guid>();
         }
         #endregion
+
+        protected override void StatisticsRecalculate()
+        {
+            base.StatisticsRecalculate();
+            try
+            {
+                mStatistics.TasksMaxConcurrent = mTasksMaxConcurrent;
+
+                mStatistics.Active = mActiveBag.Count;
+                mStatistics.SlotsAvailable = Count;
+
+                mStatistics.Killed = mTasksKilled;
+                mStatistics.KilledDidReturn = mTasksKilledDidReturn;
+
+                if (mPriorityStatus != null)
+                    mStatistics.Levels = mPriorityStatus
+                        .Union(new TaskManagerPrioritySettings[] { mPriorityInternal })
+                        .OrderByDescending((s) => s.Level)
+                        .Select((s) => s.Debug)
+                        .ToArray();
+            }
+            catch (Exception ex)
+            {
+                mStatistics.Ex = ex;
+            }
+        }
 
         #region BulkheadReserve(int level, int slotCount)
         /// <summary>
@@ -68,7 +105,7 @@ namespace Xigadee
             if (level < LevelMin || level > LevelMax)
                 return false;
 
-            mPriorityStatus[level].BulkHeadReservation = slotCount;
+            mPriorityStatus[level].BulkHeadReserve(slotCount);
 
             return true;
         }
@@ -94,36 +131,82 @@ namespace Xigadee
         public int Levels { get; }
         #endregion
 
+        #region Level(int priority)
+        /// <summary>
+        /// Find any available slots for the level.
+        /// </summary>
+        /// <param name="priority">The priority.</param>
+        /// <returns>returns the available slots.</returns>
         public int Level(int priority)
         {
-            return 10;
+            if (Count > 0)
+                return Count;
+
+            if (priority > LevelMax)
+                priority = LevelMax;
+
+            if (priority < LevelMin)
+                priority = LevelMin;
+
+            //OK, do we have any bulkhead reservation.
+            do
+            {
+                int available = mPriorityStatus[priority].Available;
+
+                if (available > 0)
+                    return available;
+
+                priority--;
+            }
+            while (priority >= LevelMin);
+
+            return 0;
         }
+        #endregion
 
-        public int TasksMaxConcurrent { get; }
-
+        #region Increment(TaskTracker tracker)
+        /// <summary>
+        /// This method adds a tracker to the availability counters.
+        /// </summary>
+        /// <param name="tracker">The tracker to add.</param>
+        /// <returns>Returns the tracker id.</returns>
         public long Increment(TaskTracker tracker)
         {
-            Interlocked.Increment(ref mActive);
-
-            if (tracker.IsInternal)
-                Interlocked.Increment(ref mPriorityInternal.Active);
-            else
-                Interlocked.Increment(ref mPriorityStatus[tracker.Priority.Value].Active);
+            if (tracker.ProcessSlot.HasValue && mActiveBag.ContainsKey(tracker.ProcessSlot.Value))
+                throw new ArgumentOutOfRangeException($"The tracker has already been submitted.");
 
             tracker.ProcessSlot = Interlocked.Increment(ref mProcessSlot);
+            if (!mActiveBag.TryAdd(tracker.ProcessSlot.Value, tracker.Id))
+                throw new ArgumentOutOfRangeException($"The tracker has already been submitted.");
+
+            if (tracker.IsInternal)
+                mPriorityInternal.Increment();
+            else
+                mPriorityStatus[tracker.Priority.Value].Increment();
 
             return tracker.ProcessSlot.Value;
-        }
-
+        } 
+        #endregion
+        #region Decrement(TaskTracker tracker, bool force = false)
+        /// <summary>
+        /// This method removes a tracker from the availability counters.
+        /// </summary>
+        /// <param name="tracker">The tracker to remove.</param>
+        /// <param name="force">A flag indicating whether the tracker was forceably deleted.</param>
         public void Decrement(TaskTracker tracker, bool force = false)
         {
-            Interlocked.Decrement(ref mActive);
+            if (!tracker.ProcessSlot.HasValue)
+                throw new ArgumentOutOfRangeException($"The tracker does not have a process slot set.");
+
+            Guid value;
+            if (!mActiveBag.TryRemove(tracker.ProcessSlot.Value, out value))
+                return;
 
             //Remove the internal task count.
             if (tracker.IsInternal)
-                Interlocked.Decrement(ref mPriorityInternal.Active);
+                mPriorityInternal.Decrement(tracker.IsKilled);
             else
-                Interlocked.Decrement(ref mPriorityStatus[tracker.Priority.Value].Active);
+                mPriorityStatus[tracker.Priority.Value].Decrement(tracker.IsKilled);
 
             if (tracker.IsKilled)
             {
@@ -131,9 +214,10 @@ namespace Xigadee
                 if (!force)
                     Interlocked.Increment(ref mTasksKilledDidReturn);
             }
-        }
+        } 
+        #endregion
 
-        #region Available
+        #region Count
         /// <summary>
         /// This figure is the number of remaining task slots available. Internal tasks are removed from the running tasks.
         /// </summary>
@@ -141,11 +225,9 @@ namespace Xigadee
         {
             get
             {
-                return TasksMaxConcurrent - (mActive - mPriorityInternal.Active - mTasksKilled);
+                return mTasksMaxConcurrent - (mActiveBag.Count - mPriorityInternal.Active);
             }
         }
         #endregion
-
-
     }
 }

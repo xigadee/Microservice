@@ -41,20 +41,20 @@ namespace Xigadee
 
         protected TaskAvailability mAvailability;
 
-        public class AutoTuneStats
-        {
-            public int TasksMaxConcurrent { get; set; } = 0;
+        //public class AutoTuneStats
+        //{
+        //    public int TasksMaxConcurrent { get; set; } = 0;
 
-            public int TasksMinConcurrent { get; set; } = 0;
+        //    public int TasksMinConcurrent { get; set; } = 0;
 
-            public int OverloadTasksConcurrent { get; set; } = 0;
+        //    public int OverloadTasksConcurrent { get; set; } = 0;
 
-            public long ProcessorCurrentMissCount = 0;
+        //    public long ProcessorCurrentMissCount = 0;
 
-            public DateTime? LastProcessorTime { get; set; } = null;
-        }
+        //    public DateTime? LastProcessorTime { get; set; } = null;
+        //}
 
-        private AutoTuneStats mAutotuneStats = new AutoTuneStats();
+        //private AutoTuneStats mAutotuneStats = new AutoTuneStats();
 
         /// <summary>
         /// This is the priority task queue.
@@ -141,25 +141,7 @@ namespace Xigadee
 
                 mStatistics.AutotuneActive = mPolicy.AutotuneEnabled;
 
-                mStatistics.TasksMaxConcurrent = mAutotuneStats.TasksMaxConcurrent;
-                mStatistics.OverloadTasksConcurrent = mAutotuneStats.OverloadTasksConcurrent;
-
-                if (mTaskRequests != null)
-                {
-                    mStatistics.Active = mTaskRequests.Count;
-                    mStatistics.SlotsAvailable = mAvailability.Count;
-                }
-
-                //mStatistics.Killed = mTasksKilled;
-                //mStatistics.KilledTotal = mTasksKilledTotal;
-                //mStatistics.KilledDidReturn = mTasksKilledDidReturn;
-
-                //if (mPriorityStatus != null)
-                //    mStatistics.Levels = mPriorityStatus
-                //        .Union(new TaskPrioritySettings[] { mPriorityInternal })
-                //        .OrderByDescending((s) => s.Level)
-                //        .Select((s) => s.Debug)
-                //        .ToArray();
+                mStatistics.TaskCount = mTaskRequests?.Count ?? 0;
 
                 if (mTaskRequests != null)
                     mStatistics.Running = mTaskRequests.Values
@@ -520,16 +502,6 @@ namespace Xigadee
         #endregion
 
 
-        #region Logger
-        /// <summary>
-        /// This is the system wide logger reference.
-        /// </summary>
-        public ILoggerExtended Logger
-        {
-            get; set;
-        }
-        #endregion
-
         #region --> TaskTimedoutKill()
         /// <summary>
         /// This method is used to kill the overrun tasks when it has exceeded the configured cancel time.
@@ -641,11 +613,11 @@ namespace Xigadee
             {
                 float? current = await mCpuStats.SystemProcessorUsagePercentage(System.Diagnostics.Process.GetCurrentProcess().ProcessName);
 
-                if (!current.HasValue && mAutotuneStats.ProcessorCurrentMissCount < 5)
-                {
-                    Interlocked.Increment(ref mAutotuneStats.ProcessorCurrentMissCount);
-                    return;
-                }
+                //if (!current.HasValue && mAutotuneStats.ProcessorCurrentMissCount < 5)
+                //{
+                //    Interlocked.Increment(ref mAutotuneStats.ProcessorCurrentMissCount);
+                //    return;
+                //}
 
                 //if (!mPolicy.AutotuneEnabled)
                 //    return;
@@ -693,8 +665,15 @@ namespace Xigadee
         }
         #endregion
 
-
-
+        #region Logger
+        /// <summary>
+        /// This is the system wide logger reference.
+        /// </summary>
+        public ILoggerExtended Logger
+        {
+            get; set;
+        }
+        #endregion
 
 
     }
