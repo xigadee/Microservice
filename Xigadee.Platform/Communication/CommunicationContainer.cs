@@ -231,7 +231,7 @@ namespace Xigadee
         /// <returns></returns>
         public bool CanProcess()
         {
-            return Status == ServiceStatus.Running;
+            return Status == ServiceStatus.Running && Submit != null;
         }
         #endregion
         #region --> Process(TaskManagerAvailability availability)
@@ -246,27 +246,35 @@ namespace Xigadee
             //Set the current collection for this iteration.
             var collection = mClientCollection;
 
-            //Process each priority level in decending priority. The Levels property is already ordered correctly.
-            foreach (int priorityLevel in collection.Levels)
+            try
             {
-                int slotsAvailable = availability.Level(priorityLevel);
-
-                while (CanProcess() && !collection.IsClosed)
+                //Process each priority level in decending priority. The Levels property is already ordered correctly.
+                foreach (int priorityLevel in collection.Levels)
                 {
-                    int available = slotsAvailable - mListenerActiveReservedSlots + mListenerActiveAllowedOverage;
-                    if (available <= 0)
-                        break;
+                    int slotsAvailable = availability.Level(priorityLevel);
 
-                    HolderSlotContext context;
-                    if (mClientCollection.TakeNext(available, TaskRecoverSlots, out context))
+                    while (CanProcess() && !collection.IsClosed)
                     {
+                        int available = slotsAvailable - mListenerActiveReservedSlots + mListenerActiveAllowedOverage;
+                        if (available <= 0)
+                            break;
+
+                        HolderSlotContext context;
+                        if (!mClientCollection.TakeNext(available, TaskRecoverSlots, out context))
+                            continue;
+
                         Interlocked.Add(ref mListenerActiveReservedSlots, context.Reserved);
+
+                        TaskTracker tracker = TrackerCreateFromListenerContext(context, priorityLevel);
+
+                        Submit(tracker);
                     }
-
-                    TaskTracker tracker = TrackerCreateFromListenerContext(context, priorityLevel);
-
-                    Submit(tracker);
                 }
+            }
+            catch (Exception ex)
+            {
+
+                throw;
             }
         }
 

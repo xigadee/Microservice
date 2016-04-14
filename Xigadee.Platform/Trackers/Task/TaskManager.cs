@@ -141,6 +141,8 @@ namespace Xigadee
 
                 mStatistics.AutotuneActive = mPolicy.AutotuneEnabled;
 
+                mStatistics.Availability = mAvailability.Statistics;
+
                 mStatistics.TaskCount = mTaskRequests?.Count ?? 0;
 
                 if (mTaskRequests != null)
@@ -222,7 +224,7 @@ namespace Xigadee
         public void ProcessRegister<C>(string name, int ordinal, ITaskManagerProcess process, C context = default(C))
         {
             var holder = new TaskManagerProcessContext<C>(name) { Ordinal = ordinal, Process = process, Context = context };
-
+            process.Submit = ExecuteOrEnqueue;
             mProcesses.AddOrUpdate(name, holder, (n, o) => holder);
         }
         #endregion
@@ -235,6 +237,7 @@ namespace Xigadee
         {
             TaskManagerProcessContext value;
             mProcesses.TryRemove(name, out value);
+            value.Process.Submit = null;
         }
         #endregion
         #region ProcessExecute(ProcessHolder process)
