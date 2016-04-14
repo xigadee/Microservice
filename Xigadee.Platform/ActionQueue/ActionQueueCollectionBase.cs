@@ -183,7 +183,7 @@ namespace Xigadee
         /// <returns>Returns true if the process can proceed.</returns>
         public virtual bool CanProcess()
         {
-            return Overloaded && mOverloadTaskCount < mPolicy.OverloadMaxTasks;
+            return Status == ServiceStatus.Running && Overloaded && mOverloadTaskCount < mPolicy.OverloadMaxTasks;
         } 
         #endregion
 

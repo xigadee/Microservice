@@ -139,7 +139,7 @@ namespace Xigadee
         /// <returns>Returns true of we can process.</returns>
         public bool CanProcess()
         {
-            return Count > 0 && Submit != null;
+            return Status == ServiceStatus.Running && Count > 0 && Submit != null;
         }
         #endregion
 

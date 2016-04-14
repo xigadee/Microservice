@@ -38,24 +38,10 @@ namespace Xigadee
         /// This is the CpuStats holder. It is used to report statistics and to hold trigger autotune events.
         /// </summary>
         private CpuStats mCpuStats = new CpuStats();
-
+        /// <summary>
+        /// This is the availability holder.
+        /// </summary>
         protected TaskAvailability mAvailability;
-
-        //public class AutoTuneStats
-        //{
-        //    public int TasksMaxConcurrent { get; set; } = 0;
-
-        //    public int TasksMinConcurrent { get; set; } = 0;
-
-        //    public int OverloadTasksConcurrent { get; set; } = 0;
-
-        //    public long ProcessorCurrentMissCount = 0;
-
-        //    public DateTime? LastProcessorTime { get; set; } = null;
-        //}
-
-        //private AutoTuneStats mAutotuneStats = new AutoTuneStats();
-
         /// <summary>
         /// This is the priority task queue.
         /// </summary>
@@ -259,7 +245,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region ProcessLoop(object state)
+        #region --> ProcessLoop(object state)
         /// <summary>
         /// This is the message loop that receives messages.
         /// </summary>
