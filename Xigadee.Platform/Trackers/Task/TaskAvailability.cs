@@ -11,7 +11,7 @@ namespace Xigadee
     /// <summary>
     /// This is a transient class that shows the current task slot availability.
     /// </summary>
-    public class Availability: ITaskAvailability
+    public class TaskAvailability: ITaskAvailability
     {
         #region Declarations
         /// <summary>
@@ -40,7 +40,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="levels">The level count.</param>
         /// <param name="maxConcurrent">The maximum number of allowed executing tasks.</param>
-        public Availability(int levels, int maxConcurrent)
+        public TaskAvailability(int levels, int maxConcurrent)
         {
             Levels = levels;
             TasksMaxConcurrent = maxConcurrent;
@@ -93,7 +93,6 @@ namespace Xigadee
         /// </summary>
         public int Levels { get; }
         #endregion
-
 
         public int Level(int priority)
         {

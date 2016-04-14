@@ -108,7 +108,7 @@
     <Compile Include="Trackers\Queue\QueueTrackerStatistics.cs" />
     <Compile Include="Trackers\Resource\ResourceTracker.cs" />
     <Compile Include="Trackers\Resource\ResourceTrackerStatistics.cs" />
-    <Compile Include="Trackers\Task\Availability.cs" />
+    <Compile Include="Trackers\Task\TaskAvailability.cs" />
     <Compile Include="Trackers\Task\ITaskAvailability.cs" />
     <Compile Include="Trackers\Task\ITaskManagerProcess.cs" />
     <Compile Include="Trackers\Task\TaskManagerProcessContext.cs" />

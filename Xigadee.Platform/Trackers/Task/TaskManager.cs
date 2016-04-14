@@ -39,7 +39,7 @@ namespace Xigadee
         /// </summary>
         private CpuStats mCpuStats = new CpuStats();
 
-        protected Availability mAvailability;
+        protected TaskAvailability mAvailability;
 
         public class AutoTuneStats
         {
@@ -86,7 +86,7 @@ namespace Xigadee
 
             mPauseCheck = new ManualResetEventSlim();
 
-            mAvailability = new Availability(levels, policy.ConcurrentRequestsMax);
+            mAvailability = new TaskAvailability(levels, policy.ConcurrentRequestsMax);
 
             mTasksQueue = new QueueTrackerContainer<QueueTracker>(levels);
 
