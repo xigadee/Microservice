@@ -14,9 +14,10 @@ namespace Xigadee
     /// </summary>
     public class HolderSlotContext
     {
-        internal HolderSlotContext(Guid id, long slot, string name, int reserved
+        internal HolderSlotContext(int priority, Guid id, long slot, string name, int reserved
             , ClientPriorityHolder holder, Action<HolderSlotContext> complete)
         {
+            Priority = priority;
             Id = id;
             Slot = slot;
             Name = name;
@@ -25,6 +26,7 @@ namespace Xigadee
             mComplete = complete;
         }
 
+        public readonly int Priority;
         public readonly Guid Id;
         public readonly long Slot;
         public readonly string Name;
@@ -52,17 +54,6 @@ namespace Xigadee
             return items;
         } 
         #endregion
-
-        /// <summary>
-        /// This is the priority for the client.
-        /// </summary>
-        public int Priority
-        {
-            get
-            {
-                return mHolder.Client.Priority;
-            }
-        }
 
         public void Release(bool exception)
         {

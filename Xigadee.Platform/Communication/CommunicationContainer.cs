@@ -260,7 +260,7 @@ namespace Xigadee
                             break;
 
                         HolderSlotContext context;
-                        if (!mClientCollection.TakeNext(available, TaskRecoverSlots, out context))
+                        if (!mClientCollection.TakeNext(priorityLevel, available, TaskRecoverSlots, out context))
                             break;
 
                         Interlocked.Add(ref mListenerActiveReservedSlots, context.Reserved);
