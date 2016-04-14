@@ -26,7 +26,43 @@ namespace Xigadee
         private SchedulerContainer mScheduler;
         #endregion
 
-        #region Process ...
+        #region TaskManagerInitialise()
+        /// <summary>
+        /// This method initialises the process loop components.
+        /// </summary>
+        protected virtual void TaskManagerInitialise()
+        {
+            mScheduler = InitialiseSchedulerContainer();
+
+            mTaskContainer = InitialiseTaskManager();
+        }
+        #endregion
+        #region TaskManagerStart()
+        /// <summary>
+        /// This method starts the processing process loop.
+        /// </summary>
+        protected virtual void TaskManagerStart()
+        {
+            TaskManagerRegisterProcesses();
+
+            ServiceStart(mTaskContainer);
+
+            ServiceStart(mScheduler);
+        }
+        #endregion
+        #region TaskManagerStop()
+        /// <summary>
+        /// This method stops the process loop.
+        /// </summary>
+        protected virtual void TaskManagerStop()
+        {
+            ServiceStop(mScheduler);
+
+            ServiceStop(mTaskContainer);
+        }
+        #endregion
+
+        #region --> Process ...
         /// <summary>
         /// This method creates a service message and injects it in to the execution path and bypasses the listener infrastructure.
         /// </summary>
@@ -124,139 +160,7 @@ namespace Xigadee
         {
             ValidateServiceStarted();
 
-            ExecuteOrEnqueue(payload, "Incoming Process method request");
-        }
-        #endregion
-
-        #region -->ExecuteOrEnqueue(ServiceBase service, TransmissionPayload payload)
-        /// <summary>
-        /// This method takes incoming messages from the initiators.
-        /// </summary>
-        /// <param name="service">The calling service.</param>
-        /// <param name="payload">The payload to process.</param>
-        protected virtual void ExecuteOrEnqueue(IService service, TransmissionPayload payload)
-        {
-            ExecuteOrEnqueue(payload, service.GetType().Name);
-        }
-        /// <summary>
-        /// This method takes incoming messages from the initiators.
-        /// </summary>
-        /// <param name="payload">The payload to process.</param>
-        /// <param name="callerName">This is the name of the calling party. It is primarily used for debug and trace reasons.</param>
-        protected virtual void ExecuteOrEnqueue(TransmissionPayload payload, string callerName)
-        {
-            TaskTracker tracker = TrackerCreateFromPayload(payload, callerName);
-            mTaskContainer.ExecuteOrEnqueue(tracker);
-        }
-        #endregion
-
-        #region TrackerCreateFromPayload(TransmissionPayload payload, string caller)
-        /// <summary>
-        /// This private method builds the payload consistently for the incoming payload.
-        /// </summary>
-        /// <param name="payload">The payload to add to a tracker.</param>
-        /// <returns>Returns a tracker of type payload.</returns>
-        private TaskTracker TrackerCreateFromPayload(TransmissionPayload payload, string caller)
-        {
-            if (payload == null || payload.Message == null)
-                throw new ArgumentNullException("Payload or Payload message cannot be null.");
-
-            int priority = payload.Message.ChannelPriority;
-
-            return new TaskTracker(TaskTrackerType.Payload, payload.MaxProcessingTime)
-            {
-                IsLongRunning = false,
-                Priority = priority,
-                Name = payload.Message.ToKey(),
-                Context = payload,
-                Caller = caller
-            };
-        }
-        #endregion
-        #region TrackerCreateFromSchedule(Schedule schedule)
-        /// <summary>
-        /// This private method builds the payload consistently for the incoming payload.
-        /// </summary>
-        /// <param name="schedule">The schedule to add to a tracker.</param>
-        /// <returns>Returns a tracker of type payload.</returns>
-        private TaskTracker TrackerCreateFromSchedule(Schedule schedule)
-        {
-            TaskTracker tracker = new TaskTracker(TaskTrackerType.Schedule, null);
-            tracker.IsLongRunning = schedule.IsLongRunning;
-
-            if (schedule.IsInternal)
-                tracker.Priority = TaskTracker.PriorityInternal;
-            else
-                tracker.Priority = 2;
-
-            tracker.Context = schedule;
-            tracker.Name = schedule.Name;
-
-            return tracker;
-        }
-        #endregion
-        #region TrackerCreateFromListenerContext(HolderSlotContext context)
-        /// <summary>
-        /// This private method builds the payload consistently for the incoming payload.
-        /// </summary>
-        /// <param name="context">The client holder context.</param>
-        /// <returns>Returns a tracker of type payload.</returns>
-        private TaskTracker TrackerCreateFromListenerContext(HolderSlotContext context, int? priority = null)
-        {
-            TaskTracker tracker = new TaskTracker(TaskTrackerType.ListenerPoll, TimeSpan.FromSeconds(30))
-            {
-                Priority = priority ?? TaskTracker.PriorityInternal,
-                Context = context,
-                Name = context.Name
-            };
-
-            tracker.Execute = async t =>
-            {
-                var currentContext = ((HolderSlotContext)tracker.Context);
-
-                var payloads = await currentContext.Poll();
-
-                ListenerProcessClientPayloads(currentContext.Id, payloads);
-            };
-
-            tracker.ExecuteComplete = (tr, failed, ex) =>
-            {
-                ((HolderSlotContext)tracker.Context).Release(failed);
-            };
-
-            return tracker;
-        }
-        #endregion
-
-        #region TaskManagerInitialise()
-        /// <summary>
-        /// This method initialises the process loop components.
-        /// </summary>
-        protected virtual void TaskManagerInitialise()
-        {
-            mTaskContainer = InitialiseTaskManager();
-
-            mScheduler = InitialiseSchedulerContainer();
-        }
-        #endregion
-        #region TaskManagerStart()
-        /// <summary>
-        /// This method starts the processing process loop.
-        /// </summary>
-        protected virtual void TaskManagerStart()
-        {
-            TaskManagerProcessRegister();
-
-            ServiceStart(mTaskContainer);
-        }
-        #endregion
-        #region TaskManagerStop()
-        /// <summary>
-        /// This method stops the process loop.
-        /// </summary>
-        protected virtual void TaskManagerStop()
-        {
-            ServiceStop(mTaskContainer);
+            mTaskContainer.ExecuteOrEnqueue(payload, "Incoming Process method request");
         }
         #endregion
 
@@ -264,164 +168,19 @@ namespace Xigadee
         /// <summary>
         /// 
         /// </summary>
-        protected virtual void TaskManagerProcessRegister()
+        protected virtual void TaskManagerRegisterProcesses()
         {
-            mTaskContainer.ProcessRegister("SchedulesProcess", mTaskContainer.LevelMax + 1, mScheduler);
+            mTaskContainer.ProcessRegister("SchedulesProcess"
+                , 5, mScheduler);
 
-            for (int l = mTaskContainer.LevelMin; l <= mTaskContainer.LevelMax; l++)
-            {
-                mTaskContainer.ProcessRegister($"ListenersProcess: {l}", l, mCommunication);
-            }
+            mTaskContainer.ProcessRegister("ListenersProcess"
+                , 4, mCommunication);
 
-            mTaskContainer.ProcessRegister("Overload Check EventSource", mTaskContainer.LevelMin - 1, mEventSource);
+            mTaskContainer.ProcessRegister("Overload Check EventSource"
+                , 3, mEventSource);
 
-            mTaskContainer.ProcessRegister("Overload Check Logger", mTaskContainer.LevelMin - 2, mLogger);
-        }
-        #endregion
-
-
-        #region SchedulesProcess()
-        /// <summary>
-        /// This method processes any outstanding schedules and created a new task.
-        /// </summary>
-        private void SchedulesProcess(TaskManagerAvailability availability)
-        {
-            var items = mScheduler.Items.Where((c) => c.ShouldPoll);
-
-            foreach (Schedule schedule in items)
-            {
-                if (schedule.Active)
-                {
-                    schedule.PollSkip();
-                    continue;
-                }
-
-                schedule.Start();
-
-                TaskTracker tracker = TrackerCreateFromSchedule(schedule);
-
-                tracker.Execute = async (token) =>
-                {
-                    try
-                    {
-                        await schedule.Execute(token);
-                    }
-                    catch (Exception ex)
-                    {
-                        mLogger.LogException(string.Format("Schedule failed: {0}", schedule.Name), ex);
-                    }
-                };
-
-                tracker.ExecuteComplete = ScheduleComplete;
-
-                mTaskContainer.ExecuteOrEnqueue(tracker);
-            }
-        }
-        #endregion
-        #region ScheduleComplete(Task task, TaskTracker tracker)
-        /// <summary>
-        /// This method is used to complete a schedule request and to 
-        /// recalculate the next schedule.
-        /// </summary>
-        /// <param name="tracker">The tracker object.</param>
-        private void ScheduleComplete(TaskTracker tracker, bool failed, Exception ex)
-        {
-            var schedule = tracker.Context as Schedule;
-
-            schedule.Complete(!failed, isException:failed, lastEx: ex, exceptionTime: DateTime.UtcNow);
-        }
-        #endregion
-
-        #region ListenersProcess(int priorityLevel, TaskManagerAvailability availability)
-        /// <summary>
-        /// This method is used to create tasks to dequeue data from the listeners.
-        /// </summary>
-        /// <param name="priorityLevel">This property specifies the priority level that should be processed..</param>
-        private void ListenersProcess(int priorityLevel, TaskManagerAvailability availability)
-        {
-            bool singleHop = false;
-            //Ok, we don't receive any messages until the system is running.
-            if (Status != ServiceStatus.Running)
-                return;
-
-            HolderSlotContext context;
-
-            int listenerTaskSlotsAvailable = mTaskContainer.TaskSlotsAvailableNet(priorityLevel);
-
-            while (listenerTaskSlotsAvailable > 0
-                && mCommunication.ListenerClientNext(priorityLevel, listenerTaskSlotsAvailable, out context))
-            {
-                TaskTracker tracker = TrackerCreateFromListenerContext(context, priorityLevel);
-
-                mTaskContainer.ExecuteOrEnqueue(tracker);
-
-                if (singleHop)
-                    break;
-
-                listenerTaskSlotsAvailable = mTaskContainer.TaskSlotsAvailableNet(priorityLevel);
-            }
-        }
-        #endregion
-        #region ListenerProcessClientPayloads(ListenerClient container, TransmissionPayload payload)
-        /// <summary>
-        /// This method processes the individual payload and passes it to be exectued.
-        /// </summary>
-        /// <param name="clientId">The clientId that has been polled.</param>
-        /// <param name="payloads">The payloads to process.</param>
-        private void ListenerProcessClientPayloads(Guid clientId, List<TransmissionPayload> payloads)
-        {
-            if (payloads == null || payloads.Count == 0)
-                return;
-
-            foreach (var payload in payloads)
-                ListenerProcessClientPayload(clientId, payload);
-        }
-        #endregion
-        #region ListenerProcessClientPayload(ClientHolder client, TransmissionPayload payload)
-        /// <summary>
-        /// This method processes an individual payload returned from a client.
-        /// </summary>
-        /// <param name="clientId">The originating client.</param>
-        /// <param name="payload">The payload.</param>
-        private void ListenerProcessClientPayload(Guid clientId, TransmissionPayload payload)
-        {
-            try
-            {
-                if (payload.Message.ChannelPriority < 0)
-                    payload.Message.ChannelPriority = 0;
-
-                mCommunication.QueueTimeLog(clientId, payload.Message.EnqueuedTimeUTC);
-                mCommunication.ActiveIncrement(clientId);
-
-                TaskTracker tracker = TrackerCreateFromPayload(payload, payload.Source);
-
-                tracker.ExecuteComplete = (tr, failed, ex) =>
-                {
-                    try
-                    {
-                        var contextPayload = tr.Context as TransmissionPayload;
-
-                        mCommunication.ActiveDecrement(clientId, tr.TickCount);
-
-                        if (failed)
-                            mCommunication.ErrorIncrement(clientId);
-
-                        contextPayload.Signal(!failed);
-                    }
-                    catch (Exception exin)
-                    {
-                        mLogger.LogException(string.Format("Payload completion error-{0}", payload), exin);
-                    }
-                };
-
-                mTaskContainer.ExecuteOrEnqueue(tracker);
-            }
-            catch (Exception ex)
-            {
-                mLogger.LogException(string.Format("ProcessClientPayload: unhandled error {0}/{1}-{2}", payload.Source, payload.Message.CorrelationKey, payload), ex);
-                payload.SignalFail();
-            }
-
+            mTaskContainer.ProcessRegister("Overload Check Logger"
+                , 2, mLogger);
         }
         #endregion
 

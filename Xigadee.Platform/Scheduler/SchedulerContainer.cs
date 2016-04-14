@@ -24,7 +24,7 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        /// <param name="poll">The poll interval in milliseconds. The default is 1 second, 1000 ms.</param>
+        /// <param name="policy">The scheduler policy.</param>
         public SchedulerContainer(SchedulerPolicy policy = null)
             : base(null)
         {
@@ -123,7 +123,15 @@ namespace Xigadee
             get; set;
         }
         #endregion
-
+        #region Submit
+        /// <summary>
+        /// This is the action path back to the TaskManager.
+        /// </summary>
+        public Action<TaskTracker> Submit
+        {
+            get; set;
+        }
+        #endregion
         #region CanProcess()
         /// <summary>
         /// Check whether we have any schedules.
@@ -161,13 +169,13 @@ namespace Xigadee
                     }
                     catch (Exception ex)
                     {
-                        //mLogger.LogException(string.Format("Schedule failed: {0}", schedule.Name), ex);
+                        Logger?.LogException(string.Format("Schedule failed: {0}", schedule.Name), ex);
                     }
                 };
 
                 tracker.ExecuteComplete = ScheduleComplete;
 
-                availability.ExecuteOrEnqueue(tracker);
+                Submit(tracker);
             }
         }
         #endregion

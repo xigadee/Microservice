@@ -39,12 +39,20 @@ namespace Xigadee
         /// </summary>
         private CpuStats mCpuStats = new CpuStats();
 
-        private DateTime? mAutotuneLastProcessorTime = null;
+        public class AutoTuneStats
+        {
+            public int TasksMaxConcurrent { get; set; } = 0;
 
-        private int mAutotuneTasksMaxConcurrent = 0;
-        private int mAutotuneTasksMinConcurrent = 0;
-        private int mAutotuneOverloadTasksConcurrent = 0;
-        private long mAutotuneProcessorCurrentMissCount = 0;
+            public int TasksMinConcurrent { get; set; } = 0;
+
+            public int OverloadTasksConcurrent { get; set; } = 0;
+
+            public long ProcessorCurrentMissCount = 0;
+
+            public DateTime? LastProcessorTime { get; set; } = null;
+        }
+
+        private AutoTuneStats mAutotuneStats = new AutoTuneStats();
 
         /// <summary>
         /// This is the priority task queue.
@@ -171,8 +179,9 @@ namespace Xigadee
                 mStatistics.Cpu = mCpuStats;
 
                 mStatistics.AutotuneActive = mPolicy.AutotuneEnabled;
-                mStatistics.TasksMaxConcurrent = mAutotuneTasksMaxConcurrent;
-                mStatistics.OverloadTasksConcurrent = mAutotuneOverloadTasksConcurrent;
+
+                mStatistics.TasksMaxConcurrent = mAutotuneStats.TasksMaxConcurrent;
+                mStatistics.OverloadTasksConcurrent = mAutotuneStats.OverloadTasksConcurrent;
 
                 if (mTaskRequests != null)
                 {
@@ -205,7 +214,54 @@ namespace Xigadee
             {
                 mStatistics.Ex = ex;
             }
-        } 
+        }
+        #endregion
+
+        #region --> ExecuteOrEnqueue(ServiceBase service, TransmissionPayload payload)
+        /// <summary>
+        /// This method takes incoming messages from the initiators. It is the method set on the Dispatcher property.
+        /// </summary>
+        /// <param name="service">The calling service.</param>
+        /// <param name="payload">The payload to process.</param>
+        public virtual void ExecuteOrEnqueue(IService service, TransmissionPayload payload)
+        {
+            ExecuteOrEnqueue(payload, service.GetType().Name);
+        }
+        /// <summary>
+        /// This method takes incoming messages from the initiators.
+        /// </summary>
+        /// <param name="payload">The payload to process.</param>
+        /// <param name="callerName">This is the name of the calling party. It is primarily used for debug and trace reasons.</param>
+        public virtual void ExecuteOrEnqueue(TransmissionPayload payload, string callerName)
+        {
+            TaskTracker tracker = TrackerCreateFromPayload(payload, callerName);
+            ExecuteOrEnqueue(tracker);
+        }
+        #endregion
+
+        #region TrackerCreateFromPayload(TransmissionPayload payload, string caller)
+        /// <summary>
+        /// This private method builds the payload consistently for the incoming payload.
+        /// </summary>
+        /// <param name="payload">The payload to add to a tracker.</param>
+        /// <param name="caller">The caller reference.</param>
+        /// <returns>Returns a tracker of type payload.</returns>
+        public static TaskTracker TrackerCreateFromPayload(TransmissionPayload payload, string caller)
+        {
+            if (payload == null || payload.Message == null)
+                throw new ArgumentNullException("Payload or Payload message cannot be null.");
+
+            int priority = payload.Message.ChannelPriority;
+
+            return new TaskTracker(TaskTrackerType.Payload, payload.MaxProcessingTime)
+            {
+                IsLongRunning = false,
+                Priority = priority,
+                Name = payload.Message.ToKey(),
+                Context = payload,
+                Caller = caller
+            };
+        }
         #endregion
 
         /// <summary>
@@ -261,7 +317,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                LogException($"ProcessExecute failed: {context.Name}", ex);
+                Logger?.LogException($"ProcessExecute failed: {context.Name}", ex);
             }
         }
         #endregion
@@ -272,7 +328,7 @@ namespace Xigadee
         /// <returns>Returns a new availability object.</returns>
         protected virtual TaskManagerAvailability CalculateAvailability()
         {
-            return new TaskManagerAvailability(ExecuteOrEnqueue);
+            return new TaskManagerAvailability();
         }
 
         #region ProcessLoop(object state)
@@ -312,7 +368,7 @@ namespace Xigadee
                     }
                     catch (Exception tex)
                     {
-                        LogException("ProcessLoop unhandled exception", tex);
+                        Logger?.LogException("ProcessLoop unhandled exception", tex);
                     }
                 }
             }
@@ -324,7 +380,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                LogException("TaskManager (Unhandled)", ex);
+                Logger?.LogException("TaskManager (Unhandled)", ex);
             }
             finally
             {
@@ -408,7 +464,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                LogException("DequeueTasksAndExecute", ex);
+                Logger?.LogException("DequeueTasksAndExecute", ex);
             }
         }
         #endregion
@@ -435,11 +491,11 @@ namespace Xigadee
 
                 try
                 {
-                    var task = Task.Factory.StartNew(async () => await ExecuteTaskCreate(tracker)
-                        , tracker.Cts.Token
-                        , tOpts
-                        , TaskScheduler.Default)
-                    .Unwrap();
+                    var task = Task.Factory.StartNew
+                    (
+                          async () => await ExecuteTaskCreate(tracker)
+                        , tracker.Cts.Token, tOpts, TaskScheduler.Default
+                    ).Unwrap();
 
                     task.ContinueWith((t) => ExecuteTaskComplete(tracker, task.IsCanceled || task.IsFaulted, t.Exception));
                 }
@@ -449,7 +505,7 @@ namespace Xigadee
                 }
             }
             else
-                LogException(string.Format("Task could not be enqueued: {0}/{1}", tracker.Id, tracker.Caller));
+                Logger?.LogMessage(LoggingLevel.Error,$"Task could not be enqueued: {tracker.Id}-{tracker.Caller}");
         }
         #endregion
         #region ExecuteTaskCreate(TaskTracker tracker)
@@ -510,7 +566,7 @@ namespace Xigadee
                     catch (Exception ex)
                     {
                         //We shouldn't throw an exception here, but let's check just in case.
-                        LogException("ExecuteTaskComplete/ExecuteComplete", ex);
+                        Logger?.LogException("ExecuteTaskComplete/ExecuteComplete", ex);
                     }
 
                     if (outTracker.ExecuteTickCount.HasValue)
@@ -519,7 +575,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                LogException(string.Format("Task {0} has faulted when completing: {1}", tracker.Id, ex.Message), ex);
+                Logger?.LogException($"Task {tracker.Id} has faulted when completing: {ex.Message}", ex);
             }
 
             //Check if there are any queued tasks that can fill up the empty slot that is now available.
@@ -541,7 +597,7 @@ namespace Xigadee
 
                     if (tex != null && tex is AggregateException)
                         foreach (Exception ex in ((AggregateException)tex).InnerExceptions)
-                            LogException(string.Format("Task exception {0}-{1}", tracker.Id, tracker.Caller), ex);
+                            Logger?.LogException(string.Format("Task exception {0}-{1}", tracker.Id, tracker.Caller), ex);
                 }
             }
             catch { }
@@ -595,14 +651,13 @@ namespace Xigadee
         #endregion
 
         #region Logger
+        /// <summary>
+        /// This is the system wide logger reference.
+        /// </summary>
         public ILoggerExtended Logger
         {
             get; set;
         }
-        private void LogException(string message, Exception ex = null)
-        {
-            Logger?.LogException(message, ex);
-        } 
         #endregion
 
         #region --> TaskTimedoutKill()
@@ -679,7 +734,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                LogException("TaskCancel exception", ex);
+                Logger?.LogException("TaskCancel exception", ex);
             }
         }
         #endregion
@@ -716,54 +771,54 @@ namespace Xigadee
             {
                 float? current = await mCpuStats.SystemProcessorUsagePercentage(System.Diagnostics.Process.GetCurrentProcess().ProcessName);
 
-                if (!current.HasValue && mAutotuneProcessorCurrentMissCount < 5)
+                if (!current.HasValue && mAutotuneStats.ProcessorCurrentMissCount < 5)
                 {
-                    Interlocked.Increment(ref mAutotuneProcessorCurrentMissCount);
+                    Interlocked.Increment(ref mAutotuneStats.ProcessorCurrentMissCount);
                     return;
                 }
 
-                if (!mPolicy.AutotuneEnabled)
-                    return;
+                //if (!mPolicy.AutotuneEnabled)
+                //    return;
 
-                mAutotuneProcessorCurrentMissCount = 0;
-                float processpercentage = current.HasValue ? (float)current.Value : 0.01F;
+                //mAutotuneStats.ProcessorCurrentMissCount = 0;
+                //float processpercentage = current.HasValue ? (float)current.Value : 0.01F;
 
-                //Do we need to scale down
-                if ((processpercentage > mPolicy.ProcessorTargetLevelPercentage)
-                    || (mAutotuneTasksMaxConcurrent > mPolicy.ConcurrentRequestsMin))
-                {
-                    Interlocked.Decrement(ref mAutotuneTasksMaxConcurrent);
-                    if (mAutotuneTasksMaxConcurrent < 0)
-                        mAutotuneTasksMaxConcurrent = 0;
-                }
-                //Do we need to scale up
-                if ((processpercentage <= mPolicy.ProcessorTargetLevelPercentage)
-                    && (mAutotuneTasksMaxConcurrent < mPolicy.ConcurrentRequestsMax))
-                {
-                    Interlocked.Increment(ref mAutotuneTasksMaxConcurrent);
-                    if (mAutotuneTasksMaxConcurrent > mPolicy.ConcurrentRequestsMax)
-                        mAutotuneTasksMaxConcurrent = mPolicy.ConcurrentRequestsMax;
-                }
+                ////Do we need to scale down
+                //if ((processpercentage > mPolicy.ProcessorTargetLevelPercentage)
+                //    || (mAutotuneStats.TasksMaxConcurrent > mPolicy.ConcurrentRequestsMin))
+                //{
+                //    Interlocked.Decrement(ref mAutotuneStats.TasksMaxConcurrent);
+                //    if (mAutotuneStats.TasksMaxConcurrent < 0)
+                //        mAutotuneStats.TasksMaxConcurrent = 0;
+                //}
+                ////Do we need to scale up
+                //if ((processpercentage <= mPolicy.ProcessorTargetLevelPercentage)
+                //    && (mAutotuneStats.TasksMaxConcurrent < mPolicy.ConcurrentRequestsMax))
+                //{
+                //    Interlocked.Increment(ref mAutotuneStats.TasksMaxConcurrent);
+                //    if (mAutotuneStats.TasksMaxConcurrent > mPolicy.ConcurrentRequestsMax)
+                //        mAutotuneStats.TasksMaxConcurrent = mPolicy.ConcurrentRequestsMax;
+                //}
 
-                int AutotuneOverloadTasksCurrent = mAutotuneTasksMaxConcurrent / 10;
+                //int AutotuneOverloadTasksCurrent = mAutotuneStats.TasksMaxConcurrent / 10;
 
-                if (AutotuneOverloadTasksCurrent > mPolicy.OverloadProcessLimitMax)
-                {
-                    mAutotuneOverloadTasksConcurrent = mPolicy.OverloadProcessLimitMax;
-                }
-                else if (AutotuneOverloadTasksCurrent < mPolicy.OverloadProcessLimitMin)
-                {
-                    mAutotuneOverloadTasksConcurrent = mPolicy.OverloadProcessLimitMin;
-                }
-                else
-                {
-                    mAutotuneOverloadTasksConcurrent = AutotuneOverloadTasksCurrent;
-                }
+                //if (AutotuneOverloadTasksCurrent > mPolicy.OverloadProcessLimitMax)
+                //{
+                //    mAutotuneStats.OverloadTasksConcurrent = mPolicy.OverloadProcessLimitMax;
+                //}
+                //else if (AutotuneOverloadTasksCurrent < mPolicy.OverloadProcessLimitMin)
+                //{
+                //    mAutotuneStats.OverloadTasksConcurrent = mPolicy.OverloadProcessLimitMin;
+                //}
+                //else
+                //{
+                //    mAutotuneStats.OverloadTasksConcurrent = AutotuneOverloadTasksCurrent;
+                //}
             }
             catch (Exception ex)
             {
                 //Autotune should not throw an exceptions
-                LogException("Autotune threw an exception.", ex);
+                Logger?.LogException("Autotune threw an exception.", ex);
             }
         }
         #endregion

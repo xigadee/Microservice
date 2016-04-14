@@ -13,19 +13,13 @@ namespace Xigadee
     /// </summary>
     public class TaskManagerAvailability
     {
-        Action<TaskTracker> mEnqueue;
-
-        public TaskManagerAvailability(Action<TaskTracker> enqueue)
+        public TaskManagerAvailability()
         {
-            if (enqueue == null)
-                throw new ArgumentException(nameof(enqueue));
-
-            mEnqueue = enqueue;
         }
 
-        public void ExecuteOrEnqueue(TaskTracker tracker)
+        public int Level(int priority)
         {
-            mEnqueue(tracker);
+            return 0;
         }
     }
 }

@@ -94,7 +94,17 @@ namespace Xigadee
             {
                 mActive = value;
             }
-        } 
+        }
+        #endregion
+
+        #region Submit
+        /// <summary>
+        /// This is the action path back to the TaskManager.
+        /// </summary>
+        public Action<TaskTracker> Submit
+        {
+            get; set;
+        }
         #endregion
 
         /// <summary>
@@ -199,7 +209,7 @@ namespace Xigadee
 
             Interlocked.Increment(ref mOverloadTaskCount);
 
-            availability.ExecuteOrEnqueue(tracker);
+            Submit(tracker);
         }
 
         protected virtual void WriteEvent(D logEvent)

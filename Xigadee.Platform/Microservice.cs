@@ -321,7 +321,7 @@ namespace Xigadee
 
                 //Set the transmission action.
                 if (service is IServiceInitiator)
-                    ((IServiceInitiator)service).Dispatcher = ExecuteOrEnqueue;
+                    ((IServiceInitiator)service).Dispatcher = mTaskContainer.ExecuteOrEnqueue;
 
                 if (service is IServiceEventSource)
                     ((IServiceEventSource)service).EventSource = mEventSource;

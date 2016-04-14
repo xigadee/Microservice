@@ -50,7 +50,6 @@ namespace Xigadee
         } 
         #endregion
 
-
         #region InitialiseResourceTracker()
         /// <summary>
         /// This method creates the default resource tracker for the Microservice.
@@ -66,7 +65,6 @@ namespace Xigadee
         } 
         #endregion
 
-
         #region InitialiseComponentContainer()
         /// <summary>
         /// This method creates the component container.
@@ -81,6 +79,7 @@ namespace Xigadee
             return container;
         } 
         #endregion
+
 
         #region InitialiseCommunicationContainer()
         /// <summary>
@@ -127,7 +126,6 @@ namespace Xigadee
         }
         #endregion
 
-
         #region InitialiseEventSourceContainer(List<IEventSource> eventSources)
         /// <summary>
         /// THis method returns the default scheduler container.
@@ -156,11 +154,20 @@ namespace Xigadee
         /// <returns>The default scheduler.</returns>
         protected virtual LoggerContainer InitialiseLoggerContainer(List<ILogger> loggers)
         {
-            var container = new LoggerContainer(loggers);
+            var container = new LoggerContainer(loggers, PolicyLogger());
 
             return container;
         }
+        /// <summary>
+        /// This is the eveent source policy.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual LoggerPolicy PolicyLogger()
+        {
+            return new LoggerPolicy();
+        }
         #endregion
+
 
         #region InitialiseTelemetryContainer(List<ITelemetry> telemetries)
         /// <summary>

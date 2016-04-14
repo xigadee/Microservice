@@ -87,7 +87,7 @@ namespace Xigadee
                     {
                         //Mark internal only to stop any looping.
                         p.Options = ProcessOptions.RouteInternal;
-                        ExecuteOrEnqueue(p,"Dispatcher");
+                        mTaskContainer.ExecuteOrEnqueue(p,"Dispatcher");
                     });
 
                     var externalPayload = responsePayloads.Except(internalPayload).ToList();

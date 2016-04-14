@@ -1,4 +1,6 @@
-﻿namespace Xigadee
+﻿using System;
+
+namespace Xigadee
 {
     /// <summary>
     /// This interface is used by classes that integrate with the Microservice process loop.
@@ -8,5 +10,7 @@
         bool CanProcess();
 
         void Process(TaskManagerAvailability availability);
+
+        Action<TaskTracker> Submit { get; set; }
     }
 }

@@ -55,6 +55,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActionQueue\ActionQueueCollectionBase.cs" />
+    <Compile Include="ActionQueue\ActionQueuePolicy.cs" />
+    <Compile Include="ActionQueue\ActionQueueStatistics.cs" />
+    <Compile Include="ActionQueue\IActionQueue.cs" />
     <Compile Include="Communication\CommunicationPolicy.cs" />
     <Compile Include="Communication\ClientPriority\ClientPriorityAlgorithm.cs" />
     <Compile Include="Communication\ClientPriority\ClientPriorityCollection.cs" />
@@ -72,11 +76,8 @@
     <Compile Include="EventSource\EventSourcePolicy.cs" />
     <Compile Include="EventSource\EventSourceStatistics.cs" />
     <Compile Include="Helper\CpuStats.cs" />
-    <Compile Include="Logger\ActionQueueCollectionBase.cs" />
-    <Compile Include="Logger\ActionQueuePolicy.cs" />
-    <Compile Include="Logger\ActionQueueStatistics.cs" />
+    <Compile Include="Logger\LoggerPolicy.cs" />
     <Compile Include="Logger\Loggers\EventLogLogger.cs" />
-    <Compile Include="Logger\Interfaces\IActionQueue.cs" />
     <Compile Include="Logger\LoggerActionHolder.cs" />
     <Compile Include="Logger\LoggerStatistics.cs" />
     <Compile Include="Microservice_Events.cs" />
