@@ -53,6 +53,17 @@ namespace Xigadee
         } 
         #endregion
 
+        /// <summary>
+        /// This is the priority for the client.
+        /// </summary>
+        public int Priority
+        {
+            get
+            {
+                return mHolder.Client.Priority;
+            }
+        }
+
         public void Release(bool exception)
         {
             mHolder.Release(Slot, exception);            

@@ -265,7 +265,7 @@ namespace Xigadee
 
                         Interlocked.Add(ref mListenerActiveReservedSlots, context.Reserved);
 
-                        TaskTracker tracker = TrackerCreateFromListenerContext(context, priorityLevel);
+                        TaskTracker tracker = TrackerCreateFromListenerContext(context);
 
                         Submit(tracker);
                     }
@@ -289,11 +289,11 @@ namespace Xigadee
         /// </summary>
         /// <param name="context">The client holder context.</param>
         /// <returns>Returns a tracker of type payload.</returns>
-        private TaskTracker TrackerCreateFromListenerContext(HolderSlotContext context, int? priority = null)
+        private TaskTracker TrackerCreateFromListenerContext(HolderSlotContext context)
         {
             TaskTracker tracker = new TaskTracker(TaskTrackerType.ListenerPoll, TimeSpan.FromSeconds(30))
             {
-                Priority = priority ?? TaskTracker.PriorityInternal,
+                Priority = context.Priority,
                 Context = context,
                 Name = context.Name
             };
