@@ -49,6 +49,7 @@ namespace Test.Xigadee
 
         }
 
+
         private static void Server_OnRegister(object sender, CommandRegisterEventArgs e)
         {
             ICacheManager<Guid, MondayMorningBlues> cacheManager = null;

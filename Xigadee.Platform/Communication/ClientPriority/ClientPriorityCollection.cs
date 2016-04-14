@@ -12,14 +12,15 @@ namespace Xigadee
     /// <summary>
     /// This class holds the clients and their priority chain.
     /// </summary>
-    public class ClientPriorityCollection:StatisticsBase<ClientPriorityStatistics>
+    public class ListenerClientPriorityCollection:StatisticsBase<ClientPriorityStatistics>
     {
         #region Declarations
+        private int[] mListenerPollLevels;
+
         private Dictionary<Guid, ClientPriorityHolder> mListenerClients;
         private Guid[] mListenerPollChain;
         private long mListenerCurrent;
         private int mActive;
-        private bool mIsClosed;
 
         private readonly long mIteration;
         private readonly ClientPollSlotAllocationAlgorithm mClientPriorityAlgorithm;
@@ -29,19 +30,31 @@ namespace Xigadee
         /// This constructor build up the poll collection and sets the correct poll priority.
         /// </summary>
         /// <param name="listenerClients">The current list of listener clients.</param>
-        public ClientPriorityCollection(Dictionary<Guid, ClientPriorityHolder> listenerClients, ClientPollSlotAllocationAlgorithm clientPriorityAlgorithm, long iterationId)
+        public ListenerClientPriorityCollection(List<IListener> listeners, List<IListener> deadletterListeners
+            , IResourceTracker resourceTracker
+            , ClientPollSlotAllocationAlgorithm clientPriorityAlgorithm
+            , long iterationId)
         {
             mClientPriorityAlgorithm = clientPriorityAlgorithm;
             mIteration = iterationId;
-
             Created = DateTime.UtcNow;
 
-            if (listenerClients == null)
-                throw new ArgumentNullException("ClientPriorityCollection - listenerClients");
+            mListenerClients = new Dictionary<Guid, ClientPriorityHolder>();
+            foreach (var listener in listeners.Union(deadletterListeners))
+                if (listener.Clients != null)
+                    foreach (var client in listener.Clients)
+                    {
+                        mListenerClients.Add(client.Id, new ClientPriorityHolder(resourceTracker, client, listener.MappingChannelId));
+                    }
 
-            mListenerClients = listenerClients;
+            mListenerPollLevels = mListenerClients
+                .Select((c) => c.Value.Client.Priority)
+                .Distinct()
+                .OrderByDescending((i) => i)
+                .ToArray();
 
-            mListenerPollChain = listenerClients
+
+            mListenerPollChain = mListenerClients
                 .Where((c) => c.Value.IsActive)
                 .OrderByDescending((c) => c.Value.CalculatePriority())
                 .Select((c) => c.Key)
@@ -74,7 +87,7 @@ namespace Xigadee
                 throw new ArgumentNullException("ClientPriorityCollection/TakeNext recoverSlots cannot be null");
 
             context = null;
-            if (available <= 0 || mIsClosed)
+            if (available <= 0 || IsClosed)
                 return false;
 
             int loopCount = -1;
@@ -134,26 +147,38 @@ namespace Xigadee
         /// </summary>
         public void Close()
         {
-            mIsClosed = true;
+            IsClosed = true;
         }
         #endregion
 
+        /// <summary>
+        /// This property is set
+        /// </summary>
+        public bool IsClosed
+        {
+            get;private set;
+        }
+
+        #region StatisticsRecalculate()
+        /// <summary>
+        /// This method recalculates the client proiority statistics.
+        /// </summary>
         protected override void StatisticsRecalculate()
         {
             base.StatisticsRecalculate();
 
             try
             {
-                mStatistics.Name = string.Format("Iteration {0} @ {1} {2}", mIteration, Created, mIsClosed?"Closed":"");
+                mStatistics.Name = string.Format("Iteration {0} @ {1} {2}", mIteration, Created, IsClosed ? "Closed" : "");
 
                 var data = new List<ClientPriorityHolderStatistics>();
-                mListenerPollChain.ForIndex((i,g) =>
+                mListenerPollChain.ForIndex((i, g) =>
                 {
                     var stat = mListenerClients[g].Statistics;
                     stat.Ordinal = i;
                     data.Add(stat);
                 });
-                
+
                 if (Created.HasValue)
                     mStatistics.Created = Created.Value;
 
@@ -164,5 +189,57 @@ namespace Xigadee
 
             }
         }
+        #endregion
+
+        #region Levels
+        /// <summary>
+        /// This is the active priority levels for the listener collection.
+        /// </summary>
+        public int[] Levels
+        {
+            get
+            {
+                return mListenerPollLevels;
+            }
+        }
+        #endregion
+        #region Count
+        /// <summary>
+        /// This is the number of active listeners in the poll chain.
+        /// </summary>
+        public int Count
+        {
+            get
+            {
+                return mListenerPollChain.Length;
+            }
+        } 
+        #endregion
+
+        #region Logging
+        public void QueueTimeLog(Guid clientId, DateTime? EnqueuedTimeUTC)
+        {
+            if (mListenerClients.ContainsKey(clientId))
+                mListenerClients[clientId].QueueTimeLog(EnqueuedTimeUTC);
+        }
+
+        public void ActiveIncrement(Guid clientId)
+        {
+            if (mListenerClients.ContainsKey(clientId))
+                mListenerClients[clientId].ActiveIncrement();
+        }
+
+        public void ActiveDecrement(Guid clientId, int TickCount)
+        {
+            if (mListenerClients.ContainsKey(clientId))
+                mListenerClients[clientId].ActiveDecrement(TickCount);
+        }
+
+        public void ErrorIncrement(Guid clientId)
+        {
+            if (mListenerClients.ContainsKey(clientId))
+                mListenerClients[clientId].ErrorIncrement();
+        }
+        #endregion
     }
 }

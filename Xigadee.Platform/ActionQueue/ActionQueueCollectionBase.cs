@@ -191,7 +191,7 @@ namespace Xigadee
         /// This method checks whether the process is overloaded and schedules a long running task to reduce the overload.
         /// </summary>
         /// <param name="availability">The task manager availability to check.</param>
-        public virtual void Process(TaskManagerAvailability availability)
+        public virtual void Process(ITaskAvailability availability)
         {
             if (!Overloaded)
                 return;

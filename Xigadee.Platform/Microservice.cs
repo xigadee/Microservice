@@ -186,20 +186,21 @@ namespace Xigadee
         /// <param name="args">The incoming arguments.</param>
         protected override void StartInternal()
         {
-            OnStartRequested();
-
-            //This method initialises the configuration.
-            ConfigurationInitialise();
-
-            //This initialises the process loop.
-            TaskManagerInitialise();
-
-            //This method populates the components in the service.
-            ComponentsPopulate();
 
             //This method starts the components in the service in the correct order.
             try
             {
+                OnStartRequested();
+
+                //This method initialises the configuration.
+                ConfigurationInitialise();
+
+                //This initialises the process loop.
+                TaskManagerInitialise();
+
+                //This method populates the components in the service.
+                ComponentsPopulate();
+
                 //Start the logger components.
                 ServiceStart(mLogger);
 

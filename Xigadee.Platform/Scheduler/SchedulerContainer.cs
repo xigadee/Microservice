@@ -147,7 +147,7 @@ namespace Xigadee
         /// <summary>
         /// This method processes any outstanding schedules and created a new task.
         /// </summary>
-        public void Process(TaskManagerAvailability availability)
+        public void Process(ITaskAvailability availability)
         {
             foreach (Schedule schedule in Items.Where((c) => c.ShouldPoll))
             {

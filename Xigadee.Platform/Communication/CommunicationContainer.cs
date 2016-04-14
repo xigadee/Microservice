@@ -22,8 +22,6 @@ namespace Xigadee
         /// </summary>
         protected ConcurrentDictionary<string, List<ISender>> mMessageSenderMap;
 
-        private Dictionary<Guid, ClientPriorityHolder> mListenerClients;
-
         private List<IListener> mListener, mDeadletterListener;
 
         private List<ISender> mSenders;
@@ -32,15 +30,18 @@ namespace Xigadee
 
         private ISupportedMessageTypes mSupportedMessageTypes;
 
-        private List<MessageFilterWrapper> mSupportedMessages;
+        /// <summary>
+        /// This is the collection of supported messages that the commands expect to receive from the listeners.
+        /// </summary>
+        protected List<MessageFilterWrapper> mSupportedMessages;
 
         private int mListenerActiveReservedSlots = 0;
 
         private int mListenerActiveAllowedOverage = 5;
 
-        private long mPriorityCollectionIteration = 0;
+        private long mListenersPriorityIteration = 0;
 
-        private ClientPriorityCollection mClientCollection = null;
+        private ListenerClientPriorityCollection mClientCollection = null;
 
         private IResourceTracker mResourceTracker;
 
@@ -59,11 +60,39 @@ namespace Xigadee
             mPolicy = policy ?? new CommunicationPolicy();
 
             mMessageSenderMap = new ConcurrentDictionary<string, List<ISender>>();
-            mListenerClients = new Dictionary<Guid, ClientPriorityHolder>();
             mSupportedMessages = new List<MessageFilterWrapper>();
             mSenders = new List<ISender>();
             mListener = new List<IListener>();
             mDeadletterListener = new List<IListener>();
+        }
+        #endregion
+        #region StatisticsRecalculate()
+        /// <summary>
+        /// This method recalculates the statistics for the communication holder.
+        /// </summary>
+        protected override void StatisticsRecalculate()
+        {
+            base.StatisticsRecalculate();
+            try
+            {
+                mStatistics.ActiveReservedSlots = mListenerActiveReservedSlots;
+
+                mStatistics.ActiveAllowedOverage = mListenerActiveAllowedOverage;
+
+                if (mSenders != null)
+                    mStatistics.Senders = mSenders.SelectMany((c) => c.Clients).Select((l) => l.Statistics).ToList();
+                if (mListener != null)
+                    mStatistics.Listeners = mListener.SelectMany((c) => c.Clients).Select((l) => l.Statistics).ToList();
+                if (mDeadletterListener != null)
+                    mStatistics.DeadLetterListeners = mDeadletterListener.SelectMany((c) => c.Clients).Select((l) => l.Statistics).ToList();
+
+                if (mClientCollection != null)
+                    mStatistics.ActiveListeners = mClientCollection.Statistics;
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
         #endregion
 
@@ -88,7 +117,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region SenderAdd(ISender sender)
+        #region --> SenderAdd(ISender sender)
         /// <summary>
         /// This method adds a registered sender to the communication collection.
         /// </summary>
@@ -99,7 +128,7 @@ namespace Xigadee
             mMessageSenderMap.Clear();
         }
         #endregion
-        #region ListenerAdd(IListener listener, bool deadLetter)
+        #region --> ListenerAdd(IListener listener, bool deadLetter)
         /// <summary>
         /// This method adds a listener or a deadletter listener to the collection.
         /// </summary>
@@ -114,6 +143,7 @@ namespace Xigadee
         }
         #endregion
 
+        //Listener
         #region ListenersStart()
         /// <summary>
         /// This method starts the registered listeners and deadletter listeners.
@@ -127,7 +157,7 @@ namespace Xigadee
                 mListener.ForEach(l => ServiceStart(l));
                 mDeadletterListener.ForEach(l => ServiceStart(l));
 
-                mListenerClients = ClientsPopulate();
+                //Set the client priority collection.
                 ListenersPriorityRecalculate().Wait();
 
                 // Flush the accumulated telemetry 
@@ -162,6 +192,201 @@ namespace Xigadee
         }
         #endregion
 
+        #region ListenersPriorityRecalculate()
+        /// <summary>
+        /// This method recalculate the poll chain for the listener and deadlistener collection 
+        /// and swaps the new collection in. This is also done on a schedule to ensure that the collection priority
+        /// does not become stale, and that the most active clients receive the most amount of attention.
+        /// </summary>
+        private async Task ListenersPriorityRecalculate()
+        {
+            if (Status != ServiceStatus.Running)
+                return;
+
+            try
+            {
+                //We do an atomic switch to add in a new priority list.
+                var newColl = new ListenerClientPriorityCollection(mListener, mDeadletterListener, mResourceTracker
+                    , mPolicy.PriorityAlgorithm
+                    , Interlocked.Increment(ref mListenersPriorityIteration));
+
+                var oldColl = Interlocked.Exchange(ref mClientCollection, newColl);
+                //This may happen the first time.
+                if (oldColl != null)
+                    oldColl.Close();
+
+                Logger?.LogMessage(LoggingLevel.Info, "ListenersPriorityRecalculate completed.");
+            }
+            catch (Exception ex)
+            {
+                Logger?.LogException("ListenersPriorityCalculate failed. Using the old collection.", ex);
+            }
+        }
+        #endregion
+
+        #region CanProcess()
+        /// <summary>
+        /// This returns true if the service is running.
+        /// </summary>
+        /// <returns></returns>
+        public bool CanProcess()
+        {
+            return Status == ServiceStatus.Running;
+        }
+        #endregion
+        #region --> Process(TaskManagerAvailability availability)
+        /// <summary>
+        /// This method processes any outstanding schedules and created a new task.
+        /// </summary>
+        public void Process(ITaskAvailability availability)
+        {
+            if (mClientCollection == null || mClientCollection.Count == 0)
+                return;
+
+            //Set the current collection for this iteration.
+            var collection = mClientCollection;
+
+            //Process each priority level in decending priority. The Levels property is already ordered correctly.
+            foreach (int priorityLevel in collection.Levels)
+            {
+                int slotsAvailable = availability.Level(priorityLevel);
+
+                while (CanProcess() && !collection.IsClosed)
+                {
+                    int available = slotsAvailable - mListenerActiveReservedSlots + mListenerActiveAllowedOverage;
+                    if (available <= 0)
+                        break;
+
+                    HolderSlotContext context;
+                    if (mClientCollection.TakeNext(available, TaskRecoverSlots, out context))
+                    {
+                        Interlocked.Add(ref mListenerActiveReservedSlots, context.Reserved);
+                    }
+
+                    TaskTracker tracker = TrackerCreateFromListenerContext(context, priorityLevel);
+
+                    Submit(tracker);
+                }
+            }
+        }
+
+        private void TaskRecoverSlots(int slots)
+        {
+            Interlocked.Add(ref mListenerActiveReservedSlots, slots * -1);
+        }
+        #endregion
+        #region TrackerCreateFromListenerContext(HolderSlotContext context)
+        /// <summary>
+        /// This private method builds the payload consistently for the incoming payload.
+        /// </summary>
+        /// <param name="context">The client holder context.</param>
+        /// <returns>Returns a tracker of type payload.</returns>
+        private TaskTracker TrackerCreateFromListenerContext(HolderSlotContext context, int? priority = null)
+        {
+            TaskTracker tracker = new TaskTracker(TaskTrackerType.ListenerPoll, TimeSpan.FromSeconds(30))
+            {
+                Priority = priority ?? TaskTracker.PriorityInternal,
+                Context = context,
+                Name = context.Name
+            };
+
+            tracker.Execute = async t =>
+            {
+                var currentContext = ((HolderSlotContext)tracker.Context);
+
+                var payloads = await currentContext.Poll();
+
+                if (payloads != null && payloads.Count > 0)
+                    foreach (var payload in payloads)
+                        PayloadSubmit(currentContext.Id, payload);
+            };
+
+            tracker.ExecuteComplete = (tr, failed, ex) =>
+            {
+                ((HolderSlotContext)tr.Context).Release(failed);
+            };
+
+            return tracker;
+        }
+        #endregion
+        #region PayloadSubmit(ClientHolder client, TransmissionPayload payload)
+        /// <summary>
+        /// This method processes an individual payload returned from a client.
+        /// </summary>
+        /// <param name="clientId">The originating client.</param>
+        /// <param name="payload">The payload.</param>
+        private void PayloadSubmit(Guid clientId, TransmissionPayload payload)
+        {
+            try
+            {
+                if (payload.Message.ChannelPriority < 0)
+                    payload.Message.ChannelPriority = 0;
+
+                mClientCollection.QueueTimeLog(clientId, payload.Message.EnqueuedTimeUTC);
+                mClientCollection.ActiveIncrement(clientId);
+
+                TaskTracker tracker = TaskManager.TrackerCreateFromPayload(payload, payload.Source);
+
+                tracker.ExecuteComplete = (tr, failed, ex) =>
+                {
+                    try
+                    {
+                        var contextPayload = tr.Context as TransmissionPayload;
+
+                        mClientCollection.ActiveDecrement(clientId, tr.TickCount);
+
+                        if (failed)
+                            mClientCollection.ErrorIncrement(clientId);
+
+                        contextPayload.Signal(!failed);
+                    }
+                    catch (Exception exin)
+                    {
+                        Logger?.LogException(string.Format("Payload completion error-{0}", payload), exin);
+                    }
+                };
+                //Submit the tracker to the task manager.
+                Submit(tracker);
+            }
+            catch (Exception ex)
+            {
+                Logger?.LogException(string.Format("ProcessClientPayload: unhandled error {0}/{1}-{2}", payload.Source, payload.Message.CorrelationKey, payload), ex);
+                payload.SignalFail();
+            }
+        }
+        #endregion
+
+        //Command message event handling
+        #region RegisterSupportedMessages()
+        /// <summary>
+        /// This method registers and connects to the shared service for supported messages
+        /// This event will be called whenever a command changes its status and becomes active or inactive.
+        /// This is used to start or stop particular listeners.
+        /// </summary>
+        protected virtual void RegisterSupportedMessages()
+        {
+            mSupportedMessageTypes = mSharedServices.GetService<ISupportedMessageTypes>();
+            if (mSupportedMessageTypes != null)
+                mSupportedMessageTypes.OnCommandChange += SupportedMessageTypes_OnCommandChange;
+        }
+        #endregion
+        #region SupportedMessageTypes_OnCommandChange(object sender, SupportedMessagesChange e)
+        /// <summary>
+        /// This method provides a dynamic notification to the client when the supported messages change.
+        /// Clients can use this information to decide whether they should start or stop listening.
+        /// </summary>
+        /// <param name="sender">The sender that initiated the call.</param>
+        /// <param name="e">The change parameter.</param>
+        private void SupportedMessageTypes_OnCommandChange(object sender, SupportedMessagesChange e)
+        {
+            mSupportedMessages = e.Messages;
+            mListener.ForEach((c) => c.Update(e.Messages));
+            //Update the listeners as there may be new active listeners or other may have shutdown.
+            ListenersPriorityRecalculate().Wait();
+        }
+        #endregion
+
+        //Senders
         #region SendersStart()
         /// <summary>
         /// This method starts the registered senders in the container.
@@ -186,280 +411,6 @@ namespace Xigadee
         public void SendersStop()
         {
             mSenders.ForEach(l => ServiceStop(l));
-        }
-        #endregion
-
-        #region ServiceStart(object service)
-        /// <summary>
-        /// This override sets the listener and sender specific service references.
-        /// </summary>
-        /// <param name="service">The service to start</param>
-        protected override void ServiceStart(object service)
-        {
-            try
-            {
-                if (service is IContainerService)
-                    ((IContainerService)service).Services.ForEach(s => ServiceStart(s));
-
-                if (service is IRequireSharedServices)
-                    ((IRequireSharedServices)service).SharedServices = SharedServices;
-
-                if (service is IServiceOriginator)
-                    ((IServiceOriginator)service).OriginatorId = OriginatorId;
-
-                if (service is IServiceLogger)
-                    ((IServiceLogger)service).Logger = Logger;
-
-                if (service is IPayloadSerializerConsumer)
-                    ((IPayloadSerializerConsumer)service).PayloadSerializer = PayloadSerializer;
-
-                base.ServiceStart(service);
-
-                if (service is IListener)
-                    ((IListener)service).Update(mSupportedMessages);
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException("Communication/ServiceStart" + service.ToString(), ex);
-                throw;
-            }
-        }
-        #endregion
-
-        #region Logging
-        public void QueueTimeLog(Guid clientId, DateTime? EnqueuedTimeUTC)
-        {
-            mListenerClients[clientId].QueueTimeLog(EnqueuedTimeUTC);
-        }
-
-        public void ActiveIncrement(Guid clientId)
-        {
-            mListenerClients[clientId].ActiveIncrement();
-        }
-
-        public void ActiveDecrement(Guid clientId, int TickCount)
-        {
-            mListenerClients[clientId].ActiveDecrement(TickCount);
-        }
-
-        public void ErrorIncrement(Guid clientId)
-        {
-            mListenerClients[clientId].ErrorIncrement();
-        }
-        #endregion
-
-        #region --> ListenerClientNext(int slotsAvailable, out HolderSlot? holderId)
-        /// <summary>
-        /// This method is called by the Microservice to reserve a listener for processing.
-        /// </summary>
-        /// <param name="priority">The poll priority.</param>
-        /// <param name="slotsAvailable">The number of slots currently available.</param>
-        /// <param name="holderId">The output Guid of the listener.</param>
-        /// <returns></returns>
-        public bool ListenerClientNext(int priority, int slotsAvailable, out HolderSlotContext holderId)
-        {
-            holderId = null;
-
-            //Check that we have slots available after we have taken in to accounts the slots reserved for pending polls.
-            int available = slotsAvailable - mListenerActiveReservedSlots + mListenerActiveAllowedOverage;
-            if (Status != ServiceStatus.Running || available <= 0 || mClientCollection == null)
-                return false;
-
-            if (mClientCollection.TakeNext(available, TaskRecoverSlots, out holderId))
-            {
-                Interlocked.Add(ref mListenerActiveReservedSlots, holderId.Reserved);
-                return true;
-            }
-
-            return false;
-        }
-        #endregion
-        #region TaskRecoverSlots(int slots)
-        /// <summary>
-        /// This method is called after the poll has completed.
-        /// </summary>
-        /// <param name="slots">The number of reserved slots.</param>
-        private void TaskRecoverSlots(int slots)
-        {
-            Interlocked.Add(ref mListenerActiveReservedSlots, slots * -1);
-        }
-        #endregion
-
-        #region ClientsPopulate()
-        /// <summary>
-        /// This method will recalculate the clients list and return a new ClientPriorityHolder collection.
-        /// </summary>
-        /// <returns>Returns a list of active clients.</returns>
-        private Dictionary<Guid, ClientPriorityHolder> ClientsPopulate()
-        {
-            var tempClients = new Dictionary<Guid, ClientPriorityHolder>();
-
-            foreach (var listener in mListener.Union(mDeadletterListener))
-                if (listener.Clients != null)
-                    foreach (var client in listener.Clients)
-                    {
-                        tempClients.Add(client.Id, new ClientPriorityHolder(mResourceTracker, client, listener.MappingChannelId));
-                    }
-
-            return tempClients;
-        }
-        #endregion
-        #region ListenersPriorityRecalculate()
-        /// <summary>
-        /// This method recalculate the poll chain for the listener and deadlistener collection 
-        /// and swaps the new collection in.
-        /// </summary>
-        public async Task ListenersPriorityRecalculate()
-        {
-            if (Status != ServiceStatus.Running)
-                return;
-
-            //Check that the listener clients have been created.
-            if (mListenerClients == null)
-                return;
-
-            try
-            {
-                //We do an atomic switch to add in a new priority list.
-                var newColl = new ClientPriorityCollection(mListenerClients, mPolicy.PriorityAlgorithm, Interlocked.Increment(ref mPriorityCollectionIteration));
-                var oldColl = Interlocked.Exchange(ref mClientCollection, newColl);
-                //This may happen the first time.
-                if (oldColl != null)
-                    oldColl.Close();
-
-                Logger.LogMessage(LoggingLevel.Info, "ListenersPriorityRecalculate completed.");
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException("ListenersPriorityCalculate failed. Using the old collection.", ex);
-            }
-        }
-        #endregion
-
-        #region StatisticsRecalculate()
-        /// <summary>
-        /// This method recalculates the statistics for the communication holder.
-        /// </summary>
-        protected override void StatisticsRecalculate()
-        {
-            base.StatisticsRecalculate();
-            try
-            {
-                mStatistics.ActiveReservedSlots = mListenerActiveReservedSlots;
-
-                mStatistics.ActiveAllowedOverage = mListenerActiveAllowedOverage;
-
-                if (mSenders != null)
-                    mStatistics.Senders = mSenders.SelectMany((c) => c.Clients).Select((l) => l.Statistics).ToList();
-                if (mListener != null)
-                    mStatistics.Listeners = mListener.SelectMany((c) => c.Clients).Select((l) => l.Statistics).ToList();
-                if (mDeadletterListener != null)
-                    mStatistics.DeadLetterListeners = mDeadletterListener.SelectMany((c) => c.Clients).Select((l) => l.Statistics).ToList();
-
-                if (mClientCollection != null)
-                    mStatistics.ActiveListeners = mClientCollection.Statistics;
-            }
-            catch (Exception ex)
-            {
-
-            }
-        }
-        #endregion
-
-        #region Logger
-        /// <summary>
-        /// The system logger.
-        /// </summary>
-        public ILoggerExtended Logger
-        {
-            get; set;
-        }
-        #endregion
-        #region OriginatorId
-        /// <summary>
-        /// The system originatorId which is appended to outgoing messages.
-        /// </summary>
-        public string OriginatorId
-        {
-            get; set;
-        }
-        #endregion
-
-        #region PayloadSerializer
-        /// <summary>
-        /// This is the serializer used by the clients to decode the incoming payload.
-        /// </summary>
-        public IPayloadSerializationContainer PayloadSerializer
-        {
-            get; set;
-        }
-        #endregion
-
-        #region SharedServices
-        /// <summary>
-        /// This is the shared service collection.
-        /// This override extracts the supported message types function when the shared services are set.
-        /// </summary>
-        public ISharedService SharedServices
-        {
-            get
-            {
-                return mSharedServices;
-            }
-            set
-            {
-                mSharedServices = value;
-                if (mSharedServices != null)
-                    RegisterSupportedMessages();
-            }
-        }
-        #endregion
-        #region Scheduler
-        /// <summary>
-        /// This is the system wide scheduler. It is used to execute the client priority recalculate task.
-        /// </summary>
-        public IScheduler Scheduler
-        {
-            get; set;
-        }
-        #endregion
-        #region Submit
-        /// <summary>
-        /// This is the action path back to the TaskManager.
-        /// </summary>
-        public Action<TaskTracker> Submit
-        {
-            get; set;
-        } 
-        #endregion
-
-        #region RegisterSupportedMessages()
-        /// <summary>
-        /// This method registers and connects to the shared service for supported messages.
-        /// </summary>
-        protected virtual void RegisterSupportedMessages()
-        {
-            mSupportedMessageTypes = mSharedServices.GetService<ISupportedMessageTypes>();
-            if (mSupportedMessageTypes != null)
-                mSupportedMessageTypes.OnCommandChange += SupportedMessageTypes_OnCommandChange;
-        }
-        #endregion
-
-        #region SupportedMessageTypes_OnCommandChange(object sender, SupportedMessagesChange e)
-        /// <summary>
-        /// This method provides a dynamic notification to the client when the supported messages change.
-        /// Clients can use this information to decide whether they should start or stop listening.
-        /// </summary>
-        /// <param name="sender">The sender that initiated the call.</param>
-        /// <param name="e">The change parameter.</param>
-        private void SupportedMessageTypes_OnCommandChange(object sender, SupportedMessagesChange e)
-        {
-            mSupportedMessages = e.Messages;
-            mListener.ForEach((c) => c.Update(e.Messages));
-            //Update the listeners as there may be new active listeners or other may have shutdown.
-            mListenerClients = ClientsPopulate();
-
-            ListenersPriorityRecalculate().Wait();
         }
         #endregion
 
@@ -521,127 +472,106 @@ namespace Xigadee
         }
         #endregion
 
-        #region Process(TaskManagerAvailability availability)
+        //Helpers
+        #region Submit
         /// <summary>
-        /// This method processes any outstanding schedules and created a new task.
+        /// This is the action path back to the TaskManager.
         /// </summary>
-        public void Process(TaskManagerAvailability availability)
+        public Action<TaskTracker> Submit
         {
-
-        }
-
-        public bool CanProcess()
+            get; set;
+        } 
+        #endregion
+        #region Logger
+        /// <summary>
+        /// The system logger.
+        /// </summary>
+        public ILoggerExtended Logger
         {
-            return Status != ServiceStatus.Running;
+            get; set;
         }
         #endregion
-
-        #region ListenersProcess(int priorityLevel, TaskManagerAvailability availability)
+        #region OriginatorId
         /// <summary>
-        /// This method is used to create tasks to dequeue data from the listeners.
+        /// The system originatorId which is appended to outgoing messages.
         /// </summary>
-        /// <param name="priorityLevel">This property specifies the priority level that should be processed..</param>
-        private void ListenersProcess(int priorityLevel, TaskManagerAvailability availability)
+        public string OriginatorId
         {
-            //Ok, we don't receive any messages until the system is running.
-            if (Status != ServiceStatus.Running)
-                return;
-
-            HolderSlotContext context;
-
-            int listenerTaskSlotsAvailable = availability.Level(priorityLevel);
-
-            while (listenerTaskSlotsAvailable > 0
-                && ListenerClientNext(priorityLevel, listenerTaskSlotsAvailable, out context))
+            get; set;
+        }
+        #endregion
+        #region PayloadSerializer
+        /// <summary>
+        /// This is the serializer used by the clients to decode the incoming payload.
+        /// </summary>
+        public IPayloadSerializationContainer PayloadSerializer
+        {
+            get; set;
+        }
+        #endregion
+        #region SharedServices
+        /// <summary>
+        /// This is the shared service collection.
+        /// This override extracts the supported message types function when the shared services are set.
+        /// </summary>
+        public ISharedService SharedServices
+        {
+            get
             {
-                TaskTracker tracker = TrackerCreateFromListenerContext(context, priorityLevel);
-
-                Submit(tracker);
-
-                listenerTaskSlotsAvailable = availability.Level(priorityLevel);
+                return mSharedServices;
+            }
+            set
+            {
+                mSharedServices = value;
+                if (mSharedServices != null)
+                    RegisterSupportedMessages();
             }
         }
         #endregion
-
-        #region TrackerCreateFromListenerContext(HolderSlotContext context)
+        #region Scheduler
         /// <summary>
-        /// This private method builds the payload consistently for the incoming payload.
+        /// This is the system wide scheduler. It is used to execute the client priority recalculate task.
         /// </summary>
-        /// <param name="context">The client holder context.</param>
-        /// <returns>Returns a tracker of type payload.</returns>
-        private TaskTracker TrackerCreateFromListenerContext(HolderSlotContext context, int? priority = null)
+        public IScheduler Scheduler
         {
-            TaskTracker tracker = new TaskTracker(TaskTrackerType.ListenerPoll, TimeSpan.FromSeconds(30))
-            {
-                Priority = priority ?? TaskTracker.PriorityInternal,
-                Context = context,
-                Name = context.Name
-            };
-
-            tracker.Execute = async t =>
-            {
-                var currentContext = ((HolderSlotContext)tracker.Context);
-
-                var payloads = await currentContext.Poll();
-
-                if (payloads != null && payloads.Count > 0)
-                    foreach (var payload in payloads)
-                        ListenerProcessClientPayload(currentContext.Id, payload);
-            };
-
-            tracker.ExecuteComplete = (tr, failed, ex) =>
-            {
-                ((HolderSlotContext)tr.Context).Release(failed);
-            };
-
-            return tracker;
+            get; set;
         }
         #endregion
-        #region ListenerProcessClientPayload(ClientHolder client, TransmissionPayload payload)
+
+        #region ServiceStart(object service)
         /// <summary>
-        /// This method processes an individual payload returned from a client.
+        /// This override sets the listener and sender specific service references.
         /// </summary>
-        /// <param name="clientId">The originating client.</param>
-        /// <param name="payload">The payload.</param>
-        private void ListenerProcessClientPayload(Guid clientId, TransmissionPayload payload)
+        /// <param name="service">The service to start</param>
+        protected override void ServiceStart(object service)
         {
             try
             {
-                if (payload.Message.ChannelPriority < 0)
-                    payload.Message.ChannelPriority = 0;
+                if (service is IContainerService)
+                    ((IContainerService)service).Services.ForEach(s => ServiceStart(s));
 
-                QueueTimeLog(clientId, payload.Message.EnqueuedTimeUTC);
-                ActiveIncrement(clientId);
+                if (service is IRequireSharedServices)
+                    ((IRequireSharedServices)service).SharedServices = SharedServices;
 
-                TaskTracker tracker = TaskManager.TrackerCreateFromPayload(payload, payload.Source);
+                if (service is IServiceOriginator)
+                    ((IServiceOriginator)service).OriginatorId = OriginatorId;
 
-                tracker.ExecuteComplete = (tr, failed, ex) =>
-                {
-                    try
-                    {
-                        var contextPayload = tr.Context as TransmissionPayload;
+                if (service is IServiceLogger)
+                    ((IServiceLogger)service).Logger = Logger;
 
-                        ActiveDecrement(clientId, tr.TickCount);
+                if (service is IPayloadSerializerConsumer)
+                    ((IPayloadSerializerConsumer)service).PayloadSerializer = PayloadSerializer;
 
-                        if (failed)
-                            ErrorIncrement(clientId);
+                base.ServiceStart(service);
 
-                        contextPayload.Signal(!failed);
-                    }
-                    catch (Exception exin)
-                    {
-                        Logger?.LogException(string.Format("Payload completion error-{0}", payload), exin);
-                    }
-                };
-
-                Submit(tracker);
+                if (service is IListener)
+                    ((IListener)service).Update(mSupportedMessages);
             }
             catch (Exception ex)
             {
-                Logger?.LogException(string.Format("ProcessClientPayload: unhandled error {0}/{1}-{2}", payload.Source, payload.Message.CorrelationKey, payload), ex);
-                payload.SignalFail();
+                Logger.LogException("Communication/ServiceStart" + service.ToString(), ex);
+                throw;
             }
-
         }
         #endregion
 

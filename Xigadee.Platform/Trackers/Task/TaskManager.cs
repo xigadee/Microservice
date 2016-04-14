@@ -39,6 +39,8 @@ namespace Xigadee
         /// </summary>
         private CpuStats mCpuStats = new CpuStats();
 
+        protected Availability mAvailability;
+
         public class AutoTuneStats
         {
             public int TasksMaxConcurrent { get; set; } = 0;
@@ -66,28 +68,7 @@ namespace Xigadee
         /// This function contains a reference to the Dispather which is used to process a task.
         /// </summary>
         private Func<TransmissionPayload, Task> Dispatcher;
-        /// <summary>
-        /// This is the number of priority level defined in the Task Manager.
-        /// </summary>
-        private int mLevels;
 
-        private int mTasksMaxConcurrent;
-        /// <summary>
-        /// This is the current count of the internal running tasks.
-        /// </summary>
-        private TaskPrioritySettings mPriorityInternal;
-
-        private TaskPrioritySettings[] mPriorityStatus;
-
-        private long mProcessSlot = 0;
-        /// <summary>
-        /// This is the current count of the killed tasks that have been freed up because the task has failed to return.
-        /// </summary>
-        private int mTasksKilled = 0;
-
-        private long mTasksKilledTotal = 0;
-
-        private long mTasksKilledDidReturn = 0;
         #endregion
         #region Constructor
         /// <summary>
@@ -105,18 +86,11 @@ namespace Xigadee
 
             mPauseCheck = new ManualResetEventSlim();
 
-            mLevels = levels;
+            mAvailability = new Availability(levels, policy.ConcurrentRequestsMax);
 
-            mPriorityInternal = new TaskPrioritySettings(TaskTracker.PriorityInternal);
-
-            mPriorityStatus = new TaskPrioritySettings[levels];
-            Enumerable.Range(0, levels).ForEach((l) => mPriorityStatus[l] = new TaskPrioritySettings(l));
-            
             mTasksQueue = new QueueTrackerContainer<QueueTracker>(levels);
 
             mProcesses = new ConcurrentDictionary<string, TaskManagerProcessContext>();
-
-            TasksMaxConcurrent = policy.ConcurrentRequestsMax;
 
             Dispatcher = dispatcher;
 
@@ -125,19 +99,6 @@ namespace Xigadee
 
             mTaskRequests = new ConcurrentDictionary<Guid, TaskTracker>();
         }
-        #endregion
-
-        #region LevelMin
-        /// <summary>
-        /// This is the minimum task priority level.
-        /// </summary>
-        public int LevelMin { get { return 0; } } 
-        #endregion
-        #region LevelMax
-        /// <summary>
-        /// This is the maximum task priority level.
-        /// </summary>
-        public int LevelMax { get { return mLevels - 1; } } 
         #endregion
 
         #region StartInternal()
@@ -151,7 +112,7 @@ namespace Xigadee
             LoopReset();
 
             mMessagePump.Start();
-        } 
+        }
         #endregion
         #region StopInternal()
         /// <summary>
@@ -186,19 +147,19 @@ namespace Xigadee
                 if (mTaskRequests != null)
                 {
                     mStatistics.Active = mTaskRequests.Count;
-                    mStatistics.SlotsAvailable = TaskSlotsAvailable;
+                    mStatistics.SlotsAvailable = mAvailability.Count;
                 }
 
-                mStatistics.Killed = mTasksKilled;
-                mStatistics.KilledTotal = mTasksKilledTotal;
-                mStatistics.KilledDidReturn = mTasksKilledDidReturn;
+                //mStatistics.Killed = mTasksKilled;
+                //mStatistics.KilledTotal = mTasksKilledTotal;
+                //mStatistics.KilledDidReturn = mTasksKilledDidReturn;
 
-                if (mPriorityStatus != null)
-                    mStatistics.Levels = mPriorityStatus
-                        .Union(new TaskPrioritySettings[] { mPriorityInternal })
-                        .OrderByDescending((s) => s.Level)
-                        .Select((s) => s.Debug)
-                        .ToArray();
+                //if (mPriorityStatus != null)
+                //    mStatistics.Levels = mPriorityStatus
+                //        .Union(new TaskPrioritySettings[] { mPriorityInternal })
+                //        .OrderByDescending((s) => s.Level)
+                //        .Select((s) => s.Debug)
+                //        .ToArray();
 
                 if (mTaskRequests != null)
                     mStatistics.Running = mTaskRequests.Values
@@ -264,15 +225,6 @@ namespace Xigadee
         }
         #endregion
 
-        /// <summary>
-        /// This method initialises a particular process before it is first executed, if an exception is thrown the process is disabled.
-        /// </summary>
-        /// <param name="context">The process to execute.</param>
-        private void ProcessInitialise(TaskManagerProcessContext context)
-        {
-
-        }
-
         #region ProcessRegister(string name, int priority, Action execute)
         /// <summary>
         /// This method registers a process to be polled as part of the process loop.
@@ -313,7 +265,7 @@ namespace Xigadee
             try
             {
                 if (context.Process.CanProcess())
-                    context.Process.Process(CalculateAvailability());
+                    context.Process.Process(mAvailability);
             }
             catch (Exception ex)
             {
@@ -321,15 +273,6 @@ namespace Xigadee
             }
         }
         #endregion
-
-        /// <summary>
-        /// This method passes an object to the polling party that can be used to enqueue jobs.
-        /// </summary>
-        /// <returns>Returns a new availability object.</returns>
-        protected virtual TaskManagerAvailability CalculateAvailability()
-        {
-            return new TaskManagerAvailability();
-        }
 
         #region ProcessLoop(object state)
         /// <summary>
@@ -353,8 +296,8 @@ namespace Xigadee
 
                         //Reset the reset event to pause the thread.
                         //However this will be set if any new tasks are enqueued in the following code.
-                        LoopReset(); 
-                        
+                        LoopReset();
+
                         //Timeout any overdue tasks.
                         TaskTimedoutCancel();
 
@@ -404,9 +347,8 @@ namespace Xigadee
         private void LoopSet()
         {
             mPauseCheck.Set();
-        } 
+        }
         #endregion
-
 
         #region BulkheadReserve(int level, int slotCount)
         /// <summary>
@@ -419,16 +361,8 @@ namespace Xigadee
         /// <returns>Returns true if the reservation has been set.</returns>
         public bool BulkheadReserve(int level, int slotCount)
         {
-            if (level < LevelMin || level > LevelMax)
-                return false;
-
-            if (slotCount < 0)
-                return false;
-
-            mPriorityStatus[level].BulkHeadReservation = slotCount;
-
-            return true;
-        } 
+            return mAvailability.BulkheadReserve(level, slotCount);
+        }
         #endregion
 
         #region --> ExecuteOrEnqueue(TaskTracker tracker)
@@ -449,18 +383,16 @@ namespace Xigadee
             DequeueTasksAndExecute();
         }
         #endregion
-        #region --> DequeueTasksAndExecute(int? slots = null)
+        #region --> DequeueTasksAndExecute()
         /// <summary>
         /// This method processes the tasks that resides in the queue, dequeuing the highest priority first.
         /// </summary>
-        public void DequeueTasksAndExecute(int? slots = null)
+        public void DequeueTasksAndExecute()
         {
             try
             {
-                slots = slots ?? TaskSlotsAvailable;
-                if (slots > 0)
-                    foreach (var dequeueTask in mTasksQueue.Dequeue(slots.Value))
-                        ExecuteTask(dequeueTask);
+                foreach (var dequeueTask in mTasksQueue.Dequeue(mAvailability.Count))
+                    ExecuteTask(dequeueTask);
             }
             catch (Exception ex)
             {
@@ -476,25 +408,19 @@ namespace Xigadee
         /// <param name="tracker">The tracker to enqueue.</param>
         private void ExecuteTask(TaskTracker tracker)
         {
-            tracker.ProcessSlot = Interlocked.Increment(ref mProcessSlot);
-
             var tOpts = tracker.IsLongRunning ? TaskCreationOptions.LongRunning : TaskCreationOptions.None;
 
             if (mTaskRequests.TryAdd(tracker.Id, tracker))
             {
-                tracker.UTCExecute = DateTime.UtcNow;
+                mAvailability.Increment(tracker);
 
-                if (tracker.IsInternal)
-                    Interlocked.Increment(ref mPriorityInternal.Active);
-                else
-                    Interlocked.Increment(ref mPriorityStatus[tracker.Priority.Value].Active);
+                tracker.UTCExecute = DateTime.UtcNow;
 
                 try
                 {
                     var task = Task.Factory.StartNew
                     (
-                          async () => await ExecuteTaskCreate(tracker)
-                        , tracker.Cts.Token, tOpts, TaskScheduler.Default
+                          async () => await ExecuteTaskCreate(tracker), tracker.Cts.Token, tOpts, TaskScheduler.Default
                     ).Unwrap();
 
                     task.ContinueWith((t) => ExecuteTaskComplete(tracker, task.IsCanceled || task.IsFaulted, t.Exception));
@@ -505,7 +431,7 @@ namespace Xigadee
                 }
             }
             else
-                Logger?.LogMessage(LoggingLevel.Error,$"Task could not be enqueued: {tracker.Id}-{tracker.Caller}");
+                Logger?.LogMessage(LoggingLevel.Error, $"Task could not be enqueued: {tracker.Id}-{tracker.Caller}");
         }
         #endregion
         #region ExecuteTaskCreate(TaskTracker tracker)
@@ -545,18 +471,7 @@ namespace Xigadee
                 TaskTracker outTracker;
                 if (mTaskRequests.TryRemove(tracker.Id, out outTracker))
                 {
-                    //Remove the internal task count.
-                    if (outTracker.IsInternal)
-                        Interlocked.Decrement(ref mPriorityInternal.Active);
-                    else
-                        Interlocked.Decrement(ref mPriorityStatus[tracker.Priority.Value].Active);
-
-
-                    if (tracker.IsKilled)
-                    {
-                        Interlocked.Decrement(ref mTasksKilled);
-                        Interlocked.Increment(ref mTasksKilledDidReturn);
-                    }
+                    mAvailability.Decrement(outTracker);
 
                     try
                     {
@@ -604,51 +519,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region TaskSlotsAvailable
-        /// <summary>
-        /// This figure is the number of remaining task slots available. Internal tasks are removed from the running tasks.
-        /// </summary>
-        public int TaskSlotsAvailable
-        {
-            get { return mTasksMaxConcurrent - (mTaskRequests.Count - mPriorityInternal.Active - mTasksKilled); }
-        }
-        #endregion
-        #region TaskSlotsAvailableNet
-        /// <summary>
-        /// This figure is the number of remaining task slots available after the number of queued tasks have been removed.
-        /// </summary>
-        public int TaskSlotsAvailableNet(int priorityLevel)
-        {
-            return TaskSlotsAvailable - mTasksQueue.Count;
-        }
-        #endregion
-   
-        #region TasksMaxConcurrent
-        /// <summary>
-        /// This is the maximum number of concurrent tasks that can execure in parallel.
-        /// </summary>
-        public int TasksMaxConcurrent
-        {
-            get
-            {
-                return mTasksMaxConcurrent;
-            }
-            set
-            {
-                if (value <= 0)
-                    throw new ArgumentOutOfRangeException($"{nameof(TaskManager)}: TasksMaxConcurrent must be a positive integer.");
-
-                mTasksMaxConcurrent = value;
-            }
-        } 
-        #endregion
-
-        #region TasksActive
-        /// <summary>
-        /// This is a count all all the current active requests.
-        /// </summary>
-        public int TasksActive { get { return mTaskRequests.Count; } }
-        #endregion
 
         #region Logger
         /// <summary>
@@ -755,8 +625,8 @@ namespace Xigadee
                     return;
 
                 tracker.IsKilled = true;
-                Interlocked.Increment(ref mTasksKilled);
-                Interlocked.Increment(ref mTasksKilledTotal);
+
+                mAvailability.Decrement(tracker, true);
             }
         }
         #endregion
@@ -823,32 +693,9 @@ namespace Xigadee
         }
         #endregion
 
-        /// <summary>
-        /// This class is used to hold the priority settings.
-        /// </summary>
-        [DebuggerDisplay("{Debug}")]
-        protected class TaskPrioritySettings
-        {
-            public TaskPrioritySettings(int level)
-            {
-                Level = level;
-            }
 
-            public readonly int Level;
 
-            public long Count;
 
-            public int Active;
 
-            public int BulkHeadReservation;
-
-            public string Debug
-            {
-                get
-                {
-                    return $"Level={Level} Hits={Count} Active={Active} Reserved={BulkHeadReservation}";
-                }
-            }
-        }
     }
 }

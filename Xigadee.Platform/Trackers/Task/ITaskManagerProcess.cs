@@ -9,7 +9,7 @@ namespace Xigadee
     {
         bool CanProcess();
 
-        void Process(TaskManagerAvailability availability);
+        void Process(ITaskAvailability availability);
 
         Action<TaskTracker> Submit { get; set; }
     }

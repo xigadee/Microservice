@@ -108,10 +108,12 @@
     <Compile Include="Trackers\Queue\QueueTrackerStatistics.cs" />
     <Compile Include="Trackers\Resource\ResourceTracker.cs" />
     <Compile Include="Trackers\Resource\ResourceTrackerStatistics.cs" />
+    <Compile Include="Trackers\Task\Availability.cs" />
+    <Compile Include="Trackers\Task\ITaskAvailability.cs" />
     <Compile Include="Trackers\Task\ITaskManagerProcess.cs" />
-    <Compile Include="Trackers\Task\TaskManagerAvailability.cs" />
     <Compile Include="Trackers\Task\TaskManagerProcessContext.cs" />
     <Compile Include="Trackers\Task\TaskManagerStatistics.cs" />
+    <Compile Include="Trackers\Task\TaskPrioritySettings.cs" />
     <Compile Include="Trackers\Task\TaskTracker.cs" />
     <Compile Include="Telemetry\TelemetryContainer.cs" />
     <Compile Include="Microservice.cs" />
