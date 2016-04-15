@@ -929,7 +929,7 @@ namespace Xigadee
         {
             if (holderResponse.Ex != null && !rs.IsTimeout)
                 Logger.LogException($"Error in persistence {typeof (E).Name}-{key}", holderResponse.Ex);
-            else
+            else if (rs.ResponseCode != 404)
                 Logger.LogMessage(
                     rs.IsTimeout ? LoggingLevel.Warning : LoggingLevel.Info,
                     $"Error in persistence {typeof (E).Name}-{rs.ResponseCode}-{key}-{holderResponse.Ex?.ToString() ?? rs.ResponseMessage}", typeof(E).Name);
