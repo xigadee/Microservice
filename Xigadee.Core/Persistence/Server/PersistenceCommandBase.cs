@@ -213,16 +213,13 @@ namespace Xigadee
         #endregion
 
         #region TimeoutCorrectCreateUpdate...
+
         /// <summary>
         /// This method can be overridden to correct timeouts for state changing requests and to log to the event source event on a timeout failure condition.
         /// This would be used when the underlying communication times out, but the action was ultimately successful.
         /// </summary>
         /// <typeparam name="K"></typeparam>
         /// <typeparam name="E"></typeparam>
-        /// <param name="rq"></param>
-        /// <param name="rs"></param>
-        /// <param name="m"></param>
-        /// <param name="l"></param>
         /// <returns>Return true if the message should logged </returns>
         protected virtual async Task<bool> TimeoutCorrectCreateUpdate(PersistenceRequestHolder<K, E> holder)
         {
@@ -485,13 +482,21 @@ namespace Xigadee
         #endregion
 
         #region PersistenceCommandRegister<KT,ET>...
+
         /// <summary>
         /// This method registers the specific persistence handler.
         /// </summary>
         /// <typeparam Name="KT">The key type.</typeparam>
         /// <typeparam Name="ET">The entity type.</typeparam>
-        /// <param Name="actionType">The action type identifier</param>
-        /// <param Name="action">The action to process the command.</param>
+        /// <param name="actionType">The action type identifier</param>
+        /// <param name="action">The action to process the command.</param>
+        /// <param name="logEventOnSuccess"></param>
+        /// <param name="preaction"></param>
+        /// <param name="postaction"></param>
+        /// <param name="timeoutcorrect"></param>
+        /// <param name="retryOnTimeout"></param>
+        /// <param name="channelId"></param>
+        /// <param name="entityType"></param>
         protected virtual void PersistenceCommandRegister<KT, ET>(string actionType
             , Func<PersistenceRequestHolder<KT, ET>, Task> action
             , bool logEventOnSuccess = false
@@ -566,7 +571,7 @@ namespace Xigadee
                                 ProfileRetry(holder, attempt);
 
                                 Logger.LogMessage(LoggingLevel.Info
-                                    , string.Format("Timeout occured for {0} {1} for request:{2}", EntityType, actionType, holder.rq)
+                                    , $"Timeout occured for {EntityType} {actionType} for request:{holder.rq}"
                                     , "DBTimeout");
 
                                 holder.rq.IsRetry = true;
@@ -590,7 +595,7 @@ namespace Xigadee
                                 Log(actionType
                                     , holder
                                     , LoggingLevel.Error
-                                    , string.Format("Retry limit has been exceeded (cancelled ({0})) for {1} {2} for {3}", m.Cancel.IsCancellationRequested, EntityType, actionType, holder.rq)
+                                    , $"Retry limit has been exceeded (cancelled ({m.Cancel.IsCancellationRequested})) for {EntityType} {actionType} for {holder.rq} after {m.Message?.FabricDeliveryCount} delivery attempts"
                                     , "DBRetry");
                                 holder.result = ResourceRequestResult.RetryExceeded;
                             }
