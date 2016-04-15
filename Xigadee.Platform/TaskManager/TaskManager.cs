@@ -447,7 +447,7 @@ namespace Xigadee
                     try
                     {
                         if (outTracker.ExecuteComplete != null)
-                            outTracker.ExecuteComplete(tracker, failed, tex);
+                            outTracker.ExecuteComplete(outTracker, failed, tex);
                     }
                     catch (Exception ex)
                     {
@@ -464,19 +464,11 @@ namespace Xigadee
                 Logger?.LogException($"Task {tracker.Id} has faulted when completing: {ex.Message}", ex);
             }
 
-            //Check if there are any queued tasks that can fill up the empty slot that is now available.
             try
             {
                 //Signal the poll loop to proceed in case it is waiting, this will check for any pending tasks that require processing.
                 LoopSet();
-            }
-            catch (Exception)
-            {
-                //We do not want to throw an exception here.
-            }
 
-            try
-            {
                 if (failed)
                 {
                     mStatistics.ErrorIncrement();
@@ -489,7 +481,6 @@ namespace Xigadee
             catch { }
         }
         #endregion
-
 
         #region --> TaskTimedoutKill()
         /// <summary>
@@ -562,6 +553,7 @@ namespace Xigadee
             {
                 mStatistics.TimeoutRegister(1);
                 tracker.Cancel();
+                LoopSet();
             }
             catch (Exception ex)
             {
@@ -588,6 +580,7 @@ namespace Xigadee
                 tracker.IsKilled = true;
 
                 mAvailability.Decrement(tracker, true);
+                LoopSet();
             }
         }
         #endregion
@@ -663,7 +656,5 @@ namespace Xigadee
             get; set;
         }
         #endregion
-
-
     }
 }

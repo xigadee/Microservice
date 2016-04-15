@@ -19,7 +19,7 @@ namespace Xigadee
 
         private int mActive;
 
-        private int mKilled; 
+        private int mKilled;
         #endregion
 
         internal TaskManagerPrioritySettings(int level)
@@ -38,7 +38,7 @@ namespace Xigadee
             get
             {
                 int result = BulkHeadReservation - mActive;
-                return result>0?result:0;
+                return result > 0 ? result : 0;
             }
         }
 

@@ -194,8 +194,8 @@ namespace Xigadee
 
         #region ListenersPriorityRecalculate()
         /// <summary>
-        /// This method recalculate the poll chain for the listener and deadlistener collection 
-        /// and swaps the new collection in. This is also done on a schedule to ensure that the collection priority
+        /// This method recalculate the new poll chain for the listener and deadletter listener collection 
+        /// and swaps the new collection in atomically. This is done on a schedule to ensure that the collection priority
         /// does not become stale, and that the most active clients receive the most amount of attention.
         /// </summary>
         private async Task ListenersPriorityRecalculate()
@@ -273,11 +273,13 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-
                 throw;
             }
         }
-
+        /// <summary>
+        /// This method recovers the reserved slots when the poll task completes.
+        /// </summary>
+        /// <param name="slots"></param>
         private void TaskRecoverSlots(int slots)
         {
             Interlocked.Add(ref mListenerActiveReservedSlots, slots * -1);
@@ -293,7 +295,7 @@ namespace Xigadee
         {
             TaskTracker tracker = new TaskTracker(TaskTrackerType.ListenerPoll, TimeSpan.FromSeconds(30))
             {
-                Priority = context.Priority,
+                Priority = TaskTracker.PriorityInternal,                 
                 Context = context,
                 Name = context.Name
             };

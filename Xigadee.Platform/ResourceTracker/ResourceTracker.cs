@@ -30,7 +30,10 @@ namespace Xigadee
         }
         #endregion
 
-        #region Start/Stop/SharedServices
+        #region SharedServices
+        /// <summary>
+        /// This method registers the IResourceTracker reference when the shared services reference is set.
+        /// </summary>
         public ISharedService SharedServices
         {
             get
@@ -42,13 +45,16 @@ namespace Xigadee
                 mSharedServices = value;
                 value.RegisterService<IResourceTracker>(this);
             }
-        }
-
+        } 
+        #endregion
+        #region Start/Stop
         protected override void StartInternal()
         {
 
         }
-
+        /// <summary>
+        /// This method removes the shared service reference.
+        /// </summary>
         protected override void StopInternal()
         {
             try
@@ -119,7 +125,6 @@ namespace Xigadee
 
             return limiter;
         }
-
 
     }
 }

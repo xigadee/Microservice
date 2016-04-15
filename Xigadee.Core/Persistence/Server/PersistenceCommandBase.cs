@@ -27,7 +27,9 @@ namespace Xigadee
         /// This is the cache manager.
         /// </summary>
         protected readonly ICacheManager<K, E> mCacheManager;
-
+        /// <summary>
+        /// This is the set of in play requests currently being processed.
+        /// </summary>
         protected readonly ConcurrentDictionary<Guid, IPersistenceRequestHolder> mInPlay;
         #endregion
         #region Constructor
@@ -395,8 +397,7 @@ namespace Xigadee
         /// <param name="holder">The request holder.</param>
         protected virtual void ProfileEnd<KT, ET>(PersistenceRequestHolder<KT, ET> holder)
         {
-            if (mPolicy.ResourceConsumer != null)
-                mPolicy.ResourceConsumer.End(holder.profileId, holder.start, holder.result ?? ResourceRequestResult.Unknown);
+            mPolicy.ResourceConsumer?.End(holder.profileId, holder.start, holder.result ?? ResourceRequestResult.Unknown);
 
             IPersistenceRequestHolder ok;
             mInPlay.TryRemove(holder.profileId, out ok);
@@ -411,8 +412,7 @@ namespace Xigadee
         /// <param name="retryStart">The tick count of the retry point.</param>
         protected virtual void ProfileRetry<KT, ET>(PersistenceRequestHolder<KT, ET> holder, int retryStart)
         {
-            if (mPolicy.ResourceConsumer != null)
-                mPolicy.ResourceConsumer.Retry(holder.profileId, retryStart, holder.rs.ShouldRetry ? ResourceRetryReason.Other : ResourceRetryReason.Timeout);
+            mPolicy.ResourceConsumer?.Retry(holder.profileId, retryStart, holder.rs.ShouldRetry ? ResourceRetryReason.Other : ResourceRetryReason.Timeout);
 
             holder.Retry(retryStart);
 

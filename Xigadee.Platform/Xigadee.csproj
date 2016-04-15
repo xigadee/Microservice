@@ -102,14 +102,12 @@
     <Compile Include="TaskManager\QueueTracker\QueueTracker.cs" />
     <Compile Include="TaskManager\QueueTracker\QueueTrackerContainer.cs" />
     <Compile Include="TaskManager\QueueTracker\QueueTrackerStatistics.cs" />
-    <Compile Include="TaskManager\TaskAvailability.cs" />
-    <Compile Include="TaskManager\TaskAvailabilityStatistics.cs" />
+    <Compile Include="TaskManager\TaskAvailability\TaskAvailability.cs" />
+    <Compile Include="TaskManager\TaskAvailability\TaskAvailabilityStatistics.cs" />
+    <Compile Include="TaskManager\TaskAvailability\TaskManagerPrioritySettings.cs" />
     <Compile Include="TaskManager\TaskManager.cs" />
     <Compile Include="TaskManager\TaskManagerProcessContext.cs" />
     <Compile Include="TaskManager\TaskManagerStatistics.cs" />
-    <Compile Include="TaskManager\TaskPrioritySettings.cs" />
-    <Compile Include="TaskManager\TaskTracker.cs" />
-    <Compile Include="TaskManager\TaskTrackerType.cs" />
     <Compile Include="Logger\Loggers\TraceEventLogger.cs" />
     <Compile Include="Microservice_TaskManager.cs" />
     <Compile Include="MicroserviceConfigurationOptions.cs" />
@@ -120,6 +118,8 @@
     <Compile Include="Serialization\SerializationContainer.cs" />
     <Compile Include="Command\ServiceHolder\ServiceHolder.cs" />
     <Compile Include="Command\SharedService\SharedServiceContainer.cs" />
+    <Compile Include="TaskManager\TaskTracker\TaskTracker.cs" />
+    <Compile Include="TaskManager\TaskTracker\TaskTrackerType.cs" />
     <Compile Include="Telemetry\TelemetryContainer.cs" />
     <Compile Include="Microservice.cs" />
     <Compile Include="Microservice_Components.cs" />

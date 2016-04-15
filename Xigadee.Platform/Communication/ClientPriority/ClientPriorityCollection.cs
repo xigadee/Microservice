@@ -15,6 +15,7 @@ namespace Xigadee
     public class ListenerClientPriorityCollection:StatisticsBase<ClientPriorityStatistics>
     {
         #region Declarations
+
         private int[] mListenerPollLevels;
 
         private Dictionary<Guid, ClientPriorityHolder> mListenerClients;
@@ -214,7 +215,6 @@ namespace Xigadee
             get; private set;
         } 
         #endregion
-
 
         #region Levels
         /// <summary>
