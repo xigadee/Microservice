@@ -111,10 +111,11 @@ namespace Xigadee
         #region Start/Stop
         protected override void StartInternal()
         {
+            base.StartInternal();
+
             mContainer = new ConcurrentDictionary<K, JsonHolder<K>>();
             mContainerReference = new ConcurrentDictionary<string, K>();
             mReferenceModifyLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
-            base.StartInternal();
         }
 
         protected override void StopInternal()
@@ -125,6 +126,7 @@ namespace Xigadee
             mContainer.Clear();
             mContainerReference = null;
             mContainer = null;
+
             base.StopInternal();
         }
         #endregion
@@ -138,119 +140,189 @@ namespace Xigadee
         protected virtual bool ReferenceGet(Tuple<string, string> reference, out K key)
         {
             key = default(K);
+
             return false;
         }
 
         protected virtual void ReferenceSet(K key, List<Tuple<string, string>> references)
         {
+
         }
 
         protected virtual void ReferencesRemove(K key)
         {
+
         }
 
 
         protected override async Task<IResponseHolder<E>> InternalCreate(K key
             , PersistenceRequestHolder<K, E> holder)
         {
-            E entity = holder.rq.Entity;
-            var jsonHolder = mTransform.JsonMaker(entity);
+            try
+            {
+                mReferenceModifyLock.EnterWriteLock();
 
-            bool success = mContainer.TryAdd(key, jsonHolder);
+                E entity = holder.rq.Entity;
+                var jsonHolder = mTransform.JsonMaker(entity);
 
-            if (success)
-                return new PersistenceResponseHolder<E>(PersistenceResponse.Created201, jsonHolder.Json, mTransform.PersistenceEntitySerializer.Deserializer(jsonHolder.Json));
-            else
-                return new PersistenceResponseHolder<E>(PersistenceResponse.Conflict409);
+                bool success = mContainer.TryAdd(key, jsonHolder);
+
+                if (success)
+                    return new PersistenceResponseHolder<E>(PersistenceResponse.Created201, jsonHolder.Json, mTransform.PersistenceEntitySerializer.Deserializer(jsonHolder.Json));
+                else
+                    return new PersistenceResponseHolder<E>(PersistenceResponse.Conflict409);
+            }
+            finally
+            {
+                mReferenceModifyLock.ExitWriteLock();
+            }
         }
 
         protected override async Task<IResponseHolder<E>> InternalRead(K key
             , PersistenceRequestHolder<K, E> holder)
         {
-            JsonHolder<K> jsonHolder;
-            bool success = mContainer.TryGetValue(key, out jsonHolder);
+            try
+            {
+                mReferenceModifyLock.EnterReadLock();
 
-            if (success)
-                return new PersistenceResponseHolder<E>(PersistenceResponse.Ok200, jsonHolder.Json, mTransform.PersistenceEntitySerializer.Deserializer(jsonHolder.Json));
-            else
-                return new PersistenceResponseHolder<E>(PersistenceResponse.NotFound404);
+                JsonHolder<K> jsonHolder;
+                bool success = mContainer.TryGetValue(key, out jsonHolder);
+
+                if (success)
+                    return new PersistenceResponseHolder<E>(PersistenceResponse.Ok200, jsonHolder.Json, mTransform.PersistenceEntitySerializer.Deserializer(jsonHolder.Json));
+                else
+                    return new PersistenceResponseHolder<E>(PersistenceResponse.NotFound404);
+            }
+            finally
+            {
+                mReferenceModifyLock.ExitReadLock();
+            }
         }
 
         protected override async Task<IResponseHolder<E>> InternalReadByRef(Tuple<string, string> reference
             , PersistenceRequestHolder<K, E> holder)
         {
-            K key;
-            if (!ReferenceGet(reference, out key))
-                return new PersistenceResponseHolder<E>(PersistenceResponse.NotFound404);
+            try
+            {
+                mReferenceModifyLock.EnterReadLock();
 
-            return await InternalRead(key, holder);
+                K key;
+                if (!ReferenceGet(reference, out key))
+                    return new PersistenceResponseHolder<E>(PersistenceResponse.NotFound404);
+
+                return await InternalRead(key, holder);
+            }
+            finally
+            {
+                mReferenceModifyLock.ExitReadLock();
+            }
         }
 
         protected override async Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRequestHolder<K, E> holder)
         {
-            //E entity = holder.rq.Entity;
-            //var jsonHolder = mTransform.JsonMaker(entity);
-
-            //bool success = mContainer.TryUpdate(key, jsonHolder, 
-
-            //if (success)
-            //    return new PersistenceResponseHolder<E>()
-            //    {
-            //        StatusCode = 201
-            //        , Content = jsonHolder.Json
-            //        , IsSuccess = true
-            //        , Entity = mTransform.PersistenceEntityDeserializer(jsonHolder.Json)
-            //    };
-            //else
-            return new PersistenceResponseHolder<E>()
+            try
             {
-                StatusCode = 412
-                ,
-                IsSuccess = false
-                ,
-                IsTimeout = false
-            };
+                mReferenceModifyLock.EnterWriteLock();
+
+                E entity = holder.rq.Entity;
+                var jsonHolder = mTransform.JsonMaker(entity);
+
+                bool success = false;//mContainer.TryUpdate(key, jsonHolder,
+
+                if (success)
+                    return new PersistenceResponseHolder<E>()
+                    {
+                        StatusCode = 201
+                        , Content = jsonHolder.Json
+                        , IsSuccess = true
+                        , Entity = mTransform.PersistenceEntitySerializer.Deserializer(jsonHolder.Json)
+                    };
+                else
+                    return new PersistenceResponseHolder<E>()
+                    {
+                        StatusCode = 412, IsSuccess = false, IsTimeout = false
+                    };
+            }
+            finally
+            {
+                mReferenceModifyLock.EnterWriteLock();
+            }
         }
 
         protected override async Task<IResponseHolder> InternalDelete(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            JsonHolder<K> value;
-            if (!mContainer.TryRemove(key, out value))
-                return new PersistenceResponseHolder(PersistenceResponse.NotFound404);
+            try
+            {
+                mReferenceModifyLock.EnterWriteLock();
 
-            ReferencesRemove(key);
-            return new PersistenceResponseHolder(PersistenceResponse.Ok200);
+                JsonHolder<K> value;
+                if (!mContainer.TryRemove(key, out value))
+                    return new PersistenceResponseHolder(PersistenceResponse.NotFound404);
+
+                ReferencesRemove(key);
+                return new PersistenceResponseHolder(PersistenceResponse.Ok200);
+            }
+            finally
+            {
+                mReferenceModifyLock.EnterWriteLock();
+            }
         }
 
         protected override async Task<IResponseHolder> InternalDeleteByRef(Tuple<string, string> reference
             , PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            K key;
-            if (!ReferenceGet(reference, out key))
-                return new PersistenceResponseHolder<E>() { StatusCode = 404, IsSuccess = false, IsTimeout = false };
+            try
+            {
+                mReferenceModifyLock.EnterWriteLock();
 
-            return await InternalDelete(key, holder);
+                K key;
+                if (!ReferenceGet(reference, out key))
+                    return new PersistenceResponseHolder<E>() { StatusCode = 404, IsSuccess = false, IsTimeout = false };
+
+                return await InternalDelete(key, holder);
+            }
+            finally
+            {
+                mReferenceModifyLock.ExitWriteLock();
+            }
         }
 
         protected override async Task<IResponseHolder> InternalVersion(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            JsonHolder<K> jsonHolder;
-            bool success = mContainer.TryGetValue(key, out jsonHolder);
+            try
+            {
+                mReferenceModifyLock.EnterReadLock();
 
-            if (success)
-                return new PersistenceResponseHolder(PersistenceResponse.Ok200, jsonHolder.Json);
-            else
-                return new PersistenceResponseHolder(PersistenceResponse.NotFound404);
+                JsonHolder<K> jsonHolder;
+                bool success = mContainer.TryGetValue(key, out jsonHolder);
+
+                if (success)
+                    return new PersistenceResponseHolder(PersistenceResponse.Ok200, jsonHolder.Json);
+                else
+                    return new PersistenceResponseHolder(PersistenceResponse.NotFound404);
+            }
+            finally
+            {
+                mReferenceModifyLock.ExitReadLock();
+            }
         }
 
         protected override async Task<IResponseHolder> InternalVersionByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            K key;
-            if (!ReferenceGet(reference, out key))
-                return new PersistenceResponseHolder(PersistenceResponse.NotFound404);
+            try
+            {
+                mReferenceModifyLock.EnterReadLock();
 
-            return await InternalVersion(key, holder);
+                K key;
+                if (!ReferenceGet(reference, out key))
+                    return new PersistenceResponseHolder(PersistenceResponse.NotFound404);
+
+                return await InternalVersion(key, holder);
+            }
+            finally
+            {
+                mReferenceModifyLock.ExitReadLock();
+            }
         }
-
     }
 }

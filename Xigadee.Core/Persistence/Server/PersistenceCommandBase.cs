@@ -421,69 +421,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region class ->> PersistenceRequestHolder<KT, ET>
-
-        protected interface IPersistenceRequestHolder
-        {
-            Guid profileId { get; }
-
-            int start { get; }
-
-            string Profile { get; }
-        }
-
-        /// <summary>
-        /// This class is used to hold the incoming persistence request while it is being processed.
-        /// </summary>
-        /// <typeparam name="KT">The key type.</typeparam>
-        /// <typeparam name="ET">The entity type.</typeparam>
-        protected class PersistenceRequestHolder<KT, ET> : IPersistenceRequestHolder
-        {
-            private int mRetry;
-
-            public PersistenceRequestHolder(Guid profileId, TransmissionPayload prq, List<TransmissionPayload> prs)
-            {
-                this.profileId = profileId;
-                this.prq = prq;
-                this.prs = prs;
-
-                start = Environment.TickCount;
-
-                result = null;
-                rq = null;
-                rs = null;
-            }
-
-            public PersistenceRepositoryHolder<KT, ET> rq;
-
-            public PersistenceRepositoryHolder<KT, ET> rs;
-
-            public TransmissionPayload prq;
-
-            public List<TransmissionPayload> prs;
-
-            public int start { get; private set; }
-
-            public Guid profileId { get; private set; }
-
-            public ResourceRequestResult? result;
-
-            public void Retry(int retryStart)
-            {
-                Interlocked.Increment(ref mRetry);
-            }
-
-            public string Profile
-            {
-                get
-                {
-                    return "";
-                }
-            }
-        }
-
-        #endregion
-
         #region PersistenceCommandRegister<KT,ET>...
         /// <summary>
         /// This method registers the specific persistence handler.

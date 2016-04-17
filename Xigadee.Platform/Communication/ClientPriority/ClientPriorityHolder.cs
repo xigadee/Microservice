@@ -135,17 +135,31 @@ namespace Xigadee
         /// </summary>
         public int? PriorityTickCount { get; set; }
         #endregion
-        #region PriorityCurrent
+        #region Priority
         /// <summary>
         /// This is the current client priority.
         /// </summary>
-        public long? PriorityCurrent { get; set; }
+        public int Priority { get { return Client.Priority; } }
+        #endregion
+        #region PriorityWeighting
+        /// <summary>
+        /// This is the client weighting which is used to adjust the priority for the polling.
+        /// This value is a percentage ratio.
+        /// </summary>
+        public decimal PriorityWeighting { get { return Client.Weighting; } }
         #endregion
         #region PriorityQueueLength
         /// <summary>
         /// This is the queue length last time the priority was calculated.
         /// </summary>
         public long? PriorityQueueLength { get; private set; }
+        #endregion
+
+        #region PriorityCalculated
+        /// <summary>
+        /// This is the current client priority.
+        /// </summary>
+        public long? PriorityCalculated { get; set; }
         #endregion
 
         #region LastPollTimeSpan
@@ -451,7 +465,7 @@ namespace Xigadee
         /// </summary>
         public long CalculatePriority()
         {
-            long priority = (Client.Priority + 1) * (IsDeadletter ? 0xFFFFFFFFFFFF : 0xFFFFFFFF);
+            long priority = (IsDeadletter ? 0xFFFFFFFF : 0xFFFFFFFFFFFF);
 
             try
             {
@@ -463,12 +477,14 @@ namespace Xigadee
                 //Add the queue length to add the listener with the greatest number of messages.
                 PriorityQueueLength = Client.QueueLength();
                 priority += PriorityQueueLength ?? 0;
+
+                priority = (long)((decimal)priority * Client.Weighting);
             }
             catch (Exception)
             {
             }
 
-            PriorityCurrent = priority;
+            PriorityCalculated = priority;
             return priority;
         }
         #endregion
@@ -519,7 +535,9 @@ namespace Xigadee
                 mStatistics.IsReserved = IsReserved;
                 mStatistics.LastReserved = LastReserved;
                 mStatistics.CapacityPercentage = CapacityPercentage;
-                mStatistics.PriorityCurrent = PriorityCurrent;
+                mStatistics.Priority = Priority;
+                mStatistics.PriorityWeighting = PriorityWeighting;
+                mStatistics.PriorityCalculated = PriorityCalculated;
                 mStatistics.Status = string.Format("Ratio: {0}/{1} Failed:{2} Hits:{3}/{4}", mPollAchieved, mPollAttempted, mPollException, mPollIn, mPollOut);
                 mStatistics.PollLast = LastPollTimeSpan;
                 mStatistics.Name = Client.DebugStatus;

@@ -41,7 +41,10 @@ namespace Xigadee
         /// </summary>
         private long mTasksKilledDidReturn = 0;
 
-        private readonly int mTasksMaxConcurrent;
+        /// <summary>
+        /// This is the current maximum amount of task that can be processed in parallel.
+        /// </summary>
+        private int mTasksMaxConcurrent;
         #endregion
         #region Constructor
         /// <summary>
@@ -63,6 +66,10 @@ namespace Xigadee
         }
         #endregion
 
+        #region StatisticsRecalculate()
+        /// <summary>
+        /// This method calculates the statistics for the task manager availability.
+        /// </summary>
         protected override void StatisticsRecalculate()
         {
             base.StatisticsRecalculate();
@@ -87,7 +94,8 @@ namespace Xigadee
             {
                 mStatistics.Ex = ex;
             }
-        }
+        } 
+        #endregion
 
         #region BulkheadReserve(int level, int slotCount)
         /// <summary>

@@ -65,7 +65,7 @@ namespace Xigadee
                 .OrderByDescending((i) => i)
                 .ToArray();
 
-            //Finally create a poll chain for each individual level
+            //Finally create a poll chain for each individual priority level
             mListenerPollChain = new Dictionary<int, Guid[]>();
 
             foreach (int priority in mListenerPollLevels)
