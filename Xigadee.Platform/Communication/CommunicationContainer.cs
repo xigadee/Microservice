@@ -354,7 +354,7 @@ namespace Xigadee
                     }
                     catch (Exception exin)
                     {
-                        Logger?.LogException(string.Format("Payload completion error-{0}", payload), exin);
+                        Logger?.LogException($"Payload completion error-{payload} after {(tr.Context as TransmissionPayload)?.Message?.FabricDeliveryCount} delivery attempts", exin);
                     }
                 };
                 //Submit the tracker to the task manager.
@@ -362,7 +362,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                Logger?.LogException(string.Format("ProcessClientPayload: unhandled error {0}/{1}-{2}", payload.Source, payload.Message.CorrelationKey, payload), ex);
+                Logger?.LogException($"ProcessClientPayload: unhandled error {payload.Source}/{payload.Message.CorrelationKey}-{payload} after {payload.Message?.FabricDeliveryCount} delivery attempts", ex);
                 payload.SignalFail();
             }
         }

@@ -105,7 +105,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                mLogger.LogException(string.Format("Unable to process {0}", requestPayload != null ? requestPayload.Message : null), ex);
+                mLogger.LogException($"Unable to process {requestPayload?.Message} after {requestPayload?.Message?.FabricDeliveryCount} attempts", ex);
                 OnProcessRequestError(requestPayload, ex);
             }
             finally
