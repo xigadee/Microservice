@@ -20,7 +20,7 @@ namespace Xigadee
         /// <param name="channelId">The internal channel id used to resolve the comms resource.</param>
         /// <param name="connectionString">The Azure connection string.</param>
         /// <param name="connectionName">The specific connection name to use.</param>
-        public AzureSBTopicSender(string channelId, string connectionString, string connectionName, SenderPartitionConfig[] priorityPartitions
+        public AzureSBTopicSender(string channelId, string connectionString, string connectionName, IEnumerable<SenderPartitionConfig> priorityPartitions
             , IBoundaryLogger boundaryLogger = null) :
             base(channelId, connectionString, connectionName, priorityPartitions, boundaryLogger) { } 
         #endregion
@@ -31,7 +31,7 @@ namespace Xigadee
 
             client.Type = "Topic Sender";
 
-            client.Name = mPriorityClientNamer(mAzureSB.ConnectionName, partition.Id);
+            client.Name = mPriorityClientNamer(mAzureSB.ConnectionName, partition.Priority);
 
             client.AssignMessageHelpers();
 

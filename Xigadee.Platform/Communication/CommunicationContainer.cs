@@ -206,14 +206,16 @@ namespace Xigadee
             try
             {
                 //We do an atomic switch to add in a new priority list.
-                var newColl = new ListenerClientPriorityCollection(mListener, mDeadletterListener, mResourceTracker
+                var newColl = new ListenerClientPriorityCollection(mListener, mDeadletterListener
+                    , mResourceTracker
                     , mPolicy.PriorityAlgorithm
                     , Interlocked.Increment(ref mListenersPriorityIteration));
 
+                //Switch out the old collection for the new collection atomically
                 var oldColl = Interlocked.Exchange(ref mClientCollection, newColl);
-                //This may happen the first time.
-                if (oldColl != null)
-                    oldColl.Close();
+
+                //Close the old collection, note that it will be null the first time.
+                oldColl?.Close();
 
                 Logger?.LogMessage(LoggingLevel.Info, "ListenersPriorityRecalculate completed.");
             }
@@ -224,7 +226,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region CanProcess()
+        #region --> CanProcess()
         /// <summary>
         /// This returns true if the service is running.
         /// </summary>
@@ -287,10 +289,10 @@ namespace Xigadee
         #endregion
         #region TrackerCreateFromListenerContext(HolderSlotContext context)
         /// <summary>
-        /// This private method builds the payload consistently for the incoming payload.
+        /// This method builds the task tracker for the listener poll.
         /// </summary>
         /// <param name="context">The client holder context.</param>
-        /// <returns>Returns a tracker of type payload.</returns>
+        /// <returns>Returns a tracker of type listener poll.</returns>
         private TaskTracker TrackerCreateFromListenerContext(HolderSlotContext context)
         {
             TaskTracker tracker = new TaskTracker(TaskTrackerType.ListenerPoll, TimeSpan.FromSeconds(30))
@@ -584,6 +586,5 @@ namespace Xigadee
             }
         }
         #endregion
-
     }
 }

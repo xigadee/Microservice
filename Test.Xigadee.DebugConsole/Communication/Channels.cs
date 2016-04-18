@@ -10,6 +10,7 @@ namespace Test.Xigadee
     {
         public static readonly string TestA = "testa";
         public static readonly string TestB = "testb";
+        public static readonly string TestC = "testc";
 
         public static readonly string Interserve = "interserve";
         public static readonly string MasterJob = "masterjob";

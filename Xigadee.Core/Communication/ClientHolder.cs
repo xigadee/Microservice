@@ -170,6 +170,10 @@ namespace Xigadee
         /// </summary>
         public TimeSpan? MessageMaxProcessingTime { get; set; }
         /// <summary>
+        /// This is the maximum wait time for the underlying fabric to hold the message.
+        /// </summary>
+        public TimeSpan? FabricMaxMessageLock { get; set; }
+        /// <summary>
         /// This method is used to validate the current filter settings for the client.
         /// The default is to do nothing.
         /// </summary>

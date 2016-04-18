@@ -16,7 +16,7 @@ namespace Xigadee
     public abstract class MessagingServiceBase<C, M, H, P> : ServiceBase<StatusBase>, IMessaging,
         IPayloadSerializerConsumer, IServiceOriginator, IServiceLogger
         where H: ClientHolder<C, M>, new()
-        where P: PartitionConfig, new()
+        where P: PartitionConfig
     {
         #region Declarations
         /// <summary>
@@ -46,21 +46,21 @@ namespace Xigadee
         /// </summary>
         /// <param name="channelId">The string based channel id.</param>
         /// <param name="priorityPartitions">The number of priority channels. Null denotes a single channel of priority one.</param>
-        public MessagingServiceBase(string channelId, P[] priorityPartitions, IBoundaryLogger boundaryLogger = null) :base()
+        public MessagingServiceBase(string channelId, IEnumerable<P> priorityPartitions, IBoundaryLogger boundaryLogger = null) :base()
         {
             if (channelId == null)
                 throw new ArgumentNullException("channelId", "channelId cannot be null");
             if (priorityPartitions == null)
                 throw new ArgumentNullException("priorityPartitions", "priorityPartitions cannot be null");
-            if (priorityPartitions.Length == 0)
+
+            //Set the partition priority to a single partition if null or an empty set.
+            mPriorityPartitions = priorityPartitions.ToArray();
+            if (mPriorityPartitions.Length == 0)
                 throw new ArgumentOutOfRangeException("priorityPartitions", "priorityPartitions must have at least one member.");
 
             mBoundaryLogger = boundaryLogger;
 
             ChannelId = channelId;
-            //Set the partition priority to a single partition if null or an empty set.
-            mPriorityPartitions = priorityPartitions;
-
 
             //This is the collection of client holder for the appropriate partitions.
             mClients = new Dictionary<int, H>();
@@ -82,21 +82,21 @@ namespace Xigadee
                 {
                     var client = ClientCreate(priority);
 
-                    mClients.Add(priority.Id, client);
+                    mClients.Add(priority.Priority, client);
 
                     if (client.CanStart)
                         ClientStart(client);
                     else
                         Logger.LogMessage(string.Format("Client not started: {0} :{1}/{2}", client.Type, client.Name, client.Priority));
 
-                    if (priority.Id == 1)
+                    if (priority.Priority == 1)
                         mDefaultPriority = 1;
                 }
 
                 //If the incoming priority cannot be reconciled we set it to the default
                 //which is 1, unless 1 is not present and then we set it to the max value.
                 if (!mDefaultPriority.HasValue)
-                    mDefaultPriority = mPriorityPartitions.Select((p) => p.Id).Max();
+                    mDefaultPriority = mPriorityPartitions.Select((p) => p.Priority).Max();
             }
             catch (Exception ex)
             {
@@ -172,7 +172,7 @@ namespace Xigadee
 
             client.ClientRefresh = () => { };
 
-            client.Priority = partition.Id;
+            client.Priority = partition.Priority;
 
             client.QueueLength = () => (int?)null;
 

@@ -37,7 +37,7 @@ namespace Xigadee
         #region Constructor
 
         public AzureSBTopicListener(string channelId, string connectionString, string connectionName
-            , ListenerPartitionConfig[] priorityPartitions
+            , IEnumerable<ListenerPartitionConfig> priorityPartitions
             , string subscriptionId = null
             , bool isDeadLetterListener = false
             , bool deleteOnStop = true
@@ -138,14 +138,16 @@ namespace Xigadee
 
             client.Type = "Subscription Listener";
 
-            client.Name = mPriorityClientNamer(mAzureSB.ConnectionName, partition.Id);
+            client.Name = mPriorityClientNamer(mAzureSB.ConnectionName, partition.Priority);
 
             client.AssignMessageHelpers();
 
             client.FabricInitialize = () =>
             {
                 mAzureSB.TopicFabricInitialize(client.Name);
-                var subDesc = mAzureSB.SubscriptionFabricInitialize(client.Name, mSubscriptionId, mDeleteOnIdleTime);
+                var subDesc = mAzureSB.SubscriptionFabricInitialize(client.Name, mSubscriptionId
+                    , autoDeleteSubscription: mDeleteOnIdleTime
+                    , lockDuration: partition.FabricMaxMessageLock);
             };
 
             client.SupportsQueueLength = true;

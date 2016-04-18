@@ -27,7 +27,7 @@ namespace Xigadee
         public AzureSBSenderBase(string channelId
             , string connectionString
             , string connectionName
-            , SenderPartitionConfig[] priorityPartitions
+            , IEnumerable<SenderPartitionConfig> priorityPartitions
             , IBoundaryLogger boundaryLogger = null) 
             :base(channelId, priorityPartitions, boundaryLogger) 
         {

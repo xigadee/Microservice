@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Xigadee
+﻿namespace Xigadee
 {
+    /// <summary>
+    /// This is the statistics class for Task Availability
+    /// </summary>
     public class TaskAvailabilityStatistics:StatusBase
     {
         public int TasksMaxConcurrent { get; set; }

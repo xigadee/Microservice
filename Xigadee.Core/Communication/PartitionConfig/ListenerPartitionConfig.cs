@@ -1,5 +1,7 @@
 ﻿#region using
 using System;
+using System.Collections.Generic;
+using System.Linq;
 #endregion
 namespace Xigadee
 {
@@ -10,37 +12,28 @@ namespace Xigadee
     {
         #region Static methods
 
-        static readonly ListenerPartitionConfig[] mDefault;
-
-        static ListenerPartitionConfig()
+        public static IEnumerable<ListenerPartitionConfig> Init(params int[] priority)
         {
-            mDefault = Init(1);
+            foreach(int p in priority)
+                yield return new ListenerPartitionConfig(p);
         }
 
-        public static ListenerPartitionConfig[] Init(params int[] priority)
-        {
-            return Init<ListenerPartitionConfig>(priority, (p, e) =>
-            {
-                e.SupportsRateLimiting = p == 0;
-                e.DefaultTimeout = TimeSpan.FromMinutes(p == 0 ? 10 : 1);
-            });
-        }
-
-        public static ListenerPartitionConfig[] Default
-        {
-            get
-            {
-                return mDefault;
-            }
-        } 
         #endregion
 
         /// <summary>
         /// This is the default constructor that sets the weighting to 1 (100%).
         /// </summary>
-        public ListenerPartitionConfig() 
+        public ListenerPartitionConfig(int priority
+            , decimal priortyWeighting = 1m
+            , bool? supportsRateLimiting = null
+            , TimeSpan? payloadMaxProcessingTime = null
+            , TimeSpan? fabricMaxMessageLock = null
+            )
+            : base(priority, fabricMaxMessageLock)
         {
-            Weighting = 1;
+            PriorityWeighting = priortyWeighting;
+            SupportsRateLimiting = supportsRateLimiting ?? priority == 0;
+            PayloadMaxProcessingTime = payloadMaxProcessingTime ?? TimeSpan.FromMinutes(4d);
         }
 
         /// <summary>
@@ -51,14 +44,15 @@ namespace Xigadee
         /// <summary>
         /// This is the default timeout - 1 minute by default. 10 minutes for the async channel.
         /// </summary>
-        public TimeSpan? DefaultTimeout { get; set; }
+        public TimeSpan? PayloadMaxProcessingTime { get; set; }
+
+
 
         /// <summary>
         /// This is the percentage weighting for the channel used when calculating priority over the 
-        /// other queues. 1 is the default value. A value of 1.1 will give the client a 10% increase 
-        /// of slot allocation over the other channels.
+        /// other queues. 1 is the default value. A value of 1.1 will increase the overall priority score by 10%.
         /// </summary>
-        public decimal Weighting { get; set; }
+        public decimal PriorityWeighting { get; set; }
 
     }
 }

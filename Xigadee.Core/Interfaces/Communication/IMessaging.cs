@@ -9,7 +9,7 @@ namespace Xigadee
     public interface IMessaging
     {
         /// <summary>
-        /// This is a list of clients for the sender.
+        /// This is a list of clients for the listener or sender.
         /// </summary>
         IEnumerable<ClientHolder> Clients { get; }
     }

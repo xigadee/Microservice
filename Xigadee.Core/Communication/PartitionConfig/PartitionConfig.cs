@@ -6,33 +6,20 @@ namespace Xigadee
 {
     public abstract class PartitionConfig
     {
-        protected internal PartitionConfig()
+        protected internal PartitionConfig(int priority, TimeSpan? fabricMaxMessageLock = null)
         {
+            Priority = priority;
+            FabricMaxMessageLock = fabricMaxMessageLock ?? TimeSpan.FromMinutes(4.5d);
         }
 
         /// <summary>
         /// This is the numeric partition id.
         /// </summary>
-        public int Id { get; internal set; }
+        public int Priority { get; }
 
-        internal static P[] Init<P>(int[] priority, Action<int,P> initiate) where P : PartitionConfig, new()
-        {
-            return priority.Select((p) =>
-            {
-                var item = Create<P>(p);
-                initiate(p,item);
-                return item;
-            }).ToArray();
-        }
-
-        public static P Create<P>(int priority, bool? supportsRateLimiting = null, TimeSpan? defaultTimeout = null) where P : PartitionConfig, new()
-        {
-            var item = new P();
-            item.Id = priority;
-            return item;
-        }
-
-
-
+        /// <summary>
+        /// This is the message lock duration for the underlying fabric
+        /// </summary>
+        public TimeSpan? FabricMaxMessageLock { get; set; }
     }
 }

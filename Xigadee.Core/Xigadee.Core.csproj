@@ -151,6 +151,7 @@
     <Compile Include="Persistence\Server\File\TransactionalNTFS\TxFFile.cs" />
     <Compile Include="Persistence\Server\File\TransactionalNTFS\TxFTransaction.cs" />
     <Compile Include="Persistence\Server\File\TransactionalNTFS\WinApiHelper.cs" />
+    <Compile Include="Persistence\Server\IPersistenceRequestHolder.cs" />
     <Compile Include="Persistence\Server\JSON\JsonHolder.cs" />
     <Compile Include="Persistence\Server\DocumentDb\PersistenceManagerHandlerDocumentDb.cs" />
     <Compile Include="Persistence\Server\File\PersistenceManagerHandlerFileSystem.cs" />
@@ -161,6 +162,7 @@
     <Compile Include="Persistence\Server\PersistenceRepositoryHolder.cs" />
     <Compile Include="Persistence\Client\PersistenceSharedService.cs" />
     <Compile Include="Logging\LoggingStatistics.cs" />
+    <Compile Include="Persistence\Server\PersistenceRequestHolder.cs" />
     <Compile Include="Persistence\Server\PersistenceStatistics.cs" />
     <Compile Include="Persistence\Policy\ShardingPolicy.cs" />
     <Compile Include="Persistence\Policy\VersionPolicy.cs" />
@@ -233,6 +235,8 @@
     <Compile Include="Communication\Statistics\MessagingServiceStatistics.cs" />
     <Compile Include="Statistics\ICollectionStatistics.cs" />
     <Compile Include="Statistics\MessagingStatistics.cs" />
+    <Compile Include="Statistics\StatsContainer.cs" />
+    <Compile Include="Statistics\StatsCounter.cs" />
     <Compile Include="Statistics\StatusBase.cs" />
   </ItemGroup>
   <ItemGroup>

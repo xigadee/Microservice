@@ -26,7 +26,7 @@ namespace Xigadee
         /// <param name="priorityPartitions">An integer array containing the number of priority partitions for the listener</param>
         /// <param name="mappingChannelId">This is the mapping channel. Incoming messages will have this channel appended to the payload messages.</param>
         public AzureSBQueueListener(string channelId, string connectionString, string connectionName
-            , ListenerPartitionConfig[] priorityPartitions
+            , IEnumerable<ListenerPartitionConfig> priorityPartitions
             , bool isDeadLetterListener = false
             , string mappingChannelId = null
             , IEnumerable<ResourceProfile> resourceProfiles = null
@@ -46,13 +46,13 @@ namespace Xigadee
             var client = base.ClientCreate(partition);
 
             client.Type ="Queue Listener";
-            client.Name = mPriorityClientNamer(mAzureSB.ConnectionName, partition.Id);
+            client.Name = mPriorityClientNamer(mAzureSB.ConnectionName, partition.Priority);
 
             client.AssignMessageHelpers();
 
             client.FabricInitialize = () =>
             {
-                var queuedesc = mAzureSB.QueueFabricInitialize(client.Name);
+                var queuedesc = mAzureSB.QueueFabricInitialize(client.Name, lockDuration: partition.FabricMaxMessageLock);
             };
 
             client.SupportsQueueLength = true;

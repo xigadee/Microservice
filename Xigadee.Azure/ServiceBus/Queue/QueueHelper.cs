@@ -21,15 +21,18 @@ namespace Xigadee
         /// </summary>
         /// <param name="cName">The queue name.</param>
         /// <returns>Returns a QueueDescription object with the default settings.</returns>
-        public static QueueDescription QueueDescriptionGet(string cName)
+        public static QueueDescription QueueDescriptionGet(string cName
+            , TimeSpan? defaultMessageTTL = null
+            , TimeSpan? lockDuration = null
+            )
         {
             return new QueueDescription(cName)
             {
                   EnableDeadLetteringOnMessageExpiration = true
-                , LockDuration = TimeSpan.FromMinutes(4)
+                , LockDuration = lockDuration ?? TimeSpan.FromMinutes(5)
                 , SupportOrdering = true
                 , EnableBatchedOperations = true
-                , DefaultMessageTimeToLive = TimeSpan.FromDays(7)
+                , DefaultMessageTimeToLive = defaultMessageTTL ?? TimeSpan.FromDays(7)
                 , MaxSizeInMegabytes = 5120
 
                 //, EnablePartitioning = true
@@ -41,13 +44,16 @@ namespace Xigadee
         /// <summary>
         /// This method creates the queue if it doesn't already exist.
         /// </summary>
-        public static QueueDescription QueueFabricInitialize(this AzureConnection conn, string name)
+        public static QueueDescription QueueFabricInitialize(this AzureConnection conn, string name
+            , TimeSpan? defaultMessageTTL = null
+            , TimeSpan? lockDuration = null
+        )
         {
             if (!conn.NamespaceManager.QueueExists(name))
             {
                 try
                 {
-                    return conn.NamespaceManager.CreateQueue(QueueDescriptionGet(name));
+                    return conn.NamespaceManager.CreateQueue(QueueDescriptionGet(name, defaultMessageTTL, lockDuration));
                 }
                 catch (MessagingEntityAlreadyExistsException)
                 {

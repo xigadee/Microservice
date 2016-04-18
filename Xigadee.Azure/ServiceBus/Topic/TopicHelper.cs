@@ -15,14 +15,16 @@ namespace Xigadee
     public static class TopicHelper
     {
         #region TopicDescriptionGet(string cName)
-        public static TopicDescription TopicDescriptionGet(string cName)
+        public static TopicDescription TopicDescriptionGet(string cName
+            , TimeSpan? defaultMessageTTL = null
+            )
         {
             return new TopicDescription(cName)
             {
                 EnableBatchedOperations = true
                 ,EnableFilteringMessagesBeforePublishing = false
                 ,SupportOrdering = true
-                ,DefaultMessageTimeToLive = TimeSpan.FromDays(7)
+                ,DefaultMessageTimeToLive = defaultMessageTTL ??TimeSpan.FromDays(7)
                 ,MaxSizeInMegabytes = 5120
                 //,EnablePartitioning = true
             };
@@ -30,15 +32,19 @@ namespace Xigadee
         #endregion
 
         #region SubscriptionDescriptionGet(string tPath, string sName)
-        public static SubscriptionDescription SubscriptionDescriptionGet(string tPath, string sName, TimeSpan? autoDelete = null)
+        public static SubscriptionDescription SubscriptionDescriptionGet(string tPath, string sName
+            , TimeSpan? autoDelete = null
+            , TimeSpan? defaultMessageTTL = null
+            , TimeSpan? lockDuration = null
+            )
         {
             return new SubscriptionDescription(tPath, sName)
             {
                 EnableDeadLetteringOnMessageExpiration = true,
                 EnableDeadLetteringOnFilterEvaluationExceptions = false,
-                LockDuration = TimeSpan.FromMinutes(1),
+                LockDuration = lockDuration??TimeSpan.FromMinutes(5),
                 EnableBatchedOperations = true,
-                DefaultMessageTimeToLive = TimeSpan.FromDays(7),
+                DefaultMessageTimeToLive = defaultMessageTTL ?? TimeSpan.FromDays(7),
                 AutoDeleteOnIdle = autoDelete??TimeSpan.MaxValue
             };
         } 
@@ -48,13 +54,15 @@ namespace Xigadee
         /// <summary>
         /// This method creates the topic if it does not exist.
         /// </summary>
-        public static TopicDescription TopicFabricInitialize(this AzureConnection conn, string name)
+        public static TopicDescription TopicFabricInitialize(this AzureConnection conn, string name
+            , TimeSpan? defaultMessageTTL = null
+            )
         {
             if (!conn.NamespaceManager.TopicExists(name))
             {
                 try
                 {
-                    return conn.NamespaceManager.CreateTopic(TopicDescriptionGet(name));
+                    return conn.NamespaceManager.CreateTopic(TopicDescriptionGet(name, defaultMessageTTL));
                 }
                 catch (MessagingEntityAlreadyExistsException)
                 {
@@ -70,13 +78,18 @@ namespace Xigadee
         /// <summary>
         /// This method creates the subscription if it does not exist.
         /// </summary>
-        public static SubscriptionDescription SubscriptionFabricInitialize(this AzureConnection conn, string name, string subscriptionId, TimeSpan? autoDelete = null)
+        public static SubscriptionDescription SubscriptionFabricInitialize(this AzureConnection conn, string name, string subscriptionId
+            , TimeSpan? autoDeleteSubscription = null
+            , TimeSpan? defaultMessageTTL = null
+            , TimeSpan? lockDuration = null)
         {
             if (!conn.NamespaceManager.SubscriptionExists(name, subscriptionId))
             {
                 try
                 {
-                    return conn.NamespaceManager.CreateSubscription(SubscriptionDescriptionGet(name, subscriptionId, autoDelete));
+                    return conn.NamespaceManager.CreateSubscription(
+                        SubscriptionDescriptionGet(name, subscriptionId, autoDeleteSubscription, defaultMessageTTL, lockDuration)
+                        );
                 }
                 catch (MessagingEntityAlreadyExistsException)
                 {

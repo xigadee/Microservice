@@ -30,7 +30,7 @@ namespace Xigadee
         /// <param name="connectionString">The Azure connection string.</param>
         /// <param name="connectionName">The connection name.</param>
         public QueueEventSource(string channelId, string connectionString, string connectionName, ResourceProfile resourceProfile = null) :
-            base(channelId, connectionString, connectionName, SenderPartitionConfig.Default)
+            base(channelId, connectionString, connectionName, SenderPartitionConfig.Init(1))
         {
             mResourceProfile = resourceProfile;
             mJsonSerializer = new JsonSerializer { TypeNameHandling = TypeNameHandling.Auto };
@@ -45,7 +45,7 @@ namespace Xigadee
         protected override AzureClientHolder<QueueClient, BrokeredMessage> ClientCreate(SenderPartitionConfig partition)
         {
             var client = base.ClientCreate(partition);
-            client.Name = mPriorityClientNamer(mAzureSB.ConnectionName, partition.Id);
+            client.Name = mPriorityClientNamer(mAzureSB.ConnectionName, partition.Priority);
 
             //client.AssignMessageHelpers();
 
