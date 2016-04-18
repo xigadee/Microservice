@@ -43,7 +43,7 @@ namespace Xigadee
             var client = base.ClientCreate(partition);
 
             client.Type = "Queue Sender";
-            client.Name = mPriorityClientNamer(mAzureSB.ConnectionName, partition.Id);
+            client.Name = mPriorityClientNamer(mAzureSB.ConnectionName, partition.Priority);
 
             client.AssignMessageHelpers();
 

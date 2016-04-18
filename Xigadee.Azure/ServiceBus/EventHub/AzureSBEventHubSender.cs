@@ -21,7 +21,7 @@ namespace Xigadee
         /// <param name="connectionString">The Azure connection string.</param>
         /// <param name="connectionName">The connection name.</param>
         public AzureSBEventHubSender(string channelId, string connectionString, string connectionName) :
-            base(channelId, connectionString, connectionName, SenderPartitionConfig.Default) { } 
+            base(channelId, connectionString, connectionName, SenderPartitionConfig.Init(1)) { } 
         #endregion
 
         #region ClientCreate()
@@ -32,7 +32,7 @@ namespace Xigadee
         protected override AzureClientHolder<EventHubClient, EventData> ClientCreate(SenderPartitionConfig partition)
         {
             var client = base.ClientCreate(partition);
-            client.Name = mPriorityClientNamer(mAzureSB.ConnectionName, partition.Id);
+            client.Name = mPriorityClientNamer(mAzureSB.ConnectionName, partition.Priority);
 
             client.AssignMessageHelpers();
 

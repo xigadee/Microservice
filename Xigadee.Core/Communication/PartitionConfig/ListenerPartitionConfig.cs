@@ -12,43 +12,28 @@ namespace Xigadee
     {
         #region Static methods
 
-        static readonly ListenerPartitionConfig[] mDefault;
-
-        static ListenerPartitionConfig()
-        {
-            mDefault = Init(1).ToArray();
-        }
-
         public static IEnumerable<ListenerPartitionConfig> Init(params int[] priority)
         {
             foreach(int p in priority)
                 yield return new ListenerPartitionConfig(p);
         }
 
-        public static ListenerPartitionConfig[] Default
-        {
-            get
-            {
-                return mDefault;
-            }
-        } 
         #endregion
 
         /// <summary>
         /// This is the default constructor that sets the weighting to 1 (100%).
         /// </summary>
         public ListenerPartitionConfig(int priority
-            , decimal weighting = 1m
+            , decimal priortyWeighting = 1m
             , bool? supportsRateLimiting = null
-            , TimeSpan? defaultTimeout = null
-            , TimeSpan? fabricMaximumMessageLock = null
+            , TimeSpan? payloadMaxProcessingTime = null
+            , TimeSpan? fabricMaxMessageLock = null
             )
-            : base(priority)
+            : base(priority, fabricMaxMessageLock)
         {
-            Weighting = weighting;
+            PriorityWeighting = priortyWeighting;
             SupportsRateLimiting = supportsRateLimiting ?? priority == 0;
-            DefaultTimeout = defaultTimeout ?? TimeSpan.FromMinutes(4d);
-            FabricMaximumMessageLock = fabricMaximumMessageLock ?? TimeSpan.FromMinutes(4.5d);
+            PayloadMaxProcessingTime = payloadMaxProcessingTime ?? TimeSpan.FromMinutes(4d);
         }
 
         /// <summary>
@@ -59,18 +44,15 @@ namespace Xigadee
         /// <summary>
         /// This is the default timeout - 1 minute by default. 10 minutes for the async channel.
         /// </summary>
-        public TimeSpan? DefaultTimeout { get; set; }
+        public TimeSpan? PayloadMaxProcessingTime { get; set; }
 
-        /// <summary>
-        /// This is the message lock duration for the underlying fabric
-        /// </summary>
-        public TimeSpan? FabricMaximumMessageLock { get; set; }
+
 
         /// <summary>
         /// This is the percentage weighting for the channel used when calculating priority over the 
         /// other queues. 1 is the default value. A value of 1.1 will increase the overall priority score by 10%.
         /// </summary>
-        public decimal Weighting { get; set; }
+        public decimal PriorityWeighting { get; set; }
 
     }
 }

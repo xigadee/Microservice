@@ -13,29 +13,15 @@ namespace Xigadee
 {
     public class SenderPartitionConfig: PartitionConfig
     {
-        static readonly SenderPartitionConfig[] mDefault;
-
-        static SenderPartitionConfig()
-        {
-            mDefault = Init(1).ToArray();
-        }
-
-        public SenderPartitionConfig(int priority):base(priority)
-        {
-        }
-
         public static IEnumerable<SenderPartitionConfig> Init(params int[] priority)
         {
             foreach(int p in priority)
                 yield return new SenderPartitionConfig(p);
         }
 
-        public static SenderPartitionConfig[] Default
+
+        public SenderPartitionConfig(int priority, TimeSpan? fabricMaxMessageLock = null) :base(priority, fabricMaxMessageLock)
         {
-            get
-            {
-                return mDefault;
-            }
         }
     }
 }

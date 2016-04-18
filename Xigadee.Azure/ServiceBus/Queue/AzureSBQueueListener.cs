@@ -46,13 +46,13 @@ namespace Xigadee
             var client = base.ClientCreate(partition);
 
             client.Type ="Queue Listener";
-            client.Name = mPriorityClientNamer(mAzureSB.ConnectionName, partition.Id);
+            client.Name = mPriorityClientNamer(mAzureSB.ConnectionName, partition.Priority);
 
             client.AssignMessageHelpers();
 
             client.FabricInitialize = () =>
             {
-                var queuedesc = mAzureSB.QueueFabricInitialize(client.Name);
+                var queuedesc = mAzureSB.QueueFabricInitialize(client.Name, lockDuration: partition.FabricMaxMessageLock);
             };
 
             client.SupportsQueueLength = true;

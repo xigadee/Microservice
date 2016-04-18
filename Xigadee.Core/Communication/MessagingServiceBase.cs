@@ -82,21 +82,21 @@ namespace Xigadee
                 {
                     var client = ClientCreate(priority);
 
-                    mClients.Add(priority.Id, client);
+                    mClients.Add(priority.Priority, client);
 
                     if (client.CanStart)
                         ClientStart(client);
                     else
                         Logger.LogMessage(string.Format("Client not started: {0} :{1}/{2}", client.Type, client.Name, client.Priority));
 
-                    if (priority.Id == 1)
+                    if (priority.Priority == 1)
                         mDefaultPriority = 1;
                 }
 
                 //If the incoming priority cannot be reconciled we set it to the default
                 //which is 1, unless 1 is not present and then we set it to the max value.
                 if (!mDefaultPriority.HasValue)
-                    mDefaultPriority = mPriorityPartitions.Select((p) => p.Id).Max();
+                    mDefaultPriority = mPriorityPartitions.Select((p) => p.Priority).Max();
             }
             catch (Exception ex)
             {
@@ -172,7 +172,7 @@ namespace Xigadee
 
             client.ClientRefresh = () => { };
 
-            client.Priority = partition.Id;
+            client.Priority = partition.Priority;
 
             client.QueueLength = () => (int?)null;
 

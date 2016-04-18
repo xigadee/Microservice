@@ -31,7 +31,7 @@ namespace Xigadee
 
             client.Type = "Topic Sender";
 
-            client.Name = mPriorityClientNamer(mAzureSB.ConnectionName, partition.Id);
+            client.Name = mPriorityClientNamer(mAzureSB.ConnectionName, partition.Priority);
 
             client.AssignMessageHelpers();
 
