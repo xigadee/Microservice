@@ -50,10 +50,10 @@ namespace Xigadee
         /// <summary>
         /// This is the default timeout for requests.
         /// </summary>
-        protected TimeSpan? mDefaultTimeout = null;
+        protected TimeSpan? mDefaultTimeout;
         #endregion
 
-        public RestBase(DocumentDbConnection connection, TimeSpan? defaultTimeout = null)
+        protected RestBase(DocumentDbConnection connection, TimeSpan? defaultTimeout = null)
         {
             mDefaultTimeout = defaultTimeout;
             Connection = connection;

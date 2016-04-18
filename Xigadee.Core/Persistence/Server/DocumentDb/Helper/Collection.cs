@@ -111,17 +111,19 @@ namespace Xigadee
         /// <summary>
         /// This method resolves the documentId, and etag for the document in DocumentDb
         /// </summary>
+        /// <param name="field"></param>
         /// <param name="id">The entity Id.</param>
+        /// <param name="timeout"></param>
+        /// <param name="extractionJPaths"></param>
         /// <returns>Returns a response holder that holds teh data.</returns>
         public async Task<ResponseHolder> ResolveDocumentId(string field, string id, TimeSpan? timeout = null
             , IEnumerable<KeyValuePair<string, string>> extractionJPaths = null)
         {
-            var sql = string.Format("SELECT * FROM c WHERE (c.{0}=@id)", field);
+            var sql = $"SELECT * FROM c WHERE (c.{field}=@id)";
             var param = new SearchParameter() { Name = "id", Value = id};
             var search = await Search(sql, 1, timeout, null, null, param);
 
-            var holder = new ResponseHolder();
-            holder.IsTimeout = search.IsTimeout;
+            var holder = new ResponseHolder {IsTimeout = search.IsTimeout};
 
             if (search.IsSuccess)
             {
@@ -253,8 +255,8 @@ namespace Xigadee
         /// <returns></returns>
         public async Task<ResponseHolder> Search(string query, int top, TimeSpan? timeout, string sessionToken = null, string continuationToken = null, params SearchParameter[] parameters)
         {
-            var uri = string.Format("/dbs/{0}/colls/{1}/docs", DatabaseId, CollectionId);
-            var jQuery = JObject.FromObject(new { query = query, parameters = parameters.Select((i) => new { name = "@" + i.Name, value = i.Value }) });
+            var uri = $"/dbs/{DatabaseId}/colls/{CollectionId}/docs";
+            var jQuery = JObject.FromObject(new {query, parameters = parameters.Select(i => new { name = "@" + i.Name, value = i.Value }) });
 
             var json = jQuery.ToString();
             using (var content = new StringContent(json, Encoding.UTF8))
@@ -270,6 +272,7 @@ namespace Xigadee
                             if (!string.IsNullOrEmpty(continuationToken))
                                 rq.Headers.Add("x-ms-continuation", continuationToken);
                         }
+                    , timeout: timeout
                 );
             }
         } 
