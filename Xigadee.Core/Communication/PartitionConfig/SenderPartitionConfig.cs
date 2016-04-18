@@ -14,18 +14,20 @@ namespace Xigadee
     public class SenderPartitionConfig: PartitionConfig
     {
         static readonly SenderPartitionConfig[] mDefault;
+
         static SenderPartitionConfig()
         {
-            mDefault = Init(1);
+            mDefault = Init(1).ToArray();
         }
 
-        public SenderPartitionConfig()
+        public SenderPartitionConfig(int priority):base(priority)
         {
         }
 
-        public static SenderPartitionConfig[] Init(params int[] priority)
+        public static IEnumerable<SenderPartitionConfig> Init(params int[] priority)
         {
-            return Init<SenderPartitionConfig>(priority, (o, e) => { });
+            foreach(int p in priority)
+                yield return new SenderPartitionConfig(p);
         }
 
         public static SenderPartitionConfig[] Default

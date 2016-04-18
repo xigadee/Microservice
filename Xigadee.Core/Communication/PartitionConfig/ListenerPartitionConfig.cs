@@ -1,5 +1,7 @@
 ﻿#region using
 using System;
+using System.Collections.Generic;
+using System.Linq;
 #endregion
 namespace Xigadee
 {
@@ -14,16 +16,13 @@ namespace Xigadee
 
         static ListenerPartitionConfig()
         {
-            mDefault = Init(1);
+            mDefault = Init(1).ToArray();
         }
 
-        public static ListenerPartitionConfig[] Init(params int[] priority)
+        public static IEnumerable<ListenerPartitionConfig> Init(params int[] priority)
         {
-            return Init<ListenerPartitionConfig>(priority, (p, e) =>
-            {
-                e.SupportsRateLimiting = p == 0;
-                e.DefaultTimeout = TimeSpan.FromMinutes(p == 0 ? 10 : 1);
-            });
+            foreach(int p in priority)
+                yield return new ListenerPartitionConfig(p);
         }
 
         public static ListenerPartitionConfig[] Default
@@ -38,10 +37,18 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor that sets the weighting to 1 (100%).
         /// </summary>
-        public ListenerPartitionConfig() 
+        public ListenerPartitionConfig(int priority
+            , decimal weighting = 1m
+            , bool? supportsRateLimiting = null
+            , TimeSpan? defaultTimeout = null
+            , TimeSpan? fabricMaximumMessageLock = null
+            )
+            : base(priority)
         {
-            Weighting = 1;
-            SupportsRateLimiting = true;
+            Weighting = weighting;
+            SupportsRateLimiting = supportsRateLimiting ?? priority == 0;
+            DefaultTimeout = defaultTimeout ?? TimeSpan.FromMinutes(4d);
+            FabricMaximumMessageLock = fabricMaximumMessageLock ?? TimeSpan.FromMinutes(4.5d);
         }
 
         /// <summary>
@@ -53,6 +60,11 @@ namespace Xigadee
         /// This is the default timeout - 1 minute by default. 10 minutes for the async channel.
         /// </summary>
         public TimeSpan? DefaultTimeout { get; set; }
+
+        /// <summary>
+        /// This is the message lock duration for the underlying fabric
+        /// </summary>
+        public TimeSpan? FabricMaximumMessageLock { get; set; }
 
         /// <summary>
         /// This is the percentage weighting for the channel used when calculating priority over the 

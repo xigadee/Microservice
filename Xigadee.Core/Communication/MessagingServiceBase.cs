@@ -16,7 +16,7 @@ namespace Xigadee
     public abstract class MessagingServiceBase<C, M, H, P> : ServiceBase<StatusBase>, IMessaging,
         IPayloadSerializerConsumer, IServiceOriginator, IServiceLogger
         where H: ClientHolder<C, M>, new()
-        where P: PartitionConfig, new()
+        where P: PartitionConfig
     {
         #region Declarations
         /// <summary>
