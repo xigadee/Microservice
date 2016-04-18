@@ -33,7 +33,7 @@ namespace Xigadee
         /// <param name="defaultTimeout"></param>
         /// <param name="isDeadLetterListener"></param>
         public AzureSBListenerBase(string channelId, string connectionString, string connectionName
-            , ListenerPartitionConfig[] priorityPartitions
+            , IEnumerable<ListenerPartitionConfig> priorityPartitions
             , bool isDeadLetterListener = false
             , string mappingChannelId = null
             , IEnumerable<ResourceProfile> resourceProfiles = null

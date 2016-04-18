@@ -26,7 +26,7 @@ namespace Xigadee
         /// <param name="connectionString">The Azure connection string.</param>
         /// <param name="connectionName">The connection name.</param>
         public AzureSBQueueSender(string channelId, string connectionString, string connectionName
-            , SenderPartitionConfig[] priorityPartitions
+            , IEnumerable<SenderPartitionConfig> priorityPartitions
             , IBoundaryLogger boundaryLogger = null) :
             base(channelId, connectionString, connectionName, priorityPartitions, boundaryLogger) 
         { 

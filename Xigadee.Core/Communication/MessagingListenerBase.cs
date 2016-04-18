@@ -35,7 +35,7 @@ namespace Xigadee
         /// <param name="priorityPartitions">The number of priority channels. Null denotes a single channel of priority one.</param>
         /// <param name="defaultTimeout">This is the default timeout for incoming messages. By default this is set to 1 minute if left blank.</param>
         public MessagingListenerBase(string channelId
-            , ListenerPartitionConfig[] priorityPartitions = null
+            , IEnumerable<ListenerPartitionConfig> priorityPartitions = null
             , string mappingChannelId = null
             , IEnumerable<ResourceProfile> resourceProfiles = null
             , IBoundaryLogger boundaryLogger = null)

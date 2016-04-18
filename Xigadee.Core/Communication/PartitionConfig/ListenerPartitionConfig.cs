@@ -41,6 +41,7 @@ namespace Xigadee
         public ListenerPartitionConfig() 
         {
             Weighting = 1;
+            SupportsRateLimiting = true;
         }
 
         /// <summary>
@@ -55,8 +56,7 @@ namespace Xigadee
 
         /// <summary>
         /// This is the percentage weighting for the channel used when calculating priority over the 
-        /// other queues. 1 is the default value. A value of 1.1 will give the client a 10% increase 
-        /// of slot allocation over the other channels.
+        /// other queues. 1 is the default value. A value of 1.1 will increase the overall priority score by 10%.
         /// </summary>
         public decimal Weighting { get; set; }
 

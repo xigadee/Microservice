@@ -13,7 +13,7 @@ namespace Xigadee
         /// <summary>
         /// This is the numeric partition id.
         /// </summary>
-        public int Id { get; internal set; }
+        public int Id { get; set; }
 
         internal static P[] Init<P>(int[] priority, Action<int,P> initiate) where P : PartitionConfig, new()
         {
