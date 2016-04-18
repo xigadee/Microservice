@@ -72,7 +72,7 @@ namespace Xigadee
 
             mInPlay = new ConcurrentDictionary<Guid, IPersistenceRequestHolder>();
 
-            mPolicy.DefaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(5);
+            mPolicy.DefaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(10);
             mPolicy.PersistenceRetryPolicy = persistenceRetryPolicy ?? new PersistenceRetryPolicy();
             mPolicy.ResourceProfile = resourceProfile;
 
@@ -96,7 +96,7 @@ namespace Xigadee
 
             mTransform = entityTransform;
 
-            mPolicy.DefaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(5);
+            mPolicy.DefaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(10);
             mPolicy.PersistenceRetryPolicy = persistenceRetryPolicy ?? new PersistenceRetryPolicy();
             mPolicy.ResourceProfile = resourceProfile;
 
