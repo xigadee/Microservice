@@ -16,63 +16,7 @@ namespace Xigadee
     public class CommunicationContainer: ServiceBase<CommunicationStatistics>, 
         IServiceOriginator, IServiceLogger, IPayloadSerializerConsumer, IRequireSharedServices, IRequireScheduler, ITaskManagerProcess
     {
-        /// <summary>
-        /// This class is used to record the number of slots currently assigned.
-        /// </summary>
-        protected class ListenerSlotReservations
-        {
-            private int mActiveSlots;
-
-            private readonly int mAllowedOverage;
-
-            public ListenerSlotReservations(int allowedOverage)
-            {
-                mAllowedOverage = allowedOverage;
-                mActiveSlots = 0;
-            }
-
-
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <param name="slots"></param>
-            public void SlotsReserve(int available, int taken)
-            {
-                Interlocked.Add(ref mActiveSlots, taken-available);
-            }
-
-            /// <summary>
-            /// This method recovers the reserved slots when the poll task completes.
-            /// </summary>
-            /// <param name="taken"></param>
-            public void SlotsRecover(int taken)
-            {
-                Interlocked.Add(ref mActiveSlots, taken * -1);
-            }
-
-            public int GetAvailability(int slotsAvailable)
-            {
-                return slotsAvailable;// - mActiveSlots + mAllowedOverage;
-            }
-
-            /// <summary>
-            /// This is the debug string used for statistics.
-            /// </summary>
-            public string[] Debug
-            {
-                get
-                {
-                    return new[] { "" };
-                }
-            }
-        }
-
-
         #region Declarations
-        /// <summary>
-        /// This is the listener reservation collection
-        /// </summary>
-        protected ListenerSlotReservations mReservations { get; }
         /// <summary>
         /// This is the configuration policy.
         /// </summary>
@@ -94,10 +38,6 @@ namespace Xigadee
         /// This is the collection of supported messages that the commands expect to receive from the listeners.
         /// </summary>
         protected List<MessageFilterWrapper> mSupportedMessages;
-
-        private int mListenerActiveReservedSlots = 0;
-
-        private int mListenerActiveAllowedOverage = 5;
 
         /// <summary>
         /// This is a counter to the current listener iteration.
@@ -123,8 +63,6 @@ namespace Xigadee
         {
             mPolicy = policy ?? new CommunicationPolicy();
 
-            mReservations = new ListenerSlotReservations(policy.ListenerClientPollAlgorithm.AllowedOverage);
-
             mMessageSenderMap = new ConcurrentDictionary<string, List<ISender>>();
             mSupportedMessages = new List<MessageFilterWrapper>();
             mSenders = new List<ISender>();
@@ -141,9 +79,6 @@ namespace Xigadee
             base.StatisticsRecalculate();
             try
             {
-                mStatistics.ActiveReservedSlots = mListenerActiveReservedSlots;
-
-                mStatistics.ActiveAllowedOverage = mListenerActiveAllowedOverage;
 
                 if (mSenders != null)
                     mStatistics.Senders = mSenders.SelectMany((c) => c.Clients).Select((l) => l.Statistics).ToList();
@@ -223,12 +158,12 @@ namespace Xigadee
                 mListener.ForEach(l => ServiceStart(l));
                 mDeadletterListener.ForEach(l => ServiceStart(l));
 
-                //Set the client priority collection.
-                ListenersPriorityRecalculate().Wait();
+                //Create the client priority collection.
+                ListenersPriorityRecalculate(true).Wait();
 
                 if (mPolicy.ListenerClientPollAlgorithm.PriorityRecalculateFrequency.HasValue)
                     //Set the reschedule priority.
-                    mClientRecalculateSchedule = Scheduler.Register(async (s, cancel) => await ListenersPriorityRecalculate()
+                    mClientRecalculateSchedule = Scheduler.Register(async (s, cancel) => await ListenersPriorityRecalculate(false)
                         , mPolicy.ListenerClientPollAlgorithm.PriorityRecalculateFrequency.Value
                         , "Communication: Listeners Priority Recalculate"
                         , TimeSpan.FromMinutes(1)
@@ -259,16 +194,20 @@ namespace Xigadee
         }
         #endregion
 
-        #region ListenersPriorityRecalculate()
+        #region ListenersPriorityRecalculate(bool rebuild = true)
         /// <summary>
         /// This method recalculate the new poll chain for the listener and deadletter listener collection 
         /// and swaps the new collection in atomically. This is done on a schedule to ensure that the collection priority
         /// does not become stale, and that the most active clients receive the most amount of attention.
         /// </summary>
-        private async Task ListenersPriorityRecalculate()
+        /// <param name="rebuild">This boolean property specifies whether the collection should be rebuilt or reordered. True rebuilds the collection.</param>
+        private async Task ListenersPriorityRecalculate(bool rebuild = true)
         {
             if (Status != ServiceStatus.Running)
                 return;
+
+            if (!rebuild && mClientCollection != null)
+                mClientCollection.Reprioritise();
 
             try
             {
@@ -300,7 +239,7 @@ namespace Xigadee
         /// <returns></returns>
         public bool CanProcess()
         {
-            return Status == ServiceStatus.Running && Submit != null;
+            return Status == ServiceStatus.Running && TaskSubmit != null;
         }
         #endregion
         #region --> Process(TaskManagerAvailability availability)
@@ -308,10 +247,12 @@ namespace Xigadee
         /// This method processes any outstanding schedules and created a new task.
         /// This call is always single threaded.
         /// </summary>
-        public void Process(ITaskAvailability availability)
+        public void Process()
         {
             //Set the current collection for this iteration.
+            //This could change during execution of this process.
             var collection = mClientCollection;
+
             //Check that we have something to do.
             if (collection == null || collection.IsClosed || collection.Count == 0)
                 return;
@@ -319,41 +260,31 @@ namespace Xigadee
             try
             {
                 //Process each priority level in decending priority. The Levels property is already ordered correctly.
-                foreach (int priorityLevel in collection.Levels)
+                var currentColl = mClientCollection;
+                //Get a holder in the priority needed.
+                foreach (ClientPriorityHolder context in currentColl.TakeNext(TaskAvailability))
                 {
-                    //Do we have slots for this level?
-                    int slotsAvailable = availability.Level(priorityLevel);
-
-                    while (CanProcess() && !collection.IsClosed)
-                    {
-                        int available = mReservations.GetAvailability(slotsAvailable);
-                        if (available <= 0)
-                            break;
-
-                        ClientPriorityHolder context;
-                        if (!mClientCollection.TakeNext(priorityLevel, available, out context))
-                            break;
-
-                        mReservations.SlotsReserve(available, context.Reserved);
-
-                        TaskTracker tracker = TrackerCreateFromListenerContext(context);
-
-                        Submit(tracker);
-                    }
-                }
+                    TrackerSubmitFromClientPriorityHolder(context);
+                    //Check whether we can continue. Note the current collection may be rebuilt and closed 
+                    //during this poll.
+                    if (!CanProcess() || currentColl.IsClosed)
+                        break;
+                }     
             }
             catch (Exception ex)
             {
+                Logger?.LogException("CommunicationContainer/Process", ex);
                 throw;
             }
         }
-        #region TrackerCreateFromListenerContext(HolderSlotContext context)
+        #endregion
+        #region TrackerSubmitFromClientPriorityHolder(ClientPriorityHolder context)
         /// <summary>
         /// This method builds the task tracker for the listener poll.
         /// </summary>
-        /// <param name="context">The client holder context.</param>
+        /// <param name="context">The client priority holder context.</param>
         /// <returns>Returns a tracker of type listener poll.</returns>
-        private TaskTracker TrackerCreateFromListenerContext(ClientPriorityHolder context)
+        private void TrackerSubmitFromClientPriorityHolder(ClientPriorityHolder context)
         {
             TaskTracker tracker = new TaskTracker(TaskTrackerType.ListenerPoll, TimeSpan.FromSeconds(30))
             {
@@ -370,15 +301,17 @@ namespace Xigadee
 
                 if (payloads != null && payloads.Count > 0)
                     foreach (var payload in payloads)
-                        PayloadSubmit(currentContext.Id, payload);
+                        PayloadSubmit(currentContext.ClientId, payload);
             };
 
             tracker.ExecuteComplete = (tr, failed, ex) =>
             {
-                ((ClientPriorityHolder)tr.Context).Release(failed);
+                var currentContext = ((ClientPriorityHolder)tr.Context);
+                TaskAvailability.ReservationRelease(currentContext.Id);
+                currentContext.Release(failed);
             };
 
-            return tracker;
+            TaskSubmit(tracker);
         }
         #endregion
         #region PayloadSubmit(ClientHolder client, TransmissionPayload payload)
@@ -418,7 +351,7 @@ namespace Xigadee
                     }
                 };
                 //Submit the tracker to the task manager.
-                Submit(tracker);
+                TaskSubmit(tracker);
             }
             catch (Exception ex)
             {
@@ -453,8 +386,9 @@ namespace Xigadee
         {
             mSupportedMessages = e.Messages;
             mListener.ForEach((c) => c.Update(e.Messages));
+
             //Update the listeners as there may be new active listeners or other may have shutdown.
-            ListenersPriorityRecalculate().Wait();
+            ListenersPriorityRecalculate(true).Wait();
         }
         #endregion
 
@@ -545,14 +479,20 @@ namespace Xigadee
         #endregion
 
         //Helpers
-        #region Submit
+        #region TaskSubmit
         /// <summary>
         /// This is the action path back to the TaskManager.
         /// </summary>
-        public Action<TaskTracker> Submit
+        public Action<TaskTracker> TaskSubmit
         {
             get; set;
-        } 
+        }
+        #endregion
+        #region TaskAvailability
+        /// <summary>
+        /// This is the task availability collection
+        /// </summary>
+        public ITaskAvailability TaskAvailability { get; set; }
         #endregion
         #region Logger
         /// <summary>

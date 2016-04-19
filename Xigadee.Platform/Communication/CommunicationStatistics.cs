@@ -21,10 +21,6 @@ namespace Xigadee
             }
         }
 
-        public int ActiveReservedSlots;
-
-        public int ActiveAllowedOverage;
-
         //public int ActiveReservedSlots;
         public ClientPriorityStatistics ActiveListeners { get; set; }
 

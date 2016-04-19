@@ -19,5 +19,7 @@
 
 
         public string[] Running { get; set; }
+
+        public string[] Reservations { get; set; }
     }
 }

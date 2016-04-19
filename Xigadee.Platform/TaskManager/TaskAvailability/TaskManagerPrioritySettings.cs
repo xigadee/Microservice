@@ -27,9 +27,17 @@ namespace Xigadee
             Level = level;
         }
 
+        /// <summary>
+        /// This is the priority level.
+        /// </summary>
         public int Level { get; }
 
+        /// <summary>
+        /// This is the defined number of slots reserved for a particular priority.
+        /// </summary>
         public int BulkHeadReservation { get; private set; }
+
+        public int Overage { get; private set; }
 
         public int Active { get { return mActive; } }
 
@@ -42,9 +50,10 @@ namespace Xigadee
             }
         }
 
-        public void BulkHeadReserve(int slotCount)
+        public void BulkHeadReserve(int slotCount, int overage)
         {
             BulkHeadReservation = slotCount;
+            Overage = overage;
         }
 
         public void Increment()

@@ -22,11 +22,9 @@ namespace Xigadee
 
         private Dictionary<int,Guid[]> mListenerPollChain;
 
-        private long mListenerCurrent;
-
-        private int mActive;
-
         private readonly long mIteration;
+
+        private long mReprioritise;
 
         private readonly IListenerClientPollAlgorithm mPollAlgorithm;
         #endregion
@@ -56,7 +54,10 @@ namespace Xigadee
             foreach (var listener in listeners.Union(deadletterListeners))
                 if (listener.Clients != null)
                     foreach (var client in listener.Clients)
-                        mListenerClients.Add(client.Id, new ClientPriorityHolder(resourceTracker, client, listener.MappingChannelId, algorithm));
+                    {
+                        var holder = new ClientPriorityHolder(resourceTracker, client, listener.MappingChannelId, algorithm);
+                        mListenerClients.Add(holder.Id, holder);
+                    }
 
             //Get the supported levels.
             mListenerPollLevels = mListenerClients
@@ -65,23 +66,9 @@ namespace Xigadee
                 .OrderByDescending((i) => i)
                 .ToArray();
 
+            mReprioritise = 0;
             //Finally create a poll chain for each individual priority level
-            mListenerPollChain = new Dictionary<int, Guid[]>();
-
-            foreach (int priority in mListenerPollLevels)
-            {
-                var guids = mListenerClients
-                    .Where((c) => c.Value.IsActive && c.Value.Client.Priority == priority)
-                    .OrderByDescending((c) => c.Value.CalculatePriority())
-                    .Select((c) => c.Key)
-                    .ToArray();
-
-                mListenerPollChain.Add(priority, guids);
-            }
-
-            mListenerCurrent = -1;
-
-            mListenerClients.ForEach((c) => c.Value.CapacityReset());
+            Reprioritise();
         }
         #endregion
         #region StatisticsRecalculate()
@@ -124,75 +111,95 @@ namespace Xigadee
         public DateTime? Created { get; private set; }
         #endregion
 
-        #region TakeNext(int priority, int available, Action<int> recoverSlots, out HolderSlotContext context)
+        #region Reprioritise()
         /// <summary>
-        /// This method returns the next client in the poll chain if one is available.
+        /// This method reprioritises the clients based on thier calculated priority.
         /// </summary>
-        /// <param name="priority">This is the client priority level.</param>
-        /// <param name="available">The number of available slots.</param>
-        /// <param name="recoverSlots">This action is called when a poll has completed to recover the reserved slots for other polling clients.</param>
-        /// <param name="holder">The slot context.</param>
-        /// <returns>Returns true if a slot has been reserved.</returns>
-        public bool TakeNext(int priority, int available, Action<int> recoverSlots, out ClientPriorityHolder holder)
+        public void Reprioritise()
         {
-            if (recoverSlots == null)
-                throw new ArgumentNullException("ClientPriorityCollection/TakeNext recoverSlots cannot be null");
+            //Finally create a poll chain for each individual priority level
+            var listenerPollChain = new Dictionary<int, Guid[]>();
 
-            holder = null;
-
-            if (available <= 0 || IsClosed)
-                return false;
-
-            if (!mListenerPollChain.ContainsKey(priority))
-                return false;
-
-            int loopCount = -1;
-
-            while (++loopCount < mListenerPollChain[priority].Length)
+            foreach (int priority in mListenerPollLevels)
             {
-                holder = null;
+                var guids = mListenerClients
+                    .Where((c) => c.Value.IsActive && c.Value.Client.Priority == priority)
+                    .OrderByDescending((c) => c.Value.CalculatePriority())
+                    .Select((c) => c.Key)
+                    .ToArray();
 
-                Guid clientId = mListenerPollChain[priority][loopCount];
-
-                //Check whether we can get the client. If not, move to the next.
-                if (!mListenerClients.TryGetValue(clientId, out holder))
-                    continue;
-
-                //If the holder is already polling then move to the next.
-                if (holder.IsReserved)
-                    continue;
-
-                //If the holder is infrequently returning data then it will start to 
-                //skip poll slots to speed up retrieval for the active slots.
-                if (holder.ShouldSkip())
-                    continue;
-
-                int taken;
-                long holderSlotId;
-                if (!holder.Reserve(available, out taken, out holderSlotId))
-                    continue;
-
-                Interlocked.Increment(ref mActive);
-
-
-
-                context = new HolderSlotContext(priority, holder.Id, holderSlotId, clientName, taken, holder
-                    , complete: (c) =>
-                    {
-                        recoverSlots(c.Reserved);
-                        Interlocked.Decrement(ref mActive);
-                        if (c.Actual.HasValue && c.Actual >= c.Reserved)
-                        {
-                            if (slot < (mListenerCurrent % mListenerPollChain[priority].Length))
-                                mListenerCurrent = slot;
-                        }
-                    });
-
-                return true;
+                listenerPollChain.Add(priority, guids);
             }
 
-            return false;
+            Interlocked.Exchange(ref mListenerPollChain, listenerPollChain);
+            Interlocked.Increment(ref mReprioritise);
+
+            mListenerClients.ForEach((c) => c.Value.CapacityReset());
         }
+        #endregion
+
+        #region TakeNext(ITaskAvailability availability, ListenerSlotReservations reservations)
+        /// <summary>
+        /// This method loops through the client for the given priority while there is slot availability.
+        /// </summary>
+        /// <param name="availability">This is the current slot availability.</param>
+        /// <param name="reservations">This class contains the current slot reservations.</param>
+        /// <returns>Returns a collection of ClientPriorityHolders.</returns>
+        public IEnumerable<ClientPriorityHolder> TakeNext(ITaskAvailability availability)
+        {
+            var pollChain = mListenerPollChain;
+            long iteration = mReprioritise;
+
+            foreach (int priority in pollChain.Keys.OrderByDescending((k) => k))
+            {
+                //This is the ordered chain of client holders for the particular priority.
+                var priorityChain = pollChain[priority];
+
+                int loopCount = -1;
+                while (++loopCount < priorityChain.Length)
+                {
+                    //Check whether the collection has been reogainsed or closed
+                    if (IsClosed || mReprioritise != iteration)
+                        yield break;
+
+                    Guid id = priorityChain[loopCount];
+
+                    ClientPriorityHolder holder;
+                    //Check whether we can get the client. If not, move to the next.
+                    if (!mListenerClients.TryGetValue(id, out holder))
+                        continue;
+
+                    //If the holder is already polling then move to the next.
+                    if (holder.IsReserved)
+                        continue;
+
+                    //Otherwise, if the holder is infrequently returning data then it will start to 
+                    //skip poll slots to speed up retrieval for the active slots.
+                    if (holder.ShouldSkip())
+                        continue;
+
+                    //We get the availability as we proceed though the client collection
+                    //This may change as slots are released from other processes.
+                    int available = availability.Level(priority);
+                    if (available <= 0)
+                        continue;
+
+                    //Ok, check the available amount against the slots that have already been reserved.
+                    int actualAvailability = availability.GetAvailability(priority, available);
+                    if (actualAvailability <= 0)
+                        continue;
+
+                    int taken;
+                    if (!holder.Reserve(actualAvailability, out taken))
+                        continue;
+
+                    availability.ReservationMake(holder.Id, priority, taken);
+
+                    //OK, process the holder for polling.
+                    yield return holder;
+                }
+            }
+        } 
         #endregion
 
         #region Close()

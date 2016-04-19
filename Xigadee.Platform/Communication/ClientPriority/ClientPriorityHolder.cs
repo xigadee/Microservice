@@ -89,14 +89,21 @@ namespace Xigadee
 
             mLimiter = resourceTracker.RegisterRequestRateLimiter(client.Name, client.ResourceProfiles);
             mCapacityPercentage = 0.75D;
-        } 
+        }
         #endregion
 
         #region Id
         /// <summary>
+        /// This is the unique reference id for the holder.
+        /// </summary>
+        public Guid Id { get; } = Guid.NewGuid(); 
+        #endregion
+
+        #region ClientId
+        /// <summary>
         /// This is the same id as the underlying client.
         /// </summary>
-        public Guid Id
+        public Guid ClientId
         {
             get
             {
@@ -134,6 +141,19 @@ namespace Xigadee
         /// This is the underlying client.
         /// </summary>
         public ClientHolder Client { get; private set; }
+        #endregion
+
+        #region SupportsRateLimiting
+        /// <summary>
+        /// This method specifies whether the holder supports rate limiting.
+        /// </summary>
+        public bool SupportsRateLimiting
+        {
+            get
+            {
+                return Client.SupportsRateLimiting;
+            }
+        } 
         #endregion
 
         #region Priority
@@ -250,7 +270,7 @@ namespace Xigadee
         public DateTime? LastExceptionTime { get; set; }
         #endregion
 
-        #region ShouldSkip()
+        #region ShouldSkip
         /// <summary>
         /// This method returns true if the client should be skipped for this poll.
         /// </summary>
@@ -273,7 +293,7 @@ namespace Xigadee
                 return true;
 
             return false;
-        } 
+        }
         #endregion
 
         #region --> IsReserved
@@ -302,19 +322,20 @@ namespace Xigadee
                 else
                     return Client.Name;
             }
-        } 
+        }
         #endregion
-        #region Reserve(int capacity, out int taken, out long identifier)
+
+        #region Reserve(int available, out int taken)
         /// <summary>
         /// This method reserves the client, and returns the number of slots that it has taken based on
         /// previous history.
         /// </summary>
-        /// <param name="capacity">The available capacity.</param>
-        /// <returns>Returns the number of slots taken.</returns>
-        public bool Reserve(int capacity, out int taken, out long identifier)
+        /// <param name="available">The available capacity.</param>
+        /// <param name="taken">The number of slots actually reserved.</param>
+        /// <returns>Returns true if the holder is reserved for polling.</returns>
+        public bool Reserve(int available, out int taken)
         {
             taken = 0;
-            identifier = mPollIn;
 
             if (!IsActive)
                 return false;
@@ -334,38 +355,61 @@ namespace Xigadee
             //There are multiple threads running around here, so it pays to be paranoid.
             if (IsReserved)
             {
-                identifier = Interlocked.Increment(ref mPollIn);
-
                 double ratelimitAdjustment = 1D;
 
-                if (Client.SupportsRateLimiting && mLimiter != null)
-                    ratelimitAdjustment = mLimiter.RateLimitAdjustmentPercentage;
+                if (SupportsRateLimiting)
+                    ratelimitAdjustment = mLimiter?.RateLimitAdjustmentPercentage ?? 1D;
 
                 //We make sure that a small fraction rate limit adjust resolves to zero as we use ceiling to make even small fractional numbers go to one.
-                int takenCalc = (int)Math.Ceiling((double)capacity * CapacityPercentage * Math.Round(ratelimitAdjustment, 2, MidpointRounding.AwayFromZero));
+                int takenCalc = (int)Math.Ceiling((double)available * CapacityPercentage * Math.Round(ratelimitAdjustment, 2, MidpointRounding.AwayFromZero));
 
                 if (takenCalc > 0 && IsActive)
                 {
                     LastPollTickCount = Environment.TickCount;
-                    LastPollId = identifier;
+                    LastPollId = Interlocked.Increment(ref mPollIn);
                     LastReserved = taken = takenCalc;
                     return true;
                 }
                 else
                 {
                     //Ok, we won the battle, but nothing to do here.
-                    Release(identifier, false);
+                    Release(false);
                 }
             }
 
             return false;
         }
         #endregion
+        #region Release(long slotId, bool exception)
+        /// <summary>
+        /// This method releases the holder so that it can be polled again.
+        /// </summary>
+        /// <param name="exception">A flag indicating whether there was an exception.</param>
+        /// <returns>Returns true if the holder returned all records requested.</returns>
+        public void Release(bool exception)
+        {
+            //if (mPollIn != slotId)
+            //    throw new Exception("ClientPriorityHolder - unexpected concurrency exception - slots don't match");
+
+            lock (mReserveLock)
+            {
+                Interlocked.Increment(ref mPollOut);
+
+                if (exception)
+                    Interlocked.Increment(ref mPollException);
+                else
+                    //Recalculate statistics.
+                    CapacityPercentageRecalculate(LastActual, LastReserved);
+
+                IsReserved = false;
+            }
+        }
+        #endregion
+
         #region Poll()
         /// <summary>
         /// This method is used to Poll the connection for waiting messages.
         /// </summary>
-        /// <param name="wait">The time to wait, by default 50 ms.</param>
         /// <returns>Returns a list of TransmissionPayload objects to process.</returns>
         public async Task<List<TransmissionPayload>> Poll()
         {
@@ -427,34 +471,6 @@ namespace Xigadee
                 var rate = PollSuccessRate;
                 mSkipCount = rate <= 0 ? (int)50 : (int)Math.Round((decimal)1 / rate);
             }
-        }
-        #endregion
-        #region Release(long slotId, bool exception)
-        /// <summary>
-        /// This method releases the holder so that it can be polled again.
-        /// </summary>
-        /// <param name="slotId">The last slot id.</param>
-        /// <param name="exception">A flag indicating whether there was an exception.</param>
-        /// <returns>Returns true if the holder returned all records requested.</returns>
-        public bool Release(long slotId, bool exception)
-        {
-            if (mPollIn != slotId)
-                throw new Exception("ClientPriorityHolder - unexpected concurrency exception - slots don't match");
-
-            lock (mReserveLock)
-            {
-                Interlocked.Increment(ref mPollOut);
-
-                if (exception)
-                    Interlocked.Increment(ref mPollException);
-                else
-                    //Recalulate statistics.
-                    CapacityPercentageRecalculate(LastActual, LastReserved);
-
-                IsReserved = false;
-            }
-
-            return false;
         }
         #endregion
 

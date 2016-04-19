@@ -210,7 +210,8 @@ namespace Xigadee
         public void ProcessRegister<C>(string name, int ordinal, ITaskManagerProcess process, C context = default(C))
         {
             var holder = new TaskManagerProcessContext<C>(name) { Ordinal = ordinal, Process = process, Context = context };
-            process.Submit = ExecuteOrEnqueue;
+            process.TaskSubmit = ExecuteOrEnqueue;
+            process.TaskAvailability = mAvailability;
             mProcesses.AddOrUpdate(name, holder, (n, o) => holder);
         }
         #endregion
@@ -223,7 +224,7 @@ namespace Xigadee
         {
             TaskManagerProcessContext value;
             mProcesses.TryRemove(name, out value);
-            value.Process.Submit = null;
+            value.Process.TaskSubmit = null;
         }
         #endregion
         #region ProcessExecute(ProcessHolder process)
@@ -236,7 +237,7 @@ namespace Xigadee
             try
             {
                 if (context.Process.CanProcess())
-                    context.Process.Process(mAvailability);
+                    context.Process.Process();
             }
             catch (Exception ex)
             {
@@ -330,9 +331,9 @@ namespace Xigadee
         /// <param name="level">The level to reserve.</param>
         /// <param name="slotCount">The slot count. Set this to zero if you wish to clear the reserve.</param>
         /// <returns>Returns true if the reservation has been set.</returns>
-        public bool BulkheadReserve(int level, int slotCount)
+        public bool BulkheadReserve(int level, int slotCount, int overage = 0)
         {
-            return mAvailability.BulkheadReserve(level, slotCount);
+            return mAvailability.BulkheadReserve(level, slotCount, overage);
         }
         #endregion
 

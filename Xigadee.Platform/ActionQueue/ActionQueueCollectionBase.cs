@@ -97,14 +97,20 @@ namespace Xigadee
         }
         #endregion
 
-        #region Submit
+        #region TaskSubmit
         /// <summary>
         /// This is the action path back to the TaskManager.
         /// </summary>
-        public Action<TaskTracker> Submit
+        public Action<TaskTracker> TaskSubmit
         {
             get; set;
         }
+        #endregion
+        #region TaskAvailability
+        /// <summary>
+        /// This is the task availability collection
+        /// </summary>
+        public ITaskAvailability TaskAvailability { get; set; }
         #endregion
 
         /// <summary>
@@ -190,8 +196,7 @@ namespace Xigadee
         /// <summary>
         /// This method checks whether the process is overloaded and schedules a long running task to reduce the overload.
         /// </summary>
-        /// <param name="availability">The task manager availability to check.</param>
-        public virtual void Process(ITaskAvailability availability)
+        public virtual void Process()
         {
             if (!Overloaded)
                 return;
@@ -209,7 +214,7 @@ namespace Xigadee
 
             Interlocked.Increment(ref mOverloadTaskCount);
 
-            Submit(tracker);
+            TaskSubmit(tracker);
         }
 
         protected virtual void WriteEvent(D logEvent)

@@ -45,6 +45,9 @@ namespace Xigadee
         /// This is the current maximum amount of task that can be processed in parallel.
         /// </summary>
         private int mTasksMaxConcurrent;
+        private int mReservedSlots;
+        private ConcurrentDictionary<Guid, Reservation> mReservations;
+
         #endregion
         #region Constructor
         /// <summary>
@@ -63,6 +66,8 @@ namespace Xigadee
             Enumerable.Range(0, levels).ForEach((l) => mPriorityStatus[l] = new TaskManagerPrioritySettings(l));
 
             mActiveBag = new ConcurrentDictionary<long, Guid>();
+            mReservations = new ConcurrentDictionary<Guid, Reservation>();
+            mReservedSlots = 0;
         }
         #endregion
 
@@ -89,22 +94,26 @@ namespace Xigadee
                         .OrderByDescending((s) => s.Level)
                         .Select((s) => s.Debug)
                         .ToArray();
+
+                mStatistics.Reservations = mReservations.Select((r) => r.Value.Debug).ToArray();
+
             }
             catch (Exception ex)
             {
                 mStatistics.Ex = ex;
             }
-        } 
+        }
         #endregion
 
-        #region BulkheadReserve(int level, int slotCount)
+        #region BulkheadReserve(int level, int slotCount, int overage)
         /// <summary>
         /// This method sets the bulk head reservation for a particular level.
         /// </summary>
         /// <param name="level"></param>
         /// <param name="slotCount"></param>
+        /// <param name="overage"></param>
         /// <returns></returns>
-        public bool BulkheadReserve(int level, int slotCount)
+        public bool BulkheadReserve(int level, int slotCount, int overage)
         {
 
             if (slotCount < 0)
@@ -113,7 +122,7 @@ namespace Xigadee
             if (level < LevelMin || level > LevelMax)
                 return false;
 
-            mPriorityStatus[level].BulkHeadReserve(slotCount);
+            mPriorityStatus[level].BulkHeadReserve(slotCount, overage);
 
             return true;
         }
@@ -222,8 +231,36 @@ namespace Xigadee
                 if (!force)
                     Interlocked.Increment(ref mTasksKilledDidReturn);
             }
-        } 
+        }
         #endregion
+
+
+        public bool ReservationMake(Guid id, int priority, int taken)
+        {
+            Interlocked.Add(ref mReservedSlots, taken);
+            return mReservations.TryAdd(id, new Reservation {Id=id, Priority = priority, Taken = taken });
+        }
+
+        public bool ReservationRelease(Guid id)
+        {
+            Reservation reserve;
+            if (mReservations.TryRemove(id, out reserve))
+            {
+                Interlocked.Add(ref mReservedSlots, reserve.Taken * -1);
+                return true;
+            }
+
+            return false;
+        }
+
+        public int GetAvailability(int priority, int slotsAvailable)
+        {
+            int taken = mReservations.Values.Where((s) => s.Priority == priority).Sum((r) => r.Taken);
+
+            int actual = slotsAvailable - taken + mPriorityStatus[priority].Overage;
+
+            return actual;
+        }
 
         #region Count
         /// <summary>
@@ -237,5 +274,27 @@ namespace Xigadee
             }
         }
         #endregion
+
+        [DebuggerDisplay("{Debug}")]
+        private class Reservation
+        {
+            public Guid Id;
+
+            public int Taken;
+
+            public int Priority;
+
+            public int Start { get; } = Environment.TickCount;
+
+            public string Debug
+            {
+                get
+                {
+                    var extent = TimeSpan.FromMilliseconds(StatsContainer.CalculateDelta(Environment.TickCount, Start));
+
+                    return $"Id={Id} Priority={Priority} Reserved={Taken} Extent={StatsCounter.LargeTime(extent)}";
+                }
+            }
+        }
     }
 }

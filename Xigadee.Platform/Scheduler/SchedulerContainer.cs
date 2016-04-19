@@ -123,14 +123,20 @@ namespace Xigadee
             get; set;
         }
         #endregion
-        #region Submit
+        #region TaskSubmit
         /// <summary>
         /// This is the action path back to the TaskManager.
         /// </summary>
-        public Action<TaskTracker> Submit
+        public Action<TaskTracker> TaskSubmit
         {
             get; set;
         }
+        #endregion
+        #region TaskAvailability
+        /// <summary>
+        /// This is the task availability collection
+        /// </summary>
+        public ITaskAvailability TaskAvailability { get; set; } 
         #endregion
         #region CanProcess()
         /// <summary>
@@ -139,15 +145,15 @@ namespace Xigadee
         /// <returns>Returns true of we can process.</returns>
         public bool CanProcess()
         {
-            return Status == ServiceStatus.Running && Count > 0 && Submit != null;
+            return Status == ServiceStatus.Running && Count > 0 && TaskSubmit != null;
         }
         #endregion
 
-        #region Process(TaskManagerAvailability availability)
+        #region Process()
         /// <summary>
         /// This method processes any outstanding schedules and created a new task.
         /// </summary>
-        public void Process(ITaskAvailability availability)
+        public void Process()
         {
             foreach (Schedule schedule in Items.Where((c) => c.ShouldPoll))
             {
@@ -175,7 +181,7 @@ namespace Xigadee
 
                 tracker.ExecuteComplete = ScheduleComplete;
 
-                Submit(tracker);
+                TaskSubmit(tracker);
             }
         }
         #endregion

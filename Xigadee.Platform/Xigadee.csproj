@@ -68,7 +68,6 @@
     <Compile Include="Communication\ClientPriority\Statistics\ClientPriorityStatistics.cs" />
     <Compile Include="Communication\CommunicationContainer.cs" />
     <Compile Include="Communication\CommunicationStatistics.cs" />
-    <Compile Include="Communication\ClientPriority\HolderSlotContext.cs" />
     <Compile Include="Command\CommandContainer.cs" />
     <Compile Include="Command\CommandContainerStatistics.cs" />
     <Compile Include="Command\Handler\HandlersCollection.cs" />
