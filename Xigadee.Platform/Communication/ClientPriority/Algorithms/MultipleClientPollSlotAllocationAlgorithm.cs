@@ -148,5 +148,18 @@ namespace Xigadee
         }
         #endregion
 
+        /// <summary>
+        /// This method recalculates the skip count based on the success of the last poll.
+        /// </summary>
+        /// <param name="success">The flag indicating whether the last poll was successful.</param>
+        /// <param name="context">The metrics.</param>
+        public override void SkipCountRecalculate(bool success, ClientPriorityHolderMetrics context)
+        {
+            if (success)
+                context.SkipCount = 0;
+            else
+                context.SkipCount = 20;
+
+        }
     }
 }

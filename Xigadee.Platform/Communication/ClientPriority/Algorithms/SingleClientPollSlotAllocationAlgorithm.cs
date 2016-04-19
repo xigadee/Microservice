@@ -30,34 +30,6 @@ namespace Xigadee
             context.CapacityPercentage = 1D;
         }
 
-        #region CalculateMaximumPollWait(ClientPriorityHolderMetrics context)
-        /// <summary>
-        /// This method is used to reduce the poll interval when the client reaches a certain success threshold
-        /// for polling frequency, which is set of an increasing scale at 75%.
-        /// </summary>
-        public void CalculateMaximumPollWait(ClientPriorityHolderMetrics context)
-        {
-            //var rate = PollSuccessRate;
-            ////If we have a poll success rate under the threshold then return the maximum value.
-            //if (!mPollTimeReduceRatio.HasValue || rate < mPollTimeReduceRatio.Value)
-            //    return mMaxAllowedPollWait;
-
-            //decimal adjustRatio = ((1M - rate) / (1M - mPollTimeReduceRatio.Value)); //This tends to 0 when the rate hits 100%
-
-            //double minTime = mMinExpectedPollWait.TotalMilliseconds;
-            //double maxTime = mMaxAllowedPollWait.TotalMilliseconds;
-            //double difference = maxTime - minTime;
-
-            //if (difference <= 0)
-            //    return TimeSpan.FromMilliseconds(minTime);
-
-            //double newWait = (double)((decimal)difference * adjustRatio);
-
-            //return TimeSpan.FromMilliseconds(minTime + newWait);
-        }
-        #endregion
-
-
         #region CapacityReset()
         /// <summary>
         /// This method is used to reset the capacity calculation.
@@ -82,5 +54,10 @@ namespace Xigadee
             return 1;
         }
         #endregion
+
+        public override void SkipCountRecalculate(bool success, ClientPriorityHolderMetrics context)
+        {
+            context.SkipCount = 0;
+        }
     }
 }

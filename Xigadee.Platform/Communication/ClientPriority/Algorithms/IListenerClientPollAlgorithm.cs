@@ -42,6 +42,8 @@ namespace Xigadee
         void CapacityReset(ClientPriorityHolderMetrics context);
 
         long PriorityRecalculate(long? queueLength, ClientPriorityHolderMetrics context);
+
+        void SkipCountRecalculate(bool success, ClientPriorityHolderMetrics context);
     }
 
 

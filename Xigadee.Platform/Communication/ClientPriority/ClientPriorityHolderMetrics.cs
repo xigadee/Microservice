@@ -147,7 +147,14 @@ namespace Xigadee
         /// <summary>
         /// This is the current skip count for the holder.
         /// </summary>
-        public int SkipCount { get { return mSkipCount; } }
+        public int SkipCount
+        {
+            get { return mSkipCount; }
+            set
+            {
+                Interlocked.Exchange(ref mSkipCount, value);
+            }
+        }
 
         public bool SkipCountDecrement()
         {
@@ -220,12 +227,7 @@ namespace Xigadee
             if (payloadCount > 0)
                 Interlocked.Increment(ref mPollsSuccess);
 
-            RecalculateSkipCount(payloadCount > 0);
-        }
-
-        private void RecalculateSkipCount(bool success)
-        {
-            mSkipCount = 10;
+            Algorithm.SkipCountRecalculate(payloadCount > 0, this);
         }
 
         #region LastActual
