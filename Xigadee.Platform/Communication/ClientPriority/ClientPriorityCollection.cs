@@ -28,7 +28,7 @@ namespace Xigadee
 
         private readonly long mIteration;
 
-        private readonly ClientPollSlotAllocationAlgorithm mClientPriorityAlgorithm;
+        private readonly IListenerClientPollAlgorithm mPollAlgorithm;
         #endregion
         #region Constructor
         /// <summary>
@@ -37,17 +37,17 @@ namespace Xigadee
         /// <param name="listeners"></param>
         /// <param name="deadletterListeners"></param>
         /// <param name="resourceTracker"></param>
-        /// <param name="clientPriorityAlgorithm"></param>
+        /// <param name="algorithm"></param>
         /// <param name="iterationId"></param>
         public ListenerClientPriorityCollection(
               List<IListener> listeners
             , List<IListener> deadletterListeners
             , IResourceTracker resourceTracker
-            , ClientPollSlotAllocationAlgorithm clientPriorityAlgorithm
+            , IListenerClientPollAlgorithm algorithm
             , long iterationId
             )
         {
-            mClientPriorityAlgorithm = clientPriorityAlgorithm;
+            mPollAlgorithm = algorithm;
             mIteration = iterationId;
             Created = DateTime.UtcNow;
 
@@ -56,7 +56,7 @@ namespace Xigadee
             foreach (var listener in listeners.Union(deadletterListeners))
                 if (listener.Clients != null)
                     foreach (var client in listener.Clients)
-                        mListenerClients.Add(client.Id, new ClientPriorityHolder(resourceTracker, client, listener.MappingChannelId));
+                        mListenerClients.Add(client.Id, new ClientPriorityHolder(resourceTracker, client, listener.MappingChannelId, algorithm));
 
             //Get the supported levels.
             mListenerPollLevels = mListenerClients
@@ -94,10 +94,10 @@ namespace Xigadee
 
             try
             {
-                mStatistics.Name = string.Format("Iteration {0} @ {1} {2}", mIteration, Created, IsClosed ? "Closed" : "");
+                mStatistics.Name = $"Iteration {mIteration} @ {Created} {(IsClosed ? "Closed" : "")}";
 
                 var data = new List<ClientPriorityHolderStatistics>();
-                foreach(int priority in mListenerPollLevels)
+                foreach(int priority in Levels)
                     mListenerPollChain[priority].ForIndex((i, g) =>
                     {
                         var stat = mListenerClients[g].Statistics;
@@ -131,14 +131,15 @@ namespace Xigadee
         /// <param name="priority">This is the client priority level.</param>
         /// <param name="available">The number of available slots.</param>
         /// <param name="recoverSlots">This action is called when a poll has completed to recover the reserved slots for other polling clients.</param>
-        /// <param name="context">The slot context.</param>
+        /// <param name="holder">The slot context.</param>
         /// <returns>Returns true if a slot has been reserved.</returns>
-        public bool TakeNext(int priority, int available, Action<int> recoverSlots, out HolderSlotContext context)
+        public bool TakeNext(int priority, int available, Action<int> recoverSlots, out ClientPriorityHolder holder)
         {
             if (recoverSlots == null)
                 throw new ArgumentNullException("ClientPriorityCollection/TakeNext recoverSlots cannot be null");
 
-            context = null;
+            holder = null;
+
             if (available <= 0 || IsClosed)
                 return false;
 
@@ -149,19 +150,20 @@ namespace Xigadee
 
             while (++loopCount < mListenerPollChain[priority].Length)
             {
-                long slot = Interlocked.Increment(ref mListenerCurrent) % mListenerPollChain[priority].Length;
-                Guid clientId = mListenerPollChain[priority][slot];
+                holder = null;
 
-                ClientPriorityHolder holder;
+                Guid clientId = mListenerPollChain[priority][loopCount];
+
+                //Check whether we can get the client. If not, move to the next.
                 if (!mListenerClients.TryGetValue(clientId, out holder))
                     continue;
 
-                //If the holder is already polling then skip
+                //If the holder is already polling then move to the next.
                 if (holder.IsReserved)
                     continue;
 
                 //If the holder is infrequently returning data then it will start to 
-                //skip poll slots to speed up retrieval for the active slots
+                //skip poll slots to speed up retrieval for the active slots.
                 if (holder.ShouldSkip())
                     continue;
 
@@ -172,11 +174,7 @@ namespace Xigadee
 
                 Interlocked.Increment(ref mActive);
 
-                string clientName;
-                if (!string.IsNullOrEmpty(holder.Client.MappingChannelId))
-                    clientName= holder.Client.Name + "-" + holder.Client.MappingChannelId;
-                else
-                    clientName = holder.Client.Name;
+
 
                 context = new HolderSlotContext(priority, holder.Id, holderSlotId, clientName, taken, holder
                     , complete: (c) =>

@@ -13,7 +13,7 @@ namespace Xigadee
     /// This class is used to log any incoming dead letter messages in to the 
     /// blob storage store.
     /// </summary>
-    public class DeadLetterLoggerMessageHandler: MessageHandlerBase<MessageHandlerStatistics>
+    public class DeadLetterLoggerMessageHandler: CommandBase
     {
         #region Declarations
         /// <summary>

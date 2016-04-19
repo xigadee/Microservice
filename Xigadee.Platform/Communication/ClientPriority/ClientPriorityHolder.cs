@@ -42,6 +42,7 @@ namespace Xigadee
 
         IResourceRequestRateLimiter mLimiter;
 
+        IListenerClientPollAlgorithm mAlgorithm;
         /// <summary>
         /// This is the maximum wait time that the client can wait before it is polled.
         /// </summary>
@@ -62,13 +63,21 @@ namespace Xigadee
         /// <param name="maxAllowedPollWait">The maximum permitted poll length.</param>
         public ClientPriorityHolder(IResourceTracker resourceTracker
             , ClientHolder client, string mappingChannelId
+            , IListenerClientPollAlgorithm algorithm
             , TimeSpan? maxAllowedPollWait = null
             , TimeSpan? minExpectedPollWait = null
             , decimal? pollTimeReduceRatio = 0.75M
             )
         {
             if (client == null)
-                throw new ArgumentNullException("Client");
+                throw new ArgumentNullException("client");
+
+            if (algorithm == null)
+                throw new ArgumentNullException("algorithm");
+
+            Client = client;
+            mMappingChannel = mappingChannelId;
+            mAlgorithm = algorithm;
 
             mPollTimeReduceRatio = pollTimeReduceRatio;
 
@@ -79,8 +88,6 @@ namespace Xigadee
                 mMinExpectedPollWait = mMaxAllowedPollWait;
 
             mLimiter = resourceTracker.RegisterRequestRateLimiter(client.Name, client.ResourceProfiles);
-            mMappingChannel = mappingChannelId;
-            Client = client;
             mCapacityPercentage = 0.75D;
         } 
         #endregion
@@ -129,12 +136,6 @@ namespace Xigadee
         public ClientHolder Client { get; private set; }
         #endregion
 
-        #region PriorityTickCount
-        /// <summary>
-        /// This is the tick count of the last time the client priority was calculated.
-        /// </summary>
-        public int? PriorityTickCount { get; set; }
-        #endregion
         #region Priority
         /// <summary>
         /// This is the current client priority.
@@ -160,6 +161,12 @@ namespace Xigadee
         /// This is the current client priority.
         /// </summary>
         public long? PriorityCalculated { get; set; }
+        #endregion
+        #region PriorityTickCount
+        /// <summary>
+        /// This is the tick count of the last time the client priority was calculated.
+        /// </summary>
+        public int? PriorityTickCount { get; set; }
         #endregion
 
         #region LastPollTimeSpan
@@ -237,6 +244,9 @@ namespace Xigadee
         /// This is the last recorded exception that occurred during polling
         /// </summary>
         public Exception LastException { get; set; }
+        /// <summary>
+        /// This is the last time for a poll exception.
+        /// </summary>
         public DateTime? LastExceptionTime { get; set; }
         #endregion
 
@@ -276,9 +286,24 @@ namespace Xigadee
         /// <summary>
         /// This is the calcualted percentage that determines how many of the available reserved slots the client will take.
         /// </summary>
-        public double CapacityPercentage { get { return mCapacityPercentage; } } 
+        public double CapacityPercentage { get { return mCapacityPercentage; } }
         #endregion
 
+        #region Name
+        /// <summary>
+        /// This is the friendly name.
+        /// </summary>
+        public string Name
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(Client.MappingChannelId))
+                    return $"{Client.Name}-{Client.MappingChannelId}";
+                else
+                    return Client.Name;
+            }
+        } 
+        #endregion
         #region Reserve(int capacity, out int taken, out long identifier)
         /// <summary>
         /// This method reserves the client, and returns the number of slots that it has taken based on
@@ -367,9 +392,12 @@ namespace Xigadee
             {
                 Interlocked.Add(ref mPollAchieved, payloadCount);
                 Interlocked.Add(ref mPollAchievedBatch, payloadCount);
+
                 LastActual = payloadCount;
+
                 if (payloadCount > 0)
                     Interlocked.Increment(ref mPollsSuccess);
+
                 RecalculateSkipCount(payloadCount > 0);
             }
 
@@ -434,8 +462,8 @@ namespace Xigadee
         /// <summary>
         /// This method is used to recalcualte the capacity percentage.
         /// </summary>
-        /// <param name="LastActual"></param>
-        /// <param name="LastReserved"></param>
+        /// <param name="lastActual"></param>
+        /// <param name="lastReserved"></param>
         /// <returns></returns>
         private bool CapacityPercentageRecalculate(long? lastActual, int? lastReserved)
         {

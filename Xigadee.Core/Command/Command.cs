@@ -63,13 +63,13 @@ namespace Xigadee
         /// </summary>
         protected CommandBase(P policy = null)
         {
-            mPolicy = policy ?? new P();
+            mPolicy = PolicyCreateOrValidate(policy);
+
             mCurrentMasterPollAttempts = 0;
             mSupported = new Dictionary<MessageFilterWrapper, CommandHandler>();
             mSchedules = new List<Schedule>();
 
-            if (mPolicy.StartupPriority.HasValue)
-                StartupPriority = mPolicy.StartupPriority.Value;
+            StartupPriority = mPolicy.StartupPriority ?? 0;
 
             if (mPolicy.MasterJobEnabled)
                 MasterJobInitialise();
@@ -77,6 +77,18 @@ namespace Xigadee
             if (mPolicy.JobPollEnabled)
                 TimerPollSchedulesRegister();   
         }
+        #endregion
+
+        #region PolicyCreateOrValidate(P incomingPolicy)
+        /// <summary>
+        /// This method ensures that a policy object exists for the command. You should override this method to set any
+        /// default configuration properties.
+        /// </summary>
+        /// <returns>Returns the incoming policy or creates a default policy if this is not set..</returns>
+        protected virtual P PolicyCreateOrValidate(P incomingPolicy)
+        {
+            return incomingPolicy ?? new P();
+        } 
         #endregion
 
         #region StartInternal/StopInternal

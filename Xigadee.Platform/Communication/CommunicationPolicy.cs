@@ -12,14 +12,9 @@ namespace Xigadee
     /// </summary>
     public class CommunicationPolicy:PolicyBase
     {
-        public CommunicationPolicy()
-        {
-            ClientPriorityRecalculateFrequency = TimeSpan.FromMinutes(10);
-            PriorityAlgorithm = new DefaultClientPollSlotAllocationAlgorithm();
-        }
-
-        public TimeSpan ClientPriorityRecalculateFrequency { get; set; } 
-
-        public virtual ClientPollSlotAllocationAlgorithm PriorityAlgorithm { get; set; } 
+        /// <summary>
+        /// This is the algorithm used to assign poll cycles to the various listeners.
+        /// </summary>
+        public virtual IListenerClientPollAlgorithm ListenerClientPollAlgorithm { get; set; }  = new MultipleClientPollSlotAllocationAlgorithm();
     }
 }

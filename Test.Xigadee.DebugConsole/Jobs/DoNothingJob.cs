@@ -7,10 +7,17 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    public class DoNothingJob: JobBase<JobStatistics>
+    public class DoNothingJob: CommandBase
     {
-        public DoNothingJob() : base(JobConfiguration.ToJob(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1),null))
+        public DoNothingJob() 
         {
         }
+
+        public override void CommandsRegister()
+        {
+            base.CommandsRegister();
+        }
+
+        //override Policy
     }
 }

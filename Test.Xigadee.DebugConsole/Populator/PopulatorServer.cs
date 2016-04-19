@@ -29,7 +29,7 @@ namespace Test.Xigadee
                     { ChannelId = Channels.TestB }
                 );
 
-            Service.RegisterCommand(new DoNothingJob { ChannelId = Channels.TestB });
+            Service.RegisterCommand(new DoNothingJob { ChannelId = Channels.TestC });
         }
 
         protected override void RegisterCommunication()
@@ -46,6 +46,13 @@ namespace Test.Xigadee
                   Channels.TestB
                 , Config.ServiceBusConnection
                 , Channels.TestB
+                , ListenerPartitionConfig.Init(0, 1)
+                , resourceProfiles: new[] { mResourceDocDb, mResourceBlob }));
+
+            Service.RegisterListener(new AzureSBQueueListener(
+                  Channels.TestC
+                , Config.ServiceBusConnection
+                , Channels.TestC
                 , ListenerPartitionConfig.Init(0, 1)
                 , resourceProfiles: new[] { mResourceDocDb, mResourceBlob }));
 

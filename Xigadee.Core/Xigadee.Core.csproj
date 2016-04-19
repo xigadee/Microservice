@@ -193,7 +193,6 @@
     <Compile Include="Interfaces\ISupportsMessage.cs" />
     <Compile Include="Interfaces\ITelemetry.cs" />
     <Compile Include="MessageHandler\CommandHandler.cs" />
-    <Compile Include="MessageHandler\MessageHandlerActionHolder.cs" />
     <Compile Include="MessageHandler\MessageHandlerBase.cs" />
     <Compile Include="MessageInitiator\MessageInitiatorBase.cs" />
     <Compile Include="MessageInitiator\MessageInitiatorRequestTracker.cs" />

@@ -59,8 +59,9 @@
     <Compile Include="ActionQueue\ActionQueuePolicy.cs" />
     <Compile Include="ActionQueue\ActionQueueStatistics.cs" />
     <Compile Include="ActionQueue\IActionQueue.cs" />
+    <Compile Include="Communication\ClientPriority\Algorithms\ClientPollSlotAllocationAlgorithmBase.cs" />
+    <Compile Include="Communication\ClientPriority\Algorithms\MultipleClientPollSlotAllocationAlgorithm.cs" />
     <Compile Include="Communication\CommunicationPolicy.cs" />
-    <Compile Include="Communication\ClientPriority\ClientPriorityAlgorithm.cs" />
     <Compile Include="Communication\ClientPriority\ClientPriorityCollection.cs" />
     <Compile Include="Communication\ClientPriority\ClientPriorityHolder.cs" />
     <Compile Include="Communication\ClientPriority\Statistics\ClientPriorityHolderStatistics.cs" />

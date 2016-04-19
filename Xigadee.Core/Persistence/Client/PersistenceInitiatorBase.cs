@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public abstract class PersistenceInitiatorBase<K, E> : MessageInitiatorBase<MessageInitiatorRequestTracker, PersistenceInitiatorStatistics>, IRepositoryAsync<K, E>
+    public abstract class PersistenceInitiatorBase<K, E> : MessageInitiatorBase<MessageInitiatorRequestTracker, PersistenceInitiatorStatistics>
+        , IRepositoryAsync<K, E>
         where K : IEquatable<K>
     {
         #region Declarations
