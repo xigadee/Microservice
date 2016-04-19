@@ -144,8 +144,11 @@ namespace Xigadee
                 Interlocked.Exchange(ref mPollAchievedBatch, value);
             }
         }
+
+        #region SkipCount
         /// <summary>
-        /// This is the current skip count for the holder.
+        /// This is the current skip count for the holder, i.e. the number of poll cycles 
+        /// that will be missed until the underlying fabric is polled for new messages.
         /// </summary>
         public int SkipCount
         {
@@ -155,7 +158,12 @@ namespace Xigadee
                 Interlocked.Exchange(ref mSkipCount, value);
             }
         }
-
+        #endregion
+        #region SkipCountDecrement()
+        /// <summary>
+        /// This method decrements the skip count.
+        /// </summary>
+        /// <returns>The method returns true if the skipcount is still positive, or false if the skip count is 0 or below.</returns>
         public bool SkipCountDecrement()
         {
             //Check whether the skip count is greater that zero, and if so then skip
@@ -164,10 +172,11 @@ namespace Xigadee
 
             return false;
         }
-
-        #region ShouldSkip
+        #endregion
+        #region ShouldSkip()
         /// <summary>
-        /// This method returns true if the client should be skipped for this poll.
+        /// This method returns true if the client should be skipped for this poll
+        /// using the logic in the underlying algorithm.
         /// </summary>
         /// <returns>Returns true if the poll should be skipped.</returns>
         public bool ShouldSkip()
@@ -203,9 +212,15 @@ namespace Xigadee
             else
                 //Recalculate statistics.
                 Algorithm.CapacityPercentageRecalculate(this);
-        } 
+        }
         #endregion
 
+        #region PollBegin(int reserved)
+        /// <summary>
+        /// This methid signals the start of a poll.
+        /// </summary>
+        /// <param name="reserved">The reserved slots count.</param>
+        /// <returns>Returns the poll time.</returns>
         public int PollBegin(int reserved)
         {
             Interlocked.Add(ref mPollAttempted, reserved);
@@ -214,8 +229,14 @@ namespace Xigadee
             Interlocked.Increment(ref mPolls);
 
             return (int)MinExpectedPollWait.TotalMilliseconds;
-        }
-
+        } 
+        #endregion
+        #region PollEnd(int payloadCount, bool hasErrored)
+        /// <summary>
+        /// This method signals the end of a poll.
+        /// </summary>
+        /// <param name="payloadCount">The payload count.</param>
+        /// <param name="hasErrored">A flag indicating whether the poll errored.</param>
         public void PollEnd(int payloadCount, bool hasErrored)
         {
             Interlocked.Add(ref mPollAchieved, payloadCount);
@@ -228,7 +249,8 @@ namespace Xigadee
                 Interlocked.Increment(ref mPollsSuccess);
 
             Algorithm.SkipCountRecalculate(payloadCount > 0, this);
-        }
+        } 
+        #endregion
 
         #region LastActual
         /// <summary>
@@ -240,7 +262,6 @@ namespace Xigadee
         /// </summary>
         public DateTime? LastActualTime { get; set; }
         #endregion
-
 
         #region CapacityPercentage
         /// <summary>

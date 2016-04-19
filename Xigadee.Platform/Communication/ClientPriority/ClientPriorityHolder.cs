@@ -82,6 +82,7 @@ namespace Xigadee
 
                 mStatistics.SkipCount = mMetrics.SkipCount;
                 mStatistics.Status = mMetrics.Status;
+
                 //mStatistics.CapacityPercentage = CapacityPercentage;
                 //mStatistics.PriorityCalculated = PriorityCalculated;
                 //mStatistics.PollLast = LastPollTimeSpan;

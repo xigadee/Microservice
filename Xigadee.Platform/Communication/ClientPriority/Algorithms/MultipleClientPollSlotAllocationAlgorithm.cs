@@ -1,11 +1,5 @@
 ﻿#region using
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-
 #endregion
 namespace Xigadee
 {
@@ -15,55 +9,7 @@ namespace Xigadee
     public class MultipleClientPollSlotAllocationAlgorithm: ListenerClientPollAlgorithmBase
     {
 
-        #region ShouldSkip
-        /// <summary>
-        /// This method returns true if the client should be skipped for this poll.
-        /// </summary>
-        /// <returns>Returns true if the poll should be skipped.</returns>
-        public override bool ShouldSkip(ClientPriorityHolderMetrics context)
-        {
-            //Get the timespan since the last poll
-            var lastPollTimeSpan = context.LastPollTimeSpan;
 
-            //Check whether we have waited the minimum poll time, if not skip
-            if (lastPollTimeSpan.HasValue && lastPollTimeSpan.Value < context.MinExpectedPollWait)
-                return true;
-
-            //Check whether we have waited over maximum poll time, then poll
-            if (lastPollTimeSpan.HasValue && lastPollTimeSpan.Value > CalculatedMaximumPollWait(context))
-                return false;
-
-            return context.SkipCountDecrement();
-
-        }
-        #endregion
-
-        #region CalculatedMaximumPollWait
-        /// <summary>
-        /// This method is used to reduce the poll interval when the client reaches a certain success threshold
-        /// for polling frequency, which is set of an increasing scale at 75%.
-        /// </summary>
-        public TimeSpan CalculatedMaximumPollWait(ClientPriorityHolderMetrics context)
-        {
-            var rate = context.PollSuccessRate;
-            //If we have a poll success rate under the threshold then return the maximum value.
-            if (!context.PollTimeReduceRatio.HasValue || rate < context.PollTimeReduceRatio.Value)
-                return MaxAllowedPollWait;
-
-            decimal adjustRatio = ((1M - rate) / (1M - context.PollTimeReduceRatio.Value)); //This tends to 0 when the rate hits 100%
-
-            double minTime = MinExpectedPollWait.TotalMilliseconds;
-            double maxTime = MaxAllowedPollWait.TotalMilliseconds;
-            double difference = maxTime - minTime;
-
-            if (difference <= 0)
-                return TimeSpan.FromMilliseconds(minTime);
-
-            double newWait = (double)((decimal)difference * adjustRatio);
-
-            return TimeSpan.FromMilliseconds(minTime + newWait);
-        }
-        #endregion
 
         #region CalculateSlots(int available, ClientPriorityHolderMetrics context)
         /// <summary>
@@ -71,7 +17,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="available">The available slots.</param>
         /// <param name="context">The metrics.</param>
-        /// <returns>Returns the number of slots to take.</returns>
+        /// <returns>Returns the number of slots to reserve from the amount available.</returns>
         public override int CalculateSlots(int available, ClientPriorityHolderMetrics context)
         {
             double ratelimitAdjustment = context.RateLimiter?.RateLimitAdjustmentPercentage ?? 1D;
@@ -122,6 +68,9 @@ namespace Xigadee
         /// It is used to ensure that clients with the overall same base priority are accessed 
         /// so the one polled last is then polled first the next time.
         /// </summary>
+        /// <param name="queueLength">This contains the current queue length for the underlying fabric.</param>
+        /// <param name="context">This is the metrics context.</param>
+        /// <returns>Returns the new priority.</returns>
         public override long PriorityRecalculate(long? queueLength, ClientPriorityHolderMetrics context)
         {
             long newPriority = (context.IsDeadletter ? 0xFFFFFFFF : 0xFFFFFFFFFFFF);
@@ -148,6 +97,7 @@ namespace Xigadee
         }
         #endregion
 
+        #region SkipCountRecalculate(bool success, ClientPriorityHolderMetrics context)
         /// <summary>
         /// This method recalculates the skip count based on the success of the last poll.
         /// </summary>
@@ -159,7 +109,54 @@ namespace Xigadee
                 context.SkipCount = 0;
             else
                 context.SkipCount = 20;
+        } 
+        #endregion
+        #region ShouldSkip
+        /// <summary>
+        /// This method returns true if the client should be skipped for this poll.
+        /// </summary>
+        /// <returns>Returns true if the poll should be skipped.</returns>
+        public override bool ShouldSkip(ClientPriorityHolderMetrics context)
+        {
+            //Get the timespan since the last poll
+            var lastPollTimeSpan = context.LastPollTimeSpan;
 
+            //Check whether we have waited the minimum poll time, if not skip
+            if (lastPollTimeSpan.HasValue && lastPollTimeSpan.Value < context.MinExpectedPollWait)
+                return true;
+
+            //Check whether we have waited over maximum poll time, then poll
+            if (lastPollTimeSpan.HasValue && lastPollTimeSpan.Value > RecalculateMaximumPollWait(context))
+                return false;
+
+            return context.SkipCountDecrement();
         }
+        #endregion
+        #region RecalculateMaximumPollWait(ClientPriorityHolderMetrics context)
+        /// <summary>
+        /// This method is used to reduce the poll interval when the client reaches a certain success threshold
+        /// for polling frequency, which is set of an increasing scale at 75%.
+        /// </summary>
+        private TimeSpan RecalculateMaximumPollWait(ClientPriorityHolderMetrics context)
+        {
+            var rate = context.PollSuccessRate;
+            //If we have a poll success rate under the threshold then return the maximum value.
+            if (!context.PollTimeReduceRatio.HasValue || rate < context.PollTimeReduceRatio.Value)
+                return MaxAllowedPollWait;
+
+            decimal adjustRatio = ((1M - rate) / (1M - context.PollTimeReduceRatio.Value)); //This tends to 0 when the rate hits 100%
+
+            double minTime = MinExpectedPollWait.TotalMilliseconds;
+            double maxTime = MaxAllowedPollWait.TotalMilliseconds;
+            double difference = maxTime - minTime;
+
+            if (difference <= 0)
+                return TimeSpan.FromMilliseconds(minTime);
+
+            double newWait = (double)((decimal)difference * adjustRatio);
+
+            return TimeSpan.FromMilliseconds(minTime + newWait);
+        }
+        #endregion
     }
 }
