@@ -10,6 +10,8 @@ namespace Xigadee
 {
     public class ClientPriorityHolderStatistics: StatusBase
     {
+        public Guid Id { get; set; }
+
         public override string Name
         {
             get

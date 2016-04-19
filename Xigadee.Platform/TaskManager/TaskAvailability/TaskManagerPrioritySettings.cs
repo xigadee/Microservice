@@ -20,6 +20,8 @@ namespace Xigadee
         private int mActive;
 
         private int mKilled;
+
+        private int mReserved;
         #endregion
 
         internal TaskManagerPrioritySettings(int level)
@@ -35,7 +37,7 @@ namespace Xigadee
         /// <summary>
         /// This is the defined number of slots reserved for a particular priority.
         /// </summary>
-        public int BulkHeadReservation { get; private set; }
+        public int BulkHead { get; private set; }
 
         public int Overage { get; private set; }
 
@@ -45,16 +47,28 @@ namespace Xigadee
         {
             get
             {
-                int result = BulkHeadReservation - mActive;
+                int result = BulkHead - mActive;
                 return result > 0 ? result : 0;
             }
         }
 
-        public void BulkHeadReserve(int slotCount, int overage)
+        public void BulkHeadSet(int slotCount, int overage)
         {
-            BulkHeadReservation = slotCount;
+            BulkHead = slotCount;
             Overage = overage;
         }
+
+        public void Reserve(int count)
+        {
+            Interlocked.Add(ref mReserved, count);
+        }
+
+        public void Release(int count)
+        {
+            Interlocked.Add(ref mReserved, count*-1);
+        }
+
+        public int Reserved { get { return mReserved; } }
 
         public void Increment()
         {
@@ -73,7 +87,7 @@ namespace Xigadee
         {
             get
             {
-                return $"Level={Level} Hits={mCount} Active={mActive} Available={Available} Reserved={BulkHeadReservation} Killed={mKilled}";
+                return $"Level={Level} Hits={mCount} Active={mActive} Available={Available} Bulkhead={BulkHead} Reserved={mReserved} Killed={mKilled}";
             }
         }
     }

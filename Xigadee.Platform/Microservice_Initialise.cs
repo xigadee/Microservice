@@ -24,9 +24,9 @@ namespace Xigadee
         {
             var taskTracker = new TaskManager(4, Execute, PolicyTaskManager());
 
-            taskTracker.BulkheadReserve(3, 1);
-            taskTracker.BulkheadReserve(2, 2);
-            taskTracker.BulkheadReserve(1, 8);
+            taskTracker.BulkheadReserve(3, 1, 2);
+            taskTracker.BulkheadReserve(2, 2, 2);
+            taskTracker.BulkheadReserve(1, 8, 8);
             taskTracker.BulkheadReserve(0, 0);
 
             return taskTracker;

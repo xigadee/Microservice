@@ -14,6 +14,6 @@ namespace Xigadee
 
         bool ReservationRelease(Guid id);
 
-        int GetAvailability(int priority, int slotsAvailable);
+        int ReservationsAvailable(int priority);
     }
 }

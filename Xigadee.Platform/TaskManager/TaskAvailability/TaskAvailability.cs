@@ -122,7 +122,7 @@ namespace Xigadee
             if (level < LevelMin || level > LevelMax)
                 return false;
 
-            mPriorityStatus[level].BulkHeadReserve(slotCount, overage);
+            mPriorityStatus[level].BulkHeadSet(slotCount, overage);
 
             return true;
         }
@@ -237,29 +237,59 @@ namespace Xigadee
 
         public bool ReservationMake(Guid id, int priority, int taken)
         {
-            Interlocked.Add(ref mReservedSlots, taken);
-            return mReservations.TryAdd(id, new Reservation {Id=id, Priority = priority, Taken = taken });
+            try
+            {
+                Interlocked.Add(ref mReservedSlots, taken);
+                mPriorityStatus[priority].Reserve(taken);
+                return mReservations.TryAdd(id, new Reservation {Id=id, Priority = priority, Taken = taken });
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public bool ReservationRelease(Guid id)
         {
-            Reservation reserve;
-            if (mReservations.TryRemove(id, out reserve))
+            try
             {
-                Interlocked.Add(ref mReservedSlots, reserve.Taken * -1);
-                return true;
-            }
+                Reservation reserve;
+                if (mReservations.TryRemove(id, out reserve))
+                {
+                    Interlocked.Add(ref mReservedSlots, reserve.Taken * -1);
+                    mPriorityStatus[reserve.Priority].Release(reserve.Taken);
+                    return true;
+                }
 
-            return false;
+                return false;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
-        public int GetAvailability(int priority, int slotsAvailable)
+        public int ReservationsAvailable(int priority)
         {
-            int taken = mReservations.Values.Where((s) => s.Priority == priority).Sum((r) => r.Taken);
+            try
+            {
+                //We get the availability as we proceed though the client collection
+                //This may change as slots are released from other processes.
+                int slotsAvailable = Level(priority);
+                if (slotsAvailable <= 0)
+                    return 0;
 
-            int actual = slotsAvailable - taken + mPriorityStatus[priority].Overage;
+                var ps = mPriorityStatus[priority];
 
-            return actual;
+                int actual = slotsAvailable - ps.Reserved + ps.Overage;
+
+                return actual;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
         }
 
         #region Count

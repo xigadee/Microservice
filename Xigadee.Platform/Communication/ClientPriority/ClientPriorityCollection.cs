@@ -61,7 +61,7 @@ namespace Xigadee
 
             //Get the supported levels.
             mListenerPollLevels = mListenerClients
-                .Select((c) => c.Value.Client.Priority)
+                .Select((c) => c.Value.Priority)
                 .Distinct()
                 .OrderByDescending((i) => i)
                 .ToArray();
@@ -123,8 +123,8 @@ namespace Xigadee
             foreach (int priority in mListenerPollLevels)
             {
                 var guids = mListenerClients
-                    .Where((c) => c.Value.IsActive && c.Value.Client.Priority == priority)
-                    .OrderByDescending((c) => c.Value.CalculatePriority())
+                    .Where((c) => c.Value.IsActive && c.Value.Priority == priority)
+                    .OrderByDescending((c) => c.Value.PriorityRecalculate())
                     .Select((c) => c.Key)
                     .ToArray();
 
@@ -143,7 +143,6 @@ namespace Xigadee
         /// This method loops through the client for the given priority while there is slot availability.
         /// </summary>
         /// <param name="availability">This is the current slot availability.</param>
-        /// <param name="reservations">This class contains the current slot reservations.</param>
         /// <returns>Returns a collection of ClientPriorityHolders.</returns>
         public IEnumerable<ClientPriorityHolder> TakeNext(ITaskAvailability availability)
         {
@@ -178,14 +177,8 @@ namespace Xigadee
                     if (holder.ShouldSkip())
                         continue;
 
-                    //We get the availability as we proceed though the client collection
-                    //This may change as slots are released from other processes.
-                    int available = availability.Level(priority);
-                    if (available <= 0)
-                        continue;
-
                     //Ok, check the available amount against the slots that have already been reserved.
-                    int actualAvailability = availability.GetAvailability(priority, available);
+                    int actualAvailability = availability.ReservationsAvailable(priority);
                     if (actualAvailability <= 0)
                         continue;
 

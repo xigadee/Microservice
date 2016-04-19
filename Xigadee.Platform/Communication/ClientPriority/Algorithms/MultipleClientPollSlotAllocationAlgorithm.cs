@@ -80,16 +80,16 @@ namespace Xigadee
         /// <returns>Returns true if the poll should be skipped.</returns>
         public bool ShouldSkip(ClientPriorityHolder context)
         {
-            //Get the timespan since the last poll
-            var lastPollTimeSpan = context.LastPollTimeSpan;
+            ////Get the timespan since the last poll
+            //var lastPollTimeSpan = context.LastPollTimeSpan;
 
-            //Check whether we have waited the minimum poll time, if not skip
-            //if (lastPollTimeSpan.HasValue && lastPollTimeSpan.Value < context.MinExpectedPollWait)
-            //    return true;
+            ////Check whether we have waited the minimum poll time, if not skip
+            ////if (lastPollTimeSpan.HasValue && lastPollTimeSpan.Value < context.MinExpectedPollWait)
+            ////    return true;
 
-            //Check whether we have waited over maximum poll time, then poll
-            if (lastPollTimeSpan.HasValue && lastPollTimeSpan.Value > context.CalculatedMaximumPollWait)
-                return false;
+            ////Check whether we have waited over maximum poll time, then poll
+            //if (lastPollTimeSpan.HasValue && lastPollTimeSpan.Value > context.CalculatedMaximumPollWait)
+            //    return false;
 
             //Check whether the skip count is greater that zero, and if so then skip
             //if (Interlocked.Decrement(ref mSkipCount) > 0)
