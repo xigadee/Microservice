@@ -36,6 +36,10 @@ namespace Xigadee
         int CalculateSlots(int available, ClientPriorityHolderMetrics context);
 
         bool ShouldSkip(ClientPriorityHolderMetrics context);
+
+        void CapacityPercentageRecalculate(ClientPriorityHolderMetrics context);
+
+        void CapacityReset(ClientPriorityHolderMetrics context);
     }
 
 

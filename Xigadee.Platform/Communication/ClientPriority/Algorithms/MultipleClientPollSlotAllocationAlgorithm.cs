@@ -46,6 +46,41 @@ namespace Xigadee
             return (int)Math.Ceiling((double)available * CapacityPercentage * Math.Round(ratelimitAdjustment, 2, MidpointRounding.AwayFromZero));
         }
 
+        #region CapacityReset()
+        /// <summary>
+        /// This method is used to reset the capacity calculation.
+        /// </summary>
+        public override void CapacityReset(ClientPriorityHolderMetrics context)
+        {
+            context.PollAttemptedBatch = 0;
+            context.PollAchievedBatch = 0;
+            context.CapacityPercentage = 0.75D;
+        }
+        #endregion
+
+        #region CapacityPercentageRecalculate(ClientPriorityHolderMetrics context)
+        /// <summary>
+        /// This method is used to recalcualte the capacity percentage.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override void CapacityPercentageRecalculate(ClientPriorityHolderMetrics context)
+        {
+            if (context.PollAttemptedBatch > 0)
+            {
+                //If the actual and reserved tend to 100% we want the capacity to grow to 95%
+                double capacityPercentage = context.CapacityPercentage * ((double)context.PollAchievedBatch / (double)context.PollAttemptedBatch) * 1.05D;
+
+                if (capacityPercentage >= 0.95D)
+                    capacityPercentage = 0.95D;
+                else if (capacityPercentage <= 0.01D)
+                    capacityPercentage = 0.01D;
+
+                context.CapacityPercentage = capacityPercentage;
+            }
+        }
+        #endregion
+
         #region CalculateMaximumPollWait(ClientPriorityHolderMetrics context)
         /// <summary>
         /// This method is used to reduce the poll interval when the client reaches a certain success threshold
@@ -106,16 +141,5 @@ namespace Xigadee
         #endregion
 
 
-        #region CapacityReset(ClientPriorityHolderMetrics context)
-        /// <summary>
-        /// This method is used to reset the capacity calculation.
-        /// </summary>
-        public void CapacityReset(ClientPriorityHolderMetrics context)
-        {
-            //mPollAttemptedBatch = 0;
-            //mPollAchievedBatch = 0;
-            //mCapacityPercentage = 0.75D;
-        }
-        #endregion
     }
 }

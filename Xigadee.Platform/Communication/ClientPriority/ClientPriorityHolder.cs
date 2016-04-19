@@ -171,10 +171,16 @@ namespace Xigadee
         public int? Reserved { get; set; }
         #endregion
 
+        #region ShouldSkip()
+        /// <summary>
+        /// This method specifies whether the client holder should be skipped for the current poll.
+        /// </summary>
+        /// <returns>Returns true if it should be skipped.</returns>
         public bool ShouldSkip()
         {
             return mMetrics.ShouldSkip();
-        }
+        } 
+        #endregion
 
         #region Reserve(int available, out int taken)
         /// <summary>

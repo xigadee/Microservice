@@ -39,7 +39,9 @@ namespace Xigadee
         /// This action is used to signal that the message can be released back to the listener.
         /// </summary>
         private Action<bool, Guid> mListenerSignalRelease = null;
-
+        /// <summary>
+        /// This is the time that the payload was created.
+        /// </summary>
         private readonly DateTime mCreateTime = DateTime.UtcNow;
         #endregion
         #region Constructor
@@ -85,7 +87,28 @@ namespace Xigadee
         public TimeSpan Extent
         {
             get { return DateTime.UtcNow - mCreateTime; }
-        } 
+        }
+        #endregion
+        #region CommsWait
+        /// <summary>
+        /// This is the time that the message spent on the fabric before it was received.
+        /// </summary>
+        public TimeSpan? CommsWait
+        {
+            get
+            {
+                DateTime? start = Message?.EnqueuedTimeUTC;
+                if (!start.HasValue)
+                    return null;
+
+                var diff = mCreateTime - start.Value;
+
+                if (diff.TotalMilliseconds < 0)
+                    return TimeSpan.Zero;
+
+                return diff;
+            }
+        }
         #endregion
 
         #region Static Create helper methods
@@ -177,7 +200,7 @@ namespace Xigadee
         /// has completed. You may want to turn off this default action in specific scenarios. The default action
         /// is to signal (true).
         /// </summary>
-        public bool DispatcherCanSignal { get; set; } 
+        public bool DispatcherCanSignal { get; set; }
         #endregion
 
 

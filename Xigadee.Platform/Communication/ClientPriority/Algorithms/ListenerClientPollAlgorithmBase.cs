@@ -46,5 +46,9 @@ namespace Xigadee
         public abstract int CalculateSlots(int available, ClientPriorityHolderMetrics context);
 
         public abstract bool ShouldSkip(ClientPriorityHolderMetrics context);
+
+        public abstract void CapacityPercentageRecalculate(ClientPriorityHolderMetrics context);
+
+        public abstract void CapacityReset(ClientPriorityHolderMetrics context);
     }
 }

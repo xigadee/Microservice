@@ -25,6 +25,11 @@ namespace Xigadee
             return false;
         }
 
+        public override void CapacityPercentageRecalculate(ClientPriorityHolderMetrics context)
+        {
+            context.CapacityPercentage = 1D;
+        }
+
         #region CalculateMaximumPollWait(ClientPriorityHolderMetrics context)
         /// <summary>
         /// This method is used to reduce the poll interval when the client reaches a certain success threshold
@@ -84,16 +89,15 @@ namespace Xigadee
         }
         #endregion
 
-
-        #region CapacityReset(ClientPriorityHolderMetrics context)
+        #region CapacityReset()
         /// <summary>
         /// This method is used to reset the capacity calculation.
         /// </summary>
-        public void CapacityReset(ClientPriorityHolderMetrics context)
+        public override void CapacityReset(ClientPriorityHolderMetrics context)
         {
-            //mPollAttemptedBatch = 0;
-            //mPollAchievedBatch = 0;
-            //mCapacityPercentage = 0.75D;
+            context.PollAttemptedBatch = 0;
+            context.PollAchievedBatch = 0;
+            context.CapacityPercentage = 1D;
         }
         #endregion
     }

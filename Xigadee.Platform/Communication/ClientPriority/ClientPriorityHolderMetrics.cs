@@ -126,6 +126,22 @@ namespace Xigadee
         }
         #endregion
 
+        public long PollAttemptedBatch
+        {
+            get { return mPollAttemptedBatch; }
+            set
+            {
+                Interlocked.Exchange(ref mPollAttemptedBatch, value);
+            }
+        }
+        public long PollAchievedBatch
+        {
+            get { return mPollAchievedBatch; }
+            set
+            {
+                Interlocked.Exchange(ref mPollAchievedBatch, value);
+            }
+        }
         /// <summary>
         /// This is the current skip count for the holder.
         /// </summary>
@@ -140,6 +156,17 @@ namespace Xigadee
             return false;
         }
 
+        #region ShouldSkip
+        /// <summary>
+        /// This method returns true if the client should be skipped for this poll.
+        /// </summary>
+        /// <returns>Returns true if the poll should be skipped.</returns>
+        public bool ShouldSkip()
+        {
+            return Algorithm.ShouldSkip(this);
+        }
+        #endregion
+
         public int Reserve(int available)
         {
             int takenCalc = Algorithm.CalculateSlots(available, this);
@@ -152,6 +179,7 @@ namespace Xigadee
 
         public int? LastReserved { get; set; }
 
+        #region Release(bool exception)
         /// <summary>
         /// This method releases the holder so that it can be polled again.
         /// </summary>
@@ -165,8 +193,9 @@ namespace Xigadee
                 Interlocked.Increment(ref mPollException);
             else
                 //Recalculate statistics.
-                CapacityPercentageRecalculate(LastActual, LastReserved);
-        }
+                Algorithm.CapacityPercentageRecalculate(this);
+        } 
+        #endregion
 
         public int PollBegin(int reserved)
         {
@@ -208,46 +237,21 @@ namespace Xigadee
         public DateTime? LastActualTime { get; set; }
         #endregion
 
-        #region ShouldSkip
-        /// <summary>
-        /// This method returns true if the client should be skipped for this poll.
-        /// </summary>
-        /// <returns>Returns true if the poll should be skipped.</returns>
-        public bool ShouldSkip()
-        {
-            return Algorithm.ShouldSkip(this);
-        }
-        #endregion
+
         #region CapacityPercentage
         /// <summary>
         /// This is the calcualted percentage that determines how many of the available reserved slots the client will take.
         /// </summary>
-        public double CapacityPercentage { get { return mCapacityPercentage; } }
-        #endregion
-        #region CapacityPercentageRecalculate(long LastActual, int LastReserved)
-        /// <summary>
-        /// This method is used to recalcualte the capacity percentage.
-        /// </summary>
-        /// <param name="lastActual"></param>
-        /// <param name="lastReserved"></param>
-        /// <returns></returns>
-        public bool CapacityPercentageRecalculate(long? lastActual, int? lastReserved)
+        public double CapacityPercentage
         {
-            if (mPollAttemptedBatch > 0)
+            get
             {
-                //If the actual and reserved tend to 100% we want the capacity to grow to 95%
-                double capacityPercentage = mCapacityPercentage * ((double)mPollAchievedBatch / (double)mPollAttemptedBatch) * 1.05D;
-
-                if (capacityPercentage >= 0.95D)
-                    capacityPercentage = 0.95D;
-                else if (capacityPercentage <= 0.01D)
-                    capacityPercentage = 0.01D;
-
-                Interlocked.Exchange(ref mCapacityPercentage, capacityPercentage);
-
-                return true;
+                return mCapacityPercentage;
             }
-            return false;
+            set
+            {
+                Interlocked.Exchange(ref mCapacityPercentage, value);
+            }
         }
         #endregion
 
@@ -301,7 +305,6 @@ namespace Xigadee
         public long? PriorityQueueLength { get; private set; }
         #endregion
 
-
         #region LastPollTimeSpan
         /// <summary>
         /// This is the calcualted time span from the last time the priority was calculated.
@@ -330,11 +333,10 @@ namespace Xigadee
         /// </summary>
         public void CapacityReset()
         {
-            mPollAttemptedBatch = 0;
-            mPollAchievedBatch = 0;
-            mCapacityPercentage = 0.75D;
+            Algorithm.CapacityReset(this);
         }
         #endregion
+
         #region CalculatedMaximumPollWait
         /// <summary>
         /// This method is used to reduce the poll interval when the client reaches a certain success threshold
