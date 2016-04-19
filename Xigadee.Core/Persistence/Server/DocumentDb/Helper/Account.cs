@@ -20,7 +20,7 @@ namespace Xigadee
         public Account(DocumentDbConnection connection, TimeSpan? defaultTimeout = null):base(connection, defaultTimeout)
         {
             Name = connection.AccountName;
-            mDefaultTimeout = mDefaultTimeout ?? TimeSpan.FromSeconds(20);
+            mDefaultTimeout = mDefaultTimeout ?? TimeSpan.FromSeconds(30);
         }
 
         public async Task<ResponseHolder<Database>> Create(string databaseName)
