@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 #endregion
 namespace Xigadee
 {
-
     /// <summary>
     /// This protected calss
     /// </summary>
@@ -193,7 +192,7 @@ namespace Xigadee
 
         private void RecalculateSkipCount(bool success)
         {
-
+            mSkipCount = 10;
         }
 
         #region LastActual
