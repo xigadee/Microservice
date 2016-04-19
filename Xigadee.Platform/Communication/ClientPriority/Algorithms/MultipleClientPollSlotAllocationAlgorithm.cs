@@ -14,12 +14,12 @@ namespace Xigadee
     /// </summary>
     public class MultipleClientPollSlotAllocationAlgorithm: ListenerClientPollAlgorithmBase
     {
-        #region CalculateMaximumPollWait(ClientPriorityHolder context)
+        #region CalculateMaximumPollWait(ClientPriorityHolderMetrics context)
         /// <summary>
         /// This method is used to reduce the poll interval when the client reaches a certain success threshold
         /// for polling frequency, which is set of an increasing scale at 75%.
         /// </summary>
-        public void CalculateMaximumPollWait(ClientPriorityHolder context)
+        public void CalculateMaximumPollWait(ClientPriorityHolderMetrics context)
         {
             //var rate = PollSuccessRate;
             ////If we have a poll success rate under the threshold then return the maximum value.
@@ -41,13 +41,13 @@ namespace Xigadee
         }
         #endregion
 
-        #region CalculatePriority(ClientPriorityHolder context)
+        #region CalculatePriority(ClientPriorityHolderMetrics context)
         /// <summary>
         /// This is the priority based on the elapsed poll tick time and the overall priority.
         /// It is used to ensure that clients with the overall same base priority are accessed 
         /// so the one polled last is then polled first the next time.
         /// </summary>
-        public long CalculatePriority(ClientPriorityHolder context)
+        public long CalculatePriority(ClientPriorityHolderMetrics context)
         {
             long priority = (context.IsDeadletter ? 0xFFFFFFFF : 0xFFFFFFFFFFFF);
 
@@ -73,12 +73,12 @@ namespace Xigadee
         }
         #endregion
 
-        #region ShouldSkip(ClientPriorityHolder context)
+        #region ShouldSkip(ClientPriorityHolderMetrics context)
         /// <summary>
         /// This method returns true if the client should be skipped for this poll.
         /// </summary>
         /// <returns>Returns true if the poll should be skipped.</returns>
-        public bool ShouldSkip(ClientPriorityHolder context)
+        public bool ShouldSkip(ClientPriorityHolderMetrics context)
         {
             ////Get the timespan since the last poll
             //var lastPollTimeSpan = context.LastPollTimeSpan;
@@ -99,11 +99,11 @@ namespace Xigadee
         }
         #endregion
 
-        #region CapacityReset(ClientPriorityHolder context)
+        #region CapacityReset(ClientPriorityHolderMetrics context)
         /// <summary>
         /// This method is used to reset the capacity calculation.
         /// </summary>
-        public void CapacityReset(ClientPriorityHolder context)
+        public void CapacityReset(ClientPriorityHolderMetrics context)
         {
             //mPollAttemptedBatch = 0;
             //mPollAchievedBatch = 0;

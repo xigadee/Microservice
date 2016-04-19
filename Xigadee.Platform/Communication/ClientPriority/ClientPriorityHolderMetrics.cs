@@ -142,6 +142,7 @@ namespace Xigadee
             //We make sure that a small fraction rate limit adjust resolves to zero as we use ceiling to make even small fractional numbers go to one.
             int takenCalc = (int)Math.Ceiling((double)available * CapacityPercentage * Math.Round(ratelimitAdjustment, 2, MidpointRounding.AwayFromZero));
 
+
             LastPollTickCount = Environment.TickCount;
             Interlocked.Increment(ref mPollIn);
             LastReserved = takenCalc;

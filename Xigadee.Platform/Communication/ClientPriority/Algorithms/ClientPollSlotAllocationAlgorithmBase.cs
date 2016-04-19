@@ -45,6 +45,9 @@ namespace Xigadee
         /// </summary>
         public int AllowedOverage { get; set; } = 5;
 
+        /// <summary>
+        /// This is the algorithm name.
+        /// </summary>
         public virtual string Name
         {
             get
