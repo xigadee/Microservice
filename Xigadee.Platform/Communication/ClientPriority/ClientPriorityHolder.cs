@@ -24,6 +24,8 @@ namespace Xigadee
         private string mMappingChannel;
 
         private ClientPriorityHolderMetrics mMetrics;
+
+        private IListenerClientPollAlgorithm mAlgorithm;
         #endregion
         #region Constructor
         /// <summary>
@@ -34,7 +36,8 @@ namespace Xigadee
         /// <param name="mappingChannelId">The mapping channel.param>
         /// <param name="maxAllowedPollWait">The maximum permitted poll length.</param>
         public ClientPriorityHolder(IResourceTracker resourceTracker
-            , ClientHolder client, string mappingChannelId
+            , ClientHolder client
+            , string mappingChannelId
             , IListenerClientPollAlgorithm algorithm
             )
         {
@@ -44,7 +47,10 @@ namespace Xigadee
             if (algorithm == null)
                 throw new ArgumentNullException("algorithm");
 
+            mAlgorithm = algorithm;
+
             Client = client;
+
             mMappingChannel = mappingChannelId;
 
             //Create the metrics container to hold the calculations for poll priority and reservation amount.
@@ -68,12 +74,15 @@ namespace Xigadee
             try
             {
                 mStatistics.Id = Id;
+                mStatistics.Algorithm = mAlgorithm.Name;
+                mStatistics.Name = Name;
 
                 mStatistics.IsReserved = IsReserved;
                 mStatistics.LastReserved = Reserved;
+
                 mStatistics.Priority = Priority;
                 mStatistics.PriorityWeighting = PriorityWeighting;
-                mStatistics.Name = Client.DebugStatus;
+
                 mStatistics.Client = Client.Statistics;
                 mStatistics.MappingChannel = mMappingChannel;
 

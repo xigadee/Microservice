@@ -25,6 +25,8 @@ namespace Xigadee
             }
         }
 
+        public string Algorithm { get; set; }
+
         public int Ordinal { get; set; }
         public int SkipCount { get; set; }
         public int Priority { get; set; }
