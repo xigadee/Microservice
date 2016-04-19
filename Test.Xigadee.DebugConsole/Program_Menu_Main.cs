@@ -95,7 +95,7 @@ namespace Test.Xigadee
                 , Version(sServerContext.ServerPersistence)
                 , VersionByReference(sServerContext.ServerPersistence)
                 , StressTest(sServerContext.ServerPersistence)
-
+                , StressCrudTest(sServerContext.ServerPersistence)
                )
             );
 

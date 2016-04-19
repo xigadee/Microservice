@@ -6,9 +6,9 @@ namespace Test.Xigadee
 {
     static partial class Program
     {
-        static void PersistenceLog(ConsoleMenu menu, string Action, bool success)
+        static void PersistenceLog(ConsoleMenu menu, string action, bool success)
         {
-            menu.AddInfoMessage(string.Format("{0} {1}", Action, success ? "OK" : "Fail")
+            menu.AddInfoMessage($"{action} {(success ? "OK" : "Fail")}"
                 , true, success ? EventLogEntryType.Information : EventLogEntryType.Error);
         }
 
