@@ -42,5 +42,9 @@ namespace Xigadee
         public decimal PollTimeReduceRatio { get; set; } = 0.75M;
 
         public double CapacityPercentage { get; set; } = 0.75D;
+
+        public abstract int CalculateSlots(int available, ClientPriorityHolderMetrics context);
+
+        public abstract bool ShouldSkip(ClientPriorityHolderMetrics context);
     }
 }

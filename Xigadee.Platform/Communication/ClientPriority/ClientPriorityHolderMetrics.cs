@@ -36,11 +36,11 @@ namespace Xigadee
         /// <summary>
         /// This is the maximum wait time that the client can wait before it is polled.
         /// </summary>
-        TimeSpan mMaxAllowedPollWait;
+        public TimeSpan MaxAllowedPollWait { get; set; }
         /// <summary>
         /// This is the minimum wait time that the client should wait before it is polled.
         /// </summary>
-        TimeSpan mMinExpectedPollWait;
+        public TimeSpan MinExpectedPollWait { get; set; }
         #endregion
         #region Constructor
         /// <summary>
@@ -65,11 +65,11 @@ namespace Xigadee
 
             mPollTimeReduceRatio = algorithm.PollTimeReduceRatio;
 
-            mMaxAllowedPollWait = algorithm.MaxAllowedPollWait;
-            mMinExpectedPollWait = algorithm.MinExpectedPollWait;
+            MaxAllowedPollWait = algorithm.MaxAllowedPollWait;
+            MinExpectedPollWait = algorithm.MinExpectedPollWait;
 
-            if (mMinExpectedPollWait > mMaxAllowedPollWait)
-                mMinExpectedPollWait = mMaxAllowedPollWait;
+            if (MinExpectedPollWait > MaxAllowedPollWait)
+                MinExpectedPollWait = MaxAllowedPollWait;
 
             mCapacityPercentage = algorithm.CapacityPercentage;
         }
@@ -131,17 +131,18 @@ namespace Xigadee
         /// </summary>
         public int SkipCount { get { return mSkipCount; } }
 
+        public bool SkipCountDecrement()
+        {
+            //Check whether the skip count is greater that zero, and if so then skip
+            if (Interlocked.Decrement(ref mSkipCount) > 0)
+                return true;
+
+            return false;
+        }
 
         public int Reserve(int available)
         {
-            double ratelimitAdjustment = 1D;
-
-            if (RateLimiter != null)
-                ratelimitAdjustment = RateLimiter?.RateLimitAdjustmentPercentage ?? 1D;
-
-            //We make sure that a small fraction rate limit adjust resolves to zero as we use ceiling to make even small fractional numbers go to one.
-            int takenCalc = (int)Math.Ceiling((double)available * CapacityPercentage * Math.Round(ratelimitAdjustment, 2, MidpointRounding.AwayFromZero));
-
+            int takenCalc = Algorithm.CalculateSlots(available, this);
 
             LastPollTickCount = Environment.TickCount;
             Interlocked.Increment(ref mPollIn);
@@ -174,7 +175,7 @@ namespace Xigadee
 
             Interlocked.Increment(ref mPolls);
 
-            return (int)mMinExpectedPollWait.TotalMilliseconds;
+            return (int)MinExpectedPollWait.TotalMilliseconds;
         }
 
         public void PollEnd(int payloadCount, bool hasErrored)
@@ -214,22 +215,7 @@ namespace Xigadee
         /// <returns>Returns true if the poll should be skipped.</returns>
         public bool ShouldSkip()
         {
-            //Get the timespan since the last poll
-            var lastPollTimeSpan = LastPollTimeSpan;
-
-            //Check whether we have waited the minimum poll time, if not skip
-            if (lastPollTimeSpan.HasValue && lastPollTimeSpan.Value < mMinExpectedPollWait)
-                return true;
-
-            //Check whether we have waited over maximum poll time, then poll
-            if (lastPollTimeSpan.HasValue && lastPollTimeSpan.Value > CalculatedMaximumPollWait)
-                return false;
-
-            //Check whether the skip count is greater that zero, and if so then skip
-            if (Interlocked.Decrement(ref mSkipCount) > 0)
-                return true;
-
-            return false;
+            return Algorithm.ShouldSkip(this);
         }
         #endregion
         #region CapacityPercentage
@@ -361,12 +347,12 @@ namespace Xigadee
                 var rate = PollSuccessRate;
                 //If we have a poll success rate under the threshold then return the maximum value.
                 if (!mPollTimeReduceRatio.HasValue || rate < mPollTimeReduceRatio.Value)
-                    return mMaxAllowedPollWait;
+                    return MaxAllowedPollWait;
 
                 decimal adjustRatio = ((1M - rate) / (1M - mPollTimeReduceRatio.Value)); //This tends to 0 when the rate hits 100%
 
-                double minTime = mMinExpectedPollWait.TotalMilliseconds;
-                double maxTime = mMaxAllowedPollWait.TotalMilliseconds;
+                double minTime = MinExpectedPollWait.TotalMilliseconds;
+                double maxTime = MaxAllowedPollWait.TotalMilliseconds;
                 double difference = maxTime - minTime;
 
                 if (difference <= 0)

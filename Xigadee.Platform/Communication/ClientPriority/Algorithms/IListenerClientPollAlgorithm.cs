@@ -33,6 +33,9 @@ namespace Xigadee
 
         double CapacityPercentage { get; set; }
 
+        int CalculateSlots(int available, ClientPriorityHolderMetrics context);
+
+        bool ShouldSkip(ClientPriorityHolderMetrics context);
     }
 
 

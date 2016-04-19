@@ -14,6 +14,17 @@ namespace Xigadee
     /// </summary>
     public class SingleClientPollSlotAllocationAlgorithm: ListenerClientPollAlgorithmBase
     {
+        public override int CalculateSlots(int available, ClientPriorityHolderMetrics context)
+        {
+            //We make sure that a small fraction rate limit adjust resolves to zero as we use ceiling to make even small fractional numbers go to one.
+            return available;
+        }
+
+        public override bool ShouldSkip(ClientPriorityHolderMetrics context)
+        {
+            return false;
+        }
+
         #region CalculateMaximumPollWait(ClientPriorityHolderMetrics context)
         /// <summary>
         /// This method is used to reduce the poll interval when the client reaches a certain success threshold
@@ -73,31 +84,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region ShouldSkip(ClientPriorityHolderMetrics context)
-        /// <summary>
-        /// This method returns true if the client should be skipped for this poll.
-        /// </summary>
-        /// <returns>Returns true if the poll should be skipped.</returns>
-        public bool ShouldSkip(ClientPriorityHolderMetrics context)
-        {
-            ////Get the timespan since the last poll
-            //var lastPollTimeSpan = context.LastPollTimeSpan;
-
-            ////Check whether we have waited the minimum poll time, if not skip
-            ////if (lastPollTimeSpan.HasValue && lastPollTimeSpan.Value < context.MinExpectedPollWait)
-            ////    return true;
-
-            ////Check whether we have waited over maximum poll time, then poll
-            //if (lastPollTimeSpan.HasValue && lastPollTimeSpan.Value > context.CalculatedMaximumPollWait)
-            //    return false;
-
-            //Check whether the skip count is greater that zero, and if so then skip
-            //if (Interlocked.Decrement(ref mSkipCount) > 0)
-            //    return true;
-
-            return false;
-        }
-        #endregion
 
         #region CapacityReset(ClientPriorityHolderMetrics context)
         /// <summary>
