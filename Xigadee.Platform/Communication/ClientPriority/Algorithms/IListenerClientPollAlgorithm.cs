@@ -40,6 +40,8 @@ namespace Xigadee
         void CapacityPercentageRecalculate(ClientPriorityHolderMetrics context);
 
         void CapacityReset(ClientPriorityHolderMetrics context);
+
+        long PriorityRecalculate(long? queueLength, ClientPriorityHolderMetrics context);
     }
 
 

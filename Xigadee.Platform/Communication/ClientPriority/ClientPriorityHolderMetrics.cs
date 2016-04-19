@@ -29,9 +29,6 @@ namespace Xigadee
 
         private int mSkipCount = 0;
 
-
-        private decimal? mPollTimeReduceRatio;
-
         private int mPolls, mPollsSuccess;
         /// <summary>
         /// This is the maximum wait time that the client can wait before it is polled.
@@ -63,7 +60,7 @@ namespace Xigadee
             Priority = priority;
             PriorityWeighting = weighting;
 
-            mPollTimeReduceRatio = algorithm.PollTimeReduceRatio;
+            PollTimeReduceRatio = algorithm.PollTimeReduceRatio;
 
             MaxAllowedPollWait = algorithm.MaxAllowedPollWait;
             MinExpectedPollWait = algorithm.MinExpectedPollWait;
@@ -125,6 +122,11 @@ namespace Xigadee
             }
         }
         #endregion
+
+        public decimal? PollTimeReduceRatio
+        {
+            get; set;
+        }
 
         public long PollAttemptedBatch
         {
@@ -263,27 +265,7 @@ namespace Xigadee
         /// </summary>
         public long PriorityRecalculate(long? queueLength)
         {
-            long newPriority = (IsDeadletter ? 0xFFFFFFFF : 0xFFFFFFFFFFFF);
-
-            try
-            {
-                if (PriorityTickCount.HasValue)
-                    newPriority += StatsContainer.CalculateDelta(Environment.TickCount, PriorityTickCount.Value);
-
-                PriorityTickCount = Environment.TickCount;
-                //Add the queue length to add the listener with the greatest number of messages.
-                PriorityQueueLength = queueLength;
-
-                newPriority += PriorityQueueLength ?? 0;
-
-                newPriority = (long)((decimal)newPriority * PriorityWeighting);
-            }
-            catch (Exception ex)
-            {
-            }
-
-            PriorityCalculated = newPriority;
-            return newPriority;
+            return Algorithm.PriorityRecalculate(queueLength, this);
         }
         #endregion
         #region PriorityCalculated
@@ -302,7 +284,7 @@ namespace Xigadee
         /// <summary>
         /// This is the queue length last time the priority was calculated.
         /// </summary>
-        public long? PriorityQueueLength { get; private set; }
+        public long? PriorityQueueLength { get; set; }
         #endregion
 
         #region LastPollTimeSpan
@@ -334,36 +316,6 @@ namespace Xigadee
         public void CapacityReset()
         {
             Algorithm.CapacityReset(this);
-        }
-        #endregion
-
-        #region CalculatedMaximumPollWait
-        /// <summary>
-        /// This method is used to reduce the poll interval when the client reaches a certain success threshold
-        /// for polling frequency, which is set of an increasing scale at 75%.
-        /// </summary>
-        public TimeSpan CalculatedMaximumPollWait
-        {
-            get
-            {
-                var rate = PollSuccessRate;
-                //If we have a poll success rate under the threshold then return the maximum value.
-                if (!mPollTimeReduceRatio.HasValue || rate < mPollTimeReduceRatio.Value)
-                    return MaxAllowedPollWait;
-
-                decimal adjustRatio = ((1M - rate) / (1M - mPollTimeReduceRatio.Value)); //This tends to 0 when the rate hits 100%
-
-                double minTime = MinExpectedPollWait.TotalMilliseconds;
-                double maxTime = MaxAllowedPollWait.TotalMilliseconds;
-                double difference = maxTime - minTime;
-
-                if (difference <= 0)
-                    return TimeSpan.FromMilliseconds(minTime);
-
-                double newWait = (double)((decimal)difference * adjustRatio);
-
-                return TimeSpan.FromMilliseconds(minTime + newWait);
-            }
         }
         #endregion
 

@@ -57,37 +57,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region CalculatePriority(ClientPriorityHolderMetrics context)
-        /// <summary>
-        /// This is the priority based on the elapsed poll tick time and the overall priority.
-        /// It is used to ensure that clients with the overall same base priority are accessed 
-        /// so the one polled last is then polled first the next time.
-        /// </summary>
-        public long CalculatePriority(ClientPriorityHolderMetrics context)
-        {
-            long priority = (context.IsDeadletter ? 0xFFFFFFFF : 0xFFFFFFFFFFFF);
-
-            //try
-            //{
-            //    if (context.PriorityTickCount.HasValue)
-            //        priority += StatsContainer.CalculateDelta(Environment.TickCount, context.PriorityTickCount.Value);
-
-            //    context.PriorityTickCount = Environment.TickCount;
-
-            //    //Add the queue length to add the listener with the greatest number of messages.
-            //    context.PriorityQueueLength = context.Client.QueueLength();
-            //    priority += context.PriorityQueueLength ?? 0;
-
-            //    priority = (long)((decimal)priority * Client.Weighting);
-            //}
-            //catch (Exception)
-            //{
-            //}
-
-            //PriorityCalculated = priority;
-            return priority;
-        }
-        #endregion
 
         #region CapacityReset()
         /// <summary>
@@ -98,6 +67,19 @@ namespace Xigadee
             context.PollAttemptedBatch = 0;
             context.PollAchievedBatch = 0;
             context.CapacityPercentage = 1D;
+        }
+        #endregion
+
+        #region PriorityRecalculate(long? queueLength)
+        /// <summary>
+        /// This is the priority based on the elapsed poll tick time and the overall priority.
+        /// It is used to ensure that clients with the overall same base priority are accessed 
+        /// so the one polled last is then polled first the next time.
+        /// </summary>
+        public override long PriorityRecalculate(long? queueLength, ClientPriorityHolderMetrics context)
+        {
+            context.PriorityCalculated = 1;
+            return 1;
         }
         #endregion
     }

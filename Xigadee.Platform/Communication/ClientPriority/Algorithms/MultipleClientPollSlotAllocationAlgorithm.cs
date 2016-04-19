@@ -30,7 +30,7 @@ namespace Xigadee
                 return true;
 
             //Check whether we have waited over maximum poll time, then poll
-            if (lastPollTimeSpan.HasValue && lastPollTimeSpan.Value > context.CalculatedMaximumPollWait)
+            if (lastPollTimeSpan.HasValue && lastPollTimeSpan.Value > CalculatedMaximumPollWait(context))
                 return false;
 
             return context.SkipCountDecrement();
@@ -38,13 +38,48 @@ namespace Xigadee
         }
         #endregion
 
+        #region CalculatedMaximumPollWait
+        /// <summary>
+        /// This method is used to reduce the poll interval when the client reaches a certain success threshold
+        /// for polling frequency, which is set of an increasing scale at 75%.
+        /// </summary>
+        public TimeSpan CalculatedMaximumPollWait(ClientPriorityHolderMetrics context)
+        {
+            var rate = context.PollSuccessRate;
+            //If we have a poll success rate under the threshold then return the maximum value.
+            if (!context.PollTimeReduceRatio.HasValue || rate < context.PollTimeReduceRatio.Value)
+                return MaxAllowedPollWait;
+
+            decimal adjustRatio = ((1M - rate) / (1M - context.PollTimeReduceRatio.Value)); //This tends to 0 when the rate hits 100%
+
+            double minTime = MinExpectedPollWait.TotalMilliseconds;
+            double maxTime = MaxAllowedPollWait.TotalMilliseconds;
+            double difference = maxTime - minTime;
+
+            if (difference <= 0)
+                return TimeSpan.FromMilliseconds(minTime);
+
+            double newWait = (double)((decimal)difference * adjustRatio);
+
+            return TimeSpan.FromMilliseconds(minTime + newWait);
+        }
+        #endregion
+
+        #region CalculateSlots(int available, ClientPriorityHolderMetrics context)
+        /// <summary>
+        /// This method calculates the number of slots to take from the amount available.
+        /// </summary>
+        /// <param name="available">The available slots.</param>
+        /// <param name="context">The metrics.</param>
+        /// <returns>Returns the number of slots to take.</returns>
         public override int CalculateSlots(int available, ClientPriorityHolderMetrics context)
         {
             double ratelimitAdjustment = context.RateLimiter?.RateLimitAdjustmentPercentage ?? 1D;
 
             //We make sure that a small fraction rate limit adjust resolves to zero as we use ceiling to make even small fractional numbers go to one.
             return (int)Math.Ceiling((double)available * CapacityPercentage * Math.Round(ratelimitAdjustment, 2, MidpointRounding.AwayFromZero));
-        }
+        } 
+        #endregion
 
         #region CapacityReset()
         /// <summary>
@@ -81,65 +116,37 @@ namespace Xigadee
         }
         #endregion
 
-        #region CalculateMaximumPollWait(ClientPriorityHolderMetrics context)
-        /// <summary>
-        /// This method is used to reduce the poll interval when the client reaches a certain success threshold
-        /// for polling frequency, which is set of an increasing scale at 75%.
-        /// </summary>
-        public void CalculateMaximumPollWait(ClientPriorityHolderMetrics context)
-        {
-            //var rate = PollSuccessRate;
-            ////If we have a poll success rate under the threshold then return the maximum value.
-            //if (!mPollTimeReduceRatio.HasValue || rate < mPollTimeReduceRatio.Value)
-            //    return mMaxAllowedPollWait;
-
-            //decimal adjustRatio = ((1M - rate) / (1M - mPollTimeReduceRatio.Value)); //This tends to 0 when the rate hits 100%
-
-            //double minTime = mMinExpectedPollWait.TotalMilliseconds;
-            //double maxTime = mMaxAllowedPollWait.TotalMilliseconds;
-            //double difference = maxTime - minTime;
-
-            //if (difference <= 0)
-            //    return TimeSpan.FromMilliseconds(minTime);
-
-            //double newWait = (double)((decimal)difference * adjustRatio);
-
-            //return TimeSpan.FromMilliseconds(minTime + newWait);
-        }
-        #endregion
-
-        #region CalculatePriority(ClientPriorityHolderMetrics context)
+        #region PriorityRecalculate(long? queueLength)
         /// <summary>
         /// This is the priority based on the elapsed poll tick time and the overall priority.
         /// It is used to ensure that clients with the overall same base priority are accessed 
         /// so the one polled last is then polled first the next time.
         /// </summary>
-        public long CalculatePriority(ClientPriorityHolderMetrics context)
+        public override long PriorityRecalculate(long? queueLength, ClientPriorityHolderMetrics context)
         {
-            long priority = (context.IsDeadletter ? 0xFFFFFFFF : 0xFFFFFFFFFFFF);
+            long newPriority = (context.IsDeadletter ? 0xFFFFFFFF : 0xFFFFFFFFFFFF);
 
-            //try
-            //{
-            //    if (context.PriorityTickCount.HasValue)
-            //        priority += StatsContainer.CalculateDelta(Environment.TickCount, context.PriorityTickCount.Value);
+            try
+            {
+                if (context.PriorityTickCount.HasValue)
+                    newPriority += StatsContainer.CalculateDelta(Environment.TickCount, context.PriorityTickCount.Value);
 
-            //    context.PriorityTickCount = Environment.TickCount;
+                context.PriorityTickCount = Environment.TickCount;
+                //Add the queue length to add the listener with the greatest number of messages.
+                context.PriorityQueueLength = queueLength;
 
-            //    //Add the queue length to add the listener with the greatest number of messages.
-            //    context.PriorityQueueLength = context.Client.QueueLength();
-            //    priority += context.PriorityQueueLength ?? 0;
+                newPriority += context.PriorityQueueLength ?? 0;
 
-            //    priority = (long)((decimal)priority * Client.Weighting);
-            //}
-            //catch (Exception)
-            //{
-            //}
+                newPriority = (long)((decimal)newPriority * context.PriorityWeighting);
+            }
+            catch (Exception ex)
+            {
+            }
 
-            //PriorityCalculated = priority;
-            return priority;
+            context.PriorityCalculated = newPriority;
+            return newPriority;
         }
         #endregion
-
 
     }
 }
