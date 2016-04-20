@@ -69,7 +69,7 @@
     <Compile Include="Communication\ClientPriority\ClientPriorityCollection.cs" />
     <Compile Include="Communication\ClientPriority\ClientPriorityHolder.cs" />
     <Compile Include="Communication\ClientPriority\Statistics\ClientPriorityHolderStatistics.cs" />
-    <Compile Include="Communication\ClientPriority\Statistics\ClientPriorityStatistics.cs" />
+    <Compile Include="Communication\ClientPriority\Statistics\ClientPriorityCollectionStatistics.cs" />
     <Compile Include="Communication\CommunicationContainer.cs" />
     <Compile Include="Communication\CommunicationStatistics.cs" />
     <Compile Include="Command\CommandContainer.cs" />

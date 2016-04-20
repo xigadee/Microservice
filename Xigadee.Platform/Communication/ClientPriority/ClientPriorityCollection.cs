@@ -25,8 +25,9 @@ namespace Xigadee
         private readonly long mIteration;
 
         private long mReprioritise;
+        private int mReprioritiseTickCount;
 
-        private readonly IListenerClientPollAlgorithm mPollAlgorithm;
+        private readonly IListenerClientPollAlgorithm mPriorityAlgorithm;
         #endregion
         #region Constructor
         /// <summary>
@@ -45,7 +46,7 @@ namespace Xigadee
             , long iterationId
             )
         {
-            mPollAlgorithm = algorithm;
+            mPriorityAlgorithm = algorithm;
             mIteration = iterationId;
             Created = DateTime.UtcNow;
 
@@ -95,6 +96,7 @@ namespace Xigadee
                 if (Created.HasValue)
                     mStatistics.Created = Created.Value;
 
+                mStatistics.Algorithm = mPriorityAlgorithm.Name;
                 mStatistics.Clients = data;
             }
             catch (Exception ex)
@@ -132,7 +134,9 @@ namespace Xigadee
             }
 
             Interlocked.Exchange(ref mListenerPollChain, listenerPollChain);
+
             Interlocked.Increment(ref mReprioritise);
+            mReprioritiseTickCount = Environment.TickCount;
 
             mListenerClients.ForEach((c) => c.Value.CapacityReset());
         }

@@ -25,7 +25,7 @@ namespace Xigadee
 
         private ClientPriorityHolderMetrics mMetrics;
 
-        private IListenerClientPollAlgorithm mAlgorithm;
+        private IListenerClientPollAlgorithm mPriorityAlgorithm;
         #endregion
         #region Constructor
         /// <summary>
@@ -38,30 +38,30 @@ namespace Xigadee
         public ClientPriorityHolder(IResourceTracker resourceTracker
             , ClientHolder client
             , string mappingChannelId
-            , IListenerClientPollAlgorithm algorithm
+            , IListenerClientPollAlgorithm priorityAlgorithm
             )
         {
             if (client == null)
                 throw new ArgumentNullException("client");
 
-            if (algorithm == null)
+            if (priorityAlgorithm == null)
                 throw new ArgumentNullException("algorithm");
 
-            mAlgorithm = algorithm;
+            mPriorityAlgorithm = priorityAlgorithm;
 
             Client = client;
 
             mMappingChannel = mappingChannelId;
 
             //Create the metrics container to hold the calculations for poll priority and reservation amount.
-            mMetrics = new ClientPriorityHolderMetrics(algorithm
+            mMetrics = new ClientPriorityHolderMetrics(mPriorityAlgorithm
                 , resourceTracker?.RegisterRequestRateLimiter(client.Name, client.ResourceProfiles)
                 , client.IsDeadLetter
                 , client.Priority
                 , client.Weighting
                 );
 
-            algorithm.InitialiseMetrics(mMetrics);
+            mPriorityAlgorithm.InitialiseMetrics(mMetrics);
         }
         #endregion
 
@@ -78,7 +78,7 @@ namespace Xigadee
                 mStatistics.Id = Id;
                 mStatistics.ClientId = Client.Id;
 
-                mStatistics.Algorithm = mAlgorithm.Name;
+                mStatistics.Algorithm = mPriorityAlgorithm.Name;
                 mStatistics.Name = Name;
                 mStatistics.MappingChannel = mMappingChannel;
 

@@ -23,6 +23,8 @@ namespace Xigadee
             }
         }
 
+        public string Algorithm { get; set; }
+
         public List<ClientPriorityHolderStatistics> Clients { get; set; }
     }
 }
