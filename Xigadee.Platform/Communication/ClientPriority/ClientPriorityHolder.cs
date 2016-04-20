@@ -93,7 +93,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-
+                mStatistics.Ex = ex;
             }
         }
         #endregion

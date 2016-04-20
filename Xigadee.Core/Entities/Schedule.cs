@@ -94,6 +94,7 @@ namespace Xigadee
                 if (Active || !NextPollTime.HasValue)
                     return null;
                 var span = NextPollTime.Value - DateTime.UtcNow;
+
                 return StatsCounter.LargeTime(span);
             }
         }
