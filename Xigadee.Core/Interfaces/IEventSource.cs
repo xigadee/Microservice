@@ -72,5 +72,11 @@ namespace Xigadee
         public string EntityVersionOld { get; set; }
 
         public abstract string Key { get; }
+
+        public string EntitySource { get; set; }
+
+        public string EntitySourceId { get; set; }
+
+        public string EntitySourceName { get; set; }
     }
 }
