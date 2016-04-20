@@ -70,11 +70,10 @@ namespace Xigadee
                 mStatistics.IsDeadletter = IsDeadletter;
                 mStatistics.LastActual = LastActual;
                 mStatistics.LastActualTime = LastActualTime;
-                mStatistics.LastPollTickCount = LastPollTickCount;
-                mStatistics.LastPollTimeSpan = LastPollTimeSpan;
+                mStatistics.LastPoll = ConversionHelper.DeltaAsTimeSpan(LastPollTickCount).ToFriendlyString("Not polled");
                 mStatistics.LastReserved = LastReserved;
-                mStatistics.MaxAllowedPollWait = MaxAllowedPollWait;
-                mStatistics.MinExpectedPollWait = MinExpectedPollWait;
+                mStatistics.MaxAllowedPollWait = MaxAllowedPollWait.ToFriendlyString();
+                mStatistics.MinExpectedPollWait = MinExpectedPollWait.ToFriendlyString();
                 mStatistics.PollAchievedBatch = PollAchievedBatch;
                 mStatistics.PollAttemptedBatch = PollAttemptedBatch;
                 mStatistics.PollSuccessRate = PollSuccessRate;
@@ -82,7 +81,7 @@ namespace Xigadee
                 mStatistics.Priority = Priority;
                 mStatistics.PriorityCalculated = PriorityCalculated;
                 mStatistics.PriorityQueueLength = PriorityQueueLength;
-                mStatistics.PriorityTickCount = PriorityTickCount;
+                mStatistics.PriorityRecalculated = ConversionHelper.DeltaAsTimeSpan(PriorityTickCount).ToFriendlyString("Not recalculated");
                 mStatistics.PriorityWeighting = PriorityWeighting;
                 mStatistics.SkipCount = SkipCount;
                 mStatistics.Status = Status;
@@ -345,21 +344,6 @@ namespace Xigadee
         public long? PriorityQueueLength { get; set; }
         #endregion
 
-        #region LastPollTimeSpan
-        /// <summary>
-        /// This is the calcualted time span from the last time the priority was calculated.
-        /// </summary>
-        public TimeSpan? LastPollTimeSpan
-        {
-            get
-            {
-                if (!LastPollTickCount.HasValue)
-                    return null;
-
-                return TimeSpan.FromMilliseconds(StatsContainer.CalculateDelta(Environment.TickCount, LastPollTickCount.Value));
-            }
-        }
-        #endregion
         #region LastPollTickCount
         /// <summary>
         /// This is the tickcount from the last time the client was polled for incoming requests.

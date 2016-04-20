@@ -223,9 +223,12 @@ namespace Xigadee
             return CalculateDelta(tickNow ?? Environment.TickCount, tickStart);
         }
 
-        public static TimeSpan DeltaAsTimeSpan(int tickCount, int? tickStart = null)
+        public static TimeSpan? DeltaAsTimeSpan(int? tickStart, int? tickNow = null)
         {
-            return TimeSpan.FromMilliseconds(CalculateDelta(tickStart ?? Environment.TickCount, tickCount));
+            if (!tickStart.HasValue)
+                return null;
+
+            return TimeSpan.FromMilliseconds(DeltaAsMs(tickStart.Value, tickNow));
         }
 
         public static string DeltaAsFriendlyTime(int tickCount, int? tickStart = null)
@@ -233,7 +236,7 @@ namespace Xigadee
             return ToFriendlyString(DeltaAsTimeSpan(tickCount, tickStart));
         }
 
-        #region FriendlyTime(TimeSpan? time, string defaultText="NA")
+        #region ToFriendlyString(TimeSpan? time, string defaultText="NA")
 
         static readonly Func<TimeSpan?, string> fnTimeConv = (time) =>
         {

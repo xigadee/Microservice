@@ -82,7 +82,7 @@ namespace Xigadee
                 if (context.PriorityTickCount.HasValue)
                     newPriority += StatsContainer.CalculateDelta(timeStamp.Value, context.PriorityTickCount.Value);
 
-                context.PriorityTickCount = Environment.TickCount;
+                context.PriorityTickCount = timeStamp.Value;
                 //Add the queue length to add the listener with the greatest number of messages.
                 context.PriorityQueueLength = queueLength;
 
@@ -121,7 +121,7 @@ namespace Xigadee
         public override bool ShouldSkip(ClientPriorityHolderMetrics context)
         {
             //Get the timespan since the last poll
-            var lastPollTimeSpan = context.LastPollTimeSpan;
+            var lastPollTimeSpan = ConversionHelper.DeltaAsTimeSpan(context.LastPollTickCount);
 
             //Check whether we have waited the minimum poll time, if not skip
             if (lastPollTimeSpan.HasValue && lastPollTimeSpan.Value < context.MinExpectedPollWait)

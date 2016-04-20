@@ -26,6 +26,16 @@ namespace Xigadee
             get; set;
         }
 
+        public string LastPoll
+        {
+            get; set;
+        }
+
+        public int? LastReserved
+        {
+            get; set;
+        }
+
         public int? LastActual
         {
             get; set;
@@ -36,27 +46,12 @@ namespace Xigadee
             get; set;
         }
 
-        public int? LastPollTickCount
+        public string MaxAllowedPollWait
         {
             get; set;
         }
 
-        public TimeSpan? LastPollTimeSpan
-        {
-            get; set;
-        }
-
-        public int? LastReserved
-        {
-            get; set;
-        }
-
-        public TimeSpan MaxAllowedPollWait
-        {
-            get; set;
-        }
-
-        public TimeSpan MinExpectedPollWait
+        public string MinExpectedPollWait
         {
             get; set;
         }
@@ -92,7 +87,7 @@ namespace Xigadee
             get; set;
         }
 
-        public int? PriorityTickCount
+        public string PriorityRecalculated
         {
             get; set;
 
