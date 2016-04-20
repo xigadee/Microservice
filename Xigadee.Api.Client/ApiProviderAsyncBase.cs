@@ -332,7 +332,7 @@ namespace Xigadee
             catch (Exception ex)
             {
                 rs.ResponseMessage = FormatExceptionChain(ex);
-                rs.ResponseCode = 500;
+                rs.ResponseCode = 503;
             }
 
             return rs;
