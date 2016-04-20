@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 #endregion
 namespace Xigadee
 {
-    public class ClientPriorityStatistics: StatusBase
+    public class ClientPriorityCollectionStatistics: StatusBase
     {
         public override string Name
         {
@@ -22,6 +22,7 @@ namespace Xigadee
                 base.Name = value;
             }
         }
-        public List<ClientPriorityHolderStatistics> ClientHolders { get; set; }
+
+        public List<ClientPriorityHolderStatistics> Clients { get; set; }
     }
 }

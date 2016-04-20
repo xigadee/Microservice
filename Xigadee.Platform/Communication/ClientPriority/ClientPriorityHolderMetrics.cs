@@ -12,16 +12,14 @@ namespace Xigadee
     /// <summary>
     /// This protected calss
     /// </summary>
-    public class ClientPriorityHolderMetrics
+    public class ClientPriorityHolderMetrics: StatisticsBase<ClientPriorityHolderMetricsStatistics>
     {
         #region Declarations
-        long mPollIn;
-        long mPollOut;
+        long mPollIn, mPollOut;
 
-        long mPollAttempted;
-        long mPollAchieved;
-        long mPollAttemptedBatch;
-        long mPollAchievedBatch;
+        long mPollAttempted, mPollAchieved;
+
+        long mPollAttemptedBatch, mPollAchievedBatch;
 
         int mPollException;
 
@@ -30,14 +28,6 @@ namespace Xigadee
         private int mSkipCount = 0;
 
         private int mPolls, mPollsSuccess;
-        /// <summary>
-        /// This is the maximum wait time that the client can wait before it is polled.
-        /// </summary>
-        public TimeSpan MaxAllowedPollWait { get; set; }
-        /// <summary>
-        /// This is the minimum wait time that the client should wait before it is polled.
-        /// </summary>
-        public TimeSpan MinExpectedPollWait { get; set; }
         #endregion
         #region Constructor
         /// <summary>
@@ -71,6 +61,37 @@ namespace Xigadee
             mCapacityPercentage = algorithm.CapacityPercentage;
         }
         #endregion
+
+        protected override void StatisticsRecalculate()
+        {
+            try
+            {
+                mStatistics.CapacityPercentage = CapacityPercentage;
+                mStatistics.IsDeadletter = IsDeadletter;
+                mStatistics.LastActual = LastActual;
+                mStatistics.LastActualTime = LastActualTime;
+                mStatistics.LastPollTickCount = LastPollTickCount;
+                mStatistics.LastPollTimeSpan = LastPollTimeSpan;
+                mStatistics.LastReserved = LastReserved;
+                mStatistics.MaxAllowedPollWait = MaxAllowedPollWait;
+                mStatistics.MinExpectedPollWait = MinExpectedPollWait;
+                mStatistics.PollAchievedBatch = PollAchievedBatch;
+                mStatistics.PollAttemptedBatch = PollAttemptedBatch;
+                mStatistics.PollSuccessRate = PollSuccessRate;
+                mStatistics.PollTimeReduceRatio = PollTimeReduceRatio;
+                mStatistics.Priority = Priority;
+                mStatistics.PriorityCalculated = PriorityCalculated;
+                mStatistics.PriorityQueueLength = PriorityQueueLength;
+                mStatistics.PriorityTickCount = PriorityTickCount;
+                mStatistics.PriorityWeighting = PriorityWeighting;
+                mStatistics.SkipCount = SkipCount;
+                mStatistics.Status = Status;
+            }
+            catch (Exception ex)
+            {
+                mStatistics.Ex = ex;
+            }
+        }
 
         #region RateLimiter
         /// <summary>
@@ -122,6 +143,15 @@ namespace Xigadee
             }
         }
         #endregion
+
+        /// <summary>
+        /// This is the maximum wait time that the client can wait before it is polled.
+        /// </summary>
+        public TimeSpan MaxAllowedPollWait { get; set; }
+        /// <summary>
+        /// This is the minimum wait time that the client should wait before it is polled.
+        /// </summary>
+        public TimeSpan MinExpectedPollWait { get; set; }
 
         public decimal? PollTimeReduceRatio
         {
@@ -195,7 +225,12 @@ namespace Xigadee
             return takenCalc;
         }
 
-        public int? LastReserved { get; set; }
+        #region LastReserved
+        /// <summary>
+        /// This is the last reserved slot count.
+        /// </summary>
+        public int? LastReserved { get; set; } 
+        #endregion
 
         #region Release(bool exception)
         /// <summary>
@@ -288,7 +323,7 @@ namespace Xigadee
         /// </summary>
         public long PriorityRecalculate(long? queueLength)
         {
-            return Algorithm.PriorityRecalculate(queueLength, this);
+            return Algorithm.PriorityRecalculate(queueLength, this, Environment.TickCount);
         }
         #endregion
         #region PriorityCalculated

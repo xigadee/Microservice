@@ -24,7 +24,9 @@ namespace Xigadee
         /// This id is for the specific client mappings.
         /// </summary>
         protected string mMappingChannelId;
-
+        /// <summary>
+        /// This is the list of resource profiles that the Listener can be throttled on.
+        /// </summary>
         protected readonly List<ResourceProfile> mResourceProfiles;
         #endregion
         #region Constructor

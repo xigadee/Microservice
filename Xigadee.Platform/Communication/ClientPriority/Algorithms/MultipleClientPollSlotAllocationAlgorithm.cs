@@ -9,8 +9,6 @@ namespace Xigadee
     public class MultipleClientPollSlotAllocationAlgorithm: ListenerClientPollAlgorithmBase
     {
 
-
-
         #region CalculateSlots(int available, ClientPriorityHolderMetrics context)
         /// <summary>
         /// This method calculates the number of slots to take from the amount available.
@@ -62,7 +60,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region PriorityRecalculate(long? queueLength)
+        #region PriorityRecalculate(long? queueLength, ClientPriorityHolderMetrics context, int? timeStamp = null)
         /// <summary>
         /// This is the priority based on the elapsed poll tick time and the overall priority.
         /// It is used to ensure that clients with the overall same base priority are accessed 
@@ -70,15 +68,19 @@ namespace Xigadee
         /// </summary>
         /// <param name="queueLength">This contains the current queue length for the underlying fabric.</param>
         /// <param name="context">This is the metrics context.</param>
+        /// <param name="timeStamp">This is an optional parameter that defaults to the current tick count. You can set this value for unit testing.</param>
         /// <returns>Returns the new priority.</returns>
-        public override long PriorityRecalculate(long? queueLength, ClientPriorityHolderMetrics context)
+        public override long PriorityRecalculate(long? queueLength, ClientPriorityHolderMetrics context, int? timeStamp = null)
         {
+            if (!timeStamp.HasValue)
+                timeStamp = Environment.TickCount;
+
             long newPriority = (context.IsDeadletter ? 0xFFFFFFFF : 0xFFFFFFFFFFFF);
 
             try
             {
                 if (context.PriorityTickCount.HasValue)
-                    newPriority += StatsContainer.CalculateDelta(Environment.TickCount, context.PriorityTickCount.Value);
+                    newPriority += StatsContainer.CalculateDelta(timeStamp.Value, context.PriorityTickCount.Value);
 
                 context.PriorityTickCount = Environment.TickCount;
                 //Add the queue length to add the listener with the greatest number of messages.
@@ -158,5 +160,10 @@ namespace Xigadee
             return TimeSpan.FromMilliseconds(minTime + newWait);
         }
         #endregion
+
+        public override void InitialiseMetrics(ClientPriorityHolderMetrics context)
+        {
+
+        }
     }
 }

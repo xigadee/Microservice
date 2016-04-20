@@ -67,7 +67,7 @@ namespace Xigadee
 
                 if (mResourceTracker != null) mStatistics.Resources = mResourceTracker.Statistics;
 
-                if (mComponents != null) mStatistics.Components = mComponents.Statistics;
+                if (mComponents != null) mStatistics.Commands = mComponents.Statistics;
 
                 if (mScheduler != null) mStatistics.Scheduler = mScheduler.Statistics;
 

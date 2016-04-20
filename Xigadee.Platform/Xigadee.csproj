@@ -64,6 +64,7 @@
     <Compile Include="Communication\ClientPriority\Algorithms\MultipleClientPollSlotAllocationAlgorithm.cs" />
     <Compile Include="Communication\ClientPriority\Algorithms\SingleClientPollSlotAllocationAlgorithm.cs" />
     <Compile Include="Communication\ClientPriority\ClientPriorityHolderMetrics.cs" />
+    <Compile Include="Communication\ClientPriority\Statistics\ClientPriorityHolderMetricsStatistics.cs" />
     <Compile Include="Communication\CommunicationPolicy.cs" />
     <Compile Include="Communication\ClientPriority\ClientPriorityCollection.cs" />
     <Compile Include="Communication\ClientPriority\ClientPriorityHolder.cs" />

@@ -22,7 +22,7 @@ namespace Xigadee
         }
 
         //public int ActiveReservedSlots;
-        public ClientPriorityStatistics ActiveListeners { get; set; }
+        public ClientPriorityCollectionStatistics Active { get; set; }
 
         public List<MessagingServiceStatistics> Senders { get; set; }
 

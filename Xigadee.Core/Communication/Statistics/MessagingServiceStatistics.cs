@@ -21,6 +21,11 @@ namespace Xigadee
             mStatsRateLimitHits = new StatsContainer();
         }
 
+        /// <summary>
+        /// This is the id of the client.
+        /// </summary>
+        public Guid Id { get; set; }
+
         public override string Name
         {
             get

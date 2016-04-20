@@ -44,7 +44,7 @@ namespace Xigadee
         /// </summary>
         private long mListenersPriorityIteration = 0;
 
-        private ListenerClientPriorityCollection mClientCollection = null;
+        private ClientPriorityCollection mClientCollection = null;
 
         private IResourceTracker mResourceTracker;
 
@@ -88,7 +88,7 @@ namespace Xigadee
                     mStatistics.DeadLetterListeners = mDeadletterListener.SelectMany((c) => c.Clients).Select((l) => l.Statistics).ToList();
 
                 if (mClientCollection != null)
-                    mStatistics.ActiveListeners = mClientCollection.Statistics;
+                    mStatistics.Active = mClientCollection.Statistics;
             }
             catch (Exception ex)
             {
@@ -212,7 +212,7 @@ namespace Xigadee
             try
             {
                 //We do an atomic switch to add in a new priority list.
-                var newColl = new ListenerClientPriorityCollection(mListener, mDeadletterListener
+                var newColl = new ClientPriorityCollection(mListener, mDeadletterListener
                     , mResourceTracker
                     , mPolicy.ListenerClientPollAlgorithm
                     , Interlocked.Increment(ref mListenersPriorityIteration));

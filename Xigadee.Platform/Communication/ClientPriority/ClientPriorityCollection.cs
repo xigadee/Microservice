@@ -12,7 +12,7 @@ namespace Xigadee
     /// <summary>
     /// This class holds the clients and their priority chain.
     /// </summary>
-    public class ListenerClientPriorityCollection:StatisticsBase<ClientPriorityStatistics>
+    public class ClientPriorityCollection:StatisticsBase<ClientPriorityCollectionStatistics>
     {
         #region Declarations
 
@@ -37,7 +37,7 @@ namespace Xigadee
         /// <param name="resourceTracker"></param>
         /// <param name="algorithm"></param>
         /// <param name="iterationId"></param>
-        public ListenerClientPriorityCollection(
+        public ClientPriorityCollection(
               List<IListener> listeners
             , List<IListener> deadletterListeners
             , IResourceTracker resourceTracker
@@ -95,7 +95,7 @@ namespace Xigadee
                 if (Created.HasValue)
                     mStatistics.Created = Created.Value;
 
-                mStatistics.ClientHolders = data;
+                mStatistics.Clients = data;
             }
             catch (Exception ex)
             {

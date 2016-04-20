@@ -51,10 +51,10 @@ namespace Xigadee
 
         public abstract void CapacityReset(ClientPriorityHolderMetrics context);
 
-        public abstract long PriorityRecalculate(long? queueLength, ClientPriorityHolderMetrics context);
+        public abstract long PriorityRecalculate(long? queueLength, ClientPriorityHolderMetrics context, int? timeStamp = null);
 
         public abstract void SkipCountRecalculate(bool success, ClientPriorityHolderMetrics context);
 
-
+        public abstract void InitialiseMetrics(ClientPriorityHolderMetrics context);
     }
 }

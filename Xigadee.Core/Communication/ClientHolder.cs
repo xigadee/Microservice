@@ -209,6 +209,7 @@ namespace Xigadee
             mStatistics.QueueLength = QueueLength();
             mStatistics.Filters = Filters;
             mStatistics.IsActive = IsActive;
+            mStatistics.Id = this.Id;
 
         }
         #endregion

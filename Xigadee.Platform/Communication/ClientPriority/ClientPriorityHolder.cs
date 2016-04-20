@@ -60,6 +60,8 @@ namespace Xigadee
                 , client.Priority
                 , client.Weighting
                 );
+
+            algorithm.InitialiseMetrics(mMetrics);
         }
         #endregion
 
@@ -74,28 +76,20 @@ namespace Xigadee
             try
             {
                 mStatistics.Id = Id;
+                mStatistics.ClientId = Client.Id;
+
                 mStatistics.Algorithm = mAlgorithm.Name;
                 mStatistics.Name = Name;
+                mStatistics.MappingChannel = mMappingChannel;
 
                 mStatistics.IsReserved = IsReserved;
-                mStatistics.LastReserved = Reserved;
-
-                mStatistics.Priority = Priority;
-                mStatistics.PriorityWeighting = PriorityWeighting;
-
-                mStatistics.Client = Client.Statistics;
-                mStatistics.MappingChannel = mMappingChannel;
+                mStatistics.Reserved = Reserved;
 
                 mStatistics.LastException = LastException;
                 mStatistics.LastExceptionTime = LastExceptionTime;
 
-                mStatistics.SkipCount = mMetrics.SkipCount;
-                mStatistics.Status = mMetrics.Status;
 
-                //mStatistics.CapacityPercentage = CapacityPercentage;
-                //mStatistics.PriorityCalculated = PriorityCalculated;
-                //mStatistics.PollLast = LastPollTimeSpan;
-                //mStatistics.PollSuccessRate = PollSuccessRate;
+                mStatistics.Metrics = mMetrics.Statistics;
             }
             catch (Exception ex)
             {

@@ -48,7 +48,7 @@ namespace Xigadee
         /// It is used to ensure that clients with the overall same base priority are accessed 
         /// so the one polled last is then polled first the next time.
         /// </summary>
-        public override long PriorityRecalculate(long? queueLength, ClientPriorityHolderMetrics context)
+        public override long PriorityRecalculate(long? queueLength, ClientPriorityHolderMetrics context, int? timeStamp = null)
         {
             context.PriorityCalculated = 1;
             return 1;
@@ -58,6 +58,11 @@ namespace Xigadee
         public override void SkipCountRecalculate(bool success, ClientPriorityHolderMetrics context)
         {
             context.SkipCount = 0;
+        }
+
+        public override void InitialiseMetrics(ClientPriorityHolderMetrics context)
+        {
+
         }
     }
 }

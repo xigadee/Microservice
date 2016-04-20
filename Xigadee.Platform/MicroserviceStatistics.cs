@@ -101,7 +101,7 @@ namespace Xigadee
 
         public ResourceTrackerStatistics Resources { get; set; }
 
-        public CommandContainerStatistics Components { get; set; }
+        public CommandContainerStatistics Commands { get; set; }
 
         public SchedulerStatistics Scheduler { get; set; }
 
