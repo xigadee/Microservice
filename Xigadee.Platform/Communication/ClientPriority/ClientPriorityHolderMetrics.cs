@@ -143,20 +143,28 @@ namespace Xigadee
         }
         #endregion
 
+        #region MaxAllowedPollWait
         /// <summary>
         /// This is the maximum wait time that the client can wait before it is polled.
         /// </summary>
         public TimeSpan MaxAllowedPollWait { get; set; }
+        #endregion
+        #region MinExpectedPollWait
         /// <summary>
         /// This is the minimum wait time that the client should wait before it is polled.
         /// </summary>
-        public TimeSpan MinExpectedPollWait { get; set; }
+        public TimeSpan MinExpectedPollWait { get; set; } 
+        #endregion
 
         public decimal? PollTimeReduceRatio
         {
             get; set;
         }
 
+        #region PollAttemptedBatch
+        /// <summary>
+        /// This is the number of poll attempts for the current batch.
+        /// </summary>
         public long PollAttemptedBatch
         {
             get { return mPollAttemptedBatch; }
@@ -165,6 +173,11 @@ namespace Xigadee
                 Interlocked.Exchange(ref mPollAttemptedBatch, value);
             }
         }
+        #endregion
+        #region PollAchievedBatch
+        /// <summary>
+        /// This is the number of successful polls for the current batch.
+        /// </summary>
         public long PollAchievedBatch
         {
             get { return mPollAchievedBatch; }
@@ -172,7 +185,8 @@ namespace Xigadee
             {
                 Interlocked.Exchange(ref mPollAchievedBatch, value);
             }
-        }
+        } 
+        #endregion
 
         #region SkipCount
         /// <summary>
@@ -214,6 +228,11 @@ namespace Xigadee
         }
         #endregion
 
+        /// <summary>
+        /// This method reserves a number of slots.
+        /// </summary>
+        /// <param name="available"></param>
+        /// <returns></returns>
         public int Reserve(int available)
         {
             int takenCalc = Algorithm.CalculateSlots(available, this);

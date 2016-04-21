@@ -62,7 +62,6 @@ namespace Xigadee
         #endregion
 
         #region EntityTransformCreate...
-
         /// <summary>
         /// This method sets the Json serializer as the primary transform mechanism.
         /// </summary>

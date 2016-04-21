@@ -20,7 +20,6 @@ namespace Xigadee
         where K : IEquatable<K>
     {
         #region Constructor
-
         /// <summary>
         /// This is the document db persistence agent.
         /// </summary>
@@ -128,6 +127,30 @@ namespace Xigadee
             mContainer = null;
 
             base.StopInternal();
+        }
+        #endregion
+
+
+        public override void CommandsRegister()
+        {
+            base.CommandsRegister();
+
+            PersistenceCommandRegister<MemoryPersistenceDirectiveRequest, MemoryPersistenceDirectiveResponse>("Directive", ProcessDirective);
+        }
+
+        #region Behaviour
+        /// <summary>
+        /// This is not currently used.
+        /// </summary>
+        /// <param name="rq"></param>
+        /// <param name="rs"></param>
+        /// <param name="prq"></param>
+        /// <param name="prs"></param>
+        /// <returns></returns>
+        protected virtual async Task ProcessDirective(PersistenceRequestHolder<MemoryPersistenceDirectiveRequest, MemoryPersistenceDirectiveResponse> holder)
+        {
+            holder.rs.ResponseCode = (int)PersistenceResponse.NotImplemented501;
+            holder.rs.ResponseMessage = "Not implemented.";
         }
         #endregion
 
