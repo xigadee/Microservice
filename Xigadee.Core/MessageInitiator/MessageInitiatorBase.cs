@@ -113,9 +113,9 @@ namespace Xigadee
             bool processAsync = false)
         {
             if (payloadRq == null)
-                throw new ArgumentNullException("payloadRequest");
+                throw new ArgumentNullException(nameof(payloadRq));
             if (processPayload == null)
-                throw new ArgumentNullException("processPayload");
+                throw new ArgumentNullException(nameof(processPayload));
 
             ValidateServiceStarted();
 
