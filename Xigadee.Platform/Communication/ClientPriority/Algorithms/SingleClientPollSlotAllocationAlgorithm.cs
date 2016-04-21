@@ -55,7 +55,7 @@ namespace Xigadee
         }
         #endregion
 
-        public override void SkipCountRecalculate(bool success, ClientPriorityHolderMetrics context)
+        public override void PollMetricsRecalculate(bool success, bool hasErrored, ClientPriorityHolderMetrics context)
         {
             context.SkipCount = 0;
         }

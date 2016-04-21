@@ -67,20 +67,26 @@ namespace Xigadee
             try
             {
                 mStatistics.CapacityPercentage = CapacityPercentage;
+
                 mStatistics.IsDeadletter = IsDeadletter;
+
+                mStatistics.LastOffered = LastOffered;
+                mStatistics.LastReserved = LastReserved;
                 mStatistics.LastActual = LastActual;
                 mStatistics.LastActualTime = LastActualTime;
+
+                mStatistics.FabricPollWaitTime = TimeSpan.FromMilliseconds(FabricPollWaitTime??0).ToFriendlyString();
+
                 mStatistics.LastPoll = ConversionHelper.DeltaAsTimeSpan(LastPollTickCount).ToFriendlyString("Not polled");
-                mStatistics.LastReserved = LastReserved;
                 mStatistics.MaxAllowedPollWait = MaxAllowedPollWait.ToFriendlyString();
                 mStatistics.MinExpectedPollWait = MinExpectedPollWait.ToFriendlyString();
                 mStatistics.PollAchievedBatch = PollAchievedBatch;
                 mStatistics.PollAttemptedBatch = PollAttemptedBatch;
-                mStatistics.PollSuccessRate = PollSuccessRate;
-                mStatistics.PollTimeReduceRatio = PollTimeReduceRatio;
+                mStatistics.PollSuccessRate = $"{PollSuccessRate.ToString("#0.##%")}";
+                mStatistics.PollTimeReduceRatio = $"{(PollTimeReduceRatio ?? 0).ToString("#0.##%")}";
                 mStatistics.Priority = Priority;
                 mStatistics.PriorityCalculated = PriorityCalculated;
-                mStatistics.PriorityQueueLength = PriorityQueueLength;
+                mStatistics.QueueLength = PriorityQueueLength;
                 mStatistics.PriorityRecalculated = ConversionHelper.DeltaAsTimeSpan(PriorityTickCount).ToFriendlyString("Not recalculated");
                 mStatistics.PriorityWeighting = PriorityWeighting;
                 mStatistics.SkipCount = SkipCount;
@@ -91,6 +97,20 @@ namespace Xigadee
                 mStatistics.Ex = ex;
             }
         }
+
+        #region Priority
+        /// <summary>
+        /// This is the priority level for the underlying client.
+        /// </summary>
+        public int Priority { get; }
+        #endregion
+        #region PriorityWeighting
+        /// <summary>
+        /// This is the client weighting which is used to adjust the priority for the polling.
+        /// This value is a percentage ratio.
+        /// </summary>
+        public decimal PriorityWeighting { get; }
+        #endregion
 
         #region RateLimiter
         /// <summary>
@@ -112,19 +132,6 @@ namespace Xigadee
         {
             get;
         }
-        #endregion
-        #region Priority
-        /// <summary>
-        /// This is the priority level for the underlying client.
-        /// </summary>
-        public int Priority { get; }
-        #endregion
-        #region PriorityWeighting
-        /// <summary>
-        /// This is the client weighting which is used to adjust the priority for the polling.
-        /// This value is a percentage ratio.
-        /// </summary>
-        public decimal PriorityWeighting { get; }
         #endregion
 
         #region PollSuccessRate
@@ -241,20 +248,23 @@ namespace Xigadee
         }
         #endregion
 
+        #region Reserve(int available)
         /// <summary>
         /// This method reserves a number of slots.
         /// </summary>
         /// <param name="available"></param>
-        /// <returns></returns>
+        /// <returns>Returns the number of slots reserved.</returns>
         public int Reserve(int available)
         {
             int takenCalc = Algorithm.CalculateSlots(available, this);
 
+            LastOffered = available;
             LastPollTickCount = Environment.TickCount;
             Interlocked.Increment(ref mPollIn);
             LastReserved = takenCalc;
             return takenCalc;
-        }
+        } 
+        #endregion
 
         #region LastReserved
         /// <summary>
@@ -321,11 +331,15 @@ namespace Xigadee
             if (payloadCount > 0)
                 Interlocked.Increment(ref mPollsSuccess);
 
-            Algorithm.SkipCountRecalculate(payloadCount > 0, this);
-        } 
+            Algorithm.PollMetricsRecalculate(payloadCount > 0, hasErrored, this);
+        }
         #endregion
 
         #region LastActual
+        /// <summary>
+        /// This is the amount of slots last offered 
+        /// </summary>
+        public int? LastOffered { get; private set; }
         /// <summary>
         /// This is the last actual slot value for the client.
         /// </summary>

@@ -99,14 +99,31 @@ namespace Xigadee
         }
         #endregion
 
-        #region SkipCountRecalculate(bool success, ClientPriorityHolderMetrics context)
+        #region PollMetricsRecalculate(bool success, ClientPriorityHolderMetrics context)
         /// <summary>
-        /// This method recalculates the skip count based on the success of the last poll.
+        /// This method recalculates the metrics after the poll has returned from the fabric.
         /// </summary>
         /// <param name="success">The flag indicating whether the last poll was successful.</param>
         /// <param name="context">The metrics.</param>
-        public override void SkipCountRecalculate(bool success, ClientPriorityHolderMetrics context)
+        public override void PollMetricsRecalculate(bool success, bool hasErrored, ClientPriorityHolderMetrics context)
         {
+            
+            int newwait = (context.FabricPollWaitTime ?? (int)FabricPollWaitMin.TotalMilliseconds);
+            if (!success && (context.LastReserved ?? 0) > 0 && (context.PriorityQueueLength ?? 0) > 0)
+            {
+                newwait += 100;
+                if (newwait > (int)FabricPollWaitMax.TotalMilliseconds)
+                    newwait = (int)FabricPollWaitMax.TotalMilliseconds;
+            }
+            else if (success && newwait > (int)FabricPollWaitMin.TotalMilliseconds)
+            {
+                newwait -= 100;
+                if (newwait < (int)FabricPollWaitMin.TotalMilliseconds)
+                    newwait = (int)FabricPollWaitMin.TotalMilliseconds;
+            }
+
+            context.FabricPollWaitTime = newwait;
+
             if (success)
                 context.SkipCount = 0;
             else

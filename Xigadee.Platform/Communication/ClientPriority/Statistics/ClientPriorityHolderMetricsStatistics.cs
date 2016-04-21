@@ -16,6 +16,17 @@ namespace Xigadee
             get; set;
         }
 
+        public decimal PriorityWeighting
+        {
+            get; set;
+
+        }
+
+        public long? QueueLength
+        {
+            get; set;
+        }
+
         public double CapacityPercentage
         {
             get;set;
@@ -26,7 +37,14 @@ namespace Xigadee
             get; set;
         }
 
+        public string FabricPollWaitTime { get; set; }
+
         public string LastPoll
+        {
+            get; set;
+        }
+
+        public int? LastOffered
         {
             get; set;
         }
@@ -66,12 +84,12 @@ namespace Xigadee
             get; set;
         }
 
-        public decimal PollSuccessRate
+        public string PollSuccessRate
         {
             get; set;
         }
 
-        public decimal? PollTimeReduceRatio
+        public string PollTimeReduceRatio
         {
             get; set;
         }
@@ -82,10 +100,6 @@ namespace Xigadee
             get; set;
         }
 
-        public long? PriorityQueueLength
-        {
-            get; set;
-        }
 
         public string PriorityRecalculated
         {
@@ -93,11 +107,7 @@ namespace Xigadee
 
         }
 
-        public decimal PriorityWeighting
-        {
-            get; set;
 
-        }
 
         public int SkipCount
         {

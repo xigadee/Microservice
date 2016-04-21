@@ -51,7 +51,7 @@ namespace Xigadee
 
         long PriorityRecalculate(long? queueLength, ClientPriorityHolderMetrics context, int? timeStamp = null);
 
-        void SkipCountRecalculate(bool success, ClientPriorityHolderMetrics context);
+        void PollMetricsRecalculate(bool success, bool hasErrored, ClientPriorityHolderMetrics context);
 
         void InitialiseMetrics(ClientPriorityHolderMetrics context);
 
