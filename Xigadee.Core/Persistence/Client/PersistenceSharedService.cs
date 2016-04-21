@@ -121,20 +121,20 @@ namespace Xigadee
         }
         #endregion
 
-        #region UseASPNETThreadModel
-        /// <summary>
-        /// This will return false as we are only used for internal Microservice use.
-        /// </summary>
-        public override bool UseASPNETThreadModel
-        {
-            get
-            {
-                return false;
-            }
-            set
-            {
-            }
-        }
-        #endregion
+        //#region UseASPNETThreadModel
+        ///// <summary>
+        ///// This will return false as we are only used for internal Microservice use.
+        ///// </summary>
+        //public override bool UseASPNETThreadModel
+        //{
+        //    get
+        //    {
+        //        return false;
+        //    }
+        //    set
+        //    {
+        //    }
+        //}
+        //#endregion
     }
 }
