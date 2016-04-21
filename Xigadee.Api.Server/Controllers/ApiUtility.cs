@@ -36,7 +36,11 @@ namespace Xigadee
             {
                 var identity = principal.Identity as ApimIdentity;
                 if (identity != null)
+                {
                     settings.Source = identity.Source;
+                    settings.SourceId = identity.Id;
+                    settings.SourceName = identity.Name;
+                }
             }
 
             return settings;

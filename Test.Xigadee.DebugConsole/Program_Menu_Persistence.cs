@@ -17,7 +17,7 @@ namespace Test.Xigadee
                 sServerContext.EntityId = Guid.NewGuid();
 
                 var result = repo.Value.Create(CreateEntity(sServerContext.EntityId, email: sServerContext.EntityReference)
-                    , new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
+                    , new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5), Source = "Xigadee"}).Result;
 
                 if (result.IsSuccess)
                     sServerContext.EntityVersionid = result.Entity.VersionId;

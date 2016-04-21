@@ -112,7 +112,6 @@ namespace Xigadee
                 PreferSet("batchid", value);
             }
         }
-
         /// <summary>
         /// This is the optional source attached to the document,
         /// </summary>
@@ -125,6 +124,34 @@ namespace Xigadee
             set
             {
                 PreferSet("source", value);
+            }
+        }    
+        /// <summary>
+        /// This is the optional source id attached to the document,
+        /// </summary>
+        public string SourceId
+        {
+            get
+            {
+                return PreferGet("sourceid");
+            }
+            set
+            {
+                PreferSet("sourceid", value);
+            }
+        }
+        /// <summary>
+        /// This is the optional source id attached to the document,
+        /// </summary>
+        public string SourceName
+        {
+            get
+            {
+                return PreferGet("sourcename");
+            }
+            set
+            {
+                PreferSet("sourcename", value);
             }
         }
         /// <summary>

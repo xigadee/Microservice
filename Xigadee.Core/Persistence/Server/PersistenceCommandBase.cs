@@ -342,7 +342,10 @@ namespace Xigadee
                     EntityType = typeof(E).Name,
                     EventType = actionType,
                     Entity = entity,
-                    EntityKey = key
+                    EntityKey = key,
+                    EntitySource = settings?.Source,
+                    EntitySourceId = settings?.SourceId,
+                    EntitySourceName = settings?.SourceName
                 };
 
                 if (settings != null)
@@ -358,7 +361,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                Logger.LogException(string.Format("Exception thrown for log to event source on {0}-{1}-{2}", typeof(E).Name, actionType, originatorKey), ex);
+                Logger.LogException($"Exception thrown for log to event source on {typeof (E).Name}-{actionType}-{originatorKey}", ex);
             }
         }
         #endregion
