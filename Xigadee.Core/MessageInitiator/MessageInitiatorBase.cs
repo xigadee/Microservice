@@ -136,7 +136,9 @@ namespace Xigadee
                 else
                     payloadRs = await tracker.Tcs.Task;
             }
-            catch (Exception) { }
+            catch (Exception ex)
+            {
+            }
 
             var response = processPayload(tracker.Tcs.Task.Status, payloadRs, false);
 

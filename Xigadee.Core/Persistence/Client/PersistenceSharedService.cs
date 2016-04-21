@@ -42,6 +42,7 @@ namespace Xigadee
             mMessageType = typeof(E).Name;
             mResponseId = new MessageFilterWrapper(new ServiceMessageHeader(responseChannel, mMessageType));
             mResponseChannel = responseChannel;
+            UseASPNETThreadModel = false;
         }
         #endregion
 
@@ -118,21 +119,5 @@ namespace Xigadee
             return await TransmitAsync(payloadRq, ProcessResponse<KT, ET>, processAsync: processAsync);
         }
         #endregion
-
-        //#region UseASPNETThreadModel
-        ///// <summary>
-        ///// This will return false as we are only used for internal Microservice use.
-        ///// </summary>
-        //public override bool UseASPNETThreadModel
-        //{
-        //    get
-        //    {
-        //        return false;
-        //    }
-        //    set
-        //    {
-        //    }
-        //}
-        //#endregion
     }
 }
