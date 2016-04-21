@@ -147,8 +147,10 @@ namespace Xigadee
         /// This method loops through the client for the given priority while there is slot availability.
         /// </summary>
         /// <param name="availability">This is the current slot availability.</param>
+        /// <param name="choosePastDue">This boolean property scans through the client collection but only returns client holders that 
+        /// have passed the maximum wait for a poll</param>
         /// <returns>Returns a collection of ClientPriorityHolders.</returns>
-        public IEnumerable<ClientPriorityHolder> TakeNext(ITaskAvailability availability)
+        public IEnumerable<ClientPriorityHolder> TakeNext(ITaskAvailability availability, bool choosePastDue)
         {
             var pollChain = mListenerPollChain;
             long iteration = mReprioritise;
@@ -156,7 +158,7 @@ namespace Xigadee
             foreach (int priority in pollChain.Keys.OrderByDescending((k) => k))
             {
                 //This is the ordered chain of client holders for the particular priority.
-                var priorityChain = pollChain[priority];
+                Guid[] priorityChain = pollChain[priority];
 
                 int loopCount = -1;
                 while (++loopCount < priorityChain.Length)
@@ -176,9 +178,12 @@ namespace Xigadee
                     if (holder.IsReserved)
                         continue;
 
+                    if (choosePastDue && !holder.IsPollPastDue)
+                        continue;
+
                     //Otherwise, if the holder is infrequently returning data then it will start to 
                     //skip poll slots to speed up retrieval for the active slots.
-                    if (holder.ShouldSkip())
+                    if (!choosePastDue && holder.ShouldSkip())
                         continue;
 
                     //Ok, check the available amount against the slots that have already been reserved.
@@ -196,9 +201,9 @@ namespace Xigadee
                     yield return holder;
                 }
             }
-        } 
+        }
         #endregion
-
+        
         #region Close()
         /// <summary>
         /// This method marks the current collection as closed.

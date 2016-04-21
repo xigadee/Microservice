@@ -144,12 +144,12 @@ namespace Xigadee
             var rate = context.PollSuccessRate;
             //If we have a poll success rate under the threshold then return the maximum value.
             if (!context.PollTimeReduceRatio.HasValue || rate < context.PollTimeReduceRatio.Value)
-                return MaxAllowedPollWait;
+                return MaxAllowedWaitBetweenPolls;
 
             decimal adjustRatio = ((1M - rate) / (1M - context.PollTimeReduceRatio.Value)); //This tends to 0 when the rate hits 100%
 
-            double minTime = MinExpectedPollWait.TotalMilliseconds;
-            double maxTime = MaxAllowedPollWait.TotalMilliseconds;
+            double minTime = MinExpectedWaitBetweenPolls.TotalMilliseconds;
+            double maxTime = MaxAllowedWaitBetweenPolls.TotalMilliseconds;
             double difference = maxTime - minTime;
 
             if (difference <= 0)
@@ -163,7 +163,21 @@ namespace Xigadee
 
         public override void InitialiseMetrics(ClientPriorityHolderMetrics context)
         {
-
+            context.FabricPollWaitTime = (int)FabricPollWaitMin.TotalMilliseconds;
         }
+
+        public override bool PastDueCalculate(ClientPriorityHolderMetrics context, int? timeStamp = null)
+        {
+            if (timeStamp == null)
+                timeStamp = Environment.TickCount;
+
+            var timePassed = ConversionHelper.DeltaAsTimeSpan(context.LastPollTickCount, timeStamp);
+            return timePassed.HasValue && timePassed.Value > context.MaxAllowedPollWait;
+        }
+
+        /// <summary>
+        /// This method specifies that the algorithm supports a pass due client scan before the main scan.
+        /// </summary>
+        public override bool SupportPassDueScan { get { return true; } }
     }
 }

@@ -179,7 +179,7 @@ namespace Xigadee
 
         #region Dispatcher In -> ProcessMessage(TransmissionPayload payload, List<TransmissionPayload> responses)
         /// <summary>
-        /// This method is called to process and incoming message.
+        /// This method is called to process an incoming message.
         /// </summary>
         /// <param name="request">The message to process.</param>
         /// <param name="responses">The return path for the message.</param>

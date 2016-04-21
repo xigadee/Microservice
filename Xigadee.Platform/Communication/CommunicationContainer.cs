@@ -257,19 +257,28 @@ namespace Xigadee
             if (collection == null || collection.IsClosed || collection.Count == 0)
                 return;
 
+            if (mPolicy.ListenerClientPollAlgorithm.SupportPassDueScan)
+                ProcessClients(true);
+
+            ProcessClients(false);
+        }
+        #endregion
+
+        protected void ProcessClients(bool pastDue)
+        {
             try
             {
                 //Process each priority level in decending priority. The Levels property is already ordered correctly.
                 var currentColl = mClientCollection;
                 //Get a holder in the priority needed.
-                foreach (ClientPriorityHolder context in currentColl.TakeNext(TaskAvailability))
+                foreach (ClientPriorityHolder context in currentColl.TakeNext(TaskAvailability, pastDue))
                 {
                     TrackerSubmitFromClientPriorityHolder(context);
                     //Check whether we can continue. Note the current collection may be rebuilt and closed 
                     //during this poll.
                     if (!CanProcess() || currentColl.IsClosed)
                         break;
-                }     
+                }
             }
             catch (Exception ex)
             {
@@ -277,7 +286,7 @@ namespace Xigadee
                 throw;
             }
         }
-        #endregion
+
         #region TrackerSubmitFromClientPriorityHolder(ClientPriorityHolder context)
         /// <summary>
         /// This method builds the task tracker for the listener poll.

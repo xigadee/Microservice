@@ -62,7 +62,13 @@ namespace Xigadee
 
         public override void InitialiseMetrics(ClientPriorityHolderMetrics context)
         {
-
+            context.FabricPollWaitTime = (int)FabricPollWaitMax.TotalMilliseconds;
         }
+
+        public override bool PastDueCalculate(ClientPriorityHolderMetrics context, int? timeStamp = default(int?))
+        {
+            return false;
+        }
+
     }
 }

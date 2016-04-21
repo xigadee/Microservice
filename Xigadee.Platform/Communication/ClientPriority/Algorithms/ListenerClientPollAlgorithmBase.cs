@@ -35,9 +35,13 @@ namespace Xigadee
         /// </summary>
         public TimeSpan? PriorityRecalculateFrequency { get; set; } = TimeSpan.FromMinutes(10);
 
-        public TimeSpan MaxAllowedPollWait { get; set; } = TimeSpan.FromSeconds(1);
+        public TimeSpan MaxAllowedWaitBetweenPolls { get; set; } = TimeSpan.FromSeconds(1);
 
-        public TimeSpan MinExpectedPollWait { get; set; } = TimeSpan.FromMilliseconds(100);
+        public TimeSpan MinExpectedWaitBetweenPolls { get; set; } = TimeSpan.FromMilliseconds(100);
+
+        public TimeSpan FabricPollWaitMin { get; set; } = TimeSpan.FromMilliseconds(100);
+
+        public TimeSpan FabricPollWaitMax { get; set; } = TimeSpan.FromSeconds(1);
 
         public decimal PollTimeReduceRatio { get; set; } = 0.75M;
 
@@ -56,5 +60,11 @@ namespace Xigadee
         public abstract void SkipCountRecalculate(bool success, ClientPriorityHolderMetrics context);
 
         public abstract void InitialiseMetrics(ClientPriorityHolderMetrics context);
+
+        public abstract bool PastDueCalculate(ClientPriorityHolderMetrics context, int? timeStamp = null);
+        /// <summary>
+        /// This method specifies that the algorithm supports a pass due client scan before the main scan.
+        /// </summary>
+        public virtual bool SupportPassDueScan { get { return false; } }
     }
 }

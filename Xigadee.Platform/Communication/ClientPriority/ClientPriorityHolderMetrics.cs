@@ -52,8 +52,8 @@ namespace Xigadee
 
             PollTimeReduceRatio = algorithm.PollTimeReduceRatio;
 
-            MaxAllowedPollWait = algorithm.MaxAllowedPollWait;
-            MinExpectedPollWait = algorithm.MinExpectedPollWait;
+            MaxAllowedPollWait = algorithm.MaxAllowedWaitBetweenPolls;
+            MinExpectedPollWait = algorithm.MinExpectedWaitBetweenPolls;
 
             if (MinExpectedPollWait > MaxAllowedPollWait)
                 MinExpectedPollWait = MaxAllowedPollWait;
@@ -185,6 +185,19 @@ namespace Xigadee
             {
                 Interlocked.Exchange(ref mPollAchievedBatch, value);
             }
+        }
+        #endregion
+
+        #region IsPollPastDue
+        /// <summary>
+        /// This property specifies whether the time since the last poll has exceeded the maximum time.
+        /// </summary>
+        public bool IsPollPastDue
+        {
+            get
+            {
+                return Algorithm.PastDueCalculate(this);
+            }
         } 
         #endregion
 
@@ -268,20 +281,27 @@ namespace Xigadee
         }
         #endregion
 
+        #region FabricPollWaitTime
+        /// <summary>
+        /// This is the time that the fabric should wait for a poll to receive a message.
+        /// </summary>
+        public int? FabricPollWaitTime { get; set; } 
+        #endregion
+
         #region PollBegin(int reserved)
         /// <summary>
         /// This methid signals the start of a poll.
         /// </summary>
         /// <param name="reserved">The reserved slots count.</param>
         /// <returns>Returns the poll time.</returns>
-        public int PollBegin(int reserved)
+        public int? PollBegin(int reserved)
         {
             Interlocked.Add(ref mPollAttempted, reserved);
             Interlocked.Add(ref mPollAttemptedBatch, reserved);
 
             Interlocked.Increment(ref mPolls);
 
-            return (int)MinExpectedPollWait.TotalMilliseconds;
+            return FabricPollWaitTime;
         } 
         #endregion
         #region PollEnd(int payloadCount, bool hasErrored)

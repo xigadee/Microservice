@@ -15,6 +15,10 @@ namespace Xigadee
     public interface IListenerClientPollAlgorithm
     {
         /// <summary>
+        /// This method specifies that the algorithm supports a pass due client scan before the main scan.
+        /// </summary>
+        bool SupportPassDueScan { get; }
+        /// <summary>
         /// This is the number of allowed additional slots over the available slots.
         /// </summary>
         int AllowedOverage { get; set; }
@@ -25,9 +29,13 @@ namespace Xigadee
 
         string Name { get; }
 
-        TimeSpan MaxAllowedPollWait { get; set; }
+        TimeSpan FabricPollWaitMin { get; set; }
 
-        TimeSpan MinExpectedPollWait { get; set; }
+        TimeSpan FabricPollWaitMax { get; set; }
+
+        TimeSpan MaxAllowedWaitBetweenPolls { get; set; }
+
+        TimeSpan MinExpectedWaitBetweenPolls { get; set; }
 
         decimal PollTimeReduceRatio { get; set; }
 
@@ -46,6 +54,8 @@ namespace Xigadee
         void SkipCountRecalculate(bool success, ClientPriorityHolderMetrics context);
 
         void InitialiseMetrics(ClientPriorityHolderMetrics context);
+
+        bool PastDueCalculate(ClientPriorityHolderMetrics context, int? timeStamp = null);
     }
 
 

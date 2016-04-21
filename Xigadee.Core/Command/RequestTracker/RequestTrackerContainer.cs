@@ -106,8 +106,7 @@ namespace Xigadee
         /// <param name="holder">The holder to transmit.</param>
         protected virtual void ProcessMessageInternal(R holder)
         {
-            if (mProcessMessage != null)
-                mProcessMessage(holder.Id, holder.Payload, holder);
+            mProcessMessage?.Invoke(holder.Id, holder.Payload, holder);
         } 
         #endregion
 

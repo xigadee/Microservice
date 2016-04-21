@@ -131,6 +131,18 @@ namespace Xigadee
             }
         }
         #endregion
+        #region IsPollPastDue
+        /// <summary>
+        /// A shortcut that identifies whether the client is a deadletter
+        /// </summary>
+        public bool IsPollPastDue
+        {
+            get
+            {
+                return mMetrics.IsPollPastDue;
+            }
+        }
+        #endregion
         #region Client
         /// <summary>
         /// This is the underlying client.
@@ -244,8 +256,8 @@ namespace Xigadee
 
             try
             {
-                int waitTimeInMs = mMetrics.PollBegin(Reserved.Value);
-                payloads = await Client.MessagesPull(Reserved.Value, waitTimeInMs, mMappingChannel);
+                int? fabricWaitTimeInMs = mMetrics.PollBegin(Reserved.Value);
+                payloads = await Client.MessagesPull(Reserved.Value, fabricWaitTimeInMs, mMappingChannel);
             }
             catch (Exception ex)
             {
