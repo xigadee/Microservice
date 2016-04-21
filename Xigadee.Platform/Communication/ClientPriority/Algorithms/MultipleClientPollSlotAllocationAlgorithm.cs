@@ -124,10 +124,12 @@ namespace Xigadee
 
             context.FabricPollWaitTime = newwait;
 
-            if (success)
-                context.SkipCount = 0;
-            else
-                context.SkipCount = 20;
+            if (!hasErrored)
+            {
+                var rate = context.PollSuccessRate;
+                context.SkipCount = rate <= 0 ? (int)50 : (int)Math.Round((decimal)1 / rate);
+            }
+
         } 
         #endregion
         #region ShouldSkip
