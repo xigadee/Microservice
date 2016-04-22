@@ -143,21 +143,17 @@ namespace Xigadee
             base.StatisticsRecalculate();
             try
             {
-
                 if (SharedServices != null) mStatistics.SharedServices = mSharedServices.Statistics;
 
                 mStatistics.Handlers = Commands.SelectMany((h) => h.Items).Select((i) => i.Statistics).ToList();
 
                 mStatistics.Persistence = Commands.OfType<IPersistenceMessageHandler>().Select((h) => h.StatisticsGet()).ToList();
-                mStatistics.PersistenceSharedService = Commands.OfType<IPersistenceSharedService>().Select((h) => h.StatisticsGet()).ToList();
-                mStatistics.MessageInitiators = Commands.OfType<IPersistenceMessageInitiator>().Select((h) => h.StatisticsGet()).ToList();
 
                 mStatistics.Commands = Commands.OfType<ICommand>().Select((h) => (CommandStatistics)h.StatisticsGet()).ToList();
 
                 mStatistics.Jobs = Commands.OfType<IJob>().Select((h) => h.StatisticsGet() as JobStatistics).Where((s) => s != null).ToList();
 
                 mStatistics.Cache = Commands.OfType<ICacheComponent>().Select((h) => (MessagingStatistics)h.StatisticsGet()).ToList();
-
             }
             catch (Exception ex)
             {

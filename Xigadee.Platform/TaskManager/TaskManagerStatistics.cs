@@ -30,6 +30,8 @@ namespace Xigadee
 
         public int TaskCount { get; set; }
 
+        public int? InternalQueueLength { get; set; }
+
         public QueueTrackerStatistics Queues { get; set; }
     }
 }

@@ -14,6 +14,8 @@ namespace Xigadee
     public class TaskManager: ServiceBase<TaskManagerStatistics>, IServiceLogger
     {
         #region Declarations
+
+        private ConcurrentQueue<TaskTracker> mProcessInternalQueue;
         /// <summary>
         /// This is a collection of the current active processes on the system.
         /// </summary>
@@ -54,7 +56,6 @@ namespace Xigadee
         /// This function contains a reference to the Dispather which is used to process a task.
         /// </summary>
         private Func<TransmissionPayload, Task> Dispatcher;
-
         #endregion
         #region Constructor
         /// <summary>
@@ -75,6 +76,7 @@ namespace Xigadee
             mAvailability = new TaskAvailability(levels, policy.ConcurrentRequestsMax);
 
             mTasksQueue = new QueueTrackerContainer<QueueTracker>(levels);
+            mProcessInternalQueue = new ConcurrentQueue<TaskTracker>();
 
             mProcesses = new ConcurrentDictionary<string, TaskManagerProcessContext>();
 
@@ -124,6 +126,8 @@ namespace Xigadee
             try
             {
                 mStatistics.Cpu = mCpuStats;
+
+                mStatistics.InternalQueueLength = mProcessInternalQueue?.Count;
 
                 mStatistics.AutotuneActive = mPolicy.AutotuneEnabled;
 
@@ -265,7 +269,6 @@ namespace Xigadee
 
                     try
                     {
-
                         //Reset the reset event to pause the thread.
                         //However this will be set if any new tasks are enqueued in the following code.
                         LoopReset();
@@ -345,34 +348,27 @@ namespace Xigadee
         public void ExecuteOrEnqueue(TaskTracker tracker)
         {
             if (tracker.IsInternal)
-            {
-                ExecuteTask(tracker);
-                return;
-            }
+                mProcessInternalQueue.Enqueue(tracker);
+            else
+                mTasksQueue.Enqueue(tracker);
 
-            mTasksQueue.Enqueue(tracker);
-
-            DequeueTasksAndExecute();
+            LoopSet();
         }
         #endregion
         #region --> DequeueTasksAndExecute()
         /// <summary>
         /// This method processes the tasks that resides in the queue, dequeuing the highest priority first.
         /// </summary>
-        public void DequeueTasksAndExecute()
+        private void DequeueTasksAndExecute()
         {
-            try
-            {
-                foreach (var dequeueTask in mTasksQueue.Dequeue(mAvailability.Count))
-                    ExecuteTask(dequeueTask);
-            }
-            catch (Exception ex)
-            {
-                Logger?.LogException("DequeueTasksAndExecute", ex);
-            }
+            TaskTracker tracker;
+            while (mProcessInternalQueue.TryDequeue(out tracker))
+                ExecuteTask(tracker);
+
+            foreach (var dequeueTask in mTasksQueue.Dequeue(mAvailability.Count))
+                ExecuteTask(dequeueTask);
         }
         #endregion
-
         #region ExecuteTask(TaskTracker tracker)
         /// <summary>
         /// This method sets the task on to a Task for execution and calls the end method on completion.
@@ -380,30 +376,38 @@ namespace Xigadee
         /// <param name="tracker">The tracker to enqueue.</param>
         private void ExecuteTask(TaskTracker tracker)
         {
-            var tOpts = tracker.IsLongRunning ? TaskCreationOptions.LongRunning : TaskCreationOptions.None;
-
-            if (mTaskRequests.TryAdd(tracker.Id, tracker))
+            try
             {
-                mAvailability.Increment(tracker);
+                var tOpts = tracker.IsLongRunning ? TaskCreationOptions.LongRunning : TaskCreationOptions.None;
 
-                tracker.UTCExecute = DateTime.UtcNow;
-
-                try
+                if (mTaskRequests.TryAdd(tracker.Id, tracker))
                 {
-                    var task = Task.Factory.StartNew
-                    (
-                          async () => await ExecuteTaskCreate(tracker), tracker.Cts.Token, tOpts, TaskScheduler.Default
-                    ).Unwrap();
+                    mAvailability.Increment(tracker);
 
-                    task.ContinueWith((t) => ExecuteTaskComplete(tracker, task.IsCanceled || task.IsFaulted, t.Exception));
+                    tracker.UTCExecute = DateTime.UtcNow;
+
+                    try
+                    {
+                        var task = Task.Factory.StartNew
+                        (
+                              async () => await ExecuteTaskCreate(tracker), tracker.Cts.Token, tOpts, TaskScheduler.Default
+                        ).Unwrap();
+
+                        task.ContinueWith((t) => ExecuteTaskComplete(tracker, task.IsCanceled || task.IsFaulted, t.Exception));
+                    }
+                    catch (Exception ex)
+                    {
+                        ExecuteTaskComplete(tracker, true, ex);
+                        Logger?.LogException("Task creation failed.", ex);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    ExecuteTaskComplete(tracker, true, ex);
-                }
+                else
+                    Logger?.LogMessage(LoggingLevel.Error, $"Task could not be enqueued: {tracker.Id}-{tracker.Caller}");
             }
-            else
-                Logger?.LogMessage(LoggingLevel.Error, $"Task could not be enqueued: {tracker.Id}-{tracker.Caller}");
+            catch (Exception ex)
+            {
+                Logger?.LogException("DequeueTasksAndExecute", ex);
+            }
         }
         #endregion
         #region ExecuteTaskCreate(TaskTracker tracker)

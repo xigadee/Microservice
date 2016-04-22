@@ -29,7 +29,7 @@ namespace Test.Xigadee
         }
 
         [TestMethod]
-        public void CreateAndReadEntity()
+        public void CreateReadUpdateDeleteEntity()
         {
             var entity = new MyTestEntity();
 
@@ -38,6 +38,15 @@ namespace Test.Xigadee
 
             var response2 = mService.Read(entity.Id).Result;
             Assert.IsTrue(response2.IsSuccess);
+
+            //var response3 = mService.Update(entity).Result;
+            //Assert.IsTrue(response3.IsSuccess);
+
+            var response4 = mService.Delete(entity.Id).Result;
+            Assert.IsTrue(response4.IsSuccess);
+
+            var response5 = mService.Read(entity.Id).Result;
+            Assert.IsFalse(response5.IsSuccess);
         }
     }
 }

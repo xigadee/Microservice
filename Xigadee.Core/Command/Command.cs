@@ -195,6 +195,7 @@ namespace Xigadee
         }
         #endregion
 
+        #region FriendlyName
         /// <summary>
         /// This is the name of the command used in logging. It defaults to GetType().Name, but can be overridden when generics make this garbled.
         /// </summary>
@@ -204,7 +205,8 @@ namespace Xigadee
             {
                 return GetType().Name;
             }
-        }
+        } 
+        #endregion
     }
 }
 

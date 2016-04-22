@@ -26,8 +26,5 @@ namespace Xigadee
 
         public List<MessagingStatistics> Cache { get; set; }
 
-        public List<StatusBase> PersistenceSharedService { get; set; }
-
-        public List<StatusBase> MessageInitiators { get; set; }
-    }
+   }
 }

@@ -268,7 +268,7 @@ namespace Xigadee
             }
             finally
             {
-                mReferenceModifyLock.EnterWriteLock();
+                mReferenceModifyLock.ExitWriteLock();
             }
         }
 
@@ -287,7 +287,7 @@ namespace Xigadee
             }
             finally
             {
-                mReferenceModifyLock.EnterWriteLock();
+                mReferenceModifyLock.ExitWriteLock();
             }
         }
 

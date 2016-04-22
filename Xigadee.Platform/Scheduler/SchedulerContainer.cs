@@ -175,6 +175,7 @@ namespace Xigadee
                     }
                     catch (Exception ex)
                     {
+                        schedule.Ex = ex;
                         Logger?.LogException(string.Format("Schedule failed: {0}", schedule.Name), ex);
                     }
                 };
