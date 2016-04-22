@@ -178,6 +178,7 @@
     </Compile>
     <Compile Include="EventSource\AzureStorageEventSource.cs" />
     <Compile Include="EventSource\EventHubEventSource.cs" />
+    <Compile Include="IoT\IoTTelemetry.cs" />
     <Compile Include="Logger\AzureStorageLogger.cs" />
     <Compile Include="Logger\AzureStorageLoggingBase.cs" />
     <Compile Include="Logger\QueueEventSource.cs" />
@@ -229,9 +230,7 @@
       <Name>Xigadee.Helper</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="IoT\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="BeforeBuild">

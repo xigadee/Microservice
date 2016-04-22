@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 #endregion
@@ -12,22 +13,26 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="KT">The key type.</typeparam>
     /// <typeparam name="ET">The entity type.</typeparam>
+    [DebuggerDisplay("{Debug}")]
     public class PersistenceRequestHolder<KT, ET>: IPersistenceRequestHolder
     {
         private int mRetry;
 
         public PersistenceRequestHolder(Guid profileId, TransmissionPayload prq, List<TransmissionPayload> prs)
         {
-            this.profileId = profileId;
+            this.ProfileId = profileId;
             this.prq = prq;
             this.prs = prs;
 
-            start = Environment.TickCount;
+            Start = Environment.TickCount;
 
             result = null;
             rq = null;
             rs = null;
         }
+
+        public string Debug { get { return $"{prq?.Id.ToString("N")}={prq?.Message?.ToServiceMessageHeader().ToKey()} Retry={mRetry} Extent={ConversionHelper.DeltaAsFriendlyTime(Environment.TickCount, Start)}";} }
+
 
         public PersistenceRepositoryHolder<KT, ET> rq;
 
@@ -37,9 +42,9 @@ namespace Xigadee
 
         public List<TransmissionPayload> prs;
 
-        public int start { get; private set; }
+        public int Start { get; private set; }
 
-        public Guid profileId { get; private set; }
+        public Guid ProfileId { get; private set; }
 
         public ResourceRequestResult? result;
 
@@ -48,12 +53,5 @@ namespace Xigadee
             Interlocked.Increment(ref mRetry);
         }
 
-        public string Profile
-        {
-            get
-            {
-                return "";
-            }
-        }
     }
 }

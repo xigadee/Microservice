@@ -1,20 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 #region using
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 #endregion
 namespace Xigadee
 {
     public interface IPersistenceRequestHolder
     {
-        Guid profileId { get; }
+        Guid ProfileId { get; }
 
-        int start { get; }
+        int Start { get; }
 
-        string Profile { get; }
+        string Debug { get; }
+
     }
 }

@@ -378,7 +378,7 @@ namespace Xigadee
         protected override async Task<bool> TimeoutCorrectDelete(PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
 
-            var alternateHolder = new PersistenceRequestHolder<K, E>(holder.profileId, holder.prq, holder.prs);
+            var alternateHolder = new PersistenceRequestHolder<K, E>(holder.ProfileId, holder.prq, holder.prs);
             alternateHolder.rq = new PersistenceRepositoryHolder<K, E> { Key = holder.rq.Key, KeyReference = holder.rq.KeyReference, Timeout = holder.rq.Timeout };
             alternateHolder.rs = new PersistenceRepositoryHolder<K, E>();
 

@@ -35,6 +35,7 @@ namespace Xigadee
         }
         #endregion
 
+        #region FriendlyName
         /// <summary>
         /// Update to friendly name to make it clear which entity is being used
         /// </summary>
@@ -44,7 +45,8 @@ namespace Xigadee
             {
                 return $"{base.FriendlyName}-{typeof(E).Name}";
             }
-        }
+        } 
+        #endregion
 
         #region Persistence shortcuts
 

@@ -15,10 +15,21 @@ namespace Xigadee
     //TaskManager
     public partial class Microservice
     {
+        /// <summary>
+        /// This event is raised when the service start begins
+        /// </summary>
         public event EventHandler<StartEventArgs> StartRequested;
+        /// <summary>
+        /// This event is raised when the service start completes.
+        /// </summary>
         public event EventHandler<StartEventArgs> StartCompleted;
-
+        /// <summary>
+        /// This event is raised when a stop request begins.
+        /// </summary>
         public event EventHandler<StopEventArgs> StopRequested;
+        /// <summary>
+        /// This event is raised when the service has stopped.
+        /// </summary>
         public event EventHandler<StopEventArgs> StopCompleted;
 
         /// <summary>
@@ -30,7 +41,9 @@ namespace Xigadee
         /// This event will be thrown if an incoming message cannot be resolved against a command.
         /// </summary>
         public event EventHandler<ProcessRequestUnresolvedEventArgs> ProcessRequestUnresolved;
-
+        /// <summary>
+        /// This event will be raised when a process request errors.
+        /// </summary>
         public event EventHandler<ProcessRequestErrorEventArgs> ProcessRequestError;
 
         //public event EventHandler<AutotuneEventArgs> AutotuneEvent;
@@ -40,12 +53,11 @@ namespace Xigadee
         {
             try
             {
-                if (ProcessRequestUnresolved != null)
-                    ProcessRequestUnresolved(this, new ProcessRequestUnresolvedEventArgs() { Payload = payload });
+                ProcessRequestUnresolved?.Invoke(this, new ProcessRequestUnresolvedEventArgs() { Payload = payload });
             }
             catch (Exception ex)
             {
-                mLogger.LogException("OnUnhandledRequest / external exception thrown on event", ex);
+                mLogger?.LogException("OnUnhandledRequest / external exception thrown on event", ex);
             }
         }
 
@@ -53,12 +65,11 @@ namespace Xigadee
         {
             try
             {
-                if (ProcessRequestError != null)
-                    ProcessRequestError(this, new ProcessRequestErrorEventArgs() { Payload = payload, Ex = pex });
+                ProcessRequestError?.Invoke(this, new ProcessRequestErrorEventArgs() { Payload = payload, Ex = pex });
             }
             catch (Exception ex)
             {
-                mLogger.LogException("OnUnhandledRequest / external exception thrown on event", ex);
+                mLogger?.LogException("OnUnhandledRequest / external exception thrown on event", ex);
             }
         }
 
@@ -66,12 +77,11 @@ namespace Xigadee
         {
             try
             {
-                if (StartRequested != null)
-                    StartRequested(this, new StartEventArgs() { ConfigurationOptions = ConfigurationOptions });
+                StartRequested?.Invoke(this, new StartEventArgs() { ConfigurationOptions = ConfigurationOptions });
             }
             catch (Exception ex)
             {
-                mLogger.LogException("OnStartRequested / external exception thrown on event", ex);
+                mLogger?.LogException("OnStartRequested / external exception thrown on event", ex);
             }
         }
 
@@ -79,12 +89,11 @@ namespace Xigadee
         {
             try
             {
-                if (StartCompleted != null)
-                    StartCompleted(this, new StartEventArgs());
+                StartCompleted?.Invoke(this, new StartEventArgs());
             }
             catch (Exception ex)
             {
-                mLogger.LogException("OnStartCompleted / external exception thrown on event", ex);
+                mLogger?.LogException("OnStartCompleted / external exception thrown on event", ex);
             }
         }
 
@@ -92,12 +101,11 @@ namespace Xigadee
         {
             try
             {
-                if (StopRequested != null)
-                    StopRequested(this, new StopEventArgs());
+                StopRequested?.Invoke(this, new StopEventArgs());
             }
             catch (Exception ex)
             {
-                mLogger.LogException("OnStopRequested / external exception thrown on event", ex);
+                mLogger?.LogException("OnStopRequested / external exception thrown on event", ex);
             }
         }
 
@@ -105,26 +113,23 @@ namespace Xigadee
         {
             try
             {
-                if (StopCompleted != null)
-                    StopCompleted(this, new StopEventArgs());
+                StopCompleted?.Invoke(this, new StopEventArgs());
             }
             catch (Exception ex)
             {
-                mLogger.LogException("OnStopCompleted / external exception thrown on event", ex);
+                mLogger?.LogException("OnStopCompleted / external exception thrown on event", ex);
             }
         }
-
 
         protected virtual void OnStatisticsIssued(MicroserviceStatistics statistics)
         {
             try
             {
-                if (StatisticsIssued != null)
-                    StatisticsIssued(this, new StatisticsEventArgs() { Statistics = statistics }); 
+                StatisticsIssued?.Invoke(this, new StatisticsEventArgs() { Statistics = statistics }); 
             }
             catch (Exception ex)
             {
-                mLogger.LogException("Action_OnStatistics / external exception thrown on event", ex);
+                mLogger?.LogException("Action_OnStatistics / external exception thrown on event", ex);
             }
         } 
     }

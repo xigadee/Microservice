@@ -183,7 +183,6 @@ namespace Xigadee
         /// <summary>
         /// This override sends the service start message.
         /// </summary>
-        /// <param name="args">The incoming arguments.</param>
         protected override void StartInternal()
         {
 

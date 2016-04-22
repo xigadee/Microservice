@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 #endregion
@@ -104,6 +105,26 @@ namespace Xigadee
         }
         #endregion
 
+        #region StatisticsRecalculate()
+        /// <summary>
+        /// This method recalculates the statistics for the persistence command.
+        /// </summary>
+        protected override void StatisticsRecalculate()
+        {
+            base.StatisticsRecalculate();
+
+            try
+            {
+                mStatistics.RequestsInPlay = mInPlay.Values.Select((v) => v?.Debug).ToArray();
+            }
+            catch (Exception ex)
+            {
+                mStatistics.Ex = ex;
+            }
+        } 
+        #endregion
+
+        #region FriendlyName
         /// <summary>
         /// Update to friendly name to make it clear which entity is being used
         /// </summary>
@@ -113,7 +134,8 @@ namespace Xigadee
             {
                 return $"{base.FriendlyName}-{typeof(E).Name}";
             }
-        }
+        } 
+        #endregion
 
         #region EntityTransformCreate...
 
@@ -396,7 +418,7 @@ namespace Xigadee
 
             var holder = new PersistenceRequestHolder<KT, ET>(profileId, prq, prs);
 
-            mInPlay.TryAdd(holder.profileId, holder);
+            mInPlay.TryAdd(holder.ProfileId, holder);
 
             return holder;
         }
@@ -408,10 +430,10 @@ namespace Xigadee
         /// <param name="holder">The request holder.</param>
         protected virtual void ProfileEnd<KT, ET>(PersistenceRequestHolder<KT, ET> holder)
         {
-            mPolicy.ResourceConsumer?.End(holder.profileId, holder.start, holder.result ?? ResourceRequestResult.Unknown);
+            mPolicy.ResourceConsumer?.End(holder.ProfileId, holder.Start, holder.result ?? ResourceRequestResult.Unknown);
 
             IPersistenceRequestHolder ok;
-            mInPlay.TryRemove(holder.profileId, out ok);
+            mInPlay.TryRemove(holder.ProfileId, out ok);
         }
 
         /// <summary>
@@ -423,7 +445,7 @@ namespace Xigadee
         /// <param name="retryStart">The tick count of the retry point.</param>
         protected virtual void ProfileRetry<KT, ET>(PersistenceRequestHolder<KT, ET> holder, int retryStart)
         {
-            mPolicy.ResourceConsumer?.Retry(holder.profileId, retryStart, holder.rs.ShouldRetry ? ResourceRetryReason.Other : ResourceRetryReason.Timeout);
+            mPolicy.ResourceConsumer?.Retry(holder.ProfileId, retryStart, holder.rs.ShouldRetry ? ResourceRetryReason.Other : ResourceRetryReason.Timeout);
 
             holder.Retry(retryStart);
 
