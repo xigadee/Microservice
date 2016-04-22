@@ -35,18 +35,14 @@ namespace Xigadee
         }
         #endregion
 
-        protected override void StatisticsRecalculate()
+        /// <summary>
+        /// Update to friendly name to make it clear which entity is being used
+        /// </summary>
+        public override string FriendlyName
         {
-            base.StatisticsRecalculate();
-
-            try
+            get
             {
-                mStatistics.TypeKey = typeof(K).Name;
-                mStatistics.TypeEntity = typeof(E).Name;
-            }
-            catch (Exception ex)
-            {
-                mStatistics.Ex = ex;
+                return $"{base.FriendlyName}-{typeof(E).Name}";
             }
         }
 

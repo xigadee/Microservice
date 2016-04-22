@@ -104,6 +104,17 @@ namespace Xigadee
         }
         #endregion
 
+        /// <summary>
+        /// Update to friendly name to make it clear which entity is being used
+        /// </summary>
+        public override string FriendlyName
+        {
+            get
+            {
+                return $"{base.FriendlyName}-{typeof(E).Name}";
+            }
+        }
+
         #region EntityTransformCreate...
 
         /// <summary>

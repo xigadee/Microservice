@@ -355,7 +355,6 @@ namespace Xigadee
                     return debug;
                 }
             }
-
         } 
         #endregion
     }
