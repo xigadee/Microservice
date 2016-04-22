@@ -15,6 +15,7 @@ namespace Xigadee
     /// and negotiate with other instances to agree on only a single instance should run 
     /// at any one time, effectively a system wide singleton.
     /// </summary>
+    [Obsolete("Use CommandBase instead.")]
     public abstract class JobBase<S> : MessageInitiatorBase<MessageInitiatorRequestTracker,S>, IJob, IMessageHandlerDynamic
         where S: JobStatistics, new()
     {

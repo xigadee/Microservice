@@ -12,6 +12,7 @@ namespace Xigadee
     /// <summary>
     /// This command is the base implementation that allows multiple commands to be handled within a single container.
     /// </summary>
+    [Obsolete("Use CommandBase instead.")]
     public abstract class MessageHandlerBase<S> : ServiceBase<S>, IMessageHandler
         where S : MessageHandlerStatistics, new()
     {

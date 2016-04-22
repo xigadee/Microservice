@@ -11,6 +11,7 @@ namespace Xigadee
     /// The command will hold the incoming thread until the response is received, or the request times out.
     /// The initiator can also be used to send async messages and respond immediately.
     /// </summary>
+    [Obsolete("Use CommandBase instead.")]
     public abstract class MessageInitiatorBase<RT,S> : MessageHandlerBase<S>, IMessageInitiator
         where RT : MessageInitiatorRequestTracker, new()
         where S : MessageInitiatorStatistics, new()
