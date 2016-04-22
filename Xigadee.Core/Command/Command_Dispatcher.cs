@@ -18,7 +18,7 @@ namespace Xigadee
         {
             //Check whether the ResponseId has been set, and if so then register the command.
             if (ResponseId != null)
-                CommandRegister(ResponseId, OutgoingRequestsProcessResponse);
+                CommandRegister(ResponseId, OutgoingRequestResponseProcess);
 
             if (mPolicy.MasterJobEnabled)
             {

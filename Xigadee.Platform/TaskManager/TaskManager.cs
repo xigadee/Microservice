@@ -14,7 +14,9 @@ namespace Xigadee
     public class TaskManager: ServiceBase<TaskManagerStatistics>, IServiceLogger
     {
         #region Declarations
-
+        /// <summary>
+        /// This collection holds the internal request jobs.
+        /// </summary>
         private ConcurrentQueue<TaskTracker> mProcessInternalQueue;
         /// <summary>
         /// This is a collection of the current active processes on the system.
@@ -160,7 +162,8 @@ namespace Xigadee
         /// <param name="payload">The payload to process.</param>
         public virtual void ExecuteOrEnqueue(IService service, TransmissionPayload payload)
         {
-            ExecuteOrEnqueue(payload, service.GetType().Name);
+            TaskTracker tracker = TrackerCreateFromPayload(payload, service.GetType().Name);
+            ExecuteOrEnqueue(tracker);
         }
         /// <summary>
         /// This method takes incoming messages from the initiators.

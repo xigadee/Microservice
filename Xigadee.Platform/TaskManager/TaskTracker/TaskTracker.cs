@@ -126,6 +126,9 @@ namespace Xigadee
             Cts.Cancel();
         }
 
+        /// <summary>
+        /// This is the task used when the tracker is executed.
+        /// </summary>
         public Task ExecuteTask { get; set; }
 
         /// <summary>
@@ -133,6 +136,9 @@ namespace Xigadee
         /// </summary>
         public CancellationTokenSource Cts { get; set; }
 
+        /// <summary>
+        /// This is the context object that can be used to hold additional data for the context/
+        /// </summary>
         public object Context { get; set; }
 
         #region Debug

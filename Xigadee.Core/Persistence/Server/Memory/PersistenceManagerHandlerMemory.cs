@@ -89,7 +89,9 @@ namespace Xigadee
         /// This lock is used when modifying references.
         /// </summary>
         protected ReaderWriterLockSlim mReferenceModifyLock;
-
+        /// <summary>
+        /// This is the time span for the delay.
+        /// </summary>
         private TimeSpan? mDelay = null;
         #endregion
         #region Constructor

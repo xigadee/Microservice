@@ -8,7 +8,7 @@ using System.Linq;
 #endregion
 namespace Xigadee
 {
-    public abstract partial class CommandBase<S,P>
+    public abstract partial class CommandBase<S,P>: IMessageInitiatorCallbacks
     {
         #region Declarations
         /// <summary>
@@ -57,29 +57,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region OutgoingRequestRegister(R holder)
-        /// <summary>
-        /// This method register a holder with the id specified in the object.
-        /// </summary>
-        /// <param name="holder">The holder to to add.</param>
-        protected virtual void OutgoingRequestRegister(OutgoingRequestTracker holder)
-        {
-            if (!mOutgoingRequests.TryAdd(holder.Id, holder))
-                throw new Exception("Duplicate key");
-        }
-        #endregion
-        #region OutgoingRequestRemove(string id)
-        /// <summary>
-        /// This method removes a request from the inplay collection.
-        /// </summary>
-        /// <param name="id">The request id.</param>
-        /// <returns>Returns true if successful.</returns>
-        protected virtual bool OutgoingRequestRemove(string id)
-        {
-            OutgoingRequestTracker holder;
-            return OutgoingRequestRemove(id, out holder);
-        }
-        #endregion
         #region OutgoingRequestRemove(string id, out CommandOutgoingRequestTracker holder)
         /// <summary>
         /// This method removes a request from the inplay collection.
@@ -87,9 +64,31 @@ namespace Xigadee
         /// <param name="id">The request id.</param>
         /// <param name="holder">An output containing the holder object.</param>
         /// <returns>Returns true if successful.</returns>
-        protected virtual bool OutgoingRequestRemove(string id, out OutgoingRequestTracker holder)
+        protected virtual bool OutgoingRequestRemove(string id, bool cancel, out OutgoingRequestTracker holder)
         {
-            return mOutgoingRequests.TryRemove(id, out holder);
+            holder  = null;
+            if (!mOutgoingRequests.TryRemove(id, out holder))
+                return false;
+
+            try
+            {
+                if (holder.Tcs != null)
+                    if (cancel)
+                    {
+                        holder.Tcs.SetCanceled();
+                    }
+                    else
+                    {
+                        //This next method signal to the waiting request that it has completed.
+                        holder.Tcs.SetResult(holder.Payload);
+                    }
+            }
+            catch (Exception ex)
+            {
+                Logger?.LogException("OutgoingRequestRemove TCS error", ex);
+            }
+
+            return true;
         }
         #endregion
 
@@ -135,7 +134,7 @@ namespace Xigadee
 
             //TaskScheduler taskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
-            var tracker = OutgoingRequestProcessMessage(this, payloadRq);
+            var tracker = OutgoingRequestTransmit(payloadRq);
 
             if (processAsync)
             {
@@ -155,6 +154,77 @@ namespace Xigadee
             var response = processPayload(tracker.Tcs.Task.Status, payloadRs, false);
 
             return response;
+        }
+        #endregion
+
+        public void OutgoingRequestCancelled(string originatorKey)
+        {
+        }
+
+        #region OutgoingRequestTransmit(TransmissionPayload requestPayload)
+        /// <summary>
+        /// This method marshalls the incoming requests from the Initiators.
+        /// </summary>
+        /// <param name="caller">The caller.</param>
+        /// <param name="message">The message to process.</param>
+        protected virtual OutgoingRequestTracker OutgoingRequestTransmit(TransmissionPayload payload)
+        {
+            //Create and register the request holder.
+            string id = payload.Message.OriginatorKey.ToUpperInvariant();
+
+            //Get the maximum processing time.
+            TimeSpan processingTime = payload.MaxProcessingTime.HasValue ? payload.MaxProcessingTime.Value : mPolicy.OutgoingRequestMaxProcessingTimeDefault;
+
+            //Create and register the request holder.
+            var holder = new OutgoingRequestTracker(id, payload, processingTime);
+
+            if (!mOutgoingRequests.TryAdd(holder.Id, holder))
+            {
+                var errorStr = $"OutgoingRequestTransmit: Duplicate key {holder.Id}";
+                Logger?.LogMessage(LoggingLevel.Error, errorStr);
+                throw new Exception(errorStr);
+            }
+
+            //Submit the payload for processing
+            Dispatcher(this, holder.Payload);
+
+            return holder;
+        }
+        #endregion
+
+        #region --> OutgoingRequestResponseProcess(TransmissionPayload payload, List<TransmissionPayload> responses)
+        /// <summary>
+        /// This method processes the returning messages.
+        /// </summary>
+        /// <param name="payload">The incoming payload.</param>
+        /// <param name="responses">The responses collection is not currently used.</param>
+        protected virtual async Task OutgoingRequestResponseProcess(TransmissionPayload payload, List<TransmissionPayload> responses)
+        {
+            string id = payload?.Message?.CorrelationKey?.ToUpperInvariant(); ;
+
+            //If there is not a correlation key then quit.
+            if (id == null)
+            {
+                Logger?.LogMessage(LoggingLevel.Warning, "OutgoingRequestsProcessResponse - id is null");
+                return;
+            }
+
+            OutgoingRequestTracker holder;
+            if (!OutgoingRequestRemove(id, false, out holder))
+            {
+                try
+                {
+                    OnTimedOutResponse?.Invoke(this, payload);
+                }
+                catch (Exception ex)
+                {
+                    Logger?.LogException("OnTimedOutResponse", ex);
+                    //We do not want to throw exceptions here.
+                }
+            }
+
+            //Signal to the listener to release the message.
+            payload.SignalSuccess();
         }
         #endregion
 
@@ -179,18 +249,8 @@ namespace Xigadee
             {
                 //Check that the object has not be removed by another process.
                 OutgoingRequestTracker holder;
-                if (!OutgoingRequestRemove(key.Key, out holder))
+                if (!OutgoingRequestRemove(key.Key, true, out holder))
                     continue;
-
-                try
-                {
-                    holder.Tcs.SetCanceled();
-                }
-                catch (Exception ex)
-                {
-                    Logger?.LogException("OutgoingRequestsProcessTimeouts TCS SetCancelled", ex);
-                    //We do not want to throw exceptions here.
-                }
 
                 try
                 {
@@ -204,108 +264,10 @@ namespace Xigadee
             }
         }
         #endregion
-        #region --> OutgoingRequestsProcessResponse(TransmissionPayload payload, List<TransmissionPayload> responses)
-        /// <summary>
-        /// This method processes the returning messages.
-        /// </summary>
-        /// <param name="payload">The incoming payload.</param>
-        /// <param name="responses">The responses collection is not currently used.</param>
-        protected virtual async Task OutgoingRequestsProcessResponse(TransmissionPayload payload, List<TransmissionPayload> responses)
-        {
-            string id = payload.Message.CorrelationKey;
 
-            //If there is not a correlation key then quit.
-            if (id == null)
-                return;
 
-            OutgoingRequestTracker holder = null;
-            if (OutgoingRequestRemove(id, out holder))
-            {
-                try
-                {
-                    //This next method signal to the waiting request that it has completed.
-                    if (holder.Tcs != null)
-                        holder.Tcs.SetResult(payload);
-                }
-                catch (Exception ex)
-                {
-                    Logger?.LogException("OutgoingRequestsProcessResponse TCS SetResult", ex);
-                }
-            }
-            else
-            {
-                try
-                {
-                    OnTimedOutResponse?.Invoke(this, payload);
-                }
-                catch (Exception ex)
-                {
-                    Logger?.LogException("OnTimedOutResponse", ex);
-                    //We do not want to throw exceptions here.
-                }
-            }
 
-            //Signal to the listener to release the message.
-            payload.SignalSuccess();
-        }
-        #endregion
 
-        #region OutgoingRequestHolderCreate(IService caller, TransmissionPayload payload)
-        /// <summary>
-        /// This method creates the holder that contains the message currently being processed or queued for processing.
-        /// </summary>
-        /// <param name="caller">The caller.</param>
-        /// <param name="payload">The payload to process.</param>
-        /// <returns>Returns a new holder of the specific type.</returns>
-        protected virtual OutgoingRequestTracker OutgoingRequestHolderCreate(IService caller, TransmissionPayload payload)
-        {
-            //Get a new id.
-            string id = OutgoingRequestKeyMaker(caller, payload);
-
-            TimeSpan processingTime = payload.MaxProcessingTime.HasValue ? payload.MaxProcessingTime.Value : mPolicy.OutgoingRequestMaxProcessingTimeDefault;
-
-            //Create and register the request holder.
-            var holder = new OutgoingRequestTracker(id, payload,processingTime);
-
-            return holder;
-        }
-        #endregion
-        #region OutgoingRequestKeyMaker(IService caller, TransmissionPayload payload)
-        /// <summary>
-        /// This method formats the key used to hold the priority processes.
-        /// </summary>
-        /// <param name="caller">The calling object.</param>
-        /// <returns>Returns a formatted string containing both parts.</returns>
-        protected virtual string OutgoingRequestKeyMaker(IService caller, TransmissionPayload payload)
-        {
-            string value = payload?.Message?.OriginatorKey;
-
-            if (string.IsNullOrEmpty(value))
-                value = string.Format("{0}|{1}", (caller == null ? "" : caller.GetType().Name), Guid.NewGuid().ToString("N")).ToLowerInvariant();
-
-            return value;
-        }
-        #endregion
-
-        #region OutgoingRequestProcessMessage(IService caller, TransmissionPayload requestPayload)
-        /// <summary>
-        /// This method marshalls the incoming requests from the Initiators.
-        /// </summary>
-        /// <param name="caller">The caller.</param>
-        /// <param name="message">The message to process.</param>
-        protected virtual OutgoingRequestTracker OutgoingRequestProcessMessage(IService caller, TransmissionPayload payload)
-        {
-            //Create and register the request holder.
-            var holder = OutgoingRequestHolderCreate(caller, payload);
-
-            OutgoingRequestRegister(holder);
-
-            //Submit the payload for processing
-            Dispatcher(this, holder.Payload);
-
-            return holder;
-        }
-        #endregion
 
         #region Class -> OutgoingRequestTracker
         /// <summary>

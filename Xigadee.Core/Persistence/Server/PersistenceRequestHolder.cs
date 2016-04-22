@@ -31,7 +31,7 @@ namespace Xigadee
             rs = null;
         }
 
-        public string Debug { get { return $"{prq?.Id.ToString("N")}={prq?.Message?.ToServiceMessageHeader().ToKey()} Retry={mRetry} Extent={ConversionHelper.DeltaAsFriendlyTime(Environment.TickCount, Start)}";} }
+        public string Debug { get { return $"{prq?.Id.ToString("N")}={prq?.Message?.ToServiceMessageHeader().ToKey()} Retry={mRetry} Extent={ConversionHelper.DeltaAsFriendlyTime(Start, Environment.TickCount)}";} }
 
 
         public PersistenceRepositoryHolder<KT, ET> rq;

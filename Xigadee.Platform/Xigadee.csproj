@@ -76,7 +76,6 @@
     <Compile Include="Command\CommandContainerStatistics.cs" />
     <Compile Include="Command\Handler\HandlersCollection.cs" />
     <Compile Include="EventSource\EventSourceActionHolder.cs" />
-    <Compile Include="Command\CommandFormatPolicy.cs" />
     <Compile Include="EventSource\EventSourcePolicy.cs" />
     <Compile Include="EventSource\EventSourceStatistics.cs" />
     <Compile Include="Exceptions\EventSourceLogException.cs" />

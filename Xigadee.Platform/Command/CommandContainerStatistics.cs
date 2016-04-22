@@ -16,8 +16,6 @@ namespace Xigadee
         /// </summary>
         public List<CommandHandlerStatistics> Handlers { get; set; }
 
-        public List<StatusBase> Persistence { get; set; }
-
         public List<CommandStatistics> Commands { get; set; }
 
         public List<JobStatistics> Jobs { get; set; }

@@ -15,9 +15,12 @@ namespace Xigadee
             {
                 mStatistics.Name = FriendlyName;
 
-                mStatistics.OutgoingRequests = mOutgoingRequests?.Select((h) => h.Value.Debug).ToList();
-
                 mStatistics.SupportedHandlers = mSupported.Select((h) => string.Format("{0}.{1} {2}", h.Key.Header.ToKey(), h.Key.ClientId, h.Key.IsDeadLetter ? "DL" : "")).ToList();
+
+                if (mPolicy.OutgoingRequestsEnabled)
+                {
+                    mStatistics.OutgoingRequests = mOutgoingRequests?.Select((h) => h.Value.Debug).ToList();
+                }
 
                 mStatistics.MasterJob.Active = mPolicy.MasterJobEnabled;
                 if (mPolicy.MasterJobEnabled)

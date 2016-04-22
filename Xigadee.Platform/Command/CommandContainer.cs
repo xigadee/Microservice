@@ -147,8 +147,6 @@ namespace Xigadee
 
                 mStatistics.Handlers = Commands.SelectMany((h) => h.Items).Select((i) => i.Statistics).ToList();
 
-                mStatistics.Persistence = Commands.OfType<IPersistenceMessageHandler>().Select((h) => h.StatisticsGet()).ToList();
-
                 mStatistics.Commands = Commands.OfType<ICommand>().Select((h) => (CommandStatistics)h.StatisticsGet()).ToList();
 
                 mStatistics.Jobs = Commands.OfType<IJob>().Select((h) => h.StatisticsGet() as JobStatistics).Where((s) => s != null).ToList();

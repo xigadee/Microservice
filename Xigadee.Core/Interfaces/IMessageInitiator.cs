@@ -18,4 +18,9 @@ namespace Xigadee
         /// </summary>
         Task OutgoingRequestsProcessTimeouts(Schedule schedule, CancellationToken token);
     }
+
+    public interface IMessageInitiatorCallbacks
+    {
+        void OutgoingRequestCancelled(string originatorKey);
+    }
 }

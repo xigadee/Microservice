@@ -231,9 +231,9 @@ namespace Xigadee
             return TimeSpan.FromMilliseconds(DeltaAsMs(tickStart.Value, tickNow));
         }
 
-        public static string DeltaAsFriendlyTime(int tickCount, int? tickStart = null)
+        public static string DeltaAsFriendlyTime(int tickStart, int? tickNow = null)
         {
-            return ToFriendlyString(DeltaAsTimeSpan(tickCount, tickStart));
+            return ToFriendlyString(DeltaAsTimeSpan(tickStart, tickNow));
         }
 
         #region ToFriendlyString(TimeSpan? time, string defaultText="NA")
