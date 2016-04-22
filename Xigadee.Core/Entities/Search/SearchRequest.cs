@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class SearchRequest: SearchOData4Base
+    public class SearchRequest: SearchOData4Base, IEquatable<SearchRequest>
     {
+        public bool Equals(SearchRequest other)
+        {
+            return true;
+        }
     }
 }

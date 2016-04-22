@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public abstract class PersistenceInitiatorBase<K, E> : MessageInitiatorBase<MessageInitiatorRequestTracker, PersistenceInitiatorStatistics>
+    public class PersistenceInitiatorPolicy: CommandPolicy
+    {
+        public override bool OutgoingRequestsEnabled { get; set; } = true;
+    }
+
+    public abstract class PersistenceInitiatorBase<K, E> : CommandBase<PersistenceInitiatorStatistics, PersistenceInitiatorPolicy>
         , IRepositoryAsync<K, E>
         where K : IEquatable<K>
     {
@@ -16,7 +21,7 @@ namespace Xigadee
         /// </summary>
         protected readonly ICacheManager<K, E> mCacheManager;
         #endregion
-
+        #region Constructor
         /// <summary>
         /// This is the default constructor which sets the cache manager.
         /// </summary>
@@ -25,7 +30,21 @@ namespace Xigadee
         {
             mCacheManager = cacheManager ?? new NullCacheManager<K, E>();
         }
+        #endregion
 
+        protected override void StatisticsRecalculate()
+        {
+            base.StatisticsRecalculate();
+
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+                mStatistics.Ex = ex;
+            }
+        }
         #region Persistence shortcuts
 
         public async Task<RepositoryHolder<K, E>> Create(E entity, RepositorySettings settings = null)
@@ -105,6 +124,20 @@ namespace Xigadee
             }
 
             return await TransmitInternal(EntityActions.VersionByRef, new RepositoryHolder<K, Tuple<K, string>> { KeyReference = new Tuple<string, string>(refKey, refValue), Settings = settings });
+        }
+
+        public async Task<RepositoryHolder<SearchRequest, SearchResponse<K>>> Search(SearchRequest rq, RepositorySettings settings = null)
+        {
+            //if ((settings?.UseCache ?? true) && mCacheManager.IsActive)
+            //{
+            //    var result = await mCacheManager.VersionRead(new Tuple<string, string>(refKey, refValue));
+            //    if (result.IsSuccess)
+            //    {
+            //        return new RepositoryHolder<K, Tuple<K, string>>(result.Entity.Item1, new Tuple<string, string>(result.Id, result.VersionId), responseCode: 200, entity: result.Entity) { IsCached = true };
+            //    }
+            //}
+
+            return await TransmitInternal(EntityActions.Search, new RepositoryHolder<SearchRequest, SearchResponse<K>> { Key = rq, Settings = settings });
         }
 
         #endregion

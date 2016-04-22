@@ -208,7 +208,7 @@ namespace Xigadee
             PersistenceCommandRegister<K, Tuple<K, string>>(EntityActions.Version, ProcessVersion);
             PersistenceCommandRegister<K, Tuple<K, string>>(EntityActions.VersionByRef, ProcessVersionByRef);
 
-            PersistenceCommandRegister<K, Tuple<K, string>>(EntityActions.Search, ProcessSearch);
+            PersistenceCommandRegister<SearchRequest, SearchResponse<K>>(EntityActions.Search, ProcessSearch);
         }
         #endregion
 
@@ -800,7 +800,7 @@ namespace Xigadee
         /// <param name="prq"></param>
         /// <param name="prs"></param>
         /// <returns></returns>
-        protected virtual async Task ProcessSearch(PersistenceRequestHolder<K, Tuple<K, string>> holder)
+        protected virtual async Task ProcessSearch(PersistenceRequestHolder<SearchRequest, SearchResponse<K>> holder)
         {
             holder.rs.ResponseCode = (int)PersistenceResponse.NotImplemented501;
             holder.rs.ResponseMessage = "Not implemented.";

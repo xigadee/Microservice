@@ -144,8 +144,13 @@ namespace Xigadee
         public virtual bool Remove(string id, out R holder)
         {
             return mInPlayRequests.TryRemove(id, out holder);
-        } 
+        }
         #endregion
+
+        public void Close()
+        {
+            //TODO
+        }
 
         #region Key(ServiceBase caller, TransmissionPayload payload)
         /// <summary>

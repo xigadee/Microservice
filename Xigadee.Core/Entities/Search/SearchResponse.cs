@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class SearchResponse: SearchOData4Base
+    public class SearchResponse<K>: SearchOData4Base
+        where K: IEquatable<K>
     {
 
     }

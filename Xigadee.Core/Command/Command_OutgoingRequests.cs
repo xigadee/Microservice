@@ -25,6 +25,9 @@ namespace Xigadee
 
         protected virtual void OutgoingRequestsTimeoutStart()
         {
+            mTracker = new RequestTrackerContainer<CommandOutgoingRequestTracker>(
+                (id, payload, holder) => Dispatcher(this, payload), keyMaker: (s, tp) => tp.Message.OriginatorKey);
+
             mScheduleTimeout = new CommandTimeoutSchedule(OutgoingRequestsProcessTimeouts, mPolicy.OutgoingRequestsTimeoutPoll,
                 string.Format("{0} Command Timeout", GetType().Name));
 
@@ -34,6 +37,9 @@ namespace Xigadee
         protected virtual void OutgoingRequestsTimeoutStop()
         {
             Scheduler.Unregister(mScheduleTimeout);
+
+            mTracker.Close();
+            mTracker = null;
         }
 
         #region ChannelId

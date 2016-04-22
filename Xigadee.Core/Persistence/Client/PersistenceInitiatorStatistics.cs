@@ -9,7 +9,7 @@ namespace Xigadee
     /// <summary>
     /// This is the statistics class used to record the status of the command.
     /// </summary>
-    public class PersistenceInitiatorStatistics: MessageInitiatorStatistics
+    public class PersistenceInitiatorStatistics: CommandStatistics
     {
         #region Constructor
         /// <summary>
