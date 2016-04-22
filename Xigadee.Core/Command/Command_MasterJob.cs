@@ -42,13 +42,17 @@ namespace Xigadee
         }
         #endregion
 
-        private void MasterJobInitialise()
+        #region MasterJobInitialise()
+        /// <summary>
+        /// This method initialises the master job.
+        /// </summary>
+        protected virtual void MasterJobInitialise()
         {
             mStandbyPartner = new ConcurrentDictionary<string, StandbyPartner>();
 
             State = MasterJobState.VerifyingComms;
 
-            var masterjobPoll = new Schedule(MasterJobStateNotificationOutgoing, $"MasterJob: {mPolicy.MasterJobName ?? GetType().Name}");
+            var masterjobPoll = new Schedule(MasterJobStateNotificationOutgoing, $"MasterJob: {mPolicy.MasterJobName ?? FriendlyName}");
 
             mMasterJobs = new Dictionary<Guid, MasterJobHolder>();
 
@@ -61,7 +65,8 @@ namespace Xigadee
             masterjobPoll.IsLongRunning = false;
 
             mSchedules.Add(masterjobPoll);
-        }
+        } 
+        #endregion
 
         #region NegotiationChannelId
         /// <summary>
@@ -177,7 +182,7 @@ namespace Xigadee
             }
             else if (!string.IsNullOrEmpty(rq.Message.ActionType))
             {
-                Logger.LogMessage(LoggingLevel.Warning, $"{rq.Message.ActionType} is not a valid negotiating action type for master job", "MasterJob");
+                Logger.LogMessage(LoggingLevel.Warning, $"{rq.Message.ActionType} is not a valid negotiating action type for master job {FriendlyName}", "MasterJob");
             }
         }
 
@@ -396,7 +401,7 @@ namespace Xigadee
                 if (ResponseChannelId == null)
                     return null;
 
-                return new MessageFilterWrapper(new ServiceMessageHeader(ResponseChannelId, "MasterJob", GetType().Name)) { ClientId = OriginatorId };
+                return new MessageFilterWrapper(new ServiceMessageHeader(ResponseChannelId, "MasterJob", FriendlyName)) { ClientId = OriginatorId };
             }
         }
         #endregion

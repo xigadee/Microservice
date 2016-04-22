@@ -13,6 +13,7 @@ namespace Xigadee
         /// </summary>
         public int? StartupPriority { get; set; }
 
+        public virtual TimeSpan OutgoingRequestMaxProcessingTimeDefault { get; set; } = TimeSpan.FromSeconds(30);
         //Outgoing Request
         public virtual bool OutgoingRequestsEnabled { get; set; } = false;
 

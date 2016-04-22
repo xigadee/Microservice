@@ -13,6 +13,8 @@ namespace Xigadee
         {
             try
             {
+                mStatistics.OutgoingRequests = mOutgoingRequests?.Select((h) => h.Value.Debug).ToList();
+
                 mStatistics.SupportedHandlers = mSupported.Select((h) => string.Format("{0}.{1} {2}", h.Key.Header.ToKey(), h.Key.ClientId, h.Key.IsDeadLetter ? "DL" : "")).ToList();
 
                 mStatistics.MasterJob.Active = mPolicy.MasterJobEnabled;

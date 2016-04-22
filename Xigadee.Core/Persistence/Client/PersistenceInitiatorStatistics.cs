@@ -19,5 +19,9 @@ namespace Xigadee
         {
         }
         #endregion
+
+
+        public string TypeKey { get; set; }
+        public string TypeEntity { get; set; }
     }
 }

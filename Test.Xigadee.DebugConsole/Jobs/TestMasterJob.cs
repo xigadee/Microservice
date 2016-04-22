@@ -7,11 +7,21 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    public class TestMasterJob : JobBase<JobStatistics>, IRequireSharedServices
+    public class TestMasterJob : CommandBase, IRequireSharedServices
     {
-        public TestMasterJob(string channel):base(JobConfiguration.ToMasterJob(channel))
+        public TestMasterJob(string channel):base()//JobConfiguration.ToMasterJob(channel)
         {
 
+        }
+
+        protected override CommandPolicy PolicyCreateOrValidate(CommandPolicy incomingPolicy)
+        {
+            var pol = base.PolicyCreateOrValidate(incomingPolicy);
+
+            pol.MasterJobEnabled = true;
+            pol.MasterJobNegotiationChannelId = ChannelId;
+
+            return pol;
         }
 
         public ISharedService SharedServices

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This class is used for persistence based shortcuts.
+    /// </summary>
     public class PersistenceInitiatorPolicy: CommandPolicy
     {
         public override bool OutgoingRequestsEnabled { get; set; } = true;
@@ -38,13 +41,15 @@ namespace Xigadee
 
             try
             {
-
+                mStatistics.TypeKey = typeof(K).Name;
+                mStatistics.TypeEntity = typeof(E).Name;
             }
             catch (Exception ex)
             {
                 mStatistics.Ex = ex;
             }
         }
+
         #region Persistence shortcuts
 
         public async Task<RepositoryHolder<K, E>> Create(E entity, RepositorySettings settings = null)
