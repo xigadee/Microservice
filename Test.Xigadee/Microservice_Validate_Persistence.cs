@@ -42,11 +42,11 @@ namespace Test.Xigadee
             //var response3 = mService.Update(entity).Result;
             //Assert.IsTrue(response3.IsSuccess);
 
-            var response4 = mService.Delete(entity.Id).Result;
-            Assert.IsTrue(response4.IsSuccess);
+            //var response4 = mService.Delete(entity.Id).Result;
+            //Assert.IsTrue(response4.IsSuccess);
 
-            var response5 = mService.Read(entity.Id).Result;
-            Assert.IsFalse(response5.IsSuccess);
+            //var response5 = mService.Read(entity.Id).Result;
+            //Assert.IsFalse(response5.IsSuccess);
         }
     }
 }
