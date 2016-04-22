@@ -334,7 +334,7 @@ namespace Xigadee
 
             private TimeSpan ExtentNow(int? now = null)
             {
-                return ConversionHelper.DeltaAsTimeSpan(now ?? Environment.TickCount, Start).Value;
+                return ConversionHelper.DeltaAsTimeSpan(Start, now ?? Environment.TickCount).Value;
             }
 
             public bool HasExpired(int? now = null)
@@ -351,7 +351,8 @@ namespace Xigadee
             {
                 get
                 {
-                    return $"{Id} TTL: {(MaxTTL - Extent).ToFriendlyString()} HasExpired: {(HasExpired()?"Yes":"No")}";
+                    var debug =  $"{Id} TTL: {(MaxTTL - Extent).ToFriendlyString()} HasExpired: {(HasExpired()?"Yes":"No")}";
+                    return debug;
                 }
             }
 

@@ -32,10 +32,12 @@ namespace Test.Xigadee
         public void CreateAndReadEntity()
         {
             var entity = new MyTestEntity();
+
             var response1 = mService.Create(entity).Result;
+            Assert.IsTrue(response1.IsSuccess);
+
             var response2 = mService.Read(entity.Id).Result;
-
-
+            Assert.IsTrue(response2.IsSuccess);
         }
     }
 }
