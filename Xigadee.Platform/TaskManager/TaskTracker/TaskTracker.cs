@@ -150,6 +150,7 @@ namespace Xigadee
                     var expireTime = StatsCounter.LargeTime(TimeToExpiry, "Never");
 
                     string id = null;
+                    string pid = null;
 
                     switch (Type)
                     {
@@ -158,6 +159,7 @@ namespace Xigadee
                         case TaskTrackerType.Payload:
                             var payload = Context as TransmissionPayload;
                             id = payload.Message.CorrelationKey;
+                            pid = payload.Id.ToString("N").ToUpperInvariant();
                             break;
                         case TaskTrackerType.Schedule:
                             var schedule = Context as Schedule;
@@ -171,7 +173,7 @@ namespace Xigadee
                             break;
                     }
 
-                    return string.Format("{10} {0}[{1}] {2} [{3}] Runtime={5} Expires={6} ({7}){8}{9} QueueTime={4}"
+                    return string.Format("{10} {0}[{1}] {2} [{3}] Runtime={5} Expires={6} ({7}){8}{9} QueueTime={4} {11}"
                         , Type
                         , Priority
                         , id
@@ -183,6 +185,7 @@ namespace Xigadee
                         , IsLongRunning ? " Long running" : ""
                         , IsCancelled ? (IsKilled?"Killed":"Cancelled") : ""
                         , ProcessSlot
+                        , pid
                         );
                 }
                 catch (Exception ex)
