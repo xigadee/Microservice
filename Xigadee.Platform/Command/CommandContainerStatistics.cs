@@ -18,8 +18,6 @@ namespace Xigadee
 
         public List<CommandStatistics> Commands { get; set; }
 
-        public List<JobStatistics> Jobs { get; set; }
-
         public SharedServiceStatistics SharedServices { get; set; }
 
         public List<MessagingStatistics> Cache { get; set; }

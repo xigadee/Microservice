@@ -58,6 +58,31 @@ namespace Xigadee
         /// This function contains a reference to the Dispather which is used to process a task.
         /// </summary>
         private Func<TransmissionPayload, Task> Dispatcher;
+
+        /// <summary>
+        /// This event can be attached to verify a task before it is executed.
+        /// </summary>
+        public event EventHandler<TaskTracker> DiagnosticOnExecuteTaskBefore;
+        /// <summary>
+        /// This event can be attached to identify a failure to enqueue a task.
+        /// </summary>
+        public event EventHandler<TaskTracker> DiagnosticOnExecuteTaskBeforeEnqueueFailed;
+        /// <summary>
+        /// This event can be attached to identify a failure to enqueu a task.
+        /// </summary>
+        public event EventHandler<TaskTracker> DiagnosticOnExecuteTaskBeforeException;
+        /// <summary>
+        /// This event can be attached to record an event after is has executed successfully.
+        /// </summary>
+        public event EventHandler<TaskTracker> DiagnosticOnExecuteTaskCompleteSuccess;
+        /// <summary>
+        /// This event can be attached to diagnose an event after is has failed during execution.
+        /// </summary>
+        public event EventHandler<TaskTracker> DiagnosticOnExecuteTaskCompleteFailure;
+        /// <summary>
+        /// This event can be attached to diagnose an orphan event that has already left the collection after being returned.
+        /// </summary>
+        public event EventHandler<TaskTracker> DiagnosticOnExecuteTaskCompleteOrphan;
         #endregion
         #region Constructor
         /// <summary>
@@ -371,6 +396,16 @@ namespace Xigadee
                 ExecuteTask(dequeueTask);
         }
         #endregion
+
+        private void TaskTrackerEvent(EventHandler<TaskTracker> taskEvent, TaskTracker tracker)
+        {
+            try
+            {
+                taskEvent?.Invoke(this, tracker);
+            }
+            catch { }
+        }
+
         #region ExecuteTask(TaskTracker tracker)
         /// <summary>
         /// This method sets the task on to a Task for execution and calls the end method on completion.
@@ -378,6 +413,8 @@ namespace Xigadee
         /// <param name="tracker">The tracker to enqueue.</param>
         private void ExecuteTask(TaskTracker tracker)
         {
+            TaskTrackerEvent(DiagnosticOnExecuteTaskBefore, tracker);
+
             try
             {
                 var tOpts = tracker.IsLongRunning ? TaskCreationOptions.LongRunning : TaskCreationOptions.None;
@@ -393,7 +430,8 @@ namespace Xigadee
                         var task = Task.Factory.StartNew
                         (
                               async () => await ExecuteTaskCreate(tracker), tracker.Cts.Token, tOpts, TaskScheduler.Default
-                        ).Unwrap();
+                        )
+                        .Unwrap();
 
                         task.ContinueWith((t) => ExecuteTaskComplete(tracker, task.IsCanceled || task.IsFaulted, t.Exception));
                     }
@@ -402,13 +440,30 @@ namespace Xigadee
                         ExecuteTaskComplete(tracker, true, ex);
                         Logger?.LogException("Task creation failed.", ex);
                     }
+
+                    return;
                 }
                 else
+                {
+                    TaskTrackerEvent(DiagnosticOnExecuteTaskBeforeEnqueueFailed, tracker);
                     Logger?.LogMessage(LoggingLevel.Error, $"Task could not be enqueued: {tracker.Id}-{tracker.Caller}");
+                }
             }
             catch (Exception ex)
             {
-                Logger?.LogException("DequeueTasksAndExecute", ex);
+                tracker.IsFailure = true;
+                tracker.FailureException = ex;
+                TaskTrackerEvent(DiagnosticOnExecuteTaskBeforeException, tracker);
+                Logger?.LogException("ExecuteTask execute exception", ex);
+            }
+
+            try
+            {
+                tracker.Cancel();
+            }
+            catch (Exception ex)
+            {
+                Logger?.LogException("ExecuteTask unhandled exception.", ex);
             }
         }
         #endregion
@@ -444,6 +499,9 @@ namespace Xigadee
         /// <param name="tex">Any exception that was caught as the task executed.</param>
         private void ExecuteTaskComplete(TaskTracker tracker, bool failed, Exception tex)
         {
+            tracker.IsFailure = failed;
+            tracker.FailureException = tex;
+
             try
             {
                 TaskTracker outTracker;
@@ -453,8 +511,7 @@ namespace Xigadee
 
                     try
                     {
-                        if (outTracker.ExecuteComplete != null)
-                            outTracker.ExecuteComplete(outTracker, failed, tex);
+                        outTracker.ExecuteComplete?.Invoke(outTracker, failed, tex);
                     }
                     catch (Exception ex)
                     {
@@ -465,6 +522,12 @@ namespace Xigadee
                     if (outTracker.ExecuteTickCount.HasValue)
                         StatisticsInternal.ActiveDecrement(outTracker.ExecuteTickCount.Value);
                 }
+                else
+                {
+                    tracker.IsFailure = true;
+                    TaskTrackerEvent(DiagnosticOnExecuteTaskCompleteOrphan, tracker);
+                }
+
             }
             catch (Exception ex)
             {
@@ -478,12 +541,16 @@ namespace Xigadee
 
                 if (failed)
                 {
+                    TaskTrackerEvent(DiagnosticOnExecuteTaskCompleteFailure, tracker);
+
                     StatisticsInternal.ErrorIncrement();
 
                     if (tex != null && tex is AggregateException)
                         foreach (Exception ex in ((AggregateException)tex).InnerExceptions)
                             Logger?.LogException(string.Format("Task exception {0}-{1}", tracker.Id, tracker.Caller), ex);
                 }
+                else
+                    TaskTrackerEvent(DiagnosticOnExecuteTaskCompleteSuccess, tracker);
             }
             catch { }
         }

@@ -57,7 +57,6 @@ namespace Xigadee
         }
         #endregion
 
-
         #region ChannelId
         /// <summary>
         /// The channel id.
@@ -198,7 +197,7 @@ namespace Xigadee
             if (mOutgoingRequests.IsEmpty)
                 return;
 
-            var timeoutSchedule = schedule as TimeoutSchedule;
+            var timeoutSchedule = schedule as CommandTimeoutSchedule;
 
             var results = mOutgoingRequests.Where(i => i.Value.HasExpired()).ToList();
             if (results.Count == 0)
@@ -326,7 +325,8 @@ namespace Xigadee
                     return debug;
                 }
             }
-        } 
+        }
         #endregion
+
     }
 }

@@ -62,6 +62,10 @@
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Command\Handler\CommandHandler.cs" />
+    <Compile Include="Command\Handler\CommandHandlerStatistics.cs" />
+    <Compile Include="Command\Statistics\CommandStatistics.cs" />
+    <Compile Include="Command\Statistics\MasterJobStatistics.cs" />
     <Compile Include="Persistence\CircuitBreaker\CircuitBreakerBase.cs" />
     <Compile Include="Collections\CollectionContainer.cs" />
     <Compile Include="Command\Command.cs" />
@@ -70,7 +74,6 @@
     <Compile Include="Command\Test\CommandTestContainer.cs" />
     <Compile Include="Command\CommandPolicy.cs" />
     <Compile Include="Command\Helper\CommandRequestTracker.cs" />
-    <Compile Include="Command\CommandStatistics.cs" />
     <Compile Include="Command\Helper\CommandSchedule.cs" />
     <Compile Include="Command\Command_MasterJob.cs" />
     <Compile Include="Command\Command_OutgoingRequests.cs" />
@@ -97,8 +100,6 @@
     <Compile Include="Interfaces\IServiceOriginator.cs" />
     <Compile Include="Interfaces\ISupportedMessageTypes.cs" />
     <Compile Include="IStatisticsBase.cs" />
-    <Compile Include="Job\JobBase.cs" />
-    <Compile Include="Job\JobConfiguration.cs" />
     <Compile Include="Command\MasterJob\MasterJobHolder.cs" />
     <Compile Include="Command\MasterJob\MasterJobState.cs" />
     <Compile Include="Command\MasterJob\StandbyPartner.cs" />
@@ -109,9 +110,6 @@
     <Compile Include="Logging\LoggingLevel.cs" />
     <Compile Include="Logging\PayloadLogEvent.cs" />
     <Compile Include="Logging\PersistencePayloadLogEvent.cs" />
-    <Compile Include="MessageHandler\CommandHandlerStatistics.cs" />
-    <Compile Include="MessageHandler\MessageHandlerStatistics.cs" />
-    <Compile Include="MessageInitiator\MessageInitiatorTimeoutSchedule.cs" />
     <Compile Include="Persistence\CacheManager\CacheManagerBase.cs" />
     <Compile Include="Persistence\Client\PersistenceInitiatorBase.cs" />
     <Compile Include="Persistence\Client\PersistenceInitiatorStatistics.cs" />
@@ -193,10 +191,6 @@
     <Compile Include="Interfaces\IServiceInitiator.cs" />
     <Compile Include="Interfaces\ISupportsMessage.cs" />
     <Compile Include="Interfaces\ITelemetry.cs" />
-    <Compile Include="MessageHandler\CommandHandler.cs" />
-    <Compile Include="MessageHandler\MessageHandlerBase.cs" />
-    <Compile Include="MessageInitiator\MessageInitiatorBase.cs" />
-    <Compile Include="MessageInitiator\MessageInitiatorRequestTracker.cs" />
     <Compile Include="Communication\ClientHolder.cs" />
     <Compile Include="Communication\Exceptions\TransmissionException.cs" />
     <Compile Include="Communication\MessagingListenerBase.cs" />
@@ -230,8 +224,6 @@
     <Compile Include="ServiceStatus.cs" />
     <Compile Include="StatisticsBase.cs" />
     <Compile Include="Statistics\CollectionStatistics.cs" />
-    <Compile Include="Job\JobStatistics.cs" />
-    <Compile Include="MessageInitiator\MessageInitiatorStatistics.cs" />
     <Compile Include="Communication\Statistics\MessagingServiceStatistics.cs" />
     <Compile Include="Statistics\ICollectionStatistics.cs" />
     <Compile Include="Statistics\MessagingStatistics.cs" />

@@ -7,23 +7,21 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    public class DelayedProcessingJob : JobBase<JobStatistics>
+    public class DelayedProcessingJob : CommandBase
     {
         private Logger mLogger = LogManager.GetCurrentClassLogger();
         private int mCurrentExecutionId;
 
-        public DelayedProcessingJob() : base(JobConfiguration.ToJob(TimeSpan.FromSeconds(15), TimeSpan.FromSeconds(1), null, isLongRunningJob: true))
+        public DelayedProcessingJob() : base(CommandPolicy.ToJob(TimeSpan.FromSeconds(15), TimeSpan.FromSeconds(1), null, isLongRunningJob: false))
         {
         }
 
-        protected override void TimerPollSchedulesRegister(JobConfiguration config)
+        protected override void TimerPollSchedulesRegister()
         {
-            var job = new Schedule(ExecuteJob, string.Format("ExecuteJob: {0}", GetType().Name));
-
-            job.Frequency = config.Interval;
-            job.InitialWait = config.InitialWait;
-            job.InitialTime = config.InitialTime;
-            job.IsLongRunning = false;
+            var job = new CommandSchedule(ExecuteJob
+                , mPolicy.JobPollSchedule
+                , $"DelayedProcessingJob: {GetType().Name}"
+                , false);
 
             mSchedules.Add(job);
         }

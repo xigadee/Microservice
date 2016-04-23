@@ -149,8 +149,6 @@ namespace Xigadee
 
             stats.Commands = Commands.OfType<ICommand>().Select((h) => (CommandStatistics)h.StatisticsGet()).ToList();
 
-            stats.Jobs = Commands.OfType<IJob>().Select((h) => h.StatisticsGet() as JobStatistics).Where((s) => s != null).ToList();
-
             stats.Cache = Commands.OfType<ICacheComponent>().Select((h) => (MessagingStatistics)h.StatisticsGet()).ToList();
         }
         #endregion

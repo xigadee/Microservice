@@ -360,7 +360,6 @@ namespace Xigadee
         }
         #endregion
         #region MasterJobRegister ...
-
         /// <summary>
         /// This method registers a master job that will be called at the schedule specified 
         /// when the job is active.

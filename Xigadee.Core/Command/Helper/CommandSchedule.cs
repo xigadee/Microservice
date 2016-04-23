@@ -29,12 +29,13 @@ namespace Xigadee
 
     public class CommandSchedule: Schedule
     {
-        public CommandSchedule(Func<Schedule, CancellationToken, Task> execute, CommandTimerPoll timerConfig, string name = null)
+        public CommandSchedule(Func<Schedule, CancellationToken, Task> execute, CommandTimerPoll timerConfig, string name = null, bool isLongRunning = false)
             : base(execute, name)
         {
             base.Frequency = timerConfig.Interval;
             base.InitialTime = timerConfig.InitialWaitUTCTime;
             base.InitialWait = timerConfig.InitialWait;
+            base.IsLongRunning = IsLongRunning;
         }
     }
 }

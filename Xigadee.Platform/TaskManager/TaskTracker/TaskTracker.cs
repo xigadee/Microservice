@@ -217,5 +217,7 @@ namespace Xigadee
         }
         #endregion
 
+        public bool IsFailure { get; set; }
+        public Exception FailureException { get; set; }
     }
 }

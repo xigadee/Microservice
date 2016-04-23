@@ -7,9 +7,9 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    public class TestMasterJob2: JobBase<JobStatistics>, IRequireSharedServices
+    public class TestMasterJob2: CommandBase, IRequireSharedServices
     {
-        public TestMasterJob2(string channel) : base(JobConfiguration.ToMasterJob(channel))
+        public TestMasterJob2(string channel) : base(CommandPolicy.ToMasterJob(channel))
         {
 
         }
