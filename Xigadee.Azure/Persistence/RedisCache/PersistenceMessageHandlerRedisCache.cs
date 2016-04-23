@@ -49,16 +49,16 @@ namespace Xigadee
 
         protected async override Task<IResponseHolder<E>> InternalCreate(K key, PersistenceRequestHolder<K, E> holder)
         {          
-            if (await mCacheManager.Write(mTransform, holder.rq.Entity))
-                return new PersistenceResponseHolder<E> { IsSuccess = true, StatusCode = 201, Entity = holder.rq.Entity };
+            if (await mCacheManager.Write(mTransform, holder.Rq.Entity))
+                return new PersistenceResponseHolder<E> { IsSuccess = true, StatusCode = 201, Entity = holder.Rq.Entity };
 
             return new PersistenceResponseHolder<E> { IsSuccess = false, StatusCode = 409 };
         }
 
         protected async override Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRequestHolder<K, E> holder)
         {
-            if (await mCacheManager.Write(mTransform, holder.rq.Entity))
-                return new PersistenceResponseHolder<E> { IsSuccess = true, StatusCode = 200, Entity = holder.rq.Entity };
+            if (await mCacheManager.Write(mTransform, holder.Rq.Entity))
+                return new PersistenceResponseHolder<E> { IsSuccess = true, StatusCode = 200, Entity = holder.Rq.Entity };
 
             return new PersistenceResponseHolder<E> { IsSuccess = false, StatusCode = 409 };
         }

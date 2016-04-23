@@ -378,7 +378,7 @@ namespace Xigadee
         {
             var rs = await SqlCommandTemplateXml<PersistenceResponseHolder<E>>(Connection
                 , StoredProcedureCreate
-                , sqlCmd => DbSerializeEntity(holder.rq.Entity, sqlCmd)
+                , sqlCmd => DbSerializeEntity(holder.Rq.Entity, sqlCmd)
                 );
 
             ProcessOutputEntity(holder, rs);
@@ -417,7 +417,7 @@ namespace Xigadee
         {
             var rs = await SqlCommandTemplateXml<PersistenceResponseHolder<E>>(Connection
                 , StoredProcedureUpdate
-                , sqlCmd => DbSerializeEntity(holder.rq.Entity, sqlCmd)
+                , sqlCmd => DbSerializeEntity(holder.Rq.Entity, sqlCmd)
                 );
 
             ProcessOutputEntity(holder, rs);
@@ -470,7 +470,7 @@ namespace Xigadee
         {
             var rs = await SqlCommandTemplateXml<PersistenceResponseHolder>(Connection
                 , StoredProcedureVersionByRef
-                , sqlCmd => DbSerializeKeyReference(holder.rq.KeyReference, sqlCmd)
+                , sqlCmd => DbSerializeKeyReference(holder.Rq.KeyReference, sqlCmd)
                 );
 
             ProcessOutputKey(true, holder, rs);
@@ -513,7 +513,7 @@ namespace Xigadee
                 var tuple = mXmlVersionMaker(node);
                 rs.VersionId = tuple.Item2;
                 if (isByReference)
-                    holder.rq.Key = tuple.Item1;
+                    holder.Rq.Key = tuple.Item1;
             }
         }
         #endregion

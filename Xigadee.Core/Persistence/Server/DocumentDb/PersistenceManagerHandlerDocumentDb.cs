@@ -191,9 +191,9 @@ namespace Xigadee
         /// <param name="holder"></param>
         protected async override Task<IResponseHolder<E>> InternalCreate(K key, PersistenceRequestHolder<K, E> holder)
         {
-            var jsonHolder = mTransform.JsonMaker(holder.rq.Entity);
+            var jsonHolder = mTransform.JsonMaker(holder.Rq.Entity);
 
-            var result = await Partition(jsonHolder.Key).Create(jsonHolder.Json, holder.rq.Timeout);
+            var result = await Partition(jsonHolder.Key).Create(jsonHolder.Json, holder.Rq.Timeout);
 
             return PersistenceResponseFormat(result);
         }
@@ -206,12 +206,12 @@ namespace Xigadee
         /// <param name="holder"></param>
         protected override async Task<IResponseHolder<E>> InternalRead(K key, PersistenceRequestHolder<K, E> holder)
         {
-            var documentRq = await ResolveDocumentIdByKey(key, holder.rq.Timeout);
+            var documentRq = await ResolveDocumentIdByKey(key, holder.Rq.Timeout);
 
             if (!documentRq.IsSuccess)
                 return PersistenceResponseFormat(documentRq);
 
-            var result = await Partition(key).Read(documentRq.DocumentId, holder.rq.Timeout);
+            var result = await Partition(key).Read(documentRq.DocumentId, holder.Rq.Timeout);
 
             return PersistenceResponseFormat(result);
         }
@@ -225,10 +225,10 @@ namespace Xigadee
         protected override async Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRequestHolder<K, E> holder)
         {
             //409 Conflict
-            JsonHolder<K> jsonHolder = mTransform.JsonMaker(holder.rq.Entity);
+            JsonHolder<K> jsonHolder = mTransform.JsonMaker(holder.Rq.Entity);
             JsonHolder<K> jsonHolderUpdate;
 
-            var documentRq = await ResolveDocumentIdByKey(jsonHolder.Key, holder.rq.Timeout);
+            var documentRq = await ResolveDocumentIdByKey(jsonHolder.Key, holder.Rq.Timeout);
             if (!documentRq.IsSuccess)
                 return PersistenceResponseFormat(documentRq);
 
@@ -239,17 +239,17 @@ namespace Xigadee
             {
                 var currentVersionId = documentRq.Fields[mTransform.Version.VersionJsonMetadata.Key];
 
-                if (currentVersionId != mTransform.Version.EntityVersionAsString(holder.rq.Entity))
+                if (currentVersionId != mTransform.Version.EntityVersionAsString(holder.Rq.Entity))
                     return new PersistenceResponseHolder<E>() { StatusCode = 409, IsSuccess = false, IsTimeout = false, VersionId = currentVersionId};
 
                 //Set the new version id on the entity.
-                mTransform.Version.EntityVersionUpdate(holder.rq.Entity);
-                jsonHolderUpdate = mTransform.JsonMaker(holder.rq.Entity);
+                mTransform.Version.EntityVersionUpdate(holder.Rq.Entity);
+                jsonHolderUpdate = mTransform.JsonMaker(holder.Rq.Entity);
             }
             else
                 jsonHolderUpdate = jsonHolder;
 
-            var result = await Partition(jsonHolderUpdate.Key).Update(documentRq.DocumentId, jsonHolderUpdate.Json, holder.rq.Timeout, eTag: eTag);
+            var result = await Partition(jsonHolderUpdate.Key).Update(documentRq.DocumentId, jsonHolderUpdate.Json, holder.Rq.Timeout, eTag: eTag);
 
             if (result.IsSuccess && mTransform.Version.SupportsArchiving)
             {
@@ -270,13 +270,13 @@ namespace Xigadee
         protected override async Task<IResponseHolder> InternalDelete(K key,
             PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            var documentId = await ResolveDocumentIdByKey(holder.rq.Key, holder.rq.Timeout);
+            var documentId = await ResolveDocumentIdByKey(holder.Rq.Key, holder.Rq.Timeout);
 
             if (!documentId.IsSuccess)
                 return PersistenceResponseFormat(documentId);
 
             string eTag = documentId.ETag;
-            var result = await Partition(holder.rq.Key).Delete(documentId.DocumentId, holder.rq.Timeout, eTag: eTag);
+            var result = await Partition(holder.Rq.Key).Delete(documentId.DocumentId, holder.Rq.Timeout, eTag: eTag);
 
             if (result.IsSuccess)
             {
@@ -298,12 +298,12 @@ namespace Xigadee
         /// <param name="prs">The outgoing payload.</param>
         protected override async Task<IResponseHolder> InternalVersion(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            var documentId = await ResolveDocumentIdByKey(holder.rq.Key, holder.rq.Timeout);
+            var documentId = await ResolveDocumentIdByKey(holder.Rq.Key, holder.Rq.Timeout);
 
             if (!documentId.IsSuccess)
                 return PersistenceResponseFormat(documentId);
 
-            var result = await Partition(holder.rq.Key).Read(documentId.DocumentId, holder.rq.Timeout);
+            var result = await Partition(holder.Rq.Key).Read(documentId.DocumentId, holder.Rq.Timeout);
 
             return PersistenceResponseFormat(result);
         }
@@ -355,34 +355,34 @@ namespace Xigadee
 
         protected override async Task<bool> TimeoutCorrectCreateUpdate(PersistenceRequestHolder<K, E> holder)
         {
-            if (holder.rq.Entity == null)
+            if (holder.Rq.Entity == null)
                 return false;
 
-            var jsonHolder = mTransform.JsonMaker(holder.rq.Entity);
-            var request = new PersistenceRepositoryHolder<K, E> {Key = jsonHolder.Key, Timeout = holder.rq.Timeout};
+            var jsonHolder = mTransform.JsonMaker(holder.Rq.Entity);
+            var request = new PersistenceRepositoryHolder<K, E> {Key = jsonHolder.Key, Timeout = holder.Rq.Timeout};
             var response = new PersistenceRepositoryHolder<K, E>();
 
             if (!(await RetrieveEntity(holder, ProcessRead)))
                 return false;
 
-            holder.rs.Entity = response.Entity;
-            holder.rs.Key = response.Key;
-            holder.rs.KeyReference = response.KeyReference;
-            holder.rs.ResponseCode = !mTransform.Version.SupportsVersioning || jsonHolder.Version.Equals(mTransform.Version.EntityVersionAsString(holder.rs.Entity))
+            holder.Rs.Entity = response.Entity;
+            holder.Rs.Key = response.Key;
+            holder.Rs.KeyReference = response.KeyReference;
+            holder.Rs.ResponseCode = !mTransform.Version.SupportsVersioning || jsonHolder.Version.Equals(mTransform.Version.EntityVersionAsString(holder.Rs.Entity))
                 ? response.ResponseCode
-                : holder.rs.ResponseCode;
+                : holder.Rs.ResponseCode;
 
-            return holder.rs.IsSuccess;
+            return holder.Rs.IsSuccess;
         }
 
         protected override async Task<bool> TimeoutCorrectDelete(PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
 
-            var alternateHolder = new PersistenceRequestHolder<K, E>(holder.ProfileId, holder.prq, holder.prs);
-            alternateHolder.rq = new PersistenceRepositoryHolder<K, E> { Key = holder.rq.Key, KeyReference = holder.rq.KeyReference, Timeout = holder.rq.Timeout };
-            alternateHolder.rs = new PersistenceRepositoryHolder<K, E>();
+            var alternateHolder = new PersistenceRequestHolder<K, E>(holder.ProfileId, holder.Prq, holder.Prs);
+            alternateHolder.Rq = new PersistenceRepositoryHolder<K, E> { Key = holder.Rq.Key, KeyReference = holder.Rq.KeyReference, Timeout = holder.Rq.Timeout };
+            alternateHolder.Rs = new PersistenceRepositoryHolder<K, E>();
 
-            bool byref = alternateHolder.rq.KeyReference != null && !string.IsNullOrEmpty(alternateHolder.rq.KeyReference.Item2);
+            bool byref = alternateHolder.Rq.KeyReference != null && !string.IsNullOrEmpty(alternateHolder.Rq.KeyReference.Item2);
 
             bool result;
             if (byref)
@@ -394,11 +394,11 @@ namespace Xigadee
                 return false;
 
             // We should have a 404 response code here. If not send back the one we got otherwise send back 200 OK
-            holder.rs.Key = alternateHolder.rs.Key;
-            holder.rs.KeyReference = alternateHolder.rs.KeyReference;
-            holder.rs.ResponseCode = alternateHolder.rs.ResponseCode != 404 ? alternateHolder.rs.ResponseCode : 200;
+            holder.Rs.Key = alternateHolder.Rs.Key;
+            holder.Rs.KeyReference = alternateHolder.Rs.KeyReference;
+            holder.Rs.ResponseCode = alternateHolder.Rs.ResponseCode != 404 ? alternateHolder.Rs.ResponseCode : 200;
 
-            return holder.rs.IsSuccess;
+            return holder.Rs.IsSuccess;
         }
         #endregion
         #region RetrieveEntity
@@ -415,16 +415,16 @@ namespace Xigadee
         {
             int numberOfRetries = 0;
 
-            int maximumRetries = mPolicy.PersistenceRetryPolicy.GetMaximumRetries(holder.prq);
+            int maximumRetries = mPolicy.PersistenceRetryPolicy.GetMaximumRetries(holder.Prq);
 
-            while (numberOfRetries < maximumRetries && !holder.prq.Cancel.IsCancellationRequested)
+            while (numberOfRetries < maximumRetries && !holder.Prq.Cancel.IsCancellationRequested)
             {
                 await readAction(holder);
 
-                if (holder.rs.Entity != null || holder.rs.ResponseCode == 404)
-                    return holder.rs.Entity != null;
+                if (holder.Rs.Entity != null || holder.Rs.ResponseCode == 404)
+                    return holder.Rs.Entity != null;
 
-                await Task.Delay(mPolicy.PersistenceRetryPolicy.GetDelayBetweenRetries(holder.prq, numberOfRetries));
+                await Task.Delay(mPolicy.PersistenceRetryPolicy.GetDelayBetweenRetries(holder.Prq, numberOfRetries));
 
                 numberOfRetries++;
             }
@@ -433,10 +433,10 @@ namespace Xigadee
                 , string.Format(
                     "Unable to retrieve entity after {0} retries, message cancelled({1}) on channel({2}) for request: {3} - response: {4}"
                     , numberOfRetries
-                    , holder.prq.Cancel.IsCancellationRequested
-                    , holder.prq.Message != null ? holder.prq.Message.ChannelPriority.ToString() : "null"
-                    , holder.rq
-                    , holder.rs)
+                    , holder.Prq.Cancel.IsCancellationRequested
+                    , holder.Prq.Message != null ? holder.Prq.Message.ChannelPriority.ToString() : "null"
+                    , holder.Rq
+                    , holder.Rs)
                 , "DocDb"
                 );
 

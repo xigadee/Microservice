@@ -161,8 +161,8 @@ namespace Xigadee
         /// <returns></returns>
         protected virtual async Task ProcessDirective(PersistenceRequestHolder<MemoryPersistenceDirectiveRequest, MemoryPersistenceDirectiveResponse> holder)
         {
-            holder.rs.ResponseCode = (int)PersistenceResponse.NotImplemented501;
-            holder.rs.ResponseMessage = "Not implemented.";
+            holder.Rs.ResponseCode = (int)PersistenceResponse.NotImplemented501;
+            holder.Rs.ResponseMessage = "Not implemented.";
         }
         #endregion
 
@@ -201,7 +201,7 @@ namespace Xigadee
             {
                 mReferenceModifyLock.EnterWriteLock();
 
-                E entity = holder.rq.Entity;
+                E entity = holder.Rq.Entity;
                 var jsonHolder = mTransform.JsonMaker(entity);
 
                 bool success = mContainer.TryAdd(key, jsonHolder);
@@ -269,7 +269,7 @@ namespace Xigadee
             {
                 mReferenceModifyLock.EnterWriteLock();
 
-                E entity = holder.rq.Entity;
+                E entity = holder.Rq.Entity;
                 var jsonHolder = mTransform.JsonMaker(entity);
 
                 bool success = false;//mContainer.TryUpdate(key, jsonHolder,

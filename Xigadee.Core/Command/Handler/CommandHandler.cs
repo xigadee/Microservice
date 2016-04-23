@@ -23,6 +23,7 @@ namespace Xigadee
         }
         #endregion
 
+        #region Initialise(MessageFilterWrapper key, Func<TransmissionPayload, List<TransmissionPayload>, Task> action)
         /// <summary>
         /// This method initialises the holder.
         /// </summary>
@@ -34,16 +35,24 @@ namespace Xigadee
             Key = key;
             Action = action;
         }
+        #endregion
 
+        #region Key
         /// <summary>
         /// This is the key for the specific handler.
         /// </summary>
         public MessageFilterWrapper Key { get; protected set; }
+        #endregion
+        #region Action
         /// <summary>
         /// This is the action called when an incoming message comes in.
         /// </summary>
         public Func<TransmissionPayload, List<TransmissionPayload>, Task> Action { get; protected set; }
+        #endregion
 
+        /// <summary>
+        /// This is the HandlerStatistics
+        /// </summary>
         public ICommandHandlerStatistics HandlerStatistics
         {
             get

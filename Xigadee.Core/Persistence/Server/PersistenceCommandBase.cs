@@ -265,7 +265,7 @@ namespace Xigadee
         {
             Func<TransmissionPayload, List<TransmissionPayload>, Task> actionPayload = async (incoming, outgoing) =>
             {
-                var holder = ProfileStart<KT, ET>(incoming, outgoing);
+                var profileHolder = ProfileStart<KT, ET>(incoming, outgoing);
 
                 try
                 {
@@ -288,10 +288,10 @@ namespace Xigadee
                         if (rqTemp == null)
                             rqTemp = PayloadSerializer.PayloadDeserialize<RepositoryHolder<KT, ET>>(incoming);
 
-                        holder.rq = new PersistenceRepositoryHolder<KT, ET>(rqTemp);
+                        profileHolder.Rq = new PersistenceRepositoryHolder<KT, ET>(rqTemp);
 
-                        if (holder.rq.Timeout == null)
-                            holder.rq.Timeout = TimeSpan.FromSeconds(10);
+                        if (profileHolder.Rq.Timeout == null)
+                            profileHolder.Rq.Timeout = TimeSpan.FromSeconds(10);
 
                         bool preactionFailed = false;
 
@@ -304,41 +304,41 @@ namespace Xigadee
                                 int attempt = Environment.TickCount;
 
                                 //Create the payloadRs holder, and discard any previous version.
-                                holder.rs = new PersistenceRepositoryHolder<KT, ET>();
+                                profileHolder.Rs = new PersistenceRepositoryHolder<KT, ET>();
 
-                                if (preaction != null && !(await preaction(holder)))
+                                if (preaction != null && !(await preaction(profileHolder)))
                                 {
                                     preactionFailed = true;
                                     break;
                                 }
 
                                 //Call the specific command to process the action, i.e Create, Read, Update, Delete ... etc.
-                                await action(holder);
+                                await action(profileHolder);
 
                                 //Flag if the request times out at any point. 
                                 //This may be required later when checking whether the action was actually successful.
-                                hasTimedOut |= holder.rs.IsTimeout;
+                                hasTimedOut |= profileHolder.Rs.IsTimeout;
 
                                 //OK, if this is not a time out then it is successful
-                                if (!holder.rs.IsTimeout && !holder.rs.ShouldRetry)
+                                if (!profileHolder.Rs.IsTimeout && !profileHolder.Rs.ShouldRetry)
                                     break;
 
-                                ProfileRetry(holder, attempt);
+                                ProfileRetry(profileHolder, attempt);
 
                                 Logger.LogMessage(LoggingLevel.Warning
-                                    , $"Timeout occured for {EntityType} {actionType} for request:{holder.rq}"
+                                    , $"Timeout occured for {EntityType} {actionType} for request:{profileHolder.Rq}"
                                     , "DBTimeout");
 
-                                holder.rq.IsRetry = true;
+                                profileHolder.Rq.IsRetry = true;
 
                                 //These should not be counted against the limit.
-                                if (!holder.rs.ShouldRetry)
-                                    holder.rq.Retry++;
+                                if (!profileHolder.Rs.ShouldRetry)
+                                    profileHolder.Rq.Retry++;
 
-                                holder.rq.IsTimeout = false;
+                                profileHolder.Rq.IsTimeout = false;
 
                                 retryExceeded = incoming.Cancel.IsCancellationRequested 
-                                    || holder.rq.Retry > mPolicy.PersistenceRetryPolicy.GetMaximumRetries(incoming);
+                                    || profileHolder.Rq.Retry > mPolicy.PersistenceRetryPolicy.GetMaximumRetries(incoming);
                             }
                             while (!retryExceeded);
 
@@ -349,74 +349,74 @@ namespace Xigadee
                             if (retryExceeded)
                             {
                                 Log(actionType
-                                    , holder
+                                    , profileHolder
                                     , LoggingLevel.Error
-                                    , $"Retry limit has been exceeded (cancelled ({incoming.Cancel.IsCancellationRequested})) for {EntityType} {actionType} for {holder.rq} after {incoming.Message?.FabricDeliveryCount} delivery attempts"
+                                    , $"Retry limit has been exceeded (cancelled ({incoming.Cancel.IsCancellationRequested})) for {EntityType} {actionType} for {profileHolder.Rq} after {incoming.Message?.FabricDeliveryCount} delivery attempts"
                                     , "DBRetry");
 
-                                holder.result = ResourceRequestResult.RetryExceeded;
+                                profileHolder.result = ResourceRequestResult.RetryExceeded;
                             }
                         }
                         catch (Exception ex)
                         {
-                            LogException(actionType, holder, ex);
+                            LogException(actionType, profileHolder, ex);
                             incoming.SignalFail();
-                            holder.result = ResourceRequestResult.Exception;
+                            profileHolder.result = ResourceRequestResult.Exception;
                         }
 
-                        bool logEventSource = !preactionFailed && logEventOnSuccess && holder.rs.IsSuccess;
+                        bool logEventSource = !preactionFailed && logEventOnSuccess && profileHolder.Rs.IsSuccess;
 
-                        if (!holder.rs.IsSuccess && hasTimedOut && timeoutcorrect != null && holder.result != ResourceRequestResult.Exception)
+                        if (!profileHolder.Rs.IsSuccess && hasTimedOut && timeoutcorrect != null && profileHolder.result != ResourceRequestResult.Exception)
                         {
-                            if (await timeoutcorrect(holder))
+                            if (await timeoutcorrect(profileHolder))
                             {
                                 logEventSource = true;
                                 Logger.LogMessage(LoggingLevel.Info
-                                    , string.Format("Recovered timeout sucessfully for {0}-{1} for request:{2} - response:{3}", EntityType, actionType, holder.rq, holder.rs)
+                                    , string.Format("Recovered timeout sucessfully for {0}-{1} for request:{2} - response:{3}", EntityType, actionType, profileHolder.Rq, profileHolder.Rs)
                                     , "DBTimeout");
                             }
                             else
                             {
                                 Logger.LogMessage(LoggingLevel.Error
-                                    , string.Format("Not recovered timeout for {0}-{1} for request:{2} - response:{3}", EntityType, actionType, holder.rq, holder.rs)
+                                    , string.Format("Not recovered timeout for {0}-{1} for request:{2} - response:{3}", EntityType, actionType, profileHolder.Rq, profileHolder.Rs)
                                     , "DBTimeout");
                             }
                         }
 
-                        if (logEventSource && holder.rs.ShouldLogEventSource)
-                            await LogEventSource(actionType, holder);
+                        if (logEventSource && profileHolder.Rs.ShouldLogEventSource)
+                            await LogEventSource(actionType, profileHolder);
 
                         if (!preactionFailed && postaction != null)
-                            await postaction(holder);
+                            await postaction(profileHolder);
 
                         //Serialize the payloadRs
-                        var reposHolder = holder.rs.ToRepositoryHolder();
+                        var reposHolder = profileHolder.Rs.ToRepositoryHolder();
 
                         rsPayload.MessageObject = reposHolder;
                         rsPayload.Message.Blob = PayloadSerializer.PayloadSerialize(reposHolder);
 
                         rsPayload.Message.Status = "200";
 
-                        if (!holder.result.HasValue)
-                            holder.result = ResourceRequestResult.Success;
+                        if (!profileHolder.result.HasValue)
+                            profileHolder.result = ResourceRequestResult.Success;
                     }
                     catch (Exception ex)
                     {
                         incoming.SignalFail();
                         rsPayload.Message.Status = "500";
                         rsPayload.Message.StatusDescription = ex.Message;
-                        Logger.LogException($"Error processing message (was cancelled({incoming.Cancel.IsCancellationRequested}))-{EntityType}-{actionType}-{holder.rq}", ex);
-                        holder.result = ResourceRequestResult.Exception;
+                        Logger.LogException($"Error processing message (was cancelled({incoming.Cancel.IsCancellationRequested}))-{EntityType}-{actionType}-{profileHolder.Rq}", ex);
+                        profileHolder.result = ResourceRequestResult.Exception;
                     }
 
                     // check whether we need to send a response message. If this is async and AsyncResponse is not set to true,
                     // then by default we do not send a response message to cut down on unnecessary traffic.
-                    if (holder.rq == null || holder.rq.Settings == null || !holder.rq.Settings.ProcessAsync)
+                    if (profileHolder.Rq == null || profileHolder.Rq.Settings == null || !profileHolder.Rq.Settings.ProcessAsync)
                         outgoing.Add(rsPayload);
                 }
                 finally
                 {
-                    ProfileEnd(holder);
+                    ProfileEnd(profileHolder);
                 }
             };
 
@@ -483,7 +483,7 @@ namespace Xigadee
         protected void Log<KT, ET>(string action, PersistenceRequestHolder<KT, ET> holder
             , LoggingLevel loggingLevel = LoggingLevel.Info, string message = null, string category = null)
         {
-            var logEvent = new PersistencePayloadLogEvent(holder.prq, holder.rq, holder.rs, loggingLevel) { Message = message ?? string.Empty, Category = category };
+            var logEvent = new PersistencePayloadLogEvent(holder.Prq, holder.Rq, holder.Rs, loggingLevel) { Message = message ?? string.Empty, Category = category };
             Logger.Log(logEvent);
         }
         #endregion
@@ -506,15 +506,15 @@ namespace Xigadee
 
             try
             {
-                var logEvent = new PersistencePayloadLogEvent(holder.prq, holder.rq, holder.rs, LoggingLevel.Info, ex);
+                var logEvent = new PersistencePayloadLogEvent(holder.Prq, holder.Rq, holder.Rs, LoggingLevel.Info, ex);
                 Logger.Log(logEvent);
 
                 Guid errorId = Guid.NewGuid();
-                string errMessage = string.Format("Exception tracker {0}/{1}/{2}", action, (holder.prq != null && holder.prq.Message != null ? holder.prq.Message.OriginatorKey : string.Empty), errorId);
-                holder.rs.ResponseMessage = errMessage;
+                string errMessage = string.Format("Exception tracker {0}/{1}/{2}", action, (holder.Prq != null && holder.Prq.Message != null ? holder.Prq.Message.OriginatorKey : string.Empty), errorId);
+                holder.Rs.ResponseMessage = errMessage;
 
-                if (holder.rq != null)
-                    errMessage += string.Format("/{0}-{1}", holder.rq.Key, (holder.rq.Entity == null) ? string.Empty : holder.rq.Entity.ToString());
+                if (holder.Rq != null)
+                    errMessage += string.Format("/{0}-{1}", holder.Rq.Key, (holder.Rq.Entity == null) ? string.Empty : holder.Rq.Entity.ToString());
 
                 Logger.LogException(errMessage, ex);
             }
@@ -523,8 +523,8 @@ namespace Xigadee
                 // Do not fail due to an issue logging
             }
 
-            holder.rs.ResponseCode = 500;
-            holder.rs.ResponseMessage = ex.Message;
+            holder.Rs.ResponseCode = 500;
+            holder.Rs.ResponseMessage = ex.Message;
         }
         #endregion
         #region LogEventSource<KT, ET>...
@@ -541,8 +541,8 @@ namespace Xigadee
         protected async virtual Task LogEventSource<KT, ET>(string actionType, PersistenceRequestHolder<KT, ET> holder)
         {
             // Only pass through the entity if is of the correct entity type. ET might be an entity or it might be a Tuple<K, string>> in which case pass a null  
-            E entity = typeof(ET) == typeof(E) ? (E)Convert.ChangeType(holder.rs.Entity, typeof(E)) : default(E);
-            await LogEventSource(actionType, holder.prq.Message.OriginatorKey, holder.rs.Key, entity, holder.rq.Settings);
+            E entity = typeof(ET) == typeof(E) ? (E)Convert.ChangeType(holder.Rs.Entity, typeof(E)) : default(E);
+            await LogEventSource(actionType, holder.Prq.Message.OriginatorKey, holder.Rs.Key, entity, holder.Rq.Settings);
         }
         /// <summary>
         /// This method logs entities to the event source. This method will try indefinitely
@@ -623,6 +623,10 @@ namespace Xigadee
 
             IPersistenceRequestHolder ok;
             mRequestsCurrent.TryRemove(holder.ProfileId, out ok);
+
+            PersistenceHandler handler;
+            if (SupportedResolve(holder.Prq.Message.ToServiceMessageHeader(), out handler))
+                handler.Record(holder);
         }
 
         /// <summary>
@@ -634,12 +638,11 @@ namespace Xigadee
         /// <param name="retryStart">The tick count of the retry point.</param>
         protected virtual void ProfileRetry<KT, ET>(PersistenceRequestHolder<KT, ET> holder, int retryStart)
         {
-            mPolicy.ResourceConsumer?.Retry(holder.ProfileId, retryStart, holder.rs.ShouldRetry ? ResourceRetryReason.Other : ResourceRetryReason.Timeout);
+            mPolicy.ResourceConsumer?.Retry(holder.ProfileId, retryStart, holder.Rs.ShouldRetry ? ResourceRetryReason.Other : ResourceRetryReason.Timeout);
 
             holder.Retry(retryStart);
 
             StatisticsInternal.RetryIncrement();
-
         }
         #endregion
 
@@ -647,14 +650,14 @@ namespace Xigadee
         #region Create
         protected virtual async Task ProcessCreate(PersistenceRequestHolder<K, E> holder)
         {
-            K key = mTransform.KeyMaker(holder.rq.Entity);
+            K key = mTransform.KeyMaker(holder.Rq.Entity);
 
             var result = await InternalCreate(key, holder);
 
             if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
                 mCacheManager.Write(mTransform, result.Entity);
 
-            ProcessOutputEntity(key, holder.rq, holder.rs, result);
+            ProcessOutputEntity(key, holder.Rq, holder.Rs, result);
         }
 
         protected virtual async Task<IResponseHolder<E>> InternalCreate(K key, PersistenceRequestHolder<K, E> holder)
@@ -669,18 +672,18 @@ namespace Xigadee
         {
             IResponseHolder<E> result = null;
 
-            if (mCacheManager.IsActive && holder.rq.Settings.UseCache)
-                result = await mCacheManager.Read(mTransform, holder.rq.Key);
+            if (mCacheManager.IsActive && holder.Rq.Settings.UseCache)
+                result = await mCacheManager.Read(mTransform, holder.Rq.Key);
 
             if (result == null || !result.IsSuccess)
             {
-                result = await InternalRead(holder.rq.Key, holder);
+                result = await InternalRead(holder.Rq.Key, holder);
 
                 if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
                     mCacheManager.Write(mTransform, result.Entity);
             }
 
-            ProcessOutputEntity(holder.rq.Key, holder.rq, holder.rs, result);
+            ProcessOutputEntity(holder.Rq.Key, holder.Rq, holder.Rs, result);
         }
 
         protected async virtual Task<IResponseHolder<E>> InternalRead(K key, PersistenceRequestHolder<K, E> holder)
@@ -693,18 +696,18 @@ namespace Xigadee
         {
             IResponseHolder<E> result = null;
 
-            if (mCacheManager.IsActive && holder.rq.Settings.UseCache)
-                result = await mCacheManager.Read(mTransform, holder.rq.KeyReference);
+            if (mCacheManager.IsActive && holder.Rq.Settings.UseCache)
+                result = await mCacheManager.Read(mTransform, holder.Rq.KeyReference);
 
             if (result == null || !result.IsSuccess)
             {
-                result = await InternalReadByRef(holder.rq.KeyReference, holder);
+                result = await InternalReadByRef(holder.Rq.KeyReference, holder);
 
                 if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
                     mCacheManager.Write(mTransform, result.Entity);
             }
 
-            ProcessOutputEntity(holder.rq.Key, holder.rq, holder.rs, result);
+            ProcessOutputEntity(holder.Rq.Key, holder.Rq, holder.Rs, result);
         }
 
         protected async virtual Task<IResponseHolder<E>> InternalReadByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, E> holder)
@@ -716,7 +719,7 @@ namespace Xigadee
         #region Update
         protected virtual async Task ProcessUpdate(PersistenceRequestHolder<K, E> holder)
         {
-            K key = mTransform.KeyMaker(holder.rq.Entity);
+            K key = mTransform.KeyMaker(holder.Rq.Entity);
 
             // Remove from the cache first to ensure no change of ending up with a stale cached item
             // if the write to cache fails for any reason
@@ -728,7 +731,7 @@ namespace Xigadee
             if (mCacheManager.IsActive && result.IsSuccess)
                 mCacheManager.Write(mTransform, result.Entity);
 
-            ProcessOutputEntity(key, holder.rq, holder.rs, result);
+            ProcessOutputEntity(key, holder.Rq, holder.Rs, result);
         }
 
         protected virtual async Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRequestHolder<K, E> holder)
@@ -743,11 +746,11 @@ namespace Xigadee
             //We presume that the delete will succeed and remove it from the cache before it is processed. 
             //Worse case this will result in a cache miss.
             if (mCacheManager.IsActive)
-                await mCacheManager.Delete(mTransform, holder.rq.Key);
+                await mCacheManager.Delete(mTransform, holder.Rq.Key);
 
-            var result = await InternalDelete(holder.rq.Key, holder);
+            var result = await InternalDelete(holder.Rq.Key, holder);
 
-            ProcessOutputKey(holder.rq, holder.rs, result);
+            ProcessOutputKey(holder.Rq, holder.Rs, result);
         }
 
         protected virtual async Task<IResponseHolder> InternalDelete(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
@@ -758,12 +761,12 @@ namespace Xigadee
         #region DeleteByRef
         protected virtual async Task ProcessDeleteByRef(PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            var result = await InternalDeleteByRef(holder.rq.KeyReference, holder);
+            var result = await InternalDeleteByRef(holder.Rq.KeyReference, holder);
 
             if (mCacheManager.IsActive && result.IsSuccess)
                 await mCacheManager.Delete(mTransform, mTransform.KeyDeserializer(result.Id));
 
-            ProcessOutputKey(holder.rq, holder.rs, result);
+            ProcessOutputKey(holder.Rq, holder.Rs, result);
         }
         protected virtual async Task<IResponseHolder> InternalDeleteByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
@@ -777,16 +780,16 @@ namespace Xigadee
             IResponseHolder result = null;
 
             if (mCacheManager.IsActive)
-                result = await mCacheManager.VersionRead(mTransform, holder.rq.Key);
+                result = await mCacheManager.VersionRead(mTransform, holder.Rq.Key);
 
             if (result == null || !result.IsSuccess)
             {
-                result = await InternalVersion(holder.rq.Key, holder);
+                result = await InternalVersion(holder.Rq.Key, holder);
                 if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
-                    mCacheManager.WriteVersion(mTransform, holder.rq.Key, result.VersionId);
+                    mCacheManager.WriteVersion(mTransform, holder.Rq.Key, result.VersionId);
             }
 
-            ProcessOutputKey(holder.rq, holder.rs, result);
+            ProcessOutputKey(holder.Rq, holder.Rs, result);
         }
 
         protected virtual async Task<IResponseHolder> InternalVersion(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
@@ -800,18 +803,18 @@ namespace Xigadee
             IResponseHolder result = null;
 
             if (mCacheManager.IsActive)
-                result = await mCacheManager.VersionRead(mTransform, holder.rq.KeyReference);
+                result = await mCacheManager.VersionRead(mTransform, holder.Rq.KeyReference);
 
             if (result == null || !result.IsSuccess)
             {
-                result = await InternalVersionByRef(holder.rq.KeyReference, holder);
+                result = await InternalVersionByRef(holder.Rq.KeyReference, holder);
                 if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
-                    mCacheManager.WriteReference(mTransform, holder.rq.KeyReference, holder.rq.Key, result.VersionId);
+                    mCacheManager.WriteReference(mTransform, holder.Rq.KeyReference, holder.Rq.Key, result.VersionId);
             }
             else
-                holder.rq.Key = mTransform.KeyDeserializer(result.Id); // Pass back the entities actual id in the key field
+                holder.Rq.Key = mTransform.KeyDeserializer(result.Id); // Pass back the entities actual id in the key field
 
-            ProcessOutputKey(holder.rq, holder.rs, result);
+            ProcessOutputKey(holder.Rq, holder.Rs, result);
         }
 
         protected virtual async Task<IResponseHolder> InternalVersionByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
@@ -831,8 +834,8 @@ namespace Xigadee
         /// <returns></returns>
         protected virtual async Task ProcessSearch(PersistenceRequestHolder<SearchRequest, SearchResponse<K>> holder)
         {
-            holder.rs.ResponseCode = (int)PersistenceResponse.NotImplemented501;
-            holder.rs.ResponseMessage = "Not implemented.";
+            holder.Rs.ResponseCode = (int)PersistenceResponse.NotImplemented501;
+            holder.Rs.ResponseMessage = "Not implemented.";
         }
         #endregion
 

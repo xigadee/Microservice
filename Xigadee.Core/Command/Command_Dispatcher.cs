@@ -35,19 +35,19 @@ namespace Xigadee
         /// <typeparam name="P">The payloadRq DTO channelId. This will be deserialized using the ServiceMessage binary payloadRq.</typeparam>
         /// <param name="action">The process action.</param>
         /// <param name="exceptionAction">The optional action call if an exception is thrown.</param>
-        protected virtual void CommandRegister<C, P>(
-            Func<P, TransmissionPayload, List<TransmissionPayload>, Task> action,
+        protected virtual void CommandRegister<CM, PM>(
+            Func<PM, TransmissionPayload, List<TransmissionPayload>, Task> action,
             Func<TransmissionPayload, List<TransmissionPayload>, Task> deadLetterAction = null,
             Func<Exception, TransmissionPayload, List<TransmissionPayload>, Task> exceptionAction = null)
-            where C : IMessageContract
+            where CM : IMessageContract
         {
             Func<TransmissionPayload, List<TransmissionPayload>, Task> actionReduced = async (m, l) =>
             {
-                P payload = PayloadSerializer.PayloadDeserialize<P>(m);
+                PM payload = PayloadSerializer.PayloadDeserialize<PM>(m);
                 await action(payload, m, l);
             };
 
-            CommandRegister<C>(actionReduced, deadLetterAction, exceptionAction);
+            CommandRegister<CM>(actionReduced, deadLetterAction, exceptionAction);
         }
         /// <summary>
         /// This method register a command.
@@ -55,14 +55,14 @@ namespace Xigadee
         /// <typeparam name="C">The contract channelId.</typeparam>
         /// <param name="action">The process action.</param>
         /// <param name="exceptionAction">The optional action call if an exception is thrown.</param>
-        protected virtual void CommandRegister<C>(
+        protected virtual void CommandRegister<CM>(
             Func<TransmissionPayload, List<TransmissionPayload>, Task> action,
             Func<TransmissionPayload, List<TransmissionPayload>, Task> deadLetterAction = null,
             Func<Exception, TransmissionPayload, List<TransmissionPayload>, Task> exceptionAction = null)
-            where C : IMessageContract
+            where CM : IMessageContract
         {
             string channelId, messageType, actionType;
-            ServiceMessageHelper.ExtractContractInfo<C>(out channelId, out messageType, out actionType);
+            ServiceMessageHelper.ExtractContractInfo<CM>(out channelId, out messageType, out actionType);
 
             CommandRegister(channelId, messageType, actionType, action, deadLetterAction, exceptionAction);
         }
@@ -106,6 +106,7 @@ namespace Xigadee
                 Exception actionEx = null;
                 try
                 {
+                    //Depending on the message type, execute the deadletter action.
                     if (rq.IsDeadLetterMessage && deadLetterAction != null)
                         await deadLetterAction(rq, rs);
                     else
@@ -202,27 +203,27 @@ namespace Xigadee
         }
         #endregion
 
-        #region Dispatcher In -> ProcessMessage(TransmissionPayload payload, List<TransmissionPayload> responses)
+        #region --> ProcessMessage(TransmissionPayload payload, List<TransmissionPayload> responses)
         /// <summary>
         /// This method is called to process an incoming message.
         /// </summary>
         /// <param name="request">The message to process.</param>
         /// <param name="responses">The return path for the message.</param>
-        public virtual async Task ProcessMessage(TransmissionPayload payload, List<TransmissionPayload> responses)
+        public virtual async Task ProcessMessage(TransmissionPayload requestPayload, List<TransmissionPayload> responses)
         {
             int start = StatisticsInternal.ActiveIncrement();
             try
             {
-                var header = payload.Message.ToServiceMessageHeader();
+                var header = requestPayload.Message.ToServiceMessageHeader();
 
-                ICommandHandler handler;
+                H handler;
                 if (!SupportedResolve(header, out handler))
                 {
                     throw new NotSupportedException(string.Format("This command is not supported: '{0}' in {1}", header, GetType().Name));
                 }
 
                 //Call the registered command.
-                await handler.Execute(payload, responses);
+                await handler.Execute(requestPayload, responses);
             }
             catch (Exception)
             {
@@ -237,12 +238,12 @@ namespace Xigadee
         #endregion
 
         #region SupportedResolve...
-        protected virtual bool SupportedResolve(MessageFilterWrapper inWrapper, out ICommandHandler command)
+        protected virtual bool SupportedResolve(MessageFilterWrapper inWrapper, out H command)
         {
             return SupportedResolve(inWrapper.Header, out command);
         }
 
-        protected virtual bool SupportedResolve(ServiceMessageHeader header, out ICommandHandler command)
+        protected virtual bool SupportedResolve(ServiceMessageHeader header, out H command)
         {
             foreach (var item in mSupported)
             {
@@ -276,7 +277,7 @@ namespace Xigadee
         /// <returns>Returns true if the message is supported.</returns>
         public virtual bool SupportsMessage(ServiceMessageHeader header)
         {
-            ICommandHandler command;
+            H command;
             return SupportedResolve(header, out command);
         }
         #endregion

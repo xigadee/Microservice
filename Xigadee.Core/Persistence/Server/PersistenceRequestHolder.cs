@@ -21,37 +21,45 @@ namespace Xigadee
         public PersistenceRequestHolder(Guid profileId, TransmissionPayload prq, List<TransmissionPayload> prs)
         {
             this.ProfileId = profileId;
-            this.prq = prq;
-            this.prs = prs;
+            this.Prq = prq;
+            this.Prs = prs;
 
             Start = Environment.TickCount;
 
             result = null;
-            rq = null;
-            rs = null;
+            Rq = null;
+            Rs = null;
         }
 
-        public string Debug { get { return $"{prq?.Id.ToString("N")}={prq?.Message?.ToServiceMessageHeader().ToKey()} Retry={mRetry} Extent={ConversionHelper.DeltaAsFriendlyTime(Start, Environment.TickCount)}";} }
+        public TransmissionPayload Prq { get; }
+
+        public List<TransmissionPayload> Prs { get; }
 
 
-        public PersistenceRepositoryHolder<KT, ET> rq;
+        public PersistenceRepositoryHolder<KT, ET> Rq { get; set; }
 
-        public PersistenceRepositoryHolder<KT, ET> rs;
+        public PersistenceRepositoryHolder<KT, ET> Rs { get; set; }
 
-        public TransmissionPayload prq;
 
-        public List<TransmissionPayload> prs;
 
-        public int Start { get; private set; }
+        public int Start { get; }
 
-        public Guid ProfileId { get; private set; }
+        public Guid ProfileId { get; }
 
-        public ResourceRequestResult? result;
+        public ResourceRequestResult? result { get; set; }
 
         public void Retry(int retryStart)
         {
             Interlocked.Increment(ref mRetry);
         }
 
+        public string Debug { get { return $"{Prq?.Id.ToString("N")}={Prq?.Message?.ToServiceMessageHeader().ToKey()} Retries={mRetry} Extent={Extent.ToFriendlyString()}"; } }
+
+        public TimeSpan? Extent
+        {
+            get { return ConversionHelper.DeltaAsTimeSpan(Start, Environment.TickCount); }
+        }
+
+        public int Retries { get { return mRetry; } }
     }
 }

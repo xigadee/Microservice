@@ -76,7 +76,6 @@
     <Compile Include="Command\Command_Dispatcher.cs" />
     <Compile Include="Command\Test\CommandTestContainer.cs" />
     <Compile Include="Command\CommandPolicy.cs" />
-    <Compile Include="Command\Helper\CommandRequestTracker.cs" />
     <Compile Include="Command\Helper\CommandSchedule.cs" />
     <Compile Include="Command\Command_MasterJob.cs" />
     <Compile Include="Command\Command_OutgoingRequests.cs" />
