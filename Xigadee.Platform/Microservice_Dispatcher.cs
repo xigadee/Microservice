@@ -56,7 +56,7 @@ namespace Xigadee
 
                 var responsePayloads = new List<TransmissionPayload>();
 
-                bool resolveInternal = await mComponents.Execute(requestPayload, responsePayloads);
+                bool resolveInternal = await mCommands.Execute(requestPayload, responsePayloads);
                 //Switch the incoming message to the outgoing collection to be processed
                 //by the sender as it has not been processed internally and it is not marked
                 //as internal only.
@@ -79,7 +79,7 @@ namespace Xigadee
                 {
                     //Get the payloads that should be processed internally.
                     var internalPayload = responsePayloads
-                        .Where((p) => ((p.Options & ProcessOptions.RouteInternal) > 0) && mComponents.Resolve(p))
+                        .Where((p) => ((p.Options & ProcessOptions.RouteInternal) > 0) && mCommands.Resolve(p))
                         .ToList();
 
                     //OK, send the payloads off to the Dispatcher for processing.
@@ -131,7 +131,7 @@ namespace Xigadee
         /// <summary>
         /// This method checks that the incoming message has not exceeded the maximum number of hops.
         /// </summary>
-        /// <param name="requestPayload">The requestPayload to check.</param>
+        /// <param name="payload">The requestPayload to check.</param>
         private void IncrementAndVerifyDispatcherTransitCount(TransmissionPayload payload)
         {
             //Increase the Dispatcher transit count.

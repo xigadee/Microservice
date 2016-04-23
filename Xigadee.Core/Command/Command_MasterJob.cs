@@ -7,7 +7,7 @@ using System.Threading;
 #endregion
 namespace Xigadee
 {
-    public abstract partial class CommandBase<S, P>
+    public abstract partial class CommandBase<S, P, H>
     {
         #region Declarations
         /// <summary>

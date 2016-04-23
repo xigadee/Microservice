@@ -12,36 +12,47 @@ namespace Xigadee
     /// <summary>
     /// This class holds the Handler and the action.
     /// </summary>
-    public class CommandHandler : StatisticsBase<CommandHandlerStatistics>
+    public class CommandHandler<S>: StatisticsBase<S>, ICommandHandler where S: CommandHandlerStatistics, new()
     {
-        #region Declarations
-        /// <summary>
-        /// This is the key for the specific handler.
-        /// </summary>
-        private readonly MessageFilterWrapper Key;
-        /// <summary>
-        /// This is the action called when an incoming message comes in.
-        /// </summary>
-        private readonly Func<TransmissionPayload, List<TransmissionPayload>, Task> Action;
-        #endregion
         #region Constructor
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        /// <param name="parent">The handler parent.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="action">The action.</param>
-        public CommandHandler(string parent, MessageFilterWrapper key
-            , Func<TransmissionPayload, List<TransmissionPayload>, Task> action)
+        public CommandHandler()
         {
-            Key = key;
-            Action = action;
-            StatisticsInternal.Name = string.Format("{0} [{1}]", parent, key.Header.ToKey());
         }
         #endregion
 
-        protected override void StatisticsRecalculate(CommandHandlerStatistics stats)
+        public virtual void Initialise(string parent, MessageFilterWrapper key, Func<TransmissionPayload, List<TransmissionPayload>, Task> action)
         {
+            Parent = parent;
+            Key = key;
+            Action = action;
+        }
+
+        #region Declarations
+        public string Parent { get; protected set; }
+        /// <summary>
+        /// This is the key for the specific handler.
+        /// </summary>
+        public MessageFilterWrapper Key { get; protected set; }
+        /// <summary>
+        /// This is the action called when an incoming message comes in.
+        /// </summary>
+        public Func<TransmissionPayload, List<TransmissionPayload>, Task> Action { get; protected set; }
+        #endregion
+
+        public ICommandHandlerStatistics HandlerStatistics
+        {
+            get
+            {
+                return Statistics;
+            }
+        }
+
+        protected override void StatisticsRecalculate(S stats)
+        {
+            stats.Name = $"{Parent} [{Key.Header.ToKey()}]";
         }
 
         #region Execute(TransmissionPayload rq, List<TransmissionPayload> rs)

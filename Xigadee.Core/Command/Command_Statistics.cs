@@ -4,7 +4,7 @@ using System.Linq;
 #endregion
 namespace Xigadee
 {
-    public abstract partial class CommandBase<S, P>
+    public abstract partial class CommandBase<S, P, H>
     {
         /// <summary>
         /// This override lists the handlers supported for each handler.
@@ -15,7 +15,7 @@ namespace Xigadee
 
             stats.Name = FriendlyName;
 
-            stats.SupportedHandlers = mSupported.Select((h) => string.Format("{0}.{1} {2}", h.Key.Header.ToKey(), h.Key.ClientId, h.Key.IsDeadLetter ? "DL" : "")).ToList();
+            stats.SupportedHandlers = mSupported.Select((h) => h.Value.HandlerStatistics).ToList();
 
             if (mPolicy.OutgoingRequestsEnabled)
             {

@@ -30,7 +30,7 @@ namespace Xigadee
             this.Type = type;
         }
 
-        public IMessageInitiatorCallbacks Callback { get; set; }
+        public ICommand Callback { get; set; }
 
         public string CallbackId { get; set; }
 

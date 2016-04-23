@@ -62,8 +62,11 @@
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Command\CommandChange.cs" />
     <Compile Include="Command\Handler\CommandHandler.cs" />
     <Compile Include="Command\Handler\CommandHandlerStatistics.cs" />
+    <Compile Include="Command\Handler\ICommandHandler.cs" />
+    <Compile Include="Command\Handler\ICommandHandlerStatistics.cs" />
     <Compile Include="Command\Statistics\CommandStatistics.cs" />
     <Compile Include="Command\Statistics\MasterJobStatistics.cs" />
     <Compile Include="Persistence\CircuitBreaker\CircuitBreakerBase.cs" />
@@ -177,11 +180,8 @@
     <Compile Include="Exceptions\PayloadTypeSerializationNotSupportedException.cs" />
     <Compile Include="Interfaces\IContainerService.cs" />
     <Compile Include="Interfaces\IEventSourceContainer.cs" />
-    <Compile Include="Interfaces\IMessageInitiator.cs" />
-    <Compile Include="Interfaces\IJob.cs" />
     <Compile Include="Interfaces\Communication\IListener.cs" />
     <Compile Include="Interfaces\ILogger.cs" />
-    <Compile Include="Interfaces\IMessageHandler.cs" />
     <Compile Include="Interfaces\IRequireSharedServices.cs" />
     <Compile Include="Interfaces\ISchedule.cs" />
     <Compile Include="Interfaces\Communication\ISender.cs" />

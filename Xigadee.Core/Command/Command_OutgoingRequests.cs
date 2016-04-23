@@ -8,7 +8,7 @@ using System.Linq;
 #endregion
 namespace Xigadee
 {
-    public abstract partial class CommandBase<S,P>: IMessageInitiatorCallbacks
+    public abstract partial class CommandBase<S, P, H>
     {
         #region Declarations
         /// <summary>
@@ -267,6 +267,7 @@ namespace Xigadee
         }
         #endregion
 
+        #region OutgoingRequestDirectAbort(string originatorKey)
         /// <summary>
         /// This method is called for processes that support direct notification from the Task Manager that a process has been
         /// cancelled.
@@ -275,7 +276,9 @@ namespace Xigadee
         public void OutgoingRequestDirectAbort(string originatorKey)
         {
             OutgoingRequestRemove(originatorKey, null);
-        }
+            Logger?.LogMessage(LoggingLevel.Info, $"{FriendlyName} received abort notification for {originatorKey}");
+        } 
+        #endregion
 
         #region Class -> OutgoingRequestTracker
         /// <summary>
@@ -327,6 +330,5 @@ namespace Xigadee
             }
         }
         #endregion
-
     }
 }

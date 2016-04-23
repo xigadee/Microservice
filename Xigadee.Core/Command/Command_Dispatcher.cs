@@ -8,7 +8,7 @@ using System.Linq;
 #endregion
 namespace Xigadee
 {
-    public abstract partial class CommandBase<S, P>
+    public abstract partial class CommandBase<S, P, H>
     {
         #region CommandsRegister()
         /// <summary>
@@ -133,11 +133,33 @@ namespace Xigadee
             if (key.Header.IsPartialKey && key.Header.ChannelId == null)
                 throw new Exception("You must supply a channel when using a partial key.");
 
-            mSupported.Add(key, new CommandHandler(GetType().Name, key, command));
+            mSupported.Add(key, CommandHandlerCreate(GetType().Name, key, command));
 
-            if (OnCommandChange != null)
-                OnCommandChange(this, new CommandChange(false, key));
+            try
+            {
+                OnCommandChange?.Invoke(this, new CommandChange(false, key));
+            }
+            catch (Exception)
+            {
+            }
         }
+        #endregion
+
+        #region CommandHandlerCreate(MessageFilterWrapper key, Func<TransmissionPayload, List<TransmissionPayload>, Task> action)
+        /// <summary>
+        /// This method creates the command handler. You can override this method to set additional properties.
+        /// </summary>
+        /// <param name="key">The message key</param>
+        /// <param name="action">The execute action.</param>
+        /// <returns>Returns the handler.</returns>
+        protected virtual H CommandHandlerCreate(string parent, MessageFilterWrapper key, Func<TransmissionPayload, List<TransmissionPayload>, Task> action)
+        {
+            var handler = new H();
+
+            handler.Initialise(parent, key, action);
+
+            return handler;
+        } 
         #endregion
 
         #region CommandUnregister<C>...
@@ -172,8 +194,11 @@ namespace Xigadee
         {
             mSupported.Remove(key);
 
-            if (OnCommandChange != null)
-                OnCommandChange(this, new CommandChange(true, key));
+            try
+            {
+                OnCommandChange?.Invoke(this, new CommandChange(true, key));
+            }
+            catch {}
         }
         #endregion
 
@@ -190,7 +215,7 @@ namespace Xigadee
             {
                 var header = payload.Message.ToServiceMessageHeader();
 
-                CommandHandler handler;
+                ICommandHandler handler;
                 if (!SupportedResolve(header, out handler))
                 {
                     throw new NotSupportedException(string.Format("This command is not supported: '{0}' in {1}", header, GetType().Name));
@@ -212,12 +237,12 @@ namespace Xigadee
         #endregion
 
         #region SupportedResolve...
-        protected virtual bool SupportedResolve(MessageFilterWrapper inWrapper, out CommandHandler command)
+        protected virtual bool SupportedResolve(MessageFilterWrapper inWrapper, out ICommandHandler command)
         {
             return SupportedResolve(inWrapper.Header, out command);
         }
 
-        protected virtual bool SupportedResolve(ServiceMessageHeader header, out CommandHandler command)
+        protected virtual bool SupportedResolve(ServiceMessageHeader header, out ICommandHandler command)
         {
             foreach (var item in mSupported)
             {
@@ -251,7 +276,7 @@ namespace Xigadee
         /// <returns>Returns true if the message is supported.</returns>
         public virtual bool SupportsMessage(ServiceMessageHeader header)
         {
-            CommandHandler command;
+            ICommandHandler command;
             return SupportedResolve(header, out command);
         }
         #endregion

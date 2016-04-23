@@ -12,7 +12,7 @@ namespace Xigadee
     /// <summary>
     /// This is the statistics class for the Handler.
     /// </summary>
-    public class CommandHandlerStatistics: MessagingStatistics
+    public class CommandHandlerStatistics: MessagingStatistics, ICommandHandlerStatistics
     {
         public override string Name
         {

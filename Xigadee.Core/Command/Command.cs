@@ -8,7 +8,7 @@ namespace Xigadee
     /// <summary>
     /// This is the standard command base constructor.
     /// </summary>
-    public abstract class CommandBase: CommandBase<CommandStatistics, CommandPolicy>
+    public abstract class CommandBase: CommandBase<CommandStatistics>
     {
         public CommandBase(CommandPolicy policy = null) : base(policy)
         {
@@ -26,7 +26,21 @@ namespace Xigadee
         public CommandBase(CommandPolicy policy = null) : base(policy)
         {
         }
-    } 
+    }
+
+    /// <summary>
+    /// This is the extended command constructor that allows for custom statistics.
+    /// </summary>
+    /// <typeparam name="S">The statistics class type.</typeparam>
+    /// <typeparam name="P">The customer command policy.</typeparam>
+    public abstract class CommandBase<S,P>: CommandBase<S, P, CommandHandler<CommandHandlerStatistics>>
+        where S : CommandStatistics, new()
+        where P : CommandPolicy, new()
+    {
+        public CommandBase(P policy = null) : base(policy)
+        {
+        }
+    }
     #endregion
 
     /// <summary>
@@ -34,9 +48,11 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="S">The statistics class type.</typeparam>
     /// <typeparam name="P">The customer command policy.</typeparam>
-    public abstract partial class CommandBase<S,P>: ServiceBase<S>, ICommand
+    /// <typeparam name="H">The command handler type.</typeparam>
+    public abstract partial class CommandBase<S,P,H>: ServiceBase<S>, ICommand
         where S : CommandStatistics, new()
         where P : CommandPolicy, new()
+        where H : class, ICommandHandler, new()
     {
         #region Declarations
         /// <summary>
@@ -46,7 +62,7 @@ namespace Xigadee
         /// <summary>
         /// This is the concurrent dictionary that contains the supported commands.
         /// </summary>
-        protected Dictionary<MessageFilterWrapper, CommandHandler> mSupported;
+        protected Dictionary<MessageFilterWrapper, H> mSupported;
         /// <summary>
         /// This event is used by the component container to discover when a command is registered or deregistered.
         /// Implement IMessageHandlerDynamic to enable this feature.
@@ -66,7 +82,7 @@ namespace Xigadee
             mPolicy = PolicyCreateOrValidate(policy);
 
             mCurrentMasterPollAttempts = 0;
-            mSupported = new Dictionary<MessageFilterWrapper, CommandHandler>();
+            mSupported = new Dictionary<MessageFilterWrapper, H>();
             mSchedules = new List<Schedule>();
 
             StartupPriority = mPolicy.StartupPriority ?? 0;
@@ -173,18 +189,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region Items
-        /// <summary>
-        /// This returns the list of handlers for logging purposes.
-        /// </summary>
-        public IEnumerable<CommandHandler> Items
-        {
-            get
-            {
-                return mSupported.Values;
-            }
-        }
-        #endregion
         #region StartupPriority
         /// <summary>
         /// This is the message handler priority used when starting up.

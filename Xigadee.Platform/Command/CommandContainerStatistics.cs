@@ -11,10 +11,6 @@ namespace Xigadee
 {
     public class CommandContainerStatistics: StatusBase
     {
-        /// <summary>
-        /// This is a list of the handlers active on the system and their status.
-        /// </summary>
-        public List<CommandHandlerStatistics> Handlers { get; set; }
 
         public List<CommandStatistics> Commands { get; set; }
 

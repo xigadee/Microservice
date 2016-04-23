@@ -42,7 +42,7 @@ namespace Xigadee
         /// <summary>
         /// This container holds the components that do work on the system.
         /// </summary>
-        protected CommandContainer mComponents;
+        protected CommandContainer mCommands;
         /// <summary>
         /// This container holds the communication components.
         /// </summary>
@@ -107,7 +107,7 @@ namespace Xigadee
             mServiceEngineVersionId = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
             mCommunication = InitialiseCommunicationContainer();
-            mComponents = InitialiseCommandsContainer();
+            mCommands = InitialiseCommandsContainer();
             mResourceTracker = InitialiseResourceTracker();
 
             mTelemetries = new List<ITelemetry>();
@@ -198,7 +198,7 @@ namespace Xigadee
                 TaskManagerInitialise();
 
                 //This method populates the components in the service.
-                ComponentsPopulate();
+                PopulateComponents();
 
                 //Start the logger components.
                 ServiceStart(mLogger);
@@ -210,7 +210,7 @@ namespace Xigadee
                 ServiceStart(mEventSource);
 
                 //This method connects any components that require Shared Service together before they start.
-                mComponents.SharedServicesConnect();
+                mCommands.SharedServicesConnect();
 
                 //Ensure that the communication handler is working.
                 ServiceStart(mCommunication);
@@ -219,10 +219,10 @@ namespace Xigadee
                 mCommunication.SendersStart();
 
                 //Ensure that any handlers are registered.
-                ServiceStart(mComponents);
+                ServiceStart(mCommands);
 
                 //Start the handlers in decending priority
-                mComponents.Commands
+                mCommands.Commands
                     .OrderByDescending((h) => h.StartupPriority)
                     .ForEach(h => ServiceStart(h));
 
@@ -269,11 +269,11 @@ namespace Xigadee
             mCommunication.ListenersStop();
 
             //Ok, stop the commands.
-            mComponents.Commands
+            mCommands.Commands
                 .OrderBy((h) => h.StartupPriority)
                 .ForEach(h => ServiceStop(h));
 
-            ServiceStop(mComponents);
+            ServiceStop(mCommands);
 
             TaskManagerStop();
 

@@ -17,35 +17,40 @@ namespace Test.Xigadee
     [TestClass]
     public class Microservice_Validate_Persistence: TestPopulator<TestMicroservice, TestConfig>
     {
-        protected PersistenceManagerHandlerMemory<Guid, MyTestEntity> mPersistence;
-        protected PersistenceSharedService<Guid, MyTestEntity> mService;
+        protected PersistenceManagerHandlerMemory<Guid, MyTestEntity> mPersistenceCommand;
+        protected PersistenceSharedService<Guid, MyTestEntity> mPersistenceService;
 
         protected override void RegisterCommands()
         {
             base.RegisterCommands();
 
-            mPersistence = (PersistenceManagerHandlerMemory<Guid, MyTestEntity>)Service.RegisterCommand(new PersistenceManagerHandlerMemory<Guid, MyTestEntity>((e) => e.Id, (e) => new Guid(e)) { ChannelId = "internal" });
-            mService = (PersistenceSharedService<Guid, MyTestEntity>)Service.RegisterCommand(new PersistenceSharedService<Guid, MyTestEntity>() { ChannelId = "internal" } );
+            mPersistenceCommand = (PersistenceManagerHandlerMemory<Guid, MyTestEntity>)Service.RegisterCommand(new PersistenceManagerHandlerMemory<Guid, MyTestEntity>((e) => e.Id, (e) => new Guid(e)) { ChannelId = "internal" });
+            mPersistenceService = (PersistenceSharedService<Guid, MyTestEntity>)Service.RegisterCommand(new PersistenceSharedService<Guid, MyTestEntity>() { ChannelId = "internal" } );
         }
 
         [TestMethod]
         public void CreateReadUpdateDeleteEntity()
         {
+            Assert.AreEqual(Service.Status, ServiceStatus.Running);
+
             var entity = new MyTestEntity();
 
-            var response1 = mService.Create(entity).Result;
+            var response1 = mPersistenceService.Create(entity).Result;
             Assert.IsTrue(response1.IsSuccess);
+            Assert.AreEqual(response1.ResponseCode, 201);
 
-            var response2 = mService.Read(entity.Id).Result;
+            var response2 = mPersistenceService.Read(entity.Id).Result;
             Assert.IsTrue(response2.IsSuccess);
+            Assert.AreEqual(response2.ResponseCode, 200);
 
-            //var response3 = mService.Update(entity).Result;
+            var response3 = mPersistenceService.Update(entity).Result;
             //Assert.IsTrue(response3.IsSuccess);
 
-            var response4 = mService.Delete(entity.Id).Result;
+            var response4 = mPersistenceService.Delete(entity.Id).Result;
             Assert.IsTrue(response4.IsSuccess);
+            Assert.AreEqual(response4.ResponseCode, 200);
 
-            var response5 = mService.Read(entity.Id).Result;
+            var response5 = mPersistenceService.Read(entity.Id).Result;
             Assert.IsFalse(response5.IsSuccess);
         }
     }

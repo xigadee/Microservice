@@ -34,7 +34,7 @@ namespace Xigadee
         public List<string> OutgoingRequests { get; set; }
 
 
-        public List<string> SupportedHandlers { get; set; }
+        public List<ICommandHandlerStatistics> SupportedHandlers { get; set; }
 
         public MasterJobStatistics MasterJob { get; set; }
 

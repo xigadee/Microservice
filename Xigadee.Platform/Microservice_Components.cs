@@ -17,25 +17,7 @@ namespace Xigadee
         /// <summary>
         /// This collection holds the shared services for the Microservice.
         /// </summary>
-        public ISharedService SharedServices { get { return mComponents.SharedServices; } }
-        #endregion
-
-        #region ComponentsPopulate()
-        /// <summary>
-        /// This method is used to populate the items in the ServiceBusContainer prior 
-        /// to the index commands.
-        /// </summary>
-        protected virtual void ComponentsPopulate()
-        {
-            //This method populates any manually defined components.
-            PopulateTelemetry();
-
-            PopulateLoggers();
-
-            PopulatePayloadSerializers();
-
-            PopulateEventSource();
-        }
+        public ISharedService SharedServices { get { return mCommands.SharedServices; } }
         #endregion
 
         //Comms
@@ -80,11 +62,11 @@ namespace Xigadee
         /// <summary>
         /// This method allows you to manually register a job.
         /// </summary>
-        public virtual IMessageHandler RegisterCommand(IMessageHandler command)
+        public virtual ICommand RegisterCommand(ICommand command)
         {
             ValidateServiceNotStarted();
 
-            return mComponents.Add(command);
+            return mCommands.Add(command);
         }
         #endregion
 
@@ -96,64 +78,13 @@ namespace Xigadee
         {
             get
             {
-                if (mComponents == null)
+                if (mCommands == null)
                     yield break;
                 else
-                    foreach (var command in mComponents.Commands.Where((c) => c is ICommand).Cast<ICommand>())
+                    foreach (var command in mCommands.Commands.Where((c) => c is ICommand).Cast<ICommand>())
                         yield return command;
             }
         }
-        #endregion
-        #region Jobs
-        /// <summary>
-        /// This is a list of jobs currently register in the service.
-        /// </summary>
-        [Obsolete("Use Commands instead.")]
-        public virtual IEnumerable<IJob> Jobs
-        {
-            get
-            {
-                if (mComponents == null || mComponents.Jobs == null)
-                    yield break;
-                else
-                    foreach (var job in mComponents.Jobs)
-                        yield return job;
-            }
-        }
-        #endregion
-        #region MessageInitiators
-        /// <summary>
-        /// This is a list of message initiators currently register in the service.
-        /// </summary>
-        [Obsolete("Use Commands instead.")]
-        public virtual IEnumerable<IMessageInitiator> MessageInitiators
-        {
-            get
-            {
-                if (mComponents == null || mComponents.MessageInitiators == null)
-                    yield break;
-                else
-                    foreach (var mi in mComponents.MessageInitiators)
-                        yield return mi;
-            }
-        }
-        #endregion
-        #region MessageHandlers
-        /// <summary>
-        /// This is a list of message handlers currently register in the service.
-        /// </summary>
-        [Obsolete("Use Commands instead.")]
-        public virtual IEnumerable<IMessageHandler> MessageHandlers
-        {
-            get
-            {
-                if (mComponents == null || mComponents.MessageHandlers == null)
-                    yield break;
-                else
-                    foreach (var mh in mComponents.MessageHandlers)
-                        yield return mh;
-            }
-        } 
         #endregion
 
         //Serializer
@@ -206,7 +137,25 @@ namespace Xigadee
         }
         #endregion
 
-        //Collections
+        //Populate
+        #region PopulateComponents()
+        /// <summary>
+        /// This method is used to populate the items in the ServiceBusContainer prior 
+        /// to the index commands.
+        /// </summary>
+        protected virtual void PopulateComponents()
+        {
+            //This method populates any manually defined components.
+            PopulateTelemetry();
+
+            PopulateLoggers();
+
+            PopulatePayloadSerializers();
+
+            PopulateEventSource();
+        }
+        #endregion
+
         #region PopulatePayloadSerializers()
         /// <summary>
         /// Any registered Payload Serializer.
