@@ -161,6 +161,7 @@
     <Compile Include="Persistence\Server\Memory\PersistenceManagerHandlerMemory.cs" />
     <Compile Include="Persistence\Policy\PersistenceRetryPolicy.cs" />
     <Compile Include="Persistence\Server\PersistenceCommandBase.cs" />
+    <Compile Include="Persistence\Server\PersistenceHandler.cs" />
     <Compile Include="Persistence\Server\PersistenceRepositoryHolder.cs" />
     <Compile Include="Persistence\Client\PersistenceSharedService.cs" />
     <Compile Include="Logging\LoggingStatistics.cs" />

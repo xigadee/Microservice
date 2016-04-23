@@ -23,15 +23,18 @@ namespace Xigadee
         }
         #endregion
 
-        public virtual void Initialise(string parent, MessageFilterWrapper key, Func<TransmissionPayload, List<TransmissionPayload>, Task> action)
+        /// <summary>
+        /// This method initialises the holder.
+        /// </summary>
+        /// <param name="parent">The name of the parent container.</param>
+        /// <param name="key"></param>
+        /// <param name="action"></param>
+        public virtual void Initialise(MessageFilterWrapper key, Func<TransmissionPayload, List<TransmissionPayload>, Task> action)
         {
-            Parent = parent;
             Key = key;
             Action = action;
         }
 
-        #region Declarations
-        public string Parent { get; protected set; }
         /// <summary>
         /// This is the key for the specific handler.
         /// </summary>
@@ -40,7 +43,6 @@ namespace Xigadee
         /// This is the action called when an incoming message comes in.
         /// </summary>
         public Func<TransmissionPayload, List<TransmissionPayload>, Task> Action { get; protected set; }
-        #endregion
 
         public ICommandHandlerStatistics HandlerStatistics
         {
@@ -52,7 +54,7 @@ namespace Xigadee
 
         protected override void StatisticsRecalculate(S stats)
         {
-            stats.Name = $"{Parent} [{Key.Header.ToKey()}]";
+            stats.Name = Key.Header.ToKey();
         }
 
         #region Execute(TransmissionPayload rq, List<TransmissionPayload> rs)
@@ -61,7 +63,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="rq">The incoming requests.</param>
         /// <param name="rs">The outgoing responses.</param>
-        public async Task Execute(TransmissionPayload rq, List<TransmissionPayload> rs)
+        public async virtual Task Execute(TransmissionPayload rq, List<TransmissionPayload> rs)
         {
             int timerStart = StatisticsInternal.ActiveIncrement();
             StatisticsInternal.LastAccessed = DateTime.UtcNow;

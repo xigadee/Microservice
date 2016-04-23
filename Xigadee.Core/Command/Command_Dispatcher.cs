@@ -100,16 +100,16 @@ namespace Xigadee
             if (key == null)
                 throw new ArgumentNullException("CommandRegister: key cannot be null");
 
-            Func<TransmissionPayload, List<TransmissionPayload>, Task> command = async (sm, lsm) =>
+            Func<TransmissionPayload, List<TransmissionPayload>, Task> command = async (rq, rs) =>
             {
                 bool error = false;
                 Exception actionEx = null;
                 try
                 {
-                    if (sm.IsDeadLetterMessage && deadLetterAction != null)
-                        await deadLetterAction(sm, lsm);
+                    if (rq.IsDeadLetterMessage && deadLetterAction != null)
+                        await deadLetterAction(rq, rs);
                     else
-                        await action(sm, lsm);
+                        await action(rq, rs);
                 }
                 catch (Exception ex)
                 {
@@ -122,7 +122,7 @@ namespace Xigadee
                 try
                 {
                     if (error)
-                        await exceptionAction(actionEx, sm, lsm);
+                        await exceptionAction(actionEx, rq, rs);
                 }
                 catch (Exception ex)
                 {
@@ -133,7 +133,7 @@ namespace Xigadee
             if (key.Header.IsPartialKey && key.Header.ChannelId == null)
                 throw new Exception("You must supply a channel when using a partial key.");
 
-            mSupported.Add(key, CommandHandlerCreate(GetType().Name, key, command));
+            mSupported.Add(key, CommandHandlerCreate(key, command));
 
             try
             {
@@ -152,11 +152,11 @@ namespace Xigadee
         /// <param name="key">The message key</param>
         /// <param name="action">The execute action.</param>
         /// <returns>Returns the handler.</returns>
-        protected virtual H CommandHandlerCreate(string parent, MessageFilterWrapper key, Func<TransmissionPayload, List<TransmissionPayload>, Task> action)
+        protected virtual H CommandHandlerCreate(MessageFilterWrapper key, Func<TransmissionPayload, List<TransmissionPayload>, Task> action)
         {
             var handler = new H();
 
-            handler.Initialise(parent, key, action);
+            handler.Initialise(key, action);
 
             return handler;
         } 

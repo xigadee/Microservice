@@ -26,6 +26,7 @@ namespace Xigadee
                 base.Name = value;
             }
         }
+
         /// <summary>
         /// This is the time the handler was last accessed.
         /// </summary>

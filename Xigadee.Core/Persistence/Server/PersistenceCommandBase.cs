@@ -13,7 +13,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public abstract class PersistenceCommandBase<K, E, S, P> : CommandBase<S, P>,
+    public abstract class PersistenceCommandBase<K, E, S, P> : CommandBase<S, P, PersistenceHandler>,
         IPersistenceMessageHandler, IRequireSharedServices
         where K : IEquatable<K>
         where S : PersistenceStatistics, new()
@@ -128,7 +128,7 @@ namespace Xigadee
             {
                 return $"{base.FriendlyName}-{typeof(E).Name}";
             }
-        } 
+        }
         #endregion
 
         #region EntityTransformCreate...
@@ -174,7 +174,6 @@ namespace Xigadee
             return transform;
         }
         #endregion
-
         #region EntityType
         /// <summary>
         /// This is the entity type Name used for matching request and payloadRs messages.
@@ -238,7 +237,204 @@ namespace Xigadee
             PersistenceCommandRegister<SearchRequest, SearchResponse<K>>(EntityActions.Search, ProcessSearch);
         }
         #endregion
+        #region PersistenceCommandRegister<KT,ET>...
+        /// <summary>
+        /// This method registers the specific persistence handler.
+        /// </summary>
+        /// <typeparam Name="KT">The key type.</typeparam>
+        /// <typeparam Name="ET">The entity type.</typeparam>
+        /// <param name="actionType">The action type identifier</param>
+        /// <param name="action">The action to process the command.</param>
+        /// <param name="logEventOnSuccess"></param>
+        /// <param name="preaction"></param>
+        /// <param name="postaction"></param>
+        /// <param name="timeoutcorrect"></param>
+        /// <param name="retryOnTimeout"></param>
+        /// <param name="channelId"></param>
+        /// <param name="entityType"></param>
+        protected virtual void PersistenceCommandRegister<KT, ET>(string actionType
+            , Func<PersistenceRequestHolder<KT, ET>, Task> action
+            , bool logEventOnSuccess = false
+            , Func<PersistenceRequestHolder<KT, ET>, Task<bool>> preaction = null
+            , Func<PersistenceRequestHolder<KT, ET>, Task> postaction = null
+            , Func<PersistenceRequestHolder<KT, ET>, Task<bool>> timeoutcorrect = null
+            , int? retryOnTimeout = null
+            , string channelId = null
+            , string entityType = null
+            )
+        {
+            Func<TransmissionPayload, List<TransmissionPayload>, Task> actionPayload = async (incoming, outgoing) =>
+            {
+                var holder = ProfileStart<KT, ET>(incoming, outgoing);
 
+                try
+                {
+                    var rsMessage = incoming.Message.ToResponse();
+
+                    rsMessage.ChannelId = incoming.Message.ResponseChannelId;
+                    rsMessage.ChannelPriority = incoming.Message.ResponseChannelPriority;
+                    rsMessage.MessageType = incoming.Message.MessageType;
+                    rsMessage.ActionType = "";
+
+                    var rsPayload = new TransmissionPayload(rsMessage);
+
+                    bool hasTimedOut = false;
+
+                    try
+                    {
+                        RepositoryHolder<KT, ET> rqTemp = incoming.MessageObject as RepositoryHolder<KT, ET>;
+
+                        //Deserialize the incoming payloadRq request
+                        if (rqTemp == null)
+                            rqTemp = PayloadSerializer.PayloadDeserialize<RepositoryHolder<KT, ET>>(incoming);
+
+                        holder.rq = new PersistenceRepositoryHolder<KT, ET>(rqTemp);
+
+                        if (holder.rq.Timeout == null)
+                            holder.rq.Timeout = TimeSpan.FromSeconds(10);
+
+                        bool preactionFailed = false;
+
+                        try
+                        {
+                            bool retryExceeded = false;
+
+                            do
+                            {
+                                int attempt = Environment.TickCount;
+
+                                //Create the payloadRs holder, and discard any previous version.
+                                holder.rs = new PersistenceRepositoryHolder<KT, ET>();
+
+                                if (preaction != null && !(await preaction(holder)))
+                                {
+                                    preactionFailed = true;
+                                    break;
+                                }
+
+                                //Call the specific command to process the action, i.e Create, Read, Update, Delete ... etc.
+                                await action(holder);
+
+                                //Flag if the request times out at any point. 
+                                //This may be required later when checking whether the action was actually successful.
+                                hasTimedOut |= holder.rs.IsTimeout;
+
+                                //OK, if this is not a time out then it is successful
+                                if (!holder.rs.IsTimeout && !holder.rs.ShouldRetry)
+                                    break;
+
+                                ProfileRetry(holder, attempt);
+
+                                Logger.LogMessage(LoggingLevel.Warning
+                                    , $"Timeout occured for {EntityType} {actionType} for request:{holder.rq}"
+                                    , "DBTimeout");
+
+                                holder.rq.IsRetry = true;
+
+                                //These should not be counted against the limit.
+                                if (!holder.rs.ShouldRetry)
+                                    holder.rq.Retry++;
+
+                                holder.rq.IsTimeout = false;
+
+                                retryExceeded = incoming.Cancel.IsCancellationRequested 
+                                    || holder.rq.Retry > mPolicy.PersistenceRetryPolicy.GetMaximumRetries(incoming);
+                            }
+                            while (!retryExceeded);
+
+                            //Signal to the underlying comms channel that the message has been processed successfully.
+                            incoming.Signal(!retryExceeded);
+
+                            // If we have exceeded the retry limit then Log error
+                            if (retryExceeded)
+                            {
+                                Log(actionType
+                                    , holder
+                                    , LoggingLevel.Error
+                                    , $"Retry limit has been exceeded (cancelled ({incoming.Cancel.IsCancellationRequested})) for {EntityType} {actionType} for {holder.rq} after {incoming.Message?.FabricDeliveryCount} delivery attempts"
+                                    , "DBRetry");
+
+                                holder.result = ResourceRequestResult.RetryExceeded;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            LogException(actionType, holder, ex);
+                            incoming.SignalFail();
+                            holder.result = ResourceRequestResult.Exception;
+                        }
+
+                        bool logEventSource = !preactionFailed && logEventOnSuccess && holder.rs.IsSuccess;
+
+                        if (!holder.rs.IsSuccess && hasTimedOut && timeoutcorrect != null && holder.result != ResourceRequestResult.Exception)
+                        {
+                            if (await timeoutcorrect(holder))
+                            {
+                                logEventSource = true;
+                                Logger.LogMessage(LoggingLevel.Info
+                                    , string.Format("Recovered timeout sucessfully for {0}-{1} for request:{2} - response:{3}", EntityType, actionType, holder.rq, holder.rs)
+                                    , "DBTimeout");
+                            }
+                            else
+                            {
+                                Logger.LogMessage(LoggingLevel.Error
+                                    , string.Format("Not recovered timeout for {0}-{1} for request:{2} - response:{3}", EntityType, actionType, holder.rq, holder.rs)
+                                    , "DBTimeout");
+                            }
+                        }
+
+                        if (logEventSource && holder.rs.ShouldLogEventSource)
+                            await LogEventSource(actionType, holder);
+
+                        if (!preactionFailed && postaction != null)
+                            await postaction(holder);
+
+                        //Serialize the payloadRs
+                        var reposHolder = holder.rs.ToRepositoryHolder();
+
+                        rsPayload.MessageObject = reposHolder;
+                        rsPayload.Message.Blob = PayloadSerializer.PayloadSerialize(reposHolder);
+
+                        rsPayload.Message.Status = "200";
+
+                        if (!holder.result.HasValue)
+                            holder.result = ResourceRequestResult.Success;
+                    }
+                    catch (Exception ex)
+                    {
+                        incoming.SignalFail();
+                        rsPayload.Message.Status = "500";
+                        rsPayload.Message.StatusDescription = ex.Message;
+                        Logger.LogException($"Error processing message (was cancelled({incoming.Cancel.IsCancellationRequested}))-{EntityType}-{actionType}-{holder.rq}", ex);
+                        holder.result = ResourceRequestResult.Exception;
+                    }
+
+                    // check whether we need to send a response message. If this is async and AsyncResponse is not set to true,
+                    // then by default we do not send a response message to cut down on unnecessary traffic.
+                    if (holder.rq == null || holder.rq.Settings == null || !holder.rq.Settings.ProcessAsync)
+                        outgoing.Add(rsPayload);
+                }
+                finally
+                {
+                    ProfileEnd(holder);
+                }
+            };
+
+            if (channelId == null)
+                channelId = ChannelId ?? string.Empty;
+
+            if (entityType == null)
+                entityType = EntityType;
+
+            CommandRegister(
+                  channelId.ToLowerInvariant()
+                , entityType.ToLowerInvariant()
+                , actionType.ToLowerInvariant()
+                , actionPayload);
+        }
+        #endregion
+
+        //Timeout correction
         #region TimeoutCorrectCreateUpdate...
 
         /// <summary>
@@ -271,6 +467,7 @@ namespace Xigadee
         }
         #endregion
 
+        //Logging
         #region Log<KT, ET>...
         /// <summary>
         /// 
@@ -330,7 +527,6 @@ namespace Xigadee
             holder.rs.ResponseMessage = ex.Message;
         }
         #endregion
-
         #region LogEventSource<KT, ET>...
         /// <summary>
         /// This method logs entities to the event source. This method will try indefinitely
@@ -348,8 +544,6 @@ namespace Xigadee
             E entity = typeof(ET) == typeof(E) ? (E)Convert.ChangeType(holder.rs.Entity, typeof(E)) : default(E);
             await LogEventSource(actionType, holder.prq.Message.OriginatorKey, holder.rs.Key, entity, holder.rq.Settings);
         }
-        #endregion
-        #region LogEventSource<KT, ET>...
         /// <summary>
         /// This method logs entities to the event source. This method will try indefinitely
         /// as we do not want the Event Source to fail.
@@ -393,6 +587,7 @@ namespace Xigadee
         }
         #endregion
 
+        //Profiling
         #region ProfileStart/ProfileEnd/ProfileRetry
         /// <summary>
         /// This method starts the request profile and creates the request holder with the profile id.
@@ -448,201 +643,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region PersistenceCommandRegister<KT,ET>...
-        /// <summary>
-        /// This method registers the specific persistence handler.
-        /// </summary>
-        /// <typeparam Name="KT">The key type.</typeparam>
-        /// <typeparam Name="ET">The entity type.</typeparam>
-        /// <param name="actionType">The action type identifier</param>
-        /// <param name="action">The action to process the command.</param>
-        /// <param name="logEventOnSuccess"></param>
-        /// <param name="preaction"></param>
-        /// <param name="postaction"></param>
-        /// <param name="timeoutcorrect"></param>
-        /// <param name="retryOnTimeout"></param>
-        /// <param name="channelId"></param>
-        /// <param name="entityType"></param>
-        protected virtual void PersistenceCommandRegister<KT, ET>(string actionType
-            , Func<PersistenceRequestHolder<KT, ET>, Task> action
-            , bool logEventOnSuccess = false
-            , Func<PersistenceRequestHolder<KT, ET>, Task<bool>> preaction = null
-            , Func<PersistenceRequestHolder<KT, ET>, Task> postaction = null
-            , Func<PersistenceRequestHolder<KT, ET>, Task<bool>> timeoutcorrect = null
-            , int? retryOnTimeout = null
-            , string channelId = null
-            , string entityType = null
-            )
-        {
-            Func<TransmissionPayload, List<TransmissionPayload>, Task> actionPayload = async (m, l) =>
-            {
-                var holder = ProfileStart<KT, ET>(m, l);
-
-                try
-                {
-                    var rsMessage = m.Message.ToResponse();
-
-                    rsMessage.ChannelId = m.Message.ResponseChannelId;
-                    rsMessage.ChannelPriority = m.Message.ResponseChannelPriority;
-                    rsMessage.MessageType = m.Message.MessageType;
-                    rsMessage.ActionType = "";
-
-                    var rsPayload = new TransmissionPayload(rsMessage);
-
-                    bool hasTimedOut = false;
-
-                    try
-                    {
-                        RepositoryHolder<KT, ET> rqTemp = m.MessageObject as RepositoryHolder<KT, ET>;
-
-                        //Deserialize the incoming payloadRq request
-                        if (rqTemp == null)
-                            rqTemp = PayloadSerializer.PayloadDeserialize<RepositoryHolder<KT, ET>>(m);
-
-                        holder.rq = new PersistenceRepositoryHolder<KT, ET>(rqTemp);
-
-                        if (holder.rq.Timeout == null)
-                            holder.rq.Timeout = TimeSpan.FromSeconds(10);
-
-                        bool preactionFailed = false;
-
-                        try
-                        {
-                            bool retryExceeded = false;
-
-                            do
-                            {
-                                int attempt = Environment.TickCount;
-
-                                //Create the payloadRs holder, and discard any previous version.
-                                holder.rs = new PersistenceRepositoryHolder<KT, ET>();
-
-                                if (preaction != null && !(await preaction(holder)))
-                                {
-                                    preactionFailed = true;
-                                    break;
-                                }
-
-                                //Call the specific command to process the action, i.e Create, Read, Update, Delete ... etc.
-                                await action(holder);
-
-                                //Flag if the request times out at any point. 
-                                //This may be required later when checking whether the action was actually successful.
-                                hasTimedOut |= holder.rs.IsTimeout;
-
-                                //OK, if this is not a time out then it is successful
-                                if (!holder.rs.IsTimeout && !holder.rs.ShouldRetry)
-                                    break;
-
-                                ProfileRetry(holder, attempt);
-
-                                Logger.LogMessage(LoggingLevel.Info
-                                    , $"Timeout occured for {EntityType} {actionType} for request:{holder.rq}"
-                                    , "DBTimeout");
-
-                                holder.rq.IsRetry = true;
-
-                                //These should not be counted against the limit.
-                                if (!holder.rs.ShouldRetry)
-                                    holder.rq.Retry++;
-
-                                holder.rq.IsTimeout = false;
-
-                                retryExceeded = m.Cancel.IsCancellationRequested || holder.rq.Retry > mPolicy.PersistenceRetryPolicy.GetMaximumRetries(m);
-                            }
-                            while (!retryExceeded);
-
-                            //Signal to the underlying comms channel that the message has been processed successfully.
-                            m.Signal(!retryExceeded);
-
-                            // If we have exceeded the retry limit then Log error
-                            if (retryExceeded)
-                            {
-                                Log(actionType
-                                    , holder
-                                    , LoggingLevel.Error
-                                    , $"Retry limit has been exceeded (cancelled ({m.Cancel.IsCancellationRequested})) for {EntityType} {actionType} for {holder.rq} after {m.Message?.FabricDeliveryCount} delivery attempts"
-                                    , "DBRetry");
-                                holder.result = ResourceRequestResult.RetryExceeded;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            LogException(actionType, holder, ex);
-                            m.SignalFail();
-                            holder.result = ResourceRequestResult.Exception;
-                        }
-
-                        bool logEventSource = !preactionFailed && logEventOnSuccess && holder.rs.IsSuccess;
-
-                        if (!holder.rs.IsSuccess && hasTimedOut && timeoutcorrect != null && holder.result != ResourceRequestResult.Exception)
-                        {
-                            if (await timeoutcorrect(holder))
-                            {
-                                logEventSource = true;
-                                Logger.LogMessage(LoggingLevel.Info
-                                    , string.Format("Recovered timeout sucessfully for {0}-{1} for request:{2} - response:{3}", EntityType, actionType, holder.rq, holder.rs)
-                                    , "DBTimeout");
-                            }
-                            else
-                            {
-                                Logger.LogMessage(LoggingLevel.Error
-                                    , string.Format("Not recovered timeout for {0}-{1} for request:{2} - response:{3}", EntityType, actionType, holder.rq, holder.rs)
-                                    , "DBTimeout");
-                            }
-                        }
-
-                        if (logEventSource && holder.rs.ShouldLogEventSource)
-                            await LogEventSource(actionType, holder);
-
-                        if (!preactionFailed && postaction != null)
-                            await postaction(holder);
-
-                        //Serialize the payloadRs
-                        var reposHolder = holder.rs.ToRepositoryHolder();
-
-                        rsPayload.MessageObject = reposHolder;
-                        rsPayload.Message.Blob = PayloadSerializer.PayloadSerialize(reposHolder);
-
-                        rsPayload.Message.Status = "200";
-
-                        if (!holder.result.HasValue)
-                            holder.result = ResourceRequestResult.Success;
-                    }
-                    catch (Exception ex)
-                    {
-                        m.SignalFail();
-                        rsPayload.Message.Status = "500";
-                        rsPayload.Message.StatusDescription = ex.Message;
-                        Logger.LogException($"Error processing message (was cancelled({m.Cancel.IsCancellationRequested}))-{EntityType}-{actionType}-{holder.rq}", ex);
-                        holder.result = ResourceRequestResult.Exception;
-                    }
-
-                    // check whether we need to send a response message. If this is async and AsyncResponse is not set to true,
-                    // then by default we do not send a response message to cut down on unnecessary traffic.
-                    if (holder.rq == null || holder.rq.Settings == null || !holder.rq.Settings.ProcessAsync)
-                        l.Add(rsPayload);
-                }
-                finally
-                {
-                    ProfileEnd(holder);
-                }
-            };
-
-            if (channelId == null)
-                channelId = ChannelId ?? string.Empty;
-
-            if (entityType == null)
-                entityType = EntityType;
-
-            CommandRegister(
-                  channelId.ToLowerInvariant()
-                , entityType.ToLowerInvariant()
-                , actionType.ToLowerInvariant()
-                , actionPayload);
-        }
-        #endregion
-
+        //Requests
         #region Create
         protected virtual async Task ProcessCreate(PersistenceRequestHolder<K, E> holder)
         {
@@ -835,6 +836,7 @@ namespace Xigadee
         }
         #endregion
 
+        //Response Processing
         #region ProcessOutputEntity...
         /// <summary>
         /// This method sets the entity and any associated metadata in to the response.

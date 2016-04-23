@@ -89,7 +89,7 @@ namespace Xigadee
         /// </summary>
         public TimeSpan Extent
         {
-            get { return TimeSpan.FromMilliseconds(StatsContainer.CalculateDelta(mTickCountEnd ?? Environment.TickCount, mTickCountStart)); }
+            get { return TimeSpan.FromMilliseconds(ConversionHelper.CalculateDelta(mTickCountEnd ?? Environment.TickCount, mTickCountStart)); }
         }
         #endregion
 

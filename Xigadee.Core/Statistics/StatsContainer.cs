@@ -42,30 +42,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region CalculateDelta(int now, int start)
-        /// <summary>
-        /// This method calculates the delta and takes in to account that the
-        /// tickcount recycles to negative every 49 days.
-        /// </summary>
-        /// <param name="now"></param>
-        /// <param name="start"></param>
-        /// <returns></returns>
-        public static int CalculateDelta(int now, int start)
-        {
-            int delta;
-            if (now >= start)
-                delta = now - start;
-            else
-            {
-                //Do this, otherwise you'll be in a world of pain every 49 days.
-                long upLimit = ((long)(int.MaxValue)) + Math.Abs(int.MinValue - now);
-                delta = (int)(upLimit - start);
-            }
-
-            return delta;
-        }
-        #endregion
-
         #region ErrorIncrement()
         /// <summary>
         /// This method is used to increment the active and total record count.
@@ -93,7 +69,7 @@ namespace Xigadee
         /// <param name="delta">The processing time in milliseconds.</param>
         public virtual int ActiveDecrement(int start)
         {
-            int delta = CalculateDelta(Environment.TickCount, start);
+            int delta = ConversionHelper.CalculateDelta(Environment.TickCount, start);
 
             ActiveDecrementInternal(delta);
 

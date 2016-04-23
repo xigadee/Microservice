@@ -45,7 +45,9 @@ namespace Xigadee
         /// This is the current maximum amount of task that can be processed in parallel.
         /// </summary>
         private int mTasksMaxConcurrent;
+
         private int mReservedSlots;
+
         private ConcurrentDictionary<Guid, Reservation> mReservations;
 
         #endregion
@@ -311,7 +313,7 @@ namespace Xigadee
             {
                 get
                 {
-                    var extent = TimeSpan.FromMilliseconds(StatsContainer.CalculateDelta(Environment.TickCount, Start));
+                    var extent = TimeSpan.FromMilliseconds(ConversionHelper.CalculateDelta(Environment.TickCount, Start));
 
                     return $"Id={Id} Priority={Priority} Reserved={Taken} Extent={StatsCounter.LargeTime(extent)}";
                 }

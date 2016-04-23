@@ -80,7 +80,7 @@ namespace Xigadee
             try
             {
                 if (context.PriorityTickCount.HasValue)
-                    newPriority += StatsContainer.CalculateDelta(timeStamp.Value, context.PriorityTickCount.Value);
+                    newPriority += ConversionHelper.CalculateDelta(timeStamp.Value, context.PriorityTickCount.Value);
 
                 context.PriorityTickCount = timeStamp.Value;
                 //Add the queue length to add the listener with the greatest number of messages.

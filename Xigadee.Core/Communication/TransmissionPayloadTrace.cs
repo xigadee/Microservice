@@ -35,7 +35,7 @@ namespace Xigadee
         {
             get
             {
-                return TimeSpan.FromMilliseconds(StatsContainer.CalculateDelta(Environment.TickCount, mStart));
+                return TimeSpan.FromMilliseconds(ConversionHelper.CalculateDelta(Environment.TickCount, mStart));
             }
         }
 

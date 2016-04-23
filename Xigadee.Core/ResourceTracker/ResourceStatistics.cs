@@ -197,7 +197,7 @@ namespace Xigadee
         {
             get
             {
-                return TimeSpan.FromMilliseconds(StatsContainer.CalculateDelta(Environment.TickCount, mStart));
+                return TimeSpan.FromMilliseconds(ConversionHelper.CalculateDelta(Environment.TickCount, mStart));
             }
         }
 
@@ -354,7 +354,7 @@ namespace Xigadee
         internal void Retry(string name, Guid profileId, int start, ResourceRetryReason reason)
         {
             ErrorIncrement();
-            int delta = StatsContainer.CalculateDelta(Environment.TickCount, start);
+            int delta = ConversionHelper.CalculateDelta(Environment.TickCount, start);
             ResourceRequestTrack outValue;
             if (!mActive.TryGetValue(profileId, out outValue))
                 return;
