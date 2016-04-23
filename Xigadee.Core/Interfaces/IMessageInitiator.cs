@@ -21,6 +21,6 @@ namespace Xigadee
 
     public interface IMessageInitiatorCallbacks
     {
-        void OutgoingRequestCancelled(string originatorKey);
+        void OutgoingRequestDirectAbort(string originatorKey);
     }
 }

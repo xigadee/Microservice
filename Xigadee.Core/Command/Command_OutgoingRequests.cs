@@ -57,40 +57,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region OutgoingRequestRemove(string id, out CommandOutgoingRequestTracker holder)
-        /// <summary>
-        /// This method removes a request from the inplay collection.
-        /// </summary>
-        /// <param name="id">The request id.</param>
-        /// <param name="holder">An output containing the holder object.</param>
-        /// <returns>Returns true if successful.</returns>
-        protected virtual bool OutgoingRequestRemove(string id, bool cancel, out OutgoingRequestTracker holder)
-        {
-            holder  = null;
-            if (!mOutgoingRequests.TryRemove(id, out holder))
-                return false;
-
-            try
-            {
-                if (holder.Tcs != null)
-                    if (cancel)
-                    {
-                        holder.Tcs.SetCanceled();
-                    }
-                    else
-                    {
-                        //This next method signal to the waiting request that it has completed.
-                        holder.Tcs.SetResult(holder.Payload);
-                    }
-            }
-            catch (Exception ex)
-            {
-                Logger?.LogException("OutgoingRequestRemove TCS error", ex);
-            }
-
-            return true;
-        }
-        #endregion
 
         #region ChannelId
         /// <summary>
@@ -157,10 +123,6 @@ namespace Xigadee
         }
         #endregion
 
-        public void OutgoingRequestCancelled(string originatorKey)
-        {
-        }
-
         #region OutgoingRequestTransmit(TransmissionPayload requestPayload)
         /// <summary>
         /// This method marshalls the incoming requests from the Initiators.
@@ -209,8 +171,7 @@ namespace Xigadee
                 return;
             }
 
-            OutgoingRequestTracker holder;
-            if (!OutgoingRequestRemove(id, false, out holder))
+            if (!OutgoingRequestRemove(id, payload))
             {
                 try
                 {
@@ -248,13 +209,13 @@ namespace Xigadee
             foreach (var key in results)
             {
                 //Check that the object has not be removed by another process.
-                OutgoingRequestTracker holder;
-                if (!OutgoingRequestRemove(key.Key, true, out holder))
+                TransmissionPayload payloadRq;
+                if (!OutgoingRequestRemove(key.Key, null, out payloadRq))
                     continue;
 
                 try
                 {
-                    OnTimedOutRequest?.Invoke(this, holder.Payload);
+                    OnTimedOutRequest?.Invoke(this, payloadRq);
                 }
                 catch (Exception ex)
                 {
@@ -265,9 +226,57 @@ namespace Xigadee
         }
         #endregion
 
+        #region OutgoingRequestRemove(string id, out CommandOutgoingRequestTracker holder)
+        /// <summary>
+        /// This method removes a request from the inplay collection.
+        /// </summary>
+        /// <param name="id">The request id.</param>
+        /// <param name="holder">An output containing the holder object.</param>
+        /// <returns>Returns true if successful.</returns>
+        protected virtual bool OutgoingRequestRemove(string id, TransmissionPayload payloadIn)
+        {
+            TransmissionPayload payloadOut;
+            return OutgoingRequestRemove(id, payloadIn, out payloadOut);
+        }
 
+        protected virtual bool OutgoingRequestRemove(string id, TransmissionPayload payloadIn, out TransmissionPayload payloadOut)
+        {
+            payloadOut = null;
+            OutgoingRequestTracker holder;
+            if (!mOutgoingRequests.TryRemove(id, out holder))
+                return false;
 
+            try
+            {
+                if (holder.Tcs != null)
+                    if (payloadIn == null)
+                    {
+                        holder.Tcs.SetCanceled();
+                    }
+                    else
+                    {
+                        //This next method signal to the waiting request that it has completed.
+                        holder.Tcs.SetResult(payloadIn);
+                    }
+            }
+            catch (Exception ex)
+            {
+                Logger?.LogException("OutgoingRequestRemove TCS error", ex);
+            }
 
+            return true;
+        }
+        #endregion
+
+        /// <summary>
+        /// This method is called for processes that support direct notification from the Task Manager that a process has been
+        /// cancelled.
+        /// </summary>
+        /// <param name="originatorKey">The is the originator tracking key.</param>
+        public void OutgoingRequestDirectAbort(string originatorKey)
+        {
+            OutgoingRequestRemove(originatorKey, null);
+        }
 
         #region Class -> OutgoingRequestTracker
         /// <summary>

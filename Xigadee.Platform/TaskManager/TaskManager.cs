@@ -163,6 +163,13 @@ namespace Xigadee
         public virtual void ExecuteOrEnqueue(IService service, TransmissionPayload payload)
         {
             TaskTracker tracker = TrackerCreateFromPayload(payload, service.GetType().Name);
+
+            if (service is IMessageInitiatorCallbacks)
+            {
+                tracker.Callback = service as IMessageInitiatorCallbacks;
+                tracker.CallbackId = payload?.Message?.OriginatorKey;
+            }
+
             ExecuteOrEnqueue(tracker);
         }
         /// <summary>

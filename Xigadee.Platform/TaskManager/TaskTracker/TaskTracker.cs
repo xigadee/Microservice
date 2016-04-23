@@ -30,6 +30,10 @@ namespace Xigadee
             this.Type = type;
         }
 
+        public IMessageInitiatorCallbacks Callback { get; set; }
+
+        public string CallbackId { get; set; }
+
         public int? ExecuteTickCount { get; set; }
 
         public TaskTrackerType Type { get; set; }
@@ -123,7 +127,18 @@ namespace Xigadee
 
             CancelledTime = DateTime.UtcNow;
             IsCancelled = true;
+
             Cts.Cancel();
+
+            try
+            {
+                if (Callback != null && !string.IsNullOrEmpty(CallbackId))
+                    Callback.OutgoingRequestDirectAbort(CallbackId);
+            }
+            catch (Exception)
+            {
+
+            }
         }
 
         /// <summary>

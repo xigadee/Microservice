@@ -30,7 +30,9 @@ namespace Xigadee
             if (status.HasValue)
             {
                 StatusCode = (int)status.Value;
-                IsSuccess = StatusCode>=200 || StatusCode <= 299;
+                IsSuccess = StatusCode>=200 && StatusCode <= 299;
+
+                IsTimeout = !IsSuccess && StatusCode == 408;
             }
             Content = content;
         }

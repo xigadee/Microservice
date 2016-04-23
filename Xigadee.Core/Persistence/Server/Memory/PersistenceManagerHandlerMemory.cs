@@ -196,6 +196,7 @@ namespace Xigadee
         {
             if (mDelay.HasValue)
                 await Task.Delay(mDelay.Value);
+
             try
             {
                 mReferenceModifyLock.EnterWriteLock();
@@ -274,18 +275,14 @@ namespace Xigadee
                 bool success = false;//mContainer.TryUpdate(key, jsonHolder,
 
                 if (success)
-                    return new PersistenceResponseHolder<E>()
+                    return new PersistenceResponseHolder<E>(PersistenceResponse.Ok200)
                     {
-                        StatusCode = 201
-                        , Content = jsonHolder.Json
+                          Content = jsonHolder.Json
                         , IsSuccess = true
                         , Entity = mTransform.PersistenceEntitySerializer.Deserializer(jsonHolder.Json)
                     };
                 else
-                    return new PersistenceResponseHolder<E>()
-                    {
-                        StatusCode = 412, IsSuccess = false, IsTimeout = false
-                    };
+                    return new PersistenceResponseHolder<E>(PersistenceResponse.PreconditionFailed412);
             }
             finally
             {
@@ -325,7 +322,7 @@ namespace Xigadee
 
                 K key;
                 if (!ReferenceGet(reference, out key))
-                    return new PersistenceResponseHolder<E>() { StatusCode = 404, IsSuccess = false, IsTimeout = false };
+                    return new PersistenceResponseHolder<E>(PersistenceResponse.NotFound404);
 
                 return await InternalDelete(key, holder);
             }
