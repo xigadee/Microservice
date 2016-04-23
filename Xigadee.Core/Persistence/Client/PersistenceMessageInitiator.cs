@@ -71,7 +71,7 @@ namespace Xigadee
         {
             try
             {
-                mStatistics.ActiveIncrement();
+                StatisticsInternal.ActiveIncrement();
 
                 var payload = TransmissionPayload.Create();
 

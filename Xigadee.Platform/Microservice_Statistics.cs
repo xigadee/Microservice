@@ -39,44 +39,34 @@ namespace Xigadee
         /// <summary>
         /// This method sets the updated Microservice statistics.
         /// </summary>
-        protected override void StatisticsRecalculate()
+        protected override void StatisticsRecalculate(MicroserviceStatistics stats)
         {
-            base.StatisticsRecalculate();
-            try
-            {
-                mStatistics.MachineName = mMachineName;
-                mStatistics.Name = mName;
-                mStatistics.ServiceId = mServiceId;
-                mStatistics.ExternalServiceId = ExternalServiceId;
+            stats.MachineName = mMachineName;
+            stats.ServiceId = mServiceId;
+            stats.ExternalServiceId = ExternalServiceId;
 
-                mStatistics.VersionId = mServiceVersionId;
-                mStatistics.EngineVersionId = mServiceEngineVersionId;
-                mStatistics.Created = mStartTime;
-                mStatistics.Status = Status.ToString();
-                mStatistics.LogTime = DateTime.UtcNow;
-                mStatistics.Configuration = ConfigurationOptions;
-                mStatistics.StartTime = mStartTime;
+            stats.VersionId = mServiceVersionId;
+            stats.EngineVersionId = mServiceEngineVersionId;
+            stats.Created = mStartTime;
+            stats.Status = Status.ToString();
+            stats.LogTime = DateTime.UtcNow;
+            stats.Configuration = ConfigurationOptions;
+            stats.StartTime = mStartTime;
 
-                if (mTaskContainer != null) mStatistics.Tasks = mTaskContainer.Statistics;
+            if (mTaskContainer != null) stats.Tasks = mTaskContainer.Statistics;
 
-                if (mLogger != null) mStatistics.Logger = mLogger.Statistics;
+            if (mLogger != null) stats.Logger = mLogger.Statistics;
 
-                if (mEventSource != null) mStatistics.EventSource = mEventSource.Statistics;
+            if (mEventSource != null) stats.EventSource = mEventSource.Statistics;
 
-                if (mCommunication != null) mStatistics.Communication = mCommunication.Statistics;
+            if (mCommunication != null) stats.Communication = mCommunication.Statistics;
 
-                if (mResourceTracker != null) mStatistics.Resources = mResourceTracker.Statistics;
+            if (mResourceTracker != null) stats.Resources = mResourceTracker.Statistics;
 
-                if (mComponents != null) mStatistics.Commands = mComponents.Statistics;
+            if (mComponents != null) stats.Commands = mComponents.Statistics;
 
-                if (mScheduler != null) mStatistics.Scheduler = mScheduler.Statistics;
-
-            }
-            catch (Exception ex)
-            {
-                mStatistics.Ex = ex;
-            }
-        } 
+            if (mScheduler != null) stats.Scheduler = mScheduler.Statistics;
+        }
         #endregion
     }
 }

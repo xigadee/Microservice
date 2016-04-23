@@ -34,14 +34,14 @@ namespace Xigadee
         {
             mInstance = instance;
             mInstanceCreator = lazyInstance;
-            mStatistics.Name = serviceName ?? typeof(I).Name;
+            StatisticsInternal.Name = serviceName ?? typeof(I).Name;
         }
 
         public I Service 
         { 
             get 
             {
-                mStatistics.Increment();
+                StatisticsInternal.Increment();
 
                 if (mInstance == default(I))
                 {
@@ -57,5 +57,8 @@ namespace Xigadee
     /// </summary>
     public class ServiceHolder: StatisticsBase<ServiceHolderStatistics>
     {
+        protected override void StatisticsRecalculate(ServiceHolderStatistics stats)
+        {
+        }
     }
 }

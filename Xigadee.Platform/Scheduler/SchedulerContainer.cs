@@ -93,12 +93,12 @@ namespace Xigadee
 
         #endregion
 
-        protected override void StatisticsRecalculate()
+        protected override void StatisticsRecalculate(SchedulerStatistics stats)
         {
-            base.StatisticsRecalculate();
+            base.StatisticsRecalculate(stats);
 
-            mStatistics.DefaultPollInMs = mPolicy.DefaultPollInMs;
-            mStatistics.Schedules = Items.ToList();
+            stats.DefaultPollInMs = mPolicy.DefaultPollInMs;
+            stats.Schedules = Items.ToList();
         }
 
         //#region SchedulerStop()

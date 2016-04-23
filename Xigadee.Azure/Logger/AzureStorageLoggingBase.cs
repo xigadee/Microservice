@@ -95,7 +95,7 @@ namespace Xigadee
 
         protected async Task Output(string id, string directory, E entity)
         {
-            int start = mStatistics.ActiveIncrement();
+            int start = StatisticsInternal.ActiveIncrement();
             Guid traceId = ProfileStart(id, directory);
             var result = ResourceRequestResult.Unknown;
             try
@@ -120,19 +120,19 @@ namespace Xigadee
             {
                 result = ResourceRequestResult.Exception;
                 Logger.LogException(string.Format("Unable to output {0} to {1} for {2}", id, directory, typeof(E).Name), ex);
-                mStatistics.ErrorIncrement();
+                StatisticsInternal.ErrorIncrement();
                 throw;
             }
             finally
             {
-                mStatistics.ActiveDecrement(start);
+                StatisticsInternal.ActiveDecrement(start);
                 ProfileEnd(traceId, start, result);
             }
         }
 
         protected async Task Output(string id, string directory, byte[] blob, string contentType, string contentEncoding = null)
         {
-            int start = mStatistics.ActiveIncrement();
+            int start = StatisticsInternal.ActiveIncrement();
             Guid traceId = ProfileStart(id, directory);
             var result = ResourceRequestResult.Unknown;
             try
@@ -153,13 +153,13 @@ namespace Xigadee
             {
                 result = ResourceRequestResult.Exception;
                 Logger.LogException(string.Format("Unable to output {0} to {1} for {2}", id, directory, contentType), ex);
-                mStatistics.ErrorIncrement();
+                StatisticsInternal.ErrorIncrement();
                 throw;
             }
             finally
             {
                 ProfileEnd(traceId, start, result);
-                mStatistics.ActiveDecrement(start);
+                StatisticsInternal.ActiveDecrement(start);
             }
         }
 

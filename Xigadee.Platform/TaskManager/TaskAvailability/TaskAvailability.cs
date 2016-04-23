@@ -75,33 +75,24 @@ namespace Xigadee
         /// <summary>
         /// This method calculates the statistics for the task manager availability.
         /// </summary>
-        protected override void StatisticsRecalculate()
+        protected override void StatisticsRecalculate(TaskAvailabilityStatistics stats)
         {
-            base.StatisticsRecalculate();
-            try
-            {
-                mStatistics.TasksMaxConcurrent = mTasksMaxConcurrent;
+            stats.TasksMaxConcurrent = mTasksMaxConcurrent;
 
-                mStatistics.Active = mActiveBag.Count;
-                mStatistics.SlotsAvailable = Count;
+            stats.Active = mActiveBag.Count;
+            stats.SlotsAvailable = Count;
 
-                mStatistics.Killed = mTasksKilled;
-                mStatistics.KilledDidReturn = mTasksKilledDidReturn;
+            stats.Killed = mTasksKilled;
+            stats.KilledDidReturn = mTasksKilledDidReturn;
 
-                if (mPriorityStatus != null)
-                    mStatistics.Levels = mPriorityStatus
-                        .Union(new TaskManagerPrioritySettings[] { mPriorityInternal })
-                        .OrderByDescending((s) => s.Level)
-                        .Select((s) => s.Debug)
-                        .ToArray();
+            if (mPriorityStatus != null)
+                stats.Levels = mPriorityStatus
+                    .Union(new TaskManagerPrioritySettings[] { mPriorityInternal })
+                    .OrderByDescending((s) => s.Level)
+                    .Select((s) => s.Debug)
+                    .ToArray();
 
-                mStatistics.Reservations = mReservations.Select((r) => r.Value.Debug).ToArray();
-
-            }
-            catch (Exception ex)
-            {
-                mStatistics.Ex = ex;
-            }
+            stats.Reservations = mReservations.Select((r) => r.Value.Debug).ToArray();
         }
         #endregion
 

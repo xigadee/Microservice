@@ -16,13 +16,6 @@ namespace Xigadee
         where S : StatusBase, new()
     {
         #region Declarations
-        /// <summary>
-        /// This is the statistics class that can be referenced throughout the application.
-        /// </summary>
-        protected S mStatistics;
-
-        private readonly Guid mComponentId;
-
         private readonly string mName;
         #endregion
         #region Constructor
@@ -32,46 +25,66 @@ namespace Xigadee
         /// <param name="name">This sets the name in the statistics.</param>
         protected StatisticsBase(string name = null)
         {
-            mName = name;
-            mComponentId = Guid.NewGuid();
-            mStatistics = StatisticsCreate();
-        } 
+            mName = name ?? GetType().Name;
+            ComponentId = Guid.NewGuid();
+            StatisticsCreate();
+        }
         #endregion
-        #region Statistics
+
+        #region StatisticsInternal
         /// <summary>
-        /// This is the public statistics object
+        /// This is the internal statistics collection. Components should use this when referencing the collection directly.
+        /// Use of Statistics will trigger a recursive StatisticsRecalculate calls each time.
         /// </summary>
-        public virtual S Statistics
+        protected S StatisticsInternal { get; private set; } 
+        #endregion
+
+        #region ComponentId
+        /// <summary>
+        /// This is the componentId used to uniquely reference the component.
+        /// </summary>
+        public Guid ComponentId { get; } = Guid.NewGuid(); 
+        #endregion
+        #region FriendlyName
+        /// <summary>
+        /// This is the name of the command used in logging based on the name parameter passed in the constructor. 
+        /// It defaults to GetType().Name, but can be overridden when generics make this garbled.
+        /// </summary>
+        public virtual string FriendlyName
         {
             get
             {
-                StatisticsRecalculate();
-                return mStatistics;
+                return mName;
             }
         }
         #endregion
 
-        #region StatisticsRecalculate()
+        #region StatisticsRecalculate(S statistics)
         /// <summary>
         /// This method is used to set any calculated fields before the statistics are retrieved.
         /// </summary>
-        protected virtual void StatisticsRecalculate()
+        protected abstract void StatisticsRecalculate(S statistics);
+        #endregion
+        #region StatisticsInitialise(S statistics)
+        /// <summary>
+        /// This method is used to set any calculated fields before the statistics are retrieved.
+        /// </summary>
+        protected virtual void StatisticsInitialise(S stats)
         {
-
+            stats.Name = FriendlyName;
+            stats.ComponentId = ComponentId;
         }
         #endregion
+
         #region StatisticsCreate()
         /// <summary>
         /// This method is used to set any calculated fields before the statistics are retrieved.
         /// </summary>
-        protected virtual S StatisticsCreate()
+        protected virtual void StatisticsCreate()
         {
-            mStatistics = new S();
+            StatisticsInternal = new S();
 
-            mStatistics.Name = mName ?? GetType().Name;
-            mStatistics.ComponentId = mComponentId;
-
-            return mStatistics;
+            StatisticsInitialise(StatisticsInternal);
         }
         #endregion
 
@@ -83,7 +96,31 @@ namespace Xigadee
         public StatusBase StatisticsGet()
         {
             return Statistics;
-        } 
+        }
+        #endregion
+        #region Statistics
+        /// <summary>
+        /// This is the public generic statistics object.
+        /// Calling this will result in a recursive call to StatisticsRecalculate
+        /// and is provided primarily for external calling parties.
+        /// Internal code should use StatisticsInternal to access the collection directly without side effects.
+        /// </summary>
+        public virtual S Statistics
+        {
+            get
+            {
+                try
+                {
+                    StatisticsRecalculate(StatisticsInternal);
+                }
+                catch (Exception ex)
+                {
+                    StatisticsInternal.Ex = ex;
+                }
+
+                return StatisticsInternal;
+            }
+        }
         #endregion
     }
 }

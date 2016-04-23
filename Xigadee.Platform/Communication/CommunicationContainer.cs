@@ -74,26 +74,19 @@ namespace Xigadee
         /// <summary>
         /// This method recalculates the statistics for the communication holder.
         /// </summary>
-        protected override void StatisticsRecalculate()
+        protected override void StatisticsRecalculate(CommunicationStatistics stats)
         {
-            base.StatisticsRecalculate();
-            try
-            {
+            base.StatisticsRecalculate(stats);
 
-                if (mSenders != null)
-                    mStatistics.Senders = mSenders.SelectMany((c) => c.Clients).Select((l) => l.Statistics).ToList();
-                if (mListener != null)
-                    mStatistics.Listeners = mListener.SelectMany((c) => c.Clients).Select((l) => l.Statistics).ToList();
-                if (mDeadletterListener != null)
-                    mStatistics.DeadLetterListeners = mDeadletterListener.SelectMany((c) => c.Clients).Select((l) => l.Statistics).ToList();
+            if (mSenders != null)
+                stats.Senders = mSenders.SelectMany((c) => c.Clients).Select((l) => l.Statistics).ToList();
+            if (mListener != null)
+                stats.Listeners = mListener.SelectMany((c) => c.Clients).Select((l) => l.Statistics).ToList();
+            if (mDeadletterListener != null)
+                stats.DeadLetterListeners = mDeadletterListener.SelectMany((c) => c.Clients).Select((l) => l.Statistics).ToList();
 
-                if (mClientCollection != null)
-                    mStatistics.Active = mClientCollection.Statistics;
-            }
-            catch (Exception ex)
-            {
-
-            }
+            if (mClientCollection != null)
+                stats.Active = mClientCollection.Statistics;
         }
         #endregion
 

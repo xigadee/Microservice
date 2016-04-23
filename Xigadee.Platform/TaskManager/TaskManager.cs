@@ -121,36 +121,28 @@ namespace Xigadee
         /// <summary>
         /// This method sets the statistics.
         /// </summary>
-        protected override void StatisticsRecalculate()
+        protected override void StatisticsRecalculate(TaskManagerStatistics stats)
         {
-            base.StatisticsRecalculate();
+            base.StatisticsRecalculate(stats);
 
-            try
-            {
-                mStatistics.Cpu = mCpuStats;
+            stats.Cpu = mCpuStats;
 
-                mStatistics.InternalQueueLength = mProcessInternalQueue?.Count;
+            stats.InternalQueueLength = mProcessInternalQueue?.Count;
 
-                mStatistics.AutotuneActive = mPolicy.AutotuneEnabled;
+            stats.AutotuneActive = mPolicy.AutotuneEnabled;
 
-                mStatistics.Availability = mAvailability.Statistics;
+            stats.Availability = mAvailability.Statistics;
 
-                mStatistics.TaskCount = mTaskRequests?.Count ?? 0;
+            stats.TaskCount = mTaskRequests?.Count ?? 0;
 
-                if (mTaskRequests != null)
-                    mStatistics.Running = mTaskRequests.Values
-                        .Where((t) => t.ProcessSlot.HasValue)
-                        .OrderBy((t) => t.ProcessSlot.Value)
-                        .Select((t) => t.Debug)
-                        .ToArray();
+            if (mTaskRequests != null)
+                stats.Running = mTaskRequests.Values
+                    .Where((t) => t.ProcessSlot.HasValue)
+                    .OrderBy((t) => t.ProcessSlot.Value)
+                    .Select((t) => t.Debug)
+                    .ToArray();
 
-                if (mTasksQueue != null) mStatistics.Queues = mTasksQueue.Statistics;
-
-            }
-            catch (Exception ex)
-            {
-                mStatistics.Ex = ex;
-            }
+            if (mTasksQueue != null) stats.Queues = mTasksQueue.Statistics;
         }
         #endregion
 
@@ -429,7 +421,7 @@ namespace Xigadee
         private Task ExecuteTaskCreate(TaskTracker tracker)
         {
             //Internal tasks should not block other incoming tasks and they are passthrough requests from another task.
-            tracker.ExecuteTickCount = mStatistics.ActiveIncrement();
+            tracker.ExecuteTickCount = StatisticsInternal.ActiveIncrement();
 
             var payload = tracker.Context as TransmissionPayload;
             if (payload != null)
@@ -471,7 +463,7 @@ namespace Xigadee
                     }
 
                     if (outTracker.ExecuteTickCount.HasValue)
-                        mStatistics.ActiveDecrement(outTracker.ExecuteTickCount.Value);
+                        StatisticsInternal.ActiveDecrement(outTracker.ExecuteTickCount.Value);
                 }
             }
             catch (Exception ex)
@@ -486,7 +478,7 @@ namespace Xigadee
 
                 if (failed)
                 {
-                    mStatistics.ErrorIncrement();
+                    StatisticsInternal.ErrorIncrement();
 
                     if (tex != null && tex is AggregateException)
                         foreach (Exception ex in ((AggregateException)tex).InnerExceptions)
@@ -566,7 +558,7 @@ namespace Xigadee
 
             try
             {
-                mStatistics.TimeoutRegister(1);
+                StatisticsInternal.TimeoutRegister(1);
                 tracker.Cancel();
                 LoopSet();
             }

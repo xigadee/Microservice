@@ -185,7 +185,7 @@ namespace Xigadee
         /// <param name="responses">The return path for the message.</param>
         public virtual async Task ProcessMessage(TransmissionPayload payload, List<TransmissionPayload> responses)
         {
-            int start = mStatistics.ActiveIncrement();
+            int start = StatisticsInternal.ActiveIncrement();
             try
             {
                 var header = payload.Message.ToServiceMessageHeader();
@@ -201,12 +201,12 @@ namespace Xigadee
             }
             catch (Exception)
             {
-                mStatistics.ErrorIncrement();
+                StatisticsInternal.ErrorIncrement();
                 throw;
             }
             finally
             {
-                mStatistics.ActiveDecrement(start);
+                StatisticsInternal.ActiveDecrement(start);
             }
         }
         #endregion

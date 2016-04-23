@@ -74,7 +74,7 @@ namespace Xigadee
             finally
             {
                 if (fail)
-                    mStatistics.ExceptionHitIncrement();
+                    StatisticsInternal.ExceptionHitIncrement();
             }
 
             if (tryAgain)

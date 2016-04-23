@@ -36,9 +36,13 @@ namespace Xigadee
         {
             Key = key;
             Action = action;
-            mStatistics.Name = string.Format("{0} [{1}]", parent, key.Header.ToKey());
-        } 
+            StatisticsInternal.Name = string.Format("{0} [{1}]", parent, key.Header.ToKey());
+        }
         #endregion
+
+        protected override void StatisticsRecalculate(CommandHandlerStatistics stats)
+        {
+        }
 
         #region Execute(TransmissionPayload rq, List<TransmissionPayload> rs)
         /// <summary>
@@ -48,8 +52,8 @@ namespace Xigadee
         /// <param name="rs">The outgoing responses.</param>
         public async Task Execute(TransmissionPayload rq, List<TransmissionPayload> rs)
         {
-            int timerStart = mStatistics.ActiveIncrement();
-            mStatistics.LastAccessed = DateTime.UtcNow;
+            int timerStart = StatisticsInternal.ActiveIncrement();
+            StatisticsInternal.LastAccessed = DateTime.UtcNow;
 
             try
             {
@@ -57,13 +61,13 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                mStatistics.ErrorIncrement();
-                mStatistics.Ex = ex;
+                StatisticsInternal.ErrorIncrement();
+                StatisticsInternal.Ex = ex;
                 throw;
             }
             finally
             {
-                mStatistics.ActiveDecrement(timerStart);
+                StatisticsInternal.ActiveDecrement(timerStart);
             }
         } 
         #endregion

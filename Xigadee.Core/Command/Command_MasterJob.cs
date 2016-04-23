@@ -301,8 +301,8 @@ namespace Xigadee
                 }
                 catch (Exception ex)
                 {
-                    mStatistics.Ex = ex;
-                    Logger.Log(mStatistics);
+                    StatisticsInternal.Ex = ex;
+                    Logger.LogException($"MasterJob '{job.Name} could not be initialised.'",ex);
                 }
 
                 Scheduler.Register(job.Schedule);
@@ -328,8 +328,7 @@ namespace Xigadee
                 }
                 catch (Exception ex)
                 {
-                    mStatistics.Ex = ex;
-                    Logger.Log(mStatistics);
+                    Logger.LogException($"MasterJob '{mMasterJobs[id].Name}' execute failed", ex);
                     throw;
                 }
         }
@@ -350,8 +349,7 @@ namespace Xigadee
                 }
                 catch (Exception ex)
                 {
-                    mStatistics.Ex = ex;
-                    Logger.Log(mStatistics);
+                    Logger.LogException($"MasterJob '{job.Name}' stop failed",ex);
                 }
 
                 Scheduler.Unregister(job.Schedule);
@@ -386,7 +384,7 @@ namespace Xigadee
                 InitialTime = initialTime
             };
 
-            mMasterJobs.Add(schedule.Id, new MasterJobHolder(schedule, action, initialise, cleanup));
+            mMasterJobs.Add(schedule.Id, new MasterJobHolder(schedule.Name, schedule, action, initialise, cleanup));
         }
         #endregion
 

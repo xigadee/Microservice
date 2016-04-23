@@ -26,7 +26,7 @@ namespace Xigadee
 
         public void Enqueue(TaskTracker item)
         {
-            var wrapper = new KeyValuePair<TaskTracker, int>(item, mStatistics.ActiveIncrement());
+            var wrapper = new KeyValuePair<TaskTracker, int>(item, StatisticsInternal.ActiveIncrement());
             mQueue.Enqueue(wrapper);
         }
 
@@ -50,10 +50,14 @@ namespace Xigadee
             if (mQueue.TryDequeue(out wrapper))
             {
                 item = wrapper.Key;
-                mStatistics.ActiveDecrement(wrapper.Value);
+                StatisticsInternal.ActiveDecrement(wrapper.Value);
                 return true;
             }
             return false;
+        }
+
+        protected override void StatisticsRecalculate(MessagingStatistics stats)
+        {
         }
     }
 }

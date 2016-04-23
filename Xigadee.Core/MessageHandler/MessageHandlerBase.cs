@@ -208,7 +208,7 @@ namespace Xigadee
         /// <param name="responses">The return path for the message.</param>
         public virtual async Task ProcessMessage(TransmissionPayload payload, List<TransmissionPayload> responses)
         {
-            int start = mStatistics.ActiveIncrement();
+            int start = StatisticsInternal.ActiveIncrement();
             try
             {
                 var header = payload.Message.ToServiceMessageHeader();
@@ -224,12 +224,12 @@ namespace Xigadee
             }
             catch (Exception)
             {
-                mStatistics.ErrorIncrement();
+                StatisticsInternal.ErrorIncrement();
                 throw;
             }
             finally
             {
-                mStatistics.ActiveDecrement(start);
+                StatisticsInternal.ActiveDecrement(start);
             }
         } 
         #endregion
@@ -357,18 +357,10 @@ namespace Xigadee
         /// <summary>
         /// This override lists the handlers supported for each handler.
         /// </summary>
-        protected override void StatisticsRecalculate()
+        protected override void StatisticsRecalculate(S stats)
         {
-            base.StatisticsRecalculate();
-
-            try
-            {
-                mStatistics.SupportedHandlers = mSupported.Select((h) => string.Format("{0}.{1} {2}", h.Key.Header.ToKey(), h.Key.ClientId, h.Key.IsDeadLetter ? "DL" : "")).ToList();
-            }
-            catch (Exception)
-            {
-                //We don't want to throw an exception here.
-            }
+            base.StatisticsRecalculate(stats);
+            stats.SupportedHandlers = mSupported.Select((h) => string.Format("{0}.{1} {2}", h.Key.Header.ToKey(), h.Key.ClientId, h.Key.IsDeadLetter ? "DL" : "")).ToList();
         } 
         #endregion
     }

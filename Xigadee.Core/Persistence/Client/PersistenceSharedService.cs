@@ -98,7 +98,7 @@ namespace Xigadee
         /// <returns>Returns an async task that will be signalled when the request completes or times out.</returns>
         protected override async Task<RepositoryHolder<KT, ET>> TransmitInternal<KT, ET>(string actionType, RepositoryHolder<KT, ET> rq, ProcessOptions? routing = null)
         {
-            mStatistics.ActiveIncrement();
+            StatisticsInternal.ActiveIncrement();
 
             var payloadRq = TransmissionPayload.Create();
 

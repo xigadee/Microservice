@@ -178,7 +178,7 @@
     </Compile>
     <Compile Include="EventSource\AzureStorageEventSource.cs" />
     <Compile Include="EventSource\EventHubEventSource.cs" />
-    <Compile Include="IoT\IoTTelemetry.cs" />
+    <Compile Include="IoT\AzureIoTLogger.cs" />
     <Compile Include="Logger\AzureStorageLogger.cs" />
     <Compile Include="Logger\AzureStorageLoggingBase.cs" />
     <Compile Include="Logger\QueueEventSource.cs" />

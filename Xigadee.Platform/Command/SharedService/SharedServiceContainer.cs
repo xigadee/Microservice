@@ -81,11 +81,9 @@ namespace Xigadee
             return mContainer.ContainsKey(key);
         }
 
-        protected override void StatisticsRecalculate()
+        protected override void StatisticsRecalculate(SharedServiceStatistics stats)
         {
-            base.StatisticsRecalculate();
-
-            mStatistics.Services = mContainer.Values.Select((v) => v.Statistics).ToList();
+            stats.Services = mContainer.Values.Select((v) => v.Statistics).ToList();
         }
     }
 

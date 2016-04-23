@@ -31,7 +31,7 @@ namespace Xigadee
         /// <summary>
         /// This is the set of in play requests currently being processed.
         /// </summary>
-        protected readonly ConcurrentDictionary<Guid, IPersistenceRequestHolder> mInPlay;
+        protected readonly ConcurrentDictionary<Guid, IPersistenceRequestHolder> mRequestsCurrent;
         #endregion
         #region Constructor
         /// <summary>
@@ -71,7 +71,7 @@ namespace Xigadee
                 , persistenceEntitySerializer, cachingEntitySerializer
                 , keySerializer, keyDeserializer, referenceMaker, referenceHashMaker);
 
-            mInPlay = new ConcurrentDictionary<Guid, IPersistenceRequestHolder>();
+            mRequestsCurrent = new ConcurrentDictionary<Guid, IPersistenceRequestHolder>();
 
             mPolicy.DefaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(10);
             mPolicy.PersistenceRetryPolicy = persistenceRetryPolicy ?? new PersistenceRetryPolicy();
@@ -109,18 +109,12 @@ namespace Xigadee
         /// <summary>
         /// This method recalculates the statistics for the persistence command.
         /// </summary>
-        protected override void StatisticsRecalculate()
+        protected override void StatisticsRecalculate(S stats)
         {
-            base.StatisticsRecalculate();
+            base.StatisticsRecalculate(stats);
 
-            try
-            {
-                mStatistics.RequestsInPlay = mInPlay.Values.Select((v) => v?.Debug).ToArray();
-            }
-            catch (Exception ex)
-            {
-                mStatistics.Ex = ex;
-            }
+            StatisticsInternal.RequestsInPlay = mRequestsCurrent.Values.Select((v) => v?.Debug).ToArray();
+
         } 
         #endregion
 
@@ -418,7 +412,7 @@ namespace Xigadee
 
             var holder = new PersistenceRequestHolder<KT, ET>(profileId, prq, prs);
 
-            mInPlay.TryAdd(holder.ProfileId, holder);
+            mRequestsCurrent.TryAdd(holder.ProfileId, holder);
 
             return holder;
         }
@@ -433,7 +427,7 @@ namespace Xigadee
             mPolicy.ResourceConsumer?.End(holder.ProfileId, holder.Start, holder.result ?? ResourceRequestResult.Unknown);
 
             IPersistenceRequestHolder ok;
-            mInPlay.TryRemove(holder.ProfileId, out ok);
+            mRequestsCurrent.TryRemove(holder.ProfileId, out ok);
         }
 
         /// <summary>
@@ -449,13 +443,12 @@ namespace Xigadee
 
             holder.Retry(retryStart);
 
-            mStatistics.RetryIncrement();
+            StatisticsInternal.RetryIncrement();
 
         }
         #endregion
 
         #region PersistenceCommandRegister<KT,ET>...
-
         /// <summary>
         /// This method registers the specific persistence handler.
         /// </summary>
@@ -715,7 +708,7 @@ namespace Xigadee
 
         protected async virtual Task<IResponseHolder<E>> InternalReadByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, E> holder)
         {
-            return new PersistenceResponseHolder<E>(PersistenceResponse.NotImplemented501) { IsSuccess = false };
+            return new PersistenceResponseHolder<E>(PersistenceResponse.NotImplemented501);
         }
         #endregion
 
@@ -739,24 +732,26 @@ namespace Xigadee
 
         protected virtual async Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRequestHolder<K, E> holder)
         {
-            return new PersistenceResponseHolder<E>(PersistenceResponse.NotImplemented501) { IsSuccess = false };
+            return new PersistenceResponseHolder<E>(PersistenceResponse.NotImplemented501);
         }
         #endregion
 
         #region Delete
         protected virtual async Task ProcessDelete(PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            var result = await InternalDelete(holder.rq.Key, holder);
-
-            if (mCacheManager.IsActive && result.IsSuccess)
+            //We presume that the delete will succeed and remove it from the cache before it is processed. 
+            //Worse case this will result in a cache miss.
+            if (mCacheManager.IsActive)
                 await mCacheManager.Delete(mTransform, holder.rq.Key);
+
+            var result = await InternalDelete(holder.rq.Key, holder);
 
             ProcessOutputKey(holder.rq, holder.rs, result);
         }
 
         protected virtual async Task<IResponseHolder> InternalDelete(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return new PersistenceResponseHolder(PersistenceResponse.NotImplemented501) { IsSuccess = false };
+            return new PersistenceResponseHolder(PersistenceResponse.NotImplemented501);
         }
         #endregion
         #region DeleteByRef
@@ -771,7 +766,7 @@ namespace Xigadee
         }
         protected virtual async Task<IResponseHolder> InternalDeleteByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return new PersistenceResponseHolder(PersistenceResponse.NotImplemented501) { IsSuccess = false };
+            return new PersistenceResponseHolder(PersistenceResponse.NotImplemented501);
         }
         #endregion
 

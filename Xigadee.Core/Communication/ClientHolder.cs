@@ -44,22 +44,22 @@ namespace Xigadee
         #region Logging
         public void QueueTimeLog(DateTime? EnqueuedTimeUTC)
         {
-            mStatistics.QueueTimeLog(EnqueuedTimeUTC);
+            StatisticsInternal.QueueTimeLog(EnqueuedTimeUTC);
         }
 
         public void ActiveIncrement()
         {
-            mStatistics.ActiveIncrement();
+            StatisticsInternal.ActiveIncrement();
         }
 
         public void ActiveDecrement(int TickCount)
         {
-            mStatistics.ActiveDecrement(TickCount);
+            StatisticsInternal.ActiveDecrement(TickCount);
         }
 
         public void ErrorIncrement()
         {
-            mStatistics.ErrorIncrement();
+            StatisticsInternal.ErrorIncrement();
         }
         #endregion
 
@@ -200,16 +200,14 @@ namespace Xigadee
         /// <summary>
         /// This method recalculates the statistics for the client.
         /// </summary>
-        protected override void StatisticsRecalculate()
+        protected override void StatisticsRecalculate(MessagingServiceStatistics stats)
         {
-            base.StatisticsRecalculate();
+            stats.Name = DebugStatus;
 
-            mStatistics.Name = DebugStatus;
-
-            mStatistics.QueueLength = QueueLength();
-            mStatistics.Filters = Filters;
-            mStatistics.IsActive = IsActive;
-            mStatistics.Id = this.Id;
+            stats.QueueLength = QueueLength();
+            stats.Filters = Filters;
+            stats.IsActive = IsActive;
+            stats.Id = this.Id;
 
         }
         #endregion

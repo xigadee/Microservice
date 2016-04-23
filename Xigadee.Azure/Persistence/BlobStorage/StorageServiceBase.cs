@@ -218,7 +218,7 @@ namespace Xigadee
         protected async Task<StorageResponseHolder> CallCloudBlockBlob(StorageRequestHolder rq
             , Func<StorageRequestHolder, StorageResponseHolder, bool, Task> action)
         {
-            int start = mStatistics.ActiveIncrement();
+            int start = StatisticsInternal.ActiveIncrement();
             var rs = new StorageResponseHolder();
             try
             {
@@ -257,8 +257,8 @@ namespace Xigadee
             finally
             {
                 if (!rs.IsSuccess)
-                    mStatistics.ErrorIncrement();
-                mStatistics.ActiveDecrement(start);
+                    StatisticsInternal.ErrorIncrement();
+                StatisticsInternal.ActiveDecrement(start);
             }
 
             return rs;
@@ -488,8 +488,9 @@ namespace Xigadee
                     rs.IsSuccess = true;
                     rs.StatusCode = 200;
                 });
-        } 
+        }
         #endregion
+
 
     }
 }

@@ -131,15 +131,16 @@ namespace Xigadee
         /// <summary>
         /// This method recalculates the statistics for the job.
         /// </summary>
-        protected override void StatisticsRecalculate()
+        protected override void StatisticsRecalculate(S stats)
         {
-            base.StatisticsRecalculate();
-            mStatistics.MasterJob.Active = mConfig.IsMasterJob;
+            base.StatisticsRecalculate(stats);
+
+            stats.MasterJob.Active = mConfig.IsMasterJob;
             if (mConfig.IsMasterJob)
             {
-                mStatistics.MasterJob.Server = string.Format("{0} @ {1:o}", mCurrentMasterServiceId, mCurrentMasterReceiveTime);
-                mStatistics.MasterJob.Status = string.Format("Status={0} Channel={1}/{2} Type={3}", State.ToString(), NegotiationChannelId, NegotiationChannelPriority, NegotiationMessageType);
-                mStatistics.MasterJob.Standbys = mStandbyPartner.Values.ToList();
+                stats.MasterJob.Server = string.Format("{0} @ {1:o}", mCurrentMasterServiceId, mCurrentMasterReceiveTime);
+                stats.MasterJob.Status = string.Format("Status={0} Channel={1}/{2} Type={3}", State.ToString(), NegotiationChannelId, NegotiationChannelPriority, NegotiationMessageType);
+                stats.MasterJob.Standbys = mStandbyPartner.Values.ToList();
             }
         } 
         #endregion
@@ -392,8 +393,7 @@ namespace Xigadee
                 }
                 catch (Exception ex)
                 {
-                    mStatistics.Ex = ex;
-                    Logger.Log(mStatistics);
+                    Logger.LogException(ex);
                 }
 
                 Scheduler.Register(job.Schedule);
@@ -416,8 +416,7 @@ namespace Xigadee
                 }
                 catch (Exception ex)
                 {
-                    mStatistics.Ex = ex;
-                    Logger.Log(mStatistics);
+                    Logger.LogException(ex);
                     throw;
                 }
         }
@@ -437,8 +436,7 @@ namespace Xigadee
                 }
                 catch (Exception ex)
                 {
-                    mStatistics.Ex = ex;
-                    Logger.Log(mStatistics);
+                    Logger.LogException(ex);
                 }
 
                 Scheduler.Unregister(job.Schedule);
@@ -467,7 +465,7 @@ namespace Xigadee
                 InitialTime = initialTime
             };
 
-            mMasterJobs.Add(schedule.Id, new MasterJobHolder(schedule, action, initialise, cleanup));
+            mMasterJobs.Add(schedule.Id, new MasterJobHolder(schedule.Name, schedule, action, initialise, cleanup));
         }
         #endregion
 

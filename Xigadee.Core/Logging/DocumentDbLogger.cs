@@ -55,7 +55,7 @@ namespace Xigadee
         /// <param name="logEvent">The event to store in the log.</param>
         public async Task Log(LogEvent logEvent)
         {
-            int start = mStatistics.ActiveIncrement();
+            int start = StatisticsInternal.ActiveIncrement();
             try
             {
 
@@ -79,11 +79,11 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                mStatistics.ErrorIncrement();
+                StatisticsInternal.ErrorIncrement();
             }
             finally
             {
-                mStatistics.ActiveDecrement(start);
+                StatisticsInternal.ActiveDecrement(start);
             }
         } 
         #endregion

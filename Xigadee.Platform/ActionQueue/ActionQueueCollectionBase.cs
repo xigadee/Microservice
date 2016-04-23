@@ -55,15 +55,15 @@ namespace Xigadee
         /// <summary>
         /// This method recalculates the statistics and set the current queuelength.
         /// </summary>
-        protected override void StatisticsRecalculate()
+        protected override void StatisticsRecalculate(S stats)
         {
-            base.StatisticsRecalculate();
+            base.StatisticsRecalculate(stats);
 
-            mStatistics.QueueLength = mQueue.Count;
-            mStatistics.Overloaded = Overloaded;
-            mStatistics.OverloadProcessCount = mOverloadProcessCount;
-            mStatistics.OverloadProcessHits = mOverloadProcessHits;
-            mStatistics.OverloadThreshold = mPolicy.OverloadThreshold;
+            stats.QueueLength = mQueue.Count;
+            stats.Overloaded = Overloaded;
+            stats.OverloadProcessCount = mOverloadProcessCount;
+            stats.OverloadProcessHits = mOverloadProcessHits;
+            stats.OverloadThreshold = mPolicy.OverloadThreshold;
         }
         #endregion
 
@@ -228,8 +228,8 @@ namespace Xigadee
                 catch (Exception ex)
                 {
                     //We don't want unexpected exceptions here and to stop the other loggers working.
-                    mStatistics.ErrorIncrement();
-                    mStatistics.Ex = ex;
+                    StatisticsInternal.ErrorIncrement();
+                    StatisticsInternal.Ex = ex;
                 }
             });
         }
@@ -251,7 +251,7 @@ namespace Xigadee
 
                     items++;
 
-                    mStatistics.ActiveDecrement(logEvent.Timestamp);
+                    StatisticsInternal.ActiveDecrement(logEvent.Timestamp);
 
                     //Kick out every 100 loops if there is a timer limit.
                     if (timespaninms.HasValue && (items % 100 == 0))
@@ -272,7 +272,7 @@ namespace Xigadee
                 throw new ServiceNotStartedException();
 
             var item = new ActionQueueContainer<D> { Data = data };
-            item.Timestamp = mStatistics.ActiveIncrement();
+            item.Timestamp = StatisticsInternal.ActiveIncrement();
             mQueue.Enqueue(item);
             mReset.Set();
         }

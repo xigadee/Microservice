@@ -228,5 +228,14 @@ namespace Xigadee
             }
         }
         #endregion
+
+        #region StatisticsRecalculate(S statistics)
+        /// <summary>
+        /// This method restores the default service behaviour.
+        /// </summary>
+        protected override void StatisticsRecalculate(S statistics)
+        {
+        } 
+        #endregion
     }
 }

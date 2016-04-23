@@ -161,7 +161,7 @@ namespace Xigadee
         protected virtual RepositoryHolder<KT, ET> ProcessResponse<KT, ET>(TaskStatus rType, TransmissionPayload payload, bool processAsync)
         {
 
-            mStatistics.ActiveDecrement(payload != null ? payload.Extent : TimeSpan.Zero);
+            StatisticsInternal.ActiveDecrement(payload != null ? payload.Extent : TimeSpan.Zero);
 
             if (processAsync)
                 return new RepositoryHolder<KT, ET>(responseCode: 202, responseMessage: "Accepted");
@@ -184,17 +184,17 @@ namespace Xigadee
                         }
                         catch (Exception ex)
                         {
-                            mStatistics.ErrorIncrement();
+                            StatisticsInternal.ErrorIncrement();
                             return new RepositoryHolder<KT, ET>(responseCode: 500, responseMessage: ex.Message);
                         }
                     case TaskStatus.Canceled:
-                        mStatistics.ErrorIncrement();
+                        StatisticsInternal.ErrorIncrement();
                         return new RepositoryHolder<KT, ET>(responseCode: 408, responseMessage: "Time out");
                     case TaskStatus.Faulted:
-                        mStatistics.ErrorIncrement();
+                        StatisticsInternal.ErrorIncrement();
                         return new RepositoryHolder<KT, ET>() { ResponseCode = (int)PersistenceResponse.GatewayTimeout504, ResponseMessage = "Response timeout." };
                     default:
-                        mStatistics.ErrorIncrement();
+                        StatisticsInternal.ErrorIncrement();
                         return new RepositoryHolder<KT, ET>(responseCode: 500, responseMessage: rType.ToString());
 
                 }

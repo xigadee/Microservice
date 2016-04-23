@@ -41,9 +41,11 @@ namespace Xigadee
                 mContainer = new ConcurrentBag<I>(items);
         }
 
-        protected override void StatisticsRecalculate()
+        protected override void StatisticsRecalculate(S stats)
         {
-            mStatistics.ItemCount = Count;
+            base.StatisticsRecalculate(stats);
+
+            stats.ItemCount = Count;
         }
 
         public IEnumerable<I> Items

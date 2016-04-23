@@ -62,40 +62,34 @@ namespace Xigadee
         }
         #endregion
 
-        protected override void StatisticsRecalculate()
+        protected override void StatisticsRecalculate(ClientPriorityHolderMetricsStatistics stats)
         {
-            try
-            {
-                mStatistics.CapacityPercentage = CapacityPercentage;
+            stats.CapacityPercentage = CapacityPercentage;
 
-                mStatistics.IsDeadletter = IsDeadletter;
+            stats.IsDeadletter = IsDeadletter;
 
-                mStatistics.LastOffered = LastOffered;
-                mStatistics.LastReserved = LastReserved;
-                mStatistics.LastActual = LastActual;
-                mStatistics.LastActualTime = LastActualTime;
+            stats.LastOffered = LastOffered;
+            stats.LastReserved = LastReserved;
+            stats.LastActual = LastActual;
+            stats.LastActualTime = LastActualTime;
+            
+            stats.FabricPollWaitTime = TimeSpan.FromMilliseconds(FabricPollWaitTime ?? 0).ToFriendlyString();
+            stats.LastPoll = ConversionHelper.DeltaAsTimeSpan(LastPollTickCount).ToFriendlyString("Not polled");
 
-                mStatistics.FabricPollWaitTime = TimeSpan.FromMilliseconds(FabricPollWaitTime??0).ToFriendlyString();
+            stats.MaxAllowedPollWait = MaxAllowedPollWait.ToFriendlyString();
+            stats.MinExpectedPollWait = MinExpectedPollWait.ToFriendlyString();
+            stats.PollAchievedBatch = PollAchievedBatch;
+            stats.PollAttemptedBatch = PollAttemptedBatch;
+            stats.PollSuccessRate = $"{PollSuccessRate.ToString("#0.##%")}";
+            stats.PollTimeReduceRatio = $"{(PollTimeReduceRatio ?? 0).ToString("#0.##%")}";
+            stats.Priority = Priority;
+            stats.PriorityCalculated = PriorityCalculated;
+            stats.QueueLength = PriorityQueueLength;
+            stats.PriorityRecalculated = ConversionHelper.DeltaAsTimeSpan(PriorityTickCount).ToFriendlyString("Not recalculated");
+            stats.PriorityWeighting = PriorityWeighting;
+            stats.SkipCount = SkipCount;
+            stats.Status = Status;
 
-                mStatistics.LastPoll = ConversionHelper.DeltaAsTimeSpan(LastPollTickCount).ToFriendlyString("Not polled");
-                mStatistics.MaxAllowedPollWait = MaxAllowedPollWait.ToFriendlyString();
-                mStatistics.MinExpectedPollWait = MinExpectedPollWait.ToFriendlyString();
-                mStatistics.PollAchievedBatch = PollAchievedBatch;
-                mStatistics.PollAttemptedBatch = PollAttemptedBatch;
-                mStatistics.PollSuccessRate = $"{PollSuccessRate.ToString("#0.##%")}";
-                mStatistics.PollTimeReduceRatio = $"{(PollTimeReduceRatio ?? 0).ToString("#0.##%")}";
-                mStatistics.Priority = Priority;
-                mStatistics.PriorityCalculated = PriorityCalculated;
-                mStatistics.QueueLength = PriorityQueueLength;
-                mStatistics.PriorityRecalculated = ConversionHelper.DeltaAsTimeSpan(PriorityTickCount).ToFriendlyString("Not recalculated");
-                mStatistics.PriorityWeighting = PriorityWeighting;
-                mStatistics.SkipCount = SkipCount;
-                mStatistics.Status = Status;
-            }
-            catch (Exception ex)
-            {
-                mStatistics.Ex = ex;
-            }
         }
 
         #region Priority

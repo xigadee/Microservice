@@ -76,33 +76,24 @@ namespace Xigadee
         /// <summary>
         /// This method recalculates the client proiority statistics.
         /// </summary>
-        protected override void StatisticsRecalculate()
+        protected override void StatisticsRecalculate(ClientPriorityCollectionStatistics stats)
         {
-            base.StatisticsRecalculate();
+            stats.Name = $"Iteration {mIteration} @ {Created} {(IsClosed ? "Closed" : "")}";
 
-            try
-            {
-                mStatistics.Name = $"Iteration {mIteration} @ {Created} {(IsClosed ? "Closed" : "")}";
+            var data = new List<ClientPriorityHolderStatistics>();
+            foreach (int priority in Levels)
+                mListenerPollChain[priority].ForIndex((i, g) =>
+                {
+                    var stat = mListenerClients[g].Statistics;
+                    stat.Ordinal = i;
+                    data.Add(stat);
+                });
 
-                var data = new List<ClientPriorityHolderStatistics>();
-                foreach(int priority in Levels)
-                    mListenerPollChain[priority].ForIndex((i, g) =>
-                    {
-                        var stat = mListenerClients[g].Statistics;
-                        stat.Ordinal = i;
-                        data.Add(stat);
-                    });
+            if (Created.HasValue)
+                stats.Created = Created.Value;
 
-                if (Created.HasValue)
-                    mStatistics.Created = Created.Value;
-
-                mStatistics.Algorithm = mPriorityAlgorithm.Name;
-                mStatistics.Clients = data;
-            }
-            catch (Exception ex)
-            {
-                mStatistics.Ex = ex;
-            }
+            stats.Algorithm = mPriorityAlgorithm.Name;
+            stats.Clients = data;
         }
         #endregion
 

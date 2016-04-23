@@ -138,25 +138,20 @@ namespace Xigadee
         /// <summary>
         /// This method recalcuates the component statistics.
         /// </summary>
-        protected override void StatisticsRecalculate()
+        protected override void StatisticsRecalculate(CommandContainerStatistics stats)
         {
-            base.StatisticsRecalculate();
-            try
-            {
-                if (SharedServices != null) mStatistics.SharedServices = mSharedServices.Statistics;
+            base.StatisticsRecalculate(stats);
 
-                mStatistics.Handlers = Commands.SelectMany((h) => h.Items).Select((i) => i.Statistics).ToList();
+            if (SharedServices != null)
+                stats.SharedServices = mSharedServices.Statistics;
 
-                mStatistics.Commands = Commands.OfType<ICommand>().Select((h) => (CommandStatistics)h.StatisticsGet()).ToList();
+            stats.Handlers = Commands.SelectMany((h) => h.Items).Select((i) => i.Statistics).ToList();
 
-                mStatistics.Jobs = Commands.OfType<IJob>().Select((h) => h.StatisticsGet() as JobStatistics).Where((s) => s != null).ToList();
+            stats.Commands = Commands.OfType<ICommand>().Select((h) => (CommandStatistics)h.StatisticsGet()).ToList();
 
-                mStatistics.Cache = Commands.OfType<ICacheComponent>().Select((h) => (MessagingStatistics)h.StatisticsGet()).ToList();
-            }
-            catch (Exception ex)
-            {
+            stats.Jobs = Commands.OfType<IJob>().Select((h) => h.StatisticsGet() as JobStatistics).Where((s) => s != null).ToList();
 
-            }
+            stats.Cache = Commands.OfType<ICacheComponent>().Select((h) => (MessagingStatistics)h.StatisticsGet()).ToList();
         }
         #endregion
 

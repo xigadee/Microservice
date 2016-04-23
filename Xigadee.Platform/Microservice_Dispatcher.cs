@@ -24,7 +24,7 @@ namespace Xigadee
         /// <param name="requestPayload">The request payload.</param>
         protected virtual async Task Execute(TransmissionPayload requestPayload)
         {
-            int timerStart = mStatistics.ActiveIncrement();
+            int timerStart = StatisticsInternal.ActiveIncrement();
 
             bool isSuccess = false;
             try
@@ -114,7 +114,7 @@ namespace Xigadee
                 if (requestPayload.DispatcherCanSignal)
                     requestPayload.Signal(isSuccess);
 
-                int delta = mStatistics.ActiveDecrement(timerStart);
+                int delta = StatisticsInternal.ActiveDecrement(timerStart);
 
                 //Log the telemtry for the specific message channelId.
                 mTelemetry.Log(requestPayload.Message.ToKey(), delta, isSuccess);
@@ -122,7 +122,7 @@ namespace Xigadee
                 if (isSuccess)
                     mLogger.LogPayload(requestPayload, direction:DispatcherLoggerDirection.Outgoing, timespan: TimeSpan.FromMilliseconds(delta));
                 else
-                    mStatistics.ErrorIncrement();
+                    StatisticsInternal.ErrorIncrement();
             }
         }
         #endregion

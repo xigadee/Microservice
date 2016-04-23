@@ -68,23 +68,13 @@ namespace Xigadee
         } 
         #endregion
 
-        protected override void StatisticsRecalculate()
+        protected override void StatisticsRecalculate(ResourceTrackerStatistics stats)
         {
-            base.StatisticsRecalculate();
+            if (mResources!=null)
+                stats.Resources = mResources.Values.ToArray();
 
-            try
-            {
-                if (mResources!=null)
-                    mStatistics.Resources = mResources.Values.ToArray();
-
-                if (mResourceRateLimiters != null)
-                    mStatistics.RateLimiters = mResourceRateLimiters.Values.Select((v) => v.Debug).ToArray();
-
-            }
-            catch (Exception)
-            {
-                //We don't want to throw an exception here.
-            }
+            if (mResourceRateLimiters != null)
+                stats.RateLimiters = mResourceRateLimiters.Values.Select((v) => v.Debug).ToArray();
         }
 
         protected ResourceStatistics ResourceCreate(ResourceProfile profile)

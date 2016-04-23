@@ -69,32 +69,22 @@ namespace Xigadee
         /// <summary>
         /// This method calculates the statistics for the client.
         /// </summary>
-        protected override void StatisticsRecalculate()
+        protected override void StatisticsRecalculate(ClientPriorityHolderStatistics stats)
         {
-            base.StatisticsRecalculate();
+            stats.Id = Id;
+            stats.ClientId = Client.Id;       
 
-            try
-            {
-                mStatistics.Id = Id;
-                mStatistics.ClientId = Client.Id;
-
-                mStatistics.Algorithm = mPriorityAlgorithm.Name;
-                mStatistics.Name = Name;
-                mStatistics.MappingChannel = mMappingChannel;
-
-                mStatistics.IsReserved = IsReserved;
-                mStatistics.Reserved = Reserved;
-
-                mStatistics.LastException = LastException;
-                mStatistics.LastExceptionTime = LastExceptionTime;
-
-
-                mStatistics.Metrics = mMetrics.Statistics;
-            }
-            catch (Exception ex)
-            {
-                mStatistics.Ex = ex;
-            }
+            stats.Algorithm = mPriorityAlgorithm.Name;
+            stats.Name = Name;
+            stats.MappingChannel = mMappingChannel;
+            
+            stats.IsReserved = IsReserved;
+            stats.Reserved = Reserved;
+            
+            stats.LastException = LastException;
+            stats.LastExceptionTime = LastExceptionTime;
+            
+            stats.Metrics = mMetrics.Statistics;
         }
         #endregion
 

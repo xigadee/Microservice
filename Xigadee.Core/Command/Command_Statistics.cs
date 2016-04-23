@@ -9,32 +9,27 @@ namespace Xigadee
         /// <summary>
         /// This override lists the handlers supported for each handler.
         /// </summary>
-        protected override void StatisticsRecalculate()
+        protected override void StatisticsRecalculate(S stats)
         {
-            try
+            base.StatisticsRecalculate(stats);
+
+            stats.Name = FriendlyName;
+
+            stats.SupportedHandlers = mSupported.Select((h) => string.Format("{0}.{1} {2}", h.Key.Header.ToKey(), h.Key.ClientId, h.Key.IsDeadLetter ? "DL" : "")).ToList();
+
+            if (mPolicy.OutgoingRequestsEnabled)
             {
-                mStatistics.Name = FriendlyName;
-
-                mStatistics.SupportedHandlers = mSupported.Select((h) => string.Format("{0}.{1} {2}", h.Key.Header.ToKey(), h.Key.ClientId, h.Key.IsDeadLetter ? "DL" : "")).ToList();
-
-                if (mPolicy.OutgoingRequestsEnabled)
-                {
-                    mStatistics.OutgoingRequests = mOutgoingRequests?.Select((h) => h.Value.Debug).ToList();
-                }
-
-                mStatistics.MasterJob.Active = mPolicy.MasterJobEnabled;
-                if (mPolicy.MasterJobEnabled)
-                {
-                    mStatistics.MasterJob.Server = string.Format("{0} @ {1:o}", mCurrentMasterServiceId, mCurrentMasterReceiveTime);
-                    mStatistics.MasterJob.Status = string.Format("Status={0} Channel={1}/{2} Type={3}", State.ToString(), NegotiationChannelId, NegotiationChannelPriority, NegotiationMessageType);
-                    mStatistics.MasterJob.Standbys = mStandbyPartner.Values.ToList();
-                }
+                stats.OutgoingRequests = mOutgoingRequests?.Select((h) => h.Value.Debug).ToList();
             }
-            catch (Exception ex)
+
+            stats.MasterJob.Active = mPolicy.MasterJobEnabled;
+            if (mPolicy.MasterJobEnabled)
             {
-                //We don't want to throw an exception here.
-                mStatistics.Ex = ex;
+                stats.MasterJob.Server = string.Format("{0} @ {1:o}", mCurrentMasterServiceId, mCurrentMasterReceiveTime);
+                stats.MasterJob.Status = string.Format("Status={0} Channel={1}/{2} Type={3}", State.ToString(), NegotiationChannelId, NegotiationChannelPriority, NegotiationMessageType);
+                stats.MasterJob.Standbys = mStandbyPartner.Values.ToList();
             }
+
         }
     }
 }

@@ -74,20 +74,20 @@ namespace Xigadee
         /// <summary>
         /// This method recalculates the statistics for the async cache
         /// </summary>
-        protected override void StatisticsRecalculate()
+        protected override void StatisticsRecalculate(EntityCacheStatistics stats)
         {
-            base.StatisticsRecalculate();
+            base.StatisticsRecalculate(stats);
 
-            mStatistics.CurrentCached = mEntities.Count;
-            mStatistics.CurrentCachedEntities = mEntities.Values.Where((e) => e.Entity != null).LongCount();
-            mStatistics.CurrentCacheLimit = mPolicy.EntityCacheLimit;
-            mStatistics.TrackEvents = mPolicy.EntityChangeTrackEvents;
-            mStatistics.WaitCycles = mWaitCycles;
-            mStatistics.Removed = mRemoved;
-            mStatistics.Added = mAdded;
-            mStatistics.LastScheduleTime = mLastScheduleTime;
+            stats.CurrentCached = mEntities.Count;
+            stats.CurrentCachedEntities = mEntities.Values.Where((e) => e.Entity != null).LongCount();
+            stats.CurrentCacheLimit = mPolicy.EntityCacheLimit;
+            stats.TrackEvents = mPolicy.EntityChangeTrackEvents;
+            stats.WaitCycles = mWaitCycles;
+            stats.Removed = mRemoved;
+            stats.Added = mAdded;
+            stats.LastScheduleTime = mLastScheduleTime;
 
-            mStatistics.Current = mEntities.Values.Select((e) => e.Debug).ToList();
+            stats.Current = mEntities.Values.Select((e) => e.Debug).ToList();
 
             //mStatistics.DefaultExpiry = mDefaultExpiry;
         }
@@ -323,7 +323,7 @@ namespace Xigadee
             var traceId = mResourceConsumer.Start("TryGetCacheHolder", Guid.NewGuid());
             ResourceRequestResult status = ResourceRequestResult.Unknown;
             EntityCacheHolder<K, E> cacheHolder;
-            int start = mStatistics.ActiveIncrement();
+            int start = StatisticsInternal.ActiveIncrement();
 
             try
             {
@@ -384,9 +384,9 @@ namespace Xigadee
             }
             finally
             {
-                mStatistics.ActiveDecrement(start);
+                StatisticsInternal.ActiveDecrement(start);
                 if (status != ResourceRequestResult.Success)
-                    mStatistics.ErrorIncrement();
+                    StatisticsInternal.ErrorIncrement();
 
                 mResourceConsumer.End(traceId, start, status);
             }

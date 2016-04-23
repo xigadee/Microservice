@@ -39,11 +39,11 @@ namespace Xigadee
         } 
         #endregion
 
-        protected override void StatisticsRecalculate()
+        protected override void StatisticsRecalculate(QueueTrackerStatistics stats)
         {
-            base.StatisticsRecalculate();
+            base.StatisticsRecalculate(stats);
 
-            mStatistics.Queues = mTasksQueue.Values.Select((q) => q.Statistics).ToList();
+            stats.Queues = mTasksQueue.Values.Select((q) => q.Statistics).ToList();
         }
 
         public bool IsEmpty
