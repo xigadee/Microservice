@@ -68,7 +68,7 @@ namespace Xigadee
         /// </summary>
         public event EventHandler<TaskTracker> DiagnosticOnExecuteTaskBeforeEnqueueFailed;
         /// <summary>
-        /// This event can be attached to identify a failure to enqueu a task.
+        /// This event can be attached to identify a failure to enqueue a task.
         /// </summary>
         public event EventHandler<TaskTracker> DiagnosticOnExecuteTaskBeforeException;
         /// <summary>
@@ -83,6 +83,14 @@ namespace Xigadee
         /// This event can be attached to diagnose an orphan event that has already left the collection after being returned.
         /// </summary>
         public event EventHandler<TaskTracker> DiagnosticOnExecuteTaskCompleteOrphan;
+        /// <summary>
+        /// This event is called after a task has been cancelled.
+        /// </summary>
+        public event EventHandler<TaskTracker> DiagnosticOnExecuteTaskKilled;
+        /// <summary>
+        /// This event is called after a task has been killed.
+        /// </summary>
+        public event EventHandler<TaskTracker> DiagnosticOnExecuteTaskCancelled;
         #endregion
         #region Constructor
         /// <summary>
@@ -633,6 +641,8 @@ namespace Xigadee
             {
                 Logger?.LogException("TaskCancel exception", ex);
             }
+
+            TaskTrackerEvent(DiagnosticOnExecuteTaskCancelled, tracker);
         }
         #endregion
         #region TaskKill(TaskTracker tracker)
@@ -656,6 +666,8 @@ namespace Xigadee
                 mAvailability.Decrement(tracker, true);
                 LoopSet();
             }
+
+            TaskTrackerEvent(DiagnosticOnExecuteTaskKilled, tracker);
         }
         #endregion
 
