@@ -9,6 +9,10 @@ namespace Test.Xigadee
 {
     public class TestMicroservice:Microservice
     {
+        public TestMicroservice() : base(name: "Test")
+        {
+
+        }
 
         protected override TaskManager InitialiseTaskManager()
         {

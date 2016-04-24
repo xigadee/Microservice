@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -58,6 +60,8 @@ namespace Xigadee
             };
         }
 
+
+
         public static CommandPolicy ToMasterJob(string negotiationChannelId, string negotiationChannelType = null, int negotiationChannelPriority = 1, string name = null)
         {
             return new CommandPolicy()
@@ -70,6 +74,17 @@ namespace Xigadee
                 , MasterJobName = name
                 , OutgoingRequestsEnabled = true
             };
+        }
+    }
+
+    public static class CommandPolicyHelper
+    {
+        public static CommandSchedule ToCommandSchedule(this CommandPolicy policy, Func<Schedule, CancellationToken, Task> execute, string name)
+        {
+            return new CommandSchedule(execute
+                , policy.JobPollSchedule
+                , name
+                , policy.JobPollIsLongRunning);
         }
     }
 }

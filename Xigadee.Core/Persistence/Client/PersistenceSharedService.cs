@@ -37,7 +37,8 @@ namespace Xigadee
         /// </summary>
         /// <param name="responseChannel">This is the internal response channel that the message will listen on.</param>
         /// <param name="cacheManager"></param>
-        public PersistenceSharedService(string responseChannel = "internalpersistence", ICacheManager<K, E> cacheManager = null):base(cacheManager)
+        public PersistenceSharedService(string responseChannel = "internalpersistence", ICacheManager<K, E> cacheManager = null
+            , TimeSpan? defaultRequestTimespan = null) :base(cacheManager, defaultRequestTimespan)
         {
             mMessageType = typeof(E).Name;
             mResponseId = new MessageFilterWrapper(new ServiceMessageHeader(responseChannel, mMessageType));
@@ -105,7 +106,9 @@ namespace Xigadee
             bool processAsync = rq.Settings?.ProcessAsync ?? false;
             payloadRq.Options = ProcessOptions.RouteInternal;
             var message = payloadRq.Message;
-            payloadRq.MaxProcessingTime = rq.Settings?.WaitTime;
+
+            payloadRq.MaxProcessingTime = rq.Settings?.WaitTime ?? mDefaultRequestTimespan;
+
             payloadRq.MessageObject = rq;
             message.ChannelId = ChannelId;
             message.ChannelPriority = processAsync ? 0:-1;

@@ -31,6 +31,7 @@ namespace Test.Xigadee
         [TestMethod]
         public void CreateReadUpdateDeleteEntity()
         {
+            
             Assert.AreEqual(Service.Status, ServiceStatus.Running);
 
             var entity = new MyTestEntity();

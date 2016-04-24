@@ -21,7 +21,8 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor. This set the default routing to external only.
         /// </summary>
-        public PersistenceMessageInitiator(ICacheManager<K, E> cacheManager = null) : base(cacheManager)
+        public PersistenceMessageInitiator(ICacheManager<K, E> cacheManager = null, TimeSpan? defaultRequestTimespan = null) 
+            : base(cacheManager, defaultRequestTimespan)
         {
             RoutingDefault = ProcessOptions.RouteExternal;
         }
@@ -93,8 +94,7 @@ namespace Xigadee
                 payload.Message.MessageType = EntityType;
                 payload.Message.ActionType = actionType;
 
-                if (rq.Settings != null && rq.Settings.WaitTime.HasValue)
-                    payload.MaxProcessingTime = rq.Settings.WaitTime;
+                payload.MaxProcessingTime = rq.Settings?.WaitTime ?? mDefaultRequestTimespan;
 
                 return await TransmitAsync(payload, ProcessResponse<KT, ET>, processAsync);
             }
@@ -106,43 +106,6 @@ namespace Xigadee
             }
         }
         #endregion
-        #region ProcessResponse<KT, ET>(TaskStatus rType, TransmissionPayload payload, bool processAsync)
-        ///// <summary>
-        ///// This method process the response.
-        ///// </summary>
-        ///// <typeparam Name="KT">The key type.</typeparam>
-        ///// <typeparam Name="ET">The entity type.</typeparam>
-        ///// <param Name="rType">The response enumeration.</param>
-        ///// <param Name="payload">The message payload.</param>
-        ///// <param name="rType"></param>
-        ///// <returns>Returns a new repository holder.</returns>
-        //protected override RepositoryHolder<KT, ET> ProcessResponse<KT, ET>(TaskStatus rType, TransmissionPayload payload, bool processAsync)
-        //{
-        //    mStatistics.ActiveDecrement(payload != null ? payload.Extent : TimeSpan.Zero);
 
-        //    if (processAsync)
-        //        return new RepositoryHolder<KT, ET> { ResponseCode = (int)PersistenceResponse.Accepted202, ResponseMessage = "Accepted" };
-
-        //    try
-        //    {
-        //        switch (rType)
-        //        {
-        //            case TaskStatus.RanToCompletion:
-        //                return PayloadSerializer.PayloadDeserialize<RepositoryHolder<KT, ET>>(payload);
-        //            case TaskStatus.Canceled:
-        //            case TaskStatus.Faulted:
-        //                return new RepositoryHolder<KT, ET>() { ResponseCode = (int)PersistenceResponse.GatewayTimeout504, ResponseMessage = "Response timeout." };
-        //            default:
-        //                Logger.LogMessage(LoggingLevel.Error, "Unknown task response of " + rType.ToString());
-        //                return new RepositoryHolder<KT, ET> {ResponseCode = (int)PersistenceResponse.UnknownError500, ResponseMessage = "Unknown error."};
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Logger.LogException("Error processing response for task status " + rType, ex);
-        //        throw;
-        //    }
-        //} 
-        #endregion
     }
 }

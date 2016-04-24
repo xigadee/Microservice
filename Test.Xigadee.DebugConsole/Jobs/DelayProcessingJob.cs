@@ -18,11 +18,8 @@ namespace Test.Xigadee
 
         protected override void TimerPollSchedulesRegister()
         {
-            var job = new CommandSchedule(ExecuteJob
-                , mPolicy.JobPollSchedule
-                , $"DelayedProcessingJob: {GetType().Name}"
-                , false);
-
+            var job = mPolicy.ToCommandSchedule(ExecuteJob, $"DelayedProcessingJob: {GetType().Name}");
+            
             mSchedules.Add(job);
         }
 

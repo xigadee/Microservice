@@ -31,6 +31,10 @@ namespace Xigadee
         /// This is the collection of inplay messages.
         /// </summary>
         protected ConcurrentDictionary<string, OutgoingRequestTracker> mOutgoingRequests;
+
+        public event EventHandler<OutgoingRequestTracker> DiagnosticsOnOutgoingRequest;
+        public event EventHandler<OutgoingRequestTracker> DiagnosticsOnOutgoingRequestTimeout;
+        public event EventHandler<OutgoingRequestTracker> DiagnosticsOnOutgoingRequestComplete;
         #endregion
 
         #region OutgoingRequestsTimeoutStart()
@@ -284,7 +288,7 @@ namespace Xigadee
         /// <summary>
         /// This class holds the parent task while it is being processed.
         /// </summary>
-        protected class OutgoingRequestTracker
+        public class OutgoingRequestTracker
         {
             public OutgoingRequestTracker(string id, TransmissionPayload payload, TimeSpan ttl, int? start = null)
             {

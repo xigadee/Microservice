@@ -23,15 +23,18 @@ namespace Xigadee
         /// This is the internal cache manager that can be set to redirect calls to the cache. 
         /// </summary>
         protected readonly ICacheManager<K, E> mCacheManager;
+
+        protected readonly TimeSpan? mDefaultRequestTimespan;
         #endregion
         #region Constructor
         /// <summary>
         /// This is the default constructor which sets the cache manager.
         /// </summary>
         /// <param name="cacheManager">THe cache manager.</param>
-        protected PersistenceInitiatorBase(ICacheManager<K, E> cacheManager = null)
+        protected PersistenceInitiatorBase(ICacheManager<K, E> cacheManager = null, TimeSpan? defaultRequestTimespan = null)
         {
             mCacheManager = cacheManager ?? new NullCacheManager<K, E>();
+            mDefaultRequestTimespan = defaultRequestTimespan;
         }
         #endregion
 
@@ -50,12 +53,12 @@ namespace Xigadee
 
         #region Persistence shortcuts
 
-        public async Task<RepositoryHolder<K, E>> Create(E entity, RepositorySettings settings = null)
+        public virtual async Task<RepositoryHolder<K, E>> Create(E entity, RepositorySettings settings = null)
         {
             return await TransmitInternal(EntityActions.Create, new RepositoryHolder<K, E> { Entity = entity, Settings = settings });
         }
 
-        public async Task<RepositoryHolder<K, E>> Read(K key, RepositorySettings settings = null)
+        public virtual async Task<RepositoryHolder<K, E>> Read(K key, RepositorySettings settings = null)
         {
             if ((settings?.UseCache ?? true) && mCacheManager.IsActive)
             {
@@ -69,7 +72,7 @@ namespace Xigadee
             return await TransmitInternal(EntityActions.Read, new RepositoryHolder<K, E> { Key = key, Settings = settings });
         }
 
-        public async Task<RepositoryHolder<K, E>> ReadByRef(string refKey, string refValue, RepositorySettings settings = null)
+        public virtual async Task<RepositoryHolder<K, E>> ReadByRef(string refKey, string refValue, RepositorySettings settings = null)
         {
             if ((settings?.UseCache ?? true) && mCacheManager.IsActive)
             {
@@ -86,22 +89,22 @@ namespace Xigadee
             return await TransmitInternal(EntityActions.ReadByRef, new RepositoryHolder<K, E> { KeyReference = new Tuple<string, string>(refKey, refValue), Settings = settings });
         }
 
-        public async Task<RepositoryHolder<K, E>> Update(E entity, RepositorySettings settings = null)
+        public virtual async Task<RepositoryHolder<K, E>> Update(E entity, RepositorySettings settings = null)
         {
             return await TransmitInternal(EntityActions.Update, new RepositoryHolder<K, E> { Entity = entity, Settings = settings });
         }
 
-        public async Task<RepositoryHolder<K, Tuple<K, string>>> Delete(K key, RepositorySettings settings = null)
+        public virtual async Task<RepositoryHolder<K, Tuple<K, string>>> Delete(K key, RepositorySettings settings = null)
         {
             return await TransmitInternal(EntityActions.Delete, new RepositoryHolder<K, Tuple<K, string>> { Key = key, Settings = settings });
         }
 
-        public async Task<RepositoryHolder<K, Tuple<K, string>>> DeleteByRef(string refKey, string refValue, RepositorySettings settings = null)
+        public virtual async Task<RepositoryHolder<K, Tuple<K, string>>> DeleteByRef(string refKey, string refValue, RepositorySettings settings = null)
         {
             return await TransmitInternal(EntityActions.DeleteByRef, new RepositoryHolder<K, Tuple<K, string>> { KeyReference = new Tuple<string, string>(refKey, refValue), Settings = settings });
         }
 
-        public async Task<RepositoryHolder<K, Tuple<K, string>>> Version(K key, RepositorySettings settings = null)
+        public virtual async Task<RepositoryHolder<K, Tuple<K, string>>> Version(K key, RepositorySettings settings = null)
         {
             if ((settings?.UseCache ?? true) && mCacheManager.IsActive)
             {
@@ -115,7 +118,7 @@ namespace Xigadee
             return await TransmitInternal(EntityActions.Version, new RepositoryHolder<K, Tuple<K, string>> { Key = key, Settings = settings });
         }
 
-        public async Task<RepositoryHolder<K, Tuple<K, string>>> VersionByRef(string refKey, string refValue, RepositorySettings settings = null)
+        public virtual async Task<RepositoryHolder<K, Tuple<K, string>>> VersionByRef(string refKey, string refValue, RepositorySettings settings = null)
         {
             if ((settings?.UseCache ?? true) && mCacheManager.IsActive)
             {
@@ -129,7 +132,7 @@ namespace Xigadee
             return await TransmitInternal(EntityActions.VersionByRef, new RepositoryHolder<K, Tuple<K, string>> { KeyReference = new Tuple<string, string>(refKey, refValue), Settings = settings });
         }
 
-        public async Task<RepositoryHolder<SearchRequest, SearchResponse<K>>> Search(SearchRequest rq, RepositorySettings settings = null)
+        public virtual async Task<RepositoryHolder<SearchRequest, SearchResponse<K>>> Search(SearchRequest rq, RepositorySettings settings = null)
         {
             //if ((settings?.UseCache ?? true) && mCacheManager.IsActive)
             //{
@@ -160,7 +163,6 @@ namespace Xigadee
         /// <returns></returns>
         protected virtual RepositoryHolder<KT, ET> ProcessResponse<KT, ET>(TaskStatus rType, TransmissionPayload payload, bool processAsync)
         {
-
             StatisticsInternal.ActiveDecrement(payload != null ? payload.Extent : TimeSpan.Zero);
 
             if (processAsync)

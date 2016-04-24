@@ -27,7 +27,8 @@ namespace Xigadee
         {
         }
     }
-
+    #endregion
+    #region CommandBase<S,P>
     /// <summary>
     /// This is the extended command constructor that allows for custom statistics.
     /// </summary>
@@ -182,7 +183,7 @@ namespace Xigadee
         /// <summary>
         /// This is the link to the Microservice dispatcher.
         /// </summary>
-        public Action<IService, TransmissionPayload> Dispatcher
+        public virtual Action<IService, TransmissionPayload> Dispatcher
         {
             get;
             set;
