@@ -269,20 +269,34 @@ namespace Xigadee
             {
                 mReferenceModifyLock.EnterWriteLock();
 
-                E entity = holder.Rq.Entity;
-                var jsonHolder = mTransform.JsonMaker(entity);
+                JsonHolder<K> jsonHolderExisting;
+                bool successExisting = mContainer.TryGetValue(key, out jsonHolderExisting);
+                if (!successExisting)
+                    return new PersistenceResponseHolder<E>(PersistenceResponse.NotFound404);
 
-                bool success = false;//mContainer.TryUpdate(key, jsonHolder,
+                E newEntity = holder.Rq.Entity;
+                var oldEntity = mTransform.PersistenceEntitySerializer.Deserializer(jsonHolderExisting.Json);
+                var ver = mTransform.Version;
+                if (ver.SupportsOptimisticLocking)
+                {
+                    if (ver.EntityVersionAsString(oldEntity)!= ver.EntityVersionAsString(newEntity))
+                        return new PersistenceResponseHolder<E>(PersistenceResponse.PreconditionFailed412);
+                }
 
-                if (success)
-                    return new PersistenceResponseHolder<E>(PersistenceResponse.Ok200)
-                    {
-                          Content = jsonHolder.Json
-                        , IsSuccess = true
-                        , Entity = mTransform.PersistenceEntitySerializer.Deserializer(jsonHolder.Json)
-                    };
-                else
-                    return new PersistenceResponseHolder<E>(PersistenceResponse.PreconditionFailed412);
+                if (ver.SupportsVersioning)
+                    ver.EntityVersionUpdate(newEntity);
+
+                var jsonHolder = mTransform.JsonMaker(newEntity);
+
+                mContainer[key] = jsonHolder;
+
+                return new PersistenceResponseHolder<E>(PersistenceResponse.Ok200)
+                {
+                      Content = jsonHolder.Json
+                    , IsSuccess = true
+                    , Entity = newEntity
+                };
+
             }
             finally
             {
