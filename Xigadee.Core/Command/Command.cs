@@ -179,16 +179,6 @@ namespace Xigadee
             get; set;
         }
         #endregion
-        #region Dispatcher
-        /// <summary>
-        /// This is the link to the Microservice dispatcher.
-        /// </summary>
-        public virtual Action<IService, TransmissionPayload> Dispatcher
-        {
-            get;
-            set;
-        }
-        #endregion
 
         #region StartupPriority
         /// <summary>

@@ -107,5 +107,19 @@ namespace Xigadee
         }
         #endregion
 
+
+        #region TaskManagerTimeoutSupported
+        /// <summary>
+        /// Shared services operate as remote bridge and provides its own timeout support
+        /// as there is no guarantee that a message will return from a remote party.
+        /// </summary>
+        public override bool TaskManagerTimeoutSupported
+        {
+            get
+            {
+                return false;
+            }
+        }
+        #endregion
     }
 }

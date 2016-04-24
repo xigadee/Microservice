@@ -6,14 +6,6 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    /// <summary>
-    /// This class is used for persistence based shortcuts.
-    /// </summary>
-    public class PersistenceInitiatorPolicy: CommandPolicy
-    {
-        public override bool OutgoingRequestsEnabled { get; set; } = true;
-    }
-
     public abstract class PersistenceInitiatorBase<K, E> : CommandBase<PersistenceInitiatorStatistics, PersistenceInitiatorPolicy>
         , IRepositoryAsync<K, E>
         where K : IEquatable<K>
@@ -23,7 +15,9 @@ namespace Xigadee
         /// This is the internal cache manager that can be set to redirect calls to the cache. 
         /// </summary>
         protected readonly ICacheManager<K, E> mCacheManager;
-
+        /// <summary>
+        /// This is the default timespan that a message will wait if not set.
+        /// </summary>
         protected readonly TimeSpan? mDefaultRequestTimespan;
         #endregion
         #region Constructor

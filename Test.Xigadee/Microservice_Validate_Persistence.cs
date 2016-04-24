@@ -42,7 +42,8 @@ namespace Test.Xigadee
 
             var entity = new MyTestEntity2();
 
-            var response1 = mPersistenceService2.Create(entity).Result;
+            //mPersistenceCommand2.DiagnosticsSetMessageDelay(TimeSpan.FromSeconds(5));
+            var response1 = mPersistenceService2.Create(entity, new RepositorySettings() { WaitTime = TimeSpan.FromSeconds(10) }).Result;
             Assert.IsTrue(response1.IsSuccess);
             Assert.AreEqual(response1.ResponseCode, 201);
 

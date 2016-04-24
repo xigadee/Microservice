@@ -138,7 +138,7 @@ namespace Xigadee
         /// This method can be used during testing. It will insert a delay to the task.
         /// </summary>
         /// <param name="delay">The delay.</param>
-        public void TestingSetMessageDelay(TimeSpan? delay)
+        public void DiagnosticsSetMessageDelay(TimeSpan? delay)
         {
             mDelay = delay;
         }
@@ -189,13 +189,22 @@ namespace Xigadee
 
         }
 
+        private async Task<bool> ProvideTaskDelay(CancellationToken Cancel)
+        {
+            if (!mDelay.HasValue)
+                return true;
+           
+            await Task.Delay(mDelay.Value, Cancel);
 
+            return Cancel.IsCancellationRequested;
+        }
 
         protected override async Task<IResponseHolder<E>> InternalCreate(K key
             , PersistenceRequestHolder<K, E> holder)
         {
-            if (mDelay.HasValue)
-                await Task.Delay(mDelay.Value);
+            if (await ProvideTaskDelay(holder.Prq.Cancel))
+                return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
+
 
             try
             {
@@ -220,8 +229,9 @@ namespace Xigadee
         protected override async Task<IResponseHolder<E>> InternalRead(K key
             , PersistenceRequestHolder<K, E> holder)
         {
-            if (mDelay.HasValue)
-                await Task.Delay(mDelay.Value);
+            if (await ProvideTaskDelay(holder.Prq.Cancel))
+                return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
+
             try
             {
                 mReferenceModifyLock.EnterReadLock();
@@ -243,8 +253,9 @@ namespace Xigadee
         protected override async Task<IResponseHolder<E>> InternalReadByRef(Tuple<string, string> reference
             , PersistenceRequestHolder<K, E> holder)
         {
-            if (mDelay.HasValue)
-                await Task.Delay(mDelay.Value);
+            if (await ProvideTaskDelay(holder.Prq.Cancel))
+                return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
+
             try
             {
                 mReferenceModifyLock.EnterReadLock();
@@ -263,8 +274,9 @@ namespace Xigadee
 
         protected override async Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRequestHolder<K, E> holder)
         {
-            if (mDelay.HasValue)
-                await Task.Delay(mDelay.Value);
+            if (await ProvideTaskDelay(holder.Prq.Cancel))
+                return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
+
             try
             {
                 mReferenceModifyLock.EnterWriteLock();
@@ -306,8 +318,9 @@ namespace Xigadee
 
         protected override async Task<IResponseHolder> InternalDelete(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            if (mDelay.HasValue)
-                await Task.Delay(mDelay.Value);
+            if (await ProvideTaskDelay(holder.Prq.Cancel))
+                return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
+
             try
             {
                 mReferenceModifyLock.EnterWriteLock();
@@ -328,8 +341,9 @@ namespace Xigadee
         protected override async Task<IResponseHolder> InternalDeleteByRef(Tuple<string, string> reference
             , PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            if (mDelay.HasValue)
-                await Task.Delay(mDelay.Value);
+            if (await ProvideTaskDelay(holder.Prq.Cancel))
+                return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
+
             try
             {
                 mReferenceModifyLock.EnterWriteLock();
@@ -348,8 +362,9 @@ namespace Xigadee
 
         protected override async Task<IResponseHolder> InternalVersion(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            if (mDelay.HasValue)
-                await Task.Delay(mDelay.Value);
+            if (await ProvideTaskDelay(holder.Prq.Cancel))
+                return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
+
             try
             {
                 mReferenceModifyLock.EnterReadLock();
@@ -370,8 +385,8 @@ namespace Xigadee
 
         protected override async Task<IResponseHolder> InternalVersionByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            if (mDelay.HasValue)
-                await Task.Delay(mDelay.Value);
+            if (await ProvideTaskDelay(holder.Prq.Cancel))
+                return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
 
             try
             {

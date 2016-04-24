@@ -114,6 +114,7 @@
     <Compile Include="Logging\PersistencePayloadLogEvent.cs" />
     <Compile Include="Persistence\CacheManager\CacheManagerBase.cs" />
     <Compile Include="Persistence\Client\PersistenceInitiatorBase.cs" />
+    <Compile Include="Persistence\Client\PersistenceInitiatorPolicy.cs" />
     <Compile Include="Persistence\Client\PersistenceInitiatorStatistics.cs" />
     <Compile Include="Persistence\Policy\CircuitBreakerPolicy.cs" />
     <Compile Include="Persistence\Policy\PersistenceCommandPolicy.cs" />
@@ -188,7 +189,6 @@
     <Compile Include="Interfaces\IPayloadSerializationContainer.cs" />
     <Compile Include="Interfaces\IService.cs" />
     <Compile Include="Interfaces\IServiceEventSource.cs" />
-    <Compile Include="Interfaces\IServiceInitiator.cs" />
     <Compile Include="Interfaces\ISupportsMessage.cs" />
     <Compile Include="Interfaces\ITelemetry.cs" />
     <Compile Include="Communication\ClientHolder.cs" />

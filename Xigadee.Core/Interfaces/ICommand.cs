@@ -7,9 +7,20 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public interface ICommand: //IMessageHandlerDynamic//, IMessageInitiator//, IJob,
-        IRequireScheduler, IServiceInitiator, IPayloadSerializerConsumer, IServiceEventSource, IServiceLogger, IServiceOriginator
+    public interface ICommand: IService,
+        IRequireScheduler, IPayloadSerializerConsumer, IServiceEventSource, IServiceLogger, IServiceOriginator//IServiceInitiator, 
     {
+        bool TaskManagerTimeoutSupported { get; }
+
+        Action<IService, TransmissionPayload> TaskManager { get; set; }
+
+        /// <summary>
+        /// This method is called for processes that support direct notification from the Task Manager that a process has been
+        /// cancelled.
+        /// </summary>
+        /// <param name="originatorKey">The is the originator tracking key.</param>
+        void TaskManagerTimeoutNotification(string originatorKey);
+
         /// <summary>
         /// This method register the commands.
         /// </summary>
@@ -40,16 +51,11 @@ namespace Xigadee
         /// This event is used to signal a change of registered commands.
         /// </summary>
         event EventHandler<CommandChange> OnCommandChange;
-        /// <summary>
-        /// This method is called to calculate expired requests.
-        /// </summary>
-        Task OutgoingRequestsProcessTimeouts(Schedule schedule, CancellationToken token);
-        /// <summary>
-        /// This method is called for processes that support direct notification from the Task Manager that a process has been
-        /// cancelled.
-        /// </summary>
-        /// <param name="originatorKey">The is the originator tracking key.</param>
-        void OutgoingRequestDirectAbort(string originatorKey);
+        ///// <summary>
+        ///// This method is called to calculate expired requests.
+        ///// </summary>
+        //Task OutgoingRequestsProcessTimeouts(Schedule schedule, CancellationToken token);
+
 
     }
 

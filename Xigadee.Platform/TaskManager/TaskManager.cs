@@ -189,9 +189,10 @@ namespace Xigadee
         {
             TaskTracker tracker = TrackerCreateFromPayload(payload, service.GetType().Name);
 
-            if (service is ICommand)
+            ICommand command = service as ICommand;
+            if (command != null && command.TaskManagerTimeoutSupported)
             {
-                tracker.Callback = service as ICommand;
+                tracker.Callback = command;
                 tracker.CallbackId = payload?.Message?.OriginatorKey;
             }
 

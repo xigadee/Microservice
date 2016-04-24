@@ -320,8 +320,8 @@ namespace Xigadee
                     ((IServiceOriginator)service).OriginatorId = ExternalServiceId;
 
                 //Set the transmission action.
-                if (service is IServiceInitiator)
-                    ((IServiceInitiator)service).Dispatcher = mTaskContainer.ExecuteOrEnqueue;
+                if (service is ICommand)
+                    ((ICommand)service).TaskManager = mTaskContainer.ExecuteOrEnqueue;
 
                 if (service is IServiceEventSource)
                     ((IServiceEventSource)service).EventSource = mEventSource;
@@ -351,8 +351,8 @@ namespace Xigadee
 
             base.ServiceStop(service);
 
-            if (service is IServiceInitiator)
-                ((IServiceInitiator)service).Dispatcher = null;
+            if (service is ICommand)
+                ((ICommand)service).TaskManager = null;
 
             if (service is IServiceEventSource)
             {

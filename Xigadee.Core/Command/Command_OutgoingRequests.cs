@@ -45,10 +45,14 @@ namespace Xigadee
         {
             mOutgoingRequests = new ConcurrentDictionary<string, OutgoingRequestTracker>();
 
-            mScheduleTimeout = new CommandTimeoutSchedule(OutgoingRequestsProcessTimeouts, mPolicy.OutgoingRequestsTimeoutPoll,
-                string.Format("{0} Command OutgoingRequests Timeout Poll", FriendlyName));
+            //Set a timer for aborted requests if the Task
+            if (!TaskManagerTimeoutSupported)
+            {
+                mScheduleTimeout = new CommandTimeoutSchedule(OutgoingRequestsProcessTimeouts, mPolicy.OutgoingRequestsTimeoutPoll,
+                    string.Format("{0} Command OutgoingRequests Timeout Poll", FriendlyName));
 
-            Scheduler.Register(mScheduleTimeout);
+                Scheduler.Register(mScheduleTimeout);
+            }
         }
         #endregion
         #region OutgoingRequestsTimeoutStop()
@@ -57,7 +61,24 @@ namespace Xigadee
         /// </summary>
         protected virtual void OutgoingRequestsTimeoutStop()
         {
-            Scheduler.Unregister(mScheduleTimeout);
+            if (mScheduleTimeout != null)
+            {
+                Scheduler.Unregister(mScheduleTimeout);
+                mScheduleTimeout = null;
+            }
+
+            try
+            {
+                foreach (var key in mOutgoingRequests.Keys.ToList())
+                    OutgoingRequestRemove(key, null);
+
+                mOutgoingRequests.Clear();
+                mOutgoingRequests = null;
+            }
+            catch (Exception ex)
+            {
+            }
+
         }
         #endregion
 
@@ -151,7 +172,7 @@ namespace Xigadee
             }
 
             //Submit the payload for processing
-            Dispatcher(this, holder.Payload);
+            TaskManager(this, holder.Payload);
 
             return holder;
         }
@@ -196,7 +217,7 @@ namespace Xigadee
         /// <summary>
         /// This method is used to process any payloadRs timeouts.
         /// </summary>
-        public virtual async Task OutgoingRequestsProcessTimeouts(Schedule schedule, CancellationToken token)
+        protected virtual async Task OutgoingRequestsProcessTimeouts(Schedule schedule, CancellationToken token)
         {
             if (mOutgoingRequests.IsEmpty)
                 return;
@@ -271,17 +292,33 @@ namespace Xigadee
         }
         #endregion
 
-        #region OutgoingRequestDirectAbort(string originatorKey)
+        #region TaskManagerTimeoutSupported
+        /// <summary>
+        /// This boolean property indicates to the task manager that the command should be notified if a submitted task is cancelled.
+        /// </summary>
+        public virtual bool TaskManagerTimeoutSupported { get { return true; } }
+        #endregion
+        #region TaskManagerTimeoutNotification(string originatorKey)
         /// <summary>
         /// This method is called for processes that support direct notification from the Task Manager that a process has been
         /// cancelled.
         /// </summary>
         /// <param name="originatorKey">The is the originator tracking key.</param>
-        public void OutgoingRequestDirectAbort(string originatorKey)
+        public void TaskManagerTimeoutNotification(string originatorKey)
         {
             OutgoingRequestRemove(originatorKey, null);
             Logger?.LogMessage(LoggingLevel.Info, $"{FriendlyName} received abort notification for {originatorKey}");
         } 
+        #endregion
+        #region TaskManager
+        /// <summary>
+        /// This is the link to the Microservice dispatcher.
+        /// </summary>
+        public virtual Action<IService, TransmissionPayload> TaskManager
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Class -> OutgoingRequestTracker
@@ -316,7 +353,8 @@ namespace Xigadee
 
             public bool HasExpired(int? now = null)
             {
-                return ExtentNow(now) > MaxTTL;
+                var extent = ExtentNow();
+                return extent > MaxTTL;
             }
 
             /// <summary>
@@ -334,5 +372,8 @@ namespace Xigadee
             }
         }
         #endregion
+
+
+
     }
 }

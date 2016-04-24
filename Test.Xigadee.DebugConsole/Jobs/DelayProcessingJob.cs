@@ -29,7 +29,7 @@ namespace Test.Xigadee
             mLogger.Log(LogLevel.Info, "DelayedProcessingJob - Executing schedule " + currentJob);
             state.State = currentJob;
             
-            Dispatcher(this, new TransmissionPayload("interserv", "do", "something", options:ProcessOptions.RouteExternal));
+            TaskManager(this, new TransmissionPayload("interserv", "do", "something", options:ProcessOptions.RouteExternal));
 
             //await Task.Delay(TimeSpan.FromSeconds(40), token);
             mLogger.Log(LogLevel.Info, "DelayedProcessingJob - Finished executing schedule " + currentJob);

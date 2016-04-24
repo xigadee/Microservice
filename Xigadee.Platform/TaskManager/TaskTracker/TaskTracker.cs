@@ -133,7 +133,7 @@ namespace Xigadee
             try
             {
                 if (Callback != null && !string.IsNullOrEmpty(CallbackId))
-                    Callback.OutgoingRequestDirectAbort(CallbackId);
+                    Callback.TaskManagerTimeoutNotification(CallbackId);
             }
             catch (Exception)
             {

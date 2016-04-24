@@ -122,5 +122,19 @@ namespace Xigadee
             return await TransmitAsync(payloadRq, ProcessResponse<KT, ET>, processAsync: processAsync);
         }
         #endregion
+
+        #region TaskManagerTimeoutSupported
+        /// <summary>
+        /// Shared services operate as a bridge to the internal commands and use
+        /// the Task Manager to support timeouts.
+        /// </summary>
+        public override bool TaskManagerTimeoutSupported
+        {
+            get
+            {
+                return true;
+            }
+        } 
+        #endregion
     }
 }
