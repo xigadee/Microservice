@@ -192,7 +192,7 @@ namespace Xigadee
         private async Task<bool> ProvideTaskDelay(CancellationToken Cancel)
         {
             if (!mDelay.HasValue)
-                return true;
+                return false;
            
             await Task.Delay(mDelay.Value, Cancel);
 
@@ -204,7 +204,6 @@ namespace Xigadee
         {
             if (await ProvideTaskDelay(holder.Prq.Cancel))
                 return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
-
 
             try
             {
