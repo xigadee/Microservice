@@ -166,7 +166,7 @@ namespace Xigadee
                 , ConfigurationOptions.StatusLogFrequency, "Status Poll", TimeSpan.FromSeconds(0), isInternal:true);
 
             //Set the status log frequency.
-            mScheduler.Register(async (s, cancel) => await mTaskContainer.Autotune()
+            mScheduler.Register(async (s, cancel) => await mTaskManager.Autotune()
                 , TimeSpan.FromSeconds(1), "Autotune", TimeSpan.FromSeconds(10), isInternal: true);
 
             // Flush the accumulated telemetry 
@@ -174,7 +174,7 @@ namespace Xigadee
                 , TimeSpan.FromMinutes(15), "Telemetry Flush", TimeSpan.FromSeconds(10), isInternal: true);
 
             // Kills any overrunning tasks
-            mScheduler.Register(async (s, cancel) => await mTaskContainer.TaskTimedoutKill()
+            mScheduler.Register(async (s, cancel) => await mTaskManager.TaskTimedoutKill()
                 , TimeSpan.FromMinutes(1), "Tasks timed out kill", TimeSpan.FromSeconds(1), isInternal: true);
         }
         #endregion
@@ -227,17 +227,18 @@ namespace Xigadee
                 //Finally register the housekeeping schedules.
                 SchedulesRegister();
 
-                //LogStatistics().Wait(TimeSpan.FromSeconds(1));
+                //Now start the listeners and deadletter listeners
+                mCommunication.ListenersStart();
 
                 //Start the handlers in decending priority
                 mCommands.Commands
                     .OrderByDescending((h) => h.StartupPriority)
                     .ForEach(h => ServiceStart(h));
 
-                //Now start the listeners and deadletter listeners
-                mCommunication.ListenersStart();
-
                 OnStartCompleted();
+
+                //Do a final log now that everything has started up.
+                LogStatistics().Wait(TimeSpan.FromSeconds(1));
             }
             catch (Exception ex)
             {
@@ -321,7 +322,7 @@ namespace Xigadee
 
                 //Set the transmission action.
                 if (service is ICommand)
-                    ((ICommand)service).TaskManager = mTaskContainer.ExecuteOrEnqueue;
+                    ((ICommand)service).TaskManager = mTaskManager.ExecuteOrEnqueue;
 
                 if (service is IServiceEventSource)
                     ((IServiceEventSource)service).EventSource = mEventSource;

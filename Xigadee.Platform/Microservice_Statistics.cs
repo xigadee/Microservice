@@ -53,7 +53,7 @@ namespace Xigadee
             stats.Configuration = ConfigurationOptions;
             stats.StartTime = mStartTime;
 
-            if (mTaskContainer != null) stats.Tasks = mTaskContainer.Statistics;
+            if (mTaskManager != null) stats.Tasks = mTaskManager.Statistics;
 
             if (mLogger != null) stats.Logger = mLogger.Statistics;
 

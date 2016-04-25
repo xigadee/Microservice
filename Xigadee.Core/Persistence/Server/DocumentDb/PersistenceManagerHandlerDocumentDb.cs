@@ -381,7 +381,7 @@ namespace Xigadee
             var alternateHolder = new PersistenceRequestHolder<K, E>(holder.ProfileId, holder.Prq, holder.Prs);
             alternateHolder.Rq = new PersistenceRepositoryHolder<K, E> { Key = holder.Rq.Key, KeyReference = holder.Rq.KeyReference, Timeout = holder.Rq.Timeout };
             alternateHolder.Rs = new PersistenceRepositoryHolder<K, E>();
-
+            
             bool byref = alternateHolder.Rq.KeyReference != null && !string.IsNullOrEmpty(alternateHolder.Rq.KeyReference.Item2);
 
             bool result;

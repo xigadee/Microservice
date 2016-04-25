@@ -277,7 +277,7 @@ namespace Xigadee
                     rsMessage.ActionType = "";
 
                     var rsPayload = new TransmissionPayload(rsMessage);
-
+                    
                     bool hasTimedOut = false;
 
                     try

@@ -19,7 +19,7 @@ namespace Xigadee
         /// <summary>
         /// This class contains the running tasks and provides a breakdown of the current availability for new tasks.
         /// </summary>
-        private TaskManager mTaskContainer;
+        private TaskManager mTaskManager;
         /// <summary>
         /// This is the scheduler container.
         /// </summary>
@@ -34,7 +34,7 @@ namespace Xigadee
         {
             mScheduler = InitialiseSchedulerContainer();
 
-            mTaskContainer = InitialiseTaskManager();
+            mTaskManager = InitialiseTaskManager();
         }
         #endregion
         #region TaskManagerStart()
@@ -45,7 +45,7 @@ namespace Xigadee
         {
             TaskManagerRegisterProcesses();
 
-            ServiceStart(mTaskContainer);
+            ServiceStart(mTaskManager);
 
             ServiceStart(mScheduler);
         }
@@ -58,7 +58,7 @@ namespace Xigadee
         {
             ServiceStop(mScheduler);
 
-            ServiceStop(mTaskContainer);
+            ServiceStop(mTaskManager);
         }
         #endregion
 
@@ -160,7 +160,7 @@ namespace Xigadee
         {
             ValidateServiceStarted();
 
-            mTaskContainer.ExecuteOrEnqueue(payload, "Incoming Process method request");
+            mTaskManager.ExecuteOrEnqueue(payload, "Incoming Process method request");
         }
         #endregion
 
@@ -170,16 +170,16 @@ namespace Xigadee
         /// </summary>
         protected virtual void TaskManagerRegisterProcesses()
         {
-            mTaskContainer.ProcessRegister("SchedulesProcess"
+            mTaskManager.ProcessRegister("SchedulesProcess"
                 , 5, mScheduler);
 
-            mTaskContainer.ProcessRegister("ListenersProcess"
+            mTaskManager.ProcessRegister("ListenersProcess"
                 , 4, mCommunication);
 
-            mTaskContainer.ProcessRegister("Overload Check EventSource"
+            mTaskManager.ProcessRegister("Overload Check EventSource"
                 , 3, mEventSource);
 
-            mTaskContainer.ProcessRegister("Overload Check Logger"
+            mTaskManager.ProcessRegister("Overload Check Logger"
                 , 2, mLogger);
         }
         #endregion

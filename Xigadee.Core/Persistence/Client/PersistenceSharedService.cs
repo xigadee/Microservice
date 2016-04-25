@@ -108,7 +108,6 @@ namespace Xigadee
             var message = payloadRq.Message;
 
             payloadRq.MaxProcessingTime = rq.Settings?.WaitTime ?? mDefaultRequestTimespan;
-
             payloadRq.MessageObject = rq;
             message.ChannelId = ChannelId;
             message.ChannelPriority = processAsync ? 0:-1;
@@ -116,6 +115,7 @@ namespace Xigadee
             message.ActionType = actionType;
 
             message.ResponseChannelId = mResponseChannel;
+            message.ResponseChannelPriority = -1; //Always internal
 
             message.Blob = PayloadSerializer.PayloadSerialize(rq);
 
