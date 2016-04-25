@@ -561,20 +561,20 @@ namespace Xigadee
         {
             try
             {
+                if (service is IServiceLogger)
+                    ((IServiceLogger)service).Logger = Logger;
+
+                if (service is IServiceOriginator)
+                    ((IServiceOriginator)service).OriginatorId = OriginatorId;
+
+                if (service is IPayloadSerializerConsumer)
+                    ((IPayloadSerializerConsumer)service).PayloadSerializer = PayloadSerializer;
+
                 if (service is IContainerService)
                     ((IContainerService)service).Services.ForEach(s => ServiceStart(s));
 
                 if (service is IRequireSharedServices)
                     ((IRequireSharedServices)service).SharedServices = SharedServices;
-
-                if (service is IServiceOriginator)
-                    ((IServiceOriginator)service).OriginatorId = OriginatorId;
-
-                if (service is IServiceLogger)
-                    ((IServiceLogger)service).Logger = Logger;
-
-                if (service is IPayloadSerializerConsumer)
-                    ((IPayloadSerializerConsumer)service).PayloadSerializer = PayloadSerializer;
 
                 base.ServiceStart(service);
 

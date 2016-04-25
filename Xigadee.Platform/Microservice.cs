@@ -305,6 +305,19 @@ namespace Xigadee
         {
             try
             {
+
+                if (service is IServiceLogger)
+                    ((IServiceLogger)service).Logger = mLogger;
+
+                if (service is IServiceOriginator)
+                    ((IServiceOriginator)service).OriginatorId = ExternalServiceId;
+
+                if (service is IServiceEventSource)
+                    ((IServiceEventSource)service).EventSource = mEventSource;
+
+                if (service is IPayloadSerializerConsumer)
+                    ((IPayloadSerializerConsumer)service).PayloadSerializer = mSerializer;
+
                 if (service is IRequireScheduler)
                     ((IRequireScheduler)service).Scheduler = mScheduler;
 
@@ -314,21 +327,9 @@ namespace Xigadee
                 if (service is IContainerService)
                     ((IContainerService)service).Services.ForEach(s => ServiceStart(s));
 
-                if (service is IServiceLogger)
-                    ((IServiceLogger)service).Logger = mLogger;
-
-                if (service is IServiceOriginator)
-                    ((IServiceOriginator)service).OriginatorId = ExternalServiceId;
-
                 //Set the transmission action.
                 if (service is ICommand)
                     ((ICommand)service).TaskManager = mTaskManager.ExecuteOrEnqueue;
-
-                if (service is IServiceEventSource)
-                    ((IServiceEventSource)service).EventSource = mEventSource;
-
-                if (service is IPayloadSerializerConsumer)
-                    ((IPayloadSerializerConsumer)service).PayloadSerializer = mSerializer;
 
                 base.ServiceStart(service);
             }
