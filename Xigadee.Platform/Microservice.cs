@@ -163,7 +163,7 @@ namespace Xigadee
         {
             //Set the status log frequency.
             mScheduler.Register(async (s, cancel) => await LogStatistics()
-                , ConfigurationOptions.StatusLogFrequency, "Status Poll", TimeSpan.FromSeconds(15), isInternal:true);
+                , ConfigurationOptions.StatusLogFrequency, "Status Poll", TimeSpan.FromSeconds(0), isInternal:true);
 
             //Set the status log frequency.
             mScheduler.Register(async (s, cancel) => await mTaskContainer.Autotune()
@@ -221,21 +221,21 @@ namespace Xigadee
                 //Ensure that any handlers are registered.
                 ServiceStart(mCommands);
 
+                //OK, start the loop to start processing requests and picking up messages from the listeners.
+                TaskManagerStart();
+
+                //Finally register the housekeeping schedules.
+                SchedulesRegister();
+
+                //LogStatistics().Wait(TimeSpan.FromSeconds(1));
+
                 //Start the handlers in decending priority
                 mCommands.Commands
                     .OrderByDescending((h) => h.StartupPriority)
                     .ForEach(h => ServiceStart(h));
 
-                //OK, start the loop to start processing requests and picking up messages from the listeners.
-                TaskManagerStart();
-
                 //Now start the listeners and deadletter listeners
                 mCommunication.ListenersStart();
-
-                //Finally register the housekeeping schedules.
-                SchedulesRegister();
-
-                LogStatistics().Wait(TimeSpan.FromSeconds(1));
 
                 OnStartCompleted();
             }
