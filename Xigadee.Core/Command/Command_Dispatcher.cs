@@ -138,7 +138,8 @@ namespace Xigadee
 
             try
             {
-                OnCommandChange?.Invoke(this, new CommandChange(false, key));
+                if (Status == ServiceStatus.Running)
+                    OnCommandChange?.Invoke(this, new CommandChange(false, key));
             }
             catch (Exception)
             {

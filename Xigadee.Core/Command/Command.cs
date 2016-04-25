@@ -120,12 +120,38 @@ namespace Xigadee
             {
                 throw ex;
             }
+
+            mSupported.Keys
+                .ForEach((k) =>
+                {
+
+                    try
+                    {
+                        OnCommandChange?.Invoke(this, new CommandChange(false, k));
+                    }
+                    catch (Exception)
+                    {
+                    }
+                });
         }
 
         protected override void StopInternal()
         {
             if (mPolicy.OutgoingRequestsEnabled)
                 OutgoingRequestsTimeoutStop();
+
+            mSupported.Keys
+                .ForEach((k) =>
+                {
+
+                    try
+                    {
+                        OnCommandChange?.Invoke(this, new CommandChange(true, k));
+                    }
+                    catch (Exception)
+                    {
+                    }
+                });
         }
         #endregion
 

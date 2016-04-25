@@ -267,12 +267,12 @@ namespace Xigadee
 
             LogStatistics().Wait(TimeSpan.FromSeconds(15));
 
-            mCommunication.ListenersStop();
-
             //Ok, stop the commands.
             mCommands.Commands
                 .OrderBy((h) => h.StartupPriority)
                 .ForEach(h => ServiceStop(h));
+
+            mCommunication.ListenersStop();
 
             ServiceStop(mCommands);
 
