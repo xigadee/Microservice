@@ -72,7 +72,7 @@ namespace Xigadee
         /// <summary>
         /// This is the job timer
         /// </summary>
-        protected List<Schedule> mSchedules;
+        private List<Schedule> mSchedules;
         /// <summary>
         /// This is the shared service collection.
         /// </summary>
@@ -91,12 +91,6 @@ namespace Xigadee
             mSchedules = new List<Schedule>();
 
             StartupPriority = mPolicy.StartupPriority ?? 0;
-
-            if (mPolicy.MasterJobEnabled)
-                MasterJobInitialise();
-
-            if (mPolicy.JobPollEnabled)
-                TimerPollSchedulesRegister();
         }
         #endregion
 
@@ -137,10 +131,20 @@ namespace Xigadee
                     {
                     }
                 });
+
+
+            if (mPolicy.MasterJobEnabled)
+                MasterJobInitialise();
+
+            if (mPolicy.JobPollEnabled)
+                TimerPollSchedulesRegister();
         }
 
         protected override void StopInternal()
         {
+            mSchedules.ForEach((s) => Scheduler.Unregister(s));
+            mSchedules.Clear();
+
             if (mPolicy.OutgoingRequestsEnabled)
                 OutgoingRequestsTimeoutStop();
 
@@ -208,6 +212,17 @@ namespace Xigadee
         {
             get; set;
         }
+        #endregion
+        #region SchedulerRegister(Schedule schedule)
+        /// <summary>
+        /// This method registers a schedule and adds it to the collection so that it can be 
+        /// deregistered later when the command stops.
+        /// </summary>
+        /// <param name="schedule">The schedule to register.</param>
+        protected virtual void SchedulerRegister(Schedule schedule)
+        {
+            mSchedules.Add(Scheduler.Register(schedule));
+        } 
         #endregion
 
         #region StartupPriority

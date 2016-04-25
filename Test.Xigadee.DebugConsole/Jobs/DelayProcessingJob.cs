@@ -20,7 +20,7 @@ namespace Test.Xigadee
         {
             var job = mPolicy.ToCommandSchedule(ExecuteJob, $"DelayedProcessingJob: {GetType().Name}");
             
-            mSchedules.Add(job);
+            SchedulerRegister(job);
         }
 
         protected async Task ExecuteJob(Schedule state, CancellationToken token)

@@ -30,6 +30,8 @@ namespace Test.Xigadee
                 );
 
             Service.RegisterCommand(new DoNothingJob { ChannelId = Channels.TestC });
+
+            Service.RegisterCommand(new DelayedProcessingJob { ChannelId = Channels.TestA });
         }
 
         protected override void RegisterCommunication()

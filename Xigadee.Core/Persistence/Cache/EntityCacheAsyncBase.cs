@@ -100,9 +100,10 @@ namespace Xigadee
                 , $"EntityCacheHandlerBase: {typeof(E).Name} Expire Entities"
                 , mPolicy.JobPollIsLongRunning);
 
-            mSchedules.Add(job);
-        } 
+            SchedulerRegister(job);
+        }
         #endregion
+
         #region --> ScheduleExpireEntities(Schedule schedule, CancellationToken cancel)
         /// <summary>
         /// Remove the expired references.

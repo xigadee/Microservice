@@ -64,7 +64,7 @@ namespace Xigadee
             masterjobPoll.InitialWait = TimeSpan.FromSeconds(5);
             masterjobPoll.IsLongRunning = false;
 
-            mSchedules.Add(masterjobPoll);
+            SchedulerRegister(masterjobPoll);
         } 
         #endregion
 
