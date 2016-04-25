@@ -30,6 +30,7 @@ namespace Xigadee
         /// <summary>
         /// This is the time the handler was last accessed.
         /// </summary>
-        public DateTime? LastAccessed { get; set; }
+        public string LastAccessed { get; set; }
+
     }
 }

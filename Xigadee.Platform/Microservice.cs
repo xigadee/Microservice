@@ -230,11 +230,10 @@ namespace Xigadee
                 //Now start the listeners and deadletter listeners
                 mCommunication.ListenersStart();
 
-                //Start the handlers in decending priority
-                mCommands.Commands
-                    .OrderByDescending((h) => h.StartupPriority)
-                    .ForEach(h => ServiceStart(h));
+                //Ok start the commands in parallel at the same priority group.
+                CommandsStart();
 
+                //Signal that start has completed.
                 OnStartCompleted();
 
                 //Do a final log now that everything has started up.
@@ -255,8 +254,33 @@ namespace Xigadee
                 //Throw the original exception.
                 mLogger.LogException("StartInternal unhandled exception thrown - service is stopping", ex);
             }
-        } 
+        }
         #endregion
+
+        protected virtual void CommandsStart()
+        {
+            var commands = mCommands.Commands.ToList();
+
+            //Start the handlers in decending priority
+            int[] commandPriorities = commands.Select((c) => c.StartupPriority)
+                .Distinct()
+                .OrderByDescending((k) => k)
+                .ToArray();
+
+            foreach (int priorityGroup in commandPriorities)
+            {
+                Task.WaitAll(CommandsStart(priorityGroup, commands));
+            }
+        }
+
+        protected Task[] CommandsStart(int priority, List<ICommand> commands)
+        {
+            return commands
+                .Where((c) => c.StartupPriority == priority)
+                .Select((c) => Task.Run(() => ServiceStart(c)))
+                .ToArray();
+        }
+
         #region StopInternal()
         /// <summary>
         /// This override sends the service stop message.

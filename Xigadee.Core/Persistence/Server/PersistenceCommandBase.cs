@@ -13,8 +13,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public abstract class PersistenceCommandBase<K, E, S, P> : CommandBase<S, P, PersistenceHandler>,
-        IPersistenceMessageHandler, IRequireSharedServices
+    public abstract class PersistenceCommandBase<K, E, S, P> : CommandBase<S, P, PersistenceHandler>, IPersistenceMessageHandler
         where K : IEquatable<K>
         where S : PersistenceStatistics, new()
         where P : PersistenceCommandPolicy, new()
@@ -202,16 +201,6 @@ namespace Xigadee
             mPolicy.ResourceConsumer = null;
 
             base.StopInternal();
-        }
-        #endregion
-
-        #region SharedServices
-        /// <summary>
-        /// This is the shared service connector
-        /// </summary>
-        public virtual ISharedService SharedServices
-        {
-            get; set;
         }
         #endregion
 

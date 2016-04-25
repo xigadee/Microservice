@@ -7,16 +7,11 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    public class TestMasterJob2: CommandBase, IRequireSharedServices
+    public class TestMasterJob2: CommandBase
     {
         public TestMasterJob2(string channel) : base(CommandPolicy.ToMasterJob(channel))
         {
 
-        }
-
-        public ISharedService SharedServices
-        {
-            get; set;
         }
 
         protected override void StartInternal()

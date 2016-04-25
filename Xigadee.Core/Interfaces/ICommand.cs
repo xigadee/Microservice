@@ -7,13 +7,16 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public interface ICommand: IService,
-        IRequireScheduler, IPayloadSerializerConsumer, IServiceEventSource, IServiceLogger, IServiceOriginator//IServiceInitiator, 
+    public interface ICommand: IService, IRequireScheduler, IPayloadSerializerConsumer, IServiceEventSource, IServiceLogger, IServiceOriginator, IRequireSharedServices
     {
+        /// <summary>
+        /// This flag specifies whether the command should be informed when a submitted process has timed out.
+        /// </summary>
         bool TaskManagerTimeoutSupported { get; }
-
+        /// <summary>
+        /// This is the reference to the task manager that can be called to submit new jobs for processing.
+        /// </summary>
         Action<IService, TransmissionPayload> TaskManager { get; set; }
-
         /// <summary>
         /// This method is called for processes that support direct notification from the Task Manager that a process has been
         /// cancelled.
@@ -51,11 +54,6 @@ namespace Xigadee
         /// This event is used to signal a change of registered commands.
         /// </summary>
         event EventHandler<CommandChange> OnCommandChange;
-        ///// <summary>
-        ///// This method is called to calculate expired requests.
-        ///// </summary>
-        //Task OutgoingRequestsProcessTimeouts(Schedule schedule, CancellationToken token);
-
 
     }
 

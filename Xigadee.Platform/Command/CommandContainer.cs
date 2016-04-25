@@ -105,7 +105,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region StatisticsRecalculate()
+        #region StatisticsRecalculate(CommandContainerStatistics stats)
         /// <summary>
         /// This method recalcuates the component statistics.
         /// </summary>
@@ -116,9 +116,9 @@ namespace Xigadee
             if (SharedServices != null)
                 stats.SharedServices = mSharedServices.Statistics;
 
-            stats.Commands = Commands.OfType<ICommand>().Select((h) => (CommandStatistics)h.StatisticsGet()).ToList();
-
-            stats.Cache = Commands.OfType<ICacheComponent>().Select((h) => (MessagingStatistics)h.StatisticsGet()).ToList();
+            stats.Commands = Commands
+                .OrderByDescending((c) => c.StartupPriority)
+                .Select((h) => (CommandStatistics)h.StatisticsGet()).ToList();
         }
         #endregion
 

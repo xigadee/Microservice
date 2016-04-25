@@ -13,11 +13,29 @@ namespace Xigadee
     /// </summary>
     public class SharedServiceContainer: StatisticsBase<SharedServiceStatistics>, ISharedService
     {
+        #region Declarations.
+        /// <summary>
+        /// The internal container.
+        /// </summary>
         private ConcurrentDictionary<Type, ServiceHolder> mContainer;
-
+        #endregion
+        #region Constructor
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
         public SharedServiceContainer()
         {
             mContainer = new ConcurrentDictionary<Type, ServiceHolder>();
+        }
+        #endregion
+
+        /// <summary>
+        /// This is the shared service statistics.
+        /// </summary>
+        /// <param name="stats">The statistics</param>
+        protected override void StatisticsRecalculate(SharedServiceStatistics stats)
+        {
+            stats.Services = mContainer.Values.Select((v) => v.Statistics).ToList();
         }
 
         public bool RegisterService<I>(I instance, string serviceName = null)
@@ -81,14 +99,5 @@ namespace Xigadee
             return mContainer.ContainsKey(key);
         }
 
-        protected override void StatisticsRecalculate(SharedServiceStatistics stats)
-        {
-            stats.Services = mContainer.Values.Select((v) => v.Statistics).ToList();
-        }
-    }
-
-    public class SharedServiceStatistics: StatusBase
-    {
-        public List<ServiceHolderStatistics> Services { get; set; }
     }
 }

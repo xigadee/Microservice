@@ -14,6 +14,7 @@ namespace Xigadee
             base.StatisticsRecalculate(stats);
 
             stats.Name = FriendlyName;
+            stats.StartupPriority = StartupPriority;
 
             stats.SupportedHandlers = mSupported.Select((h) => h.Value.HandlerStatistics).ToList();
 

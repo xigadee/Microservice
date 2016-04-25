@@ -16,7 +16,5 @@ namespace Xigadee
 
         public SharedServiceStatistics SharedServices { get; set; }
 
-        public List<MessagingStatistics> Cache { get; set; }
-
    }
 }

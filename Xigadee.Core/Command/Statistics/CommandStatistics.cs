@@ -31,6 +31,8 @@ namespace Xigadee
             }
         }
 
+        public int StartupPriority { get; set; }
+
         public List<string> OutgoingRequests { get; set; }
 
 

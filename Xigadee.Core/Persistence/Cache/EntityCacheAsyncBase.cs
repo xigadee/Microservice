@@ -13,8 +13,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public abstract class EntityCacheAsyncBase<K, E>: CommandBase<EntityCacheStatistics, EntityCacheAsyncPolicy>, 
-        IRequireSharedServices, IEntityCacheAsync<K, E>
+    public abstract class EntityCacheAsyncBase<K, E>: CommandBase<EntityCacheStatistics, EntityCacheAsyncPolicy>, IEntityCacheAsync<K, E>
         where K : IEquatable<K>
         where E : class
     {
@@ -25,9 +24,6 @@ namespace Xigadee
         protected IResourceConsumer mResourceConsumer;
 
         protected readonly ResourceProfile mResourceProfile;
-
-        protected ISharedService mSharedServices;
-
 
         protected readonly ConcurrentDictionary<K, EntityCacheHolder<K, E>> mEntities;
 
@@ -163,22 +159,16 @@ namespace Xigadee
             base.StopInternal();
         }
         #endregion
-        #region SharedServices
+
+        #region SharedServicesChange(ISharedService sharedServices)
         /// <summary>
-        /// This is the shared service collection.
+        /// This is the methdo that register the shared service reference.
         /// </summary>
-        public virtual ISharedService SharedServices
+        protected override void SharedServicesChange(ISharedService sharedServices)
         {
-            get
-            {
-                return mSharedServices;
-            }
-            set
-            {
-                mSharedServices = value;
-                if (value != null)
-                    mSharedServices.RegisterService<IEntityCacheAsync<K, E>>(this);
-            }
+            base.SharedServicesChange(sharedServices);
+            if (mSharedServices != null)
+                mSharedServices.RegisterService<IEntityCacheAsync<K, E>>(this);
         }
         #endregion
 

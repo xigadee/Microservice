@@ -34,7 +34,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="S">The statistics class type.</typeparam>
     /// <typeparam name="P">The customer command policy.</typeparam>
-    public abstract class CommandBase<S,P>: CommandBase<S, P, CommandHandler<CommandHandlerStatistics>>
+    public abstract class CommandBase<S, P>: CommandBase<S, P, CommandHandler<CommandHandlerStatistics>>
         where S : CommandStatistics, new()
         where P : CommandPolicy, new()
     {
@@ -50,7 +50,7 @@ namespace Xigadee
     /// <typeparam name="S">The statistics class type.</typeparam>
     /// <typeparam name="P">The customer command policy.</typeparam>
     /// <typeparam name="H">The command handler type.</typeparam>
-    public abstract partial class CommandBase<S,P,H>: ServiceBase<S>, ICommand
+    public abstract partial class CommandBase<S, P, H>: ServiceBase<S>, ICommand
         where S : CommandStatistics, new()
         where P : CommandPolicy, new()
         where H : class, ICommandHandler, new()
@@ -73,6 +73,10 @@ namespace Xigadee
         /// This is the job timer
         /// </summary>
         protected List<Schedule> mSchedules;
+        /// <summary>
+        /// This is the shared service collection.
+        /// </summary>
+        protected ISharedService mSharedServices;
         #endregion
         #region Constructor
         /// <summary>
@@ -92,7 +96,7 @@ namespace Xigadee
                 MasterJobInitialise();
 
             if (mPolicy.JobPollEnabled)
-                TimerPollSchedulesRegister();   
+                TimerPollSchedulesRegister();
         }
         #endregion
 
@@ -105,7 +109,7 @@ namespace Xigadee
         protected virtual P PolicyCreateOrValidate(P incomingPolicy)
         {
             return incomingPolicy ?? new P();
-        } 
+        }
         #endregion
 
         #region StartInternal/StopInternal
@@ -214,6 +218,33 @@ namespace Xigadee
         {
             get; set;
         }
+        #endregion
+
+        #region SharedServices
+        /// <summary>
+        /// This is the shared service collection for commands that wish to share direct access to internal data.
+        /// </summary>
+        public virtual ISharedService SharedServices
+        {
+            get
+            {
+                return mSharedServices;
+            }
+
+            set
+            {
+                SharedServicesChange(value);
+            }
+        }
+        /// <summary>
+        /// This method is called to set or remove the shared service reference.
+        /// You can override your logic to safely set the shared service collection here.
+        /// </summary>
+        /// <param name="sharedServices">The shared service reference or null if this is not set.</param>
+        protected virtual void SharedServicesChange(ISharedService sharedServices)
+        {
+            mSharedServices = sharedServices;
+        } 
         #endregion
     }
 }

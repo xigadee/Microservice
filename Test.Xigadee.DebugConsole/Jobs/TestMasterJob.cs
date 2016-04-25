@@ -7,7 +7,7 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    public class TestMasterJob : CommandBase, IRequireSharedServices
+    public class TestMasterJob : CommandBase
     {
         public TestMasterJob(string channel):base()//JobConfiguration.ToMasterJob(channel)
         {
@@ -22,11 +22,6 @@ namespace Test.Xigadee
             pol.MasterJobNegotiationChannelId = ChannelId;
 
             return pol;
-        }
-
-        public ISharedService SharedServices
-        {
-            get;set;
         }
 
         protected override void StartInternal()

@@ -14,6 +14,7 @@ namespace Xigadee
     /// </summary>
     public class CommandHandler<S>: StatisticsBase<S>, ICommandHandler where S: CommandHandlerStatistics, new()
     {
+        public int? mLastAccessed = null;
         #region Constructor
         /// <summary>
         /// This is the default constructor.
@@ -64,6 +65,7 @@ namespace Xigadee
         protected override void StatisticsRecalculate(S stats)
         {
             stats.Name = Key.Header.ToKey();
+            stats.LastAccessed = mLastAccessed.HasValue ? ConversionHelper.DeltaAsFriendlyTime(mLastAccessed.Value, Environment.TickCount):"Not accessed";
         }
 
         #region Execute(TransmissionPayload rq, List<TransmissionPayload> rs)
@@ -75,7 +77,7 @@ namespace Xigadee
         public async virtual Task Execute(TransmissionPayload rq, List<TransmissionPayload> rs)
         {
             int timerStart = StatisticsInternal.ActiveIncrement();
-            StatisticsInternal.LastAccessed = DateTime.UtcNow;
+            mLastAccessed = Environment.TickCount;
 
             try
             {
