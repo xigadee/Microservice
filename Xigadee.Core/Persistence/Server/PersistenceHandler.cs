@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -17,7 +14,9 @@ namespace Xigadee
 
         public virtual void Record<KT, ET>(PersistenceRequestHolder<KT, ET> holder)
         {
-            var stats = mResponses.GetOrAdd(holder.Rs.ResponseCode, new PersistenceResponseStatisticsHolder(holder.Rs.ResponseCode));
+            int responseCode = holder.Rs?.ResponseCode ?? 0;
+
+            var stats = mResponses.GetOrAdd(responseCode, new PersistenceResponseStatisticsHolder(responseCode));
             stats.Record(holder.Extent, holder.Rs);
         }
 
@@ -69,7 +68,7 @@ namespace Xigadee
                 ActiveDecrement(extent.Value);
             }
             
-            Interlocked.Add(ref mRetries, rs.Retry);
+            Interlocked.Add(ref mRetries, rs?.Retry??0);
         }
     }
 }
