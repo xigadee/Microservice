@@ -17,6 +17,9 @@ namespace Xigadee
         string VersionId { get; set; }
         bool IsSuccess { get; set; }
         bool IsTimeout { get; set; }
+
+        bool IsCacheHit { get; set; }
+
         int StatusCode { get; }
     }
 }

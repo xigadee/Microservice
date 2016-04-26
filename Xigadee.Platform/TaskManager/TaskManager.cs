@@ -403,7 +403,7 @@ namespace Xigadee
         private void DequeueTasksAndExecute()
         {
             TaskTracker tracker;
-            while (!mProcessInternalQueue.IsEmpty && mProcessInternalQueue.TryDequeue(out tracker))
+            while (mProcessInternalQueue.TryDequeue(out tracker))
                 ExecuteTask(tracker);
 
             foreach (var dequeueTask in mTasksQueue.Dequeue(mAvailability.Count))
@@ -411,6 +411,13 @@ namespace Xigadee
         }
         #endregion
 
+        #region TaskTrackerEvent(EventHandler<TaskTracker> taskEvent, TaskTracker tracker)
+        /// <summary>
+        /// This helper is used to trigger diagnotic events within the Task Manager at key points in the 
+        /// processing pipeline.
+        /// </summary>
+        /// <param name="taskEvent">The event.</param>
+        /// <param name="tracker">The tracker</param>
         private void TaskTrackerEvent(EventHandler<TaskTracker> taskEvent, TaskTracker tracker)
         {
             try
@@ -418,7 +425,8 @@ namespace Xigadee
                 taskEvent?.Invoke(this, tracker);
             }
             catch { }
-        }
+        } 
+        #endregion
 
         #region ExecuteTask(TaskTracker tracker)
         /// <summary>

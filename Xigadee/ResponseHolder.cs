@@ -19,6 +19,8 @@ namespace Xigadee
 
         public bool IsTimeout { get; set; }
 
+        public bool IsCacheHit { get; set; }
+
         public virtual int StatusCode { get; set; }
 
         public virtual string StatusMessage { get; set; }
@@ -36,8 +38,6 @@ namespace Xigadee
 
     public class ResponseHolder: ResponseHolderBase
     {
-
-
         public bool IsThrottled { get; set; }
 
         public bool ThrottleHasWaited { get; set; }
@@ -57,8 +57,6 @@ namespace Xigadee
         public string ContinuationToken { get; set; }
 
         public string SessionToken { get; set; }
-
-
     }
 
     public class ResponseHolder<O> : ResponseHolder, IResponseHolder<O>

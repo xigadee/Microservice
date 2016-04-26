@@ -73,6 +73,11 @@ namespace Xigadee
             get;set;
         }
 
+        public bool IsCacheHit
+        {
+            get;set;
+        }
+
         public int StatusCode
         {
             get;set;
@@ -82,5 +87,6 @@ namespace Xigadee
         {
             get;set;
         }
+
     }
 }

@@ -671,6 +671,8 @@ namespace Xigadee
                 if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
                     mCacheManager.Write(mTransform, result.Entity);
             }
+            else
+                result.IsCacheHit = true;
 
             ProcessOutputEntity(holder.Rq.Key, holder.Rq, holder.Rs, result);
         }

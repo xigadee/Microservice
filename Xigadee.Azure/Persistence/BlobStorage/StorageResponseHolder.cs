@@ -57,6 +57,8 @@ namespace Xigadee
 
         public bool IsDeleted { get; set; }
 
+        public bool IsCacheHit { get; set; }
+
         public string Content
         {
             get
