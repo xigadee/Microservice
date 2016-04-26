@@ -50,6 +50,7 @@ namespace Xigadee
     {
         private long mRetries = 0;
         private long mHitCount = 0;
+        private long mCacheHits = 0;
 
         public PersistenceResponseStatisticsHolder(int status)
         {
@@ -60,6 +61,8 @@ namespace Xigadee
 
         public long Retries { get { return mRetries; } }
 
+        public long CacheHits { get { return mRetries; } }
+
         public void Record<KT, ET>(TimeSpan? extent, PersistenceRepositoryHolder<KT, ET> rs)
         {
             if (extent.HasValue)
@@ -67,7 +70,17 @@ namespace Xigadee
                 ActiveIncrement();
                 ActiveDecrement(extent.Value);
             }
-            
+
+            if (rs.IsRetry)
+            {
+                Interlocked.Increment(ref mRetries);
+            }
+
+            if (rs.IsCached)
+            {
+                Interlocked.Increment(ref mCacheHits);
+            }
+
             Interlocked.Add(ref mRetries, rs?.Retry??0);
         }
     }
