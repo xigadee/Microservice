@@ -22,6 +22,7 @@ namespace Xigadee
 
             if (mPolicy.MasterJobEnabled)
             {
+                MasterJobChannelInitialise();
                 CommandRegister(NegotiationChannelId, NegotiationMessageType, null, MasterJobStateNotificationIncoming);
             }
         }
