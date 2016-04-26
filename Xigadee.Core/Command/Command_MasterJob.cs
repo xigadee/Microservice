@@ -44,6 +44,18 @@ namespace Xigadee
 
         #region MasterJobInitialise()
         /// <summary>
+        /// This method initialises the master job channel.
+        /// </summary>
+        protected virtual void MasterJobChannelInitialise()
+        {
+            NegotiationChannelPriority = mPolicy.MasterJobNegotiationChannelPriority;
+            NegotiationChannelId = mPolicy.MasterJobNegotiationChannelId ?? ChannelId;
+            NegotiationMessageType = mPolicy.MasterJobNegotiationChannelType ?? GetType().Name;
+        }
+        #endregion
+
+        #region MasterJobInitialise()
+        /// <summary>
         /// This method initialises the master job.
         /// </summary>
         protected virtual void MasterJobInitialise()
@@ -55,11 +67,6 @@ namespace Xigadee
             var masterjobPoll = new Schedule(MasterJobStateNotificationOutgoing, $"MasterJob: {mPolicy.MasterJobName ?? FriendlyName}");
 
             mMasterJobs = new Dictionary<Guid, MasterJobHolder>();
-
-            NegotiationChannelPriority = mPolicy.MasterJobNegotiationChannelPriority;
-            NegotiationChannelId = mPolicy.MasterJobNegotiationChannelId ?? ChannelId;
-            NegotiationMessageType = mPolicy.MasterJobNegotiationChannelType ?? GetType().Name;
-
             masterjobPoll.Frequency = TimeSpan.FromSeconds(20);
             masterjobPoll.InitialWait = TimeSpan.FromSeconds(5);
             masterjobPoll.IsLongRunning = false;
