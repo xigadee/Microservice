@@ -305,7 +305,7 @@ namespace Xigadee
                     Logger.LogException($"MasterJob '{job.Name} could not be initialised.'",ex);
                 }
 
-                Scheduler.Register(job.Schedule);
+                SchedulerRegister(job.Schedule);
             }
         }
         #endregion

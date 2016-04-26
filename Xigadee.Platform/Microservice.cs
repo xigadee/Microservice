@@ -257,6 +257,10 @@ namespace Xigadee
         }
         #endregion
 
+        #region CommandsStart...
+        /// <summary>
+        /// This method starts the commands
+        /// </summary>
         protected virtual void CommandsStart()
         {
             var commands = mCommands.Commands.ToList();
@@ -272,14 +276,20 @@ namespace Xigadee
                 Task.WaitAll(CommandsStart(priorityGroup, commands));
             }
         }
-
+        /// <summary>
+        /// This method starts the commands in parallel for the same priority.
+        /// </summary>
+        /// <param name="priority">The command priority.</param>
+        /// <param name="commands">The command list.</param>
+        /// <returns>Returns a set of tasks that can be executed in parallel.</returns>
         protected Task[] CommandsStart(int priority, List<ICommand> commands)
         {
             return commands
                 .Where((c) => c.StartupPriority == priority)
                 .Select((c) => Task.Run(() => ServiceStart(c)))
                 .ToArray();
-        }
+        } 
+        #endregion
 
         #region StopInternal()
         /// <summary>

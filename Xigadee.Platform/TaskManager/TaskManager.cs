@@ -384,7 +384,12 @@ namespace Xigadee
         public void ExecuteOrEnqueue(TaskTracker tracker)
         {
             if (tracker.IsInternal)
-                mProcessInternalQueue.Enqueue(tracker);
+            {
+                if (mPolicy.ExecuteInternalDirect)
+                    ExecuteTask(tracker);
+                else
+                    mProcessInternalQueue.Enqueue(tracker);
+            }
             else
                 mTasksQueue.Enqueue(tracker);
 
@@ -398,7 +403,7 @@ namespace Xigadee
         private void DequeueTasksAndExecute()
         {
             TaskTracker tracker;
-            while (mProcessInternalQueue.TryDequeue(out tracker))
+            while (!mProcessInternalQueue.IsEmpty && mProcessInternalQueue.TryDequeue(out tracker))
                 ExecuteTask(tracker);
 
             foreach (var dequeueTask in mTasksQueue.Dequeue(mAvailability.Count))

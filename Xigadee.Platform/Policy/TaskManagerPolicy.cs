@@ -51,7 +51,9 @@ namespace Xigadee
         /// This is the default time that the process loop should pause before another cycle if it is not triggered
         /// by a task submission or completion. The default is 200 ms.
         /// </summary>
-        public int LoopPauseTimeInMs { get; set; } = 200;
+        public int LoopPauseTimeInMs { get; set; } = 50;
+
+        public bool ExecuteInternalDirect { get; set; } = true;
 
     }
 }
