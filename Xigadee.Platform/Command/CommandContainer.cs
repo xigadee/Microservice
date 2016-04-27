@@ -71,8 +71,8 @@ namespace Xigadee
             //Ensure that any handlers are registered.
             Commands.ForEach((h) =>
             {
-                h.CommandsRegister();
                 h.OnCommandChange += Dynamic_OnCommandChange;
+                h.CommandsRegister();
             });
         }
         /// <summary>

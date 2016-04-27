@@ -137,16 +137,44 @@ namespace Xigadee
 
             mSupported.Add(key, CommandHandlerCreate(key, command));
 
+            switch (mPolicy.CommandNotify)
+            {
+                case CommandNotificationBehaviour.OnRegistration:
+                    CommandNotify(key, false);
+                    break;
+                case CommandNotificationBehaviour.OnRegistrationIfStarted:
+                    if (Status == ServiceStatus.Running)
+                        CommandNotify(key, false);
+                    break;
+            }
+        }
+        #endregion
+        #region CommandsNotify..
+        /// <summary>
+        /// This method can be used to nofity the command container of all the current keys currently supported.
+        /// </summary>
+        protected virtual void CommandsNotify(bool remove = false)
+        {
+            foreach (var key in mSupported.Keys)
+                CommandNotify(key, remove);
+        }
+        /// <summary>
+        /// This method will notify the command container when a commands is added or removed.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="remove">Set this to true to remove the command mapping, false is default.</param>
+        protected virtual void CommandNotify(MessageFilterWrapper key, bool remove = false)
+        {
             try
             {
-                if (Status == ServiceStatus.Running)
-                    OnCommandChange?.Invoke(this, new CommandChange(false, key));
+                OnCommandChange?.Invoke(this, new CommandChange(remove, key));
             }
             catch (Exception)
             {
             }
-        }
+        } 
         #endregion
+
 
         #region CommandHandlerCreate(MessageFilterWrapper key, Func<TransmissionPayload, List<TransmissionPayload>, Task> action)
         /// <summary>
@@ -197,11 +225,7 @@ namespace Xigadee
         {
             mSupported.Remove(key);
 
-            try
-            {
-                OnCommandChange?.Invoke(this, new CommandChange(true, key));
-            }
-            catch {}
+            CommandNotify(key, true);
         }
         #endregion
 

@@ -5,19 +5,26 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
+    /// This enum defines how command registration is notified to the controlling container.
+    /// </summary>
+    public enum CommandNotificationBehaviour
+    {
+        OnRegistration,
+        OnRegistrationIfStarted,
+        Manual
+    }
+
+    /// <summary>
     /// The command policy sets or enables various settings for the command.
     /// </summary>
     public class CommandPolicy:PolicyBase
     {
-        public CommandPolicy()
-        {
-        }
-
         /// <summary>
         /// This is the command startup prioroty.
         /// </summary>
-        public int? StartupPriority { get; set; }
+        public int? StartupPriority { get; set; }=0;
 
+        public CommandNotificationBehaviour CommandNotify { get; set; } = CommandNotificationBehaviour.OnRegistration;
         /// <summary>
         /// This is the default timeout for outgoing requests from the Command to other commands when not set in the settings.
         /// The default is 30s.
