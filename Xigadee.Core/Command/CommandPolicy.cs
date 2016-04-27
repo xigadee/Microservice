@@ -57,7 +57,13 @@ namespace Xigadee
 
         public static CommandPolicy ToJob(TimeSpan? interval, TimeSpan? initialWait, DateTime? initialTime, bool isLongRunningJob = false)
         {
-            return new CommandPolicy
+            return ToJob<CommandPolicy>(interval, initialWait, initialTime, isLongRunningJob);
+        }
+
+        public static P ToJob<P>(TimeSpan? interval, TimeSpan? initialWait, DateTime? initialTime, bool isLongRunningJob = false)
+            where P : CommandPolicy, new()
+        {
+            return new P
             {
                   JobPollEnabled = true
                 , JobPollIsLongRunning = isLongRunningJob
@@ -67,11 +73,15 @@ namespace Xigadee
             };
         }
 
-
-
         public static CommandPolicy ToMasterJob(string negotiationChannelId, string negotiationChannelType = null, int negotiationChannelPriority = 1, string name = null)
         {
-            return new CommandPolicy()
+            return ToMasterJob<CommandPolicy>(negotiationChannelId, negotiationChannelType, negotiationChannelPriority, name);
+        }
+
+        public static P ToMasterJob<P>(string negotiationChannelId, string negotiationChannelType = null, int negotiationChannelPriority = 1, string name = null)
+            where P: CommandPolicy, new()
+        {
+            return new P()
             {
                   JobPollEnabled = true
                 , MasterJobEnabled = true
