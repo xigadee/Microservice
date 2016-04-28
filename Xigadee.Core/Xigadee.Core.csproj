@@ -199,6 +199,7 @@
     <Compile Include="Communication\MessagingServiceBase.cs" />
     <Compile Include="Command\RequestTracker\RequestTrackerContainer.cs" />
     <Compile Include="ResourceTracker\CircuitBreakerBase.cs" />
+    <Compile Include="ResourceTracker\CircuitBreakerState.cs" />
     <Compile Include="ResourceTracker\Interfaces\IResourceBase.cs" />
     <Compile Include="ResourceTracker\Interfaces\IResourceConsumer.cs" />
     <Compile Include="ResourceTracker\Interfaces\IResourceRequestRateLimiter.cs" />
