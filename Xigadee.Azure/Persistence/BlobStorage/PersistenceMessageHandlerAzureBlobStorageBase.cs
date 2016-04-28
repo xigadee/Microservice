@@ -80,8 +80,8 @@ namespace Xigadee
         /// </summary>
         protected override void StartInternal()
         {
-            base.StartInternal();
             mStorage.Start();
+            base.StartInternal();
         }
         #endregion
         #region StopInternal()

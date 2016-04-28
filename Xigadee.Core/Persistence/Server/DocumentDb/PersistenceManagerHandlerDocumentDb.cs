@@ -146,14 +146,14 @@ namespace Xigadee
         /// </summary>
         protected override void StartInternal()
         {
-            base.StartInternal();
-
             mHolders = new Dictionary<string, CollectionHolder>();
             foreach (var collection in mShardingPolicy.Collections)
             {
                 mHolders.Add(collection, mConnection.ToCollectionHolder(mDatabaseName, collection, mPolicy.DefaultTimeout, true));
             }
-        }
+
+            base.StartInternal();
+       }
         #endregion
         #region Partition(K key)
         /// <summary>

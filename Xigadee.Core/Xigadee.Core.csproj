@@ -71,7 +71,6 @@
     <Compile Include="Command\Handler\ICommandHandlerStatistics.cs" />
     <Compile Include="Command\Statistics\CommandStatistics.cs" />
     <Compile Include="Command\Statistics\MasterJobStatistics.cs" />
-    <Compile Include="Persistence\CircuitBreaker\CircuitBreakerBase.cs" />
     <Compile Include="Collections\CollectionContainer.cs" />
     <Compile Include="Command\Command.cs" />
     <Compile Include="Command\CommandTimerPoll.cs" />
@@ -199,6 +198,7 @@
     <Compile Include="Communication\MessagingSenderBase.cs" />
     <Compile Include="Communication\MessagingServiceBase.cs" />
     <Compile Include="Command\RequestTracker\RequestTrackerContainer.cs" />
+    <Compile Include="ResourceTracker\CircuitBreakerBase.cs" />
     <Compile Include="ResourceTracker\Interfaces\IResourceBase.cs" />
     <Compile Include="ResourceTracker\Interfaces\IResourceConsumer.cs" />
     <Compile Include="ResourceTracker\Interfaces\IResourceRequestRateLimiter.cs" />
@@ -209,7 +209,9 @@
     <Compile Include="ResourceTracker\ResourceRateLimiter.cs" />
     <Compile Include="ResourceTracker\Interfaces\ResourceRequestResult.cs" />
     <Compile Include="ResourceTracker\Interfaces\ResourceRetryReason.cs" />
+    <Compile Include="ResourceTracker\ResourceRequestTrack.cs" />
     <Compile Include="ResourceTracker\ResourceStatistics.cs" />
+    <Compile Include="ResourceTracker\ResourceStatsContainer.cs" />
     <Compile Include="Serializer\DefaultDataContractSerializer.cs" />
     <Compile Include="Serializer\DefaultSerializerBase.cs" />
     <Compile Include="Interfaces\IEventSource.cs" />

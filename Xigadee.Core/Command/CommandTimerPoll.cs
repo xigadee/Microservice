@@ -31,7 +31,7 @@ namespace Xigadee
 
             if (! interval.HasValue && !InitialWait.HasValue && !initialWaitUTCTime.HasValue)
                 throw new ArgumentNullException("At least one parameter must be set when using this constructor.");
-        } 
+        }
         #endregion
 
         /// <summary>

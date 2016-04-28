@@ -35,8 +35,13 @@ namespace Xigadee
             {
                 base.Name = value;
             }
-        } 
+        }
         #endregion
+
+        /// <summary>
+        /// This is the application tag for the overall system.
+        /// </summary>
+        public string Application { get; set; }
 
         /// <summary>
         /// This is the environment tag, i.e production, UAT, SIT, staging etc. 
@@ -99,9 +104,12 @@ namespace Xigadee
         /// </summary>
         public CommunicationStatistics Communication { get; set; }
 
-        public ResourceTrackerStatistics Resources { get; set; }
-
+        /// <summary>
+        /// This is the command container statistics/
+        /// </summary>
         public CommandContainerStatistics Commands { get; set; }
+
+        public ResourceTrackerStatistics Resources { get; set; }
 
         public SchedulerStatistics Scheduler { get; set; }
 

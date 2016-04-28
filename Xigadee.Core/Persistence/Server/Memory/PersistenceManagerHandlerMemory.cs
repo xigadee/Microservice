@@ -114,11 +114,11 @@ namespace Xigadee
         #region Start/Stop
         protected override void StartInternal()
         {
-            base.StartInternal();
-
             mContainer = new ConcurrentDictionary<K, JsonHolder<K>>();
             mContainerReference = new ConcurrentDictionary<string, K>();
             mReferenceModifyLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
+
+            base.StartInternal();
         }
 
         protected override void StopInternal()

@@ -144,11 +144,12 @@ namespace Xigadee
         /// </summary>
         protected override void StartInternal()
         {
-            base.StartInternal();
 
             var resourceTracker = SharedServices.GetService<IResourceTracker>();
             if (resourceTracker != null && mResourceProfile != null)
                 mResourceConsumer = resourceTracker.RegisterConsumer("CacheV2" + mResourceProfile.Id, mResourceProfile);
+
+            base.StartInternal();
         }
         /// <summary>
         /// This is the class that removes references to service and removes shared services.

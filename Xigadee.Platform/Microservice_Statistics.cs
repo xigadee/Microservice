@@ -68,5 +68,12 @@ namespace Xigadee
             if (mScheduler != null) stats.Scheduler = mScheduler.Statistics;
         }
         #endregion
+
+        protected override void StatisticsInitialise(MicroserviceStatistics stats)
+        {
+            base.StatisticsInitialise(stats);
+
+            stats.Application = "";
+        }
     }
 }

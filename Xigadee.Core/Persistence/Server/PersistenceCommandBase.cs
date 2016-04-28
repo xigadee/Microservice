@@ -189,11 +189,11 @@ namespace Xigadee
         #region Start/Stop Internal
         protected override void StartInternal()
         {
-            base.StartInternal();
-
             var resourceTracker = SharedServices.GetService<IResourceTracker>();
             if (resourceTracker != null && mPolicy.ResourceProfile != null)
                 mPolicy.ResourceConsumer = resourceTracker.RegisterConsumer(EntityType, mPolicy.ResourceProfile);
+
+            base.StartInternal();
         }
 
         protected override void StopInternal()
