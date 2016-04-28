@@ -25,33 +25,20 @@ namespace Xigadee
 
         protected Random mRandom = new Random(Environment.TickCount);
 
-        protected DateTime? mLastPollTime;
+        protected DateTime? mMasterJobLastPollTime;
         /// <summary>
         /// This holds the master job collection.
         /// </summary>
         protected Dictionary<Guid, MasterJobHolder> mMasterJobs;
+
+        private MasterJobState mMasterJobState;
         #endregion
 
-        #region TimerPollSchedulesRegister()
+        #region OnMasterJobStateChange
         /// <summary>
-        /// This method can be overriden to enable additional schedules to be registered for the job.
+        /// This event can is fired when the state of the master job is changed.
         /// </summary>
-        protected virtual void TimerPollSchedulesRegister()
-        {
-
-        }
-        #endregion
-
-        #region MasterJobInitialise()
-        /// <summary>
-        /// This method initialises the master job channel.
-        /// </summary>
-        protected virtual void MasterJobChannelInitialise()
-        {
-            NegotiationChannelPriority = mPolicy.MasterJobNegotiationChannelPriority;
-            NegotiationChannelId = mPolicy.MasterJobNegotiationChannelId ?? ChannelId;
-            NegotiationMessageType = mPolicy.MasterJobNegotiationChannelType ?? GetType().Name;
-        }
+        public event EventHandler<MasterJobStateChange> OnMasterJobStateChange; 
         #endregion
 
         #region MasterJobInitialise()
@@ -60,13 +47,21 @@ namespace Xigadee
         /// </summary>
         protected virtual void MasterJobInitialise()
         {
+            mMasterJobs = new Dictionary<Guid, MasterJobHolder>();
+
+            if (mPolicy.MasterJobNegotiationChannelId == null)
+                throw new CommandStartupException("Masterjobs are enabled, but the NegotiationChannelId has not been set");
+            if (mPolicy.MasterJobNegotiationChannelType == null)
+                throw new CommandStartupException("Masterjobs are enabled, but the NegotiationChannelType has not been set");
+
+            CommandRegister(mPolicy.MasterJobNegotiationChannelId, mPolicy.MasterJobNegotiationChannelType, null, MasterJobStateNotificationIncoming);
+
             mStandbyPartner = new ConcurrentDictionary<string, StandbyPartner>();
 
             State = MasterJobState.VerifyingComms;
 
             var masterjobPoll = new Schedule(MasterJobStateNotificationOutgoing, $"MasterJob: {mPolicy.MasterJobName ?? FriendlyName}");
 
-            mMasterJobs = new Dictionary<Guid, MasterJobHolder>();
             masterjobPoll.Frequency = TimeSpan.FromSeconds(20);
             masterjobPoll.InitialWait = TimeSpan.FromSeconds(5);
             masterjobPoll.IsLongRunning = false;
@@ -75,45 +70,25 @@ namespace Xigadee
         } 
         #endregion
 
-        #region NegotiationChannelId
-        /// <summary>
-        /// This is the channel used to negotiate.
-        /// </summary>
-        public string NegotiationChannelId { get; set; }
-        #endregion
-        #region NegotiationChannelPriority
-        /// <summary>
-        /// This is the message priority.
-        /// </summary>
-        public int NegotiationChannelPriority { get; set; }
-        #endregion
-        #region NegotiationMessageType
-        /// <summary>
-        /// This is the negotiation message type.
-        /// </summary>
-        public string NegotiationMessageType { get; set; }
-        #endregion
         #region NegotiationTransmit(string action)
         /// <summary>
         /// This method transmits the notification message to the other instances.
         /// </summary>
         /// <param name="action">The action to transmit.</param>
-        protected virtual Task NegotiationTransmit(string action)
+        protected virtual async Task NegotiationTransmit(string action)
         {
             var payload = TransmissionPayload.Create();
             payload.Options = ProcessOptions.RouteExternal;
             var message = payload.Message;
 
-            message.ChannelId = NegotiationChannelId;
-            message.ChannelPriority = NegotiationChannelPriority;
-            message.MessageType = NegotiationMessageType;
+            message.ChannelId = mPolicy.MasterJobNegotiationChannelId;
+            message.ChannelPriority = mPolicy.MasterJobNegotiationChannelPriority;
+            message.MessageType = mPolicy.MasterJobNegotiationChannelType;
             message.ActionType = action;
 
             //Go straight to the dispatcher as we don't want to use the tracker for this job
             //as it is transmit only.
             TaskManager(this, payload);
-
-            return Task.CompletedTask;
         }
         #endregion
 
@@ -123,7 +98,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="rq">The request.</param>
         /// <param name="rs">The responses - this is not used.</param>
-        private async Task MasterJobStateNotificationIncoming(TransmissionPayload rq, List<TransmissionPayload> rs)
+        protected virtual async Task MasterJobStateNotificationIncoming(TransmissionPayload rq, List<TransmissionPayload> rs)
         {
             //Filter out any messages sent from this service.
             if (string.Equals(rq.Message.OriginatorServiceId, OriginatorId, StringComparison.InvariantCultureIgnoreCase))
@@ -200,11 +175,26 @@ namespace Xigadee
         /// This boolean property identifies whether this job is the master job for the particular 
         /// NegotiationMessageType.
         /// </summary>
-        public MasterJobState State { get; set; }
+        public virtual MasterJobState State
+        {
+            get
+            {
+                return mMasterJobState;
+            }
+            set
+            {
+                var oldState = mMasterJobState;
+                mMasterJobState = value;
+                try
+                {
+                    OnMasterJobStateChange?.Invoke(this, new MasterJobStateChange(oldState, value));
+                }
+                catch { }
+            }
+        }
         #endregion
 
         #region MasterJobStateNotificationOutgoing(Schedule state, CancellationToken token)
-
         /// <summary>
         /// This is the master job negotiation logic.
         /// </summary>
@@ -212,7 +202,7 @@ namespace Xigadee
         /// <param name="token">The cancellation token</param>
         protected virtual async Task MasterJobStateNotificationOutgoing(Schedule schedule, CancellationToken token)
         {
-            mLastPollTime = DateTime.UtcNow;
+            mMasterJobLastPollTime = DateTime.UtcNow;
             //We set a random poll time to reduce the potential for deadlocking
             //and to make the negotiation messaging more efficient.
             schedule.Frequency = TimeSpan.FromSeconds(5 + mRandom.Next(10));
@@ -255,7 +245,7 @@ namespace Xigadee
                     break;
             }
 
-            mLastPollTime = DateTime.UtcNow;
+            mMasterJobLastPollTime = DateTime.UtcNow;
         }
         #endregion
 
@@ -324,7 +314,6 @@ namespace Xigadee
         /// </summary>
         /// <param name="schedule">The schedule to activate.</param>
         /// <param name="cancel">The cancellation token</param>
-#pragma warning disable 4014
         protected virtual async Task MasterJobExecute(Schedule schedule, CancellationToken cancel)
         {
             var id = schedule.Id;
@@ -339,7 +328,6 @@ namespace Xigadee
                     throw;
                 }
         }
-#pragma warning restore 4014
         #endregion
         #region MasterJobStop()
         /// <summary>
@@ -351,8 +339,7 @@ namespace Xigadee
             {
                 try
                 {
-                    if (job.Cleanup != null)
-                        job.Cleanup(job.Schedule);
+                    job.Cleanup?.Invoke(job.Schedule);
                 }
                 catch (Exception ex)
                 {
@@ -394,20 +381,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region ResponseId
-        /// <summary>
-        /// This override will receive the incoming messages
-        /// </summary>
-        protected virtual MessageFilterWrapper ResponseId
-        {
-            get
-            {
-                if (ResponseChannelId == null)
-                    return null;
 
-                return new MessageFilterWrapper(new ServiceMessageHeader(ResponseChannelId, "MasterJob", FriendlyName)) { ClientId = OriginatorId };
-            }
-        }
-        #endregion
     }
 }

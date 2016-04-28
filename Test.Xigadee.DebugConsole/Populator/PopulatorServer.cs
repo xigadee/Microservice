@@ -29,9 +29,9 @@ namespace Test.Xigadee
                     { ChannelId = Channels.TestB }
                 );
 
-            Service.RegisterCommand(new DoNothingJob { ChannelId = Channels.TestC });
+            Service.RegisterCommand(new DoNothingJob { ChannelId = Channels.TestC, ResponseChannelId = Channels.InternalCallback });
 
-            Service.RegisterCommand(new DelayedProcessingJob { ChannelId = Channels.TestA });
+            Service.RegisterCommand(new DelayedProcessingJob { ChannelId = Channels.TestA, ResponseChannelId = Channels.InternalCallback });
 
             //Service.RegisterCommand(new DelayedProcessingJob { ChannelId = Channels.TestA });
             //Service.RegisterCommand(new DelayedProcessingJob { ChannelId = Channels.TestA });

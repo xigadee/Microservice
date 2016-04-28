@@ -72,7 +72,7 @@ namespace Xigadee
             Commands.ForEach((h) =>
             {
                 h.OnCommandChange += Dynamic_OnCommandChange;
-                h.CommandsRegister();
+                //h.CommandsRegister();
             });
         }
         /// <summary>

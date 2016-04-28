@@ -208,7 +208,7 @@ namespace Xigadee
         /// <summary>
         /// This method register the supported commands for a persistence handler.
         /// </summary>
-        public override void CommandsRegister()
+        protected override void CommandsRegister()
         {
             PersistenceCommandRegister<K, E>(EntityActions.Create, ProcessCreate, true, timeoutcorrect: TimeoutCorrectCreateUpdate);
 

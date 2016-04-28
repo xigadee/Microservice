@@ -37,11 +37,11 @@ namespace Xigadee
         public event EventHandler<OutgoingRequestTracker> DiagnosticsOnOutgoingRequestComplete;
         #endregion
 
-        #region OutgoingRequestsTimeoutStart()
+        #region OutgoingRequestsStart()
         /// <summary>
         /// This method starts the outgoing request support.
         /// </summary>
-        protected virtual void OutgoingRequestsTimeoutStart()
+        protected virtual void OutgoingRequestsInitialise()
         {
             mOutgoingRequests = new ConcurrentDictionary<string, OutgoingRequestTracker>();
 
@@ -53,6 +53,12 @@ namespace Xigadee
 
                 Scheduler.Register(mScheduleTimeout);
             }
+
+            //Check whether the ResponseId has been set, and if so then register the command.
+            if (ResponseId == null)
+                throw new CommandStartupException("Outgoing requests are enabled, but the ResponseId parameter has not been set");
+
+            CommandRegister(ResponseId, OutgoingRequestResponseProcess);
         }
         #endregion
         #region OutgoingRequestsTimeoutStop()
@@ -81,18 +87,62 @@ namespace Xigadee
 
         }
         #endregion
-
-        #region ChannelId
+        #region --> OutgoingRequestResponseProcess(TransmissionPayload payload, List<TransmissionPayload> responses)
         /// <summary>
-        /// The channel id.
+        /// This method processes the returning messages.
         /// </summary>
-        public virtual string ChannelId { get; set; }
+        /// <param name="payload">The incoming payload.</param>
+        /// <param name="responses">The responses collection is not currently used.</param>
+        protected virtual async Task OutgoingRequestResponseProcess(TransmissionPayload payload, List<TransmissionPayload> responses)
+        {
+            string id = payload?.Message?.CorrelationKey?.ToUpperInvariant(); ;
+
+            //If there is not a correlation key then quit.
+            if (id == null)
+            {
+                Logger?.LogMessage(LoggingLevel.Warning, "OutgoingRequestsProcessResponse - id is null");
+                return;
+            }
+
+            if (!OutgoingRequestRemove(id, payload))
+            {
+                try
+                {
+                    OnTimedOutResponse?.Invoke(this, payload);
+                }
+                catch (Exception ex)
+                {
+                    Logger?.LogException("OnTimedOutResponse", ex);
+                    //We do not want to throw exceptions here.
+                }
+            }
+
+            //Signal to the listener to release the message.
+            payload.SignalSuccess();
+        }
         #endregion
+
+
         #region ResponseChannelId
         /// <summary>
         /// This is the channel used for the payloadRs message.
         /// </summary>
         public virtual string ResponseChannelId { get; set; }
+        #endregion
+        #region ResponseId
+        /// <summary>
+        /// This override will receive the incoming messages
+        /// </summary>
+        protected virtual MessageFilterWrapper ResponseId
+        {
+            get
+            {
+                if (ResponseChannelId == null)
+                    return null;
+
+                return new MessageFilterWrapper(new ServiceMessageHeader(ResponseChannelId, "MasterJob", FriendlyName)) { ClientId = OriginatorId };
+            }
+        }
         #endregion
 
         #region UseASPNETThreadModel
@@ -178,40 +228,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region --> OutgoingRequestResponseProcess(TransmissionPayload payload, List<TransmissionPayload> responses)
-        /// <summary>
-        /// This method processes the returning messages.
-        /// </summary>
-        /// <param name="payload">The incoming payload.</param>
-        /// <param name="responses">The responses collection is not currently used.</param>
-        protected virtual async Task OutgoingRequestResponseProcess(TransmissionPayload payload, List<TransmissionPayload> responses)
-        {
-            string id = payload?.Message?.CorrelationKey?.ToUpperInvariant(); ;
-
-            //If there is not a correlation key then quit.
-            if (id == null)
-            {
-                Logger?.LogMessage(LoggingLevel.Warning, "OutgoingRequestsProcessResponse - id is null");
-                return;
-            }
-
-            if (!OutgoingRequestRemove(id, payload))
-            {
-                try
-                {
-                    OnTimedOutResponse?.Invoke(this, payload);
-                }
-                catch (Exception ex)
-                {
-                    Logger?.LogException("OnTimedOutResponse", ex);
-                    //We do not want to throw exceptions here.
-                }
-            }
-
-            //Signal to the listener to release the message.
-            payload.SignalSuccess();
-        }
-        #endregion
 
         #region --> OutgoingRequestsProcessTimeouts()
         /// <summary>
@@ -372,8 +388,6 @@ namespace Xigadee
             }
         }
         #endregion
-
-
 
     }
 }

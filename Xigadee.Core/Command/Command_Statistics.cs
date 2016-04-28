@@ -27,7 +27,12 @@ namespace Xigadee
             if (mPolicy.MasterJobEnabled)
             {
                 stats.MasterJob.Server = string.Format("{0} @ {1:o}", mCurrentMasterServiceId, mCurrentMasterReceiveTime);
-                stats.MasterJob.Status = string.Format("Status={0} Channel={1}/{2} Type={3}", State.ToString(), NegotiationChannelId, NegotiationChannelPriority, NegotiationMessageType);
+                stats.MasterJob.Status = string.Format("Status={0} Channel={1}/{2} Type={3}"
+                    , State.ToString()
+                    , mPolicy.MasterJobNegotiationChannelId
+                    , mPolicy.MasterJobNegotiationChannelPriority
+                    , mPolicy.MasterJobNegotiationChannelType
+                    );
                 stats.MasterJob.Standbys = mStandbyPartner.Values.ToList();
             }
 

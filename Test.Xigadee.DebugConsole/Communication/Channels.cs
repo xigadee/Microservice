@@ -16,5 +16,6 @@ namespace Test.Xigadee
         public static readonly string MasterJob = "masterjob";
 
         public static readonly string Internal = "internalpersistence";
+        public static readonly string InternalCallback = "internalcallback";
     }
 }

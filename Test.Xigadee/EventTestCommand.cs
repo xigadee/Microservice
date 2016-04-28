@@ -24,7 +24,7 @@ namespace Test.Xigadee
 
         }
 
-        public override void CommandsRegister()
+        protected override void CommandsRegister()
         {
             base.CommandsRegister();
             CommandRegister<I>(ExecuteRequest);

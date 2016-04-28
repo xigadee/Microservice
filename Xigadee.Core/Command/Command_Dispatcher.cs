@@ -14,17 +14,9 @@ namespace Xigadee
         /// <summary>
         /// This method should be implemented to populate supported commands.
         /// </summary>
-        public virtual void CommandsRegister()
+        protected virtual void CommandsRegister()
         {
-            //Check whether the ResponseId has been set, and if so then register the command.
-            if (ResponseId != null)
-                CommandRegister(ResponseId, OutgoingRequestResponseProcess);
 
-            if (mPolicy.MasterJobEnabled)
-            {
-                MasterJobChannelInitialise();
-                CommandRegister(NegotiationChannelId, NegotiationMessageType, null, MasterJobStateNotificationIncoming);
-            }
         }
         #endregion
 
@@ -172,9 +164,15 @@ namespace Xigadee
             catch (Exception)
             {
             }
-        } 
+        }
         #endregion
 
+        #region ChannelId
+        /// <summary>
+        /// The channel id.
+        /// </summary>
+        public virtual string ChannelId { get; set; }
+        #endregion
 
         #region CommandHandlerCreate(MessageFilterWrapper key, Func<TransmissionPayload, List<TransmissionPayload>, Task> action)
         /// <summary>

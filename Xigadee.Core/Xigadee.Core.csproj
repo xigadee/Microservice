@@ -62,7 +62,9 @@
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Command\CommandChange.cs" />
+    <Compile Include="Command\EventHandlers\CommandChange.cs" />
+    <Compile Include="Command\EventHandlers\MasterJobStateChange.cs" />
+    <Compile Include="Command\Exceptions\CommandStartupException.cs" />
     <Compile Include="Command\Handler\CommandHandler.cs" />
     <Compile Include="Command\Handler\CommandHandlerStatistics.cs" />
     <Compile Include="Command\Handler\ICommandHandler.cs" />

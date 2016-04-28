@@ -177,7 +177,7 @@ namespace Xigadee
         /// <summary>
         /// This override connects the cache handler to the interservice message handling.
         /// </summary>
-        public override void CommandsRegister()
+        protected override void CommandsRegister()
         {
             if (mPolicy.EntityChangeTrackEvents)
                 EntityChangeEventCommandsRegister();

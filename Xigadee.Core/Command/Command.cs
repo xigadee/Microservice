@@ -111,55 +111,47 @@ namespace Xigadee
         {
             try
             {
+                if (mPolicy == null)
+                    throw new CommandStartupException("Command policy cannot be null");
+
+                CommandsRegister();
+
                 if (mPolicy.OutgoingRequestsEnabled)
-                    OutgoingRequestsTimeoutStart();
+                    OutgoingRequestsInitialise();
+
+                if (mPolicy.MasterJobEnabled)
+                    MasterJobInitialise();
+
+                if (mPolicy.JobPollEnabled)
+                    TimerPollSchedulesRegister();
+
+                if (mPolicy.CommandNotify == CommandNotificationBehaviour.OnStartUp)
+                    CommandsNotify();
             }
             catch (Exception ex)
             {
+                Logger?.LogException($"Command '{GetType().Name}' start exception", ex);
                 throw ex;
             }
-
-            mSupported.Keys
-                .ForEach((k) =>
-                {
-
-                    try
-                    {
-                        OnCommandChange?.Invoke(this, new CommandChange(false, k));
-                    }
-                    catch (Exception)
-                    {
-                    }
-                });
-
-
-            if (mPolicy.MasterJobEnabled)
-                MasterJobInitialise();
-
-            if (mPolicy.JobPollEnabled)
-                TimerPollSchedulesRegister();
         }
 
         protected override void StopInternal()
         {
-            mSchedules.ForEach((s) => Scheduler.Unregister(s));
-            mSchedules.Clear();
+            try
+            {
+                mSchedules.ForEach((s) => Scheduler.Unregister(s));
+                mSchedules.Clear();
 
-            if (mPolicy.OutgoingRequestsEnabled)
-                OutgoingRequestsTimeoutStop();
+                if (mPolicy.OutgoingRequestsEnabled)
+                    OutgoingRequestsTimeoutStop();
 
-            mSupported.Keys
-                .ForEach((k) =>
-                {
-
-                    try
-                    {
-                        OnCommandChange?.Invoke(this, new CommandChange(true, k));
-                    }
-                    catch (Exception)
-                    {
-                    }
-                });
+                CommandsNotify(true);
+            }
+            catch (Exception ex)
+            {
+                Logger?.LogException($"Command '{GetType().Name}' stop exception", ex);
+                throw;
+            }
         }
         #endregion
 
@@ -171,6 +163,16 @@ namespace Xigadee
         {
             get;
             set;
+        }
+        #endregion
+
+        #region TimerPollSchedulesRegister()
+        /// <summary>
+        /// This method can be overriden to enable additional schedules to be registered for the job.
+        /// </summary>
+        protected virtual void TimerPollSchedulesRegister()
+        {
+
         }
         #endregion
 
@@ -259,7 +261,7 @@ namespace Xigadee
         protected virtual void SharedServicesChange(ISharedService sharedServices)
         {
             mSharedServices = sharedServices;
-        } 
+        }
         #endregion
     }
 }

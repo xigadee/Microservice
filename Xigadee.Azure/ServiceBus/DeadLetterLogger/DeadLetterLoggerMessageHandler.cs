@@ -47,7 +47,7 @@ namespace Xigadee
         } 
         #endregion
 
-        public override void CommandsRegister()
+        protected override void CommandsRegister()
         {
             //base.CommandRegister();
             //CommandRegister(

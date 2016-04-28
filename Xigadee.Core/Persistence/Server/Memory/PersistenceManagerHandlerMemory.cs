@@ -143,7 +143,7 @@ namespace Xigadee
             mDelay = delay;
         }
 
-        public override void CommandsRegister()
+        protected override void CommandsRegister()
         {
             base.CommandsRegister();
 

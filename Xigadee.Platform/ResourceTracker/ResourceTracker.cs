@@ -8,6 +8,7 @@ namespace Xigadee
 {
     /// <summary>
     /// This class is used to connect resource consumers with resource limiters.
+    /// Limiters are typically connected to listener clients and reduce the imcoming traffic when the resource becomes stressed.
     /// </summary>
     public class ResourceTracker: ServiceBase<ResourceTrackerStatistics>, IRequireSharedServices, IResourceTracker
     {
@@ -43,7 +44,7 @@ namespace Xigadee
             set
             {
                 mSharedServices = value;
-                value.RegisterService<IResourceTracker>(this);
+                value?.RegisterService<IResourceTracker>(this);
             }
         } 
         #endregion
@@ -98,6 +99,12 @@ namespace Xigadee
             return consumer;
         }
 
+        /// <summary>
+        /// This method registers a rate limiter and connects it to a set of resource profiles.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="profiles"></param>
+        /// <returns></returns>
         public IResourceRequestRateLimiter RegisterRequestRateLimiter(string name, IEnumerable<ResourceProfile> profiles)
         {
             if (profiles == null)

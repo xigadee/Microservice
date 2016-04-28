@@ -25,10 +25,6 @@ namespace Xigadee
         void TaskManagerTimeoutNotification(string originatorKey);
 
         /// <summary>
-        /// This method register the commands.
-        /// </summary>
-        void CommandsRegister();
-        /// <summary>
         /// This method should return true if the handler support this specific message.
         /// </summary>
         /// <param name="messageHeader">The message header.</param>
@@ -51,10 +47,13 @@ namespace Xigadee
         /// </summary>
         int StartupPriority { get; set; }
         /// <summary>
-        /// This event is used to signal a change of registered commands.
+        /// This event is used to signal a change of registered message types for the command.
         /// </summary>
         event EventHandler<CommandChange> OnCommandChange;
-
+        /// <summary>
+        /// This event is fired when the command's masterjob state is changed.
+        /// </summary>
+        event EventHandler<MasterJobStateChange> OnMasterJobStateChange;
     }
 
 }
