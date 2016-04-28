@@ -7,7 +7,7 @@ using System.Threading;
 namespace Xigadee
 {
     /// <summary>
-    /// This class holds a record of messages that have signalled a slow down.
+    /// This class holds a record of messages that have signalled a slow down or an exception.
     /// </summary>
     [DebuggerDisplay("{Debug}")]
     public class ResourceRequestTrack

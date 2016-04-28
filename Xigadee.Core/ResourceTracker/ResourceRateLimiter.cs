@@ -13,7 +13,6 @@ namespace Xigadee
     {
         #region Declarations
         List<ResourceStatistics> mProfiles;
-
         #endregion
 
         public ResourceRateLimiter(string name, List<ResourceStatistics> profiles)

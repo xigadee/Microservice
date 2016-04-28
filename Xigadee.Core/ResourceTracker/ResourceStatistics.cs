@@ -148,6 +148,17 @@ namespace Xigadee
             outValue.RetrySignal(delta, reason);
         }
 
+        internal void Exception(string name, Guid profileId, int start, ResourceRetryReason reason)
+        {
+            ErrorIncrement();
+            int delta = ConversionHelper.CalculateDelta(Environment.TickCount, start);
+            ResourceRequestTrack outValue;
+            if (!mActive.TryGetValue(profileId, out outValue))
+                return;
+
+            outValue.RetrySignal(delta, reason);
+        }
+
         private void Complete(ResourceRequestTrack outValue, TimeSpan delta)
         {
             

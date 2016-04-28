@@ -13,6 +13,7 @@ namespace Xigadee
         void End(Guid profileId, int start, ResourceRequestResult result);
 
         void Retry(Guid profileId, int retryStart, ResourceRetryReason reason);
-    }
 
+        void Exception(Guid profileId, int retryStart);
+    }
 }

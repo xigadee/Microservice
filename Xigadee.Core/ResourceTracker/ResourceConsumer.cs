@@ -47,5 +47,10 @@ namespace Xigadee
         {
             mResource.Retry(mName, profileId, retryStart, reason);
         }
+
+        public void Exception(Guid profileId, int retryStart)
+        {
+            Retry(profileId, retryStart, ResourceRetryReason.Exception);
+        }
     }
 }

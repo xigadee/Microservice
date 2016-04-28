@@ -10,6 +10,9 @@ namespace Xigadee
     {
         Throttle,
         Timeout,
+        Exception,
         Other
     }
+
+
 }
