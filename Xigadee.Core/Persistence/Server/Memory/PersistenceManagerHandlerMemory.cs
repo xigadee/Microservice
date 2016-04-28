@@ -123,14 +123,14 @@ namespace Xigadee
 
         protected override void StopInternal()
         {
+            base.StopInternal();
+
             mReferenceModifyLock.Dispose();
             mReferenceModifyLock = null;
             mContainerReference.Clear();
             mContainer.Clear();
             mContainerReference = null;
             mContainer = null;
-
-            base.StopInternal();
         }
         #endregion
 

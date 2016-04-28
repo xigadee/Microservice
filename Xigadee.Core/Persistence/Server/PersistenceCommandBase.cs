@@ -198,9 +198,8 @@ namespace Xigadee
 
         protected override void StopInternal()
         {
-            mPolicy.ResourceConsumer = null;
-
             base.StopInternal();
+            mPolicy.ResourceConsumer = null;
         }
         #endregion
 

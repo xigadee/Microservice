@@ -90,8 +90,8 @@ namespace Xigadee
         /// </summary>
         protected override void StopInternal()
         {
-            mStorage.Stop();
             base.StopInternal();
+            mStorage.Stop();
         }
         #endregion
 

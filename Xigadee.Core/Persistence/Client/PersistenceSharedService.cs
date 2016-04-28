@@ -80,10 +80,10 @@ namespace Xigadee
         /// </summary>
         protected override void StopInternal()
         {
+            base.StopInternal();
+
             if (mShared)
                 mSharedServices.RemoveService<IRepositoryAsync<K, E>>();
-
-            base.StopInternal();
         }
         #endregion
 

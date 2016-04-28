@@ -156,9 +156,9 @@ namespace Xigadee
         /// </summary>
         protected override void StopInternal()
         {
-            mResourceConsumer = null;
-
             base.StopInternal();
+
+            mResourceConsumer = null;
         }
         #endregion
 
