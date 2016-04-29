@@ -122,7 +122,6 @@ namespace Xigadee
         }
         #endregion
 
-
         #region ResponseChannelId
         /// <summary>
         /// This is the channel used for the payloadRs message.

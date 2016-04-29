@@ -81,7 +81,7 @@ namespace Xigadee
                   JobPollEnabled = true
                 , JobPollIsLongRunning = isLongRunningJob
                 , MasterJobEnabled = false
-                , OutgoingRequestsEnabled = true
+                , OutgoingRequestsEnabled = false
                 , JobPollSchedule = new CommandTimerPoll(interval, initialWait, initialTime)
             };
         }
@@ -102,7 +102,7 @@ namespace Xigadee
                 , MasterJobNegotiationChannelType = negotiationChannelType
                 , MasterJobNegotiationChannelPriority = negotiationChannelPriority
                 , MasterJobName = name
-                , OutgoingRequestsEnabled = true
+                , OutgoingRequestsEnabled = false
             };
         }
     }
