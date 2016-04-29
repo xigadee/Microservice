@@ -69,6 +69,7 @@
     <Compile Include="Command\Handler\CommandHandlerStatistics.cs" />
     <Compile Include="Command\Handler\ICommandHandler.cs" />
     <Compile Include="Command\Handler\ICommandHandlerStatistics.cs" />
+    <Compile Include="Command\Helper\CommandHolder.cs" />
     <Compile Include="Command\Statistics\CommandStatistics.cs" />
     <Compile Include="Command\Statistics\MasterJobStatistics.cs" />
     <Compile Include="Collections\CollectionContainer.cs" />
@@ -240,7 +241,9 @@
     <None Include="packages.config" />
     <None Include="Xigadee.Core.nuspec" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="DependencyManager\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Properties\ApacheLicense-2.0.txt" />
   </ItemGroup>

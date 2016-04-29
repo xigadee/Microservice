@@ -25,8 +25,14 @@ namespace Xigadee
 
         public void NotifyChange(List<MessageFilterWrapper> messages)
         {
-            if (OnCommandChange != null)
-                OnCommandChange(this, new SupportedMessagesChange() { Messages = mSupportedMessageTypes() });
+            try
+            {
+                OnCommandChange?.Invoke(this, new SupportedMessagesChange() { Messages = mSupportedMessageTypes() });
+            }
+            catch (Exception ex)
+            {
+                //Logger?.
+            }
         }
 
         public List<MessageFilterWrapper> SupportedMessages

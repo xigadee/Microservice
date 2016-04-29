@@ -63,7 +63,7 @@ namespace Xigadee
         /// <summary>
         /// This is the concurrent dictionary that contains the supported commands.
         /// </summary>
-        protected Dictionary<MessageFilterWrapper, H> mSupported;
+        protected Dictionary<CommandHolder, H> mSupported;
         /// <summary>
         /// This event is used by the component container to discover when a command is registered or deregistered.
         /// Implement IMessageHandlerDynamic to enable this feature.
@@ -87,7 +87,7 @@ namespace Xigadee
             mPolicy = PolicyCreateOrValidate(policy);
 
             mCurrentMasterPollAttempts = 0;
-            mSupported = new Dictionary<MessageFilterWrapper, H>();
+            mSupported = new Dictionary<CommandHolder, H>();
             mSchedules = new List<Schedule>();
 
             StartupPriority = mPolicy.StartupPriority ?? 0;

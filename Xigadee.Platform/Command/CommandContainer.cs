@@ -30,6 +30,8 @@ namespace Xigadee
         /// This is the list of registered commands.
         /// </summary>
         protected List<ICommand> mCommands;
+
+        protected bool mNotificationsActive = false;
         #endregion
         #region Constructor
         /// <summary>
@@ -72,7 +74,6 @@ namespace Xigadee
             Commands.ForEach((h) =>
             {
                 h.OnCommandChange += Dynamic_OnCommandChange;
-                //h.CommandsRegister();
             });
         }
         /// <summary>
@@ -100,8 +101,9 @@ namespace Xigadee
             if (e.IsRemoval)
                 mMessageMap.Clear();
 
-            //Notify the relevant parties (probably just communication) to refresh what they are doing.
-            mHandlersCollection.NotifyChange(SupportedMessageTypes());
+            if (mNotificationsActive)
+                //Notify the relevant parties (probably just communication) to refresh what they are doing.
+                mHandlersCollection.NotifyChange(SupportedMessageTypes());
         }
         #endregion
 
@@ -255,5 +257,55 @@ namespace Xigadee
                 .ForEach((s) => s.SharedServices = SharedServices);
         }
         #endregion
+
+        #region CommandsStart...
+        /// <summary>
+        /// This method starts the commands
+        /// </summary>
+        public void CommandsStart(Action<ICommand> serviceStart)
+        {
+            var commands = Commands.ToList();
+
+            //Start the handlers in decending priority
+            int[] commandPriorities = commands.Select((c) => c.StartupPriority)
+                .Distinct()
+                .OrderByDescending((k) => k)
+                .ToArray();
+
+            foreach (int priorityGroup in commandPriorities)
+            {
+                Task.WaitAll(CommandsStart(priorityGroup, commands, serviceStart));
+            }
+
+            mNotificationsActive = true;
+
+            //Notify the relevant parties (probably just communication) to refresh what they are doing.
+            mHandlersCollection.NotifyChange(SupportedMessageTypes());
+        }
+        /// <summary>
+        /// This method starts the commands in parallel for the same priority.
+        /// </summary>
+        /// <param name="priority">The command priority.</param>
+        /// <param name="commands">The command list.</param>
+        /// <returns>Returns a set of tasks that can be executed in parallel.</returns>
+        protected Task[] CommandsStart(int priority, List<ICommand> commands, Action<ICommand> serviceStart)
+        {
+            return commands
+                .Where((c) => c.StartupPriority == priority)
+                .Select((c) => Task.Run(() => serviceStart(c)))
+                .ToArray();
+        }
+        #endregion
+
+        public void CommandsStop(Action<ICommand> serviceStop)
+        {
+            //Ok, stop the commands.
+            Commands
+                .OrderBy((h) => h.StartupPriority)
+                .ForEach(h => serviceStop(h));
+
+            mNotificationsActive = false;
+
+        }
     }
 }

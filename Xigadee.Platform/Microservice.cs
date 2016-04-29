@@ -231,7 +231,7 @@ namespace Xigadee
                 mCommunication.ListenersStart();
 
                 //Ok start the commands in parallel at the same priority group.
-                CommandsStart();
+                mCommands.CommandsStart(ServiceStart);
 
                 //Signal that start has completed.
                 OnStartCompleted();
@@ -257,40 +257,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region CommandsStart...
-        /// <summary>
-        /// This method starts the commands
-        /// </summary>
-        protected virtual void CommandsStart()
-        {
-            var commands = mCommands.Commands.ToList();
-
-            //Start the handlers in decending priority
-            int[] commandPriorities = commands.Select((c) => c.StartupPriority)
-                .Distinct()
-                .OrderByDescending((k) => k)
-                .ToArray();
-
-            foreach (int priorityGroup in commandPriorities)
-            {
-                Task.WaitAll(CommandsStart(priorityGroup, commands));
-            }
-        }
-        /// <summary>
-        /// This method starts the commands in parallel for the same priority.
-        /// </summary>
-        /// <param name="priority">The command priority.</param>
-        /// <param name="commands">The command list.</param>
-        /// <returns>Returns a set of tasks that can be executed in parallel.</returns>
-        protected Task[] CommandsStart(int priority, List<ICommand> commands)
-        {
-            return commands
-                .Where((c) => c.StartupPriority == priority)
-                .Select((c) => Task.Run(() => ServiceStart(c)))
-                .ToArray();
-        } 
-        #endregion
-
         #region StopInternal()
         /// <summary>
         /// This override sends the service stop message.
@@ -301,10 +267,7 @@ namespace Xigadee
 
             LogStatistics().Wait(TimeSpan.FromSeconds(15));
 
-            //Ok, stop the commands.
-            mCommands.Commands
-                .OrderBy((h) => h.StartupPriority)
-                .ForEach(h => ServiceStop(h));
+            mCommands.CommandsStop(ServiceStop);
 
             mCommunication.ListenersStop();
 
@@ -339,7 +302,6 @@ namespace Xigadee
         {
             try
             {
-
                 if (service is IServiceLogger)
                     ((IServiceLogger)service).Logger = mLogger;
 

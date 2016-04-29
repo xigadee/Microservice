@@ -12,6 +12,7 @@ namespace Xigadee
     /// </summary>
     public class ResourceTracker: ServiceBase<ResourceTrackerStatistics>, IRequireSharedServices, IResourceTracker
     {
+        //AKA Dependency Monitor
         #region Declarations
         private ISharedService mSharedServices;
 

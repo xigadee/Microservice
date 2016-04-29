@@ -88,7 +88,8 @@ namespace Xigadee
         protected void CommandRegister(MessageFilterWrapper key,
             Func<TransmissionPayload, List<TransmissionPayload>, Task> action,
             Func<TransmissionPayload, List<TransmissionPayload>, Task> deadLetterAction = null,
-            Func<Exception, TransmissionPayload, List<TransmissionPayload>, Task> exceptionAction = null)
+            Func<Exception, TransmissionPayload, List<TransmissionPayload>, Task> exceptionAction = null,
+            bool requiresQuorum = false)
         {
             if (key == null)
                 throw new ArgumentNullException("CommandRegister: key cannot be null");
@@ -127,16 +128,17 @@ namespace Xigadee
             if (key.Header.IsPartialKey && key.Header.ChannelId == null)
                 throw new Exception("You must supply a channel when using a partial key.");
 
-            mSupported.Add(key, CommandHandlerCreate(key, command));
+            var cHolder = new CommandHolder(key, requiresQuorum);
+            mSupported.Add(cHolder, CommandHandlerCreate(key, command));
 
             switch (mPolicy.CommandNotify)
             {
                 case CommandNotificationBehaviour.OnRegistration:
-                    CommandNotify(key, false);
+                    CommandNotify(cHolder, false);
                     break;
                 case CommandNotificationBehaviour.OnRegistrationIfStarted:
                     if (Status == ServiceStatus.Running)
-                        CommandNotify(key, false);
+                        CommandNotify(cHolder, false);
                     break;
             }
         }
@@ -155,11 +157,11 @@ namespace Xigadee
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="remove">Set this to true to remove the command mapping, false is default.</param>
-        protected virtual void CommandNotify(MessageFilterWrapper key, bool remove = false)
+        protected virtual void CommandNotify(CommandHolder key, bool remove = false, bool isQuorum = false)
         {
             try
             {
-                OnCommandChange?.Invoke(this, new CommandChange(remove, key));
+                OnCommandChange?.Invoke(this, new CommandChange(remove, key.Message, isQuorum));
             }
             catch (Exception)
             {
@@ -221,9 +223,13 @@ namespace Xigadee
         /// <param name="key">Message filter wrapper key</param>
         protected void CommandUnregister(MessageFilterWrapper key)
         {
-            mSupported.Remove(key);
+            var item = mSupported.Keys.FirstOrDefault((d) => d.Message == key);
+            if (item != null)
+            {
+                mSupported.Remove(item);
 
-            CommandNotify(key, true);
+                CommandNotify(item, true);
+            }
         }
         #endregion
 
@@ -271,9 +277,9 @@ namespace Xigadee
         {
             foreach (var item in mSupported)
             {
-                if (item.Key.Header.IsPartialKey)
+                if (item.Key.Message.Header.IsPartialKey)
                 {
-                    string partialkey = item.Key.Header.ToPartialKey();
+                    string partialkey = item.Key.Message.Header.ToPartialKey();
 
                     if (header.ToKey().StartsWith(partialkey))
                     {
@@ -281,7 +287,7 @@ namespace Xigadee
                         return true;
                     }
                 }
-                else if (item.Key.Header.Equals(header))
+                else if (item.Key.Message.Header.Equals(header))
                 {
                     command = item.Value;
                     return true;
@@ -312,7 +318,7 @@ namespace Xigadee
         /// <returns>Returns a list of MessageFilterWrappers</returns>
         public virtual List<MessageFilterWrapper> SupportedMessageTypes()
         {
-            return mSupported.Keys.ToList();
+            return mSupported.Keys.Select((h) => h.Message).ToList();
         }
         #endregion
     }
