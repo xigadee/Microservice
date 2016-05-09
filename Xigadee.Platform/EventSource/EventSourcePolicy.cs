@@ -14,6 +14,7 @@ namespace Xigadee
         public EventSourcePolicy()
         {
             OverloadThreshold = 500;
+            Name = "EventSourceContainer";
         }
     }
 }

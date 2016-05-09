@@ -13,11 +13,19 @@ namespace Xigadee
     /// <summary>
     /// This internal collection contains the Microservice loggers.
     /// </summary>
-    public class LoggerContainer : ActionQueueCollectionBase<LogEvent, ILogger, LoggerStatistics, LoggerPolicy>, ILoggerExtended
+    public class LoggerContainer : ActionQueueCollectionBase<LogEvent, ILogger, LoggerContainerStatistics, LoggerPolicy>
+        , ILoggerExtended
     {
         public LoggerContainer(IEnumerable<ILogger> components, LoggerPolicy policy=null) : base(components, policy)
         {
 
+        }
+
+        protected override void StatisticsRecalculate(LoggerContainerStatistics stats)
+        {
+            base.StatisticsRecalculate(stats);
+
+            //stats.
         }
 
         protected override void Process(LogEvent data, ILogger logger)
@@ -92,8 +100,6 @@ namespace Xigadee
                 Enqueue(logEvent);
         }
         #endregion
-
-
 
     }
 }

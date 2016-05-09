@@ -101,6 +101,7 @@ namespace Xigadee
         }
         #endregion
 
+        #region Active
         /// <summary>
         /// This is a list of the currently active requests.
         /// </summary>
@@ -118,25 +119,48 @@ namespace Xigadee
                 }
             }
         }
+        #endregion
 
+        #region Start(string name, string group, Guid profileId)
+        /// <summary>
+        /// This is used to record the start of a resource request.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="group">The group.</param>
+        /// <param name="profileId">The profile id.</param>
+        /// <returns></returns>
         internal Guid Start(string name, string group, Guid profileId)
         {
             ActiveIncrement();
             var id = Guid.NewGuid();
-            var item = mActive.GetOrAdd(id, new ResourceRequestTrack(id, group) { ProfileId = profileId } );
+            var item = mActive.GetOrAdd(id, new ResourceRequestTrack(id, group) { ProfileId = profileId });
             return item.Id;
         }
-
+        #endregion
+        #region End(string name, Guid profileId, int start, ResourceRequestResult result)
+        /// <summary>
+        /// This internal method is used to record the end of a resource request.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="profileId">The profile id</param>
+        /// <param name="start">The start time.</param>
+        /// <param name="result">The request result.</param>
         internal void End(string name, Guid profileId, int start, ResourceRequestResult result)
         {
             int delta = ActiveDecrement(start);
             ResourceRequestTrack outValue;
             if (!mActive.TryRemove(profileId, out outValue))
                 return;
-
-            Complete(outValue, TimeSpan.FromMilliseconds(delta));
         }
-
+        #endregion
+        #region Retry(string name, Guid profileId, int start, ResourceRetryReason reason)
+        /// <summary>
+        /// This method is used to signal a retry to a dependency.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="profileId">The profile id.</param>
+        /// <param name="start">The start time.</param>
+        /// <param name="reason">The retry reason.</param>
         internal void Retry(string name, Guid profileId, int start, ResourceRetryReason reason)
         {
             ErrorIncrement();
@@ -146,22 +170,8 @@ namespace Xigadee
                 return;
 
             outValue.RetrySignal(delta, reason);
-        }
+        } 
+        #endregion
 
-        internal void Exception(string name, Guid profileId, int start, ResourceRetryReason reason)
-        {
-            ErrorIncrement();
-            int delta = ConversionHelper.CalculateDelta(Environment.TickCount, start);
-            ResourceRequestTrack outValue;
-            if (!mActive.TryGetValue(profileId, out outValue))
-                return;
-
-            outValue.RetrySignal(delta, reason);
-        }
-
-        private void Complete(ResourceRequestTrack outValue, TimeSpan delta)
-        {
-            
-        }
     }
 }

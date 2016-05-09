@@ -12,6 +12,7 @@ namespace Xigadee
     /// </summary>
     public class EventHubEventSource : AzureSBEventHubSender, IEventSource
     {
+
         #region Constructor
         /// <summary>
         /// This is the default constructor for the Azure service bus sender.
@@ -24,6 +25,14 @@ namespace Xigadee
         {
         }
         #endregion
+
+        public string Name
+        {
+            get
+            {
+                return "AzureEventSource";
+            }
+        }
 
         protected override AzureClientHolder<EventHubClient, EventData> ClientCreate(SenderPartitionConfig partition)
         {

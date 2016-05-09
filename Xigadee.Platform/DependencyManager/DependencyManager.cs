@@ -9,28 +9,31 @@ namespace Xigadee
     /// <summary>
     /// This class is responsible for managing external dependencies and resources, particularly the rate limiting and circuit breaker limits.
     /// </summary>
-    public class DependencyManager: ServiceBase<DependencyManagerStatistics>, IServiceLogger, IRequireSharedServices
+    public class DependencyManager: ServiceContainerBase<DependencyManagerStatistics, DependencyManagerPolicy>, IServiceLogger, IRequireSharedServices
     {
-        public DependencyManager()
+        public DependencyManager(DependencyManagerPolicy policy):base(policy)
         {
 
         }
 
+        #region Logger
         /// <summary>
         /// This is the logger reference.
         /// </summary>
         public ILoggerExtended Logger
         {
-            get;set;
+            get; set;
         }
-
+        #endregion
+        #region SharedServices
         /// <summary>
         /// Shared services are used to interact with the dependency manager,
         /// </summary>
         public ISharedService SharedServices
         {
-            get;set;
-        }
+            get; set;
+        } 
+        #endregion
 
         protected override void StartInternal()
         {

@@ -10,7 +10,7 @@ using System.Threading;
 #endregion
 namespace Xigadee
 {
-    public class ActionQueueStatistics: MessagingStatistics, ICollectionStatistics
+    public class ActionQueueCollectionStatistics: MessagingStatistics, ICollectionStatistics
     {
         public int ItemCount { get; set; }
 
@@ -23,6 +23,14 @@ namespace Xigadee
         public int? OverloadThreshold { get; set; }
 
         public long OverloadProcessHits { get; set; }
+
+
+        public List<object> Components { get; set; }
+
+    }
+
+    public class ActionQueueStatistics: MessagingStatistics
+    {
 
     }
 }

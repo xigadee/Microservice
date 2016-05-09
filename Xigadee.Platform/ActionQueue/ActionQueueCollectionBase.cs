@@ -16,8 +16,10 @@ namespace Xigadee
     /// <typeparam name="D"></typeparam>
     /// <typeparam name="I"></typeparam>
     /// <typeparam name="S"></typeparam>
-    public abstract class ActionQueueCollectionBase<D, I, S, P>: CollectionContainerBase<I, S>, IActionQueue, ITaskManagerProcess
-        where S : ActionQueueStatistics, new()
+    /// <typeparam name="P"></typeparam>
+    public abstract class ActionQueueCollectionBase<D, I, S, P>: CollectionContainerBase<I, S>
+        , IActionQueue, ITaskManagerProcess
+        where S : ActionQueueCollectionStatistics, new()
         where P : ActionQueuePolicy, new()
     {
         #region Declarations
@@ -113,15 +115,18 @@ namespace Xigadee
         public ITaskAvailability TaskAvailability { get; set; }
         #endregion
 
+        #region OverloadProcessCount
         /// <summary>
         /// This counter holds the current actve overload process threads.
         /// </summary>
         public int OverloadProcessCount { get { return mOverloadProcessCount; } }
+        #endregion
+        #region OverloadProcessHits
         /// <summary>
         /// 
         /// </summary>
-        public long OverloadProcessHits { get { return mOverloadProcessHits; } }
-
+        public long OverloadProcessHits { get { return mOverloadProcessHits; } } 
+        #endregion
 
         #region OverloadProcess()
         /// <summary>
@@ -190,9 +195,9 @@ namespace Xigadee
         public virtual bool CanProcess()
         {
             return Status == ServiceStatus.Running && Overloaded && mOverloadTaskCount < mPolicy.OverloadMaxTasks;
-        } 
+        }
         #endregion
-
+        #region --> Process()
         /// <summary>
         /// This method checks whether the process is overloaded and schedules a long running task to reduce the overload.
         /// </summary>
@@ -209,13 +214,14 @@ namespace Xigadee
             tracker.Priority = 3;
 
             tracker.Execute = async (token) => await OverloadProcess();
-            
-            tracker.ExecuteComplete = (t,s,ex) => Interlocked.Decrement(ref mOverloadTaskCount);
+
+            tracker.ExecuteComplete = (t, s, ex) => Interlocked.Decrement(ref mOverloadTaskCount);
 
             Interlocked.Increment(ref mOverloadTaskCount);
 
             TaskSubmit(tracker);
-        }
+        } 
+        #endregion
 
         protected virtual void WriteEvent(D logEvent)
         {

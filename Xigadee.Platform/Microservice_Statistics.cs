@@ -73,7 +73,9 @@ namespace Xigadee
         {
             base.StatisticsInitialise(stats);
 
+            stats.Name = "";
             stats.Application = "";
+            stats.Environment = "";
         }
     }
 }

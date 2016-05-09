@@ -19,6 +19,14 @@ namespace Xigadee
         {
         }
 
+        public string Name
+        {
+            get
+            {
+                return "AzureBlobStorage";
+            }
+        }
+
         public async Task Write<K, E>(string originatorId, EventSourceEntry<K, E> entry, DateTime? utcTimeStamp = default(DateTime?), bool sync = false)
         {
             await Output(mIdMaker(entry), mDirectoryMaker(entry), entry);

@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class DependencyManagerStatistics: StatusBase
+    public class CommandContainerPolicy:PolicyBase
     {
-
     }
 }

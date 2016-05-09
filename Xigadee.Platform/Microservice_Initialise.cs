@@ -62,24 +62,31 @@ namespace Xigadee
             var container = new ResourceTracker();
 
             return container;
-        } 
+        }
         #endregion
 
-        #region InitialiseComponentContainer()
+        #region InitialiseCommandContainer()
         /// <summary>
         /// This method creates the component container.
         /// This container holds the jobs, message initiators and handlers and is used to 
         /// assign incoming requests to the appropriate command.
         /// </summary>
         /// <returns>Returns the container.</returns>
-        protected virtual CommandContainer InitialiseCommandsContainer()
+        protected virtual CommandContainer InitialiseCommandContainer()
         {
-            var container = new CommandContainer();
+            var container = new CommandContainer(PolicyCommand());
 
             return container;
-        } 
+        }
+        /// <summary>
+        /// This is the policy used to set the communication component settings.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual CommandContainerPolicy PolicyCommand()
+        {
+            return new CommandContainerPolicy();
+        }
         #endregion
-
 
         #region InitialiseCommunicationContainer()
         /// <summary>

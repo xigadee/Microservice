@@ -107,7 +107,7 @@ namespace Xigadee
             mServiceEngineVersionId = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
             mCommunication = InitialiseCommunicationContainer();
-            mCommands = InitialiseCommandsContainer();
+            mCommands = InitialiseCommandContainer();
             mResourceTracker = InitialiseResourceTracker();
 
             mTelemetries = new List<ITelemetry>();

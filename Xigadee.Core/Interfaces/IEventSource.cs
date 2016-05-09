@@ -14,6 +14,8 @@ namespace Xigadee
     public interface IEventSource
     {
         Task Write<K,E>(string originatorId, EventSourceEntry<K,E> entry, DateTime? utcTimeStamp = null, bool sync = false);
+
+        string Name { get; }
     }
 
     /// <summary>

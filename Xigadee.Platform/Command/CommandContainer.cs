@@ -11,7 +11,7 @@ namespace Xigadee
     /// This container contains all the internal handlers, initiators and jobs that are responsible for 
     /// processing messages on the system.
     /// </summary>
-    public class CommandContainer:ServiceBase<CommandContainerStatistics>
+    public class CommandContainer:ServiceContainerBase<CommandContainerStatistics, CommandContainerPolicy>
     {
         #region Declarations
         /// <summary>
@@ -37,7 +37,7 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        public CommandContainer()
+        public CommandContainer(CommandContainerPolicy policy = null):base(policy)
         {
             mCommands = new List<ICommand>();
 

@@ -15,6 +15,8 @@ namespace Xigadee
 
         private string mInstance;
 
+
+
         private class EventSourceWrapper<K,E>
         {
             public string OriginatorId { get; set; }
@@ -47,6 +49,17 @@ namespace Xigadee
             jObj["id"] = mInstance + Guid.NewGuid().ToString("N");
 
             await mDocDb.Collection.Create(jObj.ToString());
+        }
+
+        /// <summary>
+        /// This is the event source identifier.
+        /// </summary>
+        public string Name
+        {
+            get
+            {
+                return "DocumentDb";
+            }
         }
     }
 }

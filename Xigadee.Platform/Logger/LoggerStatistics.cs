@@ -10,7 +10,9 @@ using System.Threading;
 #endregion
 namespace Xigadee
 {
-    public class LoggerStatistics: ActionQueueStatistics
+    public class LoggerContainerStatistics: ActionQueueCollectionStatistics
     {
+
+
     }
 }

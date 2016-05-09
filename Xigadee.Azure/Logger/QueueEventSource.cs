@@ -22,6 +22,14 @@ namespace Xigadee
 
         private readonly ResourceProfile mResourceProfile;
         #endregion
+
+        public string Name
+        {
+            get
+            {
+                return "AzureServiceBusQueue";
+            }
+        }
         #region Constructor
         /// <summary>
         /// This is the default constructor for the Azure service bus sender.

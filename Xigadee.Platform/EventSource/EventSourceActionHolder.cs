@@ -18,6 +18,14 @@ namespace Xigadee
             mActionHolder = actionHolder;
         }
 
+        public string Name
+        {
+            get
+            {
+                return "ActionHolder";
+            }
+        }
+
         public async Task Write<K, E>(string originatorId, EventSourceEntry<K, E> entry, DateTime? utcTimeStamp = default(DateTime?), bool sync = false)
         {
             try

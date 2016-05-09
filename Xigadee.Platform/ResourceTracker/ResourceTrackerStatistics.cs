@@ -8,9 +8,13 @@ namespace Xigadee
 {
     public class ResourceTrackerStatistics: StatusBase
     {
-
+        /// <summary>
+        /// 
+        /// </summary>
         public ResourceStatistics[] Resources { get; set; }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public string[] RateLimiters { get; set; }
     }
 }

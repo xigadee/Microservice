@@ -12,7 +12,7 @@ namespace Xigadee
     /// The Event Source is used to track all changes of state for a Microservice so that the system can be 
     /// reconstructed if there is a failure to any primary systems.
     /// </summary>
-    public class EventSourceContainer : ActionQueueCollectionBase<Action<IEventSource>, IEventSource, EventSourceStatistics, EventSourcePolicy>
+    public class EventSourceContainer : ActionQueueCollectionBase<Action<IEventSource>, IEventSource, EventSourceContainerStatistics, EventSourcePolicy>
         , IEventSource, IServiceLogger
     {
         private ILoggerExtended mLogger;
@@ -22,6 +22,10 @@ namespace Xigadee
         {
         }
 
+        #region Logger
+        /// <summary>
+        /// This is the logger used to record event source errors.
+        /// </summary>
         public ILoggerExtended Logger
         {
             get { return mLogger; }
@@ -31,6 +35,19 @@ namespace Xigadee
                 ContainerInternal.OfType<IServiceLogger>().ForEach(sl => sl.Logger = mLogger);
             }
         }
+        #endregion
+
+        /// <summary>
+        /// This is the name of the container.
+        /// </summary>
+        public string Name
+        {
+            get
+            {
+                return nameof(EventSourceContainer);
+            }
+        }
+
 
         public async Task Write<K, E>(string originatorId, EventSourceEntry<K, E> entry, DateTime? utcTimeStamp = default(DateTime?), bool sync = false)
         {

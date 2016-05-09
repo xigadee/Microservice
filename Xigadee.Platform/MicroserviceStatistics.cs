@@ -113,9 +113,9 @@ namespace Xigadee
 
         public SchedulerStatistics Scheduler { get; set; }
 
-        public LoggerStatistics Logger { get; set; }
+        public LoggerContainerStatistics Logger { get; set; }
 
-        public EventSourceStatistics EventSource { get; set; }
+        public EventSourceContainerStatistics EventSource { get; set; }
 
         private long mTimeouts;
 

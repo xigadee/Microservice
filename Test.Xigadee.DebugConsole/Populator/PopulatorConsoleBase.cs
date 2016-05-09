@@ -59,6 +59,7 @@ namespace Test.Xigadee
             base.RegisterLogging();
 
             Service.RegisterLogger(new TraceEventLogger());
+
             Service.RegisterLogger(new AzureStorageLogger(
                   Config.Storage
                 , Service.Name

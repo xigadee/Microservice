@@ -13,14 +13,10 @@ namespace Xigadee
     /// <summary>
     /// This container holds all the communication components (sender/listener/bidirectional) for the Microservice.
     /// </summary>
-    public class CommunicationContainer: ServiceBase<CommunicationStatistics>, 
+    public class CommunicationContainer: ServiceContainerBase<CommunicationStatistics, CommunicationPolicy>, 
         IServiceOriginator, IServiceLogger, IPayloadSerializerConsumer, IRequireSharedServices, IRequireScheduler, ITaskManagerProcess
     {
         #region Declarations
-        /// <summary>
-        /// This is the configuration policy.
-        /// </summary>
-        protected readonly CommunicationPolicy mPolicy;
         /// <summary>
         /// This collection holds the priority senders for each individual message.
         /// </summary>
@@ -59,10 +55,8 @@ namespace Xigadee
         /// </summary>
         /// <param name="policy">This is a algorithm used to calculate the 
         /// client poll order and the number of slots to release. You can use another algorithm when necessary by substituting this class for your own.</param>
-        public CommunicationContainer(CommunicationPolicy policy = null)
+        public CommunicationContainer(CommunicationPolicy policy = null):base(policy)
         {
-            mPolicy = policy ?? new CommunicationPolicy();
-
             mMessageSenderMap = new ConcurrentDictionary<string, List<ISender>>();
             mSupportedMessages = new List<MessageFilterWrapper>();
             mSenders = new List<ISender>();

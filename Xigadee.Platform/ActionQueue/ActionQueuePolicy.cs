@@ -27,5 +27,13 @@ namespace Xigadee
         /// This is the threshold at which point the overload tasks will be triggered.
         /// </summary>
         public int? OverloadThreshold { get; set; } = 1000;
+
+        /// <summary>
+        /// This is the name used for debugging.
+        /// </summary>
+        public virtual string Name
+        {
+            get;set;
+        }
     }
 }

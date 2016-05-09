@@ -11,7 +11,7 @@ namespace Xigadee
     /// <summary>
     /// This container holds the current tasks being processed on the system and calculates the availabile slots for the supported priority levels.
     /// </summary>
-    public class TaskManager: ServiceBase<TaskManagerStatistics>, IServiceLogger
+    public class TaskManager: ServiceContainerBase<TaskManagerStatistics, TaskManagerPolicy>, IServiceLogger
     {
         #region Declarations
         /// <summary>
@@ -34,10 +34,6 @@ namespace Xigadee
         /// This is the manual reset lock that is triggered when a job completes.
         /// </summary>
         private ManualResetEventSlim mPauseCheck;
-        /// <summary>
-        /// This is the setting policy for the task manager.
-        /// </summary>
-        private TaskManagerPolicy mPolicy;
         /// <summary>
         /// This is the CpuStats holder. It is used to report statistics and to hold trigger autotune events.
         /// </summary>
@@ -99,12 +95,11 @@ namespace Xigadee
         public TaskManager(int levels
             , Func<TransmissionPayload, Task> dispatcher
             , TaskManagerPolicy policy = null
-            ) : base(nameof(TaskManager))
+            ) : base(policy, nameof(TaskManager))
         {
             if (dispatcher == null)
                 throw new ArgumentNullException($"{nameof(TaskManager)}: dispatcher can not be null");
 
-            mPolicy = policy ?? new TaskManagerPolicy();
 
             mPauseCheck = new ManualResetEventSlim();
 
