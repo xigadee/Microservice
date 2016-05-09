@@ -313,12 +313,10 @@ namespace Xigadee
 
                                 ProfileRetry(profileHolder, attempt);
 
-                                Logger.LogMessage(LoggingLevel.Warning
-                                    , $"Timeout occured for {EntityType} {actionType} for request:{profileHolder.Rq}"
-                                    , "DBTimeout");
+                                if (profileHolder.Rs.IsTimeout)
+                                    Logger.LogMessage(LoggingLevel.Warning, $"Timeout occured for {EntityType} {actionType} for request:{profileHolder.Rq} with response:{profileHolder.Rs}", "DBTimeout");
 
                                 profileHolder.Rq.IsRetry = true;
-
                                 //These should not be counted against the limit.
                                 if (!profileHolder.Rs.ShouldRetry)
                                     profileHolder.Rq.Retry++;

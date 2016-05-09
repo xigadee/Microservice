@@ -25,11 +25,11 @@ namespace Xigadee
                 return database;
 
             if (!create)
-                throw new ArgumentException(string.Format("DocumentDB database {0} cannot be resolved on server {1}", databaseName, account.Name));
+                throw new ArgumentException($"DocumentDB database {databaseName} cannot be resolved on server {account.Name}");
 
             var dbResult = account.Create(databaseName).Result;
             if (!dbResult.IsSuccess)
-                throw new ArgumentException(string.Format("DocumentDB database {0} cannot be created on server {1}", databaseName, account.Name));
+                throw new ArgumentException($"DocumentDB database {databaseName} cannot be created on server {account.Name}-{dbResult.StatusCode}-{dbResult.StatusMessage}");
 
             return dbResult.Entity;
         }
@@ -41,13 +41,11 @@ namespace Xigadee
                 return collection;
 
             if (!create)
-                throw new ArgumentException(string.Format("DocumentDB collection {0} cannot be resolved on database {1} for server {2}"
-                    , collectionName, database.Name, database.Connection.AccountName));
+                throw new ArgumentException($"DocumentDB collection {collectionName} cannot be resolved on database {database.Name} for server {database.Connection.AccountName}");
 
             var collectionResult = database.Create(collectionName, database.Name).Result;
             if (!collectionResult.IsSuccess)
-                throw new ArgumentException(string.Format("DocumentDB collection {0} cannot be created on database {1} for server {2}"
-                    , collectionName, database.Name, database.Connection.AccountName));
+                throw new ArgumentException($"DocumentDB collection {collectionName} cannot be created on database {database.Name} for server {database.Connection.AccountName}-{collectionResult.StatusCode}-{collectionResult.StatusMessage}");
 
             return collectionResult.Entity;
         }

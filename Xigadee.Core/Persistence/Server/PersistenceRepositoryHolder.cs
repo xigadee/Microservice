@@ -67,7 +67,7 @@ namespace Xigadee
 
         public override string ToString()
         {
-            return string.Format( "{0}|Timeout{1}|IsTimeout={2}|IsRetry={3}|Retry={4}", base.ToString(), Timeout, IsTimeout, IsRetry, Retry);
+            return $"{base.ToString()}|Timeout{Timeout}|IsTimeout={IsTimeout}|IsRetry={IsRetry}|Retry={Retry}|ShouldRetry={ShouldRetry}";
         }
     }
 }

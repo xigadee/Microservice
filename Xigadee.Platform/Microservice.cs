@@ -344,19 +344,8 @@ namespace Xigadee
         /// <param name="service">The service to stop.</param>
         protected override void ServiceStop(object service)
         {
-            if (service is IContainerService)
-                ((IContainerService)service).Services.ForEach(s => ServiceStop(s));
-
+            (service as IContainerService)?.Services.ForEach(ServiceStop);
             base.ServiceStop(service);
-
-            if (service is ICommand)
-                ((ICommand)service).TaskManager = null;
-
-            if (service is IServiceEventSource)
-            {
-                ((IServiceEventSource)service).EventSource = null;
-            }
-
         }
         #endregion
 
