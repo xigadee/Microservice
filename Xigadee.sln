@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Helper", "Xigadee\Xigadee.Helper.csproj", "{4F785B7B-1FDC-4DCC-9453-FE42447FDED2}"
 EndProject
@@ -104,5 +104,8 @@ Global
 		{C523008A-BAF6-418D-8822-48E0820A427D} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 		{FE000961-2CD9-49C4-9C6D-B8A5AAAC1844} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 		{F81F3402-897C-40AE-832C-7EF1000D2595} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
 	EndGlobalSection
 EndGlobal
