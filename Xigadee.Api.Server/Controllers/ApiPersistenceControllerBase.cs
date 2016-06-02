@@ -20,6 +20,7 @@ namespace Xigadee
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
     /// <typeparam name="S">The serialization type.</typeparam>
+    [Obsolete("ApiPersistenceControllerBase is depreciated and will be removed shortly. Use ApiPersistenceControllerAsyncBase instead.")]
     public abstract class ApiPersistenceControllerBase<K, E, S> : ApiController
         where K : IEquatable<K>
     {

@@ -93,7 +93,7 @@ namespace Xigadee
                     actionContext.Request.Headers.Add(mCorrelationIdKeyName, correlationId);
 
                 var apiRequest = actionContext.ActionArguments.Values.FirstOrDefault(
-                        aa => aa != null && aa.GetType() == typeof (ApiRequest)) as ApiRequest;
+                        aa => aa != null && aa.GetType() == typeof (OData4ApiRequest)) as OData4ApiRequest;
 
                 if (apiRequest?.Options != null)
                     apiRequest.Options.CorrelationId = correlationId;

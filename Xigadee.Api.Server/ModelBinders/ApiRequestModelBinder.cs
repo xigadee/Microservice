@@ -13,12 +13,12 @@ namespace Xigadee
         public bool BindModel(HttpActionContext actionContext, ModelBindingContext bindingContext)
         {
             //TODO: See http://www.asp.net/web-api/overview/formats-and-model-binding/parameter-binding-in-aspnet-web-api
-            if (bindingContext.ModelType != typeof(ApiRequest))
+            if (bindingContext.ModelType != typeof(OData4ApiRequest))
             {
                 return false;
             }
 
-            ApiRequest result = new ApiRequest
+            OData4ApiRequest result = new OData4ApiRequest
             {
                 Options = ApiUtility.BuildRepositorySettings(actionContext.RequestContext, actionContext.Request)
             };
