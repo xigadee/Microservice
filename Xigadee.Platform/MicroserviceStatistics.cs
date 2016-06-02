@@ -18,6 +18,7 @@ namespace Xigadee
         /// </summary>
         public MicroserviceStatistics():base()
         {
+
         }
 
         #region Name
