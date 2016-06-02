@@ -355,8 +355,8 @@ namespace Xigadee
         /// </summary>
         /// <param name="rq">The incoming request.</param>
         /// <returns>Returns a HTTP Action result</returns>
-        [Route("/search")]
-        [HttpGet]
+        [Route("")]
+        [AcceptVerbs("SEARCH")]
         public virtual async Task<IHttpActionResult> Search([ModelBinder(typeof(ApiRequestModelBinder))]OData4ApiRequest rq)
         {
             TransportSerializer<E> entitySerializer;
