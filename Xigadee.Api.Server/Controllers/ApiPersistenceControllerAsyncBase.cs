@@ -357,7 +357,7 @@ namespace Xigadee
         /// <returns>Returns a HTTP Action result</returns>
         [Route("")]
         [AcceptVerbs("SEARCH")]
-        public virtual async Task<IHttpActionResult> Search([ModelBinder(typeof(ApiRequestModelBinder))]OData4ApiRequest rq)
+        public virtual async Task<IHttpActionResult> Search([ModelBinder(typeof(OData4ApiRequestModelBinder))]OData4ApiRequest rq)
         {
             TransportSerializer<E> entitySerializer;
             //Check that we have an appropriate serializer in the accept header
