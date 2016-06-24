@@ -16,40 +16,48 @@ namespace Test.Xigadee
                     }
                     , enabled: (m, o) => sServerContext.Client.Status == 0 && sServerContext.Server.Status == 0
                 )
-                , new ConsoleOption("Start client"
-                    , (m, o) =>
-                    {
-                        Task.Run(() => MicroserviceClientStart());
-                    }
-                    , enabled: (m, o) => sServerContext.Client.Status == 0
-                )
-                , new ConsoleOption("Stop client"
-                    , (m, o) =>
-                    {
-                        Task.Run(() => sServerContext.Client.Stop());
-                    }
-                    , enabled: (m, o) => sServerContext.Client.Status == 2
-                )
                 , new ConsoleOption("Set Persistence storage options"
                     , (m, o) =>
                     {
                     }
                     , enabled: (m, o) => sServerContext.Server.Status == 0
                     , childMenu: sPersistenceSettingsMenu.Value
+                )                
+                , new ConsoleSwitchOption(
+                    "Start client", (m, o) =>
+                    {
+                        Task.Run(() => MicroserviceClientStart());
+                        return true;
+                    }
+                    , "Stop client", (m, o) =>
+                    {
+                        Task.Run(() => sServerContext.Client.Stop());
+                        return true;
+                    }
                 )
-                , new ConsoleOption("Start server"
-                    , (m, o) =>
+                , new ConsoleSwitchOption(
+                    "Start WebAPI client", (m, o) =>
+                    {
+                        Task.Run(() => MicroserviceClientStart());
+                        return true;
+                    }
+                    , "Stop WebAPI client", (m, o) =>
+                    {
+                        Task.Run(() => sServerContext.Client.Stop());
+                        return true;
+                    }
+                )
+                , new ConsoleSwitchOption(
+                    "Start server", (m, o) =>
                     {
                         Task.Run(() => MicroserviceServerStart());
+                        return true;
                     }
-                    , enabled: (m, o) => sServerContext.Server.Status == 0
-                )
-                , new ConsoleOption("Stop server"
-                    , (m, o) =>
+                    ,"Stop server", (m, o) =>
                     {
                         Task.Run(() => sServerContext.Server.Stop());
+                        return true;
                     }
-                    , enabled: (m, o) => sServerContext.Server.Status == 2
                 )
                 , new ConsoleOption("Client Persistence methods"
                     , (m, o) =>

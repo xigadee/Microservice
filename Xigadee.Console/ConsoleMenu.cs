@@ -152,7 +152,7 @@ namespace Xigadee
             System.Console.ResetColor();
             System.Console.ForegroundColor = ConsoleColor.Yellow;
 
-            if (pageMax > 0)
+            if (pageMax > 1)
                 ConsoleHelper.HeaderBar(string.Format("{2} Page {0} of {1} {3}", page + 1, pageMax + 1
                     , page > 0 ? "<" : "-", page < pageMax ? ">" : "-"), character: ' ');
             else
@@ -254,7 +254,7 @@ namespace Xigadee
                     if (option.FnEnabled(this, option) && option.Action != null)
                         option.Action(this, option);
 
-                    if (option.IsChildMenu && option.Menu != null)
+                    if (option.Menu != null)
                         option.Menu.Show(State, pageLength);
                 }
             }

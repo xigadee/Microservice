@@ -55,6 +55,7 @@
     <Compile Include="ConsoleConfigurationBase.cs" />
     <Compile Include="ConsoleHelper.cs" />
     <Compile Include="ConsoleMenu.cs" />
+    <Compile Include="ConsoleSwitchOption.cs" />
     <Compile Include="ConsoleOption.cs" />
     <Compile Include="ConsoleWriter.cs" />
     <Compile Include="ErrorInfo.cs" />

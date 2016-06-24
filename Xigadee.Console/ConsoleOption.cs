@@ -7,6 +7,9 @@ using System.Xml.Linq;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This is class that holds the options entry on the console menu
+    /// </summary>
     public class ConsoleOption
     {
 
@@ -18,9 +21,13 @@ namespace Xigadee
             , Func<ConsoleMenu, ConsoleOption, string> display = null
             , Func<ConsoleMenu, ConsoleOption, bool> selected = null
             )
-            : this(text, childMenu, enabled, display, selected)
         {
             Action = action;
+            Menu = childMenu;
+            Text = text;
+            FnDisplay = display;
+            FnEnabled = enabled ?? ((m, o) => true);
+            FnSelected = selected;
         }
 
         public ConsoleOption(string text
@@ -29,10 +36,8 @@ namespace Xigadee
             , Func<ConsoleMenu, ConsoleOption, string> display = null
             , Func<ConsoleMenu, ConsoleOption, bool> selected = null
             )
-            : this(text, enabled, display, selected)
+            : this(text, null, childMenu, enabled, display, selected)
         {
-            Menu = childMenu;
-            IsChildMenu = childMenu != null;
         }
 
         protected ConsoleOption(string text
@@ -40,27 +45,34 @@ namespace Xigadee
             , Func<ConsoleMenu, ConsoleOption, string> display = null
             , Func<ConsoleMenu, ConsoleOption, bool> selected = null
             )
+            : this(text, null, null, enabled, display, selected)
         {
-            Text = text;
-            FnDisplay = display;
-            FnEnabled = enabled ?? ((m, o) => true);
-            FnSelected = selected;
         }
         #endregion
-
+        /// <summary>
+        /// This is the text displayed in the menu option.
+        /// </summary>
         public string Text { get; set; }
-
-        public bool IsChildMenu { get; set; }
-
-        public Func<ConsoleMenu, ConsoleOption, bool> FnEnabled { get; set; }
-
-        public Func<ConsoleMenu, ConsoleOption, bool> FnSelected { get; set; }
-
-        public Func<ConsoleMenu, ConsoleOption, string> FnDisplay { get; set; }
-
-        public Action<ConsoleMenu, ConsoleOption> Action { get; set; }
-
+        /// <summary>
+        /// This is the parent menu option.
+        /// </summary>
         public ConsoleMenu Menu { get; set; }
+        /// <summary>
+        /// This function is used to specify when the option is marked as enabled.
+        /// </summary>
+        public Func<ConsoleMenu, ConsoleOption, bool> FnEnabled { get; set; }
+        /// <summary>
+        /// This function is called when the option is selected by the user.
+        /// </summary>
+        public Func<ConsoleMenu, ConsoleOption, bool> FnSelected { get; set; }
+        /// <summary>
+        /// This function is used to set the display text for the option.
+        /// </summary>
+        public Func<ConsoleMenu, ConsoleOption, string> FnDisplay { get; set; }
+        /// <summary>
+        /// This is the action executed when the option is selected.
+        /// </summary>
+        public Action<ConsoleMenu, ConsoleOption> Action { get; set; }
 
     }
 }
