@@ -38,12 +38,12 @@ namespace Test.Xigadee
                 , new ConsoleSwitchOption(
                     "Start WebAPI client", (m, o) =>
                     {
-                        Task.Run(() => MicroserviceClientStart());
+                        Task.Run(() => MicroserviceWebAPIStart());
                         return true;
                     }
                     , "Stop WebAPI client", (m, o) =>
                     {
-                        Task.Run(() => sServerContext.Client.Stop());
+                        MicroserviceWebAPIStop();
                         return true;
                     }
                 )

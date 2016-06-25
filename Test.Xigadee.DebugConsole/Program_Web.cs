@@ -12,10 +12,17 @@ namespace Test.Xigadee
     {
         static void MicroserviceWebAPIStart()
         {
-            sServerContext.Client.Service.StatusChanged += ClientStatusChanged;
+            //sServerContext.Client.Service.StatusChanged += ClientStatusChanged;
 
-            sServerContext.Client.Populate(ResolveClientSetting, true);
-            sServerContext.Client.Start();
+            //sServerContext.Client.Populate(ResolveClientSetting, true);
+            //sServerContext.Client.Start();
+        }
+        static void MicroserviceWebAPIStop()
+        {
+            //sServerContext.Client.Service.StatusChanged += ClientStatusChanged;
+
+            //sServerContext.Client.Populate(ResolveClientSetting, true);
+            //sServerContext.Client.Start();
         }
 
         //static IDisposable mWebApp;

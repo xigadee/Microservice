@@ -9,6 +9,7 @@ namespace Test.Xigadee
     {
         static Context sServerContext;
         static Context sClientContext;
+        static Context sWebAPIContext;
 
         static Dictionary<string, string> sServerSettings = new Dictionary<string, string>();
 
@@ -27,7 +28,7 @@ namespace Test.Xigadee
                 sServerContext.SetPersistenceCacheOption(switches["persistencecache"]);
 
             sServerContext.SlotCount = switches.ContainsKey("processes") ? 
-                int.Parse(switches["processes"]) : Environment.ProcessorCount * 4 * 4 * 2;
+                int.Parse(switches["processes"]) : Environment.ProcessorCount * 4 * 4;
 
             sServerContext.EntityVersionid = Guid.NewGuid();
             sServerContext.EntityId = new Guid("414f06b5-7c16-403a-acc5-40d2b18f08a1");
