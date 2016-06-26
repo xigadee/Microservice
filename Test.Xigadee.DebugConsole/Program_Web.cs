@@ -10,19 +10,29 @@ namespace Test.Xigadee
 {
     static partial class Program
     {
+        static IDisposable mWebApp;
+
         static void MicroserviceWebAPIStart()
         {
-            //sServerContext.Client.Service.StatusChanged += ClientStatusChanged;
+            string baseAddress = "http://localhost:29001/";
+            StartOptions opts = new StartOptions(baseAddress);
+            opts.ServerFactory = "";
+            try
+            {
+                mWebApp = WebApp.Start<Test.Xigadee.Api.Server.Startup>(opts);
+            }
+            catch (Exception ex)
+            {
 
-            //sServerContext.Client.Populate(ResolveClientSetting, true);
-            //sServerContext.Client.Start();
+                throw ex;
+            }
+            //opts.Settings.
+
         }
         static void MicroserviceWebAPIStop()
         {
-            //sServerContext.Client.Service.StatusChanged += ClientStatusChanged;
-
-            //sServerContext.Client.Populate(ResolveClientSetting, true);
-            //sServerContext.Client.Start();
+            mWebApp.Dispose();
+            mWebApp = null;
         }
 
         //static IDisposable mWebApp;

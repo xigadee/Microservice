@@ -18,8 +18,7 @@ namespace Test.Xigadee.Api.Server
 
             Service.Initialise();
 
-            GlobalConfiguration.Configuration.DependencyResolver
-                = new UnityDependencyResolver(Service.Unity);
+            GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(Service.Unity);
             GlobalConfiguration.Configure((c) => WebApiConfig.Register(c));
 
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
