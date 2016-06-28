@@ -282,7 +282,6 @@
     <Compile Include="Microservice\ConfigWebApi.cs" />
     <Compile Include="Microservice\MicroserviceWebApi.cs" />
     <Compile Include="Microservice\PopulatorWebApi.cs" />
-    <Compile Include="Microservice\Sha256SignatureProvider.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />

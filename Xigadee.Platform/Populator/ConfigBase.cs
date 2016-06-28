@@ -14,11 +14,15 @@ namespace Xigadee
     /// </summary>
     public abstract class ConfigBase
     {
+        #region Declarations
         private object syncLock = new object();
         /// <summary>
         /// This is the configuration collection that holds the configuration keys.
         /// </summary>
-        private readonly ConcurrentDictionary<string, string> mConfig = new ConcurrentDictionary<string, string>();
+        private readonly ConcurrentDictionary<string, string> mConfig = new ConcurrentDictionary<string, string>(); 
+        #endregion
+
+        #region ResolverFirst
         /// <summary>
         /// This boolean property specifies whether the system should read from the internal collection
         /// or go straight to the azure/windows config setting.
@@ -27,7 +31,10 @@ namespace Xigadee
         public bool ResolverFirst
         {
             get; set;
-        }
+        } 
+        #endregion
+
+        #region PlatformOrConfig(string key)
         /// <summary>
         /// This method returns a string value from configuration. It tries to resolve values from 
         /// either the resolver function, or from the Azure configuration and then the windows configuration.
@@ -57,7 +64,10 @@ namespace Xigadee
             }
 
             return value;
-        }
+        } 
+        #endregion
+
+        #region PlatformOrConfigCache(string key, string defaultValue = null)
         /// <summary>
         /// This method resolves a specific value or insert the default value.
         /// </summary>
@@ -73,7 +83,10 @@ namespace Xigadee
             }
 
             return value;
-        }
+        } 
+        #endregion
+
+        #region PlatformOrConfigCacheBool(string key, string defaultValue = null)
         /// <summary>
         /// This method resolves a specific value or insert the default value for boolean properties.
         /// </summary>
@@ -83,8 +96,10 @@ namespace Xigadee
         protected virtual bool PlatformOrConfigCacheBool(string key, string defaultValue = null)
         {
             return Convert.ToBoolean(PlatformOrConfigCache(key, defaultValue));
-        }
+        } 
+        #endregion
 
+        #region PlatformOrConfigCacheInt(string key, int? defaultValue = null)
         /// <summary>
         /// This method resolves a specific value or insert the default value for boolean properties.
         /// </summary>
@@ -94,14 +109,17 @@ namespace Xigadee
         protected virtual int PlatformOrConfigCacheInt(string key, int? defaultValue = null)
         {
             return Convert.ToInt32(PlatformOrConfigCache(key, defaultValue?.ToString()));
-        }
+        } 
+        #endregion
 
+        #region Resolver
         /// <summary>
         /// This is the resolves function that can be injected in to the config resolution flow.
         /// </summary>
         public Func<string, string, string> Resolver
         {
             get; set;
-        }
+        } 
+        #endregion
     }
 }

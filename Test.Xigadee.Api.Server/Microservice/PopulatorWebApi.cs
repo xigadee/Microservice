@@ -145,10 +145,6 @@ namespace Test.Xigadee.Api.Server
                 ));
         }
 
-        protected override void RegisterResourceProfiles()
-        {
-            base.RegisterResourceProfiles();
-        }
 
         protected virtual IEnumerable<ListenerPartitionConfig> PrimaryChannelConfig(decimal weighting = 1.2m)
         {

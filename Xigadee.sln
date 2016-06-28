@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Helper", "Xigadee\Xigadee.Helper.csproj", "{4F785B7B-1FDC-4DCC-9453-FE42447FDED2}"
 EndProject
@@ -37,6 +37,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.DebugConsole", "Test.Xigadee.DebugConsole\Test.Xigadee.DebugConsole.csproj", "{F81F3402-897C-40AE-832C-7EF1000D2595}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Api.Server", "Test.Xigadee.Api.Server\Test.Xigadee.Api.Server.csproj", "{3C7D695D-4111-499E-9764-6B9E6EC93952}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Api.Server.Unity", "Xigadee.Api.Server.Unity\Xigadee.Api.Server.Unity.csproj", "{636956F9-6CCE-4F3E-BE57-5A851C089243}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -102,6 +104,10 @@ Global
 		{3C7D695D-4111-499E-9764-6B9E6EC93952}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C7D695D-4111-499E-9764-6B9E6EC93952}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C7D695D-4111-499E-9764-6B9E6EC93952}.Release|Any CPU.Build.0 = Release|Any CPU
+		{636956F9-6CCE-4F3E-BE57-5A851C089243}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{636956F9-6CCE-4F3E-BE57-5A851C089243}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{636956F9-6CCE-4F3E-BE57-5A851C089243}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{636956F9-6CCE-4F3E-BE57-5A851C089243}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
