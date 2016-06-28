@@ -5,12 +5,12 @@ using Xigadee;
 namespace Test.Xigadee
 {
     [TestClass]
-    public class Test_Sha256SignatureHelper
+    public class Test_Sha512SignatureHelper
     {
         [TestMethod]
         public void TestSignature1()
         {
-            var helper = new Sha256SignatureHelper("");
+            var helper = new Sha512SignatureHelper("");
 
             var signature = helper.Sign("freddy", "got", "fingered");
 
@@ -21,10 +21,10 @@ namespace Test.Xigadee
         [TestMethod]
         public void TestSignature2()
         {
-            var helper = new Sha256SignatureHelper("");
+            var helper = new Sha512SignatureHelper("");
             Assert.IsTrue(helper.VerifySignature(helper.Sign(), ""));
 
-            var helper2 = new Sha256SignatureHelper("HelloMom");
+            var helper2 = new Sha512SignatureHelper("HelloMom");
             Assert.IsTrue(helper2.VerifySignature(helper2.Sign(), ""));
             Assert.IsTrue(helper2.VerifySignature(helper2.Sign()));
             Assert.IsFalse(helper2.VerifySignature(helper2.Sign().ToUpperInvariant(), ""));
@@ -33,7 +33,7 @@ namespace Test.Xigadee
         [TestMethod]
         public void TestSignature3()
         {
-            var helper = new Sha256SignatureHelper("123");
+            var helper = new Sha512SignatureHelper("123");
 
             var signature = helper.Sign("freddy", "got", "fingered");
 

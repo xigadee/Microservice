@@ -64,7 +64,7 @@
     <Compile Include="Common\TestMicroservice.cs" />
     <Compile Include="Common\TestPopulatorBase.cs" />
     <Compile Include="Microservice_Validate_Persistence.cs" />
-    <Compile Include="Sha256SignatureHelper.cs" />
+    <Compile Include="Sha512SignatureHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xigadee.Azure\Xigadee.Azure.csproj">

@@ -10,7 +10,7 @@ namespace Test.Xigadee.Api.Server
     public class ConfigWebApi: ConfigBase
     {
 
-        public Sha256SignatureHelper SignatureProvider => new Sha256SignatureHelper("A4514A8598CC4E77B46DA51FE62D00FB");
+        public Sha512SignatureHelper SignatureProvider => new Sha512SignatureHelper("A4514A8598CC4E77B46DA51FE62D00FB");
 
         public bool AuthAllowInsecureHttp => PlatformOrConfigCacheBool("AuthAllowInsecureHttp", "true");
 
