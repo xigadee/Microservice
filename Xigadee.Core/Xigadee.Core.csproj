@@ -214,6 +214,7 @@
     <Compile Include="ResourceTracker\ResourceRequestTrack.cs" />
     <Compile Include="ResourceTracker\ResourceStatistics.cs" />
     <Compile Include="ResourceTracker\ResourceStatsContainer.cs" />
+    <Compile Include="Security\Sha256SignatureHelper.cs" />
     <Compile Include="Serializer\DefaultDataContractSerializer.cs" />
     <Compile Include="Serializer\DefaultSerializerBase.cs" />
     <Compile Include="Interfaces\IEventSource.cs" />

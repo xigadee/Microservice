@@ -10,7 +10,7 @@ namespace Xigadee
     {
         private readonly string mHeaderName;
 
-        public WebApiVersionHeaderFilter(string headerName = "X-IMGroupApiVersion")
+        public WebApiVersionHeaderFilter(string headerName = "X-XigadeeApiVersion")
         {
             mHeaderName = headerName;
         }

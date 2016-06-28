@@ -20,6 +20,8 @@ namespace Test.Xigadee.Api.Server
             try
             {
                 //AreaRegistration.RegisterAllAreas();
+                var config = new HttpConfiguration();
+                app.UseWebApi(config);
 
                 Service.Initialise();
 

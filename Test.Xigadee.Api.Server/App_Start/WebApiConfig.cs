@@ -36,9 +36,10 @@ namespace Test.Xigadee.Api.Server
             config.Filters.Add(new WebApiVersionHeaderFilter());
             config.Formatters.Insert(0, new ByteArrayMediaTypeFormatter()); // Add before any of the default formatters
 
+            //Enable attribute based routing for HTTP verbs.
             config.MapHttpAttributeRoutes();
 
-            // Convention-based routing.
+            // Add additional convention-based routing for the default controller.
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "v1/{controller}/{id}",
