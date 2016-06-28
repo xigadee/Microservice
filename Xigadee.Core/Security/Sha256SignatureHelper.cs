@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -7,61 +8,116 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    /// <summary>
-    /// This class verifies the signature.
-    /// </summary>
-    public class Sha512SignatureHelper
+    public abstract class SignatureHelper<H>
+        where H: HashAlgorithm
     {
         #region Declarations
-        private readonly string mSalt;
+        protected readonly string mSalt;
         #endregion
         #region Constructor
         /// <summary>
         /// This is the default constructor.
         /// </summary>
         /// <param name="salt">The case sensitive string that serves as the salt value for the signature.</param>
-        public Sha512SignatureHelper(string salt)
+        public SignatureHelper(string salt)
         {
             mSalt = salt ?? string.Empty;
-        } 
+        }
         #endregion
 
         /// <summary>
-        /// This method creates a SHA256
+        /// This method creates a hash from the incoming values against the salt.
         /// </summary>
-        /// <param name="signatureValues"></param>
-        /// <returns></returns>
+        /// <param name="signatureValues">The set of string values to hash with the salt.</param>
+        /// <returns>Returns the base64 encoded hash.</returns>
         public string Sign(params string[] signatureValues)
         {
-            return CreateHash(signatureValues);
+            byte[] hash = CreateHash(signatureValues);
+            return Convert.ToBase64String(hash);
         }
 
+        /// <summary>
+        /// This method verifies an existing signature against the set of string parameters passed.
+        /// </summary>
+        /// <param name="base64signature">The existing base64 encoded signature.</param>
+        /// <param name="signatureValues">The parameter collection.</param>
+        /// <returns>Returns true if the computed hash matches the one passed.</returns>
         public bool VerifySignature(string base64signature, params string[] signatureValues)
         {
             if (string.IsNullOrEmpty(base64signature))
                 throw new ArgumentOutOfRangeException("signature", "signature cannot be null or empty");
 
-            //Case sensitive match
-            return base64signature.Equals(CreateHash(signatureValues), StringComparison.Ordinal);
+            byte[] comparand = Convert.FromBase64String(base64signature);
+            byte[] hash = CreateHash(signatureValues);
+
+            return StructuralComparisons.StructuralEqualityComparer.Equals(comparand, hash);
         }
 
         /// <summary>
         /// This private method creates a base64 hash from the salt and the parameters passed.
         /// </summary>
         /// <param name="signatureValues">The signature values to hash.</param>
-        /// <returns>Returns a base 64 encoded string.</returns>
-        private string CreateHash(IEnumerable<string> signatureValues)
+        /// <returns>Returns a byte array.</returns>
+        private byte[] CreateHash(IEnumerable<string> signatureValues)
         {
             string data = string.Format("{0}:{1}", mSalt, string.Join(":", signatureValues.Select(s => String.IsNullOrEmpty(s) ? string.Empty : s)));
 
-            using (var provider = new SHA512CryptoServiceProvider())
+            using (H provider = CreateProvider())
             {
                 byte[] binData = Encoding.UTF8.GetBytes(data);
 
                 byte[] hash = provider.ComputeHash(binData, 0, binData.Length);
 
-                return Convert.ToBase64String(hash);
+                return hash;
             }
+        }
+
+        /// <summary>
+        /// This override is used to create the specific provider.
+        /// </summary>
+        /// <returns></returns>
+        protected abstract H CreateProvider();
+    }
+
+    /// <summary>
+    /// This class verifies the signature.
+    /// </summary>
+    public class Sha512SignatureHelper: SignatureHelper<SHA512CryptoServiceProvider>
+    {
+        #region Constructor
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="salt">The case sensitive string that serves as the salt value for the signature.</param>
+        public Sha512SignatureHelper(string salt) : base(salt)
+        {
+        }
+        #endregion
+
+        protected override SHA512CryptoServiceProvider CreateProvider()
+        {
+            return new SHA512CryptoServiceProvider();
+        }
+    }
+
+    /// <summary>
+    /// This class verifies the signature.
+    /// </summary>
+    public class Sha256SignatureHelper: SignatureHelper<SHA256CryptoServiceProvider>
+    {
+        #region Constructor
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="salt">The case sensitive string that serves as the salt value for the signature.</param>
+        public Sha256SignatureHelper(string salt) : base(salt)
+        {
+        }
+        #endregion
+
+        protected override SHA256CryptoServiceProvider CreateProvider()
+        {
+            return new SHA256CryptoServiceProvider();
         }
     }
 }
