@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     public abstract class PopulatorWebApiBase<M, C>: PopulatorBase<M, C>
-                where M : Microservice, new()
+        where M : Microservice, new()
         where C : ConfigBase, new()
     {
+
     }
 }
