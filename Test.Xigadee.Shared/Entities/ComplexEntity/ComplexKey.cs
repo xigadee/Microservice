@@ -17,8 +17,4 @@ namespace Test.Xigadee
             return other.One == this.One && other.Two == this.Two;
         }
     }
-
-
-
-
 }
