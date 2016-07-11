@@ -70,14 +70,16 @@
   <ItemGroup>
     <Compile Include="Entities\Blah.cs" />
     <Compile Include="Entities\Blah2.cs" />
-    <Compile Include="Entities\ComplexKey.cs" />
+    <Compile Include="Entities\ComplexEntity\ComplexEntity.cs" />
+    <Compile Include="Entities\ComplexEntity\ComplexKeyMapper.cs" />
+    <Compile Include="Entities\ComplexEntity\ComplexKey.cs" />
     <Compile Include="Entities\MondayMorningBlues.cs" />
-    <Compile Include="Persistence\MondayMorningBluesHelper.cs" />
-    <Compile Include="Persistence\PersistenceMondayMorningBluesBlob.cs" />
-    <Compile Include="Persistence\PersistenceMondayMorningBluesDocDb.cs" />
-    <Compile Include="Persistence\PersistenceMondayMorningBluesMemory.cs" />
-    <Compile Include="Persistence\PersistenceMondayMorningBluesRedis.cs" />
-    <Compile Include="Persistence\PersistenceMondayMorningBluesSql.cs" />
+    <Compile Include="Persistence\MondayMorningBlues\MondayMorningBluesHelper.cs" />
+    <Compile Include="Persistence\MondayMorningBlues\PersistenceMondayMorningBluesBlob.cs" />
+    <Compile Include="Persistence\MondayMorningBlues\PersistenceMondayMorningBluesDocDb.cs" />
+    <Compile Include="Persistence\MondayMorningBlues\PersistenceMondayMorningBluesMemory.cs" />
+    <Compile Include="Persistence\MondayMorningBlues\PersistenceMondayMorningBluesRedis.cs" />
+    <Compile Include="Persistence\MondayMorningBlues\PersistenceMondayMorningBluesSql.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
