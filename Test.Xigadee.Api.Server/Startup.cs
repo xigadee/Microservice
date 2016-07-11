@@ -22,10 +22,10 @@ namespace Test.Xigadee.Api.Server
                 //AreaRegistration.RegisterAllAreas();
                 var config = new HttpConfiguration();
                 app.UseWebApi(config);
-
+                //app.UseJwtBearerAuthentication(
                 Service.Initialise();
-
-                GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(Service.Unity);
+                config.DependencyResolver =  new UnityDependencyResolver(Service.Unity);
+                GlobalConfiguration.Configuration.DependencyResolver = config.DependencyResolver;
                 GlobalConfiguration.Configure((c) => WebApiConfig.Register(c));
 
                 FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);

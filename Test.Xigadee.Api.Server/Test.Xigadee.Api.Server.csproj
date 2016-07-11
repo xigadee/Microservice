@@ -346,6 +346,10 @@
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Test.Xigadee.Shared\Test.Xigadee.Shared.csproj">
+      <Project>{6aa8f0e5-ab72-4df5-bd02-a23fbd8fdb83}</Project>
+      <Name>Test.Xigadee.Shared</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Xigadee.Api.Client\Xigadee.Api.Client.csproj">
       <Project>{19f45b9b-5c21-4ec3-ae73-84001ebccc4b}</Project>
       <Name>Xigadee.Api.Client</Name>

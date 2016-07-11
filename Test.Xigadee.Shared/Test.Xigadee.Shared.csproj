@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{6AA8F0E5-AB72-4DF5-BD02-A23FBD8FDB83}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Test.Xigadee.Shared</RootNamespace>
+    <AssemblyName>Test.Xigadee.Shared</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Class1.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Xigadee.Azure\Xigadee.Azure.csproj">
+      <Project>{069f5121-bc8e-4f1f-b08c-ba3f4806db78}</Project>
+      <Name>Xigadee.Azure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Xigadee.Communication\Xigadee.Communication.csproj">
+      <Project>{7e70924f-c120-4259-8069-da466afe8bc1}</Project>
+      <Name>Xigadee.Communication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Xigadee.Core\Xigadee.Core.csproj">
+      <Project>{f73b3423-992d-444d-a486-9c6a9d729900}</Project>
+      <Name>Xigadee.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Xigadee.Framework\Xigadee.Framework.csproj">
+      <Project>{af9b61ba-6a9c-4bd3-a87a-fb513188f21f}</Project>
+      <Name>Xigadee.Framework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Xigadee.Platform\Xigadee.csproj">
+      <Project>{4788fc0b-e692-4762-a4f4-aeab2a77da42}</Project>
+      <Name>Xigadee</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj">
+      <Project>{4f785b7b-1fdc-4dcc-9453-fe42447fded2}</Project>
+      <Name>Xigadee.Helper</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
