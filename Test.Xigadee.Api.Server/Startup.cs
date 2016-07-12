@@ -26,14 +26,14 @@ namespace Test.Xigadee.Api.Server
                 
                 app.UseWebApi(config);
                 //app.UseJwtBearerAuthentication(
-                Service.Initialise();
-                config.DependencyResolver =  new UnityDependencyResolver(Service.Unity);
+                //Service.Initialise();
+                //config.DependencyResolver =  new UnityDependencyResolver(Service.Unity);
                 GlobalConfiguration.Configuration.DependencyResolver = config.DependencyResolver;
                 GlobalConfiguration.Configure((c) => Register(c));
 
-                FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
+                //FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
 
-                Service.Start();
+                //Service.Start();
 
             }
             catch (Exception ex)
@@ -56,7 +56,7 @@ namespace Test.Xigadee.Api.Server
 
             //config.Filters.Add(CreateBlobLoggingFilter());
             config.Filters.Add(new WebApiVersionHeaderFilter());
-            config.Formatters.Insert(0, new ByteArrayMediaTypeFormatter()); // Add before any of the default formatters
+            //config.Formatters.Insert(0, new ByteArrayMediaTypeFormatter()); // Add before any of the default formatters
 
             //Enable attribute based routing for HTTP verbs.
             config.MapHttpAttributeRoutes();

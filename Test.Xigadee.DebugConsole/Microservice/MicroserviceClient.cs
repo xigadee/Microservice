@@ -11,7 +11,7 @@ namespace Test.Xigadee
     /// <summary>
     /// This is the client Microservice.
     /// </summary>
-    internal class MicroserviceClient: Microservice
+    public class MicroserviceClient: Microservice
     {
         public MicroserviceClient()
         {

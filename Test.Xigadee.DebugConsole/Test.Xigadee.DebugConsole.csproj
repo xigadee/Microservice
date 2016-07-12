@@ -177,8 +177,8 @@
     <Compile Include="Persistence\PersistenceOptions.cs" />
     <Compile Include="Populator\ConfigConsole.cs" />
     <Compile Include="Populator\IPopulatorConsole.cs" />
-    <Compile Include="Populator\MicroserviceClient.cs" />
-    <Compile Include="Populator\MicroserviceServer.cs" />
+    <Compile Include="Microservice\MicroserviceClient.cs" />
+    <Compile Include="Microservice\MicroserviceServer.cs" />
     <Compile Include="Populator\PopulatorConsoleBase.cs" />
     <Compile Include="Populator\PopulatorServer.cs" />
     <Compile Include="Populator\PopulatorClient.cs" />

@@ -265,10 +265,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App_Start\FilterConfig.cs" />
-    <Compile Include="App_Start\ServiceConfig.cs" />
-    <Compile Include="App_Start\SwaggerConfig.cs" />
-    <Compile Include="ByteArrayMediaTypeFormatter.cs" />
+    <Compile Include="SwaggerConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BlahController.cs" />
     <Compile Include="Controllers\ComplexEntityController.cs" />
