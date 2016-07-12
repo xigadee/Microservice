@@ -100,7 +100,6 @@
     <Compile Include="Microservice_Statistics.cs" />
     <Compile Include="Populator\IPopulator.cs" />
     <Compile Include="Populator\PopulatorBase.cs" />
-    <Compile Include="Populator\ConfigBaseHelperService.cs" />
     <Compile Include="ResourceTracker\ResourceTracker.cs" />
     <Compile Include="ResourceTracker\ResourceTrackerStatistics.cs" />
     <Compile Include="Scheduler\SchedulerPolicy.cs" />
