@@ -16,9 +16,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="M"></typeparam>
     /// <typeparam name="C"></typeparam>
-    public class PopulatorWebApiUnity<M,C>: PopulatorWebApiBase<M, C>
-        where M : Microservice, new()
-        where C : ConfigBase, new()
+    public class PopulatorWebApiUnity: PopulatorWebApiBase
     {
         /// <summary>
         /// This is the Unity container used within the application.

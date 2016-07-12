@@ -2,21 +2,28 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Web;
-using Xigadee;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Test.Xigadee.Api.Server
+namespace Xigadee
 {
-    public class MicroserviceWebApi: Microservice
+    /// <summary>
+    /// This is a default microservice for the web api.
+    /// </summary>
+    public class MicroserviceWebApi:Microservice
     {
+
         public MicroserviceWebApi()
         {
             ServicePointManager.DefaultConnectionLimit = 50000;
+#if (DEBUG)
             StartCompleted += MicroserviceBff_StartCompleted;
             StatisticsIssued += MicroserviceBff_StatisticsIssued;
             StatusChanged += MicroserviceBff_StatusChanged;
+#endif
         }
 
+#if (DEBUG)
         private void MicroserviceBff_StatusChanged(object sender, StatusChangedEventArgs e)
         {
 
@@ -31,5 +38,6 @@ namespace Test.Xigadee.Api.Server
         {
 
         }
+#endif
     }
 }

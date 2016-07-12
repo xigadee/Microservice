@@ -273,7 +273,7 @@
     <Compile Include="Controllers\BlahController.cs" />
     <Compile Include="Controllers\ComplexEntityController.cs" />
     <Compile Include="Controllers\MondayMorningBluesController.cs" />
-    <Compile Include="MicroserviceWebApi.cs" />
+    <Compile Include="Controllers\OData4Controller.cs" />
     <Compile Include="PopulatorWebApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />

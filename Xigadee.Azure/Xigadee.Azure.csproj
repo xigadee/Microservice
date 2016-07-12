@@ -178,6 +178,10 @@
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ConfigHelper\DocumentDb.cs" />
+    <Compile Include="ConfigHelper\Redis.cs" />
+    <Compile Include="ConfigHelper\ServiceBus.cs" />
+    <Compile Include="ConfigHelper\Storage.cs" />
     <Compile Include="EventSource\AzureStorageEventSource.cs" />
     <Compile Include="EventSource\EventHubEventSource.cs" />
     <Compile Include="EventSource\QueueEventSource.cs" />
