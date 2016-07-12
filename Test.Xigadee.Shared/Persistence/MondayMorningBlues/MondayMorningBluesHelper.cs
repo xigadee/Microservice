@@ -51,6 +51,10 @@ namespace Test.Xigadee
 
         #region Version
 
+        public static VersionPolicy<MondayMorningBlues> VersionPolicyHelper =
+            new VersionPolicy<MondayMorningBlues>(e => e.VersionId.ToString("N").ToLowerInvariant(), e => e.VersionId = Guid.NewGuid());
+
+
         public static Tuple<Guid, string> ToVersion(XElement node)
         {
             return new Tuple<Guid, string>(

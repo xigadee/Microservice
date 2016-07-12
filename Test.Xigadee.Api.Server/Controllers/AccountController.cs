@@ -13,9 +13,6 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OAuth;
-using Test.Xigadee.Api.Server.Models;
-using Test.Xigadee.Api.Server.Providers;
-using Test.Xigadee.Api.Server.Results;
 
 namespace Test.Xigadee.Api.Server.Controllers
 {

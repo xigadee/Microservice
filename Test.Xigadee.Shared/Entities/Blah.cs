@@ -22,7 +22,7 @@ namespace Test.Xigadee
     {
         public override string XsdName
         {
-            get { return "Test.IMGroup.Entities.Xml.Blah.xsd"; }
+            get { return "Test.Xigadee.Shared.Xsd.Blah.xsd"; }
         }
     }
 }

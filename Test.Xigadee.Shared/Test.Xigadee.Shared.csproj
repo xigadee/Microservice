@@ -69,7 +69,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\Blah.cs" />
-    <Compile Include="Entities\Blah2.cs" />
     <Compile Include="Entities\ComplexEntity\ComplexEntity.cs" />
     <Compile Include="Entities\ComplexEntity\ComplexKeyMapper.cs" />
     <Compile Include="Entities\ComplexEntity\ComplexKey.cs" />
@@ -80,6 +79,8 @@
     <Compile Include="Persistence\MondayMorningBlues\PersistenceMondayMorningBluesMemory.cs" />
     <Compile Include="Persistence\MondayMorningBlues\PersistenceMondayMorningBluesRedis.cs" />
     <Compile Include="Persistence\MondayMorningBlues\PersistenceMondayMorningBluesSql.cs" />
+    <Compile Include="Persistence\PersistenceBlahMemory.cs" />
+    <Compile Include="Persistence\PersistenceComplexEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -115,7 +116,11 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <EmbeddedResource Include="Xsd\Blah.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

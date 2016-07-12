@@ -22,7 +22,7 @@ namespace Test.Xigadee
                 });
 
             Service.RegisterCommand(
-                new PersistenceMessageInitiator<Guid, Blah2>()
+                new PersistenceMessageInitiator<Guid, Blah>()
                 {
                       ChannelId = Channels.TestB
                     , ResponseChannelId = Channels.Interserve

@@ -64,38 +64,38 @@ namespace Test.Xigadee
                 case PersistenceOptions.Sql:
                     sServerContext.Server.Service.RegisterCommand(
                         new PersistenceMondayMorningBluesSql(e.Config.SqlConnection
-                        , sServerContext.Server.VersionMondayMorningBlues, cacheManager)
+                        , MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
                         { ChannelId = Channels.TestB });
                     break;
                 case PersistenceOptions.Blob:
                     e.Service.RegisterCommand(
                         new PersistenceMondayMorningBluesBlob(e.Config.Storage
-                        , sServerContext.Server.VersionMondayMorningBlues, cacheManager)
+                        , MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
                         { ChannelId = Channels.TestB });
                     break;
                 case PersistenceOptions.DocumentDb:
                     e.Service.RegisterCommand(
                         new PersistenceMondayMorningBluesDocDb(e.Config.DocDbCredentials, e.Config.DocumentDbName
-                        , sServerContext.Server.VersionMondayMorningBlues, cacheManager)
+                        , MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
                         { ChannelId = Channels.TestB });
                     break;
                 case PersistenceOptions.DocumentDbSdk:
                     e.Service.RegisterCommand(
                         new PersistenceMondayMorningBluesDocDb(e.Config.DocDbCredentials, e.Config.DocumentDbName
-                        , sServerContext.Server.VersionMondayMorningBlues, cacheManager)
+                        , MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
                         { ChannelId = Channels.TestB });
                     break;
                 case PersistenceOptions.Memory:
                     e.Service.RegisterCommand(
                         new PersistenceMondayMorningBluesMemory(
-                          sServerContext.Server.VersionMondayMorningBlues, cacheManager)
+                          MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
                         { ChannelId = Channels.TestB });
                     break;
 
                 case PersistenceOptions.RedisCache:
                     e.Service.RegisterCommand(
                         new PersistenceMondayMorningBluesRedis(e.Config.RedisCacheConnection
-                        , sServerContext.Server.VersionMondayMorningBlues, cacheManager)
+                        , MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
                         { ChannelId = Channels.TestB });
                     break;
             }

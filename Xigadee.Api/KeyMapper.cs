@@ -26,12 +26,12 @@ namespace Xigadee
             return mapper;
         }
 
-        public static KeyMapper Resolve<KT>()
+        public static KeyMapper<KT> Resolve<KT>()
         {
             var type = typeof(KT);
 
             if (sMaps.ContainsKey(type))
-                return sMaps[type];
+                return sMaps[type] as KeyMapper<KT>;
 
             //Ok, do attribute lookup
 

@@ -13,11 +13,9 @@ namespace Test.Xigadee
     /// </summary>
     internal class PopulatorServer: PopulatorConsoleBase<MicroserviceServer>
     {
-        public readonly VersionPolicy<MondayMorningBlues> VersionMondayMorningBlues =
-            new VersionPolicy<MondayMorningBlues>(e => e.VersionId.ToString("N").ToLowerInvariant(), e => e.VersionId = Guid.NewGuid());
 
-        public readonly VersionPolicy<Blah2> VersionBlah2 =
-            new VersionPolicy<Blah2>((e) => e.VersionId.ToString("N").ToLowerInvariant(), (e) => e.VersionId = Guid.NewGuid());
+        //public readonly VersionPolicy<Blah2> VersionBlah2 =
+        //    new VersionPolicy<Blah2>((e) => e.VersionId.ToString("N").ToLowerInvariant(), (e) => e.VersionId = Guid.NewGuid());
 
         protected override void RegisterCommands()
         {
