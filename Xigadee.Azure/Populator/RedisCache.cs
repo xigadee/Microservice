@@ -9,9 +9,10 @@ namespace Xigadee
 {
     public static class ConfigBaseHelperRedis
     {
-        [ConfigKeySettingName]
+        [ConfigSettingKey("RedisCache")]
         public const string KeyRedisCacheConnection = "RedisCacheConnection";
 
+        [ConfigSetting("RedisCache")]
         public static string RedisCacheConnection(this ConfigBase config) => config.PlatformOrConfigCache(KeyRedisCacheConnection);
     }
 }

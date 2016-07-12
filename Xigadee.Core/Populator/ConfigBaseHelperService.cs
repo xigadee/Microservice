@@ -8,17 +8,20 @@ namespace Xigadee
 {
     public static class ConfigBaseHelperService
     {
-        [ConfigKeySettingName]
+        [ConfigSettingKey("Service")]
         public const string KeyEnvironment = "Environment";
-        [ConfigKeySettingName]
+        [ConfigSettingKey("Service")]
         public const string KeyClient = "Client";
-        [ConfigKeySettingName]
+        [ConfigSettingKey("Service")]
         public const string KeyServiceDisabled = "ServiceDisabled";
 
+        [ConfigSetting("Service")]
         public static bool ServiceDisabled(this ConfigBase config) => config.PlatformOrConfigCacheBool(KeyServiceDisabled);
 
+        [ConfigSetting("Service")]
         public static string Client(this ConfigBase config) => config.PlatformOrConfigCache(KeyClient);
 
+        [ConfigSetting("Service")]
         public static string Environment(this ConfigBase config) => config.PlatformOrConfigCache(KeyEnvironment);
 
     }

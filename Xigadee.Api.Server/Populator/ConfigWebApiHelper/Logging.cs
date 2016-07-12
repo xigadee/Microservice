@@ -9,9 +9,12 @@ namespace Xigadee
 {
     public static class ConfigWebApiHelperLogging
     {
+        [ConfigSettingKey("WebApiLogging")]
+        public const string KeyWebLogFilterLevels = "WebLogFilterLevels";
         /// <summary>
         /// Blob logging filter level
         /// </summary>
-        public static IList<string> WebLogFilterLevels(this ConfigWebApi config) => config.PlatformOrConfigCache("WebLogFilterLevels", "All")?.Split(',').ToList() ?? new List<string>();
+        [ConfigSetting("WebApiLogging")]
+        public static IList<string> WebLogFilterLevels(this ConfigWebApi config) => config.PlatformOrConfigCache(KeyWebLogFilterLevels, "All")?.Split(',').ToList() ?? new List<string>();
     }
 }

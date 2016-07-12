@@ -7,7 +7,24 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     [AttributeUsage(AttributeTargets.Field)]
-    public class ConfigKeySettingNameAttribute:Attribute
+    public class ConfigSettingKeyAttribute:Attribute
     {
+        public ConfigSettingKeyAttribute(string category = null)
+        {
+            Category = category;
+        }
+
+        public string Category { get; }
+    }
+
+    [AttributeUsage(AttributeTargets.Method)]
+    public class ConfigSettingAttribute: Attribute
+    {
+        public ConfigSettingAttribute(string category = null)
+        {
+            Category = category;
+        }
+
+        public string Category { get; }
     }
 }

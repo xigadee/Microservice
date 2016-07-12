@@ -9,16 +9,19 @@ namespace Xigadee
 {
     public static class ConfigBaseHelperLogStorage
     {
-        [ConfigKeySettingName]
+        [ConfigSettingKey("LogStorage")]
         public const string KeyLogStorageAccountName = "LogStorageAccountName";
-        [ConfigKeySettingName]
+        [ConfigSettingKey("LogStorage")]
         public const string KeyLogStorageAccountAccessKey = "LogStorageAccountAccessKey";
 
 
+        [ConfigSetting("LogStorage")]
         public static string LogStorageAccountName(this ConfigBase config) => config.PlatformOrConfigCache(KeyLogStorageAccountName, config.StorageAccountName());
 
+        [ConfigSetting("LogStorage")]
         public static string LogStorageAccountAccessKey(this ConfigBase config) => config.PlatformOrConfigCache(KeyLogStorageAccountAccessKey, config.StorageAccountAccessKey());
 
+        [ConfigSetting("LogStorage")]
         public static StorageCredentials LogStorageCredentials(this ConfigBase config)
         {
             if (string.IsNullOrEmpty(config.LogStorageAccountName()) || string.IsNullOrEmpty(config.LogStorageAccountAccessKey()))
