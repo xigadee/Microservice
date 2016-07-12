@@ -9,7 +9,9 @@ namespace Xigadee
 {
     public static class ConfigBaseHelperStorage
     {
+        [ConfigKeySettingName]
         public const string KeyStorageAccountName = "StorageAccountName";
+        [ConfigKeySettingName]
         public const string KeyStorageAccountAccessKey = "StorageAccountAccessKey";
 
         public static string StorageAccountName(this ConfigBase config) => config.PlatformOrConfigCache(KeyStorageAccountName);

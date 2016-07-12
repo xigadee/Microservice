@@ -178,8 +178,7 @@
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Populator\DocumentDb.cs" />
-    <Compile Include="Populator\Redis.cs" />
+    <Compile Include="Populator\RedisCache.cs" />
     <Compile Include="Populator\ServiceBus.cs" />
     <Compile Include="Populator\LogStorage.cs" />
     <Compile Include="Populator\Storage.cs" />

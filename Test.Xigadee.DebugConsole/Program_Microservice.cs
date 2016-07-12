@@ -56,32 +56,32 @@ namespace Test.Xigadee
 
             if (sServerContext.ServerCacheEnabled)
             {
-                cacheManager = RedisCacheHelper.Default<Guid, MondayMorningBlues>(e.Config.RedisCacheConnection);
+                cacheManager = RedisCacheHelper.Default<Guid, MondayMorningBlues>(e.Config.RedisCacheConnection());
             }
 
             switch (sServerContext.PersistenceType)
             {
                 case PersistenceOptions.Sql:
                     sServerContext.Server.Service.RegisterCommand(
-                        new PersistenceMondayMorningBluesSql(e.Config.SqlConnection
+                        new PersistenceMondayMorningBluesSql(e.Config.SqlConnection()
                         , MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
                         { ChannelId = Channels.TestB });
                     break;
                 case PersistenceOptions.Blob:
                     e.Service.RegisterCommand(
-                        new PersistenceMondayMorningBluesBlob(e.Config.Storage
+                        new PersistenceMondayMorningBluesBlob(e.Config.StorageCredentials()
                         , MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
                         { ChannelId = Channels.TestB });
                     break;
                 case PersistenceOptions.DocumentDb:
                     e.Service.RegisterCommand(
-                        new PersistenceMondayMorningBluesDocDb(e.Config.DocDbCredentials, e.Config.DocumentDbName
+                        new PersistenceMondayMorningBluesDocDb(e.Config.DocDBConnection(), e.Config.DocDBDatabaseName()
                         , MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
                         { ChannelId = Channels.TestB });
                     break;
                 case PersistenceOptions.DocumentDbSdk:
                     e.Service.RegisterCommand(
-                        new PersistenceMondayMorningBluesDocDb(e.Config.DocDbCredentials, e.Config.DocumentDbName
+                        new PersistenceMondayMorningBluesDocDb(e.Config.DocDBConnection(), e.Config.DocDBDatabaseName()
                         , MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
                         { ChannelId = Channels.TestB });
                     break;
@@ -94,7 +94,7 @@ namespace Test.Xigadee
 
                 case PersistenceOptions.RedisCache:
                     e.Service.RegisterCommand(
-                        new PersistenceMondayMorningBluesRedis(e.Config.RedisCacheConnection
+                        new PersistenceMondayMorningBluesRedis(e.Config.RedisCacheConnection()
                         , MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
                         { ChannelId = Channels.TestB });
                     break;

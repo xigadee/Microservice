@@ -44,8 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConfigHelper\Sql.cs" />
     <Compile Include="Persistence\SQL\PersistenceManagerHandlerSqlBase.cs" />
+    <Compile Include="Populator\ConfigBaseHelperSql.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

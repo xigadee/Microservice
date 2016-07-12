@@ -9,7 +9,9 @@ namespace Xigadee
 {
     public static class ConfigBaseHelperLogStorage
     {
+        [ConfigKeySettingName]
         public const string KeyLogStorageAccountName = "LogStorageAccountName";
+        [ConfigKeySettingName]
         public const string KeyLogStorageAccountAccessKey = "LogStorageAccountAccessKey";
 
 

@@ -23,13 +23,13 @@ namespace Test.Xigadee
         {
             Service.RegisterListener(new AzureSBTopicListener(
                   Channels.MasterJob
-                , Config.ServiceBusConnection
+                , Config.ServiceBusConnection()
                 , Channels.MasterJob
                 , ListenerPartitionConfig.Init(2)));
 
             Service.RegisterSender(new AzureSBTopicSender(
                   Channels.MasterJob
-                , Config.ServiceBusConnection
+                , Config.ServiceBusConnection()
                 , Channels.MasterJob
                 , SenderPartitionConfig.Init(2)));
         }
@@ -48,7 +48,7 @@ namespace Test.Xigadee
         protected override void RegisterEventSources()
         {
             Service.RegisterEventSource(new AzureStorageEventSource(
-                  Config.Storage
+                  Config.StorageCredentials()
                 , Service.Name
                 , resourceProfile: mResourceBlob));
 
@@ -61,7 +61,7 @@ namespace Test.Xigadee
             Service.RegisterLogger(new TraceEventLogger());
 
             Service.RegisterLogger(new AzureStorageLogger(
-                  Config.Storage
+                  Config.StorageCredentials()
                 , Service.Name
                 , resourceProfile: mResourceBlob));
 

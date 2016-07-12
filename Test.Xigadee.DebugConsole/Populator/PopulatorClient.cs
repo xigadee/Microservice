@@ -12,7 +12,7 @@ namespace Test.Xigadee
         {
             base.RegisterCommands();
 
-            var cacheManager = new RedisCacheManager<Guid, MondayMorningBlues>(Config.RedisCacheConnection, true, new EntityTransformHolder<Guid, MondayMorningBlues>(true) { KeyDeserializer = s => new Guid(s) });
+            var cacheManager = new RedisCacheManager<Guid, MondayMorningBlues>(Config.RedisCacheConnection(), true, new EntityTransformHolder<Guid, MondayMorningBlues>(true) { KeyDeserializer = s => new Guid(s) });
 
             Persistence = (IRepositoryAsync<Guid, MondayMorningBlues>)Service.RegisterCommand(
                 new PersistenceMessageInitiator<Guid, MondayMorningBlues>(cacheManager)
@@ -35,7 +35,7 @@ namespace Test.Xigadee
 
             Service.RegisterListener(new AzureSBTopicListener(
                   Channels.Interserve
-                , Config.ServiceBusConnection
+                , Config.ServiceBusConnection()
                 , Channels.Interserve
                 , deleteOnStop: false
                 , listenOnOriginatorId: true
@@ -43,14 +43,14 @@ namespace Test.Xigadee
 
             Service.RegisterListener(new AzureSBQueueListener(
                   Channels.TestA
-                , Config.ServiceBusConnection
+                , Config.ServiceBusConnection()
                 , Channels.TestA
                 , ListenerPartitionConfig.Init(0, 1)
                 , resourceProfiles: new[] { mResourceDocDb, mResourceBlob }));
 
             Service.RegisterSender(new AzureSBQueueSender(
                   Channels.TestB
-                , Config.ServiceBusConnection
+                , Config.ServiceBusConnection()
                 , Channels.TestB
                 , SenderPartitionConfig.Init(0, 1)));
 

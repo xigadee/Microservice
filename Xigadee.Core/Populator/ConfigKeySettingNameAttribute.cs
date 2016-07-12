@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public static class ConfigBaseHelperDocumentDb
+    [AttributeUsage(AttributeTargets.Field)]
+    public class ConfigKeySettingNameAttribute:Attribute
     {
-
     }
 }

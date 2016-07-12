@@ -202,6 +202,7 @@
     <Compile Include="Populator\ConfigBase.cs" />
     <Compile Include="Populator\ConfigBaseHelperDocumentDb.cs" />
     <Compile Include="Populator\ConfigBaseHelperService.cs" />
+    <Compile Include="Populator\ConfigKeySettingNameAttribute.cs" />
     <Compile Include="ResourceTracker\CircuitBreakerBase.cs" />
     <Compile Include="ResourceTracker\CircuitBreakerState.cs" />
     <Compile Include="ResourceTracker\Interfaces\IResourceBase.cs" />

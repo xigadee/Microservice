@@ -9,9 +9,13 @@ namespace Xigadee
 
     public static class ConfigBaseHelperDocumentDb
     {
+        [ConfigKeySettingName]
         public const string KeyDocDBAccountName = "DocDBAccountName";
+        [ConfigKeySettingName]
         public const string KeyDocDBAccountAccessKey = "DocDBAccountAccessKey";
+        [ConfigKeySettingName]
         public const string KeyDocDBDatabaseName = "DocDBDatabaseName";
+        [ConfigKeySettingName]
         public const string KeyDocDBCollectionName = "DocDBCollectionName";
 
 

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public static class ConfigHelperSql
+    public static class ConfigBaseHelperSql
     {
-        public const string KeySqlConnection= "SqlConnection";
+        public const string KeySqlConnection = "SqlConnection";
 
         public static string SqlConnection(this ConfigBase config) => config.PlatformOrConfigCache(KeySqlConnection);
 
