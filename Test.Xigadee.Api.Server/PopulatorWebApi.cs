@@ -109,7 +109,7 @@ namespace Test.Xigadee.Api.Server
             base.RegisterLogging();
 
             Service.RegisterLogger(new AzureStorageLogger(
-                Config.LogStorageCredentials
+                Config.LogStorageCredentials()
                 , Service.Name
                 , resourceProfile: mResourceBlobStorage));
         }
@@ -120,31 +120,30 @@ namespace Test.Xigadee.Api.Server
 
             Service.RegisterListener(new AzureSBTopicListener(
                   CoreChannels.MasterJob
-                , Config.ServiceBusConnection
+                , Config.ServiceBusConnection()
                 , CoreChannels.MasterJob
                 , ListenerPartitionConfig.Init(2)));
 
             Service.RegisterSender(new AzureSBTopicSender(
                   CoreChannels.MasterJob
-                , Config.ServiceBusConnection
+                , Config.ServiceBusConnection()
                 , CoreChannels.MasterJob
                 , SenderPartitionConfig.Init(2)));
 
             Service.RegisterSender(new AzureSBQueueSender(
                   CoreChannels.RequestCore
-                , Config.ServiceBusConnection
+                , Config.ServiceBusConnection()
                 , CoreChannels.RequestCore
                 , SenderPartitionConfig.Init(0, 1)));
 
             Service.RegisterListener(new AzureSBTopicListener(
                   CoreChannels.ResponseBff
-                , Config.ServiceBusConnection
+                , Config.ServiceBusConnection()
                 , CoreChannels.ResponseBff
                 , new[] { new ListenerPartitionConfig(1, 2, false) }
                 , listenOnOriginatorId: true
                 ));
         }
-
 
         protected virtual IEnumerable<ListenerPartitionConfig> PrimaryChannelConfig(decimal weighting = 1.2m)
         {

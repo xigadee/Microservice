@@ -384,7 +384,6 @@ namespace Xigadee
         }
         #endregion
 
-
         #region ResponseFormat<KT, ET> ...
         /// <summary>
         /// This method processes the outgoing response.

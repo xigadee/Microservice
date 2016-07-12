@@ -150,15 +150,16 @@
     <Compile Include="Apim\ApimJson.cs" />
     <Compile Include="Apim\ApimPrincipal.cs" />
     <Compile Include="Apim\ApimResponseHolder.cs" />
-    <Compile Include="ConfigHelpers\Auth.cs" />
-    <Compile Include="ConfigHelpers\Redis.cs" />
-    <Compile Include="ConfigHelpers\Service.cs" />
-    <Compile Include="ConfigHelpers\ServiceBus.cs" />
-    <Compile Include="ConfigHelpers\Storage.cs" />
+    <Compile Include="Config\ConfigWebApi.cs" />
+    <Compile Include="Config\Helpers\Auth.cs" />
+    <Compile Include="Config\Helpers\Redis.cs" />
+    <Compile Include="Config\Helpers\Service.cs" />
+    <Compile Include="Config\Helpers\ServiceBus.cs" />
+    <Compile Include="Config\Helpers\Storage.cs" />
     <Compile Include="Controllers\ApiPersistenceControllerAsyncBase.cs" />
     <Compile Include="Controllers\ApiPersistenceControllerBase.cs" />
     <Compile Include="Controllers\OData4SearchRedirectControllerAsync.cs" />
-    <Compile Include="Microservice\PopulatorWebApiBase.cs" />
+    <Compile Include="Populator\PopulatorWebApiBase.cs" />
     <Compile Include="ModelBinders\OData4ApiRequest.cs" />
     <Compile Include="ModelBinders\OData4ApiRequestModelBinder.cs" />
     <Compile Include="ModelBinders\ApiUtility.cs" />
@@ -168,7 +169,7 @@
     <Compile Include="Filters\WebApiApimAuthentication.cs" />
     <Compile Include="Filters\WebApiAzureBlobLoggingFilter.cs" />
     <Compile Include="Filters\WebApiVersionHeaderFilter.cs" />
-    <Compile Include="OpenCorsPolicy.cs" />
+    <Compile Include="Cors\OpenCorsPolicy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

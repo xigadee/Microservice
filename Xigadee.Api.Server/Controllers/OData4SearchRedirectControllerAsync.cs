@@ -13,7 +13,7 @@ using System.Collections.Generic;
 #endregion
 namespace Xigadee
 {
-    public class OData4SearchRedirectControllerAsync: ApiController
+    public abstract class OData4SearchRedirectControllerAsync: ApiController
     {
 
         #region Read -> Get(ApiRequest rq)
