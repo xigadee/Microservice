@@ -150,6 +150,11 @@
     <Compile Include="Apim\ApimJson.cs" />
     <Compile Include="Apim\ApimPrincipal.cs" />
     <Compile Include="Apim\ApimResponseHolder.cs" />
+    <Compile Include="ConfigHelpers\Auth.cs" />
+    <Compile Include="ConfigHelpers\Redis.cs" />
+    <Compile Include="ConfigHelpers\Service.cs" />
+    <Compile Include="ConfigHelpers\ServiceBus.cs" />
+    <Compile Include="ConfigHelpers\Storage.cs" />
     <Compile Include="Controllers\ApiPersistenceControllerAsyncBase.cs" />
     <Compile Include="Controllers\ApiPersistenceControllerBase.cs" />
     <Compile Include="Controllers\OData4SearchRedirectControllerAsync.cs" />

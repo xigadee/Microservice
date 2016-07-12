@@ -12,7 +12,6 @@ namespace Test.Xigadee.Api.Server
 
         public Sha512SignatureHelper SignatureProvider => new Sha512SignatureHelper("A4514A8598CC4E77B46DA51FE62D00FB");
 
-        public bool AuthAllowInsecureHttp => PlatformOrConfigCacheBool("AuthAllowInsecureHttp", "true");
 
         public string AuthAudiences => PlatformOrConfigCache("AuthAudiences");
         //{"Audiences":[{"Name":"ValueRetail.Web.User","ClientId":"e02920f4b3eb4492b26991030265a0f6","Base64Secret":"G7AIbRzz4r0NC3u5RBnYauveRoCwqm5zmBJU6PDMaa4="},{"Name":"APIClient","ClientId":"4e8ce86a9c914dd8a41c09e0709ef297","Base64Secret":"71UOU6ewhSjuJ/sp+O/1qlvw4m66LkmSsaFljtHan4M=", "CustomTokenExpirationMin":"525949"}]}
@@ -22,6 +21,7 @@ namespace Test.Xigadee.Api.Server
 
         public string AuthTokenLifeInMin => PlatformOrConfigCache("AuthTokenLifeInMin","30");
 
+        public bool AuthAllowInsecureHttp => PlatformOrConfigCacheBool("AuthAllowInsecureHttp", "true");
         /// <summary>
         /// Blob logging filter level
         /// </summary>

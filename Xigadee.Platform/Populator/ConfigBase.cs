@@ -74,7 +74,7 @@ namespace Xigadee
         /// <param name="key">The key to resolve.</param>
         /// <param name="defaultValue">The default value.</param>
         /// <returns>Returns the setting or the default.</returns>
-        protected string PlatformOrConfigCache(string key, string defaultValue = null)
+        public string PlatformOrConfigCache(string key, string defaultValue = null)
         {
             string value = null;
             if (!mConfig.TryGetValue(key, out value))
@@ -93,7 +93,7 @@ namespace Xigadee
         /// <param name="key">The key to resolve.</param>
         /// <param name="defaultValue">The default value.</param>
         /// <returns>Returns the setting or the default as boolean false.</returns>
-        protected virtual bool PlatformOrConfigCacheBool(string key, string defaultValue = null)
+        public virtual bool PlatformOrConfigCacheBool(string key, string defaultValue = null)
         {
             return Convert.ToBoolean(PlatformOrConfigCache(key, defaultValue));
         } 
@@ -106,7 +106,7 @@ namespace Xigadee
         /// <param name="key">The key to resolve.</param>
         /// <param name="defaultValue">The default value.</param>
         /// <returns>Returns the setting or the default as boolean false.</returns>
-        protected virtual int PlatformOrConfigCacheInt(string key, int? defaultValue = null)
+        public virtual int PlatformOrConfigCacheInt(string key, int? defaultValue = null)
         {
             return Convert.ToInt32(PlatformOrConfigCache(key, defaultValue?.ToString()));
         } 

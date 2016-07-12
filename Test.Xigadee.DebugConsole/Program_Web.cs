@@ -28,8 +28,8 @@ namespace Test.Xigadee
                 var start = new Startup();
 
                 //mWebApp = WebApp.Start(opts, start);
-                mWebApp = WebApp.Start<Startup>(opts);
-                //mWebApp = WebApp.Start<Test.Xigadee.Api.Server.Startup>(opts);
+                //mWebApp = WebApp.Start<Startup>(opts);
+                mWebApp = WebApp.Start<Test.Xigadee.Api.Server.Startup>(opts);
             }
             catch (Exception ex)
             {

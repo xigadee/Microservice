@@ -23,6 +23,7 @@ namespace Test.Xigadee.Api.Server
             {
                 //AreaRegistration.RegisterAllAreas();
                 var config = new HttpConfiguration();
+                
                 app.UseWebApi(config);
                 //app.UseJwtBearerAuthentication(
                 Service.Initialise();

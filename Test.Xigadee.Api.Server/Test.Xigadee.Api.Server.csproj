@@ -270,9 +270,9 @@
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="ByteArrayMediaTypeFormatter.cs" />
     <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Global.asax.cs">
-      <DependentUpon>Global.asax</DependentUpon>
-    </Compile>
+    <Compile Include="Controllers\BlahController.cs" />
+    <Compile Include="Controllers\ComplexEntityController.cs" />
+    <Compile Include="Controllers\MondayMorningBluesController.cs" />
     <Compile Include="Microservice\ConfigWebApi.cs" />
     <Compile Include="Microservice\MicroserviceWebApi.cs" />
     <Compile Include="Microservice\PopulatorWebApi.cs" />
@@ -281,7 +281,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="favicon.ico" />
-    <Content Include="Global.asax" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
