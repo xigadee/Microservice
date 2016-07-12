@@ -151,8 +151,8 @@
     <Compile Include="Apim\ApimPrincipal.cs" />
     <Compile Include="Apim\ApimResponseHolder.cs" />
     <Compile Include="Populator\ConfigWebApi.cs" />
-    <Compile Include="Populator\ConfigHelper\Auth.cs" />
-    <Compile Include="Populator\ConfigHelper\WebApi.cs" />
+    <Compile Include="Populator\ConfigWebApiHelper\Auth.cs" />
+    <Compile Include="Populator\ConfigWebApiHelper\Logging.cs" />
     <Compile Include="Controllers\ApiPersistenceControllerAsyncBase.cs" />
     <Compile Include="Controllers\OData4SearchRedirectControllerAsync.cs" />
     <Compile Include="Populator\MicroserviceWebApi.cs" />

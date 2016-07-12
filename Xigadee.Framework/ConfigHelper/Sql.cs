@@ -8,7 +8,9 @@ namespace Xigadee
 {
     public static class ConfigHelperSql
     {
-        public static string SqlConnection(this ConfigBase config) => config.PlatformOrConfigCache("SqlConnection");
+        public const string KeySqlConnection= "SqlConnection";
+
+        public static string SqlConnection(this ConfigBase config) => config.PlatformOrConfigCache(KeySqlConnection);
 
     }
 }

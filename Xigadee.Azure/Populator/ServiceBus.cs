@@ -9,7 +9,8 @@ namespace Xigadee
 {
     public static class ConfigBaseHelperServiceBus
     {
-        public static string ServiceBusConnection(this ConfigBase config) => config.PlatformOrConfigCache("ServiceBusConnection");
+        public const string KeyServiceBusConnection = "ServiceBusConnection";
 
+        public static string ServiceBusConnection(this ConfigBase config) => config.PlatformOrConfigCache(KeyServiceBusConnection);
     }
 }

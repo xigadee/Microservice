@@ -7,7 +7,7 @@ using Microsoft.WindowsAzure.Storage.Auth;
 
 namespace Xigadee
 {
-    public static class ConfigBaseHelperWebApi
+    public static class ConfigWebApiHelperLogging
     {
         /// <summary>
         /// Blob logging filter level

@@ -16,13 +16,11 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="M"></typeparam>
     /// <typeparam name="C"></typeparam>
-    public class PopulatorWebApiUnity: PopulatorWebApiBase
+    public class PopulatorWebApiUnity<M, C>: PopulatorWebApiBase
+        where M : Microservice, new()
+        where C : ConfigWebApi, new()
     {
-        /// <summary>
-        /// This is the Unity container used within the application.
-        /// </summary>
-        public IUnityContainer Unity { get; }
-
+        #region Constructor
         /// <summary>
         /// This constructor creates the Unity container.
         /// </summary>
@@ -30,13 +28,22 @@ namespace Xigadee
         {
             Unity = new UnityContainer();
         }
+        #endregion
 
+        #region Unity
+        /// <summary>
+        /// This is the Unity container used within the application.
+        /// </summary>
+        public IUnityContainer Unity { get; }
+        #endregion
+
+        #region RegisterCommand...
         /// <summary>
         /// This method is used to register an API command.
         /// </summary>
         /// <typeparam name="I">The command interface.</typeparam>
         /// <typeparam name="P">The concrete instance.</typeparam>
-        protected virtual void RegisterCommand<I, P>() 
+        protected virtual void RegisterCommand<I, P>()
             where P : I, ICommand, new()
         {
             RegisterCommand<I, P>(new P());
@@ -47,7 +54,7 @@ namespace Xigadee
         /// <typeparam name="I">The command interface.</typeparam>
         /// <typeparam name="P">The concrete instance.</typeparam>
         /// <param name="instance">An instance of the concrete class.</param>
-        protected virtual void RegisterCommand<I, P>(P instance) 
+        protected virtual void RegisterCommand<I, P>(P instance)
             where P : I, ICommand
         {
             try
@@ -60,7 +67,8 @@ namespace Xigadee
                 //Trace.TraceError(ex.Message);
                 throw;
             }
-        }
+        } 
+        #endregion
 
         public virtual void Start(IAppBuilder app)
         {

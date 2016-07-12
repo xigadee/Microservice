@@ -7,7 +7,7 @@ using Microsoft.WindowsAzure.Storage.Auth;
 
 namespace Xigadee
 {
-    public static class ConfigBaseHelperAuth
+    public static class ConfigWebApiHelperAuth
     {
         public static bool AuthAllowInsecureHttp(this ConfigWebApi config) => config.PlatformOrConfigCacheBool("AuthAllowInsecureHttp", "true");
 
