@@ -150,6 +150,8 @@
     <Compile Include="Apim\ApimJson.cs" />
     <Compile Include="Apim\ApimPrincipal.cs" />
     <Compile Include="Apim\ApimResponseHolder.cs" />
+    <Compile Include="ModelBinders\OData4\OData4MetadataResponse.cs" />
+    <Compile Include="ModelBinders\OData4\OData4MetadataValue.cs" />
     <Compile Include="Populator\ConfigWebApi.cs" />
     <Compile Include="Populator\ConfigWebApiHelper\Auth.cs" />
     <Compile Include="Populator\ConfigWebApiHelper\Logging.cs" />
@@ -157,8 +159,8 @@
     <Compile Include="Controllers\OData4SearchRedirectControllerAsync.cs" />
     <Compile Include="Populator\MicroserviceWebApi.cs" />
     <Compile Include="Populator\PopulatorWebApiBase.cs" />
-    <Compile Include="ModelBinders\OData4ApiRequest.cs" />
-    <Compile Include="ModelBinders\OData4ApiRequestModelBinder.cs" />
+    <Compile Include="ModelBinders\OData4\OData4ApiRequest.cs" />
+    <Compile Include="ModelBinders\OData4\OData4ApiRequestModelBinder.cs" />
     <Compile Include="ModelBinders\ApiUtility.cs" />
     <Compile Include="ModelBinders\ApiRequestModelBinder.cs" />
     <Compile Include="ModelBinders\ApiRequest.cs" />

@@ -22,6 +22,7 @@ namespace Test.Xigadee.Api.Server
             try
             {
                 var config = new HttpConfiguration();
+
                 //config.DependencyResolver = 
                 config.EnableCors(new OpenCorrsPolicy());
                 // Web API configuration and services
