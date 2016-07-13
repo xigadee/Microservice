@@ -6,6 +6,7 @@ using Xigadee;
 
 namespace Test.Xigadee.Api.Server.Controllers
 {
+
     public class OData4Controller: OData4SearchRedirectControllerAsync
     {
     }

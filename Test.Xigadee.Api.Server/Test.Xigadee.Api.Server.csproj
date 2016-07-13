@@ -265,6 +265,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Provider\ProviderBlahAsyncLocal.cs" />
+    <Compile Include="Provider\ProviderBlahAsyncTransmit.cs" />
     <Compile Include="SwaggerConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BlahController.cs" />
@@ -296,6 +298,10 @@
     <ProjectReference Include="..\Xigadee.Api.Client\Xigadee.Api.Client.csproj">
       <Project>{19f45b9b-5c21-4ec3-ae73-84001ebccc4b}</Project>
       <Name>Xigadee.Api.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Xigadee.Api.Server.Unity\Xigadee.Api.Server.Unity.csproj">
+      <Project>{636956f9-6cce-4f3e-be57-5a851c089243}</Project>
+      <Name>Xigadee.Api.Server.Unity</Name>
     </ProjectReference>
     <ProjectReference Include="..\Xigadee.Api.Server\Xigadee.Api.Server.csproj">
       <Project>{c39cd117-3863-4e8c-9bd0-043e5f1fb67c}</Project>

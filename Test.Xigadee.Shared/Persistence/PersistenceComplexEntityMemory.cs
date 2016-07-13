@@ -4,9 +4,9 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    public class PersistenceComplexEntity: PersistenceManagerHandlerMemory<ComplexKey, ComplexEntity>
+    public class PersistenceComplexEntityMemory: PersistenceManagerHandlerMemory<ComplexKey, ComplexEntity>
     {
-        public PersistenceComplexEntity(
+        public PersistenceComplexEntityMemory(
               VersionPolicy<ComplexEntity> versionPolicy = null
             , ICacheManager<ComplexKey, ComplexEntity> cacheManager = null)
             : base(

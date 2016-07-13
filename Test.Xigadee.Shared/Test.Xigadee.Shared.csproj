@@ -80,7 +80,7 @@
     <Compile Include="Persistence\MondayMorningBlues\PersistenceMondayMorningBluesRedis.cs" />
     <Compile Include="Persistence\MondayMorningBlues\PersistenceMondayMorningBluesSql.cs" />
     <Compile Include="Persistence\PersistenceBlahMemory.cs" />
-    <Compile Include="Persistence\PersistenceComplexEntity.cs" />
+    <Compile Include="Persistence\PersistenceComplexEntityMemory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
