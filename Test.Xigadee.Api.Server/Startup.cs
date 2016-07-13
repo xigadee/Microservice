@@ -21,10 +21,30 @@ namespace Test.Xigadee.Api.Server
         {
             try
             {
-                //AreaRegistration.RegisterAllAreas();
                 var config = new HttpConfiguration();
+                //config.DependencyResolver = 
+                config.EnableCors(new OpenCorrsPolicy());
+                // Web API configuration and services
+                // Configure Web API to use only bearer token authentication.
+                //config.SuppressDefaultHostAuthentication();
+                config.Filters.Add(new HostAuthenticationFilter(OAuthDefaults.AuthenticationType));
+
+                //config.Filters.Add(CreateBlobLoggingFilter());
+                config.Filters.Add(new WebApiVersionHeaderFilter());
+                //config.Formatters.Insert(0, new ByteArrayMediaTypeFormatter()); // Add before any of the default formatters
+
+                //Enable attribute based routing for HTTP verbs.
+                config.MapHttpAttributeRoutes();
+
+                // Add additional convention-based routing for the default controller.
+                config.Routes.MapHttpRoute(
+                    name: "DefaultApi",
+                    routeTemplate: "v1/{controller}/{id}",
+                    defaults: new { id = RouteParameter.Optional }
+                );
                 
                 app.UseWebApi(config);
+
                 //app.UseJwtBearerAuthentication(
                 //Service.Initialise();
                 //config.DependencyResolver =  new UnityDependencyResolver(Service.Unity);
