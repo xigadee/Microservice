@@ -118,6 +118,8 @@ namespace Xigadee
             mContainerReference = new ConcurrentDictionary<string, K>();
             mReferenceModifyLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
 
+            PrePopulate();
+
             base.StartInternal();
         }
 
@@ -132,6 +134,16 @@ namespace Xigadee
             mContainerReference = null;
             mContainer = null;
         }
+        #endregion
+
+        #region PrePopulate()
+        /// <summary>
+        /// This method is used to prepopulate entities in to the memory cache.
+        /// </summary>
+        public virtual void PrePopulate()
+        {
+
+        } 
         #endregion
 
         /// <summary>
@@ -199,6 +211,25 @@ namespace Xigadee
             return Cancel.IsCancellationRequested;
         }
 
+        protected virtual bool EntityAdd(E entity)
+        {
+            K key = mTransform.KeyMaker(entity);
+            JsonHolder<K> jsonHolder;
+
+            return EntityAdd(key, entity, out jsonHolder);
+        }
+
+        protected virtual bool EntityAdd(K key, E entity, out JsonHolder<K> jsonHolder)
+        {
+            jsonHolder = mTransform.JsonMaker(entity);
+
+            bool success = mContainer.TryAdd(key, jsonHolder);
+
+            return success;
+        }
+
+
+
         protected override async Task<IResponseHolder<E>> InternalCreate(K key
             , PersistenceRequestHolder<K, E> holder)
         {
@@ -209,10 +240,8 @@ namespace Xigadee
             {
                 mReferenceModifyLock.EnterWriteLock();
 
-                E entity = holder.Rq.Entity;
-                var jsonHolder = mTransform.JsonMaker(entity);
-
-                bool success = mContainer.TryAdd(key, jsonHolder);
+                JsonHolder<K> jsonHolder;
+                bool success = EntityAdd(key, holder.Rq.Entity, out jsonHolder);
 
                 if (success)
                     return new PersistenceResponseHolder<E>(PersistenceResponse.Created201, jsonHolder.Json, mTransform.PersistenceEntitySerializer.Deserializer(jsonHolder.Json));

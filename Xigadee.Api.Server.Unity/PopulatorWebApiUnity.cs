@@ -75,8 +75,10 @@ namespace Xigadee
         }
         #endregion
 
-        protected override void RegisterWebApiService()
+        protected override void RegisterWebApiServices()
         {
+            base.RegisterWebApiServices();
+
             // Register the log container so that we can log to the same loggers as the microservce code
             Unity.RegisterInstance(Service.Logger);
 

@@ -18,6 +18,11 @@ namespace Test.Xigadee
         {
 
         }
-    
+
+
+        public override void PrePopulate()
+        {
+            EntityAdd(new Blah() { ContentId = new Guid("3211c71a-24e5-474d-b35d-9e2f72cafbe8"), Message = "Hello mom.", VersionId = Guid.NewGuid() });
+        }
     }
 }

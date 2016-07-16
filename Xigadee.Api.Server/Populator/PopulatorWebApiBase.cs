@@ -43,7 +43,7 @@ namespace Xigadee
                 Populate(settingsResolver);
                 Start();
 
-                RegisterWebApiService();
+                RegisterWebApiServices();
 
                 app.UseWebApi(ApiConfig);
 
@@ -56,9 +56,9 @@ namespace Xigadee
 
         }
 
-        protected virtual void RegisterWebApiService()
+        protected virtual void RegisterWebApiServices()
         {
-
+            ApiConfig.Filters.Add(new WebApiCorrelationIdFilter());
         }
     }
 

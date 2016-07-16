@@ -23,7 +23,7 @@ namespace Xigadee
     /// <summary>
     /// This class logs the incoming request and subsequent response to the Azure Storage container.
     /// </summary>
-    public class WebApiAzureBlobLoggingFilter : ActionFilterAttribute
+    public class WebApiAzureBlobLoggingFilter : WebApiCorrelationIdFilter
     {
         #region LoggingFilterLevel
         /// <summary>
@@ -47,8 +47,6 @@ namespace Xigadee
         protected CloudStorageAccount mStorageAccount;
         protected CloudBlobClient mStorageClient;
         protected CloudBlobContainer mEntityContainer;
-
-        protected readonly string mCorrelationIdKeyName;
         protected readonly LoggingFilterLevel mLevel;
         #endregion
         #region Constructor
@@ -60,9 +58,8 @@ namespace Xigadee
         /// <param name="correlationIdKeyName"></param>
         /// <param name="level"></param>
         public WebApiAzureBlobLoggingFilter(StorageCredentials credentials, string containerName
-            , string correlationIdKeyName = "X-CorrelationId", LoggingFilterLevel level = LoggingFilterLevel.All)
+            , string correlationIdKeyName = "X-CorrelationId", LoggingFilterLevel level = LoggingFilterLevel.All):base(correlationIdKeyName)
         {
-            mCorrelationIdKeyName = correlationIdKeyName;
             mLevel = level;
 
             mStorageAccount = new CloudStorageAccount(credentials, true);
@@ -71,40 +68,7 @@ namespace Xigadee
             var result = mEntityContainer.CreateIfNotExistsAsync(BlobContainerPublicAccessType.Blob, null, null).Result;
         }
         #endregion
-        #region CorrelationIdGet()
-        /// <summary>
-        /// This method creates the correlation id.
-        /// </summary>
-        /// <returns>A unique string.</returns>
-        protected virtual string CorrelationIdGet()
-        {
-            return Guid.NewGuid().ToString("N").ToUpperInvariant();
-        } 
-        #endregion
 
-        public override void OnActionExecuting(HttpActionContext actionContext)
-        {
-            try
-            {
-                var request = actionContext.Request;
-                IEnumerable<string> correlationValues;
-                var correlationId = CorrelationIdGet();
-                if (!request.Headers.TryGetValues(mCorrelationIdKeyName, out correlationValues))
-                    actionContext.Request.Headers.Add(mCorrelationIdKeyName, correlationId);
-
-                var apiRequest = actionContext.ActionArguments.Values.FirstOrDefault(
-                        aa => aa != null && aa.GetType() == typeof (OData4ApiRequest)) as OData4ApiRequest;
-
-                if (apiRequest?.Options != null)
-                    apiRequest.Options.CorrelationId = correlationId;
-            }
-            catch (Exception)
-            {
-                // Don't prevent normal operation of the site where there is an exception
-            }
-
-            base.OnActionExecuting(actionContext);
-        }
 
         public override async Task OnActionExecutedAsync(HttpActionExecutedContext actionExecutedContext, CancellationToken cancellationToken)
         {

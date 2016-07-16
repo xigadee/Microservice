@@ -10,7 +10,7 @@ using System.Web.Http.ModelBinding;
 namespace Xigadee
 {
     [ModelBinder(typeof(OData4ApiRequestModelBinder))]
-    public class OData4ApiRequest
+    public class OData4ApiRequest: IRequestOptions
     {
         public string Id { get; set; }
 

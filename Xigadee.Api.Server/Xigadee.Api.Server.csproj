@@ -150,6 +150,8 @@
     <Compile Include="Apim\ApimJson.cs" />
     <Compile Include="Apim\ApimPrincipal.cs" />
     <Compile Include="Apim\ApimResponseHolder.cs" />
+    <Compile Include="Filters\WebApiCorrelationIdFilter.cs" />
+    <Compile Include="ModelBinders\IRequestOptions.cs" />
     <Compile Include="ModelBinders\OData4\OData4MetadataResponse.cs" />
     <Compile Include="ModelBinders\OData4\OData4MetadataValue.cs" />
     <Compile Include="Owin\UseBlobLogger.cs" />

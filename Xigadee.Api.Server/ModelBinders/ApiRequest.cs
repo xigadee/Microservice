@@ -10,7 +10,7 @@ using System.Web.Http.ModelBinding;
 namespace Xigadee
 {
     [ModelBinder(typeof(ApiRequestModelBinder))]
-    public class ApiRequest
+    public class ApiRequest: IRequestOptions
     {
         public string Id { get; set; }
 
