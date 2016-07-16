@@ -21,40 +21,61 @@ namespace Test.Xigadee.Api.Server
         {
             try
             {
-                var config = new HttpConfiguration();
+                var Service = new PopulatorWebApi();
 
                 //config.DependencyResolver = 
-                config.EnableCors(new OpenCorrsPolicy());
+                Service.ApiConfig.EnableCors(new OpenCorrsPolicy());
                 // Web API configuration and services
                 // Configure Web API to use only bearer token authentication.
                 //config.SuppressDefaultHostAuthentication();
-                config.Filters.Add(new HostAuthenticationFilter(OAuthDefaults.AuthenticationType));
+                //Service.ApiConfig.Filters.Add(new HostAuthenticationFilter(OAuthDefaults.AuthenticationType));
 
                 //config.Filters.Add(CreateBlobLoggingFilter());
-                config.Filters.Add(new WebApiVersionHeaderFilter());
+
+                Service.ApiConfig.Filters.Add(new WebApiVersionHeaderFilter());
                 //config.Formatters.Insert(0, new ByteArrayMediaTypeFormatter()); // Add before any of the default formatters
 
                 //Enable attribute based routing for HTTP verbs.
-                config.MapHttpAttributeRoutes();
+                Service.ApiConfig.MapHttpAttributeRoutes();
 
                 // Add additional convention-based routing for the default controller.
-                config.Routes.MapHttpRoute(
+                Service.ApiConfig.Routes.MapHttpRoute(
                     name: "DefaultApi",
                     routeTemplate: "v1/{controller}/{id}",
                     defaults: new { id = RouteParameter.Optional }
                 );
-                
-                app.UseWebApi(config);
+
+                // Add additional convention-based routing for the default controller.
+                Service.ApiConfig.Routes.MapHttpRoute(
+                    name: "ODataMetadata",
+                    routeTemplate: "v1/OData/OData.svc/$metadata",
+                    defaults: new { id = RouteParameter.Optional }
+                );
+
+                // Add additional convention-based routing for the default controller.
+                Service.ApiConfig.Routes.MapHttpRoute(
+                    name: "ODataBatch",
+                    routeTemplate: "v1/OData/OData.svc/$batch",
+                    defaults: new { id = RouteParameter.Optional }
+                );
+
+                // Add additional convention-based routing for the default controller.
+                Service.ApiConfig.Routes.MapHttpRoute(
+                    name: "OData",
+                    routeTemplate: "v1/OData/OData.svc/{controller}",
+                    defaults: new { id = RouteParameter.Optional }
+                );
+
 
                 //app.UseJwtBearerAuthentication(
                 //Service.Initialise();
                 //config.DependencyResolver =  new UnityDependencyResolver(Service.Unity);
-                GlobalConfiguration.Configuration.DependencyResolver = config.DependencyResolver;
-                GlobalConfiguration.Configure((c) => Register(c));
+                //GlobalConfiguration.Configuration.DependencyResolver = config.DependencyResolver;
+                //GlobalConfiguration.Configure((c) => Register(c));
 
                 //FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
 
-                //Service.Start();
+                Service.Start(app, AzureHelper.Resolver);
 
             }
             catch (Exception ex)
@@ -63,41 +84,6 @@ namespace Test.Xigadee.Api.Server
                 throw ex;
             }
 
-        }
-
-
-        public static void Register(HttpConfiguration config)
-        {
-            config.EnableCors(new OpenCorrsPolicy());
-
-            // Web API configuration and services
-            // Configure Web API to use only bearer token authentication.
-            //config.SuppressDefaultHostAuthentication();
-            config.Filters.Add(new HostAuthenticationFilter(OAuthDefaults.AuthenticationType));
-
-            //config.Filters.Add(CreateBlobLoggingFilter());
-            config.Filters.Add(new WebApiVersionHeaderFilter());
-            //config.Formatters.Insert(0, new ByteArrayMediaTypeFormatter()); // Add before any of the default formatters
-
-            //Enable attribute based routing for HTTP verbs.
-            config.MapHttpAttributeRoutes();
-
-            // Add additional convention-based routing for the default controller.
-            config.Routes.MapHttpRoute(
-                name: "DefaultApi",
-                routeTemplate: "v1/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
-            );
-        }
-
-        /// <summary> Creates the HTTP configuration. </summary>
-        /// <returns> An <see cref="HttpConfiguration"/> to bootstrap the hosted API </returns>
-        public static HttpConfiguration CreateHttpConfiguration()
-        {
-            var config = new HttpConfiguration();
-            config.MapHttpAttributeRoutes();
-            
-            return config;
         }
 
     }

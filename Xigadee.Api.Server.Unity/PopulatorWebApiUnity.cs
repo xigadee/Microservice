@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Dependencies;
 using Microsoft.Practices.Unity;
 using Owin;
+using Unity.WebApi;
 
 namespace Xigadee
 {
@@ -26,7 +28,10 @@ namespace Xigadee
         /// </summary>
         public PopulatorWebApiUnity()
         {
+            //ApiConfig.
             Unity = new UnityContainer();
+
+            ApiConfig.DependencyResolver = new UnityDependencyResolver(Unity);
         }
         #endregion
 
@@ -67,46 +72,16 @@ namespace Xigadee
                 //Trace.TraceError(ex.Message);
                 throw;
             }
-        } 
+        }
         #endregion
 
-        public virtual void Start(IAppBuilder app)
+        protected override void RegisterWebApiService()
         {
-            //AreaRegistration.RegisterAllAreas();
-            var config = new HttpConfiguration();
-            
-            app.UseWebApi(config);
+            // Register the log container so that we can log to the same loggers as the microservce code
+            Unity.RegisterInstance(Service.Logger);
 
-            Populate();
-
-
-            Service.Start();
-
-            //ConfigureAuth(app);
-
-        }
-
-        /// <summary>
-        /// This method starts the microservice.
-        /// </summary>
-        public override void Start()
-        {
-            try
-            {
-                base.Start();
-
-                // Register the log container so that we can log to the same loggers as the microservce code
-                Unity.RegisterInstance(Service.Logger);
-
-                // Register the config to ensure that the azure cloud settings can be pulled out of config not just the web.config settings - used by owin auth
-                Unity.RegisterInstance(Config);
-            }
-            catch (Exception ex)
-            {
-
-                throw;
-            }
-
+            // Register the config to ensure that the azure cloud settings can be pulled out of config not just the web.config settings - used by owin auth
+            Unity.RegisterInstance(Config);
         }
     }
 }

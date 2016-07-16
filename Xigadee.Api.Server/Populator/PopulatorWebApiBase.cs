@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Web.Http;
+using System.Web.Http.Dependencies;
+using Owin;
+using Xigadee;
 namespace Xigadee
 {
     /// <summary>
@@ -13,7 +16,50 @@ namespace Xigadee
     /// <typeparam name="C"></typeparam>
     public abstract class PopulatorWebApiBase: PopulatorWebApiBase<MicroserviceWebApi>
     {
+        #region Constructor
+        /// <summary>
+        /// This constructor creates the Unity container.
+        /// </summary>
+        public PopulatorWebApiBase()
+        {
+            ApiConfig = new HttpConfiguration();
+        }
+        #endregion
 
+        #region ApiConfig
+        /// <summary>
+        /// This is the Unity container used within the application.
+        /// </summary>
+        public HttpConfiguration ApiConfig { get; }
+        #endregion
+
+        /// <summary>
+        /// This method starts the microservice.
+        /// </summary>
+        public virtual void Start(IAppBuilder app, Func<string, string, string> settingsResolver = null)
+        {
+            try
+            {
+                Populate(settingsResolver);
+                Start();
+
+                RegisterWebApiService();
+
+                app.UseWebApi(ApiConfig);
+
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
+        }
+
+        protected virtual void RegisterWebApiService()
+        {
+
+        }
     }
 
     /// <summary>

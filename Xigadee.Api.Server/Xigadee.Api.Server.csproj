@@ -152,6 +152,7 @@
     <Compile Include="Apim\ApimResponseHolder.cs" />
     <Compile Include="ModelBinders\OData4\OData4MetadataResponse.cs" />
     <Compile Include="ModelBinders\OData4\OData4MetadataValue.cs" />
+    <Compile Include="Owin\UseBlobLogger.cs" />
     <Compile Include="Populator\ConfigWebApi.cs" />
     <Compile Include="Populator\ConfigWebApiHelper\Auth.cs" />
     <Compile Include="Populator\ConfigWebApiHelper\Logging.cs" />
@@ -197,9 +198,7 @@
       <Name>Xigadee.Helper</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Owin\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="BeforeBuild">

@@ -24,7 +24,7 @@ namespace Test.Xigadee.Api.Server
     {
         public CorePersistenceSharedService():base(responseChannel: CoreChannels.Internal)
         {
-
+            ChannelId = CoreChannels.Internal;
         }
     }
 }

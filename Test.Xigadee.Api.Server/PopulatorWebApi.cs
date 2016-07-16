@@ -31,38 +31,6 @@ namespace Test.Xigadee.Api.Server
         }
 
 
-        protected override void ConfigInitialise(Func<string, string, string> resolver, bool resolverFirst)
-        {
-            if (resolver == null)
-            {
-                resolver = (k, v) =>
-                {
-                    string value = null;
-
-                    try
-                    {
-                        if (k != null)
-                        {
-                            value = CloudConfigurationManager.GetSetting(k);
-
-                            if (value == null)
-                                value = ConfigurationManager.AppSettings[k];
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        // Unable to retrieve from azure
-                        return null;
-                    }
-
-                    return value;
-                };
-            }
-
-            base.ConfigInitialise(resolver, true);
-        }
-
-
         protected override void RegisterCommands()
         {
             base.RegisterCommands();

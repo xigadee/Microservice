@@ -22,16 +22,28 @@ namespace Test.Xigadee
         {
             base.RegisterCommands();
 
-            mPersistenceCommand1 = (PersistenceManagerHandlerMemory<Guid, MyTestEntity1>)Service.RegisterCommand(new PersistenceManagerHandlerMemory<Guid, MyTestEntity1>((e) => e.Id, (e) => new Guid(e)) { ChannelId = "internal" });
-            mPersistenceService1 = (PersistenceSharedService<Guid, MyTestEntity1>)Service.RegisterCommand(new PersistenceSharedService<Guid, MyTestEntity1>() { ChannelId = "internal" });
+            mPersistenceCommand1 = (PersistenceManagerHandlerMemory<Guid, MyTestEntity1>)Service.RegisterCommand(
+                new PersistenceManagerHandlerMemory<Guid, MyTestEntity1>(
+                    (e) => e.Id
+                , (e) => new Guid(e))
+                { ChannelId = "internal" });
+
+            mPersistenceService1 = (PersistenceSharedService<Guid, MyTestEntity1>)Service.RegisterCommand(
+                new PersistenceSharedService<Guid, MyTestEntity1>()
+                { ChannelId = "internal" });
 
             mPersistenceCommand2 = (PersistenceManagerHandlerMemory<Guid, MyTestEntity2>)Service.RegisterCommand(
                 new PersistenceManagerHandlerMemory<Guid, MyTestEntity2>(
                     (e) => e.Id
                     , (e) => new Guid(e)
-                    , versionPolicy: new VersionPolicy<MyTestEntity2>( (e) => e.VersionId.ToString("N").ToUpperInvariant(), (e) => e.VersionId = Guid.NewGuid())
-                    ) { ChannelId = "internal" });
-            mPersistenceService2 = (PersistenceSharedService<Guid, MyTestEntity2>)Service.RegisterCommand(new PersistenceSharedService<Guid, MyTestEntity2>() { ChannelId = "internal" });
+                    , versionPolicy: new VersionPolicy<MyTestEntity2>( (e) => e.VersionId.ToString("N").ToUpperInvariant()
+                    , (e) => e.VersionId = Guid.NewGuid())
+                    )
+                { ChannelId = "internal" });
+
+            mPersistenceService2 = (PersistenceSharedService<Guid, MyTestEntity2>)Service.RegisterCommand(
+                new PersistenceSharedService<Guid, MyTestEntity2>()
+                { ChannelId = "internal" });
         }
 
         [TestMethod]

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
 using System.Collections.Generic;
+using System.Web.OData;
 
 #endregion
 namespace Xigadee
@@ -359,6 +360,7 @@ namespace Xigadee
         [AcceptVerbs("SEARCH")]
         public virtual async Task<IHttpActionResult> Search([ModelBinder(typeof(OData4ApiRequestModelBinder))]OData4ApiRequest rq)
         {
+           
             TransportSerializer<E> entitySerializer;
             //Check that we have an appropriate serializer in the accept header
             if (!ResolveSerializer(rq, out entitySerializer))
