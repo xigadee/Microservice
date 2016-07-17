@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xigadee;
 
 namespace Test.Xigadee
@@ -19,10 +20,27 @@ namespace Test.Xigadee
 
         }
 
+        protected override async Task ProcessSearch(PersistenceRequestHolder<SearchRequest, SearchResponse> holder)
+        {
+            try
+            {
+                holder.Rs.ResponseCode = (int)PersistenceResponse.Ok200;
+                holder.Rs.Entity = new SearchResponse();
+            }
+            catch (Exception ex)
+            {
+                holder.Rs.ResponseCode = (int)PersistenceResponse.UnknownError500;
+                holder.Rs.ResponseMessage = ex.Message;
+            }
+        }
 
         public override void PrePopulate()
         {
-            EntityAdd(new Blah() { ContentId = new Guid("3211c71a-24e5-474d-b35d-9e2f72cafbe8"), Message = "Hello mom.", VersionId = Guid.NewGuid() });
+            EntityAdd(new Blah() { ContentId = new Guid("3211c71a-24e5-474d-b35d-9e2f72cafbe8"), Message = "Hello mom 32.", VersionId = Guid.NewGuid() });
+            EntityAdd(new Blah() { ContentId = new Guid("3111c71a-24e5-474d-b35d-9e2f72cafbe8"), Message = "Hello mom 31.", VersionId = Guid.NewGuid() });
+            EntityAdd(new Blah() { ContentId = new Guid("3011c71a-24e5-474d-b35d-9e2f72cafbe8"), Message = "Hello mom 30.", VersionId = Guid.NewGuid() });
+            EntityAdd(new Blah() { ContentId = new Guid("2911c71a-24e5-474d-b35d-9e2f72cafbe8"), Message = "Hello mom 29.", VersionId = Guid.NewGuid() });
+            EntityAdd(new Blah() { ContentId = new Guid("2811c71a-24e5-474d-b35d-9e2f72cafbe8"), Message = "Hello mom 28.", VersionId = Guid.NewGuid() });
         }
     }
 }

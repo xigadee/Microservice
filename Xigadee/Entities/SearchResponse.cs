@@ -8,6 +8,7 @@ namespace Xigadee
 {
     public class SearchResponse: SearchOData4Base
     {
+        public string Etag { get; set; }
 
     }
 }
