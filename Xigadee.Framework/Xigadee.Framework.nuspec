@@ -13,7 +13,9 @@
     <releaseNotes>Initial push.</releaseNotes>
     <copyright>Copyright © Information Management Group 2012-2016</copyright>
     <tags>Xigadee Microservice Accelerator</tags>
-    <dependencies />
+    <dependencies>
+      <dependency id="Newtonsoft.Json" version="9.0.1" />
+    </dependencies>
   </metadata>
   <files>
     <file src="bin\Release\Xigadee*.dll" target="lib\net46\" />

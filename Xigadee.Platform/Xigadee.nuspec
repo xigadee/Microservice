@@ -14,7 +14,7 @@
     <copyright>Copyright © Information Management Group 2012-2016</copyright>
     <tags>Xigadee Microservice Azure</tags>
     <dependencies>
-      <dependency id="Newtonsoft.Json" version="8.0.3" />
+      <dependency id="Newtonsoft.Json" version="9.0.1" />
     </dependencies>
   </metadata>
   <files>
