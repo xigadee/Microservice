@@ -47,9 +47,9 @@ namespace Xigadee
         /// <summary>
         /// This constructor creates the Unity container.
         /// </summary>
-        public PopulatorWebApiBase()
+        public PopulatorWebApiBase(HttpConfiguration config = null)
         {
-            ApiConfig = new HttpConfiguration();
+            ApiConfig = config ?? new HttpConfiguration();
         }
         #endregion
 
@@ -57,7 +57,7 @@ namespace Xigadee
         /// <summary>
         /// This is the Unity container used within the application.
         /// </summary>
-        public HttpConfiguration ApiConfig { get; }
+        public HttpConfiguration ApiConfig { get; protected set;}
         #endregion
 
         /// <summary>

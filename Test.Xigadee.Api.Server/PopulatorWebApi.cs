@@ -14,11 +14,11 @@ namespace Test.Xigadee.Api.Server
 {
     public static class CoreChannels
     {
-        public static string Internal = "internalchannel";
-        public static string ResponseBff = "response-bff";
-        public static string RequestCore = "request-core";
-        public static string MasterJob = "masterjob";
-        public static string Interservice = "interservice";
+        public const string Internal = "internalchannel";
+        public const string ResponseBff = "response-bff";
+        public const string RequestCore = "request-core";
+        public const string MasterJob = "masterjob";
+        public const string Interservice = "interservice";
     }
 
     public class PopulatorWebApi: PopulatorWebApiUnity<MicroserviceWebApi, ConfigWebApi>
@@ -102,24 +102,5 @@ namespace Test.Xigadee.Api.Server
             //    ));
         }
 
-        //protected virtual IEnumerable<ListenerPartitionConfig> PrimaryChannelConfig(decimal weighting = 1.2m)
-        //{
-        //    var p0 = new ListenerPartitionConfig(0
-        //        , payloadMaxProcessingTime: TimeSpan.FromMinutes(4.5)
-        //        , fabricMaxMessageLock: TimeSpan.FromMinutes(4.8)
-        //        );
-        //    p0.SupportsRateLimiting = true;
-
-        //    yield return p0;
-
-        //    var p1 = new ListenerPartitionConfig(1
-        //        , payloadMaxProcessingTime: TimeSpan.FromMinutes(4.5)
-        //        , fabricMaxMessageLock: TimeSpan.FromMinutes(4.8)
-        //        );
-        //    p1.SupportsRateLimiting = false;
-        //    p1.PriorityWeighting = weighting;
-
-        //    yield return p1;
-        //}
     }
 }

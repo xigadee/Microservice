@@ -68,7 +68,7 @@ namespace Test.Xigadee.Api.Server
                     defaults: new { action = "Search" }, constraints: null, 
                     handler: new HttpMethodChangeHandler(Service.ApiConfig, "SEARCH"));
 
-                 Service.Start(app, AzureHelper.Resolver);
+                Service.Start(app, AzureHelper.Resolver);
 
             }
             catch (Exception ex)
