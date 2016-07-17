@@ -75,6 +75,7 @@ namespace Xigadee
 
                 app.UseWebApi(ApiConfig);
 
+                ApiConfig.EnsureInitialized();
             }
             catch (Exception ex)
             {
