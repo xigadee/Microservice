@@ -8,7 +8,7 @@ namespace Test.Xigadee
     {
         static Lazy<ConsoleMenu> sMainMenu = new Lazy<ConsoleMenu>(
             () => new ConsoleMenu(
-                "Xigadee Microservice Scrathpad Test Console"
+                "Xigadee Microservice Scratchpad Test Console"
                 , new ConsoleOption("Load Settings"
                     , (m, o) =>
                     {
