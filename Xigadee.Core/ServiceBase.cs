@@ -97,8 +97,6 @@ namespace Xigadee
             }
         }
 
-
-
         /// <summary>
         /// This method signals to any event subscribers that the status has changed.
         /// </summary>

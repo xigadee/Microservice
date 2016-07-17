@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Cors;
 using System.Web.Http;
+using System.Web.Http.Controllers;
 using System.Web.Http.Cors;
 using System.Web.Http.Dependencies;
+using System.Web.Http.Filters;
 using Owin;
 using Xigadee;
 namespace Xigadee
@@ -43,6 +46,8 @@ namespace Xigadee
         where M : Microservice, new()
         where C : ConfigWebApi, new()
     {
+        protected readonly WebApiServiceUnavailableFilter mRejectIfServiceNotStartedFilter;
+
         #region Constructor
         /// <summary>
         /// This constructor creates the Unity container.
@@ -50,6 +55,9 @@ namespace Xigadee
         public PopulatorWebApiBase(HttpConfiguration config = null)
         {
             ApiConfig = config ?? new HttpConfiguration();
+            mRejectIfServiceNotStartedFilter = new WebApiServiceUnavailableFilter();
+            ApiConfig.Filters.Add(mRejectIfServiceNotStartedFilter);
+
         }
         #endregion
 
@@ -60,6 +68,12 @@ namespace Xigadee
         public HttpConfiguration ApiConfig { get; protected set;}
         #endregion
 
+
+        protected override void ServiceStatusChanged(object sender, StatusChangedEventArgs e)
+        {
+            mRejectIfServiceNotStartedFilter.StatusCurrent = e.StatusNew;
+        }
+
         /// <summary>
         /// This method starts the microservice.
         /// </summary>
@@ -69,13 +83,18 @@ namespace Xigadee
             {
                 Populate(settingsResolver);
 
-                Start();
+                ApiConfig.Filters.Add(mRejectIfServiceNotStartedFilter);
 
                 RegisterWebApiServices();
+
+                RegisterCorrsPolicy();
 
                 app.UseWebApi(ApiConfig);
 
                 ApiConfig.EnsureInitialized();
+
+                Start();
+
             }
             catch (Exception ex)
             {
@@ -90,8 +109,6 @@ namespace Xigadee
             ApiConfig.Filters.Add(new WebApiCorrelationIdFilter());
 
             ApiConfig.Filters.Add(new WebApiVersionHeaderFilter());
-
-            RegisterCorrsPolicy();
 
             // Web API configuration and services
             // Configure Web API to use only bearer token authentication.

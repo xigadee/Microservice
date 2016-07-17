@@ -80,10 +80,51 @@ namespace Xigadee
             base.RegisterWebApiServices();
 
             // Register the log container so that we can log to the same loggers as the microservce code
-            Unity.RegisterInstance(Service.Logger);
+            Unity.RegisterInstance(new LoggerInternal(Service));
 
             // Register the config to ensure that the azure cloud settings can be pulled out of config not just the web.config settings - used by owin auth
             Unity.RegisterInstance(Config);
+        }
+
+        protected class LoggerInternal: ILoggerExtended
+        {
+            private readonly Microservice mService;
+
+            public LoggerInternal(Microservice service)
+            {
+                mService = service;
+            }
+
+            public async Task Log(LogEvent logEvent)
+            {
+                if (mService.Logger != null)
+                    await mService.Logger.Log(logEvent);
+            }
+
+            public void LogException(Exception ex)
+            {
+                mService.Logger?.LogException(ex);
+            }
+
+            public void LogException(string message, Exception ex)
+            {
+                mService.Logger?.LogException(message, ex);
+            }
+
+            public void LogMessage(string message)
+            {
+                mService.Logger?.LogMessage(message);
+            }
+
+            public void LogMessage(LoggingLevel level, string message)
+            {
+                mService.Logger?.LogMessage(level, message);
+            }
+
+            public void LogMessage(LoggingLevel level, string message, string category)
+            {
+                mService.Logger?.LogMessage(level, message, category);
+            }
         }
     }
 }

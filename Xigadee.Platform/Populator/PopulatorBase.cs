@@ -28,6 +28,7 @@ namespace Xigadee
             Service.StopRequested += ServiceStopRequested;
             Service.StopCompleted += ServiceStopCompleted;
             Service.StatisticsIssued += ServiceStatisticsIssued;
+            Service.StatusChanged += ServiceStatusChanged;
         }
         #endregion
 
@@ -46,6 +47,11 @@ namespace Xigadee
         protected virtual void ServiceStopCompleted(object sender, StopEventArgs e) { }
 
         protected virtual void ServiceStopRequested(object sender, StopEventArgs e) { }
+
+        protected virtual void ServiceStatusChanged(object sender, StatusChangedEventArgs e)
+        {
+            
+        }
 
         #region ServiceStatisticsIssued(object sender, StatisticsEventArgs e)
         /// <summary>
