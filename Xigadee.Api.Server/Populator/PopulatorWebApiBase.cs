@@ -93,7 +93,7 @@ namespace Xigadee
 
                 ApiConfig.EnsureInitialized();
 
-                Start();
+                Task.Run(() =>Start());
 
             }
             catch (Exception ex)
