@@ -87,9 +87,6 @@
     <Compile Include="Communication\PartitionConfig\PartitionConfig.cs" />
     <Compile Include="Communication\PartitionConfig\SenderPartitionConfig.cs" />
     <Compile Include="Communication\TransmissionPayloadTrace.cs" />
-    <Compile Include="Entities\Search\SearchOData4Base.cs" />
-    <Compile Include="Entities\Search\SearchRequest.cs" />
-    <Compile Include="Entities\Search\SearchResponse.cs" />
     <Compile Include="EventSource\DocumentDbEventSource.cs" />
     <Compile Include="Exceptions\RequiredSharedServiceMissingException.cs" />
     <Compile Include="Exceptions\StorageThrottlingException.cs" />

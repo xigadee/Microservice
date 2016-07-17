@@ -59,7 +59,7 @@ namespace Xigadee
                 mTransports = TransportSerializer.GetSerializers<E>(typeof(E)).ToDictionary((s) => s.MediaType.ToLowerInvariant());
 
             if (mTransports == null || mTransports.Count == 0)
-                throw new TransportSerializerResolutionException("The defaul TransportSerializer cannot be resolved.");
+                throw new TransportSerializerResolutionException("The default TransportSerializer cannot be resolved.");
 
             //Get the transport serializer with the highest priority.
             mPrimaryTransport = mTransports.Values.OrderByDescending((t) => t.Priority).First();
@@ -220,6 +220,25 @@ namespace Xigadee
             var uri = mUriMapper.MakeUri(HttpMethod.Head, refKey, refValue);
             return await CallClient<K, Tuple<K, string>>(uri, options,
                 mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
+        }
+        #endregion
+
+        #region Search(K key, RepositorySettings options = null)
+        /// <summary>
+        /// This method reads an entity based on the key passed.
+        /// </summary>
+        /// <param name="key">The key request.</param>
+        /// <param name="options">These are the repository options which define the request type..</param>
+        /// <returns>This is the holder containing the response and the entity where necessary.</returns>
+        public async Task<RepositoryHolder<SearchRequest, SearchResponse>> Search(SearchRequest key, RepositorySettings options = null)
+        {
+            throw new NotImplementedException();
+            //var uri = mUriMapper.MakeUri(new HttpMethod("Search"));
+            //using (var content = GetContent(entity))
+            //{
+            //    return await CallClient<K, E>(uri, options, content: content, deserializer: DeserializeEntity,
+            //        mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
+            //}
         }
         #endregion
 

@@ -126,7 +126,7 @@ namespace Xigadee
             return await TransmitInternal(EntityActions.VersionByRef, new RepositoryHolder<K, Tuple<K, string>> { KeyReference = new Tuple<string, string>(refKey, refValue), Settings = settings });
         }
 
-        public virtual async Task<RepositoryHolder<SearchRequest, SearchResponse<K>>> Search(SearchRequest rq, RepositorySettings settings = null)
+        public virtual async Task<RepositoryHolder<SearchRequest, SearchResponse>> Search(SearchRequest rq, RepositorySettings settings = null)
         {
             //if ((settings?.UseCache ?? true) && mCacheManager.IsActive)
             //{
@@ -137,7 +137,7 @@ namespace Xigadee
             //    }
             //}
 
-            return await TransmitInternal(EntityActions.Search, new RepositoryHolder<SearchRequest, SearchResponse<K>> { Key = rq, Settings = settings });
+            return await TransmitInternal(EntityActions.Search, new RepositoryHolder<SearchRequest, SearchResponse> { Key = rq, Settings = settings });
         }
 
         #endregion

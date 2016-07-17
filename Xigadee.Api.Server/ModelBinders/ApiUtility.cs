@@ -8,13 +8,17 @@ namespace Xigadee
 {
     public static class ApiUtility
     {
+        public static RepositorySettings BuildRepositorySettings(HttpActionContext aContext)
+        {
+            return BuildRepositorySettings(aContext.RequestContext, aContext.Request);
+        }
         /// <summary>
         /// Builds a repository settings object based on the request and request context. Sets up the prefer values, APIM source etc
         /// </summary>
         /// <param name="requestContext"></param>
         /// <param name="request"></param>
         /// <returns></returns>
-        internal static RepositorySettings BuildRepositorySettings(HttpRequestContext requestContext, HttpRequestMessage request)
+        public static RepositorySettings BuildRepositorySettings(HttpRequestContext requestContext, HttpRequestMessage request)
         {
             var settings = new RepositorySettings();
 

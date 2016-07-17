@@ -7,10 +7,16 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Net.Http;
 using System.Web.Http.ModelBinding;
 using System.Collections.Generic;
 using System.Web.OData;
-
+using System.Web.OData.Query;
+using Microsoft.OData.Edm;
+using Microsoft.OData.Edm.Csdl;
+using Microsoft.OData.Edm.Library;
+using Microsoft.OData.Core.UriParser;
+using Microsoft.OData.Core.UriParser.Semantic;
 #endregion
 namespace Xigadee
 {
@@ -38,6 +44,10 @@ namespace Xigadee
         /// This is the supported transport serializers.
         /// </summary>
         protected Dictionary<string, TransportSerializer<E>> mSerializers;
+        /// <summary>
+        /// This property holds the OData query validation.
+        /// </summary>
+        protected readonly ODataValidationSettings mODataValidate;
         #endregion
         #region Constructor
         /// <summary>
@@ -56,8 +66,23 @@ namespace Xigadee
                     .ToDictionary((p) => p.MediaType.ToLowerInvariant());
 
             mKeyMapper = (KeyMapper<K>)KeyMapper.Resolve<K>();
-        } 
+
+            mODataValidate = ODataValidationSettingsCreate();
+        }
         #endregion
+
+        protected virtual ODataValidationSettings ODataValidationSettingsCreate()
+        {
+            var settings = new ODataValidationSettings()
+            {
+                // Initialize settings as needed.
+                AllowedFunctions = AllowedFunctions.None
+                , AllowedLogicalOperators = AllowedLogicalOperators.Equal | AllowedLogicalOperators.NotEqual | AllowedLogicalOperators.GreaterThan | AllowedLogicalOperators.LessThan
+                , AllowedArithmeticOperators = AllowedArithmeticOperators.None
+            };
+
+            return settings;
+        }
 
         #region ResolveSerializer(ApiRequest rq, out TransportSerializer<E> transport)
         /// <summary>
@@ -66,7 +91,7 @@ namespace Xigadee
         /// <param name="rq">The incoming request.</param>
         /// <param name="transport">The resolve transport serializer.</param>
         /// <returns>Returns true if the serializer can be resolved.</returns>
-        protected virtual bool ResolveSerializer(OData4ApiRequest rq, out TransportSerializer<E> transport)
+        protected virtual bool ResolveSerializer(ApiRequest rq, out TransportSerializer<E> transport)
         {
             transport = null;
             var accepts = rq.Accept ?? new List<MediaTypeWithQualityHeaderValue>();
@@ -108,7 +133,7 @@ namespace Xigadee
         /// <param name="rq">The incoming request.</param>
         /// <param name="transport">The resolve transport serializer.</param>
         /// <returns>Returns true if the serializer can be resolved.</returns>
-        protected virtual bool ResolveDeserializer(OData4ApiRequest rq, out TransportSerializer<E> transport)
+        protected virtual bool ResolveDeserializer(ApiRequest rq, out TransportSerializer<E> transport)
         {
             transport = null;
 
@@ -136,7 +161,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="rq">The incoming request.</param>
         /// <param name="ex">The exception.</param>
-        protected virtual void LogException(OData4ApiRequest rq, Exception ex) { }
+        protected virtual void LogException(ApiRequest rq, Exception ex) { }
         #endregion
 
         #region LogMessage
@@ -155,7 +180,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        protected virtual bool EntityValidate(OData4ApiRequest rq, E entity)
+        protected virtual bool EntityValidate(ApiRequest rq, E entity)
         {
             return true;
         } 
@@ -167,9 +192,8 @@ namespace Xigadee
         /// </summary>
         /// <param name="rq">The incoming request.</param>
         /// <returns>Returns a HTTP Action result</returns>
-        [Route("")]
         [HttpPost]
-        public virtual async Task<IHttpActionResult> Post([ModelBinder(typeof(ApiRequestModelBinder))]OData4ApiRequest rq)
+        public virtual async Task<IHttpActionResult> Post([ModelBinder(typeof(ApiRequestModelBinder))]ApiRequest rq)
         {
             TransportSerializer<E> entitySerializer, entityDeserializer;
             //Check that we have an appropriate deserializer
@@ -220,9 +244,8 @@ namespace Xigadee
         /// </summary>
         /// <param name="rq">The incoming request.</param>
         /// <returns>Returns a HTTP Action result</returns>
-        [Route("")]
         [HttpGet]
-        public virtual async Task<IHttpActionResult> Get([ModelBinder(typeof(ApiRequestModelBinder))]OData4ApiRequest rq)
+        public virtual async Task<IHttpActionResult> Get([ModelBinder(typeof(ApiRequestModelBinder))]ApiRequest rq)
         {
             TransportSerializer<E> entitySerializer;
             //Check that we have an appropriate serializer in the accept header
@@ -254,9 +277,8 @@ namespace Xigadee
         /// </summary>
         /// <param name="rq">The incoming request.</param>
         /// <returns>Returns a HTTP Action result</returns>
-        [Route("")]
         [HttpPut]
-        public virtual async Task<IHttpActionResult> Put([ModelBinder(typeof(ApiRequestModelBinder))]OData4ApiRequest rq)
+        public virtual async Task<IHttpActionResult> Put([ModelBinder(typeof(ApiRequestModelBinder))]ApiRequest rq)
         {
             TransportSerializer<E> entitySerializer, entityDeserializer;
             //Check that we have an appropriate deserializer
@@ -297,9 +319,8 @@ namespace Xigadee
         /// </summary>
         /// <param name="rq">The incoming request.</param>
         /// <returns>Returns a HTTP Action result</returns>
-        [Route("")]
         [HttpDelete]
-        public virtual async Task<IHttpActionResult> Delete([ModelBinder(typeof(ApiRequestModelBinder))]OData4ApiRequest rq)
+        public virtual async Task<IHttpActionResult> Delete([ModelBinder(typeof(ApiRequestModelBinder))]ApiRequest rq)
         {
             try
             {
@@ -326,9 +347,8 @@ namespace Xigadee
         /// </summary>
         /// <param name="rq">The incoming request.</param>
         /// <returns>Returns a HTTP Action result</returns>
-        [Route("")]
         [HttpHead]
-        public virtual async Task<IHttpActionResult> Head([ModelBinder(typeof(ApiRequestModelBinder))]OData4ApiRequest rq)
+        public virtual async Task<IHttpActionResult> Head([ModelBinder(typeof(ApiRequestModelBinder))]ApiRequest rq)
         {
             try
             {
@@ -356,32 +376,27 @@ namespace Xigadee
         /// </summary>
         /// <param name="rq">The incoming request.</param>
         /// <returns>Returns a HTTP Action result</returns>
-        [Route("")]
-        [AcceptVerbs("SEARCH")]
-        public virtual async Task<IHttpActionResult> Search([ModelBinder(typeof(OData4ApiRequestModelBinder))]OData4ApiRequest rq)
+        [AcceptVerbs("Search")]
+        public virtual async Task<IHttpActionResult> Search(ODataQueryOptions<E> request)
         {
-           
-            TransportSerializer<E> entitySerializer;
-            //Check that we have an appropriate serializer in the accept header
-            if (!ResolveSerializer(rq, out entitySerializer))
-                return StatusCode(HttpStatusCode.NotAcceptable);
-
             try
             {
-                RepositoryHolder<K, E> response;
-                if (rq.HasKey)
-                    response = await mRespository.Read(mKeyMapper.ToKey(rq.Id), rq.Options);
-                else if (rq.HasReference)
-                    response = await mRespository.ReadByRef(rq.RefType, rq.RefValue, rq.Options);
-                else
-                    return BadRequest();
+                //Validate that the request is correctly formed.
+                request.Validate(mODataValidate);
 
-                return ResponseFormat(response, entitySerializer);
+                //Load the request with the necessary parameters.
+                SearchRequest rq = new SearchRequest();
+                rq.ODataPopulate(request);
+
+                //Make the request to the persistence service.
+                RepositorySettings settings = ApiUtility.BuildRepositorySettings(ActionContext);
+                RepositoryHolder<SearchRequest, SearchResponse> response = await mRespository.Search(rq, settings);
+
+                return ResponseFormat(response, new JsonTransportSerializer<SearchResponse>());
             }
-            catch (Exception ex)
+            catch (Exception vex)
             {
-                LogException(rq, ex);
-                return StatusCode(HttpStatusCode.InternalServerError);
+                return BadRequest();
             }
         }
         #endregion

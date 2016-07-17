@@ -76,7 +76,8 @@ namespace Xigadee
             if (request.Headers.TryGetValues(mCorrelationIdKeyName, out correlationValues))
                 correlationId = correlationValues.FirstOrDefault();
 
-            if (!string.IsNullOrEmpty(correlationId))
+            if (!string.IsNullOrEmpty(correlationId) 
+                && !response.Headers.Contains(mCorrelationIdKeyName))
                 response.Headers.Add(mCorrelationIdKeyName, correlationId);
 
             await Task.WhenAll(tasks);

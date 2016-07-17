@@ -1,7 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Controllers;
+using System.Web.Http.Dispatcher;
+using System.Web.Http.Routing;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
@@ -23,16 +29,6 @@ namespace Test.Xigadee.Api.Server
             {
                 var Service = new PopulatorWebApi();
 
-                //config.DependencyResolver = 
-                Service.ApiConfig.EnableCors(new OpenCorrsPolicy());
-                // Web API configuration and services
-                // Configure Web API to use only bearer token authentication.
-                //config.SuppressDefaultHostAuthentication();
-                //Service.ApiConfig.Filters.Add(new HostAuthenticationFilter(OAuthDefaults.AuthenticationType));
-
-                //config.Filters.Add(CreateBlobLoggingFilter());
-
-                Service.ApiConfig.Filters.Add(new WebApiVersionHeaderFilter());
                 //config.Formatters.Insert(0, new ByteArrayMediaTypeFormatter()); // Add before any of the default formatters
 
                 //Enable attribute based routing for HTTP verbs.
@@ -40,7 +36,13 @@ namespace Test.Xigadee.Api.Server
 
                 // Add additional convention-based routing for the default controller.
                 Service.ApiConfig.Routes.MapHttpRoute(
-                    name: "DefaultApi",
+                    name: "Security",
+                    routeTemplate: "v1/account/{action}/{id}",
+                    defaults: new { id = RouteParameter.Optional, controller = "Security" }
+                );
+
+                Service.ApiConfig.Routes.MapHttpRoute(
+                    name: "DefaultPersistence",
                     routeTemplate: "v1/{controller}/{id}",
                     defaults: new { id = RouteParameter.Optional }
                 );
@@ -49,42 +51,30 @@ namespace Test.Xigadee.Api.Server
                 Service.ApiConfig.Routes.MapHttpRoute(
                     name: "ODataMetadata",
                     routeTemplate: "v1/OData/OData.svc/$metadata",
-                    defaults: new { id = RouteParameter.Optional }
+                    defaults: new { id = RouteParameter.Optional, controller = "OData4", action="Metadata" }
                 );
 
                 // Add additional convention-based routing for the default controller.
                 Service.ApiConfig.Routes.MapHttpRoute(
                     name: "ODataBatch",
                     routeTemplate: "v1/OData/OData.svc/$batch",
-                    defaults: new { id = RouteParameter.Optional }
+                    defaults: new { id = RouteParameter.Optional, controller = "OData4", action = "Batch" }
                 );
 
-                // Add additional convention-based routing for the default controller.
+
                 Service.ApiConfig.Routes.MapHttpRoute(
                     name: "OData",
                     routeTemplate: "v1/OData/OData.svc/{controller}",
-                    defaults: new { id = RouteParameter.Optional }
-                );
+                    defaults: new { action = "Search" }, constraints: null, 
+                    handler: new HttpMethodChangeHandler(Service.ApiConfig, "SEARCH"));
 
-
-                //app.UseJwtBearerAuthentication(
-                //Service.Initialise();
-                //config.DependencyResolver =  new UnityDependencyResolver(Service.Unity);
-                //GlobalConfiguration.Configuration.DependencyResolver = config.DependencyResolver;
-                //GlobalConfiguration.Configure((c) => Register(c));
-
-                //FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
-
-                Service.Start(app, AzureHelper.Resolver);
+                 Service.Start(app, AzureHelper.Resolver);
 
             }
             catch (Exception ex)
             {
-
                 throw ex;
             }
-
         }
-
-    }
+     }
 }

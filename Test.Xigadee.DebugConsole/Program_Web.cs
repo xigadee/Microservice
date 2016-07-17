@@ -17,26 +17,25 @@ namespace Test.Xigadee
 
         static void MicroserviceWebAPIStart()
         {
-            string baseAddress = "http://localhost:29001/";
-            var settings = Microsoft.Owin.Hosting.Utilities.SettingsLoader.LoadFromConfig();
-            StartOptions opts = new StartOptions(baseAddress);
+            StartOptions options = new StartOptions();
+            options.Urls.Add("http://localhost:29001");
 
-            opts.Settings.Add("paul", "cool");
-            opts.ServerFactory = "";
+            //options.Urls.Add("http://127.0.0.1:29001");
+            //options.Urls.Add(string.Format("http://{0}:29001", Environment.MachineName));
+
+            //var settings = Microsoft.Owin.Hosting.Utilities.SettingsLoader.LoadFromConfig();
+            //StartOptions opts = new StartOptions(baseAddress);
+
+            //opts.Settings.Add("paul", "cool");
+            //opts.ServerFactory = "";
             try
             {
-                var start = new Startup();
-
-                //mWebApp = WebApp.Start(opts, start);
-                //mWebApp = WebApp.Start<Startup>(opts);
-                mWebApp = WebApp.Start<Test.Xigadee.Api.Server.Startup>(opts);
+                mWebApp = WebApp.Start<Test.Xigadee.Api.Server.Startup>(options);
             }
             catch (Exception ex)
             {
-
                 throw ex;
             }
-            //opts.Settings.
 
         }
 

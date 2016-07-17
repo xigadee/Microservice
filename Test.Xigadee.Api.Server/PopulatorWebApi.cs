@@ -40,7 +40,7 @@ namespace Test.Xigadee.Api.Server
             RegisterCommand<IRepositoryAsync<Guid, MondayMorningBlues>, ProviderMondayMorningBluesAsyncLocal>(new ProviderMondayMorningBluesAsyncLocal());
             RegisterCommand<IRepositoryAsync<ComplexKey, ComplexEntity>, ProviderComplexEntityAsyncLocal>(new ProviderComplexEntityAsyncLocal());
 
-            Service.RegisterCommand(new PersistenceBlahMemory()
+            Service.RegisterCommand(new PersistenceBlahMemory(versionPolicy: new VersionPolicy<Blah>(entityVersionAsString: (e) => e.VersionId.ToString("N"), entityVersionUpdate: (e) => e.VersionId = Guid.NewGuid()))
             { ChannelId = CoreChannels.Internal, StartupPriority = 99 });
 
             Service.RegisterCommand(new PersistenceComplexEntityMemory()

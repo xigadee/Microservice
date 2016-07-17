@@ -51,6 +51,9 @@
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Entities\SearchOData4Base.cs" />
+    <Compile Include="Entities\SearchRequest.cs" />
+    <Compile Include="Entities\SearchResponse.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="Interfaces\IRepositoryAsync.cs" />
