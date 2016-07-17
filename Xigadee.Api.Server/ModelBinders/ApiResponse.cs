@@ -20,6 +20,7 @@ namespace Xigadee
         {
             StatusCode = statusCode;
         }
+        public HttpStatusCode StatusCode { get; set; }
 
         public byte[] Data { get; set; }
 
@@ -29,7 +30,6 @@ namespace Xigadee
 
         public string MediaType { get; set; }
 
-        public HttpStatusCode StatusCode { get; set; }
 
         public bool? IsCached { get; set; }
 

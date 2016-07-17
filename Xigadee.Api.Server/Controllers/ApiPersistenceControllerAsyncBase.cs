@@ -1,5 +1,4 @@
 ﻿#region using
-
 using System.Xml.Schema;
 using System;
 using System.Linq;
@@ -392,7 +391,7 @@ namespace Xigadee
                 RepositorySettings settings = ApiUtility.BuildRepositorySettings(ActionContext);
                 RepositoryHolder<SearchRequest, SearchResponse> response = await mRespository.Search(rq, settings);
 
-                return ResponseFormat(response, new JsonTransportSerializer<SearchResponse>());
+                return new OData4ServiceDocumentResponse(response, ActionContext.Request.RequestUri);
             }
             catch (Exception vex)
             {

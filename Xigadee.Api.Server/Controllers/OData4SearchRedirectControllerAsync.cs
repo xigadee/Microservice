@@ -18,42 +18,6 @@ namespace Xigadee
 {
     public abstract class OData4SearchRedirectControllerAsync: ApiController
     {
-
-        #region Read -> Get(ApiRequest rq)
-        /// <summary>
-        /// Get=Read
-        /// </summary>
-        /// <param name="rq">The incoming request.</param>
-        /// <returns>Returns a HTTP Action result</returns>
-        //[Route("/")]
-        [HttpGet]//http://host/service/
-        //public virtual async Task<IHttpActionResult> Service([FromODataUri] string key, ODataQueryOptions queryOptions)
-        public virtual async Task<IHttpActionResult> Service(ODataQueryOptions<object> request)
-        {
-
-    //        var valid = new System.Web.OData.Query.Validators.ODataQueryValidator();
-    //        valid.Validate(
-    //        Uri serviceRoot = new Uri("http://services.odata.org/V4/OData/OData.svc");
-    //        IEdmModel model = EdmxReader.Parse(XmlReader.Create(serviceRoot + "/$metadata"));
-    //        Uri fullUri = new Uri("http://services.odata.org/V4/OData/OData.svc/Products");
-
-    ////        Uri fullUri = new Uri("Products?$select=ID&$expand=ProductDetail" +
-    ////"&$filter=Categories/any(d:d/ID%20gt%201)&$orderby=ID%20desc" +
-    ////"&$top=1&$count=true&$search=tom", UriKind.Relative);
-    //        ODataUriParser parser = new ODataUriParser(model, fullUri);
-    //        SelectExpandClause expand =
-    //            parser.ParseSelectAndExpand();              //parse $select, $expand
-    //        FilterClause filter = parser.ParseFilter();     // parse $filter
-    //        OrderByClause orderby = parser.ParseOrderBy();  // parse $orderby
-    //        SearchClause search = parser.ParseSearch();     // parse $search
-    //        long? top = parser.ParseTop();                  // parse $top
-    //        long? skip = parser.ParseSkip();                // parse $skip
-    //        bool? count = parser.ParseCount();              // parse $count
-
-            return StatusCode(HttpStatusCode.NotImplemented);
-        }
-        #endregion
-
         #region Metadata()
         /// <summary>
         /// Get=Read
