@@ -1,20 +1,31 @@
 ﻿#region using
 
-using System.Xml.Schema;
 using System;
-using System.Linq;
-using System.Net;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Http.ModelBinding;
-using System.Collections.Generic;
-using System.Web.OData;
+using Microsoft.IdentityModel.Tokens;
 
 #endregion
 namespace Xigadee
 {
     public class SecurityControllerAsyncBase: ApiController
     {
+
+        public void SignOn()
+        {
+            //var tokenHandler = new JwtSecurityTokenHandler();
+
+            //SecurityKey key = new System.IdentityModel.Tokens.X509AsymmetricSecurityKey();
+
+            //SigningCredentials creds = new SigningCredentials(key, "hello");;
+
+            //var jwt = new JwtSecurityToken(
+            //    token.Issuer,
+            //    token.Audience,
+            //    token.Claims,
+            //    new Lifetime(DateTime.UtcNow, DateTime.UtcNow.AddSeconds(token.Lifetime)),
+            //    credentials);
+
+            
+        }
     }
 }
