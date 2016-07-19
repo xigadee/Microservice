@@ -1,6 +1,7 @@
 ﻿#region using
 
 using System;
+using System.IdentityModel.Tokens;
 using System.Web.Http;
 using Microsoft.IdentityModel.Tokens;
 
@@ -25,7 +26,7 @@ namespace Xigadee
             //    new Lifetime(DateTime.UtcNow, DateTime.UtcNow.AddSeconds(token.Lifetime)),
             //    credentials);
 
-            
+
         }
     }
 }
