@@ -23,6 +23,10 @@
       <dependency id="Microsoft.AspNet.WebApi.WebHost" version="5.2.3" />
       <dependency id="Microsoft.AspNet.OData" version="5.9.1" />
 
+      <dependency id="Microsoft.AspNet.Identity.Core" version="2.2.1" />
+      <dependency id="Microsoft.AspNet.Identity.EntityFramework" version="2.2.1" />
+      <dependency id="Microsoft.AspNet.Identity.Owin" version="2.2.1" />
+  
       <dependency id="WindowsAzure.Storage" version="7.1.2" />
       <dependency id="Newtonsoft.Json" version="9.0.1" />
       <dependency id="System.IdentityModel.Tokens.Jwt" version="4.0.2.206221351" />
