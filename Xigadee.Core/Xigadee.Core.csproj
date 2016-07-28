@@ -111,6 +111,27 @@
     <Compile Include="Logging\LoggingLevel.cs" />
     <Compile Include="Logging\PayloadLogEvent.cs" />
     <Compile Include="Logging\PersistencePayloadLogEvent.cs" />
+    <Compile Include="Orchestration\Commands\EntityChange\EntityChangeOrchestrationCommandBase.cs" />
+    <Compile Include="Orchestration\Commands\Input\InputOrchestrationCommandBase.cs" />
+    <Compile Include="Orchestration\Commands\Output\OutputOrchestrationCommandBase.cs" />
+    <Compile Include="Orchestration\Commands\Schedule\ScheduleOrchestrationCommandBase.cs" />
+    <Compile Include="Orchestration\Commands\Transform\TransformOrchestrationCommandBase.cs" />
+    <Compile Include="Orchestration\Commands\Validate\ValidateOrchestrationCommandBase.cs" />
+    <Compile Include="Orchestration\Context\OrchestrationContextState.cs" />
+    <Compile Include="Orchestration\Flow\Components\EntityChange\EntityChangeBase.cs" />
+    <Compile Include="Orchestration\Flow\Components\Schedule\ScheduleBase.cs" />
+    <Compile Include="Orchestration\Flow\Components\Input\InputBase.cs" />
+    <Compile Include="Orchestration\Flow\OrchestrationFlowPath.cs" />
+    <Compile Include="Orchestration\Flow\Components\Output\OutputBase.cs" />
+    <Compile Include="Orchestration\Flow\Components\Transform\TransformBase.cs" />
+    <Compile Include="Orchestration\Flow\Components\Validate\ValidationBase.cs" />
+    <Compile Include="Orchestration\Flow\OrchestrationFlowValidator.cs" />
+    <Compile Include="Orchestration\OrchestrationCommandBase.cs" />
+    <Compile Include="Orchestration\Flow\OrchestrationFlow.cs" />
+    <Compile Include="Orchestration\Flow\Components\OrchestrationFlowComponentBase.cs" />
+    <Compile Include="Orchestration\OrchestrationCommandPolicy.cs" />
+    <Compile Include="Orchestration\OrchestrationCommandStatistics.cs" />
+    <Compile Include="Orchestration\Context\OrchestrationContext.cs" />
     <Compile Include="Persistence\CacheManager\CacheManagerBase.cs" />
     <Compile Include="Persistence\Client\PersistenceInitiatorBase.cs" />
     <Compile Include="Persistence\Client\PersistenceInitiatorPolicy.cs" />
@@ -245,6 +266,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="DependencyManager\" />
+    <Folder Include="Orchestration\Consignment\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Properties\ApacheLicense-2.0.txt" />

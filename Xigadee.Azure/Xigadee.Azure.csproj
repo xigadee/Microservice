@@ -178,6 +178,7 @@
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Persistence\DocumentDbSDK\SDKHelper.cs" />
     <Compile Include="Populator\AzureHelper.cs" />
     <Compile Include="Populator\RedisCache.cs" />
     <Compile Include="Populator\ServiceBus.cs" />

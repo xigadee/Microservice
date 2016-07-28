@@ -23,6 +23,7 @@ namespace Xigadee
         {
             AccountName = account;
             Account = new Uri(string.Format(sBase, AccountName));
+            AccountKey = base64key;
             Key = Convert.FromBase64String(base64key);
         }
 
@@ -34,6 +35,10 @@ namespace Xigadee
         /// The account uri.
         /// </summary>
         public Uri Account { get; private set; }
+        /// <summary>
+        /// This is the account key.
+        /// </summary>
+        public string AccountKey { get; private set; }
         /// <summary>
         /// The binary key.
         /// </summary>

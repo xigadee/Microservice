@@ -17,7 +17,6 @@ namespace Xigadee
         where P : PersistenceCommandPolicy, new()
     {
         #region Constructor
-
         /// <summary>
         /// This is the default constructor.
         /// </summary>

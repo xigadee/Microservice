@@ -51,16 +51,15 @@
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ValueSwitch.cs" />
     <Compile Include="Entities\SearchOData4Base.cs" />
     <Compile Include="Entities\SearchRequest.cs" />
     <Compile Include="Entities\SearchResponse.cs" />
     <Compile Include="Helper.cs" />
-    <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="Interfaces\IRepositoryAsync.cs" />
     <Compile Include="IResponseHolder.cs" />
-    <Compile Include="Linq.cs" />
+    <Compile Include="LinqHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ProviderBase.cs" />
     <Compile Include="RepositoryOptions.cs" />
     <Compile Include="RepositoryResponse.cs" />
     <Compile Include="RepositorySettings.cs" />
