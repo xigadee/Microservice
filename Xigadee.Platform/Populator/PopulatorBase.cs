@@ -49,8 +49,7 @@ namespace Xigadee
         protected virtual void ServiceStopRequested(object sender, StopEventArgs e) { }
 
         protected virtual void ServiceStatusChanged(object sender, StatusChangedEventArgs e)
-        {
-            
+        {            
         }
 
         #region ServiceStatisticsIssued(object sender, StatisticsEventArgs e)
@@ -155,12 +154,10 @@ namespace Xigadee
 
         protected virtual void RegisterBoundaryLogger()
         {
-
         }
 
         protected virtual void RegisterResourceProfiles()
         {
-
         }
 
         /// <summary>
@@ -174,12 +171,10 @@ namespace Xigadee
 
         protected virtual void RegisterCommunication()
         {
-
         }
 
         protected virtual void RegisterCommands()
         {
-
         }
 
         protected virtual void RegisterTelemetry()
@@ -192,8 +187,6 @@ namespace Xigadee
 
         protected virtual void RegisterEventSources()
         {
-
         }
-
     }
 }

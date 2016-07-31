@@ -16,6 +16,7 @@ namespace Xigadee
     {
         public const int ResponseNotFound = 404;
         public const int ResponseOK = 200;
+        public const int ResponseForbidden = 403;
         public const int ResponseConflict = 409;
         public const int ResponseSignatureFailure = 422;
         public const int ResponseNotImplemented = 501;

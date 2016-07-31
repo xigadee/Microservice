@@ -104,6 +104,9 @@
     <Compile Include="ResourceTracker\ResourceTrackerStatistics.cs" />
     <Compile Include="Scheduler\SchedulerPolicy.cs" />
     <Compile Include="Scheduler\SchedulerStatistics.cs" />
+    <Compile Include="Security\SecurityContainer.cs" />
+    <Compile Include="Security\SecurityPolicy.cs" />
+    <Compile Include="Security\SecurityStatistics.cs" />
     <Compile Include="TaskManager\Interface\IQueueTracker.cs" />
     <Compile Include="TaskManager\Interface\ITaskAvailability.cs" />
     <Compile Include="TaskManager\Interface\ITaskManagerProcess.cs" />

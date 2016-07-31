@@ -236,6 +236,7 @@
     <Compile Include="ResourceTracker\ResourceRequestTrack.cs" />
     <Compile Include="ResourceTracker\ResourceStatistics.cs" />
     <Compile Include="ResourceTracker\ResourceStatsContainer.cs" />
+    <Compile Include="Security\SecurityGatekeeperBase.cs" />
     <Compile Include="Security\SignatureHelper.cs" />
     <Compile Include="Serializer\DefaultDataContractSerializer.cs" />
     <Compile Include="Serializer\DefaultSerializerBase.cs" />
@@ -267,6 +268,7 @@
   <ItemGroup>
     <Folder Include="DependencyManager\" />
     <Folder Include="Orchestration\Consignment\" />
+    <Folder Include="Orchestration\Context\Results\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Properties\ApacheLicense-2.0.txt" />

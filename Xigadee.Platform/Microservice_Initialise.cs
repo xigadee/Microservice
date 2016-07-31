@@ -175,6 +175,28 @@ namespace Xigadee
         }
         #endregion
 
+        #region InitialiseSecurityContainer()
+        /// <summary>
+        /// This method creates the component container.
+        /// This container holds the jobs, message initiators and handlers and is used to 
+        /// assign incoming requests to the appropriate command.
+        /// </summary>
+        /// <returns>Returns the container.</returns>
+        protected virtual SecurityContainer InitialiseSecurityContainer()
+        {
+            var container = new SecurityContainer(PolicySecurity());
+
+            return container;
+        }
+        /// <summary>
+        /// This is the policy used to set the communication component settings.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual SecurityPolicy PolicySecurity()
+        {
+            return new SecurityPolicy();
+        }
+        #endregion
 
         #region InitialiseTelemetryContainer(List<ITelemetry> telemetries)
         /// <summary>

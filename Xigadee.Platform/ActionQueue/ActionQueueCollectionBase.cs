@@ -11,7 +11,7 @@ using System.Threading;
 namespace Xigadee
 {
     /// <summary>
-    /// 
+    /// Thia collection is used by 
     /// </summary>
     /// <typeparam name="D"></typeparam>
     /// <typeparam name="I"></typeparam>
@@ -185,7 +185,6 @@ namespace Xigadee
             }
         }
         #endregion
-
 
         #region CanProcess()
         /// <summary>

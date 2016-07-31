@@ -40,6 +40,10 @@ namespace Xigadee
         /// </summary>
         protected TelemetryContainer mTelemetry;
         /// <summary>
+        /// This container is used to hold the security infrastructure for the Microservice.
+        /// </summary>
+        protected SecurityContainer mSecurity;
+        /// <summary>
         /// This container holds the components that do work on the system.
         /// </summary>
         protected CommandContainer mCommands;
@@ -71,7 +75,9 @@ namespace Xigadee
         /// This contains the supported serializers.
         /// </summary>
         protected List<IPayloadSerializer> mPayloadSerializers;
-
+        /// <summary>
+        /// This is the collection of policy settings for the Microservice.
+        /// </summary>
         protected List<PolicyBase> mPolicySettings;
 
         protected readonly string mServiceVersionId;
@@ -106,6 +112,7 @@ namespace Xigadee
             mServiceVersionId = Assembly.GetCallingAssembly().GetName().Version.ToString();
             mServiceEngineVersionId = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
+            mSecurity = InitialiseSecurityContainer();
             mCommunication = InitialiseCommunicationContainer();
             mCommands = InitialiseCommandContainer();
             mResourceTracker = InitialiseResourceTracker();

@@ -105,6 +105,7 @@ namespace Xigadee
             , bool isDeadLetterMessage = false)
         {
             var header = new ServiceMessageHeader(ChannelId, MessageType, ActionType);
+
             Process(header, package, ChannelPriority, options, release, isDeadLetterMessage);
         }
 

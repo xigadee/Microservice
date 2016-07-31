@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This is the base policy class that is used to configure the command.
+    /// </summary>
     public class OrchestrationCommandPolicy: CommandPolicy
     {
 
