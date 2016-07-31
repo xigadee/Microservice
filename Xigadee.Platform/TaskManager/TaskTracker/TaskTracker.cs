@@ -22,21 +22,40 @@ namespace Xigadee
 
         public TaskTracker(TaskTrackerType type, TimeSpan? ttl)
         {
-            this.Id = Guid.NewGuid();
-            this.UTCStart = DateTime.UtcNow;
-            this.TTL = ttl??TimeSpan.FromSeconds(30);
-            this.Cts = new CancellationTokenSource();
-            this.TickCount = Environment.TickCount;
-            this.Type = type;
+            Type = type;
+            TTL = ttl??TimeSpan.FromSeconds(30);
         }
+
+        /// <summary>
+        /// This is the unique tracking id for the process.
+        /// </summary>
+        public Guid Id { get; } = Guid.NewGuid();
+        /// <summary>
+        /// This is the maximum time to live for the process.
+        /// </summary>
+        public TimeSpan TTL { get; }
+        /// <summary>
+        /// This is the Microservice tracker type
+        /// </summary>
+        public TaskTrackerType Type { get; }
+        /// <summary>
+        /// This is the UTC timestamp for the process.
+        /// </summary>
+        public DateTime UTCStart { get; } = DateTime.UtcNow;
+        /// <summary>
+        /// This is the tick count for the process.
+        /// </summary>
+        public int TickCount { get; } = Environment.TickCount;
+        /// <summary>
+        /// This is the cancellation token used to signal tiemouts or shutdown.
+        /// </summary>
+        public CancellationTokenSource Cts { get; } = new CancellationTokenSource();
 
         public ICommand Callback { get; set; }
 
         public string CallbackId { get; set; }
 
         public int? ExecuteTickCount { get; set; }
-
-        public TaskTrackerType Type { get; set; }
 
         public TimeSpan? TimeProcessing
         {
@@ -63,11 +82,9 @@ namespace Xigadee
         /// </summary>
         public string Name { get; set; }
 
-        public readonly int TickCount;
 
         public string Caller { get; set; }
 
-        public Guid Id { get; set; }
 
         /// <summary>
         /// This boolean property identifies when a task is long running and is used to identify that fact to the Task Manager.
@@ -80,7 +97,9 @@ namespace Xigadee
         /// a running slot.
         /// </summary>
         public bool IsInternal { get { return Priority.HasValue && Priority.Value == PriorityInternal; } }
-
+        /// <summary>
+        /// This boolean property indicates whether the task has been flagged for cancellation.
+        /// </summary>
         public bool IsCancelled { get; set; }
 
         public bool IsKilled { get; set; }
@@ -95,14 +114,15 @@ namespace Xigadee
         /// </summary>
         public Action<TaskTracker, bool, Exception> ExecuteComplete { get; set; }
 
-        public DateTime UTCStart { get; set; }
 
         public DateTime? UTCExecute { get; set; }
 
         public DateTime? CancelledTime { get; set; }
 
-        public TimeSpan TTL { get; set; }
-
+        #region HasExpired
+        /// <summary>
+        /// This boolean value indicates whether the process has expired.
+        /// </summary>
         public bool HasExpired
         {
             get
@@ -110,7 +130,8 @@ namespace Xigadee
                 var time = ExpireTime;
                 return time.HasValue && (DateTime.UtcNow > time.Value);
             }
-        }
+        } 
+        #endregion
 
         public DateTime? ExpireTime
         {
@@ -120,6 +141,10 @@ namespace Xigadee
             }
         }
 
+        #region Cancel()
+        /// <summary>
+        /// This method is used to cancel the task.
+        /// </summary>
         public void Cancel()
         {
             if (IsCancelled)
@@ -139,22 +164,23 @@ namespace Xigadee
             {
 
             }
-        }
+        } 
+        #endregion
 
         /// <summary>
         /// This is the task used when the tracker is executed.
         /// </summary>
         public Task ExecuteTask { get; set; }
 
-        /// <summary>
-        /// This is the cancellation token used to signal tiemouts or shutdown.
-        /// </summary>
-        public CancellationTokenSource Cts { get; set; }
 
         /// <summary>
         /// This is the context object that can be used to hold additional data for the context/
         /// </summary>
         public object Context { get; set; }
+
+        public bool IsFailure { get; set; }
+
+        public Exception FailureException { get; set; }
 
         #region Debug
         /// <summary>
@@ -217,7 +243,5 @@ namespace Xigadee
         }
         #endregion
 
-        public bool IsFailure { get; set; }
-        public Exception FailureException { get; set; }
     }
 }

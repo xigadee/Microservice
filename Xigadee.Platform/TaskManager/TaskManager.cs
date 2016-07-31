@@ -90,22 +90,28 @@ namespace Xigadee
         #endregion
         #region Constructor
         /// <summary>
-        /// This is the default constructor.
+        /// This is the constructor for the task manager.
         /// </summary>
+        /// <param name="levels">The number of priorty levels supported in the task manager.</param>
+        /// <param name="dispatcher">The dispatcher function that is used to process the specific tasks.</param>
+        /// <param name="policy">The task manager policy.</param>
         public TaskManager(int levels
             , Func<TransmissionPayload, Task> dispatcher
-            , TaskManagerPolicy policy = null
+            , TaskManagerPolicy policy
             ) : base(policy, nameof(TaskManager))
         {
+            if (policy == null)
+                throw new ArgumentNullException($"{nameof(TaskManager)}: policy can not be null");
+
             if (dispatcher == null)
                 throw new ArgumentNullException($"{nameof(TaskManager)}: dispatcher can not be null");
-
 
             mPauseCheck = new ManualResetEventSlim();
 
             mAvailability = new TaskAvailability(levels, policy.ConcurrentRequestsMax);
 
             mTasksQueue = new QueueTrackerContainer<QueueTracker>(levels);
+
             mProcessInternalQueue = new ConcurrentQueue<TaskTracker>();
 
             mProcesses = new ConcurrentDictionary<string, TaskManagerProcessContext>();
@@ -236,12 +242,19 @@ namespace Xigadee
         /// </summary>
         /// <param name="name">The process name. If this is already used, then it will be replaced.</param>
         /// <param name="ordinal">The order the registered processes are polled higher is first.</param>
-        /// <param name="execute">The execute action.</param>
+        /// <param name="process">The execute action.</param>
         public void ProcessRegister(string name, int ordinal, ITaskManagerProcess process)
         {
             ProcessRegister<object>(name, ordinal, process);
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="C"></typeparam>
+        /// <param name="name"></param>
+        /// <param name="ordinal"></param>
+        /// <param name="process"></param>
+        /// <param name="context"></param>
         public void ProcessRegister<C>(string name, int ordinal, ITaskManagerProcess process, C context = default(C))
         {
             var holder = new TaskManagerProcessContext<C>(name) { Ordinal = ordinal, Process = process, Context = context };
@@ -295,7 +308,7 @@ namespace Xigadee
                 //Loop to infinity until an exception is called for the thread or MessagePumpActive is set to false.
                 while (MessagePumpActive)
                 {
-                    //Pause 50ms if set or until another process signals continue.
+                    //Pause if set or until another process signals continue.
                     LoopPause();
 
                     try
@@ -310,7 +323,7 @@ namespace Xigadee
                         //Process waiting messages.
                         DequeueTasksAndExecute();
 
-                        //Execute any registered processes
+                        //Execute any additional registered processes
                         mProcesses.Values
                             .OrderByDescending((p) => p.Ordinal)
                             .ForEach((p) => ProcessExecute(p));
@@ -378,6 +391,8 @@ namespace Xigadee
         /// <param name="tracker">The tracker.</param>
         public void ExecuteOrEnqueue(TaskTracker tracker)
         {
+            //This is where the security validation should be added.
+
             if (tracker.IsInternal)
             {
                 if (mPolicy.ExecuteInternalDirect)
@@ -398,6 +413,7 @@ namespace Xigadee
         private void DequeueTasksAndExecute()
         {
             TaskTracker tracker;
+
             while (mProcessInternalQueue.TryDequeue(out tracker))
                 ExecuteTask(tracker);
 
@@ -425,7 +441,7 @@ namespace Xigadee
 
         #region ExecuteTask(TaskTracker tracker)
         /// <summary>
-        /// This method sets the task on to a Task for execution and calls the end method on completion.
+        /// This method sets the task for execution and calls the end method on completion.
         /// </summary>
         /// <param name="tracker">The tracker to enqueue.</param>
         private void ExecuteTask(TaskTracker tracker)

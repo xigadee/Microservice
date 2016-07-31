@@ -109,13 +109,26 @@ namespace Xigadee
         /// This is the command container statistics/
         /// </summary>
         public CommandContainerStatistics Commands { get; set; }
-
+        /// <summary>
+        /// The resource statistics.
+        /// </summary>
         public ResourceTrackerStatistics Resources { get; set; }
 
+        /// <summary>
+        /// The security statictics.
+        /// </summary>
+        public SecurityStatistics Security { get; set; }
+        /// <summary>
+        /// The scheduler statistics.
+        /// </summary>
         public SchedulerStatistics Scheduler { get; set; }
-
+        /// <summary>
+        /// The logger statistics.
+        /// </summary>
         public LoggerContainerStatistics Logger { get; set; }
-
+        /// <summary>
+        /// The event source statistics.
+        /// </summary>
         public EventSourceContainerStatistics EventSource { get; set; }
 
         private long mTimeouts;
@@ -156,7 +169,4 @@ namespace Xigadee
         /// </summary>
         public string EngineVersionId { get; set; }
     }
-
-
-
 }

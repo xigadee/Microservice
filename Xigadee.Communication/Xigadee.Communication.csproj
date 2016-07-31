@@ -65,13 +65,18 @@
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="DirectChannel\DirectChannelCommunicator.cs" />
-    <Compile Include="DirectChannel\TcpDirectChannel.cs" />
+    <Compile Include="TcpTlsChannel\DirectChannelCommunicator.cs" />
+    <Compile Include="TcpTlsChannel\TcpTlsChannelSender.cs" />
+    <Compile Include="TcpTlsChannel\TcpTlsConnection.cs" />
+    <Compile Include="TcpTlsChannel\TcpTlsMessage.cs" />
+    <Compile Include="TcpTlsChannel\TcpTlsClientHolder.cs" />
     <Compile Include="Http\HttpDirectListener.cs" />
     <Compile Include="Http\HttpDirectSender.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TcpTlsChannel\TlsTcpChannelListener.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="TcpTlsChannel\Helper\MakeCert.txt" />
     <Content Include="Properties\ApacheLicense-2.0.txt" />
   </ItemGroup>
   <ItemGroup>

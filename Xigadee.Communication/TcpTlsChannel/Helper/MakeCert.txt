@@ -1,0 +1,1 @@
+﻿makecert -r -pe -n “CN=localhost” -m 12 -sky exchange -ss my serverCert.cer

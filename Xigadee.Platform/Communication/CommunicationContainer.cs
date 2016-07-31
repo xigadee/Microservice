@@ -251,6 +251,12 @@ namespace Xigadee
         }
         #endregion
 
+        #region ProcessClients(bool pastDue)
+        /// <summary>
+        /// This method processes the active clients in order of their priority an allocates available slots to them.
+        /// </summary>
+        /// <param name="pastDue">A boolean that specifies to the polling logic to poll any clients that have waited longer then the maximum time. 
+        /// This stops higher priority clients hogging all the processing bandwidth.</param>
         protected void ProcessClients(bool pastDue)
         {
             try
@@ -272,7 +278,8 @@ namespace Xigadee
                 Logger?.LogException("CommunicationContainer/Process", ex);
                 throw;
             }
-        }
+        } 
+        #endregion
 
         #region TrackerSubmitFromClientPriorityHolder(ClientPriorityHolder context)
         /// <summary>
@@ -346,6 +353,7 @@ namespace Xigadee
                         Logger?.LogException($"Payload completion error-{payload} after {(tr.Context as TransmissionPayload)?.Message?.FabricDeliveryCount} delivery attempts", exin);
                     }
                 };
+
                 //Submit the tracker to the task manager.
                 TaskSubmit(tracker);
             }
