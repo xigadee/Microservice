@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// The security container class contains all the components to secure the incoming messaging for a Microservice, 
+    /// and to ensure that incoming message requests have the correct permissions necessary to be processed.
+    /// </summary>
     public class SecurityContainer: ServiceContainerBase<SecurityStatistics, SecurityPolicy>
     {
         public SecurityContainer(SecurityPolicy policy):base(policy)
@@ -15,12 +19,10 @@ namespace Xigadee
 
         protected override void StartInternal()
         {
-            //throw new NotImplementedException();
         }
 
         protected override void StopInternal()
         {
-            //throw new NotImplementedException();
         }
     }
 }

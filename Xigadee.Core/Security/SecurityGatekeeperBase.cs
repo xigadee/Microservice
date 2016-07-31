@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class SecurityGatekeeperBase
+    public interface ISecurityGatekeeper
+    {
+
+    }
+
+    public class SecurityGatekeeperBase: ISecurityGatekeeper
     {
     }
 }

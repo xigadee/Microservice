@@ -237,7 +237,9 @@
     <Compile Include="ResourceTracker\ResourceStatistics.cs" />
     <Compile Include="ResourceTracker\ResourceStatsContainer.cs" />
     <Compile Include="Security\SecurityGatekeeperBase.cs" />
-    <Compile Include="Security\SignatureHelper.cs" />
+    <Compile Include="Security\SignatureHelper\SignatureHelper.cs" />
+    <Compile Include="Security\SignatureHelper\Sha256SignatureHelper.cs" />
+    <Compile Include="Security\SignatureHelper\Sha512SignatureHelper.cs" />
     <Compile Include="Serializer\DefaultDataContractSerializer.cs" />
     <Compile Include="Serializer\DefaultSerializerBase.cs" />
     <Compile Include="Interfaces\IEventSource.cs" />
@@ -266,7 +268,6 @@
     <None Include="Xigadee.Core.nuspec" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="DependencyManager\" />
     <Folder Include="Orchestration\Consignment\" />
     <Folder Include="Orchestration\Context\Results\" />
   </ItemGroup>

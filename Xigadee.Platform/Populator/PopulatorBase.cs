@@ -145,6 +145,8 @@ namespace Xigadee
             RegisterLogging();
             RegisterEventSources();
 
+            RegisterSecurity();
+
             RegisterCommands();
 
             RegisterCommunication();
@@ -174,6 +176,10 @@ namespace Xigadee
         }
 
         protected virtual void RegisterCommands()
+        {
+        }
+
+        protected virtual void RegisterSecurity()
         {
         }
 

@@ -129,14 +129,6 @@ namespace Xigadee
             Status = ServiceStatus.Running;
         } 
         #endregion
-
-        #region StartInternal();
-        /// <summary>
-        /// This abstract method will actually index the service,
-        /// </summary>
-        protected abstract void StartInternal(); 
-        #endregion
-
         #region Stop()
         /// <summary>
         /// This method stops a running service.
@@ -153,12 +145,15 @@ namespace Xigadee
             Status = ServiceStatus.Stopped;
         } 
         #endregion
-        #region StopInternal()
+
         /// <summary>
-        /// This abstract method stops the actual service. You should override this method for your own logic.
+        /// This abstract method starts the service. You should override this method for your own logic and implement your specific startup implementation.
+        /// </summary>
+        protected abstract void StartInternal(); 
+        /// <summary>
+        /// This abstract method stops the service. You should override this method for your own logic.
         /// </summary>
         protected abstract void StopInternal(); 
-        #endregion
 
         #region ServiceStart(object service, Dictionary<string, string> args)
         /// <summary>
