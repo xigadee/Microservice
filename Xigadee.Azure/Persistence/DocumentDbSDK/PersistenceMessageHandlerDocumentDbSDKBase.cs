@@ -89,7 +89,7 @@ namespace Xigadee
             mCollectionName = databaseCollection ?? typeof(E).Name;
             mShardingPolicy = shardingPolicy ?? new ShardingPolicy<K>(mCollectionName, (k) => 0, 1, (i) => mCollectionName);
 
-            mClient = new DocumentClient(connection.Account, connection.AccountKey);
+            mClient = connection.ToDocumentClient();
         }
         #endregion
 
@@ -114,10 +114,9 @@ namespace Xigadee
         /// </summary>
         /// <param name="key"></param>
         /// <returns>Returns the documentDb collection.</returns>
-        protected virtual Collection Partition(K key)
+        protected virtual string Partition(K key)
         {
-            var collection = mShardingPolicy.Resolve(key);
-            return mHolders[collection].Collection;
+            return mShardingPolicy.Resolve(key);
         }
         #endregion
 
@@ -146,15 +145,17 @@ namespace Xigadee
         {
             var jsonHolder = mTransform.JsonMaker(holder.Rq.Entity);
 
-            var result = await Partition(jsonHolder.Key).Create(jsonHolder.Json, holder.Rq.Timeout);
-            //using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(@"{ a : 5, b: 6, c: 7 }")))
-            //{
-            //    await mClient.CreateDocumentAsync(collectionSelfLink,
-            //        Document.LoadFrom<Document>(ms));
-            //}
+            using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(jsonHolder.Json)))
+            {
+                
+                var doc = Document.LoadFrom<Document>(ms);
+                var uri = UriFactory.CreateDocumentCollectionUri(mDatabaseName, Partition(key));
+                var resultDocDb = await mClient.CreateDocumentAsync(uri, doc, disableAutomaticIdGeneration: true);
+            }
             //mClient.CreateDocumentAsync(
             //var result2 = await mClient.CreateDocumentAsync(
-            return PersistenceResponseFormat(result);
+            //var result = await Partition(jsonHolder.Key).Create(jsonHolder.Json, holder.Rq.Timeout);
+            return PersistenceResponseFormat(null);
         }
         #endregion
         #region InternalRead
@@ -169,10 +170,10 @@ namespace Xigadee
 
             if (!documentRq.IsSuccess)
                 return PersistenceResponseFormat(documentRq);
+            
+            //var result = await Partition(key).Read(documentRq.DocumentId, holder.Rq.Timeout);
 
-            var result = await Partition(key).Read(documentRq.DocumentId, holder.Rq.Timeout);
-
-            return PersistenceResponseFormat(result);
+            return PersistenceResponseFormat(null);
         }
         #endregion
         #region InternalUpdate
@@ -208,14 +209,14 @@ namespace Xigadee
             else
                 jsonHolderUpdate = jsonHolder;
 
-            var result = await Partition(jsonHolderUpdate.Key).Update(documentRq.DocumentId, jsonHolderUpdate.Json, holder.Rq.Timeout, eTag: eTag);
+            //var result = await Partition(jsonHolderUpdate.Key).Update(documentRq.DocumentId, jsonHolderUpdate.Json, holder.Rq.Timeout, eTag: eTag);
 
-            if (result.IsSuccess && mTransform.Version.SupportsArchiving)
-            {
-                //mCollection.Create(documentRq.DocumentId, jsonHolder.Json, rq.Timeout).Result;
-            }
+            //if (result.IsSuccess && mTransform.Version.SupportsArchiving)
+            //{
+            //    //mCollection.Create(documentRq.DocumentId, jsonHolder.Json, rq.Timeout).Result;
+            //}
 
-            return PersistenceResponseFormat(result);
+            return PersistenceResponseFormat(null);
         }
         #endregion
         #region InternalDelete
@@ -235,16 +236,16 @@ namespace Xigadee
                 return PersistenceResponseFormat(documentId);
 
             string eTag = documentId.ETag;
-            var result = await Partition(holder.Rq.Key).Delete(documentId.DocumentId, holder.Rq.Timeout, eTag: eTag);
+            //var result = await Partition(holder.Rq.Key).Delete(documentId.DocumentId, holder.Rq.Timeout, eTag: eTag);
 
-            if (result.IsSuccess)
-            {
-                //Switch the content over so that we can return the contentId and versionId.
-                result.Content = documentId.Content;
-                result.ETag = documentId.ETag;
-            }
+            //if (result.IsSuccess)
+            //{
+            //    //Switch the content over so that we can return the contentId and versionId.
+            //    result.Content = documentId.Content;
+            //    result.ETag = documentId.ETag;
+            //}
 
-            return PersistenceResponseFormat(result);
+            return PersistenceResponseFormat(null);
         }
         #endregion
         #region InternalVersion
@@ -262,9 +263,9 @@ namespace Xigadee
             if (!documentId.IsSuccess)
                 return PersistenceResponseFormat(documentId);
 
-            var result = await Partition(holder.Rq.Key).Read(documentId.DocumentId, holder.Rq.Timeout);
+            //var result = await Partition(holder.Rq.Key).Read(documentId.DocumentId, holder.Rq.Timeout);
 
-            return PersistenceResponseFormat(result);
+            return PersistenceResponseFormat(null);
         }
         #endregion
 
@@ -284,9 +285,9 @@ namespace Xigadee
             if (mTransform.Version.SupportsVersioning)
                 extractions.Add(mTransform.Version.VersionJsonMetadata);
 
-            var result = await Partition(key).ResolveDocumentId(id, timeout: timeout, extractionJPaths: extractions);
+            //var result = await Partition(key).ResolveDocumentId(id, timeout: timeout, extractionJPaths: extractions);
 
-            return result;
+            return null;//result;
         }
         #endregion
 
