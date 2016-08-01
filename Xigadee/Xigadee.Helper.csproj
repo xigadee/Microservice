@@ -51,10 +51,13 @@
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Entities\History\HistoryBase.cs" />
+    <Compile Include="Entities\History\HistoryRequest.cs" />
+    <Compile Include="Entities\History\HistoryResponse.cs" />
     <Compile Include="Entities\ValueSwitch.cs" />
-    <Compile Include="Entities\SearchOData4Base.cs" />
-    <Compile Include="Entities\SearchRequest.cs" />
-    <Compile Include="Entities\SearchResponse.cs" />
+    <Compile Include="Entities\Search\SearchOData4Base.cs" />
+    <Compile Include="Entities\Search\SearchRequest.cs" />
+    <Compile Include="Entities\Search\SearchResponse.cs" />
     <Compile Include="Helper\Conversion_Xml.cs" />
     <Compile Include="Helper\Conversion.cs" />
     <Compile Include="Helper\Conversion_Delta.cs" />

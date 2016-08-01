@@ -223,6 +223,7 @@ namespace Xigadee
             PersistenceCommandRegister<K, Tuple<K, string>>(EntityActions.VersionByRef, ProcessVersionByRef);
 
             PersistenceCommandRegister<SearchRequest, SearchResponse>(EntityActions.Search, ProcessSearch);
+            PersistenceCommandRegister<HistoryRequest<K>, HistoryResponse<K>>(EntityActions.History, ProcessHistory);
         }
         #endregion
         #region PersistenceCommandRegister<KT,ET>...
@@ -813,17 +814,27 @@ namespace Xigadee
 
         #region Search
         /// <summary>
-        /// This is not currently used.
+        /// This is the entity search.
         /// </summary>
-        /// <param name="rq"></param>
-        /// <param name="rs"></param>
-        /// <param name="prq"></param>
-        /// <param name="prs"></param>
-        /// <returns></returns>
+        /// <param name="holder">The is the entity search data.</param>
+        /// <returns>This is an async task.</returns>
         protected virtual async Task ProcessSearch(PersistenceRequestHolder<SearchRequest, SearchResponse> holder)
         {
             holder.Rs.ResponseCode = (int)PersistenceResponse.NotImplemented501;
-            holder.Rs.ResponseMessage = "Not implemented.";
+            holder.Rs.ResponseMessage = "Search is not implemented.";
+        }
+        #endregion
+
+        #region History
+        /// <summary>
+        /// This is the entity history.
+        /// </summary>
+        /// <param name="holder">The is the entity history data.</param>
+        /// <returns>This is an async task.</returns>
+        protected virtual async Task ProcessHistory(PersistenceRequestHolder<HistoryRequest<K>, HistoryResponse<K>> holder)
+        {
+            holder.Rs.ResponseCode = (int)PersistenceResponse.NotImplemented501;
+            holder.Rs.ResponseMessage = "History is not implemented.";
         }
         #endregion
 

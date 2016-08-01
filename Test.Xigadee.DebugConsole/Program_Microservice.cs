@@ -17,15 +17,24 @@ namespace Test.Xigadee
 
         static void MicroserviceServerStart()
         {
-            sServerContext.Server.OnRegister += Server_OnRegister;
+            try
+            {
+                sServerContext.Server.OnRegister += Server_OnRegister;
 
-            sServerContext.Server.Service.StatusChanged += ServerStatusChanged;
+                sServerContext.Server.Service.StatusChanged += ServerStatusChanged;
 
-            sServerContext.Server.Service.StartRequested += ServerStartRequested;
-            sServerContext.Server.Service.StopRequested += ServerStopRequested;
+                sServerContext.Server.Service.StartRequested += ServerStartRequested;
+                sServerContext.Server.Service.StopRequested += ServerStopRequested;
 
-            sServerContext.Server.Populate(ResolveServerSetting, true);
-            sServerContext.Server.Start();
+                sServerContext.Server.Populate(ResolveServerSetting, true);
+
+                sServerContext.Server.Start();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
         }
 
         static string ResolveServerSetting(string key, string value)
@@ -81,7 +90,7 @@ namespace Test.Xigadee
                     break;
                 case PersistenceOptions.DocumentDbSdk:
                     e.Service.RegisterCommand(
-                        new PersistenceMondayMorningBluesDocDb(e.Config.DocDBConnection(), e.Config.DocDBDatabaseName()
+                        new PersistenceMondayMorningBluesDocDbSdk(e.Config.DocDBConnection(), e.Config.DocDBDatabaseName()
                         , MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
                         { ChannelId = Channels.TestB });
                     break;

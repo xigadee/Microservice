@@ -158,7 +158,5 @@ namespace Xigadee
             return payload;
         }
         #endregion
-
-
     }
 }

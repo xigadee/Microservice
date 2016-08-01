@@ -1,7 +1,10 @@
 ﻿#region using
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 #endregion
 namespace Xigadee
@@ -11,7 +14,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class PersistenceMessageHandlerDocumentDbSDKBase<K, E, S, P>: PersistenceManagerHandlerJsonBase<K, E, S, P>
+    public class PersistenceMessageHandlerDocumentDbSdk<K, E, S, P>: PersistenceManagerHandlerJsonBase<K, E, S, P>
         where K : IEquatable<K>
         where S : PersistenceStatistics, new()
         where P : PersistenceCommandPolicy, new()
@@ -54,7 +57,7 @@ namespace Xigadee
         /// <param name="defaultTimeout">This is the default timeout period to be used when connecting to documentDb.</param>
         /// <param name="shardingPolicy">This is sharding policy used to choose the appropriate collection from the key presented.</param>
         /// <param name="retryPolicy"></param>
-        public PersistenceMessageHandlerDocumentDbSDKBase(DocumentDbConnection connection
+        public PersistenceMessageHandlerDocumentDbSdk(DocumentDbConnection connection
             , string database
             , Func<E, K> keyMaker
             , Func<string, K> keyDeserializer
@@ -81,11 +84,12 @@ namespace Xigadee
                   , keyDeserializer: keyDeserializer
                   )
         {
-            //mClient = new DocumentClient(
             mConnection = connection;
             mDatabaseName = database;
             mCollectionName = databaseCollection ?? typeof(E).Name;
             mShardingPolicy = shardingPolicy ?? new ShardingPolicy<K>(mCollectionName, (k) => 0, 1, (i) => mCollectionName);
+
+            mClient = new DocumentClient(connection.Account, connection.AccountKey);
         }
         #endregion
 
@@ -143,7 +147,12 @@ namespace Xigadee
             var jsonHolder = mTransform.JsonMaker(holder.Rq.Entity);
 
             var result = await Partition(jsonHolder.Key).Create(jsonHolder.Json, holder.Rq.Timeout);
-
+            //using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(@"{ a : 5, b: 6, c: 7 }")))
+            //{
+            //    await mClient.CreateDocumentAsync(collectionSelfLink,
+            //        Document.LoadFrom<Document>(ms));
+            //}
+            //mClient.CreateDocumentAsync(
             //var result2 = await mClient.CreateDocumentAsync(
             return PersistenceResponseFormat(result);
         }

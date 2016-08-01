@@ -30,7 +30,7 @@ namespace Test.Xigadee
                     {
                         sServerContext.PersistenceType = PersistenceOptions.DocumentDbSdk;
                     }
-                    , enabled: (m, o) => false
+                    , enabled: (m, o) => true
                     , selected: (m, o) => sServerContext.PersistenceType == PersistenceOptions.DocumentDbSdk
                 )
                 , new ConsoleOption("Blob storage based Persistence"

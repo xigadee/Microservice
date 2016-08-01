@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class TcpTlsMessage
+    public abstract class HistoryBase<K>
+        where K: IEquatable<K>
     {
-
-        public byte[] Payload { get; set; }
     }
 }

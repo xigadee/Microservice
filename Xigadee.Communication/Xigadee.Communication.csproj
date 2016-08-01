@@ -65,7 +65,7 @@
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="TcpTlsChannel\DirectChannelCommunicator.cs" />
+    <Compile Include="TcpTlsChannel\Helper\DirectChannelCommunicator.cs" />
     <Compile Include="TcpTlsChannel\TcpTlsChannelSender.cs" />
     <Compile Include="TcpTlsChannel\TcpTlsConnection.cs" />
     <Compile Include="TcpTlsChannel\TcpTlsMessage.cs" />

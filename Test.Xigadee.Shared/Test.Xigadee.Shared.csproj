@@ -75,6 +75,7 @@
     <Compile Include="Entities\MondayMorningBlues.cs" />
     <Compile Include="Persistence\MondayMorningBlues\MondayMorningBluesHelper.cs" />
     <Compile Include="Persistence\MondayMorningBlues\PersistenceMondayMorningBluesBlob.cs" />
+    <Compile Include="Persistence\MondayMorningBlues\PersistenceMondayMorningBluesDocDbSdk.cs" />
     <Compile Include="Persistence\MondayMorningBlues\PersistenceMondayMorningBluesDocDb.cs" />
     <Compile Include="Persistence\MondayMorningBlues\PersistenceMondayMorningBluesMemory.cs" />
     <Compile Include="Persistence\MondayMorningBlues\PersistenceMondayMorningBluesRedis.cs" />
