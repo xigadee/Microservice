@@ -161,39 +161,48 @@ namespace Xigadee
         /// <param name="holder">The request holder.</param>
         protected override async Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRequestHolder<K, E> holder)
         {
-            ////409 Conflict
-            //JsonHolder<K> jsonHolder = mTransform.JsonMaker(holder.Rq.Entity);
-            //JsonHolder<K> jsonHolderUpdate;
+            string eTag = null;
+            string collection = mShardingPolicy.Resolve(key);
+            string stringKey = mTransform.KeyStringMaker(key);
 
-            //var documentRq = await ResolveDocumentIdByKey(jsonHolder.Key, holder.Rq.Timeout);
-            //if (!documentRq.IsSuccess)
-            //    return PersistenceResponseFormat(documentRq);
+            var jsonHolder = mTransform.JsonMaker(holder.Rq.Entity);
 
-            //string eTag = documentRq.ETag;
+            //We check this in case optimistic locking has been turned on, but old versions don't support this yet.
+            if (mTransform.Version.SupportsOptimisticLocking) 
+            {
+                //OK, we need to read from the to validate the version and confirm the eTag.
+                var resultRead = await mClient.ReadGeneric(mDatabaseName, collection, stringKey);
+                if (resultRead.IsSuccess)
+                {
+                    E entityCurrent = mTransform.PersistenceEntitySerializer.Deserializer(resultRead.Content);
 
-            ////We check this in case optimistic locking has been turned on, but old versions don't support this yet.
-            //if (mTransform.Version.SupportsOptimisticLocking && documentRq.Fields.ContainsKey(mTransform.Version.VersionJsonMetadata.Key))
-            //{
-            //    var currentVersionId = documentRq.Fields[mTransform.Version.VersionJsonMetadata.Key];
+                    if (mTransform.Version.EntityVersionAsString(entityCurrent) != jsonHolder.Version)
+                    {
+                        return new PersistenceResponseHolder<E>() { StatusCode = 409, IsSuccess = false, IsTimeout = false, VersionId = jsonHolder.Version };
+                    }
 
-            //    if (currentVersionId != mTransform.Version.EntityVersionAsString(holder.Rq.Entity))
-            //        return new PersistenceResponseHolder<E>() { StatusCode = 409, IsSuccess = false, IsTimeout = false, VersionId = currentVersionId };
+                    eTag = resultRead.ETag;
 
-            //    //Set the new version id on the entity.
-            //    mTransform.Version.EntityVersionUpdate(holder.Rq.Entity);
-            //    jsonHolderUpdate = mTransform.JsonMaker(holder.Rq.Entity);
-            //}
-            //else
-            //    jsonHolderUpdate = jsonHolder;
+                    ////&& holder.Rq.Fields.ContainsKey(mTransform.Version.VersionJsonMetadata.Key))
+                    //var currentVersionId = documentRq.Fields[mTransform.Version.VersionJsonMetadata.Key];
 
-            //var result = await Partition(jsonHolderUpdate.Key).Update(documentRq.DocumentId, jsonHolderUpdate.Json, holder.Rq.Timeout, eTag: eTag);
+                    //if (currentVersionId != mTransform.Version.EntityVersionAsString(holder.Rq.Entity))
+                    //    return new PersistenceResponseHolder<E>() { StatusCode = 409, IsSuccess = false, IsTimeout = false, VersionId = currentVersionId };
 
-            //if (result.IsSuccess && mTransform.Version.SupportsArchiving)
-            //{
-            //    //mCollection.Create(documentRq.DocumentId, jsonHolder.Json, rq.Timeout).Result;
-            //}
+                    //Set the new version id on the entity.
+                    mTransform.Version.EntityVersionUpdate(holder.Rq.Entity);
+                    jsonHolder = mTransform.JsonMaker(holder.Rq.Entity);
+                }
+            }
 
-            return PersistenceResponseFormat(null);
+            var result = await mClient.UpdateGeneric(jsonHolder.Json, mDatabaseName, collection, stringKey, eTag);
+
+            if (result.IsSuccess && mTransform.Version.SupportsArchiving)
+            {
+                //mCollection.Create(documentRq.DocumentId, jsonHolder.Json, rq.Timeout).Result;
+            }
+
+            return PersistenceResponseFormat(result);
         }
         #endregion
         #region InternalDelete

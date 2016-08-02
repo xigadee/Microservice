@@ -208,8 +208,8 @@ namespace Xigadee
 
                     if (rs.Response.Headers.Contains("x-ms-request-charge"))
                     {
-                        long charge;
-                        if (long.TryParse(rs.Response.Headers.GetValues("x-ms-request-charge").FirstOrDefault(), out charge))
+                        double charge;
+                        if (double.TryParse(rs.Response.Headers.GetValues("x-ms-request-charge").FirstOrDefault(), out charge))
                             rs.ResourceCharge = charge;
                     }
 

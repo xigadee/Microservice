@@ -20,8 +20,7 @@ namespace Xigadee
 
         public static async Task<ResponseHolder> CreateGeneric(this DocumentClient client, string json, string nameDatabase, string nameCollection)
         {
-
-            return await DocDbExceptionWrapper(async e => 
+            return await DocDbExceptionWrapper(async e =>
             {
 
                 ResourceResponse<Document> resultDocDb = null;
@@ -36,9 +35,9 @@ namespace Xigadee
                 e.StatusCode = (int)resultDocDb.StatusCode;
                 e.Content = resultDocDb.Resource.ToString();
                 e.ETag = resultDocDb.Resource.ETag;
+                e.ResourceCharge = resultDocDb.RequestCharge;
             }
             );
-
         }
 
         public static async Task<ResponseHolder> ReadGeneric(this DocumentClient client, string nameDatabase, string nameCollection, string nameId)
@@ -53,7 +52,46 @@ namespace Xigadee
                 e.StatusCode = (int)resultDocDb.StatusCode;
                 e.Content = resultDocDb.Resource.ToString();
                 e.ETag = resultDocDb.Resource.ETag;
+                e.ResourceCharge = resultDocDb.RequestCharge;
             });
+        }
+
+        public static async Task<ResponseHolder> UpdateGeneric(this DocumentClient client, string json, string nameDatabase, string nameCollection, string nameId
+            , string eTag = null)
+        {
+            return await DocDbExceptionWrapper(async e =>
+            {
+                ResourceResponse<Document> resultDocDb = null;
+
+                using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+                {
+                    var doc = Document.LoadFrom<Document>(ms);
+                    var uri = UriFactory.CreateDocumentCollectionUri(nameDatabase, nameCollection);
+                    //var uri = UriFactory.CreateDocumentUri(nameDatabase, nameCollection, nameId);
+                    resultDocDb = await client.UpsertDocumentAsync(uri, doc, disableAutomaticIdGeneration: true, options: ETagOptions(eTag));
+
+                }
+
+                e.IsSuccess = true;
+                e.StatusCode = (int)resultDocDb.StatusCode;
+                e.Content = resultDocDb.Resource.ToString();
+                e.ETag = resultDocDb.Resource.ETag;
+                e.ResourceCharge = resultDocDb.RequestCharge;
+            }
+            );
+        }
+
+        private static RequestOptions ETagOptions(string eTag)
+        {
+            if (eTag == null)
+                return null;
+
+
+            var condition = new AccessCondition();
+            condition.Type = AccessConditionType.IfMatch;
+            condition.Condition = eTag;
+
+            return new RequestOptions() { AccessCondition = condition };
         }
 
         public static async Task<ResponseHolder> DeleteGeneric(this DocumentClient client, string nameDatabase, string nameCollection, string nameId)
@@ -66,6 +104,7 @@ namespace Xigadee
 
                 e.IsSuccess = true;
                 e.StatusCode = (int)resultDocDb.StatusCode;
+                e.ResourceCharge = resultDocDb.RequestCharge;
             });
         }
 
@@ -81,6 +120,14 @@ namespace Xigadee
             {
                 response.StatusCode = (int)dex.StatusCode;
                 response.IsSuccess = false;
+
+                if (response.StatusCode == 429)
+                {
+                    response.ThrottleHasWaited = true;
+                    response.ThrottleSuggestedWait = dex.RetryAfter;
+                }
+
+                response.ResourceCharge = dex.RequestCharge;
             }
             catch (Exception ex)
             {

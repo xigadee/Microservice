@@ -42,7 +42,7 @@ namespace Xigadee
 
         public bool ThrottleHasWaited { get; set; }
 
-        public long ResourceCharge { get; set; }
+        public double ResourceCharge { get; set; }
 
         public TimeSpan? ThrottleSuggestedWait { get; set; }
 
