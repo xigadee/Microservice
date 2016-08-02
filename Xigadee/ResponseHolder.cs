@@ -48,7 +48,7 @@ namespace Xigadee
 
         public HttpResponseMessage Response { get; set; }
 
-        public override int StatusCode { get { return (Response != null?(int)Response.StatusCode: 0); } }
+        public override int StatusCode { get { return (Response != null?(int)Response.StatusCode: base.StatusCode); } }
 
         public string DocumentId { get; set; }
 

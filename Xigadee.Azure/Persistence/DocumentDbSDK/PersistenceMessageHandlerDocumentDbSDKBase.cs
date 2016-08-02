@@ -108,17 +108,7 @@ namespace Xigadee
             base.StartInternal();
         }
         #endregion
-        #region Partition(K key)
-        /// <summary>
-        /// This method uses the sharding policy to determine the appropriate collection for the key.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns>Returns the documentDb collection.</returns>
-        protected virtual string Partition(K key)
-        {
-            return mShardingPolicy.Resolve(key);
-        }
-        #endregion
+
 
         #region PersistenceResponseFormat(ResponseHolder result)
         /// <summary>
@@ -145,17 +135,9 @@ namespace Xigadee
         {
             var jsonHolder = mTransform.JsonMaker(holder.Rq.Entity);
 
-            using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(jsonHolder.Json)))
-            {
-                
-                var doc = Document.LoadFrom<Document>(ms);
-                var uri = UriFactory.CreateDocumentCollectionUri(mDatabaseName, Partition(key));
-                var resultDocDb = await mClient.CreateDocumentAsync(uri, doc, disableAutomaticIdGeneration: true);
-            }
-            //mClient.CreateDocumentAsync(
-            //var result2 = await mClient.CreateDocumentAsync(
-            //var result = await Partition(jsonHolder.Key).Create(jsonHolder.Json, holder.Rq.Timeout);
-            return PersistenceResponseFormat(null);
+            var response = await mClient.CreateGeneric(jsonHolder.Json, mDatabaseName, mShardingPolicy.Resolve(key));
+
+            return PersistenceResponseFormat(response);
         }
         #endregion
         #region InternalRead
@@ -166,14 +148,9 @@ namespace Xigadee
         /// <param name="holder"></param>
         protected override async Task<IResponseHolder<E>> InternalRead(K key, PersistenceRequestHolder<K, E> holder)
         {
-            var documentRq = await ResolveDocumentIdByKey(key, holder.Rq.Timeout);
+            var response = await mClient.ReadGeneric(mDatabaseName, mShardingPolicy.Resolve(key), mTransform.KeyStringMaker(key));
 
-            if (!documentRq.IsSuccess)
-                return PersistenceResponseFormat(documentRq);
-            
-            //var result = await Partition(key).Read(documentRq.DocumentId, holder.Rq.Timeout);
-
-            return PersistenceResponseFormat(null);
+            return PersistenceResponseFormat(response);
         }
         #endregion
         #region InternalUpdate
@@ -184,30 +161,30 @@ namespace Xigadee
         /// <param name="holder">The request holder.</param>
         protected override async Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRequestHolder<K, E> holder)
         {
-            //409 Conflict
-            JsonHolder<K> jsonHolder = mTransform.JsonMaker(holder.Rq.Entity);
-            JsonHolder<K> jsonHolderUpdate;
+            ////409 Conflict
+            //JsonHolder<K> jsonHolder = mTransform.JsonMaker(holder.Rq.Entity);
+            //JsonHolder<K> jsonHolderUpdate;
 
-            var documentRq = await ResolveDocumentIdByKey(jsonHolder.Key, holder.Rq.Timeout);
-            if (!documentRq.IsSuccess)
-                return PersistenceResponseFormat(documentRq);
+            //var documentRq = await ResolveDocumentIdByKey(jsonHolder.Key, holder.Rq.Timeout);
+            //if (!documentRq.IsSuccess)
+            //    return PersistenceResponseFormat(documentRq);
 
-            string eTag = documentRq.ETag;
+            //string eTag = documentRq.ETag;
 
-            //We check this in case optimistic locking has been turned on, but old versions don't support this yet.
-            if (mTransform.Version.SupportsOptimisticLocking && documentRq.Fields.ContainsKey(mTransform.Version.VersionJsonMetadata.Key))
-            {
-                var currentVersionId = documentRq.Fields[mTransform.Version.VersionJsonMetadata.Key];
+            ////We check this in case optimistic locking has been turned on, but old versions don't support this yet.
+            //if (mTransform.Version.SupportsOptimisticLocking && documentRq.Fields.ContainsKey(mTransform.Version.VersionJsonMetadata.Key))
+            //{
+            //    var currentVersionId = documentRq.Fields[mTransform.Version.VersionJsonMetadata.Key];
 
-                if (currentVersionId != mTransform.Version.EntityVersionAsString(holder.Rq.Entity))
-                    return new PersistenceResponseHolder<E>() { StatusCode = 409, IsSuccess = false, IsTimeout = false, VersionId = currentVersionId };
+            //    if (currentVersionId != mTransform.Version.EntityVersionAsString(holder.Rq.Entity))
+            //        return new PersistenceResponseHolder<E>() { StatusCode = 409, IsSuccess = false, IsTimeout = false, VersionId = currentVersionId };
 
-                //Set the new version id on the entity.
-                mTransform.Version.EntityVersionUpdate(holder.Rq.Entity);
-                jsonHolderUpdate = mTransform.JsonMaker(holder.Rq.Entity);
-            }
-            else
-                jsonHolderUpdate = jsonHolder;
+            //    //Set the new version id on the entity.
+            //    mTransform.Version.EntityVersionUpdate(holder.Rq.Entity);
+            //    jsonHolderUpdate = mTransform.JsonMaker(holder.Rq.Entity);
+            //}
+            //else
+            //    jsonHolderUpdate = jsonHolder;
 
             //var result = await Partition(jsonHolderUpdate.Key).Update(documentRq.DocumentId, jsonHolderUpdate.Json, holder.Rq.Timeout, eTag: eTag);
 
@@ -230,22 +207,9 @@ namespace Xigadee
         protected override async Task<IResponseHolder> InternalDelete(K key,
             PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            var documentId = await ResolveDocumentIdByKey(holder.Rq.Key, holder.Rq.Timeout);
+            var response = await mClient.DeleteGeneric(mDatabaseName, mShardingPolicy.Resolve(key), mTransform.KeyStringMaker(key));
 
-            if (!documentId.IsSuccess)
-                return PersistenceResponseFormat(documentId);
-
-            string eTag = documentId.ETag;
-            //var result = await Partition(holder.Rq.Key).Delete(documentId.DocumentId, holder.Rq.Timeout, eTag: eTag);
-
-            //if (result.IsSuccess)
-            //{
-            //    //Switch the content over so that we can return the contentId and versionId.
-            //    result.Content = documentId.Content;
-            //    result.ETag = documentId.ETag;
-            //}
-
-            return PersistenceResponseFormat(null);
+            return PersistenceResponseFormat(response);
         }
         #endregion
         #region InternalVersion
@@ -258,38 +222,12 @@ namespace Xigadee
         /// <param name="prs">The outgoing payload.</param>
         protected override async Task<IResponseHolder> InternalVersion(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            var documentId = await ResolveDocumentIdByKey(holder.Rq.Key, holder.Rq.Timeout);
+            var response = await mClient.ReadGeneric(mDatabaseName, mShardingPolicy.Resolve(key), mTransform.KeyStringMaker(key));
 
-            if (!documentId.IsSuccess)
-                return PersistenceResponseFormat(documentId);
-
-            //var result = await Partition(holder.Rq.Key).Read(documentId.DocumentId, holder.Rq.Timeout);
-
-            return PersistenceResponseFormat(null);
+            return PersistenceResponseFormat(response);
         }
         #endregion
 
-        #region ResolveDocumentIdByKey(K key)
-        /// <summary>
-        /// This method resolves an entity id against the internal DocumentDb _rid value.
-        /// </summary>
-        /// <param name="key">The key to resolve.</param>
-        /// <param name="timeout"></param>
-        /// <returns>Returns the _rid value.</returns>
-        protected virtual async Task<ResponseHolder> ResolveDocumentIdByKey(K key, TimeSpan? timeout = null)
-        {
-            string id = mTransform.KeyStringMaker(key);
-
-            var extractions = new List<KeyValuePair<string, string>>();
-            extractions.Add(mTransform.JsonMetadata_EntityType);
-            if (mTransform.Version.SupportsVersioning)
-                extractions.Add(mTransform.Version.VersionJsonMetadata);
-
-            //var result = await Partition(key).ResolveDocumentId(id, timeout: timeout, extractionJPaths: extractions);
-
-            return null;//result;
-        }
-        #endregion
 
         protected override void ProcessOutputKey(PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
             IResponseHolder holderResponse)
