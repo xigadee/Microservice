@@ -60,6 +60,8 @@ namespace Xigadee
     }
     #endregion
 
+
+
     /// <summary>
     /// This is the REST based documentDb persistence handler class.
     /// </summary>
