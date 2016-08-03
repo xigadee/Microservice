@@ -298,12 +298,12 @@ namespace Xigadee
         /// <param name="prs">The outgoing payload.</param>
         protected override async Task<IResponseHolder> InternalVersion(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            var documentId = await ResolveDocumentIdByKey(holder.Rq.Key, holder.Rq.Timeout);
+            var documentId = await ResolveDocumentIdByKey(key, holder.Rq.Timeout);
 
             if (!documentId.IsSuccess)
                 return PersistenceResponseFormat(documentId);
 
-            var result = await Partition(holder.Rq.Key).Read(documentId.DocumentId, holder.Rq.Timeout);
+            var result = await Partition(key).Read(documentId.DocumentId, holder.Rq.Timeout);
 
             return PersistenceResponseFormat(result);
         }

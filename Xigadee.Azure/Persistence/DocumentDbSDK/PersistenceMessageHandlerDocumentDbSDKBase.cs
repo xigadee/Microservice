@@ -109,7 +109,6 @@ namespace Xigadee
         }
         #endregion
 
-
         #region PersistenceResponseFormat(ResponseHolder result)
         /// <summary>
         /// This method sets the response holder based on the results holder.
@@ -119,9 +118,14 @@ namespace Xigadee
         private PersistenceResponseHolder<E> PersistenceResponseFormat(ResponseHolder result)
         {
             if (result.IsSuccess)
-                return new PersistenceResponseHolder<E>() { StatusCode = result.StatusCode, Content = result.Content, IsSuccess = true, Entity = mTransform.PersistenceEntitySerializer.Deserializer(result.Content) };
+            {
+                if (result.Content != null)
+                    return new PersistenceResponseHolder<E>() { Id = result.Id, StatusCode = result.StatusCode, Content = result.Content, IsSuccess = true, Entity = mTransform.PersistenceEntitySerializer.Deserializer(result.Content), VersionId = result.VersionId };
+                else
+                    return new PersistenceResponseHolder<E>() { Id = result.Id, StatusCode = result.StatusCode, IsSuccess = true, VersionId = result.VersionId };
+            }
             else
-                return new PersistenceResponseHolder<E>() { StatusCode = result.IsTimeout ? 504 : result.StatusCode, IsSuccess = false, IsTimeout = result.IsTimeout };
+                return new PersistenceResponseHolder<E>() { Id = result.Id, StatusCode = result.IsTimeout ? 504 : result.StatusCode, IsSuccess = false, IsTimeout = result.IsTimeout };
         }
         #endregion
 
@@ -148,7 +152,9 @@ namespace Xigadee
         /// <param name="holder"></param>
         protected override async Task<IResponseHolder<E>> InternalRead(K key, PersistenceRequestHolder<K, E> holder)
         {
-            var response = await mClient.ReadGeneric(mDatabaseName, mShardingPolicy.Resolve(key), mTransform.KeyStringMaker(key));
+            string stringKey = mTransform.KeyStringMaker(key);
+            var response = await mClient.ReadGeneric(mDatabaseName, mShardingPolicy.Resolve(key), stringKey);
+            response.Id = mTransform.KeySerializer(key);
 
             return PersistenceResponseFormat(response);
         }
@@ -168,34 +174,30 @@ namespace Xigadee
             var jsonHolder = mTransform.JsonMaker(holder.Rq.Entity);
 
             //We check this in case optimistic locking has been turned on, but old versions don't support this yet.
-            if (mTransform.Version.SupportsOptimisticLocking) 
+            if (mTransform.Version.SupportsOptimisticLocking)
             {
                 //OK, we need to read from the to validate the version and confirm the eTag.
                 var resultRead = await mClient.ReadGeneric(mDatabaseName, collection, stringKey);
-                if (resultRead.IsSuccess)
+
+                if (!resultRead.IsSuccess)
+                    return new PersistenceResponseHolder<E>() { StatusCode = resultRead.StatusCode, IsSuccess = false, IsTimeout = false};
+
+                E entityCurrent = mTransform.PersistenceEntitySerializer.Deserializer(resultRead.Content);
+
+                if (mTransform.Version.EntityVersionAsString(entityCurrent) != jsonHolder.Version)
                 {
-                    E entityCurrent = mTransform.PersistenceEntitySerializer.Deserializer(resultRead.Content);
-
-                    if (mTransform.Version.EntityVersionAsString(entityCurrent) != jsonHolder.Version)
-                    {
-                        return new PersistenceResponseHolder<E>() { StatusCode = 409, IsSuccess = false, IsTimeout = false, VersionId = jsonHolder.Version };
-                    }
-
-                    eTag = resultRead.ETag;
-
-                    ////&& holder.Rq.Fields.ContainsKey(mTransform.Version.VersionJsonMetadata.Key))
-                    //var currentVersionId = documentRq.Fields[mTransform.Version.VersionJsonMetadata.Key];
-
-                    //if (currentVersionId != mTransform.Version.EntityVersionAsString(holder.Rq.Entity))
-                    //    return new PersistenceResponseHolder<E>() { StatusCode = 409, IsSuccess = false, IsTimeout = false, VersionId = currentVersionId };
-
-                    //Set the new version id on the entity.
-                    mTransform.Version.EntityVersionUpdate(holder.Rq.Entity);
-                    jsonHolder = mTransform.JsonMaker(holder.Rq.Entity);
+                    return new PersistenceResponseHolder<E>() { StatusCode = 409, IsSuccess = false, IsTimeout = false, VersionId = jsonHolder.Version };
                 }
+
+                eTag = resultRead.ETag;
+
+                //Set the new version id on the entity.
+                mTransform.Version.EntityVersionUpdate(holder.Rq.Entity);
+
+                jsonHolder = mTransform.JsonMaker(holder.Rq.Entity);
             }
 
-            var result = await mClient.UpdateGeneric(jsonHolder.Json, mDatabaseName, collection, stringKey, eTag);
+            var result = await mClient.UpdateGeneric(jsonHolder.Json, mDatabaseName, collection, eTag);
 
             if (result.IsSuccess && mTransform.Version.SupportsArchiving)
             {
@@ -216,7 +218,9 @@ namespace Xigadee
         protected override async Task<IResponseHolder> InternalDelete(K key,
             PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            var response = await mClient.DeleteGeneric(mDatabaseName, mShardingPolicy.Resolve(key), mTransform.KeyStringMaker(key));
+            string stringKey = mTransform.KeyStringMaker(key);
+            var response = await mClient.DeleteGeneric(mDatabaseName, mShardingPolicy.Resolve(key), stringKey);
+            response.Id = mTransform.KeySerializer(key);
 
             return PersistenceResponseFormat(response);
         }
@@ -231,7 +235,9 @@ namespace Xigadee
         /// <param name="prs">The outgoing payload.</param>
         protected override async Task<IResponseHolder> InternalVersion(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            var response = await mClient.ReadGeneric(mDatabaseName, mShardingPolicy.Resolve(key), mTransform.KeyStringMaker(key));
+            string stringKey = mTransform.KeyStringMaker(key);
+            var response = await mClient.ReadGeneric(mDatabaseName, mShardingPolicy.Resolve(key), stringKey);
+            response.Id = mTransform.KeySerializer(key);       
 
             return PersistenceResponseFormat(response);
         }

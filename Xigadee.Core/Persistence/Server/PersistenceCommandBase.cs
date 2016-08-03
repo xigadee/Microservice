@@ -773,7 +773,12 @@ namespace Xigadee
 
             if (result == null || !result.IsSuccess)
             {
-                result = await InternalVersion(holder.Rq.Key, holder);
+                if (mTransform.Version == null)
+                    //If we don't set a version maker then how can we return the version.
+                    result = new PersistenceResponseHolder(PersistenceResponse.NotImplemented501) { IsSuccess = false };
+                else
+                    result = await InternalVersion(holder.Rq.Key, holder);
+
                 if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
                     mCacheManager.WriteVersion(mTransform, holder.Rq.Key, result.VersionId);
             }
@@ -824,7 +829,6 @@ namespace Xigadee
             holder.Rs.ResponseMessage = "Search is not implemented.";
         }
         #endregion
-
         #region History
         /// <summary>
         /// This is the entity history.

@@ -14,7 +14,11 @@ namespace Xigadee
 
         public static DocumentClient ToDocumentClient(this DocumentDbConnection conn, ConnectionPolicy policy = null, ConsistencyLevel? level = null)
         {
-            return new DocumentClient(conn.Account, conn.AccountKey, policy??ConnectionPolicy.Default, level);
+            return new DocumentClient(conn.Account, conn.AccountKey, policy?? new ConnectionPolicy
+            {
+                ConnectionMode = ConnectionMode.Direct,
+                ConnectionProtocol = Protocol.Tcp
+            }, level);
         }
 
 
@@ -56,8 +60,7 @@ namespace Xigadee
             });
         }
 
-        public static async Task<ResponseHolder> UpdateGeneric(this DocumentClient client, string json, string nameDatabase, string nameCollection, string nameId
-            , string eTag = null)
+        public static async Task<ResponseHolder> UpdateGeneric(this DocumentClient client, string json, string nameDatabase, string nameCollection, string eTag = null)
         {
             return await DocDbExceptionWrapper(async e =>
             {
@@ -67,7 +70,6 @@ namespace Xigadee
                 {
                     var doc = Document.LoadFrom<Document>(ms);
                     var uri = UriFactory.CreateDocumentCollectionUri(nameDatabase, nameCollection);
-                    //var uri = UriFactory.CreateDocumentUri(nameDatabase, nameCollection, nameId);
                     resultDocDb = await client.UpsertDocumentAsync(uri, doc, disableAutomaticIdGeneration: true, options: ETagOptions(eTag));
 
                 }
