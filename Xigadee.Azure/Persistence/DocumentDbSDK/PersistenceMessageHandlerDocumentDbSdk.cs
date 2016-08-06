@@ -64,7 +64,6 @@ namespace Xigadee
     }
     #endregion
 
-
     /// <summary>
     /// This persistence handler uses Azure Blob storage as its underlying storage mechanism.
     /// </summary>
@@ -127,6 +126,7 @@ namespace Xigadee
         }
         #endregion
 
+        #region CreateDatabase()
         /// <summary>
         /// This method will create the database on the server.
         /// </summary>
@@ -145,7 +145,11 @@ namespace Xigadee
                 }
             }
         }
-
+        #endregion
+        #region CreateCollections()
+        /// <summary>
+        /// This method creates the appropriate collections based on the sharding policy.
+        /// </summary>
         protected override void CreateCollections()
         {
             var uri = UriFactory.CreateDatabaseUri(mDatabaseName);
@@ -164,7 +168,8 @@ namespace Xigadee
                     }
                 }
             }
-        }
+        } 
+        #endregion
 
         #region InternalCreate
         /// <summary>
