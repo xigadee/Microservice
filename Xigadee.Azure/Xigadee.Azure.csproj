@@ -191,7 +191,7 @@
     <Compile Include="Logger\AzureStorageLogger.cs" />
     <Compile Include="Logger\AzureStorageLoggingBase.cs" />
     <Compile Include="Persistence\BlobStorage\PersistenceMessageHandlerAzureBlobStorageBase.cs" />
-    <Compile Include="Persistence\DocumentDbSDK\PersistenceMessageHandlerDocumentDbSDKBase.cs" />
+    <Compile Include="Persistence\DocumentDbSDK\PersistenceMessageHandlerDocumentDbSdk.cs" />
     <Compile Include="Persistence\BlobStorage\StorageResponseHolder.cs" />
     <Compile Include="Persistence\RedisCache\PersistenceMessageHandlerRedisCache.cs" />
     <Compile Include="Persistence\RedisCache\RedisCacheManager.cs" />

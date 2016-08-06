@@ -4,7 +4,7 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    public class PersistenceMondayMorningBluesDocDbSdk: PersistenceMessageHandlerDocumentDbSdk<Guid, MondayMorningBlues, PersistenceStatistics, PersistenceCommandPolicy>
+    public class PersistenceMondayMorningBluesDocDbSdk: PersistenceMessageHandlerDocumentDbSdk<Guid, MondayMorningBlues>
     {
         public PersistenceMondayMorningBluesDocDbSdk(DocumentDbConnection connection, string name
             , VersionPolicy<MondayMorningBlues> versionPolicy = null

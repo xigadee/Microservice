@@ -13,8 +13,6 @@ namespace Xigadee
         where K : IEquatable<K>
     {
         #region Declarations
-        private string mCollectionBase;
-        private int mCount;
         private Func<K, int> mFnPartition;
         private Func<int, string> mFnPartitionNameMap;
         private Dictionary<int, string> mPartitionCache;
@@ -33,12 +31,13 @@ namespace Xigadee
             if (fnPartition == null)
                 throw new ArgumentNullException("fnPartition");
             if (partitionCount <= 0)
-                throw new ArgumentOutOfRangeException("partitionCount");
+                throw new ArgumentOutOfRangeException("partitionCount must be greater than 0.");
 
-            mCollectionBase = collectionBase;
-            mCount = partitionCount;
+            CollectionBase = collectionBase;
+            PartitionCount = partitionCount;
+
             mFnPartition = fnPartition;
-            mFnPartitionNameMap = fnPartitionNameMap ?? ((i) => string.Format("{0}{1}", mCollectionBase, i));
+            mFnPartitionNameMap = fnPartitionNameMap ?? ((i) => string.Format("{0}{1}", CollectionBase, i));
 
             //Build the partition cache.
             mPartitionCache = new Dictionary<int, string>();
@@ -58,13 +57,27 @@ namespace Xigadee
         public virtual string Resolve(K key)
         {
             int partition = mFnPartition(key);
-            if (partition < 0 || partition >= mCount)
-                throw new ArgumentOutOfRangeException(string.Format("ShardingPolicy: the partition function has produced an invalid value {0} for key \"{1}\" - maximum allowed is {2}", partition, key.ToString(), mCount));
+
+            if (partition < 0 || partition >= PartitionCount)
+                throw new ArgumentOutOfRangeException(string.Format("ShardingPolicy: the partition function has produced an invalid value {0} for key \"{1}\" - maximum allowed is {2}", partition, key.ToString(), PartitionCount));
 
             return mPartitionCache[partition];
         }
         #endregion
 
+        #region CollectionBase
+        /// <summary>
+        /// This is the base name for the collection.
+        /// </summary>
+        public string CollectionBase { get; } 
+        #endregion
+
+        #region PartitionCount
+        /// <summary>
+        /// This is the number of partitions for the collection.
+        /// </summary>
+        public int PartitionCount { get; } 
+        #endregion
         #region Collections
         /// <summary>
         /// This method returns the partition collection list and is used to create the necessary documentDb collections

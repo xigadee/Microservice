@@ -154,6 +154,7 @@
     <Compile Include="Persistence\Cache\EntityCacheReferenceTypeValueKey.cs" />
     <Compile Include="Persistence\Client\PersistenceMessageInitiator.cs" />
     <Compile Include="Persistence\EntityActions.cs" />
+    <Compile Include="Persistence\Server\DocumentDb\DocumentDbPersistenceCommandPolicy.cs" />
     <Compile Include="Persistence\Server\DocumentDb\PersistenceManagerHandlerDocumentDbBase.cs" />
     <Compile Include="Persistence\Server\EntitySerializer.cs" />
     <Compile Include="Persistence\Server\EntityTransformHolder.cs" />

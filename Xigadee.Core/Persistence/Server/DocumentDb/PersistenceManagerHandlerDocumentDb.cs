@@ -61,14 +61,13 @@ namespace Xigadee
     #endregion
 
 
-
     /// <summary>
     /// This is the REST based documentDb persistence handler class.
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
     /// <typeparam name="S">The statistics class.</typeparam>
-    public class PersistenceManagerHandlerDocumentDb<K, E, S> : PersistenceManagerHandlerJsonBase<K, E, S, PersistenceCommandPolicy>
+    public class PersistenceManagerHandlerDocumentDb<K, E, S>: PersistenceManagerHandlerJsonBase<K, E, S, DocumentDbPersistenceCommandPolicy>
         where K : IEquatable<K>
         where S : PersistenceStatistics, new()
     {
@@ -123,7 +122,7 @@ namespace Xigadee
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             , Func<K, string> keySerializer = null
             )
-            : base( entityName: entityName
+            : base(entityName: entityName
                   , versionPolicy: versionPolicy
                   , defaultTimeout: defaultTimeout
                   , persistenceRetryPolicy: persistenceRetryPolicy
@@ -138,7 +137,7 @@ namespace Xigadee
             mConnection = connection;
             mDatabaseName = database;
             mCollectionName = databaseCollection ?? typeof(E).Name;
-            mShardingPolicy = shardingPolicy??new ShardingPolicy<K>(mCollectionName, (k) => 0, 1, (i) => mCollectionName);
+            mShardingPolicy = shardingPolicy ?? new ShardingPolicy<K>(mCollectionName, (k) => 0, 1, (i) => mCollectionName);
         }
         #endregion
 
@@ -155,8 +154,9 @@ namespace Xigadee
             }
 
             base.StartInternal();
-       }
+        }
         #endregion
+
         #region Partition(K key)
         /// <summary>
         /// This method uses the sharding policy to determine the appropriate collection for the key.
@@ -242,7 +242,7 @@ namespace Xigadee
                 var currentVersionId = documentRq.Fields[mTransform.Version.VersionJsonMetadata.Key];
 
                 if (currentVersionId != mTransform.Version.EntityVersionAsString(holder.Rq.Entity))
-                    return new PersistenceResponseHolder<E>() { StatusCode = 409, IsSuccess = false, IsTimeout = false, VersionId = currentVersionId};
+                    return new PersistenceResponseHolder<E>() { StatusCode = 409, IsSuccess = false, IsTimeout = false, VersionId = currentVersionId };
 
                 //Set the new version id on the entity.
                 mTransform.Version.EntityVersionUpdate(holder.Rq.Entity);
@@ -333,7 +333,7 @@ namespace Xigadee
         }
         #endregion
 
-        protected override void ProcessOutputKey(PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs, 
+        protected override void ProcessOutputKey(PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
             IResponseHolder holderResponse)
         {
             if (holderResponse.IsSuccess)
@@ -350,7 +350,7 @@ namespace Xigadee
                 }
             }
 
-            base.ProcessOutputKey(rq,rs, holderResponse);
+            base.ProcessOutputKey(rq, rs, holderResponse);
         }
 
         #region TimeoutCorrect
@@ -361,7 +361,7 @@ namespace Xigadee
                 return false;
 
             var jsonHolder = mTransform.JsonMaker(holder.Rq.Entity);
-            var request = new PersistenceRepositoryHolder<K, E> {Key = jsonHolder.Key, Timeout = holder.Rq.Timeout};
+            var request = new PersistenceRepositoryHolder<K, E> { Key = jsonHolder.Key, Timeout = holder.Rq.Timeout };
             var response = new PersistenceRepositoryHolder<K, E>();
 
             if (!(await RetrieveEntity(holder, ProcessRead)))
@@ -383,7 +383,7 @@ namespace Xigadee
             var alternateHolder = new PersistenceRequestHolder<K, E>(holder.ProfileId, holder.Prq, holder.Prs);
             alternateHolder.Rq = new PersistenceRepositoryHolder<K, E> { Key = holder.Rq.Key, KeyReference = holder.Rq.KeyReference, Timeout = holder.Rq.Timeout };
             alternateHolder.Rs = new PersistenceRepositoryHolder<K, E>();
-            
+
             bool byref = alternateHolder.Rq.KeyReference != null && !string.IsNullOrEmpty(alternateHolder.Rq.KeyReference.Item2);
 
             bool result;
@@ -444,6 +444,7 @@ namespace Xigadee
 
             return false;
         }
+        #endregion
+
     }
-    #endregion
 }

@@ -9,39 +9,77 @@ using Microsoft.Azure.Documents.Client;
 #endregion
 namespace Xigadee
 {
+    #region PersistenceMessageHandlerDocumentDbSdk<K, E>
+    /// <summary>
+    /// This is the naitve documentDb persistence handler class.
+    /// </summary>
+    /// <typeparam name="K">The key type.</typeparam>
+    /// <typeparam name="E">The entity type.</typeparam>
+    public class PersistenceMessageHandlerDocumentDbSdk<K, E>: PersistenceMessageHandlerDocumentDbSdk<K, E, PersistenceStatistics, DocumentDbPersistenceCommandPolicy>
+        where K : IEquatable<K>
+    {
+        #region Constructor
+        /// <summary>
+        /// This is the document db persistence agent.
+        /// </summary>
+        /// <param name="connection">The documentDb connection.</param>
+        /// <param name="database">The is the databaseId name. If the Db does not exist it will be created.</param>
+        /// <param name="keyMaker">This function creates a key of type K from an entity of type E</param>
+        /// <param name="databaseCollection">The is the collection name. If the collection does it exist it will be created. This will be used by the sharding policy to create multiple collections.</param>
+        /// <param name="entityName">The entity name to be used in the collection. By default this will be set through reflection.</param>
+        /// <param name="versionMaker">This function should be set to enforce optimistic locking.</param>
+        /// <param name="defaultTimeout">This is the default timeout period to be used when connecting to documentDb.</param>
+        /// <param name="shardingPolicy">This is sharding policy used to choose the appropriate collection from the key presented.</param>
+        /// <param name="retryPolicy"></param>
+        public PersistenceMessageHandlerDocumentDbSdk(DocumentDbConnection connection
+            , string database
+            , Func<E, K> keyMaker
+            , Func<string, K> keyDeserializer
+            , string databaseCollection = null
+            , ShardingPolicy<K> shardingPolicy = null
+            , string entityName = null
+            , VersionPolicy<E> versionPolicy = null
+            , TimeSpan? defaultTimeout = null
+            , PersistenceRetryPolicy persistenceRetryPolicy = null
+            , ResourceProfile resourceProfile = null
+            , ICacheManager<K, E> cacheManager = null
+            , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
+            , Func<K, string> keySerializer = null
+            )
+            : base(connection, database, keyMaker, keyDeserializer
+                  , databaseCollection: databaseCollection
+                  , shardingPolicy: shardingPolicy
+                  , entityName: entityName
+                  , versionPolicy: versionPolicy
+                  , defaultTimeout: defaultTimeout
+                  , persistenceRetryPolicy: persistenceRetryPolicy
+                  , resourceProfile: resourceProfile
+                  , cacheManager: cacheManager
+                  , referenceMaker: referenceMaker
+                  , keySerializer: keySerializer
+                  )
+        {
+        }
+        #endregion
+    }
+    #endregion
+
+
     /// <summary>
     /// This persistence handler uses Azure Blob storage as its underlying storage mechanism.
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class PersistenceMessageHandlerDocumentDbSdk<K, E, S, P>: PersistenceManagerHandlerJsonBase<K, E, S, P>
+    public class PersistenceMessageHandlerDocumentDbSdk<K, E, S, P>: PersistenceManagerHandlerDocumentDbBase<K, E, S, P>
         where K : IEquatable<K>
         where S : PersistenceStatistics, new()
-        where P : PersistenceCommandPolicy, new()
+        where P : DocumentDbPersistenceCommandPolicy, new()
     {
         #region Declarations
-
+        /// <summary>
+        /// This is the client used to communicate with the DocumentDb service.
+        /// </summary>
         DocumentClient mClient;
-        /// <summary>
-        /// This is the documentDb collection mapper;
-        /// </summary>
-        protected Dictionary<string, CollectionHolder> mHolders;
-        /// <summary>
-        /// This is the connection to documentDb.
-        /// </summary>
-        protected readonly DocumentDbConnection mConnection;
-        /// <summary>
-        /// This is the default documentDb database name.
-        /// </summary>
-        protected readonly string mDatabaseName;
-        /// <summary>
-        /// This is the base documentDb collection naem
-        /// </summary>
-        protected readonly string mCollectionName;
-        /// <summary>
-        /// This sharding policy is used to create the sharded collection.
-        /// </summary>
-        protected ShardingPolicy<K> mShardingPolicy;
         #endregion
         #region Constructor
         /// <summary>
@@ -72,7 +110,8 @@ namespace Xigadee
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             , Func<K, string> keySerializer = null
             )
-            : base( entityName: entityName
+            : base(connection, database, databaseCollection: databaseCollection, shardingPolicy: shardingPolicy
+                  , entityName: entityName
                   , versionPolicy: versionPolicy
                   , defaultTimeout: defaultTimeout
                   , persistenceRetryPolicy: persistenceRetryPolicy
@@ -84,50 +123,48 @@ namespace Xigadee
                   , keyDeserializer: keyDeserializer
                   )
         {
-            mConnection = connection;
-            mDatabaseName = database;
-            mCollectionName = databaseCollection ?? typeof(E).Name;
-            mShardingPolicy = shardingPolicy ?? new ShardingPolicy<K>(mCollectionName, (k) => 0, 1, (i) => mCollectionName);
-
             mClient = connection.ToDocumentClient();
         }
         #endregion
 
-        #region StartInternal()
         /// <summary>
-        /// This override creates the document db databaseId and collection if they don't already exist.
+        /// This method will create the database on the server.
         /// </summary>
-        protected override void StartInternal()
+        protected override void CreateDatabase()
         {
-            mHolders = new Dictionary<string, CollectionHolder>();
+            try
+            {
+                var db = mClient.CreateDatabaseAsync(new Microsoft.Azure.Documents.Database { Id = mDatabaseName }).Result;
+            }
+            catch (Exception ex)
+            {
+                var inEx = ex.InnerException as DocumentClientException;
+                if (inEx == null || inEx.StatusCode != System.Net.HttpStatusCode.Conflict)
+                {
+                    throw;
+                }
+            }
+        }
+
+        protected override void CreateCollections()
+        {
+            var uri = UriFactory.CreateDatabaseUri(mDatabaseName);
             foreach (var collection in mShardingPolicy.Collections)
             {
-                mHolders.Add(collection, mConnection.ToCollectionHolder(mDatabaseName, collection, mPolicy.DefaultTimeout, true));
+                try
+                {
+                    var coll = mClient.CreateDocumentCollectionAsync(uri, new DocumentCollection { Id = collection }).Result;
+                }
+                catch (Exception ex)
+                {
+                    var inEx = ex.InnerException as DocumentClientException;
+                    if (inEx == null || inEx.StatusCode != System.Net.HttpStatusCode.Conflict)
+                    {
+                        throw;
+                    }
+                }
             }
-
-            base.StartInternal();
         }
-        #endregion
-
-        #region PersistenceResponseFormat(ResponseHolder result)
-        /// <summary>
-        /// This method sets the response holder based on the results holder.
-        /// </summary>
-        /// <param name="result">The documentDb result holder.</param>
-        /// <returns>Returns the persistence holder.</returns>
-        private PersistenceResponseHolder<E> PersistenceResponseFormat(ResponseHolder result)
-        {
-            if (result.IsSuccess)
-            {
-                if (result.Content != null)
-                    return new PersistenceResponseHolder<E>() { Id = result.Id, StatusCode = result.StatusCode, Content = result.Content, IsSuccess = true, Entity = mTransform.PersistenceEntitySerializer.Deserializer(result.Content), VersionId = result.VersionId };
-                else
-                    return new PersistenceResponseHolder<E>() { Id = result.Id, StatusCode = result.StatusCode, IsSuccess = true, VersionId = result.VersionId };
-            }
-            else
-                return new PersistenceResponseHolder<E>() { Id = result.Id, StatusCode = result.IsTimeout ? 504 : result.StatusCode, IsSuccess = false, IsTimeout = result.IsTimeout };
-        }
-        #endregion
 
         #region InternalCreate
         /// <summary>
@@ -243,6 +280,25 @@ namespace Xigadee
         }
         #endregion
 
+        #region PersistenceResponseFormat(ResponseHolder result)
+        /// <summary>
+        /// This method sets the response holder based on the results holder.
+        /// </summary>
+        /// <param name="result">The documentDb result holder.</param>
+        /// <returns>Returns the persistence holder.</returns>
+        private PersistenceResponseHolder<E> PersistenceResponseFormat(ResponseHolder result)
+        {
+            if (result.IsSuccess)
+            {
+                if (result.Content != null)
+                    return new PersistenceResponseHolder<E>() { Id = result.Id, StatusCode = result.StatusCode, Content = result.Content, IsSuccess = true, Entity = mTransform.PersistenceEntitySerializer.Deserializer(result.Content), VersionId = result.VersionId };
+                else
+                    return new PersistenceResponseHolder<E>() { Id = result.Id, StatusCode = result.StatusCode, IsSuccess = true, VersionId = result.VersionId };
+            }
+            else
+                return new PersistenceResponseHolder<E>() { Id = result.Id, StatusCode = result.IsTimeout ? 504 : result.StatusCode, IsSuccess = false, IsTimeout = result.IsTimeout };
+        }
+        #endregion
 
         protected override void ProcessOutputKey(PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
             IResponseHolder holderResponse)
@@ -264,98 +320,6 @@ namespace Xigadee
             base.ProcessOutputKey(rq, rs, holderResponse);
         }
 
-        #region TimeoutCorrect
-
-        protected override async Task<bool> TimeoutCorrectCreateUpdate(PersistenceRequestHolder<K, E> holder)
-        {
-            if (holder.Rq.Entity == null)
-                return false;
-
-            var jsonHolder = mTransform.JsonMaker(holder.Rq.Entity);
-            var request = new PersistenceRepositoryHolder<K, E> { Key = jsonHolder.Key, Timeout = holder.Rq.Timeout };
-            var response = new PersistenceRepositoryHolder<K, E>();
-
-            if (!(await RetrieveEntity(holder, ProcessRead)))
-                return false;
-
-            holder.Rs.Entity = response.Entity;
-            holder.Rs.Key = response.Key;
-            holder.Rs.KeyReference = response.KeyReference;
-            holder.Rs.ResponseCode = !mTransform.Version.SupportsVersioning || jsonHolder.Version.Equals(mTransform.Version.EntityVersionAsString(holder.Rs.Entity))
-                ? response.ResponseCode
-                : holder.Rs.ResponseCode;
-
-            return holder.Rs.IsSuccess;
-        }
-
-        protected override async Task<bool> TimeoutCorrectDelete(PersistenceRequestHolder<K, Tuple<K, string>> holder)
-        {
-
-            var alternateHolder = new PersistenceRequestHolder<K, E>(holder.ProfileId, holder.Prq, holder.Prs);
-            alternateHolder.Rq = new PersistenceRepositoryHolder<K, E> { Key = holder.Rq.Key, KeyReference = holder.Rq.KeyReference, Timeout = holder.Rq.Timeout };
-            alternateHolder.Rs = new PersistenceRepositoryHolder<K, E>();
-
-            bool byref = alternateHolder.Rq.KeyReference != null && !string.IsNullOrEmpty(alternateHolder.Rq.KeyReference.Item2);
-
-            bool result;
-            if (byref)
-                result = await RetrieveEntity(alternateHolder, ProcessReadByRef);
-            else
-                result = await RetrieveEntity(alternateHolder, ProcessRead);
-
-            if (result)
-                return false;
-
-            // We should have a 404 response code here. If not send back the one we got otherwise send back 200 OK
-            holder.Rs.Key = alternateHolder.Rs.Key;
-            holder.Rs.KeyReference = alternateHolder.Rs.KeyReference;
-            holder.Rs.ResponseCode = alternateHolder.Rs.ResponseCode != 404 ? alternateHolder.Rs.ResponseCode : 200;
-
-            return holder.Rs.IsSuccess;
-        }
-        #endregion
-        #region RetrieveEntity
-        /// <summary>
-        /// Retrieves an entity using the supplied read action (read or read by ref) using the persistence retry policy
-        /// </summary>
-        /// <param name="rq">Read request</param>
-        /// <param name="rs">Read response</param>
-        /// <param name="m">Transmission request message</param>
-        /// <param name="l">Tranmission response messages</param>
-        /// <param name="readAction">Read action</param>
-        /// <returns></returns>
-        protected virtual async Task<bool> RetrieveEntity(PersistenceRequestHolder<K, E> holder, Func<PersistenceRequestHolder<K, E>, Task> readAction)
-        {
-            int numberOfRetries = 0;
-
-            int maximumRetries = mPolicy.PersistenceRetryPolicy.GetMaximumRetries(holder.Prq);
-
-            while (numberOfRetries < maximumRetries && !holder.Prq.Cancel.IsCancellationRequested)
-            {
-                await readAction(holder);
-
-                if (holder.Rs.Entity != null || holder.Rs.ResponseCode == 404)
-                    return holder.Rs.Entity != null;
-
-                await Task.Delay(mPolicy.PersistenceRetryPolicy.GetDelayBetweenRetries(holder.Prq, numberOfRetries));
-
-                numberOfRetries++;
-            }
-
-            Logger.LogMessage(LoggingLevel.Error
-                , string.Format(
-                    "Unable to retrieve entity after {0} retries, message cancelled({1}) on channel({2}) for request: {3} - response: {4}"
-                    , numberOfRetries
-                    , holder.Prq.Cancel.IsCancellationRequested
-                    , holder.Prq.Message != null ? holder.Prq.Message.ChannelPriority.ToString() : "null"
-                    , holder.Rq
-                    , holder.Rs)
-                , "DocDb"
-                );
-
-            return false;
-        }
-        #endregion
     }
 }
 

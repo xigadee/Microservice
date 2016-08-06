@@ -119,9 +119,9 @@ namespace Xigadee
         protected override async Task<IResponseHolder<E>> InternalCreate(K key, PersistenceRequestHolder<K, E> holder)
         {
             var jsonHolder = mTransform.JsonMaker(holder.Rq.Entity);
-            var blob = Encoding.UTF8.GetBytes(jsonHolder.Json);
 
-            var result = await mStorage.Create(mStorageIdMaker(jsonHolder.Key), blob
+            var result = await mStorage.Create(mStorageIdMaker(jsonHolder.Key)
+                , jsonHolder.ToBlob()
                 , contentType: "application/json; charset=utf-8"
                 , version: jsonHolder.Version, directory: mDirectory);
 
@@ -154,9 +154,9 @@ namespace Xigadee
         protected override async Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRequestHolder<K, E> holder)
         {
             var jsonHolder = mTransform.JsonMaker(holder.Rq.Entity);
-            var blob = Encoding.UTF8.GetBytes(jsonHolder.Json);
 
-            var result = await mStorage.Update(mStorageIdMaker(jsonHolder.Key), blob
+            var result = await mStorage.Update(mStorageIdMaker(jsonHolder.Key)
+                , jsonHolder.ToBlob()
                 , contentType: "application/json; charset=utf-8"
                 , version: jsonHolder.Version, directory: mDirectory);
 

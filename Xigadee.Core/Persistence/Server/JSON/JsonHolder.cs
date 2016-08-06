@@ -1,6 +1,8 @@
 ﻿#region using
 
 #endregion
+using System.Text;
+
 namespace Xigadee
 {
     /// <summary>
@@ -20,6 +22,11 @@ namespace Xigadee
         public string Version { get; set; }
 
         public string Json { get; set; }
+
+        public byte[] ToBlob()
+        {
+            return Json == null?(byte[])null: Encoding.UTF8.GetBytes(Json);
+        }
     }
 
     /// <summary>
