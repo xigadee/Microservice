@@ -21,8 +21,9 @@ namespace Xigadee
             , Func<ConsoleMenu, ConsoleSwitchOption, bool> switched = null
             , Func<ConsoleMenu, ConsoleOption, bool> enabled = null
             , Func<ConsoleMenu, ConsoleOption, string> display = null
+            , string shortcut = null
             )
-            : base(textSwitchedOff, null, childMenu, enabled, display, null)
+            : base(textSwitchedOff, null, childMenu, enabled, display, null, shortcut)
         {
             Action = (m,o) =>
             {

@@ -54,6 +54,12 @@ namespace Xigadee
 
         public ConcurrentBag<ErrorInfo> InfoMessages { get; set; }
 
+        /// <summary>
+        /// This method displays the options on the console page.
+        /// </summary>
+        /// <param name="start">The page start.</param>
+        /// <param name="pageLength">The page length.</param>
+        /// <returns>Returns a list of the disabled options on the page based on their position.</returns>
         private List<int> PaginateOptions(int start, int pageLength)
         {
             List<int> disabled = new List<int>();
@@ -152,7 +158,7 @@ namespace Xigadee
             System.Console.ResetColor();
             System.Console.ForegroundColor = ConsoleColor.Yellow;
 
-            if (pageMax > 1)
+            if (pageMax >= 1)
                 ConsoleHelper.HeaderBar(string.Format("{2} Page {0} of {1} {3}", page + 1, pageMax + 1
                     , page > 0 ? "<" : "-", page < pageMax ? ">" : "-"), character: ' ');
             else
@@ -174,7 +180,7 @@ namespace Xigadee
             mRefresh = true;
         }
 
-        public virtual void Show(object state, int pageLength = 9)
+        public virtual void Show(object state, int pageLength = 9, string shortcut = null)
         {
             State = state;
 
@@ -184,7 +190,7 @@ namespace Xigadee
 
             ConsoleKeyInfo key;
             int page = 0;
-            int pageMax = Options.Count / pageLength;
+            int pageMax = Options.Count / (pageLength + 1);
 
             int info = 0;
 
@@ -198,6 +204,7 @@ namespace Xigadee
                 DisplayHeader();
 
                 var disabled = PaginateOptions(page * pageLength, pageLength);
+
                 System.Console.WriteLine();
 
                 info = DisplayInfoMessages(info);
@@ -260,5 +267,6 @@ namespace Xigadee
             }
             while (true);
         }
+
     }
 }

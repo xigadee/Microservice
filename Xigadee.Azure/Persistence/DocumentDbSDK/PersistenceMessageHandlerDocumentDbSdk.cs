@@ -285,6 +285,17 @@ namespace Xigadee
         }
         #endregion
 
+        /// <summary>
+        /// This is the specific search implementation for the DocumentDb database
+        /// </summary>
+        /// <param name="holder"></param>
+        /// <returns></returns>
+        protected override async Task ProcessSearch(PersistenceRequestHolder<SearchRequest, SearchResponse> holder)
+        {
+            holder.Rs.ResponseCode = (int)PersistenceResponse.NotImplemented501;
+            holder.Rs.ResponseMessage = "Search is not implemented.";
+        }
+
         #region PersistenceResponseFormat(ResponseHolder result)
         /// <summary>
         /// This method sets the response holder based on the results holder.

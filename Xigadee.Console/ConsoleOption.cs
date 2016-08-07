@@ -12,7 +12,6 @@ namespace Xigadee
     /// </summary>
     public class ConsoleOption
     {
-
         #region Constructors
         public ConsoleOption(string text
             , Action<ConsoleMenu, ConsoleOption> action
@@ -20,6 +19,7 @@ namespace Xigadee
             , Func<ConsoleMenu, ConsoleOption, bool> enabled = null
             , Func<ConsoleMenu, ConsoleOption, string> display = null
             , Func<ConsoleMenu, ConsoleOption, bool> selected = null
+            , string shortcut = null
             )
         {
             Action = action;
@@ -28,6 +28,7 @@ namespace Xigadee
             FnDisplay = display;
             FnEnabled = enabled ?? ((m, o) => true);
             FnSelected = selected;
+            Shortcut = shortcut;
         }
 
         public ConsoleOption(string text
@@ -35,8 +36,9 @@ namespace Xigadee
             , Func<ConsoleMenu, ConsoleOption, bool> enabled = null
             , Func<ConsoleMenu, ConsoleOption, string> display = null
             , Func<ConsoleMenu, ConsoleOption, bool> selected = null
+            , string shortcut = null
             )
-            : this(text, null, childMenu, enabled, display, selected)
+            : this(text, null, childMenu, enabled, display, selected, shortcut)
         {
         }
 
@@ -44,11 +46,17 @@ namespace Xigadee
             , Func<ConsoleMenu, ConsoleOption, bool> enabled = null
             , Func<ConsoleMenu, ConsoleOption, string> display = null
             , Func<ConsoleMenu, ConsoleOption, bool> selected = null
+            , string shortcut = null
             )
-            : this(text, null, null, enabled, display, selected)
+            : this(text, null, null, enabled, display, selected, shortcut)
         {
         }
         #endregion
+        /// <summary>
+        /// This is the shorcut action value. This can be used to send simulated key strokes.
+        /// </summary>
+        public string Shortcut { get; set; }
+
         /// <summary>
         /// This is the text displayed in the menu option.
         /// </summary>

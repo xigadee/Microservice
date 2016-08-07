@@ -34,10 +34,10 @@ namespace Test.Xigadee
                 case "blob":
                     c.PersistenceType = PersistenceOptions.Blob;
                     break;
-                case "docdbsdk":
+                case "documentdbsdk":
                     c.PersistenceType = PersistenceOptions.DocumentDbSdk;
                     break;
-                case "docdb":
+                case "documentdb":
                     c.PersistenceType = PersistenceOptions.DocumentDb;
                     break;
                 case "redis":

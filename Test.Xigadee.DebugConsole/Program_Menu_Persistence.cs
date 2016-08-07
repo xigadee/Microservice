@@ -153,6 +153,25 @@ namespace Test.Xigadee
                );
         }
 
+        static ConsoleOption Search(Lazy<IRepositoryAsync<Guid, MondayMorningBlues>> repo)
+        {
+            return new ConsoleOption("Search entity"
+               , (m, o) =>
+               {
+                   var search = new SearchRequest();
+
+                   var result = repo.Value.Search(search,
+                       new RepositorySettings()
+                       {
+                           WaitTime = TimeSpan.FromMinutes(5)
+                       }).Result;
+
+                   PersistenceLog(m, "Search", result.IsSuccess);
+               }
+               , enabled: (m, o) => sServerContext.PersistenceStatus() == 2
+               );
+        }
+
         static ConsoleOption StressTest(Lazy<IRepositoryAsync<Guid, MondayMorningBlues>> repo)
         {
             return new ConsoleOption("Create 100000 entities async"

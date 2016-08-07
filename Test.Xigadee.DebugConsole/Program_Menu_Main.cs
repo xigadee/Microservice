@@ -34,6 +34,7 @@ namespace Test.Xigadee
                         Task.Run(() => sServerContext.Client.Stop());
                         return true;
                     }
+                    ,shortcut: "startclient"
                 )
                 , new ConsoleSwitchOption(
                     "Start WebAPI client", (m, o) =>
@@ -46,6 +47,7 @@ namespace Test.Xigadee
                         MicroserviceWebAPIStop();
                         return true;
                     }
+                    , shortcut: "startapi"
                 )
                 , new ConsoleSwitchOption(
                     "Start server", (m, o) =>
@@ -58,6 +60,7 @@ namespace Test.Xigadee
                         Task.Run(() => sServerContext.Server.Stop());
                         return true;
                     }
+                    , shortcut: "startserver"
                 )
                 , new ConsoleOption("Client Persistence methods"
                     , (m, o) =>
@@ -102,6 +105,7 @@ namespace Test.Xigadee
                 , DeleteByReference(sServerContext.ServerPersistence)
                 , Version(sServerContext.ServerPersistence)
                 , VersionByReference(sServerContext.ServerPersistence)
+                , Search(sServerContext.ServerPersistence)
                 , StressTest(sServerContext.ServerPersistence)
                 , StressCrudTest(sServerContext.ServerPersistence)
                )

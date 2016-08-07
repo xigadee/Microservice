@@ -33,7 +33,7 @@ namespace Test.Xigadee
             sServerContext.EntityVersionid = Guid.NewGuid();
             sServerContext.EntityId = new Guid("414f06b5-7c16-403a-acc5-40d2b18f08a1");
 
-            sMainMenu.Value.Show(args, 9);
+            sMainMenu.Value.Show(args, shortcut:switches.ContainsKey("shortcut")?switches["shortcut"]:null);
         }
 
     }
