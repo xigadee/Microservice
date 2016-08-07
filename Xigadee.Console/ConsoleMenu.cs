@@ -90,6 +90,13 @@ namespace Xigadee
             if (mContextOptions.ConsoleTitle != null)
                 System.Console.Title = mContextOptions.ConsoleTitle;
 
+
+            if (shortcut != null)
+            {
+                var option = mContextOptions.Options.FirstOrDefault((o) => o.Shortcut == shortcut);
+                option.Action?.Invoke(this, option);
+            }
+
             do
             {
                 DisplayHeader();
@@ -100,7 +107,7 @@ namespace Xigadee
 
                 DisplayFooter();
             }
-            while (ProcessKeyPress(shortcut));
+            while (ProcessKeyPress());
         }
         #endregion
 
@@ -109,10 +116,9 @@ namespace Xigadee
         /// This method processes a key press and returns when the screen requires refreshing
         /// </summary>
         /// <returns>Returns true if the escape key has been pressed.</returns>
-        private bool ProcessKeyPress(string shortcut)
+        private bool ProcessKeyPress()
         {
             ConsoleKeyInfo key = new ConsoleKeyInfo();
-
             //Wait for a key press of a refresh flag to be set
             while (true)
             {
