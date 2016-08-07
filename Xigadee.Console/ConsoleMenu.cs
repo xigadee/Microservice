@@ -13,119 +13,234 @@ namespace Xigadee
     /// <summary>
     /// This is the base console menu class
     /// </summary>
-    public class ConsoleMenu
+    public partial class ConsoleMenu
     {
+        /// <summary>
+        /// This is the menu context that holds the current state.
+        /// </summary>
+        protected ConsoleMenuContext mContext;
+
+        /// <summary>
+        /// This is the main constructor for the menu.
+        /// </summary>
+        /// <param name="title">The page title.</param>
+        /// <param name="options">The child options for the menu.</param>
         public ConsoleMenu(
               string title
             , params ConsoleOption[] options
             )
         {
-            Title = title;
-            ConsoleTitle = title;
-            Subtitle = "Please select from the following options";
+            mContext = new ConsoleMenuContext(options);
 
-            EscapeText = "Press escape to exit";
-            EscapeWrapper = true;
+            mContext.Title = title;
+            mContext.ConsoleTitle = title;
+            mContext.Subtitle = "Please select from the following options";
 
-            Indent1 = 3;
-            Indent2 = 6;
+            mContext.EscapeText = "Press escape to exit";
+            mContext.EscapeWrapper = true;
 
-            Options = new List<ConsoleOption>(options);
-            InfoMessages = new ConcurrentBag<ErrorInfo>();
+            mContext.Indent1 = 3;
+            mContext.Indent2 = 6;
         }
 
-        public object State { get; set; }
+        #region AddInfoMessage(string message, bool refresh = false, EventLogEntryType type = EventLogEntryType.Information)
+        /// <summary>
+        /// This method can be called by an external process to update the info messages displayed in the menu.
+        /// </summary>
+        /// <param name="message">The info message</param>
+        /// <param name="refresh">The refresh option flag.</param>
+        /// <param name="type">The log type.</param>
+        public void AddInfoMessage(string message, bool refresh = false, EventLogEntryType type = EventLogEntryType.Information)
+        {
+            mContext.InfoMessages.Add(new ErrorInfo() { Type = type, Message = message });
 
-        public int Indent1 { get; set; }
+            if (refresh)
+                Refresh();
+        }
+        #endregion
 
-        public int Indent2 { get; set; }
+        #region Refresh()
+        /// <summary>
+        /// This method call be called to force a refresh of the display.
+        /// </summary>
+        public virtual void Refresh()
+        {
+            mContext.Refresh = true;
+        } 
+        #endregion
 
-        public string Title { get; set; }
+        /// <summary>
+        /// This method displays the menu on the console application.
+        /// </summary>
+        /// <param name="state">The optional state.</param>
+        /// <param name="pageLength"></param>
+        /// <param name="shortcut"></param>
+        public virtual void Show(object state = null, int pageLength = 9, string shortcut = null)
+        {
+            mContext.State = state;
+            mContext.PageCurrent = 1;
+            mContext.PageSet(pageLength);
 
-        public string ConsoleTitle { get; set; }
+            if (mContext.ConsoleTitle != null)
+                System.Console.Title = mContext.ConsoleTitle;
 
-        public string Subtitle { get; set; }
+            do
+            {
+                DisplayHeader();
 
-        public bool EscapeWrapper { get; set; }
+                DisplayOptions();
 
-        public string EscapeText { get; set; }
+                DisplayInfoMessages();
 
-        public List<ConsoleOption> Options { get; set; }
+                DisplayFooter();
+            }
+            while (ProcessKeyPress(shortcut));
+        }
 
-        public ConcurrentBag<ErrorInfo> InfoMessages { get; set; }
+        /// <summary>
+        /// This method processes a key press and returns when the screen requires refreshing
+        /// </summary>
+        /// <returns>Returns true if the escape key has been pressed.</returns>
+        private bool ProcessKeyPress(string shortcut)
+        {
+            ConsoleKeyInfo key = new ConsoleKeyInfo();
 
+            //Wait for a key press of a refresh flag to be set
+            while (true)
+            {
+                if (Console.KeyAvailable == true)
+                {
+                    key = System.Console.ReadKey(true);
+
+                    if (ProcessKey(key))
+                        break;
+                }
+                else if (mContext.Refresh)
+                {
+                    key = new ConsoleKeyInfo();
+                    mContext.Refresh = false;
+                    break;
+                }
+
+                Thread.Sleep(100);
+            }
+
+            return key.Key != ConsoleKey.Escape;
+        }
+
+        private bool ProcessKey(ConsoleKeyInfo key)
+        {
+            if (key.Key == ConsoleKey.Escape)
+                return true;
+
+            if (key.Key == ConsoleKey.LeftArrow)
+                return mContext.PageDecrement();
+
+            if (key.Key == ConsoleKey.RightArrow)
+                return mContext.PageIncrement();
+
+            if (key.Key == ConsoleKey.UpArrow)
+                return mContext.InfoDecrement();
+
+            if (key.Key == ConsoleKey.DownArrow)
+                return mContext.InfoIncrement();
+
+            //Keys 1 - 9
+            if (key.KeyChar >= 48 && key.KeyChar <= 57)
+            {
+                int optionVal = (int)key.KeyChar - 48;
+
+                var option = mContext.PageOptionSelect(optionVal);
+
+                if (option != null && option.FnEnabled(this, option))
+                {
+                    OptionAction(option);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        #region DisplayHeader()
+        /// <summary>
+        /// This method displays the header on the console.
+        /// </summary>
+        private void DisplayHeader()
+        {
+            ConsoleHelper.Header(mContext.Title);
+
+            System.Console.ForegroundColor = ConsoleColor.Yellow;
+            System.Console.WriteLine();
+            System.Console.Write(new string(' ', mContext.Indent1));
+            System.Console.WriteLine("{0}:", mContext.Subtitle);
+            System.Console.WriteLine();
+        }
+        #endregion
+
+        #region DisplayOptions()
         /// <summary>
         /// This method displays the options on the console page.
         /// </summary>
         /// <param name="start">The page start.</param>
         /// <param name="pageLength">The page length.</param>
         /// <returns>Returns a list of the disabled options on the page based on their position.</returns>
-        private List<int> PaginateOptions(int start, int pageLength)
+        private void DisplayOptions()
         {
-            List<int> disabled = new List<int>();
-
-            int end = Options.Count - start;
-            if (end > pageLength) end = pageLength;
-
-            for (int i = 0; i < end; i++)
+            int pos = 1;
+            for (; pos <= mContext.PageOptionsLength; pos++)
             {
-                var option = Options[start + i];
+                var option = mContext.PageOptionSelect(pos);
+                if (option == null)
+                    break;
+
                 if (option.FnEnabled(this, option))
                     System.Console.ForegroundColor = ConsoleColor.Yellow;
                 else
-                {
-                    disabled.Add(i);
                     System.Console.ForegroundColor = ConsoleColor.DarkYellow;
-                }
 
-                System.Console.Write(new string(' ', Indent2));
-                string display = option.FnDisplay == null? option.Text:option.FnDisplay(this, option);
+                System.Console.Write(new string(' ', mContext.Indent2));
+                string display = option.FnDisplay == null ? option.Text : option.FnDisplay(this, option);
 
                 if (option.FnSelected != null)
-                    display = $"[{(option.FnSelected(this, option)? "x" : " ")}] " + display;
+                    display = $"[{(option.FnSelected(this, option) ? "x" : " ")}] " + display;
 
-                System.Console.WriteLine("{0}. {1}", i + 1, display);
+                System.Console.WriteLine("{0}. {1}", pos, display);
             }
 
-            return disabled;
+            while (pos <= mContext.PageOptionsLength)
+            {
+                System.Console.WriteLine();
+                pos++;
+            }
         }
+        #endregion
 
-        private void DisplayHeader()
+        #region DisplayInfoMessages()
+        /// <summary>
+        /// This method displays the info messages on the console.
+        /// </summary>
+        /// <param name="start">The message start position.</param>
+        /// <returns></returns>
+        private void DisplayInfoMessages()
         {
-            ConsoleHelper.Header(Title);
+            if (mContext.InfoMessages == null || mContext.InfoMessages.Count == 0)
+                return;
 
-            System.Console.ForegroundColor = ConsoleColor.Yellow;
-            System.Console.WriteLine();
-            System.Console.Write(new string(' ', Indent1));
-            System.Console.WriteLine("{0}:", Subtitle);
-            System.Console.WriteLine();
-        }
-
-        public void AddInfoMessage(string message, bool refresh = false, EventLogEntryType type = EventLogEntryType.Information)
-        {
-            InfoMessages.Add(new ErrorInfo(){Type = type, Message = message});
-
-            if (refresh)
-                Refresh();
-        }
-
-        private int DisplayInfoMessages(int start = 0)
-        {
-            if (InfoMessages == null || InfoMessages.Count == 0)
-                return 0;
-
-            var infoArray = InfoMessages.OrderByDescending((i)=>i.Priority).ToList();
+            int start = 0;
+            var infoArray = mContext.InfoMessages.OrderByDescending((i) => i.Priority).ToList();
 
             if (start >= infoArray.Count)
                 start = infoArray.Count - 1;
 
             int end = start + 2;
+
             if (end > infoArray.Count)
                 end = infoArray.Count;
 
-            for (int i = start ; i < end; i++)
+            for (int i = start; i < end; i++)
             {
-                bool showUp = start>0;
+                bool showUp = start > 0;
                 bool showDown = infoArray.Count > start + 2;
 
                 ConsoleColor infoColor;
@@ -145,128 +260,62 @@ namespace Xigadee
                 ConsoleHelper.HeaderBar(infoArray[i].Message, character: ' '
                     , titleColour: infoColor
                     , startChar: showUp && i == start ? (char)8593 : (char?)null
-                    , endChar: showDown && i == end - 1? (char)8595 : (char?)null
+                    , endChar: showDown && i == end - 1 ? (char)8595 : (char?)null
                     );
             }
+
             System.Console.WriteLine();
-
-            return start;
         }
+        #endregion
 
-        private void DisplayFooter(int page, int pageMax)
+        #region DisplayFooter()
+        /// <summary>
+        /// This methdo displays the footer for the console.
+        /// </summary>
+        /// <param name="page">The curent page.</param>
+        /// <param name="pageMax">The maximum number of pages.</param>
+        private void DisplayFooter()
         {
             System.Console.ResetColor();
             System.Console.ForegroundColor = ConsoleColor.Yellow;
 
-            if (pageMax >= 1)
-                ConsoleHelper.HeaderBar(string.Format("{2} Page {0} of {1} {3}", page + 1, pageMax + 1
-                    , page > 0 ? "<" : "-", page < pageMax ? ">" : "-"), character: ' ');
+            if (mContext.PageMax > 1)
+            {
+                ConsoleHelper.HeaderBar(string.Format("{2} Page {0} of {1} {3}"
+                    , mContext.PageCurrent
+                    , mContext.PageMax
+                    , mContext.PageCurrent > 1 ? "<" : "-"
+                    , mContext.PageCurrent < mContext.PageMax ? ">" : "-"
+                    ), character: ' ');
+            }
             else
                 System.Console.WriteLine();
 
-            if (!string.IsNullOrWhiteSpace(EscapeText))
+            if (!string.IsNullOrWhiteSpace(mContext.EscapeText))
             {
-                if (EscapeWrapper) ConsoleHelper.HeaderBar();
-                ConsoleHelper.HeaderBar(EscapeText, character: ' ');
-                if (EscapeWrapper) ConsoleHelper.HeaderBar();
+                if (mContext.EscapeWrapper) ConsoleHelper.HeaderBar();
+                ConsoleHelper.HeaderBar(mContext.EscapeText, character: ' ');
+                if (mContext.EscapeWrapper) ConsoleHelper.HeaderBar();
             }
 
             System.Console.ResetColor();
         }
+        #endregion
 
-        private bool mRefresh = false;
-        public virtual void Refresh()
+        #region OptionAction(ConsoleOption option)
+        /// <summary>
+        /// This method executes the action or selects the menu option.
+        /// </summary>
+        /// <param name="option">The option to execute.</param>
+        /// <param name="pageLength">The page length.</param>
+        protected virtual void OptionAction(ConsoleOption option)
         {
-            mRefresh = true;
-        }
+            option.Action?.Invoke(this, option);
 
-        public virtual void Show(object state, int pageLength = 9, string shortcut = null)
-        {
-            State = state;
-
-            if (pageLength > 9 || pageLength < 1)
-                pageLength = 9;
-
-
-            ConsoleKeyInfo key;
-            int page = 0;
-            int pageMax = Options.Count / (pageLength + 1);
-
-            int info = 0;
-
-            do
-            {
-                int infoMax = InfoMessages.Count;
-
-                if (ConsoleTitle != null)
-                    System.Console.Title = ConsoleTitle;
-
-                DisplayHeader();
-
-                var disabled = PaginateOptions(page * pageLength, pageLength);
-
-                System.Console.WriteLine();
-
-                info = DisplayInfoMessages(info);
-
-                DisplayFooter(page, pageMax);
-
-                while (true)
-                {
-                    if (Console.KeyAvailable == true)
-                    {
-                        key = System.Console.ReadKey(true);
-                        break;
-                    }
-                    else if (mRefresh)
-                    {
-                        key = new ConsoleKeyInfo();
-                        mRefresh = false;
-                        break;
-                    }
-
-                    Thread.Sleep(100);
-                }
-                
-                
-                if (key.Key == ConsoleKey.Escape)
-                    break;
-
-                if (key.Key == ConsoleKey.LeftArrow && page > 0)
-                    page--;
-
-                if (key.Key == ConsoleKey.RightArrow && page < pageMax)
-                    page++;
-
-                if (key.Key == ConsoleKey.UpArrow && info > 0)
-                    info--;
-
-                if (key.Key == ConsoleKey.DownArrow && info < infoMax)
-                    info++;
-
-                if (key.KeyChar >= 48 && key.KeyChar <= 57)
-                {
-                    int optionVal = (int)key.KeyChar - 49;
-
-                    if (disabled.Contains(optionVal))
-                        continue;
-
-                    optionVal += page * pageLength;
-
-                    if (optionVal > Options.Count)
-                        continue;
-
-                    var option = Options[optionVal];
-
-                    if (option.FnEnabled(this, option) && option.Action != null)
-                        option.Action(this, option);
-
-                    if (option.Menu != null)
-                        option.Menu.Show(State, pageLength);
-                }
-            }
-            while (true);
-        }
+            if (option.Menu != null)
+                option.Menu.Show(mContext.State, mContext.PageOptionsLength);
+        } 
+        #endregion
 
     }
 }
