@@ -54,6 +54,8 @@
     <Compile Include="ArgumentsParser.cs" />
     <Compile Include="ConsoleConfigurationBase.cs" />
     <Compile Include="ConsoleHelper.cs" />
+    <Compile Include="Info\ConsoleInfoContext.cs" />
+    <Compile Include="Info\InfoHelper.cs" />
     <Compile Include="Menu\ConsoleMenu.cs" />
     <Compile Include="Menu\ConsoleMenuContext.cs" />
     <Compile Include="Options\ConsoleSwitchOption.cs" />

@@ -47,7 +47,7 @@ namespace Xigadee
         #endregion
 
         /// <summary>
-        /// 
+        /// This boolean switch identifies whether the option has been enabled.
         /// </summary>
         public bool IsSwitchedOn { get; set; }
 
