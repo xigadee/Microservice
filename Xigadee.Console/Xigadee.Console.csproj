@@ -54,10 +54,10 @@
     <Compile Include="ArgumentsParser.cs" />
     <Compile Include="ConsoleConfigurationBase.cs" />
     <Compile Include="ConsoleHelper.cs" />
-    <Compile Include="ConsoleMenu.cs" />
-    <Compile Include="ConsoleMenuContext.cs" />
-    <Compile Include="ConsoleSwitchOption.cs" />
-    <Compile Include="ConsoleOption.cs" />
+    <Compile Include="Menu\ConsoleMenu.cs" />
+    <Compile Include="Menu\ConsoleMenuContext.cs" />
+    <Compile Include="Options\ConsoleSwitchOption.cs" />
+    <Compile Include="Options\ConsoleOption.cs" />
     <Compile Include="ConsoleWriter.cs" />
     <Compile Include="ErrorInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

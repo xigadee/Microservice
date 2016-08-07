@@ -13,13 +13,15 @@ namespace Xigadee
     /// </summary>
     public class MicroserviceStatistics: MessagingStatistics, ILogStoreName
     {
+        #region Constructor
         /// <summary>
         /// This is the statistics default constructor.
         /// </summary>
-        public MicroserviceStatistics():base()
+        public MicroserviceStatistics() : base()
         {
 
-        }
+        } 
+        #endregion
 
         #region Name
         /// <summary>

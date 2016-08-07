@@ -15,13 +15,18 @@ namespace Xigadee
     /// </summary>
     public partial class ConsoleMenu
     {
+        #region Declarations
         /// <summary>
         /// This is the menu context that holds the current state.
         /// </summary>
         protected ConsoleMenuContext mContextOptions;
+        /// <summary>
+        /// This context holds the context info.
+        /// </summary>
+        protected ConsoleInfoContext mContextInfo; 
+        #endregion
 
-        protected ConsoleInfoContext mContextInfo;
-
+        #region Constructor
         /// <summary>
         /// This is the main constructor for the menu.
         /// </summary>
@@ -44,7 +49,8 @@ namespace Xigadee
 
             mContextOptions.Indent1 = 3;
             mContextOptions.Indent2 = 6;
-        }
+        } 
+        #endregion
 
         #region AddInfoMessage(string message, bool refresh = false, EventLogEntryType type = EventLogEntryType.Information)
         /// <summary>
@@ -90,7 +96,7 @@ namespace Xigadee
             if (mContextOptions.ConsoleTitle != null)
                 System.Console.Title = mContextOptions.ConsoleTitle;
 
-
+            //Execute any registered shortcut
             if (shortcut != null)
             {
                 var option = mContextOptions.Options.FirstOrDefault((o) => o.Shortcut == shortcut);
@@ -142,7 +148,6 @@ namespace Xigadee
             return key.Key != ConsoleKey.Escape;
         }
         #endregion
-
         #region ProcessKey(ConsoleKeyInfo key)
         /// <summary>
         /// This method processes the logic for the individual key press.
@@ -202,7 +207,6 @@ namespace Xigadee
             System.Console.WriteLine();
         }
         #endregion
-
         #region DisplayOptions()
         /// <summary>
         /// This method displays the options on the console page.
@@ -240,7 +244,6 @@ namespace Xigadee
             }
         }
         #endregion
-
         #region DisplayInfoMessages()
         /// <summary>
         /// This method displays the info messages on the console.
@@ -291,7 +294,6 @@ namespace Xigadee
             System.Console.WriteLine();
         }
         #endregion
-
         #region DisplayFooter()
         /// <summary>
         /// This methdo displays the footer for the console.
@@ -340,6 +342,5 @@ namespace Xigadee
                 option.Menu.Show(mContextOptions.State, mContextOptions.PageOptionsLength, contextInfo:mContextInfo);
         } 
         #endregion
-
     }
 }
