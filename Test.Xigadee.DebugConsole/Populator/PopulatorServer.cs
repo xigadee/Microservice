@@ -64,7 +64,11 @@ namespace Test.Xigadee
                 , Config.ServiceBusConnection()
                 , Channels.TestA
                 , SenderPartitionConfig.Init(0, 1)));
+        }
 
+        protected override void RegisterLogging()
+        {
+            base.RegisterLogging();
         }
     }
 }

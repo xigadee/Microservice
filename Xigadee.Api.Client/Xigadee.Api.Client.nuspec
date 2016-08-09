@@ -13,7 +13,10 @@
     <releaseNotes>Initial push.</releaseNotes>
     <copyright>Copyright © Information Management Group 2012-2016</copyright>
     <tags>Xigadee Microservice Azure</tags>
-    <dependencies />
+    <dependencies>
+      <dependency id="Newtonsoft.Json" version="9.0.1" />
+      <dependency id="System.IdentityModel.Tokens.Jwt" version="4.0.2.206221351" />
+    </dependencies>
   </metadata>
   <files>
     <file src="bin\Release\Xigadee*.dll" target="lib\net46\" />

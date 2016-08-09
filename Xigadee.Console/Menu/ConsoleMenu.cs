@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This is the base console menu class
+    /// This is the base console menu class.
     /// </summary>
     public partial class ConsoleMenu
     {

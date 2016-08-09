@@ -23,7 +23,7 @@ namespace Xigadee
                 if (start >= infoArray.Count)
                     start = infoArray.Count - 1;
 
-                int end = start + 2;
+                int end = start + count;
 
                 if (end > infoArray.Count)
                     end = infoArray.Count;
@@ -31,7 +31,7 @@ namespace Xigadee
                 for (int i = start; i < end; i++)
                 {
                     bool showUp = start > 0;
-                    bool showDown = infoArray.Count > start + 2;
+                    bool showDown = infoArray.Count > start + count;
 
                     ConsoleColor infoColor;
                     switch (infoArray[i].Type)
