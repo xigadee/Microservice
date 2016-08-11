@@ -39,7 +39,7 @@ namespace Test.Xigadee
                     break;
             }
 
-            sMainMenu.Value.AddInfoMessage(string.Format("{0}={1}", serv.Statistics.Name, e.StatusNew.ToString()), true);
+            sMainMenu.Value.AddInfoMessage(string.Format("{0}={1}", serv.Name, e.StatusNew.ToString()), true);
         }
 
         private static void ServerStopRequested(object sender, StopEventArgs e)
