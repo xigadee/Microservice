@@ -21,27 +21,6 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="M"></typeparam>
     /// <typeparam name="C"></typeparam>
-    public abstract class PopulatorWebApiBase: PopulatorWebApiBase<MicroserviceWebApi>
-    {
-
-    }
-
-    /// <summary>
-    /// This class provides the basic set of method to set up a BFF WebApi layer.
-    /// </summary>
-    /// <typeparam name="M"></typeparam>
-    /// <typeparam name="C"></typeparam>
-    public abstract class PopulatorWebApiBase<M>: PopulatorWebApiBase<M, ConfigWebApi>
-        where M : Microservice, new()
-    {
-
-    }
-
-    /// <summary>
-    /// This class provides the basic set of method to set up a BFF WebApi layer.
-    /// </summary>
-    /// <typeparam name="M"></typeparam>
-    /// <typeparam name="C"></typeparam>
     public abstract class PopulatorWebApiBase<M, C>: PopulatorBase<M, C>
         where M : Microservice, new()
         where C : ConfigWebApi, new()
@@ -52,12 +31,13 @@ namespace Xigadee
         /// <summary>
         /// This constructor creates the Unity container.
         /// </summary>
-        public PopulatorWebApiBase(HttpConfiguration config = null)
+        public PopulatorWebApiBase(HttpConfiguration config = null, Func<string, string, string> resolver = null, bool resolverFirst = true)
         {
             ApiConfig = config ?? new HttpConfiguration();
             mRejectIfServiceNotStartedFilter = new WebApiServiceUnavailableFilter();
             ApiConfig.Filters.Add(mRejectIfServiceNotStartedFilter);
 
+            ConfigInitialise(resolver, resolverFirst);
         }
         #endregion
 

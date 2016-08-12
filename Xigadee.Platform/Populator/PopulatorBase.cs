@@ -14,7 +14,12 @@ namespace Xigadee
         where C : ConfigBase, new()
     {
         #region Declarations
+        /// <summary>
+        /// This list contains the set of resource profiles used in the populator.
+        /// </summary>
         protected IList<ResourceProfile> mResourceProfiles = new List<ResourceProfile>();
+
+        private bool mConfigInitialised = false;
         #endregion
         #region Constructor
         /// <summary>
@@ -117,11 +122,17 @@ namespace Xigadee
         /// <param name="resolverFirst">A boolean property that determines whether the resolver is called first before falling back to the settings classes.</param>
         protected virtual void ConfigInitialise(Func<string, string, string> resolver, bool resolverFirst)
         {
-            Config = new C();
-            if (resolver != null)
+            //We only want to do this once.
+            if (!mConfigInitialised)
             {
-                Config.Resolver = resolver;
-                Config.ResolverFirst = resolverFirst;
+                mConfigInitialised = true;
+
+                Config = new C();
+                if (resolver != null)
+                {
+                    Config.Resolver = resolver;
+                    Config.ResolverFirst = resolverFirst;
+                }
             }
         }
         #endregion
@@ -153,11 +164,15 @@ namespace Xigadee
         } 
         #endregion
 
-
+        /// <summary>
+        /// This shortcut can be used for registering boundary loggers.
+        /// </summary>
         protected virtual void RegisterBoundaryLogger()
         {
         }
-
+        /// <summary>
+        /// This shortcut can be used to register resource profilers.
+        /// </summary>
         protected virtual void RegisterResourceProfiles()
         {
         }

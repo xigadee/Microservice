@@ -29,6 +29,7 @@ namespace Test.Xigadee.Api.Server
             {
                 var Service = new PopulatorWebApi();
 
+                Service.Populate();
                 //config.Formatters.Insert(0, new ByteArrayMediaTypeFormatter()); // Add before any of the default formatters
 
                 //Enable attribute based routing for HTTP verbs.

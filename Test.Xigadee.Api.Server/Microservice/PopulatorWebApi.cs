@@ -28,8 +28,8 @@ namespace Test.Xigadee.Api.Server
 
         public PopulatorWebApi()
         {
+            ConfigInitialise(null, false);
         }
-
 
         protected override void RegisterCommands()
         {
