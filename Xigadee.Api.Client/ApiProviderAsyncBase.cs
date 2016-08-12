@@ -44,16 +44,22 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        public ApiProviderAsyncBase(TransportUriMapper<K> mapper = null, bool useHttps = true, string entityName = null)
+        public ApiProviderAsyncBase(TransportUriMapper<K> uriMapper = null
+            , bool useHttps = true, string entityName = null
+            , IKeyMapper<K> keyMapper = null
+            , TransportSerializer<E> primaryTransport = null)
         {
             // Get the types assembly version to add to the request headers
             mAssemblyVersion = GetType().Assembly.GetName().Version.ToString();
 
-            ResolveKeyMapper();
+            mKeyMapper = keyMapper ?? ResolveKeyMapper();
 
-            ResolveUriMapper(mapper, entityName);
+            mUriMapper = uriMapper ?? ResolveUriMapper(uriMapper, entityName);
 
-            ResolveSerializer();
+            if (entityName != null)
+                EntityName = entityName;
+
+            mPrimaryTransport = primaryTransport ?? ResolveSerializer();
 
             UseHttps = useHttps;
         }
@@ -63,28 +69,26 @@ namespace Xigadee
         /// <summary>
         /// This method resolves the mapper that converts the key in to a format suitable for the Uri request.
         /// </summary>
-        protected virtual void ResolveKeyMapper()
+        protected virtual IKeyMapper<K> ResolveKeyMapper()
         {
-            mKeyMapper = (KeyMapper<K>)KeyMapper.Resolve<K>();
+            return (KeyMapper<K>)KeyMapper.Resolve<K>();
         }
         #endregion
         #region ResolveUriMapper(TransportUriMapper<K> mapper)
         /// <summary>
         /// This method resolves the appropriate transport uri mapper for the request.
         /// </summary>
-        /// <param name="mapper">The mapper passed through the constructor.</param>
-        protected virtual void ResolveUriMapper(TransportUriMapper<K> mapper, string entityName)
+        /// <param name="uriMapper">The mapper passed through the constructor.</param>
+        protected virtual TransportUriMapper<K> ResolveUriMapper(TransportUriMapper<K> uriMapper, string entityName)
         {
-            mUriMapper = mapper ?? new TransportUriMapper<K>(mKeyMapper);
-
-            EntityName = entityName ?? typeof(E).Name;
+            return new TransportUriMapper<K>(mKeyMapper);
         }
         #endregion
         #region ResolveSerializer()
         /// <summary>
         /// This method resolves the specific serializer for the entity transport.
         /// </summary>
-        protected virtual void ResolveSerializer()
+        protected virtual TransportSerializer<E> ResolveSerializer()
         {
             mTransports = TransportSerializer.GetSerializers<E>(GetType()).ToDictionary((s) => s.MediaType.ToLowerInvariant());
 
@@ -95,7 +99,7 @@ namespace Xigadee
                 throw new TransportSerializerResolutionException("The default TransportSerializer cannot be resolved.");
 
             //Get the transport serializer with the highest priority.
-            mPrimaryTransport = mTransports.Values.OrderByDescending((t) => t.Priority).First();
+            return mTransports.Values.OrderByDescending((t) => t.Priority).First();
         } 
         #endregion
 
