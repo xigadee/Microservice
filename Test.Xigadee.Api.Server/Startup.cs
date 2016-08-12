@@ -14,6 +14,7 @@ using System.Web.Routing;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.OAuth;
 using Owin;
+using Swashbuckle.Application;
 using Unity.WebApi;
 using Xigadee;
 
@@ -29,7 +30,6 @@ namespace Test.Xigadee.Api.Server
             {
                 var Service = new PopulatorWebApi();
 
-                Service.Populate();
                 //config.Formatters.Insert(0, new ByteArrayMediaTypeFormatter()); // Add before any of the default formatters
 
                 //Enable attribute based routing for HTTP verbs.
@@ -68,6 +68,15 @@ namespace Test.Xigadee.Api.Server
                     routeTemplate: "v1/OData/OData.svc/{controller}",
                     defaults: new { action = "Search" }, constraints: null, 
                     handler: new HttpMethodChangeHandler(Service.ApiConfig, "SEARCH"));
+
+                // /swagger/ui/index
+                Service.ApiConfig.EnableSwagger(c =>
+                {
+                    c.IncludeXmlComments("docs.XML");
+                    c.Schemes(new[] { "http", "https" });
+                    c.SingleApiVersion("1.0", "Xigadee Test API");
+                })
+                .EnableSwaggerUi();
 
                 Service.Start(app, AzureHelper.Resolver);
 

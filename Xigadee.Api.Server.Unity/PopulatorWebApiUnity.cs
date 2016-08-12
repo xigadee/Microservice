@@ -26,7 +26,8 @@ namespace Xigadee
         /// <summary>
         /// This constructor creates the Unity container.
         /// </summary>
-        public PopulatorWebApiUnity()
+        public PopulatorWebApiUnity(HttpConfiguration config = null, Func<string, string, string> resolver = null, bool resolverFirst = true)
+            :base(config, resolver, resolverFirst)
         {
             //ApiConfig.
             Unity = new UnityContainer();
