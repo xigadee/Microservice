@@ -25,6 +25,7 @@ namespace Xigadee
         where M : Microservice, new()
         where C : ConfigWebApi, new()
     {
+
         protected readonly WebApiServiceUnavailableFilter mRejectIfServiceNotStartedFilter;
 
         #region Constructor

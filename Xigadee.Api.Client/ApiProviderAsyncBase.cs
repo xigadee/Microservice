@@ -44,15 +44,46 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        public ApiProviderAsyncBase(TransportUriMapper<K> mapper = null)
+        public ApiProviderAsyncBase(TransportUriMapper<K> mapper = null, bool useHttps = true, string entityName = null)
+        {
+            // Get the types assembly version to add to the request headers
+            mAssemblyVersion = GetType().Assembly.GetName().Version.ToString();
+            EntityName = entityName ?? typeof(E).Name;
+            UseHttps = useHttps;
+
+            ResolveKeyMapper();
+
+            ResolveUriMapper(mapper);
+
+            ResolveSerializer();
+        }
+        #endregion
+
+        #region ResolveKeyMapper()
+        /// <summary>
+        /// This method resolves the mapper that converts the key in to a format suitable for the Uri request.
+        /// </summary>
+        protected virtual void ResolveKeyMapper()
         {
             mKeyMapper = (KeyMapper<K>)KeyMapper.Resolve<K>();
-
+        }
+        #endregion
+        #region ResolveUriMapper(TransportUriMapper<K> mapper)
+        /// <summary>
+        /// This method resolves the appropriate transport uri mapper for the request.
+        /// </summary>
+        /// <param name="mapper">The mapper passed through the constructor.</param>
+        protected virtual void ResolveUriMapper(TransportUriMapper<K> mapper)
+        {
             mUriMapper = mapper ?? new TransportUriMapper<K>(mKeyMapper);
-
-            EntityName = typeof(E).Name;
-            UseHttps = true;
-
+        }
+        #endregion
+        #region ResolveSerializer()
+        /// <summary>
+        /// This method resolves the specific serializer for the entity transport.
+        /// </summary>
+        protected virtual void ResolveSerializer()
+        {
             mTransports = TransportSerializer.GetSerializers<E>(GetType()).ToDictionary((s) => s.MediaType.ToLowerInvariant());
 
             if (mTransports == null || mTransports.Count == 0)
@@ -63,10 +94,7 @@ namespace Xigadee
 
             //Get the transport serializer with the highest priority.
             mPrimaryTransport = mTransports.Values.OrderByDescending((t) => t.Priority).First();
-
-            // Get the types assembly version to add to the request headers
-            mAssemblyVersion = GetType().Assembly.GetName().Version.ToString();
-        }
+        } 
         #endregion
 
         #region UseHttps
@@ -108,7 +136,7 @@ namespace Xigadee
         /// <param name="entity">The entity to create.</param>
         /// <param name="options">The optional parameters.</param>
         /// <returns>Returns the response with the entity if the request is successful.</returns>
-        public async Task<RepositoryHolder<K, E>> Create(E entity, RepositorySettings options = null)
+        public virtual async Task<RepositoryHolder<K, E>> Create(E entity, RepositorySettings options = null)
         {
             var uri = mUriMapper.MakeUri(HttpMethod.Post);
             using (var content = GetContent(entity))
@@ -125,7 +153,7 @@ namespace Xigadee
         /// <param name="key">The key request.</param>
         /// <param name="options">These are the repository options which define the request type..</param>
         /// <returns>This is the holder containing the response and the entity where necessary.</returns>
-        public async Task<RepositoryHolder<K, E>> Read(K key, RepositorySettings options = null)
+        public virtual async Task<RepositoryHolder<K, E>> Read(K key, RepositorySettings options = null)
         {
             var uri = mUriMapper.MakeUri(HttpMethod.Get, key);
             return await CallClient<K, E>(uri, options, deserializer: DeserializeEntity,
@@ -140,7 +168,7 @@ namespace Xigadee
         /// <param name="refValue">The key value.</param>
         /// <param name="options">These are the repository options which define the request type..</param>
         /// <returns>This is the holder containing the response and the entity where necessary.</returns>
-        public async Task<RepositoryHolder<K, E>> ReadByRef(string refKey, string refValue, RepositorySettings options = null)
+        public virtual async Task<RepositoryHolder<K, E>> ReadByRef(string refKey, string refValue, RepositorySettings options = null)
         {
             var uri = mUriMapper.MakeUri(HttpMethod.Get, refKey, refValue);
             return await CallClient<K, E>(uri, options, deserializer: DeserializeEntity,
@@ -154,7 +182,7 @@ namespace Xigadee
         /// <param name="entity"></param>
         /// <param name="options">These are the repository options which define the request type..</param>
         /// <returns>This is the holder containing the response and the entity where necessary.</returns>
-        public async Task<RepositoryHolder<K, E>> Update(E entity, RepositorySettings options = null)
+        public virtual async Task<RepositoryHolder<K, E>> Update(E entity, RepositorySettings options = null)
         {
             var uri = mUriMapper.MakeUri(HttpMethod.Put);
             using (var content = GetContent(entity))
@@ -171,7 +199,7 @@ namespace Xigadee
         /// <param name="key">The entity unique key.</param>
         /// <param name="options">These are the repository options which define the request type..</param>
         /// <returns>This is the holder containing the response and the entity where necessary.</returns>
-        public async Task<RepositoryHolder<K, Tuple<K, string>>> Delete(K key, RepositorySettings options = null)
+        public virtual async Task<RepositoryHolder<K, Tuple<K, string>>> Delete(K key, RepositorySettings options = null)
         {
             var uri = mUriMapper.MakeUri(HttpMethod.Delete, key);
             return await CallClient<K, Tuple<K, string>>(uri, options,
@@ -186,7 +214,7 @@ namespace Xigadee
         /// <param name="refValue">The key value.</param>
         /// <param name="options">These are the repository options which define the request type..</param>
         /// <returns>This is the holder containing the response and the entity where necessary.</returns>
-        public async Task<RepositoryHolder<K, Tuple<K, string>>> DeleteByRef(string refKey, string refValue, RepositorySettings options = null)
+        public virtual async Task<RepositoryHolder<K, Tuple<K, string>>> DeleteByRef(string refKey, string refValue, RepositorySettings options = null)
         {
             var uri = mUriMapper.MakeUri(HttpMethod.Delete, refKey, refValue);
             return await CallClient<K, Tuple<K, string>>(uri, options,
@@ -200,7 +228,7 @@ namespace Xigadee
         /// <param name="key">The entity unique key.</param>
         /// <param name="options">These are the repository options which define the request type..</param>
         /// <returns>This is the holder containing the response and the entity where necessary.</returns>
-        public async Task<RepositoryHolder<K, Tuple<K, string>>> Version(K key, RepositorySettings options = null)
+        public virtual async Task<RepositoryHolder<K, Tuple<K, string>>> Version(K key, RepositorySettings options = null)
         {
             var uri = mUriMapper.MakeUri(HttpMethod.Head, key);
             return await CallClient<K, Tuple<K, string>>(uri, options,
@@ -215,7 +243,7 @@ namespace Xigadee
         /// <param name="refValue">The key value.</param>
         /// <param name="options">These are the repository options which define the request type..</param>
         /// <returns>This is the holder containing the response and the entity where necessary.</returns>
-        public async Task<RepositoryHolder<K, Tuple<K, string>>> VersionByRef(string refKey, string refValue, RepositorySettings options = null)
+        public virtual async Task<RepositoryHolder<K, Tuple<K, string>>> VersionByRef(string refKey, string refValue, RepositorySettings options = null)
         {
             var uri = mUriMapper.MakeUri(HttpMethod.Head, refKey, refValue);
             return await CallClient<K, Tuple<K, string>>(uri, options,
@@ -230,7 +258,7 @@ namespace Xigadee
         /// <param name="key">The key request.</param>
         /// <param name="options">These are the repository options which define the request type..</param>
         /// <returns>This is the holder containing the response and the entity where necessary.</returns>
-        public async Task<RepositoryHolder<SearchRequest, SearchResponse>> Search(SearchRequest key, RepositorySettings options = null)
+        public virtual async Task<RepositoryHolder<SearchRequest, SearchResponse>> Search(SearchRequest key, RepositorySettings options = null)
         {
             throw new NotImplementedException();
             //var uri = mUriMapper.MakeUri(new HttpMethod("Search"));
@@ -296,7 +324,7 @@ namespace Xigadee
         /// <param name="mapper">Any response adjustment before returning to the caller.</param>
         /// <param name="deserializer">Deserialize the response content into the entity</param>
         /// <returns></returns>
-        protected async Task<RepositoryHolder<KT, ET>> CallClient<KT, ET>(
+        protected virtual async Task<RepositoryHolder<KT, ET>> CallClient<KT, ET>(
               KeyValuePair<HttpMethod, Uri> uri
             , RepositorySettings options
             , HttpContent content = null
@@ -364,7 +392,7 @@ namespace Xigadee
         /// <param name="verb">The HTTP verb.</param>
         /// <param name="uri">The Uri request.</param>
         /// <returns>Returns the message with the full domain request.</returns>
-        protected HttpRequestMessage Request(HttpMethod verb, Uri uri)
+        protected virtual HttpRequestMessage Request(HttpMethod verb, Uri uri)
         {
             HttpRequestMessage rq = new HttpRequestMessage
             {
@@ -393,7 +421,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="entity">The entity to convert.</param>
         /// <returns>The ByteArrayContent to transmit.</returns>
-        protected ByteArrayContent GetContent(E entity)
+        protected virtual ByteArrayContent GetContent(E entity)
         {
             var data = mPrimaryTransport.GetData(entity);
             var content = new ByteArrayContent(data);
@@ -420,6 +448,5 @@ namespace Xigadee
             return FormatExceptionChain(exception.InnerException, message);
         }
         #endregion
-
     }
 }
