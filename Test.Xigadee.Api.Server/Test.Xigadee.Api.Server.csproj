@@ -291,6 +291,8 @@
   <ItemGroup>
     <Compile Include="Controllers\ApiRequestsController.cs" />
     <Compile Include="Controllers\SecurityController.cs" />
+    <Compile Include="Microservice\TestConfigApi.cs" />
+    <Compile Include="Microservice\TestMicroserviceApi.cs" />
     <Compile Include="Provider\ProviderLocal.cs" />
     <Compile Include="Provider\ProviderTransmit.cs" />
     <Compile Include="SwaggerConfig.cs" />
@@ -299,7 +301,7 @@
     <Compile Include="Controllers\ComplexEntityController.cs" />
     <Compile Include="Controllers\MondayMorningBluesController.cs" />
     <Compile Include="Controllers\OData4Controller.cs" />
-    <Compile Include="PopulatorWebApi.cs" />
+    <Compile Include="Microservice\PopulatorWebApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>

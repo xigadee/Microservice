@@ -18,7 +18,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="M"></typeparam>
     /// <typeparam name="C"></typeparam>
-    public class PopulatorWebApiUnity<M, C>: PopulatorWebApiBase
+    public class PopulatorWebApiUnity<M, C>: PopulatorWebApiBase<M, C>
         where M : Microservice, new()
         where C : ConfigWebApi, new()
     {

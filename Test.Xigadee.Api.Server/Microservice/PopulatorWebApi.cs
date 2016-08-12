@@ -21,7 +21,7 @@ namespace Test.Xigadee.Api.Server
         public const string Interservice = "interservice";
     }
 
-    public class PopulatorWebApi: PopulatorWebApiUnity<MicroserviceWebApi, ConfigWebApi>
+    public class PopulatorWebApi: PopulatorWebApiUnity<TestMicroserviceApi, TestConfigApi>
     {
 
         public readonly ResourceProfile mResourceBlobStorage = new ResourceProfile("Blob");
