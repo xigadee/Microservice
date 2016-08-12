@@ -18,6 +18,7 @@ namespace Xigadee
             sMaps.Add(typeof(Guid), new KeyMapper<Guid>((s) => new Guid(s), (s) => s.ToString("N")));
             sMaps.Add(typeof(int), new KeyMapper<int>((s) => int.Parse(s), (s) => s.ToString()));
             sMaps.Add(typeof(long), new KeyMapper<long>((s) => long.Parse(s), (s) => s.ToString()));
+            sMaps.Add(typeof(double), new KeyMapper<double>((s) => double.Parse(s), (s) => s.ToString()));
         }
 
         public static KeyMapper<KT> Add<KT>(KeyMapper<KT> mapper)

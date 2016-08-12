@@ -48,14 +48,14 @@ namespace Xigadee
         {
             // Get the types assembly version to add to the request headers
             mAssemblyVersion = GetType().Assembly.GetName().Version.ToString();
-            EntityName = entityName ?? typeof(E).Name;
-            UseHttps = useHttps;
 
             ResolveKeyMapper();
 
-            ResolveUriMapper(mapper);
+            ResolveUriMapper(mapper, entityName);
 
             ResolveSerializer();
+
+            UseHttps = useHttps;
         }
         #endregion
 
@@ -73,9 +73,11 @@ namespace Xigadee
         /// This method resolves the appropriate transport uri mapper for the request.
         /// </summary>
         /// <param name="mapper">The mapper passed through the constructor.</param>
-        protected virtual void ResolveUriMapper(TransportUriMapper<K> mapper)
+        protected virtual void ResolveUriMapper(TransportUriMapper<K> mapper, string entityName)
         {
             mUriMapper = mapper ?? new TransportUriMapper<K>(mKeyMapper);
+
+            EntityName = entityName ?? typeof(E).Name;
         }
         #endregion
         #region ResolveSerializer()
