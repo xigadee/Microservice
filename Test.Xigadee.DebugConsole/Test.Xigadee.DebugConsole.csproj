@@ -217,6 +217,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Test.Xigadee.Api.Client\Test.Xigadee.Api.Client.csproj">
+      <Project>{37a0a4fc-647e-4115-b72e-62b043b84d7a}</Project>
+      <Name>Test.Xigadee.Api.Client</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Test.Xigadee.Api.Server\Test.Xigadee.Api.Server.csproj">
       <Project>{3c7d695d-4111-499e-9764-6b9e6ec93952}</Project>
       <Name>Test.Xigadee.Api.Server</Name>

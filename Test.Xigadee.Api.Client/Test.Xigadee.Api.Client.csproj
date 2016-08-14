@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{AF9B61BA-6A9C-4BD3-A87A-FB513188F21F}</ProjectGuid>
+    <ProjectGuid>{37A0A4FC-647E-4115-B72E-62B043B84D7A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Xigadee</RootNamespace>
-    <AssemblyName>Xigadee.Framework</AssemblyName>
+    <RootNamespace>Test.Xigadee.Api</RootNamespace>
+    <AssemblyName>Test.Xigadee.Api.Client</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,10 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -44,28 +40,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BoundaryLogger\BoundaryLoggerSql.cs" />
-    <Compile Include="Persistence\SQL\PersistenceManagerHandlerSqlBase.cs" />
-    <Compile Include="Populator\ConfigBaseHelperSql.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Xigadee.Core\Xigadee.Core.csproj">
-      <Project>{f73b3423-992d-444d-a486-9c6a9d729900}</Project>
-      <Name>Xigadee.Core</Name>
+    <ProjectReference Include="..\Test.Xigadee.Shared\Test.Xigadee.Shared.csproj">
+      <Project>{6aa8f0e5-ab72-4df5-bd02-a23fbd8fdb83}</Project>
+      <Name>Test.Xigadee.Shared</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj">
-      <Project>{4f785b7b-1fdc-4dcc-9453-fe42447fded2}</Project>
-      <Name>Xigadee.Helper</Name>
+    <ProjectReference Include="..\Xigadee.Api.Client\Xigadee.Api.Client.csproj">
+      <Project>{19f45b9b-5c21-4ec3-ae73-84001ebccc4b}</Project>
+      <Name>Xigadee.Api.Client</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-    <None Include="Xigadee.Framework.nuspec" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="BoundaryLogger\Sql\" />
-    <Folder Include="EventSource\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

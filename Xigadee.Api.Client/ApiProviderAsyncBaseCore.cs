@@ -6,16 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http.Headers;
-
 #endregion
 namespace Xigadee
 {
-    /// <summary>
-    /// This is the async provider base.
-    /// </summary>
-    /// <typeparam name="K">The entity key type.</typeparam>
-    /// <typeparam name="E">The entity type.</typeparam>
-    public class ApiProviderAsyncBase<K, E>: IRepositoryAsync<K, E>
+    public abstract class ApiProviderAsyncBaseCore<K, E>: IRepositoryAsync<K, E>
         where K : IEquatable<K>
     {
         #region Declarations
@@ -44,7 +38,7 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        public ApiProviderAsyncBase(TransportUriMapper<K> uriMapper = null
+        public ApiProviderAsyncBaseCore(TransportUriMapper<K> uriMapper = null
             , bool useHttps = true, string entityName = null
             , IKeyMapper<K> keyMapper = null
             , TransportSerializer<E> primaryTransport = null)
@@ -100,7 +94,7 @@ namespace Xigadee
 
             //Get the transport serializer with the highest priority.
             return mTransports.Values.OrderByDescending((t) => t.Priority).First();
-        } 
+        }
         #endregion
 
         #region UseHttps
@@ -144,11 +138,14 @@ namespace Xigadee
         /// <returns>Returns the response with the entity if the request is successful.</returns>
         public virtual async Task<RepositoryHolder<K, E>> Create(E entity, RepositorySettings options = null)
         {
-            var uri = mUriMapper.MakeUri(HttpMethod.Post);
+            var uri = MakeUri(HttpMethod.Post);
+
             using (var content = GetContent(entity))
             {
-                return await CallClient<K, E>(uri, options, content: content, deserializer: DeserializeEntity,
-                    mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
+                return await CallClient<K, E>(uri, options
+                    , content: content
+                    , deserializer: DeserializeEntity
+                    , mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
             }
         }
         #endregion
@@ -161,9 +158,11 @@ namespace Xigadee
         /// <returns>This is the holder containing the response and the entity where necessary.</returns>
         public virtual async Task<RepositoryHolder<K, E>> Read(K key, RepositorySettings options = null)
         {
-            var uri = mUriMapper.MakeUri(HttpMethod.Get, key);
-            return await CallClient<K, E>(uri, options, deserializer: DeserializeEntity,
-                mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
+            var uri = MakeUri(HttpMethod.Get, key);
+
+            return await CallClient<K, E>(uri, options
+                , deserializer: DeserializeEntity
+                , mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
         }
         #endregion
         #region ReadByRef(string refKey, string refValue, RepositorySettings options = null)
@@ -176,9 +175,11 @@ namespace Xigadee
         /// <returns>This is the holder containing the response and the entity where necessary.</returns>
         public virtual async Task<RepositoryHolder<K, E>> ReadByRef(string refKey, string refValue, RepositorySettings options = null)
         {
-            var uri = mUriMapper.MakeUri(HttpMethod.Get, refKey, refValue);
-            return await CallClient<K, E>(uri, options, deserializer: DeserializeEntity,
-                mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
+            var uri = MakeUri(HttpMethod.Get, refKey, refValue);
+
+            return await CallClient<K, E>(uri, options
+                , deserializer: DeserializeEntity
+                , mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
         }
         #endregion
         #region Update(E entity, RepositorySettings options = null)
@@ -190,11 +191,14 @@ namespace Xigadee
         /// <returns>This is the holder containing the response and the entity where necessary.</returns>
         public virtual async Task<RepositoryHolder<K, E>> Update(E entity, RepositorySettings options = null)
         {
-            var uri = mUriMapper.MakeUri(HttpMethod.Put);
+            var uri = MakeUri(HttpMethod.Put);
+
             using (var content = GetContent(entity))
             {
-                return await CallClient<K, E>(uri, options, content: content, deserializer: DeserializeEntity,
-                    mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
+                return await CallClient<K, E>(uri, options
+                    , content: content
+                    , deserializer: DeserializeEntity
+                    , mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
             }
         }
         #endregion
@@ -207,9 +211,10 @@ namespace Xigadee
         /// <returns>This is the holder containing the response and the entity where necessary.</returns>
         public virtual async Task<RepositoryHolder<K, Tuple<K, string>>> Delete(K key, RepositorySettings options = null)
         {
-            var uri = mUriMapper.MakeUri(HttpMethod.Delete, key);
-            return await CallClient<K, Tuple<K, string>>(uri, options,
-                mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
+            var uri = MakeUri(HttpMethod.Delete, key);
+
+            return await CallClient<K, Tuple<K, string>>(uri, options
+                , mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
         }
         #endregion
         #region DeleteByRef(string refKey, string refValue, RepositorySettings options = null)
@@ -222,9 +227,10 @@ namespace Xigadee
         /// <returns>This is the holder containing the response and the entity where necessary.</returns>
         public virtual async Task<RepositoryHolder<K, Tuple<K, string>>> DeleteByRef(string refKey, string refValue, RepositorySettings options = null)
         {
-            var uri = mUriMapper.MakeUri(HttpMethod.Delete, refKey, refValue);
-            return await CallClient<K, Tuple<K, string>>(uri, options,
-                mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
+            var uri = MakeUri(HttpMethod.Delete, refKey, refValue);
+
+            return await CallClient<K, Tuple<K, string>>(uri, options
+                , mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
         }
         #endregion
         #region Version(K key, RepositorySettings options = null)
@@ -236,9 +242,10 @@ namespace Xigadee
         /// <returns>This is the holder containing the response and the entity where necessary.</returns>
         public virtual async Task<RepositoryHolder<K, Tuple<K, string>>> Version(K key, RepositorySettings options = null)
         {
-            var uri = mUriMapper.MakeUri(HttpMethod.Head, key);
-            return await CallClient<K, Tuple<K, string>>(uri, options,
-                mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
+            var uri = MakeUri(HttpMethod.Head, key);
+
+            return await CallClient<K, Tuple<K, string>>(uri, options
+                , mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
         }
         #endregion
         #region VersionByRef(string refKey, string refValue, RepositorySettings options = null)
@@ -251,9 +258,10 @@ namespace Xigadee
         /// <returns>This is the holder containing the response and the entity where necessary.</returns>
         public virtual async Task<RepositoryHolder<K, Tuple<K, string>>> VersionByRef(string refKey, string refValue, RepositorySettings options = null)
         {
-            var uri = mUriMapper.MakeUri(HttpMethod.Head, refKey, refValue);
-            return await CallClient<K, Tuple<K, string>>(uri, options,
-                mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
+            var uri = MakeUri(HttpMethod.Head, refKey, refValue);
+
+            return await CallClient<K, Tuple<K, string>>(uri, options
+                , mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
         }
         #endregion
 
@@ -266,7 +274,14 @@ namespace Xigadee
         /// <returns>This is the holder containing the response and the entity where necessary.</returns>
         public virtual async Task<RepositoryHolder<SearchRequest, SearchResponse>> Search(SearchRequest key, RepositorySettings options = null)
         {
-            throw new NotSupportedException();
+            var uri = mUriMapper.MakeUri(new HttpMethod("Search"));
+
+            throw new NotImplementedException();
+            //using (var content = GetContent(entity))
+            //{
+            //    return await CallClient<K, E>(uri, options, content: content, deserializer: DeserializeEntity,
+            //        mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
+            //}
         }
         #endregion
 
@@ -424,7 +439,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region FormatException
+        #region FormatExceptionChain(Exception exception, string message = null)
         /// <summary>
         /// Formats the exception message including all inner exceptions. Useful when we have a send error on the API
         /// which might be caused by a DNS or a certificate issue etc. 
@@ -442,5 +457,21 @@ namespace Xigadee
             return FormatExceptionChain(exception.InnerException, message);
         }
         #endregion
+
+
+        public virtual KeyValuePair<HttpMethod, Uri> MakeUri(HttpMethod method)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual KeyValuePair<HttpMethod, Uri> MakeUri(HttpMethod method, K key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual KeyValuePair<HttpMethod, Uri> MakeUri(HttpMethod method, string refKey, string refValue)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

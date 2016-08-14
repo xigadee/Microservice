@@ -58,6 +58,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ApiProviderAsyncBase.cs" />
+    <Compile Include="ApiProviderAsyncBaseCore.cs" />
     <Compile Include="ApiProviderSearchBase.cs" />
     <Compile Include="ApiRepositoryOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -17,11 +17,10 @@ namespace Test.Xigadee
 
         static void MicroserviceWebAPIStart()
         {
-            StartOptions options = new StartOptions();
-            options.Urls.Add("http://localhost:29001");
-
             try
             {
+                StartOptions options = new StartOptions();
+                options.Urls.Add("http://localhost:29001");
                 mWebApp = WebApp.Start<Test.Xigadee.Api.Server.Startup>(options);
             }
             catch (Exception ex)
