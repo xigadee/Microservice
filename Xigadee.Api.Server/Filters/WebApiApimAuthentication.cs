@@ -42,14 +42,14 @@ namespace Xigadee
             IEnumerable<string> subKeys;
             ApimPrincipal principal;
             string subKey;
-            if (context.Request.Headers.TryGetValues(ApiConstants.AzureSubscriptionKeyHeader, out subKeys))
+            if (context.Request.Headers.TryGetValues(ApimConstants.AzureSubscriptionKeyHeader, out subKeys))
             {
                 subKey = subKeys.FirstOrDefault();
             }
             else
             {
                 subKey = context.Request.GetQueryNameValuePairs().FirstOrDefault(
-                        kvp => kvp.Key.Equals(ApiConstants.AzureSubscriptionKeyQueryString, StringComparison.InvariantCultureIgnoreCase)).Value;
+                        kvp => kvp.Key.Equals(ApimConstants.AzureSubscriptionKeyQueryString, StringComparison.InvariantCultureIgnoreCase)).Value;
             }
 
             if (!string.IsNullOrEmpty(subKey) && mConnector.TryGetValue(subKey, out principal))

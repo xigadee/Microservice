@@ -14,7 +14,7 @@ namespace Xigadee
     {
         #region Declarations
         /// <summary>
-        /// This method is used to 
+        /// This method is used to maps entity keys to a string represntation for the Uri.
         /// </summary>
         protected IKeyMapper<K> mKeyMapper;
         /// <summary>
@@ -32,7 +32,11 @@ namespace Xigadee
         /// <summary>
         /// This is the assembly version
         /// </summary>
-        private string mAssemblyVersion;
+        protected readonly string mAssemblyVersion;
+        /// <summary>
+        /// This is a list of auth handlers to be used to au
+        /// </summary>
+        protected List<ApiProviderAuthBase> mAuthHandlers;
         #endregion
         #region Constructor
         /// <summary>
@@ -44,7 +48,7 @@ namespace Xigadee
             , TransportSerializer<E> primaryTransport = null)
         {
             // Get the types assembly version to add to the request headers
-            mAssemblyVersion = GetType().Assembly.GetName().Version.ToString();
+            mAssemblyVersion = AssemblyVersionGet();
 
             mKeyMapper = keyMapper ?? ResolveKeyMapper();
 
@@ -57,6 +61,18 @@ namespace Xigadee
 
             UseHttps = useHttps;
         }
+        #endregion
+
+        #region AssemblyVersionGet()
+        /// <summary>
+        /// This method returns the assembly version that is passed to the calling party. You can override this
+        /// method to change the version.
+        /// </summary>
+        /// <returns>Returns a string containing the assembly version.</returns>
+        protected virtual string AssemblyVersionGet()
+        {
+            return GetType().Assembly.GetName().Version.ToString();
+        }  
         #endregion
 
         #region ResolveKeyMapper()
@@ -116,18 +132,6 @@ namespace Xigadee
         public virtual string EntityName { get { return mUriMapper.Path; } set { mUriMapper.Path = value; } }
         #endregion
 
-        #region ApiKey
-        /// <summary>
-        /// The Azure api subscription key
-        /// </summary>
-        public string ApiKey { get; set; }
-        #endregion        
-        #region ApiTrace
-        /// <summary>
-        /// Set this to true to initiate an API trace event.
-        /// </summary>
-        public bool ApiTrace { get; set; }
-        #endregion
 
         #region Create(E entity, RepositorySettings options = null)
         /// <summary>
@@ -138,13 +142,13 @@ namespace Xigadee
         /// <returns>Returns the response with the entity if the request is successful.</returns>
         public virtual async Task<RepositoryHolder<K, E>> Create(E entity, RepositorySettings options = null)
         {
-            var uri = MakeUri(HttpMethod.Post);
+            var uri = GetUri(HttpMethod.Post);
 
-            using (var content = GetContent(entity))
+            using (var content = EntitySerialize(entity))
             {
                 return await CallClient<K, E>(uri, options
                     , content: content
-                    , deserializer: DeserializeEntity
+                    , deserializer: EntityDeserialize
                     , mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
             }
         }
@@ -158,10 +162,10 @@ namespace Xigadee
         /// <returns>This is the holder containing the response and the entity where necessary.</returns>
         public virtual async Task<RepositoryHolder<K, E>> Read(K key, RepositorySettings options = null)
         {
-            var uri = MakeUri(HttpMethod.Get, key);
+            var uri = GetUri(HttpMethod.Get, key);
 
             return await CallClient<K, E>(uri, options
-                , deserializer: DeserializeEntity
+                , deserializer: EntityDeserialize
                 , mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
         }
         #endregion
@@ -175,10 +179,10 @@ namespace Xigadee
         /// <returns>This is the holder containing the response and the entity where necessary.</returns>
         public virtual async Task<RepositoryHolder<K, E>> ReadByRef(string refKey, string refValue, RepositorySettings options = null)
         {
-            var uri = MakeUri(HttpMethod.Get, refKey, refValue);
+            var uri = GetUri(HttpMethod.Get, refKey, refValue);
 
             return await CallClient<K, E>(uri, options
-                , deserializer: DeserializeEntity
+                , deserializer: EntityDeserialize
                 , mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
         }
         #endregion
@@ -191,13 +195,13 @@ namespace Xigadee
         /// <returns>This is the holder containing the response and the entity where necessary.</returns>
         public virtual async Task<RepositoryHolder<K, E>> Update(E entity, RepositorySettings options = null)
         {
-            var uri = MakeUri(HttpMethod.Put);
+            var uri = GetUri(HttpMethod.Put);
 
-            using (var content = GetContent(entity))
+            using (var content = EntitySerialize(entity))
             {
                 return await CallClient<K, E>(uri, options
                     , content: content
-                    , deserializer: DeserializeEntity
+                    , deserializer: EntityDeserialize
                     , mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
             }
         }
@@ -211,7 +215,7 @@ namespace Xigadee
         /// <returns>This is the holder containing the response and the entity where necessary.</returns>
         public virtual async Task<RepositoryHolder<K, Tuple<K, string>>> Delete(K key, RepositorySettings options = null)
         {
-            var uri = MakeUri(HttpMethod.Delete, key);
+            var uri = GetUri(HttpMethod.Delete, key);
 
             return await CallClient<K, Tuple<K, string>>(uri, options
                 , mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
@@ -227,7 +231,7 @@ namespace Xigadee
         /// <returns>This is the holder containing the response and the entity where necessary.</returns>
         public virtual async Task<RepositoryHolder<K, Tuple<K, string>>> DeleteByRef(string refKey, string refValue, RepositorySettings options = null)
         {
-            var uri = MakeUri(HttpMethod.Delete, refKey, refValue);
+            var uri = GetUri(HttpMethod.Delete, refKey, refValue);
 
             return await CallClient<K, Tuple<K, string>>(uri, options
                 , mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
@@ -242,7 +246,7 @@ namespace Xigadee
         /// <returns>This is the holder containing the response and the entity where necessary.</returns>
         public virtual async Task<RepositoryHolder<K, Tuple<K, string>>> Version(K key, RepositorySettings options = null)
         {
-            var uri = MakeUri(HttpMethod.Head, key);
+            var uri = GetUri(HttpMethod.Head, key);
 
             return await CallClient<K, Tuple<K, string>>(uri, options
                 , mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
@@ -258,7 +262,7 @@ namespace Xigadee
         /// <returns>This is the holder containing the response and the entity where necessary.</returns>
         public virtual async Task<RepositoryHolder<K, Tuple<K, string>>> VersionByRef(string refKey, string refValue, RepositorySettings options = null)
         {
-            var uri = MakeUri(HttpMethod.Head, refKey, refValue);
+            var uri = GetUri(HttpMethod.Head, refKey, refValue);
 
             return await CallClient<K, Tuple<K, string>>(uri, options
                 , mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
@@ -285,26 +289,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region DeserializeEntity(ApiRequest rq, out TransportSerializer<E> transport)
-        /// <summary>
-        /// This method resolves the appropriate transport serialzer from the incoming accept header.
-        /// </summary>
-        /// <param name="rs">The response</param>
-        /// <param name="data">The response content</param>
-        /// <param name="holder">The repository holder</param>
-        /// <returns>Returns true if the serializer can be resolved.</returns>
-        protected virtual void DeserializeEntity(HttpResponseMessage rs, byte[] data, RepositoryHolder<K, E> holder)
-        {
-            string mediaType = rs.Content.Headers.ContentType.MediaType;
-            if (mTransports.ContainsKey(mediaType))
-            {
-                var transport = mTransports[mediaType];
-                holder.Entity = transport.GetObject(data);
-            }
-            else
-                throw new TransportSerializerResolutionException(mediaType);
-        }
-        #endregion
         #region ExtractHeaders<KT, ET>(HttpResponseMessage rs, RepositoryHolder<KT, ET> holder, IKeyMapper<KT> keyMapper)
         /// <summary>
         /// This method resolves the appropriate transport serialzer from the incoming accept header.
@@ -316,6 +300,7 @@ namespace Xigadee
         {
             string contentId = rs.Headers.Where((h) => h.Key.Equals("x-img-contentid", StringComparison.InvariantCultureIgnoreCase))
                 .SelectMany((h) => h.Value).FirstOrDefault() ?? "";
+
             string versionId = rs.Headers.Where((h) => h.Key.Equals("x-img-versionid", StringComparison.InvariantCultureIgnoreCase))
                 .SelectMany((h) => h.Value).FirstOrDefault() ?? "";
 
@@ -347,53 +332,55 @@ namespace Xigadee
             , Action<HttpResponseMessage, RepositoryHolder<KT, ET>> mapper = null
             , Action<HttpResponseMessage, byte[], RepositoryHolder<KT, ET>> deserializer = null)
         {
-            var rs = new RepositoryHolder<KT, ET>();
+            var response = new RepositoryHolder<KT, ET>();
+
             try
             {
-                HttpRequestMessage rq = Request(uri.Key, uri.Value);
+                HttpRequestMessage httpRq = Request(uri.Key, uri.Value);
 
-                adjust?.Invoke(rq);
+                RequestHeadersPreferSet(httpRq, options?.Prefer);
+
+                adjust?.Invoke(httpRq);
 
                 if (content != null)
-                    rq.Content = content;
-
-                if (options?.Prefer != null && options.Prefer.Count > 0)
-                    rq.Headers.Add("Prefer", options.Prefer.Select((k) => string.Format("{0}={1}", k.Key, k.Value)));
+                    httpRq.Content = content;
 
                 var client = new HttpClient();
 
                 // Specify request body
-                var response = await client.SendAsync(rq);
+                var httpRs = await client.SendAsync(httpRq);
 
-                if (response.Content != null && response.Content.Headers.ContentLength > 0)
+                //OK, set the response content if set
+                if (httpRs.Content != null && httpRs.Content.Headers.ContentLength > 0)
                 {
-                    byte[] rsContent = await response.Content.ReadAsByteArrayAsync();
+                    byte[] httpRsContent = await httpRs.Content.ReadAsByteArrayAsync();
 
-                    if (response.IsSuccessStatusCode)
-                        deserializer?.Invoke(response, rsContent, rs);
+                    if (httpRs.IsSuccessStatusCode)
+                        deserializer?.Invoke(httpRs, httpRsContent, response);
                     else
                         // So that we can see error messages such as schema validation fail
-                        rs.ResponseMessage = Encoding.UTF8.GetString(rsContent);
+                        response.ResponseMessage = Encoding.UTF8.GetString(httpRsContent);
                 }
 
                 //Get any outgoing trace headers and set them in to the response.
                 IEnumerable<string> trace;
-                if (response.Headers.TryGetValues(ApiConstants.AzureTraceHeaderLocation, out trace))
-                    rs.Settings.Prefer.Add(ApiConstants.AzureTraceHeaderLocation, trace.First());
+                if (httpRs.Headers.TryGetValues(ApimConstants.AzureTraceHeaderLocation, out trace))
+                    response.Settings.Prefer.Add(ApimConstants.AzureTraceHeaderLocation, trace.First());
 
-                rs.ResponseCode = (int)response.StatusCode;
+                response.ResponseCode = (int)httpRs.StatusCode;
 
-                mapper?.Invoke(response, rs);
+                mapper?.Invoke(httpRs, response);
             }
             catch (Exception ex)
             {
-                rs.ResponseMessage = FormatExceptionChain(ex);
-                rs.ResponseCode = 503;
+                response.ResponseMessage = FormatExceptionChain(ex);
+                response.ResponseCode = 503;
             }
 
-            return rs;
+            return response;
         }
         #endregion
+
         #region Request(HttpMethod verb, Uri uri)
         /// <summary>
         /// This method creates the default request message.
@@ -409,33 +396,105 @@ namespace Xigadee
                 RequestUri = uri
             };
 
-            rq.Headers.Add("x-api-clientversion", mAssemblyVersion);
-            rq.Headers.Add("x-api-version", "2015-06-24");
-
-            mTransports.ForEach((t) => rq.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(t.Value.MediaType, t.Value.Priority)));
-
-            //Add the azure management key when provided.
-            if (!string.IsNullOrEmpty(ApiKey))
-                rq.Headers.Add(ApiConstants.AzureSubscriptionKeyHeader, ApiKey);
-            if (ApiTrace)
-                rq.Headers.Add(ApiConstants.AzureTraceHeader, "true");
+            RequestHeadersSet(rq);
 
             return rq;
         }
         #endregion
-        #region GetContent(E entity)
+
+        #region RequestHeadersSet(HttpRequestMessage rq)
+        /// <summary>
+        /// This virtual method sets the necessary headers for the request.
+        /// </summary>
+        /// <param name="rq">The http request.</param>
+        protected virtual void RequestHeadersSet(HttpRequestMessage rq)
+        {
+            RequestHeadersSetHelper(rq);
+
+            RequestHeadersSetTransport(rq);
+
+            RequestHeadersSetSecurity(rq);
+        }
+        #endregion
+        #region RequestHeadersSetHelper(HttpRequestMessage rq)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="rq"></param>
+        protected virtual void RequestHeadersSetHelper(HttpRequestMessage rq)
+        {
+            rq.Headers.Add("x-api-clientversion", mAssemblyVersion);
+            rq.Headers.Add("x-api-version", "2016-08-01");
+        }
+        #endregion
+        #region RequestHeadersSetTransport(HttpRequestMessage rq)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="rq"></param>
+        protected virtual void RequestHeadersSetTransport(HttpRequestMessage rq)
+        {
+            mTransports.ForEach((t) => rq.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(t.Value.MediaType, t.Value.Priority)));
+        }
+        #endregion
+        #region RequestHeadersSetSecurity(HttpRequestMessage rq)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="rq">The http request object.</param>
+        protected virtual void RequestHeadersSetSecurity(HttpRequestMessage rq)
+        {
+
+        }
+        #endregion
+
+        #region RequestHeadersPreferSet(HttpRequestMessage rq, Dictionary<string, string> Prefer)
+        /// <summary>
+        /// This method sets the prefer request headers for the Api call.
+        /// </summary>
+        /// <param name="rq">The http request object.</param>
+        /// <param name="Prefer">The prefer collection.</param>
+        protected virtual void RequestHeadersPreferSet(HttpRequestMessage rq, Dictionary<string, string> Prefer)
+        {
+            if (Prefer != null && Prefer.Count > 0)
+                rq.Headers.Add("Prefer", Prefer.Select((k) => string.Format("{0}={1}", k.Key, k.Value)));
+        } 
+        #endregion
+
+
+        #region EntitySerialize(E entity)
         /// <summary>
         /// This method turns the entity in to binary content using
         /// the primary transport
         /// </summary>
         /// <param name="entity">The entity to convert.</param>
         /// <returns>The ByteArrayContent to transmit.</returns>
-        protected virtual ByteArrayContent GetContent(E entity)
+        protected virtual ByteArrayContent EntitySerialize(E entity)
         {
             var data = mPrimaryTransport.GetData(entity);
             var content = new ByteArrayContent(data);
             content.Headers.ContentType = new MediaTypeWithQualityHeaderValue(mPrimaryTransport.MediaType);
             return content;
+        }
+        #endregion
+        #region EntityDeserialize(ApiRequest rq, out TransportSerializer<E> transport)
+        /// <summary>
+        /// This method resolves the appropriate transport serialzer from the incoming accept header.
+        /// </summary>
+        /// <param name="rs">The response</param>
+        /// <param name="data">The response content</param>
+        /// <param name="holder">The repository holder</param>
+        /// <returns>Returns true if the serializer can be resolved.</returns>
+        protected virtual void EntityDeserialize(HttpResponseMessage rs, byte[] data, RepositoryHolder<K, E> holder)
+        {
+            string mediaType = rs.Content.Headers.ContentType.MediaType;
+            if (mTransports.ContainsKey(mediaType))
+            {
+                var transport = mTransports[mediaType];
+                holder.Entity = transport.GetObject(data);
+            }
+            else
+                throw new TransportSerializerResolutionException(mediaType);
         }
         #endregion
 
@@ -458,20 +517,10 @@ namespace Xigadee
         }
         #endregion
 
+        public abstract KeyValuePair<HttpMethod, Uri> GetUri(HttpMethod method);
 
-        public virtual KeyValuePair<HttpMethod, Uri> MakeUri(HttpMethod method)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract KeyValuePair<HttpMethod, Uri> GetUri(HttpMethod method, K key);
 
-        public virtual KeyValuePair<HttpMethod, Uri> MakeUri(HttpMethod method, K key)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual KeyValuePair<HttpMethod, Uri> MakeUri(HttpMethod method, string refKey, string refValue)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract KeyValuePair<HttpMethod, Uri> GetUri(HttpMethod method, string refKey, string refValue);
     }
 }

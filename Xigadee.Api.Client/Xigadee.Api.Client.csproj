@@ -59,7 +59,7 @@
     </Compile>
     <Compile Include="ApiProviderAsyncBase.cs" />
     <Compile Include="ApiProviderAsyncBaseCore.cs" />
-    <Compile Include="ApiProviderSearchBase.cs" />
+    <Compile Include="ApiProviderAuthBase.cs" />
     <Compile Include="ApiRepositoryOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public static class ApiConstants
+    public static class ApimConstants
     {
         public const string AzureSubscriptionKeyHeader = "Ocp-Apim-Subscription-Key";
         public const string AzureTraceHeader = "Ocp-Apim-Trace";

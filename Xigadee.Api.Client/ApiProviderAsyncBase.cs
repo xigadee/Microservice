@@ -363,8 +363,8 @@ namespace Xigadee
 
                 //Get any outgoing trace headers and set them in to the response.
                 IEnumerable<string> trace;
-                if (response.Headers.TryGetValues(ApiConstants.AzureTraceHeaderLocation, out trace))
-                    rs.Settings.Prefer.Add(ApiConstants.AzureTraceHeaderLocation, trace.First());
+                if (response.Headers.TryGetValues(ApimConstants.AzureTraceHeaderLocation, out trace))
+                    rs.Settings.Prefer.Add(ApimConstants.AzureTraceHeaderLocation, trace.First());
 
                 rs.ResponseCode = (int)response.StatusCode;
 
@@ -401,9 +401,9 @@ namespace Xigadee
 
             //Add the azure management key when provided.
             if (!string.IsNullOrEmpty(ApiKey))
-                rq.Headers.Add(ApiConstants.AzureSubscriptionKeyHeader, ApiKey);
+                rq.Headers.Add(ApimConstants.AzureSubscriptionKeyHeader, ApiKey);
             if (ApiTrace)
-                rq.Headers.Add(ApiConstants.AzureTraceHeader, "true");
+                rq.Headers.Add(ApimConstants.AzureTraceHeader, "true");
 
             return rq;
         }
