@@ -7,29 +7,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public abstract class ApiProviderAuthBase
-    {
-
-
-        public abstract void ProcessRequest(HttpRequestMessage rq);
-
-        public abstract void ProcessResponse(HttpResponseMessage rq);
-
-
-    }
-
-    public class ApiProviderAuthNone: ApiProviderAuthBase
-    {
-        public override void ProcessRequest(HttpRequestMessage rq)
-        {
-        }
-
-        public override void ProcessResponse(HttpResponseMessage rq)
-        {
-        }
-    }
-
-    public class ApiProviderAuthApim: ApiProviderAuthBase
+    public class ApiProviderAuthApim: IApiProviderAuthBase
     {
 
         #region ApiKey
@@ -45,7 +23,7 @@ namespace Xigadee
         public bool ApiTrace { get; set; }
         #endregion
 
-        public override void ProcessRequest(HttpRequestMessage rq)
+        public void ProcessRequest(HttpRequestMessage rq)
         {
             //Add the azure management key when provided.
             if (!string.IsNullOrEmpty(ApiKey))
@@ -55,7 +33,7 @@ namespace Xigadee
                 rq.Headers.Add(ApimConstants.AzureTraceHeader, "true");
         }
 
-        public override void ProcessResponse(HttpResponseMessage rq)
+        public void ProcessResponse(HttpResponseMessage rq)
         {
         }
     }

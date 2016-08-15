@@ -13,13 +13,21 @@ namespace Xigadee
     /// <typeparam name="K">The key type.</typeparam>
     public class TransportUriMapper<K>
     {
+        #region Declarations
         /// <summary>
-        /// This method is used to 
+        /// This method is used to convert the key in to a string.
         /// </summary>
         protected IKeyMapper<K> mKeyMapper;
+        /// <summary>
+        /// THis dictionary contains the individual templates for each HTTP method.
+        /// </summary>
+        Dictionary<HttpMethod, string> mUriTemplates; 
+        #endregion
 
-        Dictionary<HttpMethod, string> mUriTemplates;
-
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="keyMapper">The key mapper.</param>
         public TransportUriMapper(IKeyMapper<K> keyMapper = null)
         {
             mUriTemplates = new Dictionary<HttpMethod, string>();

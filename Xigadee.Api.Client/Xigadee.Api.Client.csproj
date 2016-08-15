@@ -59,8 +59,11 @@
     </Compile>
     <Compile Include="ApiProviderAsyncBase.cs" />
     <Compile Include="ApiProviderAsyncBaseCore.cs" />
-    <Compile Include="ApiProviderAuthBase.cs" />
     <Compile Include="ApiRepositoryOptions.cs" />
+    <Compile Include="Auth\ApiProviderAuthApim.cs" />
+    <Compile Include="Auth\IApiProviderAuthBase.cs" />
+    <Compile Include="Auth\ApiProviderAuthJwt.cs" />
+    <Compile Include="Auth\ApiProviderAuthNone.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

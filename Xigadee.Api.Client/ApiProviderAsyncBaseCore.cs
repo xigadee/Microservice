@@ -9,6 +9,11 @@ using System.Net.Http.Headers;
 #endregion
 namespace Xigadee
 {
+    /// <summary>
+    /// This is a more flexible Api client that supports more extensible authentication and Uri mapping support.
+    /// </summary>
+    /// <typeparam name="K">The key type.</typeparam>
+    /// <typeparam name="E">The entity type.</typeparam>
     public abstract class ApiProviderAsyncBaseCore<K, E>: IRepositoryAsync<K, E>
         where K : IEquatable<K>
     {
@@ -24,7 +29,7 @@ namespace Xigadee
         /// <summary>
         /// This is the collection of transports available for serialization.
         /// </summary>
-        protected Dictionary<string, TransportSerializer<E>> mTransports;
+        protected Dictionary<string, TransportSerializer<E>> mTransportSerializers;
         /// <summary>
         /// This is the primary transport used for sending requests.
         /// </summary>
@@ -36,16 +41,18 @@ namespace Xigadee
         /// <summary>
         /// This is a list of auth handlers to be used to au
         /// </summary>
-        protected List<ApiProviderAuthBase> mAuthHandlers;
+        protected List<IApiProviderAuthBase> mAuthHandlers;
         #endregion
         #region Constructor
         /// <summary>
         /// This is the default constructor.
         /// </summary>
         public ApiProviderAsyncBaseCore(TransportUriMapper<K> uriMapper = null
-            , bool useHttps = true, string entityName = null
+            , bool useHttps = true
+            , string entityName = null
             , IKeyMapper<K> keyMapper = null
-            , TransportSerializer<E> primaryTransport = null)
+            , TransportSerializer<E> primaryTransport = null
+            , IEnumerable<IApiProviderAuthBase> authHandlers = null)
         {
             // Get the types assembly version to add to the request headers
             mAssemblyVersion = AssemblyVersionGet();
@@ -54,12 +61,9 @@ namespace Xigadee
 
             mUriMapper = uriMapper ?? ResolveUriMapper(uriMapper, entityName);
 
-            if (entityName != null)
-                EntityName = entityName;
+            mPrimaryTransport = primaryTransport ?? ResolveTransport();
 
-            mPrimaryTransport = primaryTransport ?? ResolveSerializer();
-
-            UseHttps = useHttps;
+            mAuthHandlers = authHandlers?.ToList();
         }
         #endregion
 
@@ -94,44 +98,24 @@ namespace Xigadee
             return new TransportUriMapper<K>(mKeyMapper);
         }
         #endregion
-        #region ResolveSerializer()
+        #region ResolveTransport()
         /// <summary>
         /// This method resolves the specific serializer for the entity transport.
         /// </summary>
-        protected virtual TransportSerializer<E> ResolveSerializer()
+        protected virtual TransportSerializer<E> ResolveTransport()
         {
-            mTransports = TransportSerializer.GetSerializers<E>(GetType()).ToDictionary((s) => s.MediaType.ToLowerInvariant());
+            mTransportSerializers = TransportSerializer.GetSerializers<E>(GetType()).ToDictionary((s) => s.MediaType.ToLowerInvariant());
 
-            if (mTransports == null || mTransports.Count == 0)
-                mTransports = TransportSerializer.GetSerializers<E>(typeof(E)).ToDictionary((s) => s.MediaType.ToLowerInvariant());
+            if (mTransportSerializers == null || mTransportSerializers.Count == 0)
+                mTransportSerializers = TransportSerializer.GetSerializers<E>(typeof(E)).ToDictionary((s) => s.MediaType.ToLowerInvariant());
 
-            if (mTransports == null || mTransports.Count == 0)
+            if (mTransportSerializers == null || mTransportSerializers.Count == 0)
                 throw new TransportSerializerResolutionException("The default TransportSerializer cannot be resolved.");
 
             //Get the transport serializer with the highest priority.
-            return mTransports.Values.OrderByDescending((t) => t.Priority).First();
+            return mTransportSerializers.Values.OrderByDescending((t) => t.Priority).First();
         }
         #endregion
-
-        #region UseHttps
-        /// <summary>
-        /// Specifies whether the requests should be sent over https. The default is true.
-        /// </summary>
-        public bool UseHttps { get { return mUriMapper.UseHttps; } set { mUriMapper.UseHttps = value; } }
-        #endregion
-        #region Server
-        /// <summary>
-        /// Specifies the server and port.
-        /// </summary>
-        public virtual Uri Server { get { return mUriMapper.Server; } set { mUriMapper.Server = value; } }
-        #endregion
-        #region Path
-        /// <summary>
-        /// Specifies the entity name that will be appended to the Uri path.
-        /// </summary>
-        public virtual string EntityName { get { return mUriMapper.Path; } set { mUriMapper.Path = value; } }
-        #endregion
-
 
         #region Create(E entity, RepositorySettings options = null)
         /// <summary>
@@ -338,7 +322,11 @@ namespace Xigadee
             {
                 HttpRequestMessage httpRq = Request(uri.Key, uri.Value);
 
+                RequestHeadersSet(httpRq);
+
                 RequestHeadersPreferSet(httpRq, options?.Prefer);
+
+                RequestHeadersAuthSet(httpRq);
 
                 adjust?.Invoke(httpRq);
 
@@ -396,8 +384,6 @@ namespace Xigadee
                 RequestUri = uri
             };
 
-            RequestHeadersSet(rq);
-
             return rq;
         }
         #endregion
@@ -434,7 +420,7 @@ namespace Xigadee
         /// <param name="rq"></param>
         protected virtual void RequestHeadersSetTransport(HttpRequestMessage rq)
         {
-            mTransports.ForEach((t) => rq.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(t.Value.MediaType, t.Value.Priority)));
+            mTransportSerializers.ForEach((t) => rq.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(t.Value.MediaType, t.Value.Priority)));
         }
         #endregion
         #region RequestHeadersSetSecurity(HttpRequestMessage rq)
@@ -458,9 +444,19 @@ namespace Xigadee
         {
             if (Prefer != null && Prefer.Count > 0)
                 rq.Headers.Add("Prefer", Prefer.Select((k) => string.Format("{0}={1}", k.Key, k.Value)));
-        } 
+        }
         #endregion
 
+        #region RequestHeadersAuthSet(HttpRequestMessage rq)
+        /// <summary>
+        /// This method sets the prefer request headers for the Api call.
+        /// </summary>
+        /// <param name="rq">The http request object.</param>
+        /// <param name="Prefer">The prefer collection.</param>
+        protected virtual void RequestHeadersAuthSet(HttpRequestMessage rq)
+        {
+        }
+        #endregion
 
         #region EntitySerialize(E entity)
         /// <summary>
@@ -488,9 +484,9 @@ namespace Xigadee
         protected virtual void EntityDeserialize(HttpResponseMessage rs, byte[] data, RepositoryHolder<K, E> holder)
         {
             string mediaType = rs.Content.Headers.ContentType.MediaType;
-            if (mTransports.ContainsKey(mediaType))
+            if (mTransportSerializers.ContainsKey(mediaType))
             {
-                var transport = mTransports[mediaType];
+                var transport = mTransportSerializers[mediaType];
                 holder.Entity = transport.GetObject(data);
             }
             else
@@ -517,10 +513,19 @@ namespace Xigadee
         }
         #endregion
 
-        public abstract KeyValuePair<HttpMethod, Uri> GetUri(HttpMethod method);
+        protected virtual KeyValuePair<HttpMethod, Uri> GetUri(HttpMethod method)
+        {
+            return mUriMapper.MakeUri(method);
+        }
 
-        public abstract KeyValuePair<HttpMethod, Uri> GetUri(HttpMethod method, K key);
+        protected virtual KeyValuePair<HttpMethod, Uri> GetUri(HttpMethod method, K key)
+        {
+            return mUriMapper.MakeUri(method, key);
+        }
 
-        public abstract KeyValuePair<HttpMethod, Uri> GetUri(HttpMethod method, string refKey, string refValue);
+        protected virtual KeyValuePair<HttpMethod, Uri> GetUri(HttpMethod method, string refKey, string refValue)
+        {
+            return mUriMapper.MakeUri(method, refKey, refValue);
+        }
     }
 }
