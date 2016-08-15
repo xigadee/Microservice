@@ -1,0 +1,9 @@
+﻿CREATE TABLE [Core].[Channel]
+(
+	 [Id] SMALLINT NOT NULL PRIMARY KEY IDENTITY(1,1)
+	,[Name] VARCHAR(250) NOT NULL
+	,[DateFirstRecorded] DATETIME NOT NULL DEFAULT(GETUTCDATE()) 
+)
+GO
+CREATE UNIQUE INDEX [IX_Channel_Id] ON [Core].[Channel] ([Name]) INCLUDE ([Id])
+GO

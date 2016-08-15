@@ -1,0 +1,8 @@
+﻿CREATE TABLE [Core].[Service]
+(
+	 [Id] SMALLINT NOT NULL PRIMARY KEY IDENTITY(1,1)
+    ,[Name] VARCHAR(50) NOT NULL
+)
+GO
+CREATE UNIQUE INDEX [IX_Service_Id] ON [Core].[Service] ([Name]) INCLUDE ([Id])
+GO

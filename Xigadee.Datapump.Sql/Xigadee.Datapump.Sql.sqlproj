@@ -59,15 +59,31 @@
     <Folder Include="Properties" />
     <Folder Include="Datapump" />
     <Folder Include="Boundary" />
+    <Folder Include="External" />
+    <Folder Include="Datapump\Helper" />
+    <Folder Include="Core" />
+    <Folder Include="Core\Helper" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Schemas.sql" />
-    <Build Include="Datapump\Batch.sql" />
     <Build Include="Datapump\Entity.sql" />
     <Build Include="Datapump\EntityType.sql" />
     <Build Include="Datapump\EventSource.sql" />
     <Build Include="Datapump\EventSourceData.sql" />
     <Build Include="Datapump\EventType.sql" />
     <Build Include="Datapump\Instance.sql" />
+    <Build Include="Boundary\Log.sql" />
+    <Build Include="Boundary\Poll.sql" />
+    <Build Include="Datapump\Helper\Resolve_Entity.sql" />
+    <Build Include="Datapump\Helper\Resolve_EntityType.sql" />
+    <Build Include="Datapump\Helper\Resolve_EventType.sql" />
+    <Build Include="Datapump\Helper\Resolve_Instance.sql" />
+    <Build Include="Core\Batch.sql" />
+    <Build Include="Core\Helper\Resolve_Batch.sql" />
+    <Build Include="Core\Service.sql" />
+    <Build Include="Core\Channel.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="Xigadee.Datapump.Sql.refactorlog" />
   </ItemGroup>
 </Project>

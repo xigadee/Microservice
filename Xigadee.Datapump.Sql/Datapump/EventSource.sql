@@ -20,7 +20,7 @@
     ,CONSTRAINT [FK_EventSource_ToEntityType] FOREIGN KEY ([EntityType]) REFERENCES [Datapump].[EntityType]([Id])
     ,CONSTRAINT [FK_EventSource_ToEntity] FOREIGN KEY ([Entity]) REFERENCES [Datapump].[Entity]([Id])
     ,CONSTRAINT [FK_EventSource_ToInstance] FOREIGN KEY ([Instance]) REFERENCES [Datapump].[Instance]([Id])
-    ,CONSTRAINT [FK_EventSource_ToBatch] FOREIGN KEY ([BatchId]) REFERENCES [Datapump].[Batch]([Id])
+    ,CONSTRAINT [FK_EventSource_ToBatch] FOREIGN KEY ([BatchId]) REFERENCES [Core].[Batch]([Id])
 )
 
 GO

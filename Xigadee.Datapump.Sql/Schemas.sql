@@ -4,3 +4,5 @@ CREATE SCHEMA [DataPump]
 GO
 CREATE SCHEMA [Boundary]
 GO
+CREATE SCHEMA [Core]
+GO
