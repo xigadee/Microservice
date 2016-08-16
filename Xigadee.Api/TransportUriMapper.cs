@@ -21,14 +21,15 @@ namespace Xigadee
         /// <summary>
         /// THis dictionary contains the individual templates for each HTTP method.
         /// </summary>
-        Dictionary<HttpMethod, string> mUriTemplates; 
+        Dictionary<HttpMethod, string> mUriTemplates;
         #endregion
-
+        #region Constructor
         /// <summary>
         /// This is the default constructor.
         /// </summary>
         /// <param name="keyMapper">The key mapper.</param>
-        public TransportUriMapper(IKeyMapper<K> keyMapper = null)
+        /// <param name="rootUri">This is the root Uri.</param>
+        public TransportUriMapper(IKeyMapper<K> keyMapper = null, Uri rootUri = null)
         {
             mUriTemplates = new Dictionary<HttpMethod, string>();
 
@@ -38,7 +39,8 @@ namespace Xigadee
                 mKeyMapper = keyMapper;
             else
                 mKeyMapper = (KeyMapper<K>)KeyMapper.Resolve<K>();
-        }
+        } 
+        #endregion
 
         /// <summary>
         /// This property determines whether to use https to call the Api.

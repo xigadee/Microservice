@@ -58,7 +58,8 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ApiProviderAsyncBase.cs" />
-    <Compile Include="ApiProviderAsyncBaseCore.cs" />
+    <Compile Include="ApiProviderAsyncQueryHelper.cs" />
+    <Compile Include="ApiProviderAsyncV2.cs" />
     <Compile Include="ApiRepositoryOptions.cs" />
     <Compile Include="Auth\ApiProviderAuthApim.cs" />
     <Compile Include="Auth\IApiProviderAuthBase.cs" />

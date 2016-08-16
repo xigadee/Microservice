@@ -40,6 +40,13 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -65,8 +72,17 @@
     <Compile Include="Common\TestPopulatorBase.cs" />
     <Compile Include="Microservice_Validate_Persistence.cs" />
     <Compile Include="SignatureHelper.cs" />
+    <Compile Include="ApiTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Xigadee.Api.Client\Xigadee.Api.Client.csproj">
+      <Project>{19f45b9b-5c21-4ec3-ae73-84001ebccc4b}</Project>
+      <Name>Xigadee.Api.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Xigadee.Api\Xigadee.Api.csproj">
+      <Project>{9680b7a6-f4b7-4ecb-bbb4-d46941b9cfed}</Project>
+      <Name>Xigadee.Api</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Xigadee.Azure\Xigadee.Azure.csproj">
       <Project>{069f5121-bc8e-4f1f-b08c-ba3f4806db78}</Project>
       <Name>Xigadee.Azure</Name>

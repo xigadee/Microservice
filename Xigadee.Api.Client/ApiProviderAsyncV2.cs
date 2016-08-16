@@ -14,7 +14,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public abstract class ApiProviderAsyncBaseCore<K, E>: IRepositoryAsync<K, E>
+    public class ApiProviderAsyncV2<K, E>: IRepositoryAsync<K, E>
         where K : IEquatable<K>
     {
         #region Declarations
@@ -47,10 +47,36 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        public ApiProviderAsyncBaseCore(TransportUriMapper<K> uriMapper = null
-            , bool useHttps = true
-            , string entityName = null
+        public ApiProviderAsyncV2(TransportUriMapper<K> uriMapper = null   
             , IKeyMapper<K> keyMapper = null
+            , TransportSerializer<E> primaryTransport = null
+            , IEnumerable<IApiProviderAuthBase> authHandlers = null)
+            :this(keyMapper, primaryTransport, authHandlers)
+        {
+
+            if (uriMapper == null)
+                throw new ArgumentNullException("You must set uriMapper");
+
+            mUriMapper = uriMapper;
+        }
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        public ApiProviderAsyncV2(Uri rootUri
+            , IKeyMapper<K> keyMapper = null
+            , TransportSerializer<E> primaryTransport = null
+            , IEnumerable<IApiProviderAuthBase> authHandlers = null)
+            : this(keyMapper, primaryTransport, authHandlers)
+        {
+            if (rootUri == null)
+                throw new ArgumentNullException("You must set rootUri for the API");
+
+            mUriMapper = CreateUriMapper(rootUri);
+        }
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        protected ApiProviderAsyncV2(IKeyMapper<K> keyMapper = null
             , TransportSerializer<E> primaryTransport = null
             , IEnumerable<IApiProviderAuthBase> authHandlers = null)
         {
@@ -58,8 +84,6 @@ namespace Xigadee
             mAssemblyVersion = AssemblyVersionGet();
 
             mKeyMapper = keyMapper ?? ResolveKeyMapper();
-
-            mUriMapper = uriMapper ?? ResolveUriMapper(uriMapper, entityName);
 
             mPrimaryTransport = primaryTransport ?? ResolveTransport();
 
@@ -93,9 +117,9 @@ namespace Xigadee
         /// This method resolves the appropriate transport uri mapper for the request.
         /// </summary>
         /// <param name="uriMapper">The mapper passed through the constructor.</param>
-        protected virtual TransportUriMapper<K> ResolveUriMapper(TransportUriMapper<K> uriMapper, string entityName)
+        protected virtual TransportUriMapper<K> CreateUriMapper(Uri rootUri)
         {
-            return new TransportUriMapper<K>(mKeyMapper);
+            return new TransportUriMapper<K>(mKeyMapper, rootUri);
         }
         #endregion
         #region ResolveTransport()
@@ -133,7 +157,7 @@ namespace Xigadee
                 return await CallClient<K, E>(uri, options
                     , content: content
                     , deserializer: EntityDeserialize
-                    , mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
+                    , mapper: (rs, holder) => ExtractHeaders(rs, holder));
             }
         }
         #endregion
@@ -150,7 +174,7 @@ namespace Xigadee
 
             return await CallClient<K, E>(uri, options
                 , deserializer: EntityDeserialize
-                , mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
+                , mapper: (rs, holder) => ExtractHeaders(rs, holder));
         }
         #endregion
         #region ReadByRef(string refKey, string refValue, RepositorySettings options = null)
@@ -167,7 +191,7 @@ namespace Xigadee
 
             return await CallClient<K, E>(uri, options
                 , deserializer: EntityDeserialize
-                , mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
+                , mapper: (rs, holder) => ExtractHeaders(rs, holder));
         }
         #endregion
         #region Update(E entity, RepositorySettings options = null)
@@ -186,7 +210,7 @@ namespace Xigadee
                 return await CallClient<K, E>(uri, options
                     , content: content
                     , deserializer: EntityDeserialize
-                    , mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
+                    , mapper: (rs, holder) => ExtractHeaders(rs, holder));
             }
         }
         #endregion
@@ -202,7 +226,7 @@ namespace Xigadee
             var uri = GetUri(HttpMethod.Delete, key);
 
             return await CallClient<K, Tuple<K, string>>(uri, options
-                , mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
+                , mapper: (rs, holder) => ExtractHeaders(rs, holder));
         }
         #endregion
         #region DeleteByRef(string refKey, string refValue, RepositorySettings options = null)
@@ -218,7 +242,7 @@ namespace Xigadee
             var uri = GetUri(HttpMethod.Delete, refKey, refValue);
 
             return await CallClient<K, Tuple<K, string>>(uri, options
-                , mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
+                , mapper: (rs, holder) => ExtractHeaders(rs, holder));
         }
         #endregion
         #region Version(K key, RepositorySettings options = null)
@@ -233,7 +257,7 @@ namespace Xigadee
             var uri = GetUri(HttpMethod.Head, key);
 
             return await CallClient<K, Tuple<K, string>>(uri, options
-                , mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
+                , mapper: (rs, holder) => ExtractHeaders(rs, holder));
         }
         #endregion
         #region VersionByRef(string refKey, string refValue, RepositorySettings options = null)
@@ -249,7 +273,7 @@ namespace Xigadee
             var uri = GetUri(HttpMethod.Head, refKey, refValue);
 
             return await CallClient<K, Tuple<K, string>>(uri, options
-                , mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
+                , mapper: (rs, holder) => ExtractHeaders(rs, holder));
         }
         #endregion
 
@@ -280,7 +304,7 @@ namespace Xigadee
         /// <param name="rs">The incoming response.</param>
         /// <param name="transport">The resolve transport serializer.</param>
         /// <returns>Returns true if the serializer can be resolved.</returns>
-        protected virtual void ExtractHeaders<KT>(HttpResponseMessage rs, RepositoryHolder<KT> holder, IKeyMapper<KT> keyMapper)
+        protected virtual void ExtractHeaders(HttpResponseMessage rs, RepositoryHolder<K> holder)
         {
             string contentId = rs.Headers.Where((h) => h.Key.Equals("x-img-contentid", StringComparison.InvariantCultureIgnoreCase))
                 .SelectMany((h) => h.Value).FirstOrDefault() ?? "";
@@ -291,7 +315,7 @@ namespace Xigadee
             holder.KeyReference = new Tuple<string, string>(contentId, versionId);
 
             if (!string.IsNullOrEmpty(contentId))
-                holder.Key = keyMapper.ToKey(contentId);
+                holder.Key = mKeyMapper.ToKey(contentId);
         }
         #endregion
 
@@ -324,9 +348,11 @@ namespace Xigadee
 
                 RequestHeadersSet(httpRq);
 
+                RequestHeadersSetTransport(httpRq);
+
                 RequestHeadersPreferSet(httpRq, options?.Prefer);
 
-                RequestHeadersAuthSet(httpRq);
+                RequestHeadersAuth(httpRq);
 
                 adjust?.Invoke(httpRq);
 
@@ -337,6 +363,8 @@ namespace Xigadee
 
                 // Specify request body
                 var httpRs = await client.SendAsync(httpRq);
+
+                ResponseHeadersAuth(httpRq, httpRs);
 
                 //OK, set the response content if set
                 if (httpRs.Content != null && httpRs.Content.Headers.ContentLength > 0)
@@ -395,48 +423,23 @@ namespace Xigadee
         /// <param name="rq">The http request.</param>
         protected virtual void RequestHeadersSet(HttpRequestMessage rq)
         {
-            RequestHeadersSetHelper(rq);
-
-            RequestHeadersSetTransport(rq);
-
-            RequestHeadersSetSecurity(rq);
-        }
-        #endregion
-        #region RequestHeadersSetHelper(HttpRequestMessage rq)
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="rq"></param>
-        protected virtual void RequestHeadersSetHelper(HttpRequestMessage rq)
-        {
             rq.Headers.Add("x-api-clientversion", mAssemblyVersion);
             rq.Headers.Add("x-api-version", "2016-08-01");
         }
         #endregion
         #region RequestHeadersSetTransport(HttpRequestMessage rq)
         /// <summary>
-        /// 
+        /// This method sets the media quality type for the entity transfer.
         /// </summary>
-        /// <param name="rq"></param>
+        /// <param name="rq">The http request.</param>
         protected virtual void RequestHeadersSetTransport(HttpRequestMessage rq)
         {
             mTransportSerializers.ForEach((t) => rq.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(t.Value.MediaType, t.Value.Priority)));
         }
         #endregion
-        #region RequestHeadersSetSecurity(HttpRequestMessage rq)
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="rq">The http request object.</param>
-        protected virtual void RequestHeadersSetSecurity(HttpRequestMessage rq)
-        {
-
-        }
-        #endregion
-
         #region RequestHeadersPreferSet(HttpRequestMessage rq, Dictionary<string, string> Prefer)
         /// <summary>
-        /// This method sets the prefer request headers for the Api call.
+        /// This method sets the prefer request header directives for the Api call.
         /// </summary>
         /// <param name="rq">The http request object.</param>
         /// <param name="Prefer">The prefer collection.</param>
@@ -453,7 +456,17 @@ namespace Xigadee
         /// </summary>
         /// <param name="rq">The http request object.</param>
         /// <param name="Prefer">The prefer collection.</param>
-        protected virtual void RequestHeadersAuthSet(HttpRequestMessage rq)
+        protected virtual void RequestHeadersAuth(HttpRequestMessage rq)
+        {
+        }
+        #endregion
+        #region ResponseHeadersAuth(HttpRequestMessage rq, HttpResponseMessage rs)
+        /// <summary>
+        /// This method sets the prefer request headers for the Api call.
+        /// </summary>
+        /// <param name="rq">The http request object.</param>
+        /// <param name="Prefer">The prefer collection.</param>
+        protected virtual void ResponseHeadersAuth(HttpRequestMessage rq, HttpResponseMessage rs)
         {
         }
         #endregion
