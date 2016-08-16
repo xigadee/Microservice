@@ -19,9 +19,13 @@ namespace Test.Xigadee
 
         public PopulatorServer Server { get; private set; }
 
+        public IDisposable ApiServer { get; set; }
+
         public Lazy<IRepositoryAsync<Guid, MondayMorningBlues>> ClientPersistence;
 
         public Lazy<IRepositoryAsync<Guid, MondayMorningBlues>> ServerPersistence;
+
+        public Lazy<IRepositoryAsync<Guid, MondayMorningBlues>> ApiPersistence;
 
         public Func<int> PersistenceStatus = () => 0;
 

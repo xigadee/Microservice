@@ -13,18 +13,17 @@ namespace Test.Xigadee
 {
     static partial class Program
     {
-        static IDisposable mWebApp;
-
         static void MicroserviceWebAPIStart()
         {
             try
             {
                 StartOptions options = new StartOptions();
                 options.Urls.Add("http://localhost:29001");
-                mWebApp = WebApp.Start<Test.Xigadee.Api.Server.Startup>(options);
+                sServerContext.ApiServer = WebApp.Start<Test.Xigadee.Api.Server.Startup>(options);
             }
             catch (Exception ex)
             {
+                sServerContext.ApiServer = null;
                 throw ex;
             }
 
@@ -32,8 +31,8 @@ namespace Test.Xigadee
 
         static void MicroserviceWebAPIStop()
         {
-            mWebApp.Dispose();
-            mWebApp = null;
+            sServerContext.ApiServer.Dispose();
+            sServerContext.ApiServer = null;
         }
 
     }

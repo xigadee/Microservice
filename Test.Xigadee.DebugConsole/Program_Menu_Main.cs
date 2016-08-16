@@ -76,7 +76,7 @@ namespace Test.Xigadee
                         sServerContext.PersistenceStatus = () => sServerContext.Client.Status;
                     }
                     , childMenu: sPersistenceMenuClient.Value
-                    , enabled: (m, o) => sServerContext.Client.Status == 2
+                    , enabled: (m, o) => sServerContext.ApiServer != null
                 )
                 , new ConsoleOption("Server Shared Service Persistence methods"
                     , (m, o) =>
