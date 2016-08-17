@@ -8,7 +8,7 @@ namespace Test.Xigadee
 {
     static class ContextHelper
     {
-        public static void SetPersistenceCacheOption(this Context c, string value)
+        public static void SetServicePersistenceCacheOption(this Context c, string value)
         {
             switch (value.ToLowerInvariant())
             {
@@ -24,7 +24,7 @@ namespace Test.Xigadee
             }
         }
 
-        public static void SetPersistenceOption(this Context c, string value)
+        public static void SetServicePersistenceOption(this Context c, string value)
         {
             switch (value.ToLowerInvariant())
             {

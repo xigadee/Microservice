@@ -7,6 +7,11 @@ namespace Test.Xigadee
 {
     static partial class Program
     {
+
+        static Dictionary<string, string> sServerSettings = new Dictionary<string, string>();
+
+        static Dictionary<string, string> sClientSettings = new Dictionary<string, string>();
+
         static void MicroserviceClientStart()
         {
             sContext.Client.Service.StatusChanged += ClientStatusChanged;

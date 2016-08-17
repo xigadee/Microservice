@@ -2,20 +2,6 @@
 using Xigadee;
 namespace Test.Xigadee
 {
-    class ContextPersistence<K,E>
-        where K: IEquatable<K>
-    {
-        public ContextPersistence(IRepositoryAsync<Guid, MondayMorningBlues> persistence)
-        {
-            Persistence = persistence;
-        }
-
-        public IRepositoryAsync<Guid, MondayMorningBlues> Persistence { get;}
-
-        public int Status { get; set; }
-
-        public bool CacheEnabled { get; set; }
-    }
 
     /// <summary>
     /// This class is used to manage the state of the console application.
@@ -27,26 +13,39 @@ namespace Test.Xigadee
             Client = new PopulatorClient();
             Server = new PopulatorServer();
 
-            ClientPersistence = new Lazy<IRepositoryAsync<Guid, MondayMorningBlues>>(() => Client.Persistence);
+            ClientPersistence = new ContextPersistence<Guid, MondayMorningBlues>( new Lazy<IRepositoryAsync<Guid, MondayMorningBlues>>(() => Client.Persistence));
 
-            ServerPersistence = new Lazy<IRepositoryAsync<Guid, MondayMorningBlues>>(() => Server.Persistence);
+            ServerPersistence = new ContextPersistence<Guid, MondayMorningBlues>(new Lazy<IRepositoryAsync<Guid, MondayMorningBlues>>(() => Server.Persistence));
+
+            ApiPersistence = new ContextPersistence<Guid, MondayMorningBlues>(new Lazy<IRepositoryAsync<Guid, MondayMorningBlues>>(() => new ApiProviderAsyncV2<Guid, MondayMorningBlues>(ApiUri)));
         }
 
+        public Uri ApiUri { get; set; }
+        /// <summary>
+        /// This is the client Microservice.
+        /// </summary>
         public PopulatorClient Client { get; private set; }
-
+        /// <summary>
+        /// This is the server Microservice.
+        /// </summary>
         public PopulatorServer Server { get; private set; }
-
+        /// <summary>
+        /// This is the Api instancer service.
+        /// </summary>
         public IDisposable ApiServer { get; set; }
 
-        public Lazy<IRepositoryAsync<Guid, MondayMorningBlues>> ClientPersistence;
-
-        public Lazy<IRepositoryAsync<Guid, MondayMorningBlues>> ServerPersistence;
-
-        public Lazy<IRepositoryAsync<Guid, MondayMorningBlues>> ApiPersistence;
-
-        public Func<int> PersistenceStatus = () => 0;
-
-        public Func<int> ApiPersistenceStatus = () => 0;
+        /// <summary>
+        /// This is the client persistence class.
+        /// </summary>//ContextPersistence<K, E>
+        public ContextPersistence<Guid, MondayMorningBlues> ClientPersistence { get; set; }
+        /// <summary>
+        /// This is the server persistence class.
+        /// </summary>
+        public ContextPersistence<Guid, MondayMorningBlues> ServerPersistence { get; set; }
+        /// <summary>
+        /// This is the Api Persistence client that will connect to the Api Service over a RESTful Api connection.
+        /// </summary>
+        public ContextPersistence<Guid, MondayMorningBlues> ApiPersistence { get; set; }
 
         public int SlotCount;
 

@@ -187,6 +187,7 @@
   <ItemGroup>
     <Compile Include="Context\Context.cs" />
     <Compile Include="Context\ContextHelper.cs" />
+    <Compile Include="Context\ContextPersistence.cs" />
     <Compile Include="Jobs\DoNothingJob.cs" />
     <Compile Include="Jobs\DelayProcessingJob.cs" />
     <Compile Include="Jobs\TestMasterJob2.cs" />

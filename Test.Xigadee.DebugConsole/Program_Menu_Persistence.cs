@@ -9,14 +9,14 @@ namespace Test.Xigadee
 {
     static partial class Program
     {
-        static ConsoleOption Create(Lazy<IRepositoryAsync<Guid, MondayMorningBlues>> repo)
+        static ConsoleOption Create(ContextPersistence<Guid, MondayMorningBlues> repo)
         {
             return new ConsoleOption("Create entity"
             , (m, o) =>
             {
                 sContext.EntityId = Guid.NewGuid();
 
-                var result = repo.Value.Create(CreateEntity(sContext.EntityId, email: sContext.EntityReference)
+                var result = repo.Persistence.Create(CreateEntity(sContext.EntityId, email: sContext.EntityReference)
                     , new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5), Source = "Xigadee"}).Result;
 
                 if (result.IsSuccess)
@@ -24,42 +24,42 @@ namespace Test.Xigadee
 
                 PersistenceLog(m, "Create", result.IsSuccess);
             }
-               , enabled: (m, o) => sContext.PersistenceStatus() == 2
+               , enabled: (m, o) => repo.Status == 2
                );
         }
 
-        static ConsoleOption Read(Lazy<IRepositoryAsync<Guid, MondayMorningBlues>> repo)
+        static ConsoleOption Read(ContextPersistence<Guid, MondayMorningBlues> repo)
         {
             return new ConsoleOption("Read entity"
                , (m, o) =>
                {
-                   var result = repo.Value.Read(sContext.EntityId
+                   var result = repo.Persistence.Read(sContext.EntityId
                        , new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
                    PersistenceLog(m, "Read", result.IsSuccess);
                }
-               , enabled: (m, o) => sContext.PersistenceStatus() == 2
+               , enabled: (m, o) => repo.Status == 2
                );
         }
 
-        static ConsoleOption ReadByReference(Lazy<IRepositoryAsync<Guid, MondayMorningBlues>> repo)
+        static ConsoleOption ReadByReference(ContextPersistence<Guid, MondayMorningBlues> repo)
         {
             return new ConsoleOption("Read entity by reference"
                , (m, o) =>
                {
-                   var result = repo.Value.ReadByRef("email", sContext.EntityReference
+                   var result = repo.Persistence.ReadByRef("email", sContext.EntityReference
                        , new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
                    PersistenceLog(m, "Read By Reference", result.IsSuccess);
                }
-               , enabled: (m, o) => sContext.PersistenceStatus() == 2
+               , enabled: (m, o) => repo.Status == 2
                );
         }
 
-        static ConsoleOption Update(Lazy<IRepositoryAsync<Guid, MondayMorningBlues>> repo)
+        static ConsoleOption Update(ContextPersistence<Guid, MondayMorningBlues> repo)
         {
             return new ConsoleOption("Update entity"
                , (m, o) =>
                {
-                   var result = repo.Value.Update(
+                   var result = repo.Persistence.Update(
                        new MondayMorningBlues()
                        {
                            Id = sContext.EntityId,
@@ -80,16 +80,16 @@ namespace Test.Xigadee
                        sContext.EntityVersionid = result.Entity.VersionId;
                    }
                }
-               , enabled: (m, o) => sContext.PersistenceStatus() == 2
+               , enabled: (m, o) => repo.Status == 2
                );
         }
 
-        static ConsoleOption Delete(Lazy<IRepositoryAsync<Guid, MondayMorningBlues>> repo)
+        static ConsoleOption Delete(ContextPersistence<Guid, MondayMorningBlues> repo)
         {
             return new ConsoleOption("Delete entity"
                , (m, o) =>
                {
-                   var result = repo.Value.Delete(sContext.EntityId
+                   var result = repo.Persistence.Delete(sContext.EntityId
                        , new RepositorySettings()
                        {
                            WaitTime = TimeSpan.FromMinutes(5)
@@ -97,16 +97,16 @@ namespace Test.Xigadee
                        }).Result;
                    PersistenceLog(m, "Delete", result.IsSuccess);
                }
-               , enabled: (m, o) => sContext.PersistenceStatus() == 2
+               , enabled: (m, o) => repo.Status == 2
                );
         }
 
-        static ConsoleOption DeleteByReference(Lazy<IRepositoryAsync<Guid, MondayMorningBlues>> repo)
+        static ConsoleOption DeleteByReference(ContextPersistence<Guid, MondayMorningBlues> repo)
         {
             return new ConsoleOption("Delete entity by reference"
                , (m, o) =>
                {
-                   var result = repo.Value.DeleteByRef("email", sContext.EntityReference,
+                   var result = repo.Persistence.DeleteByRef("email", sContext.EntityReference,
                        new RepositorySettings()
                        {
                            WaitTime = TimeSpan.FromMinutes(5)
@@ -114,16 +114,16 @@ namespace Test.Xigadee
                        }).Result;
                    PersistenceLog(m, "Delete By Reference", result.IsSuccess);
                }
-               , enabled: (m, o) => sContext.PersistenceStatus() == 2
+               , enabled: (m, o) => repo.Status == 2
                );
         }
 
-        static ConsoleOption Version(Lazy<IRepositoryAsync<Guid, MondayMorningBlues>> repo)
+        static ConsoleOption Version(ContextPersistence<Guid, MondayMorningBlues> repo)
         {
             return new ConsoleOption("Version entity"
                , (m, o) =>
                {
-                   var result = repo.Value.Version(sContext.EntityId,
+                   var result = repo.Persistence.Version(sContext.EntityId,
                        new RepositorySettings()
                        {
                            WaitTime = TimeSpan.FromMinutes(5)
@@ -131,16 +131,16 @@ namespace Test.Xigadee
                        }).Result;
                    PersistenceLog(m, "Version", result.IsSuccess);
                }
-               , enabled: (m, o) => sContext.PersistenceStatus() == 2
+               , enabled: (m, o) => repo.Status == 2
                );
         }
 
-        static ConsoleOption VersionByReference(Lazy<IRepositoryAsync<Guid, MondayMorningBlues>> repo)
+        static ConsoleOption VersionByReference(ContextPersistence<Guid, MondayMorningBlues> repo)
         {
             return new ConsoleOption("Version entity by reference"
                , (m, o) =>
                {
-                   var result = repo.Value.VersionByRef("EMAIL", sContext.EntityReference
+                   var result = repo.Persistence.VersionByRef("EMAIL", sContext.EntityReference
                        , new RepositorySettings
                        {
                            WaitTime = TimeSpan.FromMinutes(5)
@@ -149,18 +149,18 @@ namespace Test.Xigadee
 
                    PersistenceLog(m, "Version By Reference", result.IsSuccess);
                }
-               , enabled: (m, o) => sContext.PersistenceStatus() == 2
+               , enabled: (m, o) => repo.Status == 2
                );
         }
 
-        static ConsoleOption Search(Lazy<IRepositoryAsync<Guid, MondayMorningBlues>> repo)
+        static ConsoleOption Search(ContextPersistence<Guid, MondayMorningBlues> repo)
         {
             return new ConsoleOption("Search entity"
                , (m, o) =>
                {
                    var search = new SearchRequest();
 
-                   var result = repo.Value.Search(search,
+                   var result = repo.Persistence.Search(search,
                        new RepositorySettings()
                        {
                            WaitTime = TimeSpan.FromMinutes(5)
@@ -168,11 +168,11 @@ namespace Test.Xigadee
 
                    PersistenceLog(m, "Search", result.IsSuccess);
                }
-               , enabled: (m, o) => sContext.PersistenceStatus() == 2
+               , enabled: (m, o) => repo.Status == 2
                );
         }
 
-        static ConsoleOption StressTest(Lazy<IRepositoryAsync<Guid, MondayMorningBlues>> repo)
+        static ConsoleOption StressTest(ContextPersistence<Guid, MondayMorningBlues> repo)
         {
             return new ConsoleOption("Create 100000 entities async"
                , (m, o) =>
@@ -183,7 +183,7 @@ namespace Test.Xigadee
                    {
                        try
                        {
-                           var result = repo.Value.Create(CreateEntity()
+                           var result = repo.Persistence.Create(CreateEntity()
                                , new RepositorySettings()
                                {
                                    WaitTime = TimeSpan.FromMinutes(15),
@@ -201,73 +201,73 @@ namespace Test.Xigadee
 
                    PersistenceLog(m, "100000 enqueued", true);
                }
-               , enabled: (m, o) => sContext.PersistenceStatus() == 2
+               , enabled: (m, o) => repo.Status == 2
                );
         }
 
-        static ConsoleOption StressCrudTest(Lazy<IRepositoryAsync<Guid, MondayMorningBlues>> repo)
+        static ConsoleOption StressCrudTest(ContextPersistence<Guid, MondayMorningBlues> repo)
         {
             return new ConsoleOption("Create, Read, Update, Delete 1000 entities async"
                , (m, o) =>
                {
-                   // Create a work queue to process
-                   var batchId = Guid.NewGuid().ToString("N").ToUpperInvariant();
-                   var workQueue = new ConcurrentQueue<Tuple<int, Func<Lazy<IRepositoryAsync<Guid, MondayMorningBlues>>, string, Task<bool>>>>();
-                   for (var j = 0; j < 1000; j++)
-                   {
-                       workQueue.Enqueue(new Tuple<int, Func<Lazy<IRepositoryAsync<Guid, MondayMorningBlues>>, string, Task<bool>>>(j, (r, b) => PerformCrud(r, b, m)));                       
-                   }
+                   //// Create a work queue to process
+                   //var batchId = Guid.NewGuid().ToString("N").ToUpperInvariant();
+                   //var workQueue = new ConcurrentQueue<Tuple<int, Func<Lazy<IRepositoryAsync<Guid, MondayMorningBlues>>, string, Task<bool>>>>();
+                   //for (var j = 0; j < 1000; j++)
+                   //{
+                   //    workQueue.Enqueue(new Tuple<int, Func<Lazy<IRepositoryAsync<Guid, MondayMorningBlues>>, string, Task<bool>>>(j, (r, b) => PerformCrud(r, b, m)));                       
+                   //}
 
-                   for (int i = 0; i < 50; i++)
-                   {
-                       var taskId = i;
-                       Task.Run(async () =>
-                       {
-                           Tuple<int, Func<Lazy<IRepositoryAsync<Guid, MondayMorningBlues>>, string, Task<bool>>> queueItem;
-                           while (workQueue.TryDequeue(out queueItem))
-                           {
-                               var crudStart = DateTime.UtcNow;
-                               var result = await queueItem.Item2(repo, batchId);
-                               if (!result)
-                               {
-                                   PersistenceLog(m, "Failure for " + taskId, false);
-                                   return;
-                               }
-                               Console.WriteLine($"Crud for worker {taskId} processed {queueItem.Item1} successfully after {DateTime.UtcNow.Subtract(crudStart).TotalSeconds} seconds");
-                           }
-                           PersistenceLog(m, $"{taskId} Finished Crud {queueItem.Item1}", true);
-                       });
-                   }
+                   //for (int i = 0; i < 50; i++)
+                   //{
+                   //    var taskId = i;
+                   //    Task.Run(async () =>
+                   //    {
+                   //        Tuple<int, IRepositoryAsync<Guid, MondayMorningBlues>, string, Task<bool>>> queueItem;
+                   //        while (workQueue.TryDequeue(out queueItem))
+                   //        {
+                   //            var crudStart = DateTime.UtcNow;
+                   //            var result = await queueItem.Item2(repo.Persistence, batchId);
+                   //            if (!result)
+                   //            {
+                   //                PersistenceLog(m, "Failure for " + taskId, false);
+                   //                return;
+                   //            }
+                   //            Console.WriteLine($"Crud for worker {taskId} processed {queueItem.Item1} successfully after {DateTime.UtcNow.Subtract(crudStart).TotalSeconds} seconds");
+                   //        }
+                   //        PersistenceLog(m, $"{taskId} Finished Crud {queueItem.Item1}", true);
+                   //    });
+                   //}
 
                    PersistenceLog(m, "1000 enqueued", true);
                }
-               , enabled: (m, o) => sContext.PersistenceStatus() == 2
+               , enabled: (m, o) => repo.Status == 2
                );
         }
 
-        private static async Task<bool> PerformCrud(Lazy<IRepositoryAsync<Guid, MondayMorningBlues>> repo, string batchId, ConsoleMenu m)
+        private static async Task<bool> PerformCrud(ContextPersistence<Guid, MondayMorningBlues> repo, string batchId, ConsoleMenu m)
         {
             var createEntity = CreateEntity();
             var repoSettings = new RepositorySettings { BatchId = batchId };
-            var createResult = await repo.Value.Create(createEntity, repoSettings);
+            var createResult = await repo.Persistence.Create(createEntity, repoSettings);
             if (!createResult.IsSuccess)
             {
                 PersistenceLog(m, $"StressCrudTest Create {createResult.ResponseCode}", createResult.IsSuccess);
                 return false;
             }
-            var readResult = await repo.Value.Read(createEntity.Id, repoSettings);
+            var readResult = await repo.Persistence.Read(createEntity.Id, repoSettings);
             if (!readResult.IsSuccess)
             {
                 PersistenceLog(m, $"StressCrudTest Read {readResult.ResponseCode}", readResult.IsSuccess);
                 return false;
             }
-            var updateResult = await repo.Value.Update(readResult.Entity, repoSettings);
+            var updateResult = await repo.Persistence.Update(readResult.Entity, repoSettings);
             if (!updateResult.IsSuccess)
             {
                 PersistenceLog(m, $"StressCrudTest Update {updateResult.ResponseCode}", updateResult.IsSuccess);
                 return false;
             }
-            var deleteResult = await repo.Value.Delete(createEntity.Id, repoSettings);
+            var deleteResult = await repo.Persistence.Delete(createEntity.Id, repoSettings);
             if (!deleteResult.IsSuccess)
             {
                 PersistenceLog(m, $"StressCrudTest Delete {deleteResult.ResponseCode}", deleteResult.IsSuccess);

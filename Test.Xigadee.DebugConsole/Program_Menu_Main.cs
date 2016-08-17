@@ -65,7 +65,7 @@ namespace Test.Xigadee
                 , new ConsoleOption("Client Persistence methods"
                     , (m, o) =>
                     {
-                        sContext.PersistenceStatus = () => sContext.Client.Status;
+                        //sContext.ClientPersistence = () => sContext.Client.Status;
                     }
                     , childMenu: sPersistenceMenuClient.Value
                     , enabled: (m, o) => sContext.Client.Status == 2
@@ -73,7 +73,7 @@ namespace Test.Xigadee
                 , new ConsoleOption("API Client Persistence methods"
                     , (m, o) =>
                     {
-                        sContext.ApiPersistenceStatus = () => 2;
+                        //sContext.ApiPersistenceStatus = () => 2;
                     }
                     , childMenu: sPersistenceMenuApi.Value
                     , enabled: (m, o) => sContext.ApiPersistence != null
@@ -81,7 +81,7 @@ namespace Test.Xigadee
                 , new ConsoleOption("Server Shared Service Persistence methods"
                     , (m, o) =>
                     {
-                        sContext.PersistenceStatus = () => sContext.Server.Status;
+                        //sContext.PersistenceStatus = () => sContext.Server.Status;
                     }
                     , childMenu: sPersistenceMenuServer.Value
                     , enabled: (m, o) => sContext.Server.Status == 2

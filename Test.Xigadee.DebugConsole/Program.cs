@@ -9,21 +9,19 @@ namespace Test.Xigadee
     {
         static Context sContext;
 
-        static Dictionary<string, string> sServerSettings = new Dictionary<string, string>();
-
-        static Dictionary<string, string> sClientSettings = new Dictionary<string, string>();
-
         static void Main(string[] args)
         {
             sContext = new Context();
 
+            sContext.ApiUri = new Uri("http://localhost:29001");
+
             var switches = args.CommandArgsParse();
 
             if (switches.ContainsKey("persistence"))
-                sContext.SetPersistenceOption(switches["persistence"]);
+                sContext.SetServicePersistenceOption(switches["persistence"]);
 
             if (switches.ContainsKey("persistencecache"))
-                sContext.SetPersistenceCacheOption(switches["persistencecache"]);
+                sContext.SetServicePersistenceCacheOption(switches["persistencecache"]);
 
             sContext.SlotCount = switches.ContainsKey("processes") ? 
                 int.Parse(switches["processes"]) : Environment.ProcessorCount * 4 * 4;

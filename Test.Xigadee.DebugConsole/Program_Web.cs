@@ -13,18 +13,16 @@ namespace Test.Xigadee
 {
     static partial class Program
     {
-        static string sApiHost = "http://localhost:29001";
         static void MicroserviceWebAPIStart()
         {
             try
             {
                 StartOptions options = new StartOptions();
-                options.Urls.Add(sApiHost);
-                sMainMenu.Value.AddInfoMessage($"Api Starting @ {sApiHost}", true);
+                options.Urls.Add(sContext.ApiUri.ToString());
+                sMainMenu.Value.AddInfoMessage($"Api Starting @ {sContext.ApiUri.ToString()}", true);
 
                 sContext.ApiServer = WebApp.Start<Test.Xigadee.Api.Server.Startup>(options);
 
-                sContext.ApiPersistence = new Lazy<IRepositoryAsync<Guid, MondayMorningBlues>>(() => new ApiProviderAsyncV2<Guid, MondayMorningBlues>(new Uri(sApiHost)));
                 sMainMenu.Value.AddInfoMessage("Api Started", true);
 
             }
