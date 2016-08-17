@@ -7,9 +7,7 @@ namespace Test.Xigadee
 {
     static partial class Program
     {
-        static Context sServerContext;
-        static Context sClientContext;
-        static Context sWebAPIContext;
+        static Context sContext;
 
         static Dictionary<string, string> sServerSettings = new Dictionary<string, string>();
 
@@ -17,21 +15,21 @@ namespace Test.Xigadee
 
         static void Main(string[] args)
         {
-            sServerContext = new Context();
+            sContext = new Context();
 
             var switches = args.CommandArgsParse();
 
             if (switches.ContainsKey("persistence"))
-                sServerContext.SetPersistenceOption(switches["persistence"]);
+                sContext.SetPersistenceOption(switches["persistence"]);
 
             if (switches.ContainsKey("persistencecache"))
-                sServerContext.SetPersistenceCacheOption(switches["persistencecache"]);
+                sContext.SetPersistenceCacheOption(switches["persistencecache"]);
 
-            sServerContext.SlotCount = switches.ContainsKey("processes") ? 
+            sContext.SlotCount = switches.ContainsKey("processes") ? 
                 int.Parse(switches["processes"]) : Environment.ProcessorCount * 4 * 4;
 
-            sServerContext.EntityVersionid = Guid.NewGuid();
-            sServerContext.EntityId = new Guid("414f06b5-7c16-403a-acc5-40d2b18f08a1");
+            sContext.EntityVersionid = Guid.NewGuid();
+            sContext.EntityId = new Guid("414f06b5-7c16-403a-acc5-40d2b18f08a1");
 
             sMainMenu.Value.Show(args, shortcut:switches.ContainsKey("shortcut")?switches["shortcut"]:null);
         }

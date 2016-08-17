@@ -203,6 +203,7 @@
     <Compile Include="Program_Entity.cs" />
     <Compile Include="Program_Menu_Main.cs" />
     <Compile Include="Program_Menu_Persistence.cs" />
+    <Compile Include="Program_Menu_PersistenceApi.cs" />
     <Compile Include="Program_Menu_PersistenceSettings.cs" />
     <Compile Include="Program_Menu_StressTestsServer.cs" />
     <Compile Include="Program_Menu_StressTestsClient.cs" />
@@ -228,6 +229,10 @@
     <ProjectReference Include="..\Test.Xigadee.Shared\Test.Xigadee.Shared.csproj">
       <Project>{6aa8f0e5-ab72-4df5-bd02-a23fbd8fdb83}</Project>
       <Name>Test.Xigadee.Shared</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Xigadee.Api.Client\Xigadee.Api.Client.csproj">
+      <Project>{19f45b9b-5c21-4ec3-ae73-84001ebccc4b}</Project>
+      <Name>Xigadee.Api.Client</Name>
     </ProjectReference>
     <ProjectReference Include="..\Xigadee.Api\Xigadee.Api.csproj">
       <Project>{9680b7a6-f4b7-4ecb-bbb4-d46941b9cfed}</Project>

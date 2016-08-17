@@ -2,6 +2,21 @@
 using Xigadee;
 namespace Test.Xigadee
 {
+    class ContextPersistence<K,E>
+        where K: IEquatable<K>
+    {
+        public ContextPersistence(IRepositoryAsync<Guid, MondayMorningBlues> persistence)
+        {
+            Persistence = persistence;
+        }
+
+        public IRepositoryAsync<Guid, MondayMorningBlues> Persistence { get;}
+
+        public int Status { get; set; }
+
+        public bool CacheEnabled { get; set; }
+    }
+
     /// <summary>
     /// This class is used to manage the state of the console application.
     /// </summary>
@@ -10,8 +25,10 @@ namespace Test.Xigadee
         public Context()
         {
             Client = new PopulatorClient();
-            ClientPersistence = new Lazy<IRepositoryAsync<Guid, MondayMorningBlues>>(() => Client.Persistence);
             Server = new PopulatorServer();
+
+            ClientPersistence = new Lazy<IRepositoryAsync<Guid, MondayMorningBlues>>(() => Client.Persistence);
+
             ServerPersistence = new Lazy<IRepositoryAsync<Guid, MondayMorningBlues>>(() => Server.Persistence);
         }
 
@@ -29,6 +46,8 @@ namespace Test.Xigadee
 
         public Func<int> PersistenceStatus = () => 0;
 
+        public Func<int> ApiPersistenceStatus = () => 0;
+
         public int SlotCount;
 
         public PersistenceOptions PersistenceType = PersistenceOptions.DocumentDb;
@@ -41,7 +60,7 @@ namespace Test.Xigadee
         {
             get
             {
-                return $"guy+{EntityId.ToString("N")}@hotmail.com";
+                return $"anyone+{EntityId.ToString("N")}@hotmail.com";
             }
         }
 

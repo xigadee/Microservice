@@ -14,13 +14,13 @@ namespace Test.Xigadee
                     {
                         MicroserviceLoadSettings();
                     }
-                    , enabled: (m, o) => sServerContext.Client.Status == 0 && sServerContext.Server.Status == 0
+                    , enabled: (m, o) => sContext.Client.Status == 0 && sContext.Server.Status == 0
                 )
                 , new ConsoleOption("Set Persistence storage options"
                     , (m, o) =>
                     {
                     }
-                    , enabled: (m, o) => sServerContext.Server.Status == 0
+                    , enabled: (m, o) => sContext.Server.Status == 0
                     , childMenu: sPersistenceSettingsMenu.Value
                 )                
                 , new ConsoleSwitchOption(
@@ -31,7 +31,7 @@ namespace Test.Xigadee
                     }
                     , "Stop client", (m, o) =>
                     {
-                        Task.Run(() => sServerContext.Client.Stop());
+                        Task.Run(() => sContext.Client.Stop());
                         return true;
                     }
                     ,shortcut: "startclient"
@@ -57,7 +57,7 @@ namespace Test.Xigadee
                     }
                     ,"Stop server", (m, o) =>
                     {
-                        Task.Run(() => sServerContext.Server.Stop());
+                        Task.Run(() => sContext.Server.Stop());
                         return true;
                     }
                     , shortcut: "startserver"
@@ -65,74 +65,75 @@ namespace Test.Xigadee
                 , new ConsoleOption("Client Persistence methods"
                     , (m, o) =>
                     {
-                        sServerContext.PersistenceStatus = () => sServerContext.Client.Status;
+                        sContext.PersistenceStatus = () => sContext.Client.Status;
                     }
                     , childMenu: sPersistenceMenuClient.Value
-                    , enabled: (m, o) => sServerContext.Client.Status == 2
+                    , enabled: (m, o) => sContext.Client.Status == 2
                 )
                 , new ConsoleOption("API Client Persistence methods"
                     , (m, o) =>
                     {
-                        sServerContext.PersistenceStatus = () => sServerContext.Client.Status;
+                        sContext.ApiPersistenceStatus = () => 2;
                     }
-                    , childMenu: sPersistenceMenuClient.Value
-                    , enabled: (m, o) => sServerContext.ApiServer != null
+                    , childMenu: sPersistenceMenuApi.Value
+                    , enabled: (m, o) => sContext.ApiPersistence != null
                 )
                 , new ConsoleOption("Server Shared Service Persistence methods"
                     , (m, o) =>
                     {
-                        sServerContext.PersistenceStatus = () => sServerContext.Server.Status;
+                        sContext.PersistenceStatus = () => sContext.Server.Status;
                     }
                     , childMenu: sPersistenceMenuServer.Value
-                    , enabled: (m, o) => sServerContext.Server.Status == 2
+                    , enabled: (m, o) => sContext.Server.Status == 2
                 )
                 , new ConsoleOption("Client Stress Tests"
                     , (m, o) =>
                     {
                     }
                     , childMenu: sClientStressTestsMenu.Value
-                    , enabled: (m, o) => sServerContext.Client.Status == 2
+                    , enabled: (m, o) => sContext.Client.Status == 2
                 )
                 , new ConsoleOption("Server Stress Tests"
                     , (m, o) =>
                     {
                     }
                     , childMenu: sClientStressTestsMenu.Value
-                    , enabled: (m, o) => sServerContext.Server.Status == 2
+                    , enabled: (m, o) => sContext.Server.Status == 2
                 )
             ));
 
         static Lazy<ConsoleMenu> sPersistenceMenuServer = new Lazy<ConsoleMenu>(
             () => new ConsoleMenu(
                 "Persistence"
-                , Create(sServerContext.ServerPersistence)
-                , Read(sServerContext.ServerPersistence)
-                , ReadByReference(sServerContext.ServerPersistence)
-                , Update(sServerContext.ServerPersistence)
-                , Delete(sServerContext.ServerPersistence)
-                , DeleteByReference(sServerContext.ServerPersistence)
-                , Version(sServerContext.ServerPersistence)
-                , VersionByReference(sServerContext.ServerPersistence)
-                , Search(sServerContext.ServerPersistence)
-                , StressTest(sServerContext.ServerPersistence)
-                , StressCrudTest(sServerContext.ServerPersistence)
+                , Create(sContext.ServerPersistence)
+                , Read(sContext.ServerPersistence)
+                , ReadByReference(sContext.ServerPersistence)
+                , Update(sContext.ServerPersistence)
+                , Delete(sContext.ServerPersistence)
+                , DeleteByReference(sContext.ServerPersistence)
+                , Version(sContext.ServerPersistence)
+                , VersionByReference(sContext.ServerPersistence)
+                , Search(sContext.ServerPersistence)
+                , StressTest(sContext.ServerPersistence)
+                , StressCrudTest(sContext.ServerPersistence)
                )
             );
 
         static Lazy<ConsoleMenu> sPersistenceMenuClient = new Lazy<ConsoleMenu>(
             () => new ConsoleMenu(
                "Persistence"
-                    , Create(sServerContext.ClientPersistence)
-                    , Read(sServerContext.ClientPersistence)
-                    , ReadByReference(sServerContext.ClientPersistence)
-                    , Update(sServerContext.ClientPersistence)
-                    , Delete(sServerContext.ClientPersistence)
-                    , DeleteByReference(sServerContext.ClientPersistence)
-                    , Version(sServerContext.ClientPersistence)
-                    , VersionByReference(sServerContext.ClientPersistence)
-                    , StressTest(sServerContext.ClientPersistence)
+                    , Create(sContext.ClientPersistence)
+                    , Read(sContext.ClientPersistence)
+                    , ReadByReference(sContext.ClientPersistence)
+                    , Update(sContext.ClientPersistence)
+                    , Delete(sContext.ClientPersistence)
+                    , DeleteByReference(sContext.ClientPersistence)
+                    , Version(sContext.ClientPersistence)
+                    , VersionByReference(sContext.ClientPersistence)
+                    , StressTest(sContext.ClientPersistence)
 
                    )
                 );
+
     }
 }

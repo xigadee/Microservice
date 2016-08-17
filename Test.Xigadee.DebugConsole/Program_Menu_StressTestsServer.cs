@@ -8,7 +8,7 @@ namespace Test.Xigadee
     {
         static Lazy<ConsoleMenu> sServerStressTestsMenu = new Lazy<ConsoleMenu>(
             () => new ConsoleMenu(
-                $"Server Stress Tests ({sServerContext.PersistenceType.ToString()})"
+                $"Server Stress Tests ({sContext.PersistenceType.ToString()})"
                 , new ConsoleOption("Stress test 1"
                     , (m, o) =>
                     {

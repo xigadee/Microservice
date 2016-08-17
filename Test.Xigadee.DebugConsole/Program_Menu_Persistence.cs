@@ -14,17 +14,17 @@ namespace Test.Xigadee
             return new ConsoleOption("Create entity"
             , (m, o) =>
             {
-                sServerContext.EntityId = Guid.NewGuid();
+                sContext.EntityId = Guid.NewGuid();
 
-                var result = repo.Value.Create(CreateEntity(sServerContext.EntityId, email: sServerContext.EntityReference)
+                var result = repo.Value.Create(CreateEntity(sContext.EntityId, email: sContext.EntityReference)
                     , new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5), Source = "Xigadee"}).Result;
 
                 if (result.IsSuccess)
-                    sServerContext.EntityVersionid = result.Entity.VersionId;
+                    sContext.EntityVersionid = result.Entity.VersionId;
 
                 PersistenceLog(m, "Create", result.IsSuccess);
             }
-               , enabled: (m, o) => sServerContext.PersistenceStatus() == 2
+               , enabled: (m, o) => sContext.PersistenceStatus() == 2
                );
         }
 
@@ -33,11 +33,11 @@ namespace Test.Xigadee
             return new ConsoleOption("Read entity"
                , (m, o) =>
                {
-                   var result = repo.Value.Read(sServerContext.EntityId
+                   var result = repo.Value.Read(sContext.EntityId
                        , new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
                    PersistenceLog(m, "Read", result.IsSuccess);
                }
-               , enabled: (m, o) => sServerContext.PersistenceStatus() == 2
+               , enabled: (m, o) => sContext.PersistenceStatus() == 2
                );
         }
 
@@ -46,11 +46,11 @@ namespace Test.Xigadee
             return new ConsoleOption("Read entity by reference"
                , (m, o) =>
                {
-                   var result = repo.Value.ReadByRef("email", sServerContext.EntityReference
+                   var result = repo.Value.ReadByRef("email", sContext.EntityReference
                        , new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
                    PersistenceLog(m, "Read By Reference", result.IsSuccess);
                }
-               , enabled: (m, o) => sServerContext.PersistenceStatus() == 2
+               , enabled: (m, o) => sContext.PersistenceStatus() == 2
                );
         }
 
@@ -62,13 +62,13 @@ namespace Test.Xigadee
                    var result = repo.Value.Update(
                        new MondayMorningBlues()
                        {
-                           Id = sServerContext.EntityId,
+                           Id = sContext.EntityId,
                            ContentId = new Guid(),
-                           VersionId = sServerContext.EntityVersionid,
+                           VersionId = sContext.EntityVersionid,
                            Message = $"Hello mom2 -{DateTime.Now.ToString()}",
                            NotEnoughCoffee = false,
                            NotEnoughSleep = false,
-                           Email = sServerContext.EntityReference
+                           Email = sContext.EntityReference
                        }
                        , new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) })
                        .Result;
@@ -77,10 +77,10 @@ namespace Test.Xigadee
 
                    if (result.IsSuccess)
                    {
-                       sServerContext.EntityVersionid = result.Entity.VersionId;
+                       sContext.EntityVersionid = result.Entity.VersionId;
                    }
                }
-               , enabled: (m, o) => sServerContext.PersistenceStatus() == 2
+               , enabled: (m, o) => sContext.PersistenceStatus() == 2
                );
         }
 
@@ -89,15 +89,15 @@ namespace Test.Xigadee
             return new ConsoleOption("Delete entity"
                , (m, o) =>
                {
-                   var result = repo.Value.Delete(sServerContext.EntityId
+                   var result = repo.Value.Delete(sContext.EntityId
                        , new RepositorySettings()
                        {
                            WaitTime = TimeSpan.FromMinutes(5)
-                            , VersionId = sServerContext.EntityVersionid.ToString()
+                            , VersionId = sContext.EntityVersionid.ToString()
                        }).Result;
                    PersistenceLog(m, "Delete", result.IsSuccess);
                }
-               , enabled: (m, o) => sServerContext.PersistenceStatus() == 2
+               , enabled: (m, o) => sContext.PersistenceStatus() == 2
                );
         }
 
@@ -106,15 +106,15 @@ namespace Test.Xigadee
             return new ConsoleOption("Delete entity by reference"
                , (m, o) =>
                {
-                   var result = repo.Value.DeleteByRef("email", sServerContext.EntityReference,
+                   var result = repo.Value.DeleteByRef("email", sContext.EntityReference,
                        new RepositorySettings()
                        {
                            WaitTime = TimeSpan.FromMinutes(5)
-                            , VersionId = sServerContext.EntityVersionid.ToString()
+                            , VersionId = sContext.EntityVersionid.ToString()
                        }).Result;
                    PersistenceLog(m, "Delete By Reference", result.IsSuccess);
                }
-               , enabled: (m, o) => sServerContext.PersistenceStatus() == 2
+               , enabled: (m, o) => sContext.PersistenceStatus() == 2
                );
         }
 
@@ -123,15 +123,15 @@ namespace Test.Xigadee
             return new ConsoleOption("Version entity"
                , (m, o) =>
                {
-                   var result = repo.Value.Version(sServerContext.EntityId,
+                   var result = repo.Value.Version(sContext.EntityId,
                        new RepositorySettings()
                        {
                            WaitTime = TimeSpan.FromMinutes(5)
-                            , VersionId = sServerContext.EntityVersionid.ToString()
+                            , VersionId = sContext.EntityVersionid.ToString()
                        }).Result;
                    PersistenceLog(m, "Version", result.IsSuccess);
                }
-               , enabled: (m, o) => sServerContext.PersistenceStatus() == 2
+               , enabled: (m, o) => sContext.PersistenceStatus() == 2
                );
         }
 
@@ -140,16 +140,16 @@ namespace Test.Xigadee
             return new ConsoleOption("Version entity by reference"
                , (m, o) =>
                {
-                   var result = repo.Value.VersionByRef("EMAIL", sServerContext.EntityReference
+                   var result = repo.Value.VersionByRef("EMAIL", sContext.EntityReference
                        , new RepositorySettings
                        {
                            WaitTime = TimeSpan.FromMinutes(5)
-                            , VersionId = sServerContext.EntityVersionid.ToString()
+                            , VersionId = sContext.EntityVersionid.ToString()
                        }).Result;
 
                    PersistenceLog(m, "Version By Reference", result.IsSuccess);
                }
-               , enabled: (m, o) => sServerContext.PersistenceStatus() == 2
+               , enabled: (m, o) => sContext.PersistenceStatus() == 2
                );
         }
 
@@ -168,7 +168,7 @@ namespace Test.Xigadee
 
                    PersistenceLog(m, "Search", result.IsSuccess);
                }
-               , enabled: (m, o) => sServerContext.PersistenceStatus() == 2
+               , enabled: (m, o) => sContext.PersistenceStatus() == 2
                );
         }
 
@@ -201,7 +201,7 @@ namespace Test.Xigadee
 
                    PersistenceLog(m, "100000 enqueued", true);
                }
-               , enabled: (m, o) => sServerContext.PersistenceStatus() == 2
+               , enabled: (m, o) => sContext.PersistenceStatus() == 2
                );
         }
 
@@ -241,7 +241,7 @@ namespace Test.Xigadee
 
                    PersistenceLog(m, "1000 enqueued", true);
                }
-               , enabled: (m, o) => sServerContext.PersistenceStatus() == 2
+               , enabled: (m, o) => sContext.PersistenceStatus() == 2
                );
         }
 

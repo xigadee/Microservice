@@ -9,26 +9,26 @@ namespace Test.Xigadee
     {
         static void MicroserviceClientStart()
         {
-            sServerContext.Client.Service.StatusChanged += ClientStatusChanged;
+            sContext.Client.Service.StatusChanged += ClientStatusChanged;
 
-            sServerContext.Client.Populate(ResolveClientSetting, true);
-            sServerContext.Client.Start();
+            sContext.Client.Populate(ResolveClientSetting, true);
+            sContext.Client.Start();
         }
 
         static void MicroserviceServerStart()
         {
             try
             {
-                sServerContext.Server.OnRegister += Server_OnRegister;
+                sContext.Server.OnRegister += Server_OnRegister;
 
-                sServerContext.Server.Service.StatusChanged += ServerStatusChanged;
+                sContext.Server.Service.StatusChanged += ServerStatusChanged;
 
-                sServerContext.Server.Service.StartRequested += ServerStartRequested;
-                sServerContext.Server.Service.StopRequested += ServerStopRequested;
+                sContext.Server.Service.StartRequested += ServerStartRequested;
+                sContext.Server.Service.StopRequested += ServerStopRequested;
 
-                sServerContext.Server.Populate(ResolveServerSetting, true);
+                sContext.Server.Populate(ResolveServerSetting, true);
 
-                sServerContext.Server.Start();
+                sContext.Server.Start();
             }
             catch (Exception ex)
             {
@@ -63,15 +63,15 @@ namespace Test.Xigadee
         {
             ICacheManager<Guid, MondayMorningBlues> cacheManager = null;
 
-            if (sServerContext.ServerCacheEnabled)
+            if (sContext.ServerCacheEnabled)
             {
                 cacheManager = RedisCacheHelper.Default<Guid, MondayMorningBlues>(e.Config.RedisCacheConnection());
             }
 
-            switch (sServerContext.PersistenceType)
+            switch (sContext.PersistenceType)
             {
                 case PersistenceOptions.Sql:
-                    sServerContext.Server.Service.RegisterCommand(
+                    sContext.Server.Service.RegisterCommand(
                         new PersistenceMondayMorningBluesSql(e.Config.SqlConnection()
                         , MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
                         { ChannelId = Channels.TestB });
