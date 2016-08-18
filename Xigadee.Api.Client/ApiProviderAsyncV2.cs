@@ -50,8 +50,9 @@ namespace Xigadee
         public ApiProviderAsyncV2(TransportUriMapper<K> uriMapper = null   
             , IKeyMapper<K> keyMapper = null
             , TransportSerializer<E> primaryTransport = null
-            , IEnumerable<IApiProviderAuthBase> authHandlers = null)
-            :this(keyMapper, primaryTransport, authHandlers)
+            , IEnumerable<IApiProviderAuthBase> authHandlers = null
+            , bool useDefaultJsonSerializer = true)
+            :this(keyMapper, primaryTransport, authHandlers, useDefaultJsonSerializer)
         {
 
             if (uriMapper == null)
@@ -67,7 +68,7 @@ namespace Xigadee
             , TransportSerializer<E> primaryTransport = null
             , IEnumerable<IApiProviderAuthBase> authHandlers = null
             , bool useDefaultJsonSerializer = true)
-            : this(keyMapper, primaryTransport, authHandlers)
+            : this(keyMapper, primaryTransport, authHandlers, useDefaultJsonSerializer)
         {
             if (rootUri == null)
                 throw new ArgumentNullException("You must set rootUri for the API");
@@ -89,7 +90,7 @@ namespace Xigadee
 
             mKeyMapper = keyMapper ?? ResolveKeyMapper();
 
-            mPrimaryTransport = primaryTransport ?? ResolveTransport(useDefaultJsonSerializer);
+            ResolveTransport(mPrimaryTransport, useDefaultJsonSerializer);
 
             mAuthHandlers = authHandlers?.ToList();
         }
@@ -123,30 +124,38 @@ namespace Xigadee
         /// <param name="uriMapper">The mapper passed through the constructor.</param>
         protected virtual TransportUriMapper<K> CreateUriMapper(Uri rootUri)
         {
-            return new TransportUriMapper<K>(mKeyMapper, rootUri);
+            return new TransportUriMapper<K>(mKeyMapper, rootUri, typeof(E).Name.ToLowerInvariant());
         }
         #endregion
         #region ResolveTransport()
         /// <summary>
         /// This method resolves the specific serializer for the entity transport.
         /// </summary>
-        protected virtual TransportSerializer<E> ResolveTransport(bool useDefaultJsonSerializer)
+        protected virtual void ResolveTransport(TransportSerializer<E> primaryTransport, bool useDefaultJsonSerializer)
         {
-            mTransportSerializers = TransportSerializer.GetSerializers<E>(GetType()).ToDictionary((s) => s.MediaType.ToLowerInvariant());
+            var transportSerializers = TransportSerializer.GetSerializers<E>(GetType()).ToDictionary((s) => s.MediaType.ToLowerInvariant());
 
-            if (mTransportSerializers == null || mTransportSerializers.Count == 0)
-                mTransportSerializers = TransportSerializer.GetSerializers<E>(typeof(E)).ToDictionary((s) => s.MediaType.ToLowerInvariant());
+            if (transportSerializers == null || transportSerializers.Count == 0)
+                transportSerializers = TransportSerializer.GetSerializers<E>(typeof(E)).ToDictionary((s) => s.MediaType.ToLowerInvariant());
 
-            if (mTransportSerializers == null || mTransportSerializers.Count == 0)
+            if (transportSerializers == null || transportSerializers.Count == 0)
             {
-                if (!useDefaultJsonSerializer)
+                if (primaryTransport == null && !useDefaultJsonSerializer)
                     throw new TransportSerializerResolutionException("The default TransportSerializer cannot be resolved.");
 
-                return new JsonTransportSerializer<E>();
+                transportSerializers = new Dictionary<string, TransportSerializer<E>>();
+
+                if (primaryTransport == null)
+                    primaryTransport = new JsonTransportSerializer<E>();
             }
 
+            if (primaryTransport != null && !transportSerializers.ContainsKey(primaryTransport.MediaType))
+                transportSerializers.Add(primaryTransport.MediaType, primaryTransport);
+
+            mTransportSerializers = transportSerializers;
+
             //Get the transport serializer with the highest priority.
-            return mTransportSerializers.Values.OrderByDescending((t) => t.Priority).First();
+            mPrimaryTransport = mTransportSerializers.Values.OrderByDescending((t) => t.Priority).First();
         }
         #endregion
 

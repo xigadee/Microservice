@@ -29,16 +29,27 @@ namespace Xigadee
         /// </summary>
         /// <param name="keyMapper">The key mapper.</param>
         /// <param name="rootUri">This is the root Uri.</param>
-        public TransportUriMapper(IKeyMapper<K> keyMapper = null, Uri rootUri = null)
+        public TransportUriMapper(IKeyMapper<K> keyMapper = null, Uri rootUri = null, string pathEntity = null)
         {
             mUriTemplates = new Dictionary<HttpMethod, string>();
-
-            UseHttps = true;
 
             if (keyMapper != null)
                 mKeyMapper = keyMapper;
             else
                 mKeyMapper = (KeyMapper<K>)KeyMapper.Resolve<K>();
+
+            if (rootUri != null)
+            {
+                UseHttps = string.Equals(rootUri.Scheme, "https", StringComparison.InvariantCultureIgnoreCase);
+                Server = new Uri(rootUri.Authority);
+                Host = rootUri.Host;
+                Path = rootUri.AbsolutePath;
+                Port = rootUri.Port;
+            }
+            else
+                UseHttps = true;
+
+            PathEntity = pathEntity;
         } 
         #endregion
 
@@ -57,9 +68,27 @@ namespace Xigadee
         /// </summary>
         public virtual Uri Server { get; set; }
         /// <summary>
+        /// This is the Api host.
+        /// </summary>
+        public string Host { get; set; }
+        /// <summary>
         /// 
         /// </summary>
         public virtual string Path { get; set; }
+        /// <summary>
+        /// This is the port that the api is listening. If null the default port will be used, i.e. 80, 443.
+        /// </summary>
+        public int? Port { get; set; }
+
+        protected int PortAdjusted
+        {
+            get
+            {
+                return Port.HasValue?Port.Value:UseHttps?443:80;
+            }
+        }
+
+        public string PathEntity { get; set; }
 
         /// <summary>
         /// This method returns a UriBuilder for the request.
@@ -68,10 +97,15 @@ namespace Xigadee
         /// <returns>Returns the builder.</returns>
         protected virtual UriBuilder UriParts(HttpMethod method)
         {
-            var builder = new UriBuilder(Server);
+            var builder = new UriBuilder(Scheme, Host, PortAdjusted, Path);
 
-            builder.Scheme = Scheme;
-            builder.Path = string.Format("{0}{1}", builder.Path, Path);
+            if (!string.IsNullOrWhiteSpace(PathEntity))
+            {
+                if (!builder.Path.EndsWith(@"/"))
+                    builder.Path += @"/";
+
+                builder.Path += PathEntity;
+            }
 
             return builder;
         }
@@ -79,6 +113,7 @@ namespace Xigadee
         public virtual KeyValuePair<HttpMethod,Uri> MakeUri(HttpMethod method)
         {
             var builder = UriParts(method);
+
             return new KeyValuePair<HttpMethod, Uri>(method, builder.Uri);
         }
 

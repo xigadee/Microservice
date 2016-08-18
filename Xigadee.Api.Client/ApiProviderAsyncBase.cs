@@ -15,6 +15,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The entity key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
+    [Obsolete("Use ApiProviderAsyncV2 instead", true)]
     public class ApiProviderAsyncBase<K, E>: IRepositoryAsync<K, E>
         where K : IEquatable<K>
     {

@@ -47,7 +47,7 @@ namespace Test.Xigadee
                 options.Urls.Add(ApiUri.ToString());
                 OnStatusChanged(ServiceStatus.Starting, $" @ {ApiUri.ToString()}");
 
-                Persistence = new ApiProviderAsyncV2<Guid, MondayMorningBlues>(ApiUri);
+                Persistence = new ApiProviderAsyncV2<Guid, MondayMorningBlues>(new Uri($"{ApiUri.AbsoluteUri}v1"));
                 ApiServer = WebApp.Start<Test.Xigadee.Api.Server.Startup>(options);
 
                 OnStatusChanged(ServiceStatus.Running);
