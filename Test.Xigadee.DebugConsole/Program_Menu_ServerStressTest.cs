@@ -6,7 +6,7 @@ namespace Test.Xigadee
 {
     static partial class Program
     {
-        static Lazy<ConsoleMenu> sServerStressTestsMenu = new Lazy<ConsoleMenu>(
+        static Lazy<ConsoleMenu> sMenuServerStressTest = new Lazy<ConsoleMenu>(
             () => new ConsoleMenu(
                 $"Server Stress Tests ({sContext.PersistenceType.ToString()})"
                 , new ConsoleOption("Stress test 1"

@@ -17,10 +17,6 @@ namespace Test.Xigadee
             ServiceStatusChanged((v) => sContext.Server.Status = v, sender, e);
         }
 
-        static void ClientStatusChanged(object sender, StatusChangedEventArgs e)
-        {
-            ServiceStatusChanged((v) => sContext.Client.Status = v, sender, e);
-        }
 
         static void ServiceStatusChanged(Action<int> started, object sender, StatusChangedEventArgs e)
         {
@@ -39,23 +35,8 @@ namespace Test.Xigadee
                     break;
             }
 
-            sMainMenu.Value.AddInfoMessage(string.Format("{0}={1}", serv.Name, e.StatusNew.ToString()), true);
+            sMenuMain.Value.AddInfoMessage(string.Format("{0}={1}", serv.Name, e.StatusNew.ToString()), true);
         }
 
-        private static void ServerStopRequested(object sender, StopEventArgs e)
-        {
-
-        }
-
-        private static void ServerStartRequested(object sender, StartEventArgs e)
-        {
-            e.ConfigurationOptions.ConcurrentRequestsMax = 4;
-            e.ConfigurationOptions.ConcurrentRequestsMin = 1;
-            e.ConfigurationOptions.StatusLogFrequency = TimeSpan.FromSeconds(15);
-
-            //e.ConfigurationOptions.OverloadProcessLimit = 2;
-            //if (e.ConfigurationOptions.OverloadProcessLimit == 0)
-            //    e.ConfigurationOptions.OverloadProcessLimit = 11;        
-        }
     }
 }

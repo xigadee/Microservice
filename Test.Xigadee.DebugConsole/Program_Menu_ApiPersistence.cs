@@ -10,7 +10,7 @@ namespace Test.Xigadee
     static partial class Program
     {
 
-        static Lazy<ConsoleMenu> sPersistenceMenuApi = new Lazy<ConsoleMenu>(
+        static Lazy<ConsoleMenu> sMenuApiPersistence = new Lazy<ConsoleMenu>(
             () => new ConsoleMenu(
                "Persistence"
                     , Create(sContext.ApiPersistence)

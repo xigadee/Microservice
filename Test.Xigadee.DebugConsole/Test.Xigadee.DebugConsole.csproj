@@ -202,15 +202,19 @@
     <Compile Include="Populator\PopulatorClient.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Program_Entity.cs" />
-    <Compile Include="Program_Menu_Main.cs" />
-    <Compile Include="Program_Menu_Persistence.cs" />
-    <Compile Include="Program_Menu_PersistenceApi.cs" />
-    <Compile Include="Program_Menu_PersistenceSettings.cs" />
-    <Compile Include="Program_Menu_StressTestsServer.cs" />
-    <Compile Include="Program_Menu_StressTestsClient.cs" />
+    <Compile Include="Program_Menu.cs" />
+    <Compile Include="Program_Menu_ClientPersistence.cs" />
+    <Compile Include="Program_Microservice_Client.cs" />
+    <Compile Include="Program_Microservice_Server.cs" />
+    <Compile Include="Program_PersistenceMenuHelper.cs" />
+    <Compile Include="Program_Menu_ApiPersistence.cs" />
+    <Compile Include="Program_Menu_ServerPersistence.cs" />
+    <Compile Include="Program_Menu_ServerPersistenceSettings.cs" />
+    <Compile Include="Program_Menu_ServerStressTest.cs" />
+    <Compile Include="Program_Menu_ClientStressTest.cs" />
     <Compile Include="Program_Microservice.cs" />
     <Compile Include="Program_Status.cs" />
-    <Compile Include="Program_Web.cs" />
+    <Compile Include="Program_Microservice_WebApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Jobs\TestMasterJob.cs" />
   </ItemGroup>

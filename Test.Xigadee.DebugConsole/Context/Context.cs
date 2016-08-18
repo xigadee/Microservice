@@ -19,7 +19,9 @@ namespace Test.Xigadee
 
             ApiPersistence = new ContextPersistence<Guid, MondayMorningBlues>(new Lazy<IRepositoryAsync<Guid, MondayMorningBlues>>(() => new ApiProviderAsyncV2<Guid, MondayMorningBlues>(ApiUri)));
         }
-
+        /// <summary>
+        /// This is the Uri for the Api listener and Api Provider.
+        /// </summary>
         public Uri ApiUri { get; set; }
         /// <summary>
         /// This is the client Microservice.
@@ -37,15 +39,15 @@ namespace Test.Xigadee
         /// <summary>
         /// This is the client persistence class.
         /// </summary>//ContextPersistence<K, E>
-        public ContextPersistence<Guid, MondayMorningBlues> ClientPersistence { get; set; }
+        public ContextPersistence<Guid, MondayMorningBlues> ClientPersistence { get; private set;}
         /// <summary>
         /// This is the server persistence class.
         /// </summary>
-        public ContextPersistence<Guid, MondayMorningBlues> ServerPersistence { get; set; }
+        public ContextPersistence<Guid, MondayMorningBlues> ServerPersistence { get; private set; }
         /// <summary>
         /// This is the Api Persistence client that will connect to the Api Service over a RESTful Api connection.
         /// </summary>
-        public ContextPersistence<Guid, MondayMorningBlues> ApiPersistence { get; set; }
+        public ContextPersistence<Guid, MondayMorningBlues> ApiPersistence { get; private set; }
 
         public int SlotCount;
 

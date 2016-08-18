@@ -19,29 +19,31 @@ namespace Test.Xigadee
             {
                 StartOptions options = new StartOptions();
                 options.Urls.Add(sContext.ApiUri.ToString());
-                sMainMenu.Value.AddInfoMessage($"Api Starting @ {sContext.ApiUri.ToString()}", true);
+                sMenuMain.Value.AddInfoMessage($"Api Starting @ {sContext.ApiUri.ToString()}", true);
+                sContext.ApiPersistence.Status = 1;
 
                 sContext.ApiServer = WebApp.Start<Test.Xigadee.Api.Server.Startup>(options);
 
-                sMainMenu.Value.AddInfoMessage("Api Started", true);
+                sMenuMain.Value.AddInfoMessage("Api Started", true);
+                sContext.ApiPersistence.Status = 2;
 
             }
             catch (Exception ex)
             {
-                sMainMenu.Value.AddInfoMessage($"Api Failed: {ex.Message}", true);
+                sMenuMain.Value.AddInfoMessage($"Api Failed: {ex.Message}", true);
 
-                sContext.ApiPersistence = null;
                 sContext.ApiServer = null;
+                sContext.ApiPersistence.Status = 0;
             }
         }
 
         static void MicroserviceWebAPIStop()
         {
-            sMainMenu.Value.AddInfoMessage("Api Stopping", true);
-            sContext.ApiPersistence = null;
+            sMenuMain.Value.AddInfoMessage("Api Stopping", true);
+            sContext.ApiPersistence.Status = 0;
             sContext.ApiServer.Dispose();
             sContext.ApiServer = null;
-            sMainMenu.Value.AddInfoMessage("Api Stopped", true);
+            sMenuMain.Value.AddInfoMessage("Api Stopped", true);
         }
 
     }

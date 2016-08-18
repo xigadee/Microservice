@@ -6,7 +6,7 @@ namespace Test.Xigadee
 {
     static partial class Program
     {
-        static Lazy<ConsoleMenu> sPersistenceSettingsMenu = new Lazy<ConsoleMenu>(
+        static Lazy<ConsoleMenu> sMenuServerPersistenceSettings = new Lazy<ConsoleMenu>(
             () => new ConsoleMenu(
                 $"Persistence store options"
                 , new ConsoleOption("Sql based Persistence"

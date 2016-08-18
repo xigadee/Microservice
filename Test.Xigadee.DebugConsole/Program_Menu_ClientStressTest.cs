@@ -6,7 +6,7 @@ namespace Test.Xigadee
 {
     static partial class Program
     {
-        static Lazy<ConsoleMenu> sClientStressTestsMenu = new Lazy<ConsoleMenu>(
+        static Lazy<ConsoleMenu> sMenuClientStressTests = new Lazy<ConsoleMenu>(
             () => new ConsoleMenu(
                 $"Client Stress Tests({sContext.PersistenceType.ToString()})"
                 //, new ConsoleOption("Sql based"
@@ -21,7 +21,7 @@ namespace Test.Xigadee
                     , (m, o) =>
                     {
                         sContext.PersistenceType = PersistenceOptions.DocumentDb;
-                        sClientStressTestsMenu.Value.Refresh();
+                        sMenuClientStressTests.Value.Refresh();
                     }
                     , enabled: (m, o) => true
                 )
@@ -29,7 +29,7 @@ namespace Test.Xigadee
                     , (m, o) =>
                     {
                         sContext.PersistenceType = PersistenceOptions.Blob;
-                        sClientStressTestsMenu.Value.Refresh();
+                        sMenuClientStressTests.Value.Refresh();
                     }
                     , enabled: (m, o) => true
                 )
@@ -37,7 +37,7 @@ namespace Test.Xigadee
                     , (m, o) =>
                     {
                         sContext.PersistenceType = PersistenceOptions.RedisCache;
-                        sClientStressTestsMenu.Value.Refresh();
+                        sMenuClientStressTests.Value.Refresh();
                     }
                     , enabled: (m, o) => true
                 )
