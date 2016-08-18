@@ -19,13 +19,16 @@ namespace Xigadee
     /// <summary>
     /// This class provides the basic set of method to set up a BFF WebApi layer.
     /// </summary>
-    /// <typeparam name="M"></typeparam>
-    /// <typeparam name="C"></typeparam>
+    /// <typeparam name="M">The microsercice type.</typeparam>
+    /// <typeparam name="C">The config type.</typeparam>
     public abstract class PopulatorWebApiBase<M, C>: PopulatorBase<M, C>
         where M : Microservice, new()
         where C : ConfigWebApi, new()
     {
 
+        /// <summary>
+        /// This is the filter that rejects requests until the core service is fully started.
+        /// </summary>
         protected readonly WebApiServiceUnavailableFilter mRejectIfServiceNotStartedFilter;
 
         #region Constructor
@@ -85,6 +88,9 @@ namespace Xigadee
 
         }
 
+        /// <summary>
+        /// This override sets the necessary request 
+        /// </summary>
         protected virtual void RegisterWebApiServices()
         {
             ApiConfig.Filters.Add(new WebApiCorrelationIdFilter());
@@ -101,6 +107,9 @@ namespace Xigadee
 
         }
 
+        /// <summary>
+        /// This sets the default Cors policy.
+        /// </summary>
         protected virtual void RegisterCorrsPolicy()
         {
             //config.DependencyResolver = 

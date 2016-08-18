@@ -12,20 +12,32 @@ using System.Web.Http.Filters;
 namespace Xigadee
 {
     /// <summary>
-    /// This filter is used to stop requests when the system is not fully started.
+    /// This auth filter is used to stop requests from being processed when the system is not fully started.
     /// </summary>
     public class WebApiServiceUnavailableFilter: IAuthorizationFilter
     {
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="retryInSeconds">The default retry time in seconds.</param>
         public WebApiServiceUnavailableFilter(int retryInSeconds = 10)
         {
             StatusCurrent = ServiceStatus.Stopped;
             RetryInSeconds = retryInSeconds;
         }
 
+        /// <summary>
+        /// The current server status.
+        /// </summary>
         public ServiceStatus StatusCurrent { get; set; }
-
+        /// <summary>
+        /// The default retry time in seconds.
+        /// </summary>
         public int? RetryInSeconds { get; set; }
 
+        /// <summary>
+        /// This is an override from the auth interface definition. We do not allow multiple.
+        /// </summary>
         public bool AllowMultiple
         {
             get
@@ -42,7 +54,7 @@ namespace Xigadee
 
             var request = actionContext.Request;
             HttpResponseMessage response = request.CreateResponse(HttpStatusCode.ServiceUnavailable);
-            response.ReasonPhrase = $"Microservice Status: {StatusCurrent.ToString()}";
+            response.ReasonPhrase = $"Status: {StatusCurrent.ToString()}";
 
             if (RetryInSeconds.HasValue)
                 response.Headers.Add("Retry-After", RetryInSeconds.Value.ToString());

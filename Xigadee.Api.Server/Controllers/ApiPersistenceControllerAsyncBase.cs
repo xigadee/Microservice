@@ -70,6 +70,11 @@ namespace Xigadee
         }
         #endregion
 
+        #region ODataValidationSettingsCreate()
+        /// <summary>
+        /// This method sets the OData validation options for incoming request.
+        /// </summary>
+        /// <returns>Returns the default settings that limit requests to simple quesries.</returns>
         protected virtual ODataValidationSettings ODataValidationSettingsCreate()
         {
             var settings = new ODataValidationSettings()
@@ -81,7 +86,8 @@ namespace Xigadee
             };
 
             return settings;
-        }
+        } 
+        #endregion
 
         #region ResolveSerializer(ApiRequest rq, out TransportSerializer<E> transport)
         /// <summary>
@@ -470,15 +476,6 @@ namespace Xigadee
 
             return response;
         }
-        #endregion
-
-        #region BuildRepositorySettings()
-
-        protected RepositorySettings BuildRepositorySettings()
-        {
-            return ApiUtility.BuildRepositorySettings(RequestContext, Request);
-        }
-
         #endregion
     }
 }

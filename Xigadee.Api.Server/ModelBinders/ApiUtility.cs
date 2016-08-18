@@ -35,7 +35,9 @@ namespace Xigadee
             }
 
             AddHeader(request, settings, ApimConstants.AzureSubscriptionKeyHeader);
+
             ApimPrincipal principal = requestContext.Principal as ApimPrincipal;
+
             if (principal != null)
             {
                 var identity = principal.Identity as ApimIdentity;
