@@ -13,9 +13,14 @@ namespace Test.Xigadee
         {
             sContext = new Context();
 
-            sContext.ApiUri = new Uri("http://localhost:29001");
 
             var switches = args.CommandArgsParse();
+
+            if (switches.ContainsKey("apiuri"))
+                sContext.ApiServer.ApiUri = new Uri(switches["apiuri"]);
+            else
+                sContext.ApiServer.ApiUri = new Uri("http://localhost:29001");
+
 
             if (switches.ContainsKey("persistence"))
                 sContext.SetServicePersistenceOption(switches["persistence"]);

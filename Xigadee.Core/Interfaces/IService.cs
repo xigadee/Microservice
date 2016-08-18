@@ -37,9 +37,18 @@ namespace Xigadee
     /// </summary>
     public class StatusChangedEventArgs: EventArgs
     {
+        /// <summary>
+        /// The previous service status.
+        /// </summary>
         public ServiceStatus StatusOld { get; set; }
-
+        /// <summary>
+        /// The new service status.
+        /// </summary>
         public ServiceStatus StatusNew { get; set; }
+        /// <summary>
+        /// This is an optional message describing the reason for the status change.
+        /// </summary>
+        public string Message { get; set; }
     }
 
 }

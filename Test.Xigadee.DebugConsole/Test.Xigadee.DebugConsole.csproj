@@ -193,10 +193,12 @@
     <Compile Include="Jobs\TestMasterJob2.cs" />
     <Compile Include="Communication\Channels.cs" />
     <Compile Include="Persistence\PersistenceOptions.cs" />
+    <Compile Include="Populator\CommandRegisterEventArgs.cs" />
     <Compile Include="Populator\ConfigConsole.cs" />
     <Compile Include="Populator\IPopulatorConsole.cs" />
     <Compile Include="Microservice\MicroserviceClient.cs" />
     <Compile Include="Microservice\MicroserviceServer.cs" />
+    <Compile Include="Populator\PopulatorApiService.cs" />
     <Compile Include="Populator\PopulatorConsoleBase.cs" />
     <Compile Include="Populator\PopulatorServer.cs" />
     <Compile Include="Populator\PopulatorClient.cs" />

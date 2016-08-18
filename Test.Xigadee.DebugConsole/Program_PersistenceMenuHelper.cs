@@ -4,12 +4,19 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Test.Xigadee
 {
     static partial class Program
     {
-        static ConsoleOption Create(ContextPersistence<Guid, MondayMorningBlues> repo)
+        static void PersistenceLog(ConsoleMenu menu, string action, bool success)
+        {
+            menu.AddInfoMessage($"{action} {(success ? "OK" : "Fail")}"
+                , true, success ? EventLogEntryType.Information : EventLogEntryType.Error);
+        }
+
+        static ConsoleOption Create(IPopulatorConsole repo)
         {
             return new ConsoleOption("Create entity"
             , (m, o) =>
@@ -23,12 +30,10 @@ namespace Test.Xigadee
                     sContext.EntityVersionid = result.Entity.VersionId;
 
                 PersistenceLog(m, "Create", result.IsSuccess);
-            }
-               , enabled: (m, o) => repo.Status == 2
-               );
+            });
         }
 
-        static ConsoleOption Read(ContextPersistence<Guid, MondayMorningBlues> repo)
+        static ConsoleOption Read(IPopulatorConsole repo)
         {
             return new ConsoleOption("Read entity"
                , (m, o) =>
@@ -36,12 +41,10 @@ namespace Test.Xigadee
                    var result = repo.Persistence.Read(sContext.EntityId
                        , new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
                    PersistenceLog(m, "Read", result.IsSuccess);
-               }
-               , enabled: (m, o) => repo.Status == 2
-               );
+               });
         }
 
-        static ConsoleOption ReadByReference(ContextPersistence<Guid, MondayMorningBlues> repo)
+        static ConsoleOption ReadByReference(IPopulatorConsole repo)
         {
             return new ConsoleOption("Read entity by reference"
                , (m, o) =>
@@ -49,12 +52,10 @@ namespace Test.Xigadee
                    var result = repo.Persistence.ReadByRef("email", sContext.EntityReference
                        , new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
                    PersistenceLog(m, "Read By Reference", result.IsSuccess);
-               }
-               , enabled: (m, o) => repo.Status == 2
-               );
+               });
         }
 
-        static ConsoleOption Update(ContextPersistence<Guid, MondayMorningBlues> repo)
+        static ConsoleOption Update(IPopulatorConsole repo)
         {
             return new ConsoleOption("Update entity"
                , (m, o) =>
@@ -79,12 +80,10 @@ namespace Test.Xigadee
                    {
                        sContext.EntityVersionid = result.Entity.VersionId;
                    }
-               }
-               , enabled: (m, o) => repo.Status == 2
-               );
+               });
         }
 
-        static ConsoleOption Delete(ContextPersistence<Guid, MondayMorningBlues> repo)
+        static ConsoleOption Delete(IPopulatorConsole repo)
         {
             return new ConsoleOption("Delete entity"
                , (m, o) =>
@@ -96,12 +95,10 @@ namespace Test.Xigadee
                             , VersionId = sContext.EntityVersionid.ToString()
                        }).Result;
                    PersistenceLog(m, "Delete", result.IsSuccess);
-               }
-               , enabled: (m, o) => repo.Status == 2
-               );
+               });
         }
 
-        static ConsoleOption DeleteByReference(ContextPersistence<Guid, MondayMorningBlues> repo)
+        static ConsoleOption DeleteByReference(IPopulatorConsole repo)
         {
             return new ConsoleOption("Delete entity by reference"
                , (m, o) =>
@@ -113,12 +110,10 @@ namespace Test.Xigadee
                             , VersionId = sContext.EntityVersionid.ToString()
                        }).Result;
                    PersistenceLog(m, "Delete By Reference", result.IsSuccess);
-               }
-               , enabled: (m, o) => repo.Status == 2
-               );
+               });
         }
 
-        static ConsoleOption Version(ContextPersistence<Guid, MondayMorningBlues> repo)
+        static ConsoleOption Version(IPopulatorConsole repo)
         {
             return new ConsoleOption("Version entity"
                , (m, o) =>
@@ -130,12 +125,10 @@ namespace Test.Xigadee
                             , VersionId = sContext.EntityVersionid.ToString()
                        }).Result;
                    PersistenceLog(m, "Version", result.IsSuccess);
-               }
-               , enabled: (m, o) => repo.Status == 2
-               );
+               });
         }
 
-        static ConsoleOption VersionByReference(ContextPersistence<Guid, MondayMorningBlues> repo)
+        static ConsoleOption VersionByReference(IPopulatorConsole repo)
         {
             return new ConsoleOption("Version entity by reference"
                , (m, o) =>
@@ -148,12 +141,10 @@ namespace Test.Xigadee
                        }).Result;
 
                    PersistenceLog(m, "Version By Reference", result.IsSuccess);
-               }
-               , enabled: (m, o) => repo.Status == 2
-               );
+               });
         }
 
-        static ConsoleOption Search(ContextPersistence<Guid, MondayMorningBlues> repo)
+        static ConsoleOption Search(IPopulatorConsole repo)
         {
             return new ConsoleOption("Search entity"
                , (m, o) =>
@@ -167,12 +158,10 @@ namespace Test.Xigadee
                        }).Result;
 
                    PersistenceLog(m, "Search", result.IsSuccess);
-               }
-               , enabled: (m, o) => repo.Status == 2
-               );
+               });
         }
 
-        static ConsoleOption StressTest(ContextPersistence<Guid, MondayMorningBlues> repo)
+        static ConsoleOption StressTest(IPopulatorConsole repo)
         {
             return new ConsoleOption("Create 100000 entities async"
                , (m, o) =>
@@ -200,12 +189,10 @@ namespace Test.Xigadee
                    }
 
                    PersistenceLog(m, "100000 enqueued", true);
-               }
-               , enabled: (m, o) => repo.Status == 2
-               );
+               });
         }
 
-        static ConsoleOption StressCrudTest(ContextPersistence<Guid, MondayMorningBlues> repo)
+        static ConsoleOption StressCrudTest(IPopulatorConsole repo)
         {
             return new ConsoleOption("Create, Read, Update, Delete 1000 entities async"
                , (m, o) =>
@@ -240,9 +227,7 @@ namespace Test.Xigadee
                    //}
 
                    PersistenceLog(m, "1000 enqueued", true);
-               }
-               , enabled: (m, o) => repo.Status == 2
-               );
+               });
         }
 
         private static async Task<bool> PerformCrud(ContextPersistence<Guid, MondayMorningBlues> repo, string batchId, ConsoleMenu m)

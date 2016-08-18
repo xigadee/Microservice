@@ -17,16 +17,18 @@ namespace Test.Xigadee
 
         static void MicroserviceClientStart()
         {
-            sContext.Client.Service.StatusChanged += ClientStatusChanged;
+            sContext.Client.StatusChanged += StatusChanged;
 
             sContext.Client.Populate(ResolveClientSetting, true);
             sContext.Client.Start();
         }
 
-        static void ClientStatusChanged(object sender, StatusChangedEventArgs e)
+        static void MicroserviceClientStop()
         {
-            ServiceStatusChanged((v) => sContext.Client.Status = v, sender, e);
+            sContext.Client.Stop();
+            sContext.Client.StatusChanged -= StatusChanged;
         }
+
 
         static string ResolveClientSetting(string key, string value)
         {

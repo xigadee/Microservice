@@ -13,15 +13,15 @@ namespace Test.Xigadee
         static Lazy<ConsoleMenu> sMenuApiPersistence = new Lazy<ConsoleMenu>(
             () => new ConsoleMenu(
                "Persistence"
-                    , Create(sContext.ApiPersistence)
-                    , Read(sContext.ApiPersistence)
-                    , ReadByReference(sContext.ApiPersistence)
-                    , Update(sContext.ApiPersistence)
-                    , Delete(sContext.ApiPersistence)
-                    , DeleteByReference(sContext.ApiPersistence)
-                    , Version(sContext.ApiPersistence)
-                    , VersionByReference(sContext.ApiPersistence)
-                    , StressTest(sContext.ApiPersistence)
+                    , Create(sContext.ApiServer)
+                    , Read(sContext.ApiServer)
+                    , ReadByReference(sContext.ApiServer)
+                    , Update(sContext.ApiServer)
+                    , Delete(sContext.ApiServer)
+                    , DeleteByReference(sContext.ApiServer)
+                    , Version(sContext.ApiServer)
+                    , VersionByReference(sContext.ApiServer)
+                    , StressTest(sContext.ApiServer)
 
                    )
                 );

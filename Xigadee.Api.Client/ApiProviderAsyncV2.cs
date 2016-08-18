@@ -65,7 +65,8 @@ namespace Xigadee
         public ApiProviderAsyncV2(Uri rootUri
             , IKeyMapper<K> keyMapper = null
             , TransportSerializer<E> primaryTransport = null
-            , IEnumerable<IApiProviderAuthBase> authHandlers = null)
+            , IEnumerable<IApiProviderAuthBase> authHandlers = null
+            , bool useDefaultJsonSerializer = true)
             : this(keyMapper, primaryTransport, authHandlers)
         {
             if (rootUri == null)
@@ -76,16 +77,19 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        protected ApiProviderAsyncV2(IKeyMapper<K> keyMapper = null
+        protected ApiProviderAsyncV2(
+              IKeyMapper<K> keyMapper = null
             , TransportSerializer<E> primaryTransport = null
-            , IEnumerable<IApiProviderAuthBase> authHandlers = null)
+            , IEnumerable<IApiProviderAuthBase> authHandlers = null
+            , bool useDefaultJsonSerializer = true
+        )
         {
             // Get the types assembly version to add to the request headers
             mAssemblyVersion = AssemblyVersionGet();
 
             mKeyMapper = keyMapper ?? ResolveKeyMapper();
 
-            mPrimaryTransport = primaryTransport ?? ResolveTransport();
+            mPrimaryTransport = primaryTransport ?? ResolveTransport(useDefaultJsonSerializer);
 
             mAuthHandlers = authHandlers?.ToList();
         }
@@ -126,7 +130,7 @@ namespace Xigadee
         /// <summary>
         /// This method resolves the specific serializer for the entity transport.
         /// </summary>
-        protected virtual TransportSerializer<E> ResolveTransport()
+        protected virtual TransportSerializer<E> ResolveTransport(bool useDefaultJsonSerializer)
         {
             mTransportSerializers = TransportSerializer.GetSerializers<E>(GetType()).ToDictionary((s) => s.MediaType.ToLowerInvariant());
 
@@ -134,7 +138,12 @@ namespace Xigadee
                 mTransportSerializers = TransportSerializer.GetSerializers<E>(typeof(E)).ToDictionary((s) => s.MediaType.ToLowerInvariant());
 
             if (mTransportSerializers == null || mTransportSerializers.Count == 0)
-                throw new TransportSerializerResolutionException("The default TransportSerializer cannot be resolved.");
+            {
+                if (!useDefaultJsonSerializer)
+                    throw new TransportSerializerResolutionException("The default TransportSerializer cannot be resolved.");
+
+                return new JsonTransportSerializer<E>();
+            }
 
             //Get the transport serializer with the highest priority.
             return mTransportSerializers.Values.OrderByDescending((t) => t.Priority).First();

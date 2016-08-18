@@ -21,7 +21,7 @@ namespace Test.Xigadee
             {
                 sContext.Server.OnRegister += Server_OnRegister;
 
-                sContext.Server.Service.StatusChanged += ServerStatusChanged;
+                sContext.Server.StatusChanged += StatusChanged;
 
                 sContext.Server.Service.StartRequested += ServerStartRequested;
                 sContext.Server.Service.StopRequested += ServerStopRequested;
@@ -34,6 +34,12 @@ namespace Test.Xigadee
             {
                 throw ex;
             }
+        }
+
+        static void MicroserviceServerStop()
+        {
+            sContext.Server.Stop();
+            sContext.Server.StatusChanged -= StatusChanged;
         }
 
         static string ResolveServerSetting(string key, string value)

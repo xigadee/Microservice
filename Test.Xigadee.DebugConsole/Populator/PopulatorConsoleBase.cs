@@ -9,15 +9,25 @@ namespace Test.Xigadee
 {
     internal abstract class PopulatorConsoleBase<M>: PopulatorBase<M, ConfigConsole>, IPopulatorConsole where M : Microservice, new()
     {
-        public int Status { get; set; } = 0;
+        public ServiceStatus Status { get { return Service?.Status ?? ServiceStatus.Stopped;} }
 
         public event EventHandler<CommandRegisterEventArgs> OnRegister;
+
+        public event EventHandler<StatusChangedEventArgs> StatusChanged;
 
         public readonly ResourceProfile mResourceDocDb = new ResourceProfile("DocDB");
 
         public readonly ResourceProfile mResourceBlob = new ResourceProfile("Blob");
 
         public IRepositoryAsync<Guid, MondayMorningBlues> Persistence { get; protected set; }
+
+        public virtual string Name
+        {
+            get
+            {
+                return Service.Name;
+            }
+        }
 
         protected override void RegisterCommunication()
         {
@@ -67,18 +77,12 @@ namespace Test.Xigadee
 
         }
 
-    }
 
-    public class CommandRegisterEventArgs: EventArgs
-    {
-        public CommandRegisterEventArgs(Microservice service, ConfigConsole config)
+        protected override void ServiceStatusChanged(object sender, StatusChangedEventArgs e)
         {
-            Service = service;
-            Config = config;
+            StatusChanged?.Invoke(this, e);
         }
-
-        public Microservice Service { get; set; }
-
-        public ConfigConsole Config { get; set; }
     }
+
+
 }

@@ -6,18 +6,18 @@ namespace Test.Xigadee
 {
     static partial class Program
     {
-        static Lazy<ConsoleMenu> sPersistenceMenuClient = new Lazy<ConsoleMenu>(
+        static Lazy<ConsoleMenu> sMenuClientPersistence = new Lazy<ConsoleMenu>(
             () => new ConsoleMenu(
                "Persistence"
-                    , Create(sContext.ClientPersistence)
-                    , Read(sContext.ClientPersistence)
-                    , ReadByReference(sContext.ClientPersistence)
-                    , Update(sContext.ClientPersistence)
-                    , Delete(sContext.ClientPersistence)
-                    , DeleteByReference(sContext.ClientPersistence)
-                    , Version(sContext.ClientPersistence)
-                    , VersionByReference(sContext.ClientPersistence)
-                    , StressTest(sContext.ClientPersistence)
+                    , Create(sContext.Client)
+                    , Read(sContext.Client)
+                    , ReadByReference(sContext.Client)
+                    , Update(sContext.Client)
+                    , Delete(sContext.Client)
+                    , DeleteByReference(sContext.Client)
+                    , Version(sContext.Client)
+                    , VersionByReference(sContext.Client)
+                    , StressTest(sContext.Client)
                    )
                 );
     }

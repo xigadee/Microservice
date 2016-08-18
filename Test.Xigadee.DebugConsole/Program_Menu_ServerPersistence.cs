@@ -9,17 +9,17 @@ namespace Test.Xigadee
         static Lazy<ConsoleMenu> sMenuServerPersistence = new Lazy<ConsoleMenu>(
             () => new ConsoleMenu(
                 "Persistence"
-                , Create(sContext.ServerPersistence)
-                , Read(sContext.ServerPersistence)
-                , ReadByReference(sContext.ServerPersistence)
-                , Update(sContext.ServerPersistence)
-                , Delete(sContext.ServerPersistence)
-                , DeleteByReference(sContext.ServerPersistence)
-                , Version(sContext.ServerPersistence)
-                , VersionByReference(sContext.ServerPersistence)
-                , Search(sContext.ServerPersistence)
-                , StressTest(sContext.ServerPersistence)
-                , StressCrudTest(sContext.ServerPersistence)
+                , Create(sContext.ApiServer)
+                , Read(sContext.ApiServer)
+                , ReadByReference(sContext.ApiServer)
+                , Update(sContext.ApiServer)
+                , Delete(sContext.ApiServer)
+                , DeleteByReference(sContext.ApiServer)
+                , Version(sContext.ApiServer)
+                , VersionByReference(sContext.ApiServer)
+                , Search(sContext.ApiServer)
+                , StressTest(sContext.ApiServer)
+                , StressCrudTest(sContext.ApiServer)
                )
             );
     }
