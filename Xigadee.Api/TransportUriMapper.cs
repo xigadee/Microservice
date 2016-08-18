@@ -39,13 +39,7 @@ namespace Xigadee
                 mKeyMapper = (KeyMapper<K>)KeyMapper.Resolve<K>();
 
             if (rootUri != null)
-            {
-                UseHttps = string.Equals(rootUri.Scheme, "https", StringComparison.InvariantCultureIgnoreCase);
-                Server = new Uri(rootUri.Authority);
-                Host = rootUri.Host;
-                Path = rootUri.AbsolutePath;
-                Port = rootUri.Port;
-            }
+                Server = rootUri;
             else
                 UseHttps = true;
 
@@ -53,6 +47,21 @@ namespace Xigadee
         } 
         #endregion
 
+        public Uri Server
+        {
+            get
+            {
+                var builder = UriRoot();
+                return builder.Uri;
+            }
+            set
+            {
+                UseHttps = string.Equals(value.Scheme, "https", StringComparison.InvariantCultureIgnoreCase);
+                Host = value.Host;
+                Path = value.AbsolutePath;
+                Port = value.Port;
+            }
+        }
         /// <summary>
         /// This property determines whether to use https to call the Api.
         /// </summary>
@@ -62,24 +71,23 @@ namespace Xigadee
         /// This is the scheme, i.e. http or https
         /// </summary>
         public virtual string Scheme { get { return UseHttps ? "https" : "http"; } }
-
         /// <summary>
-        /// This is the 
-        /// </summary>
-        public virtual Uri Server { get; set; }
-        /// <summary>
-        /// This is the Api host.
+        /// This is the Api host server
         /// </summary>
         public string Host { get; set; }
         /// <summary>
-        /// 
+        /// This is the default path for the Api - usually something like "/v1"
         /// </summary>
         public virtual string Path { get; set; }
+
         /// <summary>
         /// This is the port that the api is listening. If null the default port will be used, i.e. 80, 443.
         /// </summary>
         public int? Port { get; set; }
 
+        /// <summary>
+        /// This is the default port adjusted for the http or https default port if not set.
+        /// </summary>
         protected int PortAdjusted
         {
             get
@@ -88,8 +96,15 @@ namespace Xigadee
             }
         }
 
+        /// <summary>
+        /// This is the entity path which is added to the end of uri
+        /// </summary>
         public string PathEntity { get; set; }
 
+        protected virtual UriBuilder UriRoot()
+        {
+            return new UriBuilder(Scheme, Host, PortAdjusted, Path);
+        }
         /// <summary>
         /// This method returns a UriBuilder for the request.
         /// </summary>
@@ -97,14 +112,14 @@ namespace Xigadee
         /// <returns>Returns the builder.</returns>
         protected virtual UriBuilder UriParts(HttpMethod method)
         {
-            var builder = new UriBuilder(Scheme, Host, PortAdjusted, Path);
+            var builder = UriRoot();
 
             if (!string.IsNullOrWhiteSpace(PathEntity))
             {
-                if (!builder.Path.EndsWith(@"/"))
-                    builder.Path += @"/";
-
-                builder.Path += PathEntity;
+                if (builder.Path.EndsWith("/"))
+                    builder.Path = $"{builder.Path}{PathEntity}";
+                else
+                    builder.Path = $"{builder.Path}/{PathEntity}";
             }
 
             return builder;
@@ -130,7 +145,6 @@ namespace Xigadee
             var builder = UriParts(method);
             builder.Query = string.Format("reftype={0}&refvalue={1}", Uri.EscapeDataString(refKey), Uri.EscapeDataString(refValue));
             return new KeyValuePair<HttpMethod, Uri>(method, builder.Uri);
-
         }
     }
 }

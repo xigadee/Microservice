@@ -33,7 +33,7 @@ namespace Xigadee
         /// <summary>
         /// This is the primary transport used for sending requests.
         /// </summary>
-        protected TransportSerializer<E> mPrimaryTransport;
+        protected string mPrimaryTransport;
         /// <summary>
         /// This is the assembly version
         /// </summary>
@@ -90,7 +90,7 @@ namespace Xigadee
 
             mKeyMapper = keyMapper ?? ResolveKeyMapper();
 
-            ResolveTransport(mPrimaryTransport, useDefaultJsonSerializer);
+            ResolveTransport(primaryTransport, useDefaultJsonSerializer);
 
             mAuthHandlers = authHandlers?.ToList();
         }
@@ -141,7 +141,7 @@ namespace Xigadee
             if (transportSerializers == null || transportSerializers.Count == 0)
             {
                 if (primaryTransport == null && !useDefaultJsonSerializer)
-                    throw new TransportSerializerResolutionException("The default TransportSerializer cannot be resolved.");
+                    throw new TransportSerializerResolutionException("No TransportSerializers can be resolved for the entity.");
 
                 transportSerializers = new Dictionary<string, TransportSerializer<E>>();
 
@@ -155,7 +155,10 @@ namespace Xigadee
             mTransportSerializers = transportSerializers;
 
             //Get the transport serializer with the highest priority.
-            mPrimaryTransport = mTransportSerializers.Values.OrderByDescending((t) => t.Priority).First();
+            if (primaryTransport!=null)
+                mPrimaryTransport = primaryTransport.MediaType;
+            else
+                mPrimaryTransport = mTransportSerializers.OrderByDescending((t) => t.Value.Priority).First().Key;
         }
         #endregion
 
@@ -498,9 +501,10 @@ namespace Xigadee
         /// <returns>The ByteArrayContent to transmit.</returns>
         protected virtual ByteArrayContent EntitySerialize(E entity)
         {
-            var data = mPrimaryTransport.GetData(entity);
+            var transport = mTransportSerializers[mPrimaryTransport];
+            var data = transport.GetData(entity);
             var content = new ByteArrayContent(data);
-            content.Headers.ContentType = new MediaTypeWithQualityHeaderValue(mPrimaryTransport.MediaType);
+            content.Headers.ContentType = new MediaTypeWithQualityHeaderValue(transport.MediaType);
             return content;
         }
         #endregion
