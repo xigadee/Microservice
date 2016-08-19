@@ -77,18 +77,7 @@ namespace Xigadee
         where S : PersistenceStatistics, new()
     {
         #region Declarations
-        /// <summary>
-        /// This container holds the entities.
-        /// </summary>
-        protected ConcurrentDictionary<K, JsonHolder<K>> mContainer;
-        /// <summary>
-        /// This container holds the key references.
-        /// </summary>
-        protected ConcurrentDictionary<string, K> mContainerReference;
-        /// <summary>
-        /// This lock is used when modifying references.
-        /// </summary>
-        protected ReaderWriterLockSlim mReferenceModifyLock;
+        protected PersistenceEntityContainer<K, E> mContainer;
         /// <summary>
         /// This is the time span for the delay.
         /// </summary>
@@ -114,11 +103,17 @@ namespace Xigadee
         #region Start/Stop
         protected override void StartInternal()
         {
-            mContainer = new ConcurrentDictionary<K, JsonHolder<K>>();
-            mContainerReference = new ConcurrentDictionary<string, K>();
-            mReferenceModifyLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
+            mContainer = new PersistenceEntityContainer<K, E>(mTransform.ReferenceMaker);
 
-            PrePopulate();
+            try
+            {
+                PrePopulate();
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
 
             base.StartInternal();
         }
@@ -127,11 +122,7 @@ namespace Xigadee
         {
             base.StopInternal();
 
-            mReferenceModifyLock.Dispose();
-            mReferenceModifyLock = null;
-            mContainerReference.Clear();
             mContainer.Clear();
-            mContainerReference = null;
             mContainer = null;
         }
         #endregion
@@ -155,11 +146,14 @@ namespace Xigadee
             mDelay = delay;
         }
 
+        /// <summary>
+        /// This override process the Directive command which can be used to instigate test behaviour.
+        /// </summary>
         protected override void CommandsRegister()
         {
             base.CommandsRegister();
 
-            PersistenceCommandRegister<MemoryPersistenceDirectiveRequest, MemoryPersistenceDirectiveResponse>("Directive", ProcessDirective);
+            //PersistenceCommandRegister<MemoryPersistenceDirectiveRequest, MemoryPersistenceDirectiveResponse>("Directive", ProcessDirective);
         }
 
         #region Behaviour
@@ -178,258 +172,173 @@ namespace Xigadee
         }
         #endregion
 
+
+        #region InternalCreate(K key, PersistenceRequestHolder<K, E> holder)
         /// <summary>
-        /// This method gets a key for a given reference.
+        /// This is the create override for the command.
         /// </summary>
-        /// <param name="reference">The reference tuple.</param>
-        /// <param name="key">The out key.</param>
-        /// <returns>Returns true if the reference is found and the key is set.</returns>
-        protected virtual bool ReferenceGet(Tuple<string, string> reference, out K key)
+        /// <param name="key">The key.</param>
+        /// <param name="holder">The entity holder.</param>
+        /// <returns></returns>
+        protected override async Task<IResponseHolder<E>> InternalCreate(K key, PersistenceRequestHolder<K, E> holder)
         {
-            key = default(K);
+            //if (await ProvideTaskDelay(holder.Prq.Cancel))
+            //    return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
 
-            return false;
-        }
+            int response = mContainer.Add(key, holder.Rq.Entity);
 
-        protected virtual void ReferenceSet(K key, List<Tuple<string, string>> references)
-        {
-
-        }
-
-        protected virtual void ReferencesRemove(K key)
-        {
-
-        }
-
-        private async Task<bool> ProvideTaskDelay(CancellationToken Cancel)
-        {
-            if (!mDelay.HasValue)
-                return false;
-           
-            await Task.Delay(mDelay.Value, Cancel);
-
-            return Cancel.IsCancellationRequested;
-        }
-
-        protected virtual bool EntityAdd(E entity)
-        {
-            K key = mTransform.KeyMaker(entity);
-            JsonHolder<K> jsonHolder;
-
-            return EntityAdd(key, entity, out jsonHolder);
-        }
-
-        protected virtual bool EntityAdd(K key, E entity, out JsonHolder<K> jsonHolder)
-        {
-            jsonHolder = mTransform.JsonMaker(entity);
-
-            bool success = mContainer.TryAdd(key, jsonHolder);
-
-            return success;
-        }
-
-
-
-        protected override async Task<IResponseHolder<E>> InternalCreate(K key
-            , PersistenceRequestHolder<K, E> holder)
-        {
-            if (await ProvideTaskDelay(holder.Prq.Cancel))
-                return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
-
-            try
+            if (response == 201)
             {
-                mReferenceModifyLock.EnterWriteLock();
-
-                JsonHolder<K> jsonHolder;
-                bool success = EntityAdd(key, holder.Rq.Entity, out jsonHolder);
-
-                if (success)
-                    return new PersistenceResponseHolder<E>(PersistenceResponse.Created201, jsonHolder.Json, mTransform.PersistenceEntitySerializer.Deserializer(jsonHolder.Json));
-                else
-                    return new PersistenceResponseHolder<E>(PersistenceResponse.Conflict409);
+                JsonHolder<K> jsonHolder = mTransform.JsonMaker(holder.Rq.Entity);
+                return new PersistenceResponseHolder<E>(PersistenceResponse.Created201, jsonHolder.Json, mTransform.PersistenceEntitySerializer.Deserializer(jsonHolder.Json));
             }
-            finally
-            {
-                mReferenceModifyLock.ExitWriteLock();
-            }
+            else
+                return new PersistenceResponseHolder<E>(PersistenceResponse.Conflict409);
+
         }
-
-        protected override async Task<IResponseHolder<E>> InternalRead(K key
-            , PersistenceRequestHolder<K, E> holder)
+        #endregion
+        #region InternalRead(K key, PersistenceRequestHolder<K, E> holder)
+        /// <summary>
+        /// This is the read implementation.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="holder">The request holder.</param>
+        /// <returns></returns>
+        protected override async Task<IResponseHolder<E>> InternalRead(K key, PersistenceRequestHolder<K, E> holder)
         {
-            if (await ProvideTaskDelay(holder.Prq.Cancel))
-                return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
+            //if (await ProvideTaskDelay(holder.Prq.Cancel))
+            //    return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
 
-            try
+            E entity;
+            bool success = mContainer.TryGetValue(key, out entity);
+
+            if (success)
             {
-                mReferenceModifyLock.EnterReadLock();
-
-                JsonHolder<K> jsonHolder;
-                bool success = mContainer.TryGetValue(key, out jsonHolder);
-
-                if (success)
-                    return new PersistenceResponseHolder<E>(PersistenceResponse.Ok200, jsonHolder.Json, mTransform.PersistenceEntitySerializer.Deserializer(jsonHolder.Json));
-                else
-                    return new PersistenceResponseHolder<E>(PersistenceResponse.NotFound404);
+                JsonHolder<K> jsonHolder = mTransform.JsonMaker(entity);
+                return new PersistenceResponseHolder<E>(PersistenceResponse.Ok200, jsonHolder.Json, mTransform.PersistenceEntitySerializer.Deserializer(jsonHolder.Json));
             }
-            finally
-            {
-                mReferenceModifyLock.ExitReadLock();
-            }
-        }
+            else
+                return new PersistenceResponseHolder<E>(PersistenceResponse.NotFound404);
 
-        protected override async Task<IResponseHolder<E>> InternalReadByRef(Tuple<string, string> reference
-            , PersistenceRequestHolder<K, E> holder)
+        } 
+        #endregion
+
+        protected override async Task<IResponseHolder<E>> InternalReadByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, E> holder)
         {
-            if (await ProvideTaskDelay(holder.Prq.Cancel))
-                return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
+            //if (await ProvideTaskDelay(holder.Prq.Cancel))
+            //    return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
 
-            try
+            E entity;
+            bool success = mContainer.TryGetValue(reference, out entity);
+
+            if (success)
             {
-                mReferenceModifyLock.EnterReadLock();
-
-                K key;
-                if (!ReferenceGet(reference, out key))
-                    return new PersistenceResponseHolder<E>(PersistenceResponse.NotFound404);
-
-                return await InternalRead(key, holder);
+                JsonHolder<K> jsonHolder = mTransform.JsonMaker(entity);
+                return new PersistenceResponseHolder<E>(PersistenceResponse.Ok200, jsonHolder.Json, mTransform.PersistenceEntitySerializer.Deserializer(jsonHolder.Json));
             }
-            finally
-            {
-                mReferenceModifyLock.ExitReadLock();
-            }
+            else
+                return new PersistenceResponseHolder<E>(PersistenceResponse.NotFound404);
+
         }
 
         protected override async Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRequestHolder<K, E> holder)
         {
-            if (await ProvideTaskDelay(holder.Prq.Cancel))
-                return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
+            //if (await ProvideTaskDelay(holder.Prq.Cancel))
+            //    return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
 
-            try
+            E oldEntity;
+            bool successExisting = mContainer.TryGetValue(key, out oldEntity);
+            if (!successExisting)
+                return new PersistenceResponseHolder<E>(PersistenceResponse.NotFound404);
+
+            E newEntity = holder.Rq.Entity;
+
+
+            var ver = mTransform.Version;
+            if (ver.SupportsOptimisticLocking)
             {
-                mReferenceModifyLock.EnterWriteLock();
-
-                JsonHolder<K> jsonHolderExisting;
-                bool successExisting = mContainer.TryGetValue(key, out jsonHolderExisting);
-                if (!successExisting)
-                    return new PersistenceResponseHolder<E>(PersistenceResponse.NotFound404);
-
-                E newEntity = holder.Rq.Entity;
-                var oldEntity = mTransform.PersistenceEntitySerializer.Deserializer(jsonHolderExisting.Json);
-                var ver = mTransform.Version;
-                if (ver.SupportsOptimisticLocking)
-                {
-                    if (ver.EntityVersionAsString(oldEntity)!= ver.EntityVersionAsString(newEntity))
-                        return new PersistenceResponseHolder<E>(PersistenceResponse.PreconditionFailed412);
-                }
-
-                if (ver.SupportsVersioning)
-                    ver.EntityVersionUpdate(newEntity);
-
-                var jsonHolder = mTransform.JsonMaker(newEntity);
-
-                mContainer[key] = jsonHolder;
-
-                return new PersistenceResponseHolder<E>(PersistenceResponse.Ok200)
-                {
-                      Content = jsonHolder.Json
-                    , IsSuccess = true
-                    , Entity = newEntity
-                };
-
+                if (ver.EntityVersionAsString(oldEntity)!= ver.EntityVersionAsString(newEntity))
+                    return new PersistenceResponseHolder<E>(PersistenceResponse.PreconditionFailed412);
             }
-            finally
+
+            if (ver.SupportsVersioning)
+                ver.EntityVersionUpdate(newEntity);
+
+            var jsonHolder = mTransform.JsonMaker(newEntity);
+
+            mContainer.Update(key, newEntity);
+
+            return new PersistenceResponseHolder<E>(PersistenceResponse.Ok200)
             {
-                mReferenceModifyLock.ExitWriteLock();
-            }
+                  Content = jsonHolder.Json
+                , IsSuccess = true
+                , Entity = newEntity
+            };
+
         }
 
         protected override async Task<IResponseHolder> InternalDelete(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            if (await ProvideTaskDelay(holder.Prq.Cancel))
-                return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
+            //if (await ProvideTaskDelay(holder.Prq.Cancel))
+            //    return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
 
-            try
-            {
-                mReferenceModifyLock.EnterWriteLock();
+            if (!mContainer.Remove(key))
+                return new PersistenceResponseHolder(PersistenceResponse.NotFound404);
 
-                JsonHolder<K> value;
-                if (!mContainer.TryRemove(key, out value))
-                    return new PersistenceResponseHolder(PersistenceResponse.NotFound404);
-
-                ReferencesRemove(key);
-                return new PersistenceResponseHolder(PersistenceResponse.Ok200);
-            }
-            finally
-            {
-                mReferenceModifyLock.ExitWriteLock();
-            }
+            return new PersistenceResponseHolder(PersistenceResponse.Ok200);
         }
 
-        protected override async Task<IResponseHolder> InternalDeleteByRef(Tuple<string, string> reference
-            , PersistenceRequestHolder<K, Tuple<K, string>> holder)
+        protected override async Task<IResponseHolder> InternalDeleteByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            if (await ProvideTaskDelay(holder.Prq.Cancel))
-                return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
+            //if (await ProvideTaskDelay(holder.Prq.Cancel))
+            //    return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
 
-            try
-            {
-                mReferenceModifyLock.EnterWriteLock();
+            if (!mContainer.Remove(reference))
+                return new PersistenceResponseHolder(PersistenceResponse.NotFound404);
 
-                K key;
-                if (!ReferenceGet(reference, out key))
-                    return new PersistenceResponseHolder<E>(PersistenceResponse.NotFound404);
+            return new PersistenceResponseHolder(PersistenceResponse.Ok200);
 
-                return await InternalDelete(key, holder);
-            }
-            finally
-            {
-                mReferenceModifyLock.ExitWriteLock();
-            }
         }
 
         protected override async Task<IResponseHolder> InternalVersion(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            if (await ProvideTaskDelay(holder.Prq.Cancel))
-                return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
+            //if (await ProvideTaskDelay(holder.Prq.Cancel))
+            //    return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
 
-            try
+            E entity;
+            bool success = mContainer.TryGetValue(key, out entity);
+
+            if (success)
             {
-                mReferenceModifyLock.EnterReadLock();
-
-                JsonHolder<K> jsonHolder;
-                bool success = mContainer.TryGetValue(key, out jsonHolder);
-
-                if (success)
-                    return new PersistenceResponseHolder(PersistenceResponse.Ok200, jsonHolder.Json);
-                else
-                    return new PersistenceResponseHolder(PersistenceResponse.NotFound404);
+                JsonHolder<K> jsonHolder = mTransform.JsonMaker(entity);
+                return new PersistenceResponseHolder(PersistenceResponse.Ok200, jsonHolder.Json);
             }
-            finally
-            {
-                mReferenceModifyLock.ExitReadLock();
-            }
+            else
+                return new PersistenceResponseHolder(PersistenceResponse.NotFound404);
         }
 
         protected override async Task<IResponseHolder> InternalVersionByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            if (await ProvideTaskDelay(holder.Prq.Cancel))
-                return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
+            //if (await ProvideTaskDelay(holder.Prq.Cancel))
+            //    return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
 
-            try
+            E entity;
+            bool success = mContainer.TryGetValue(reference, out entity);
+
+            if (success)
             {
-                mReferenceModifyLock.EnterReadLock();
-
-                K key;
-                if (!ReferenceGet(reference, out key))
-                    return new PersistenceResponseHolder(PersistenceResponse.NotFound404);
-
-                return await InternalVersion(key, holder);
+                JsonHolder<K> jsonHolder = mTransform.JsonMaker(entity);
+                return new PersistenceResponseHolder(PersistenceResponse.Ok200, jsonHolder.Json);
             }
-            finally
-            {
-                mReferenceModifyLock.ExitReadLock();
-            }
+            else
+                return new PersistenceResponseHolder(PersistenceResponse.NotFound404);
+
         }
+
+        protected async override Task<IResponseHolder<SearchResponse>> InternalSearch(SearchRequest key, PersistenceRequestHolder<SearchRequest, SearchResponse> holder)
+        {
+            return await base.InternalSearch(key, holder);
+        }
+
     }
 }

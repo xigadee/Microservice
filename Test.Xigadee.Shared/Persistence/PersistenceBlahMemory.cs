@@ -36,11 +36,11 @@ namespace Test.Xigadee
 
         public override void PrePopulate()
         {
-            EntityAdd(new Blah() { ContentId = new Guid("3211c71a-24e5-474d-b35d-9e2f72cafbe8"), Message = "Hello mom 32.", VersionId = Guid.NewGuid() });
-            EntityAdd(new Blah() { ContentId = new Guid("3111c71a-24e5-474d-b35d-9e2f72cafbe8"), Message = "Hello mom 31.", VersionId = Guid.NewGuid() });
-            EntityAdd(new Blah() { ContentId = new Guid("3011c71a-24e5-474d-b35d-9e2f72cafbe8"), Message = "Hello mom 30.", VersionId = Guid.NewGuid() });
-            EntityAdd(new Blah() { ContentId = new Guid("2911c71a-24e5-474d-b35d-9e2f72cafbe8"), Message = "Hello mom 29.", VersionId = Guid.NewGuid() });
-            EntityAdd(new Blah() { ContentId = new Guid("2811c71a-24e5-474d-b35d-9e2f72cafbe8"), Message = "Hello mom 28.", VersionId = Guid.NewGuid() });
+            mContainer.Add(new Guid("3211c71a-24e5-474d-b35d-9e2f72cafbe8"), new Blah() { ContentId = new Guid("3211c71a-24e5-474d-b35d-9e2f72cafbe8"), Message = "Hello mom 32.", VersionId = Guid.NewGuid() });
+            mContainer.Add(new Guid("3111c71a-24e5-474d-b35d-9e2f72cafbe8"), new Blah() { ContentId = new Guid("3111c71a-24e5-474d-b35d-9e2f72cafbe8"), Message = "Hello mom 31.", VersionId = Guid.NewGuid() });
+            mContainer.Add(new Guid("3011c71a-24e5-474d-b35d-9e2f72cafbe8"), new Blah() { ContentId = new Guid("3011c71a-24e5-474d-b35d-9e2f72cafbe8"), Message = "Hello mom 30.", VersionId = Guid.NewGuid() });
+            mContainer.Add(new Guid("2911c71a-24e5-474d-b35d-9e2f72cafbe8"), new Blah() { ContentId = new Guid("2911c71a-24e5-474d-b35d-9e2f72cafbe8"), Message = "Hello mom 29.", VersionId = Guid.NewGuid() });
+            mContainer.Add(new Guid("2811c71a-24e5-474d-b35d-9e2f72cafbe8"), new Blah() { ContentId = new Guid("2811c71a-24e5-474d-b35d-9e2f72cafbe8"), Message = "Hello mom 28.", VersionId = Guid.NewGuid() });
         }
     }
 }

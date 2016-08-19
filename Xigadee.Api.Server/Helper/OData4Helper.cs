@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.OData.Query;
@@ -19,7 +20,7 @@ namespace Xigadee
         /// <param name="rq">The search object</param>
         /// <param name="incoming">The OData request.</param>
         public static void ODataPopulate<E>(this SearchRequest rq, ODataQueryOptions<E> incoming)
-        {
+        {           
             //Not very elegant, but we don't want to make a dependencies on OData with SearchRequest.
             rq.Apply = incoming.RawValues.Apply;
             rq.Count = incoming.RawValues.Count;
@@ -33,5 +34,6 @@ namespace Xigadee
             rq.SkipToken = incoming.RawValues.SkipToken;
             rq.Top = incoming.RawValues.Top;
         }
+
     }
 }

@@ -16,6 +16,7 @@
     <dependencies>
       <dependency id="Newtonsoft.Json" version="9.0.1" />
       <dependency id="System.IdentityModel.Tokens.Jwt" version="4.0.2.206221351" />
+      <dependency id="Microsoft.Data.OData" version="5.7.0" />
     </dependencies>
   </metadata>
   <files>

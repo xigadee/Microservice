@@ -825,8 +825,26 @@ namespace Xigadee
         /// <returns>This is an async task.</returns>
         protected virtual async Task ProcessSearch(PersistenceRequestHolder<SearchRequest, SearchResponse> holder)
         {
-            holder.Rs.ResponseCode = (int)PersistenceResponse.NotImplemented501;
-            holder.Rs.ResponseMessage = "Search is not implemented.";
+            IResponseHolder<SearchResponse> result = null;
+
+            result = await InternalSearch(holder.Rq.Key, holder);
+
+            holder.Rs.Entity = result.Entity;
+
+            holder.Rs.Key = holder.Rq.Key;
+
+            //rs.Settings.VersionId = mTransform.Version?.EntityVersionAsString(rs.Entity);
+
+            //rs.KeyReference = new Tuple<string, string>(rs.Key.ToString(), rs.Settings.VersionId);
+
+            //holder.Rs.ResponseCode = (int)PersistenceResponse.NotImplemented501;
+            //holder.Rs.ResponseMessage = "Search is not implemented.";
+        }
+
+
+        protected async virtual Task<IResponseHolder<SearchResponse>> InternalSearch(SearchRequest key, PersistenceRequestHolder<SearchRequest, SearchResponse> holder)
+        {
+            return new PersistenceResponseHolder<SearchResponse>(PersistenceResponse.NotImplemented501);
         }
         #endregion
         #region History

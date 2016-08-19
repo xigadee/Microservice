@@ -10,5 +10,9 @@ namespace Xigadee
     {
         public string Etag { get; set; }
 
+        public Dictionary<int, string> Fields { get; } = new Dictionary<int, string>();
+
+        public List<string[]> Data { get; set;} 
+
     }
 }
