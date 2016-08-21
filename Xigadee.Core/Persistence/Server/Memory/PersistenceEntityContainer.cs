@@ -31,21 +31,14 @@ namespace Xigadee
         /// This lock is used when modifying references.
         /// </summary>
         ReaderWriterLockSlim mReferenceModifyLock;
-        /// <summary>
-        /// This is the reference maker.
-        /// </summary>
-        Func<E, IEnumerable<Tuple<string, string>>> mReferenceMaker;
         #endregion
-
         #region Constructor
         /// <summary>
         /// This is the default constructor.
         /// </summary>
         /// <param name="referenceMaker">The reference maker.</param>
-        public PersistenceEntityContainer(Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null)
+        public PersistenceEntityContainer()
         {
-            mReferenceMaker = referenceMaker ?? ((e) => (IEnumerable<Tuple<string, string>>)null);
-
             mContainer = new Dictionary<K, E>();
 
             mContainerReference = new Dictionary<Tuple<string, string>, K>();
@@ -64,9 +57,20 @@ namespace Xigadee
             {
                 return Atomic(() => mContainer.Count);
             }
-        } 
+        }
         #endregion
-
+        #region CountReference
+        /// <summary>
+        /// This is the number of entities in the collection.
+        /// </summary>
+        public int CountReference
+        {
+            get
+            {
+                return Atomic(() => mContainerReference.Count);
+            }
+        }
+        #endregion
         #region Atomic Wrappers...
         /// <summary>
         /// This wraps the requests the ensure that only one is processed at the same time.
@@ -125,7 +129,7 @@ namespace Xigadee
         /// 201 - Created
         /// 409 - Conflict
         /// </returns>
-        public int Add(K key, E value)
+        public int Add(K key, E value, IEnumerable<Tuple<string, string>> references = null)
         {
             return Atomic(() =>
             {
@@ -139,7 +143,6 @@ namespace Xigadee
                     return 409;
 
                 //Are there any references?
-                var references = mReferenceMaker(value);
                 if (ReferenceExistingMatch(references))
                     return 409;
 
@@ -188,7 +191,7 @@ namespace Xigadee
         /// 404 - Not sound.
         /// 409 - Conflict
         /// </returns>
-        public int Update(K key, E newEntity)
+        public int Update(K key, E newEntity, IEnumerable<Tuple<string, string>> newReferences = null)
         {
             return Atomic(() =>
             {
@@ -197,10 +200,7 @@ namespace Xigadee
                 if (!mContainer.TryGetValue(key, out oldEntity))
                     return 404;
 
-                var oldReferences = mReferenceMaker(oldEntity);
-
                 //OK, get the new references, but check whether they are assigned to another entity and if so flag an error.
-                var newReferences = mReferenceMaker(newEntity);
                 if (ReferenceExistingMatch(newReferences, true, key))
                     return 409;
 
@@ -208,8 +208,9 @@ namespace Xigadee
                 mContainer[key]= newEntity;
                 //Remove the old references, and add the new references.
                 //Note we're being lazy we add/replace even if nothing has changed.
+                var oldReferences = mContainerReference.Where((r) => r.Value.Equals(key)).Select((r) => r.Key).ToList();
                 oldReferences.ForEach((r) => mContainerReference.Remove(r));
-                newReferences.ForEach((r) => mContainerReference.Add(r, key));
+                newReferences?.ForEach((r) => mContainerReference.Add(r, key));
 
                 //All good.
                 return 200;

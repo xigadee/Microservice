@@ -103,10 +103,9 @@ namespace Xigadee
         #region Start/Stop
         protected override void StartInternal()
         {
-            mContainer = new PersistenceEntityContainer<K, E>(mTransform.ReferenceMaker);
-
             try
             {
+                mContainer = new PersistenceEntityContainer<K, E>();
                 PrePopulate();
             }
             catch (Exception ex)
@@ -172,7 +171,6 @@ namespace Xigadee
         }
         #endregion
 
-
         #region InternalCreate(K key, PersistenceRequestHolder<K, E> holder)
         /// <summary>
         /// This is the create override for the command.
@@ -184,12 +182,12 @@ namespace Xigadee
         {
             //if (await ProvideTaskDelay(holder.Prq.Cancel))
             //    return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
-
-            int response = mContainer.Add(key, holder.Rq.Entity);
+            E entity = holder.Rq.Entity;
+            int response = mContainer.Add(key, entity, mTransform.ReferenceMaker(entity));
 
             if (response == 201)
             {
-                JsonHolder<K> jsonHolder = mTransform.JsonMaker(holder.Rq.Entity);
+                JsonHolder<K> jsonHolder = mTransform.JsonMaker(entity);
                 return new PersistenceResponseHolder<E>(PersistenceResponse.Created201, jsonHolder.Json, mTransform.PersistenceEntitySerializer.Deserializer(jsonHolder.Json));
             }
             else
@@ -264,10 +262,10 @@ namespace Xigadee
             if (ver.SupportsVersioning)
                 ver.EntityVersionUpdate(newEntity);
 
+
+            mContainer.Update(key, newEntity, mTransform.ReferenceMaker(newEntity));
+
             var jsonHolder = mTransform.JsonMaker(newEntity);
-
-            mContainer.Update(key, newEntity);
-
             return new PersistenceResponseHolder<E>(PersistenceResponse.Ok200)
             {
                   Content = jsonHolder.Json
