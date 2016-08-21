@@ -9,7 +9,12 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-
+    /// <summary>
+    /// This class is used to hold the entities and their references in to an atomic collection.
+    /// This class is not optimised for high volume parallel throughput. It should only be used for testing purposes.
+    /// </summary>
+    /// <typeparam name="K">The key type.</typeparam>
+    /// <typeparam name="E">The entity type.</typeparam>
     public class PersistenceEntityContainer<K,E>
         where K: IEquatable<K>
     {
@@ -34,9 +39,9 @@ namespace Xigadee
 
         #region Constructor
         /// <summary>
-        /// 
+        /// This is the default constructor.
         /// </summary>
-        /// <param name="referenceMaker"></param>
+        /// <param name="referenceMaker">The reference maker.</param>
         public PersistenceEntityContainer(Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null)
         {
             mReferenceMaker = referenceMaker ?? ((e) => (IEnumerable<Tuple<string, string>>)null);
@@ -62,7 +67,7 @@ namespace Xigadee
         } 
         #endregion
 
-        #region Atomic...
+        #region Atomic Wrappers...
         /// <summary>
         /// This wraps the requests the ensure that only one is processed at the same time.
         /// </summary>
@@ -124,19 +129,19 @@ namespace Xigadee
         {
             return Atomic(() =>
             {
+                if (key.Equals(default(K)))
+                    throw new ArgumentOutOfRangeException("key must be set to a value");
+                if (value.Equals(default(E)))
+                    throw new ArgumentNullException("value must be set to a value");
+
                 //Does the key already exist in the collection
                 if (mContainer.ContainsKey(key))
                     return 409;
 
                 //Are there any references?
                 var references = mReferenceMaker(value);
-                if (references != null && references.Count() > 0)
-                {
-                    //And do any of the references already exist in the collection?
-                    foreach(var eRef in references)
-                        if (mContainerReference.ContainsKey(eRef))
-                            return 409;
-                }
+                if (ReferenceExistingMatch(references))
+                    return 409;
 
                 //OK, add the entity
                 mContainer.Add(key, value);
@@ -147,33 +152,66 @@ namespace Xigadee
             });
         }
 
-        public int Update(K key, E value)
+        /// <summary>
+        /// This method checks for existing references, but also skips matches if the associated key is set to the value passed. 
+        /// This allows the method to be used for both create and update requests.
+        /// </summary>
+        /// <param name="references">The references to check for matches.</param>
+        /// <param name="skipOnKeyMatch">A boolean property that specifies a match should be skipped if it matches the key passed in the key parameter.</param>
+        /// <param name="key">The key value to skip on a match.</param>
+        /// <returns>Returns true if a references has been matched to an item in the collection.</returns>
+        private bool ReferenceExistingMatch(IEnumerable<Tuple<string,string>> references, bool skipOnKeyMatch = false, K key = default(K))
+        {
+            if (references != null && references.Count() > 0)
+            {
+                //And do any of the references already exist in the collection?
+                foreach (var eRef in references)
+                {
+                    //OK, do we have a match?
+                    K refKey;
+                    if (mContainerReference.TryGetValue(eRef, out refKey))
+                        if (!skipOnKeyMatch || !refKey.Equals(key))
+                            return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// This method updates an existing entity.
+        /// </summary>
+        /// <param name="key">THe entity key.</param>
+        /// <param name="newEntity">The newEntity.</param>
+        /// <returns>
+        /// 200 - Updated
+        /// 404 - Not sound.
+        /// 409 - Conflict
+        /// </returns>
+        public int Update(K key, E newEntity)
         {
             return Atomic(() =>
             {
                 //Does the key already exist in the collection
-                if (!mContainer.ContainsKey(key))
+                E oldEntity;
+                if (!mContainer.TryGetValue(key, out oldEntity))
                     return 404;
 
-                E oldEntity = mContainer[key];
-                var oldRreferences = mReferenceMaker(oldEntity);
-                var newReferences = mReferenceMaker(value);
+                var oldReferences = mReferenceMaker(oldEntity);
 
-                //Are there any references?
-                var references = mReferenceMaker(value);
-                if (references != null && references.Count() > 0)
-                {
-                    //And do any of the references already exist in the collection?
-                    foreach (var eRef in references)
-                        if (mContainerReference.ContainsKey(eRef))
-                            return 409;
-                }
+                //OK, get the new references, but check whether they are assigned to another entity and if so flag an error.
+                var newReferences = mReferenceMaker(newEntity);
+                if (ReferenceExistingMatch(newReferences, true, key))
+                    return 409;
 
-                //OK, add the entity
-                mContainer.Add(key, value);
-                //Add the entity references
-                references?.ForEach((r) => mContainerReference.Add(r, key));
+                //OK, update the entity
+                mContainer[key]= newEntity;
+                //Remove the old references, and add the new references.
+                //Note we're being lazy we add/replace even if nothing has changed.
+                oldReferences.ForEach((r) => mContainerReference.Remove(r));
+                newReferences.ForEach((r) => mContainerReference.Add(r, key));
 
+                //All good.
                 return 200;
             });
         }
@@ -182,14 +220,19 @@ namespace Xigadee
         {
             return Atomic(() =>
             {
-                var result = mContainer.Remove(key);
-                if (result)
-                {
-                    var refs = mContainerReference.Where((r) => r.Value.Equals(key)).ToList();
-                    refs.ForEach((r) => mContainerReference.Remove(r.Key));
-                }
-                return result;
+                return RemoveInternal(key);
             });
+        }
+
+        private bool RemoveInternal(K key)
+        {
+            bool result = mContainer.Remove(key);
+            if (result)
+            {
+                var refs = mContainerReference.Where((r) => r.Value.Equals(key)).ToList();
+                refs.ForEach((r) => mContainerReference.Remove(r.Key));
+            }
+            return result;
         }
 
         public bool Remove(Tuple<string, string> reference)
@@ -200,13 +243,7 @@ namespace Xigadee
                 if (!mContainerReference.TryGetValue(reference, out key))
                     return false;
 
-                bool result = mContainer.Remove(key);
-                if (result)
-                {
-                    var refs = mContainerReference.Where((r) => r.Value.Equals(key)).ToList();
-                    refs.ForEach((r) => mContainerReference.Remove(r.Key));
-                }
-                return result;
+                return RemoveInternal(key);
             });
         }
 
@@ -236,7 +273,7 @@ namespace Xigadee
             bool result = Atomic(() =>
             {
                 K key;
-                if (mContainerReference.TryGetValue(reference, out key))
+                if (!mContainerReference.TryGetValue(reference, out key))
                     return false;
 
                 return mContainer.TryGetValue(key, out newValue);
@@ -256,6 +293,7 @@ namespace Xigadee
                 mContainerReference?.Clear();
             });
         }
+
 
         public ICollection<K> Keys
         {
