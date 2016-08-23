@@ -30,7 +30,9 @@ namespace Xigadee
         /// This holds the master job collection.
         /// </summary>
         protected Dictionary<Guid, MasterJobHolder> mMasterJobs;
-
+        /// <summary>
+        /// This is the current state of the MasterJob
+        /// </summary>
         private MasterJobState mMasterJobState;
         #endregion
 

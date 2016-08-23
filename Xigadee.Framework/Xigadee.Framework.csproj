@@ -66,6 +66,7 @@
   <ItemGroup>
     <Folder Include="BoundaryLogger\Sql\" />
     <Folder Include="EventSource\" />
+    <Folder Include="Logger\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

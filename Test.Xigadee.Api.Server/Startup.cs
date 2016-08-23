@@ -22,7 +22,10 @@ using Xigadee;
 
 namespace Test.Xigadee.Api.Server
 {
-    public partial class Startup
+    /// <summary>
+    /// This is the standard startup class for the service.
+    /// </summary>
+    public class Startup
     {
         public void Configuration(IAppBuilder app)
         {
@@ -30,53 +33,9 @@ namespace Test.Xigadee.Api.Server
             {
                 var Service = new PopulatorWebApi();
 
-                //config.Formatters.Insert(0, new ByteArrayMediaTypeFormatter()); // Add before any of the default formatters
+                RouteConfig.Register(Service);
 
-                //Enable attribute based routing for HTTP verbs.
-                Service.ApiConfig.MapHttpAttributeRoutes();
-
-                // Add additional convention-based routing for the default controller.
-                Service.ApiConfig.Routes.MapHttpRoute(
-                    name: "Security",
-                    routeTemplate: "v1/account/{action}/{id}",
-                    defaults: new { id = RouteParameter.Optional, controller = "Security" }
-                );
-
-                Service.ApiConfig.Routes.MapHttpRoute(
-                    name: "DefaultPersistence",
-                    routeTemplate: "v1/{controller}/{id}",
-                    defaults: new { id = RouteParameter.Optional }
-                );
-
-                // Add additional convention-based routing for the default controller.
-                Service.ApiConfig.Routes.MapHttpRoute(
-                    name: "ODataMetadata",
-                    routeTemplate: "v1/OData/OData.svc/$metadata",
-                    defaults: new { id = RouteParameter.Optional, controller = "OData4", action="Metadata" }
-                );
-
-                // Add additional convention-based routing for the default controller.
-                Service.ApiConfig.Routes.MapHttpRoute(
-                    name: "ODataBatch",
-                    routeTemplate: "v1/OData/OData.svc/$batch",
-                    defaults: new { id = RouteParameter.Optional, controller = "OData4", action = "Batch" }
-                );
-
-
-                Service.ApiConfig.Routes.MapHttpRoute(
-                    name: "OData",
-                    routeTemplate: "v1/OData/OData.svc/{controller}",
-                    defaults: new { action = "Search" }, constraints: null, 
-                    handler: new HttpMethodChangeHandler(Service.ApiConfig, "SEARCH"));
-
-                // /swagger/ui/index
-                Service.ApiConfig.EnableSwagger(c =>
-                {
-                    c.IncludeXmlComments("docs.XML");
-                    c.Schemes(new[] { "http", "https" });
-                    c.SingleApiVersion("1.0", "Xigadee Test API");
-                })
-                .EnableSwaggerUi();
+                SwaggerConfig.Register(Service);
 
                 Service.Start(app, AzureHelper.Resolver);
 
@@ -87,4 +46,30 @@ namespace Test.Xigadee.Api.Server
             }
         }
      }
+
+    /// <summary>
+    /// This class is used to change the configuration to move the persistence commands to be registered
+    /// locally within the Api service.
+    /// </summary>
+    public class StartupLocal
+    {
+        public void Configuration(IAppBuilder app)
+        {
+            try
+            {
+                var Service = new PopulatorWebApi(true);
+
+                RouteConfig.Register(Service);
+
+                SwaggerConfig.Register(Service);
+
+                Service.Start(app, AzureHelper.Resolver);
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
 }

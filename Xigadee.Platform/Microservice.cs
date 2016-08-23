@@ -40,6 +40,10 @@ namespace Xigadee
         /// </summary>
         protected TelemetryContainer mTelemetry;
         /// <summary>
+        /// This collection holds the channels.
+        /// </summary>
+        protected ChannelContainer mChannels;
+        /// <summary>
         /// This container is used to hold the security infrastructure for the Microservice.
         /// </summary>
         protected SecurityContainer mSecurity;
@@ -113,6 +117,7 @@ namespace Xigadee
             mServiceEngineVersionId = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
             mSecurity = InitialiseSecurityContainer();
+            mChannels = InitialiseChannelContainer();
             mCommunication = InitialiseCommunicationContainer();
             mCommands = InitialiseCommandContainer();
             mResourceTracker = InitialiseResourceTracker();
@@ -219,6 +224,9 @@ namespace Xigadee
                 //This method connects any components that require Shared Service together before they start.
                 mCommands.SharedServicesConnect();
 
+                //Start the channel controller.
+                ServiceStart(mChannels);
+
                 //Ensure that the communication handler is working.
                 ServiceStart(mCommunication);
 
@@ -286,7 +294,10 @@ namespace Xigadee
             mCommunication.SendersStop();
 
             ServiceStop(mCommunication);
-            
+
+            //Stop the channel controller.
+            ServiceStop(mChannels);
+
             if (mPayloadSerializers != null)
                 mPayloadSerializers.Clear();
 

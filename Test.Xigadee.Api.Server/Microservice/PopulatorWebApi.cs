@@ -26,7 +26,7 @@ namespace Test.Xigadee.Api.Server
 
         public readonly ResourceProfile mResourceBlobStorage = new ResourceProfile("Blob");
 
-        public PopulatorWebApi()
+        public PopulatorWebApi(bool local = false)
         {
         }
 

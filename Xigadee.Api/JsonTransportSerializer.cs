@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This the the base Json serializer.
+    /// This the the base default Json serializer.
     /// </summary>
     public class JsonTransportSerializer<E> : TransportSerializer<E>
     {

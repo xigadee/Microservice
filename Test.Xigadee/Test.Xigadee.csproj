@@ -73,6 +73,7 @@
     <Compile Include="Microservice_Validate_Persistence.cs" />
     <Compile Include="SignatureHelper.cs" />
     <Compile Include="ApiTests.cs" />
+    <Compile Include="ExtensionMethods.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xigadee.Api.Client\Xigadee.Api.Client.csproj">

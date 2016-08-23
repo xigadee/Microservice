@@ -88,6 +88,7 @@
     <Compile Include="Communication\PartitionConfig\SenderPartitionConfig.cs" />
     <Compile Include="Communication\TransmissionPayloadTrace.cs" />
     <Compile Include="EventSource\DocumentDbEventSource.cs" />
+    <Compile Include="EventSource\MemoryEventSource.cs" />
     <Compile Include="Exceptions\RequiredSharedServiceMissingException.cs" />
     <Compile Include="Exceptions\StorageThrottlingException.cs" />
     <Compile Include="Interfaces\Communication\IMessaging.cs" />
@@ -109,6 +110,7 @@
     <Compile Include="Logging\FileStorageLoggingBase.cs" />
     <Compile Include="Logging\LogEvent.cs" />
     <Compile Include="Logging\LoggingLevel.cs" />
+    <Compile Include="Logging\MemoryLogger.cs" />
     <Compile Include="Logging\PayloadLogEvent.cs" />
     <Compile Include="Logging\PersistencePayloadLogEvent.cs" />
     <Compile Include="Orchestration\Commands\EntityChange\EntityChangeOrchestrationCommandBase.cs" />

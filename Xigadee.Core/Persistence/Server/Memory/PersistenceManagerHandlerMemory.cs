@@ -77,6 +77,9 @@ namespace Xigadee
         where S : PersistenceStatistics, new()
     {
         #region Declarations
+        /// <summary>
+        /// This container holds the memory back entity collection.
+        /// </summary>
         protected PersistenceEntityContainer<K, E> mContainer;
         /// <summary>
         /// This is the time span for the delay.

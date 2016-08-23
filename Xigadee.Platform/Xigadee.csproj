@@ -59,6 +59,10 @@
     <Compile Include="ActionQueue\ActionQueuePolicy.cs" />
     <Compile Include="ActionQueue\ActionQueueStatistics.cs" />
     <Compile Include="ActionQueue\IActionQueue.cs" />
+    <Compile Include="Channel\ChannelContainer.cs" />
+    <Compile Include="Channel\ChannelContainerPolicy.cs" />
+    <Compile Include="Channel\ChannelContainerStatistics.cs" />
+    <Compile Include="Channel\IMicroserviceChannel.cs" />
     <Compile Include="Command\CommandContainerPolicy.cs" />
     <Compile Include="Command\ServiceHolder\ServiceHolderStatistics.cs" />
     <Compile Include="Command\SharedService\SharedServiceStatistics.cs" />
@@ -90,6 +94,7 @@
     <Compile Include="Exceptions\TransitCountExceededException.cs" />
     <Compile Include="Exceptions\TransmissionPayloadException.cs" />
     <Compile Include="Helper\CpuStats.cs" />
+    <Compile Include="Helper\Microservice_Extensions.cs" />
     <Compile Include="Helper\ServiceContainerBase.cs" />
     <Compile Include="Logger\LoggerPolicy.cs" />
     <Compile Include="Logger\Loggers\EventLogLogger.cs" />

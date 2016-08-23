@@ -22,11 +22,11 @@ namespace Xigadee
         /// <summary>
         /// This container holds the entities.
         /// </summary>
-        Dictionary<K, E> mContainer;
+        Dictionary<K, EntityContainer> mContainer;
         /// <summary>
         /// This container holds the key references.
         /// </summary>
-        Dictionary<Tuple<string, string>, K> mContainerReference;
+        Dictionary<Tuple<string, string>, EntityContainer> mContainerReference;
         /// <summary>
         /// This lock is used when modifying references.
         /// </summary>
@@ -39,9 +39,9 @@ namespace Xigadee
         /// <param name="referenceMaker">The reference maker.</param>
         public PersistenceEntityContainer()
         {
-            mContainer = new Dictionary<K, E>();
+            mContainer = new Dictionary<K, EntityContainer>();
 
-            mContainerReference = new Dictionary<Tuple<string, string>, K>();
+            mContainerReference = new Dictionary<Tuple<string, string>, EntityContainer>(new ReferenceComparer());
 
             mReferenceModifyLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
         } 
@@ -107,6 +107,47 @@ namespace Xigadee
             {
                 mReferenceModifyLock.ExitReadLock();
             }
+        }
+        #endregion
+
+        #region Class -> ReferenceComparer
+        /// <summary>
+        /// This helper class is used to ensure that references are matched in a case insensitive manner.
+        /// </summary>
+        private class ReferenceComparer: IEqualityComparer<Tuple<string, string>>
+        {
+            public bool Equals(Tuple<string, string> x, Tuple<string, string> y)
+            {
+                return string.Equals(x?.Item1, y?.Item1, StringComparison.InvariantCultureIgnoreCase)
+                    && string.Equals(x?.Item2, y?.Item2, StringComparison.CurrentCultureIgnoreCase);
+            }
+
+            public int GetHashCode(Tuple<string, string> obj)
+            {
+                //We create a lowwercase invariant tuple and return its hash code. This will make Equals fire for comparison.
+                var invariantTuple = new Tuple<string, string>(obj?.Item1?.ToLowerInvariant(), obj?.Item2?.ToLowerInvariant());
+                return invariantTuple.GetHashCode();
+            }
+        } 
+        #endregion
+        #region Class -> EntityContainer
+        /// <summary>
+        /// This is a private class it is used to ensure that we do not duplicate data.
+        /// </summary>
+        private class EntityContainer
+        {
+            public EntityContainer(K key, E entity, IEnumerable<Tuple<string, string>> references)
+            {
+                Key = key;
+                Entity = entity;
+                References = references == null ? new List<Tuple<string, string>>() : references.ToList();
+            }
+
+            public K Key { get; }
+
+            public E Entity { get; }
+
+            public List<Tuple<string, string>> References { get; }
         } 
         #endregion
 
@@ -146,10 +187,11 @@ namespace Xigadee
                 if (ReferenceExistingMatch(references))
                     return 409;
 
+                var container = new EntityContainer(key, value, references);
                 //OK, add the entity
-                mContainer.Add(key, value);
+                mContainer.Add(key, container);
                 //Add the entity references
-                references?.ForEach((r) => mContainerReference.Add(r, key));
+                container.References.ForEach((r) => mContainerReference.Add(r, container));
 
                 return 201;
             });
@@ -171,9 +213,9 @@ namespace Xigadee
                 foreach (var eRef in references)
                 {
                     //OK, do we have a match?
-                    K refKey;
+                    EntityContainer refKey;
                     if (mContainerReference.TryGetValue(eRef, out refKey))
-                        if (!skipOnKeyMatch || !refKey.Equals(key))
+                        if (!skipOnKeyMatch || !refKey.Key.Equals(key))
                             return true;
                 }
             }
@@ -196,21 +238,22 @@ namespace Xigadee
             return Atomic(() =>
             {
                 //Does the key already exist in the collection
-                E oldEntity;
-                if (!mContainer.TryGetValue(key, out oldEntity))
+                EntityContainer oldContainer;
+                if (!mContainer.TryGetValue(key, out oldContainer))
                     return 404;
 
                 //OK, get the new references, but check whether they are assigned to another entity and if so flag an error.
                 if (ReferenceExistingMatch(newReferences, true, key))
                     return 409;
 
+                var newContainer = new EntityContainer(key, newEntity, newReferences);
+
                 //OK, update the entity
-                mContainer[key]= newEntity;
+                mContainer[key]= newContainer;
                 //Remove the old references, and add the new references.
                 //Note we're being lazy we add/replace even if nothing has changed.
-                var oldReferences = mContainerReference.Where((r) => r.Value.Equals(key)).Select((r) => r.Key).ToList();
-                oldReferences.ForEach((r) => mContainerReference.Remove(r));
-                newReferences?.ForEach((r) => mContainerReference.Add(r, key));
+                oldContainer.References.ForEach((r) => mContainerReference.Remove(r));
+                newContainer.References.ForEach((r) => mContainerReference.Add(r, newContainer));
 
                 //All good.
                 return 200;
@@ -221,38 +264,39 @@ namespace Xigadee
         {
             return Atomic(() =>
             {
-                return RemoveInternal(key);
+                EntityContainer container = null;
+                if (mContainer.TryGetValue(key, out container))
+                    return RemoveInternal(container);
+
+                return false;
             });
         }
-
-        private bool RemoveInternal(K key)
-        {
-            bool result = mContainer.Remove(key);
-            if (result)
-            {
-                var refs = mContainerReference.Where((r) => r.Value.Equals(key)).ToList();
-                refs.ForEach((r) => mContainerReference.Remove(r.Key));
-            }
-            return result;
-        }
-
         public bool Remove(Tuple<string, string> reference)
         {
             return Atomic(() =>
             {
-                K key;
-                if (!mContainerReference.TryGetValue(reference, out key))
+                EntityContainer container;
+                if (!mContainerReference.TryGetValue(reference, out container))
                     return false;
 
-                return RemoveInternal(key);
+                return RemoveInternal(container);
             });
+        }
+
+        private bool RemoveInternal(EntityContainer container)
+        {
+            bool result = mContainer.Remove(container.Key);
+            if (result)
+                container.References.ForEach((r) => mContainerReference.Remove(r));
+
+            return result;
         }
 
         public bool TryGetValue(K key, out E value)
         {
             value = default(E);
 
-            E newValue = default(E);
+            EntityContainer newValue = null;;
 
             bool result = Atomic(() =>
             {
@@ -260,7 +304,7 @@ namespace Xigadee
             });
 
             if (result)
-                value = newValue;
+                value = newValue==null?default(E): newValue.Entity;
 
             return result;
         }
@@ -269,19 +313,15 @@ namespace Xigadee
         {
             value = default(E);
 
-            E newValue = default(E);
+            EntityContainer newValue = null; ;
 
             bool result = Atomic(() =>
             {
-                K key;
-                if (!mContainerReference.TryGetValue(reference, out key))
-                    return false;
-
-                return mContainer.TryGetValue(key, out newValue);
+                return mContainerReference.TryGetValue(reference, out newValue);
             });
 
             if (result)
-                value = newValue;
+                value = newValue == null ? default(E) : newValue.Entity;
 
             return result;
         }
@@ -295,7 +335,6 @@ namespace Xigadee
             });
         }
 
-
         public ICollection<K> Keys
         {
             get
@@ -308,7 +347,7 @@ namespace Xigadee
         {
             get
             {
-                return Atomic(() => mContainer.Values.ToList());
+                return Atomic(() => mContainer.Values.Select((c) => c.Entity).ToList());
             }
         }
 
@@ -319,7 +358,5 @@ namespace Xigadee
                 return Atomic(() => mContainerReference.Keys.ToList());
             }
         }
-
-
     }
 }
