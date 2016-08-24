@@ -41,7 +41,13 @@ namespace Xigadee
                 KeyDeserializer = s => (K)(object)(s);
             else if (typeof(K) == typeof(Guid))
                 KeyDeserializer = s => (K)(object)Guid.Parse(s);
+
+            Search = new SearchExpressionHelper<E>();
         }
+        /// <summary>
+        /// This is the search expression helper for search requests.
+        /// </summary>
+        public virtual SearchExpressionHelper<E> Search { get; protected set; }
         /// <summary>
         /// This function is used by optimistic locking, it is used to define the version id for the entity.
         /// </summary>

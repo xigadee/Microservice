@@ -36,7 +36,7 @@ namespace Xigadee
         /// <summary>
         /// This class holds the expression class.
         /// </summary>
-        protected PersistenceExpressionHelper<E> mExpressionHelper = null;
+        protected SearchExpressionHelper<E> mExpressionHelper = null;
         #endregion
         #region Constructor
         /// <summary>
@@ -196,8 +196,6 @@ namespace Xigadee
 
         protected override void StartInternal()
         {
-            ExpressionHelperCreate();
-
             var resourceTracker = SharedServices.GetService<IResourceTracker>();
             if (resourceTracker != null && mPolicy.ResourceProfile != null)
                 mPolicy.ResourceConsumer = resourceTracker.RegisterConsumer(EntityType, mPolicy.ResourceProfile);
@@ -213,15 +211,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region ExpressionHelperCreate()
-        /// <summary>
-        /// This method creates the expression helper used to build an expression for search features.
-        /// </summary>
-        protected virtual void ExpressionHelperCreate()
-        {
-            mExpressionHelper = new PersistenceExpressionHelper<E>();
-        } 
-        #endregion
 
         #region CommandsRegister()
         /// <summary>

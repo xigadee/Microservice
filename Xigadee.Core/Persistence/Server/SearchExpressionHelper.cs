@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class PersistenceExpressionHelper<E>
+    public class SearchExpressionHelper<E>
     {
         PropertyMap mPropertyMap;
 
-        public PersistenceExpressionHelper()
+        public SearchExpressionHelper()
         {
             mPropertyMap = GetPropertyMap();
         }
