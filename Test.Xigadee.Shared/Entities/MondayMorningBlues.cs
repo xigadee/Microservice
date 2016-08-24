@@ -26,5 +26,13 @@ namespace Test.Xigadee
         public string Message { get; set; }
 
         public string Email { get; set; }
+
+        public Name UserName { get; set; }
+    }
+
+    public class Name
+    {
+        public string NameFirst { get; set; }
+        public string NameFamily { get; set; }
     }
 }

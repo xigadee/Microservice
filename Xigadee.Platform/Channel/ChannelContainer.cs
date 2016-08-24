@@ -24,10 +24,12 @@ namespace Xigadee
 
         protected override void StartInternal()
         {
+
         }
 
         protected override void StopInternal()
         {
+
         }
     }
 }

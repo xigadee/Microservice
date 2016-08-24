@@ -62,6 +62,7 @@
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Channel\ChannelDirection.cs" />
     <Compile Include="Command\EventHandlers\CommandChange.cs" />
     <Compile Include="Command\EventHandlers\MasterJobStateChange.cs" />
     <Compile Include="Command\Exceptions\CommandStartupException.cs" />
@@ -138,6 +139,7 @@
     <Compile Include="Persistence\Client\PersistenceInitiatorBase.cs" />
     <Compile Include="Persistence\Client\PersistenceInitiatorPolicy.cs" />
     <Compile Include="Persistence\Client\PersistenceInitiatorStatistics.cs" />
+    <Compile Include="Persistence\Expression\PersistenceExpressionHelper.cs" />
     <Compile Include="Persistence\Policy\CircuitBreakerPolicy.cs" />
     <Compile Include="Persistence\Policy\PersistenceCommandPolicy.cs" />
     <Compile Include="Persistence\PersistenceResponseHolder.cs" />

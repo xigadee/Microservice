@@ -39,20 +39,20 @@ namespace Xigadee
 
                 var message = MessagePack(payload);
                 await MessageTransmit(message);
-                BoundaryLogger?.Log(BoundaryLoggerDirection.Outgoing, payload);
+                BoundaryLogger?.Log(ChannelDirection.Outgoing, payload);
                 fail = false;
             }
             catch (NoMatchingSubscriptionException nex)
             {
                 //OK, this happens when the remote transmitting party has closed or recycled.
                 LogException($"The sender has closed: {payload.Message.CorrelationServiceId}", nex);
-                BoundaryLogger?.Log(BoundaryLoggerDirection.Outgoing, payload, nex);
+                BoundaryLogger?.Log(ChannelDirection.Outgoing, payload, nex);
             }
             catch (TimeoutException tex)
             {
                 LogException("TimeoutException (Transmit)", tex);
                 tryAgain = true;
-                BoundaryLogger?.Log(BoundaryLoggerDirection.Outgoing, payload, tex);
+                BoundaryLogger?.Log(ChannelDirection.Outgoing, payload, tex);
             }
             catch (MessagingException dex)
             {
@@ -68,7 +68,7 @@ namespace Xigadee
             catch (Exception ex)
             {
                 LogException("Unhandled Exception (Transmit)", ex);
-                BoundaryLogger?.Log(BoundaryLoggerDirection.Outgoing, payload, ex);
+                BoundaryLogger?.Log(ChannelDirection.Outgoing, payload, ex);
                 throw;
             }
             finally
@@ -153,7 +153,7 @@ namespace Xigadee
             var payload =  PayloadRegisterAndCreate(message, serviceMessage);
 
             //Get the boundary logger to log the metadata.
-            BoundaryLogger?.Log(BoundaryLoggerDirection.Incoming, payload, batchId: batchId);
+            BoundaryLogger?.Log(ChannelDirection.Incoming, payload, batchId: batchId);
 
             return payload;
         }

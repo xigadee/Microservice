@@ -12,8 +12,9 @@ namespace Xigadee
 
         string ChannelId { get; set; }
 
-        int Direction { get; }
+        ChannelDirection Direction { get; }
     }
+
 
     public interface IMicroserviceChannelIncoming: IMicroserviceChannel
     {

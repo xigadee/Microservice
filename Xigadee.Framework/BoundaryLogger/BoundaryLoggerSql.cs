@@ -45,7 +45,7 @@ namespace Xigadee
         /// <param name="direction">The message direction.</param>
         /// <param name="payload">The payload to serialize.</param>
         /// <param name="ex">Any exception.</param>
-        public void Log(BoundaryLoggerDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = default(Guid?))
+        public void Log(ChannelDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = default(Guid?))
         {
             if (payload == null)
                 return;
@@ -62,7 +62,7 @@ namespace Xigadee
                     cmd.Parameters.Add("@ServiceName", SqlDbType.VarChar, 50).Value = mServiceName;
                     cmd.Parameters.Add("@ServiceId", SqlDbType.VarChar, 50).Value = mServiceId;
                     cmd.Parameters.Add("@PayloadId", SqlDbType.UniqueIdentifier).Value = payload.Id;
-                    cmd.Parameters.Add("@Direction", SqlDbType.Bit).Value = direction == BoundaryLoggerDirection.Outgoing;
+                    cmd.Parameters.Add("@Direction", SqlDbType.Bit).Value = direction == ChannelDirection.Outgoing;
 
                     var message = payload.Message;
                     if (message != null)

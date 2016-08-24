@@ -4,6 +4,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
+using System.Linq.Expressions;
 #endregion
 namespace Xigadee
 {
@@ -85,6 +87,8 @@ namespace Xigadee
         /// This is the time span for the delay.
         /// </summary>
         private TimeSpan? mDelay = null;
+
+        
         #endregion
         #region Constructor
         protected PersistenceManagerHandlerMemory(Func<E, K> keyMaker
@@ -338,6 +342,28 @@ namespace Xigadee
 
         protected async override Task<IResponseHolder<SearchResponse>> InternalSearch(SearchRequest key, PersistenceRequestHolder<SearchRequest, SearchResponse> holder)
         {
+            var query = mContainer.Values.AsQueryable<E>();
+
+            //key.Select
+            ////Create the expression parameters
+            //ParameterExpression num1 = Expression.Parameter(typeof(E), "num1");
+            //ParameterExpression num2 = Expression.Parameter(typeof(E), "num2");
+
+            ////Create the expression parameters
+            //ParameterExpression[] parameters = new ParameterExpression[] { num1, num2 };
+
+            ////Create the expression body
+            //BinaryExpression body = Expression.Add(num1, num2);
+            ////Expression predicateBody = Expression.OrElse(e1, e2);
+            ////Create the expression 
+            //Expression<Func<int, int, int>> expression = Expression.Lambda<Func<int, int, int>>(body, parameters);
+
+            //// Compile the expression
+            //Func<int, int, int> compiledExpression = expression.Compile();
+
+            //// Execute the expression. 
+            //int result = compiledExpression(3, 4);
+
             return await base.InternalSearch(key, holder);
         }
 

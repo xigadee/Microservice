@@ -9,5 +9,6 @@ namespace Xigadee
 {
     public class ChannelContainerStatistics: StatusBase
     {
+
     }
 }

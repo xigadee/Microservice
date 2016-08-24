@@ -3,6 +3,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 #endregion
@@ -31,6 +32,11 @@ namespace Xigadee
         /// This is the set of in play requests currently being processed.
         /// </summary>
         protected readonly ConcurrentDictionary<Guid, IPersistenceRequestHolder> mRequestsCurrent;
+
+        /// <summary>
+        /// This class holds the expression class.
+        /// </summary>
+        protected PersistenceExpressionHelper<E> mExpressionHelper = null;
         #endregion
         #region Constructor
         /// <summary>
@@ -187,8 +193,11 @@ namespace Xigadee
         #endregion
 
         #region Start/Stop Internal
+
         protected override void StartInternal()
         {
+            ExpressionHelperCreate();
+
             var resourceTracker = SharedServices.GetService<IResourceTracker>();
             if (resourceTracker != null && mPolicy.ResourceProfile != null)
                 mPolicy.ResourceConsumer = resourceTracker.RegisterConsumer(EntityType, mPolicy.ResourceProfile);
@@ -200,7 +209,18 @@ namespace Xigadee
         {
             base.StopInternal();
             mPolicy.ResourceConsumer = null;
+            mExpressionHelper = null;
         }
+        #endregion
+
+        #region ExpressionHelperCreate()
+        /// <summary>
+        /// This method creates the expression helper used to build an expression for search features.
+        /// </summary>
+        protected virtual void ExpressionHelperCreate()
+        {
+            mExpressionHelper = new PersistenceExpressionHelper<E>();
+        } 
         #endregion
 
         #region CommandsRegister()
