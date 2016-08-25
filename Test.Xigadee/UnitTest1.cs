@@ -34,77 +34,83 @@ namespace Test.Xigadee
             return query.Provider.CreateQuery<TSource>(sortExpression);
         }
 
-        [TestMethod]
-        public void TestMethod1()
-        {
-            var data =new List<MondayMorningBlues>();
+        //[TestMethod]
+        //public void TestMethod1()
+        //{
+        //    var data =new List<MondayMorningBlues>();
 
-            for (int i = 10; i > 0; i--)
-            {
-                data.Add(new MondayMorningBlues() { Email = $"pstancer+{i}@gmail.com", Message = $"Message = {i}" });
-            }
+        //    for (int i = 10; i > 0; i--)
+        //    {
+        //        data.Add(new MondayMorningBlues() { Email = $"pstancer+{i}@gmail.com", Message = $"Message = {i}" });
+        //    }
 
-            Expression<Func<IEnumerable<MondayMorningBlues>, IEnumerable<MondayMorningBlues>>> something = (s) => s.Where(r => r.Email == "freedy");
+        //    //var query = from s in data
+        //    //            where s.Email == "18"
+        //    //            select s.Id;
 
-            var hello = something.Compile();
+        //    Expression<Func<IEnumerable<MondayMorningBlues>, IEnumerable<MondayMorningBlues>>> something 
+        //        = (s) => s.Where(r => r.Email == "freedy");
 
-            try
-            {
-                var queryableData = data.AsQueryable<MondayMorningBlues>();
-                var value = GenericEvaluateOrderBy<MondayMorningBlues>("Email")(data[0]);
-                //var value2 = GenericEvaluateOrderBy<MondayMorningBlues>(queryableData, "Email").ToList();
+        //    var hello = something.Compile();
 
-                var properties = typeof(MondayMorningBlues).GetProperties().Where(p => p.CanRead);
+        //    //Expression.Equal(
+        //    try
+        //    {
+        //        var queryableData = data.AsQueryable<MondayMorningBlues>();
+        //        var value = GenericEvaluateOrderBy<MondayMorningBlues>("Email")(data[0]);
+        //        //var value2 = GenericEvaluateOrderBy<MondayMorningBlues>(queryableData, "Email").ToList();
 
-                var parameter = Expression.Parameter(typeof(MondayMorningBlues), "p");
-                var propertyReference = Expression.Property(parameter, "Email");
-                //var propertyReference = properties.FirstOrDefault((n) => n.Name == "Email");
-                var result =  Expression.Lambda<Func<MondayMorningBlues, object>>
-                        (propertyReference, new[] { parameter }).Compile()(data[0]);
+        //        var properties = typeof(MondayMorningBlues).GetProperties().Where(p => p.CanRead);
 
-                // Compose the expression tree that represents the parameter to the predicate.
-                ParameterExpression pe = Expression.Parameter(typeof(MondayMorningBlues), "Email");
+        //        var parameter = Expression.Parameter(typeof(MondayMorningBlues), "p");
+        //        var propertyReference = Expression.Property(parameter, "Email");
+        //        //var propertyReference = properties.FirstOrDefault((n) => n.Name == "Email");
+        //        var result =  Expression.Lambda<Func<MondayMorningBlues, object>>
+        //                (propertyReference, new[] { parameter }).Compile()(data[0]);
 
-                // ***** Where(company => (company.ToLower() == "coho winery" || company.Length > 16)) *****
-                // Create an expression tree that represents the expression 'company.ToLower() == "coho winery"'.
-                Expression left = Expression.Call(pe, typeof(string).GetMethod("ToLower", System.Type.EmptyTypes));
-                Expression right = Expression.Constant("pstancer+4@gmail.com");
-                Expression e1 = Expression.Equal(left, right);
+        //        // Compose the expression tree that represents the parameter to the predicate.
+        //        ParameterExpression pe = Expression.Parameter(typeof(MondayMorningBlues), "Email");
+
+        //        // ***** Where(company => (company.ToLower() == "coho winery" || company.Length > 16)) *****
+        //        // Create an expression tree that represents the expression 'company.ToLower() == "coho winery"'.
+        //        Expression left = Expression.Call(pe, typeof(string).GetMethod("ToLower", System.Type.EmptyTypes));
+        //        Expression right = Expression.Constant("pstancer+4@gmail.com");
+        //        Expression e1 = Expression.Equal(left, right);
 
 
-                // Create an expression tree that represents the expression
-                // 'queryableData.Where(company => (company.ToLower() == "coho winery" || company.Length > 16))'
-                MethodCallExpression whereCallExpression = Expression.Call(
-                    typeof(Queryable),
-                    "Where",
-                    new Type[] { queryableData.ElementType },
-                    queryableData.Expression,
-                    Expression.Lambda<Func<string, bool>>(e1, new ParameterExpression[] { pe }));
-                // ***** End Where *****
+        //        // Create an expression tree that represents the expression
+        //        // 'queryableData.Where(company => (company.ToLower() == "coho winery" || company.Length > 16))'
+        //        MethodCallExpression whereCallExpression = Expression.Call(
+        //            typeof(Queryable),
+        //            "Where",
+        //            new Type[] { queryableData.ElementType },
+        //            queryableData.Expression,
+        //            Expression.Lambda<Func<string, bool>>(e1, new ParameterExpression[] { pe }));
+        //        // ***** End Where *****
 
-                // ***** OrderBy(company => company) *****
-                // Create an expression tree that represents the expression
-                // 'whereCallExpression.OrderBy(company => company)'
-                MethodCallExpression orderByCallExpression = Expression.Call(
-                    typeof(Queryable),
-                    "OrderBy",
-                    new Type[] { queryableData.ElementType, queryableData.ElementType },
-                    whereCallExpression,
-                    Expression.Lambda<Func<string, string>>(pe, new ParameterExpression[] { pe }));
-                // ***** End OrderBy *****
+        //        // ***** OrderBy(company => company) *****
+        //        // Create an expression tree that represents the expression
+        //        // 'whereCallExpression.OrderBy(company => company)'
+        //        MethodCallExpression orderByCallExpression = Expression.Call(
+        //            typeof(Queryable),
+        //            "OrderBy",
+        //            new Type[] { queryableData.ElementType, queryableData.ElementType },
+        //            whereCallExpression,
+        //            Expression.Lambda<Func<string, string>>(pe, new ParameterExpression[] { pe }));
+        //        // ***** End OrderBy *****
 
-                // Create an executable query from the expression tree.
-                var results = queryableData.Provider.CreateQuery<MondayMorningBlues>(whereCallExpression);
-                //var results = queryableData.Provider.CreateQuery<MondayMorningBlues>(orderByCallExpression);
+        //        // Create an executable query from the expression tree.
+        //        var results = queryableData.Provider.CreateQuery<MondayMorningBlues>(whereCallExpression);
+        //        //var results = queryableData.Provider.CreateQuery<MondayMorningBlues>(orderByCallExpression);
 
-                var list = results.ToList();
-            }
-            catch (Exception ex)
-            {
+        //        var list = results.ToList();
+        //    }
+        //    catch (Exception ex)
+        //    {
 
-                throw;
-            }
+        //        throw;
+        //    }
 
-        }
+        //}
     }
 }

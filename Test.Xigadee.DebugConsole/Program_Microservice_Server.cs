@@ -22,10 +22,11 @@ namespace Test.Xigadee
                 sContext.Server.OnRegister += Server_OnRegister;
 
                 sContext.Server.StatusChanged += StatusChanged;
+                //sContext.Server.
 
                 sContext.Server.Service.StartRequested += ServerStartRequested;
                 sContext.Server.Service.StopRequested += ServerStopRequested;
-
+                sContext.Server.Service.ComponentStatusChange += ServiceComponentStatusChange;
                 sContext.Server.Populate(ResolveServerSetting, true);
 
                 sContext.Server.Start();
@@ -36,10 +37,13 @@ namespace Test.Xigadee
             }
         }
 
+
+
         static void MicroserviceServerStop()
         {
             sContext.Server.Stop();
             sContext.Server.StatusChanged -= StatusChanged;
+            sContext.Server.Service.ComponentStatusChange -= ServiceComponentStatusChange;
         }
 
         static string ResolveServerSetting(string key, string value)
@@ -104,6 +108,14 @@ namespace Test.Xigadee
 
         private static void ServerStopRequested(object sender, StopEventArgs e)
         {
+
+        }
+
+        private static void ServiceComponentStatusChange(object sender, MicroserviceStatusEventArgs e)
+        {
+            var serv = sender as Microservice;
+
+            sMenuMain.Value.AddInfoMessage($"{serv.Name} {e.Debug()}", true);
 
         }
 

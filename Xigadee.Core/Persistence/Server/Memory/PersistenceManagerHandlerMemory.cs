@@ -344,6 +344,9 @@ namespace Xigadee
         {
             var query = mContainer.Values.AsQueryable<E>();
 
+            Expression expression = mTransform.SearchTranslator.Build(key);
+
+            //holder.Rs.
             //key.Select
             ////Create the expression parameters
             //ParameterExpression num1 = Expression.Parameter(typeof(E), "num1");

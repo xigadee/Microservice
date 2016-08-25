@@ -204,49 +204,49 @@ namespace Xigadee
                 OnStartRequested();
 
                 //This method initialises the configuration.
-                ConfigurationInitialise();
+                EventStart(() => ConfigurationInitialise(), "Configuration");
 
                 //This initialises the process loop.
-                TaskManagerInitialise();
+                EventStart(() => TaskManagerInitialise(), "Task Manager Initialization");
 
                 //This method populates the components in the service.
-                PopulateComponents();
+                EventStart(() => PopulateComponents(), "Components");
 
                 //Start the logger components.
-                ServiceStart(mLogger);
+                EventStart(() => ServiceStart(mLogger), "Logger");
 
                 //OK, register the resource tracker
-                ServiceStart(mResourceTracker);
+                EventStart(() => ServiceStart(mResourceTracker), "Resource Tracker");
 
                 //Start the event source components.
-                ServiceStart(mEventSource);
+                EventStart(() => ServiceStart(mEventSource), "Event Source");
 
                 //This method connects any components that require Shared Service together before they start.
-                mCommands.SharedServicesConnect();
+                EventStart(() => mCommands.SharedServicesConnect(), "Shared Services");
 
                 //Start the channel controller.
-                ServiceStart(mChannels);
+                EventStart(() => ServiceStart(mChannels), "Channel Container");
 
                 //Ensure that the communication handler is working.
-                ServiceStart(mCommunication);
+                EventStart(() => ServiceStart(mCommunication), "Communication Container");
 
                 //Start the senders
-                mCommunication.SendersStart();
+                EventStart(() => mCommunication.SendersStart(), "Senders");
 
                 //Ensure that any handlers are registered.
-                ServiceStart(mCommands);
+                EventStart(() => ServiceStart(mCommands), "Commands Container");
 
                 //OK, start the loop to start processing requests and picking up messages from the listeners.
-                TaskManagerStart();
+                EventStart(() => TaskManagerStart(), "Task Manager");
 
                 //Finally register the housekeeping schedules.
-                SchedulesRegister();
+                EventStart(() => SchedulesRegister(), "Scheduler");
 
                 //Now start the listeners and deadletter listeners
-                mCommunication.ListenersStart();
+                EventStart(() => mCommunication.ListenersStart(), "Communication Listeners");
 
                 //Ok start the commands in parallel at the same priority group.
-                mCommands.CommandsStart(ServiceStart);
+                EventStart(() => mCommands.CommandsStart(ServiceStart), "Commands");
 
                 //Signal that start has completed.
                 OnStartCompleted();
@@ -271,7 +271,6 @@ namespace Xigadee
             }
         }
         #endregion
-
         #region StopInternal()
         /// <summary>
         /// This override sends the service stop message.
@@ -282,33 +281,79 @@ namespace Xigadee
 
             LogStatistics().Wait(TimeSpan.FromSeconds(15));
 
-            mCommands.CommandsStop(ServiceStop);
+            EventStop(() => mCommands.CommandsStop(ServiceStop), "Commands");
 
-            mCommunication.ListenersStop();
+            EventStop(() => mCommunication.ListenersStop(), "Communication Listeners");
 
-            ServiceStop(mCommands);
+            EventStop(() => ServiceStop(mCommands), "Command Container");
 
-            TaskManagerStop();
+            EventStop(() => TaskManagerStop(), "Task Manager");
 
             //Stop the sender
-            mCommunication.SendersStop();
+            EventStop(() => mCommunication.SendersStop(), "Communication Senders");
 
-            ServiceStop(mCommunication);
+            EventStop(() => ServiceStop(mCommunication), "Communication Container");
 
             //Stop the channel controller.
-            ServiceStop(mChannels);
+            EventStop(() => ServiceStop(mChannels), "Channel Container");
 
             if (mPayloadSerializers != null)
                 mPayloadSerializers.Clear();
 
-            ServiceStop(mEventSource);
+            EventStop(() => ServiceStop(mEventSource), "Event Source");
 
-            ServiceStop(mResourceTracker);
+            EventStop(() => ServiceStop(mResourceTracker), "Resource Tracker");
 
-            ServiceStop(mLogger);
+            EventStop(() => ServiceStop(mLogger), "Logger");
 
             OnStopCompleted();
         }
+        #endregion
+
+        #region Event wrappers...
+        /// <summary>
+        /// This wrapper is used for starting
+        /// </summary>
+        /// <param name="action">The action to wrap.</param>
+        /// <param name="title">The section title.</param>
+        protected virtual void EventStart(Action action, string title)
+        {
+            EventGeneric(action, title, MicroserviceStatusChangeAction.Starting);
+        }
+        /// <summary>
+        /// This wrapper is used for stopping
+        /// </summary>
+        /// <param name="action">The action to wrap.</param>
+        /// <param name="title">The section title.</param>
+        protected virtual void EventStop(Action action, string title)
+        {
+            EventGeneric(action, title, MicroserviceStatusChangeAction.Stopping);
+        }
+        /// <summary>
+        /// This is the generic exception wrapper.
+        /// </summary>
+        /// <param name="action">The action to wrap.</param>
+        /// <param name="title">The section title.</param>
+        /// <param name="type">The action type, i.e. starting or stopping.</param>
+        protected virtual void EventGeneric(Action action, string title, MicroserviceStatusChangeAction type)
+        {
+            var args = new MicroserviceStatusEventArgs(type, title);
+
+            try
+            {
+                ComponentStatusChange?.Invoke(this, args);
+                action();
+                args.State = MicroserviceStatusChangeState.Completed;
+                ComponentStatusChange?.Invoke(this, args);
+            }
+            catch (Exception ex)
+            {
+                args.Ex = new MicroserviceStatusChangeException(title, ex);
+                args.State = MicroserviceStatusChangeState.Failed;
+                ComponentStatusChange?.Invoke(this, args);
+                throw args.Ex;
+            }
+        } 
         #endregion
 
         #region ServiceStart(object service)

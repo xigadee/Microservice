@@ -292,6 +292,7 @@ namespace Xigadee
         /// <returns></returns>
         protected override async Task ProcessSearch(PersistenceRequestHolder<SearchRequest, SearchResponse> holder)
         {
+           
             holder.Rs.ResponseCode = (int)PersistenceResponse.NotImplemented501;
             holder.Rs.ResponseMessage = "Search is not implemented.";
         }

@@ -31,6 +31,10 @@ namespace Xigadee
         /// This event is raised when the service has stopped.
         /// </summary>
         public event EventHandler<StopEventArgs> StopCompleted;
+        /// <summary>
+        /// This event is raised when the service has stopped.
+        /// </summary>
+        public event EventHandler<MicroserviceStatusEventArgs> ComponentStatusChange;
 
         /// <summary>
         /// This event will be triggered when the Microservice statistics have been calculated.

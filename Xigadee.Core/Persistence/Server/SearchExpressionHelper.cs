@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -38,6 +39,11 @@ namespace Xigadee
             var properties = type.GetProperties().Where(p => p.CanRead);
 
             return map;
+        }
+
+        public Expression Build(SearchRequest key)
+        {
+            return null;
         }
     }
 }
