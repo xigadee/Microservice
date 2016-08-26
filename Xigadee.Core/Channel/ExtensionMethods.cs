@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-
     public static class ChannelExtensionMethods
     {
         public static ChannelPipelineIncoming AddChannelIncoming(this MicroservicePipeline pipeline, string channelId, string description = null)
