@@ -73,7 +73,9 @@
     <Folder Include="Logger\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ApacheLicense-2.0.txt" />
+    <Content Include="ApacheLicense-2.0.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

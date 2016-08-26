@@ -294,7 +294,9 @@
     <Folder Include="Orchestration\Context\Results\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ApacheLicense-2.0.txt" />
+    <Content Include="ApacheLicense-2.0.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj">

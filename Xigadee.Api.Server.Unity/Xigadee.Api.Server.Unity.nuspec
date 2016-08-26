@@ -11,7 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Xigadee Api Server library is used to construct API gateways to the Microservice.</description>
     <releaseNotes>Initial push.</releaseNotes>
-    <copyright>Copyright © Information Management Group 2012-2016</copyright>
+    <copyright>Copyright © Hitachi Consulting 2012-2016</copyright>
     <tags>Xigadee Microservice Azure</tags>
     <dependencies>
       
