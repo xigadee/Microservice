@@ -1,20 +1,26 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>Xigadee.Core</id>
+    <id>Xigadee.Azure</id>
     <version>{UpdateVersion.ps1.replace}</version>
-    <title>Xigadee Microservice accelerator - Core Library</title>
+    <title>Xigadee Microservice accelerator - Azure Library</title>
     <authors>By Paul Stancer and Guy Steel at Information Management Group Ltd, part of Hitachi Consulting - http://hitachiconsulting.com</authors>
     <owners>Information Management Group Ltd part of Hitachi Consulting</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <projectUrl>http://xigadee.com</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>The Xigadee Core library is used to develop components for the Microservice.</description>
-    <releaseNotes>Initial test package.</releaseNotes>
+    <description>Xigadee Azure library contains a set of communication and persistence components built on the Microsoft Azure libraries.</description>
+    <releaseNotes>Initial push.</releaseNotes>
     <copyright>Copyright © Hitachi Consulting 2012-2016</copyright>
     <tags>Xigadee Microservice Azure</tags>
     <dependencies>
+      <dependency id="WindowsAzure.ServiceBus" version="3.3.2" />
+      <dependency id="WindowsAzure.Storage" version="7.2.0" />
       <dependency id="Newtonsoft.Json" version="9.0.1" />
+      <dependency id="Microsoft.Azure.DocumentDB" version="1.9.3" />
+      <dependency id="Microsoft.WindowsAzure.ConfigurationManager" version="3.2.1" />
+      <dependency id="Microsoft.WindowsAzure.Management.Monitoring" version="4.1.0" />
+      <dependency id="StackExchange.Redis" version="1.1.603" />
     </dependencies>
   </metadata>
   <files>
