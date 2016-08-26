@@ -8,9 +8,11 @@ namespace Xigadee
 {
     public class DuplicateChannelException:Exception
     {
-        public DuplicateChannelException(string message):base(message)
+        public DuplicateChannelException(string channelId, ChannelDirection direction):base(channelId)
         {
-
+            Direction = direction;
         }
+
+        public ChannelDirection Direction { get; }
     }
 }

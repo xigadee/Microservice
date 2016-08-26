@@ -13,7 +13,8 @@ namespace Xigadee
     public class ChannelContainer: ServiceContainerBase<ChannelContainerStatistics, ChannelContainerPolicy>
     {
         #region Declarations
-        private Dictionary<string, Channel> mContainer;
+        private Dictionary<string, Channel> mContainerIncoming;
+        private Dictionary<string, Channel> mContainerOutgoing;
         #endregion
         #region Constructor
         /// <summary>
@@ -27,37 +28,67 @@ namespace Xigadee
 
         protected override void StartInternal()
         {
-            mContainer = new Dictionary<string, Channel>();
+            mContainerIncoming = new Dictionary<string, Channel>();
+            mContainerOutgoing = new Dictionary<string, Channel>();
         }
 
         protected override void StopInternal()
         {
-            mContainer.Clear();
+            mContainerIncoming.Clear();
+            mContainerOutgoing.Clear();
         }
 
+        /// <summary>
+        /// This is a list of the incoming and outgoing channels.
+        /// </summary>
         public IEnumerable<Channel> Channels
         {
             get
             {
-                return mContainer.Values;
+                return mContainerIncoming.Values.Union(mContainerOutgoing.Values);
             }
         }
 
+        /// <summary>
+        /// This method adds a channel to the collection
+        /// </summary>
+        /// <param name="item">The channel to add.</param>
         public virtual void Add(Channel item)
         {
-            if (mContainer.ContainsKey(item.Id))
+            switch (item.Direction)
             {
-                throw new DuplicateChannelException(item.Id);
-            }
+                case ChannelDirection.Incoming:
+                    if (mContainerIncoming.ContainsKey(item.Id))
+                        throw new DuplicateChannelException(item.Id, item.Direction);
 
-            mContainer.Add(item.Id, item);
+                    mContainerIncoming.Add(item.Id, item);
+                    break;
+                case ChannelDirection.Outgoing:
+                    if (mContainerOutgoing.ContainsKey(item.Id))
+                        throw new DuplicateChannelException(item.Id, item.Direction);
+
+                    mContainerOutgoing.Add(item.Id, item);
+                    break;
+            }
         }
 
+        /// <summary>
+        /// This method removes a channel from the collection.
+        /// </summary>
+        /// <param name="item">The channel item.</param>
+        /// <returns>True if the channel is removed.</returns>
         public virtual bool Remove(Channel item)
         {
-            if (mContainer.ContainsKey(item.Id))
+            switch (item.Direction)
             {
-                return mContainer.Remove(item.Id);
+                case ChannelDirection.Incoming:
+                    if (mContainerIncoming.ContainsKey(item.Id))
+                        return mContainerIncoming.Remove(item.Id);
+                    break;
+                case ChannelDirection.Outgoing:
+                    if (mContainerOutgoing.ContainsKey(item.Id))
+                        return mContainerOutgoing.Remove(item.Id);
+                    break;
             }
 
             return false;
