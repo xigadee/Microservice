@@ -33,11 +33,17 @@ namespace Xigadee
         /// </summary>
         public IEnvironmentConfiguration Configuration { get; }
 
+        /// <summary>
+        /// This shortcut starts the service.
+        /// </summary>
         public void Start()
         {
             Service.Start();
         }
 
+        /// <summary>
+        /// This shortcut stops the service.
+        /// </summary>
         public void Stop()
         {
             Service.Stop();

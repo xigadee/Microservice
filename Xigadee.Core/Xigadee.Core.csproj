@@ -75,6 +75,8 @@
     <Compile Include="Command\Handler\ICommandHandler.cs" />
     <Compile Include="Command\Handler\ICommandHandlerStatistics.cs" />
     <Compile Include="Command\Helper\CommandHolder.cs" />
+    <Compile Include="Command\Helper\CommandPolicyHelper.cs" />
+    <Compile Include="Command\Interfaces\CommandNotificationBehaviour.cs" />
     <Compile Include="Command\Statistics\CommandStatistics.cs" />
     <Compile Include="Command\Statistics\MasterJobStatistics.cs" />
     <Compile Include="Collections\CollectionContainer.cs" />
@@ -123,7 +125,7 @@
     <Compile Include="Logging\MemoryLogger.cs" />
     <Compile Include="Logging\PayloadLogEvent.cs" />
     <Compile Include="Logging\PersistencePayloadLogEvent.cs" />
-    <Compile Include="Microservice\IEnvironmentConfiguration.cs" />
+    <Compile Include="Microservice\Configuration\IEnvironmentConfiguration.cs" />
     <Compile Include="Microservice\MicroservicePipeline.cs" />
     <Compile Include="Microservice\MicroserviceStatusChangeException.cs" />
     <Compile Include="Microservice\MicroserviceStatusEvent.cs" />
@@ -238,10 +240,10 @@
     <Compile Include="Communication\MessagingSenderBase.cs" />
     <Compile Include="Communication\MessagingServiceBase.cs" />
     <Compile Include="Command\RequestTracker\RequestTrackerContainer.cs" />
-    <Compile Include="Microservice\ConfigBase.cs" />
-    <Compile Include="Microservice\ConfigBaseHelperDocumentDb.cs" />
-    <Compile Include="Microservice\ConfigBaseHelperService.cs" />
-    <Compile Include="Microservice\ConfigKeySettingNameAttribute.cs" />
+    <Compile Include="Microservice\Configuration\ConfigBase.cs" />
+    <Compile Include="Microservice\Configuration\ConfigBaseHelperDocumentDb.cs" />
+    <Compile Include="Microservice\Configuration\ConfigBaseHelperService.cs" />
+    <Compile Include="Microservice\Configuration\ConfigKeySettingNameAttribute.cs" />
     <Compile Include="ResourceTracker\CircuitBreakerBase.cs" />
     <Compile Include="ResourceTracker\CircuitBreakerState.cs" />
     <Compile Include="ResourceTracker\Interfaces\IResourceBase.cs" />
@@ -257,6 +259,7 @@
     <Compile Include="ResourceTracker\ResourceRequestTrack.cs" />
     <Compile Include="ResourceTracker\ResourceStatistics.cs" />
     <Compile Include="ResourceTracker\ResourceStatsContainer.cs" />
+    <Compile Include="Security\ExtensionMethods.cs" />
     <Compile Include="Security\SecurityGatekeeperBase.cs" />
     <Compile Include="Security\SignatureHelper\SignatureHelper.cs" />
     <Compile Include="Security\SignatureHelper\Sha256SignatureHelper.cs" />

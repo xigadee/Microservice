@@ -33,5 +33,6 @@ namespace Xigadee
         /// </summary>
         public ResourceProfile ResourceProfile { get; set; }
 
+
     }
 }

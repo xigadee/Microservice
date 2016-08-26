@@ -21,10 +21,6 @@ namespace Xigadee
             return pipeline.AddCommand(creator);
         }
 
-        //public static ICommand AddCommand(this ConfigurationPipeline pipeline
-        //    , ICommand command, IMicroserviceChannelIncoming incoming = null, IMicroserviceChannelOutgoing outgoing = null)
-        //{
-        //    return pipeline.Service.RegisterCommand(command);
-        //}
+
     }
 }

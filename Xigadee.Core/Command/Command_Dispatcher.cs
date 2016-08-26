@@ -171,18 +171,23 @@ namespace Xigadee
 
         #region ChannelId
         /// <summary>
-        /// The channel id.
+        /// This is the default listening channel id.
         /// </summary>
         public virtual string ChannelId { get; set; }
+
+        public virtual bool ChannelIdAutoSet
+        {
+            get { return mPolicy.ChannelIdAutoSet; }
+        }
         #endregion
 
         #region CommandHandlerCreate(MessageFilterWrapper key, Func<TransmissionPayload, List<TransmissionPayload>, Task> action)
-        /// <summary>
-        /// This method creates the command handler. You can override this method to set additional properties.
-        /// </summary>
-        /// <param name="key">The message key</param>
-        /// <param name="action">The execute action.</param>
-        /// <returns>Returns the handler.</returns>
+            /// <summary>
+            /// This method creates the command handler. You can override this method to set additional properties.
+            /// </summary>
+            /// <param name="key">The message key</param>
+            /// <param name="action">The execute action.</param>
+            /// <returns>Returns the handler.</returns>
         protected virtual H CommandHandlerCreate(MessageFilterWrapper key, Func<TransmissionPayload, List<TransmissionPayload>, Task> action)
         {
             var handler = new H();
@@ -321,5 +326,12 @@ namespace Xigadee
             return mSupported.Keys.Select((h) => h.Message).ToList();
         }
         #endregion
+    }
+
+    public interface IConfigureChannelIncoming
+    {
+        string ChannelId { get; set;}
+
+        bool ChannelIdAutoSet { get; }
     }
 }

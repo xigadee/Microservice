@@ -5,33 +5,14 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This enum defines how command registration is notified to the controlling container.
-    /// </summary>
-    public enum CommandNotificationBehaviour
-    {
-        /// <summary>
-        /// Commands will be registered on startup
-        /// </summary>
-        OnStartUp,
-        /// <summary>
-        /// Commands will be registered when 
-        /// </summary>
-        OnRegistration,
-        /// <summary>
-        /// Commands will be automatically registered if the command has started.
-        /// </summary>
-        OnRegistrationIfStarted,
-        /// <summary>
-        /// Commands will not be automatically registers.
-        /// </summary>
-        Manual
-    }
-
-    /// <summary>
     /// The command policy sets or enables various settings for the command.
     /// </summary>
     public class CommandPolicy:PolicyBase
     {
+        /// <summary>
+        /// This property specifies that the channel id can be automatically configured.
+        /// </summary>
+        public bool ChannelIdAutoSet { get; set; } = true;
         /// <summary>
         /// This is the command startup prioroty.
         /// </summary>
@@ -107,14 +88,5 @@ namespace Xigadee
         }
     }
 
-    public static class CommandPolicyHelper
-    {
-        public static CommandSchedule ToCommandSchedule(this CommandPolicy policy, Func<Schedule, CancellationToken, Task> execute, string name)
-        {
-            return new CommandSchedule(execute
-                , policy.JobPollSchedule
-                , name
-                , policy.JobPollIsLongRunning);
-        }
-    }
+
 }

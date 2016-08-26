@@ -211,7 +211,6 @@ namespace Xigadee
         }
         #endregion
 
-
         #region CommandsRegister()
         /// <summary>
         /// This method register the supported commands for a persistence handler.

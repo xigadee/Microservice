@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This interface is used by the configuration pipeline to add necessary components to the microservice.
+    /// </summary>
     public interface IMicroserviceConfigure: IService
     {
         string ExternalServiceId { get; }
@@ -10,6 +13,7 @@ namespace Xigadee
         string ServiceId { get; }
 
         IEnumerable<ICommand> Commands { get; }
+        IEnumerable<Channel> Channels { get; }
 
         Channel RegisterChannel(Channel channel);
         ICommand RegisterCommand(ICommand command);

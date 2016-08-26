@@ -8,14 +8,25 @@ namespace Xigadee
 {
     public static class SerializerExtensionMethods
     {
-        public static IPayloadSerializer AddPayloadSerializerDefaultJson(this MicroservicePipeline pipeline)
+        public static MicroservicePipeline AddPayloadSerializerDefaultJson(this MicroservicePipeline pipeline)
         {
-            return pipeline.Service.RegisterPayloadSerializer(new JsonContractSerializer());
+            var component = pipeline.Service.RegisterPayloadSerializer(new JsonContractSerializer());
+
+            return pipeline;
         }
 
-        public static IPayloadSerializer AddPayloadSerializer(this MicroservicePipeline pipeline, IPayloadSerializer serializer)
+        public static MicroservicePipeline AddPayloadSerializer(this MicroservicePipeline pipeline, IPayloadSerializer serializer)
         {
-            return pipeline.Service.RegisterPayloadSerializer(serializer);
+            pipeline.Service.RegisterPayloadSerializer(serializer);
+
+            return pipeline;
+        }
+
+        public static MicroservicePipeline AddPayloadSerializer(this MicroservicePipeline pipeline, Func<IEnvironmentConfiguration, IPayloadSerializer> creator)
+        {
+            pipeline.Service.RegisterPayloadSerializer(creator(pipeline.Configuration));
+
+            return pipeline;
         }
     }
 }
