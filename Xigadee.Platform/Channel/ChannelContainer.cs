@@ -13,7 +13,7 @@ namespace Xigadee
     public class ChannelContainer: ServiceContainerBase<ChannelContainerStatistics, ChannelContainerPolicy>
     {
         #region Declarations
-        private Dictionary<string,Channel> mContainer;
+        private Dictionary<string, Channel> mContainer;
         #endregion
         #region Constructor
         /// <summary>
@@ -33,6 +33,14 @@ namespace Xigadee
         protected override void StopInternal()
         {
             mContainer.Clear();
+        }
+
+        public IEnumerable<Channel> Channels
+        {
+            get
+            {
+                return mContainer.Values;
+            }
         }
 
         public virtual void Add(Channel item)

@@ -9,21 +9,28 @@ namespace Xigadee
 {
     public static class AzureLoggerExtensionMethods
     {
-        public static AzureStorageLogger AddAzureStorageLogger(this MicroservicePipeline pipeline
+        public static MicroservicePipeline AddAzureStorageLogger(this MicroservicePipeline pipeline
             , string serviceName = null
             , string containerName = "log"
-            , ResourceProfile resourceProfile = null)
+            , ResourceProfile resourceProfile = null
+            , Action<AzureStorageLogger> onCreate = null)
         {
             return pipeline.AddAzureStorageLogger(pipeline.Configuration.LogStorageCredentials(), serviceName, containerName, resourceProfile);
         }
 
-        public static AzureStorageLogger AddAzureStorageLogger(this MicroservicePipeline pipeline
+        public static MicroservicePipeline AddAzureStorageLogger(this MicroservicePipeline pipeline
             , StorageCredentials creds
             , string serviceName = null
             , string containerName = "log"
-            , ResourceProfile resourceProfile = null)
+            , ResourceProfile resourceProfile = null
+            , Action<AzureStorageLogger> onCreate = null)
         {
-            return pipeline.AddLogger((c) => new AzureStorageLogger(creds, serviceName ?? pipeline.Service.Name, containerName, resourceProfile));
+            var logger = pipeline.AddLogger(
+                (c) => new AzureStorageLogger(creds, serviceName ?? pipeline.Service.Name, containerName, resourceProfile));
+
+            onCreate?.Invoke(logger);
+
+            return pipeline;
         }
     }
 }

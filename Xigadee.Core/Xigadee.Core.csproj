@@ -64,6 +64,7 @@
     </Compile>
     <Compile Include="Channel\Channel.cs" />
     <Compile Include="Channel\ChannelDirection.cs" />
+    <Compile Include="Channel\ChannelPipelineBase.cs" />
     <Compile Include="Channel\ExtensionMethods.cs" />
     <Compile Include="Command\ExtensionMethods.cs" />
     <Compile Include="Command\EventHandlers\CommandChange.cs" />

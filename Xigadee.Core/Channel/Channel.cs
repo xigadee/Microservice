@@ -34,10 +34,15 @@ namespace Xigadee
         /// <summary>
         /// An optional description of the channel
         /// </summary>
-        public string Description { get; set;}
+        public string Description { get; set; }
         /// <summary>
         /// The direction of the channel - Incoming or outgoing
         /// </summary>
         public ChannelDirection Direction { get; }
+
+        /// <summary>
+        /// This is the boundary logger set for the channel
+        /// </summary>
+        public IBoundaryLogger BoundaryLogger {get;set;}
     }
 }

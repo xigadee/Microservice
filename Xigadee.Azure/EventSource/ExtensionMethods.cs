@@ -10,22 +10,26 @@ namespace Xigadee
     public static class AzureEventSourceExtensionMethods
     {
 
-        public static AzureStorageEventSource AddAzureStorageEventSource(
+        public static MicroservicePipeline AddAzureStorageEventSource(
             this MicroservicePipeline pipeline
             , string serviceName = null
             , string containerName = "eventsource"
-            , ResourceProfile resourceProfile = null)
+            , ResourceProfile resourceProfile = null
+            , Action<AzureStorageEventSource> onCreate = null)
         {
-            return pipeline.AddAzureStorageEventSource(pipeline.Configuration.LogStorageCredentials(), serviceName, containerName, resourceProfile);
+            return pipeline.AddAzureStorageEventSource(pipeline.Configuration.LogStorageCredentials(), serviceName, containerName, resourceProfile, onCreate);
         }
 
-        public static AzureStorageEventSource AddAzureStorageEventSource(
+        public static MicroservicePipeline AddAzureStorageEventSource(
             this MicroservicePipeline pipeline, StorageCredentials creds
             , string serviceName = null
             , string containerName = "eventsource"
-            , ResourceProfile resourceProfile = null)
+            , ResourceProfile resourceProfile = null
+            , Action<AzureStorageEventSource> onCreate = null)
         {
-            return pipeline.AddEventSource((c) => new AzureStorageEventSource(creds, serviceName ?? pipeline.Service.Name, containerName, resourceProfile));
+            var component = pipeline.AddEventSource((c) => new AzureStorageEventSource(creds, serviceName ?? pipeline.Service.Name, containerName, resourceProfile));
+            onCreate?.Invoke(component);
+            return pipeline;
         }
     }
 }

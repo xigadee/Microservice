@@ -36,7 +36,9 @@ namespace Xigadee
         #endregion
         #region Constructor
 
-        public AzureSBTopicListener(string channelId, string connectionString, string connectionName
+        public AzureSBTopicListener(string channelId
+            , string connectionString
+            , string connectionName
             , IEnumerable<ListenerPartitionConfig> priorityPartitions
             , string subscriptionId = null
             , bool isDeadLetterListener = false

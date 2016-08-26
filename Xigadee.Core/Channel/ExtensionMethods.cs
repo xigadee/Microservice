@@ -22,33 +22,9 @@ namespace Xigadee
             return new ChannelPipelineOutgoing(pipeline, channel);
         }
 
-        public class ChannelPipelineOutgoing: ChannelPipelineBase
+        public static ChannelPipelineOutgoing AddBoundaryLogger(this ChannelPipelineOutgoing cpipe, IBoundaryLogger boundaryLogger)
         {
-            public ChannelPipelineOutgoing(MicroservicePipeline pipeline, Channel channel):base(pipeline, channel)
-            {
-
-            }
-        }
-
-        public class ChannelPipelineIncoming: ChannelPipelineBase
-        {
-            public ChannelPipelineIncoming(MicroservicePipeline pipeline, Channel channel) : base(pipeline, channel)
-            {
-
-            }
-        }
-
-        public abstract class ChannelPipelineBase
-        {
-            public ChannelPipelineBase(MicroservicePipeline pipeline, Channel channel)
-            {
-                Pipeline = pipeline;
-                Channel = channel;
-            }
-
-            public MicroservicePipeline Pipeline { get;}
-
-            Channel Channel { get; }
+            return cpipe;
         }
     }
 }

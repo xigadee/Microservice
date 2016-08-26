@@ -86,6 +86,22 @@ namespace Xigadee
             }
         }
         #endregion
+        #region Channels
+        /// <summary>
+        /// This is a list of jobs currently register in the service.
+        /// </summary>
+        public virtual IEnumerable<Channel> Channels
+        {
+            get
+            {
+                if (mChannels.Channels == null)
+                    yield break;
+                else
+                    foreach (var channel in mChannels.Channels)
+                        yield return channel;
+            }
+        }
+        #endregion
 
         //Serializer
         #region RegisterPayloadSerializer(IPayloadSerializer serializer)
