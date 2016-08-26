@@ -49,6 +49,12 @@
     </Compile>
     <Compile Include="BoundaryLogger\BoundaryLoggerSql.cs" />
     <Compile Include="Persistence\ExtensionMethods.cs" />
+    <Compile Include="Persistence\FileSystem\PersistenceManagerHandlerFileSystem.cs" />
+    <Compile Include="Persistence\FileSystem\TransactionalNTFS\TxFDirectory.cs" />
+    <Compile Include="Persistence\FileSystem\TransactionalNTFS\TxFException.cs" />
+    <Compile Include="Persistence\FileSystem\TransactionalNTFS\TxFFile.cs" />
+    <Compile Include="Persistence\FileSystem\TransactionalNTFS\TxFTransaction.cs" />
+    <Compile Include="Persistence\FileSystem\TransactionalNTFS\WinApiHelper.cs" />
     <Compile Include="Persistence\SQL\PersistenceManagerHandlerSqlBase.cs" />
     <Compile Include="Populator\ConfigBaseHelperSql.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This class is used to call the remote persistence manager,
+    /// This class is used to call a remote persistence manager,
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
@@ -106,7 +106,6 @@ namespace Xigadee
             }
         }
         #endregion
-
 
         #region TaskManagerTimeoutSupported
         /// <summary>

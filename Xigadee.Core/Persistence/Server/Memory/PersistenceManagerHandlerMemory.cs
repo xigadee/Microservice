@@ -87,8 +87,6 @@ namespace Xigadee
         /// This is the time span for the delay.
         /// </summary>
         private TimeSpan? mDelay = null;
-
-        
         #endregion
         #region Constructor
         protected PersistenceManagerHandlerMemory(Func<E, K> keyMaker

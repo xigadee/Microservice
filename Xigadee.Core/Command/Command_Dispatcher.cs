@@ -169,17 +169,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region ChannelId
-        /// <summary>
-        /// This is the default listening channel id.
-        /// </summary>
-        public virtual string ChannelId { get; set; }
-
-        public virtual bool ChannelIdAutoSet
-        {
-            get { return mPolicy.ChannelIdAutoSet; }
-        }
-        #endregion
 
         #region CommandHandlerCreate(MessageFilterWrapper key, Func<TransmissionPayload, List<TransmissionPayload>, Task> action)
             /// <summary>
@@ -328,10 +317,5 @@ namespace Xigadee
         #endregion
     }
 
-    public interface IConfigureChannelIncoming
-    {
-        string ChannelId { get; set;}
 
-        bool ChannelIdAutoSet { get; }
-    }
 }

@@ -75,6 +75,8 @@ namespace Xigadee
         #region NegotiationTransmit(string action)
         /// <summary>
         /// This method transmits the notification message to the other instances.
+        /// The message is specified to be processed externally so to ensure that we can determine whether 
+        /// the comms are active.
         /// </summary>
         /// <param name="action">The action to transmit.</param>
         protected virtual async Task NegotiationTransmit(string action)
@@ -382,7 +384,6 @@ namespace Xigadee
             mMasterJobs.Add(schedule.Id, new MasterJobHolder(schedule.Name, schedule, action, initialise, cleanup));
         }
         #endregion
-
 
     }
 }

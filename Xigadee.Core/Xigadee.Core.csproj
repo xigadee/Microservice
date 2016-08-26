@@ -66,6 +66,7 @@
     <Compile Include="Channel\ChannelDirection.cs" />
     <Compile Include="Channel\ChannelPipelineBase.cs" />
     <Compile Include="Channel\ExtensionMethods.cs" />
+    <Compile Include="Command\Command_Channel.cs" />
     <Compile Include="Command\ExtensionMethods.cs" />
     <Compile Include="Command\EventHandlers\CommandChange.cs" />
     <Compile Include="Command\EventHandlers\MasterJobStateChange.cs" />
@@ -189,15 +190,9 @@
     <Compile Include="Persistence\Server\DocumentDb\Helper\Helper.cs" />
     <Compile Include="Persistence\Server\DocumentDb\Helper\RestBase.cs" />
     <Compile Include="Persistence\Server\DocumentDb\Helper\SearchParameter.cs" />
-    <Compile Include="Persistence\Server\File\TransactionalNTFS\TxFException.cs" />
-    <Compile Include="Persistence\Server\File\TransactionalNTFS\TxFDirectory.cs" />
-    <Compile Include="Persistence\Server\File\TransactionalNTFS\TxFFile.cs" />
-    <Compile Include="Persistence\Server\File\TransactionalNTFS\TxFTransaction.cs" />
-    <Compile Include="Persistence\Server\File\TransactionalNTFS\WinApiHelper.cs" />
     <Compile Include="Persistence\Server\IPersistenceRequestHolder.cs" />
     <Compile Include="Persistence\Server\JSON\JsonHolder.cs" />
     <Compile Include="Persistence\Server\DocumentDb\PersistenceManagerHandlerDocumentDb.cs" />
-    <Compile Include="Persistence\Server\File\PersistenceManagerHandlerFileSystem.cs" />
     <Compile Include="Persistence\Server\JSON\PersistenceManagerHandlerJsonBase.cs" />
     <Compile Include="Persistence\Server\Memory\BehaviourRequest.cs" />
     <Compile Include="Persistence\Server\Memory\PersistenceEntityContainer.cs" />

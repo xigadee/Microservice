@@ -8,17 +8,26 @@ namespace Xigadee
 {
     public static class CommandExtensionMethods
     {
-        public static C AddCommand<C>(this MicroservicePipeline pipeline, C command)
+        public static MicroservicePipeline AddCommand<C>(this MicroservicePipeline pipeline
+            , C command)
             where C: ICommand
         {
-            return (C)pipeline.Service.RegisterCommand(command);
+            pipeline.Service.RegisterCommand(command);
+
+            return pipeline;
         }
 
-        public static C AddCommand<C>(this MicroservicePipeline pipeline, Func<IEnvironmentConfiguration, C> creator)
+        public static MicroservicePipeline AddCommand<C>(this MicroservicePipeline pipeline
+            , Func<IEnvironmentConfiguration, C> creator
+            //, ChannelPipelineIncoming channelIncoming = null
+            )
             where C: ICommand
         {
             var command = creator(pipeline.Configuration);
-            return pipeline.AddCommand(creator);
+
+            pipeline.AddCommand(creator);
+
+            return pipeline;
         }
 
 

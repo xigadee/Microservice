@@ -122,12 +122,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region ResponseChannelId
-        /// <summary>
-        /// This is the channel used for the payloadRs message.
-        /// </summary>
-        public virtual string ResponseChannelId { get; set; }
-        #endregion
         #region ResponseId
         /// <summary>
         /// This override will receive the incoming messages

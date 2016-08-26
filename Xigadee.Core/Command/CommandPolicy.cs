@@ -10,9 +10,14 @@ namespace Xigadee
     public class CommandPolicy:PolicyBase
     {
         /// <summary>
-        /// This property specifies that the channel id can be automatically configured.
+        /// This property specifies that the listening channel id can be automatically set during configuration.
         /// </summary>
         public bool ChannelIdAutoSet { get; set; } = true;
+
+        public bool ResponseChannelIdAutoSet { get; set; } = true;
+
+        public bool MasterJobNegotiationChannelIdAutoSet { get; set; } = true;
+
         /// <summary>
         /// This is the command startup prioroty.
         /// </summary>
