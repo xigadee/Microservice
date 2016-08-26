@@ -4,17 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{AF748540-D35C-409A-AD23-D990CF19DED9}</ProjectGuid>
+    <ProjectGuid>{00CE0B92-1AC6-424D-AE93-AA1AA2F3B492}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Xigadee</RootNamespace>
-    <AssemblyName>Xigadee.Console</AssemblyName>
+    <AssemblyName>Xigadee.Azure.ApplicationInsight</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,8 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Microsoft.ApplicationInsights, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.2.1.0\lib\net46\Microsoft.ApplicationInsights.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -51,33 +47,26 @@
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="ArgumentsParser.cs" />
-    <Compile Include="ConsoleConfigurationBase.cs" />
-    <Compile Include="ConsoleHelper.cs" />
-    <Compile Include="Info\ConsoleInfoContext.cs" />
-    <Compile Include="Info\InfoHelper.cs" />
-    <Compile Include="Menu\ConsoleMenu.cs" />
-    <Compile Include="Menu\ConsoleMenuContext.cs" />
-    <Compile Include="Options\ConsoleSwitchOption.cs" />
-    <Compile Include="Options\ConsoleOption.cs" />
-    <Compile Include="ConsoleWriter.cs" />
-    <Compile Include="ErrorInfo.cs" />
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WriterBase.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="Xigadee.Azure.ApplicationInsights.nuspec" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Xigadee.Core\Xigadee.Core.csproj">
+      <Project>{f73b3423-992d-444d-a486-9c6a9d729900}</Project>
+      <Name>Xigadee.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj">
       <Project>{4f785b7b-1fdc-4dcc-9453-fe42447fded2}</Project>
       <Name>Xigadee.Helper</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-    <None Include="Xigadee.Console.nuspec" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="..\AssemblyInfo\ApacheLicense-2.0.txt">
-      <Link>ApacheLicense-2.0.txt</Link>
+      <Link>Properties\ApacheLicense-2.0.txt</Link>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

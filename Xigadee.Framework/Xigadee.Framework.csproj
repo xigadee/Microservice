@@ -73,7 +73,8 @@
     <Folder Include="Logger\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ApacheLicense-2.0.txt">
+    <Content Include="..\AssemblyInfo\ApacheLicense-2.0.txt">
+      <Link>Properties\ApacheLicense-2.0.txt</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

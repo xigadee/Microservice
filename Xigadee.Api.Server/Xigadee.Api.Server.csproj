@@ -194,11 +194,6 @@
     <None Include="Xigadee.Api.Server.nuspec" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ApacheLicense-2.0.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Xigadee.Api\Xigadee.Api.csproj">
       <Project>{9680b7a6-f4b7-4ecb-bbb4-d46941b9cfed}</Project>
       <Name>Xigadee.Api</Name>
@@ -216,7 +211,12 @@
       <Name>Xigadee.Helper</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="..\AssemblyInfo\ApacheLicense-2.0.txt">
+      <Link>Properties\ApacheLicense-2.0.txt</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="BeforeBuild">

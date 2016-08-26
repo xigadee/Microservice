@@ -76,10 +76,10 @@
     <Compile Include="TcpTlsChannel\TlsTcpChannelListener.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="TcpTlsChannel\Helper\MakeCert.txt" />
-    <Content Include="ApacheLicense-2.0.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="..\AssemblyInfo\ApacheLicense-2.0.txt">
+      <Link>ApacheLicense-2.0.txt</Link>
     </Content>
+    <Content Include="TcpTlsChannel\Helper\MakeCert.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">

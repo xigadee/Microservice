@@ -72,12 +72,13 @@
     <Compile Include="XmlSchemaValidation.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ApacheLicense-2.0.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <Content Include="..\AssemblyInfo\ApacheLicense-2.0.txt">
+      <Link>Properties\ApacheLicense-2.0.txt</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
