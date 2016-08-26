@@ -11,17 +11,17 @@ namespace Xigadee
     /// </summary>
     public class MicroserviceStatusEventArgs:EventArgs
     {
-        public MicroserviceStatusEventArgs(MicroserviceStatusChangeAction status, string title)
+        public MicroserviceStatusEventArgs(MicroserviceComponentStatusChangeAction status, string title)
         {
             Status = status;
             Title = title;
         }
 
-        public MicroserviceStatusChangeAction Status { get;}
+        public MicroserviceComponentStatusChangeAction Status { get;}
 
         public string Title { get; }
 
-        public MicroserviceStatusChangeState State { get; set; } =  MicroserviceStatusChangeState.Beginning;
+        public MicroserviceComponentStatusChangeState State { get; set; } =  MicroserviceComponentStatusChangeState.Beginning;
 
         public MicroserviceStatusChangeException Ex { get; set; }
 
@@ -31,12 +31,13 @@ namespace Xigadee
         }
     }
 
-    public enum MicroserviceStatusChangeAction
+    public enum MicroserviceComponentStatusChangeAction
     {
         Starting,
         Stopping
     }
-    public enum MicroserviceStatusChangeState
+
+    public enum MicroserviceComponentStatusChangeState
     {
         Beginning,
         Completed,

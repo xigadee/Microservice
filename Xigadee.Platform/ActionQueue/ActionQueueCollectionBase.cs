@@ -15,8 +15,8 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="D"></typeparam>
     /// <typeparam name="I"></typeparam>
-    /// <typeparam name="S"></typeparam>
-    /// <typeparam name="P"></typeparam>
+    /// <typeparam name="S">The statistics</typeparam>
+    /// <typeparam name="P">The policy</typeparam>
     public abstract class ActionQueueCollectionBase<D, I, S, P>: CollectionContainerBase<I, S>
         , IActionQueue, ITaskManagerProcess
         where S : ActionQueueCollectionStatistics, new()

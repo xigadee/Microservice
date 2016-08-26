@@ -178,6 +178,8 @@
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="EventSource\ExtensionMethods.cs" />
+    <Compile Include="Logger\ExtensionMethods.cs" />
     <Compile Include="Persistence\DocumentDbSDK\SDKHelper.cs" />
     <Compile Include="Populator\AzureHelper.cs" />
     <Compile Include="Populator\RedisCache.cs" />
@@ -200,6 +202,7 @@
     <Compile Include="ServiceBus\Base\AzureSBSenderBase.cs" />
     <Compile Include="ServiceBus\Base\AzureClientHolder.cs" />
     <Compile Include="ServiceBus\DeadLetterLogger\DeadLetterLoggerMessageHandler.cs" />
+    <Compile Include="ServiceBus\ExtensionMethods.cs" />
     <Compile Include="ServiceBus\Message Helpers\BrokeredMessageHelper.cs" />
     <Compile Include="ServiceBus\Message Helpers\EventDataHelper.cs" />
     <Compile Include="ServiceBus\EventHub\AzureSBEventHubListener.cs" />

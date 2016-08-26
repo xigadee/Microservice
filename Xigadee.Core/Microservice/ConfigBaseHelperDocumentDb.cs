@@ -20,18 +20,18 @@ namespace Xigadee
 
 
         [ConfigSetting("DocumentDb")]
-        public static DocumentDbConnection DocDBConnection(this ConfigBase config) => DocumentDbConnection.ToConnection(config.DocDBAccountName(), config.DocDBAccountAccessKey());
+        public static DocumentDbConnection DocDBConnection(this IEnvironmentConfiguration config) => DocumentDbConnection.ToConnection(config.DocDBAccountName(), config.DocDBAccountAccessKey());
 
         [ConfigSetting("DocumentDb")]
-        public static string DocDBAccountName(this ConfigBase config) => config.PlatformOrConfigCache(KeyDocDBAccountName);
+        public static string DocDBAccountName(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyDocDBAccountName);
 
         [ConfigSetting("DocumentDb")]
-        public static string DocDBAccountAccessKey(this ConfigBase config) => config.PlatformOrConfigCache(KeyDocDBAccountAccessKey);
+        public static string DocDBAccountAccessKey(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyDocDBAccountAccessKey);
 
         [ConfigSetting("DocumentDb")]
-        public static string DocDBDatabaseName(this ConfigBase config) => config.PlatformOrConfigCache(KeyDocDBDatabaseName);
+        public static string DocDBDatabaseName(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyDocDBDatabaseName);
 
         [ConfigSetting("DocumentDb")]
-        public static string DocDBCollectionName(this ConfigBase config) => config.PlatformOrConfigCache(KeyDocDBCollectionName);
+        public static string DocDBCollectionName(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyDocDBCollectionName);
     }
 }

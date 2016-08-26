@@ -12,6 +12,9 @@ namespace Xigadee
     /// </summary>
     public class ChannelContainer: ServiceContainerBase<ChannelContainerStatistics, ChannelContainerPolicy>
     {
+        #region Declarations
+        private Dictionary<string,Channel> mContainer;
+        #endregion
         #region Constructor
         /// <summary>
         /// This is the default constructor.
@@ -24,12 +27,32 @@ namespace Xigadee
 
         protected override void StartInternal()
         {
-
+            mContainer = new Dictionary<string, Channel>();
         }
 
         protected override void StopInternal()
         {
+            mContainer.Clear();
+        }
 
+        public virtual void Add(Channel item)
+        {
+            if (mContainer.ContainsKey(item.Id))
+            {
+                throw new DuplicateChannelException(item.Id);
+            }
+
+            mContainer.Add(item.Id, item);
+        }
+
+        public virtual bool Remove(Channel item)
+        {
+            if (mContainer.ContainsKey(item.Id))
+            {
+                return mContainer.Remove(item.Id);
+            }
+
+            return false;
         }
     }
 }

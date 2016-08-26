@@ -12,7 +12,7 @@ namespace Xigadee
     /// You can also insert a resolver function that can intercept calls and allow for testing containers 
     /// to insert their own config.
     /// </summary>
-    public abstract class ConfigBase
+    public class ConfigBase: IEnvironmentConfiguration
     {
         #region Declarations
         private object syncLock = new object();
@@ -22,6 +22,15 @@ namespace Xigadee
         private readonly ConcurrentDictionary<string, string> mConfig = new ConcurrentDictionary<string, string>(); 
         #endregion
 
+        #region Resolver
+        /// <summary>
+        /// This is the resolves function that can be injected in to the config resolution flow.
+        /// </summary>
+        public Func<string, string, string> Resolver
+        {
+            get; set;
+        } 
+        #endregion
         #region ResolverFirst
         /// <summary>
         /// This boolean property specifies whether the system should read from the internal collection
@@ -112,14 +121,5 @@ namespace Xigadee
         } 
         #endregion
 
-        #region Resolver
-        /// <summary>
-        /// This is the resolves function that can be injected in to the config resolution flow.
-        /// </summary>
-        public Func<string, string, string> Resolver
-        {
-            get; set;
-        } 
-        #endregion
     }
 }

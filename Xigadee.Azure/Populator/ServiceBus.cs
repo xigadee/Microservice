@@ -13,6 +13,6 @@ namespace Xigadee
         public const string KeyServiceBusConnection = "ServiceBusConnection";
 
         [ConfigSetting("ServiceBus")]
-        public static string ServiceBusConnection(this ConfigBase config) => config.PlatformOrConfigCache(KeyServiceBusConnection);
+        public static string ServiceBusConnection(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyServiceBusConnection);
     }
 }

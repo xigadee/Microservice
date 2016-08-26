@@ -16,13 +16,13 @@ namespace Xigadee
 
 
         [ConfigSetting("LogStorage")]
-        public static string LogStorageAccountName(this ConfigBase config) => config.PlatformOrConfigCache(KeyLogStorageAccountName, config.StorageAccountName());
+        public static string LogStorageAccountName(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyLogStorageAccountName, config.StorageAccountName());
 
         [ConfigSetting("LogStorage")]
-        public static string LogStorageAccountAccessKey(this ConfigBase config) => config.PlatformOrConfigCache(KeyLogStorageAccountAccessKey, config.StorageAccountAccessKey());
+        public static string LogStorageAccountAccessKey(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyLogStorageAccountAccessKey, config.StorageAccountAccessKey());
 
         [ConfigSetting("LogStorage")]
-        public static StorageCredentials LogStorageCredentials(this ConfigBase config)
+        public static StorageCredentials LogStorageCredentials(this IEnvironmentConfiguration config)
         {
             if (string.IsNullOrEmpty(config.LogStorageAccountName()) || string.IsNullOrEmpty(config.LogStorageAccountAccessKey()))
                 return config.StorageCredentials();

@@ -16,13 +16,13 @@ namespace Xigadee
         public const string KeyServiceDisabled = "ServiceDisabled";
 
         [ConfigSetting("Service")]
-        public static bool ServiceDisabled(this ConfigBase config) => config.PlatformOrConfigCacheBool(KeyServiceDisabled);
+        public static bool ServiceDisabled(this IEnvironmentConfiguration config) => config.PlatformOrConfigCacheBool(KeyServiceDisabled);
 
         [ConfigSetting("Service")]
-        public static string Client(this ConfigBase config) => config.PlatformOrConfigCache(KeyClient);
+        public static string Client(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyClient);
 
         [ConfigSetting("Service")]
-        public static string Environment(this ConfigBase config) => config.PlatformOrConfigCache(KeyEnvironment);
+        public static string Environment(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyEnvironment);
 
     }
 

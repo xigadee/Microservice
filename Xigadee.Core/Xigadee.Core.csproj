@@ -62,7 +62,10 @@
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Channel\Channel.cs" />
     <Compile Include="Channel\ChannelDirection.cs" />
+    <Compile Include="Channel\ExtensionMethods.cs" />
+    <Compile Include="Command\ExtensionMethods.cs" />
     <Compile Include="Command\EventHandlers\CommandChange.cs" />
     <Compile Include="Command\EventHandlers\MasterJobStateChange.cs" />
     <Compile Include="Command\Exceptions\CommandStartupException.cs" />
@@ -83,19 +86,24 @@
     <Compile Include="Command\Command_MasterJob.cs" />
     <Compile Include="Command\Command_OutgoingRequests.cs" />
     <Compile Include="Command\Command_Statistics.cs" />
+    <Compile Include="Communication\ExtensionMethods.cs" />
     <Compile Include="Communication\Interfaces\IBoundaryLogger.cs" />
     <Compile Include="Communication\PartitionConfig\ListenerPartitionConfig.cs" />
     <Compile Include="Communication\PartitionConfig\PartitionConfig.cs" />
     <Compile Include="Communication\PartitionConfig\SenderPartitionConfig.cs" />
     <Compile Include="Communication\TransmissionPayloadTrace.cs" />
     <Compile Include="EventSource\DocumentDbEventSource.cs" />
+    <Compile Include="EventSource\ExtensionMethods.cs" />
     <Compile Include="EventSource\MemoryEventSource.cs" />
+    <Compile Include="Logging\ExtensionMethods.cs" />
+    <Compile Include="Microservice\Events.cs" />
     <Compile Include="Exceptions\RequiredSharedServiceMissingException.cs" />
     <Compile Include="Exceptions\StorageThrottlingException.cs" />
     <Compile Include="Interfaces\Communication\IMessaging.cs" />
     <Compile Include="Interfaces\ICache.cs" />
     <Compile Include="Interfaces\ICommand.cs" />
     <Compile Include="Interfaces\ILoggerExtended.cs" />
+    <Compile Include="Microservice\IMicroservice.cs" />
     <Compile Include="Interfaces\IPersistenceMessageInitiator.cs" />
     <Compile Include="Interfaces\IPersistenceSharedService.cs" />
     <Compile Include="Interfaces\IRequireSystemEvents.cs" />
@@ -114,6 +122,10 @@
     <Compile Include="Logging\MemoryLogger.cs" />
     <Compile Include="Logging\PayloadLogEvent.cs" />
     <Compile Include="Logging\PersistencePayloadLogEvent.cs" />
+    <Compile Include="Microservice\IEnvironmentConfiguration.cs" />
+    <Compile Include="Microservice\MicroserviceConfigChannel.cs" />
+    <Compile Include="Microservice\MicroserviceStatusChangeException.cs" />
+    <Compile Include="Microservice\MicroserviceStatusEvent.cs" />
     <Compile Include="Orchestration\Commands\EntityChange\EntityChangeOrchestrationCommandBase.cs" />
     <Compile Include="Orchestration\Commands\Input\InputOrchestrationCommandBase.cs" />
     <Compile Include="Orchestration\Commands\Output\OutputOrchestrationCommandBase.cs" />
@@ -224,10 +236,10 @@
     <Compile Include="Communication\MessagingSenderBase.cs" />
     <Compile Include="Communication\MessagingServiceBase.cs" />
     <Compile Include="Command\RequestTracker\RequestTrackerContainer.cs" />
-    <Compile Include="Populator\ConfigBase.cs" />
-    <Compile Include="Populator\ConfigBaseHelperDocumentDb.cs" />
-    <Compile Include="Populator\ConfigBaseHelperService.cs" />
-    <Compile Include="Populator\ConfigKeySettingNameAttribute.cs" />
+    <Compile Include="Microservice\ConfigBase.cs" />
+    <Compile Include="Microservice\ConfigBaseHelperDocumentDb.cs" />
+    <Compile Include="Microservice\ConfigBaseHelperService.cs" />
+    <Compile Include="Microservice\ConfigKeySettingNameAttribute.cs" />
     <Compile Include="ResourceTracker\CircuitBreakerBase.cs" />
     <Compile Include="ResourceTracker\CircuitBreakerState.cs" />
     <Compile Include="ResourceTracker\Interfaces\IResourceBase.cs" />
@@ -253,6 +265,7 @@
     <Compile Include="Interfaces\IMessageContract.cs" />
     <Compile Include="Interfaces\IPayloadSerialization.cs" />
     <Compile Include="Entities\MessageFilterWrapper.cs" />
+    <Compile Include="Serializer\ExtensionMethods.cs" />
     <Compile Include="Serializer\JsonContractSerializer.cs" />
     <Compile Include="Serializer\PayloadDelivery.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

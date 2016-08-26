@@ -75,6 +75,7 @@
     <Compile Include="ApiTests.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="UnitTest1.cs" />
+    <Compile Include="PopulatorExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Test.Xigadee.Shared\Test.Xigadee.Shared.csproj">

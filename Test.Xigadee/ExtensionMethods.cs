@@ -9,17 +9,20 @@ namespace Test.Xigadee
         [TestMethod]
         public void TestMethod1()
         {
-            var service = new Microservice();
+            var pipeline = Microservice.InitalizePipeline();
 
-            service.AddChannelIncoming("CRM");
+            pipeline
+                .AddChannelIncoming("Incoming");
 
-            service.AddChannelOutgoing("API");
+            pipeline
+                .AddChannelOutgoing("Return");
 
             //    .ConfigureServiceBusQueue()
             //    .ConfigureApiListener();
+            pipeline.AddPayloadSerializerDefaultJson();
+            //pipeline.AddEventSource
 
-
-            service.Start();
+            pipeline.Service.Start();
         }
     }
 }

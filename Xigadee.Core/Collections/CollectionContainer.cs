@@ -10,6 +10,10 @@ using System.Threading;
 #endregion
 namespace Xigadee
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="I"></typeparam>
     public abstract class CollectionContainerBase<I>: CollectionContainerBase<I,CollectionStatistics>
     {
         protected CollectionContainerBase(IEnumerable<I> items):base(items)
@@ -17,6 +21,11 @@ namespace Xigadee
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="I"></typeparam>
+    /// <typeparam name="S">The statistics.</typeparam>
     public abstract class CollectionContainerBase<I,S>: ServiceBase<S>, IContainerService
         where S : StatusBase, ICollectionStatistics, new()
     {
@@ -25,20 +34,26 @@ namespace Xigadee
         public event EventHandler<I> OnRemove; 
         #endregion
         #region Declarations
-        private ConcurrentBag<I> mContainer; 
+        private ConcurrentBag<I> mContainer;
         #endregion
 
-        protected ICollection ContainerInternal
-        {
-            get{ return mContainer; }
-        }
-
+        #region Constructor
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="items">The items to preload in to the collection.</param>
         protected CollectionContainerBase(IEnumerable<I> items)
         {
             if (items == null)
                 mContainer = new ConcurrentBag<I>();
             else
                 mContainer = new ConcurrentBag<I>(items);
+        } 
+        #endregion
+
+        protected ICollection ContainerInternal
+        {
+            get{ return mContainer; }
         }
 
         protected override void StatisticsRecalculate(S stats)

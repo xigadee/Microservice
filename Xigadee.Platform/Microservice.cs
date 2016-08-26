@@ -16,17 +16,13 @@ namespace Xigadee
     /// <summary>
     /// This class enables the communication fabric to be plugged in to existing code with minimal effort.
     /// </summary>
-    public partial class Microservice : ServiceBase<MicroserviceStatistics>
+    public partial class Microservice: ServiceBase<MicroserviceStatistics>, IMicroservice
     {
         #region Declarations
         /// <summary>
         /// This is the Microservice create time.
         /// </summary>
         private readonly DateTime mStartTime;
-        /// <summary>
-        /// This class contains the common configuration options for the Microservice.
-        /// </summary>
-        public MicroserviceConfigurationOptions ConfigurationOptions { get; set; }
         /// <summary>
         /// This collection holds the serializer
         /// </summary>
@@ -97,7 +93,9 @@ namespace Xigadee
         /// This is the default Unity ServiceLocator based constructor.
         /// </summary>
         public Microservice(MicroserviceConfigurationOptions options = null
-            , string name = null, string serviceId = null, IEnumerable<PolicyBase> policySettings = null)
+            , string name = null
+            , string serviceId = null
+            , IEnumerable<PolicyBase> policySettings = null)
             : base(name)
         {
             mPolicySettings = policySettings?.ToList()??new List<PolicyBase>();
@@ -129,11 +127,17 @@ namespace Xigadee
         }
         #endregion
 
+        #region ConfigurationOptions
+        /// <summary>
+        /// This class contains the common configuration options for the Microservice.
+        /// </summary>
+        public MicroserviceConfigurationOptions ConfigurationOptions { get; set; } 
+        #endregion
         #region ConfigurationInitialise()
-            /// <summary>
-            /// This method is used to set the dynamic system configuration parameters such and max and min concurrent jobs
-            /// before the core system starts.
-            /// </summary>
+        /// <summary>
+        /// This method is used to set the dynamic system configuration parameters such and max and min concurrent jobs
+        /// before the core system starts.
+        /// </summary>
         protected virtual void ConfigurationInitialise()
         {
             //Do some sanity checking on the Max/Min settings. 
@@ -318,7 +322,7 @@ namespace Xigadee
         /// <param name="title">The section title.</param>
         protected virtual void EventStart(Action action, string title)
         {
-            EventGeneric(action, title, MicroserviceStatusChangeAction.Starting);
+            EventGeneric(action, title, MicroserviceComponentStatusChangeAction.Starting);
         }
         /// <summary>
         /// This wrapper is used for stopping
@@ -327,7 +331,7 @@ namespace Xigadee
         /// <param name="title">The section title.</param>
         protected virtual void EventStop(Action action, string title)
         {
-            EventGeneric(action, title, MicroserviceStatusChangeAction.Stopping);
+            EventGeneric(action, title, MicroserviceComponentStatusChangeAction.Stopping);
         }
         /// <summary>
         /// This is the generic exception wrapper.
@@ -335,7 +339,7 @@ namespace Xigadee
         /// <param name="action">The action to wrap.</param>
         /// <param name="title">The section title.</param>
         /// <param name="type">The action type, i.e. starting or stopping.</param>
-        protected virtual void EventGeneric(Action action, string title, MicroserviceStatusChangeAction type)
+        protected virtual void EventGeneric(Action action, string title, MicroserviceComponentStatusChangeAction type)
         {
             var args = new MicroserviceStatusEventArgs(type, title);
 
@@ -343,13 +347,13 @@ namespace Xigadee
             {
                 ComponentStatusChange?.Invoke(this, args);
                 action();
-                args.State = MicroserviceStatusChangeState.Completed;
+                args.State = MicroserviceComponentStatusChangeState.Completed;
                 ComponentStatusChange?.Invoke(this, args);
             }
             catch (Exception ex)
             {
                 args.Ex = new MicroserviceStatusChangeException(title, ex);
-                args.State = MicroserviceStatusChangeState.Failed;
+                args.State = MicroserviceComponentStatusChangeState.Failed;
                 ComponentStatusChange?.Invoke(this, args);
                 throw args.Ex;
             }

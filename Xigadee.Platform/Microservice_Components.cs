@@ -136,6 +136,18 @@ namespace Xigadee
             return logger;
         }
         #endregion
+        //Channel
+        #region RegisterChannel(ILogger logger)
+        /// <summary>
+        /// This method can be used to manually register an Logger.
+        /// </summary>
+        public virtual Channel RegisterChannel(Channel channel)
+        {
+            ValidateServiceNotStarted();
+            mChannels.Add(channel);
+            return channel;
+        }
+        #endregion
 
         //Populate
         #region PopulateComponents()

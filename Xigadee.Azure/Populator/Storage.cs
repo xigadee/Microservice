@@ -15,13 +15,13 @@ namespace Xigadee
         public const string KeyStorageAccountAccessKey = "StorageAccountAccessKey";
 
         [ConfigSetting("Storage")]
-        public static string StorageAccountName(this ConfigBase config) => config.PlatformOrConfigCache(KeyStorageAccountName);
+        public static string StorageAccountName(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyStorageAccountName);
 
         [ConfigSetting("Storage")]
-        public static string StorageAccountAccessKey(this ConfigBase config) => config.PlatformOrConfigCache(KeyStorageAccountAccessKey);
+        public static string StorageAccountAccessKey(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyStorageAccountAccessKey);
 
         [ConfigSetting("Storage")]
-        public static StorageCredentials StorageCredentials(this ConfigBase config)
+        public static StorageCredentials StorageCredentials(this IEnvironmentConfiguration config)
         {
             if (string.IsNullOrEmpty(config.StorageAccountName()) || string.IsNullOrEmpty(config.StorageAccountAccessKey()))
                 return null;

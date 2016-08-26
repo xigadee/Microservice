@@ -13,6 +13,6 @@ namespace Xigadee
         public const string KeyRedisCacheConnection = "RedisCacheConnection";
 
         [ConfigSetting("RedisCache")]
-        public static string RedisCacheConnection(this ConfigBase config) => config.PlatformOrConfigCache(KeyRedisCacheConnection);
+        public static string RedisCacheConnection(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyRedisCacheConnection);
     }
 }
