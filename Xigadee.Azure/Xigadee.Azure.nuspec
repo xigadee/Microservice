@@ -5,14 +5,14 @@
     <version>{UpdateVersion.ps1.replace}</version>
     <title>Xigadee Microservice accelerator - Azure Library</title>
     <authors>By Paul Stancer and Guy Steel at Information Management Group Ltd, part of Hitachi Consulting - http://hitachiconsulting.com</authors>
-    <owners>Information Management Group Ltd part of Hitachi Consulting</owners>
+    <owners>Information Management Group Ltd (http://imgroup.com) part of Hitachi Consulting</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <projectUrl>http://xigadee.com</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Xigadee Azure library contains a set of communication and persistence components built on the Microsoft Azure libraries.</description>
     <releaseNotes>Initial push.</releaseNotes>
     <copyright>Copyright © Hitachi Consulting 2012-2016</copyright>
-    <tags>Xigadee Microservice Azure</tags>
+    <tags>Xigadee Microservice Azure Blob Storage Redis ServiceBus DocumentDb</tags>
     <dependencies>
       <dependency id="WindowsAzure.ServiceBus" version="3.3.2" />
       <dependency id="WindowsAzure.Storage" version="7.2.0" />

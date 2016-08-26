@@ -77,7 +77,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\AssemblyInfo\ApacheLicense-2.0.txt">
-      <Link>ApacheLicense-2.0.txt</Link>
+      <Link>Properties\ApacheLicense-2.0.txt</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
