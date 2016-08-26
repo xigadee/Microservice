@@ -72,7 +72,7 @@
     <Compile Include="XmlSchemaValidation.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Properties\ApacheLicense-2.0.txt" />
+    <Content Include="ApacheLicense-2.0.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

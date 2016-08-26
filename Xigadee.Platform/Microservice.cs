@@ -231,6 +231,9 @@ namespace Xigadee
                 //Start the channel controller.
                 EventStart(() => ServiceStart(mChannels), "Channel Container");
 
+                //Start the channel controller.
+                EventStart(() => ServiceStart(mSecurity), "Security Container");
+
                 //Ensure that the communication handler is working.
                 EventStart(() => ServiceStart(mCommunication), "Communication Container");
 
@@ -297,6 +300,9 @@ namespace Xigadee
             EventStop(() => mCommunication.SendersStop(), "Communication Senders");
 
             EventStop(() => ServiceStop(mCommunication), "Communication Container");
+
+            //Stop the channel controller.
+            EventStop(() => ServiceStop(mSecurity), "Security Container");
 
             //Stop the channel controller.
             EventStop(() => ServiceStop(mChannels), "Channel Container");

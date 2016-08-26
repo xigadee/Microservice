@@ -77,7 +77,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="TcpTlsChannel\Helper\MakeCert.txt" />
-    <Content Include="Properties\ApacheLicense-2.0.txt" />
+    <Content Include="ApacheLicense-2.0.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">

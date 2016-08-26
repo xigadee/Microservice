@@ -73,7 +73,7 @@
     <Compile Include="XmlTransportSerializerBase.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Properties\ApacheLicense-2.0.txt" />
+    <Content Include="ApacheLicense-2.0.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj">

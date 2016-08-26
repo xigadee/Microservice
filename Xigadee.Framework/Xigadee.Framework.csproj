@@ -44,6 +44,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="BoundaryLogger\BoundaryLoggerSql.cs" />
     <Compile Include="Persistence\ExtensionMethods.cs" />
     <Compile Include="Persistence\SQL\PersistenceManagerHandlerSqlBase.cs" />
@@ -68,6 +71,9 @@
     <Folder Include="BoundaryLogger\Sql\" />
     <Folder Include="EventSource\" />
     <Folder Include="Logger\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ApacheLicense-2.0.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
