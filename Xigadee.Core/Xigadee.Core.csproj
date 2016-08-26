@@ -151,6 +151,7 @@
     <Compile Include="Persistence\Client\PersistenceInitiatorBase.cs" />
     <Compile Include="Persistence\Client\PersistenceInitiatorPolicy.cs" />
     <Compile Include="Persistence\Client\PersistenceInitiatorStatistics.cs" />
+    <Compile Include="Persistence\ExtensionMethods.cs" />
     <Compile Include="Persistence\Server\SearchExpressionHelper.cs" />
     <Compile Include="Persistence\Policy\CircuitBreakerPolicy.cs" />
     <Compile Include="Persistence\Policy\PersistenceCommandPolicy.cs" />

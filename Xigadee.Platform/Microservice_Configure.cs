@@ -15,7 +15,7 @@ namespace Xigadee
     //TaskManager
     public partial class Microservice
     {
-        public static ConfigurationPipeline InitalizePipeline<C>(Func<string, string, string> resolver = null, bool resolverFirst = false) 
+        public static ConfigurationPipeline Configure<C>(Func<string, string, string> resolver = null, bool resolverFirst = false) 
             where C : ConfigBase, new()
         {
             var service = new Microservice();
@@ -29,9 +29,9 @@ namespace Xigadee
             return new ConfigurationPipeline(service, config);
         }
 
-        public static ConfigurationPipeline InitalizePipeline(Func<string, string, string> resolver = null, bool resolverFirst = false) 
+        public static ConfigurationPipeline Configure(Func<string, string, string> resolver = null, bool resolverFirst = false) 
         {
-            return InitalizePipeline<ConfigBase>(resolver: resolver, resolverFirst: resolverFirst);
+            return Configure<ConfigBase>(resolver: resolver, resolverFirst: resolverFirst);
         }
 
     }

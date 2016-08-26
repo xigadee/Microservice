@@ -33,5 +33,14 @@ namespace Xigadee
         /// </summary>
         public IEnvironmentConfiguration Configuration { get; }
 
+        public void Start()
+        {
+            Service.Start();
+        }
+
+        public void Stop()
+        {
+            Service.Stop();
+        }
     }
 }

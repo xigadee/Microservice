@@ -14,10 +14,11 @@ namespace Xigadee
             return (C)pipeline.Service.RegisterCommand(command);
         }
 
-        public static C AddCommand<C>(this ConfigurationPipeline pipeline, Func<IEnvironmentConfiguration, C> command)
+        public static C AddCommand<C>(this ConfigurationPipeline pipeline, Func<IEnvironmentConfiguration, C> creator)
             where C: ICommand
         {
-            return pipeline.AddCommand(command(pipeline.Configuration));
+            var command = creator(pipeline.Configuration);
+            return pipeline.AddCommand(creator);
         }
 
         //public static ICommand AddCommand(this ConfigurationPipeline pipeline

@@ -9,7 +9,7 @@ namespace Test.Xigadee
         [TestMethod]
         public void TestMethod1()
         {
-            var pipeline = Microservice.InitalizePipeline();
+            var pipeline = Microservice.Configure();
 
             pipeline
                 .AddChannelIncoming("Incoming");
