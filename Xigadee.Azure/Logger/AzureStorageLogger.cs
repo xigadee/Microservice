@@ -1,10 +1,7 @@
-﻿using Microsoft.WindowsAzure.Storage.Auth;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.Storage.Auth;
 
 namespace Xigadee
 {
@@ -32,8 +29,12 @@ namespace Xigadee
         {
             if (logEvent is ILogStoreName)
                 return ((ILogStoreName)logEvent).StorageId;
-            else
-                return string.Format("{0}_{1}", logEvent.GetType().Name, Guid.NewGuid().ToString("N"));
+
+            // If there is a category specified and it contains valid digits or characters then make it part of the log name to make it easier to filter log events
+            if (!string.IsNullOrEmpty(logEvent.Category) && logEvent.Category.Any(char.IsLetterOrDigit))
+                return string.Format("{0}_{1}_{2}", logEvent.GetType().Name, new string(logEvent.Category.Where(char.IsLetterOrDigit).ToArray()), Guid.NewGuid().ToString("N"));
+
+            return string.Format("{0}_{1}", logEvent.GetType().Name, Guid.NewGuid().ToString("N"));
         }
     }
 }

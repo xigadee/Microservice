@@ -210,7 +210,7 @@ namespace Xigadee
                 //Close the old collection, note that it will be null the first time.
                 oldColl?.Close();
 
-                Logger?.LogMessage(LoggingLevel.Info, "ListenersPriorityRecalculate completed.");
+                Logger?.LogMessage(LoggingLevel.Trace, "ListenersPriorityRecalculate completed.");
             }
             catch (Exception ex)
             {

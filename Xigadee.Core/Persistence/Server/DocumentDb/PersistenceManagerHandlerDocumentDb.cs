@@ -357,21 +357,24 @@ namespace Xigadee
 
         protected override async Task<bool> TimeoutCorrectCreateUpdate(PersistenceRequestHolder<K, E> holder)
         {
-            if (holder.Rq.Entity == null)
+            if (holder.Rq.Entity == null || mTransform == null)
                 return false;
 
             var jsonHolder = mTransform.JsonMaker(holder.Rq.Entity);
-            var request = new PersistenceRepositoryHolder<K, E> { Key = jsonHolder.Key, Timeout = holder.Rq.Timeout };
-            var response = new PersistenceRepositoryHolder<K, E>();
+            var alternateHolder = new PersistenceRequestHolder<K, E>(holder.ProfileId, holder.Prq, holder.Prs)
+            {
+                Rq = new PersistenceRepositoryHolder<K, E> { Key = jsonHolder.Key, Timeout = holder.Rq.Timeout },
+                Rs = new PersistenceRepositoryHolder<K, E>()
+            };
 
-            if (!(await RetrieveEntity(holder, ProcessRead)))
+            if (!(await RetrieveEntity(alternateHolder, ProcessRead)))
                 return false;
 
-            holder.Rs.Entity = response.Entity;
-            holder.Rs.Key = response.Key;
-            holder.Rs.KeyReference = response.KeyReference;
-            holder.Rs.ResponseCode = !mTransform.Version.SupportsVersioning || jsonHolder.Version.Equals(mTransform.Version.EntityVersionAsString(holder.Rs.Entity))
-                ? response.ResponseCode
+            holder.Rs.Entity = alternateHolder.Rs.Entity;
+            holder.Rs.Key = alternateHolder.Rs.Key;
+            holder.Rs.KeyReference = alternateHolder.Rs.KeyReference;
+            holder.Rs.ResponseCode = mTransform.Version.SupportsVersioning && jsonHolder.Version.Equals(mTransform.Version.EntityVersionAsString(holder.Rs.Entity))
+                ? alternateHolder.Rs.ResponseCode
                 : holder.Rs.ResponseCode;
 
             return holder.Rs.IsSuccess;
