@@ -10,7 +10,7 @@ namespace Xigadee
     {
         public const string KeySqlConnection = "SqlConnection";
 
-        public static string SqlConnection(this ConfigBase config) => config.PlatformOrConfigCache(KeySqlConnection);
+        public static string SqlConnection(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeySqlConnection);
 
     }
 }

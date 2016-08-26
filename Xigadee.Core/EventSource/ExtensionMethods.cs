@@ -13,9 +13,10 @@ namespace Xigadee
             return pipeline.Service.RegisterEventSource(eventSource);
         }
 
-        public static IEventSource AddEventSource(this ConfigurationPipeline pipeline, Func<IEnvironmentConfiguration, IEventSource> eventSource)
+        public static E AddEventSource<E>(this ConfigurationPipeline pipeline, Func<IEnvironmentConfiguration, E> eventSource)
+            where E: IEventSource
         {
-            return pipeline.Service.RegisterEventSource(eventSource(pipeline.Configuration));
+            return (E)pipeline.Service.RegisterEventSource(eventSource(pipeline.Configuration));
         }
     }
 }

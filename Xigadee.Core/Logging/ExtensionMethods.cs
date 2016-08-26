@@ -13,9 +13,10 @@ namespace Xigadee
             return pipeline.Service.RegisterLogger(logger);
         }
 
-        public static ILogger AddLogger(this ConfigurationPipeline pipeline, Func<IEnvironmentConfiguration, ILogger> logger)
+        public static L AddLogger<L>(this ConfigurationPipeline pipeline, Func<IEnvironmentConfiguration, L> logger)
+            where L:ILogger
         {
-            return pipeline.Service.RegisterLogger(logger(pipeline.Configuration));
+            return (L)pipeline.Service.RegisterLogger(logger(pipeline.Configuration));
         }
 
     }

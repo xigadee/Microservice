@@ -20,7 +20,7 @@ namespace Test.Xigadee
             //    .ConfigureServiceBusQueue()
             //    .ConfigureApiListener();
             pipeline.AddPayloadSerializerDefaultJson();
-            //pipeline.AddEventSource
+            
 
             pipeline.Service.Start();
         }

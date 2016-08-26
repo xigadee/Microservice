@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BoundaryLogger\BoundaryLoggerSql.cs" />
+    <Compile Include="Persistence\ExtensionMethods.cs" />
     <Compile Include="Persistence\SQL\PersistenceManagerHandlerSqlBase.cs" />
     <Compile Include="Populator\ConfigBaseHelperSql.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
