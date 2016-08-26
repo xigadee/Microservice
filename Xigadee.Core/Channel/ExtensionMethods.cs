@@ -6,34 +6,50 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public interface IMicroserviceChannel
-    {
-        ConfigurationPipeline Service { get; }
-
-        Channel Channel { get; }
-    }
-
-
-    public interface IMicroserviceChannelIncoming: IMicroserviceChannel
-    {
-
-    }
-
-    public interface IMicroserviceChannelOutgoing: IMicroserviceChannel
-    {
-
-    }
 
     public static class ChannelExtensionMethods
     {
-        public static IMicroserviceChannelIncoming AddChannelIncoming(this ConfigurationPipeline service, string channelId)
-        {
-            return null;
+        public static ChannelPipelineIncoming AddChannelIncoming(this MicroservicePipeline pipeline, string channelId, string description = null)
+        {     
+            var channel = pipeline.Service.RegisterChannel(new Channel(channelId, ChannelDirection.Incoming, description));
+
+            return new ChannelPipelineIncoming(pipeline, channel);
         }
 
-        public static IMicroserviceChannelOutgoing AddChannelOutgoing(this ConfigurationPipeline service, string channelId)
+        public static ChannelPipelineOutgoing AddChannelOutgoing(this MicroservicePipeline pipeline, string channelId, string description = null)
         {
-            return null;
+            var channel = pipeline.Service.RegisterChannel(new Channel(channelId, ChannelDirection.Outgoing, description));
+
+            return new ChannelPipelineOutgoing(pipeline, channel);
+        }
+
+        public class ChannelPipelineOutgoing: ChannelPipelineBase
+        {
+            public ChannelPipelineOutgoing(MicroservicePipeline pipeline, Channel channel):base(pipeline, channel)
+            {
+
+            }
+        }
+
+        public class ChannelPipelineIncoming: ChannelPipelineBase
+        {
+            public ChannelPipelineIncoming(MicroservicePipeline pipeline, Channel channel) : base(pipeline, channel)
+            {
+
+            }
+        }
+
+        public abstract class ChannelPipelineBase
+        {
+            public ChannelPipelineBase(MicroservicePipeline pipeline, Channel channel)
+            {
+                Pipeline = pipeline;
+                Channel = channel;
+            }
+
+            public MicroservicePipeline Pipeline { get;}
+
+            Channel Channel { get; }
         }
     }
 }

@@ -18,7 +18,7 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        /// <param name="channelId">The channelId.</param>
+        /// <param name="channelId">The listening channelId.</param>
         /// <param name="connectionString">The service bus connection string.</param>
         /// <param name="connectionName">The connection name.</param>
         /// <param name="defaultTimeout">The default timeout for an incoming message.</param>

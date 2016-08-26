@@ -11,7 +11,7 @@ namespace Xigadee
     {
 
         public static AzureStorageEventSource AddAzureStorageEventSource(
-            this ConfigurationPipeline pipeline
+            this MicroservicePipeline pipeline
             , string serviceName = null
             , string containerName = "eventsource"
             , ResourceProfile resourceProfile = null)
@@ -20,7 +20,7 @@ namespace Xigadee
         }
 
         public static AzureStorageEventSource AddAzureStorageEventSource(
-            this ConfigurationPipeline pipeline, StorageCredentials creds
+            this MicroservicePipeline pipeline, StorageCredentials creds
             , string serviceName = null
             , string containerName = "eventsource"
             , ResourceProfile resourceProfile = null)

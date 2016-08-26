@@ -8,12 +8,12 @@ namespace Xigadee
 {
     public static class EventSourceExtensionMethods
     {
-        public static IEventSource AddEventSource(this ConfigurationPipeline pipeline, IEventSource eventSource)
+        public static IEventSource AddEventSource(this MicroservicePipeline pipeline, IEventSource eventSource)
         {
             return pipeline.Service.RegisterEventSource(eventSource);
         }
 
-        public static E AddEventSource<E>(this ConfigurationPipeline pipeline, Func<IEnvironmentConfiguration, E> eventSource)
+        public static E AddEventSource<E>(this MicroservicePipeline pipeline, Func<IEnvironmentConfiguration, E> eventSource)
             where E: IEventSource
         {
             return (E)pipeline.Service.RegisterEventSource(eventSource(pipeline.Configuration));

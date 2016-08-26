@@ -10,9 +10,9 @@ namespace Xigadee
     /// This channel is used by extension methods to create a simple channel based configuration.
     /// </summary>
     /// <typeparam name="C">The configuration type.</typeparam>
-    public class ConfigurationPipeline
+    public class MicroservicePipeline
     {
-        public ConfigurationPipeline(IMicroservice service, IEnvironmentConfiguration config)
+        public MicroservicePipeline(IMicroservice service, IEnvironmentConfiguration config)
         {
             if (service == null)
                 throw new ArgumentNullException("service cannot be null");
