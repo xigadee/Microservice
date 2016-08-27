@@ -10,12 +10,33 @@ namespace Xigadee
     public class CommandPolicy:PolicyBase
     {
         /// <summary>
+        /// This is the default listening channel for incoming messages.
+        /// </summary>
+        public virtual string ChannelId { get; set; }
+        /// <summary>
         /// This property specifies that the listening channel id can be automatically set during configuration.
         /// </summary>
         public bool ChannelIdAutoSet { get; set; } = true;
-
+        /// <summary>
+        /// This is the response channel set in outgoing request, and is used to route response messages back to the command.
+        /// </summary>
+        public virtual string ResponseChannelId { get; set; }
+        /// <summary>
+        /// This property specifies whether the response channel can be automatically set by the pipeline.
+        /// </summary>
         public bool ResponseChannelIdAutoSet { get; set; } = true;
 
+        /// <summary>
+        /// This is the channel for incoming masterjob negotiation messages.
+        /// </summary>
+        public virtual string MasterJobNegotiationChannelIdIncoming { get; set; }
+        /// <summary>
+        /// This is the channel for outgoing masterjob negotiation messages, if this is null then the incoming channel will be used.
+        /// </summary>
+        public virtual string MasterJobNegotiationChannelIdOutgoing { get; set; }
+        /// <summary>
+        /// This property specifies whether these channels can be set automatically from the configuration pipeline.
+        /// </summary>
         public bool MasterJobNegotiationChannelIdAutoSet { get; set; } = true;
 
         /// <summary>
@@ -47,8 +68,6 @@ namespace Xigadee
         public virtual bool MasterJobEnabled { get; set; }
 
         public virtual int MasterJobNegotiationChannelPriority { get; set; }
-
-        public virtual string MasterJobNegotiationChannelId { get; set; }
 
         public virtual string MasterJobNegotiationChannelType { get; set; }
 
@@ -84,7 +103,7 @@ namespace Xigadee
             {
                   JobPollEnabled = true
                 , MasterJobEnabled = true
-                , MasterJobNegotiationChannelId = negotiationChannelId
+                , MasterJobNegotiationChannelIdOutgoing = negotiationChannelId
                 , MasterJobNegotiationChannelType = negotiationChannelType
                 , MasterJobNegotiationChannelPriority = negotiationChannelPriority
                 , MasterJobName = name

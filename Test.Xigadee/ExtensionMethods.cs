@@ -9,10 +9,15 @@ namespace Test.Xigadee
         [TestMethod]
         public void TestMethod1()
         {
-            //var pipeline = Microservice.Configure();
+            var pipeline = Microservice.Configure();
 
             //pipeline
-            //    .AddChannelIncoming("Incoming");
+            //    .AddChannelIncoming("Incoming")
+            //    .AddAzureSBQueueListener(
+
+            pipeline
+                .AddCommand((c) => new PersistenceBlahMemory());
+                
 
             //pipeline
             //    .AddChannelOutgoing("Return");
@@ -22,7 +27,7 @@ namespace Test.Xigadee
             //pipeline.AddPayloadSerializerDefaultJson();
             
 
-            //pipeline.Service.Start();
+            pipeline.Start();
         }
     }
 }

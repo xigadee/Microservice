@@ -51,18 +51,20 @@ namespace Xigadee
         {
             mMasterJobs = new Dictionary<Guid, MasterJobHolder>();
 
-            if (mPolicy.MasterJobNegotiationChannelId == null)
-                throw new CommandStartupException("Masterjobs are enabled, but the NegotiationChannelId has not been set");
+            if (mPolicy.MasterJobNegotiationChannelIdIncoming == null)
+                throw new CommandStartupException("Masterjobs are enabled, but the NegotiationChannelIdIncoming has not been set");
             if (mPolicy.MasterJobNegotiationChannelType == null)
                 throw new CommandStartupException("Masterjobs are enabled, but the NegotiationChannelType has not been set");
 
-            CommandRegister(mPolicy.MasterJobNegotiationChannelId, mPolicy.MasterJobNegotiationChannelType, null, MasterJobStateNotificationIncoming);
+            CommandRegister(MasterJobNegotiationChannelIdIncoming, mPolicy.MasterJobNegotiationChannelType, null, MasterJobStateNotificationIncoming);
 
             mStandbyPartner = new ConcurrentDictionary<string, StandbyPartner>();
 
             State = MasterJobState.VerifyingComms;
 
-            var masterjobPoll = new Schedule(MasterJobStateNotificationOutgoing, $"MasterJob: {mPolicy.MasterJobName ?? FriendlyName}");
+            //Register the schedule used for poll requests.
+            var masterjobPoll = new Schedule(MasterJobStateNotificationOutgoing
+                , $"MasterJob: {mPolicy.MasterJobName ?? FriendlyName}");
 
             masterjobPoll.Frequency = TimeSpan.FromSeconds(20);
             masterjobPoll.InitialWait = TimeSpan.FromSeconds(5);
@@ -85,7 +87,10 @@ namespace Xigadee
             payload.Options = ProcessOptions.RouteExternal;
             var message = payload.Message;
 
-            message.ChannelId = mPolicy.MasterJobNegotiationChannelId;
+            //Note: historically there was only one channel, so we use the incoming channel if the outgoing has
+            //not been specified.
+            message.ChannelId = mPolicy.MasterJobNegotiationChannelIdOutgoing ?? mPolicy.MasterJobNegotiationChannelIdIncoming;
+
             message.ChannelPriority = mPolicy.MasterJobNegotiationChannelPriority;
             message.MessageType = mPolicy.MasterJobNegotiationChannelType;
             message.ActionType = action;

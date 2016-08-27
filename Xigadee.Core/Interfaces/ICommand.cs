@@ -10,6 +10,35 @@ namespace Xigadee
     public interface ICommand: IService, IRequireScheduler, IPayloadSerializerConsumer, IServiceEventSource, IServiceLogger, IServiceOriginator, IRequireSharedServices
     {
         /// <summary>
+        /// This is the default listening channel id for incoming requests.
+        /// </summary>
+        string ChannelId { get; set; }
+        /// <summary>
+        /// Specifies whether the channel can be autoset during configuration
+        /// </summary>
+        bool ChannelIdAutoSet { get; }
+        /// <summary>
+        /// This is the channel used for the response to outgoing messages.
+        /// </summary>
+        string ResponseChannelId { get; set; }
+        /// <summary>
+        /// Specifies whether the response channel can be set during configuration.
+        /// </summary>
+        bool ResponseChannelIdAutoSet { get; }
+        /// <summary>
+        /// This is the channel used to negotiate control for a master job.
+        /// </summary>
+        string MasterJobNegotiationChannelIdIncoming { get; set; }
+        /// <summary>
+        /// This is the channel used to negotiate control for a master job.
+        /// </summary>
+        string MasterJobNegotiationChannelIdOutgoing { get; set; }
+        /// <summary>
+        /// Specifies whether the master job negotiation channel can be set during configuration.
+        /// </summary>
+        bool MasterJobNegotiationChannelIdAutoSet { get; }
+
+        /// <summary>
         /// This flag specifies whether the command should be informed when a submitted process has timed out.
         /// </summary>
         bool TaskManagerTimeoutSupported { get; }

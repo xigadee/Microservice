@@ -18,7 +18,7 @@ namespace Test.Xigadee
             var pol = base.PolicyCreateOrValidate(incomingPolicy);
 
             pol.MasterJobEnabled = true;
-            pol.MasterJobNegotiationChannelId = ChannelId;
+            pol.MasterJobNegotiationChannelIdOutgoing = ChannelId;
 
             return pol;
         }
