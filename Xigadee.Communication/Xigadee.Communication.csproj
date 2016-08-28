@@ -77,7 +77,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\AssemblyInfo\ApacheLicense-2.0.txt">
-      <Link>ApacheLicense-2.0.txt</Link>
+      <Link>Properties\ApacheLicense-2.0.txt</Link>
     </Content>
     <Content Include="TcpTlsChannel\Helper\MakeCert.txt" />
   </ItemGroup>

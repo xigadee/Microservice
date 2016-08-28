@@ -8,7 +8,7 @@
     <owners>Information Management Group Ltd (http://imgroup.com) part of Hitachi Consulting</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <projectUrl>http://xigadee.com</projectUrl>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Xigadee API client library is used to access Api gateways for client applications.</description>
     <releaseNotes>Initial push.</releaseNotes>
     <copyright>Copyright © Hitachi Consulting 2012-2016</copyright>

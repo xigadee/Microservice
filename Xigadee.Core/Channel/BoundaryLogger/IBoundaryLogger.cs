@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This interface is used to log payload metadata to a central source.
+    /// This interface is used to log payload metadata to a central source when it transitions a channel.
     /// </summary>
     public interface IBoundaryLogger
     {

@@ -12,7 +12,7 @@ namespace Xigadee
     public class Channel
     {
         /// <summary>
-        /// THe default constructor.
+        /// The default constructor.
         /// </summary>
         /// <param name="Id">The channel Id.</param>
         /// <param name="Direction">The direction of the channel - Incoming or outgoing</param>

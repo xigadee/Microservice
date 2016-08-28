@@ -8,7 +8,7 @@
     <owners>Information Management Group Ltd (http://imgroup.com) part of Hitachi Consulting</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <projectUrl>http://xigadee.com</projectUrl>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>The Xigadee Console Helper library is used to help spin up quick console based test-beds for Microservice based applications.</description>
     <releaseNotes>Initial test package.</releaseNotes>
     <copyright>Copyright © Hitachi Consulting 2012-2016</copyright>

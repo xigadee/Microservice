@@ -22,9 +22,6 @@ namespace Xigadee
             return new ChannelPipelineOutgoing(pipeline, channel);
         }
 
-        public static ChannelPipelineOutgoing AddBoundaryLogger(this ChannelPipelineOutgoing cpipe, IBoundaryLogger boundaryLogger)
-        {
-            return cpipe;
-        }
+
     }
 }

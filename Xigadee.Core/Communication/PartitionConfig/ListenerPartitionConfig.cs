@@ -46,8 +46,6 @@ namespace Xigadee
         /// </summary>
         public TimeSpan? PayloadMaxProcessingTime { get; set; }
 
-
-
         /// <summary>
         /// This is the percentage weighting for the channel used when calculating priority over the 
         /// other queues. 1 is the default value. A value of 1.1 will increase the overall priority score by 10%.
