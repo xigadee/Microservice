@@ -11,7 +11,8 @@ namespace Test.Xigadee
         {
             try
             {
-                var pipeline = Microservice.Configure();
+                Microservice service;
+                var pipeline = Microservice.Configure((s) => service = s);
 
                 //pipeline
                 //    .AddChannelIncoming("Incoming")
