@@ -154,6 +154,8 @@ namespace Xigadee
             //mAutotuneTasksMaxConcurrent = ConfigurationOptions.ConcurrentRequestsMax;
 
             //mAutotuneOverloadTasksConcurrent = ConfigurationOptions.OverloadProcessLimitMax;
+
+
         } 
         #endregion
 
@@ -216,6 +218,9 @@ namespace Xigadee
                 //This method populates the components in the service.
                 EventStart(() => PopulateComponents(), "Components");
 
+                //This method initialises the serialization container.
+                EventStart(() => ServiceStart(mSerializer), "Serialization");
+
                 //Start the logger components.
                 EventStart(() => ServiceStart(mLogger), "Logger");
 
@@ -265,6 +270,8 @@ namespace Xigadee
             {
                 try
                 {
+                    //Throw the original exception.
+                    mLogger.LogException("StartInternal unhandled exception thrown - service is stopping", ex);
                     //Just try and tidy up where possible.
                     StopInternal();
                 }
@@ -273,8 +280,8 @@ namespace Xigadee
                     // Nothing do be done here
                 }
 
-                //Throw the original exception.
-                mLogger.LogException("StartInternal unhandled exception thrown - service is stopping", ex);
+                //Throw the original exception out to the initiating party
+                throw ex;
             }
         }
         #endregion
@@ -315,6 +322,8 @@ namespace Xigadee
             EventStop(() => ServiceStop(mResourceTracker), "Resource Tracker");
 
             EventStop(() => ServiceStop(mLogger), "Logger");
+
+            EventStop(() => ServiceStop(mSerializer), "Serialization");
 
             OnStopCompleted();
         }

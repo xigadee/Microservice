@@ -12,7 +12,7 @@ namespace Xigadee
             , C command
             , Action<C> assignment = null
             , ChannelPipelineIncoming channelIncoming = null
-            , ChannelPipelineIncoming channelResponse = null
+            , ChannelPipelineOutgoing channelResponse = null
             , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
             , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null
             )
@@ -39,7 +39,7 @@ namespace Xigadee
             , Func<IEnvironmentConfiguration, C> creator
             , Action<C> assignment = null
             , ChannelPipelineIncoming channelIncoming = null
-            , ChannelPipelineIncoming channelResponse = null
+            , ChannelPipelineOutgoing channelResponse = null
             , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
             , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null
             )

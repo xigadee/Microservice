@@ -189,6 +189,7 @@ namespace Xigadee
             catch (Exception ex)
             {
                 Trace.TraceError("Error stopping service [{0}]: {1}", service.GetType().Name, ex.ToString());
+                throw;
             }
         } 
         #endregion

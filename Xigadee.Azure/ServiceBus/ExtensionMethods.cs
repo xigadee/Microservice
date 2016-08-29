@@ -18,7 +18,7 @@ namespace Xigadee
             return conn;
         }
 
-        public static ChannelPipelineIncoming AddAzureSBQueueListener(this ChannelPipelineIncoming cpipe
+        public static ChannelPipelineIncoming AttachAzureServiceBusQueueListener(this ChannelPipelineIncoming cpipe
             , string connectionName
             , string serviceBusConnection = null
             , bool isDeadLetterListener = false
@@ -41,12 +41,12 @@ namespace Xigadee
 
             onCreate?.Invoke(component);
 
-            cpipe.AddListener(component, setFromChannelProperties);
+            cpipe.AttachListener(component, setFromChannelProperties);
 
             return cpipe;
         }
 
-        public static ChannelPipelineOutgoing AddAzureSBQueueSender(this ChannelPipelineOutgoing cpipe
+        public static ChannelPipelineOutgoing AttachAzureServiceBusQueueSender(this ChannelPipelineOutgoing cpipe
             , string connectionName
             , IEnumerable<SenderPartitionConfig> priorityPartitions = null
             , string serviceBusConnection = null
@@ -63,12 +63,12 @@ namespace Xigadee
 
             onCreate?.Invoke(component);
 
-            cpipe.AddSender(component, setFromChannelProperties);
+            cpipe.AttachSender(component, setFromChannelProperties);
 
             return cpipe;
         }
 
-        public static ChannelPipelineIncoming AddAzureSBTopicListener(this ChannelPipelineIncoming cpipe
+        public static ChannelPipelineIncoming AttachAzureServiceBusTopicListener(this ChannelPipelineIncoming cpipe
             , string connectionName
             , string serviceBusConnection = null
             , string subscriptionId = null
@@ -102,12 +102,12 @@ namespace Xigadee
             
             onCreate?.Invoke(component);
 
-            cpipe.AddListener(component, setFromChannelProperties);
+            cpipe.AttachListener(component, setFromChannelProperties);
 
             return cpipe;
         }
 
-        public static ChannelPipelineOutgoing AddAzureSBTopicSender(this ChannelPipelineOutgoing cpipe
+        public static ChannelPipelineOutgoing AttachAzureServiceBusTopicSender(this ChannelPipelineOutgoing cpipe
             , string connectionName
             , string serviceBusConnection = null
             , IEnumerable<SenderPartitionConfig> priorityPartitions = null
@@ -128,7 +128,7 @@ namespace Xigadee
 
             onCreate?.Invoke(component);
 
-            cpipe.AddSender(component, setFromChannelProperties);
+            cpipe.AttachSender(component, setFromChannelProperties);
 
             return cpipe;
         }

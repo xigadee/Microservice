@@ -9,28 +9,48 @@ namespace Test.Xigadee
         [TestMethod]
         public void TestMethod1()
         {
-            var pipeline = Microservice.Configure();
+            try
+            {
+                var pipeline = Microservice.Configure();
 
-            //pipeline
-            //    .AddChannelIncoming("Incoming")
-            //    .AddAzureSBQueueListener(
+                //pipeline
+                //    .AddChannelIncoming("Incoming")
+                //    .AddAzureSBQueueListener(
 
-            pipeline
-                .AddLogger<MemoryLogger>()
-                .AddChannelIncoming("internal", internalOnly:true)
-                //.AddCommand((c) => new PersistenceBlahMemory())
-                ;
-                
+                ChannelPipelineIncoming cpipeIn = null;
+                ChannelPipelineOutgoing cpipeOut = null;
+                PersistenceSharedService<Guid, Blah> sharedService = null;
+                MemoryLogger logger = null;
 
-            //pipeline
-            //    .AddChannelOutgoing("Return");
+                pipeline
+                    .AddLogger<MemoryLogger>((l) => logger = l)
+                    .AddPayloadSerializerDefaultJson()
+                    .AddChannelIncoming("internalIn", internalOnly: true)
+                        .AppendResourceProfile(new ResourceProfile("TrackIt"))
+                        .AssignPriorityPartition(ListenerPartitionConfig.Init(0, 1))              
+                        .Revert((c) => cpipeIn = c)
+                    .AddChannelOutgoing("internalOut", internalOnly: true)
+                        .AssignPriorityPartition(SenderPartitionConfig.Init(0, 1))
+                        .Revert((c) => cpipeOut = c);
 
-            ////    .ConfigureServiceBusQueue()
-            ////    .ConfigureApiListener();
-            //pipeline.AddPayloadSerializerDefaultJson();
-            
+                pipeline
+                    .AddCommand(new PersistenceBlahMemory(), channelIncoming: cpipeIn)
+                    .AddCommand(new PersistenceSharedService<Guid, Blah>(), channelIncoming: cpipeIn, channelResponse: cpipeOut, assignment: (c) => sharedService = c); 
 
-            pipeline.Start();
+
+                pipeline.Start();
+
+                Guid cId = Guid.NewGuid();
+                var result = sharedService.Create(new Blah() { ContentId = cId, Message = "Hello", VersionId = Guid.NewGuid() }).Result;
+                var result2 = sharedService.Read(cId).Result;
+
+                pipeline.Stop();
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+
         }
     }
 }

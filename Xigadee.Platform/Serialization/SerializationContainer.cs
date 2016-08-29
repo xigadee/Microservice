@@ -96,5 +96,11 @@ namespace Xigadee
         }
         #endregion
 
+
+        protected override void StartInternal()
+        {
+            if (Count == 0)
+                throw new PayloadSerializerCollectionIsEmptyException();
+        }
     }
 }

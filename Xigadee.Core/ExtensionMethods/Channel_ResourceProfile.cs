@@ -19,7 +19,23 @@ namespace Xigadee
             return cpipe;
         }
 
-        public static ChannelPipelineIncoming AppendResourceProfiles(this ChannelPipelineIncoming cpipe
+        public static ChannelPipelineIncoming AppendResourceProfile(this ChannelPipelineIncoming cpipe
+            , Func<IEnvironmentConfiguration, ResourceProfile> creator
+            , Action<ResourceProfile> action)
+        {
+            if (creator == null)
+                throw new ArgumentNullException("creator cannot be null");
+
+            var profile = creator(cpipe.Pipeline.Configuration);
+
+            action?.Invoke(profile);
+
+            cpipe.Channel.ResourceProfiles.Add(profile);
+
+            return cpipe;
+        }
+
+        public static ChannelPipelineIncoming AppendResourceProfile(this ChannelPipelineIncoming cpipe
             , IEnumerable<ResourceProfile> profiles)
         {
             if (profiles == null)

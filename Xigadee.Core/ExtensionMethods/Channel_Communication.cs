@@ -9,7 +9,7 @@ namespace Xigadee
     public static class ChannelCommunicationExtensionMethods
     {
 
-        public static ChannelPipelineIncoming AddListener(this ChannelPipelineIncoming cpipe
+        public static ChannelPipelineIncoming AttachListener(this ChannelPipelineIncoming cpipe
             , IListener listener
             , bool setFromChannelProperties = true
             )
@@ -32,7 +32,7 @@ namespace Xigadee
             return cpipe;
         }
 
-        public static ChannelPipelineIncoming AddListener<S>(this ChannelPipelineIncoming cpipe
+        public static ChannelPipelineIncoming AttachListener<S>(this ChannelPipelineIncoming cpipe
             , Func<IEnvironmentConfiguration, S> creator
             , Action<S> action = null
             , bool setFromChannelProperties = true
@@ -43,12 +43,12 @@ namespace Xigadee
 
             action?.Invoke(listener);
 
-            cpipe.AddListener(listener, setFromChannelProperties);
+            cpipe.AttachListener(listener, setFromChannelProperties);
 
             return cpipe;
         }
 
-        public static ChannelPipelineOutgoing AddSender(this ChannelPipelineOutgoing cpipe
+        public static ChannelPipelineOutgoing AttachSender(this ChannelPipelineOutgoing cpipe
             , ISender sender
             , bool setFromChannelProperties = true)
         {
@@ -69,7 +69,7 @@ namespace Xigadee
             return cpipe;
         }
 
-        public static ChannelPipelineOutgoing AddSender<S>(this ChannelPipelineOutgoing cpipe
+        public static ChannelPipelineOutgoing AttachSender<S>(this ChannelPipelineOutgoing cpipe
             , Func<IEnvironmentConfiguration, S> creator
             , Action<S> action = null
             , bool setFromChannelProperties = true)
@@ -79,7 +79,7 @@ namespace Xigadee
 
             action?.Invoke(sender);
 
-            cpipe.AddSender(sender, setFromChannelProperties);
+            cpipe.AttachSender(sender, setFromChannelProperties);
 
             return cpipe;
         }

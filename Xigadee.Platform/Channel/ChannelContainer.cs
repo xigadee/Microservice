@@ -24,14 +24,13 @@ namespace Xigadee
         /// </summary>
         public ChannelContainer(ChannelContainerPolicy policy = null):base(policy)
         {
-
+            mContainerIncoming = new Dictionary<string, Channel>();
+            mContainerOutgoing = new Dictionary<string, Channel>();
         }
         #endregion
 
         protected override void StartInternal()
         {
-            mContainerIncoming = new Dictionary<string, Channel>();
-            mContainerOutgoing = new Dictionary<string, Channel>();
         }
 
         protected override void StopInternal()

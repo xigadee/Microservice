@@ -20,8 +20,8 @@ namespace Xigadee
         /// <param name="internalOnly">This property specifies that the channel should only be used for internal messaging.</param>
         public Channel(string id, ChannelDirection direction, string description = null, IBoundaryLogger boundaryLogger = null, bool internalOnly = false)
         {
-            if (string.IsNullOrEmpty(Id))
-                throw new ArgumentNullException("Id cannot be null or empty.");
+            if (string.IsNullOrEmpty(id))
+                throw new ArgumentNullException("id cannot be null or empty.");
 
             Id = id;
             Direction = direction;

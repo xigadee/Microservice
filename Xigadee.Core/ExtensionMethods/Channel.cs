@@ -46,10 +46,12 @@ namespace Xigadee
             return new ChannelPipelineOutgoing(pipeline, channel);
         }
 
-        public static MicroservicePipeline RevertToMicroservice(this ChannelPipelineBase pipeline, Action<Channel> action = null)
+        public static MicroservicePipeline Revert<C>(this C cpipe, Action<C> action = null)
+            where C: ChannelPipelineBase
         {
-            action?.Invoke(pipeline.Channel);
-            return pipeline.Pipeline;
+            action?.Invoke(cpipe);
+
+            return cpipe.Pipeline;
         }
     }
 }
