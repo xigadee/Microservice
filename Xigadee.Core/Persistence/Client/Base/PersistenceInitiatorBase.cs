@@ -42,16 +42,29 @@ namespace Xigadee
             {
                 return $"{base.FriendlyName}-{typeof(E).Name}";
             }
-        } 
+        }
         #endregion
 
         #region Persistence shortcuts
-
+        #region Create(E entity, RepositorySettings settings = null)
+        /// <summary>
+        /// This method is used to create an entity in the persistence store.
+        /// </summary>
+        /// <param name="entity">The entity to create.</param>
+        /// <param name="settings">The persistence settings.</param>
+        /// <returns>Returns a holder that indicates the status of the request and the entity where appropriate.</returns>
         public virtual async Task<RepositoryHolder<K, E>> Create(E entity, RepositorySettings settings = null)
         {
             return await TransmitInternal(EntityActions.Create, new RepositoryHolder<K, E> { Entity = entity, Settings = settings });
         }
-
+        #endregion
+        #region Read(K key, RepositorySettings settings = null)
+        /// <summary>
+        /// This method reads an entity.
+        /// </summary>
+        /// <param name="key">The entity key.</param>
+        /// <param name="settings">The persistence settings.</param>
+        /// <returns>Returns a holder that indicates the status of the request and the entity where appropriate.</returns>
         public virtual async Task<RepositoryHolder<K, E>> Read(K key, RepositorySettings settings = null)
         {
             if ((settings?.UseCache ?? true) && mCacheManager.IsActive)
@@ -64,7 +77,8 @@ namespace Xigadee
             }
 
             return await TransmitInternal(EntityActions.Read, new RepositoryHolder<K, E> { Key = key, Settings = settings });
-        }
+        } 
+        #endregion
 
         public virtual async Task<RepositoryHolder<K, E>> ReadByRef(string refKey, string refValue, RepositorySettings settings = null)
         {
@@ -142,6 +156,15 @@ namespace Xigadee
 
         #endregion
 
+        /// <summary>
+        /// This abstract method is used to transmit the request to the appropriate party.
+        /// </summary>
+        /// <typeparam name="KT">The key type.</typeparam>
+        /// <typeparam name="ET">The entity type.</typeparam>
+        /// <param name="actionType">The request action type, i.e. Create/Read etc.</param>
+        /// <param name="rq">The request.</param>
+        /// <param name="routing">The routing options.</param>
+        /// <returns>Returns the request response.</returns>
         protected abstract Task<RepositoryHolder<KT, ET>> TransmitInternal<KT, ET>(string actionType, RepositoryHolder<KT, ET> rq, ProcessOptions? routing = null) 
             where KT : IEquatable<KT>;
 

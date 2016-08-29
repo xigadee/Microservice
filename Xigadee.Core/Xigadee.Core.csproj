@@ -164,9 +164,9 @@
     <Compile Include="Orchestration\OrchestrationCommandStatistics.cs" />
     <Compile Include="Orchestration\Context\OrchestrationContext.cs" />
     <Compile Include="Persistence\CacheManager\CacheManagerBase.cs" />
-    <Compile Include="Persistence\Client\PersistenceInitiatorBase.cs" />
-    <Compile Include="Persistence\Client\PersistenceInitiatorPolicy.cs" />
-    <Compile Include="Persistence\Client\PersistenceInitiatorStatistics.cs" />
+    <Compile Include="Persistence\Client\Base\PersistenceInitiatorBase.cs" />
+    <Compile Include="Persistence\Client\Base\PersistenceInitiatorPolicy.cs" />
+    <Compile Include="Persistence\Client\Base\PersistenceInitiatorStatistics.cs" />
     <Compile Include="Persistence\ExtensionMethods.cs" />
     <Compile Include="Persistence\Server\SearchExpressionHelper.cs" />
     <Compile Include="Persistence\Policy\CircuitBreakerPolicy.cs" />

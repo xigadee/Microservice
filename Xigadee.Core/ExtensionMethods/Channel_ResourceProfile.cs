@@ -9,19 +9,32 @@ namespace Xigadee
     public static class ChannelResourceProfileExtensionMethods
     {
         public static ChannelPipelineIncoming AppendResourceProfile(this ChannelPipelineIncoming cpipe
-            , ResourceProfile profile)
+            , ResourceProfile profile
+            , Action<ResourceProfile> action = null)
         {
             if (profile == null)
                 throw new ArgumentNullException("profile cannot be null");
 
-            cpipe.Channel.ResourceProfiles.Add(profile);
+            cpipe.AppendResourceProfile((c) => profile, action);
+
+            return cpipe;
+        }
+
+        public static ChannelPipelineIncoming AppendResourceProfile(this ChannelPipelineIncoming cpipe
+            , string profileName
+            , Action<ResourceProfile> action = null)
+        {
+            if (string.IsNullOrEmpty(profileName))
+                throw new ArgumentNullException("profileName cannot be null or empty");
+
+            cpipe.AppendResourceProfile((c) => new ResourceProfile(profileName), action);
 
             return cpipe;
         }
 
         public static ChannelPipelineIncoming AppendResourceProfile(this ChannelPipelineIncoming cpipe
             , Func<IEnvironmentConfiguration, ResourceProfile> creator
-            , Action<ResourceProfile> action)
+            , Action<ResourceProfile> action = null)
         {
             if (creator == null)
                 throw new ArgumentNullException("creator cannot be null");
