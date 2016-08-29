@@ -203,7 +203,6 @@ namespace Xigadee
         /// </summary>
         protected override void StartInternal()
         {
-
             //This method starts the components in the service in the correct order.
             try
             {
@@ -313,9 +312,6 @@ namespace Xigadee
 
             //Stop the channel controller.
             EventStop(() => ServiceStop(mChannels), "Channel Container");
-
-            if (mPayloadSerializers != null)
-                mPayloadSerializers.Clear();
 
             EventStop(() => ServiceStop(mEventSource), "Event Source");
 

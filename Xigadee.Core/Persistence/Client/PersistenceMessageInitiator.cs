@@ -87,6 +87,7 @@ namespace Xigadee
                 payload.Options = routing ?? RoutingDefault ?? ProcessOptions.RouteExternal;
 
                 payload.Message.Blob = PayloadSerializer.PayloadSerialize(rq);
+
                 payload.Message.ResponseChannelId = ResponseChannelId;
                 payload.Message.ResponseChannelPriority = payload.Message.ChannelPriority;
 

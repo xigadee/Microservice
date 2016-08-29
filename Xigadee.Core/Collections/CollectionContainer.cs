@@ -63,6 +63,11 @@ namespace Xigadee
             stats.ItemCount = Count;
         }
 
+        public virtual void Clear()
+        {
+            Interlocked.Exchange(ref mContainer, new ConcurrentBag<I>());
+        }
+
         public IEnumerable<I> Items
         {
             get

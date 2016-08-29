@@ -102,5 +102,10 @@ namespace Xigadee
             if (Count == 0)
                 throw new PayloadSerializerCollectionIsEmptyException();
         }
+
+        protected override void StopInternal()
+        {
+            Clear();
+        }
     }
 }

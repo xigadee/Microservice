@@ -36,8 +36,10 @@ namespace Xigadee
         /// </summary>
         /// <param name="responseChannel">This is the internal response channel that the message will listen on.</param>
         /// <param name="cacheManager"></param>
-        public PersistenceSharedService(string responseChannel = "internalpersistence", ICacheManager<K, E> cacheManager = null
-            , TimeSpan? defaultRequestTimespan = null) :base(cacheManager, defaultRequestTimespan)
+        public PersistenceSharedService(string responseChannel = "internalpersistence"
+            , ICacheManager<K, E> cacheManager = null
+            , TimeSpan? defaultRequestTimespan = null) 
+            :base(cacheManager, defaultRequestTimespan)
         {
             mMessageType = typeof(E).Name;
             mResponseId = new MessageFilterWrapper(new ServiceMessageHeader(responseChannel, mMessageType));
@@ -66,7 +68,7 @@ namespace Xigadee
         /// </summary>
         protected override MessageFilterWrapper ResponseId
         {
-            get { return mResponseId; }
+            get { return new MessageFilterWrapper(new ServiceMessageHeader(mResponseChannel, mMessageType)); }
         }
         #endregion
 
