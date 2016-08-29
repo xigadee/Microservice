@@ -49,7 +49,10 @@ namespace Xigadee
         #endregion
 
         #region SharedServices
-
+        /// <summary>
+        /// This override registers the persistence shortcut interface.
+        /// </summary>
+        /// <param name="sharedServices">The shared service collecction.</param>
         protected override void SharedServicesChange(ISharedService sharedServices)
         {
             mSharedServices = sharedServices;
@@ -64,7 +67,7 @@ namespace Xigadee
 
         #region ResponseId
         /// <summary>
-        /// THis is the response message filter used to pick up the returning response.
+        /// This is the response message filter used to pick up the returning response.
         /// </summary>
         protected override MessageFilterWrapper ResponseId
         {

@@ -20,7 +20,7 @@ namespace Test.Xigadee
 
                 ChannelPipelineIncoming cpipeIn = null;
                 ChannelPipelineOutgoing cpipeOut = null;
-                PersistenceSharedService<Guid, Blah> sharedService = null;
+                PersistenceSharedService<Guid, Blah> persistence = null;
                 MemoryLogger logger = null;
                 MemoryBoundaryLogger bLogger = null;
 
@@ -30,7 +30,8 @@ namespace Test.Xigadee
                     .AddChannelIncoming("internalIn", internalOnly: true)
                         .AppendResourceProfile(new ResourceProfile("TrackIt"))
                         .AppendBoundaryLogger(new MemoryBoundaryLogger(), (bl) => bLogger = bl)
-                        .AssignPriorityPartition(ListenerPartitionConfig.Init(0, 1))              
+                        .AssignPriorityPartition(ListenerPartitionConfig.Init(0, 1))
+                        .AddCommand(new PersistenceBlahMemory())
                         .Revert((c) => cpipeIn = c)
                     .AddChannelOutgoing("internalOut", internalOnly: true)
                         .AssignPriorityPartition(SenderPartitionConfig.Init(0, 1))
@@ -38,16 +39,15 @@ namespace Test.Xigadee
                         .Revert((c) => cpipeOut = c);
 
                 pipeline
-                    .AddCommand(new PersistenceBlahMemory(), channelIncoming: cpipeIn)
-                    .AddCommand(new PersistenceSharedService<Guid, Blah>(), channelIncoming: cpipeIn, channelResponse: cpipeOut, assignment: (c) => sharedService = c); 
+                    .AddCommand(new PersistenceSharedService<Guid, Blah>(), (c) => persistence = c, cpipeIn, cpipeOut); 
 
                 pipeline.Start();
 
                 Guid cId = Guid.NewGuid();
-                var result = sharedService.Create(new Blah() { ContentId = cId, Message = "Hello", VersionId = Guid.NewGuid() }).Result;
+                var result = persistence.Create(new Blah() { ContentId = cId, Message = "Hello", VersionId = Guid.NewGuid() }).Result;
                 Assert.IsTrue(result.IsSuccess);
 
-                var result2 = sharedService.Read(cId).Result;
+                var result2 = persistence.Read(cId).Result;
                 Assert.IsTrue(result2.IsSuccess);
 
                 pipeline.Stop();
