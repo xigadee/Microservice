@@ -6,26 +6,42 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// These methods can be used to create a channel.
+    /// </summary>
     public static class ChannelExtensionMethods
     {
         public static ChannelPipelineIncoming AddChannelIncoming(this MicroservicePipeline pipeline
-            , string channelId, string description = null, IBoundaryLogger bLogger = null)
+            , string channelId
+            , string description = null
+            , IEnumerable<ListenerPartitionConfig> partitions = null
+            , IBoundaryLogger bLogger = null
+            , IEnumerable<ResourceProfile> resourceProfiles = null
+            , bool internalOnly = false
+            )
         {     
-            var channel = pipeline.Service.RegisterChannel(new Channel(channelId, ChannelDirection.Incoming, description));
+            var channel = pipeline.Service.RegisterChannel(new Channel(channelId, ChannelDirection.Incoming, description, bLogger, internalOnly));
 
-            if (bLogger != null)
-                channel.BoundaryLogger = bLogger;
+            if (partitions != null)
+                channel.Partitions = partitions.ToList();
+            if (resourceProfiles != null)
+                channel.ResourceProfiles = resourceProfiles.ToList();
 
             return new ChannelPipelineIncoming(pipeline, channel);
         }
 
         public static ChannelPipelineOutgoing AddChannelOutgoing(this MicroservicePipeline pipeline
-            , string channelId, string description = null, IBoundaryLogger bLogger = null)
+            , string channelId
+            , string description = null
+            , IEnumerable<SenderPartitionConfig> partitions = null
+            , IBoundaryLogger bLogger = null
+            , bool internalOnly = false
+            )
         {
-            var channel = pipeline.Service.RegisterChannel(new Channel(channelId, ChannelDirection.Outgoing, description));
+            var channel = pipeline.Service.RegisterChannel(new Channel(channelId, ChannelDirection.Outgoing, description, bLogger, internalOnly));
 
-            if (bLogger != null)
-                channel.BoundaryLogger = bLogger;
+            if (partitions != null)
+                channel.Partitions = partitions.ToList();
 
             return new ChannelPipelineOutgoing(pipeline, channel);
         }

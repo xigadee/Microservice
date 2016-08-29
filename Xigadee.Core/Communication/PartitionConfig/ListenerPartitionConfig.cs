@@ -6,18 +6,22 @@ using System.Linq;
 namespace Xigadee
 {
     /// <summary>
-    /// This class holds the individual configuration for each partition.
+    /// This class holds the individual configuration for each listener partition.
     /// </summary>
     public class ListenerPartitionConfig: PartitionConfig
     {
         #region Static methods
-
+        /// <summary>
+        /// This static method sets the priorty channels for the integers passed at their default settings.
+        /// By default, only channel 0 will support rate limiting. The default processing time is set to 4 minutes.
+        /// </summary>
+        /// <param name="priority">The priority list, i.e. 0,1</param>
+        /// <returns>Returns a list of configs.</returns>
         public static IEnumerable<ListenerPartitionConfig> Init(params int[] priority)
         {
             foreach(int p in priority)
                 yield return new ListenerPartitionConfig(p);
         }
-
         #endregion
 
         /// <summary>
@@ -42,7 +46,7 @@ namespace Xigadee
         public bool SupportsRateLimiting { get; set; }
 
         /// <summary>
-        /// This is the default timeout - 1 minute by default. 10 minutes for the async channel.
+        /// This is the default timeout - 4 minutes by default.
         /// </summary>
         public TimeSpan? PayloadMaxProcessingTime { get; set; }
 

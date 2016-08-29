@@ -4,6 +4,9 @@ using System.Linq;
 #endregion
 namespace Xigadee
 {
+    /// <summary>
+    /// This is the base class for channel partition.
+    /// </summary>
     public abstract class PartitionConfig
     {
         protected internal PartitionConfig(int priority, TimeSpan? fabricMaxMessageLock = null)

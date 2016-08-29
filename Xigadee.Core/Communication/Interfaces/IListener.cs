@@ -15,7 +15,7 @@ namespace Xigadee
         /// <summary>
         /// This is the channel id that incoming messages will be mapped to.
         /// </summary>
-        string MappingChannelId { get; }
+        string MappingChannelId { get; set;}
 
         /// <summary>
         /// This is the list of resource profiles attached to the listener.

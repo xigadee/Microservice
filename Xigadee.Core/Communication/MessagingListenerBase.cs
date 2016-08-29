@@ -20,10 +20,6 @@ namespace Xigadee
         /// This is the supported list of message types for the client.
         /// </summary>
         protected List<MessageFilterWrapper> mSupportedMessageTypes;
-        /// <summary>
-        /// This id is for the specific client mappings.
-        /// </summary>
-        protected string mMappingChannelId;
 
         #endregion
         #region Constructor
@@ -41,7 +37,7 @@ namespace Xigadee
             : base(channelId, priorityPartitions, boundaryLogger)
         {
             mSupportedMessageTypes = new List<MessageFilterWrapper>();
-            mMappingChannelId = mappingChannelId;
+            MappingChannelId = mappingChannelId;
             ResourceProfiles = resourceProfiles == null?new List<ResourceProfile>(): resourceProfiles.ToList();
         }
         #endregion
@@ -71,7 +67,7 @@ namespace Xigadee
         /// </summary>
         public virtual void Update(List<MessageFilterWrapper> supported)
         {
-            var newList = supported.Where((m) => m.Header.ChannelId == (mMappingChannelId ?? ChannelId)).ToList();
+            var newList = supported.Where((m) => m.Header.ChannelId == (MappingChannelId ?? ChannelId)).ToList();
             var oldList = mSupportedMessageTypes;
 
             ClientsValidate(oldList, newList);
@@ -123,14 +119,11 @@ namespace Xigadee
         #endregion
         #region MappingChannelId
         /// <summary>
-        /// This is the mapping channel id.
+        /// This is the mapping channel id. It is used to map the incoming channel to a new channel when required.
         /// </summary>
         public string MappingChannelId
         {
-            get
-            {
-                return mMappingChannelId;
-            }
+            get;set;
         } 
         #endregion
 

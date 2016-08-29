@@ -103,17 +103,20 @@
     <Compile Include="EventSource\DocumentDbEventSource.cs" />
     <Compile Include="ExtensionMethods\EventSource.cs" />
     <Compile Include="EventSource\MemoryEventSource.cs" />
+    <Compile Include="ExtensionMethods\Exceptions\ChannelPartitionConfigCastException.cs" />
+    <Compile Include="ExtensionMethods\Exceptions\ChannelPartitionConfigBaseException.cs" />
+    <Compile Include="ExtensionMethods\Exceptions\ChannelPartitionConfigExistsException.cs" />
     <Compile Include="ExtensionMethods\Logging.cs" />
     <Compile Include="Microservice\Events.cs" />
     <Compile Include="Exceptions\RequiredSharedServiceMissingException.cs" />
     <Compile Include="Exceptions\StorageThrottlingException.cs" />
-    <Compile Include="Interfaces\Communication\IMessaging.cs" />
+    <Compile Include="Communication\Interfaces\IMessaging.cs" />
     <Compile Include="Interfaces\ICache.cs" />
-    <Compile Include="Interfaces\ICommand.cs" />
-    <Compile Include="Interfaces\ILoggerExtended.cs" />
+    <Compile Include="Command\Interfaces\ICommand.cs" />
+    <Compile Include="Logging\Interfaces\ILoggerExtended.cs" />
     <Compile Include="Microservice\IMicroservice.cs" />
-    <Compile Include="Interfaces\IPersistenceMessageInitiator.cs" />
-    <Compile Include="Interfaces\IPersistenceSharedService.cs" />
+    <Compile Include="Persistence\Interfaces\IPersistenceMessageInitiator.cs" />
+    <Compile Include="Persistence\Interfaces\IPersistenceSharedService.cs" />
     <Compile Include="Interfaces\IRequireSystemEvents.cs" />
     <Compile Include="Interfaces\IServiceLogger.cs" />
     <Compile Include="Interfaces\IServiceOriginator.cs" />
@@ -222,13 +225,13 @@
     <Compile Include="Exceptions\PayloadSerializationException.cs" />
     <Compile Include="Exceptions\PayloadTypeSerializationNotSupportedException.cs" />
     <Compile Include="Interfaces\IContainerService.cs" />
-    <Compile Include="Interfaces\IEventSourceContainer.cs" />
-    <Compile Include="Interfaces\Communication\IListener.cs" />
-    <Compile Include="Interfaces\ILogger.cs" />
+    <Compile Include="EventSource\Interfaces\IEventSourceContainer.cs" />
+    <Compile Include="Communication\Interfaces\IListener.cs" />
+    <Compile Include="Logging\Interfaces\ILogger.cs" />
     <Compile Include="Interfaces\IRequireSharedServices.cs" />
     <Compile Include="Interfaces\ISchedule.cs" />
-    <Compile Include="Interfaces\Communication\ISender.cs" />
-    <Compile Include="Interfaces\IPayloadSerializationContainer.cs" />
+    <Compile Include="Communication\Interfaces\ISender.cs" />
+    <Compile Include="Serializer\Interfaces\IPayloadSerializationContainer.cs" />
     <Compile Include="Interfaces\IService.cs" />
     <Compile Include="Interfaces\IServiceEventSource.cs" />
     <Compile Include="Interfaces\ISupportsMessage.cs" />
@@ -265,9 +268,9 @@
     <Compile Include="Security\SignatureHelper\Sha512SignatureHelper.cs" />
     <Compile Include="Serializer\DefaultDataContractSerializer.cs" />
     <Compile Include="Serializer\DefaultSerializerBase.cs" />
-    <Compile Include="Interfaces\IEventSource.cs" />
+    <Compile Include="EventSource\Interfaces\IEventSource.cs" />
     <Compile Include="Interfaces\IMessageContract.cs" />
-    <Compile Include="Interfaces\IPayloadSerialization.cs" />
+    <Compile Include="Serializer\Interfaces\IPayloadSerialization.cs" />
     <Compile Include="Entities\MessageFilterWrapper.cs" />
     <Compile Include="ExtensionMethods\Serializer.cs" />
     <Compile Include="Serializer\JsonContractSerializer.cs" />
@@ -292,7 +295,6 @@
     <None Include="Xigadee.Core.nuspec" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Communication\Interfaces\" />
     <Folder Include="Orchestration\Consignment\" />
     <Folder Include="Orchestration\Context\Results\" />
   </ItemGroup>
