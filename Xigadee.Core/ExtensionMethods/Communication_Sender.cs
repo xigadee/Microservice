@@ -9,19 +9,23 @@ namespace Xigadee
     public static class CommunicationSenderExtensionMethods
     {
 
-        public static ISender AddSender(this MicroservicePipeline pipeline, ISender sender)
+        public static MicroservicePipeline AddSender(this MicroservicePipeline pipeline, ISender sender)
         {
-            return pipeline.Service.RegisterSender(sender);
+            pipeline.Service.RegisterSender(sender);
+
+            return pipeline;
         }
 
-        public static S AddSender<S>(this MicroservicePipeline pipeline, Func<IEnvironmentConfiguration, S> creator, Action<S> action = null)
+        public static MicroservicePipeline AddSender<S>(this MicroservicePipeline pipeline, Func<IEnvironmentConfiguration, S> creator, Action<S> action = null)
             where S : ISender
         {
             var sender = creator(pipeline.Configuration);
 
             action?.Invoke(sender);
 
-            return (S)pipeline.AddSender(sender);
+            pipeline.AddSender(sender);
+
+            return pipeline;
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Xigadee
 {
     public static class ChannelResourceProfileExtensionMethods
     {
-        public static ChannelPipelineIncoming AddResourceProfile(this ChannelPipelineIncoming cpipe
+        public static ChannelPipelineIncoming AppendResourceProfile(this ChannelPipelineIncoming cpipe
             , ResourceProfile profile)
         {
             if (profile == null)
@@ -19,7 +19,7 @@ namespace Xigadee
             return cpipe;
         }
 
-        public static ChannelPipelineIncoming AddResourceProfiles(this ChannelPipelineIncoming cpipe
+        public static ChannelPipelineIncoming AppendResourceProfiles(this ChannelPipelineIncoming cpipe
             , IEnumerable<ResourceProfile> profiles)
         {
             if (profiles == null)

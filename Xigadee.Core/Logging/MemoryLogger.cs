@@ -118,13 +118,17 @@ namespace Xigadee
         long mLogEventsExpired = 0;
         #endregion
 
+        public MemoryLogger():this((l) => 2000)
+        {
+
+        }
         /// <summary>
         /// This is the default constructor.
         /// </summary>
         /// <param name="capacity"></param>
-        public MemoryLogger(Func<LoggingLevel, int> capacityCalculator = null)
+        public MemoryLogger(Func<LoggingLevel, int> capacityCalculator)
         {
-            mCapacityCalculator = capacityCalculator ?? ((l) => 2000);
+            mCapacityCalculator = capacityCalculator;
         }
 
         /// <summary>

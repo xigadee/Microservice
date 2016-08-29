@@ -22,9 +22,9 @@ namespace Xigadee
             , IBoundaryLogger boundaryLogger = null
             , Action<AzureSBTopicListener> onCreate = null)
         {
-            var component = cpipe.Pipeline.AddListener((c) => new AzureSBTopicListener(
+            var component = new AzureSBTopicListener(
                   cpipe.Channel.Id
-                , serviceBusConnection ?? c.ServiceBusConnection()
+                , serviceBusConnection ?? cpipe.Pipeline.Configuration.ServiceBusConnection()
                 , connectionName
                 , priorityPartitions
                 , subscriptionId
@@ -34,9 +34,11 @@ namespace Xigadee
                 , mappingChannelId
                 , deleteOnIdleTime
                 , resourceProfiles
-                , boundaryLogger ?? cpipe.Channel.BoundaryLogger));
+                , boundaryLogger ?? cpipe.Channel.BoundaryLogger);
             
             onCreate?.Invoke(component);
+
+            cpipe.Pipeline.AddListener(component);
 
             return cpipe;
         }
@@ -49,14 +51,16 @@ namespace Xigadee
             , Action<AzureSBTopicSender> onCreate = null
             )
         {
-            var component = cpipe.Pipeline.AddSender((c) => new AzureSBTopicSender(
+            var component = new AzureSBTopicSender(
                   cpipe.Channel.Id
-                , serviceBusConnection ?? c.ServiceBusConnection()
+                , serviceBusConnection ?? cpipe.Pipeline.Configuration.ServiceBusConnection()
                 , connectionName
                 , priorityPartitions
-                , boundaryLogger ?? cpipe.Channel.BoundaryLogger));
+                , boundaryLogger ?? cpipe.Channel.BoundaryLogger);
 
             onCreate?.Invoke(component);
+
+            cpipe.Pipeline.AddSender(component);
 
             return cpipe;
         }

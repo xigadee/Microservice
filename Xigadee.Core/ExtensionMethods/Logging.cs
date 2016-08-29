@@ -8,19 +8,35 @@ namespace Xigadee
 {
     public static class LoggingExtensionMethods
     {
-        public static ILogger AddLogger(this MicroservicePipeline pipeline, ILogger logger)
+        public static MicroservicePipeline AddLogger(this MicroservicePipeline pipeline, ILogger logger)
         {
-            return pipeline.Service.RegisterLogger(logger);
+            pipeline.Service.RegisterLogger(logger);
+
+            return pipeline;
         }
 
-        public static L AddLogger<L>(this MicroservicePipeline pipeline, Func<IEnvironmentConfiguration, L> creator, Action<L> action = null)
+        public static MicroservicePipeline AddLogger<L>(this MicroservicePipeline pipeline, Func<IEnvironmentConfiguration, L> creator, Action<L> action = null)
             where L:ILogger
         {
             var logger = creator(pipeline.Configuration);
 
             action?.Invoke(logger);
 
-            return (L)pipeline.Service.RegisterLogger(logger);
+            pipeline.Service.RegisterLogger(logger);
+
+            return pipeline;
+        }
+
+        public static MicroservicePipeline AddLogger<L>(this MicroservicePipeline pipeline, Action<L> action = null)
+            where L : ILogger, new()
+        {
+            var logger = new L();
+
+            action?.Invoke(logger);
+
+            pipeline.Service.RegisterLogger(logger);
+
+            return pipeline;
         }
 
     }

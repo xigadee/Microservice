@@ -8,15 +8,20 @@ namespace Xigadee
 {
     public static class EventSourceExtensionMethods
     {
-        public static IEventSource AddEventSource(this MicroservicePipeline pipeline, IEventSource eventSource)
+        public static MicroservicePipeline AddEventSource(this MicroservicePipeline pipeline, IEventSource eventSource)
         {
-            return pipeline.Service.RegisterEventSource(eventSource);
+            pipeline.Service.RegisterEventSource(eventSource);
+
+            return pipeline;
         }
 
-        public static E AddEventSource<E>(this MicroservicePipeline pipeline, Func<IEnvironmentConfiguration, E> eventSource)
+        public static MicroservicePipeline AddEventSource<E>(this MicroservicePipeline pipeline, Func<IEnvironmentConfiguration, E> creator, Action<E> assign)
             where E: IEventSource
         {
-            return (E)pipeline.Service.RegisterEventSource(eventSource(pipeline.Configuration));
+            var eSource = creator(pipeline.Configuration);
+            assign?.Invoke(eSource);
+            pipeline.Service.RegisterEventSource(eSource);
+            return pipeline;
         }
     }
 }

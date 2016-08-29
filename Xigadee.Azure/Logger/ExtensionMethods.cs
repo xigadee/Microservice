@@ -25,12 +25,10 @@ namespace Xigadee
             , ResourceProfile resourceProfile = null
             , Action<AzureStorageLogger> onCreate = null)
         {
-            var logger = pipeline.AddLogger(
-                (c) => new AzureStorageLogger(creds, serviceName ?? pipeline.Service.Name, containerName, resourceProfile));
-
+            var logger = new AzureStorageLogger(creds, serviceName ?? pipeline.Service.Name, containerName, resourceProfile);
             onCreate?.Invoke(logger);
 
-            return pipeline;
+            return pipeline.AddLogger(logger);
         }
     }
 }

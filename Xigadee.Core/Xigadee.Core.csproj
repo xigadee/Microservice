@@ -67,6 +67,9 @@
     <Compile Include="Channel\ChannelDirection.cs" />
     <Compile Include="Channel\ChannelPipelineBase.cs" />
     <Compile Include="ExtensionMethods\Channel.cs" />
+    <Compile Include="ExtensionMethods\Channel_Command.cs" />
+    <Compile Include="ExtensionMethods\Channel_Communication_Listener.cs" />
+    <Compile Include="ExtensionMethods\Channel_Communication_Sender.cs" />
     <Compile Include="ExtensionMethods\Channel_PriorityPartitions.cs" />
     <Compile Include="ExtensionMethods\Communication_Sender.cs" />
     <Compile Include="ExtensionMethods\Channel_ResourceProfile.cs" />
@@ -103,6 +106,8 @@
     <Compile Include="EventSource\DocumentDbEventSource.cs" />
     <Compile Include="ExtensionMethods\EventSource.cs" />
     <Compile Include="EventSource\MemoryEventSource.cs" />
+    <Compile Include="ExtensionMethods\Exceptions\ChannelIdMismatchException.cs" />
+    <Compile Include="ExtensionMethods\Exceptions\ChannelInternalOnlyException.cs" />
     <Compile Include="ExtensionMethods\Exceptions\ChannelPartitionConfigCastException.cs" />
     <Compile Include="ExtensionMethods\Exceptions\ChannelPartitionConfigBaseException.cs" />
     <Compile Include="ExtensionMethods\Exceptions\ChannelPartitionConfigExistsException.cs" />

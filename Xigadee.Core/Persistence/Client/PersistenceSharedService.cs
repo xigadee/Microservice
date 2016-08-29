@@ -26,7 +26,6 @@ namespace Xigadee
         /// <summary>
         /// This is the shared services collection
         /// </summary>
-        private ISharedService mSharedServices = null;
         private readonly MessageFilterWrapper mResponseId;
         private readonly string mMessageType;
         private readonly string mResponseChannel;
@@ -48,19 +47,16 @@ namespace Xigadee
         #endregion
 
         #region SharedServices
-        /// <summary>
-        /// This implementation registers the shared service with a lazy constructor.
-        /// </summary>
-        public ISharedService SharedServices
+
+        protected override void SharedServicesChange(ISharedService sharedServices)
         {
-            get { return mSharedServices; }
-            set
-            {
-                mSharedServices = value;
-                if (!mShared && !mSharedServices.HasService<IRepositoryAsync<K, E>>())
-                    mSharedServices.RegisterService<IRepositoryAsync<K, E>>(
+            mSharedServices = sharedServices;
+
+            if (!mShared 
+                && mSharedServices != null 
+                && !mSharedServices.HasService<IRepositoryAsync<K, E>>())
+                    mShared = mSharedServices.RegisterService<IRepositoryAsync<K, E>>(
                         new Lazy<IRepositoryAsync<K, E>>(() => this), typeof(E).Name);
-            }
         }
         #endregion
 
@@ -82,7 +78,7 @@ namespace Xigadee
         {
             base.StopInternal();
 
-            if (mShared)
+            if (mShared && mSharedServices != null)
                 mSharedServices.RemoveService<IRepositoryAsync<K, E>>();
         }
         #endregion

@@ -10,11 +10,13 @@ namespace Xigadee
     /// <summary>
     /// This container holds the channels active within the Microservice, and tracks messages from incoming to outgoing.
     /// </summary>
-    public class ChannelContainer: ServiceContainerBase<ChannelContainerStatistics, ChannelContainerPolicy>
+    public class ChannelContainer: ServiceContainerBase<ChannelContainerStatistics, ChannelContainerPolicy>, IRequireSharedServices, IChannelService
     {
         #region Declarations
         private Dictionary<string, Channel> mContainerIncoming;
         private Dictionary<string, Channel> mContainerOutgoing;
+
+        private ISharedService mSharedServices;
         #endregion
         #region Constructor
         /// <summary>
@@ -38,6 +40,7 @@ namespace Xigadee
             mContainerOutgoing.Clear();
         }
 
+        #region Channels
         /// <summary>
         /// This is a list of the incoming and outgoing channels.
         /// </summary>
@@ -47,8 +50,38 @@ namespace Xigadee
             {
                 return mContainerIncoming.Values.Union(mContainerOutgoing.Values);
             }
-        }
+        } 
+        #endregion
 
+        #region SharedServices
+        /// <summary>
+        /// This is the shared service collection for commands that wish to share direct access to internal data.
+        /// </summary>
+        public virtual ISharedService SharedServices
+        {
+            get
+            {
+                return mSharedServices;
+            }
+
+            set
+            {
+                SharedServicesChange(value);
+            }
+        }
+        /// <summary>
+        /// This method is called to set or remove the shared service reference.
+        /// You can override your logic to safely set the shared service collection here.
+        /// </summary>
+        /// <param name="sharedServices">The shared service reference or null if this is not set.</param>
+        protected virtual void SharedServicesChange(ISharedService sharedServices)
+        {
+            mSharedServices = sharedServices;
+            mSharedServices.RegisterService<IChannelService>(this, "Channel");
+        }
+        #endregion
+
+        #region Add(Channel item)
         /// <summary>
         /// This method adds a channel to the collection
         /// </summary>
@@ -71,7 +104,8 @@ namespace Xigadee
                     break;
             }
         }
-
+        #endregion
+        #region Remove(Channel item)
         /// <summary>
         /// This method removes a channel from the collection.
         /// </summary>
@@ -91,6 +125,38 @@ namespace Xigadee
                     break;
             }
 
+            return false;
+        }
+        #endregion
+
+        public bool Exists(string channelId, ChannelDirection direction)
+        {
+            switch (direction)
+            {
+                case ChannelDirection.Incoming:
+                    if (mContainerIncoming.ContainsKey(channelId))
+                        return true;
+                    break;
+                case ChannelDirection.Outgoing:
+                    if (mContainerOutgoing.ContainsKey(channelId))
+                        return true;
+                    break;
+            }
+
+            return false;
+        }
+
+        public bool TryGet(string channelId, ChannelDirection direction, out Channel channel)
+        {
+            switch (direction)
+            {
+                case ChannelDirection.Incoming:
+                    return mContainerIncoming.TryGetValue(channelId, out channel);
+                case ChannelDirection.Outgoing:
+                    return mContainerOutgoing.TryGetValue(channelId, out channel);
+            }
+
+            channel = null;
             return false;
         }
     }

@@ -8,7 +8,6 @@ namespace Xigadee
 {
     public static class AzureServiceBusQueueExtensionMethods
     {
-
         public static ChannelPipelineIncoming AddAzureSBQueueListener(this ChannelPipelineIncoming cpipe
             , string connectionName
             , IEnumerable<ListenerPartitionConfig> priorityPartitions
@@ -19,17 +18,19 @@ namespace Xigadee
             , IBoundaryLogger boundaryLogger = null
             , Action<AzureSBQueueListener> onCreate = null)
         {
-            var component = cpipe.Pipeline.AddListener((c) => new AzureSBQueueListener(
+            var component = new AzureSBQueueListener(
                   cpipe.Channel.Id
-                , serviceBusConnection ?? c.ServiceBusConnection()
+                , serviceBusConnection ?? cpipe.Pipeline.Configuration.ServiceBusConnection()
                 , connectionName
                 , priorityPartitions
                 , isDeadLetterListener
                 , mappingChannelId
                 , resourceProfiles
-                , boundaryLogger ?? cpipe.Channel.BoundaryLogger));
+                , boundaryLogger ?? cpipe.Channel.BoundaryLogger);
 
             onCreate?.Invoke(component);
+
+            cpipe.Pipeline.AddListener(component);
 
             return cpipe;
         }
@@ -41,14 +42,16 @@ namespace Xigadee
             , IBoundaryLogger boundaryLogger = null
             , Action<AzureSBQueueSender> onCreate = null)
         {
-            var component = cpipe.Pipeline.AddSender((c) => new AzureSBQueueSender(
+            var component = new AzureSBQueueSender(
                   cpipe.Channel.Id
-                , serviceBusConnection ?? c.ServiceBusConnection()
+                , serviceBusConnection ?? cpipe.Pipeline.Configuration.ServiceBusConnection()
                 , connectionName
                 , priorityPartitions
-                , boundaryLogger ?? cpipe.Channel.BoundaryLogger));
+                , boundaryLogger ?? cpipe.Channel.BoundaryLogger);
 
             onCreate?.Invoke(component);
+
+            cpipe.Pipeline.AddSender(component);
 
             return cpipe;
         }

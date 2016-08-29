@@ -16,7 +16,10 @@ namespace Test.Xigadee
             //    .AddAzureSBQueueListener(
 
             pipeline
-                .AddCommand((c) => new PersistenceBlahMemory());
+                .AddLogger<MemoryLogger>()
+                .AddChannelIncoming("internal", internalOnly:true)
+                //.AddCommand((c) => new PersistenceBlahMemory())
+                ;
                 
 
             //pipeline
