@@ -62,13 +62,16 @@
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Channel\BoundaryLogger\ExtensionMethods.cs" />
+    <Compile Include="ExtensionMethods\Channel_BoundaryLogger.cs" />
     <Compile Include="Channel\Channel.cs" />
     <Compile Include="Channel\ChannelDirection.cs" />
     <Compile Include="Channel\ChannelPipelineBase.cs" />
-    <Compile Include="Channel\ExtensionMethods.cs" />
+    <Compile Include="ExtensionMethods\Channel.cs" />
+    <Compile Include="ExtensionMethods\Channel_PriorityPartitions.cs" />
+    <Compile Include="ExtensionMethods\Communication_Sender.cs" />
+    <Compile Include="ExtensionMethods\Channel_ResourceProfile.cs" />
     <Compile Include="Command\Command_Channel.cs" />
-    <Compile Include="Command\ExtensionMethods.cs" />
+    <Compile Include="ExtensionMethods\Command.cs" />
     <Compile Include="Command\EventHandlers\CommandChange.cs" />
     <Compile Include="Command\EventHandlers\MasterJobStateChange.cs" />
     <Compile Include="Command\Exceptions\CommandStartupException.cs" />
@@ -91,16 +94,16 @@
     <Compile Include="Command\Command_MasterJob.cs" />
     <Compile Include="Command\Command_OutgoingRequests.cs" />
     <Compile Include="Command\Command_Statistics.cs" />
-    <Compile Include="Communication\ExtensionMethods.cs" />
-    <Compile Include="Channel\BoundaryLogger\IBoundaryLogger.cs" />
+    <Compile Include="ExtensionMethods\Communication_Listener.cs" />
+    <Compile Include="Channel\IBoundaryLogger.cs" />
     <Compile Include="Communication\PartitionConfig\ListenerPartitionConfig.cs" />
     <Compile Include="Communication\PartitionConfig\PartitionConfig.cs" />
     <Compile Include="Communication\PartitionConfig\SenderPartitionConfig.cs" />
-    <Compile Include="Communication\TransmissionPayloadTrace.cs" />
+    <Compile Include="Communication\TransmissionPayloadTrack.cs" />
     <Compile Include="EventSource\DocumentDbEventSource.cs" />
-    <Compile Include="EventSource\ExtensionMethods.cs" />
+    <Compile Include="ExtensionMethods\EventSource.cs" />
     <Compile Include="EventSource\MemoryEventSource.cs" />
-    <Compile Include="Logging\ExtensionMethods.cs" />
+    <Compile Include="ExtensionMethods\Logging.cs" />
     <Compile Include="Microservice\Events.cs" />
     <Compile Include="Exceptions\RequiredSharedServiceMissingException.cs" />
     <Compile Include="Exceptions\StorageThrottlingException.cs" />
@@ -255,7 +258,7 @@
     <Compile Include="ResourceTracker\ResourceRequestTrack.cs" />
     <Compile Include="ResourceTracker\ResourceStatistics.cs" />
     <Compile Include="ResourceTracker\ResourceStatsContainer.cs" />
-    <Compile Include="Security\ExtensionMethods.cs" />
+    <Compile Include="ExtensionMethods\Security.cs" />
     <Compile Include="Security\SecurityGatekeeperBase.cs" />
     <Compile Include="Security\SignatureHelper\SignatureHelper.cs" />
     <Compile Include="Security\SignatureHelper\Sha256SignatureHelper.cs" />
@@ -266,7 +269,7 @@
     <Compile Include="Interfaces\IMessageContract.cs" />
     <Compile Include="Interfaces\IPayloadSerialization.cs" />
     <Compile Include="Entities\MessageFilterWrapper.cs" />
-    <Compile Include="Serializer\ExtensionMethods.cs" />
+    <Compile Include="ExtensionMethods\Serializer.cs" />
     <Compile Include="Serializer\JsonContractSerializer.cs" />
     <Compile Include="Serializer\PayloadDelivery.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -289,6 +292,7 @@
     <None Include="Xigadee.Core.nuspec" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Communication\Interfaces\" />
     <Folder Include="Orchestration\Consignment\" />
     <Folder Include="Orchestration\Context\Results\" />
   </ItemGroup>

@@ -20,14 +20,6 @@ namespace Xigadee
     {
         #region Declarations
         /// <summary>
-        /// The boundary logger can be used to log message metadata when it is received or transmitted.
-        /// </summary>
-        protected IBoundaryLogger mBoundaryLogger;
-        /// <summary>
-        /// This is the set of priority partitions used to provide different priority for messages.
-        /// </summary>
-        protected P[] mPriorityPartitions;
-        /// <summary>
         /// This is the client collection.
         /// </summary>
         protected Dictionary<int, H> mClients;
@@ -50,20 +42,69 @@ namespace Xigadee
         {
             if (channelId == null)
                 throw new ArgumentNullException("channelId", "channelId cannot be null");
+
             if (priorityPartitions == null)
                 throw new ArgumentNullException("priorityPartitions", "priorityPartitions cannot be null");
 
             //Set the partition priority to a single partition if null or an empty set.
-            mPriorityPartitions = priorityPartitions.ToArray();
-            if (mPriorityPartitions.Length == 0)
+            PriorityPartitions = priorityPartitions.ToList();
+            if (PriorityPartitions.Count == 0)
                 throw new ArgumentOutOfRangeException("priorityPartitions", "priorityPartitions must have at least one member.");
 
-            mBoundaryLogger = boundaryLogger;
+            BoundaryLogger = boundaryLogger;
 
             ChannelId = channelId;
 
             //This is the collection of client holder for the appropriate partitions.
             mClients = new Dictionary<int, H>();
+        }
+        #endregion
+
+        //IMessaging
+        #region BoundaryLogger
+        /// <summary>
+        /// The boundary logger can be used to log message metadata when it is received or transmitted.
+        /// </summary>
+        public IBoundaryLogger BoundaryLogger { get; set; }
+        #endregion
+        #region PriorityPartitions
+        /// <summary>
+        /// This is the set of priority partitions used to provide different priority for messages.
+        /// </summary>
+        public List<P> PriorityPartitions { get; set; } 
+        #endregion
+        #region ChannelId
+        /// <summary>
+        /// This is the ChannelId for the messaging service
+        /// </summary>
+        public string ChannelId
+        {
+            get;
+            protected set;
+        } 
+        #endregion
+        #region Clients
+        /// <summary>
+        /// This method returns the clients created for the messaging service.
+        /// </summary>
+        public IEnumerable<ClientHolder> Clients
+        {
+            get
+            {
+                return mClients == null ? null : mClients.Values;
+            }
+        } 
+        #endregion
+
+        #region SupportsChannel(string channel)
+        /// <summary>
+        /// This method compares the channel and returns true if it is supported.
+        /// </summary>
+        /// <param name="channel"></param>
+        /// <returns>Returns true if the channel is supported.</returns>
+        public bool SupportsChannel(string channel)
+        {
+            return string.Equals(channel, ChannelId, StringComparison.InvariantCultureIgnoreCase);
         } 
         #endregion
 
@@ -78,7 +119,7 @@ namespace Xigadee
                 TearUp();
 
                 //Start the client in either listener or sender mode.
-                foreach (var priority in mPriorityPartitions)
+                foreach (var priority in PriorityPartitions)
                 {
                     var client = ClientCreate(priority);
 
@@ -96,7 +137,7 @@ namespace Xigadee
                 //If the incoming priority cannot be reconciled we set it to the default
                 //which is 1, unless 1 is not present and then we set it to the max value.
                 if (!mDefaultPriority.HasValue)
-                    mDefaultPriority = mPriorityPartitions.Select((p) => p.Priority).Max();
+                    mDefaultPriority = PriorityPartitions.Select((p) => p.Priority).Max();
             }
             catch (Exception ex)
             {
@@ -168,7 +209,7 @@ namespace Xigadee
             client.Logger = Logger;
 
             //Set the boundary logger if this has been defined in the messaging service.
-            client.BoundaryLogger = mBoundaryLogger;
+            client.BoundaryLogger = BoundaryLogger;
 
             client.ClientRefresh = () => { };
 
@@ -198,7 +239,6 @@ namespace Xigadee
             client.Stop();
         }
         #endregion
-
         #region ClientReset(H client, TransmissionException mex)
         /// <summary>
         /// This method closes and reset the fabric and the client.
@@ -251,40 +291,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region Clients
-        /// <summary>
-        /// This method returns the clients created for the messaging service.
-        /// </summary>
-        public IEnumerable<ClientHolder> Clients
-        {
-            get
-            {
-                return mClients == null ? null : mClients.Values;
-            }
-        } 
-        #endregion
-
-        #region ChannelId
-        /// <summary>
-        /// This is the ChannelId for the messaging service
-        /// </summary>
-        public string ChannelId
-        {
-            get;
-            protected set;
-        } 
-        #endregion
-        #region SupportsChannel(string channel)
-        /// <summary>
-        /// This method compares the channel and returns true if it is supported.
-        /// </summary>
-        /// <param name="channel"></param>
-        /// <returns>Returns true if the channel is supported.</returns>
-        public bool SupportsChannel(string channel)
-        {
-            return string.Equals(channel, ChannelId, StringComparison.InvariantCultureIgnoreCase);
-        } 
-        #endregion
+        //Microservice set
         #region PayloadSerializer
         /// <summary>
         /// This container is used to serialize and deserialize messaging payloads.
@@ -295,7 +302,6 @@ namespace Xigadee
             set;
         } 
         #endregion
-
         #region OriginatorId
         /// <summary>
         /// This is the OriginatorId from the parent container.

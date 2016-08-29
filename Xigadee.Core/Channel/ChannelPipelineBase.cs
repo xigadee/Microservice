@@ -46,5 +46,6 @@ namespace Xigadee
         /// This is the registered channel
         /// </summary>
         public Channel Channel { get; }
+
     }
 }

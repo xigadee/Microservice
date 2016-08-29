@@ -18,6 +18,11 @@ namespace Xigadee
         /// <returns>Returns true if the sender can handle the channel.</returns>
         bool SupportsChannel(string channel);
 
+        /// <summary>
+        /// This contains the sender partitions.
+        /// </summary>
+        List<SenderPartitionConfig> PriorityPartitions { get; set; }
+
     }
 
 }

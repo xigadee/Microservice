@@ -169,7 +169,6 @@ namespace Xigadee
         }
         #endregion
 
-
         #region CommandHandlerCreate(MessageFilterWrapper key, Func<TransmissionPayload, List<TransmissionPayload>, Task> action)
             /// <summary>
             /// This method creates the command handler. You can override this method to set additional properties.
@@ -316,6 +315,4 @@ namespace Xigadee
         }
         #endregion
     }
-
-
 }

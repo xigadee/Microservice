@@ -8,13 +8,14 @@ namespace Xigadee
 {
     public static class ChannelBoundaryLoggerExtensionMethods
     {
-        public static ChannelPipelineOutgoing AddBoundaryLogger(this ChannelPipelineOutgoing cpipe
+        public static ChannelPipelineBase AddBoundaryLogger(this ChannelPipelineBase cpipe
             , IBoundaryLogger boundaryLogger)
         {
             cpipe.Channel.BoundaryLogger = boundaryLogger;
             return cpipe;
         }
-        public static ChannelPipelineOutgoing AddBoundaryLogger(this ChannelPipelineOutgoing cpipe
+
+        public static ChannelPipelineBase AddBoundaryLogger(this ChannelPipelineBase cpipe
             , Func<IEnvironmentConfiguration, IBoundaryLogger> creator
             , Action<IBoundaryLogger> action = null)
         {

@@ -12,5 +12,15 @@ namespace Xigadee
         /// This is a list of clients for the listener or sender.
         /// </summary>
         IEnumerable<ClientHolder> Clients { get; }
+
+        /// <summary>
+        /// This is the channel for the messaging agent.
+        /// </summary>
+        string ChannelId { get; }
+
+        /// <summary>
+        /// This is the boundary logger used by the service.
+        /// </summary>
+        IBoundaryLogger BoundaryLogger { get; set; }
     }
 }

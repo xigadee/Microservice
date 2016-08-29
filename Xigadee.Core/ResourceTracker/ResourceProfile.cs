@@ -14,7 +14,9 @@ namespace Xigadee
         {
             Id = id;
         }
-
+        /// <summary>
+        /// This is the Id of the resource profile.
+        /// </summary>
         public string Id { get; set; }
     }
 }

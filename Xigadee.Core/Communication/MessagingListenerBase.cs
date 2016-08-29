@@ -24,10 +24,7 @@ namespace Xigadee
         /// This id is for the specific client mappings.
         /// </summary>
         protected string mMappingChannelId;
-        /// <summary>
-        /// This is the list of resource profiles that the Listener can be throttled on.
-        /// </summary>
-        protected readonly List<ResourceProfile> mResourceProfiles;
+
         #endregion
         #region Constructor
         /// <summary>
@@ -45,8 +42,15 @@ namespace Xigadee
         {
             mSupportedMessageTypes = new List<MessageFilterWrapper>();
             mMappingChannelId = mappingChannelId;
-            mResourceProfiles = resourceProfiles == null?new List<ResourceProfile>(): resourceProfiles.ToList();
+            ResourceProfiles = resourceProfiles == null?new List<ResourceProfile>(): resourceProfiles.ToList();
         }
+        #endregion
+
+        #region ResourceProfiles
+        /// <summary>
+        /// This is the list of resource profiles that the Listener can be throttled on.
+        /// </summary>
+        public List<ResourceProfile> ResourceProfiles { get; set; } 
         #endregion
 
         #region SharedServices
@@ -130,11 +134,6 @@ namespace Xigadee
         } 
         #endregion
 
-        protected virtual void ClientValidate(H client, List<MessageFilterWrapper> newList)
-        {
-            client.ClientRefresh();
-        }
-
         #region ClientsValidate(List<MessageFilterWrapper> oldList, List<MessageFilterWrapper> newList)
         /// <summary>
         /// This method is used to revalidate the clients when a message type is enabled or disabled.
@@ -171,7 +170,16 @@ namespace Xigadee
                         ClientValidate(client, newList);
                 }
             }
-        } 
+        }
+        /// <summary>
+        /// This method triggers a revalidates of the particular client.
+        /// </summary>
+        /// <param name="client">The client.</param>
+        /// <param name="newList">The new list of message filter wrappers.</param>
+        protected virtual void ClientValidate(H client, List<MessageFilterWrapper> newList)
+        {
+            client.ClientRefresh();
+        }
         #endregion
 
         #region ClientsStart()
@@ -185,16 +193,16 @@ namespace Xigadee
                 TearUp();
 
                 //Start the client in either listener or sender mode.
-                foreach (var partition in mPriorityPartitions)
+                foreach (var partition in base.PriorityPartitions)
                 {
                     var client = ClientCreate(partition);
 
-                    client.ResourceProfiles = mResourceProfiles;
+                    client.ResourceProfiles = ResourceProfiles;
 
                     mClients.Add(partition.Priority, client);
 
                     if (client.CanStart)
-                        ClientStart(client);
+                        base.ClientStart(client);
                     else
                         Logger.LogMessage(string.Format("Client not started: {0} :{1}/{2}", client.Type, client.Name, client.Priority));
 
@@ -204,8 +212,8 @@ namespace Xigadee
 
                 //If the incoming priority cannot be reconciled we set it to the default
                 //which is 1, unless 1 is not present and then we set it to the max value.
-                if (!mDefaultPriority.HasValue && mPriorityPartitions != null)
-                    mDefaultPriority = mPriorityPartitions.Select((p) => p.Priority).Max();
+                if (!mDefaultPriority.HasValue && base.PriorityPartitions != null)
+                    mDefaultPriority = base.PriorityPartitions.Select((p) => p.Priority).Max();
             }
             catch (Exception ex)
             {
@@ -253,5 +261,4 @@ namespace Xigadee
         }
         #endregion
     }
-
 }

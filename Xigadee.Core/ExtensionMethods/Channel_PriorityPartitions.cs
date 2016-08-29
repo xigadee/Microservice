@@ -6,11 +6,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public enum ResourceRetryReason
+    public static class ChannelPriorityPartitionsExtensionMethods
     {
-        Throttle,
-        Timeout,
-        Exception,
-        Other
     }
 }

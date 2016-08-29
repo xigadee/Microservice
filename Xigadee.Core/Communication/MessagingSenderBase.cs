@@ -21,7 +21,9 @@ namespace Xigadee
         /// </summary>
         /// <param name="channelId">The string based channel id.</param>
         /// <param name="priorityPartitions">The number of priority channels. Null denotes a single channel of priority one.</param>
-        public MessagingSenderBase(string channelId, IEnumerable<SenderPartitionConfig> priorityPartitions, IBoundaryLogger boundaryLogger = null)
+        public MessagingSenderBase(string channelId
+            , IEnumerable<SenderPartitionConfig> priorityPartitions
+            , IBoundaryLogger boundaryLogger = null)
             : base(channelId, priorityPartitions, boundaryLogger)
         {
         } 
