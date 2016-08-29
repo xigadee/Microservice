@@ -68,8 +68,7 @@
     <Compile Include="Channel\ChannelPipelineBase.cs" />
     <Compile Include="ExtensionMethods\Channel.cs" />
     <Compile Include="ExtensionMethods\Channel_Command.cs" />
-    <Compile Include="ExtensionMethods\Channel_Communication_Listener.cs" />
-    <Compile Include="ExtensionMethods\Channel_Communication_Sender.cs" />
+    <Compile Include="ExtensionMethods\Channel_Communication.cs" />
     <Compile Include="ExtensionMethods\Channel_PriorityPartitions.cs" />
     <Compile Include="ExtensionMethods\Communication_Sender.cs" />
     <Compile Include="ExtensionMethods\Channel_ResourceProfile.cs" />

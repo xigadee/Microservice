@@ -210,7 +210,6 @@
     <Compile Include="ServiceBus\EventHub\EventHubHelper.cs" />
     <Compile Include="ServiceBus\Queue\AzureSBQueueListener.cs" />
     <Compile Include="ServiceBus\Queue\AzureSBQueueSender.cs" />
-    <Compile Include="ServiceBus\Queue\ExtensionMethods.cs" />
     <Compile Include="ServiceBus\Queue\QueueHelper.cs" />
     <Compile Include="ServiceBus\Topic\AzureSBTopicListener.cs" />
     <Compile Include="ServiceBus\Topic\AzureSBTopicSender.cs" />
@@ -218,7 +217,7 @@
     <Compile Include="Exceptions\ChannelNotFoundException.cs" />
     <Compile Include="Exceptions\ChannelTypeNotSupportedException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServiceBus\Topic\ExtensionMethods.cs" />
+    <Compile Include="ServiceBus\ExtensionMethods.cs" />
     <Compile Include="ServiceBus\Topic\TopicHelper.cs" />
     <Compile Include="Persistence\BlobStorage\StorageServiceBase.cs" />
   </ItemGroup>
