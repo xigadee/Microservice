@@ -8,6 +8,13 @@ namespace Xigadee
 {
     public static class AzureApplicationInsightsExtensionMethods
     {
+        [ConfigSettingKey("ApplicationInsights")]
+        public const string KeyApplicationInsights = "ApplicationInsightsKey";
+
+        [ConfigSetting("ApplicationInsights")]
+        public static string ApplicationInsightsKey(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyApplicationInsights);
+
+
         //static TelemetryClient client;
 
         //public static void Something()
