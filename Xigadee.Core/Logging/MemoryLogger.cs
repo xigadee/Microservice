@@ -111,8 +111,6 @@ namespace Xigadee
         /// </summary>
         Dictionary<LoggingLevel, LogEventLevelHolder> mHolders; 
 
-        Func<LoggingLevel, int> mCapacityCalculator;
-
         long mLogEvents = 0;
 
         long mLogEventsExpired = 0;
@@ -120,11 +118,6 @@ namespace Xigadee
 
         public MemoryLogger():this((l) => 2000)
         {
-            //Create a dictionary for each specific level.
-            mHolders =
-                Enum.GetValues(typeof(LoggingLevel))
-                    .Cast<LoggingLevel>()
-                    .ToDictionary((l) => l, (l) => new LogEventLevelHolder(l, mCapacityCalculator(l)));
         }
         /// <summary>
         /// This is the default constructor.
@@ -132,7 +125,12 @@ namespace Xigadee
         /// <param name="capacity"></param>
         public MemoryLogger(Func<LoggingLevel, int> capacityCalculator)
         {
-            mCapacityCalculator = capacityCalculator;
+            //Create a dictionary for each specific level.
+            mHolders =
+                Enum.GetValues(typeof(LoggingLevel))
+                    .Cast<LoggingLevel>()
+                    .ToDictionary((l) => l, (l) => new LogEventLevelHolder(l, capacityCalculator(l)));
+
         }
 
         /// <summary>
@@ -156,7 +154,6 @@ namespace Xigadee
 
         protected override void StopInternal()
         {
-
         }
 
         /// <summary>
