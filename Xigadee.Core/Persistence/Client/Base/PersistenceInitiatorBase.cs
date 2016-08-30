@@ -46,13 +46,14 @@ namespace Xigadee
         #endregion
 
         #region Persistence shortcuts
+
         #region Create(E entity, RepositorySettings settings = null)
         /// <summary>
         /// This method is used to create an entity in the persistence store.
         /// </summary>
         /// <param name="entity">The entity to create.</param>
-        /// <param name="settings">The persistence settings.</param>
-        /// <returns>Returns a holder that indicates the status of the request and the entity where appropriate.</returns>
+        /// <param name="settings">The persistence request settings.</param>
+        /// <returns>Returns a response holder that indicates the status of the request and the entity or key and version id where appropriate.</returns>
         public virtual async Task<RepositoryHolder<K, E>> Create(E entity, RepositorySettings settings = null)
         {
             return await TransmitInternal(EntityActions.Create, new RepositoryHolder<K, E> { Entity = entity, Settings = settings });
@@ -63,7 +64,7 @@ namespace Xigadee
         /// This method reads an entity.
         /// </summary>
         /// <param name="key">The entity key.</param>
-        /// <param name="settings">The persistence settings.</param>
+        /// <param name="settings">The persistence request settings.</param>
         /// <returns>Returns a holder that indicates the status of the request and the entity where appropriate.</returns>
         public virtual async Task<RepositoryHolder<K, E>> Read(K key, RepositorySettings settings = null)
         {
@@ -77,9 +78,16 @@ namespace Xigadee
             }
 
             return await TransmitInternal(EntityActions.Read, new RepositoryHolder<K, E> { Key = key, Settings = settings });
-        } 
+        }
         #endregion
-
+        #region ReadByRef(string refKey, string refValue, RepositorySettings settings = null)
+        /// <summary>
+        /// This method reads and entity by the reference key/value pair.
+        /// </summary>
+        /// <param name="refKey">The reference key, i.e. email etc.</param>
+        /// <param name="refValue">The reference value.</param>
+        /// <param name="settings">The persistence request settings.</param>
+        /// <returns>Returns a response holder that indicates the status of the request and the entity or key and version id where appropriate.</returns>
         public virtual async Task<RepositoryHolder<K, E>> ReadByRef(string refKey, string refValue, RepositorySettings settings = null)
         {
             if ((settings?.UseCache ?? true) && mCacheManager.IsActive)
@@ -96,22 +104,51 @@ namespace Xigadee
 
             return await TransmitInternal(EntityActions.ReadByRef, new RepositoryHolder<K, E> { KeyReference = new Tuple<string, string>(refKey, refValue), Settings = settings });
         }
-
+        #endregion
+        #region Update(E entity, RepositorySettings settings = null)
+        /// <summary>
+        /// This method updates an entity.
+        /// </summary>
+        /// <param name="entity">The entity to update.</param>
+        /// <param name="settings">The persistence settings.</param>
+        /// <returns>Returns a response holder that indicates the status of the request and the entity or key and version id where appropriate.</returns>
         public virtual async Task<RepositoryHolder<K, E>> Update(E entity, RepositorySettings settings = null)
         {
             return await TransmitInternal(EntityActions.Update, new RepositoryHolder<K, E> { Entity = entity, Settings = settings });
         }
-
+        #endregion
+        #region Delete(K key, RepositorySettings settings = null)
+        /// <summary>
+        /// This method deletes an entity by its key.
+        /// </summary>
+        /// <param name="key">The entity key.</param>
+        /// <param name="settings">The persistence request settings.</param>
+        /// <returns>Returns a response holder that indicates the status of the request and the entity or key and version id where appropriate.</returns>
         public virtual async Task<RepositoryHolder<K, Tuple<K, string>>> Delete(K key, RepositorySettings settings = null)
         {
             return await TransmitInternal(EntityActions.Delete, new RepositoryHolder<K, Tuple<K, string>> { Key = key, Settings = settings });
         }
-
+        #endregion
+        #region DeleteByRef(string refKey, string refValue, RepositorySettings settings = null)
+        /// <summary>
+        /// This method deletes an entity by its reference.
+        /// </summary>
+        /// <param name="refKey">The reference key, i.e. email etc.</param>
+        /// <param name="refValue">The reference value.</param>
+        /// <param name="settings">The persistence request settings.</param>
+        /// <returns>Returns a response holder that indicates the status of the request and the entity or key and version id where appropriate.</returns>
         public virtual async Task<RepositoryHolder<K, Tuple<K, string>>> DeleteByRef(string refKey, string refValue, RepositorySettings settings = null)
         {
             return await TransmitInternal(EntityActions.DeleteByRef, new RepositoryHolder<K, Tuple<K, string>> { KeyReference = new Tuple<string, string>(refKey, refValue), Settings = settings });
         }
-
+        #endregion
+        #region Version(K key, RepositorySettings settings = null)
+        /// <summary>
+        /// This method resolves an entity by its key.
+        /// </summary>
+        /// <param name="key">The entity key.</param>
+        /// <param name="settings">The persistence request settings.</param>
+        /// <returns>Returns a response holder that indicates the status of the request and the entity or key and version id where appropriate.</returns>
         public virtual async Task<RepositoryHolder<K, Tuple<K, string>>> Version(K key, RepositorySettings settings = null)
         {
             if ((settings?.UseCache ?? true) && mCacheManager.IsActive)
@@ -125,12 +162,20 @@ namespace Xigadee
 
             return await TransmitInternal(EntityActions.Version, new RepositoryHolder<K, Tuple<K, string>> { Key = key, Settings = settings });
         }
-
+        #endregion
+        #region VersionByRef(string refKey, string refValue, RepositorySettings settings = null)
+        /// <summary>
+        /// This method resolves an entity by its reference
+        /// </summary>
+        /// <param name="refKey">The reference key, i.e. email etc.</param>
+        /// <param name="refValue">The reference value.</param>
+        /// <param name="settings">The persistence request settings.</param>
+        /// <returns>Returns a response holder that indicates the status of the request and the entity or key and version id where appropriate.</returns>
         public virtual async Task<RepositoryHolder<K, Tuple<K, string>>> VersionByRef(string refKey, string refValue, RepositorySettings settings = null)
         {
             if ((settings?.UseCache ?? true) && mCacheManager.IsActive)
             {
-                var result = await mCacheManager.VersionRead(new Tuple<string,string>(refKey, refValue));
+                var result = await mCacheManager.VersionRead(new Tuple<string, string>(refKey, refValue));
                 if (result.IsSuccess)
                 {
                     return new RepositoryHolder<K, Tuple<K, string>>(result.Entity.Item1, new Tuple<string, string>(result.Id, result.VersionId), responseCode: 200, entity: result.Entity) { IsCached = true };
@@ -139,7 +184,15 @@ namespace Xigadee
 
             return await TransmitInternal(EntityActions.VersionByRef, new RepositoryHolder<K, Tuple<K, string>> { KeyReference = new Tuple<string, string>(refKey, refValue), Settings = settings });
         }
+        #endregion
 
+        #region Search(SearchRequest rq, RepositorySettings settings = null)
+        /// <summary>
+        /// This method issues a search request.
+        /// </summary>
+        /// <param name="rq">The search request.</param>
+        /// <param name="settings">The persistence request settings.</param>
+        /// <returns>The search response.</returns>
         public virtual async Task<RepositoryHolder<SearchRequest, SearchResponse>> Search(SearchRequest rq, RepositorySettings settings = null)
         {
             //if ((settings?.UseCache ?? true) && mCacheManager.IsActive)
@@ -152,7 +205,8 @@ namespace Xigadee
             //}
 
             return await TransmitInternal(EntityActions.Search, new RepositoryHolder<SearchRequest, SearchResponse> { Key = rq, Settings = settings });
-        }
+        } 
+        #endregion
 
         #endregion
 

@@ -64,17 +64,6 @@ namespace Xigadee
                         new Lazy<IRepositoryAsync<K, E>>(() => this), typeof(E).Name);
         }
         #endregion
-
-        #region ResponseId
-        /// <summary>
-        /// This is the response message filter used to pick up the returning response.
-        /// </summary>
-        protected override MessageFilterWrapper ResponseId
-        {
-            get { return new MessageFilterWrapper(new ServiceMessageHeader(mResponseChannel, mMessageType)); }
-        }
-        #endregion
-
         #region StopInternal()
         /// <summary>
         /// This override removes the shared service registration.
@@ -87,6 +76,17 @@ namespace Xigadee
                 mSharedServices.RemoveService<IRepositoryAsync<K, E>>();
         }
         #endregion
+
+        #region ResponseId
+        /// <summary>
+        /// This is the response message filter used to pick up the returning response.
+        /// </summary>
+        protected override MessageFilterWrapper ResponseId
+        {
+            get { return new MessageFilterWrapper(new ServiceMessageHeader(mResponseChannel, mMessageType)); }
+        }
+        #endregion
+
 
         #region TransmitInternal<KT, ET>(string actionType, RepositoryHolder<KT, ET> rq)
         /// <summary>

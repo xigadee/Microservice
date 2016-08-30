@@ -120,7 +120,11 @@ namespace Xigadee
 
         public MemoryLogger():this((l) => 2000)
         {
-
+            //Create a dictionary for each specific level.
+            mHolders =
+                Enum.GetValues(typeof(LoggingLevel))
+                    .Cast<LoggingLevel>()
+                    .ToDictionary((l) => l, (l) => new LogEventLevelHolder(l, mCapacityCalculator(l)));
         }
         /// <summary>
         /// This is the default constructor.
@@ -148,17 +152,11 @@ namespace Xigadee
 
         protected override void StartInternal()
         {
-            //Create a dictionary for each specific level.
-            mHolders = 
-                Enum.GetValues(typeof(LoggingLevel))
-                    .Cast<LoggingLevel>()
-                    .ToDictionary((l) => l, (l) => new LogEventLevelHolder(l, mCapacityCalculator(l)));
         }
 
         protected override void StopInternal()
         {
-            mHolders.Clear();
-            mHolders = null;
+
         }
 
         /// <summary>
