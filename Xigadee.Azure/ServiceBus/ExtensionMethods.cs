@@ -6,8 +6,18 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// These extension methods connect the service bus listeners in to the pipeline.
+    /// </summary>
     public static class AzureServiceBusExtensionMethods
     {
+        #region ServiceBusConnectionValidate(this IEnvironmentConfiguration Configuration, string serviceBusConnection)
+        /// <summary>
+        /// This method validates that the service bus connection is set.
+        /// </summary>
+        /// <param name="Configuration">The configuration.</param>
+        /// <param name="serviceBusConnection">The alternate connection.</param>
+        /// <returns>Returns the connection from either the parameter or from the settings.</returns>
         private static string ServiceBusConnectionValidate(this IEnvironmentConfiguration Configuration, string serviceBusConnection)
         {
             var conn = serviceBusConnection ?? Configuration.ServiceBusConnection();
@@ -16,7 +26,8 @@ namespace Xigadee
                 throw new ArgumentNullException("Service bus connection string cannot be resolved. Please check the config settings has been set.");
 
             return conn;
-        }
+        } 
+        #endregion
 
         public static ChannelPipelineIncoming AttachAzureServiceBusQueueListener(this ChannelPipelineIncoming cpipe
             , string connectionName
@@ -26,22 +37,22 @@ namespace Xigadee
             , IEnumerable<ListenerPartitionConfig> priorityPartitions = null
             , IEnumerable<ResourceProfile> resourceProfiles = null
             , IBoundaryLogger boundaryLogger = null
-            , Action<AzureSBQueueListener> onCreate = null
-            , bool setFromChannelProperties = true)
+            , Action<AzureSBQueueListener> onCreate = null)
         {
+
             var component = new AzureSBQueueListener(
                   cpipe.Channel.Id
                 , cpipe.Pipeline.Configuration.ServiceBusConnectionValidate(serviceBusConnection)
                 , connectionName
-                , priorityPartitions
+                , priorityPartitions ?? cpipe.Channel.Partitions.Cast<ListenerPartitionConfig>().ToList()
                 , isDeadLetterListener
                 , mappingChannelId
-                , resourceProfiles
+                , resourceProfiles ?? cpipe.Channel.ResourceProfiles
                 , boundaryLogger ?? cpipe.Channel.BoundaryLogger);
 
             onCreate?.Invoke(component);
 
-            cpipe.AttachListener(component, setFromChannelProperties);
+            cpipe.AttachListener(component, false);
 
             return cpipe;
         }
@@ -51,19 +62,18 @@ namespace Xigadee
             , IEnumerable<SenderPartitionConfig> priorityPartitions = null
             , string serviceBusConnection = null
             , IBoundaryLogger boundaryLogger = null
-            , Action<AzureSBQueueSender> onCreate = null
-            , bool setFromChannelProperties = true)
+            , Action<AzureSBQueueSender> onCreate = null)
         {
             var component = new AzureSBQueueSender(
                   cpipe.Channel.Id
                 , serviceBusConnection ?? cpipe.Pipeline.Configuration.ServiceBusConnection()
                 , connectionName
-                , priorityPartitions
+                , priorityPartitions ?? cpipe.Channel.Partitions.Cast<SenderPartitionConfig>().ToList()
                 , boundaryLogger ?? cpipe.Channel.BoundaryLogger);
 
             onCreate?.Invoke(component);
 
-            cpipe.AttachSender(component, setFromChannelProperties);
+            cpipe.AttachSender(component, false);
 
             return cpipe;
         }
@@ -90,14 +100,14 @@ namespace Xigadee
                   cpipe.Channel.Id
                 , cpipe.Pipeline.Configuration.ServiceBusConnectionValidate(serviceBusConnection)
                 , connectionName
-                , priorityPartitions
+                , priorityPartitions ?? cpipe.Channel.Partitions.Cast<ListenerPartitionConfig>().ToList()
                 , subscriptionId
                 , isDeadLetterListener
                 , deleteOnStop
                 , listenOnOriginatorId
                 , mappingChannelId
                 , deleteOnIdleTime
-                , resourceProfiles
+                , resourceProfiles ?? cpipe.Channel.ResourceProfiles
                 , boundaryLogger ?? cpipe.Channel.BoundaryLogger);
             
             onCreate?.Invoke(component);
@@ -123,7 +133,7 @@ namespace Xigadee
                   cpipe.Channel.Id
                 , cpipe.Pipeline.Configuration.ServiceBusConnectionValidate(serviceBusConnection)
                 , connectionName
-                , priorityPartitions
+                , priorityPartitions ?? cpipe.Channel.Partitions.Cast<SenderPartitionConfig>().ToList()
                 , boundaryLogger ?? cpipe.Channel.BoundaryLogger);
 
             onCreate?.Invoke(component);
