@@ -14,7 +14,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class ApiProviderAsyncV2<K, E>: IRepositoryAsync<K, E>
+    public class ApiProviderAsyncV2<K, E>: ApiProviderBase, IRepositoryAsync<K, E>
         where K : IEquatable<K>
     {
         #region Declarations
@@ -34,14 +34,6 @@ namespace Xigadee
         /// This is the primary transport used for sending requests.
         /// </summary>
         protected string mPrimaryTransport;
-        /// <summary>
-        /// This is the assembly version
-        /// </summary>
-        protected readonly string mAssemblyVersion;
-        /// <summary>
-        /// This is a list of auth handlers to be used to au
-        /// </summary>
-        protected List<IApiProviderAuthBase> mAuthHandlers;
         #endregion
         #region Constructor
         /// <summary>
@@ -83,29 +75,12 @@ namespace Xigadee
             , TransportSerializer<E> primaryTransport = null
             , IEnumerable<IApiProviderAuthBase> authHandlers = null
             , bool useDefaultJsonSerializer = true
-        )
+        ):base(authHandlers)
         {
-            // Get the types assembly version to add to the request headers
-            mAssemblyVersion = AssemblyVersionGet();
-
             mKeyMapper = keyMapper ?? ResolveKeyMapper();
 
             ResolveTransport(primaryTransport, useDefaultJsonSerializer);
-
-            mAuthHandlers = authHandlers?.ToList();
         }
-        #endregion
-
-        #region AssemblyVersionGet()
-        /// <summary>
-        /// This method returns the assembly version that is passed to the calling party. You can override this
-        /// method to change the version.
-        /// </summary>
-        /// <returns>Returns a string containing the assembly version.</returns>
-        protected virtual string AssemblyVersionGet()
-        {
-            return GetType().Assembly.GetName().Version.ToString();
-        }  
         #endregion
 
         #region ResolveKeyMapper()
@@ -418,36 +393,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region Request(HttpMethod verb, Uri uri)
-        /// <summary>
-        /// This method creates the default request message.
-        /// </summary>
-        /// <param name="verb">The HTTP verb.</param>
-        /// <param name="uri">The Uri request.</param>
-        /// <returns>Returns the message with the full domain request.</returns>
-        protected virtual HttpRequestMessage Request(HttpMethod verb, Uri uri)
-        {
-            HttpRequestMessage rq = new HttpRequestMessage
-            {
-                Method = verb,
-                RequestUri = uri
-            };
-
-            return rq;
-        }
-        #endregion
-
-        #region RequestHeadersSet(HttpRequestMessage rq)
-        /// <summary>
-        /// This virtual method sets the necessary headers for the request.
-        /// </summary>
-        /// <param name="rq">The http request.</param>
-        protected virtual void RequestHeadersSet(HttpRequestMessage rq)
-        {
-            rq.Headers.Add("x-api-clientversion", mAssemblyVersion);
-            rq.Headers.Add("x-api-version", "2016-08-01");
-        }
-        #endregion
         #region RequestHeadersSetTransport(HttpRequestMessage rq)
         /// <summary>
         /// This method sets the media quality type for the entity transfer.
@@ -456,39 +401,6 @@ namespace Xigadee
         protected virtual void RequestHeadersSetTransport(HttpRequestMessage rq)
         {
             mTransportSerializers.ForEach((t) => rq.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(t.Value.MediaType, t.Value.Priority)));
-        }
-        #endregion
-        #region RequestHeadersPreferSet(HttpRequestMessage rq, Dictionary<string, string> Prefer)
-        /// <summary>
-        /// This method sets the prefer request header directives for the Api call.
-        /// </summary>
-        /// <param name="rq">The http request object.</param>
-        /// <param name="Prefer">The prefer collection.</param>
-        protected virtual void RequestHeadersPreferSet(HttpRequestMessage rq, Dictionary<string, string> Prefer)
-        {
-            if (Prefer != null && Prefer.Count > 0)
-                rq.Headers.Add("Prefer", Prefer.Select((k) => string.Format("{0}={1}", k.Key, k.Value)));
-        }
-        #endregion
-
-        #region RequestHeadersAuthSet(HttpRequestMessage rq)
-        /// <summary>
-        /// This method sets the prefer request headers for the Api call.
-        /// </summary>
-        /// <param name="rq">The http request object.</param>
-        /// <param name="Prefer">The prefer collection.</param>
-        protected virtual void RequestHeadersAuth(HttpRequestMessage rq)
-        {
-        }
-        #endregion
-        #region ResponseHeadersAuth(HttpRequestMessage rq, HttpResponseMessage rs)
-        /// <summary>
-        /// This method sets the prefer request headers for the Api call.
-        /// </summary>
-        /// <param name="rq">The http request object.</param>
-        /// <param name="Prefer">The prefer collection.</param>
-        protected virtual void ResponseHeadersAuth(HttpRequestMessage rq, HttpResponseMessage rs)
-        {
         }
         #endregion
 

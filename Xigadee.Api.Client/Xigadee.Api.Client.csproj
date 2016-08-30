@@ -73,6 +73,7 @@
     <Compile Include="ApiProviderAsyncBase.cs" />
     <Compile Include="ApiProviderAsyncQueryHelper.cs" />
     <Compile Include="ApiProviderAsyncV2.cs" />
+    <Compile Include="ApiProviderBase.cs" />
     <Compile Include="ApiRepositoryOptions.cs" />
     <Compile Include="Auth\ApiProviderAuthApim.cs" />
     <Compile Include="Auth\IApiProviderAuthBase.cs" />
