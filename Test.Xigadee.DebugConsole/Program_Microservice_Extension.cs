@@ -1,18 +1,25 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web.Http;
+using Microsoft.Owin.Hosting;
+using Owin;
+using Unity.WebApi;
 using Xigadee;
+
 namespace Test.Xigadee
 {
-    [TestClass]
-    public class ExtensionMethods
+    static partial class Program
     {
-        [TestMethod]
-        public void TestMethod1()
+        static Microservice sExtensionService = null;
+
+        static void ExtensionMicroserviceStart()
         {
             try
             {
-                Microservice service;
-                var pipeline = Microservice.Configure((s) => service = s);
+                var pipeline = Microservice.Configure((s) => sExtensionService = s);
 
                 ChannelPipelineIncoming cpipeIn = null;
                 ChannelPipelineOutgoing cpipeOut = null;
@@ -24,10 +31,11 @@ namespace Test.Xigadee
                     .AddLogger<MemoryLogger>((l) => logger = l)
                     .AddLogger<TraceEventLogger>()
                     .AddPayloadSerializerDefaultJson()
-                    .AddChannelIncoming("internalIn", internalOnly: true)
+                    .AddChannelIncoming("internalIn")
                         .AppendResourceProfile(new ResourceProfile("TrackIt"))
                         .AppendBoundaryLogger(new MemoryBoundaryLogger(), (bl) => bLogger = bl)
                         .AssignPriorityPartition(0, 1)
+                        .AttachAzureServiceBusQueueListener("Myqueue")
                         .AddCommand(new PersistenceBlahMemory())
                         .AddCommand(new PersistenceSharedService<Guid, Blah>(), (c) => persistence = c, cpipeOut)
                         .Revert((c) => cpipeIn = c)
@@ -40,18 +48,24 @@ namespace Test.Xigadee
 
                 Guid cId = Guid.NewGuid();
                 var result = persistence.Create(new Blah() { ContentId = cId, Message = "Hello", VersionId = Guid.NewGuid() }).Result;
-                Assert.IsTrue(result.IsSuccess);
+                //Assert.IsTrue(result.IsSuccess);
 
                 var result2 = persistence.Read(cId).Result;
-                Assert.IsTrue(result2.IsSuccess);
+                //Assert.IsTrue(result2.IsSuccess);
 
-                pipeline.Stop();
             }
             catch (Exception ex)
             {
-                Assert.Fail(ex.Message);
+                throw ex;
             }
+        }
 
+
+
+        static void ExtensionMicroserviceStop()
+        {
+            sExtensionService.Stop();
+            sExtensionService = null;
         }
     }
 }

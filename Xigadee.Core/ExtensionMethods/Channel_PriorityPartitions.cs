@@ -36,6 +36,13 @@ namespace Xigadee
             return pipeline;
         }
 
+        public static ChannelPipelineIncoming AssignPriorityPartition(this ChannelPipelineIncoming pipeline, params int[] init)
+        {
+            ListenerPartitionConfig.Init(init).ForEach((p) => AddPriorityPartition<ListenerPartitionConfig>(pipeline, p));
+            
+            return pipeline;
+        }
+
         public static ChannelPipelineIncoming AssignPriorityPartition(this ChannelPipelineIncoming pipeline, Func<IEnvironmentConfiguration, Channel, ListenerPartitionConfig> creator)
         {
             var config = creator(pipeline.Pipeline.Configuration, pipeline.Channel);
@@ -46,6 +53,7 @@ namespace Xigadee
         public static ChannelPipelineIncoming AssignPriorityPartition(this ChannelPipelineIncoming pipeline, IEnumerable<ListenerPartitionConfig> config)
         {
             config?.ForEach((p) => pipeline.AssignPriorityPartition(p));
+
             return pipeline;
         }
 
@@ -53,6 +61,14 @@ namespace Xigadee
         public static ChannelPipelineOutgoing AssignPriorityPartition(this ChannelPipelineOutgoing pipeline, SenderPartitionConfig config)
         {
             AddPriorityPartition<SenderPartitionConfig>(pipeline, config);
+
+            return pipeline;
+        }
+
+        public static ChannelPipelineOutgoing AssignPriorityPartition(this ChannelPipelineOutgoing pipeline, params int[] init)
+        {
+            SenderPartitionConfig.Init(init).ForEach((p) => AddPriorityPartition<SenderPartitionConfig>(pipeline, p));
+
             return pipeline;
         }
 

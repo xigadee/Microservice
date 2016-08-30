@@ -10,15 +10,16 @@ using System.Collections;
 namespace Xigadee
 {
     /// <summary>
-    /// This class is used to hold the event at the specific logging level.
+    /// This class is used to hold the memory event at the specific logging level.
     /// </summary>
-    public class LogEventLevelHolder:IEnumerable<LogEvent>
+    public class MemoryLogEventLevelHolder: IEnumerable<LogEvent>
     {
+        #region Events
         /// <summary>
         /// This event is raised when the service start begins
         /// </summary>
-        public event EventHandler<LogEvent> OnLogEvent;
-
+        public event EventHandler<LogEvent> OnLogEvent; 
+        #endregion
         #region Declarations
         /// <summary>
         /// This is the queue that holds the data in memory.
@@ -36,11 +37,11 @@ namespace Xigadee
         /// </summary>
         /// <param name="level">The logging level for the container.</param>
         /// <param name="capacity">The maximum capacity for the container.</param>
-        public LogEventLevelHolder(LoggingLevel level, int capacity = 2000)
+        public MemoryLogEventLevelHolder(LoggingLevel level, int capacity = 2000)
         {
             Level = level;
             mCapacity = capacity;
-        } 
+        }
         #endregion
 
         /// <summary>
@@ -58,7 +59,7 @@ namespace Xigadee
         /// <summary>
         /// This is the total number of events that have passed through the collection.
         /// </summary>
-        public long CountTotal { get { return mLogEvents+mLogEventsExpired; } }
+        public long CountTotal { get { return mLogEvents + mLogEventsExpired; } }
 
         #region Log(LogEvent logEvent)
         /// <summary>
@@ -96,75 +97,6 @@ namespace Xigadee
         IEnumerator IEnumerable.GetEnumerator()
         {
             return mQueue?.GetEnumerator();
-        }
-    }
-
-    /// <summary>
-    /// This logger can be used for diagnotic purposes, and will hold a set of logger messages in memory, based on the 
-    /// size parameter passed through in the constructor.
-    /// </summary>
-    public class MemoryLogger: ServiceBase<LoggingStatistics>, ILogger, IServiceOriginator
-    {
-        #region Declarations
-        /// <summary>
-        /// This is the queue that holds the data in memory.
-        /// </summary>
-        Dictionary<LoggingLevel, LogEventLevelHolder> mHolders; 
-
-        long mLogEvents = 0;
-
-        long mLogEventsExpired = 0;
-        #endregion
-
-        public MemoryLogger():this((l) => 2000)
-        {
-        }
-        /// <summary>
-        /// This is the default constructor.
-        /// </summary>
-        /// <param name="capacity"></param>
-        public MemoryLogger(Func<LoggingLevel, int> capacityCalculator)
-        {
-            //Create a dictionary for each specific level.
-            mHolders =
-                Enum.GetValues(typeof(LoggingLevel))
-                    .Cast<LoggingLevel>()
-                    .ToDictionary((l) => l, (l) => new LogEventLevelHolder(l, capacityCalculator(l)));
-
-        }
-
-        /// <summary>
-        /// The service originator.
-        /// </summary>
-        public string OriginatorId
-        {
-            get; set;
-        }
-
-        public async Task Log(LogEvent logEvent)
-        {
-            await mHolders[logEvent.Level].Log(logEvent);
-
-            Interlocked.Increment(ref mLogEvents);
-        }
-
-        protected override void StartInternal()
-        {
-        }
-
-        protected override void StopInternal()
-        {
-        }
-
-        /// <summary>
-        /// This method returns the holder.
-        /// If the logger has not yet started, then this method will return null.
-        /// </summary>
-        /// <param name="level">The logging level requested.</param>
-        /// <returns>Returns the logging level container.</returns>
-        public LogEventLevelHolder Holder(LoggingLevel level)
-        {
-            return mHolders?[level];
         }
     }
 }

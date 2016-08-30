@@ -24,7 +24,20 @@ namespace Test.Xigadee
                     }
                     , enabled: (m, o) => sContext.Server.Status == 0
                     , childMenu: sMenuServerPersistenceSettings.Value
-                )                
+                )
+                , new ConsoleSwitchOption(
+                    "Start Extension Service Test", (m, o) =>
+                    {
+                        Task.Run(() => ExtensionMicroserviceStart());
+                        return true;
+                    }
+                    , "Stop Extension Service Test", (m, o) =>
+                    {
+                        Task.Run(() => ExtensionMicroserviceStop());
+                        return true;
+                    }
+                    , shortcut: "startclient"
+                )
                 , new ConsoleSwitchOption(
                     "Start Client", (m, o) =>
                     {
@@ -36,7 +49,7 @@ namespace Test.Xigadee
                         Task.Run(() => MicroserviceClientStop());
                         return true;
                     }
-                    ,shortcut: "startclient"
+                    , shortcut: "startclient"
                 )
                 , new ConsoleSwitchOption(
                     "Start WebAPI client", (m, o) =>

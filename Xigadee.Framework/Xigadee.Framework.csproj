@@ -48,6 +48,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="BoundaryLogger\BoundaryLoggerSql.cs" />
+    <Compile Include="Logger\FileStorageLoggingBase.cs" />
     <Compile Include="Persistence\ExtensionMethods.cs" />
     <Compile Include="Persistence\FileSystem\PersistenceManagerHandlerFileSystem.cs" />
     <Compile Include="Persistence\FileSystem\TransactionalNTFS\TxFDirectory.cs" />
@@ -76,7 +77,6 @@
   <ItemGroup>
     <Folder Include="BoundaryLogger\Sql\" />
     <Folder Include="EventSource\" />
-    <Folder Include="Logger\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\AssemblyInfo\ApacheLicense-2.0.txt">

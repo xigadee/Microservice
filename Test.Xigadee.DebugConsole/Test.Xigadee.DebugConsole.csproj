@@ -207,6 +207,7 @@
     <Compile Include="Program_Menu.cs" />
     <Compile Include="Program_Menu_ClientPersistence.cs" />
     <Compile Include="Program_Microservice_Client.cs" />
+    <Compile Include="Program_Microservice_Extension.cs" />
     <Compile Include="Program_Microservice_Server.cs" />
     <Compile Include="Program_PersistenceMenuHelper.cs" />
     <Compile Include="Program_Menu_ApiPersistence.cs" />

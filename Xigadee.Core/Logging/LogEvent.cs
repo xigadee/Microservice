@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This is the root class for logging events for the Microservice framework.
+    /// </summary>
     public class LogEvent
     {
         #region Constructors
@@ -49,10 +52,5 @@ namespace Xigadee
         public virtual Exception Ex { get; set; }
 
         public virtual Dictionary<string, string> AdditionalData { get; private set; }
-    }
-
-    public interface ILogStoreName
-    {
-        string StorageId { get; }
     }
 }

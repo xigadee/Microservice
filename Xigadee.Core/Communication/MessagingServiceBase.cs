@@ -38,7 +38,10 @@ namespace Xigadee
         /// </summary>
         /// <param name="channelId">The string based channel id.</param>
         /// <param name="priorityPartitions">The number of priority channels. Null denotes a single channel of priority one.</param>
-        public MessagingServiceBase(string channelId, IEnumerable<P> priorityPartitions, IBoundaryLogger boundaryLogger = null) :base()
+        public MessagingServiceBase(string channelId
+            , IEnumerable<P> priorityPartitions
+            , IBoundaryLogger boundaryLogger = null) 
+            :base()
         {
             if (channelId == null)
                 throw new ArgumentNullException("channelId", "channelId cannot be null");

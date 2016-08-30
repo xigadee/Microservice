@@ -112,6 +112,8 @@
     <Compile Include="ExtensionMethods\Exceptions\ChannelPartitionConfigBaseException.cs" />
     <Compile Include="ExtensionMethods\Exceptions\ChannelPartitionConfigExistsException.cs" />
     <Compile Include="ExtensionMethods\Logging.cs" />
+    <Compile Include="Logging\Interfaces\ILogStoreName.cs" />
+    <Compile Include="Logging\Memory\MemoryLogEventHolder.cs" />
     <Compile Include="Microservice\Events.cs" />
     <Compile Include="Exceptions\RequiredSharedServiceMissingException.cs" />
     <Compile Include="Exceptions\StorageThrottlingException.cs" />
@@ -131,13 +133,12 @@
     <Compile Include="Command\MasterJob\MasterJobState.cs" />
     <Compile Include="Command\MasterJob\StandbyPartner.cs" />
     <Compile Include="Logging\DispatcherLoggerDirection.cs" />
-    <Compile Include="Logging\DocumentDbLogger.cs" />
-    <Compile Include="Logging\FileStorageLoggingBase.cs" />
+    <Compile Include="Logging\DocumentDb\DocumentDbLogger.cs" />
     <Compile Include="Logging\LogEvent.cs" />
     <Compile Include="Logging\LoggingLevel.cs" />
-    <Compile Include="Logging\MemoryLogger.cs" />
+    <Compile Include="Logging\Memory\MemoryLogger.cs" />
     <Compile Include="Logging\PayloadLogEvent.cs" />
-    <Compile Include="Logging\PersistencePayloadLogEvent.cs" />
+    <Compile Include="Persistence\Logging\PersistencePayloadLogEvent.cs" />
     <Compile Include="Microservice\Configuration\IEnvironmentConfiguration.cs" />
     <Compile Include="Microservice\MicroservicePipeline.cs" />
     <Compile Include="Microservice\MicroserviceStatusChangeException.cs" />
