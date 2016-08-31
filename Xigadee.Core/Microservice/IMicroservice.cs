@@ -24,6 +24,9 @@ namespace Xigadee
         IPayloadSerializer RegisterPayloadSerializer(IPayloadSerializer serializer);
         ISender RegisterSender(ISender sender);
         ITelemetry RegisterTelemetry(ITelemetry telemetry);
+
+        ISharedService SharedServices { get; }
+
     }
 
     public interface IMicroservice: IMicroserviceConfigure

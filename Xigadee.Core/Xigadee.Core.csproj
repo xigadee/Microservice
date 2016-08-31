@@ -112,6 +112,7 @@
     <Compile Include="ExtensionMethods\Exceptions\ChannelPartitionConfigBaseException.cs" />
     <Compile Include="ExtensionMethods\Exceptions\ChannelPartitionConfigExistsException.cs" />
     <Compile Include="ExtensionMethods\Logging.cs" />
+    <Compile Include="ExtensionMethods\SharedService.cs" />
     <Compile Include="Logging\Interfaces\ILogStoreName.cs" />
     <Compile Include="Logging\Memory\MemoryLogEventHolder.cs" />
     <Compile Include="Microservice\Events.cs" />
