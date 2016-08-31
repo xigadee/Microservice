@@ -3,7 +3,7 @@
   <metadata>
     <id>Xigadee.Core</id>
     <version>{UpdateVersion.ps1.replace}</version>
-    <title>Xigadee Microservice accelerator - Core Library</title>
+    <title>Xigadee Core Library</title>
     <authors>Paul Stancer and Guy Steel at Information Management Group Ltd, part of Hitachi Consulting (http://hitachiconsulting.com)</authors>
     <owners>Information Management Group Ltd (http://imgroup.com) part of Hitachi Consulting</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
