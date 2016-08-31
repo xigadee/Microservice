@@ -155,6 +155,7 @@
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="PopulatorWebApiUnity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

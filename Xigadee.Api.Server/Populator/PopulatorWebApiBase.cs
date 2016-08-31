@@ -85,7 +85,6 @@ namespace Xigadee
 
                 throw;
             }
-
         }
 
         /// <summary>

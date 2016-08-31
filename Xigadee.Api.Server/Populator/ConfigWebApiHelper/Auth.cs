@@ -21,21 +21,21 @@ namespace Xigadee
         public const string KeyAuthTokenLifeInMin = "AuthTokenLifeInMin";
 
         [ConfigSetting("WebApiAuth")]
-        public static bool AuthAllowInsecureHttp(this ConfigWebApi config) => config.PlatformOrConfigCacheBool(KeyAuthAllowInsecureHttp, "true");
+        public static bool AuthAllowInsecureHttp(this IEnvironmentConfiguration config) => config.PlatformOrConfigCacheBool(KeyAuthAllowInsecureHttp, "true");
 
         [ConfigSetting("WebApiAuth")]
-        public static Sha512SignatureHelper SignatureProvider(this ConfigWebApi config) => new Sha512SignatureHelper(config.PlatformOrConfigCache(KeyAuthSignature));
+        public static Sha512SignatureHelper SignatureProvider(this IEnvironmentConfiguration config) => new Sha512SignatureHelper(config.PlatformOrConfigCache(KeyAuthSignature));
 
         [ConfigSetting("WebApiAuth")]
-        public static string AuthAudiences(this ConfigWebApi config) => config.PlatformOrConfigCache(KeyAuthAudiences);
+        public static string AuthAudiences(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyAuthAudiences);
         //{"Audiences":[{"Name":"ValueRetail.Web.User","ClientId":"e02920f4b3eb4492b26991030265a0f6","Base64Secret":"G7AIbRzz4r0NC3u5RBnYauveRoCwqm5zmBJU6PDMaa4="},{"Name":"APIClient","ClientId":"4e8ce86a9c914dd8a41c09e0709ef297","Base64Secret":"71UOU6ewhSjuJ/sp+O/1qlvw4m66LkmSsaFljtHan4M=", "CustomTokenExpirationMin":"525949"}]}
 
         [ConfigSetting("WebApiAuth")]
-        public static string AuthIssuer(this ConfigWebApi config) => config.PlatformOrConfigCache(KeyAuthIssuer);
+        public static string AuthIssuer(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyAuthIssuer);
         //https://vrapibffstaging.cloudapp.net/
 
         [ConfigSetting("WebApiAuth")]
-        public static string AuthTokenLifeInMin(this ConfigWebApi config) => config.PlatformOrConfigCache(KeyAuthTokenLifeInMin, "30");
+        public static string AuthTokenLifeInMin(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyAuthTokenLifeInMin, "30");
 
     }
 }

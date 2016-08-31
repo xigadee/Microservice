@@ -15,6 +15,6 @@ namespace Xigadee
         /// Blob logging filter level
         /// </summary>
         [ConfigSetting("WebApiLogging")]
-        public static IList<string> WebLogFilterLevels(this ConfigWebApi config) => config.PlatformOrConfigCache(KeyWebLogFilterLevels, "All")?.Split(',').ToList() ?? new List<string>();
+        public static IList<string> WebLogFilterLevels(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyWebLogFilterLevels, "All")?.Split(',').ToList() ?? new List<string>();
     }
 }

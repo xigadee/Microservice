@@ -78,7 +78,7 @@ namespace Xigadee
         {
             base.RegisterWebApiServices();
 
-            // Register the log container so that we can log to the same loggers as the microservce code
+            // Register the log container so that we can log to the same loggers as the microservice code
             Unity.RegisterInstance(new LoggerInternal(Service));
 
             // Register the config to ensure that the azure cloud settings can be pulled out of config not just the web.config settings - used by owin auth

@@ -26,17 +26,17 @@ namespace Xigadee
         /// <summary>
         /// This is the service contract.
         /// </summary>
-        public IMicroservice Service { get; }
+        public virtual IMicroservice Service { get; protected set;}
 
         /// <summary>
         /// This is the external configuration.
         /// </summary>
-        public IEnvironmentConfiguration Configuration { get; }
+        public virtual IEnvironmentConfiguration Configuration { get; protected set;}
 
         /// <summary>
         /// This shortcut starts the service.
         /// </summary>
-        public void Start()
+        public virtual void Start()
         {
             Service.Start();
         }
@@ -44,7 +44,7 @@ namespace Xigadee
         /// <summary>
         /// This shortcut stops the service.
         /// </summary>
-        public void Stop()
+        public virtual void Stop()
         {
             Service.Stop();
         }
