@@ -12,7 +12,7 @@
     <description>Xigadee Azure library contains a set of communication and persistence components built on the Microsoft Azure libraries.</description>
     <releaseNotes>Initial push.</releaseNotes>
     <copyright>Copyright © Hitachi Consulting 2012-2016</copyright>
-    <tags>Xigadee Microservice Azure ApplicationInsights Hitachi IMGROUP</tags>
+    <tags>Xigadee Microservice Azure ApplicationInsights .NET Hitachi IMGROUP</tags>
     <dependencies>
       <dependency id="Newtonsoft.Json" version="9.0.1" />
       <dependency id="Microsoft.ApplicationInsights" version="2.1.0" />
