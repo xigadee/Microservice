@@ -169,7 +169,6 @@
     <Compile Include="Filters\WebApiServiceUnavailableFilter.cs" />
     <Compile Include="Helper\HttpMethodChangeHandler.cs" />
     <Compile Include="Helper\OData4Helper.cs" />
-    <Compile Include="ModelBinders\IRequestOptions.cs" />
     <Compile Include="ModelBinders\OData4ServiceDocumentResponse.cs" />
     <Compile Include="Populator\ConfigWebApi.cs" />
     <Compile Include="Populator\ConfigWebApiHelper\Auth.cs" />

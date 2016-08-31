@@ -62,6 +62,7 @@
     <Compile Include="Helper\Conversion.cs" />
     <Compile Include="Helper\Conversion_Delta.cs" />
     <Compile Include="Interfaces\IRepositoryAsync.cs" />
+    <Compile Include="IRequestOptions.cs" />
     <Compile Include="IResponseHolder.cs" />
     <Compile Include="Helper\LinqHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
