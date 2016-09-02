@@ -56,10 +56,11 @@ namespace Xigadee
             return cpipe;
         }
 
-        public static MicroservicePipeline Revert<C>(this C cpipe, Action<C> action = null)
+        public static MicroservicePipeline Revert<C>(this C cpipe
+            , Action<C> assign = null)
             where C: ChannelPipelineBase
         {
-            action?.Invoke(cpipe);
+            assign?.Invoke(cpipe);
 
             return cpipe.Pipeline;
         }

@@ -170,12 +170,12 @@ namespace Xigadee
         #endregion
 
         #region CommandHandlerCreate(MessageFilterWrapper key, Func<TransmissionPayload, List<TransmissionPayload>, Task> action)
-            /// <summary>
-            /// This method creates the command handler. You can override this method to set additional properties.
-            /// </summary>
-            /// <param name="key">The message key</param>
-            /// <param name="action">The execute action.</param>
-            /// <returns>Returns the handler.</returns>
+        /// <summary>
+        /// This method creates the command handler. You can override this method to set additional properties.
+        /// </summary>
+        /// <param name="key">The message key</param>
+        /// <param name="action">The execute action.</param>
+        /// <returns>Returns the handler.</returns>
         protected virtual H CommandHandlerCreate(MessageFilterWrapper key, Func<TransmissionPayload, List<TransmissionPayload>, Task> action)
         {
             var handler = new H();

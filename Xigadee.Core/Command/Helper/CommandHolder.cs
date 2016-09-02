@@ -13,6 +13,7 @@ namespace Xigadee
             Message = message;
             RequiresQuorum = requiresQuorum;
         }
+
         public MessageFilterWrapper Message { get; set; }
 
         public bool RequiresQuorum { get; set; }
