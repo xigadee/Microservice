@@ -18,6 +18,7 @@ namespace Xigadee
             , IBoundaryLogger bLogger = null
             , IEnumerable<ResourceProfile> resourceProfiles = null
             , bool internalOnly = false
+            , Action<ChannelPipelineIncoming> assign = null
             )
         {     
             var channel = pipeline.Service.RegisterChannel(new Channel(channelId, ChannelDirection.Incoming, description, bLogger, internalOnly));
@@ -27,7 +28,11 @@ namespace Xigadee
             if (resourceProfiles != null)
                 channel.ResourceProfiles = resourceProfiles.ToList();
 
-            return new ChannelPipelineIncoming(pipeline, channel);
+            var cpipe = new ChannelPipelineIncoming(pipeline, channel);
+
+            assign?.Invoke(cpipe);
+
+            return cpipe;
         }
 
         public static ChannelPipelineOutgoing AddChannelOutgoing(this MicroservicePipeline pipeline
@@ -36,6 +41,7 @@ namespace Xigadee
             , IEnumerable<SenderPartitionConfig> partitions = null
             , IBoundaryLogger bLogger = null
             , bool internalOnly = false
+            , Action<ChannelPipelineOutgoing> assign = null
             )
         {
             var channel = pipeline.Service.RegisterChannel(new Channel(channelId, ChannelDirection.Outgoing, description, bLogger, internalOnly));
@@ -43,7 +49,11 @@ namespace Xigadee
             if (partitions != null)
                 channel.Partitions = partitions.ToList();
 
-            return new ChannelPipelineOutgoing(pipeline, channel);
+            var cpipe = new ChannelPipelineOutgoing(pipeline, channel);
+
+            assign?.Invoke(cpipe);
+
+            return cpipe;
         }
 
         public static MicroservicePipeline Revert<C>(this C cpipe, Action<C> action = null)
