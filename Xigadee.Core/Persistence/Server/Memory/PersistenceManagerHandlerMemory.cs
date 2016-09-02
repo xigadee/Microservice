@@ -176,6 +176,20 @@ namespace Xigadee
         }
         #endregion
 
+        #region EntityPopulate(K key, E entity)
+        /// <summary>
+        /// This method allows items to be added to the collection. This method is broken out to allow
+        /// entities to be loaded in the pre-populate stage.
+        /// </summary>
+        /// <param name="key">The entity key.</param>
+        /// <param name="entity">The entity.</param>
+        /// <returns>The response status</returns>
+        protected virtual int EntityPopulate(K key, E entity)
+        {
+            return mContainer.Add(key, entity, mTransform.ReferenceMaker(entity)); ;
+        } 
+        #endregion
+
         #region InternalCreate(K key, PersistenceRequestHolder<K, E> holder)
         /// <summary>
         /// This is the create override for the command.
@@ -188,7 +202,7 @@ namespace Xigadee
             //if (await ProvideTaskDelay(holder.Prq.Cancel))
             //    return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
             E entity = holder.Rq.Entity;
-            int response = mContainer.Add(key, entity, mTransform.ReferenceMaker(entity));
+            int response = EntityPopulate(key, entity);
 
             if (response == 201)
             {
