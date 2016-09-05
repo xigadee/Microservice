@@ -10,13 +10,13 @@ namespace Xigadee
     {
         public static P AppendBoundaryLogger<P,L>(this P cpipe
             , L boundaryLogger
-            , Action<L> action = null
+            , Action<P,L> action = null
             )
             where P: ChannelPipelineBase
             where L: IBoundaryLogger
         {
 
-            action?.Invoke(boundaryLogger);
+            action?.Invoke(cpipe,boundaryLogger);
             cpipe.Channel.BoundaryLogger = boundaryLogger;
 
             return cpipe;
@@ -24,7 +24,7 @@ namespace Xigadee
 
         public static P AppendBoundaryLogger<P,L>(this P cpipe
             , Func<IEnvironmentConfiguration, L> creator
-            , Action<L> action = null
+            , Action<P,L> action = null
             )
             where P : ChannelPipelineBase
             where L : IBoundaryLogger

@@ -8,7 +8,6 @@ namespace Xigadee
 {
     public static class ChannelCommandExtensionMethods
     {
-
         public static ChannelPipelineIncoming AddCommand<C>(this ChannelPipelineIncoming cpipe
             , C command
             , Action<C> assignment = null

@@ -18,7 +18,7 @@ namespace Xigadee
             , IBoundaryLogger bLogger = null
             , IEnumerable<ResourceProfile> resourceProfiles = null
             , bool internalOnly = false
-            , Action<ChannelPipelineIncoming> assign = null
+            , Action<ChannelPipelineIncoming, Channel> assign = null
             )
         {     
             var channel = pipeline.Service.RegisterChannel(new Channel(channelId, ChannelDirection.Incoming, description, bLogger, internalOnly));
@@ -30,7 +30,7 @@ namespace Xigadee
 
             var cpipe = new ChannelPipelineIncoming(pipeline, channel);
 
-            assign?.Invoke(cpipe);
+            assign?.Invoke(cpipe, cpipe.Channel);
 
             return cpipe;
         }
@@ -41,7 +41,7 @@ namespace Xigadee
             , IEnumerable<SenderPartitionConfig> partitions = null
             , IBoundaryLogger bLogger = null
             , bool internalOnly = false
-            , Action<ChannelPipelineOutgoing> assign = null
+            , Action<ChannelPipelineOutgoing, Channel> assign = null
             )
         {
             var channel = pipeline.Service.RegisterChannel(new Channel(channelId, ChannelDirection.Outgoing, description, bLogger, internalOnly));
@@ -51,7 +51,7 @@ namespace Xigadee
 
             var cpipe = new ChannelPipelineOutgoing(pipeline, channel);
 
-            assign?.Invoke(cpipe);
+            assign?.Invoke(cpipe, cpipe.Channel);
 
             return cpipe;
         }

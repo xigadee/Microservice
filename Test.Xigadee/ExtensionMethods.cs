@@ -26,7 +26,7 @@ namespace Test.Xigadee
                     .AddPayloadSerializerDefaultJson()
                     .AddChannelIncoming("internalIn", internalOnly: true)
                         .AppendResourceProfile(new ResourceProfile("TrackIt"))
-                        .AppendBoundaryLogger(new MemoryBoundaryLogger(), (bl) => bLogger = bl)
+                        .AppendBoundaryLogger(new MemoryBoundaryLogger(), (p,bl) => bLogger = bl)
                         .AssignPriorityPartition(0, 1)
                         .AddCommand(new PersistenceBlahMemory())
                         .AddCommand(new PersistenceSharedService<Guid, Blah>(), (c) => persistence = c, cpipeOut)

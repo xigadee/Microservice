@@ -33,7 +33,7 @@ namespace Test.Xigadee
                     .AddPayloadSerializerDefaultJson()
                     .AddChannelIncoming("internalIn")
                         .AppendResourceProfile(new ResourceProfile("TrackIt"))
-                        .AppendBoundaryLogger(new MemoryBoundaryLogger(), (bl) => bLogger = bl)
+                        .AppendBoundaryLogger(new MemoryBoundaryLogger(), (p,bl) => bLogger = bl)
                         .AssignPriorityPartition(0, 1)
                         .AttachAzureServiceBusQueueListener("Myqueue")
                         .AddCommand(new PersistenceBlahMemory())
