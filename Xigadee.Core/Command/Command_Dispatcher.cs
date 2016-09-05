@@ -163,8 +163,9 @@ namespace Xigadee
             {
                 OnCommandChange?.Invoke(this, new CommandChange(remove, key.Message, isQuorum));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Logger?.LogException($"Command {GetType().Name} Change Notification failed", ex);
             }
         }
         #endregion

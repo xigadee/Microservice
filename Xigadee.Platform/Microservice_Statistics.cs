@@ -53,19 +53,21 @@ namespace Xigadee
             stats.Configuration = ConfigurationOptions;
             stats.StartTime = mStartTime;
 
-            if (mTaskManager != null) stats.Tasks = mTaskManager.Statistics;
+            stats.Tasks = mTaskManager?.Statistics;
 
-            if (mLogger != null) stats.Logger = mLogger.Statistics;
+            stats.Logger = mLogger?.Statistics;
 
-            if (mEventSource != null) stats.EventSource = mEventSource.Statistics;
+            stats.EventSource = mEventSource?.Statistics;
 
-            if (mCommunication != null) stats.Communication = mCommunication.Statistics;
+            stats.Channels = mChannels?.Statistics;
 
-            if (mResourceTracker != null) stats.Resources = mResourceTracker.Statistics;
+            stats.Communication = mCommunication?.Statistics;
 
-            if (mCommands != null) stats.Commands = mCommands.Statistics;
+            stats.Resources = mResourceTracker?.Statistics;
 
-            if (mScheduler != null) stats.Scheduler = mScheduler.Statistics;
+            stats.Commands = mCommands?.Statistics;
+
+            stats.Scheduler = mScheduler?.Statistics;
         }
         #endregion
 

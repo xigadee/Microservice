@@ -62,7 +62,7 @@
     <Compile Include="Channel\ChannelContainer.cs" />
     <Compile Include="Channel\ChannelContainerPolicy.cs" />
     <Compile Include="Channel\ChannelContainerStatistics.cs" />
-    <Compile Include="Channel\DuplicateChannelException.cs" />
+    <Compile Include="Channel\Exception\DuplicateChannelException.cs" />
     <Compile Include="Channel\IChannelService.cs" />
     <Compile Include="Microservice_Configure.cs" />
     <Compile Include="Populator\IMicroserviceChannel.cs" />

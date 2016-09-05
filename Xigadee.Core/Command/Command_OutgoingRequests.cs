@@ -165,8 +165,6 @@ namespace Xigadee
 
             ValidateServiceStarted();
 
-            //TaskScheduler taskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
-
             var tracker = OutgoingRequestTransmit(payloadRq);
 
             if (processAsync)
@@ -202,16 +200,18 @@ namespace Xigadee
             string id = payload.Message.OriginatorKey.ToUpperInvariant();
 
             //Get the maximum processing time.
-            TimeSpan processingTime = payload.MaxProcessingTime.HasValue ? payload.MaxProcessingTime.Value : mPolicy.OutgoingRequestMaxProcessingTimeDefault;
+            TimeSpan processingTime = payload.MaxProcessingTime.HasValue ? 
+                payload.MaxProcessingTime.Value : mPolicy.OutgoingRequestMaxProcessingTimeDefault;
 
             //Create and register the request holder.
             var holder = new OutgoingRequestTracker(id, payload, processingTime);
 
+            //Add the outgoing holder to the collection
             if (!mOutgoingRequests.TryAdd(holder.Id, holder))
             {
                 var errorStr = $"OutgoingRequestTransmit: Duplicate key {holder.Id}";
                 Logger?.LogMessage(LoggingLevel.Error, errorStr);
-                throw new Exception(errorStr);
+                throw new OutgoingRequestTransmitException(errorStr);
             }
 
             //Submit the payload for processing
@@ -221,7 +221,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region --> OutgoingRequestsProcessTimeouts()
+        #region --> OutgoingRequestsProcessTimeouts...
         /// <summary>
         /// This method is used to process any payloadRs timeouts.
         /// </summary>

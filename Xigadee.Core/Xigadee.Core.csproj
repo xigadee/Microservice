@@ -63,6 +63,8 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="BoundaryLogger\MemoryBoundaryLogger.cs" />
+    <Compile Include="Command\Attributes\CommandMethodAttribute.cs" />
+    <Compile Include="Command\Exceptions\OutgoingRequestTransmitException.cs" />
     <Compile Include="ExtensionMethods\Channel_BoundaryLogger.cs" />
     <Compile Include="Channel\Channel.cs" />
     <Compile Include="Channel\ChannelDirection.cs" />

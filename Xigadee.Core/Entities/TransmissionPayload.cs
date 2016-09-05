@@ -203,7 +203,6 @@ namespace Xigadee
         public bool DispatcherCanSignal { get; set; }
         #endregion
 
-
         #region SignalSuccess()
         /// <summary>
         /// This method signal success for the message.

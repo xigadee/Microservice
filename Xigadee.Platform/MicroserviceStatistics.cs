@@ -101,7 +101,10 @@ namespace Xigadee
         /// This is the current configuration for the Microservice.
         /// </summary>
         public MicroserviceConfigurationOptions Configuration { get; set; }
-
+        /// <summary>
+        /// The channel container statistics.
+        /// </summary>
+        public ChannelContainerStatistics Channels { get; set; }
         /// <summary>
         /// This is a list of the handlers active on the system and their status.
         /// </summary>
@@ -124,6 +127,7 @@ namespace Xigadee
         /// The scheduler statistics.
         /// </summary>
         public SchedulerStatistics Scheduler { get; set; }
+
         /// <summary>
         /// The logger statistics.
         /// </summary>

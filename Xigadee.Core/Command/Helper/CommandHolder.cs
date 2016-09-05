@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This class holds the command message notification.
+    /// </summary>
     public class CommandHolder: IEquatable<CommandHolder>
     {
         public CommandHolder(MessageFilterWrapper message, bool requiresQuorum)
@@ -13,7 +16,9 @@ namespace Xigadee
             Message = message;
             RequiresQuorum = requiresQuorum;
         }
-
+        /// <summary>
+        /// This is the message filter.
+        /// </summary>
         public MessageFilterWrapper Message { get; set; }
 
         public bool RequiresQuorum { get; set; }
