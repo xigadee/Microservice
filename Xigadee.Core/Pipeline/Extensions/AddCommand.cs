@@ -51,6 +51,14 @@ namespace Xigadee
 
         }
 
+        public static ChannelPipelineIncoming AddCommand<C>(this ChannelPipelineIncoming cpipe, Action<C> assign = null)
+            where C: ICommand, new()
+        {
+            var command = new C();
+            assign?.Invoke(command);
+            return cpipe.AddCommand(command);
+        }
+
         public static ChannelPipelineIncoming AddCommand<C>(this ChannelPipelineIncoming cpipe
             , C command
             , Action<C> assignment = null

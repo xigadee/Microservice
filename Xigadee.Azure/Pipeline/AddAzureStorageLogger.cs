@@ -7,7 +7,7 @@ using Microsoft.WindowsAzure.Storage.Auth;
 
 namespace Xigadee
 {
-    public static class AzureLoggerExtensionMethods
+    public static partial class AzureExtensionMethods
     {
         public static MicroservicePipeline AddAzureStorageLogger(this MicroservicePipeline pipeline
             , string serviceName = null

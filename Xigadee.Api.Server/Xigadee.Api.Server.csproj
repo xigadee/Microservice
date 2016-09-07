@@ -165,8 +165,8 @@
     <Compile Include="Apim\ApimResponseHolder.cs" />
     <Compile Include="Controllers\SecurityControllerAsyncBase.cs" />
     <Compile Include="Controllers\WebhookControllerAsyncBase.cs" />
-    <Compile Include="ExtensionMethods\WebApi.cs" />
-    <Compile Include="ExtensionMethods\WebApiMicroservicePipeline.cs" />
+    <Compile Include="Pipeline\WebApi.cs" />
+    <Compile Include="Pipeline\WebApiMicroservicePipeline.cs" />
     <Compile Include="Filters\WebApiCorrelationIdFilter.cs" />
     <Compile Include="Filters\WebApiServiceUnavailableFilter.cs" />
     <Compile Include="Helper\HttpMethodChangeHandler.cs" />

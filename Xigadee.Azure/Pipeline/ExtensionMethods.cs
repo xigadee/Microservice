@@ -9,7 +9,7 @@ namespace Xigadee
     /// <summary>
     /// These extension methods connect the service bus listeners in to the pipeline.
     /// </summary>
-    public static class AzureServiceBusExtensionMethods
+    public static partial class AzureExtensionMethods
     {
         #region ServiceBusConnectionValidate(this IEnvironmentConfiguration Configuration, string serviceBusConnection)
         /// <summary>

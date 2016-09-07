@@ -7,7 +7,7 @@ using Microsoft.WindowsAzure.Storage.Auth;
 
 namespace Xigadee
 {
-    public static class AzureEventSourceExtensionMethods
+    public static partial class AzureExtensionMethods
     {
 
         public static MicroservicePipeline AddAzureStorageEventSource(

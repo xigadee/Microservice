@@ -7,6 +7,7 @@ namespace Test.Xigadee
     public class ExtensionMethods
     {
         MemoryLogger logger = null;
+        MemoryBoundaryLogger bLogger = null;
 
         private void ConfigureServiceRoot(MicroservicePipeline pipe)
         {
@@ -18,7 +19,9 @@ namespace Test.Xigadee
 
         private void ChannelInConfigure(ChannelPipelineIncoming inPipe)
         {
-
+            inPipe
+                .AppendResourceProfile(new ResourceProfile("TrackIt"))
+                .AppendBoundaryLogger(new MemoryBoundaryLogger(), (p, bl) => bLogger = bl);
         }
 
         [TestMethod]
@@ -32,14 +35,11 @@ namespace Test.Xigadee
                 ChannelPipelineIncoming cpipeIn = null;
                 ChannelPipelineOutgoing cpipeOut = null;
                 PersistenceSharedService<Guid, Blah> persistence = null;
-                MemoryBoundaryLogger bLogger = null;
 
                 pipeline                 
                     .CallOut(ConfigureServiceRoot)
                     .AddChannelIncoming("internalIn", internalOnly: true)
                         .CallOut(ChannelInConfigure)
-                        .AppendResourceProfile(new ResourceProfile("TrackIt"))
-                        .AppendBoundaryLogger(new MemoryBoundaryLogger(), (p,bl) => bLogger = bl)
                         .AssignPriorityPartition(0, 1)
                         .AddCommand(new PersistenceBlahMemory())
                         .AddCommand(new PersistenceSharedService<Guid, Blah>(), (c) => persistence = c, cpipeOut)
