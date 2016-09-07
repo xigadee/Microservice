@@ -11,10 +11,10 @@ namespace Xigadee
     /// </summary>
     public class CommandHolder: IEquatable<CommandHolder>
     {
-        public CommandHolder(MessageFilterWrapper message, bool requiresQuorum)
+        public CommandHolder(MessageFilterWrapper message)
         {
             Message = message;
-            RequiresQuorum = requiresQuorum;
+            //RequiresQuorum = requiresQuorum;
         }
         /// <summary>
         /// This is the message filter.

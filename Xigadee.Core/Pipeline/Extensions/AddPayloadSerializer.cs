@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public static class SerializerExtensionMethods
+    public static partial class CorePipelineExtensions
     {
         public static MicroservicePipeline AddPayloadSerializerDefaultJson(this MicroservicePipeline pipeline)
         {

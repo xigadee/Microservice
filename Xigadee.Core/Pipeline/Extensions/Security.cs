@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public static class SecurityExtensionMethods
+    public static partial class CorePipelineExtensions
     {
 
     }

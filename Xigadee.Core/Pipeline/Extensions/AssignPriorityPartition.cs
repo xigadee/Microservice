@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public static class ChannelPriorityPartitionsExtensionMethods
+    public static partial class CorePipelineExtensions
     {
         private static void AddPriorityPartition<P>(ChannelPipelineBase pipeline, P config) where P : PartitionConfig
         {

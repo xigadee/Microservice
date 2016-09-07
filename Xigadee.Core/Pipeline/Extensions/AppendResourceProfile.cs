@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public static class ChannelResourceProfileExtensionMethods
+    public static partial class CorePipelineExtensions
     {
         public static ChannelPipelineIncoming AppendResourceProfile(this ChannelPipelineIncoming cpipe
             , ResourceProfile profile

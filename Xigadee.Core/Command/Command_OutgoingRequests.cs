@@ -57,7 +57,8 @@ namespace Xigadee
             //Check whether the ResponseId has been set, and if so then register the command.
             if (ResponseId == null)
                 throw new CommandStartupException("Outgoing requests are enabled, but the ResponseId parameter has not been set");
-
+            
+            //This is the return message handler
             CommandRegister(ResponseId, OutgoingRequestResponseProcess);
         }
         #endregion
@@ -104,6 +105,7 @@ namespace Xigadee
                 return;
             }
 
+            //This method signals the request as completed or failed and sets the incoming payload.
             if (!OutgoingRequestRemove(id, payload))
             {
                 try
@@ -283,6 +285,7 @@ namespace Xigadee
                 if (holder.Tcs != null)
                     if (payloadIn == null)
                     {
+                        //This method signals that the request has been cancelled.
                         holder.Tcs.SetCanceled();
                     }
                     else

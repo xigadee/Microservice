@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public static class LoggingExtensionMethods
+    public static partial class CorePipelineExtensions
     {
         public static MicroservicePipeline AddLogger(this MicroservicePipeline pipeline, ILogger logger)
         {

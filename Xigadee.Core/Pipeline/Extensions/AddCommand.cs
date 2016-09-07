@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public static class CommandExtensionMethods
+    public static partial class CorePipelineExtensions
     {
         public static MicroservicePipeline AddCommand<C>(this MicroservicePipeline pipeline
             , C command
@@ -51,5 +51,32 @@ namespace Xigadee
 
         }
 
+        public static ChannelPipelineIncoming AddCommand<C>(this ChannelPipelineIncoming cpipe
+            , C command
+            , Action<C> assignment = null
+            , ChannelPipelineOutgoing channelResponse = null
+            , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
+            , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null
+            )
+            where C : ICommand
+        {
+            cpipe.Pipeline.AddCommand(command, assignment, cpipe, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
+
+            return cpipe;
+        }
+
+        public static ChannelPipelineIncoming AddCommand<C>(this ChannelPipelineIncoming cpipe
+            , Func<IEnvironmentConfiguration, C> creator
+            , Action<C> assignment = null
+            , ChannelPipelineOutgoing channelResponse = null
+            , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
+            , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null
+            )
+            where C : ICommand
+        {
+            cpipe.Pipeline.AddCommand(creator, assignment, cpipe, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
+
+            return cpipe;
+        }
     }
 }

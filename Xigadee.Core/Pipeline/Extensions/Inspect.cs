@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public static class PassthroughExtensionMethods
+    public static partial class CorePipelineExtensions
     {
         public static MicroservicePipeline Inspect(this MicroservicePipeline pipeline
             , Action<IMicroservice> msAssign = null
@@ -30,19 +30,6 @@ namespace Xigadee
             return pipeline;
         }
 
-        public static IMicroservice ToMicroservice(this MicroservicePipeline pipeline)
-        {
-            return pipeline.Service;
-        }
 
-        public static IEnvironmentConfiguration ToConfiguration(this MicroservicePipeline pipeline)
-        {
-            return pipeline.Configuration;
-        }
-
-        public static Channel ToChannel(this ChannelPipelineIncoming cpipe)
-        {
-            return cpipe.Channel;
-        }
     }
 }

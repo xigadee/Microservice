@@ -9,7 +9,7 @@ namespace Xigadee
     /// <summary>
     /// These extensions allow services to be registered as part of a pipeline
     /// </summary>
-    public static class SharedServiceExtensionMethods
+    public static partial class CorePipelineExtensions
     {
         public static MicroservicePipeline AddSharedService<I>(this MicroservicePipeline pipeline, I service, string serviceName = null, Action<I> action = null) where I : class
         {
@@ -27,22 +27,6 @@ namespace Xigadee
                 throw new SharedServiceRegistrationException(typeof(I).Name, serviceName);
 
             return pipeline;
-        }
-
-        /// <summary>
-        /// This exception is thrown when the registration of a shared service fails.
-        /// </summary>
-        public class SharedServiceRegistrationException: Exception
-        {
-            public SharedServiceRegistrationException(string typeName, string serviceName)
-            {
-                TypeName = typeName;
-                ServiceName = serviceName;
-            }
-
-            public string TypeName { get; }
-
-            public string ServiceName { get; }
         }
     }
 }

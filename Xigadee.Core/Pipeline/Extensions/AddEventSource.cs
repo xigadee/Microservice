@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public static class EventSourceExtensionMethods
+    public static partial class CorePipelineExtensions
     {
         public static MicroservicePipeline AddEventSource(this MicroservicePipeline pipeline, IEventSource eventSource)
         {

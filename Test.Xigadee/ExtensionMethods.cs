@@ -6,6 +6,21 @@ namespace Test.Xigadee
     [TestClass]
     public class ExtensionMethods
     {
+        MemoryLogger logger = null;
+
+        private void ConfigureServiceRoot(MicroservicePipeline pipe)
+        {
+            pipe
+                .AddLogger<MemoryLogger>((l) => logger = l)
+                .AddLogger<TraceEventLogger>()
+                .AddPayloadSerializerDefaultJson();
+        }
+
+        private void ChannelInConfigure(ChannelPipelineIncoming inPipe)
+        {
+
+        }
+
         [TestMethod]
         public void TestMethod1()
         {
@@ -17,14 +32,12 @@ namespace Test.Xigadee
                 ChannelPipelineIncoming cpipeIn = null;
                 ChannelPipelineOutgoing cpipeOut = null;
                 PersistenceSharedService<Guid, Blah> persistence = null;
-                MemoryLogger logger = null;
                 MemoryBoundaryLogger bLogger = null;
 
-                pipeline
-                    .AddLogger<MemoryLogger>((l) => logger = l)
-                    .AddLogger<TraceEventLogger>()
-                    .AddPayloadSerializerDefaultJson()
+                pipeline                 
+                    .CallOut(ConfigureServiceRoot)
                     .AddChannelIncoming("internalIn", internalOnly: true)
+                        .CallOut(ChannelInConfigure)
                         .AppendResourceProfile(new ResourceProfile("TrackIt"))
                         .AppendBoundaryLogger(new MemoryBoundaryLogger(), (p,bl) => bLogger = bl)
                         .AssignPriorityPartition(0, 1)

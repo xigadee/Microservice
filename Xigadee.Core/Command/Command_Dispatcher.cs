@@ -88,8 +88,7 @@ namespace Xigadee
         protected void CommandRegister(MessageFilterWrapper key,
             Func<TransmissionPayload, List<TransmissionPayload>, Task> action,
             Func<TransmissionPayload, List<TransmissionPayload>, Task> deadLetterAction = null,
-            Func<Exception, TransmissionPayload, List<TransmissionPayload>, Task> exceptionAction = null,
-            bool requiresQuorum = false)
+            Func<Exception, TransmissionPayload, List<TransmissionPayload>, Task> exceptionAction = null)
         {
             if (key == null)
                 throw new ArgumentNullException("CommandRegister: key cannot be null");
@@ -128,7 +127,7 @@ namespace Xigadee
             if (key.Header.IsPartialKey && key.Header.ChannelId == null)
                 throw new Exception("You must supply a channel when using a partial key.");
 
-            var cHolder = new CommandHolder(key, requiresQuorum);
+            var cHolder = new CommandHolder(key);
             mSupported.Add(cHolder, CommandHandlerCreate(key, command));
 
             switch (mPolicy.CommandNotify)

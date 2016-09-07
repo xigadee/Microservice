@@ -7,16 +7,17 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This attribute can be set against a method to register it for automatic registration as a remote command.
+    /// This attribute can be set against a command method to register it for automatic registration as a remote command.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
-    public class CommandMethodAttribute:Attribute
+    public class CommandContractAttribute:Attribute
     {
-        public CommandMethodAttribute(string messageType, string actionType, string channelId = null)
+        public CommandContractAttribute(string messageType, string actionType, string channelId = null)
         {
             ChannelId = channelId;
             MessageType = messageType;
             ActionType = actionType;
+            Header = new Xigadee.ServiceMessageHeader(channelId, messageType, actionType);
         }
 
         public string ChannelId { get; protected set; }
@@ -24,5 +25,10 @@ namespace Xigadee
         public string MessageType { get; protected set; }
 
         public string ActionType { get; protected set; }
+
+        /// <summary>
+        /// The converted header.
+        /// </summary>
+        public ServiceMessageHeader Header { get; protected set; }
     }
 }

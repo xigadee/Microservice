@@ -64,6 +64,9 @@
     <Compile Include="Channel\ChannelContainerStatistics.cs" />
     <Compile Include="Channel\Exception\DuplicateChannelException.cs" />
     <Compile Include="Channel\IChannelService.cs" />
+    <Compile Include="Communication\CommunicationContainer_Listener.cs" />
+    <Compile Include="Communication\CommunicationContainer_Sender.cs" />
+    <Compile Include="Communication\CommunicationContainer_Channel.cs" />
     <Compile Include="Microservice_Configure.cs" />
     <Compile Include="Populator\IMicroserviceChannel.cs" />
     <Compile Include="Command\CommandContainerPolicy.cs" />

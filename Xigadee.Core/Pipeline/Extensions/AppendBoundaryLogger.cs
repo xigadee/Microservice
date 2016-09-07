@@ -9,7 +9,7 @@ namespace Xigadee
     /// <summary>
     /// These extension methods allow the channel to auto-set a boundary logger.
     /// </summary>
-    public static class ChannelBoundaryLoggerExtensionMethods
+    public static partial class CorePipelineExtensions
     {
         /// <summary>
         /// This method adds a boundary logger to the channel.

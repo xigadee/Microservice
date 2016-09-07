@@ -6,46 +6,25 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public static class ChannelCommunicationExtensionMethods
+    public static partial class CorePipelineExtensions
     {
-
-        public static ChannelPipelineIncoming AttachListener(this ChannelPipelineIncoming cpipe
-            , IListener listener
-            , bool setFromChannelProperties = true
-            )
+        public static MicroservicePipeline AttachSender(this MicroservicePipeline pipeline, ISender sender)
         {
-            if (cpipe.Channel.InternalOnly)
-                throw new ChannelInternalOnlyException(cpipe.Channel.Id, cpipe.Channel.Direction);
+            pipeline.Service.RegisterSender(sender);
 
-            if (setFromChannelProperties && listener.ChannelId != cpipe.Channel.Id)
-                throw new ChannelIdMismatchException(cpipe.Channel.Id, cpipe.Channel.Direction, listener.ChannelId);
-
-            if (setFromChannelProperties)
-            {
-                listener.BoundaryLogger = cpipe.Channel.BoundaryLogger;
-                listener.PriorityPartitions = cpipe.Channel.Partitions.Cast<ListenerPartitionConfig>().ToList();
-                listener.ResourceProfiles = cpipe.Channel.ResourceProfiles;
-            }
-
-            cpipe.Pipeline.Service.RegisterListener(listener);
-
-            return cpipe;
+            return pipeline;
         }
 
-        public static ChannelPipelineIncoming AttachListener<S>(this ChannelPipelineIncoming cpipe
-            , Func<IEnvironmentConfiguration, S> creator
-            , Action<S> action = null
-            , bool setFromChannelProperties = true
-            )
-            where S : IListener
+        public static MicroservicePipeline AttachSender<S>(this MicroservicePipeline pipeline, Func<IEnvironmentConfiguration, S> creator, Action<S> action = null)
+            where S : ISender
         {
-            var listener = creator(cpipe.Pipeline.Configuration);
+            var sender = creator(pipeline.Configuration);
 
-            action?.Invoke(listener);
+            action?.Invoke(sender);
 
-            cpipe.AttachListener(listener, setFromChannelProperties);
+            pipeline.AttachSender(sender);
 
-            return cpipe;
+            return pipeline;
         }
 
         public static ChannelPipelineOutgoing AttachSender(this ChannelPipelineOutgoing cpipe
