@@ -21,6 +21,11 @@ namespace Xigadee
         /// <param name="deadLetter">True indicates that this is a deadletter listener.</param>
         public void ListenerAdd(IListener listener, bool deadLetter)
         {
+            //if (mPolicy.AutoCreateChannels)
+            //{
+            //    listener.ChannelId
+            //}
+
             if (deadLetter)
                 mDeadletterListener.Add(listener);
             else

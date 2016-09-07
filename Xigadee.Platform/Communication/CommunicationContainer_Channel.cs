@@ -78,10 +78,10 @@ namespace Xigadee
         #endregion
 
         /// <summary>
-        /// 
+        /// This method checks whether a channel has been adeed.
         /// </summary>
-        /// <param name="channelId"></param>
-        /// <param name="direction"></param>
+        /// <param name="channelId">The channel Id.</param>
+        /// <param name="direction">The direction.</param>
         /// <returns></returns>
         public bool Exists(string channelId, ChannelDirection direction)
         {
@@ -100,11 +100,11 @@ namespace Xigadee
             return false;
         }
         /// <summary>
-        /// 
+        /// This method attempts to retrieve and existing channel.
         /// </summary>
-        /// <param name="channelId"></param>
-        /// <param name="direction"></param>
-        /// <param name="channel"></param>
+        /// <param name="channelId">The channel Id.</param>
+        /// <param name="direction">The direction.</param>
+        /// <param name="channel">Returns the channel object.</param>
         /// <returns></returns>
         public bool TryGet(string channelId, ChannelDirection direction, out Channel channel)
         {
