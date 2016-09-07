@@ -36,10 +36,6 @@ namespace Xigadee
         /// </summary>
         protected TelemetryContainer mTelemetry;
         /// <summary>
-        /// This collection holds the channels.
-        /// </summary>
-        protected ChannelContainer mChannels;
-        /// <summary>
         /// This container is used to hold the security infrastructure for the Microservice.
         /// </summary>
         protected SecurityContainer mSecurity;
@@ -115,7 +111,6 @@ namespace Xigadee
             mServiceEngineVersionId = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
             mSecurity = InitialiseSecurityContainer();
-            mChannels = InitialiseChannelContainer();
             mCommunication = InitialiseCommunicationContainer();
             mCommands = InitialiseCommandContainer();
             mResourceTracker = InitialiseResourceTracker();
@@ -233,9 +228,6 @@ namespace Xigadee
                 EventStart(() => mCommands.SharedServicesConnect(), "Shared Services");
 
                 //Start the channel controller.
-                EventStart(() => ServiceStart(mChannels), "Channel Container");
-
-                //Start the channel controller.
                 EventStart(() => ServiceStart(mSecurity), "Security Container");
 
                 //Ensure that the communication handler is working.
@@ -309,9 +301,6 @@ namespace Xigadee
 
             //Stop the channel controller.
             EventStop(() => ServiceStop(mSecurity), "Security Container");
-
-            //Stop the channel controller.
-            EventStop(() => ServiceStop(mChannels), "Channel Container");
 
             EventStop(() => ServiceStop(mEventSource), "Event Source");
 

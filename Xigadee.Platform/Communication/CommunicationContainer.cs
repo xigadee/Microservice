@@ -62,6 +62,8 @@ namespace Xigadee
             mSenders = new List<ISender>();
             mListener = new List<IListener>();
             mDeadletterListener = new List<IListener>();
+            mContainerIncoming = new Dictionary<string, Channel>();
+            mContainerOutgoing = new Dictionary<string, Channel>();
         }
         #endregion
         #region StatisticsRecalculate()
@@ -74,8 +76,10 @@ namespace Xigadee
 
             if (mSenders != null)
                 stats.Senders = mSenders.SelectMany((c) => c.Clients).Select((l) => l.Statistics).ToList();
+
             if (mListener != null)
                 stats.Listeners = mListener.SelectMany((c) => c.Clients).Select((l) => l.Statistics).ToList();
+
             if (mDeadletterListener != null)
                 stats.DeadLetterListeners = mDeadletterListener.SelectMany((c) => c.Clients).Select((l) => l.Statistics).ToList();
 
@@ -102,6 +106,8 @@ namespace Xigadee
         /// </summary>
         protected override void StopInternal()
         {
+            mContainerIncoming.Clear();
+            mContainerOutgoing.Clear();
         }
         #endregion
 
@@ -224,9 +230,21 @@ namespace Xigadee
             }
             set
             {
-                mSharedServices = value;
-                if (mSharedServices != null)
-                    RegisterSupportedMessages();
+                SharedServicesChange(value);
+            }
+        }
+        /// <summary>
+        /// This method is called to set or remove the shared service reference.
+        /// You can override your logic to safely set the shared service collection here.
+        /// </summary>
+        /// <param name="sharedServices">The shared service reference or null if this is not set.</param>
+        protected virtual void SharedServicesChange(ISharedService sharedServices)
+        {
+            mSharedServices = sharedServices;
+            if (mSharedServices != null)
+            {
+                RegisterSupportedMessages();
+                mSharedServices.RegisterService<IChannelService>(this, "Channel");
             }
         }
         #endregion

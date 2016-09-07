@@ -13,6 +13,10 @@ namespace Xigadee
     public class CommunicationPolicy:PolicyBase
     {
         /// <summary>
+        /// This property specifies that channel can be created automatically if they do not exist.
+        /// </summary>
+        public bool AutoCreateChannels { get; set; } = true;
+        /// <summary>
         /// This is the algorithm used to assign poll cycles to the various listeners.
         /// </summary>
         public virtual IListenerClientPollAlgorithm ListenerClientPollAlgorithm { get; set; }  = new MultipleClientPollSlotAllocationAlgorithm();

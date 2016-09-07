@@ -102,10 +102,6 @@ namespace Xigadee
         /// </summary>
         public MicroserviceConfigurationOptions Configuration { get; set; }
         /// <summary>
-        /// The channel container statistics.
-        /// </summary>
-        public ChannelContainerStatistics Channels { get; set; }
-        /// <summary>
         /// This is a list of the handlers active on the system and their status.
         /// </summary>
         public CommunicationStatistics Communication { get; set; }

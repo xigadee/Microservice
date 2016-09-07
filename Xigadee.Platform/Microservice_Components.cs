@@ -94,10 +94,10 @@ namespace Xigadee
         {
             get
             {
-                if (mChannels.Channels == null)
+                if (mCommunication.Channels == null)
                     yield break;
                 else
-                    foreach (var channel in mChannels.Channels)
+                    foreach (var channel in mCommunication.Channels)
                         yield return channel;
             }
         }
@@ -160,7 +160,7 @@ namespace Xigadee
         public virtual Channel RegisterChannel(Channel channel)
         {
             ValidateServiceNotStarted();
-            mChannels.Add(channel);
+            mCommunication.Add(channel);
             return channel;
         }
         #endregion

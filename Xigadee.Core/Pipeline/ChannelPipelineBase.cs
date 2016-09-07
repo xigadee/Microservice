@@ -38,6 +38,7 @@ namespace Xigadee
             Pipeline = pipeline;
             Channel = channel;
         }
+
         /// <summary>
         /// This is the configuration pipeline.
         /// </summary>

@@ -59,8 +59,6 @@ namespace Xigadee
 
             stats.EventSource = mEventSource?.Statistics;
 
-            stats.Channels = mChannels?.Statistics;
-
             stats.Communication = mCommunication?.Statistics;
 
             stats.Resources = mResourceTracker?.Statistics;

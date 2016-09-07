@@ -48,7 +48,6 @@ namespace Xigadee
             var command = creator(pipeline.Configuration);
 
             return pipeline.AddCommand(command, assignment, channelIncoming, channelResponse, channelMasterJobNegotiationIncoming);
-
         }
 
         public static ChannelPipelineIncoming AddCommand<C>(this ChannelPipelineIncoming cpipe, Action<C> assign = null)

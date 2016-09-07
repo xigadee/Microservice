@@ -111,7 +111,6 @@ namespace Xigadee
         /// </summary>
         protected virtual void RegisterCorrsPolicy()
         {
-            //config.DependencyResolver = 
             ApiConfig.EnableCors(new InternalCorrsPolicy(CorsPolicyGet));
         }
 

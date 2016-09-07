@@ -88,26 +88,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region InitialiseChannelContainer()
-        /// <summary>
-        /// THis method initialises the channel container.
-        /// </summary>
-        /// <returns>Returns a new container to hold the channels.</returns>
-        protected virtual ChannelContainer InitialiseChannelContainer()
-        {
-            return new ChannelContainer(PolicyChannel());
-        }
-
-        /// <summary>
-        /// This is the policy used to set the channel settings.
-        /// </summary>
-        /// <returns>Returns the ChannelContainerPolicy object.</returns>
-        protected virtual ChannelContainerPolicy PolicyChannel()
-        {
-            return new ChannelContainerPolicy();
-        } 
-        #endregion
-
         #region InitialiseCommunicationContainer()
         /// <summary>
         /// This method creates the communication container. This container comtains all the 

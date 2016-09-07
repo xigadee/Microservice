@@ -59,11 +59,8 @@
     <Compile Include="ActionQueue\ActionQueuePolicy.cs" />
     <Compile Include="ActionQueue\ActionQueueStatistics.cs" />
     <Compile Include="ActionQueue\IActionQueue.cs" />
-    <Compile Include="Channel\ChannelContainer.cs" />
-    <Compile Include="Channel\ChannelContainerPolicy.cs" />
-    <Compile Include="Channel\ChannelContainerStatistics.cs" />
-    <Compile Include="Channel\Exception\DuplicateChannelException.cs" />
-    <Compile Include="Channel\IChannelService.cs" />
+    <Compile Include="Communication\Exceptions\DuplicateChannelException.cs" />
+    <Compile Include="Communication\Interfaces\IChannelService.cs" />
     <Compile Include="Communication\CommunicationContainer_Listener.cs" />
     <Compile Include="Communication\CommunicationContainer_Sender.cs" />
     <Compile Include="Communication\CommunicationContainer_Channel.cs" />
