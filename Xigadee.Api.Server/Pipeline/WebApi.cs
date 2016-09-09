@@ -53,14 +53,8 @@ namespace Xigadee
         }
 
 
-        //public static WebApiMicroservicePipeline AddAzureBlobLoggingFilter(this WebApiMicroservicePipeline webpipe)
-        //{
-        //    var filter = new WebApiAzureBlobLoggingFilter();
-
-        //    webpipe.ApiConfig.Filters.Add(filter);
-
-        //    return webpipe;
-        //}
 
     }
+
+
 }

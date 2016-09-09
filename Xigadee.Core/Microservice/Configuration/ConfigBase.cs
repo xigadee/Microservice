@@ -6,6 +6,19 @@ using System.Configuration;
 #endregion
 namespace Xigadee
 {
+    public abstract class ConfigResolver
+    {
+        public abstract string Resolve(string key);
+    }
+
+    public class AppSettingsConfigResolver: ConfigResolver
+    {
+        public override string Resolve(string key)
+        {
+            return ConfigurationManager.AppSettings[key];
+        }
+    }
+
     /// <summary>
     /// This is the configuration base class for configuration. This class resolves settings from
     /// a number of sources, specifically the Azure configuration and the Windows configuration.
@@ -19,13 +32,37 @@ namespace Xigadee
         /// <summary>
         /// This is the configuration collection that holds the configuration keys.
         /// </summary>
-        private readonly ConcurrentDictionary<string, string> mConfig = new ConcurrentDictionary<string, string>(); 
+        private readonly ConcurrentDictionary<string, string> mConfigCache = new ConcurrentDictionary<string, string>(); 
+        /// <summary>
+        /// This is the set of resolvers that are available to resolve the configuration settings for the application.
+        /// </summary>
+        private readonly ConcurrentDictionary<int, ConfigResolver> mConfigResolvers = new ConcurrentDictionary<int, ConfigResolver>();
+        #endregion
+
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        public ConfigBase()
+        {
+            //Set the default config resolver.
+            mConfigResolvers.AddOrUpdate(0, new AppSettingsConfigResolver(), (k,v) => v);
+        }
+
+        #region Flush()
+        /// <summary>
+        /// This method flushes the cache of stored values.
+        /// </summary>
+        public void Flush()
+        {
+            mConfigCache.Clear();
+        }
         #endregion
 
         #region Resolver
         /// <summary>
         /// This is the resolves function that can be injected in to the config resolution flow.
         /// </summary>
+        [Obsolete("ConfigResolver will replace this.", false)]
         public Func<string, string, string> Resolver
         {
             get; set;
@@ -37,6 +74,7 @@ namespace Xigadee
         /// or go straight to the azure/windows config setting.
         /// This ensures that we can insert new values during testing.
         /// </summary>
+        [Obsolete("ConfigResolver will replace this.", false)]
         public bool ResolverFirst
         {
             get; set;
@@ -54,8 +92,8 @@ namespace Xigadee
         {
             string value = null;
 
-            if (ResolverFirst && Resolver != null)
-                value = Resolver(key, null);
+            if (ResolverFirst)
+                value = Resolver?.Invoke(key, null);
 
             if (value == null)
             {
@@ -68,8 +106,8 @@ namespace Xigadee
                     // Unable to retrieve from app settings
                 }
 
-                if (value == null && !ResolverFirst && Resolver != null)
-                    value = Resolver(key, null);
+                if (value == null && !ResolverFirst)
+                    value = Resolver?.Invoke(key, null);
             }
 
             return value;
@@ -86,9 +124,9 @@ namespace Xigadee
         public string PlatformOrConfigCache(string key, string defaultValue = null)
         {
             string value = null;
-            if (!mConfig.TryGetValue(key, out value))
+            if (!mConfigCache.TryGetValue(key, out value))
             {
-                value = mConfig.GetOrAdd(key, PlatformOrConfig(key) ?? defaultValue);
+                value = mConfigCache.GetOrAdd(key, PlatformOrConfig(key) ?? defaultValue);
             }
 
             return value;
