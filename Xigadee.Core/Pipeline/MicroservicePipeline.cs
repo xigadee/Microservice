@@ -33,20 +33,5 @@ namespace Xigadee
         /// </summary>
         public virtual IEnvironmentConfiguration Configuration { get; protected set;}
 
-        /// <summary>
-        /// This shortcut starts the service.
-        /// </summary>
-        public virtual void Start()
-        {
-            Service.Start();
-        }
-
-        /// <summary>
-        /// This shortcut stops the service.
-        /// </summary>
-        public virtual void Stop()
-        {
-            Service.Stop();
-        }
     }
 }

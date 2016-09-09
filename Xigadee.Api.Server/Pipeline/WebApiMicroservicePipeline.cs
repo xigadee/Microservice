@@ -37,14 +37,6 @@ namespace Xigadee
         public HttpConfiguration ApiConfig { get; protected set; }
         #endregion
 
-        public override void Start()
-        {
-            base.Start();
-        }
-
-        public override void Stop()
-        {
-            base.Stop();
-        }
     }
+
 }

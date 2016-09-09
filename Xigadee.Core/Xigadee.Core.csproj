@@ -146,6 +146,7 @@
     <Compile Include="Pipeline\Exceptions\ChannelPartitionConfigCastException.cs" />
     <Compile Include="Pipeline\Exceptions\ChannelPartitionConfigExistsException.cs" />
     <Compile Include="Pipeline\Extensions\Revert.cs" />
+    <Compile Include="Pipeline\Extensions\Start.cs" />
     <Compile Include="Pipeline\Extensions\To.cs" />
     <Compile Include="Pipeline\MicroservicePipeline.cs" />
     <Compile Include="Microservice\MicroserviceStatusChangeException.cs" />

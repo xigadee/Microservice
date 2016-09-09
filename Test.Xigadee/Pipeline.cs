@@ -4,7 +4,7 @@ using Xigadee;
 namespace Test.Xigadee
 {
     [TestClass]
-    public class ExtensionMethods
+    public class Pipeline
     {
         MemoryLogger logger = null;
         MemoryBoundaryLogger bLogger = null;
@@ -25,7 +25,7 @@ namespace Test.Xigadee
         }
 
         [TestMethod]
-        public void TestMethod1()
+        public void PipelineService()
         {
             try
             {
