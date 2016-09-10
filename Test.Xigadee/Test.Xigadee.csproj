@@ -73,7 +73,7 @@
     <Compile Include="Microservice_Validate_Persistence.cs" />
     <Compile Include="SignatureHelper.cs" />
     <Compile Include="ApiTests.cs" />
-    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="Pipeline.cs" />
     <Compile Include="UnitTest1.cs" />
     <Compile Include="PopulatorExtensions.cs" />
   </ItemGroup>

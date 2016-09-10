@@ -7,7 +7,7 @@ using Microsoft.WindowsAzure.Storage.Auth;
 
 namespace Xigadee
 {
-    public static class ConfigBaseHelperRedis
+    public static partial class AzureExtensionMethods
     {
         [ConfigSettingKey("RedisCache")]
         public const string KeyRedisCacheConnection = "RedisCacheConnection";

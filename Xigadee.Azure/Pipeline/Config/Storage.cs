@@ -7,7 +7,7 @@ using Microsoft.WindowsAzure.Storage.Auth;
 
 namespace Xigadee
 {
-    public static class ConfigBaseHelperStorage
+    public static partial class AzureExtensionMethods
     {
         [ConfigSettingKey("Storage")]
         public const string KeyStorageAccountName = "StorageAccountName";
