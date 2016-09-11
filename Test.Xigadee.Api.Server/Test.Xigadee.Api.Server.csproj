@@ -349,10 +349,6 @@
       <Project>{7e70924f-c120-4259-8069-da466afe8bc1}</Project>
       <Name>Xigadee.Communication</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Xigadee.Core\Xigadee.Core.csproj">
-      <Project>{f73b3423-992d-444d-a486-9c6a9d729900}</Project>
-      <Name>Xigadee.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Xigadee.Framework\Xigadee.Framework.csproj">
       <Project>{af9b61ba-6a9c-4bd3-a87a-fb513188f21f}</Project>
       <Name>Xigadee.Framework</Name>

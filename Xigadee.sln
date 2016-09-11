@@ -5,8 +5,6 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Helper", "Xigadee\Xigadee.Helper.csproj", "{4F785B7B-1FDC-4DCC-9453-FE42447FDED2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Core", "Xigadee.Core\Xigadee.Core.csproj", "{F73B3423-992D-444D-A486-9C6A9D729900}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee", "Xigadee.Platform\Xigadee.csproj", "{4788FC0B-E692-4762-A4F4-AEAB2A77DA42}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Communication", "Xigadee.Communication\Xigadee.Communication.csproj", "{7E70924F-C120-4259-8069-DA466AFE8BC1}"
@@ -50,8 +48,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Datapump", "Datapump", "{8A
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Xigadee.Datapump.Sql", "Xigadee.Datapump.Sql\Xigadee.Datapump.Sql.sqlproj", "{C66F3869-118D-4962-A904-4359E396AEB7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Azure.ApplicationInsights", "Xigadee.Azure.ApplicationInsight\Xigadee.Azure.ApplicationInsights.csproj", "{00CE0B92-1AC6-424D-AE93-AA1AA2F3B492}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,10 +58,6 @@ Global
 		{4F785B7B-1FDC-4DCC-9453-FE42447FDED2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F785B7B-1FDC-4DCC-9453-FE42447FDED2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F785B7B-1FDC-4DCC-9453-FE42447FDED2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F73B3423-992D-444D-A486-9C6A9D729900}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F73B3423-992D-444D-A486-9C6A9D729900}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F73B3423-992D-444D-A486-9C6A9D729900}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F73B3423-992D-444D-A486-9C6A9D729900}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4788FC0B-E692-4762-A4F4-AEAB2A77DA42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4788FC0B-E692-4762-A4F4-AEAB2A77DA42}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4788FC0B-E692-4762-A4F4-AEAB2A77DA42}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -138,10 +130,6 @@ Global
 		{C66F3869-118D-4962-A904-4359E396AEB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C66F3869-118D-4962-A904-4359E396AEB7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C66F3869-118D-4962-A904-4359E396AEB7}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{00CE0B92-1AC6-424D-AE93-AA1AA2F3B492}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{00CE0B92-1AC6-424D-AE93-AA1AA2F3B492}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{00CE0B92-1AC6-424D-AE93-AA1AA2F3B492}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{00CE0B92-1AC6-424D-AE93-AA1AA2F3B492}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

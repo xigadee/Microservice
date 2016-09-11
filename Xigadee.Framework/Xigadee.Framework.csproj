@@ -61,9 +61,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Xigadee.Core\Xigadee.Core.csproj">
-      <Project>{f73b3423-992d-444d-a486-9c6a9d729900}</Project>
-      <Name>Xigadee.Core</Name>
+    <ProjectReference Include="..\Xigadee.Platform\Xigadee.csproj">
+      <Project>{4788fc0b-e692-4762-a4f4-aeab2a77da42}</Project>
+      <Name>Xigadee</Name>
     </ProjectReference>
     <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj">
       <Project>{4f785b7b-1fdc-4dcc-9453-fe42447fded2}</Project>

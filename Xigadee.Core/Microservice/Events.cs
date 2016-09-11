@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class ProcessRequestUnresolvedEventArgs: EventArgs
+    public class ProcessRequestUnresolvedEventArgs: MicroserviceEventArgs
     {
         public TransmissionPayload Payload { get; set; }
     }
@@ -16,5 +16,11 @@ namespace Xigadee
         public Exception Ex { get; set; }
     }
 
+    /// <summary>
+    /// This is the base event for microservice events.
+    /// </summary>
+    public class MicroserviceEventArgs: EventArgs
+    {
 
+    }
 }

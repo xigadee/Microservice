@@ -67,7 +67,7 @@
     <Compile Include="Helper\LinqHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepositoryOptions.cs" />
-    <Compile Include="RepositoryResponse.cs" />
+    <Compile Include="RepositoryHolder.cs" />
     <Compile Include="RepositorySettings.cs" />
     <Compile Include="ResponseHolder.cs" />
     <Compile Include="XmlSchemaValidation.cs" />

@@ -97,8 +97,7 @@ namespace Xigadee
 
         #region MessagesPull(int? count, int? wait)
         /// <summary>
-        /// This method pulls a set of messages from the fabric and unpacks them
-        /// in to a TransmissionPayload message.
+        /// This method pulls a set of messages from the fabric and unpacks them in to TransmissionPayload messages.
         /// </summary>
         /// <param name="count">The number of messages to pull.</param>
         /// <param name="wait">The maximum wait time.</param>

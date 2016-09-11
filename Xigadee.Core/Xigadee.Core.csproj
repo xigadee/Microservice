@@ -63,8 +63,12 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="BoundaryLogger\MemoryBoundaryLogger.cs" />
+    <Compile Include="Collector\MemoryCollector.cs" />
     <Compile Include="Contract\CommandMethodAttribute.cs" />
     <Compile Include="Command\Exceptions\OutgoingRequestTransmitException.cs" />
+    <Compile Include="EventSource\EventSourceEntry.cs" />
+    <Compile Include="EventSource\EventSourceEntryBase.cs" />
+    <Compile Include="Interfaces\IDataCollection.cs" />
     <Compile Include="Pipeline\Exceptions\SharedServiceRegistrationException.cs" />
     <Compile Include="Pipeline\Extensions\AddChannelOutgoing.cs" />
     <Compile Include="Pipeline\Extensions\AttachListener.cs" />
@@ -95,7 +99,6 @@
     <Compile Include="Command\Command.cs" />
     <Compile Include="Command\CommandTimerPoll.cs" />
     <Compile Include="Command\Command_Dispatcher.cs" />
-    <Compile Include="Command\Test\CommandTestContainer.cs" />
     <Compile Include="Command\CommandPolicy.cs" />
     <Compile Include="Command\Helper\CommandSchedule.cs" />
     <Compile Include="Command\Command_MasterJob.cs" />
@@ -124,7 +127,6 @@
     <Compile Include="Microservice\IMicroservice.cs" />
     <Compile Include="Persistence\Interfaces\IPersistenceMessageInitiator.cs" />
     <Compile Include="Persistence\Interfaces\IPersistenceSharedService.cs" />
-    <Compile Include="Interfaces\IRequireSystemEvents.cs" />
     <Compile Include="Interfaces\IServiceLogger.cs" />
     <Compile Include="Interfaces\IServiceOriginator.cs" />
     <Compile Include="Interfaces\ISupportedMessageTypes.cs" />
