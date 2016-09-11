@@ -182,11 +182,7 @@
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="ApplicationInsights\ApplicationInsightBase.cs" />
-    <Compile Include="ApplicationInsights\BoundaryLogger.cs" />
-    <Compile Include="ApplicationInsights\EventSource.cs" />
-    <Compile Include="ApplicationInsights\Logger.cs" />
-    <Compile Include="ApplicationInsights\Telemetry.cs" />
+    <Compile Include="ApplicationInsights\ApplicationInsightsCollector.cs" />
     <Compile Include="Pipeline\AddAzureStorageEventSource.cs" />
     <Compile Include="Pipeline\AddAzureStorageLogger.cs" />
     <Compile Include="Persistence\DocumentDbSDK\SDKHelper.cs" />
@@ -242,9 +238,9 @@
     <None Include="Xigadee.Azure.nuspec" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Xigadee.Core\Xigadee.Core.csproj">
-      <Project>{f73b3423-992d-444d-a486-9c6a9d729900}</Project>
-      <Name>Xigadee.Core</Name>
+    <ProjectReference Include="..\Xigadee.Platform\Xigadee.csproj">
+      <Project>{4788fc0b-e692-4762-a4f4-aeab2a77da42}</Project>
+      <Name>Xigadee</Name>
     </ProjectReference>
     <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj">
       <Project>{4f785b7b-1fdc-4dcc-9453-fe42447fded2}</Project>

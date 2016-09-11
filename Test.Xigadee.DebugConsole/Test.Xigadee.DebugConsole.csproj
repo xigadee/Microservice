@@ -258,10 +258,6 @@
       <Project>{af748540-d35c-409a-ad23-d990cf19ded9}</Project>
       <Name>Xigadee.Console</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Xigadee.Core\Xigadee.Core.csproj">
-      <Project>{f73b3423-992d-444d-a486-9c6a9d729900}</Project>
-      <Name>Xigadee.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Xigadee.Framework\Xigadee.Framework.csproj">
       <Project>{af9b61ba-6a9c-4bd3-a87a-fb513188f21f}</Project>
       <Name>Xigadee.Framework</Name>
