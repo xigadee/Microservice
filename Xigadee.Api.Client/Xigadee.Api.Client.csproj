@@ -83,6 +83,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Xigadee.Api.Client.licenseheader" />
     <None Include="Xigadee.Api.Client.nuspec" />
   </ItemGroup>
   <ItemGroup>
