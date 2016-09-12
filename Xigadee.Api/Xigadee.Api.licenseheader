@@ -1,4 +1,6 @@
-﻿#region Copyright
+﻿extensions: designer.cs generated.cs
+extensions: .cs
+#region Copyright
 // Copyright Hitachi Consulting
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,27 +15,3 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-
-#region using
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-#endregion
-namespace Xigadee
-{
-    [Serializable]
-    public class TransportDeserializationException : Exception
-    {
-        public TransportDeserializationException(string message)
-            : base(message)
-        {
-        }
-
-        public TransportDeserializationException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-        }
-    }
-}
