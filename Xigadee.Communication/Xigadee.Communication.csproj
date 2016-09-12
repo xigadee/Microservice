@@ -85,6 +85,7 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Xigadee.Communication.licenseheader" />
     <None Include="Xigadee.Communication.nuspec" />
   </ItemGroup>
   <ItemGroup>
