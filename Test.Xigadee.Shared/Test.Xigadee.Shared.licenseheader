@@ -1,4 +1,6 @@
-﻿#region Copyright
+﻿extensions: designer.cs generated.cs
+extensions: .cs
+#region Copyright
 // Copyright Hitachi Consulting
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,24 +15,3 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-
-using System;
-using Xigadee;
-
-namespace Test.Xigadee
-{
-    [KeyMapper(typeof(ComplexKeyMapper))]
-    public class ComplexKey:IEquatable<ComplexKey>
-    {
-        public int One { get; set; }
-        public Guid Two { get; set; }
-
-        public bool Equals(ComplexKey other)
-        {
-            if (other == null)
-                return false;
-
-            return other.One == this.One && other.Two == this.Two;
-        }
-    }
-}
