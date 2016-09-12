@@ -1,4 +1,6 @@
-﻿#region Copyright
+﻿extensions: designer.cs generated.cs
+extensions: .cs
+#region Copyright
 // Copyright Hitachi Consulting
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,18 +15,3 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-
-using Microsoft.Owin;
-using Owin;
-
-[assembly: OwinStartupAttribute(typeof(Test.Xigadee.Api.Web.Startup))]
-namespace Test.Xigadee.Api.Web
-{
-    public partial class Startup
-    {
-        public void Configuration(IAppBuilder app)
-        {
-            ConfigureAuth(app);
-        }
-    }
-}
