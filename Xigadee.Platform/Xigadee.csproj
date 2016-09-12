@@ -403,6 +403,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Xigadee.nuspec" />
+    <None Include="Xigadee.Platform.licenseheader" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj">
