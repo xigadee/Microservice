@@ -16,14 +16,12 @@ namespace Xigadee
     /// This collection contains the Telemetry modules.
     /// </summary>
     public class TelemetryContainer : CollectionContainerBase<ITelemetry>
-    {
-       
+    {      
         #region Declarations
         /// <summary>
         /// This holds a collection of counters used to identify performance bottlenecks.
         /// </summary>
         ConcurrentDictionary<string, TelemetryCounterHolder> mStatusTracker;
-
         #endregion
 
         #region Constructor

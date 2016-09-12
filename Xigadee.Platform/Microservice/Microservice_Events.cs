@@ -60,7 +60,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                mLogger?.LogException("OnUnhandledRequest / external exception thrown on event", ex);
+                Logger?.LogException("OnUnhandledRequest / external exception thrown on event", ex);
             }
         }
         /// <summary>
@@ -76,7 +76,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                mLogger?.LogException("OnUnhandledRequest / external exception thrown on event", ex);
+                Logger?.LogException("OnUnhandledRequest / external exception thrown on event", ex);
             }
         }
         /// <summary>
@@ -90,7 +90,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                mLogger?.LogException("OnStartRequested / external exception thrown on event", ex);
+                Logger?.LogException("OnStartRequested / external exception thrown on event", ex);
             }
         }
         /// <summary>
@@ -104,7 +104,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                mLogger?.LogException("OnStartCompleted / external exception thrown on event", ex);
+                Logger?.LogException("OnStartCompleted / external exception thrown on event", ex);
             }
         }
         /// <summary>
@@ -118,7 +118,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                mLogger?.LogException("OnStopRequested / external exception thrown on event", ex);
+                Logger?.LogException("OnStopRequested / external exception thrown on event", ex);
             }
         }
         /// <summary>
@@ -132,7 +132,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                mLogger?.LogException("OnStopCompleted / external exception thrown on event", ex);
+                Logger?.LogException("OnStopCompleted / external exception thrown on event", ex);
             }
         }
         /// <summary>
@@ -147,7 +147,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                mLogger?.LogException("Action_OnStatistics / external exception thrown on event", ex);
+                Logger?.LogException("Action_OnStatistics / external exception thrown on event", ex);
             }
         }
 

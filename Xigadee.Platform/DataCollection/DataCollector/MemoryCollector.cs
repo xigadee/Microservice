@@ -9,7 +9,7 @@ namespace Xigadee
     /// <summary>
     /// This is a test collector.
     /// </summary>
-    public class MemoryCollector: IDataCollection
+    public class MemoryCollector: IDataCollector
     {
         public string Name
         {

@@ -21,12 +21,6 @@ namespace Xigadee
 
         }
 
-        protected override void StatisticsRecalculate(LoggerContainerStatistics stats)
-        {
-            base.StatisticsRecalculate(stats);
-
-            //stats.
-        }
 
         protected override void Process(LogEvent data, ILogger logger)
         {
@@ -45,7 +39,7 @@ namespace Xigadee
                 );
         }
 
-        #region LogMessageException(DispatcherLoggerDirection direction, ServiceMessage message, Exception ex)
+        #region LogMessageException(TransmissionPayload payload, Exception ex)
         /// <summary>
         /// This method logs the appropriate exception with the underlying loggers.
         /// </summary>

@@ -57,7 +57,7 @@ namespace Xigadee
         }
         #endregion
 
-        //Components
+        //Command
         #region RegisterCommand(IMessageHandler command)
         /// <summary>
         /// This method allows you to manually register a job.
@@ -103,19 +103,20 @@ namespace Xigadee
         }
         #endregion
 
-        //Serializer
-        #region RegisterPayloadSerializer(IPayloadSerializer serializer)
+        //Collector
+        #region RegisterCollector(ICollector collector)
         /// <summary>
-        /// This method allows you to manually register a requestPayload serializer.
+        /// This method is used to register a collector.
         /// </summary>
-        /// <typeparam name="C">The requestPayload serializer channelId.</typeparam>
-        public virtual IPayloadSerializer RegisterPayloadSerializer(IPayloadSerializer serializer)
+        /// <param name="collector">The collectors.</param>
+        /// <returns>Returns the collector passed through the registration.</returns>
+        public IDataCollector RegisterCollector(IDataCollector collector)
         {
             ValidateServiceNotStarted();
-            mPayloadSerializers.Add(serializer);
-            return serializer;
-        }
-        #endregion        
+            mDataCollection.Add(collector);
+            return collector;
+        } 
+        #endregion
         //Event Source
         #region RegisterEventSource(IEventSource eventSource)
         /// <summary>
@@ -124,7 +125,7 @@ namespace Xigadee
         public virtual IEventSource RegisterEventSource(IEventSource eventSource)
         {
             ValidateServiceNotStarted();
-            mEventSources.Add(eventSource);
+            mDataCollection.Add(eventSource);
             return eventSource;
         }
         #endregion
@@ -136,7 +137,7 @@ namespace Xigadee
         public virtual ITelemetry RegisterTelemetry(ITelemetry telemetry)
         {
             ValidateServiceNotStarted();
-            mTelemetries.Add(telemetry);
+            mDataCollection.Add(telemetry);
             return telemetry;
         }
         #endregion
@@ -148,10 +149,11 @@ namespace Xigadee
         public virtual ILogger RegisterLogger(ILogger logger)
         {
             ValidateServiceNotStarted();
-            mLoggers.Add(logger);
+            mDataCollection.Add(logger);
             return logger;
         }
         #endregion
+
         //Channel
         #region RegisterChannel(Channel logger)
         /// <summary>
@@ -164,20 +166,20 @@ namespace Xigadee
             return channel;
         }
         #endregion
-        //Collector
-        #region RegisterCollector(ICollector collector)
+        //Serializer
+        #region RegisterPayloadSerializer(IPayloadSerializer serializer)
         /// <summary>
-        /// This method is used to register a collector.
+        /// This method allows you to manually register a requestPayload serializer.
         /// </summary>
-        /// <param name="collector">The collectors.</param>
-        /// <returns>Returns the collector passed through the registration.</returns>
-        public IDataCollection RegisterCollector(IDataCollection collector)
+        /// <typeparam name="C">The requestPayload serializer channelId.</typeparam>
+        public virtual IPayloadSerializer RegisterPayloadSerializer(IPayloadSerializer serializer)
         {
             ValidateServiceNotStarted();
-            //mCollectors.Add(collector);
-            return collector;
-        } 
-        #endregion
+            mPayloadSerializers.Add(serializer);
+            return serializer;
+        }
+        #endregion    
+            
         //Populate
         #region PopulateComponents()
         /// <summary>
@@ -186,52 +188,8 @@ namespace Xigadee
         /// </summary>
         protected virtual void PopulateComponents()
         {
-            //This method populates any manually defined components.
-            PopulateTelemetry();
-
-            PopulateLoggers();
-
-            PopulatePayloadSerializers();
-
-            PopulateEventSource();
-        }
-        #endregion
-
-        #region PopulatePayloadSerializers()
-        /// <summary>
-        /// Any registered Payload Serializer.
-        /// </summary>
-        protected virtual void PopulatePayloadSerializers()
-        {
             mSerializer = InitialiseSerializationContainer(mPayloadSerializers);
         }
-        #endregion
-        #region PopulateTelemetry()
-        /// <summary>
-        /// Any registered Payload Serializer.
-        /// </summary>
-        protected virtual void PopulateTelemetry()
-        {
-            mTelemetry = InitialiseTelemetryContainer(mTelemetries);
-        }
-        #endregion
-        #region PopulateLoggers()
-        /// <summary>
-        /// Any registered Payload Serializer.
-        /// </summary>
-        protected virtual void PopulateLoggers()
-        {
-            mLogger = InitialiseLoggerContainer(mLoggers);
-        }
-        #endregion
-        #region PopulateEventSource()
-        /// <summary>
-        /// Any registered Payload Serializer.
-        /// </summary>
-        protected virtual void PopulateEventSource()
-        {
-            mEventSource = InitialiseEventSourceContainer(mEventSources);
-        }
-        #endregion               
+        #endregion            
     }
 }

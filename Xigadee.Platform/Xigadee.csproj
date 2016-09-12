@@ -58,9 +58,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Communication\TcpTlsChannel\Helper\DirectChannelCommunicator.cs" />
+    <Compile Include="Communication\TcpTlsChannel\TcpTlsChannelSender.cs" />
+    <Compile Include="Communication\TcpTlsChannel\TcpTlsClientHolder.cs" />
+    <Compile Include="Communication\TcpTlsChannel\TcpTlsConnection.cs" />
+    <Compile Include="Communication\TcpTlsChannel\TcpTlsMessage.cs" />
+    <Compile Include="Communication\TcpTlsChannel\TlsTcpChannelListener.cs" />
     <Compile Include="DataCollection\ActionQueue\ActionQueueCollectionBase.cs" />
     <Compile Include="DataCollection\ActionQueue\ActionQueuePolicy.cs" />
     <Compile Include="DataCollection\ActionQueue\ActionQueueStatistics.cs" />
+    <Compile Include="DataCollection\DataCollectionContainer_Telemetry.cs" />
+    <Compile Include="DataCollection\DataCollector\DataCollectorBase.cs" />
     <Compile Include="Microservice\Events\ProcessRequestErrorEventArgs.cs" />
     <Compile Include="Microservice\Events\ProcessRequestUnresolvedEventArgs.cs" />
     <Compile Include="Microservice\Events\StartEventArgs.cs" />
@@ -97,17 +105,17 @@
     <Compile Include="Command\RequestTracker\RequestTrackerContainer.cs" />
     <Compile Include="Command\Statistics\CommandStatistics.cs" />
     <Compile Include="Command\Statistics\MasterJobStatistics.cs" />
-    <Compile Include="Communication\ClientHolder.cs" />
+    <Compile Include="Communication\Base\ClientHolder.cs" />
     <Compile Include="Exceptions\TransmissionException.cs" />
     <Compile Include="Interfaces\IListener.cs" />
     <Compile Include="Interfaces\IMessaging.cs" />
     <Compile Include="Interfaces\ISender.cs" />
-    <Compile Include="Communication\MessagingListenerBase.cs" />
-    <Compile Include="Communication\MessagingSenderBase.cs" />
-    <Compile Include="Communication\MessagingServiceBase.cs" />
-    <Compile Include="Communication\PartitionConfig\ListenerPartitionConfig.cs" />
-    <Compile Include="Communication\PartitionConfig\PartitionConfig.cs" />
-    <Compile Include="Communication\PartitionConfig\SenderPartitionConfig.cs" />
+    <Compile Include="Communication\Listener\MessagingListenerBase.cs" />
+    <Compile Include="Communication\Sender\MessagingSenderBase.cs" />
+    <Compile Include="Communication\Base\MessagingServiceBase.cs" />
+    <Compile Include="Communication\Listener\ListenerPartitionConfig.cs" />
+    <Compile Include="Communication\Base\PartitionConfig.cs" />
+    <Compile Include="Communication\Sender\SenderPartitionConfig.cs" />
     <Compile Include="Communication\Statistics\MessagingServiceStatistics.cs" />
     <Compile Include="Communication\TransmissionPayloadTrack.cs" />
     <Compile Include="Configuration\ConfigBase.cs" />
@@ -128,10 +136,10 @@
     <Compile Include="Communication\CommunicationContainer_Listener.cs" />
     <Compile Include="Communication\CommunicationContainer_Sender.cs" />
     <Compile Include="Communication\CommunicationContainer_Channel.cs" />
-    <Compile Include="DataCollection\EventSource\DocumentDbEventSource.cs" />
+    <Compile Include="DataCollection\EventSource\Implementation\DocumentDbEventSource.cs" />
     <Compile Include="DataCollection\EventSource\EventSourceEntry.cs" />
     <Compile Include="DataCollection\EventSource\EventSourceEntryBase.cs" />
-    <Compile Include="DataCollection\EventSource\MemoryEventSource.cs" />
+    <Compile Include="DataCollection\EventSource\Implementation\MemoryEventSource.cs" />
     <Compile Include="Interfaces\IBoundaryLogger.cs" />
     <Compile Include="Interfaces\IEventSource.cs" />
     <Compile Include="Interfaces\IEventSourceContainer.cs" />
@@ -146,7 +154,7 @@
     <Compile Include="DataCollection\Logger\Implementations\Memory\MemoryLogEventHolder.cs" />
     <Compile Include="DataCollection\Logger\Implementations\Memory\MemoryLogger.cs" />
     <Compile Include="DataCollection\Logger\Events\PayloadLogEvent.cs" />
-    <Compile Include="DataCollection\MemoryCollector.cs" />
+    <Compile Include="DataCollection\DataCollector\MemoryCollector.cs" />
     <Compile Include="DataCollection\Telemetry\TelemetryCounterHolder.cs" />
     <Compile Include="Messaging\MessageFilterWrapper.cs" />
     <Compile Include="Scheduler\Schedule.cs" />
@@ -169,7 +177,7 @@
     <Compile Include="Interfaces\IMicroservice.cs" />
     <Compile Include="Interfaces\ICache.cs" />
     <Compile Include="Interfaces\IContainerService.cs" />
-    <Compile Include="Interfaces\IDataCollection.cs" />
+    <Compile Include="Interfaces\IDataCollector.cs" />
     <Compile Include="Interfaces\IRequireSharedServices.cs" />
     <Compile Include="Interfaces\ISchedule.cs" />
     <Compile Include="Interfaces\IService.cs" />
@@ -304,7 +312,7 @@
     <Compile Include="Communication\ClientPriority\Statistics\ClientPriorityHolderStatistics.cs" />
     <Compile Include="Communication\ClientPriority\Statistics\ClientPriorityCollectionStatistics.cs" />
     <Compile Include="Communication\CommunicationContainer.cs" />
-    <Compile Include="Communication\CommunicationStatistics.cs" />
+    <Compile Include="Communication\Statistics\CommunicationStatistics.cs" />
     <Compile Include="Command\CommandContainer.cs" />
     <Compile Include="Command\CommandContainerStatistics.cs" />
     <Compile Include="Command\Handler\HandlersCollection.cs" />
@@ -415,6 +423,7 @@
       <Link>Properties\ApacheLicense-2.0.txt</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Communication\TcpTlsChannel\Helper\MakeCert.txt" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

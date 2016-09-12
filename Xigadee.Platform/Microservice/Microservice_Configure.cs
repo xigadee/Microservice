@@ -15,6 +15,7 @@ namespace Xigadee
     //TaskManager
     public partial class Microservice
     {
+        #region Configure<C> ...
         /// <summary>
         /// This method is used to build a pipeline used to configure the Microservice
         /// </summary>
@@ -37,7 +38,7 @@ namespace Xigadee
             , string serviceName = null
             , string serviceId = null
             , IEnumerable<PolicyBase> policy = null
-            ) 
+            )
             where C : ConfigBase, new()
         {
             var service = new Microservice(msOptions, serviceName, serviceId, policy);
@@ -54,7 +55,9 @@ namespace Xigadee
 
             return new MicroservicePipeline(service, config);
         }
+        #endregion
 
+        #region Configure ...
         /// <summary>
         /// This method is used to build a pipeline used to configure the Microservice
         /// </summary>
@@ -81,12 +84,13 @@ namespace Xigadee
                   resolver: resolver
                 , resolverFirst: resolverFirst
                 , assign: assign
-                , configAssign:configAction
+                , configAssign: configAction
                 , msOptions: msOptions
                 , serviceName: serviceName
                 , serviceId: serviceId
                 , policy: policy
                 );
-        }
+        } 
+        #endregion
     }
 }

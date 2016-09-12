@@ -25,13 +25,13 @@ namespace Xigadee
             try
             {
                 var statistics = Statistics;
-                await mLogger.Log(statistics);
+                await Logger.Log(statistics);
                 OnStatisticsIssued(statistics);
             }
             catch (Exception ex)
             {
                 //We're not going to throw any exception here
-                mLogger.LogException("LogStatistics unhandled exception", ex);
+                Logger?.LogException("LogStatistics unhandled exception", ex);
             }
         }
         #endregion
@@ -55,9 +55,7 @@ namespace Xigadee
 
             stats.Tasks = mTaskManager?.Statistics;
 
-            stats.Logger = mLogger?.Statistics;
-
-            stats.EventSource = mEventSource?.Statistics;
+            stats.DataCollection = mDataCollection?.Statistics;
 
             stats.Communication = mCommunication?.Statistics;
 

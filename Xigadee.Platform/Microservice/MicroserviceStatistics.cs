@@ -125,13 +125,9 @@ namespace Xigadee
         public SchedulerStatistics Scheduler { get; set; }
 
         /// <summary>
-        /// The logger statistics.
+        /// The data collection statistics. These include the logger, event source and telemetry statistics.
         /// </summary>
-        public LoggerContainerStatistics Logger { get; set; }
-        /// <summary>
-        /// The event source statistics.
-        /// </summary>
-        public EventSourceContainerStatistics EventSource { get; set; }
+        public DataCollectionStatistics DataCollection { get; set; }
 
         private long mTimeouts;
 

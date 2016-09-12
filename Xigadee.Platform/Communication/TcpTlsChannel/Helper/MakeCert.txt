@@ -1,0 +1,7 @@
+﻿makecert -r -pe -n “CN=localhost” -m 12 -sky exchange -ss my serverCert.cer
+
+https://www.simple-talk.com/dotnet/.net-framework/tlsssl-and-.net-framework-4.0/
+
+https://blogs.msdn.microsoft.com/joncole/2007/06/13/sample-asynchronous-sslstream-clientserver-implementation/
+
+https://msdn.microsoft.com/en-us/library/system.net.security.sslstream.aspx?cs-save-lang=1&cs-lang=csharp#code-snippet-2

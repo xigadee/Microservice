@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -12,7 +13,7 @@ namespace Xigadee
     /// <summary>
     /// This class hooks Application Insights in to the Microservice logging capabilities.
     /// </summary>
-    public class ApplicationInsightsCollector: IDataCollection
+    public class ApplicationInsightsCollector: IDataCollector
     {
         //https://azure.microsoft.com/en-gb/documentation/articles/app-insights-api-custom-events-metrics/
         private TelemetryClient telemetry;
@@ -86,6 +87,7 @@ namespace Xigadee
         public async Task Write<K, E>(string originatorId, EventSourceEntry<K, E> entry, DateTime? utcTimeStamp = default(DateTime?), bool sync = false)
         {
         }
+
     }
 }
 

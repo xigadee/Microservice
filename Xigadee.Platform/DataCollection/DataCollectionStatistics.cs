@@ -9,11 +9,13 @@ namespace Xigadee
     /// <summary>
     /// This is the base data collection statistics.
     /// </summary>
-    public class DataCollectionStatistics: StatusBase, ICollectionStatistics
+    public class DataCollectionStatistics: MessagingStatistics
     {
-        public int ItemCount
-        {
-            get;set;
-        }
+
+        public EventSourceContainerStatistics EventSource { get; set; }
+
+        public LoggingStatistics Logging { get; set; }
+
+
     }
 }

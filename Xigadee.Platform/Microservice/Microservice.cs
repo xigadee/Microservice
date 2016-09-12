@@ -33,18 +33,6 @@ namespace Xigadee
         /// </summary>
         protected DataCollectionContainer mDataCollection;
         /// <summary>
-        /// This collection holds the loggers for the Microservice.
-        /// </summary>
-        protected LoggerContainer mLogger;
-        /// <summary>
-        /// This collection holds the event sources for the Microservice.
-        /// </summary>
-        protected EventSourceContainer mEventSource;
-        /// <summary>
-        /// This collection holds the telemetry components.
-        /// </summary>
-        protected TelemetryContainer mTelemetry;
-        /// <summary>
         /// This container is used to hold the security infrastructure for the Microservice.
         /// </summary>
         protected SecurityContainer mSecurity;
@@ -61,18 +49,6 @@ namespace Xigadee
         /// This class is used to track resource starvation and to rate limit incoming requests.
         /// </summary>
         protected ResourceTracker mResourceTracker;
-        /// <summary>
-        /// These are the message loggers for the Microservice.
-        /// </summary>
-        protected List<ILogger> mLoggers;
-        /// <summary>
-        /// These are the telemetry loggers for the Microservice.
-        /// </summary>
-        protected List<ITelemetry> mTelemetries;
-        /// <summary>
-        /// These are the event sources used for logging the incoming and outgoing messages.
-        /// </summary>
-        protected List<IEventSource> mEventSources;
         /// <summary>
         /// This contains the supported serializers.
         /// </summary>
@@ -120,11 +96,7 @@ namespace Xigadee
             mCommunication = InitialiseCommunicationContainer();
             mCommands = InitialiseCommandContainer();
             mResourceTracker = InitialiseResourceTracker();
-
-            mTelemetries = new List<ITelemetry>();
-            mLoggers = new List<ILogger>();
-            mPayloadSerializers = new List<IPayloadSerializer>();
-            mEventSources = new List<IEventSource>();
+            mDataCollection = InitialiseDataCollectionContainer();
         }
         #endregion
 
@@ -167,9 +139,6 @@ namespace Xigadee
         /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-                mEventSources = null;
-
             base.Dispose(disposing);
         }
         #endregion
@@ -189,7 +158,7 @@ namespace Xigadee
                 , TimeSpan.FromSeconds(1), "Autotune", TimeSpan.FromSeconds(10), isInternal: true);
 
             // Flush the accumulated telemetry 
-            mScheduler.Register(async (s, cancel) => await mTelemetry.Flush()
+            mScheduler.Register(async (s, cancel) => await mDataCollection.TelemetryFlush()
                 , TimeSpan.FromMinutes(15), "Telemetry Flush", TimeSpan.FromSeconds(10), isInternal: true);
 
             // Kills any overrunning tasks
@@ -221,14 +190,11 @@ namespace Xigadee
                 //This method initialises the serialization container.
                 EventStart(() => ServiceStart(mSerializer), "Serialization");
 
-                //Start the logger components.
-                EventStart(() => ServiceStart(mLogger), "Logger");
+                //Start data collection.
+                EventStart(() => ServiceStart(mDataCollection), "Data Collection");
 
                 //OK, register the resource tracker
                 EventStart(() => ServiceStart(mResourceTracker), "Resource Tracker");
-
-                //Start the event source components.
-                EventStart(() => ServiceStart(mEventSource), "Event Source");
 
                 //This method connects any components that require Shared Service together before they start.
                 EventStart(() => mCommands.SharedServicesConnect(), "Shared Services");
@@ -268,7 +234,7 @@ namespace Xigadee
                 try
                 {
                     //Throw the original exception.
-                    mLogger.LogException("StartInternal unhandled exception thrown - service is stopping", ex);
+                    Logger.LogException("StartInternal unhandled exception thrown - service is stopping", ex);
                     //Just try and tidy up where possible.
                     StopInternal();
                 }
@@ -308,18 +274,15 @@ namespace Xigadee
             //Stop the channel controller.
             EventStop(() => ServiceStop(mSecurity), "Security Container");
 
-            EventStop(() => ServiceStop(mEventSource), "Event Source");
-
             EventStop(() => ServiceStop(mResourceTracker), "Resource Tracker");
 
-            EventStop(() => ServiceStop(mLogger), "Logger");
+            EventStop(() => ServiceStop(mDataCollection), "Data Collection");
 
             EventStop(() => ServiceStop(mSerializer), "Serialization");
 
             OnStopCompleted();
         }
         #endregion
-
 
         #region ServiceStart(object service)
         /// <summary>
@@ -331,13 +294,13 @@ namespace Xigadee
             try
             {
                 if (service is IServiceLogger)
-                    ((IServiceLogger)service).Logger = mLogger;
+                    ((IServiceLogger)service).Logger = mDataCollection;
 
                 if (service is IServiceOriginator)
                     ((IServiceOriginator)service).OriginatorId = ExternalServiceId;
 
                 if (service is IServiceEventSource)
-                    ((IServiceEventSource)service).EventSource = mEventSource;
+                    ((IServiceEventSource)service).EventSource = mDataCollection;
 
                 if (service is IPayloadSerializerConsumer)
                     ((IPayloadSerializerConsumer)service).PayloadSerializer = mSerializer;
@@ -359,7 +322,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                mLogger.LogException(string.Format("Service Start failed for service {0}", service.GetType().Name), ex);
+                Logger.LogException(string.Format("Service Start failed for service {0}", service.GetType().Name), ex);
                 throw;
             }
         }
@@ -418,7 +381,7 @@ namespace Xigadee
         /// <summary>
         /// This is the internal logger. This is exposed to allow external services to log using the Microservice logging services.
         /// </summary>
-        public ILoggerExtended Logger { get { return mLogger; } } 
+        public ILoggerExtended Logger { get { return mDataCollection; } } 
         #endregion
     }
 }

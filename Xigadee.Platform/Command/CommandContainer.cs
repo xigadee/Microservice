@@ -258,7 +258,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region CommandsStart...
+        #region CommandsStart(Action<ICommand> serviceStart)
         /// <summary>
         /// This method starts the commands
         /// </summary>
@@ -287,6 +287,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="priority">The command priority.</param>
         /// <param name="commands">The command list.</param>
+        /// <param name="serviceStart">The action to start the command.</param>
         /// <returns>Returns a set of tasks that can be executed in parallel.</returns>
         protected Task[] CommandsStart(int priority, List<ICommand> commands, Action<ICommand> serviceStart)
         {
@@ -296,7 +297,11 @@ namespace Xigadee
                 .ToArray();
         }
         #endregion
-
+        #region CommandsStop(Action<ICommand> serviceStop)
+        /// <summary>
+        /// This method stops the commands in the collection.
+        /// </summary>
+        /// <param name="serviceStop">The action to stop the command.</param>
         public void CommandsStop(Action<ICommand> serviceStop)
         {
             //Ok, stop the commands.
@@ -306,6 +311,7 @@ namespace Xigadee
 
             mNotificationsActive = false;
 
-        }
+        } 
+        #endregion
     }
 }

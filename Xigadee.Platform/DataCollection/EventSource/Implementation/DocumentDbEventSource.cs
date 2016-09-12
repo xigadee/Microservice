@@ -15,8 +15,6 @@ namespace Xigadee
 
         private string mInstance;
 
-
-
         private class EventSourceWrapper<K,E>
         {
             public string OriginatorId { get; set; }

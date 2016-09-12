@@ -177,11 +177,9 @@ namespace Xigadee
             mTaskManager.ProcessRegister("ListenersProcess"
                 , 4, mCommunication);
 
-            mTaskManager.ProcessRegister("Overload Check EventSource"
-                , 3, mEventSource);
+            mTaskManager.ProcessRegister("Overload Check"
+                , 3, mDataCollection);
 
-            mTaskManager.ProcessRegister("Overload Check Logger"
-                , 2, mLogger);
         }
         #endregion
 

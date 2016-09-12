@@ -17,7 +17,7 @@ namespace Xigadee
     {
         private ILoggerExtended mLogger;
 
-        public EventSourceContainer(EventSourcePolicy policy, IEnumerable<IEventSource> eventSources)
+        public EventSourceContainer(IEnumerable<IEventSource> eventSources, EventSourcePolicy policy = null)
             : base(eventSources, policy)
         {
         }

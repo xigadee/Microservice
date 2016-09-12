@@ -111,26 +111,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region InitialiseDataCollectionContainer()
-        /// <summary>
-        /// This method creates the data collection container, which is responsible for logging, event source management, and telemetry.
-        /// </summary>
-        /// <returns>The data collection container.</returns>
-        protected virtual DataCollectionContainer InitialiseDataCollectionContainer()
-        {
-            var container = new DataCollectionContainer(PolicyDataCollection());
-
-            return container;
-        }
-        /// <summary>
-        /// This is the policy used to set the data collection container settings.
-        /// </summary>
-        /// <returns>The policy</returns>
-        protected virtual DataCollectionPolicy PolicyDataCollection()
-        {
-            return new DataCollectionPolicy();
-        }
-        #endregion
 
         #region InitialiseSchedulerContainer()
         /// <summary>
@@ -177,19 +157,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region InitialiseTelemetryContainer(List<ITelemetry> telemetries)
-        /// <summary>
-        /// THis method returns the default scheduler container.
-        /// </summary>
-        /// <returns>The default scheduler.</returns>
-        protected virtual TelemetryContainer InitialiseTelemetryContainer(List<ITelemetry> telemetries)
-        {
-            var container = new TelemetryContainer(telemetries);
-
-            return container;
-        }
-        #endregion
-
         #region InitialiseSerializationContainer(List<IPayloadSerializer> payloadSerializers)
         /// <summary>
         /// THis method returns the default scheduler container.
@@ -202,45 +169,24 @@ namespace Xigadee
         }
         #endregion
 
-        #region InitialiseEventSourceContainer(List<IEventSource> eventSources)
+        #region InitialiseDataCollectionContainer()
         /// <summary>
-        /// THis method returns the default scheduler container.
+        /// This method creates the data collection container, which is responsible for logging, event source management, and telemetry.
         /// </summary>
-        /// <returns>The default scheduler.</returns>
-        protected virtual EventSourceContainer InitialiseEventSourceContainer(List<IEventSource> eventSources)
+        /// <returns>The data collection container.</returns>
+        protected virtual DataCollectionContainer InitialiseDataCollectionContainer()
         {
-            var container = new EventSourceContainer(PolicyEventSource(), eventSources);
+            var container = new DataCollectionContainer(PolicyDataCollection());
 
             return container;
         }
         /// <summary>
-        /// This is the eveent source policy.
+        /// This is the policy used to set the data collection container settings.
         /// </summary>
-        /// <returns></returns>
-        protected virtual EventSourcePolicy PolicyEventSource()
+        /// <returns>The policy</returns>
+        protected virtual DataCollectionPolicy PolicyDataCollection()
         {
-            return new EventSourcePolicy();
-        }
-        #endregion
-
-        #region InitialiseLoggerContainer(List<ILogger> loggers)
-        /// <summary>
-        /// THis method returns the default scheduler container.
-        /// </summary>
-        /// <returns>The default scheduler.</returns>
-        protected virtual LoggerContainer InitialiseLoggerContainer(List<ILogger> loggers)
-        {
-            var container = new LoggerContainer(loggers, PolicyLogger());
-
-            return container;
-        }
-        /// <summary>
-        /// This is the eveent source policy.
-        /// </summary>
-        /// <returns></returns>
-        protected virtual LoggerPolicy PolicyLogger()
-        {
-            return new LoggerPolicy();
+            return new DataCollectionPolicy();
         }
         #endregion
     }
