@@ -74,6 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Xigadee.licenseheader" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\AssemblyInfo\ApacheLicense-2.0.txt">
