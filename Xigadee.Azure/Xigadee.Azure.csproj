@@ -235,6 +235,7 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Xigadee.Azure.licenseheader" />
     <None Include="Xigadee.Azure.nuspec" />
   </ItemGroup>
   <ItemGroup>

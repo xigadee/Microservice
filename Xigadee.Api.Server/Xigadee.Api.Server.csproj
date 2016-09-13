@@ -192,6 +192,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="Xigadee.Api.Server.licenseheader" />
     <None Include="Xigadee.Api.Server.nuspec" />
   </ItemGroup>
   <ItemGroup>

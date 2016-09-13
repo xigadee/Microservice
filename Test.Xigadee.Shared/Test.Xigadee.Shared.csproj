@@ -116,6 +116,7 @@
     <EmbeddedResource Include="Xsd\Blah.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <None Include="Test.Xigadee.Shared.licenseheader" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
