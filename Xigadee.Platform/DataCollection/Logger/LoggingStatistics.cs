@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class LoggingStatistics:MessagingStatistics
+    public class LoggingStatistics: MessagingStatistics
     {
     }
 }

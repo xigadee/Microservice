@@ -15,44 +15,60 @@
 #endregion
 
 #region using
+
 using System;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-using System.Threading;
 #endregion
 namespace Xigadee
 {
     /// <summary>
-    /// This policy is primarily concerned with defining what happens when the ActionQueue becomes overloaded.
+    /// This class is used to log and event source entry.
     /// </summary>
-    public class ActionQueuePolicy: PolicyBase
+    public class EventSourceEntry: EventSourceEntry<object, object>
+    {
+
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="K">The key type.</typeparam>
+    /// <typeparam name="E">The entity type.</typeparam>
+    public class EventSourceEntry<K, E>: EventSourceEntryBase
     {
         /// <summary>
-        /// This is the maximum time that an overload process should run.
+        /// The optional key maker.
         /// </summary>
-        public int OverloadProcessTimeInMs { get; set; } = 10000; //10s
-        /// <summary>
-        /// This is the maximum number of overload tasks that should be run concurrently.
-        /// </summary>
-        public int OverloadMaxTasks { get; set; } = 2;
-        /// <summary>
-        /// This is the threshold at which point the overload tasks will be triggered.
-        /// </summary>
-        public int? OverloadThreshold { get; set; } = 1000;
-        /// <summary>
-        /// This is the number of retry attempts to be made if the write fails.
-        /// </summary>
-        public int RetryLimit { get; set; } = 0;
-        /// <summary>
-        /// This is the name used for debugging.
-        /// </summary>
-        public virtual string Name
+        private Func<K, string> mKeyMaker;
+
+        public EventSourceEntry():this(null){}
+
+        public EventSourceEntry(Func<K, string> keyMaker)
         {
-            get;set;
+            mKeyMaker = keyMaker ?? ((e) => e.ToString());
+        }
+
+        /// <summary>
+        /// The entity key.
+        /// </summary>
+        public K EntityKey { get; set; }
+        /// <summary>
+        /// The entity.
+        /// </summary>
+        public E Entity { get; set; }
+
+        /// <summary>
+        /// A string representation of the key.
+        /// </summary>
+        public override string Key
+        {
+            get
+            {
+                return mKeyMaker(EntityKey);
+            }
         }
     }
 }

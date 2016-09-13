@@ -6,77 +6,49 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public abstract class DataCollectorBase: IDataCollector
+    /// <summary>
+    /// This abstract class is used to implement data collectors.
+    /// </summary>
+    public abstract class DataCollectorBase: IDataCollectorComponent
     {
+        protected DataCollectorBase(string name, DataCollectionSupport support = DataCollectionSupport.All)
+        {
+            Name = name;
+            Support = support;
+        }
+
+        /// <summary>
+        /// This returns the type of supported data collection
+        /// </summary>
+        public DataCollectionSupport Support { get; }
+        /// <summary>
+        /// Returns true if the requested type is supported.
+        /// </summary>
+        /// <param name="support">The data collection type</param>
+        /// <returns></returns>
+        public bool IsSupported(DataCollectionSupport support)
+        {
+            return (Support & support) == support;
+        }
+
         public string Name
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get;
         }
 
         public string OriginatorId
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
-
-            set
-            {
-                throw new NotImplementedException();
-            }
+            get;set;
         }
 
-        public Guid BatchPoll(int requested, int actual, string channelId)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract Guid BatchPoll(int requested, int actual, string channelId);
 
-        public Task Log(LogEvent logEvent)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract Task Log(LogEvent logEvent);
 
-        public void Log(ChannelDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = default(Guid?))
-        {
-            throw new NotImplementedException();
-        }
+        public abstract void Log(ChannelDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = default(Guid?));
 
-        public void LogException(Exception ex)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract void TrackMetric(string metricName, double value);
 
-        public void LogException(string message, Exception ex)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void LogMessage(string message)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void LogMessage(LoggingLevel level, string message)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void LogMessage(LoggingLevel level, string message, string category)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void TrackMetric(string metricName, double value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task Write<K, E>(string originatorId, EventSourceEntry<K, E> entry, DateTime? utcTimeStamp = default(DateTime?), bool sync = false)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract Task Write<K, E>(string originatorId, EventSourceEntry<K, E> entry, DateTime? utcTimeStamp = default(DateTime?), bool sync = false);
     }
 }

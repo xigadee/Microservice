@@ -39,6 +39,14 @@ namespace Xigadee
         /// This is the Microservice create time.
         /// </summary>
         private readonly DateTime mStartTime;
+        protected readonly string mServiceVersionId;
+        protected readonly string mServiceEngineVersionId;
+
+        protected readonly string mServiceId;
+        protected readonly string mMachineName;
+        protected readonly string mName;
+        protected readonly string mExternalServiceId;
+
         /// <summary>
         /// This collection holds the serializer
         /// </summary>
@@ -60,7 +68,6 @@ namespace Xigadee
         /// This container holds the communication components.
         /// </summary>
         protected CommunicationContainer mCommunication;
-
         /// <summary>
         /// This class is used to track resource starvation and to rate limit incoming requests.
         /// </summary>
@@ -74,13 +81,6 @@ namespace Xigadee
         /// </summary>
         protected List<PolicyBase> mPolicySettings;
 
-        protected readonly string mServiceVersionId;
-        protected readonly string mServiceEngineVersionId;
-
-        protected readonly string mServiceId;
-        protected readonly string mMachineName;
-        protected readonly string mName;
-        protected readonly string mExternalServiceId;
         #endregion
         #region Constructors
         /// <summary>
@@ -113,6 +113,7 @@ namespace Xigadee
             mCommands = InitialiseCommandContainer();
             mResourceTracker = InitialiseResourceTracker();
             mDataCollection = InitialiseDataCollectionContainer();
+            mPayloadSerializers = new List<IPayloadSerializer>();
         }
         #endregion
 

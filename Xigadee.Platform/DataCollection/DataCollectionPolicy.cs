@@ -22,7 +22,18 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This class holds the data collection policy.
+    /// </summary>
     public class DataCollectionPolicy:PolicyBase
     {
+        /// <summary>
+        /// This is the event source policy.
+        /// </summary>
+        public ActionQueuePolicy EventSource { get; set; } = new ActionQueuePolicy() { OverloadThreshold = 500, RetryLimit = 10 };
+        /// <summary>
+        /// This is the logger policy.
+        /// </summary>
+        public ActionQueuePolicy Logger { get; set; } = new ActionQueuePolicy();
     }
 }

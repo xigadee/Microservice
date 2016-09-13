@@ -9,44 +9,35 @@ namespace Xigadee
     /// <summary>
     /// This is a test collector.
     /// </summary>
-    public class MemoryCollector: IDataCollector
+    public class MemoryCollector: DataCollectorBase
     {
-        public string Name
+        public MemoryCollector() : base(typeof(MemoryCollector).Name)
         {
-            get;
-            protected set;
         }
 
-        public string OriginatorId
+        public override Guid BatchPoll(int requested, int actual, string channelId)
         {
-            get;set;
+            throw new NotImplementedException();
         }
 
-        public Guid BatchPoll(int requested, int actual, string channelId)
+        public override Task Log(LogEvent logEvent)
         {
-            var id = Guid.NewGuid();
-
-            return id;
+            throw new NotImplementedException();
         }
 
-        public async Task Log(LogEvent logEvent)
+        public override void Log(ChannelDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = default(Guid?))
         {
-
+            throw new NotImplementedException();
         }
 
-        public void Log(ChannelDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = default(Guid?))
+        public override void TrackMetric(string metricName, double value)
         {
-
+            throw new NotImplementedException();
         }
 
-        public void TrackMetric(string metricName, double value)
+        public override Task Write<K, E>(string originatorId, EventSourceEntry<K, E> entry, DateTime? utcTimeStamp = default(DateTime?), bool sync = false)
         {
-
-        }
-
-        public async Task Write<K, E>(string originatorId, EventSourceEntry<K, E> entry, DateTime? utcTimeStamp = default(DateTime?), bool sync = false)
-        {
-
+            throw new NotImplementedException();
         }
     }
 }

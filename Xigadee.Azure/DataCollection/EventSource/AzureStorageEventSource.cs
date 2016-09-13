@@ -29,8 +29,7 @@ namespace Xigadee
 {
     public class AzureStorageEventSource: AzureStorageLoggingBase<EventSourceEntryBase>, IEventSource
     {
-        public AzureStorageEventSource(StorageCredentials credentials, string serviceName, string containerName = "eventsource"
-            , ResourceProfile resourceProfile = null)
+        public AzureStorageEventSource(StorageCredentials credentials, string serviceName, string containerName = "eventsource", ResourceProfile resourceProfile = null)
             :base(credentials, containerName, serviceName, resourceProfile:resourceProfile)
         {
         }

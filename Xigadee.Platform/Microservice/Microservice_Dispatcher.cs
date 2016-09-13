@@ -65,7 +65,7 @@ namespace Xigadee
                     if (!isSuccess)
                     {
                         OnProcessRequestUnresolved(requestPayload);
-                        mLogger.LogPayload(requestPayload, ex: new SenderNotResolvedException(requestPayload));
+                        mDataCollection.LogPayload(requestPayload, ex: new SenderNotResolvedException(requestPayload));
                     }
                     return;
                 }
@@ -79,7 +79,7 @@ namespace Xigadee
                 if (!resolveInternal && internalOnly)
                 {
                     //OK, we have an problem. We log this as an error and get out of here
-                    mLogger.LogPayload(requestPayload, ex:new MessageHandlerNotResolvedException(requestPayload));
+                    mDataCollection.LogPayload(requestPayload, ex:new MessageHandlerNotResolvedException(requestPayload));
                     OnProcessRequestUnresolved(requestPayload);
                     isSuccess = ConfigurationOptions.UnhandledMessagesIgnore;
                     return;
@@ -116,12 +116,12 @@ namespace Xigadee
             }
             catch (TransmissionPayloadException pyex)
             {
-                mLogger.LogPayload(pyex.Payload, ex: pyex, level: LoggingLevel.Warning);
+                mDataCollection.LogPayload(pyex.Payload, ex: pyex, level: LoggingLevel.Warning);
                 OnProcessRequestError(pyex.Payload, pyex);
             }
             catch (Exception ex)
             {
-                mLogger.LogException($"Unable to process {requestPayload?.Message} after {requestPayload?.Message?.FabricDeliveryCount} attempts", ex);
+                mDataCollection.LogException($"Unable to process {requestPayload?.Message} after {requestPayload?.Message?.FabricDeliveryCount} attempts", ex);
                 OnProcessRequestError(requestPayload, ex);
             }
             finally
@@ -133,10 +133,10 @@ namespace Xigadee
                 int delta = StatisticsInternal.ActiveDecrement(timerStart);
 
                 //Log the telemtry for the specific message channelId.
-                mTelemetry.Log(requestPayload.Message.ToKey(), delta, isSuccess);
+                mDataCollection.Telemetry(requestPayload.Message.ToKey(), delta, isSuccess);
 
                 if (isSuccess)
-                    mLogger.LogPayload(requestPayload, direction:DispatcherLoggerDirection.Outgoing, timespan: TimeSpan.FromMilliseconds(delta));
+                    mDataCollection.LogPayload(requestPayload, direction:DispatcherLoggerDirection.Outgoing, timespan: TimeSpan.FromMilliseconds(delta));
                 else
                     StatisticsInternal.ErrorIncrement();
             }

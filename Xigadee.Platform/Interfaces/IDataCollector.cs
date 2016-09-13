@@ -13,4 +13,11 @@ namespace Xigadee
     {
 
     }
+
+    public interface IDataCollectorComponent: IDataCollector
+    {
+        DataCollectionSupport Support { get; }
+
+        bool IsSupported(DataCollectionSupport support);
+    }
 }

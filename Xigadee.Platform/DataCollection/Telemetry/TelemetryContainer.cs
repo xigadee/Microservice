@@ -55,11 +55,11 @@ namespace Xigadee
             holder.Log(delta, isSuccess, !isSuccess);
         }
 
-        #region FlushLogs()
+        #region FlushTelemetry()
         /// <summary>
         /// This method flushes log information out to the telemetries and resets the status tracker
         /// </summary>
-        public async Task Flush()
+        public async Task FlushTelemetry()
         {
             try
             {

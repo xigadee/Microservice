@@ -127,7 +127,6 @@ namespace Xigadee
         }
         #endregion
 
-
         #region InitialiseSchedulerContainer()
         /// <summary>
         /// This method returns the default scheduler container.

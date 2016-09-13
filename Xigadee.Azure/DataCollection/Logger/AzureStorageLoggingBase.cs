@@ -79,6 +79,7 @@ namespace Xigadee
             mResourceProfile = resourceProfile;
         }
         #endregion
+
         public ILoggerExtended Logger { get; set; }
 
         #region SharedServices
@@ -135,7 +136,7 @@ namespace Xigadee
             catch (Exception ex)
             {
                 result = ResourceRequestResult.Exception;
-                Logger.LogException(string.Format("Unable to output {0} to {1} for {2}", id, directory, typeof(E).Name), ex);
+                Logger?.LogException(string.Format("Unable to output {0} to {1} for {2}", id, directory, typeof(E).Name), ex);
                 StatisticsInternal.ErrorIncrement();
                 throw;
             }

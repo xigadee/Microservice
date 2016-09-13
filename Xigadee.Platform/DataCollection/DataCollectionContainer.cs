@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,26 +29,12 @@ namespace Xigadee
     public partial class DataCollectionContainer: ServiceContainerBase<DataCollectionStatistics, DataCollectionPolicy>, IDataCollector, ILoggerExtended, ITaskManagerProcess
     {
         #region Declarations
-        protected List<IDataCollector> mCollectors;
-        protected List<ILogger> mLoggers;
-        protected List<IEventSource> mEventSource;
-        protected List<IBoundaryLogger> mBoundaryLoggers;
-        protected List<ITelemetry> mTelemetry;
-
-        /// <summary>
-        /// This collection holds the loggers for the Microservice.
-        /// </summary>
-        protected LoggerContainer mContainerLogger;
-        /// <summary>
-        /// This collection holds the event sources for the Microservice.
-        /// </summary>
-        protected EventSourceContainer mContainerEventSource;
-        /// <summary>
-        /// This collection holds the telemetry components.
-        /// </summary>
-        protected TelemetryContainer mContainerTelemetry;
+        private List<IDataCollectorComponent> mCollectors;
+        private List<ILogger> mLoggers;
+        private List<IEventSource> mEventSource;
+        private List<IBoundaryLogger> mBoundaryLoggers;
+        private List<ITelemetry> mTelemetry;
         #endregion
-
         #region Constructor
         /// <summary>
         /// This is the default constructor.
@@ -55,34 +42,33 @@ namespace Xigadee
         /// <param name="policy">The policy.</param>
         public DataCollectionContainer(DataCollectionPolicy policy) : base(policy)
         {
-            mCollectors = new List<IDataCollector>();
+            mCollectors = new List<IDataCollectorComponent>();
             mLoggers = new List<ILogger>();
             mEventSource = new List<IEventSource>();
             mBoundaryLoggers = new List<IBoundaryLogger>();
             mTelemetry = new List<ITelemetry>();
-        } 
+        }
         #endregion
 
+        #region StartInternal/StopInternal
         protected override void StartInternal()
         {
-            mContainerLogger = new LoggerContainer(mLoggers);
-            mContainerEventSource = new EventSourceContainer(mEventSource);
-            mContainerTelemetry = new TelemetryContainer(mTelemetry);
-
-            
+            mCollectors.ForEach((c) => ServiceStart(c));
+            StartTelemetry();
+            StartEventSource();
+            StartLogger();
         }
 
         protected override void StopInternal()
         {
+            StopTelemetry();
+            StopEventSource();
+            StopLogger();
         }
-
-        public async Task TelemetryFlush()
-        {
-
-        }
+        #endregion
 
         #region Add...
-        public IDataCollector Add(IDataCollector component)
+        public IDataCollector Add(IDataCollectorComponent component)
         {
             mCollectors.Add(component);
             return component;
@@ -113,62 +99,28 @@ namespace Xigadee
         }
         #endregion
 
+        protected override void ServiceStart(object service)
+        {
+            try
+            {
+                if ((service as IServiceOriginator) != null)
+                    ((IServiceOriginator)service).OriginatorId = OriginatorId;
+
+                base.ServiceStart(service);
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("Error starting data collection service [{0}]: {1}", service.GetType().Name, ex.ToString());
+                throw;
+            }
+
+        }
+
         public string OriginatorId
         {
             get; set;
         }
 
-        #region LogException...
-        public void LogException(Exception ex)
-        {
-            Log(new LogEvent(ex));
-        }
-
-        public void LogException(string message, Exception ex)
-        {
-            Log(new LogEvent(message, ex));
-        }
-        #endregion
-        #region LogMessage...
-        public void LogMessage(string message)
-        {
-            Log(new LogEvent(message));
-        }
-
-        public void LogMessage(LoggingLevel logLevel, string message)
-        {
-            Log(new LogEvent(logLevel, message));
-        }
-
-        public void LogMessage(LoggingLevel logLevel, string message, string category)
-        {
-            Log(new LogEvent(logLevel, message, category));
-        }
-        public async Task Log(LogEvent logEvent)
-        {
-        }
-        #endregion
-
-        public void Log(ChannelDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = default(Guid?))
-        {
-
-        }
-
-        public Guid BatchPoll(int requested, int actual, string channelId)
-        {
-            var id = Guid.NewGuid();
-
-            return id;
-        }
-
-
-        public async Task Write<K, E>(string originatorId, EventSourceEntry<K, E> entry, DateTime? utcTimeStamp = default(DateTime?), bool sync = false)
-        {
-        }
-
-        public void TrackMetric(string metricName, double value)
-        {
-        }
 
         public bool CanProcess()
         {
@@ -180,41 +132,28 @@ namespace Xigadee
             
         }
 
-
-        public string Name
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-
-
         public Action<TaskTracker> TaskSubmit
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
-
-            set
-            {
-                throw new NotImplementedException();
-            }
+            get;set;
         }
 
         public ITaskAvailability TaskAvailability
         {
+            get;set;
+        }
+
+        public DataCollectionSupport Support
+        {
             get
             {
-                throw new NotImplementedException();
-            }
-
-            set
-            {
-                throw new NotImplementedException();
+                return DataCollectionSupport.All;
             }
         }
+
+        public bool IsSupported(DataCollectionSupport support)
+        {
+            return true;
+        }
+
     }
 }

@@ -27,40 +27,83 @@ using System.Threading;
 namespace Xigadee
 {
     /// <summary>
-    /// Thia collection is used by 
+    /// This is a concrete implementation of the base class that allows the key parts of the class to be implemented in the underlying container.
+    /// </summary>
+    /// <typeparam name="D">The data type.</typeparam>
+    /// <typeparam name="I">The interface type.</typeparam>
+    public class ActionQueueCollection<D, I>: ActionQueueCollectionBase<D, I, ActionQueueCollectionStatistics, ActionQueuePolicy>
+    {
+        Action<D, I> mAction;
+
+        /// <summary>
+        /// This is the default constructor for the queue implementation.
+        /// </summary>
+        /// <param name="items">The underlying items.</param>
+        /// <param name="policy">The policy.</param>
+        /// <param name="action">The action.</param>
+        public ActionQueueCollection(IEnumerable<I> items, ActionQueuePolicy policy, Action<D,I> action) : base(items, policy)
+        {
+            mAction = action;
+        }
+
+        /// <summary>
+        /// This override executes the action passed in the constructor.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <param name="item">The event item.</param>
+        protected override void Process(D data, I item)
+        {
+            mAction(data,item);
+        }
+    }
+
+    /// <summary>
+    /// Thia collection is used by Logging and EventSource
     /// </summary>
     /// <typeparam name="D"></typeparam>
     /// <typeparam name="I"></typeparam>
     /// <typeparam name="S">The statistics</typeparam>
     /// <typeparam name="P">The policy</typeparam>
-    public abstract class ActionQueueCollectionBase<D, I, S, P>: CollectionContainerBase<I, S>
-        , IActionQueue, ITaskManagerProcess
+    public abstract class ActionQueueCollectionBase<D, I, S, P>: CollectionContainerBase<I, S>, IActionQueue, ITaskManagerProcess
         where S : ActionQueueCollectionStatistics, new()
         where P : ActionQueuePolicy, new()
     {
         #region Declarations
+        /// <summary>
+        /// This is the underlying policy.
+        /// </summary>
         protected P mPolicy;
-
+        /// <summary>
+        /// This is the concurrent queue that contains the incoming messages.
+        /// </summary>
         protected ConcurrentQueue<ActionQueueContainer<D>> mQueue;
-
+        /// <summary>
+        /// This is the mRE that is used to signal incoming messages to the thread loop.
+        /// </summary>
         protected ManualResetEventSlim mReset;
-
+        /// <summary>
+        /// This is the thread loop used to log messages.
+        /// </summary>
         protected Thread mThreadLog;
-
-        private bool mActive;
-        
+        /// <summary>
+        /// This counter holds the current actve overload process tasks.
+        /// </summary>
         protected int mOverloadProcessCount = 0;
-
+        /// <summary>
+        /// The number of overload hits.
+        /// </summary>
         protected long mOverloadProcessHits = 0; 
-
-        private int mOverloadTaskCount = 0;
-
+        /// <summary>
+        /// This is teh number of time the overload process has been hit.
+        /// </summary>
+        protected int mOverloadTaskCount = 0;
         #endregion
         #region Constructor
         /// <summary>
         /// This is the default constructor.
         /// </summary>
         /// <param name="items">The underlying action items.</param>
+        /// <param name="policy">The collection policy.</param>
         protected ActionQueueCollectionBase(IEnumerable<I> items, P policy = null) : base(items)
         {
             mQueue = new ConcurrentQueue<ActionQueueContainer<D>>();
@@ -100,18 +143,11 @@ namespace Xigadee
 
         #region Active
         /// <summary>
-        /// This property is used for debugging.
+        /// This property indicates whether the collecction is active.
         /// </summary>
         protected virtual bool Active
         {
-            get
-            {
-                return mActive;
-            }
-            set
-            {
-                mActive = value;
-            }
+            get; set;
         }
         #endregion
 
@@ -133,13 +169,13 @@ namespace Xigadee
 
         #region OverloadProcessCount
         /// <summary>
-        /// This counter holds the current actve overload process threads.
+        /// This counter holds the current actve overload process tasks.
         /// </summary>
         public int OverloadProcessCount { get { return mOverloadProcessCount; } }
         #endregion
         #region OverloadProcessHits
         /// <summary>
-        /// 
+        /// This count holds the number of time the overload process has been triggered for the class.
         /// </summary>
         public long OverloadProcessHits { get { return mOverloadProcessHits; } } 
         #endregion
@@ -156,7 +192,7 @@ namespace Xigadee
             try
             {
                 Interlocked.Increment(ref mOverloadProcessCount);
-                return WriteBuffer(mPolicy.OverloadProcessTimeInMs);
+                return ProcessQueue(mPolicy.OverloadProcessTimeInMs);
             }
             finally
             {
@@ -197,8 +233,37 @@ namespace Xigadee
             {
                 mReset.Wait(1000);
                 mReset.Reset();
-                int count = WriteBuffer();
+                int count = ProcessQueue();
             }
+        }
+        #endregion
+        #region ProcessQueue(int? timespaninms = null)
+        /// <summary>
+        /// This method will write the current items in the queue to the stream processor.
+        /// </summary>
+        protected virtual int ProcessQueue(int? timespaninms = null)
+        {
+            ActionQueueContainer<D> logEvent;
+            DateTime start = DateTime.UtcNow;
+            int items = 0;
+            do
+            {
+                while (mQueue.TryDequeue(out logEvent))
+                {
+                    EventWrite(logEvent.Data);
+
+                    items++;
+
+                    StatisticsInternal.ActiveDecrement(logEvent.Timestamp);
+
+                    //Kick out every 100 loops if there is a timer limit.
+                    if (timespaninms.HasValue && (items % 100 == 0))
+                        break;
+                }
+            }
+            while (mQueue.Count > 0 && (!timespaninms.HasValue || (DateTime.UtcNow - start).TotalMilliseconds<timespaninms));
+
+            return items;
         }
         #endregion
 
@@ -235,79 +300,99 @@ namespace Xigadee
             Interlocked.Increment(ref mOverloadTaskCount);
 
             TaskSubmit(tracker);
-        } 
+        }
         #endregion
 
-        protected virtual void WriteEvent(D logEvent)
-        {
-            Items.ForEach((l) =>
-            {
-                try
-                {
-                    Process(logEvent, l);
-                }
-                catch (Exception ex)
-                {
-                    //We don't want unexpected exceptions here and to stop the other loggers working.
-                    StatisticsInternal.ErrorIncrement();
-                    StatisticsInternal.Ex = ex;
-                }
-            });
-        }
-
-        #region WriteBuffer()
+        #region EventSubmit(D eventData, bool async)
         /// <summary>
-        /// This method will write the current items in the queue to the stream processor.
+        /// This method submits a data item for processing.
         /// </summary>
-        protected virtual int WriteBuffer(int? timespaninms = null)
-        {
-            ActionQueueContainer<D> logEvent;
-            DateTime start = DateTime.UtcNow;
-            int items = 0;
-            do
-            {
-                while (mQueue.TryDequeue(out logEvent))
-                {
-                    WriteEvent(logEvent.Data);
-
-                    items++;
-
-                    StatisticsInternal.ActiveDecrement(logEvent.Timestamp);
-
-                    //Kick out every 100 loops if there is a timer limit.
-                    if (timespaninms.HasValue && (items % 100 == 0))
-                        break;
-                }
-            }
-            while (mQueue.Count > 0 && (!timespaninms.HasValue || (DateTime.UtcNow - start).TotalMilliseconds<timespaninms));
-
-            return items;
-        }
-        #endregion
-
-        protected abstract void Process(D data, I item);
-
-        protected virtual void Enqueue(D data)
+        /// <param name="eventData">The event data.</param>
+        /// <param name="async">A flag indicating whether the data should be processed immediately or enqueued.</param>
+        public virtual void EventSubmit(D eventData, bool async)
         {
             if (!Active)
                 throw new ServiceNotStartedException();
 
-            var item = new ActionQueueContainer<D> { Data = data };
-            item.Timestamp = StatisticsInternal.ActiveIncrement();
+            if (async)
+                EventEnqueue(eventData);
+            else
+                EventWrite(eventData);
+        }
+        #endregion
+
+        #region EventWrite(D eventData)
+        /// <summary>
+        /// This method calls the process method for each of the underlying items, for the eventData. 
+        /// </summary>
+        /// <param name="eventData">The event data.</param>
+        protected virtual void EventWrite(D eventData)
+        {
+            //Parallel.ForEach(Items, (l) => ProcessItem(eventData, l));
+            Items.ForEach((l) => ProcessItem(eventData, l));
+        }
+        #endregion
+        #region EventEnqueue(D eventData)
+        /// <summary>
+        /// This method queues the incoming event data to be processed on the queue thread.
+        /// </summary>
+        /// <param name="eventData">The incoming event</param>
+        protected virtual void EventEnqueue(D eventData)
+        {
+            if (!Active)
+                throw new ServiceNotStartedException();
+
+            var item = new ActionQueueContainer<D> { Data = eventData, Timestamp = StatisticsInternal.ActiveIncrement() };
+
             mQueue.Enqueue(item);
+
             mReset.Set();
         }
+        #endregion
 
-        #region class -> ActionQueueContainer<I>
+        #region ProcessItem(D eventData, I item)
+        /// <summary>
+        /// This method wraps the individual request in a safe wrapper.
+        /// </summary>
+        /// <param name="eventData">The event data.</param>
+        /// <param name="item">The item to process.</param>
+        protected virtual void ProcessItem(D eventData, I item)
+        {
+            try
+            {
+                Process(eventData, item);
+            }
+            catch (Exception ex)
+            {
+                //We don't want unexpected exceptions here and to stop the other loggers working.
+                StatisticsInternal.ErrorIncrement();
+                StatisticsInternal.Ex = ex;
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// This abstract method should be overridden to process the specific event data against the specific container.
+        /// </summary>
+        /// <param name="eventData">The event data.</param>
+        /// <param name="container">The container.</param>
+        protected abstract void Process(D eventData, I container);
+
+        #region class -> ActionQueueContainer<IR>
         /// <summary>
         /// This is an internal class which is used to hold the pending request.
         /// </summary>
-        /// <typeparam name="I">The item type.</typeparam>
-        protected class ActionQueueContainer<I>
+        /// <typeparam name="IR">The item type.</typeparam>
+        protected class ActionQueueContainer<IR>
         {
+            /// <summary>
+            /// The time stamp.
+            /// </summary>
             public int Timestamp { get; set; }
-
-            public I Data { get; set; }
+            /// <summary>
+            /// The queued data.
+            /// </summary>
+            public IR Data { get; set; }
         } 
         #endregion
     }

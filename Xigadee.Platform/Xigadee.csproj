@@ -67,8 +67,16 @@
     <Compile Include="DataCollection\ActionQueue\ActionQueueCollectionBase.cs" />
     <Compile Include="DataCollection\ActionQueue\ActionQueuePolicy.cs" />
     <Compile Include="DataCollection\ActionQueue\ActionQueueStatistics.cs" />
+    <Compile Include="DataCollection\DataCollectionContainer_BoundaryLogger.cs" />
+    <Compile Include="DataCollection\DataCollectionContainer_EventSource.cs" />
+    <Compile Include="DataCollection\DataCollectionContainer_Logger.cs" />
     <Compile Include="DataCollection\DataCollectionContainer_Telemetry.cs" />
     <Compile Include="DataCollection\DataCollector\DataCollectorBase.cs" />
+    <Compile Include="DataCollection\DataCollector\DataCollectionSupport.cs" />
+    <Compile Include="Exceptions\ChannelNotEnabledException.cs" />
+    <Compile Include="Exceptions\ChannelNotFoundException.cs" />
+    <Compile Include="Exceptions\ChannelTypeNotSupportedException.cs" />
+    <Compile Include="Exceptions\TransmitRetryExceededException.cs" />
     <Compile Include="Microservice\Events\ProcessRequestErrorEventArgs.cs" />
     <Compile Include="Microservice\Events\ProcessRequestUnresolvedEventArgs.cs" />
     <Compile Include="Microservice\Events\StartEventArgs.cs" />
@@ -127,7 +135,7 @@
     <Compile Include="Command\Contract\ContractAttribute.cs" />
     <Compile Include="Interfaces\IMessageContract.cs" />
     <Compile Include="DataCollection\BoundaryLogger\MemoryBoundaryLogger.cs" />
-    <Compile Include="DataCollection\CollectionContainer.cs" />
+    <Compile Include="Components\CollectionContainer.cs" />
     <Compile Include="DataCollection\DataCollectionContainer.cs" />
     <Compile Include="DataCollection\DataCollectionPolicy.cs" />
     <Compile Include="DataCollection\DataCollectionStatistics.cs" />
@@ -137,8 +145,8 @@
     <Compile Include="Communication\CommunicationContainer_Sender.cs" />
     <Compile Include="Communication\CommunicationContainer_Channel.cs" />
     <Compile Include="DataCollection\EventSource\Implementation\DocumentDbEventSource.cs" />
-    <Compile Include="DataCollection\EventSource\EventSourceEntry.cs" />
-    <Compile Include="DataCollection\EventSource\EventSourceEntryBase.cs" />
+    <Compile Include="DataCollection\EventSource\Entry\EventSourceEntry.cs" />
+    <Compile Include="DataCollection\EventSource\Entry\EventSourceEntryBase.cs" />
     <Compile Include="DataCollection\EventSource\Implementation\MemoryEventSource.cs" />
     <Compile Include="Interfaces\IBoundaryLogger.cs" />
     <Compile Include="Interfaces\IEventSource.cs" />
@@ -149,7 +157,7 @@
     <Compile Include="Interfaces\ILoggerExtended.cs" />
     <Compile Include="Interfaces\ILogStoreName.cs" />
     <Compile Include="DataCollection\Logger\Events\LogEvent.cs" />
-    <Compile Include="DataCollection\Logger\LoggingLevel.cs" />
+    <Compile Include="DataCollection\LoggingLevel.cs" />
     <Compile Include="DataCollection\Logger\LoggingStatistics.cs" />
     <Compile Include="DataCollection\Logger\Implementations\Memory\MemoryLogEventHolder.cs" />
     <Compile Include="DataCollection\Logger\Implementations\Memory\MemoryLogger.cs" />

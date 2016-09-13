@@ -25,36 +25,36 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This class is used to log and event source entry.
+    /// This is the base event source entry.
     /// </summary>
-    public class EventSourceEntry: EventSourceEntry<object, object>
+    public abstract class EventSourceEntryBase
     {
+        public EventSourceEntryBase()
+        {
+            UTCTimeStamp = DateTime.UtcNow;
+        }
 
+        public DateTime UTCTimeStamp { get; set; }
+
+        public string BatchId { get; set; }
+
+        public string CorrelationId { get; set; }
+
+        public string EventType { get; set; }
+
+        public string EntityType { get; set; }
+
+        public string EntityVersion { get; set; }
+
+        public string EntityVersionOld { get; set; }
+
+        public abstract string Key { get; }
+
+        public string EntitySource { get; set; }
+
+        public string EntitySourceId { get; set; }
+
+        public string EntitySourceName { get; set; }
     }
 
-    public class EventSourceEntry<K, E>: EventSourceEntryBase
-    {
-        private Func<K, string> mKeyMaker;
-
-        public EventSourceEntry()
-        {
-            mKeyMaker = null;
-        }
-        public EventSourceEntry(Func<K, string> keyMaker = null)
-        {
-            mKeyMaker = keyMaker;
-        }
-
-        public K EntityKey { get; set; }
-
-        public E Entity { get; set; }
-
-        public override string Key
-        {
-            get
-            {
-                return mKeyMaker == null ? EntityKey.ToString() : mKeyMaker(EntityKey);
-            }
-        }
-    }
 }

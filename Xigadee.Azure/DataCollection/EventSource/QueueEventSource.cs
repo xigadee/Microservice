@@ -46,6 +46,7 @@ namespace Xigadee
                 return "AzureServiceBusQueue";
             }
         }
+
         #region Constructor
         /// <summary>
         /// This is the default constructor for the Azure service bus sender.

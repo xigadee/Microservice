@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This EventSource uses the REST DocumentDb libraries to log entity change.
+    /// </summary>
     public class DocumentDbEventSource:IEventSource
     {
         #region Declarations

@@ -124,9 +124,9 @@ namespace Xigadee
         /// <summary>
         /// This method is used to register a collector.
         /// </summary>
-        /// <param name="collector">The collectors.</param>
+        /// <param name="collector">The collector component.</param>
         /// <returns>Returns the collector passed through the registration.</returns>
-        public IDataCollector RegisterCollector(IDataCollector collector)
+        public IDataCollector RegisterCollector(IDataCollectorComponent collector)
         {
             ValidateServiceNotStarted();
             mDataCollection.Add(collector);

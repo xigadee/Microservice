@@ -28,9 +28,9 @@ namespace Xigadee
     public class DataCollectionStatistics: MessagingStatistics
     {
 
-        public EventSourceContainerStatistics EventSource { get; set; }
+        public ActionQueueCollectionStatistics EventSource { get; set; }
 
-        public LoggingStatistics Logging { get; set; }
+        public ActionQueueCollectionStatistics Logging { get; set; }
 
 
     }
