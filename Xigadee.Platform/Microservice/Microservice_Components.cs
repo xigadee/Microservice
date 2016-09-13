@@ -120,13 +120,13 @@ namespace Xigadee
         #endregion
 
         //Collector
-        #region RegisterCollector(ICollector collector)
+        #region RegisterDataCollector(IDataCollectorComponent collector)
         /// <summary>
         /// This method is used to register a collector.
         /// </summary>
         /// <param name="collector">The collector component.</param>
         /// <returns>Returns the collector passed through the registration.</returns>
-        public IDataCollector RegisterCollector(IDataCollectorComponent collector)
+        public IDataCollectorComponent RegisterDataCollector(IDataCollectorComponent collector)
         {
             ValidateServiceNotStarted();
             mDataCollection.Add(collector);

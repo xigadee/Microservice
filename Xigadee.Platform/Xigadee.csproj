@@ -165,6 +165,7 @@
     <Compile Include="DataCollection\DataCollector\MemoryCollector.cs" />
     <Compile Include="DataCollection\Telemetry\TelemetryCounterHolder.cs" />
     <Compile Include="Messaging\MessageFilterWrapper.cs" />
+    <Compile Include="Pipeline\Extensions\AddDataCollector.cs" />
     <Compile Include="Scheduler\Schedule.cs" />
     <Compile Include="Messaging\ServiceMessage.cs" />
     <Compile Include="Messaging\ServiceMessageHeader.cs" />

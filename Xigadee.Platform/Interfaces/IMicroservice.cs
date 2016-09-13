@@ -37,6 +37,7 @@ namespace Xigadee
         IEventSource RegisterEventSource(IEventSource eventSource);
         IListener RegisterListener(IListener listener);
         ILogger RegisterLogger(ILogger logger);
+        IDataCollectorComponent RegisterDataCollector(IDataCollectorComponent logger);
         IPayloadSerializer RegisterPayloadSerializer(IPayloadSerializer serializer);
         ISender RegisterSender(ISender sender);
         ITelemetry RegisterTelemetry(ITelemetry telemetry);
