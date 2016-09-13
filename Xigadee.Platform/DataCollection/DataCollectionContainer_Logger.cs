@@ -23,14 +23,14 @@ namespace Xigadee
             mLoggers.ForEach((c) => ServiceStart(c));
             var items = mCollectors.Where((c) => c.IsSupported(DataCollectionSupport.Logger)).Cast<ILogger>().Union(mLoggers).ToList();
             mContainerLogger = new ActionQueueCollection<LogEvent, ILogger>(items, mPolicy.Logger, EventProcessLog);
-            mContainerLogger.Start();
+            ServiceStart(mContainerLogger);
         }
         /// <summary>
         /// This method stops the logger.
         /// </summary>
         protected virtual void StopLogger()
         {
-            mContainerLogger.Stop();
+            ServiceStop(mContainerLogger);
             mContainerLogger = null;
             mLoggers.ForEach((c) => ServiceStop(c));
         }

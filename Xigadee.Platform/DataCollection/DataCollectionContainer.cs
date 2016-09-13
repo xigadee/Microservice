@@ -34,6 +34,9 @@ namespace Xigadee
         private List<IEventSource> mEventSource;
         private List<IBoundaryLogger> mBoundaryLoggers;
         private List<ITelemetry> mTelemetry;
+
+        private Action<TaskTracker> mTaskSubmit;
+        private ITaskAvailability mTaskAvailability;
         #endregion
         #region Constructor
         /// <summary>
@@ -116,43 +119,63 @@ namespace Xigadee
 
         }
 
+        /// <summary>
+        /// This is the unique id for the underlying Microservice.
+        /// </summary>
         public string OriginatorId
         {
             get; set;
         }
 
-
+        /// <summary>
+        /// This method checks whether there are overloaded services.
+        /// </summary>
+        /// <returns>Returns true if any of the queues need additional processing.</returns>
         public bool CanProcess()
         {
-            return false;
+            return mContainerEventSource.CanProcess() || mContainerLogger.CanProcess();
         }
 
+        /// <summary>
+        /// This method attempts to process the overload.
+        /// </summary>
         public void Process()
         {
-            
+            ProcessCheck(mContainerEventSource);
+            ProcessCheck(mContainerLogger);
+        }
+
+        /// <summary>
+        /// This method checks whether an overload is set.
+        /// </summary>
+        /// <param name="process">The process to check.</param>
+        private void ProcessCheck(ITaskManagerProcess process)
+        {
+            if (process.CanProcess())
+                process.Process();
         }
 
         public Action<TaskTracker> TaskSubmit
         {
-            get;set;
-        }
-
-        public ITaskAvailability TaskAvailability
-        {
-            get;set;
-        }
-
-        public DataCollectionSupport Support
-        {
-            get
+            get { return mTaskSubmit; }
+            set
             {
-                return DataCollectionSupport.All;
+                mTaskSubmit = value;
+                mContainerEventSource.TaskSubmit = value;
+                mContainerLogger.TaskSubmit = value;
             }
         }
 
-        public bool IsSupported(DataCollectionSupport support)
+
+        public ITaskAvailability TaskAvailability
         {
-            return true;
+            get { return mTaskAvailability; }
+            set
+            {
+                mTaskAvailability = value;
+                mContainerEventSource.TaskAvailability = value;
+                mContainerLogger.TaskAvailability = value;
+            }
         }
 
     }

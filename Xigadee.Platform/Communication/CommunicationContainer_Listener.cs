@@ -116,7 +116,8 @@ namespace Xigadee
             try
             {
                 //We do an atomic switch to add in a new priority list.
-                var newColl = new ClientPriorityCollection(mListener, mDeadletterListener
+                var newColl = new ClientPriorityCollection(mListener
+                    , mDeadletterListener
                     , mResourceTracker
                     , mPolicy.ListenerClientPollAlgorithm
                     , Interlocked.Increment(ref mListenersPriorityIteration));
@@ -127,7 +128,7 @@ namespace Xigadee
                 //Close the old collection, note that it will be null the first time.
                 oldColl?.Close();
 
-                Logger?.LogMessage(LoggingLevel.Trace, "ListenersPriorityRecalculate completed.");
+                Logger?.LogMessage(LoggingLevel.Trace, $"ListenersPriorityRecalculate completed {mListenersPriorityIteration}.");
             }
             catch (Exception ex)
             {

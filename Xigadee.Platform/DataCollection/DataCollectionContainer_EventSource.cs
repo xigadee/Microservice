@@ -22,14 +22,14 @@ namespace Xigadee
             mEventSource.ForEach((c) => ServiceStart(c));
             var items = mCollectors.Where((c) => c.IsSupported(DataCollectionSupport.EventSource)).Cast<IEventSource>().Union(mEventSource).ToList();
             mContainerEventSource = new ActionQueueCollection<Action<IEventSource>, IEventSource>(items, mPolicy.EventSource, EventProcessEventSource);
-            mContainerEventSource.Start();
+            ServiceStart(mContainerEventSource);
         }
         /// <summary>
         /// This method stops the event source.
         /// </summary>
         protected virtual void StopEventSource()
         {
-            mContainerEventSource.Stop();
+            ServiceStop(mContainerEventSource);
             mContainerEventSource = null;
             mEventSource.ForEach((c) => ServiceStop(c));
         }
