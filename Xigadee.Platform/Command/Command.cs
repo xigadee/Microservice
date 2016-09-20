@@ -206,7 +206,7 @@ namespace Xigadee
         /// <summary>
         /// This is the service originator Id.
         /// </summary>
-        public string OriginatorId
+        public MicroserviceId OriginatorId
         {
             get;
             set;

@@ -77,7 +77,7 @@ namespace Xigadee
         /// <summary>
         /// This override sets the SubscriptionId if it is null. This is set from the first 50 characters of the originator id
         /// </summary>
-        public override string OriginatorId
+        public override MicroserviceId OriginatorId
         {
             get
             {
@@ -88,7 +88,7 @@ namespace Xigadee
             {
                 base.OriginatorId = value;
 
-                SubscriptionIdSet(value);
+                SubscriptionIdSet(value.ExternalServiceId);
             }
         }
         #endregion
@@ -113,7 +113,7 @@ namespace Xigadee
         {
             List<SqlFilter> list;
 
-            string id = OriginatorId;
+            string id = OriginatorId.ExternalServiceId;
             if (id.Length > 50)
                 id = id.Substring(0, 50);
 
@@ -121,7 +121,7 @@ namespace Xigadee
             {
                 list = new List<SqlFilter>();
                 var servMess = new ServiceMessageHeader(ChannelId);
-                list.Add(TopicHelper.SqlFilterQuery(new MessageFilterWrapper(servMess) { ClientId = OriginatorId }));
+                list.Add(TopicHelper.SqlFilterQuery(new MessageFilterWrapper(servMess) { ClientId = OriginatorId.ExternalServiceId }));
             }
             else
                 list = TopicHelper.SqlFilter(mSupportedMessageTypes, ChannelId, MappingChannelId);

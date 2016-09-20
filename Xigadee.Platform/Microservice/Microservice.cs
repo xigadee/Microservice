@@ -36,22 +36,9 @@ namespace Xigadee
     {
         #region Declarations
         /// <summary>
-        /// This is the Microservice create time.
-        /// </summary>
-        private readonly DateTime mStartTime;
-        protected readonly string mServiceVersionId;
-        protected readonly string mServiceEngineVersionId;
-
-        protected readonly string mServiceId;
-        protected readonly string mMachineName;
-        protected readonly string mName;
-        protected readonly string mExternalServiceId;
-
-        /// <summary>
         /// This collection holds the serializer
         /// </summary>
         protected SerializationContainer mSerializer;
-
         /// <summary>
         /// This collection holds the loggers for the Microservice.
         /// </summary>
@@ -93,20 +80,13 @@ namespace Xigadee
             : base(name)
         {
             mPolicySettings = policySettings?.ToList()??new List<PolicyBase>();
-
-            mStartTime = DateTime.UtcNow;
-            mMachineName = Environment.MachineName;
-
-            mServiceId = string.IsNullOrEmpty(serviceId)?Guid.NewGuid().ToString("N").ToUpperInvariant(): serviceId;
-
-            mName = string.IsNullOrEmpty(name)? GetType().Name:name;
-
-            mExternalServiceId = string.Format("{0}_{1}_{2:yyyyMMddHHmm}_{3}", mName, mMachineName, mStartTime, mServiceId);
-
             ConfigurationOptions = options ?? new MicroserviceConfigurationOptions();
 
-            mServiceVersionId = Assembly.GetCallingAssembly().GetName().Version.ToString();
-            mServiceEngineVersionId = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            Id = new MicroserviceId(
+                  string.IsNullOrEmpty(name) ? GetType().Name : name
+                , serviceId: serviceId
+                , serviceVersionId: Assembly.GetCallingAssembly().GetName().Version.ToString()
+                , serviceEngineVersionId: Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
             mSecurity = InitialiseSecurityContainer();
             mCommunication = InitialiseCommunicationContainer();
@@ -115,6 +95,13 @@ namespace Xigadee
             mDataCollection = InitialiseDataCollectionContainer();
             mPayloadSerializers = new List<IPayloadSerializer>();
         }
+        #endregion
+
+        #region Id
+        /// <summary>
+        /// This contains the set of identifiers for the Microservice.
+        /// </summary>
+        public MicroserviceId Id { get; } 
         #endregion
 
         #region ConfigurationOptions
@@ -314,7 +301,7 @@ namespace Xigadee
                     ((IServiceLogger)service).Logger = mDataCollection;
 
                 if (service is IServiceOriginator)
-                    ((IServiceOriginator)service).OriginatorId = ExternalServiceId;
+                    ((IServiceOriginator)service).OriginatorId = Id;
 
                 if (service is IServiceEventSource)
                     ((IServiceEventSource)service).EventSource = mDataCollection;
@@ -365,7 +352,7 @@ namespace Xigadee
         {
             get
             {
-                return mName;
+                return Id.Name;
             }
         }
         #endregion
@@ -377,7 +364,7 @@ namespace Xigadee
         {
             get
             {
-                return mServiceId;
+                return Id.ServiceId;
             }
         }
         #endregion
@@ -389,7 +376,7 @@ namespace Xigadee
         {
             get
             {
-                return mExternalServiceId;
+                return Id.ExternalServiceId;
             }
         } 
         #endregion

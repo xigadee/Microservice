@@ -15,23 +15,17 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Xigadee
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xigadee;
+namespace Test.Xigadee
 {
-    public interface IServiceOriginator
+    [TestClass]
+    public class Pipeline2
     {
-        /// <summary>
-        /// The originator Id for the service.
-        /// </summary>
-        MicroserviceId OriginatorId { get; set; }
-    }
+        [TestMethod]
+        public void ServiceRun()
+        {
 
-    //public interface IServiceOriginatorExtended: IServiceOriginator
-    //{
-    //    MicroserviceId OriginatorIds { get; set; }
-    //}
+        }
+    }
 }

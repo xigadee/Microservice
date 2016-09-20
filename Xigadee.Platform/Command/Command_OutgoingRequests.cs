@@ -151,7 +151,7 @@ namespace Xigadee
                 if (ResponseChannelId == null)
                     return null;
 
-                return new MessageFilterWrapper(new ServiceMessageHeader(ResponseChannelId, "MasterJob", FriendlyName)) { ClientId = OriginatorId };
+                return new MessageFilterWrapper(new ServiceMessageHeader(ResponseChannelId, "MasterJob", FriendlyName)) { ClientId = OriginatorId.ExternalServiceId };
             }
         }
         #endregion

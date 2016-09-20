@@ -215,11 +215,11 @@ namespace Xigadee
             get; set;
         }
         #endregion
-        #region OriginatorId
+        #region OriginatorId/s
         /// <summary>
         /// The system originatorId which is appended to outgoing messages.
         /// </summary>
-        public string OriginatorId
+        public MicroserviceId OriginatorId
         {
             get; set;
         }

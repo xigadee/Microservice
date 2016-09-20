@@ -29,14 +29,7 @@ namespace Xigadee
     //Components
     public partial class Microservice
     {
-        #region SharedServices
-        /// <summary>
-        /// This collection holds the shared services for the Microservice.
-        /// </summary>
-        public ISharedService SharedServices { get { return mCommands.SharedServices; } }
-        #endregion
-
-        //Comms
+        //Communication
         #region RegisterListener(IListener listener)
         /// <summary>
         /// This method regsiters a listener.
@@ -72,34 +65,15 @@ namespace Xigadee
             return deadLetter;
         }
         #endregion
-
-        //Command
-        #region RegisterCommand(IMessageHandler command)
+        #region RegisterChannel(Channel logger)
         /// <summary>
-        /// This method allows you to manually register a job.
+        /// This method can be used to manually register an Logger.
         /// </summary>
-        public virtual ICommand RegisterCommand(ICommand command)
+        public virtual Channel RegisterChannel(Channel channel)
         {
             ValidateServiceNotStarted();
-
-            return mCommands.Add(command);
-        }
-        #endregion
-
-        #region Commands
-        /// <summary>
-        /// This is a list of jobs currently register in the service.
-        /// </summary>
-        public virtual IEnumerable<ICommand> Commands
-        {
-            get
-            {
-                if (mCommands == null)
-                    yield break;
-                else
-                    foreach (var command in mCommands.Commands.Where((c) => c is ICommand).Cast<ICommand>())
-                        yield return command;
-            }
+            mCommunication.Add(channel);
+            return channel;
         }
         #endregion
         #region Channels
@@ -119,6 +93,41 @@ namespace Xigadee
         }
         #endregion
 
+        //Command
+        #region RegisterCommand(IMessageHandler command)
+        /// <summary>
+        /// This method allows you to manually register a job.
+        /// </summary>
+        public virtual ICommand RegisterCommand(ICommand command)
+        {
+            ValidateServiceNotStarted();
+
+            return mCommands.Add(command);
+        }
+        #endregion
+        #region Commands
+        /// <summary>
+        /// This is a list of jobs currently register in the service.
+        /// </summary>
+        public virtual IEnumerable<ICommand> Commands
+        {
+            get
+            {
+                if (mCommands == null)
+                    yield break;
+                else
+                    foreach (var command in mCommands.Commands.Where((c) => c is ICommand).Cast<ICommand>())
+                        yield return command;
+            }
+        }
+        #endregion
+        #region SharedServices
+        /// <summary>
+        /// This collection holds the shared services for the Microservice.
+        /// </summary>
+        public ISharedService SharedServices { get { return mCommands.SharedServices; } }
+        #endregion
+
         //Collector
         #region RegisterDataCollector(IDataCollectorComponent collector)
         /// <summary>
@@ -133,7 +142,6 @@ namespace Xigadee
             return collector;
         } 
         #endregion
-        //Event Source
         #region RegisterEventSource(IEventSource eventSource)
         /// <summary>
         /// This method can be used to manually register an EventSource.
@@ -145,7 +153,6 @@ namespace Xigadee
             return eventSource;
         }
         #endregion
-        //Telemetry
         #region RegisterTelemetry(ITelemetry telemetry)
         /// <summary>
         /// This method can be used to manually register a telemetry logger.
@@ -157,7 +164,6 @@ namespace Xigadee
             return telemetry;
         }
         #endregion
-        //Logger
         #region RegisterLogger(ILogger logger)
         /// <summary>
         /// This method can be used to manually register an Logger.
@@ -170,18 +176,6 @@ namespace Xigadee
         }
         #endregion
 
-        //Channel
-        #region RegisterChannel(Channel logger)
-        /// <summary>
-        /// This method can be used to manually register an Logger.
-        /// </summary>
-        public virtual Channel RegisterChannel(Channel channel)
-        {
-            ValidateServiceNotStarted();
-            mCommunication.Add(channel);
-            return channel;
-        }
-        #endregion
         //Serializer
         #region RegisterPayloadSerializer(IPayloadSerializer serializer)
         /// <summary>

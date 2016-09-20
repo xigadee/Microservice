@@ -63,7 +63,7 @@ namespace Xigadee
         /// <summary>
         /// The service originator.
         /// </summary>
-        public string OriginatorId
+        public MicroserviceId OriginatorId
         {
             get; set;
         }

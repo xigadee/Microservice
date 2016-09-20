@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This is a test collector.
+    /// This is a test collector. It is primarily used for unit testing to ensure the correct logging has occurred.
     /// </summary>
     public class MemoryCollector: DataCollectorBase
     {
@@ -38,6 +38,14 @@ namespace Xigadee
         public override Task Write<K, E>(string originatorId, EventSourceEntry<K, E> entry, DateTime? utcTimeStamp = default(DateTime?), bool sync = false)
         {
             throw new NotImplementedException();
+        }
+
+        protected override void StartInternal()
+        {
+        }
+
+        protected override void StopInternal()
+        {
         }
     }
 }

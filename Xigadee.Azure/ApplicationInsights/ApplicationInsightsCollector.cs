@@ -28,54 +28,72 @@ namespace Xigadee
     /// <summary>
     /// This class hooks Application Insights in to the Microservice logging capabilities.
     /// </summary>
-    public class ApplicationInsightsCollector: IDataCollector
+    public class ApplicationInsightsDataCollector: DataCollectorBase
     {
         //https://azure.microsoft.com/en-gb/documentation/articles/app-insights-api-custom-events-metrics/
-        private TelemetryClient telemetry;
+        private TelemetryClient mTelemetry;
+        private readonly string mKey;
 
-        protected ApplicationInsightsCollector(string key, bool developerMode)
+        protected ApplicationInsightsDataCollector(string key
+            , string name = null
+            , bool developerMode = false
+            , DataCollectionSupport support = DataCollectionSupport.All)
+            :base(name ?? "ApplicationInsightsDataCollector", support)
         {
             var config = new TelemetryConfiguration();
             config.InstrumentationKey = key;
             config.TelemetryChannel.DeveloperMode = developerMode;
             
-            telemetry = new TelemetryClient();
-            telemetry.Context.Component.Version = (Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly()).GetName().Version.ToString();
-            telemetry.Context.Properties["MachineName"] = "";
-            telemetry.Context.Properties["ServiceName"] = "";
-            telemetry.Context.Properties["MachineName"] = "";
-            telemetry.Context.Properties["MachineName"] = "";
-            telemetry.Context.Properties["MachineName"] = "";
-
-            telemetry.InstrumentationKey = key;
+            mKey = key;
         }
 
-        public string Name
+
+        protected override void StartInternal()
         {
-            get
-            {
-                return "";
-            }
+            
+            mTelemetry = new TelemetryClient();
+
+            mTelemetry.Context.Device.Id = OriginatorId.ServiceId;
+
+            mTelemetry.Context.Component.Version = (Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly()).GetName().Version.ToString();
+            mTelemetry.Context.Properties["ExternalServiceId"] = OriginatorId.ExternalServiceId;
+            mTelemetry.Context.Properties["MachineName"] = OriginatorId.MachineName;
+            mTelemetry.Context.Properties["ServiceName"] = OriginatorId.Name;
+
+            mTelemetry.InstrumentationKey = mKey;
         }
 
-        public string OriginatorId
+        protected override void StopInternal()
         {
-            get;set;
+            mTelemetry.Flush();
+            mTelemetry = null;
         }
 
-        public Guid BatchPoll(int requested, int actual, string channelId)
+
+
+
+        public override Guid BatchPoll(int requested, int actual, string channelId)
         {
             var id = Guid.NewGuid();
 
             return id;
         }
 
-        public void Log(ChannelDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = default(Guid?))
+        public override void Log(ChannelDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = default(Guid?))
         {
+
+   //         // Set up some properties and metrics:
+   //         var properties = new Dictionary<string, string>
+   //{{"game", currentGame.Name}, {"difficulty", currentGame.Difficulty}};
+   //         var metrics = new Dictionary<string, double>
+   //{{"Score", currentGame.Score}, {"Opponents", currentGame.OpponentCount}};
+
+   //         // Send the event:
+   //         mTelemetry.TrackEvent("WinGame", properties, metrics);
 
         }
 
-        public async Task Log(LogEvent logEvent)
+        public override async Task Log(LogEvent logEvent)
         {
             if (logEvent == null)
                 return;
@@ -95,13 +113,15 @@ namespace Xigadee
 
 
 
-        public void TrackMetric(string metricName, double value)
+        public override void TrackMetric(string metricName, double value)
+        {
+            mTelemetry?.TrackMetric(metricName, value);
+        }
+
+        public override async Task Write<K, E>(string originatorId, EventSourceEntry<K, E> entry, DateTime? utcTimeStamp = default(DateTime?), bool sync = false)
         {
         }
 
-        public async Task Write<K, E>(string originatorId, EventSourceEntry<K, E> entry, DateTime? utcTimeStamp = default(DateTime?), bool sync = false)
-        {
-        }
 
     }
 }

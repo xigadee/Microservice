@@ -126,7 +126,7 @@ namespace Xigadee
         protected virtual async Task MasterJobStateNotificationIncoming(TransmissionPayload rq, List<TransmissionPayload> rs)
         {
             //Filter out any messages sent from this service.
-            if (string.Equals(rq.Message.OriginatorServiceId, OriginatorId, StringComparison.InvariantCultureIgnoreCase))
+            if (string.Equals(rq.Message.OriginatorServiceId, OriginatorId.ExternalServiceId, StringComparison.InvariantCultureIgnoreCase))
             {
                 //We can now say that the masterjob channel is working, so we can now enable the job for negotiation.
                 if (State == MasterJobState.VerifyingComms)

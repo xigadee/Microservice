@@ -24,6 +24,7 @@ namespace Xigadee
     /// </summary>
     public interface IMicroserviceConfigure: IService
     {
+        MicroserviceId Id { get; }
         string ExternalServiceId { get; }
         string Name { get; }
         string ServiceId { get; }

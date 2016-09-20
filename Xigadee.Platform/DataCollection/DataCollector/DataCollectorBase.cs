@@ -3,13 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xigadee;
 
 namespace Xigadee
 {
+    public abstract class DataCollectorBase: DataCollectorBase<DataCollectorStatistics>
+    {
+        public DataCollectorBase(string name, DataCollectionSupport support = DataCollectionSupport.All) : base(name, support)
+        {
+        }
+    }
+
     /// <summary>
     /// This abstract class is used to implement data collectors.
     /// </summary>
-    public abstract class DataCollectorBase: IDataCollectorComponent
+    public abstract class DataCollectorBase<S>: ServiceBase<S>, IDataCollectorComponent
+        where S:DataCollectorStatistics, new()
     {
         protected DataCollectorBase(string name, DataCollectionSupport support = DataCollectionSupport.All)
         {
@@ -20,23 +29,29 @@ namespace Xigadee
         /// <summary>
         /// This returns the type of supported data collection
         /// </summary>
-        public DataCollectionSupport Support { get; }
+        public virtual DataCollectionSupport Support { get; }
         /// <summary>
         /// Returns true if the requested type is supported.
         /// </summary>
         /// <param name="support">The data collection type</param>
         /// <returns></returns>
-        public bool IsSupported(DataCollectionSupport support)
+        public virtual bool IsSupported(DataCollectionSupport support)
         {
             return (Support & support) == support;
         }
 
-        public string Name
+        /// <summary>
+        /// This is the name of the data collector.
+        /// </summary>
+        public virtual string Name
         {
             get;
         }
 
-        public string OriginatorId
+        /// <summary>
+        /// This is is the Microservice originator information.
+        /// </summary>
+        public virtual MicroserviceId OriginatorId
         {
             get;set;
         }

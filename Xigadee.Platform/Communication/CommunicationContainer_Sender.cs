@@ -92,7 +92,7 @@ namespace Xigadee
 
                 //Set the outgoing originator if not set.
                 if (string.IsNullOrEmpty(payload.Message.OriginatorServiceId))
-                    payload.Message.OriginatorServiceId = OriginatorId;
+                    payload.Message.OriginatorServiceId = OriginatorId.ExternalServiceId;
 
                 //Send the message to the supported senders.
                 await Task.WhenAll(messageSenders.Select(s => s.ProcessMessage(payload)));

@@ -73,6 +73,7 @@
     <Compile Include="DataCollection\DataCollectionContainer_Telemetry.cs" />
     <Compile Include="DataCollection\DataCollector\DataCollectorBase.cs" />
     <Compile Include="DataCollection\DataCollector\DataCollectionSupport.cs" />
+    <Compile Include="DataCollection\DataCollector\DataCollectorStatistics.cs" />
     <Compile Include="Exceptions\ChannelNotEnabledException.cs" />
     <Compile Include="Exceptions\ChannelNotFoundException.cs" />
     <Compile Include="Exceptions\ChannelTypeNotSupportedException.cs" />
@@ -127,6 +128,7 @@
     <Compile Include="Communication\Statistics\MessagingServiceStatistics.cs" />
     <Compile Include="Communication\TransmissionPayloadTrack.cs" />
     <Compile Include="Configuration\ConfigBase.cs" />
+    <Compile Include="Microservice\MicroserviceId.cs" />
     <Compile Include="Pipeline\Configuration\ConfigBaseHelperDocumentDb.cs" />
     <Compile Include="Pipeline\Configuration\ConfigBaseHelperService.cs" />
     <Compile Include="Configuration\ConfigKeySettingNameAttribute.cs" />

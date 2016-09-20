@@ -325,11 +325,12 @@ namespace Xigadee
         /// <summary>
         /// This is the OriginatorId from the parent container.
         /// </summary>
-        public virtual string OriginatorId
+        public virtual MicroserviceId OriginatorId
         {
             get;
             set;
         } 
+
         #endregion
         #region Logger
         /// <summary>

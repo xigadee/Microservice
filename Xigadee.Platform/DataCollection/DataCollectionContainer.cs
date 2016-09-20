@@ -67,11 +67,12 @@ namespace Xigadee
             StopTelemetry();
             StopEventSource();
             StopLogger();
+            mCollectors.ForEach((c) => ServiceStop(c));
         }
         #endregion
 
         #region Add...
-        public IDataCollector Add(IDataCollectorComponent component)
+        public IDataCollectorComponent Add(IDataCollectorComponent component)
         {
             mCollectors.Add(component);
             return component;
@@ -122,7 +123,7 @@ namespace Xigadee
         /// <summary>
         /// This is the unique id for the underlying Microservice.
         /// </summary>
-        public string OriginatorId
+        public MicroserviceId OriginatorId
         {
             get; set;
         }

@@ -40,7 +40,7 @@ namespace Xigadee
         /// </summary>
         private string mInstance;
 
-        private string mOriginatorId = null;
+        private MicroserviceId mOriginatorId = null;
 
         private HashSet<LoggingLevel> mLoggingPermitted = null;
 
@@ -86,7 +86,7 @@ namespace Xigadee
                 jObj["id"] = mInstance + Guid.NewGuid().ToString("N");
 
                 if (mOriginatorId != null)
-                    jObj["$microservice.instance"] = mOriginatorId;
+                    jObj["$microservice.instance"] = mOriginatorId.ExternalServiceId;
 
                 jObj["$microservice.timestamp"] = DateTime.UtcNow;
                 jObj["$microservice.logtype"] = logEvent.GetType().Name;
@@ -108,7 +108,7 @@ namespace Xigadee
         /// <summary>
         /// This is the originator id of the containing Microservice.
         /// </summary>
-        public string OriginatorId
+        public MicroserviceId OriginatorId
         {
             get
             {
@@ -117,7 +117,7 @@ namespace Xigadee
             set
             {
                 mOriginatorId = value;
-                mInstance = string.Format("Logger_{0}", value);
+                mInstance = string.Format("Logger_{0}", value.ExternalServiceId);
             }
         } 
         #endregion

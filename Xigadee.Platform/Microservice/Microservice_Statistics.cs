@@ -57,17 +57,17 @@ namespace Xigadee
         /// </summary>
         protected override void StatisticsRecalculate(MicroserviceStatistics stats)
         {
-            stats.MachineName = mMachineName;
-            stats.ServiceId = mServiceId;
+            stats.MachineName = Id.MachineName;
+            stats.ServiceId = Id.ServiceId;
             stats.ExternalServiceId = ExternalServiceId;
 
-            stats.VersionId = mServiceVersionId;
-            stats.EngineVersionId = mServiceEngineVersionId;
-            stats.Created = mStartTime;
+            stats.VersionId = Id.ServiceVersionId;
+            stats.EngineVersionId = Id.ServiceEngineVersionId;
+            stats.Created = Id.StartTime;
             stats.Status = Status.ToString();
             stats.LogTime = DateTime.UtcNow;
             stats.Configuration = ConfigurationOptions;
-            stats.StartTime = mStartTime;
+            stats.StartTime = Id.StartTime;
 
             stats.Tasks = mTaskManager?.Statistics;
 

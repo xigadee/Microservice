@@ -20,7 +20,7 @@ using Xigadee;
 namespace Test.Xigadee
 {
     [TestClass]
-    public class Pipeline
+    public class Pipeline1
     {
         MemoryLogger logger = null;
         MemoryBoundaryLogger bLogger = null;
@@ -41,12 +41,12 @@ namespace Test.Xigadee
         }
 
         [TestMethod]
-        public void PipelineService()
+        public void ServiceRun()
         {
             try
             {
                 Microservice service;
-                var pipeline = Microservice.Configure((s) => service = s);
+                var pipeline = Microservice.Configure((s) => service = s, serviceName: "TestPipeline");
 
                 ChannelPipelineIncoming cpipeIn = null;
                 ChannelPipelineOutgoing cpipeOut = null;
