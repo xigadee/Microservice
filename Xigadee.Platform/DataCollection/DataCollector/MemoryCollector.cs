@@ -25,35 +25,50 @@ namespace Xigadee
     /// <summary>
     /// This is a test collector. It is primarily used for unit testing to ensure the correct logging has occurred.
     /// </summary>
-    public class MemoryCollector: DataCollectorBase
+    public class MemoryStubCollector: DataCollectorBase
     {
-        public MemoryCollector() : base(typeof(MemoryCollector).Name)
+        public MemoryStubCollector() : base(typeof(MemoryStubCollector).Name)
         {
         }
 
-        public override Guid BatchPoll(int requested, int actual, string channelId)
+        public override void BoundaryLog(ChannelDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = default(Guid?))
         {
-            throw new NotImplementedException();
         }
 
-        public override Task Log(LogEvent logEvent)
+        public override void BoundaryLogPoll(Guid id, int requested, int actual, string channelId)
         {
-            throw new NotImplementedException();
         }
 
-        public override void Log(ChannelDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = default(Guid?))
+        public override void DispatcherPayloadComplete(TransmissionPayload payload, int delta, bool isSuccess)
         {
-            throw new NotImplementedException();
+        }
+
+        public override void DispatcherPayloadException(TransmissionPayload payload, Exception pex)
+        {
+        }
+
+        public override void DispatcherPayloadIncoming(TransmissionPayload payload)
+        {
+        }
+
+        public override void DispatcherPayloadUnresolved(TransmissionPayload payload, DispatcherRequestUnresolvedReason reason)
+        {
+        }
+
+        public override async Task Log(LogEvent logEvent)
+        {
+        }
+
+        public override void MicroserviceStatisticsIssued(MicroserviceStatistics statistics)
+        {
         }
 
         public override void TrackMetric(string metricName, double value)
         {
-            throw new NotImplementedException();
         }
 
-        public override Task Write<K, E>(string originatorId, EventSourceEntry<K, E> entry, DateTime? utcTimeStamp = default(DateTime?), bool sync = false)
+        public override async Task Write<K, E>(string originatorId, EventSourceEntry<K, E> entry, DateTime? utcTimeStamp = default(DateTime?), bool sync = false)
         {
-            throw new NotImplementedException();
         }
 
         protected override void StartInternal()

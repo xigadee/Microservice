@@ -52,7 +52,7 @@ namespace Test.Xigadee
 
                 bool isFaulted = false;
 
-                var del = new EventHandler<ProcessRequestUnresolvedEventArgs>((sender, e) =>
+                var del = new EventHandler<DispatcherRequestUnresolvedEventArgs>((sender, e) =>
                 {
                     isFaulted = true;
                     reset.Set();

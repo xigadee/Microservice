@@ -72,14 +72,22 @@ namespace Xigadee
             get;set;
         }
 
-        public abstract Guid BatchPoll(int requested, int actual, string channelId);
 
         public abstract Task Log(LogEvent logEvent);
 
-        public abstract void Log(ChannelDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = default(Guid?));
+        public abstract void BoundaryLogPoll(Guid id, int requested, int actual, string channelId);
+
+        public abstract void BoundaryLog(ChannelDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = default(Guid?));
 
         public abstract void TrackMetric(string metricName, double value);
 
         public abstract Task Write<K, E>(string originatorId, EventSourceEntry<K, E> entry, DateTime? utcTimeStamp = default(DateTime?), bool sync = false);
+
+        public abstract void DispatcherPayloadException(TransmissionPayload payload, Exception pex);
+        public abstract void DispatcherPayloadUnresolved(TransmissionPayload payload, DispatcherRequestUnresolvedReason reason);
+        public abstract void DispatcherPayloadIncoming(TransmissionPayload payload);
+        public abstract void DispatcherPayloadComplete(TransmissionPayload payload, int delta, bool isSuccess);
+
+        public abstract void MicroserviceStatisticsIssued(MicroserviceStatistics statistics);
     }
 }

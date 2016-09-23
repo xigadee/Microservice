@@ -175,6 +175,17 @@ namespace Xigadee
             return logger;
         }
         #endregion
+        #region RegisterBoundaryLogger(IBoundaryLoggerComponent logger)
+        /// <summary>
+        /// This method can be used to manually register an Logger.
+        /// </summary>
+        public virtual IBoundaryLoggerComponent RegisterBoundaryLogger(IBoundaryLoggerComponent logger)
+        {
+            ValidateServiceNotStarted();
+            mDataCollection.Add(logger);
+            return logger;
+        }
+        #endregion
 
         //Serializer
         #region RegisterPayloadSerializer(IPayloadSerializer serializer)

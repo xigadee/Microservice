@@ -15,9 +15,11 @@
 #endregion
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Xigadee
@@ -25,26 +27,32 @@ namespace Xigadee
     public partial class DataCollectionContainer
     {
 
-        private void StartBoundaryLogger()
+        public virtual void DispatcherPayloadException(TransmissionPayload payload, Exception pex)
+        {
+
+            //mDataCollection.LogException($"Unable to process {requestPayload?.Message} after {requestPayload?.Message?.FabricDeliveryCount} attempts", ex);
+
+        }
+
+        public virtual void DispatcherPayloadUnresolved(TransmissionPayload payload, DispatcherRequestUnresolvedReason reason)
         {
 
         }
 
-        private void StopBoundaryLogger()
+        public virtual void DispatcherPayloadIncoming(TransmissionPayload payload)
         {
 
         }
 
-        public void BoundaryLog(ChannelDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = default(Guid?))
+        public virtual void DispatcherPayloadComplete(TransmissionPayload payload, int delta, bool isSuccess)
         {
 
         }
 
-        public Guid BoundaryBatchPoll(int requested, int actual, string channelId)
+        public virtual void MicroserviceStatisticsIssued(MicroserviceStatistics statistics)
         {
-            var id = Guid.NewGuid();
 
-            return id;
         }
+
     }
 }

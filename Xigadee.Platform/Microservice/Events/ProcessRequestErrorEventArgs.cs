@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class ProcessRequestErrorEventArgs: ProcessRequestUnresolvedEventArgs
+    public class ProcessRequestErrorEventArgs: DispatcherRequestUnresolvedEventArgs
     {
         public Exception Ex { get; set; }
     }

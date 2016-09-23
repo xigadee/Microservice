@@ -126,6 +126,11 @@ namespace Xigadee
                 , OutgoingRequestsEnabled = false
             };
         }
+
+        /// <summary>
+        /// Specifies the commands are supported by reflection.
+        /// </summary>
+        public bool CommandReflectionSupported { get; set; } = true;
     }
 
 

@@ -49,7 +49,7 @@ namespace Test.Xigadee
                     .AddPayloadSerializerDefaultJson()
                     .AddChannelIncoming("internalIn")
                         .AppendResourceProfile(new ResourceProfile("TrackIt"))
-                        .AppendBoundaryLogger(new MemoryBoundaryLogger(), (p,bl) => bLogger = bl)
+                        //.AppendBoundaryLogger(new MemoryBoundaryLogger(), (p,bl) => bLogger = bl)
                         .AssignPriorityPartition(0, 1)
                         .AttachAzureServiceBusQueueListener("Myqueue")
                         .AddCommand(new PersistenceBlahMemory())
@@ -57,7 +57,7 @@ namespace Test.Xigadee
                         .Revert((c) => cpipeIn = c)
                     .AddChannelOutgoing("internalOut", internalOnly: true)
                         .AssignPriorityPartition(0, 1)
-                        .AppendBoundaryLogger(bLogger)
+                        //.AppendBoundaryLogger(bLogger)
                         .Revert((c) => cpipeOut = c);
 
                 pipeline.Start();

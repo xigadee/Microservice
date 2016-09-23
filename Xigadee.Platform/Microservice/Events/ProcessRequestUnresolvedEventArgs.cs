@@ -22,8 +22,15 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class ProcessRequestUnresolvedEventArgs: MicroserviceEventArgs
+    public class DispatcherRequestUnresolvedEventArgs: MicroserviceEventArgs
     {
         public TransmissionPayload Payload { get; set; }
+        public DispatcherRequestUnresolvedReason Reason { get; set; }
+    }
+
+    public enum DispatcherRequestUnresolvedReason
+    {
+        MessageHandler,
+        ChannelOutgoing
     }
 }

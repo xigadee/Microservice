@@ -29,9 +29,4 @@ namespace Xigadee
         /// </summary>
         MicroserviceId OriginatorId { get; set; }
     }
-
-    //public interface IServiceOriginatorExtended: IServiceOriginator
-    //{
-    //    MicroserviceId OriginatorIds { get; set; }
-    //}
 }

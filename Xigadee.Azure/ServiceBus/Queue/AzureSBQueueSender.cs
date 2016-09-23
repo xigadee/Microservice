@@ -45,8 +45,8 @@ namespace Xigadee
             , string connectionString
             , string connectionName
             , IEnumerable<SenderPartitionConfig> priorityPartitions
-            , IBoundaryLogger boundaryLogger = null) :
-            base(channelId, connectionString, connectionName, priorityPartitions, boundaryLogger) 
+            ) :
+            base(channelId, connectionString, connectionName, priorityPartitions) 
         { 
         } 
         #endregion

@@ -36,7 +36,7 @@ namespace Xigadee
         public SerializationContainer(IEnumerable<IPayloadSerializer> collection)
             : base(collection)
         {
-        } 
+        }
         #endregion
 
         #region PayloadDeserialize<P>(ServiceMessage message)
@@ -45,7 +45,7 @@ namespace Xigadee
         /// specific message channelId.
         /// </summary>
         /// <typeparam name="P">The requestPayload message channelId.</typeparam>
-        /// <param name="message">The service message.</param>
+        /// <param name="payload">The service message.</param>
         /// <returns>Returns the object deserialized from the binary blob.</returns>
         public P PayloadDeserialize<P>(TransmissionPayload payload)
         {
@@ -112,16 +112,24 @@ namespace Xigadee
         }
         #endregion
 
-
+        #region StartInternal()
+        /// <summary>
+        /// This override checks whether there is a default serialization container set.
+        /// </summary>
         protected override void StartInternal()
         {
             if (Count == 0)
                 throw new PayloadSerializerCollectionIsEmptyException();
         }
-
+        #endregion
+        #region StopInternal()
+        /// <summary>
+        /// This method clears the container.
+        /// </summary>
         protected override void StopInternal()
         {
             Clear();
-        }
+        } 
+        #endregion
     }
 }

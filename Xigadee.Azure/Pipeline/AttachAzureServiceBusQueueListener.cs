@@ -45,8 +45,7 @@ namespace Xigadee
                         , priorityPartitions ?? cpipe.Channel.Partitions.Cast<ListenerPartitionConfig>().ToList()
                         , isDeadLetterListener
                         , mappingChannelId
-                        , resourceProfiles ?? cpipe.Channel.ResourceProfiles
-                        , boundaryLogger ?? cpipe.Channel.BoundaryLogger);
+                        , resourceProfiles ?? cpipe.Channel.ResourceProfiles);
 
                     onCreate?.Invoke(component);
 

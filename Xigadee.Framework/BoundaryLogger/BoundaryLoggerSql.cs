@@ -61,7 +61,7 @@ namespace Xigadee
         /// <param name="direction">The message direction.</param>
         /// <param name="payload">The payload to serialize.</param>
         /// <param name="ex">Any exception.</param>
-        public void Log(ChannelDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = default(Guid?))
+        public void BoundaryLog(ChannelDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = default(Guid?))
         {
             if (payload == null)
                 return;
@@ -118,7 +118,7 @@ namespace Xigadee
 
 
 
-        public Guid BatchPoll(int requested, int returned, string channelId)
+        public Guid BoundaryBatchPoll(int requested, int returned, string channelId)
         {
             Guid batchId = Guid.NewGuid();
 

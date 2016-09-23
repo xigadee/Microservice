@@ -37,7 +37,7 @@ namespace Xigadee
         {
             mEventSource.ForEach((c) => ServiceStart(c));
             var items = mCollectors.Where((c) => c.IsSupported(DataCollectionSupport.EventSource)).Cast<IEventSource>().Union(mEventSource).ToList();
-            mContainerEventSource = new ActionQueueCollection<Action<IEventSource>, IEventSource>(items, mPolicy.EventSource, EventProcessEventSource);
+            mContainerEventSource = new ActionQueueCollection<Action<IEventSource>, IEventSource>(items, mPolicy.EventSource, ActionQueueEventSource);
             ServiceStart(mContainerEventSource);
         }
         /// <summary>
@@ -49,6 +49,17 @@ namespace Xigadee
             mContainerEventSource = null;
             mEventSource.ForEach((c) => ServiceStop(c));
         }
+        #endregion
+        #region ActionQueueEventSource(Action<IEventSource> action, IEventSource evSource)
+        /// <summary>
+        /// This is the method called by the Action Queue to log and Event Source item.
+        /// </summary>
+        /// <param name="action">The actionThe event source logger.</param>
+        /// <param name="evSource"></param>
+        private void ActionQueueEventSource(Action<IEventSource> action, IEventSource evSource)
+        {
+            action(evSource);
+        } 
         #endregion
 
         /// <summary>
@@ -64,11 +75,6 @@ namespace Xigadee
         public async Task Write<K, E>(string originatorId, EventSourceEntry<K, E> entry, DateTime? utcTimeStamp = default(DateTime?), bool sync = false)
         {
             mContainerEventSource.EventSubmit((e) => WriteSync(e, originatorId, entry, utcTimeStamp), !sync);
-        }
-
-        private void EventProcessEventSource(Action<IEventSource> action, IEventSource evSource)
-        {
-            action(evSource);
         }
 
 

@@ -49,8 +49,8 @@ namespace Xigadee
             , IEnumerable<ListenerPartitionConfig> priorityPartitions = null
             , string mappingChannelId = null
             , IEnumerable<ResourceProfile> resourceProfiles = null
-            , IBoundaryLogger boundaryLogger = null)
-            : base(channelId, priorityPartitions, boundaryLogger)
+            )
+            : base(channelId, priorityPartitions)
         {
             mSupportedMessageTypes = new List<MessageFilterWrapper>();
             MappingChannelId = mappingChannelId;

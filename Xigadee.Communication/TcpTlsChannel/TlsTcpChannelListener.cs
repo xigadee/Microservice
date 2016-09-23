@@ -24,7 +24,11 @@ namespace Xigadee
 {
     public class TcpTlsChannelListener: MessagingListenerBase<TcpTlsConnection, TcpTlsMessage, TcpTlsClientHolder>
     {
-        public TcpTlsChannelListener(string channelId, IEnumerable<ListenerPartitionConfig> priorityPartitions = null, string mappingChannelId = null, IEnumerable<ResourceProfile> resourceProfiles = null, IBoundaryLogger boundaryLogger = null) : base(channelId, priorityPartitions, mappingChannelId, resourceProfiles, boundaryLogger)
+        public TcpTlsChannelListener(string channelId, IEnumerable<ListenerPartitionConfig> priorityPartitions = null
+            , string mappingChannelId = null
+            , IEnumerable<ResourceProfile> resourceProfiles = null
+            ) 
+            : base(channelId, priorityPartitions, mappingChannelId, resourceProfiles)
         {
 
         }

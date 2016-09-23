@@ -32,6 +32,8 @@ namespace Xigadee
         EventSource = 2,
         BoundaryLogger = 4,
         Telemetry = 8,
-        All = 15
+        Dispatcher = 16,
+        Statistics = 32,
+        All = 63
     }
 }

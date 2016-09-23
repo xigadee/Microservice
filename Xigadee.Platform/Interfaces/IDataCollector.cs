@@ -25,9 +25,17 @@ namespace Xigadee
     /// <summary>
     /// This is the combined interface that allow specific components to centralise all the logging capabilities in to single class.
     /// </summary>
-    public interface IDataCollector: IBoundaryLogger, ILogger, IEventSource, ITelemetry, IServiceOriginator
+    public interface IDataCollector: IBoundaryLoggerComponent, ILogger, IEventSource, ITelemetry, IServiceOriginator
     {
+        void DispatcherPayloadException(TransmissionPayload payload, Exception pex);
 
+        void DispatcherPayloadUnresolved(TransmissionPayload payload, DispatcherRequestUnresolvedReason reason);
+
+        void DispatcherPayloadIncoming(TransmissionPayload payload);
+
+        void DispatcherPayloadComplete(TransmissionPayload payload, int delta, bool isSuccess);
+
+        void MicroserviceStatisticsIssued(MicroserviceStatistics statistics);
     }
 
     public interface IDataCollectorComponent: IDataCollector

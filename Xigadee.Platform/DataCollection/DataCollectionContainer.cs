@@ -26,13 +26,13 @@ namespace Xigadee
     /// <summary>
     /// This class centrally holds all the logging, telemetry and event source support.
     /// </summary>
-    public partial class DataCollectionContainer: ServiceContainerBase<DataCollectionStatistics, DataCollectionPolicy>, IDataCollector, ILoggerExtended, ITaskManagerProcess
+    public partial class DataCollectionContainer: ServiceContainerBase<DataCollectionStatistics, DataCollectionPolicy>, ILogger, IEventSource, ITelemetry, IServiceOriginator, ILoggerExtended, ITaskManagerProcess
     {
         #region Declarations
         private List<IDataCollectorComponent> mCollectors;
         private List<ILogger> mLoggers;
         private List<IEventSource> mEventSource;
-        private List<IBoundaryLogger> mBoundaryLoggers;
+        private List<IBoundaryLoggerComponent> mBoundaryLoggers;
         private List<ITelemetry> mTelemetry;
 
         private Action<TaskTracker> mTaskSubmit;
@@ -48,7 +48,7 @@ namespace Xigadee
             mCollectors = new List<IDataCollectorComponent>();
             mLoggers = new List<ILogger>();
             mEventSource = new List<IEventSource>();
-            mBoundaryLoggers = new List<IBoundaryLogger>();
+            mBoundaryLoggers = new List<IBoundaryLoggerComponent>();
             mTelemetry = new List<ITelemetry>();
         }
         #endregion
@@ -60,6 +60,7 @@ namespace Xigadee
             StartTelemetry();
             StartEventSource();
             StartLogger();
+            StartBoundaryLogger();
         }
 
         protected override void StopInternal()
@@ -67,6 +68,7 @@ namespace Xigadee
             StopTelemetry();
             StopEventSource();
             StopLogger();
+            StopBoundaryLogger();
             mCollectors.ForEach((c) => ServiceStop(c));
         }
         #endregion
@@ -90,7 +92,7 @@ namespace Xigadee
             return component;
         }
 
-        public IBoundaryLogger Add(IBoundaryLogger component)
+        public IBoundaryLoggerComponent Add(IBoundaryLoggerComponent component)
         {
             mBoundaryLoggers.Add(component);
             return component;

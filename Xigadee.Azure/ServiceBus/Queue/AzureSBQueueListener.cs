@@ -46,8 +46,8 @@ namespace Xigadee
             , bool isDeadLetterListener = false
             , string mappingChannelId = null
             , IEnumerable<ResourceProfile> resourceProfiles = null
-            , IBoundaryLogger boundaryLogger = null)
-            : base(channelId, connectionString, connectionName, priorityPartitions, isDeadLetterListener, mappingChannelId, resourceProfiles:resourceProfiles, boundaryLogger:boundaryLogger)
+            )
+            : base(channelId, connectionString, connectionName, priorityPartitions, isDeadLetterListener, mappingChannelId, resourceProfiles:resourceProfiles)
         {
         }
         #endregion

@@ -37,7 +37,8 @@ namespace Test.Xigadee
         {
             inPipe
                 .AppendResourceProfile(new ResourceProfile("TrackIt"))
-                .AppendBoundaryLogger(new MemoryBoundaryLogger(), (p, bl) => bLogger = bl);
+                //.AppendBoundaryLogger(new MemoryBoundaryLogger(), (p, bl) => bLogger = bl)
+                ;
         }
 
         [TestMethod]
@@ -62,7 +63,6 @@ namespace Test.Xigadee
                         .Revert((c) => cpipeIn = c)
                     .AddChannelOutgoing("internalOut", internalOnly: true)
                         .AssignPriorityPartition(0, 1)
-                        .AppendBoundaryLogger(bLogger)
                         .Revert((c) => cpipeOut = c);
 
                 pipeline.Start();

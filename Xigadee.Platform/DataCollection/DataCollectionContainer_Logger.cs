@@ -38,7 +38,7 @@ namespace Xigadee
         {
             mLoggers.ForEach((c) => ServiceStart(c));
             var items = mCollectors.Where((c) => c.IsSupported(DataCollectionSupport.Logger)).Cast<ILogger>().Union(mLoggers).ToList();
-            mContainerLogger = new ActionQueueCollection<LogEvent, ILogger>(items, mPolicy.Logger, EventProcessLog);
+            mContainerLogger = new ActionQueueCollection<LogEvent, ILogger>(items, mPolicy.Logger, ActionQueueEventProcessLog);
             ServiceStart(mContainerLogger);
         }
         /// <summary>
@@ -51,11 +51,17 @@ namespace Xigadee
             mLoggers.ForEach((c) => ServiceStop(c));
         }
         #endregion
-
-        private void EventProcessLog(LogEvent l , ILogger e)
+        #region ActionQueueEventProcessLog(LogEvent l , ILogger e)
+        /// <summary>
+        /// This is the method executed by the ActionQueueCollection
+        /// </summary>
+        /// <param name="l">The log event</param>
+        /// <param name="e">The logger.</param>
+        private void ActionQueueEventProcessLog(LogEvent l, ILogger e)
         {
             e.Log(l);
-        }
+        } 
+        #endregion
 
         #region Log(LogEvent logEvent)
         /// <summary>
@@ -68,6 +74,7 @@ namespace Xigadee
         } 
         #endregion
 
+        //Extended logging methods
         #region LogException...
         public void LogException(Exception ex)
         {
@@ -95,6 +102,5 @@ namespace Xigadee
             Log(new LogEvent(logLevel, message, category));
         }
         #endregion
-
     }
 }

@@ -63,8 +63,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Commands\SimpleCommand.cs" />
     <Compile Include="EventTestCommand.cs" />
-    <Compile Include="Microservice\Pipeline2.cs" />
+    <Compile Include="Pipeline\Pipeline2.cs" />
     <Compile Include="Microservice_Validate_CommandRequest.cs" />
     <Compile Include="Microservice_Validate_CommandOutgoingRequests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -74,7 +75,7 @@
     <Compile Include="Microservice_Validate_Persistence.cs" />
     <Compile Include="SignatureHelper.cs" />
     <Compile Include="ApiTests.cs" />
-    <Compile Include="Microservice\Pipeline1.cs" />
+    <Compile Include="Pipeline\Pipeline1.cs" />
     <Compile Include="UnitTest1.cs" />
     <Compile Include="PopulatorExtensions.cs" />
   </ItemGroup>
@@ -109,7 +110,9 @@
     <None Include="packages.config" />
     <None Include="Test.Xigadee.licenseheader" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Microservice\" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

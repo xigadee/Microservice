@@ -43,9 +43,8 @@ namespace Xigadee
         public AzureSBSenderBase(string channelId
             , string connectionString
             , string connectionName
-            , IEnumerable<SenderPartitionConfig> priorityPartitions
-            , IBoundaryLogger boundaryLogger = null) 
-            :base(channelId, priorityPartitions, boundaryLogger) 
+            , IEnumerable<SenderPartitionConfig> priorityPartitions) 
+            :base(channelId, priorityPartitions) 
         {
             mAzureSB = new AzureConnection() { ConnectionName = connectionName, ConnectionString = connectionString };
         } 

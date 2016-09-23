@@ -62,10 +62,9 @@ namespace Xigadee
             , bool listenOnOriginatorId = false
             , string mappingChannelId = null
             , TimeSpan? deleteOnIdleTime = null
-            , IEnumerable<ResourceProfile> resourceProfiles = null
-            , IBoundaryLogger boundaryLogger = null)
+            , IEnumerable<ResourceProfile> resourceProfiles = null)
             : base(channelId, connectionString, connectionName, priorityPartitions, isDeadLetterListener, mappingChannelId
-                  , resourceProfiles:resourceProfiles, boundaryLogger:boundaryLogger)
+                  , resourceProfiles:resourceProfiles)
         {
             mSubscriptionId = subscriptionId ?? mappingChannelId;
             mDeleteOnStop = deleteOnStop;

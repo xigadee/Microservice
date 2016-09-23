@@ -132,6 +132,9 @@ namespace Xigadee
 
                 CommandsRegister();
 
+                if (mPolicy.CommandReflectionSupported)
+                    CommandsRegisterReflection();
+
                 if (mPolicy.OutgoingRequestsEnabled)
                     OutgoingRequestsInitialise();
 

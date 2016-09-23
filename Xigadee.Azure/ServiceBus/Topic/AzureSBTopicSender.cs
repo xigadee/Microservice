@@ -39,8 +39,8 @@ namespace Xigadee
         public AzureSBTopicSender(string channelId, string connectionString
             , string connectionName
             , IEnumerable<SenderPartitionConfig> priorityPartitions
-            , IBoundaryLogger boundaryLogger = null) :
-            base(channelId, connectionString, connectionName, priorityPartitions, boundaryLogger) { } 
+            ) :
+            base(channelId, connectionString, connectionName, priorityPartitions) { } 
         #endregion
 
         protected override AzureClientHolder<TopicClient, BrokeredMessage> ClientCreate(SenderPartitionConfig partition)

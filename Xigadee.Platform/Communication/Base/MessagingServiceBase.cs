@@ -30,7 +30,7 @@ namespace Xigadee
     /// <typeparam name="H">The client holder class type.</typeparam>
     /// <typeparam name="P">The partition configuration class type.</typeparam>
     public abstract class MessagingServiceBase<C, M, H, P> : ServiceBase<StatusBase>, 
-        IMessaging, IPayloadSerializerConsumer, IServiceOriginator, IServiceLogger
+        IMessaging, IPayloadSerializerConsumer, IServiceOriginator, IServiceLogger, IRequireBoundaryLogger
         where H: ClientHolder<C, M>, new()
         where P: PartitionConfig
     {
@@ -55,8 +55,7 @@ namespace Xigadee
         /// <param name="channelId">The string based channel id.</param>
         /// <param name="priorityPartitions">The number of priority channels. Null denotes a single channel of priority one.</param>
         public MessagingServiceBase(string channelId
-            , IEnumerable<P> priorityPartitions
-            , IBoundaryLogger boundaryLogger = null) 
+            , IEnumerable<P> priorityPartitions) 
             :base()
         {
             if (channelId == null)
@@ -69,8 +68,6 @@ namespace Xigadee
             PriorityPartitions = priorityPartitions.ToList();
             if (PriorityPartitions.Count == 0)
                 throw new ArgumentOutOfRangeException("priorityPartitions", "priorityPartitions must have at least one member.");
-
-            BoundaryLogger = boundaryLogger;
 
             ChannelId = channelId;
 

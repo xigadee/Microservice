@@ -57,8 +57,7 @@ namespace Xigadee
                 , listenOnOriginatorId
                 , mappingChannelId
                 , deleteOnIdleTime
-                , resourceProfiles ?? cpipe.Channel.ResourceProfiles
-                , boundaryLogger ?? cpipe.Channel.BoundaryLogger);
+                , resourceProfiles ?? cpipe.Channel.ResourceProfiles);
 
             onCreate?.Invoke(component);
 

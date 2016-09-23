@@ -21,6 +21,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
 
 namespace Xigadee
@@ -30,29 +31,41 @@ namespace Xigadee
     /// </summary>
     public class ApplicationInsightsDataCollector: DataCollectorBase
     {
+        #region Declarations
         //https://azure.microsoft.com/en-gb/documentation/articles/app-insights-api-custom-events-metrics/
         private TelemetryClient mTelemetry;
         private readonly string mKey;
+        #endregion
 
+        #region Constructor
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key">This is the application insights key.</param>
+        /// <param name="name"></param>
+        /// <param name="developerMode"></param>
+        /// <param name="support"></param>
         protected ApplicationInsightsDataCollector(string key
             , string name = null
             , bool developerMode = false
             , DataCollectionSupport support = DataCollectionSupport.All)
-            :base(name ?? "ApplicationInsightsDataCollector", support)
+            : base(name ?? "ApplicationInsightsDataCollector", support)
         {
             var config = new TelemetryConfiguration();
             config.InstrumentationKey = key;
             config.TelemetryChannel.DeveloperMode = developerMode;
-            
+
             mKey = key;
-        }
+        } 
+        #endregion
 
 
         protected override void StartInternal()
         {
-            
+            TelemetryConfiguration.Active.TelemetryChannel.DeveloperMode = true;
             mTelemetry = new TelemetryClient();
 
+            //mTelemetry.Context.Component.Version = 
             mTelemetry.Context.Device.Id = OriginatorId.ServiceId;
 
             mTelemetry.Context.Component.Version = (Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly()).GetName().Version.ToString();
@@ -71,26 +84,36 @@ namespace Xigadee
 
 
 
-
-        public override Guid BatchPoll(int requested, int actual, string channelId)
-        {
-            var id = Guid.NewGuid();
-
-            return id;
-        }
-
-        public override void Log(ChannelDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = default(Guid?))
+        public override void BoundaryLog(ChannelDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = default(Guid?))
         {
 
-   //         // Set up some properties and metrics:
-   //         var properties = new Dictionary<string, string>
-   //{{"game", currentGame.Name}, {"difficulty", currentGame.Difficulty}};
-   //         var metrics = new Dictionary<string, double>
-   //{{"Score", currentGame.Score}, {"Opponents", currentGame.OpponentCount}};
+            //         // Set up some properties and metrics:
+            //         var properties = new Dictionary<string, string>
+            //{{"game", currentGame.Name}, {"difficulty", currentGame.Difficulty}};
+            //         var metrics = new Dictionary<string, double>
+            //{{"Score", currentGame.Score}, {"Opponents", currentGame.OpponentCount}};
 
-   //         // Send the event:
-   //         mTelemetry.TrackEvent("WinGame", properties, metrics);
+            //         // Send the event:
+            //         mTelemetry.TrackEvent("WinGame", properties, metrics);
 
+            var eventAI = new EventTelemetry();
+
+            eventAI.Name = "WinGame";
+
+            //eventAI.Metrics ["processingTime"] = stopwatch.Elapsed.TotalMilliseconds;
+            //eventAI.Properties ["game"] = currentGame.Name;
+            //eventAI.Properties ["difficulty"] = currentGame.Difficulty;
+            //eventAI.Metrics ["Score"] = currentGame.Score;
+            //eventAI.Metrics ["Opponents"] = currentGame.Opponents.Length;
+
+            mTelemetry?.TrackEvent(eventAI);
+            var mTelem = new MetricTelemetry();
+            mTelemetry?.TrackMetric(mTelem);
+
+            var rTelem = new RequestTelemetry();
+            //rTelem.
+            //mTelemetry?.TrackRequest(PerformanceCounterTelemetry);
+            //mTelem.Count
         }
 
         public override async Task Log(LogEvent logEvent)
@@ -122,7 +145,35 @@ namespace Xigadee
         {
         }
 
+        public override void BoundaryLogPoll(Guid id, int requested, int actual, string channelId)
+        {
+            throw new NotImplementedException();
+        }
 
+        public override void DispatcherPayloadException(TransmissionPayload payload, Exception pex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DispatcherPayloadUnresolved(TransmissionPayload payload, DispatcherRequestUnresolvedReason reason)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DispatcherPayloadIncoming(TransmissionPayload payload)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DispatcherPayloadComplete(TransmissionPayload payload, int delta, bool isSuccess)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void MicroserviceStatisticsIssued(MicroserviceStatistics statistics)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

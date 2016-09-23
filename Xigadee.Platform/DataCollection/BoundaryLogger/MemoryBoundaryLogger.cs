@@ -22,16 +22,13 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class MemoryBoundaryLogger: IBoundaryLogger
+    public class MemoryBoundaryLogger: IBoundaryLoggerComponent
     {
-        public Guid BatchPoll(int requested, int actual, string channelId)
+        public void BoundaryLogPoll(Guid id, int requested, int actual, string channelId)
         {
-            var id = Guid.NewGuid();
-
-            return id;
         }
 
-        public void Log(ChannelDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = default(Guid?))
+        public void BoundaryLog(ChannelDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = default(Guid?))
         {
         }
     }

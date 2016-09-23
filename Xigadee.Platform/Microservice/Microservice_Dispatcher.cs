@@ -50,7 +50,10 @@ namespace Xigadee
                 //If there is no message then we cannot continue.
                 if (requestPayload == null || requestPayload.Message == null)
                     throw new ArgumentNullException("Payload or Message not present");
-                
+
+                //Log the telemtry for the incoming message.
+                mDataCollection.DispatcherPayloadIncoming(requestPayload);
+
                 //Check whether this message is for external processing only.
                 bool externalOnly = (requestPayload.Options & ProcessOptions.RouteInternal) == 0;
                 bool internalOnly = (requestPayload.Options & ProcessOptions.RouteExternal) == 0;
@@ -64,8 +67,8 @@ namespace Xigadee
                     isSuccess = await mCommunication.Send(requestPayload);
                     if (!isSuccess)
                     {
-                        OnProcessRequestUnresolved(requestPayload);
-                        mDataCollection.LogPayload(requestPayload, ex: new SenderNotResolvedException(requestPayload));
+                        mDataCollection.DispatcherPayloadUnresolved(requestPayload, DispatcherRequestUnresolvedReason.ChannelOutgoing);
+                        OnProcessRequestUnresolved(requestPayload, DispatcherRequestUnresolvedReason.ChannelOutgoing);
                     }
                     return;
                 }
@@ -79,8 +82,8 @@ namespace Xigadee
                 if (!resolveInternal && internalOnly)
                 {
                     //OK, we have an problem. We log this as an error and get out of here
-                    mDataCollection.LogPayload(requestPayload, ex:new MessageHandlerNotResolvedException(requestPayload));
-                    OnProcessRequestUnresolved(requestPayload);
+                    mDataCollection.DispatcherPayloadUnresolved(requestPayload, DispatcherRequestUnresolvedReason.MessageHandler);
+                    OnProcessRequestUnresolved(requestPayload, DispatcherRequestUnresolvedReason.MessageHandler);
                     isSuccess = ConfigurationOptions.UnhandledMessagesIgnore;
                     return;
                 }
@@ -116,12 +119,12 @@ namespace Xigadee
             }
             catch (TransmissionPayloadException pyex)
             {
-                mDataCollection.LogPayload(pyex.Payload, ex: pyex, level: LoggingLevel.Warning);
+                mDataCollection.DispatcherPayloadException(requestPayload, pyex);
                 OnProcessRequestError(pyex.Payload, pyex);
             }
             catch (Exception ex)
             {
-                mDataCollection.LogException($"Unable to process {requestPayload?.Message} after {requestPayload?.Message?.FabricDeliveryCount} attempts", ex);
+                mDataCollection.DispatcherPayloadException(requestPayload, ex);
                 OnProcessRequestError(requestPayload, ex);
             }
             finally
@@ -133,11 +136,9 @@ namespace Xigadee
                 int delta = StatisticsInternal.ActiveDecrement(timerStart);
 
                 //Log the telemtry for the specific message channelId.
-                mDataCollection.Telemetry(requestPayload.Message.ToKey(), delta, isSuccess);
+                mDataCollection.DispatcherPayloadComplete(requestPayload, delta, isSuccess);
 
-                if (isSuccess)
-                    mDataCollection.LogPayload(requestPayload, direction:DispatcherLoggerDirection.Outgoing, timespan: TimeSpan.FromMilliseconds(delta));
-                else
+                if (!isSuccess)
                     StatisticsInternal.ErrorIncrement();
             }
         }

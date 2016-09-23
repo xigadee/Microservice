@@ -25,15 +25,22 @@ namespace Xigadee
     /// <summary>
     /// This attribute can be set against a command method to register it for automatic registration as a remote command.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
     public class CommandContractAttribute:Attribute
     {
-        public CommandContractAttribute(string messageType, string actionType, string channelId = null)
+        public CommandContractAttribute(string channelId = null, string messageType = null, string actionType = null)
         {
             ChannelId = channelId;
             MessageType = messageType;
             ActionType = actionType;
-            Header = new Xigadee.ServiceMessageHeader(channelId, messageType, actionType);
+            Header = new ServiceMessageHeader(channelId, messageType, actionType);
+        }
+
+        public CommandContractAttribute(Type interfaceType)
+        {
+            if (!interfaceType.IsInterface || interfaceType.IsSubclassOf(typeof(IMessageContract)))
+                throw new ArgumentOutOfRangeException("interfaceType must be an interface and derived from IMessageContract");
+
         }
 
         public string ChannelId { get; protected set; }
@@ -47,4 +54,6 @@ namespace Xigadee
         /// </summary>
         public ServiceMessageHeader Header { get; protected set; }
     }
+
+
 }

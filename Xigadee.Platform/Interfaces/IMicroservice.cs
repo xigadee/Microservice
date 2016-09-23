@@ -33,15 +33,21 @@ namespace Xigadee
         IEnumerable<Channel> Channels { get; }
 
         Channel RegisterChannel(Channel channel);
+
         ICommand RegisterCommand(ICommand command);
-        IListener RegisterDeadLetterListener(IListener deadLetter);
+
         IEventSource RegisterEventSource(IEventSource eventSource);
-        IListener RegisterListener(IListener listener);
         ILogger RegisterLogger(ILogger logger);
+        IBoundaryLoggerComponent RegisterBoundaryLogger(IBoundaryLoggerComponent logger);
         IDataCollectorComponent RegisterDataCollector(IDataCollectorComponent logger);
-        IPayloadSerializer RegisterPayloadSerializer(IPayloadSerializer serializer);
-        ISender RegisterSender(ISender sender);
         ITelemetry RegisterTelemetry(ITelemetry telemetry);
+
+        IPayloadSerializer RegisterPayloadSerializer(IPayloadSerializer serializer);
+
+        IListener RegisterListener(IListener listener);
+        ISender RegisterSender(ISender sender);
+        IListener RegisterDeadLetterListener(IListener deadLetter);
+
 
         ISharedService SharedServices { get; }
 
@@ -50,14 +56,21 @@ namespace Xigadee
     public interface IMicroservice: IMicroserviceConfigure
     {
         event EventHandler<ProcessRequestErrorEventArgs> ProcessRequestError;
-        event EventHandler<ProcessRequestUnresolvedEventArgs> ProcessRequestUnresolved;
+
+        event EventHandler<DispatcherRequestUnresolvedEventArgs> ProcessRequestUnresolved;
+
         event EventHandler<MicroserviceStatusEventArgs> ComponentStatusChange;
 
         void Process(TransmissionPayload payload);
+
         void Process(ServiceMessage message, ProcessOptions options = ProcessOptions.RouteInternal | ProcessOptions.RouteExternal, Action<bool, Guid> release = null, bool isDeadLetterMessage = false);
+
         void Process(ServiceMessageHeader header, object package = null, int ChannelPriority = 1, ProcessOptions options = ProcessOptions.RouteInternal | ProcessOptions.RouteExternal, Action<bool, Guid> release = null, bool isDeadLetterMessage = false);
+
         void Process(string ChannelId, string MessageType = null, string ActionType = null, object package = null, int ChannelPriority = 1, ProcessOptions options = ProcessOptions.RouteInternal | ProcessOptions.RouteExternal, Action<bool, Guid> release = null, bool isDeadLetterMessage = false);
-        void Process<C>(object package = null, int ChannelPriority = 1, ProcessOptions options = ProcessOptions.RouteInternal | ProcessOptions.RouteExternal, Action<bool, Guid> release = null, bool isDeadLetterMessage = false) where C : IMessageContract;
+
+        void Process<C>(object package = null, int ChannelPriority = 1, ProcessOptions options = ProcessOptions.RouteInternal | ProcessOptions.RouteExternal, Action<bool, Guid> release = null, bool isDeadLetterMessage = false) 
+            where C : IMessageContract;
 
     }
 }

@@ -58,27 +58,31 @@ namespace Xigadee
         /// <summary>
         /// This event will be thrown if an incoming message cannot be resolved against a command.
         /// </summary>
-        public event EventHandler<ProcessRequestUnresolvedEventArgs> ProcessRequestUnresolved;
+        public event EventHandler<DispatcherRequestUnresolvedEventArgs> ProcessRequestUnresolved;
         /// <summary>
         /// This event will be raised when a process request errors.
         /// </summary>
         public event EventHandler<ProcessRequestErrorEventArgs> ProcessRequestError;
 
+        #region OnProcessRequestUnresolved(TransmissionPayload payload)
         /// <summary>
         /// This method is called when an incoming request cannot be matched to a command within the Microservice.
         /// </summary>
         /// <param name="payload">The request payload.</param>
-        protected virtual void OnProcessRequestUnresolved(TransmissionPayload payload)
+        /// <param name="reason">The reason the request was unsesolved</param>
+        protected virtual void OnProcessRequestUnresolved(TransmissionPayload payload, DispatcherRequestUnresolvedReason reason)
         {
             try
             {
-                ProcessRequestUnresolved?.Invoke(this, new ProcessRequestUnresolvedEventArgs() { Payload = payload });
+                ProcessRequestUnresolved?.Invoke(this, new DispatcherRequestUnresolvedEventArgs() { Payload = payload, Reason = reason });
             }
             catch (Exception ex)
             {
                 Logger?.LogException("OnUnhandledRequest / external exception thrown on event", ex);
             }
         }
+        #endregion
+        #region OnProcessRequestError(TransmissionPayload payload, Exception pex)
         /// <summary>
         /// This method is called when a command throws an unhanlded exception when processing the request
         /// </summary>
@@ -95,6 +99,9 @@ namespace Xigadee
                 Logger?.LogException("OnUnhandledRequest / external exception thrown on event", ex);
             }
         }
+        #endregion
+
+        #region OnStartRequested()
         /// <summary>
         /// This method is called when the Microservice receives a start request.
         /// </summary>
@@ -109,6 +116,8 @@ namespace Xigadee
                 Logger?.LogException("OnStartRequested / external exception thrown on event", ex);
             }
         }
+        #endregion
+        #region OnStartCompleted()
         /// <summary>
         /// This method is called when the Microservice completes the start request.
         /// </summary>
@@ -123,6 +132,8 @@ namespace Xigadee
                 Logger?.LogException("OnStartCompleted / external exception thrown on event", ex);
             }
         }
+        #endregion
+        #region OnStopRequested()
         /// <summary>
         /// This method is called when the Microservice receives a stop request.
         /// </summary>
@@ -137,6 +148,8 @@ namespace Xigadee
                 Logger?.LogException("OnStopRequested / external exception thrown on event", ex);
             }
         }
+        #endregion
+        #region OnStopCompleted()
         /// <summary>
         /// This method is called when the Microservice completed a stop request.
         /// </summary>
@@ -151,6 +164,9 @@ namespace Xigadee
                 Logger?.LogException("OnStopCompleted / external exception thrown on event", ex);
             }
         }
+        #endregion
+
+        #region OnStatisticsIssued(MicroserviceStatistics statistics)
         /// <summary>
         /// This method is called on a regular interval when the statistics are updated.
         /// </summary>
@@ -159,13 +175,15 @@ namespace Xigadee
         {
             try
             {
+                mDataCollection?.MicroserviceStatisticsIssued(statistics);
                 StatisticsIssued?.Invoke(this, new StatisticsEventArgs() { Statistics = statistics });
             }
             catch (Exception ex)
             {
                 Logger?.LogException("Action_OnStatistics / external exception thrown on event", ex);
             }
-        }
+        } 
+        #endregion
 
         #region Event wrappers...
         /// <summary>

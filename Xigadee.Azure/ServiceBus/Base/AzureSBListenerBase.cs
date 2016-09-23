@@ -55,8 +55,8 @@ namespace Xigadee
             , bool isDeadLetterListener = false
             , string mappingChannelId = null
             , IEnumerable<ResourceProfile> resourceProfiles = null
-            , IBoundaryLogger boundaryLogger = null)
-            : base(channelId, priorityPartitions, mappingChannelId, resourceProfiles:resourceProfiles, boundaryLogger:boundaryLogger)
+            )
+            : base(channelId, priorityPartitions, mappingChannelId, resourceProfiles:resourceProfiles)
         {
             mAzureSB = new AzureConnection() { ConnectionName = connectionName, ConnectionString = connectionString };
             IsDeadLetterListener = isDeadLetterListener;

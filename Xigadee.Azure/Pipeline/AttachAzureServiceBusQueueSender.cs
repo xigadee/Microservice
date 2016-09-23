@@ -31,15 +31,13 @@ namespace Xigadee
             , string connectionName
             , IEnumerable<SenderPartitionConfig> priorityPartitions = null
             , string serviceBusConnection = null
-            , IBoundaryLogger boundaryLogger = null
             , Action<AzureSBQueueSender> onCreate = null)
         {
             var component = new AzureSBQueueSender(
                   cpipe.Channel.Id
                 , serviceBusConnection ?? cpipe.Pipeline.Configuration.ServiceBusConnection()
                 , connectionName
-                , priorityPartitions ?? cpipe.Channel.Partitions.Cast<SenderPartitionConfig>().ToList()
-                , boundaryLogger ?? cpipe.Channel.BoundaryLogger);
+                , priorityPartitions ?? cpipe.Channel.Partitions.Cast<SenderPartitionConfig>().ToList());
 
             onCreate?.Invoke(component);
 

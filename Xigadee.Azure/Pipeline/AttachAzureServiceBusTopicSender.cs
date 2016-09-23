@@ -31,7 +31,6 @@ namespace Xigadee
             , string connectionName
             , string serviceBusConnection = null
             , IEnumerable<SenderPartitionConfig> priorityPartitions = null
-            , IBoundaryLogger boundaryLogger = null
             , Action<AzureSBTopicSender> onCreate = null
             , bool setFromChannelProperties = true
             )
@@ -44,7 +43,7 @@ namespace Xigadee
                 , cpipe.Pipeline.Configuration.ServiceBusConnectionValidate(serviceBusConnection)
                 , connectionName
                 , priorityPartitions ?? cpipe.Channel.Partitions.Cast<SenderPartitionConfig>().ToList()
-                , boundaryLogger ?? cpipe.Channel.BoundaryLogger);
+                );
 
             onCreate?.Invoke(component);
 
