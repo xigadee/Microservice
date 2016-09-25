@@ -15,15 +15,25 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public interface IEventSourceContainer
+    /// <summary>
+    /// This is the root logger interface to support async logging support through the framework.
+    /// </summary>
+    public interface ILogger
     {
-        IEventSource EventSource { get; set; }
+        /// <summary>
+        /// This method asyncronously logs an event.
+        /// </summary>
+        /// <param name="logEvent">The event to log.</param>
+        /// <returns>This is an async task.</returns>
+        Task Log(LogEvent logEvent);
+    }
+
+    public interface ILoggerComponent
+    {
+
     }
 }

@@ -22,8 +22,22 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public interface ITelemetry
+    public interface IDataCollectorComponent: IServiceOriginator
     {
-        void TrackMetric(string metricName, double value);
+        DataCollectionSupport Support { get; }
+
+        bool IsSupported(DataCollectionSupport support);
+
+        void Write(EventSourceEvent eventData);
+
+        void Write(MetricEvent eventData);
+
+        void Write(LogEvent eventData);
+
+        void Write(PayloadEvent eventData);
+
+        void Write(BoundaryEvent eventData);
+
+        void Write(MicroserviceStatistics eventData);
     }
 }

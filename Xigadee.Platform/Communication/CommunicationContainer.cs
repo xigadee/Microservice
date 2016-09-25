@@ -159,10 +159,12 @@ namespace Xigadee
         }
         #endregion
 
+        #region BoundaryLogger
         /// <summary>
         /// This is the boundary logger
         /// </summary>
-        public IBoundaryLogger BoundaryLogger { get; set; }
+        public IBoundaryLogger BoundaryLogger { get; set; } 
+        #endregion
 
         //Command message event handling
         #region RegisterSupportedMessages()
@@ -180,7 +182,7 @@ namespace Xigadee
         #endregion
         #region SupportedMessageTypes_OnCommandChange(object sender, SupportedMessagesChange e)
         /// <summary>
-        /// This method provides a dynamic notification to the client when the supported messages change.
+        /// This method provides a dynamic notification to the communication listener when the supported messages change.
         /// Clients can use this information to decide whether they should start or stop listening.
         /// </summary>
         /// <param name="sender">The sender that initiated the call.</param>
@@ -188,6 +190,7 @@ namespace Xigadee
         private void SupportedMessageTypes_OnCommandChange(object sender, SupportedMessagesChange e)
         {
             mSupportedMessages = e.Messages;
+
             mListener.ForEach((c) => c.Update(e.Messages));
 
             //Update the listeners as there may be new active listeners or other may have shutdown.
@@ -220,7 +223,7 @@ namespace Xigadee
             get; set;
         }
         #endregion
-        #region OriginatorId/s
+        #region OriginatorId
         /// <summary>
         /// The system originatorId which is appended to outgoing messages.
         /// </summary>

@@ -24,7 +24,7 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static MicroservicePipeline AddEventSource(this MicroservicePipeline pipeline, IEventSource eventSource)
+        public static MicroservicePipeline AddEventSource(this MicroservicePipeline pipeline, IEventSourceComponent eventSource)
         {
             pipeline.Service.RegisterEventSource(eventSource);
 
@@ -32,7 +32,7 @@ namespace Xigadee
         }
 
         public static MicroservicePipeline AddEventSource<E>(this MicroservicePipeline pipeline, Func<IEnvironmentConfiguration, E> creator, Action<E> assign)
-            where E: IEventSource
+            where E: IEventSourceComponent
         {
             var eSource = creator(pipeline.Configuration);
             assign?.Invoke(eSource);

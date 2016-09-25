@@ -132,6 +132,4 @@ namespace Xigadee
         /// </summary>
         public bool CommandReflectionSupported { get; set; } = true;
     }
-
-
 }

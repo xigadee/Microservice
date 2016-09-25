@@ -69,7 +69,15 @@ namespace Xigadee
         /// Gets or sets the time stamp of the message originator in UTC.
         /// </summary>
         [DataMember]
-        public DateTime OriginatorUTC { get; set; } 
+        public DateTime OriginatorUTC { get; set; }
+        #endregion
+
+        #region ProcessCorrelationKey
+        /// <summary>
+        /// Gets or sets the correlation key which is the original key reference.
+        /// </summary>
+        [DataMember]
+        public string ProcessCorrelationKey { get; set; }
         #endregion
 
         #region CorrelationKey
@@ -122,6 +130,20 @@ namespace Xigadee
         /// </summary>
         [DataMember]
         public int ResponseChannelPriority { get; set; }
+        #endregion
+        #region ResponseMessageType
+        /// <summary>
+        /// Gets or sets the Response message type.
+        /// </summary>
+        [DataMember]
+        public string ResponseMessageType { get; set; }
+        #endregion
+        #region ResponseActionType
+        /// <summary>
+        /// Gets or sets the response action type.
+        /// </summary>
+        [DataMember]
+        public string ResponseActionType { get; set; }
         #endregion
 
         #region ChannelId

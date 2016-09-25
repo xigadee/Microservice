@@ -26,7 +26,7 @@ namespace Xigadee
     /// <summary>
     /// This event source uses the Azure EventHub as the event source.
     /// </summary>
-    public class EventHubEventSource : AzureSBEventHubSender, IEventSource
+    public class EventHubEventSource : AzureSBEventHubSender, IEventSourceComponent
     {
 
         #region Constructor

@@ -36,7 +36,7 @@ namespace Xigadee
 
         ICommand RegisterCommand(ICommand command);
 
-        IEventSource RegisterEventSource(IEventSource eventSource);
+        IEventSourceComponent RegisterEventSource(IEventSourceComponent eventSource);
         ILogger RegisterLogger(ILogger logger);
         IBoundaryLoggerComponent RegisterBoundaryLogger(IBoundaryLoggerComponent logger);
         IDataCollectorComponent RegisterDataCollector(IDataCollectorComponent logger);

@@ -72,7 +72,7 @@ namespace Xigadee
 
             //Check whether the ResponseId has been set, and if so then register the command.
             if (ResponseId == null)
-                throw new CommandStartupException("Outgoing requests are enabled, but the ResponseId parameter has not been set");
+                throw new CommandStartupException($"Command {GetType().Name}: Outgoing requests are enabled, but the ResponseId parameter has not been set");
             
             //This is the return message handler
             CommandRegister(ResponseId, OutgoingRequestResponseProcess);
@@ -169,16 +169,16 @@ namespace Xigadee
         /// </summary>
         /// <typeparam name="K"></typeparam>
         /// <param name="payloadRq">The payload to process.</param>
-        /// <param name="processPayload"></param>
+        /// <param name="processResponse"></param>
         /// <param name="processAsync"></param>
         /// <returns></returns>
         protected async Task<K> TransmitAsync<K>(TransmissionPayload payloadRq,
-            Func<TaskStatus, TransmissionPayload, bool, K> processPayload,
+            Func<TaskStatus, TransmissionPayload, bool, K> processResponse,
             bool processAsync = false)
         {
             if (payloadRq == null)
                 throw new ArgumentNullException("payloadRequest");
-            if (processPayload == null)
+            if (processResponse == null)
                 throw new ArgumentNullException("processPayload");
 
             ValidateServiceStarted();
@@ -187,7 +187,7 @@ namespace Xigadee
 
             if (processAsync)
             {
-                return processPayload(tracker.Tcs.Task.Status, payloadRq, true);
+                return processResponse(tracker.Tcs.Task.Status, payloadRq, true);
             }
 
             TransmissionPayload payloadRs = null;
@@ -200,7 +200,7 @@ namespace Xigadee
             }
             catch (Exception) { }
 
-            var response = processPayload(tracker.Tcs.Task.Status, payloadRs, false);
+            var response = processResponse(tracker.Tcs.Task.Status, payloadRs, false);
 
             return response;
         }
@@ -210,8 +210,7 @@ namespace Xigadee
         /// <summary>
         /// This method marshalls the incoming requests from the Initiators.
         /// </summary>
-        /// <param name="caller">The caller.</param>
-        /// <param name="message">The message to process.</param>
+        /// <param name="payload">The outgoing payload.</param>
         protected virtual OutgoingRequestTracker OutgoingRequestTransmit(TransmissionPayload payload)
         {
             //Create and register the request holder.

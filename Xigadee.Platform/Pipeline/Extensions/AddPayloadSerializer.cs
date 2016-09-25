@@ -38,6 +38,13 @@ namespace Xigadee
             return pipeline;
         }
 
+        public static MicroservicePipeline ClearPayloadSerializers(this MicroservicePipeline pipeline, IPayloadSerializer serializer)
+        {
+            
+
+            return pipeline;
+        }
+
         public static MicroservicePipeline AddPayloadSerializer(this MicroservicePipeline pipeline, Func<IEnvironmentConfiguration, IPayloadSerializer> creator)
         {
             pipeline.Service.RegisterPayloadSerializer(creator(pipeline.Configuration));

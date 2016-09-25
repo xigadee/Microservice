@@ -82,23 +82,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region TrackMetric(string metricName, double value)
-        /// <summary>
-        /// Track the metric for each of the tranckers.
-        /// </summary>
-        /// <param name="metricName"></param>
-        /// <param name="value"></param>
-        public void TrackMetric(string metricName, double value)
-        {
-            mTelemetry.ForEach((c) =>
-            {
-                try
-                {
-                    c.TrackMetric(metricName, value);
-                }
-                catch { }
-            });
-        } 
-        #endregion
+
     }
 }

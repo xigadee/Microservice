@@ -34,7 +34,6 @@ namespace Xigadee
             client.MessageSignal = MessageSignal;
         }
 
-
         #region ToSafeLower(string value)
         /// <summary>
         /// This method is to fix an issue on service bus where filters are case sensitive
@@ -71,8 +70,10 @@ namespace Xigadee
             bMessage.Properties.Add("OriginatorServiceId", sMessage.OriginatorServiceId);
             bMessage.Properties.Add("OriginatorUTC", sMessage.OriginatorUTC);
 
-            bMessage.Properties.Add("ResponseChannelId", sMessage.ResponseChannelId);
+            bMessage.Properties.Add("ResponseChannelId", ToSafeLower(sMessage.ResponseChannelId));
             bMessage.Properties.Add("ResponseChannelPriority", sMessage.ResponseChannelPriority.ToString());
+            bMessage.Properties.Add("ResponseMessageType", ToSafeLower(sMessage.ResponseMessageType));
+            bMessage.Properties.Add("ResponseActionType", ToSafeLower(sMessage.ResponseActionType));
 
             //FIX: Case sensitive pattern matchin in ServiceBus.
             bMessage.Properties.Add("ChannelId", ToSafeLower(sMessage.ChannelId));
@@ -82,8 +83,11 @@ namespace Xigadee
             bMessage.Properties.Add("IsNoop", sMessage.IsNoop ? "1" : "0");
             bMessage.Properties.Add("IsReplay", sMessage.IsReplay ? "1" : "0");
 
-            bMessage.Properties.Add("CorrelationKey", sMessage.CorrelationKey);
             bMessage.CorrelationId = sMessage.CorrelationServiceId;
+
+            bMessage.Properties.Add("ProcessCorrelationKey", sMessage.ProcessCorrelationKey);
+
+            bMessage.Properties.Add("CorrelationKey", sMessage.CorrelationKey);
             bMessage.Properties.Add("CorrelationServiceId", ToSafeLower(sMessage.CorrelationServiceId));
             bMessage.Properties.Add("CorrelationUTC", sMessage.CorrelationUTC.HasValue ? sMessage.CorrelationUTC.Value.ToString("o") : null);
 
@@ -113,6 +117,10 @@ namespace Xigadee
             sMessage.OriginatorUTC = (DateTime)bMessage.Properties["OriginatorUTC"];
 
             sMessage.ResponseChannelId = bMessage.Properties["ResponseChannelId"] as string;
+            if (bMessage.Properties.ContainsKey("ResponseMessageType"))
+                sMessage.ResponseMessageType = bMessage.Properties["ResponseMessageType"] as string;
+            if (bMessage.Properties.ContainsKey("ResponseActionType"))
+                sMessage.ResponseActionType = bMessage.Properties["ResponseActionType"] as string;
 
             if (bMessage.Properties.ContainsKey("ResponseChannelPriority"))
             {
@@ -129,6 +137,9 @@ namespace Xigadee
 
             sMessage.IsNoop = bMessage.Properties["IsNoop"] as string == "1";
             sMessage.IsReplay = bMessage.Properties["IsReplay"] as string == "1";
+
+            if (bMessage.Properties.ContainsKey("ProcessCorrelationKey"))
+                sMessage.ProcessCorrelationKey = bMessage.Properties["ProcessCorrelationKey"] as string;
 
             sMessage.CorrelationKey = bMessage.Properties["CorrelationKey"] as string;
             sMessage.CorrelationServiceId = bMessage.Properties["CorrelationServiceId"] as string;

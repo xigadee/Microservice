@@ -140,13 +140,13 @@ namespace Xigadee
             ValidateServiceNotStarted();
             mDataCollection.Add(collector);
             return collector;
-        } 
+        }
         #endregion
-        #region RegisterEventSource(IEventSource eventSource)
+        #region RegisterEventSource(IEventSourceComponent eventSource)
         /// <summary>
         /// This method can be used to manually register an EventSource.
         /// </summary>
-        public virtual IEventSource RegisterEventSource(IEventSource eventSource)
+        public virtual IEventSourceComponent RegisterEventSource(IEventSourceComponent eventSource)
         {
             ValidateServiceNotStarted();
             mDataCollection.Add(eventSource);

@@ -46,10 +46,9 @@ namespace Xigadee
         /// <param name="developerMode"></param>
         /// <param name="support"></param>
         protected ApplicationInsightsDataCollector(string key
-            , string name = null
             , bool developerMode = false
             , DataCollectionSupport support = DataCollectionSupport.All)
-            : base(name ?? "ApplicationInsightsDataCollector", support)
+            : base(support)
         {
             var config = new TelemetryConfiguration();
             config.InstrumentationKey = key;
@@ -82,98 +81,98 @@ namespace Xigadee
             mTelemetry = null;
         }
 
-
-
-        public override void BoundaryLog(ChannelDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = default(Guid?))
-        {
-
-            //         // Set up some properties and metrics:
-            //         var properties = new Dictionary<string, string>
-            //{{"game", currentGame.Name}, {"difficulty", currentGame.Difficulty}};
-            //         var metrics = new Dictionary<string, double>
-            //{{"Score", currentGame.Score}, {"Opponents", currentGame.OpponentCount}};
-
-            //         // Send the event:
-            //         mTelemetry.TrackEvent("WinGame", properties, metrics);
-
-            var eventAI = new EventTelemetry();
-
-            eventAI.Name = "WinGame";
-
-            //eventAI.Metrics ["processingTime"] = stopwatch.Elapsed.TotalMilliseconds;
-            //eventAI.Properties ["game"] = currentGame.Name;
-            //eventAI.Properties ["difficulty"] = currentGame.Difficulty;
-            //eventAI.Metrics ["Score"] = currentGame.Score;
-            //eventAI.Metrics ["Opponents"] = currentGame.Opponents.Length;
-
-            mTelemetry?.TrackEvent(eventAI);
-            var mTelem = new MetricTelemetry();
-            mTelemetry?.TrackMetric(mTelem);
-
-            var rTelem = new RequestTelemetry();
-            //rTelem.
-            //mTelemetry?.TrackRequest(PerformanceCounterTelemetry);
-            //mTelem.Count
-        }
-
-        public override async Task Log(LogEvent logEvent)
-        {
-            if (logEvent == null)
-                return;
-
-            switch (logEvent.Level)
-            {
-                case LoggingLevel.Info:
-                    break;
-                case LoggingLevel.Status:
-                    break;
-                case LoggingLevel.Fatal:
-                case LoggingLevel.Error:
-                case LoggingLevel.Warning:
-                    break;
-            }
-        }
-
-
-
-        public override void TrackMetric(string metricName, double value)
-        {
-            mTelemetry?.TrackMetric(metricName, value);
-        }
-
-        public override async Task Write<K, E>(string originatorId, EventSourceEntry<K, E> entry, DateTime? utcTimeStamp = default(DateTime?), bool sync = false)
+        public override void Write(EventSourceEvent eventData)
         {
         }
 
-        public override void BoundaryLogPoll(Guid id, int requested, int actual, string channelId)
+        public override void Write(MetricEvent eventData)
         {
-            throw new NotImplementedException();
+
         }
 
-        public override void DispatcherPayloadException(TransmissionPayload payload, Exception pex)
+        public override void Write(LogEvent eventData)
         {
-            throw new NotImplementedException();
+
         }
 
-        public override void DispatcherPayloadUnresolved(TransmissionPayload payload, DispatcherRequestUnresolvedReason reason)
+        public override void Write(PayloadEvent eventData)
         {
-            throw new NotImplementedException();
+
         }
 
-        public override void DispatcherPayloadIncoming(TransmissionPayload payload)
+        public override void Write(BoundaryEvent eventData)
         {
-            throw new NotImplementedException();
+
         }
 
-        public override void DispatcherPayloadComplete(TransmissionPayload payload, int delta, bool isSuccess)
+        public override void Write(MicroserviceStatistics eventData)
         {
-            throw new NotImplementedException();
         }
 
-        public override void MicroserviceStatisticsIssued(MicroserviceStatistics statistics)
-        {
-            throw new NotImplementedException();
-        }
+
+
+        //public override void BoundaryLog(ChannelDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = default(Guid?))
+        //{
+
+        //    //         // Set up some properties and metrics:
+        //    //         var properties = new Dictionary<string, string>
+        //    //{{"game", currentGame.Name}, {"difficulty", currentGame.Difficulty}};
+        //    //         var metrics = new Dictionary<string, double>
+        //    //{{"Score", currentGame.Score}, {"Opponents", currentGame.OpponentCount}};
+
+        //    //         // Send the event:
+        //    //         mTelemetry.TrackEvent("WinGame", properties, metrics);
+
+        //    var eventAI = new EventTelemetry();
+
+        //    eventAI.Name = "WinGame";
+
+        //    //eventAI.Metrics ["processingTime"] = stopwatch.Elapsed.TotalMilliseconds;
+        //    //eventAI.Properties ["game"] = currentGame.Name;
+        //    //eventAI.Properties ["difficulty"] = currentGame.Difficulty;
+        //    //eventAI.Metrics ["Score"] = currentGame.Score;
+        //    //eventAI.Metrics ["Opponents"] = currentGame.Opponents.Length;
+
+        //    mTelemetry?.TrackEvent(eventAI);
+        //    var mTelem = new MetricTelemetry();
+        //    mTelemetry?.TrackMetric(mTelem);
+
+        //    var rTelem = new RequestTelemetry();
+        //    //rTelem.
+        //    //mTelemetry?.TrackRequest(PerformanceCounterTelemetry);
+        //    //mTelem.Count
+        //}
+
+        //public override async Task Log(LogEvent logEvent)
+        //{
+        //    if (logEvent == null)
+        //        return;
+
+        //    switch (logEvent.Level)
+        //    {
+        //        case LoggingLevel.Info:
+        //            break;
+        //        case LoggingLevel.Status:
+        //            break;
+        //        case LoggingLevel.Fatal:
+        //        case LoggingLevel.Error:
+        //        case LoggingLevel.Warning:
+        //            break;
+        //    }
+        //}
+
+
+
+        //public override void TrackMetric(string metricName, double value)
+        //{
+        //    mTelemetry?.TrackMetric(metricName, value);
+        //}
+
+        //public override async Task Write<K, E>(string originatorId, EventSourceEntry<K, E> entry, DateTime? utcTimeStamp = default(DateTime?), bool sync = false)
+        //{
+        //}
+
+
     }
 }
 

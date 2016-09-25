@@ -20,34 +20,36 @@ using Xigadee;
 namespace Test.Xigadee
 {
     [TestClass]
-    public class Pipeline2
+    public partial class PipelineTest2
     {
         [TestMethod]
-        public void PipelineSimpleCommand()
+        public void Pipeline2()
         {
             try
             {
-                MemoryLogger logger = null;
+                DebugStubCollector collector = null;
                 Microservice service;
+                CommandInitiator init = null;
                 var pipeline = Microservice.Configure((s) => service = s, serviceName: "TestPipeline");
 
                 ChannelPipelineIncoming cpipeIn = null;
                 ChannelPipelineOutgoing cpipeOut = null;
 
                 pipeline
-                        .AddLogger<MemoryLogger>((l) => logger = l)
-                        .AddPayloadSerializerDefaultJson()
-                        .AddChannelIncoming("internalIn", internalOnly: true)
+                    .AddDataCollector<DebugStubCollector>((c) => collector = c)
+                    .AddPayloadSerializerDefaultJson()
+                    .AddChannelIncoming("internalIn", internalOnly: true)
                         .AssignPriorityPartition(0, 1)
                         .AddCommand(new SimpleCommand())
                         .Revert((c) => cpipeIn = c)
                     .AddChannelOutgoing("internalOut", internalOnly: true)
                         .AssignPriorityPartition(0, 1)
-                        .Revert((c) => cpipeOut = c);
+                        .Revert((c) => cpipeOut = c)
+                    .AddCommand(new CommandInitiator(), (c) => init = c);
 
                 pipeline.Start();
 
-                //pipeline.Service.Process(
+                var result = init.Process<IDoSomething1,Blah, string>(new Blah() { Message = "hello" }).Result;
 
                 pipeline.Stop();
             }

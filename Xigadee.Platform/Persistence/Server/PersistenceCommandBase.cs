@@ -35,6 +35,11 @@ namespace Xigadee
         where S : PersistenceStatistics, new()
         where P : PersistenceCommandPolicy, new()
     {
+        /// <summary>
+        /// This event is raised when an entity is created, changes, or is removed.
+        /// </summary>
+        public event EventHandler<EntityChangeEventArgs> OnEntityChangeAction;
+
         #region Declarations
         /// <summary>
         /// This is the entity transform holder.
@@ -429,6 +434,20 @@ namespace Xigadee
                 {
                     ProfileEnd(profileHolder);
                 }
+
+                if (profileHolder.result == ResourceRequestResult.Success)
+                    switch (actionType)
+                    {
+                        case EntityActions.Create:
+                        case EntityActions.Update:
+                        case EntityActions.Delete:
+                        case EntityActions.DeleteByRef:
+                            RaiseEntityChangeEvent(actionType, incoming.Message.MessageType, profileHolder.ProfileId
+                                , profileHolder.Rs.KeyReference
+                                , profileHolder.Prq?.Message?.ProcessCorrelationKey
+                                , profileHolder.Prq?.Message?.OriginatorKey);
+                            break;
+                    }
             };
 
             if (channelId == null)
@@ -443,6 +462,44 @@ namespace Xigadee
                 , actionType.ToLowerInvariant()
                 , actionPayload);
         }
+        #endregion
+
+        #region RaiseEntityChangeEvent...
+        /// <summary>
+        /// This method raises an event when there is a change for an entity, specifically for Create, Update or Delete.
+        /// </summary>
+        /// <param name="actionType">The action type.</param>
+        /// <param name="entityType">The entity type.</param>
+        /// <param name="traceId">The trace event</param>
+        /// <param name="idVersion">The id and version as string.</param>
+        /// <param name="processCorrelationKey">This is the original initiating process id.</param>
+        /// <param name="originatorKey">This is the message orination id.</param>
+        protected virtual void RaiseEntityChangeEvent(string actionType, string entityType
+            , Guid traceId, Tuple<string, string> idVersion
+            , string processCorrelationKey, string originatorKey)
+        {
+            //Let's fire an event if something has changed.
+            try
+            {
+                var args = new EntityChangeEventArgs();
+
+                args.ActionType = actionType;
+                args.KeyType = typeof(K).Name;
+                args.EntityType = entityType;
+                args.TraceId = traceId;
+                args.Id = idVersion.Item1;
+                args.VersionId = idVersion.Item2;
+
+                args.ProcessCorrelationKey = processCorrelationKey;
+                args.OriginatorKey = originatorKey;
+
+                OnEntityChangeAction?.Invoke(this, args);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"RaiseEntityChangeEvent {entityType}/{actionType} failed for {traceId.ToString("N")}", ex);
+            }
+        } 
         #endregion
 
         //Timeout correction

@@ -22,24 +22,23 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    /// <summary>
-    /// Repository setting metadata which is passed to the back end fabric
-    /// </summary>
-    public class RepositorySettings
+    public class RequestSettings
     {
-        #region Constructor
+
         /// <summary>
-        /// The default constructor
+        /// This is the time the request should wait for a response until signalling a time out.
         /// </summary>
-        public RepositorySettings()
-        {
-            Prefer = new Dictionary<string, string>();
+        public TimeSpan? WaitTime { get; set; }
 
-            Headers = new Dictionary<string, string>();
-        } 
-        #endregion
+        /// <summary>
+        /// http://tools.ietf.org/html/rfc7240
+        /// </summary>
+        public Dictionary<string, string> Prefer { get; set; } = new Dictionary<string, string>();
 
-        private bool PreferGetBool(string key, string trueValue = "true", bool defaultValue = true)
+        public Dictionary<string, string> Headers { get; set;  }= new Dictionary<string, string>();
+
+        #region Prefer methods
+        protected bool PreferGetBool(string key, string trueValue = "true", bool defaultValue = true)
         {
             if (Prefer == null || !Prefer.ContainsKey(key))
                 return defaultValue;
@@ -47,7 +46,7 @@ namespace Xigadee
             return Prefer[key].Equals(trueValue, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        private string PreferGet(string key, string defaultValue = null)
+        protected string PreferGet(string key, string defaultValue = null)
         {
             if (Prefer == null || !Prefer.ContainsKey(key))
                 return defaultValue;
@@ -55,7 +54,7 @@ namespace Xigadee
             return Prefer[key];
         }
 
-        private void PreferSet(string key, string value)
+        protected void PreferSet(string key, string value)
         {
             if (Prefer == null)
                 Prefer = new Dictionary<string, string>();
@@ -64,9 +63,10 @@ namespace Xigadee
                 Prefer.Add(key, value);
             else
                 Prefer[key] = value;
-        }
-
-        private string HeadersGet(string key, string defaultValue = null)
+        } 
+        #endregion
+        #region Header methods
+        protected string HeadersGet(string key, string defaultValue = null)
         {
             if (Headers == null || !Headers.ContainsKey(key))
                 return defaultValue;
@@ -74,7 +74,7 @@ namespace Xigadee
             return Headers[key];
         }
 
-        private void HeadersSet(string key, string value)
+        protected void HeadersSet(string key, string value)
         {
             if (Headers == null)
                 Headers = new Dictionary<string, string>();
@@ -84,6 +84,44 @@ namespace Xigadee
             else
                 Headers[key] = value;
         }
+        #endregion
+
+        /// <summary>
+        /// Shortcut to retrieve the correlation id
+        /// </summary>
+        public string CorrelationId
+        {
+            get
+            {
+                return HeadersGet("X-CorrelationId");
+            }
+            set
+            {
+                HeadersSet("X-CorrelationId", value);
+            }
+        }
+
+        /// <summary>
+        /// This shortcut method is used to inform the server to process the request asynchronously
+        /// </summary>
+        public bool ProcessAsync
+        {
+            get
+            {
+                return PreferGetBool("processasync", defaultValue: false);
+            }
+            set
+            {
+                PreferSet("processasync", value ? "true" : "false");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Repository setting metadata which is passed to the back end fabric
+    /// </summary>
+    public class RepositorySettings: RequestSettings
+    {
 
         /// <summary>
         /// This method informs the server to turn off optimistic locking whenset to false.
@@ -100,6 +138,7 @@ namespace Xigadee
                 PreferSet("optimisticlocking", value ? "true" : "false");
             }
         }
+
         /// <summary>
         /// This is the version id associated with the request.
         /// </summary>
@@ -114,6 +153,7 @@ namespace Xigadee
                 PreferSet("versionid", value);
             }
         }
+
         /// <summary>
         /// This is the optional batchid attached to the document,
         /// </summary>
@@ -128,6 +168,7 @@ namespace Xigadee
                 PreferSet("batchid", value);
             }
         }
+
         /// <summary>
         /// This is the optional source attached to the document,
         /// </summary>
@@ -141,7 +182,8 @@ namespace Xigadee
             {
                 PreferSet("source", value);
             }
-        }    
+        }
+
         /// <summary>
         /// This is the optional source id attached to the document,
         /// </summary>
@@ -156,6 +198,7 @@ namespace Xigadee
                 PreferSet("sourceid", value);
             }
         }
+
         /// <summary>
         /// This is the optional source id attached to the document,
         /// </summary>
@@ -170,20 +213,7 @@ namespace Xigadee
                 PreferSet("sourcename", value);
             }
         }
-        /// <summary>
-        /// This shortcut method is used to inform the server to process the request asynchronously
-        /// </summary>
-        public bool ProcessAsync
-        {
-            get
-            {
-                return PreferGetBool("processasync", defaultValue: false);
-            }
-            set
-            {
-                PreferSet("processasync", value ? "true" : "false");
-            }
-        }
+
         /// <summary>
         /// This shortcut method is used to inform the server to process to use the entity cache if available.
         /// </summary>
@@ -198,27 +228,6 @@ namespace Xigadee
                 PreferSet("usecache", value ? "true" : "false");
             }
         }
-        /// <summary>
-        /// Shortcut to retrieve the correlation id
-        /// </summary>
-        public string CorrelationId
-        {
-            get
-            {
-                return HeadersGet("X-CorrelationId");
-            }
-            set
-            {
-                HeadersSet("X-CorrelationId", value);
-            }
-        }
 
-        public TimeSpan? WaitTime { get; set; }
-
-        /// <summary>
-        /// http://tools.ietf.org/html/rfc7240
-        /// </summary>
-        public Dictionary<string, string> Prefer { get; set; }
-        public Dictionary<string, string> Headers { get; set; }
     }
 }

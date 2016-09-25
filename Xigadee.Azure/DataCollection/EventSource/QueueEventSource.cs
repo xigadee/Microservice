@@ -28,7 +28,7 @@ namespace Xigadee
     /// <summary>
     /// This event source uses the Azure EventHub as the event source.
     /// </summary>
-    public class QueueEventSource : AzureSBSenderBase<QueueClient, BrokeredMessage>, IEventSource
+    public class QueueEventSource : AzureSBSenderBase<QueueClient, BrokeredMessage>, IEventSourceComponent
     {
         #region Declarations
         /// <summary>

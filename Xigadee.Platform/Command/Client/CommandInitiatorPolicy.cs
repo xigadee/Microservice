@@ -14,21 +14,19 @@
 // limitations under the License.
 #endregion
 
-#region using
 using System;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using System.Threading;
-#endregion
 namespace Xigadee
 {
-    public class LoggerContainerStatistics: ActionQueueCollectionStatistics
+    /// <summary>
+    /// This class is used for persistence based shortcuts.
+    /// </summary>
+    public class CommandInitiatorPolicy: CommandPolicy
     {
-
-
+        public override bool OutgoingRequestsEnabled { get; set; } = true;
     }
 }

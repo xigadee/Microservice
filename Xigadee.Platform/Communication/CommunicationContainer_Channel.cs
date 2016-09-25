@@ -93,6 +93,7 @@ namespace Xigadee
         }
         #endregion
 
+        #region Exists(string channelId, ChannelDirection direction)
         /// <summary>
         /// This method checks whether a channel has been adeed.
         /// </summary>
@@ -115,6 +116,8 @@ namespace Xigadee
 
             return false;
         }
+        #endregion
+        #region TryGet(string channelId, ChannelDirection direction, out Channel channel)
         /// <summary>
         /// This method attempts to retrieve and existing channel.
         /// </summary>
@@ -134,6 +137,7 @@ namespace Xigadee
 
             channel = null;
             return false;
-        }
+        } 
+        #endregion
     }
 }

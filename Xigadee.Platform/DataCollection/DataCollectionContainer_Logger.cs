@@ -63,44 +63,6 @@ namespace Xigadee
         } 
         #endregion
 
-        #region Log(LogEvent logEvent)
-        /// <summary>
-        /// This method logs the event. 
-        /// </summary>
-        /// <param name="logEvent">The incoming event</param>
-        public async Task Log(LogEvent logEvent)
-        {
-            mContainerLogger.EventSubmit(logEvent, logEvent.Level != LoggingLevel.Status);
-        } 
-        #endregion
 
-        //Extended logging methods
-        #region LogException...
-        public void LogException(Exception ex)
-        {
-            Log(new LogEvent(ex));
-        }
-
-        public void LogException(string message, Exception ex)
-        {
-            Log(new LogEvent(message, ex));
-        }
-        #endregion
-        #region LogMessage...
-        public void LogMessage(string message)
-        {
-            Log(new LogEvent(message));
-        }
-
-        public void LogMessage(LoggingLevel logLevel, string message)
-        {
-            Log(new LogEvent(logLevel, message));
-        }
-
-        public void LogMessage(LoggingLevel logLevel, string message, string category)
-        {
-            Log(new LogEvent(logLevel, message, category));
-        }
-        #endregion
     }
 }

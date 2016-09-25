@@ -15,20 +15,20 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    /// <summary>
-    /// This is the root logger interface to support async logging support through the framework.
-    /// </summary>
-    public interface ILogger
+    public interface ITelemetry
     {
-        /// <summary>
-        /// This method asyncronously logs an event.
-        /// </summary>
-        /// <param name="logEvent">The event to log.</param>
-        /// <returns>This is an async task.</returns>
-        Task Log(LogEvent logEvent);
+        void TrackMetric(string metricName, double value);
+    }
+
+    public interface ITelemetryComponent
+    {
+
     }
 }

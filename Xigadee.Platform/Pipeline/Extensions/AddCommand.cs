@@ -31,9 +31,12 @@ namespace Xigadee
             , ChannelPipelineOutgoing channelResponse = null
             , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
             , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null
+            , int startupPriority = 100
             )
             where C: ICommand
         {
+            command.StartupPriority = startupPriority;
+
             if (channelIncoming != null && command.ChannelIdAutoSet)
                 command.ChannelId = channelIncoming.Channel.Id;
 
@@ -58,20 +61,21 @@ namespace Xigadee
             , ChannelPipelineOutgoing channelResponse = null
             , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
             , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null
+            , int startupPriority = 100
             )
             where C: ICommand
         {
             var command = creator(pipeline.Configuration);
 
-            return pipeline.AddCommand(command, assignment, channelIncoming, channelResponse, channelMasterJobNegotiationIncoming);
+            return pipeline.AddCommand(command, assignment, channelIncoming, channelResponse, channelMasterJobNegotiationIncoming, startupPriority: startupPriority);
         }
 
-        public static ChannelPipelineIncoming AddCommand<C>(this ChannelPipelineIncoming cpipe, Action<C> assign = null)
+        public static ChannelPipelineIncoming AddCommand<C>(this ChannelPipelineIncoming cpipe, Action<C> assign = null, int startupPriority = 100)
             where C: ICommand, new()
         {
             var command = new C();
             assign?.Invoke(command);
-            return cpipe.AddCommand(command);
+            return cpipe.AddCommand(command, startupPriority: startupPriority);
         }
 
         public static ChannelPipelineIncoming AddCommand<C>(this ChannelPipelineIncoming cpipe
@@ -80,10 +84,11 @@ namespace Xigadee
             , ChannelPipelineOutgoing channelResponse = null
             , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
             , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null
+            , int startupPriority = 100
             )
             where C : ICommand
         {
-            cpipe.Pipeline.AddCommand(command, assignment, cpipe, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
+            cpipe.Pipeline.AddCommand(command, assignment, cpipe, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing, startupPriority);
 
             return cpipe;
         }
@@ -94,10 +99,11 @@ namespace Xigadee
             , ChannelPipelineOutgoing channelResponse = null
             , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
             , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null
+            , int startupPriority = 100      
             )
             where C : ICommand
         {
-            cpipe.Pipeline.AddCommand(creator, assignment, cpipe, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
+            cpipe.Pipeline.AddCommand(creator, assignment, cpipe, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing, startupPriority);
 
             return cpipe;
         }

@@ -40,11 +40,8 @@ namespace Test.Xigadee
                 ChannelPipelineIncoming cpipeIn = null;
                 ChannelPipelineOutgoing cpipeOut = null;
                 PersistenceSharedService<Guid, Blah> persistence = null;
-                MemoryLogger logger = null;
-                MemoryBoundaryLogger bLogger = null;
 
                 pipeline
-                    .AddLogger<MemoryLogger>((l) => logger = l)
                     .AddLogger<TraceEventLogger>()
                     .AddPayloadSerializerDefaultJson()
                     .AddChannelIncoming("internalIn")

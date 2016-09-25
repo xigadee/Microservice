@@ -28,33 +28,39 @@ namespace Xigadee
     [DebuggerDisplay("Header={ChannelId}({MessageType}|{ActionType})")]
     public struct ServiceMessageHeader:IEquatable<ServiceMessageHeader>
     {
-        private readonly string mChannelId;
-        private readonly string mMessageType;
-        private readonly string mActionType;
-
+        /// <summary>
+        /// This constructor is used to set the message from its component parts.
+        /// </summary>
+        /// <param name="channelId">The channel the command is attached to.</param>
+        /// <param name="messageType">The message type.</param>
+        /// <param name="actionType">The action type.</param>
         public ServiceMessageHeader(string channelId, string messageType = null, string actionType = null)
         {
-            mChannelId = channelId;
-            mMessageType = messageType;
-            mActionType = actionType;
+            ChannelId = channelId;
+            MessageType = messageType;
+            ActionType = actionType;
         }
 
-        public bool IsPartialKey => mActionType == null || mMessageType == null || mChannelId == null;
+        /// <summary>
+        /// This property returns true if part of the key is not set.
+        /// </summary>
+        public bool IsPartialKey => ActionType == null || MessageType == null || ChannelId == null;
 
         /// <summary>
         /// The channel id
         /// </summary>
-        public string ChannelId => mChannelId;
+        public string ChannelId { get; }
 
         /// <summary>
         /// The message channelId.
         /// </summary>
-        public string MessageType => mMessageType;
+        public string MessageType { get; }
 
         /// <summary>
         /// The action channelId.
         /// </summary>
-        public string ActionType => mActionType;
+        public string ActionType { get; }
+
 
         public string ToPartialKey()
         {
@@ -78,7 +84,7 @@ namespace Xigadee
                 sb.Append(actionType.ToLowerInvariant());
             };
 
-            action(mChannelId, mMessageType, mActionType);
+            action(ChannelId, MessageType, ActionType);
 
             return sb.ToString();
         }

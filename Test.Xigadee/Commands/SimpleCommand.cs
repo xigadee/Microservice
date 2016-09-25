@@ -25,9 +25,9 @@ namespace Test.Xigadee
         }
 
         [CommandContract(typeof(IDoSomething1))]
-        public void ThisisMeStupid2([CommandIn]Blah item)
+        public string ThisisMeStupid2([CommandIn]Blah item)
         {
-
+            return "Hmm";
         }
 
         [CommandContract(messageType: "franky", actionType: "johnny3")]

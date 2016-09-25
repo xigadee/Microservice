@@ -26,12 +26,13 @@ namespace Xigadee
     /// <summary>
     /// This class centrally holds all the logging, telemetry and event source support.
     /// </summary>
-    public partial class DataCollectionContainer: ServiceContainerBase<DataCollectionStatistics, DataCollectionPolicy>, ILogger, IEventSource, ITelemetry, IServiceOriginator, ILoggerExtended, ITaskManagerProcess
+    public partial class DataCollectionContainer: ServiceContainerBase<DataCollectionStatistics, DataCollectionPolicy>
+        , ILogger, IEventSource, ITelemetry, IServiceOriginator, ILoggerExtended, ITaskManagerProcess
     {
         #region Declarations
         private List<IDataCollectorComponent> mCollectors;
         private List<ILogger> mLoggers;
-        private List<IEventSource> mEventSource;
+        private List<IEventSourceComponent> mEventSource;
         private List<IBoundaryLoggerComponent> mBoundaryLoggers;
         private List<ITelemetry> mTelemetry;
 
@@ -47,7 +48,7 @@ namespace Xigadee
         {
             mCollectors = new List<IDataCollectorComponent>();
             mLoggers = new List<ILogger>();
-            mEventSource = new List<IEventSource>();
+            mEventSource = new List<IEventSourceComponent>();
             mBoundaryLoggers = new List<IBoundaryLoggerComponent>();
             mTelemetry = new List<ITelemetry>();
         }
@@ -60,7 +61,6 @@ namespace Xigadee
             StartTelemetry();
             StartEventSource();
             StartLogger();
-            StartBoundaryLogger();
         }
 
         protected override void StopInternal()
@@ -68,7 +68,6 @@ namespace Xigadee
             StopTelemetry();
             StopEventSource();
             StopLogger();
-            StopBoundaryLogger();
             mCollectors.ForEach((c) => ServiceStop(c));
         }
         #endregion
@@ -86,7 +85,7 @@ namespace Xigadee
             return component;
         }
 
-        public IEventSource Add(IEventSource component)
+        public IEventSource Add(IEventSourceComponent component)
         {
             mEventSource.Add(component);
             return component;
@@ -105,6 +104,11 @@ namespace Xigadee
         }
         #endregion
 
+        #region ServiceStart(object service)
+        /// <summary>
+        /// This override sets the originator for the internal components.
+        /// </summary>
+        /// <param name="service">The service to start</param>
         protected override void ServiceStart(object service)
         {
             try
@@ -119,9 +123,10 @@ namespace Xigadee
                 Trace.TraceError("Error starting data collection service [{0}]: {1}", service.GetType().Name, ex.ToString());
                 throw;
             }
+        } 
+        #endregion
 
-        }
-
+        #region OriginatorId
         /// <summary>
         /// This is the unique id for the underlying Microservice.
         /// </summary>
@@ -129,7 +134,9 @@ namespace Xigadee
         {
             get; set;
         }
+        #endregion
 
+        #region CanProcess()
         /// <summary>
         /// This method checks whether there are overloaded services.
         /// </summary>
@@ -138,7 +145,8 @@ namespace Xigadee
         {
             return mContainerEventSource.CanProcess() || mContainerLogger.CanProcess();
         }
-
+        #endregion
+        #region Process()
         /// <summary>
         /// This method attempts to process the overload.
         /// </summary>
@@ -147,7 +155,8 @@ namespace Xigadee
             ProcessCheck(mContainerEventSource);
             ProcessCheck(mContainerLogger);
         }
-
+        #endregion
+        #region ProcessCheck(ITaskManagerProcess process)
         /// <summary>
         /// This method checks whether an overload is set.
         /// </summary>
@@ -157,7 +166,12 @@ namespace Xigadee
             if (process.CanProcess())
                 process.Process();
         }
+        #endregion
 
+        #region TaskSubmit
+        /// <summary>
+        /// This action is used to submit a task to the tracker for overflow 
+        /// </summary>
         public Action<TaskTracker> TaskSubmit
         {
             get { return mTaskSubmit; }
@@ -168,8 +182,11 @@ namespace Xigadee
                 mContainerLogger.TaskSubmit = value;
             }
         }
-
-
+        #endregion
+        #region TaskAvailability
+        /// <summary>
+        /// This method is used to signal that a process has a task that needs processing.
+        /// </summary>
         public ITaskAvailability TaskAvailability
         {
             get { return mTaskAvailability; }
@@ -179,7 +196,7 @@ namespace Xigadee
                 mContainerEventSource.TaskAvailability = value;
                 mContainerLogger.TaskAvailability = value;
             }
-        }
-
+        } 
+        #endregion
     }
 }

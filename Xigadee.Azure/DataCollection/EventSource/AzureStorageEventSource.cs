@@ -27,7 +27,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class AzureStorageEventSource: AzureStorageLoggingBase<EventSourceEntryBase>, IEventSource
+    public class AzureStorageEventSource: AzureStorageLoggingBase<EventSourceEntryBase>, IEventSourceComponent
     {
         public AzureStorageEventSource(StorageCredentials credentials, string serviceName, string containerName = "eventsource", ResourceProfile resourceProfile = null)
             :base(credentials, containerName, serviceName, resourceProfile:resourceProfile)

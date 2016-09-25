@@ -15,21 +15,46 @@
 #endregion
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class MemoryBoundaryLogger: IBoundaryLoggerComponent
+    public partial class DataCollectionContainer
     {
-        public void BoundaryLogPoll(Guid id, int requested, int actual, string channelId)
+
+        public void Write(LogEvent eventData)
         {
+            mContainerLogger.EventSubmit(eventData, eventData.Level != LoggingLevel.Status);
         }
 
-        public void BoundaryLog(ChannelDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = default(Guid?))
+        public void Write(BoundaryEvent eventData)
         {
+
+        }
+
+        public void Write(PayloadEvent eventData)
+        {
+
+        }
+
+        public void Write(MicroserviceStatistics eventData)
+        {
+
+        }
+
+        public void Write(MetricEvent eventData)
+        {
+
+        }
+
+        public void Write(EventSourceEvent eventData)
+        {
+
         }
     }
 }

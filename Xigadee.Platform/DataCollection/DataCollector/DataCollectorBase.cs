@@ -25,7 +25,7 @@ namespace Xigadee
 {
     public abstract class DataCollectorBase: DataCollectorBase<DataCollectorStatistics>
     {
-        public DataCollectorBase(string name, DataCollectionSupport support = DataCollectionSupport.All) : base(name, support)
+        public DataCollectorBase(DataCollectionSupport support = DataCollectionSupport.All) : base(support)
         {
         }
     }
@@ -34,18 +34,24 @@ namespace Xigadee
     /// This abstract class is used to implement data collectors.
     /// </summary>
     public abstract class DataCollectorBase<S>: ServiceBase<S>, IDataCollectorComponent
-        where S:DataCollectorStatistics, new()
+        where S : DataCollectorStatistics, new()
     {
-        protected DataCollectorBase(string name, DataCollectionSupport support = DataCollectionSupport.All)
+        #region Constructor
+        /// <summary>
+        /// This constructor passes in the support types for the collector.
+        /// </summary>
+        /// <param name="support">The support types - all by default.</param>
+        protected DataCollectorBase(DataCollectionSupport support = DataCollectionSupport.All)
         {
-            Name = name;
             Support = support;
-        }
+        } 
+        #endregion
 
         /// <summary>
         /// This returns the type of supported data collection
         /// </summary>
         public virtual DataCollectionSupport Support { get; }
+
         /// <summary>
         /// Returns true if the requested type is supported.
         /// </summary>
@@ -57,37 +63,43 @@ namespace Xigadee
         }
 
         /// <summary>
-        /// This is the name of the data collector.
-        /// </summary>
-        public virtual string Name
-        {
-            get;
-        }
-
-        /// <summary>
         /// This is is the Microservice originator information.
         /// </summary>
         public virtual MicroserviceId OriginatorId
         {
-            get;set;
+            get; set;
         }
 
+        public abstract void Write(EventSourceEvent eventData);
 
-        public abstract Task Log(LogEvent logEvent);
+        public abstract void Write(MetricEvent eventData);
 
-        public abstract void BoundaryLogPoll(Guid id, int requested, int actual, string channelId);
+        public abstract void Write(LogEvent eventData);
 
-        public abstract void BoundaryLog(ChannelDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = default(Guid?));
+        public abstract void Write(PayloadEvent eventData);
 
-        public abstract void TrackMetric(string metricName, double value);
+        public abstract void Write(BoundaryEvent eventData);
 
-        public abstract Task Write<K, E>(string originatorId, EventSourceEntry<K, E> entry, DateTime? utcTimeStamp = default(DateTime?), bool sync = false);
-
-        public abstract void DispatcherPayloadException(TransmissionPayload payload, Exception pex);
-        public abstract void DispatcherPayloadUnresolved(TransmissionPayload payload, DispatcherRequestUnresolvedReason reason);
-        public abstract void DispatcherPayloadIncoming(TransmissionPayload payload);
-        public abstract void DispatcherPayloadComplete(TransmissionPayload payload, int delta, bool isSuccess);
-
-        public abstract void MicroserviceStatisticsIssued(MicroserviceStatistics statistics);
+        public abstract void Write(MicroserviceStatistics eventData);
     }
+
+
+    //public abstract class DataCollectorObjectBase<S>: DataCollectorBase<S>
+    //    where S : DataCollectorStatistics, new()
+    //{
+    //    public DataCollectorObjectBase(string name, DataCollectionSupport support = DataCollectionSupport.All) : base(name, support)
+    //    {
+    //    }
+
+
+
+
+    //    public override async Task Write<K, E>(string originatorId, EventSourceEntry<K, E> entry, DateTime? utcTimeStamp = default(DateTime?), bool sync = false)
+    //    {
+    //        Write(new EventSourceEvent { OriginatorId = originatorId, Entry = entry, UtcTimeStamp = utcTimeStamp, Sync = sync });
+    //    }
+
+
+
+    //}
 }

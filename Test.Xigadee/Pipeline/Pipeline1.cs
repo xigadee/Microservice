@@ -20,15 +20,14 @@ using Xigadee;
 namespace Test.Xigadee
 {
     [TestClass]
-    public class Pipeline1
+    public partial class PipelineTest1
     {
-        MemoryLogger logger = null;
-        MemoryBoundaryLogger bLogger = null;
+        DebugStubCollector collector;
 
         private void ConfigureServiceRoot(MicroservicePipeline pipe)
         {
             pipe
-                .AddLogger<MemoryLogger>((l) => logger = l)
+                .AddDataCollector<DebugStubCollector>((c) => collector = c)
                 .AddLogger<TraceEventLogger>()
                 .AddPayloadSerializerDefaultJson();
         }
@@ -42,7 +41,7 @@ namespace Test.Xigadee
         }
 
         [TestMethod]
-        public void ServiceRun()
+        public void Pipeline1()
         {
             try
             {
@@ -52,28 +51,43 @@ namespace Test.Xigadee
                 ChannelPipelineIncoming cpipeIn = null;
                 ChannelPipelineOutgoing cpipeOut = null;
                 PersistenceSharedService<Guid, Blah> persistence = null;
+                PersistenceBlahMemory persistBlah = null;
+                int signalChange = 0;
 
-                pipeline                 
+                pipeline
                     .CallOut(ConfigureServiceRoot)
                     .AddChannelIncoming("internalIn", internalOnly: true)
                         .CallOut(ChannelInConfigure)
                         .AssignPriorityPartition(0, 1)
-                        .AddCommand(new PersistenceBlahMemory())
+                        .AddCommand(new PersistenceBlahMemory(),(p) => persistBlah = p)
                         .AddCommand(new PersistenceSharedService<Guid, Blah>(), (c) => persistence = c, cpipeOut)
                         .Revert((c) => cpipeIn = c)
                     .AddChannelOutgoing("internalOut", internalOnly: true)
                         .AssignPriorityPartition(0, 1)
                         .Revert((c) => cpipeOut = c);
 
+                persistBlah.OnEntityChangeAction += ((o, e) => { signalChange++; });
+
                 pipeline.Start();
 
+
                 Guid cId = Guid.NewGuid();
-                var result = persistence.Create(new Blah() { ContentId = cId, Message = "Hello", VersionId = Guid.NewGuid() }).Result;
+                var blah = new Blah { ContentId = cId, Message = "Hello", VersionId = Guid.NewGuid() };
+                var result = persistence.Create(blah).Result;
                 Assert.IsTrue(result.IsSuccess);
 
                 var result2 = persistence.Read(cId).Result;
                 Assert.IsTrue(result2.IsSuccess);
 
+                blah.VersionId = Guid.NewGuid();
+                var result3 = persistence.Update(blah).Result;
+                Assert.IsTrue(result3.IsSuccess);
+
+                var result4 = persistence.Delete(blah.ContentId).Result;
+                Assert.IsTrue(result4.IsSuccess);
+
+
+                Assert.IsTrue(signalChange == 3);
                 pipeline.Stop();
             }
             catch (Exception ex)

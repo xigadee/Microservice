@@ -29,7 +29,7 @@ namespace Xigadee
         /// </summary>
         protected ActionQueueCollection<Action<IEventSource>, IEventSource> mContainerEventSource;
 
-        #region Start/Stop...
+        #region StartEventSource/StopEventSource...
         /// <summary>
         /// This method starts the telemetry.
         /// </summary>
@@ -105,15 +105,5 @@ namespace Xigadee
             }
         }
 
-        /// <summary>
-        /// This is the name of the logger.
-        /// </summary>
-        public string Name
-        {
-            get
-            {
-                return GetType().Name;
-            }
-        }
     }
 }
