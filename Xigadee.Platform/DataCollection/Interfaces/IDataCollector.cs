@@ -24,20 +24,12 @@ namespace Xigadee
 {
     public interface IDataCollectorComponent: IServiceOriginator
     {
-        DataCollectionSupport Support { get; }
-
         bool IsSupported(DataCollectionSupport support);
 
-        void Write(EventSourceEvent eventData);
+        void Write(DataCollectionSupport eventType, EventBase eventData);
 
-        void Write(MetricEvent eventData);
+        bool CanFlush { get; }
 
-        void Write(LogEvent eventData);
-
-        void Write(PayloadEvent eventData);
-
-        void Write(BoundaryEvent eventData);
-
-        void Write(MicroserviceStatistics eventData);
+        void Flush();
     }
 }

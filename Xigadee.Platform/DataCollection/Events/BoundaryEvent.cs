@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class BoundaryEvent
+    public class BoundaryEvent: EventBase
     {
         public BoundaryEventType Type { get; set; }
         
@@ -19,13 +19,9 @@ namespace Xigadee
         public Guid? Id { get; set; }
 
         public int Requested { get; set; }
-        public int Actual { get; set; }
-        public string ChannelId { get; set; }
-    }
 
-    public enum BoundaryEventType
-    {
-        Poll,
-        Boundary
+        public int Actual { get; set; }
+
+        public string ChannelId { get; set; }
     }
 }

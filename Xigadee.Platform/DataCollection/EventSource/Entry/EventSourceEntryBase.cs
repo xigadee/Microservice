@@ -27,7 +27,7 @@ namespace Xigadee
     /// <summary>
     /// This is the base event source entry.
     /// </summary>
-    public abstract class EventSourceEntryBase
+    public abstract class EventSourceEntryBase:EventBase
     {
         public EventSourceEntryBase()
         {

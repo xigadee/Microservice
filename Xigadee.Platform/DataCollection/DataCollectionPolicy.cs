@@ -28,12 +28,25 @@ namespace Xigadee
     public class DataCollectionPolicy:PolicyBase
     {
         /// <summary>
-        /// This is the event source policy.
+        /// This is the maximum time that an overload process should run.
         /// </summary>
-        public ActionQueuePolicy EventSource { get; set; } = new ActionQueuePolicy() { OverloadThreshold = 500, RetryLimit = 10 };
+        public int OverloadProcessTimeInMs { get; set; } = 10000; //10s
         /// <summary>
-        /// This is the logger policy.
+        /// This is the maximum number of overload tasks that should be run concurrently.
         /// </summary>
-        public ActionQueuePolicy Logger { get; set; } = new ActionQueuePolicy();
+        public int OverloadMaxTasks { get; set; } = 2;
+        /// <summary>
+        /// This is the threshold at which point the overload tasks will be triggered.
+        /// </summary>
+        public int? OverloadThreshold { get; set; } = 1000;
+        /// <summary>
+        /// This is the number of retry attempts to be made if the write fails.
+        /// </summary>
+        public int RetryLimit { get; set; } = 0;
+
+        /// <summary>
+        /// This is the event source retry limit.
+        /// </summary>
+        public int EventSourceRetryLimit { get; set; } = 3;
     }
 }

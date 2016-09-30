@@ -25,15 +25,13 @@ namespace Xigadee
     /// <summary>
     /// This enumeration is used to specify the type of data collection supported by the component.
     /// </summary>
-    [Flags]
-    public enum DataCollectionSupport:int
+    public enum DataCollectionSupport
     {
-        Logger = 1,
-        EventSource = 2,
-        BoundaryLogger = 4,
-        Telemetry = 8,
-        Dispatcher = 16,
-        Statistics = 32,
-        All = 63
+        Logger,
+        EventSource,
+        BoundaryLogger,
+        Telemetry,
+        Dispatcher,
+        Statistics
     }
 }

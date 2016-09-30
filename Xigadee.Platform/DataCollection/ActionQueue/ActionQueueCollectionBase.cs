@@ -143,7 +143,7 @@ namespace Xigadee
 
         #region Active
         /// <summary>
-        /// This property indicates whether the collecction is active.
+        /// This property indicates whether the collection is active.
         /// </summary>
         protected virtual bool Active
         {
@@ -244,7 +244,9 @@ namespace Xigadee
         protected virtual int ProcessQueue(int? timespaninms = null)
         {
             ActionQueueContainer<D> logEvent;
+
             DateTime start = DateTime.UtcNow;
+
             int items = 0;
             do
             {

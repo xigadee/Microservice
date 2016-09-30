@@ -23,7 +23,7 @@ namespace Xigadee
     /// <summary>
     /// This is the root class for logging events for the Microservice framework.
     /// </summary>
-    public class LogEvent
+    public class LogEvent: EventBase
     {
         #region Constructors
         protected LogEvent() { }

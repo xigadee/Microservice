@@ -19,26 +19,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xigadee;
 
 namespace Xigadee
 {
     /// <summary>
-    /// This is the base data collection statistics.
+    /// This is the base class for a data collector.
     /// </summary>
-    public class DataCollectionStatistics: MessagingStatistics
+    public class DataCollectorHolder: DataCollectorBase<DataCollectorStatistics>
     {
+        protected override void StartInternal()
+        {
+        }
 
-
-        public int ItemCount { get; set; }
-
-        public int QueueLength { get; set; }
-
-        public bool Overloaded { get; set; }
-
-        public int OverloadProcessCount { get; set; }
-
-        public int? OverloadThreshold { get; set; }
-
-        public long OverloadProcessHits { get; set; }
+        protected override void StopInternal()
+        {
+        }
     }
 }

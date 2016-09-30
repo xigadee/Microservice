@@ -24,59 +24,6 @@ namespace Xigadee
 {
     public partial class DataCollectionContainer
     {
-        /// <summary>
-        /// This collection holds the event sources for the Microservice.
-        /// </summary>
-        protected ActionQueueCollection<Action<IEventSource>, IEventSource> mContainerEventSource;
-
-        #region StartEventSource/StopEventSource...
-        /// <summary>
-        /// This method starts the telemetry.
-        /// </summary>
-        protected virtual void StartEventSource()
-        {
-            mEventSource.ForEach((c) => ServiceStart(c));
-            var items = mCollectors.Where((c) => c.IsSupported(DataCollectionSupport.EventSource)).Cast<IEventSource>().Union(mEventSource).ToList();
-            mContainerEventSource = new ActionQueueCollection<Action<IEventSource>, IEventSource>(items, mPolicy.EventSource, ActionQueueEventSource);
-            ServiceStart(mContainerEventSource);
-        }
-        /// <summary>
-        /// This method stops the event source.
-        /// </summary>
-        protected virtual void StopEventSource()
-        {
-            ServiceStop(mContainerEventSource);
-            mContainerEventSource = null;
-            mEventSource.ForEach((c) => ServiceStop(c));
-        }
-        #endregion
-        #region ActionQueueEventSource(Action<IEventSource> action, IEventSource evSource)
-        /// <summary>
-        /// This is the method called by the Action Queue to log and Event Source item.
-        /// </summary>
-        /// <param name="action">The actionThe event source logger.</param>
-        /// <param name="evSource"></param>
-        private void ActionQueueEventSource(Action<IEventSource> action, IEventSource evSource)
-        {
-            action(evSource);
-        } 
-        #endregion
-
-        /// <summary>
-        /// This is the external method to submit events to the event source.
-        /// </summary>
-        /// <typeparam name="K"></typeparam>
-        /// <typeparam name="E"></typeparam>
-        /// <param name="originatorId"></param>
-        /// <param name="entry"></param>
-        /// <param name="utcTimeStamp"></param>
-        /// <param name="sync"></param>
-        /// <returns></returns>
-        public async Task Write<K, E>(string originatorId, EventSourceEntry<K, E> entry, DateTime? utcTimeStamp = default(DateTime?), bool sync = false)
-        {
-            mContainerEventSource.EventSubmit((e) => WriteSync(e, originatorId, entry, utcTimeStamp), !sync);
-        }
-
 
         private void WriteSync<K, E>(IEventSource eventSource, string originatorId, EventSourceEntry<K, E> entry, DateTime? utcTimeStamp)
         {
@@ -92,7 +39,7 @@ namespace Xigadee
                 }
                 catch (Exception ex)
                 {
-                    if (numberOfRetries >= mPolicy.EventSource.RetryLimit)
+                    if (numberOfRetries >= mPolicy.EventSourceRetryLimit)
                     {
                         LogException(string.Format("Unable to log to event source {0} for {1}-{2}-{3}", eventSource.GetType().Name, entry.EntityType, entry.Key, entry.EntityVersion), ex);
                         throw;

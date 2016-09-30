@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class MetricEvent
+    public class MetricEvent: EventBase
     {
         public string MetricName { get; set; }
 

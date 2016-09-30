@@ -29,7 +29,7 @@ namespace Xigadee
     /// <summary>
     /// This class hooks Application Insights in to the Microservice logging capabilities.
     /// </summary>
-    public class ApplicationInsightsDataCollector: DataCollectorBase
+    public class ApplicationInsightsDataCollector: DataCollectorHolder
     {
         #region Declarations
         //https://azure.microsoft.com/en-gb/documentation/articles/app-insights-api-custom-events-metrics/
@@ -45,10 +45,7 @@ namespace Xigadee
         /// <param name="name"></param>
         /// <param name="developerMode"></param>
         /// <param name="support"></param>
-        protected ApplicationInsightsDataCollector(string key
-            , bool developerMode = false
-            , DataCollectionSupport support = DataCollectionSupport.All)
-            : base(support)
+        protected ApplicationInsightsDataCollector(string key, bool developerMode = false)
         {
             var config = new TelemetryConfiguration();
             config.InstrumentationKey = key;
@@ -73,6 +70,7 @@ namespace Xigadee
             mTelemetry.Context.Properties["ServiceName"] = OriginatorId.Name;
 
             mTelemetry.InstrumentationKey = mKey;
+
         }
 
         protected override void StopInternal()
@@ -81,34 +79,53 @@ namespace Xigadee
             mTelemetry = null;
         }
 
-        public override void Write(EventSourceEvent eventData)
+        protected override void SupportLoadDefault()
         {
+            SupportAdd(DataCollectionSupport.BoundaryLogger, (e) => Write((BoundaryEvent)e));
+            SupportAdd(DataCollectionSupport.Dispatcher, (e) => Write((PayloadEvent)e));
+            SupportAdd(DataCollectionSupport.EventSource, (e) => Write((EventSourceEvent)e));
+            SupportAdd(DataCollectionSupport.Logger, (e) => Write((LogEvent)e));
+            SupportAdd(DataCollectionSupport.Statistics, (e) => Write((MicroserviceStatistics)e));
+            SupportAdd(DataCollectionSupport.Telemetry, (e) => Write((MetricEvent)e));
         }
 
-        public override void Write(MetricEvent eventData)
+        private void Write(BoundaryEvent eventData)
         {
-
+            //switch (eventData.
         }
 
-        public override void Write(LogEvent eventData)
-        {
-
-        }
-
-        public override void Write(PayloadEvent eventData)
-        {
-
-        }
-
-        public override void Write(BoundaryEvent eventData)
+        private void Write(PayloadEvent eventData)
         {
 
         }
 
-        public override void Write(MicroserviceStatistics eventData)
+        private void Write(EventSourceEvent eventData)
         {
+
         }
 
+        private void Write(LogEvent eventData)
+        {
+
+        }
+
+        private void Write(MicroserviceStatistics eventData)
+        {
+
+        }
+
+        private void Write(MetricEvent eventData)
+        {
+
+        }
+
+        /// <summary>
+        /// Flush the underlying telemetry.
+        /// </summary>
+        public override void Flush()
+        {
+            mTelemetry?.Flush();
+        }
 
 
         //public override void BoundaryLog(ChannelDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = default(Guid?))

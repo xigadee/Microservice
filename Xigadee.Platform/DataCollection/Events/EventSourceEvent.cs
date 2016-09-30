@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class EventSourceEvent
+    public class EventSourceEvent: EventBase
     {
         public string OriginatorId { get; set; }
+
         public EventSourceEntryBase Entry { get; set; }
+
         public DateTime? UtcTimeStamp { get; set; }
-        public bool Sync { get; set; }
     }
 }

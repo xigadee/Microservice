@@ -30,14 +30,10 @@ namespace Xigadee
         , ILogger, IEventSource, ITelemetry, IServiceOriginator, ILoggerExtended, ITaskManagerProcess
     {
         #region Declarations
-        private List<IDataCollectorComponent> mCollectors;
-        private List<ILogger> mLoggers;
-        private List<IEventSourceComponent> mEventSource;
-        private List<IBoundaryLoggerComponent> mBoundaryLoggers;
-        private List<ITelemetry> mTelemetry;
-
+        private List<IDataCollectorComponent> mCollectors = new List<IDataCollectorComponent>();
         private Action<TaskTracker> mTaskSubmit;
         private ITaskAvailability mTaskAvailability;
+        private Dictionary<DataCollectionSupport, List<IDataCollectorComponent>> mCollectorSupported;
         #endregion
         #region Constructor
         /// <summary>
@@ -46,11 +42,6 @@ namespace Xigadee
         /// <param name="policy">The policy.</param>
         public DataCollectionContainer(DataCollectionPolicy policy) : base(policy)
         {
-            mCollectors = new List<IDataCollectorComponent>();
-            mLoggers = new List<ILogger>();
-            mEventSource = new List<IEventSourceComponent>();
-            mBoundaryLoggers = new List<IBoundaryLoggerComponent>();
-            mTelemetry = new List<ITelemetry>();
         }
         #endregion
 
@@ -58,17 +49,27 @@ namespace Xigadee
         protected override void StartInternal()
         {
             mCollectors.ForEach((c) => ServiceStart(c));
-            StartTelemetry();
-            StartEventSource();
-            StartLogger();
+
+            CollectorSupportSet();
+        }
+
+        private void CollectorSupportSet()
+        {
+            mCollectorSupported = new Dictionary<Xigadee.DataCollectionSupport, List<Xigadee.IDataCollectorComponent>>();
+            var dataTypes = Enum.GetValues(typeof(DataCollectionSupport)).Cast<DataCollectionSupport>();
+
+            foreach (var enumitem in dataTypes)
+            {
+                var items = mCollectors.Where((i) => i.IsSupported(enumitem)).ToList();
+
+                mCollectorSupported.Add(enumitem, items.Count == 0?null:items);
+            }
         }
 
         protected override void StopInternal()
         {
-            StopTelemetry();
-            StopEventSource();
-            StopLogger();
             mCollectors.ForEach((c) => ServiceStop(c));
+            mCollectorSupported.Clear();
         }
         #endregion
 
@@ -81,25 +82,28 @@ namespace Xigadee
 
         public ILogger Add(ILogger component)
         {
-            mLoggers.Add(component);
+            var legacy = new DataCollectorLegacySupport<LogEvent, ILogger>(DataCollectionSupport.Logger, component, (l,e) => l.Log(e));
+
+            Add(legacy);
+
             return component;
         }
 
         public IEventSource Add(IEventSourceComponent component)
         {
-            mEventSource.Add(component);
+            //mEventSource.Add(component);
             return component;
         }
 
         public IBoundaryLoggerComponent Add(IBoundaryLoggerComponent component)
         {
-            mBoundaryLoggers.Add(component);
+            //mBoundaryLoggers.Add(component);
             return component;
         }
 
         public ITelemetry Add(ITelemetry component)
         {
-            mTelemetry.Add(component);
+            //mTelemetry.Add(component);
             return component;
         }
         #endregion
@@ -136,65 +140,19 @@ namespace Xigadee
         }
         #endregion
 
-        #region CanProcess()
+        #region Flush()
         /// <summary>
-        /// This method checks whether there are overloaded services.
+        /// This method calls the underlying collectors and initiates a flush of any pending data.
         /// </summary>
-        /// <returns>Returns true if any of the queues need additional processing.</returns>
-        public bool CanProcess()
+        public async Task Flush()
         {
-            return mContainerEventSource.CanProcess() || mContainerLogger.CanProcess();
-        }
-        #endregion
-        #region Process()
-        /// <summary>
-        /// This method attempts to process the overload.
-        /// </summary>
-        public void Process()
-        {
-            ProcessCheck(mContainerEventSource);
-            ProcessCheck(mContainerLogger);
-        }
-        #endregion
-        #region ProcessCheck(ITaskManagerProcess process)
-        /// <summary>
-        /// This method checks whether an overload is set.
-        /// </summary>
-        /// <param name="process">The process to check.</param>
-        private void ProcessCheck(ITaskManagerProcess process)
-        {
-            if (process.CanProcess())
-                process.Process();
-        }
-        #endregion
-
-        #region TaskSubmit
-        /// <summary>
-        /// This action is used to submit a task to the tracker for overflow 
-        /// </summary>
-        public Action<TaskTracker> TaskSubmit
-        {
-            get { return mTaskSubmit; }
-            set
+            try
             {
-                mTaskSubmit = value;
-                mContainerEventSource.TaskSubmit = value;
-                mContainerLogger.TaskSubmit = value;
+                mCollectors?.Where((c) => c.CanFlush).ForEach((c) => c.Flush());
             }
-        }
-        #endregion
-        #region TaskAvailability
-        /// <summary>
-        /// This method is used to signal that a process has a task that needs processing.
-        /// </summary>
-        public ITaskAvailability TaskAvailability
-        {
-            get { return mTaskAvailability; }
-            set
+            catch (Exception ex)
             {
-                mTaskAvailability = value;
-                mContainerEventSource.TaskAvailability = value;
-                mContainerLogger.TaskAvailability = value;
+                LogException("DataCollectionContainer/Flush failed.", ex);
             }
         } 
         #endregion

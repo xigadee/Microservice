@@ -27,63 +27,32 @@ namespace Xigadee
     /// <summary>
     /// This is a test collector. It is primarily used for unit testing to ensure the correct logging has occurred.
     /// </summary>
-    public class DebugStubCollector: DataCollectorBase<DataCollectorStatistics>
+    public class DebugStubCollector: DataCollectorHolder
     {
-        public DebugStubCollector() : base()
+        /// <summary>
+        /// This maps the default support for the event types.
+        /// </summary>
+        protected override void SupportLoadDefault()
         {
-        }
-
-        public override void Write(EventSourceEvent eventData)
-        {
-            EventsEventSource.Add(eventData);
-        }
-
-        public override void Write(MetricEvent eventData)
-        {
-            EventsMetric.Add(eventData);
-        }
-
-        public override void Write(LogEvent eventData)
-        {
-            EventsLog.Add(eventData);
-        }
-
-        public override void Write(PayloadEvent eventData)
-        {
-            EventsPayload.Add(eventData);
-
-        }
-        public override void Write(BoundaryEvent eventData)
-        {
-            EventsBoundary.Add(eventData);
-        }
-
-        public override void Write(MicroserviceStatistics eventData)
-        {
-            EventsStatistics.Add(eventData);
+            SupportAdd(DataCollectionSupport.BoundaryLogger, (e) => EventsBoundary.Add((BoundaryEvent)e));
+            SupportAdd(DataCollectionSupport.Dispatcher, (e) => EventsDispatcher.Add((PayloadEvent)e));
+            SupportAdd(DataCollectionSupport.EventSource, (e) => EventsEventSource.Add((EventSourceEvent)e));
+            SupportAdd(DataCollectionSupport.Logger, (e) => EventsLog.Add((LogEvent)e));
+            SupportAdd(DataCollectionSupport.Statistics, (e) => EventsMicroservice.Add((MicroserviceStatistics)e));
+            SupportAdd(DataCollectionSupport.Telemetry, (e) => EventsBoundary.Add((BoundaryEvent)e));
         }
 
         public ConcurrentBag<EventSourceEvent> EventsEventSource { get; set; } = new ConcurrentBag<EventSourceEvent>();
 
         public ConcurrentBag<BoundaryEvent> EventsBoundary { get; set; } = new ConcurrentBag<BoundaryEvent>();
 
-        public ConcurrentBag<PayloadEvent> EventsPayload { get; set; } = new ConcurrentBag<PayloadEvent>();
+        public ConcurrentBag<PayloadEvent> EventsDispatcher { get; set; } = new ConcurrentBag<PayloadEvent>();
 
         public ConcurrentBag<LogEvent> EventsLog { get; set; } = new ConcurrentBag<LogEvent>();
 
         public ConcurrentBag<MetricEvent> EventsMetric { get; set; } = new ConcurrentBag<MetricEvent>();
 
-        public ConcurrentBag<MicroserviceStatistics> EventsStatistics { get; set; } = new ConcurrentBag<MicroserviceStatistics>();
+        public ConcurrentBag<MicroserviceStatistics> EventsMicroservice { get; set; } = new ConcurrentBag<MicroserviceStatistics>();
 
-
-        protected override void StartInternal()
-        {
-
-        }
-
-        protected override void StopInternal()
-        {
-
-        }
     }
 }

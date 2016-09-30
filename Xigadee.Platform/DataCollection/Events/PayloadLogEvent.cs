@@ -23,15 +23,6 @@ using System.Threading.Tasks;
 #endregion
 namespace Xigadee
 {
-    public static class PayloadLogEventHelper
-    {
-        public static void LogPayload(this ILogger logger, TransmissionPayload payload, LoggingLevel? level = null
-            , Exception ex = null, DispatcherLoggerDirection? direction = null, TimeSpan? timespan = null)
-        {
-            logger.Log(new PayloadLogEvent(payload, level, ex, direction, timespan));
-        }
-    }
-
     public class PayloadLogEvent:LogEvent
     {
         public PayloadLogEvent(TransmissionPayload payload, LoggingLevel? level = null

@@ -77,5 +77,10 @@ namespace Xigadee
         /// This property contains the partitions set for the channel. This is IEnumerable to enable covariant support.
         /// </summary>
         public IEnumerable<PartitionConfig> Partitions { get; set; }  = null;
+
+        /// <summary>
+        /// This is the set of rewrite rules to be checked for incoming and outgoing messages.
+        /// </summary>
+        public List<ServiceMessageHeaderRewriteRule> RewriteRules { get; set; } = new List<ServiceMessageHeaderRewriteRule>();
     }
 }

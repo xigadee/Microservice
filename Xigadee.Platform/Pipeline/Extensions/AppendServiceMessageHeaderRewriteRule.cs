@@ -22,23 +22,21 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    /// <summary>
-    /// This is the base data collection statistics.
-    /// </summary>
-    public class DataCollectionStatistics: MessagingStatistics
+    public static partial class CorePipelineExtensions
     {
 
+        public static ChannelPipelineIncoming AppendServiceMessageHeaderRewriteRule(this ChannelPipelineIncoming cpipe)
+        {
 
-        public int ItemCount { get; set; }
+            return cpipe;
+        }
 
-        public int QueueLength { get; set; }
+        public static ChannelPipelineOutgoing AppendServiceMessageHeaderRewriteRule(this ChannelPipelineOutgoing cpipe)
+        {
 
-        public bool Overloaded { get; set; }
+            return cpipe;
+        }
 
-        public int OverloadProcessCount { get; set; }
 
-        public int? OverloadThreshold { get; set; }
-
-        public long OverloadProcessHits { get; set; }
-    }
+    }  
 }

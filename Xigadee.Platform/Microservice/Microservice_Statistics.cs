@@ -41,7 +41,7 @@ namespace Xigadee
             try
             {
                 var statistics = Statistics;
-                await Logger.Log(statistics);
+                mDataCollection?.MicroserviceStatisticsIssued(statistics);
                 OnStatisticsIssued(statistics);
             }
             catch (Exception ex)

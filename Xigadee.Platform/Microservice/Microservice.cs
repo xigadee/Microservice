@@ -162,7 +162,7 @@ namespace Xigadee
                 , TimeSpan.FromSeconds(1), "Autotune", TimeSpan.FromSeconds(10), isInternal: true);
 
             // Flush the accumulated telemetry 
-            mScheduler.Register(async (s, cancel) => await mDataCollection.TelemetryFlush()
+            mScheduler.Register(async (s, cancel) => await mDataCollection.Flush()
                 , TimeSpan.FromMinutes(15), "Telemetry Flush", TimeSpan.FromSeconds(10), isInternal: true);
 
             // Kills any overrunning tasks

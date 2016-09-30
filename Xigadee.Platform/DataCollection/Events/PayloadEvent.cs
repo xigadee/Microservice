@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class PayloadEvent
+    public class PayloadEvent: EventBase
     {
         public PayloadEventType Type { get; set; }
 

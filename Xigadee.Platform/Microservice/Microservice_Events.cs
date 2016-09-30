@@ -175,7 +175,6 @@ namespace Xigadee
         {
             try
             {
-                mDataCollection?.MicroserviceStatisticsIssued(statistics);
                 StatisticsIssued?.Invoke(this, new StatisticsEventArgs() { Statistics = statistics });
             }
             catch (Exception ex)

@@ -23,35 +23,51 @@ using Xigadee;
 
 namespace Xigadee
 {
-    public abstract class DataCollectorBase: DataCollectorBase<DataCollectorStatistics>
-    {
-        public DataCollectorBase(DataCollectionSupport support = DataCollectionSupport.All) : base(support)
-        {
-        }
-    }
-
     /// <summary>
     /// This abstract class is used to implement data collectors.
     /// </summary>
     public abstract class DataCollectorBase<S>: ServiceBase<S>, IDataCollectorComponent
         where S : DataCollectorStatistics, new()
     {
+        #region Declarations
+        /// <summary>
+        /// This dictionary object holds the action mapping for the logging type.
+        /// </summary>
+        protected Dictionary<DataCollectionSupport, Action<EventBase>> mSupported; 
+        #endregion
         #region Constructor
         /// <summary>
         /// This constructor passes in the support types for the collector.
         /// </summary>
-        /// <param name="support">The support types - all by default.</param>
-        protected DataCollectorBase(DataCollectionSupport support = DataCollectionSupport.All)
+        protected DataCollectorBase()
         {
-            Support = support;
+            mSupported = new Dictionary<DataCollectionSupport, Action<EventBase>>();
+            SupportLoadDefault();
+        }
+        #endregion
+
+        #region SupportLoadDefault()
+        /// <summary>
+        /// This method loads the support.
+        /// </summary>
+        protected virtual void SupportLoadDefault()
+        {
+
+        }
+        #endregion
+        #region SupportAdd(DataCollectionSupport eventType, Action<EventBase> eventData)
+        /// <summary>
+        /// This method adds support for the log event.
+        /// </summary>
+        /// <param name="eventType">The event type.</param>
+        /// <param name="eventData">The event data.</param>
+        public virtual void SupportAdd(DataCollectionSupport eventType, Action<EventBase> eventData)
+        {
+            mSupported[eventType] = eventData;
         } 
         #endregion
 
-        /// <summary>
-        /// This returns the type of supported data collection
-        /// </summary>
-        public virtual DataCollectionSupport Support { get; }
-
+        #region IsSupported(DataCollectionSupport support)
         /// <summary>
         /// Returns true if the requested type is supported.
         /// </summary>
@@ -59,9 +75,10 @@ namespace Xigadee
         /// <returns></returns>
         public virtual bool IsSupported(DataCollectionSupport support)
         {
-            return (Support & support) == support;
+            return mSupported.ContainsKey(support);
         }
-
+        #endregion
+        #region OriginatorId
         /// <summary>
         /// This is is the Microservice originator information.
         /// </summary>
@@ -69,37 +86,26 @@ namespace Xigadee
         {
             get; set;
         }
+        #endregion
 
-        public abstract void Write(EventSourceEvent eventData);
+        #region Write(DataCollectionSupport eventType, EventBase eventData)
+        /// <summary>
+        /// This method is the generic write that maps to the collection.
+        /// </summary>
+        /// <param name="eventType">The event type.</param>
+        /// <param name="eventData">The event data.</param>
+        public virtual void Write(DataCollectionSupport eventType, EventBase eventData)
+        {
+            if (IsSupported(eventType))
+                mSupported[eventType](eventData);
+        }
+        #endregion
 
-        public abstract void Write(MetricEvent eventData);
+        public virtual void Flush()
+        {
 
-        public abstract void Write(LogEvent eventData);
+        }
 
-        public abstract void Write(PayloadEvent eventData);
-
-        public abstract void Write(BoundaryEvent eventData);
-
-        public abstract void Write(MicroserviceStatistics eventData);
+        public bool CanFlush { get; set; }
     }
-
-
-    //public abstract class DataCollectorObjectBase<S>: DataCollectorBase<S>
-    //    where S : DataCollectorStatistics, new()
-    //{
-    //    public DataCollectorObjectBase(string name, DataCollectionSupport support = DataCollectionSupport.All) : base(name, support)
-    //    {
-    //    }
-
-
-
-
-    //    public override async Task Write<K, E>(string originatorId, EventSourceEntry<K, E> entry, DateTime? utcTimeStamp = default(DateTime?), bool sync = false)
-    //    {
-    //        Write(new EventSourceEvent { OriginatorId = originatorId, Entry = entry, UtcTimeStamp = utcTimeStamp, Sync = sync });
-    //    }
-
-
-
-    //}
 }
