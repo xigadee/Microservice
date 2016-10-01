@@ -27,7 +27,7 @@ namespace Xigadee
     /// <summary>
     /// This base status class is used for logging job time statistics.
     /// </summary>
-    public class StatusBase : LogEvent
+    public class StatusBase : EventBase
     {
         #region Constructor
         /// <summary>
@@ -38,7 +38,6 @@ namespace Xigadee
         public StatusBase(string name)
         {
             Name = name??GetType().Name;
-            Level = LoggingLevel.Status;
             Created = DateTime.UtcNow;
         }
         /// <summary>
@@ -49,7 +48,6 @@ namespace Xigadee
         public StatusBase()
         {
             Name = GetType().Name;
-            Level = LoggingLevel.Status;
             Created = DateTime.UtcNow;
         }
         #endregion
@@ -74,11 +72,16 @@ namespace Xigadee
         public DateTime Created { get; set; } 
         #endregion
 
+        /// <summary>
+        /// This is the last exception recorded.
+        /// </summary>
+        public Exception Ex { get; set; }
+
         #region Message
         /// <summary>
         /// This is the message logged for simple loggers.
         /// </summary>
-        public override string Message
+        public virtual string Message
         {
             get
             {
@@ -90,7 +93,6 @@ namespace Xigadee
             }
             set
             {
-                base.Message = value;
             }
         } 
         #endregion

@@ -39,7 +39,7 @@ namespace Xigadee
         /// <summary>
         /// This constructor passes in the support types for the collector.
         /// </summary>
-        protected DataCollectorBase()
+        protected DataCollectorBase():base()
         {
             mSupported = new Dictionary<DataCollectionSupport, Action<EventBase>>();
             SupportLoadDefault();

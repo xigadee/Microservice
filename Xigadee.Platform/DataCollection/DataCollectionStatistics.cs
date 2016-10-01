@@ -40,5 +40,6 @@ namespace Xigadee
         public int? OverloadThreshold { get; set; }
 
         public long OverloadProcessHits { get; set; }
+
     }
 }
