@@ -59,6 +59,8 @@ namespace Xigadee
         /// </summary>
         protected void StartQueue()
         {
+            mQueue = new ConcurrentQueue<EventHolder>();
+            mReset = new ManualResetEventSlim(false);
             Active = true;
             mThreadLog = new Thread(SpinWrite);
             mThreadLog.Start();
@@ -71,6 +73,8 @@ namespace Xigadee
             mReset.Set();
             Active = false;
             mThreadLog.Join();
+            mQueue = null;
+            mReset = null;
         }
         #endregion
 
@@ -178,14 +182,16 @@ namespace Xigadee
 
             var item = new EventHolder(support) { Data = eventData, Sync = sync, Timestamp = StatisticsInternal.ActiveIncrement() };
 
+            //Do we have to write this straight away, or can we push it on to an async thread.
             if (item.Sync)
             {
+                //Process the item immediately.
                 ProcessItem(item);
             }
             else
             {
                 mQueue.Enqueue(item);
-
+                //Signal to the logging thread that there is more data waiting.
                 mReset.Set();
             }
         } 
@@ -195,7 +201,7 @@ namespace Xigadee
         /// <summary>
         /// This property goes positive once the queue length exceeds the threshold amount (if set).
         /// </summary>
-        public bool Overloaded { get { return mPolicy.OverloadThreshold.HasValue && mQueue.Count > mPolicy.OverloadThreshold.Value; } }
+        public bool Overloaded { get { return mPolicy.OverloadThreshold.HasValue && ((mQueue?.Count??0) > mPolicy.OverloadThreshold.Value); } }
         #endregion
 
         #region CanProcess()

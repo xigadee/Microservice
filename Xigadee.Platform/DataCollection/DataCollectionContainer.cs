@@ -27,7 +27,7 @@ namespace Xigadee
     /// This class centrally holds all the logging, telemetry and event source support.
     /// </summary>
     public partial class DataCollectionContainer: ServiceContainerBase<DataCollectionStatistics, DataCollectionPolicy>
-        , ILogger, IEventSource, ITelemetry, IServiceOriginator, ILoggerExtended, ITaskManagerProcess
+        , ILogger, IEventSource, ITelemetry, IServiceOriginator, ILoggerExtended, ITaskManagerProcess, IRequireSharedServices
     {
         #region Declarations
         private List<IDataCollectorComponent> mCollectors = new List<IDataCollectorComponent>();
@@ -46,16 +46,25 @@ namespace Xigadee
         #endregion
 
         #region StartInternal/StopInternal
+        /// <summary>
+        /// This method starts the data collector.
+        /// </summary>
         protected override void StartInternal()
         {
             mCollectors.ForEach((c) => ServiceStart(c));
 
             CollectorSupportSet();
+
+            StartQueue();
         }
 
+        /// <summary>
+        /// This method builds the collector dictionary for all the supported collection types.
+        /// </summary>
         private void CollectorSupportSet()
         {
-            mCollectorSupported = new Dictionary<Xigadee.DataCollectionSupport, List<Xigadee.IDataCollectorComponent>>();
+            mCollectorSupported = new Dictionary<DataCollectionSupport, List<IDataCollectorComponent>>();
+
             var dataTypes = Enum.GetValues(typeof(DataCollectionSupport)).Cast<DataCollectionSupport>();
 
             foreach (var enumitem in dataTypes)
@@ -65,9 +74,13 @@ namespace Xigadee
                 mCollectorSupported.Add(enumitem, items.Count == 0?null:items);
             }
         }
-
+        /// <summary>
+        /// This method stops the data collector.
+        /// </summary>
         protected override void StopInternal()
         {
+            StopQueue();
+
             mCollectors.ForEach((c) => ServiceStop(c));
             mCollectorSupported.Clear();
         }
@@ -120,6 +133,9 @@ namespace Xigadee
                 if ((service as IServiceOriginator) != null)
                     ((IServiceOriginator)service).OriginatorId = OriginatorId;
 
+                if ((service as IRequireSharedServices) != null)
+                    ((IRequireSharedServices)service).SharedServices = SharedServices;
+
                 base.ServiceStart(service);
             }
             catch (Exception ex)
@@ -138,6 +154,17 @@ namespace Xigadee
         {
             get; set;
         }
+        #endregion
+
+        #region SharedServices
+        /// <summary>
+        /// This is the shared service collection
+        /// </summary>
+        public ISharedService SharedServices
+        {
+            get;
+            set;
+        } 
         #endregion
 
         #region Flush()

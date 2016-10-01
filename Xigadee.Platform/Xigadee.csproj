@@ -80,6 +80,7 @@
     <Compile Include="DataCollection\DataCollector\DataCollectorBase.cs" />
     <Compile Include="DataCollection\DataCollector\DataCollectorHolder.cs" />
     <Compile Include="DataCollection\DataCollector\DataCollectorLegacySupport.cs" />
+    <Compile Include="DataCollection\Events\ResourceEvent.cs" />
     <Compile Include="DataCollection\Interfaces\DataCollectionSupport.cs" />
     <Compile Include="DataCollection\DataCollector\DataCollectorStatistics.cs" />
     <Compile Include="DataCollection\Events\BoundaryEvent.cs" />
@@ -87,7 +88,7 @@
     <Compile Include="DataCollection\Events\EventBase.cs" />
     <Compile Include="DataCollection\Events\EventSourceEvent.cs" />
     <Compile Include="DataCollection\Events\MetricEvent.cs" />
-    <Compile Include="DataCollection\Events\PayloadEvent.cs" />
+    <Compile Include="DataCollection\Events\DispatcherEvent.cs" />
     <Compile Include="Exceptions\ChannelNotEnabledException.cs" />
     <Compile Include="Exceptions\ChannelNotFoundException.cs" />
     <Compile Include="Exceptions\ChannelTypeNotSupportedException.cs" />
@@ -180,7 +181,7 @@
     <Compile Include="DataCollection\Logger\Implementations\Memory\MemoryLogEventHolder.cs" />
     <Compile Include="DataCollection\Logger\Implementations\Memory\MemoryLogger.cs" />
     <Compile Include="DataCollection\Events\PayloadLogEvent.cs" />
-    <Compile Include="DataCollection\DataCollector\DebugStubCollector.cs" />
+    <Compile Include="DataCollection\DataCollector\DebugMemoryDataCollector.cs" />
     <Compile Include="DataCollection\Telemetry\TelemetryCounterHolder.cs" />
     <Compile Include="Messaging\MessageFilterWrapper.cs" />
     <Compile Include="Pipeline\Extensions\AddDataCollector.cs" />

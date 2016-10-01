@@ -22,12 +22,12 @@ namespace Test.Xigadee
     [TestClass]
     public partial class PipelineTest1
     {
-        DebugStubCollector collector;
+        DebugMemoryDataCollector collector;
 
         private void ConfigureServiceRoot(MicroservicePipeline pipe)
         {
             pipe
-                .AddDataCollector<DebugStubCollector>((c) => collector = c)
+                .AddDataCollector<DebugMemoryDataCollector>((c) => collector = c)
                 .AddLogger<TraceEventLogger>()
                 .AddPayloadSerializerDefaultJson();
         }

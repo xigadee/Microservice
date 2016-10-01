@@ -70,7 +70,6 @@ namespace Xigadee
             mTelemetry.Context.Properties["ServiceName"] = OriginatorId.Name;
 
             mTelemetry.InstrumentationKey = mKey;
-
         }
 
         protected override void StopInternal()
@@ -82,7 +81,7 @@ namespace Xigadee
         protected override void SupportLoadDefault()
         {
             SupportAdd(DataCollectionSupport.BoundaryLogger, (e) => Write((BoundaryEvent)e));
-            SupportAdd(DataCollectionSupport.Dispatcher, (e) => Write((PayloadEvent)e));
+            SupportAdd(DataCollectionSupport.Dispatcher, (e) => Write((DispatcherEvent)e));
             SupportAdd(DataCollectionSupport.EventSource, (e) => Write((EventSourceEvent)e));
             SupportAdd(DataCollectionSupport.Logger, (e) => Write((LogEvent)e));
             SupportAdd(DataCollectionSupport.Statistics, (e) => Write((MicroserviceStatistics)e));
@@ -92,9 +91,11 @@ namespace Xigadee
         private void Write(BoundaryEvent eventData)
         {
             //switch (eventData.
+
+            //mTelemetry.TrackException(
         }
 
-        private void Write(PayloadEvent eventData)
+        private void Write(DispatcherEvent eventData)
         {
 
         }

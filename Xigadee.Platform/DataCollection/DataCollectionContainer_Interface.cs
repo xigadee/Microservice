@@ -57,22 +57,22 @@ namespace Xigadee
 
         public virtual void DispatcherPayloadComplete(TransmissionPayload payload, int delta, bool isSuccess)
         {
-            Write(new PayloadEvent { Type = PayloadEventType.Complete, Payload = payload, Delta = delta, IsSuccess = isSuccess }, DataCollectionSupport.Dispatcher);
+            Write(new DispatcherEvent { Type = PayloadEventType.Complete, Payload = payload, Delta = delta, IsSuccess = isSuccess }, DataCollectionSupport.Dispatcher);
         }
 
         public virtual void DispatcherPayloadException(TransmissionPayload payload, Exception pex)
         {
-            Write(new PayloadEvent { Type = PayloadEventType.Exception, Payload = payload, Ex = pex }, DataCollectionSupport.Dispatcher);
+            Write(new DispatcherEvent { Type = PayloadEventType.Exception, Payload = payload, Ex = pex }, DataCollectionSupport.Dispatcher);
         }
 
         public virtual void DispatcherPayloadIncoming(TransmissionPayload payload)
         {
-            Write(new PayloadEvent { Type = PayloadEventType.Incoming, Payload = payload }, DataCollectionSupport.Dispatcher);
+            Write(new DispatcherEvent { Type = PayloadEventType.Incoming, Payload = payload }, DataCollectionSupport.Dispatcher);
         }
 
         public virtual void DispatcherPayloadUnresolved(TransmissionPayload payload, DispatcherRequestUnresolvedReason reason)
         {
-            Write(new PayloadEvent { Type = PayloadEventType.Unresolved, Payload = payload, Reason = reason }, DataCollectionSupport.Dispatcher);
+            Write(new DispatcherEvent { Type = PayloadEventType.Unresolved, Payload = payload, Reason = reason }, DataCollectionSupport.Dispatcher);
         }
 
         public virtual void MicroserviceStatisticsIssued(MicroserviceStatistics statistics)

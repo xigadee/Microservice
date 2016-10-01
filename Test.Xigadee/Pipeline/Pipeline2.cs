@@ -27,7 +27,7 @@ namespace Test.Xigadee
         {
             try
             {
-                DebugStubCollector collector = null;
+                DebugMemoryDataCollector collector = null;
                 Microservice service;
                 CommandInitiator init = null;
                 var pipeline = Microservice.Configure((s) => service = s, serviceName: "TestPipeline");
@@ -36,7 +36,7 @@ namespace Test.Xigadee
                 ChannelPipelineOutgoing cpipeOut = null;
 
                 pipeline
-                    .AddDataCollector<DebugStubCollector>((c) => collector = c)
+                    .AddDataCollector<DebugMemoryDataCollector>((c) => collector = c)
                     .AddPayloadSerializerDefaultJson()
                     .AddChannelIncoming("internalIn", internalOnly: true)
                         .AssignPriorityPartition(0, 1)
