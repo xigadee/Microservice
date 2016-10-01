@@ -32,6 +32,7 @@ namespace Xigadee
         BoundaryLogger,
         Telemetry,
         Dispatcher,
-        Statistics
+        Statistics,
+        Resource
     }
 }

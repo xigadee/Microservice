@@ -29,6 +29,8 @@ namespace Xigadee
     /// </summary>
     public interface IPayloadSerializer: IDisposable
     {
+        byte[] Identifier { get; }
+
         IEnumerable<byte[]> PayloadMagicNumbers();
 
         bool SupportsObjectTypeSerialization(Type entityType);

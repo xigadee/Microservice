@@ -41,11 +41,6 @@ namespace Xigadee
             Write(new EventSourceEvent { OriginatorId = originatorId, Entry = entry, UtcTimeStamp = utcTimeStamp}, DataCollectionSupport.EventSource, sync);
         }
 
-        public void BoundaryLog(ChannelDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = default(Guid?))
-        {
-            Write(new BoundaryEvent { Type = BoundaryEventType.Boundary, Direction = direction, Payload = payload, Ex = ex, Id = batchId }, DataCollectionSupport.BoundaryLogger);
-        }
-
         public Guid BoundaryBatchPoll(int requested, int actual, string channelId)
         {
             var id = Guid.NewGuid();
@@ -54,6 +49,13 @@ namespace Xigadee
 
             return id;
         }
+
+        public void BoundaryLog(ChannelDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = default(Guid?))
+        {
+            Write(new BoundaryEvent { Type = BoundaryEventType.Boundary, Direction = direction, Payload = payload, Ex = ex, Id = batchId }, DataCollectionSupport.BoundaryLogger);
+        }
+
+
 
         public virtual void DispatcherPayloadComplete(TransmissionPayload payload, int delta, bool isSuccess)
         {

@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Xigadee
@@ -23,6 +24,7 @@ namespace Xigadee
     /// <summary>
     /// This is the root class for logging events for the Microservice framework.
     /// </summary>
+    [DebuggerDisplay("{Level} {Category} ")]
     public class LogEvent: EventBase
     {
         #region Constructors
@@ -67,6 +69,6 @@ namespace Xigadee
 
         public virtual Exception Ex { get; set; }
 
-        public virtual Dictionary<string, string> AdditionalData { get; private set; }
+        public virtual Dictionary<string, string> AdditionalData { get; }
     }
 }

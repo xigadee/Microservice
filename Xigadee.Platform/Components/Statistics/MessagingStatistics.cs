@@ -42,6 +42,9 @@ namespace Xigadee
         }
         #endregion
 
+        /// <summary>
+        /// This is the statistics name.
+        /// </summary>
         public override string Name
         {
             get

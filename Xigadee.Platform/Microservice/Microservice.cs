@@ -62,7 +62,7 @@ namespace Xigadee
         /// <summary>
         /// This contains the supported serializers.
         /// </summary>
-        protected List<IPayloadSerializer> mPayloadSerializers;
+        protected Dictionary<byte[],IPayloadSerializer> mPayloadSerializers;
         /// <summary>
         /// This is the collection of policy settings for the Microservice.
         /// </summary>
@@ -71,29 +71,37 @@ namespace Xigadee
         #endregion
         #region Constructors
         /// <summary>
-        /// This is the default Unity ServiceLocator based constructor.
+        /// This is the Microservice constructor.
         /// </summary>
+        /// <param name="options">The configuration options.</param>
+        /// <param name="name">The Microservice name.</param>
+        /// <param name="serviceId">The service id.</param>
+        /// <param name="policySettings">The policy settings.</param>
+        /// <param name="properties">Any additional property key.</param>
         public Microservice(MicroserviceConfigurationOptions options = null
             , string name = null
             , string serviceId = null
-            , IEnumerable<PolicyBase> policySettings = null)
+            , IEnumerable<PolicyBase> policySettings = null
+            , IEnumerable<Tuple<string,string>> properties = null)
             : base(name)
         {
             mPolicySettings = policySettings?.ToList()??new List<PolicyBase>();
+
             ConfigurationOptions = options ?? new MicroserviceConfigurationOptions();
 
             Id = new MicroserviceId(
                   string.IsNullOrEmpty(name) ? GetType().Name : name
                 , serviceId: serviceId
                 , serviceVersionId: Assembly.GetCallingAssembly().GetName().Version.ToString()
-                , serviceEngineVersionId: Assembly.GetExecutingAssembly().GetName().Version.ToString());
+                , serviceEngineVersionId: Assembly.GetExecutingAssembly().GetName().Version.ToString()
+                , properties: properties);
 
             mSecurity = InitialiseSecurityContainer();
             mCommunication = InitialiseCommunicationContainer();
             mCommands = InitialiseCommandContainer();
             mResourceTracker = InitialiseResourceTracker();
             mDataCollection = InitialiseDataCollectionContainer();
-            mPayloadSerializers = new List<IPayloadSerializer>();
+            mPayloadSerializers = new Dictionary<byte[], IPayloadSerializer>();
         }
         #endregion
 
@@ -163,11 +171,11 @@ namespace Xigadee
 
             // Flush the accumulated telemetry 
             mScheduler.Register(async (s, cancel) => await mDataCollection.Flush()
-                , TimeSpan.FromMinutes(15), "Telemetry Flush", TimeSpan.FromSeconds(10), isInternal: true);
+                , TimeSpan.FromMinutes(15), "Data Collection Flush", TimeSpan.FromSeconds(10), isInternal: true);
 
             // Kills any overrunning tasks
             mScheduler.Register(async (s, cancel) => await mTaskManager.TaskTimedoutKill()
-                , TimeSpan.FromMinutes(1), "Tasks timed out kill", TimeSpan.FromSeconds(1), isInternal: true);
+                , TimeSpan.FromMinutes(1), "Tasks timed-out: kill", TimeSpan.FromSeconds(1), isInternal: true);
         }
         #endregion
 

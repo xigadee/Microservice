@@ -43,6 +43,7 @@ namespace Xigadee
         ITelemetry RegisterTelemetry(ITelemetry telemetry);
 
         IPayloadSerializer RegisterPayloadSerializer(IPayloadSerializer serializer);
+        void ClearPayloadSerializers();
 
         IListener RegisterListener(IListener listener);
         ISender RegisterSender(ISender sender);

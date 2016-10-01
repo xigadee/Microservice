@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    [DebuggerDisplay("{Id}={Type}/{Direction} {ChannelId}")]
     public class BoundaryEvent: EventBase
     {
         public BoundaryEventType Type { get; set; }

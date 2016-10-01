@@ -57,17 +57,14 @@ namespace Xigadee
         /// </summary>
         protected override void StatisticsRecalculate(MicroserviceStatistics stats)
         {
-            stats.MachineName = Id.MachineName;
-            stats.ServiceId = Id.ServiceId;
-            stats.ExternalServiceId = ExternalServiceId;
+            stats.Id = Id;
 
-            stats.VersionId = Id.ServiceVersionId;
-            stats.EngineVersionId = Id.ServiceEngineVersionId;
+            stats.Name = Id.Name;
             stats.Created = Id.StartTime;
+
             stats.Status = Status.ToString();
             stats.LogTime = DateTime.UtcNow;
             stats.Configuration = ConfigurationOptions;
-            stats.StartTime = Id.StartTime;
 
             stats.Tasks = mTaskManager?.Statistics;
 
@@ -80,16 +77,9 @@ namespace Xigadee
             stats.Commands = mCommands?.Statistics;
 
             stats.Scheduler = mScheduler?.Statistics;
+
+            stats.Security = mSecurity?.Statistics;
         }
         #endregion
-
-        protected override void StatisticsInitialise(MicroserviceStatistics stats)
-        {
-            base.StatisticsInitialise(stats);
-
-            stats.Name = "";
-            stats.Application = "";
-            stats.Environment = "";
-        }
     }
 }

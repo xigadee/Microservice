@@ -80,8 +80,9 @@
     <Compile Include="DataCollection\DataCollector\DataCollectorBase.cs" />
     <Compile Include="DataCollection\DataCollector\DataCollectorHolder.cs" />
     <Compile Include="DataCollection\DataCollector\DataCollectorLegacySupport.cs" />
+    <Compile Include="DataCollection\Events\EventHolder.cs" />
     <Compile Include="DataCollection\Events\ResourceEvent.cs" />
-    <Compile Include="DataCollection\Interfaces\DataCollectionSupport.cs" />
+    <Compile Include="DataCollection\DataCollectionSupport.cs" />
     <Compile Include="DataCollection\DataCollector\DataCollectorStatistics.cs" />
     <Compile Include="DataCollection\Events\BoundaryEvent.cs" />
     <Compile Include="DataCollection\Interfaces\BoundaryEventType.cs" />

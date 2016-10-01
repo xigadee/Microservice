@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    [DebuggerDisplay("{Payload.Id}={Type}/{Reason} {Payload.Message.ToKey()} {IsSuccess}")]
     public class DispatcherEvent: EventBase
     {
         public PayloadEventType Type { get; set; }

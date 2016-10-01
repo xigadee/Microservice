@@ -53,6 +53,11 @@ namespace Xigadee
         protected bool mDisposed = false;
 
         ConcurrentDictionary<Type, bool> mSupported;
+
+        /// <summary>
+        /// This is the byte header for the serialization payload.
+        /// </summary>
+        public abstract byte[] Identifier { get; }
         #endregion
         #region Constructor
         /// <summary>
@@ -135,22 +140,25 @@ namespace Xigadee
             //We cache the result to save time later.
             mSupported.TryAdd(entityType, value);
             return value;
-        } 
+        }
         #endregion
 
         /// <summary>
         /// This is the collection of byte magic numbers the the byte array will index with,
         /// </summary>
         /// <returns>A collection of 2 byte arrays.</returns>
-        public abstract IEnumerable<byte[]> PayloadMagicNumbers();
+        public virtual IEnumerable<byte[]> PayloadMagicNumbers()
+        {
+            yield return Identifier;
+        }
 
         #region SupportsPayloadDeserialization ...
-        /// <summary>
-        /// This method matches the incoming byte stream and identifies whether the serializer
-        /// can deserialize on the basis of the index of the byte array.
-        /// </summary>
-        /// <param name="blob">The incoming byte array</param>
-        /// <returns>Returns true if it is a match.</returns>
+            /// <summary>
+            /// This method matches the incoming byte stream and identifies whether the serializer
+            /// can deserialize on the basis of the index of the byte array.
+            /// </summary>
+            /// <param name="blob">The incoming byte array</param>
+            /// <returns>Returns true if it is a match.</returns>
         public virtual bool SupportsPayloadDeserialization(byte[] blob)
         {
             return SupportsPayloadDeserialization(blob, 0, blob.Length);

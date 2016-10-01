@@ -33,11 +33,12 @@ namespace Xigadee
     /// </summary>
     public class DefaultDataContractSerializer : DefaultSerializerBase<DataContractSerializer, SerializerState>
     {
-        private readonly byte[] mMagicBytes = new byte[] { 66, 215 };
-
-        public override IEnumerable<byte[]> PayloadMagicNumbers()
+        public override byte[] Identifier
         {
-            yield return mMagicBytes;
+            get
+            {
+                return new byte[] { 66, 215 };
+            }
         }
 
         protected override DataContractSerializer CreateSerializer(Type entityType)
@@ -48,7 +49,7 @@ namespace Xigadee
         public override byte[] Serialize(object entity)
         {
             var state = new SerializerState();
-            state.MagicNumbers = mMagicBytes;
+            state.MagicNumbers = Identifier;
             state.EntityType = entity.GetType();
             state.Entity = entity;
 

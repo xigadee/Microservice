@@ -23,22 +23,25 @@ namespace Xigadee
 {
     public class JsonContractSerializer : DefaultSerializerBase<JsonSerializer, SerializerState>
     {
-        private readonly byte[] mMagicBytes = { 67, 216 };
         private readonly JsonSerializer mJsonSerializer = new JsonSerializer {TypeNameHandling = TypeNameHandling.Auto};
+
+        public override byte[] Identifier
+        {
+            get
+            {
+                return new byte[]{ 67, 216 };
+            }
+        }
 
         protected override JsonSerializer CreateSerializer(Type entityType)
         {
             return mJsonSerializer;
         }
 
-        public override IEnumerable<byte[]> PayloadMagicNumbers()
-        {
-            yield return mMagicBytes;
-        }
 
         public override byte[] Serialize(object entity)
         {
-            var state = new SerializerState {MagicNumbers = mMagicBytes, EntityType = entity.GetType(), Entity = entity};
+            var state = new SerializerState {MagicNumbers = Identifier, EntityType = entity.GetType(), Entity = entity};
             return SerializeInternal(state);
         }
 

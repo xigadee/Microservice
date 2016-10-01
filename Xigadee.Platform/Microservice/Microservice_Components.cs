@@ -196,11 +196,21 @@ namespace Xigadee
         public virtual IPayloadSerializer RegisterPayloadSerializer(IPayloadSerializer serializer)
         {
             ValidateServiceNotStarted();
-            mPayloadSerializers.Add(serializer);
+            mPayloadSerializers.Add(serializer.Identifier, serializer);
             return serializer;
         }
-        #endregion    
-            
+        #endregion
+        #region ClearPayloadSerializers()
+        /// <summary>
+        /// This method clears the payload serializers. This may be used as by default, we add the JSON based serializer to Microservice.
+        /// </summary>
+        public virtual void ClearPayloadSerializers()
+        {
+            ValidateServiceNotStarted();
+            mPayloadSerializers.Clear();
+        } 
+        #endregion
+
         //Populate
         #region PopulateComponents()
         /// <summary>
@@ -209,7 +219,7 @@ namespace Xigadee
         /// </summary>
         protected virtual void PopulateComponents()
         {
-            mSerializer = InitialiseSerializationContainer(mPayloadSerializers);
+            mSerializer = InitialiseSerializationContainer(mPayloadSerializers.Values);
         }
         #endregion            
     }
