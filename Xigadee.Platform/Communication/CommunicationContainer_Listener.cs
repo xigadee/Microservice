@@ -29,23 +29,14 @@ namespace Xigadee
     public partial class CommunicationContainer
     {
         //Listener
-        #region --> ListenerAdd(IListener listener, bool deadLetter)
+        #region --> ListenerAdd(IListener listener)
         /// <summary>
         /// This method adds a listener or a deadletter listener to the collection.
         /// </summary>
         /// <param name="listener">The listener.</param>
-        /// <param name="deadLetter">True indicates that this is a deadletter listener.</param>
-        public void ListenerAdd(IListener listener, bool deadLetter)
+        public void ListenerAdd(IListener listener)
         {
-            //if (mPolicy.AutoCreateChannels)
-            //{
-            //    listener.ChannelId
-            //}
-
-            if (deadLetter)
-                mDeadletterListener.Add(listener);
-            else
-                mListener.Add(listener);
+            mListener.Add(listener);
         }
         #endregion
 
@@ -60,7 +51,6 @@ namespace Xigadee
             try
             {
                 mListener.ForEach(l => ServiceStart(l));
-                mDeadletterListener.ForEach(l => ServiceStart(l));
 
                 //Create the client priority collection.
                 ListenersPriorityRecalculate(true).Wait();
@@ -92,8 +82,6 @@ namespace Xigadee
 
             mClientCollection?.Close();
 
-            mDeadletterListener?.ForEach(l => ServiceStop(l));
-
             mListener?.ForEach(l => ServiceStop(l));
         }
         #endregion
@@ -117,7 +105,6 @@ namespace Xigadee
             {
                 //We do an atomic switch to add in a new priority list.
                 var newColl = new ClientPriorityCollection(mListener
-                    , mDeadletterListener
                     , mResourceTracker
                     , mPolicy.ListenerClientPollAlgorithm
                     , Interlocked.Increment(ref mListenersPriorityIteration));

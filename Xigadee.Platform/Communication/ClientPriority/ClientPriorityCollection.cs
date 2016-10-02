@@ -50,13 +50,11 @@ namespace Xigadee
         /// This constructor build up the poll collection and sets the correct poll priority.
         /// </summary>
         /// <param name="listeners"></param>
-        /// <param name="deadletterListeners"></param>
         /// <param name="resourceTracker"></param>
         /// <param name="algorithm"></param>
         /// <param name="iterationId"></param>
         public ClientPriorityCollection(
               List<IListener> listeners
-            , List<IListener> deadletterListeners
             , IResourceTracker resourceTracker
             , IListenerClientPollAlgorithm algorithm
             , long iterationId
@@ -68,7 +66,7 @@ namespace Xigadee
 
             //Get the list of active clients.
             mListenerClients = new Dictionary<Guid, ClientPriorityHolder>();
-            foreach (var listener in listeners.Union(deadletterListeners))
+            foreach (var listener in listeners)
                 if (listener.Clients != null)
                     foreach (var client in listener.Clients)
                     {

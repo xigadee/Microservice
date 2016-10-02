@@ -47,8 +47,6 @@ namespace Xigadee
 
         IListener RegisterListener(IListener listener);
         ISender RegisterSender(ISender sender);
-        IListener RegisterDeadLetterListener(IListener deadLetter);
-
 
         ISharedService SharedServices { get; }
 

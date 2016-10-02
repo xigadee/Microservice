@@ -38,7 +38,7 @@ namespace Xigadee
         /// </summary>
         protected ConcurrentDictionary<string, List<ISender>> mMessageSenderMap;
 
-        private List<IListener> mListener, mDeadletterListener;
+        private List<IListener> mListener;
 
         private List<ISender> mSenders;
 
@@ -77,7 +77,6 @@ namespace Xigadee
             mSupportedMessages = new List<MessageFilterWrapper>();
             mSenders = new List<ISender>();
             mListener = new List<IListener>();
-            mDeadletterListener = new List<IListener>();
             mContainerIncoming = new Dictionary<string, Channel>();
             mContainerOutgoing = new Dictionary<string, Channel>();
         }
@@ -95,9 +94,6 @@ namespace Xigadee
 
             if (mListener != null)
                 stats.Listeners = mListener.SelectMany((c) => c.Clients).Select((l) => l.Statistics).ToList();
-
-            if (mDeadletterListener != null)
-                stats.DeadLetterListeners = mDeadletterListener.SelectMany((c) => c.Clients).Select((l) => l.Statistics).ToList();
 
             if (mClientCollection != null)
                 stats.Active = mClientCollection.Statistics;

@@ -38,7 +38,7 @@ namespace Xigadee
         public virtual IListener RegisterListener(IListener listener)
         {
             ValidateServiceNotStarted();
-            mCommunication.ListenerAdd(listener, false);
+            mCommunication.ListenerAdd(listener);
             return listener;
         }
         #endregion
@@ -52,17 +52,6 @@ namespace Xigadee
             ValidateServiceNotStarted();
             mCommunication.SenderAdd(sender);
             return sender;
-        }
-        #endregion
-        #region RegisterDeadLetterListener(IListener deadLetter)
-        /// <summary>
-        /// This allows you to manually register a DeadLetterListener
-        /// </summary>
-        public virtual IListener RegisterDeadLetterListener(IListener deadLetter)
-        {
-            ValidateServiceNotStarted();
-            mCommunication.ListenerAdd(deadLetter, true);
-            return deadLetter;
         }
         #endregion
         #region RegisterChannel(Channel logger)
