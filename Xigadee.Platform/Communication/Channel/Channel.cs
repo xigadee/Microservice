@@ -15,6 +15,7 @@
 #endregion
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,13 +29,29 @@ namespace Xigadee
     public class Channel
     {
         /// <summary>
+        /// This is the list of destination rewrite rules.
+        /// </summary>
+        protected HashSet<ChannelRewriteRule> mRewriteRules;
+        /// <summary>
+        /// This is the cache that is constructed when a rewrite rule is implemented. This is used to speed up the resolution on rules, as ChannelRewriteRules use partial matching.
+        /// </summary>
+        protected ConcurrentDictionary<ServiceMessageHeader,ServiceMessageHeader> mRewriteCache = new ConcurrentDictionary<ServiceMessageHeader, ServiceMessageHeader>();
+
+        /// <summary>
         /// The default constructor.
         /// </summary>
         /// <param name="id">The channel Id.</param>
         /// <param name="direction">The direction of the channel - Incoming or outgoing</param>
         /// <param name="description">The optional description</param>
+        /// <param name="boundaryLogger">This is the boundary logger for the channel.</param>
         /// <param name="internalOnly">This property specifies that the channel should only be used for internal messaging.</param>
-        public Channel(string id, ChannelDirection direction, string description = null, IBoundaryLogger boundaryLogger = null, bool internalOnly = false)
+        /// <param name="rewriteRules">A selection of rewrite rules for the channel.</param>
+        public Channel(string id
+            , ChannelDirection direction
+            , string description = null
+            , IBoundaryLogger boundaryLogger = null
+            , bool internalOnly = false
+            , IEnumerable<ChannelRewriteRule> rewriteRules = null)
         {
             if (string.IsNullOrEmpty(id))
                 throw new ArgumentNullException("id cannot be null or empty.");
@@ -44,6 +61,11 @@ namespace Xigadee
             Description = description;
             InternalOnly = internalOnly;
             BoundaryLogger = boundaryLogger;
+
+            if (rewriteRules != null)
+                mRewriteRules = new HashSet<ChannelRewriteRule>(rewriteRules);
+            else
+                mRewriteRules = new HashSet<ChannelRewriteRule>();
         }
 
         /// <summary>
@@ -79,8 +101,58 @@ namespace Xigadee
         public IEnumerable<PartitionConfig> Partitions { get; set; }  = null;
 
         /// <summary>
-        /// This is the set of rewrite rules to be checked for incoming and outgoing messages.
+        /// This method adds a rewrite rule to the channel.
         /// </summary>
-        public List<ServiceMessageHeaderRewriteRule> RewriteRules { get; set; } = new List<ServiceMessageHeaderRewriteRule>();
+        /// <param name="rule">The rule.</param>
+        /// <returns>Returns true if the rule has been added.</returns>
+        public bool Add(ChannelRewriteRule rule)
+        {
+            bool success = mRewriteRules.Add(rule);
+            if (success)
+                mRewriteCache.Clear();
+
+            return success;
+        }
+        /// <summary>
+        /// This method removes a rule from the collection.
+        /// </summary>
+        /// <param name="rule"></param>
+        /// <returns></returns>
+        public bool Remove(ChannelRewriteRule rule)
+        {
+            bool success = mRewriteRules.Remove(rule);
+            if (success)
+                mRewriteCache.Clear();
+            return success;
+        }
+
+        /// <summary>
+        /// This is the set of rules currently held by the channel.
+        /// </summary>
+        public IEnumerable<ChannelRewriteRule> RewriteRules
+        {
+            get
+            {
+                foreach (var rule in mRewriteRules)
+                    yield return rule;
+            }
+        }
+
+        /// <summary>
+        /// This method returns true if the channel has rewrite rules set.
+        /// </summary>
+        public bool CanRewriteDestination
+        {
+            get
+            {
+                return mRewriteRules.Count>0;
+            }
+        }
+
+        public bool Rewrite(ServiceMessageHeader inRule, out ServiceMessageHeader? outRule)
+        {
+            outRule = null;
+            return false;
+        }
     }
 }

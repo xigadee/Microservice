@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This class is used to change the incoming payload service message header.
+    /// The rewrite rule is used to reroute incoming messages to their command destination.
     /// </summary>
-    public class ServiceMessageHeaderRewriteRule
+    public class ChannelRewriteRule
     {
     }
 }

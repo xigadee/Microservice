@@ -29,6 +29,10 @@ namespace Xigadee
     [DebuggerDisplay("ResourceProfile: {Id}")]
     public class ResourceProfile
     {
+        /// <summary>
+        /// This is the default constructor for the resource profile.
+        /// </summary>
+        /// <param name="id">The resource id.</param>
         public ResourceProfile(string id)
         {
             Id = id;
@@ -36,6 +40,15 @@ namespace Xigadee
         /// <summary>
         /// This is the Id of the resource profile.
         /// </summary>
-        public string Id { get; set; }
+        public string Id { get; }
+
+        /// <summary>
+        /// Implicitly converts a string in to a resource profile.
+        /// </summary>
+        /// <param name="id">The name of the resource profile.</param>
+        public static implicit operator ResourceProfile(string id)
+        {
+            return new ResourceProfile(id);
+        }
     }
 }

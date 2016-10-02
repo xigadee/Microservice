@@ -63,7 +63,7 @@
     <Compile Include="Command\Client\CommandInitiatorStatistics.cs" />
     <Compile Include="Command\Command_Reflection.cs" />
     <Compile Include="Command\Attributes\CommandInAttribute.cs" />
-    <Compile Include="Communication\Channel\ServiceMessageHeaderRewriteRule.cs" />
+    <Compile Include="Communication\Channel\ChannelRewriteRule.cs" />
     <Compile Include="Communication\TcpTlsChannel\Helper\DirectChannelCommunicator.cs" />
     <Compile Include="Communication\TcpTlsChannel\TcpTlsChannelSender.cs" />
     <Compile Include="Communication\TcpTlsChannel\TcpTlsClientHolder.cs" />
@@ -360,15 +360,15 @@
     <Compile Include="Microservice\Microservice_Statistics.cs" />
     <Compile Include="Configuration\Populator\IPopulator.cs" />
     <Compile Include="Configuration\Populator\PopulatorBase.cs" />
-    <Compile Include="ResourceTracker\CircuitBreakerBase.cs" />
-    <Compile Include="ResourceTracker\CircuitBreakerState.cs" />
+    <Compile Include="ResourceTracker\CircuitBreaker\CircuitBreakerBase.cs" />
+    <Compile Include="ResourceTracker\CircuitBreaker\CircuitBreakerState.cs" />
     <Compile Include="ResourceTracker\Interfaces\IResourceBase.cs" />
     <Compile Include="ResourceTracker\Interfaces\IResourceConsumer.cs" />
     <Compile Include="ResourceTracker\Interfaces\IResourceRequestRateLimiter.cs" />
     <Compile Include="ResourceTracker\Interfaces\IResourceTracker.cs" />
     <Compile Include="ResourceTracker\Interfaces\ResourceRequestResult.cs" />
     <Compile Include="ResourceTracker\Interfaces\ResourceRetryReason.cs" />
-    <Compile Include="ResourceTracker\ResourceBase.cs" />
+    <Compile Include="ResourceTracker\Base\ResourceBase.cs" />
     <Compile Include="ResourceTracker\ResourceConsumer.cs" />
     <Compile Include="ResourceTracker\ResourceProfile.cs" />
     <Compile Include="ResourceTracker\ResourceRateLimiter.cs" />

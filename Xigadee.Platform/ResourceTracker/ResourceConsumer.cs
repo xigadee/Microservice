@@ -30,7 +30,7 @@ namespace Xigadee
 
         public ResourceConsumer(ResourceStatistics resource, string name)
         {
-            mName = name;
+            Name = name;
             mResource = resource;
         }
 
@@ -51,17 +51,17 @@ namespace Xigadee
 
         public Guid Start(string group, Guid requestId)
         {
-            return mResource.Start(mName, group, requestId);
+            return mResource.Start(Name, group, requestId);
         }
 
         public void End(Guid profileId, int start, ResourceRequestResult result)
         {
-            mResource.End(mName, profileId, start, result);
+            mResource.End(Name, profileId, start, result);
         }
 
         public void Retry(Guid profileId, int retryStart, ResourceRetryReason reason)
         {
-            mResource.Retry(mName, profileId, retryStart, reason);
+            mResource.Retry(Name, profileId, retryStart, reason);
         }
 
         public void Exception(Guid profileId, int retryStart)

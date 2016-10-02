@@ -33,7 +33,7 @@ namespace Xigadee
 
         public ResourceRateLimiter(string name, List<ResourceStatistics> profiles)
         {
-            mName = name;
+            Name = name;
             mProfiles = profiles;
         }
  
@@ -59,7 +59,7 @@ namespace Xigadee
             get
             {
                 string concatRates = string.Concat(mProfiles.Select((e) => string.Format("{0}-{1} ", e.Name, e.RateLimitAdjustmentPercentage)));
-                return string.Format("{0} ({1}): {2}", mName, RateLimitAdjustmentPercentage, concatRates);
+                return string.Format("{0} ({1}): {2}", Name, RateLimitAdjustmentPercentage, concatRates);
             }
         }     
     }

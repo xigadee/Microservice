@@ -24,20 +24,10 @@ namespace Xigadee
 {
     public abstract class ResourceBase: IResourceBase
     {
-        private Guid mId = Guid.NewGuid();
-        protected string mName;
 
-        public Guid ResourceId
-        {
-            get
-            {
-                return mId;
-            }
-        }
+        public Guid ResourceId { get; } = Guid.NewGuid();
 
-        public string Name
-        {
-            get{ return mName; }
-        }
+        public string Name { get; protected set;}
+
     }
 }
