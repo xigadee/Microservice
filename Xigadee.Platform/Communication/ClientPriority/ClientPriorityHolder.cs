@@ -72,7 +72,6 @@ namespace Xigadee
             //Create the metrics container to hold the calculations for poll priority and reservation amount.
             mMetrics = new ClientPriorityHolderMetrics(mPriorityAlgorithm
                 , resourceTracker?.RegisterRequestRateLimiter(client.Name, client.ResourceProfiles)
-                , client.IsDeadLetter
                 , client.Priority
                 , client.Weighting
                 );
@@ -125,18 +124,7 @@ namespace Xigadee
             }
         }
         #endregion
-        #region IsDeadletter
-        /// <summary>
-        /// A shortcut that identifies whether the client is a deadletter
-        /// </summary>
-        public bool IsDeadletter
-        {
-            get
-            {
-                return mMetrics.IsDeadletter;
-            }
-        }
-        #endregion
+
         #region IsPollPastDue
         /// <summary>
         /// A shortcut that identifies whether the client is a deadletter

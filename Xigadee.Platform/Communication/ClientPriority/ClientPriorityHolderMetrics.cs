@@ -56,13 +56,11 @@ namespace Xigadee
         /// <param name="weighting"></param>
         public ClientPriorityHolderMetrics(IListenerClientPollAlgorithm algorithm
             , IResourceRequestRateLimiter rateLimiter
-            , bool isDeadletter
             , int priority
             , decimal weighting)
         {
             Algorithm = algorithm;
             RateLimiter = rateLimiter;
-            IsDeadletter = isDeadletter;
             Priority = priority;
             PriorityWeighting = weighting;
 
@@ -81,8 +79,6 @@ namespace Xigadee
         protected override void StatisticsRecalculate(ClientPriorityHolderMetricsStatistics stats)
         {
             stats.CapacityPercentage = CapacityPercentage;
-
-            stats.IsDeadletter = IsDeadletter;
 
             stats.LastOffered = LastOffered;
             stats.LastReserved = LastReserved;
@@ -134,15 +130,7 @@ namespace Xigadee
         /// </summary>
         public IListenerClientPollAlgorithm Algorithm { get; }
         #endregion
-        #region IsDeadletter
-        /// <summary>
-        /// A shortcut that identifies whether the client is a deadletter
-        /// </summary>
-        public bool IsDeadletter
-        {
-            get;
-        }
-        #endregion
+
 
         #region PollSuccessRate
         /// <summary>

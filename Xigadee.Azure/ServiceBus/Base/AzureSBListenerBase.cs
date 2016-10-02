@@ -83,8 +83,6 @@ namespace Xigadee
         {
             var client = base.ClientCreate(partition);
 
-            client.IsDeadLetter = IsDeadLetterListener;
-
             client.ClientClose = () => 
             {
                 if (client.Client != null)

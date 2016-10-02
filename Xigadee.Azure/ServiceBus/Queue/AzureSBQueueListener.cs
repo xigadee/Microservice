@@ -81,7 +81,7 @@ namespace Xigadee
 
                     client.QueueLengthLastPoll = DateTime.UtcNow;
 
-                    if (client.IsDeadLetter)
+                    if (IsDeadLetterListener)
                         return desc.MessageCountDetails.DeadLetterMessageCount;
                     else
                         return desc.MessageCountDetails.ActiveMessageCount;
@@ -96,7 +96,7 @@ namespace Xigadee
             {
                 var messagingFactory = MessagingFactory.CreateFromConnectionString(mAzureSB.ConnectionString);
 
-                string queueName = client.IsDeadLetter ? QueueClient.FormatDeadLetterPath(client.Name) : client.Name;
+                string queueName = IsDeadLetterListener ? QueueClient.FormatDeadLetterPath(client.Name) : client.Name;
 
                 var queue = messagingFactory.CreateQueueClient(queueName);
 

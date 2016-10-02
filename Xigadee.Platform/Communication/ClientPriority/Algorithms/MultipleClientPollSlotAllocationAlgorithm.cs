@@ -91,7 +91,7 @@ namespace Xigadee
             if (!timeStamp.HasValue)
                 timeStamp = Environment.TickCount;
 
-            long newPriority = (context.IsDeadletter ? 0xFFFFFFFF : 0xFFFFFFFFFFFF);
+            long newPriority = 0xFFFFFFFFFFFF;
 
             try
             {
@@ -99,6 +99,7 @@ namespace Xigadee
                     newPriority += ConversionHelper.CalculateDelta(timeStamp.Value, context.PriorityTickCount.Value);
 
                 context.PriorityTickCount = timeStamp.Value;
+
                 //Add the queue length to add the listener with the greatest number of messages.
                 context.PriorityQueueLength = queueLength;
 
@@ -111,6 +112,7 @@ namespace Xigadee
             }
 
             context.PriorityCalculated = newPriority;
+
             return newPriority;
         }
         #endregion

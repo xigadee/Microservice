@@ -93,10 +93,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="payload"></param>
         public abstract void MessageComplete(TransmissionPayload payload);
-        /// <summary>
-        /// This boolean property indicates whether the client is a deadletter listener.
-        /// </summary>
-        public bool IsDeadLetter { get; set; }
+
         /// <summary>
         /// This boolean property idemtifies whether the client is active and should be polled
         /// for new arriving messages.
@@ -285,8 +282,7 @@ namespace Xigadee
         protected virtual TransmissionPayload PayloadRegisterAndCreate(M message, ServiceMessage serviceMessage)
         {
             var payload = new TransmissionPayload(serviceMessage
-                , release: (b,i) => MessageSignalInternal(message, b, i)
-                , isDeadLetterMessage: IsDeadLetter)
+                , release: (b,i) => MessageSignalInternal(message, b, i))
             {
                 MaxProcessingTime = MessageMaxProcessingTime,
                 Options = ProcessOptions.RouteInternal,

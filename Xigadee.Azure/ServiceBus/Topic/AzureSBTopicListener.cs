@@ -177,10 +177,7 @@ namespace Xigadee
 
                     client.QueueLengthLastPoll = DateTime.UtcNow;
 
-                    if (client.IsDeadLetter)
-                        return desc.MessageCountDetails.DeadLetterMessageCount;
-                    else
-                        return desc.MessageCountDetails.ActiveMessageCount;
+                    return desc.MessageCountDetails.ActiveMessageCount;
                 }
                 catch (Exception)
                 {
