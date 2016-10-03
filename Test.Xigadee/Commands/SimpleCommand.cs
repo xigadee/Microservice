@@ -15,7 +15,7 @@ namespace Test.Xigadee
 
 
         [CommandContract(messageType: "franky", actionType: "johnny2")]
-        private void ThisisMeStupid1(TransmissionPayload incoming, List<TransmissionPayload> outgoing)
+        private async Task ThisisMeStupid1(TransmissionPayload incoming, List<TransmissionPayload> outgoing)
         {
 
         }

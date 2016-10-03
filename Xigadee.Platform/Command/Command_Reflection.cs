@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 #endregion
 namespace Xigadee
 {
@@ -49,18 +50,22 @@ namespace Xigadee
 
             var returnType = info.ReturnType;
 
-            var commandAttrs = Attribute.GetCustomAttributes(info).Where((a) => a is CommandContractAttribute).Cast<CommandContractAttribute>().ToList();
+            var commandAttrs = Attribute.GetCustomAttributes(info)
+                .Where((a) => a is CommandContractAttribute)
+                .Cast<CommandContractAttribute>()
+                .ToList();
+
             if (commandAttrs.Count == 0)
                 return;
 
-            //Is this the standard command
-            if (paramInfo.Length == 2 && genericIn != null && genericOut != null)
+            //Is this the standard command - async Task Something(TransmissionPayload incoming, List<TransmissionPayload> outgoing)
+            if (paramInfo.Length == 2 && genericIn != null && genericOut != null && returnType == typeof(Task))
             {
                 commandAttrs.ForEach((a) => CommandsRegisterReflectionStandard(info, a));
                 return;
             }
 
-
+            //No, OK .. lets proceed
 
             var hmm = Attribute.GetCustomAttributes(paramInfo[0]);
 
@@ -68,6 +73,18 @@ namespace Xigadee
 
         protected virtual void CommandsRegisterReflectionStandard(MethodInfo info, CommandContractAttribute attr)
         {
+            var header = attr.Header;
+            var wrapper = new MessageFilterWrapper(header);
+
+
+            Func<TransmissionPayload, List<TransmissionPayload>, Task> action = async (pIn, pOut) =>
+            {
+                await (Task)info.Invoke(null, new object[] { pIn, pOut });
+            };
+
+            CommandRegister(wrapper, action);
+
+            //This register the standard raw command etc. (TransmissionPayload payloadin, List<TransmissionPayload> payloadsOut)
         }
         #endregion
     }

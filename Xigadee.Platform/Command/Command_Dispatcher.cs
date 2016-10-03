@@ -37,13 +37,14 @@ namespace Xigadee
         #endregion
 
         #region CommandRegister<C>...
+
         /// <summary>
-        /// This method registers a command and sets the specific payloadRq for the command.
+        /// 
         /// </summary>
-        /// <typeparam name="C">The contract channelId.</typeparam>
-        /// <typeparam name="P">The payloadRq DTO channelId. This will be deserialized using the ServiceMessage binary payloadRq.</typeparam>
-        /// <param name="action">The process action.</param>
-        /// <param name="exceptionAction">The optional action call if an exception is thrown.</param>
+        /// <typeparam name="CM"></typeparam>
+        /// <typeparam name="PM"></typeparam>
+        /// <param name="action"></param>
+        /// <param name="exceptionAction"></param>
         protected virtual void CommandRegister<CM, PM>(
             Func<PM, TransmissionPayload, List<TransmissionPayload>, Task> action,
             Func<Exception, TransmissionPayload, List<TransmissionPayload>, Task> exceptionAction = null)
@@ -58,11 +59,11 @@ namespace Xigadee
             CommandRegister<CM>(actionReduced, exceptionAction);
         }
         /// <summary>
-        /// This method register a command.
+        /// 
         /// </summary>
-        /// <typeparam name="C">The contract channelId.</typeparam>
-        /// <param name="action">The process action.</param>
-        /// <param name="exceptionAction">The optional action call if an exception is thrown.</param>
+        /// <typeparam name="CM"></typeparam>
+        /// <param name="action"></param>
+        /// <param name="exceptionAction"></param>
         protected virtual void CommandRegister<CM>(
             Func<TransmissionPayload, List<TransmissionPayload>, Task> action,
             Func<Exception, TransmissionPayload, List<TransmissionPayload>, Task> exceptionAction = null)
@@ -76,28 +77,29 @@ namespace Xigadee
         #endregion
         #region CommandRegister...
         /// <summary>
-        /// This method registers a particular command.
+        /// 
         /// </summary>
-        /// <param name="channelId">The message channelId</param>
-        /// <param name="messageType">The command channelId</param>
-        /// <param name="actionType">The command action</param>
-        /// <param name="command">The action delegate to execute.</param>
-        protected void CommandRegister(string type, string messageType, string actionType,
+        /// <param name="channelId"></param>
+        /// <param name="messageType"></param>
+        /// <param name="actionType"></param>
+        /// <param name="action"></param>
+        /// <param name="exceptionAction"></param>
+        protected void CommandRegister(string channelId, string messageType, string actionType,
             Func<TransmissionPayload, List<TransmissionPayload>, Task> action,
             Func<Exception, TransmissionPayload, List<TransmissionPayload>, Task> exceptionAction = null)
         {
-            var key = new ServiceMessageHeader(type, messageType, actionType);
+            var key = new ServiceMessageHeader(channelId, messageType, actionType);
             var wrapper = new MessageFilterWrapper(key);
 
             CommandRegister(wrapper, action, exceptionAction);
         }
+
         /// <summary>
-        /// This method registers a particular command.
+        /// 
         /// </summary>
-        /// <param name="channelId">The message channelId</param>
-        /// <param name="messageType">The command channelId</param>
-        /// <param name="actionType">The command action</param>
-        /// <param name="command">The action delegate to execute.</param>
+        /// <param name="key"></param>
+        /// <param name="action"></param>
+        /// <param name="exceptionAction"></param>
         protected void CommandRegister(MessageFilterWrapper key,
             Func<TransmissionPayload, List<TransmissionPayload>, Task> action,
             Func<Exception, TransmissionPayload, List<TransmissionPayload>, Task> exceptionAction = null)

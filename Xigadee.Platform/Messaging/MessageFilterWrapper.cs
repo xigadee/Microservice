@@ -27,18 +27,15 @@ namespace Xigadee
     /// <summary>
     /// The MessageFilterWrapper class allows for extended filter functionality for the messaging bus.
     /// </summary>
-    [DebuggerDisplay("{Header.ToKey()}|{ClientId} DL={IsDeadLetter}")]
+    [DebuggerDisplay("{Header.ToKey()}|{ClientId}")]
     public class MessageFilterWrapper: IEquatable<MessageFilterWrapper>
     {
-        public MessageFilterWrapper(ServiceMessageHeader header, bool isDeadLetter = false)
+        public MessageFilterWrapper(ServiceMessageHeader header)
         {
             Header = header;
-            IsDeadLetter = isDeadLetter;
         }
 
-        public readonly ServiceMessageHeader Header;
-
-        public readonly bool IsDeadLetter;
+        public ServiceMessageHeader Header { get; }
 
         public string ClientId { get; set; }
 
@@ -62,7 +59,6 @@ namespace Xigadee
             {
                 var result = 0;
 
-                result = (result * 397) ^ SafeHashCode(IsDeadLetter);
                 result = (result * 397) ^ SafeHashCode(ClientId);
 
                 result = (result * 397) ^ SafeHashCode(Header.ChannelId);
@@ -94,8 +90,7 @@ namespace Xigadee
             if (other == null)
                 return false;
 
-            return IsDeadLetter == other.IsDeadLetter 
-                && ClientId == other.ClientId
+            return ClientId == other.ClientId
                 && Header.Equals(other.Header);
         }
 

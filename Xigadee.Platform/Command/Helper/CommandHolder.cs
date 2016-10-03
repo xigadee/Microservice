@@ -30,14 +30,11 @@ namespace Xigadee
         public CommandHolder(MessageFilterWrapper message)
         {
             Message = message;
-            //RequiresQuorum = requiresQuorum;
         }
         /// <summary>
         /// This is the message filter.
         /// </summary>
         public MessageFilterWrapper Message { get; set; }
-
-        public bool RequiresQuorum { get; set; }
 
         public bool Equals(CommandHolder other)
         {
