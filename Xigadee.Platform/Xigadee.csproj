@@ -146,6 +146,7 @@
     <Compile Include="Configuration\ConfigBase.cs" />
     <Compile Include="Microservice\MicroserviceId.cs" />
     <Compile Include="Microservice\Microservice_Process.cs" />
+    <Compile Include="Microservice\Policy\MicroservicePolicy.cs" />
     <Compile Include="Persistence\Events\EntityChangeEventArgs.cs" />
     <Compile Include="Persistence\Notification\EntityChangeNotificationCommand.cs" />
     <Compile Include="Persistence\Notification\EntityChangeNotificationPolicy.cs" />
@@ -187,6 +188,8 @@
     <Compile Include="Messaging\MessageFilterWrapper.cs" />
     <Compile Include="Pipeline\Extensions\AddDataCollector.cs" />
     <Compile Include="Pipeline\Extensions\AppendServiceMessageHeaderRewriteRule.cs" />
+    <Compile Include="Pipeline\Extensions\Configure.cs" />
+    <Compile Include="ResourceTracker\ResourceTrackerPolicy.cs" />
     <Compile Include="Scheduler\Schedule.cs" />
     <Compile Include="Messaging\ServiceMessage.cs" />
     <Compile Include="Messaging\ServiceMessageHeader.cs" />
@@ -220,7 +223,7 @@
     <Compile Include="DataCollection\Interfaces\ITelemetry.cs" />
     <Compile Include="Exceptions\MicroserviceStatusChangeException.cs" />
     <Compile Include="Microservice\Events\MicroserviceStatusEvent.cs" />
-    <Compile Include="Microservice\Microservice_Configure.cs" />
+    <Compile Include="Microservice\Microservice_Create.cs" />
     <Compile Include="Orchestration\Commands\EntityChange\EntityChangeOrchestrationCommandBase.cs" />
     <Compile Include="Orchestration\Commands\Input\InputOrchestrationCommandBase.cs" />
     <Compile Include="Orchestration\Commands\Output\OutputOrchestrationCommandBase.cs" />

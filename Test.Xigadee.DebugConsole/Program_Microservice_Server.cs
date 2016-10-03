@@ -137,9 +137,9 @@ namespace Test.Xigadee
 
         private static void ServerStartRequested(object sender, StartEventArgs e)
         {
-            e.ConfigurationOptions.ConcurrentRequestsMax = 4;
-            e.ConfigurationOptions.ConcurrentRequestsMin = 1;
-            e.ConfigurationOptions.StatusLogFrequency = TimeSpan.FromSeconds(15);
+            //e.ConfigurationOptions.ConcurrentRequestsMax = 4;
+            //e.ConfigurationOptions.ConcurrentRequestsMin = 1;
+            //e.ConfigurationOptions.StatusLogFrequency = TimeSpan.FromSeconds(15);
 
             //e.ConfigurationOptions.OverloadProcessLimit = 2;
             //if (e.ConfigurationOptions.OverloadProcessLimit == 0)

@@ -54,6 +54,7 @@ namespace Xigadee
             return sender;
         }
         #endregion
+        //Channels
         #region RegisterChannel(Channel logger)
         /// <summary>
         /// This method can be used to manually register an Logger.
@@ -117,7 +118,7 @@ namespace Xigadee
         public ISharedService SharedServices { get { return mCommands.SharedServices; } }
         #endregion
 
-        //Collector
+        //Data Collector
         #region RegisterDataCollector(IDataCollectorComponent collector)
         /// <summary>
         /// This method is used to register a collector.

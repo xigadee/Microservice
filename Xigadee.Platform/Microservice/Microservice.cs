@@ -78,16 +78,14 @@ namespace Xigadee
         /// <param name="serviceId">The service id.</param>
         /// <param name="policySettings">The policy settings.</param>
         /// <param name="properties">Any additional property key.</param>
-        public Microservice(MicroserviceConfigurationOptions options = null
-            , string name = null
+        public Microservice(
+              string name = null
             , string serviceId = null
             , IEnumerable<PolicyBase> policySettings = null
             , IEnumerable<Tuple<string,string>> properties = null)
             : base(name)
         {
             mPolicySettings = policySettings?.ToList()??new List<PolicyBase>();
-
-            ConfigurationOptions = options ?? new MicroserviceConfigurationOptions();
 
             Id = new MicroserviceId(
                   string.IsNullOrEmpty(name) ? GetType().Name : name
@@ -112,12 +110,6 @@ namespace Xigadee
         public MicroserviceId Id { get; } 
         #endregion
 
-        #region ConfigurationOptions
-        /// <summary>
-        /// This class contains the common configuration options for the Microservice.
-        /// </summary>
-        public MicroserviceConfigurationOptions ConfigurationOptions { get; set; } 
-        #endregion
         #region ConfigurationInitialise()
         /// <summary>
         /// This method is used to set the dynamic system configuration parameters such and max and min concurrent jobs
@@ -125,15 +117,17 @@ namespace Xigadee
         /// </summary>
         protected virtual void ConfigurationInitialise()
         {
+            var tmPolicy = PolicyTaskManager;
+
             //Do some sanity checking on the Max/Min settings. 
-            if (ConfigurationOptions.ConcurrentRequestsMin < 0)
-                ConfigurationOptions.ConcurrentRequestsMin = 0;
+            if (tmPolicy.ConcurrentRequestsMin < 0)
+                tmPolicy.ConcurrentRequestsMin = 0;
 
-            if (ConfigurationOptions.ConcurrentRequestsMax < ConfigurationOptions.ConcurrentRequestsMin)
-                ConfigurationOptions.ConcurrentRequestsMax = ConfigurationOptions.ConcurrentRequestsMin;
+            if (tmPolicy.ConcurrentRequestsMax < tmPolicy.ConcurrentRequestsMin)
+                tmPolicy.ConcurrentRequestsMax = tmPolicy.ConcurrentRequestsMin;
 
-            if (ConfigurationOptions.ConcurrentRequestsMax == 0)
-                ConfigurationOptions.ConcurrentRequestsMax = 1;
+            if (tmPolicy.ConcurrentRequestsMax == 0)
+                tmPolicy.ConcurrentRequestsMax = 1;
 
             //mAutotuneTasksMinConcurrent = ConfigurationOptions.ConcurrentRequestsMin;
             //mAutotuneTasksMaxConcurrent = ConfigurationOptions.ConcurrentRequestsMax;
@@ -163,19 +157,20 @@ namespace Xigadee
         {
             //Set the status log frequency.
             mScheduler.Register(async (s, cancel) => await LogStatistics()
-                , ConfigurationOptions.StatusLogFrequency, "Status Poll", TimeSpan.FromSeconds(0), isInternal:true);
+                , PolicyMicroservice.FrequencyStatisticsGeneration, "Status Poll", TimeSpan.FromSeconds(0), isInternal:true);
 
             //Set the status log frequency.
-            mScheduler.Register(async (s, cancel) => await mTaskManager.Autotune()
-                , TimeSpan.FromSeconds(1), "Autotune", TimeSpan.FromSeconds(10), isInternal: true);
+            if (PolicyMicroservice.FrequencyAutotune.HasValue)
+                mScheduler.Register(async (s, cancel) => await mTaskManager.Autotune()
+                    , PolicyMicroservice.FrequencyAutotune.Value, "Autotune", TimeSpan.FromSeconds(10), isInternal: true);
 
             // Flush the accumulated telemetry 
             mScheduler.Register(async (s, cancel) => await mDataCollection.Flush()
-                , TimeSpan.FromMinutes(15), "Data Collection Flush", TimeSpan.FromSeconds(10), isInternal: true);
+                , PolicyMicroservice.FrequencyDataCollectionFlush, "Data Collection Flush", TimeSpan.FromSeconds(10), isInternal: true);
 
             // Kills any overrunning tasks
             mScheduler.Register(async (s, cancel) => await mTaskManager.TaskTimedoutKill()
-                , TimeSpan.FromMinutes(1), "Tasks timed-out: kill", TimeSpan.FromSeconds(1), isInternal: true);
+                , PolicyMicroservice.FrequencyTasksTimeout, "Tasks timed-out: kill", TimeSpan.FromSeconds(1), isInternal: true);
         }
         #endregion
 

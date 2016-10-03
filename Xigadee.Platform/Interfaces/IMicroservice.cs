@@ -50,6 +50,14 @@ namespace Xigadee
 
         ISharedService SharedServices { get; }
 
+        MicroservicePolicy PolicyMicroservice { get; }
+        TaskManagerPolicy PolicyTaskManager { get; }
+        ResourceTrackerPolicy PolicyResourceTracker { get; }
+        CommandContainerPolicy PolicyCommandContainer { get; }
+        CommunicationPolicy PolicyCommunication { get; }
+        SchedulerPolicy PolicyScheduler { get; }
+        SecurityPolicy PolicySecurity { get; }
+        DataCollectionPolicy PolicyDataCollection { get; }
     }
 
     public interface IMicroservice: IMicroserviceConfigure

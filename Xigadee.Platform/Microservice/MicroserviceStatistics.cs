@@ -91,10 +91,6 @@ namespace Xigadee
         public TaskManagerStatistics Tasks { get; set; }
 
         /// <summary>
-        /// This is the current configuration for the Microservice.
-        /// </summary>
-        public MicroserviceConfigurationOptions Configuration { get; set; }
-        /// <summary>
         /// This is a list of the handlers active on the system and their status.
         /// </summary>
         public CommunicationStatistics Communication { get; set; }

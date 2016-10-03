@@ -31,6 +31,50 @@ namespace Xigadee
     //TaskManager
     public partial class Microservice
     {
+        object syncLock = new object();
+
+        MicroservicePolicy mPolicyMicroservice = null;
+        TaskManagerPolicy mPolicyTaskManager = null;
+        CommandContainerPolicy mPolicyCommand = null;
+        CommunicationPolicy mPolicyCommunication = null;
+        SchedulerPolicy mPolicyScheduler = null;
+        SecurityPolicy mPolicySecurity = null;
+        ResourceTrackerPolicy mPolicyResourceTracker = null;
+        DataCollectionPolicy mPolicyDataCollection = null;
+        //Note: Open up policy to pipeline.
+
+
+
+        private P PolicyResolve<P>(P existing, Action<Microservice, P> onResolve = null, Func<Microservice, P> creator = null)
+            where P:PolicyBase, new()
+        {
+            if (existing == null)
+            {
+                lock (syncLock)
+                {
+                    if (existing == null)
+                    {
+                        existing = mPolicySettings?.Where((p) => p is P).Cast<P>().FirstOrDefault() ?? creator?.Invoke(this) ?? new P();
+                        onResolve?.Invoke(this, existing);
+                    }
+                }
+            }
+
+            return existing;
+        }
+
+        /// <summary>
+        /// This is the policy used to set the Microservice default settings.
+        /// </summary>
+        /// <returns>The microservice policy.</returns>
+        public virtual MicroservicePolicy PolicyMicroservice
+        {
+            get
+            {
+                return PolicyResolve(mPolicyMicroservice, (m, p) => mPolicyMicroservice = p);
+            }
+        }
+
         #region InitialiseTaskManager()
         /// <summary>
         /// This method creates the task manager and sets the default bulkhead reservations.
@@ -38,7 +82,7 @@ namespace Xigadee
         /// <returns></returns>
         protected virtual TaskManager InitialiseTaskManager()
         {
-            var taskTracker = new TaskManager(4, Execute, PolicyTaskManager());
+            var taskTracker = new TaskManager(4, Execute, PolicyTaskManager);
 
             taskTracker.BulkheadReserve(3, 1, 2);
             taskTracker.BulkheadReserve(2, 2, 2);
@@ -51,19 +95,14 @@ namespace Xigadee
         /// <summary>
         /// This method retrieves the policy for the task manager.
         /// </summary>
-        /// <returns></returns>
-        protected virtual TaskManagerPolicy PolicyTaskManager()
+        /// <returns>The policy.</returns>
+        public virtual TaskManagerPolicy PolicyTaskManager
         {
-            var policy = new TaskManagerPolicy();
-
-            policy.ConcurrentRequestsMax = ConfigurationOptions.ConcurrentRequestsMax;
-            policy.ConcurrentRequestsMin = ConfigurationOptions.ConcurrentRequestsMin;
-            policy.AutotuneEnabled = ConfigurationOptions.SupportAutotune;
-            policy.ProcessKillOverrunGracePeriod = ConfigurationOptions.ProcessKillOverrunGracePeriod;
-            policy.ProcessorTargetLevelPercentage = ConfigurationOptions.ProcessorTargetLevelPercentage;
-
-            return policy;
-        } 
+            get
+            {
+                return PolicyResolve(mPolicyTaskManager, (m, p) =>mPolicyTaskManager = p);
+            }
+        }
         #endregion
 
         #region InitialiseResourceTracker()
@@ -75,9 +114,20 @@ namespace Xigadee
         /// <returns>Returns the resource tracker.</returns>
         protected virtual ResourceTracker InitialiseResourceTracker()
         {
-            var container = new ResourceTracker();
+            var container = new ResourceTracker(PolicyResourceTracker);
 
             return container;
+        }
+        /// <summary>
+        /// This is the policy used to set the communication component settings.
+        /// </summary>
+        /// <returns></returns>
+        public virtual ResourceTrackerPolicy PolicyResourceTracker
+        {
+            get
+            {
+                return PolicyResolve(mPolicyResourceTracker, (m,p) => mPolicyResourceTracker = p);
+            }
         }
         #endregion
 
@@ -90,7 +140,7 @@ namespace Xigadee
         /// <returns>Returns the container.</returns>
         protected virtual CommandContainer InitialiseCommandContainer()
         {
-            var container = new CommandContainer(PolicyCommand());
+            var container = new CommandContainer(PolicyCommandContainer);
 
             return container;
         }
@@ -98,9 +148,12 @@ namespace Xigadee
         /// This is the policy used to set the communication component settings.
         /// </summary>
         /// <returns></returns>
-        protected virtual CommandContainerPolicy PolicyCommand()
+        public virtual CommandContainerPolicy PolicyCommandContainer
         {
-            return new CommandContainerPolicy();
+            get
+            {
+                return PolicyResolve(mPolicyCommand, (m, p) => mPolicyCommand = p);
+            }
         }
         #endregion
 
@@ -113,7 +166,7 @@ namespace Xigadee
         /// <returns>The communication container.</returns>
         protected virtual CommunicationContainer InitialiseCommunicationContainer()
         {
-            var container = new CommunicationContainer(PolicyCommunication());
+            var container = new CommunicationContainer(PolicyCommunication);
 
             return container;
         }
@@ -121,9 +174,12 @@ namespace Xigadee
         /// This is the policy used to set the communication component settings.
         /// </summary>
         /// <returns></returns>
-        protected virtual CommunicationPolicy PolicyCommunication()
+        public virtual CommunicationPolicy PolicyCommunication
         {
-            return new CommunicationPolicy();
+            get
+            {
+                return PolicyResolve(mPolicyCommunication, (m, p) => mPolicyCommunication = p);
+            }
         }
         #endregion
 
@@ -134,18 +190,17 @@ namespace Xigadee
         /// <returns>The default scheduler.</returns>
         protected virtual SchedulerContainer InitialiseSchedulerContainer()
         {
-            var container = new SchedulerContainer(PolicyScheduler());
+            var container = new SchedulerContainer(PolicyScheduler);
 
             return container;
         }
 
-        protected virtual SchedulerPolicy PolicyScheduler()
+        public virtual SchedulerPolicy PolicyScheduler
         {
-            var policy = new SchedulerPolicy();
-            
-            //policy.DefaultPollInMs = ConfigurationOptions.
-
-            return policy;
+            get
+            {
+                return PolicyResolve(mPolicyScheduler, (m, p) => mPolicyScheduler = p);
+            }
         }
         #endregion
 
@@ -158,7 +213,7 @@ namespace Xigadee
         /// <returns>Returns the container.</returns>
         protected virtual SecurityContainer InitialiseSecurityContainer()
         {
-            var container = new SecurityContainer(PolicySecurity());
+            var container = new SecurityContainer(PolicySecurity);
 
             return container;
         }
@@ -166,9 +221,12 @@ namespace Xigadee
         /// This is the policy used to set the communication component settings.
         /// </summary>
         /// <returns></returns>
-        protected virtual SecurityPolicy PolicySecurity()
+        public virtual SecurityPolicy PolicySecurity
         {
-            return new SecurityPolicy();
+            get
+            {
+                return PolicyResolve(mPolicySecurity, (m, p) => mPolicySecurity = p);
+            }
         }
         #endregion
 
@@ -191,7 +249,7 @@ namespace Xigadee
         /// <returns>The data collection container.</returns>
         protected virtual DataCollectionContainer InitialiseDataCollectionContainer()
         {
-            var container = new DataCollectionContainer(PolicyDataCollection());
+            var container = new DataCollectionContainer(PolicyDataCollection);
 
             return container;
         }
@@ -199,10 +257,14 @@ namespace Xigadee
         /// This is the policy used to set the data collection container settings.
         /// </summary>
         /// <returns>The policy</returns>
-        protected virtual DataCollectionPolicy PolicyDataCollection()
+        public virtual DataCollectionPolicy PolicyDataCollection
         {
-            return new DataCollectionPolicy();
+            get
+            {
+                return PolicyResolve(mPolicyDataCollection, (m, p) => mPolicyDataCollection = p);
+            }
         }
         #endregion
+
     }
 }

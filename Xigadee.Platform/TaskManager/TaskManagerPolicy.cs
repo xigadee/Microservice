@@ -27,9 +27,6 @@ namespace Xigadee
     /// </summary>
     public class TaskManagerPolicy:PolicyBase
     {
-        public TaskManagerPolicy()
-        {
-        }
         /// <summary>
         /// This specifies whether autotune should be supported.
         /// </summary>
@@ -68,7 +65,9 @@ namespace Xigadee
         /// by a task submission or completion. The default is 200 ms.
         /// </summary>
         public int LoopPauseTimeInMs { get; set; } = 50;
-
+        /// <summary>
+        /// 
+        /// </summary>
         public bool ExecuteInternalDirect { get; set; } = true;
 
     }

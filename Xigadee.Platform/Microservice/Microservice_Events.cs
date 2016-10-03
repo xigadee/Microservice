@@ -109,7 +109,7 @@ namespace Xigadee
         {
             try
             {
-                StartRequested?.Invoke(this, new StartEventArgs() { ConfigurationOptions = ConfigurationOptions });
+                StartRequested?.Invoke(this, new StartEventArgs());
             }
             catch (Exception ex)
             {

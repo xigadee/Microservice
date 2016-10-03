@@ -35,7 +35,7 @@ namespace Test.Xigadee
         {
             try
             {
-                var pipeline = Microservice.Configure((s) => sExtensionService = s);
+                var pipeline = Microservice.Create((s) => sExtensionService = s);
 
                 ChannelPipelineIncoming cpipeIn = null;
                 ChannelPipelineOutgoing cpipeOut = null;

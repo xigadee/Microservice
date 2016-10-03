@@ -27,10 +27,13 @@ namespace Xigadee
     {
         [ConfigSettingKey("DocumentDb")]
         public const string KeyDocDBAccountName = "DocDBAccountName";
+
         [ConfigSettingKey("DocumentDb")]
         public const string KeyDocDBAccountAccessKey = "DocDBAccountAccessKey";
+
         [ConfigSettingKey("DocumentDb")]
         public const string KeyDocDBDatabaseName = "DocDBDatabaseName";
+
         [ConfigSettingKey("DocumentDb")]
         public const string KeyDocDBCollectionName = "DocDBCollectionName";
 

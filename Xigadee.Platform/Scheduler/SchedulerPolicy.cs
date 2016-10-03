@@ -24,11 +24,6 @@ namespace Xigadee
 {
     public class SchedulerPolicy:PolicyBase
     {
-        public SchedulerPolicy()
-        {
-            DefaultPollInMs = 100;
-        }
-
-        public virtual int DefaultPollInMs { get; set; }
+        public virtual int DefaultPollInMs { get; set; } = 100;
     }
 }

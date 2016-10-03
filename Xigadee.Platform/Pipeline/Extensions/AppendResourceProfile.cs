@@ -36,17 +36,17 @@ namespace Xigadee
             return cpipe;
         }
 
-        public static ChannelPipelineIncoming AppendResourceProfile(this ChannelPipelineIncoming cpipe
-            , string profileName
-            , Action<ResourceProfile> action = null)
-        {
-            if (string.IsNullOrEmpty(profileName))
-                throw new ArgumentNullException("profileName cannot be null or empty");
+        //public static ChannelPipelineIncoming AppendResourceProfile(this ChannelPipelineIncoming cpipe
+        //    , string profileName
+        //    , Action<ResourceProfile> action = null)
+        //{
+        //    if (string.IsNullOrEmpty(profileName))
+        //        throw new ArgumentNullException("profileName cannot be null or empty");
 
-            cpipe.AppendResourceProfile((c) => new ResourceProfile(profileName), action);
+        //    cpipe.AppendResourceProfile((c) => new ResourceProfile(profileName), action);
 
-            return cpipe;
-        }
+        //    return cpipe;
+        //}
 
         public static ChannelPipelineIncoming AppendResourceProfile(this ChannelPipelineIncoming cpipe
             , Func<IEnvironmentConfiguration, ResourceProfile> creator

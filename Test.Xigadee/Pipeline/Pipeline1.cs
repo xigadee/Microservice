@@ -22,12 +22,12 @@ namespace Test.Xigadee
     [TestClass]
     public partial class PipelineTest1
     {
-        DebugMemoryDataCollector collector;
+        DebugMemoryDataCollector mDataCollector;
 
         private void ConfigureServiceRoot(MicroservicePipeline pipe)
         {
             pipe
-                .AddDataCollector<DebugMemoryDataCollector>((c) => collector = c)
+                .AddDataCollector<DebugMemoryDataCollector>((c) => mDataCollector = c)
                 .AddLogger<TraceEventLogger>()
                 .AddPayloadSerializerDefaultJson();
         }
@@ -35,7 +35,7 @@ namespace Test.Xigadee
         private void ChannelInConfigure(ChannelPipelineIncoming inPipe)
         {
             inPipe
-                .AppendResourceProfile(new ResourceProfile("TrackIt"))
+                .AppendResourceProfile("TrackIt")
                 //.AppendBoundaryLogger(new MemoryBoundaryLogger(), (p, bl) => bLogger = bl)
                 ;
         }
@@ -46,7 +46,7 @@ namespace Test.Xigadee
             try
             {
                 Microservice service;
-                var pipeline = Microservice.Configure((s) => service = s, serviceName: "TestPipeline");
+                var pipeline = Microservice.Create((s) => service = s, serviceName: "TestPipeline");
 
                 ChannelPipelineIncoming cpipeIn = null;
                 ChannelPipelineOutgoing cpipeOut = null;
@@ -55,6 +55,11 @@ namespace Test.Xigadee
                 int signalChange = 0;
 
                 pipeline
+                    .ConfigureTaskManager((t) =>
+                    {
+                        t.ConcurrentRequestsMin = 1;
+                        t.ConcurrentRequestsMax = 4;
+                    })
                     .CallOut(ConfigureServiceRoot)
                     .AddChannelIncoming("internalIn", internalOnly: true)
                         .CallOut(ChannelInConfigure)

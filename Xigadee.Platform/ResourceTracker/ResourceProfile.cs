@@ -35,6 +35,8 @@ namespace Xigadee
         /// <param name="id">The resource id.</param>
         public ResourceProfile(string id)
         {
+            if (id == null)
+                throw new ArgumentNullException("ResourceProfile: id cannot be null");
             Id = id;
         }
         /// <summary>

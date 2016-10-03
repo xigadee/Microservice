@@ -84,7 +84,7 @@ namespace Xigadee
                     //OK, we have an problem. We log this as an error and get out of here
                     mDataCollection.DispatcherPayloadUnresolved(requestPayload, DispatcherRequestUnresolvedReason.MessageHandler);
                     OnProcessRequestUnresolved(requestPayload, DispatcherRequestUnresolvedReason.MessageHandler);
-                    isSuccess = ConfigurationOptions.UnhandledMessagesIgnore;
+                    isSuccess = PolicyMicroservice.DispatcherUnhandledMessagesIgnore;
                     return;
                 }
                 else if (!resolveInternal)
@@ -154,7 +154,7 @@ namespace Xigadee
             //Increase the Dispatcher transit count.
             payload.Message.DispatcherTransitCount = payload.Message.DispatcherTransitCount + 1;
             //Have we exceeded the transit count for the message.
-            if (payload.Message.DispatcherTransitCount > ConfigurationOptions.TransitCountMax)
+            if (payload.Message.DispatcherTransitCount > PolicyMicroservice.DispatcherTransitCountMax)
             {
                 //this is not supported message - the message handler will be null if previously processed.
                 throw new TransitCountExceededException(payload);

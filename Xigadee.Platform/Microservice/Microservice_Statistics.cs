@@ -64,7 +64,6 @@ namespace Xigadee
 
             stats.Status = Status.ToString();
             stats.LogTime = DateTime.UtcNow;
-            stats.Configuration = ConfigurationOptions;
 
             stats.Tasks = mTaskManager?.Statistics;
 

@@ -47,7 +47,7 @@ namespace Xigadee
         /// <param name="connectionString">The Azure Service bus connection string.</param>
         /// <param name="connectionName"></param>
         /// <param name="defaultTimeout"></param>
-        /// <param name="isDeadLetterListener"></param>
+        /// <param name="isDeadLetterListener">Specifies that the listener should process the deadletter messages from the queue.</param>
         public AzureSBListenerBase(string channelId
             , string connectionString
             , string connectionName

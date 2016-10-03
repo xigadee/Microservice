@@ -30,7 +30,7 @@ namespace Test.Xigadee
                 DebugMemoryDataCollector collector = null;
                 Microservice service;
                 CommandInitiator init = null;
-                var pipeline = Microservice.Configure((s) => service = s, serviceName: "TestPipeline");
+                var pipeline = Microservice.Create((s) => service = s, serviceName: "TestPipeline");
 
                 ChannelPipelineIncoming cpipeIn = null;
                 ChannelPipelineOutgoing cpipeOut = null;

@@ -27,10 +27,7 @@ namespace Xigadee
     /// </summary>
     public class StartEventArgs: MicroserviceEventArgs
     {
-        /// <summary>
-        /// The current configuration options.
-        /// </summary>
-        public MicroserviceConfigurationOptions ConfigurationOptions { get; set; }
+
     }
 
 }
