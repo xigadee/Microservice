@@ -46,7 +46,6 @@ namespace Xigadee
         /// <param name="exceptionAction">The optional action call if an exception is thrown.</param>
         protected virtual void CommandRegister<CM, PM>(
             Func<PM, TransmissionPayload, List<TransmissionPayload>, Task> action,
-            Func<TransmissionPayload, List<TransmissionPayload>, Task> deadLetterAction = null,
             Func<Exception, TransmissionPayload, List<TransmissionPayload>, Task> exceptionAction = null)
             where CM : IMessageContract
         {
@@ -56,7 +55,7 @@ namespace Xigadee
                 await action(payload, m, l);
             };
 
-            CommandRegister<CM>(actionReduced, deadLetterAction, exceptionAction);
+            CommandRegister<CM>(actionReduced, exceptionAction);
         }
         /// <summary>
         /// This method register a command.
@@ -66,14 +65,13 @@ namespace Xigadee
         /// <param name="exceptionAction">The optional action call if an exception is thrown.</param>
         protected virtual void CommandRegister<CM>(
             Func<TransmissionPayload, List<TransmissionPayload>, Task> action,
-            Func<TransmissionPayload, List<TransmissionPayload>, Task> deadLetterAction = null,
             Func<Exception, TransmissionPayload, List<TransmissionPayload>, Task> exceptionAction = null)
             where CM : IMessageContract
         {
             string channelId, messageType, actionType;
             ServiceMessageHelper.ExtractContractInfo<CM>(out channelId, out messageType, out actionType);
 
-            CommandRegister(channelId, messageType, actionType, action, deadLetterAction, exceptionAction);
+            CommandRegister(channelId, messageType, actionType, action, exceptionAction);
         }
         #endregion
         #region CommandRegister...
@@ -86,13 +84,12 @@ namespace Xigadee
         /// <param name="command">The action delegate to execute.</param>
         protected void CommandRegister(string type, string messageType, string actionType,
             Func<TransmissionPayload, List<TransmissionPayload>, Task> action,
-            Func<TransmissionPayload, List<TransmissionPayload>, Task> deadLetterAction = null,
             Func<Exception, TransmissionPayload, List<TransmissionPayload>, Task> exceptionAction = null)
         {
             var key = new ServiceMessageHeader(type, messageType, actionType);
             var wrapper = new MessageFilterWrapper(key);
 
-            CommandRegister(wrapper, action, deadLetterAction, exceptionAction);
+            CommandRegister(wrapper, action, exceptionAction);
         }
         /// <summary>
         /// This method registers a particular command.
@@ -103,7 +100,6 @@ namespace Xigadee
         /// <param name="command">The action delegate to execute.</param>
         protected void CommandRegister(MessageFilterWrapper key,
             Func<TransmissionPayload, List<TransmissionPayload>, Task> action,
-            Func<TransmissionPayload, List<TransmissionPayload>, Task> deadLetterAction = null,
             Func<Exception, TransmissionPayload, List<TransmissionPayload>, Task> exceptionAction = null)
         {
             if (key == null)
@@ -115,11 +111,7 @@ namespace Xigadee
                 Exception actionEx = null;
                 try
                 {
-                    //Depending on the message type, execute the deadletter action.
-                    if (rq.IsDeadLetterMessage && deadLetterAction != null)
-                        await deadLetterAction(rq, rs);
-                    else
-                        await action(rq, rs);
+                    await action(rq, rs);
                 }
                 catch (Exception ex)
                 {

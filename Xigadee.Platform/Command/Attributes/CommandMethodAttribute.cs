@@ -30,9 +30,6 @@ namespace Xigadee
     {
         public CommandContractAttribute(string channelId = null, string messageType = null, string actionType = null)
         {
-            ChannelId = channelId;
-            MessageType = messageType;
-            ActionType = actionType;
             Header = new ServiceMessageHeader(channelId, messageType, actionType);
         }
 
@@ -41,13 +38,26 @@ namespace Xigadee
             if (!interfaceType.IsInterface || interfaceType.IsSubclassOf(typeof(IMessageContract)))
                 throw new ArgumentOutOfRangeException("interfaceType must be an interface and derived from IMessageContract");
 
+            string channelId, messageType, actionType;
+
+            if (!ServiceMessageHelper.ExtractContractInfo(interfaceType, out channelId, out messageType, out actionType))
+                throw new InvalidOperationException("Unable to locate contract attributes for " + interfaceType.Name);
+
+            Header = new ServiceMessageHeader(channelId, messageType, actionType);
         }
 
-        public string ChannelId { get; protected set; }
-
-        public string MessageType { get; protected set; }
-
-        public string ActionType { get; protected set; }
+        /// <summary>
+        /// The channelId
+        /// </summary>
+        public string ChannelId { get { return Header.ChannelId; } }
+        /// <summary>
+        /// The message type.
+        /// </summary>
+        public string MessageType { get { return Header.MessageType; } }
+        /// <summary>
+        /// The action type.
+        /// </summary>
+        public string ActionType { get { return Header.ActionType; } }
 
         /// <summary>
         /// The converted header.

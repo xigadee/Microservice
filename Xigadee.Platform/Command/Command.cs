@@ -123,6 +123,9 @@ namespace Xigadee
         #endregion
 
         #region StartInternal/StopInternal
+        /// <summary>
+        /// This override method starts the command.
+        /// </summary>
         protected override void StartInternal()
         {
             try
@@ -153,7 +156,9 @@ namespace Xigadee
                 throw ex;
             }
         }
-
+        /// <summary>
+        /// This override method stops the command.
+        /// </summary>
         protected override void StopInternal()
         {
             try

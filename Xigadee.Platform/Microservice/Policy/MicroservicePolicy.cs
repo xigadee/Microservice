@@ -6,17 +6,26 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This policy hold miscellaneous settings not convered in the specific policy classes.
+    /// </summary>
     public class MicroservicePolicy:PolicyBase
     {
         /// <summary>
         /// This is the frquency that the Microservice status is compiled and logged to the data collector.
         /// </summary>
         public TimeSpan FrequencyStatisticsGeneration { get; set; } = TimeSpan.FromSeconds(15);
-
+        /// <summary>
+        /// This is the frquency for calculating time outs for overrunning processes.
+        /// </summary>
         public TimeSpan FrequencyTasksTimeout { get; set; } = TimeSpan.FromMinutes(1);
-
+        /// <summary>
+        /// This is is the frequency for calling the data collector to flush any long running statistics.
+        /// </summary>
         public TimeSpan FrequencyDataCollectionFlush { get; set; } = TimeSpan.FromMinutes(15);
-
+        /// <summary>
+        /// This is the autotune poll frquency. Leave this value null to disable the poll.
+        /// </summary>
         public TimeSpan? FrequencyAutotune { get; set; } = null;
 
 

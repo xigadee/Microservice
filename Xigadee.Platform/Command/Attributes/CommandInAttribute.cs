@@ -10,4 +10,9 @@ namespace Xigadee
     public class CommandInAttribute:Attribute
     {
     }
+
+    [AttributeUsage(AttributeTargets.ReturnValue, AllowMultiple = false)]
+    public class CommandOutAttribute: Attribute
+    {
+    }
 }

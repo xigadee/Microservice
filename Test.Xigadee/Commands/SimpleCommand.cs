@@ -13,25 +13,27 @@ namespace Test.Xigadee
         {
         }
 
-        protected override void CommandsRegister()
+
+        [CommandContract(messageType: "franky", actionType: "johnny2")]
+        private void ThisisMeStupid1(TransmissionPayload incoming, List<TransmissionPayload> outgoing)
         {
-            base.CommandsRegister();
+
         }
 
         [CommandContract(messageType: "franky", actionType: "johnny1")]
-        private void ThisisMeStupid1([CommandIn]Blah item)
+        private void ThisisMeStupid2([CommandIn]Blah item)
         {
 
         }
 
         [CommandContract(typeof(IDoSomething1))]
-        public string ThisisMeStupid2([CommandIn]Blah item)
+        public string ThisisMeStupid3([CommandIn]Blah item)
         {
             return "Hmm";
         }
 
         [CommandContract(messageType: "franky", actionType: "johnny3")]
-        protected void ThisisMeStupid3([CommandIn]string item)
+        protected void ThisisMeStupid4([CommandIn]string item)
         {
 
         }

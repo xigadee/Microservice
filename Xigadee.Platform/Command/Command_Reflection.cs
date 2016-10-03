@@ -44,7 +44,30 @@ namespace Xigadee
         {
             var paramInfo = info.GetParameters();
 
+            var genericIn = paramInfo.FirstOrDefault((p) => p.ParameterType == typeof(TransmissionPayload));
+            var genericOut = paramInfo.FirstOrDefault((p) => p.ParameterType == typeof(List<TransmissionPayload>));
+
+            var returnType = info.ReturnType;
+
+            var commandAttrs = Attribute.GetCustomAttributes(info).Where((a) => a is CommandContractAttribute).Cast<CommandContractAttribute>().ToList();
+            if (commandAttrs.Count == 0)
+                return;
+
+            //Is this the standard command
+            if (paramInfo.Length == 2 && genericIn != null && genericOut != null)
+            {
+                commandAttrs.ForEach((a) => CommandsRegisterReflectionStandard(info, a));
+                return;
+            }
+
+
+
             var hmm = Attribute.GetCustomAttributes(paramInfo[0]);
+
+        }
+
+        protected virtual void CommandsRegisterReflectionStandard(MethodInfo info, CommandContractAttribute attr)
+        {
         }
         #endregion
     }
