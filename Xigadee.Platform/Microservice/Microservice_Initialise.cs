@@ -28,9 +28,10 @@ using System.Threading.Tasks;
 #endregion
 namespace Xigadee
 {
-    //TaskManager
+    //Initialise
     public partial class Microservice
     {
+        #region Declarations
         object syncLock = new object();
 
         MicroservicePolicy mPolicyMicroservice = null;
@@ -40,13 +41,19 @@ namespace Xigadee
         SchedulerPolicy mPolicyScheduler = null;
         SecurityPolicy mPolicySecurity = null;
         ResourceTrackerPolicy mPolicyResourceTracker = null;
-        DataCollectionPolicy mPolicyDataCollection = null;
-        //Note: Open up policy to pipeline.
+        DataCollectionPolicy mPolicyDataCollection = null; 
+        #endregion
 
-
-
-        private P PolicyResolve<P>(P existing, Action<Microservice, P> onResolve = null, Func<Microservice, P> creator = null)
-            where P:PolicyBase, new()
+        #region PolicyResolve<P>(P existing, Action<Microservice, P> onResolve = null)
+        /// <summary>
+        /// This is the helper class used to pull out the policy container from the incoming collection and to set it within the correct settings.
+        /// </summary>
+        /// <typeparam name="P">The policy type.</typeparam>
+        /// <param name="existing">The existing value. If this is not null the method will bypass the setup.</param>
+        /// <param name="onResolve">An action that can be called to adjust the policy settings when it is first resolved.</param>
+        /// <returns>Returns the policy.</returns>
+        protected P PolicyResolve<P>(P existing, Action<Microservice, P> onResolve = null)
+            where P : PolicyBase, new()
         {
             if (existing == null)
             {
@@ -54,15 +61,17 @@ namespace Xigadee
                 {
                     if (existing == null)
                     {
-                        existing = mPolicySettings?.Where((p) => p is P).Cast<P>().FirstOrDefault() ?? creator?.Invoke(this) ?? new P();
+                        existing = mPolicySettings?.Where((p) => p is P).Cast<P>().FirstOrDefault() ?? new P();
                         onResolve?.Invoke(this, existing);
                     }
                 }
             }
 
             return existing;
-        }
+        } 
+        #endregion
 
+        #region PolicyMicroservice
         /// <summary>
         /// This is the policy used to set the Microservice default settings.
         /// </summary>
@@ -73,7 +82,8 @@ namespace Xigadee
             {
                 return PolicyResolve(mPolicyMicroservice, (m, p) => mPolicyMicroservice = p);
             }
-        }
+        } 
+        #endregion
 
         #region InitialiseTaskManager()
         /// <summary>
@@ -91,7 +101,8 @@ namespace Xigadee
 
             return taskTracker;
         }
-
+        #endregion
+        #region PolicyTaskManager
         /// <summary>
         /// This method retrieves the policy for the task manager.
         /// </summary>
@@ -100,9 +111,9 @@ namespace Xigadee
         {
             get
             {
-                return PolicyResolve(mPolicyTaskManager, (m, p) =>mPolicyTaskManager = p);
+                return PolicyResolve(mPolicyTaskManager, (m, p) => mPolicyTaskManager = p);
             }
-        }
+        } 
         #endregion
 
         #region InitialiseResourceTracker()
@@ -118,17 +129,19 @@ namespace Xigadee
 
             return container;
         }
+        #endregion
+        #region PolicyResourceTracker
         /// <summary>
-        /// This is the policy used to set the communication component settings.
+        /// This is the policy for the resource tracker.
         /// </summary>
         /// <returns></returns>
         public virtual ResourceTrackerPolicy PolicyResourceTracker
         {
             get
             {
-                return PolicyResolve(mPolicyResourceTracker, (m,p) => mPolicyResourceTracker = p);
+                return PolicyResolve(mPolicyResourceTracker, (m, p) => mPolicyResourceTracker = p);
             }
-        }
+        } 
         #endregion
 
         #region InitialiseCommandContainer()
@@ -144,8 +157,10 @@ namespace Xigadee
 
             return container;
         }
+        #endregion
+        #region PolicyCommandContainer
         /// <summary>
-        /// This is the policy used to set the communication component settings.
+        /// This is the policy used to set the command container.
         /// </summary>
         /// <returns></returns>
         public virtual CommandContainerPolicy PolicyCommandContainer
@@ -154,7 +169,7 @@ namespace Xigadee
             {
                 return PolicyResolve(mPolicyCommand, (m, p) => mPolicyCommand = p);
             }
-        }
+        } 
         #endregion
 
         #region InitialiseCommunicationContainer()
@@ -170,6 +185,8 @@ namespace Xigadee
 
             return container;
         }
+        #endregion
+        #region PolicyCommunication
         /// <summary>
         /// This is the policy used to set the communication component settings.
         /// </summary>
@@ -180,7 +197,7 @@ namespace Xigadee
             {
                 return PolicyResolve(mPolicyCommunication, (m, p) => mPolicyCommunication = p);
             }
-        }
+        } 
         #endregion
 
         #region InitialiseSchedulerContainer()
@@ -194,14 +211,18 @@ namespace Xigadee
 
             return container;
         }
-
+        #endregion
+        #region PolicyScheduler
+        /// <summary>
+        /// This is the policy for the scheduler.
+        /// </summary>
         public virtual SchedulerPolicy PolicyScheduler
         {
             get
             {
                 return PolicyResolve(mPolicyScheduler, (m, p) => mPolicyScheduler = p);
             }
-        }
+        } 
         #endregion
 
         #region InitialiseSecurityContainer()
@@ -217,8 +238,10 @@ namespace Xigadee
 
             return container;
         }
+        #endregion
+        #region PolicySecurity
         /// <summary>
-        /// This is the policy used to set the communication component settings.
+        /// This is the policy used to set the securty container settings.
         /// </summary>
         /// <returns></returns>
         public virtual SecurityPolicy PolicySecurity
@@ -227,7 +250,7 @@ namespace Xigadee
             {
                 return PolicyResolve(mPolicySecurity, (m, p) => mPolicySecurity = p);
             }
-        }
+        } 
         #endregion
 
         #region InitialiseSerializationContainer(List<IPayloadSerializer> payloadSerializers)
@@ -253,6 +276,8 @@ namespace Xigadee
 
             return container;
         }
+        #endregion
+        #region PolicyDataCollection
         /// <summary>
         /// This is the policy used to set the data collection container settings.
         /// </summary>
@@ -263,8 +288,7 @@ namespace Xigadee
             {
                 return PolicyResolve(mPolicyDataCollection, (m, p) => mPolicyDataCollection = p);
             }
-        }
+        } 
         #endregion
-
     }
 }

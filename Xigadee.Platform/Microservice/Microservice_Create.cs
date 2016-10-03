@@ -79,7 +79,6 @@ namespace Xigadee
         /// <param name="configAction">This action can be used to modify the configuration.</param>
         /// <param name="resolver">The resolver used by the config class to resolve key/value pairs.</param>
         /// <param name="resolverFirst">Specifies whether the resolver should be used first before falling back to the root config.</param>
-        /// <param name="msOptions">The options Microservice configuration options.</param>
         /// <param name="serviceName">The friendly service name</param>
         /// <param name="serviceId">The service id.</param>
         /// <param name="policy">A set of policy collections that override the default settings.</param>
