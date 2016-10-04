@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false)]
-    public class CommandInAttribute:Attribute
+    public class PayloadInAttribute:Attribute
     {
     }
 
-    [AttributeUsage(AttributeTargets.ReturnValue, AllowMultiple = false)]
-    public class CommandOutAttribute: Attribute
+    [AttributeUsage(AttributeTargets.ReturnValue | AttributeTargets.Parameter, AllowMultiple = false)]
+    public class PayloadOutAttribute: Attribute
     {
     }
 }

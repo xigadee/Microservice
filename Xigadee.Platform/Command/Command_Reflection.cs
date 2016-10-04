@@ -43,20 +43,22 @@ namespace Xigadee
         /// </summary>
         protected virtual void CommandRegisterReflection(MethodInfo info)
         {
+            //Get the method calling parameters
             var paramInfo = info.GetParameters();
-
-            var genericIn = paramInfo.FirstOrDefault((p) => p.ParameterType == typeof(TransmissionPayload));
-            var genericOut = paramInfo.FirstOrDefault((p) => p.ParameterType == typeof(List<TransmissionPayload>));
-
+            //And get the return type.
             var returnType = info.ReturnType;
 
+            //Now get the CommandContractAttribute.
             var commandAttrs = Attribute.GetCustomAttributes(info)
                 .Where((a) => a is CommandContractAttribute)
                 .Cast<CommandContractAttribute>()
                 .ToList();
-
+            //This shouldn't happen, but check anyway.
             if (commandAttrs.Count == 0)
                 return;
+            
+            var genericIn = paramInfo.FirstOrDefault((p) => p.ParameterType == typeof(TransmissionPayload));
+            var genericOut = paramInfo.FirstOrDefault((p) => p.ParameterType == typeof(List<TransmissionPayload>));
 
             //Is this the standard command - async Task Something(TransmissionPayload incoming, List<TransmissionPayload> outgoing)
             if (paramInfo.Length == 2 && genericIn != null && genericOut != null && returnType == typeof(Task))
@@ -67,19 +69,42 @@ namespace Xigadee
 
             //No, OK .. lets proceed
 
-            var hmm = Attribute.GetCustomAttributes(paramInfo[0]);
+            var rqAttr = Attribute.GetCustomAttributes(paramInfo[0]);
+            var rsAttr = info.ReturnTypeCustomAttributes?.GetCustomAttributes(typeof(PayloadOutAttribute), true);
+        }
 
+        protected virtual bool ValidateStandardCall(MethodInfo info, ParameterInfo[] paramInfo, List<CommandContractAttribute> commandAttrs)
+        {
+            if (paramInfo.Length != 2)
+                return false;
+
+            var genericIn = paramInfo.FirstOrDefault((p) => p.ParameterType == typeof(TransmissionPayload));
+            var genericOut = paramInfo.FirstOrDefault((p) => p.ParameterType == typeof(List<TransmissionPayload>));
+
+            //Is this the standard command - async Task Something(TransmissionPayload incoming, List<TransmissionPayload> outgoing)
+            if (genericIn != null && genericOut != null && info.ReturnType == typeof(Task))
+            {
+                commandAttrs.ForEach((a) => CommandsRegisterReflectionStandard(info, a));
+                return true;
+            }
+
+            return false;
         }
 
         protected virtual void CommandsRegisterReflectionStandard(MethodInfo info, CommandContractAttribute attr)
         {
             var header = attr.Header;
+
+
+            if (header.ChannelId == null)
+                header = new Xigadee.ServiceMessageHeader(ChannelId, header.MessageType, header.ActionType);
+
             var wrapper = new MessageFilterWrapper(header);
 
 
             Func<TransmissionPayload, List<TransmissionPayload>, Task> action = async (pIn, pOut) =>
             {
-                await (Task)info.Invoke(null, new object[] { pIn, pOut });
+                await (Task)info.Invoke(this, new object[] { pIn, pOut });
             };
 
             CommandRegister(wrapper, action);
