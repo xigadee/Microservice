@@ -63,6 +63,7 @@
     <Compile Include="Command\Client\CommandInitiatorStatistics.cs" />
     <Compile Include="Command\Command_Reflection.cs" />
     <Compile Include="Command\Attributes\CommandInAttribute.cs" />
+    <Compile Include="Command\Exceptions\CommandNotSupportedException.cs" />
     <Compile Include="Communication\Channel\ChannelRewriteRule.cs" />
     <Compile Include="Communication\TcpTlsChannel\Helper\DirectChannelCommunicator.cs" />
     <Compile Include="Communication\TcpTlsChannel\TcpTlsChannelSender.cs" />

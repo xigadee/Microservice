@@ -20,6 +20,9 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This interface is used for command handlers to implement, to allow the mapping of incoming requests to their specific commands.
+    /// </summary>
     public interface ICommandHandler
     {
         void Initialise(MessageFilterWrapper key, Func<TransmissionPayload, List<TransmissionPayload>, Task> action);

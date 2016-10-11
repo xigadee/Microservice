@@ -26,11 +26,16 @@ using System.Threading;
 namespace Xigadee
 {
     /// <summary>
-    /// This class holds the Handler and the action.
+    /// This class holds the Handler and the action and its associated statistics.
     /// </summary>
     public class CommandHandler<S>: StatisticsBase<S>, ICommandHandler where S: CommandHandlerStatistics, new()
     {
+        #region Declarations
+        /// <summary>
+        /// This is the tick count of the last time the command was accessed.
+        /// </summary>
         public int? mLastAccessed = null;
+        #endregion        
         #region Constructor
         /// <summary>
         /// This is the default constructor.
@@ -77,7 +82,10 @@ namespace Xigadee
                 return Statistics;
             }
         }
-
+        /// <summary>
+        /// This method recalculates the statistics for the command handler.
+        /// </summary>
+        /// <param name="stats">The stats to recalculate.</param>
         protected override void StatisticsRecalculate(S stats)
         {
             stats.Name = Key.Header.ToKey();

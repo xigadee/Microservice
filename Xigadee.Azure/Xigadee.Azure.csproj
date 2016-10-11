@@ -197,12 +197,12 @@
     <Compile Include="Pipeline\Config\ServiceBus.cs" />
     <Compile Include="Pipeline\Config\LogStorage.cs" />
     <Compile Include="Pipeline\Config\Storage.cs" />
-    <Compile Include="DataCollection\EventSource\AzureStorageEventSource.cs" />
-    <Compile Include="DataCollection\EventSource\EventHubEventSource.cs" />
-    <Compile Include="DataCollection\EventSource\QueueEventSource.cs" />
+    <Compile Include="DataCollection\Legacy\EventSource\AzureStorageEventSource.cs" />
+    <Compile Include="DataCollection\Legacy\EventSource\EventHubEventSource.cs" />
+    <Compile Include="DataCollection\Legacy\EventSource\QueueEventSource.cs" />
     <Compile Include="IoT\AzureIoTLogger.cs" />
-    <Compile Include="DataCollection\Logger\AzureStorageLogger.cs" />
-    <Compile Include="DataCollection\Logger\AzureStorageLoggingBase.cs" />
+    <Compile Include="DataCollection\Legacy\Logger\AzureStorageLogger.cs" />
+    <Compile Include="DataCollection\Legacy\AzureStorageLoggingBase.cs" />
     <Compile Include="Persistence\BlobStorage\PersistenceMessageHandlerAzureBlobStorageBase.cs" />
     <Compile Include="Persistence\DocumentDbSDK\PersistenceMessageHandlerDocumentDbSdk.cs" />
     <Compile Include="Persistence\BlobStorage\StorageResponseHolder.cs" />
@@ -252,6 +252,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="DataCollection\Blob\" />
     <Folder Include="Telemetry\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

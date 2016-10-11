@@ -27,7 +27,7 @@ namespace Xigadee
     /// </summary>
     public class CommandHolder: IEquatable<CommandHolder>
     {
-        public CommandHolder(MessageFilterWrapper message)
+        public CommandHolder(MessageFilterWrapper message, string referenceId = null)
         {
             Message = message;
         }
@@ -35,6 +35,11 @@ namespace Xigadee
         /// This is the message filter.
         /// </summary>
         public MessageFilterWrapper Message { get; set; }
+
+        /// <summary>
+        /// This is the reference id used for aiding debugging.
+        /// </summary>
+        public string ReferenceId { get; set; }
 
         public bool Equals(CommandHolder other)
         {

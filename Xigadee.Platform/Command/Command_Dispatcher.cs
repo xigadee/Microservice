@@ -72,7 +72,7 @@ namespace Xigadee
             string channelId, messageType, actionType;
             ServiceMessageHelper.ExtractContractInfo<CM>(out channelId, out messageType, out actionType);
 
-            CommandRegister(channelId, messageType, actionType, action, exceptionAction);
+            CommandRegister(channelId, messageType, actionType, action, exceptionAction, typeof(CM).Name);
         }
         #endregion
         #region CommandRegister...
@@ -84,14 +84,16 @@ namespace Xigadee
         /// <param name="actionType"></param>
         /// <param name="action"></param>
         /// <param name="exceptionAction"></param>
+        /// <param name="referenceId">This is the referenceId of the command</param>
         protected void CommandRegister(string channelId, string messageType, string actionType,
             Func<TransmissionPayload, List<TransmissionPayload>, Task> action,
-            Func<Exception, TransmissionPayload, List<TransmissionPayload>, Task> exceptionAction = null)
+            Func<Exception, TransmissionPayload, List<TransmissionPayload>, Task> exceptionAction = null,
+            string referenceId = null)
         {
             var key = new ServiceMessageHeader(channelId, messageType, actionType);
             var wrapper = new MessageFilterWrapper(key);
 
-            CommandRegister(wrapper, action, exceptionAction);
+            CommandRegister(wrapper, action, exceptionAction, referenceId);
         }
 
         /// <summary>
@@ -100,9 +102,11 @@ namespace Xigadee
         /// <param name="key"></param>
         /// <param name="action"></param>
         /// <param name="exceptionAction"></param>
+        /// <param name="referenceId">This is the referenceId of the command</param>
         protected void CommandRegister(MessageFilterWrapper key,
             Func<TransmissionPayload, List<TransmissionPayload>, Task> action,
-            Func<Exception, TransmissionPayload, List<TransmissionPayload>, Task> exceptionAction = null)
+            Func<Exception, TransmissionPayload, List<TransmissionPayload>, Task> exceptionAction = null, 
+            string referenceId = null)
         {
             if (key == null)
                 throw new ArgumentNullException("CommandRegister: key cannot be null");
@@ -137,7 +141,7 @@ namespace Xigadee
             if (key.Header.IsPartialKey && key.Header.ChannelId == null)
                 throw new Exception("You must supply a channel when using a partial key.");
 
-            var cHolder = new CommandHolder(key);
+            var cHolder = new CommandHolder(key, referenceId);
             mSupported.Add(cHolder, CommandHandlerCreate(key, command));
 
             switch (mPolicy.CommandNotify)
@@ -240,7 +244,7 @@ namespace Xigadee
         /// <summary>
         /// This method is called to process an incoming message.
         /// </summary>
-        /// <param name="request">The message to process.</param>
+        /// <param name="requestPayload">The message to process.</param>
         /// <param name="responses">The return path for the message.</param>
         public virtual async Task ProcessMessage(TransmissionPayload requestPayload, List<TransmissionPayload> responses)
         {
@@ -251,9 +255,7 @@ namespace Xigadee
 
                 H handler;
                 if (!SupportedResolve(header, out handler))
-                {
-                    throw new NotSupportedException(string.Format("This command is not supported: '{0}' in {1}", header, GetType().Name));
-                }
+                    throw new CommandNotSupportedException(requestPayload.Id, header, GetType());
 
                 //Call the registered command.
                 await handler.Execute(requestPayload, responses);
