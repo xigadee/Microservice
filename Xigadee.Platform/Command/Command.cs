@@ -16,6 +16,7 @@
 
 #region using
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 #endregion
 namespace Xigadee
@@ -81,6 +82,10 @@ namespace Xigadee
         /// </summary>
         protected Dictionary<CommandHolder, H> mSupported;
         /// <summary>
+        /// This is the fast lookup collection for a command.
+        /// </summary>
+        protected ConcurrentDictionary<ServiceMessageHeader, H> mCommandCache;
+        /// <summary>
         /// This event is used by the component container to discover when a command is registered or deregistered.
         /// Implement IMessageHandlerDynamic to enable this feature.
         /// </summary>
@@ -107,6 +112,8 @@ namespace Xigadee
             mSchedules = new List<Schedule>();
 
             StartupPriority = mPolicy.StartupPriority ?? 0;
+
+            mCommandCache = new ConcurrentDictionary<ServiceMessageHeader, H>();
         }
         #endregion
 

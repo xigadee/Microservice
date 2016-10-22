@@ -58,6 +58,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Command\Attributes\CommandMethodSignature.cs" />
+    <Compile Include="Command\Attributes\CommandMethodSignatureException.cs" />
+    <Compile Include="Command\Attributes\CommandMethodSignatureHelper.cs" />
     <Compile Include="Command\Client\CommandInitiator.cs" />
     <Compile Include="Command\Client\CommandInitiatorPolicy.cs" />
     <Compile Include="Command\Client\CommandInitiatorStatistics.cs" />

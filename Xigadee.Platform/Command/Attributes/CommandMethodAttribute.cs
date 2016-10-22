@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,7 +26,8 @@ namespace Xigadee
     /// <summary>
     /// This attribute can be set against a command method to register it for automatic registration as a remote command.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = false)]
+    [DebuggerDisplay("{ChannelId}/{MessageType}/{ActionType}")]
     public class CommandContractAttribute:Attribute
     {
         public CommandContractAttribute(string channelId = null, string messageType = null, string actionType = null)

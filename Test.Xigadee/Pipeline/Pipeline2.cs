@@ -49,7 +49,8 @@ namespace Test.Xigadee
 
                 pipeline.Start();
 
-                var result = init.Process<IDoSomething1,Blah, string>(new Blah() { Message = "hello" }).Result;
+                var result1 = init.Process<IDoSomething1, Blah, string>(new Blah() { Message = "hello" }).Result;
+                var result2 = init.Process<Blah,string>("internalIn", "franky", "johnny5", new Blah() { Message = "hello" }).Result;
 
                 pipeline.Stop();
             }

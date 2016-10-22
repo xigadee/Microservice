@@ -30,6 +30,7 @@ namespace Xigadee
         public CommandHolder(MessageFilterWrapper message, string referenceId = null)
         {
             Message = message;
+            ReferenceId = referenceId;
         }
         /// <summary>
         /// This is the message filter.
@@ -41,6 +42,11 @@ namespace Xigadee
         /// </summary>
         public string ReferenceId { get; set; }
 
+        /// <summary>
+        /// This override checks the items that are equivalent.
+        /// </summary>
+        /// <param name="other">The other command handle.</param>
+        /// <returns>Returns true if they support the same message.</returns>
         public bool Equals(CommandHolder other)
         {
             return other.Message == Message;

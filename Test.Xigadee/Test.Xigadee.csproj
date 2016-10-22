@@ -64,6 +64,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Commands\SimpleCommand.cs" />
+    <Compile Include="Commands\CommandReflectionUnitTest.cs" />
     <Compile Include="EventTestCommand.cs" />
     <Compile Include="Pipeline\Pipeline2.cs" />
     <Compile Include="Microservice_Validate_CommandRequest.cs" />

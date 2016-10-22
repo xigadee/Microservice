@@ -28,7 +28,7 @@ namespace Xigadee
     {
         #region CommandsRegister()
         /// <summary>
-        /// This method should be implemented to populate supported commands.
+        /// This method should be overridden to populate supported commands.
         /// </summary>
         protected virtual void CommandsRegister()
         {
@@ -142,6 +142,7 @@ namespace Xigadee
                 throw new Exception("You must supply a channel when using a partial key.");
 
             var cHolder = new CommandHolder(key, referenceId);
+
             mSupported.Add(cHolder, CommandHandlerCreate(key, command));
 
             switch (mPolicy.CommandNotify)
@@ -273,12 +274,30 @@ namespace Xigadee
         #endregion
 
         #region SupportedResolve...
-        protected virtual bool SupportedResolve(MessageFilterWrapper inWrapper, out H command)
+        /// <summary>
+        /// This attemps to match the message header to the command reigstration collection.
+        /// </summary>
+        /// <param name="header">The message header</param>
+        /// <param name="command">THe command handler as an output.</param>
+        /// <returns>Returns true if there is a match.</returns>
+        protected virtual bool SupportedResolve(ServiceMessageHeader header, out H command)
         {
-            return SupportedResolve(inWrapper.Header, out command);
+            if (!mCommandCache.TryGetValue(header, out command))
+            {
+                SupportedResolveActual(header, out command);
+                mCommandCache.TryAdd(header, command);
+            }
+
+            return command != null;
         }
 
-        protected virtual bool SupportedResolve(ServiceMessageHeader header, out H command)
+        /// <summary>
+        /// This attemps to match the message header to the command reigstration collection.
+        /// </summary>
+        /// <param name="header">The message header</param>
+        /// <param name="command">THe command handler as an output.</param>
+        /// <returns>Returns true if there is a match.</returns>
+        protected virtual bool SupportedResolveActual(ServiceMessageHeader header, out H command)
         {
             foreach (var item in mSupported)
             {

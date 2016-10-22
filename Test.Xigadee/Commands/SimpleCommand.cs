@@ -27,6 +27,7 @@ namespace Test.Xigadee
         }
 
         [CommandContract(messageType: "franky", actionType: "johnny5")]
+        [CommandContract(messageType: "franky", actionType: "johnny6")]
         private void ThisisMeStupid5([PayloadIn]Blah item, [PayloadOut]out string response)
         {
             response = null;

@@ -64,6 +64,8 @@ namespace Xigadee
             //mTelemetry.Context.Component.Version = 
             mTelemetry.Context.Device.Id = OriginatorId.ServiceId;
 
+            //mTelemetry.Context.Operation.Id = 
+
             mTelemetry.Context.Component.Version = (Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly()).GetName().Version.ToString();
             mTelemetry.Context.Properties["ExternalServiceId"] = OriginatorId.ExternalServiceId;
             mTelemetry.Context.Properties["MachineName"] = OriginatorId.MachineName;
@@ -92,7 +94,9 @@ namespace Xigadee
         {
             //switch (eventData.
 
-            //mTelemetry.TrackException(
+            //mTelemetry.TrackException(new ExceptionTelemetry() { 
+
+            //mTelemetry.TrackEvent(new EventTelemetry() { 
         }
 
         private void Write(DispatcherEvent eventData)
