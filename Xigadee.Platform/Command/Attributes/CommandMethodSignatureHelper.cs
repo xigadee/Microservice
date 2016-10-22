@@ -23,6 +23,7 @@ namespace Xigadee
                 .SelectMany((s) => s.CommandAttributes.Select((a) => new Tuple<CommandContractAttribute, CommandMethodSignature>(a,s)))
                 .ToList();
         }
+
         /// <summary>
         /// This static helper returns the 
         /// </summary>
@@ -43,7 +44,7 @@ namespace Xigadee
         }
 
         /// <summary>
-        /// This static helper returns the 
+        /// This static helper returns the list of methods that are decorated with CommandContractAttributes
         /// </summary>
         public static List<MethodInfo> CommandMethods(this Type objectType)
         {

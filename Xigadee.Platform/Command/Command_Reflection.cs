@@ -30,34 +30,14 @@ namespace Xigadee
         /// </summary>
         protected virtual void CommandsRegisterReflection()
         {
-            GetType()
-                .GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance)
-                .Where((m) => m.CustomAttributes.Count((a) => a.AttributeType == typeof(CommandContractAttribute)) > 0)
-                .ForEach((i) => CommandRegisterReflection(i));
+            foreach (var signature in this.CommandMethodAttributeSignatures())
+            {
+                CommandRegister(CommandChannelAdjust(signature.Item1)
+                    , signature.Item2.Action
+                    , referenceId: signature.Item2.Reference(signature.Item1));
+            }
         }
 
-        /// <summary>
-        /// This method should be implemented to populate supported commands.
-        /// </summary>
-        /// <param name="info">The method to be verified and registered.</param>
-        protected virtual void CommandRegisterReflection(MethodInfo info)
-        {
-            //Load and check the method signature
-            var signature = new CommandMethodSignature(this,info);
-
-            CommandRegisterReflection(signature);
-        }
-        /// <summary>
-        /// This method processes the Reflection signature and its attributes.
-        /// </summary>
-        /// <param name="signature">The signature to process.</param>
-        protected virtual void CommandRegisterReflection(CommandMethodSignature signature)
-        {
-            //Register a command for each of the attributes defined.
-            signature.CommandAttributes.ForEach((a) => 
-                CommandRegister(CommandChannelAdjust(a), signature.Action, referenceId: signature.Reference(a))
-                );
-        }
 
         /// <summary>
         /// This method replaces the channel with the command default if the value specified in the attribute is null.

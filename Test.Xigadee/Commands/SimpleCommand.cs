@@ -20,18 +20,13 @@ namespace Test.Xigadee
 
         }
 
+
         [CommandContract(messageType: "franky", actionType: "johnny2")]
         private void ThisisMeStupid2([PayloadIn]Blah item)
         {
 
         }
 
-        [CommandContract(messageType: "franky", actionType: "johnny5")]
-        [CommandContract(messageType: "franky", actionType: "johnny6")]
-        private void ThisisMeStupid5([PayloadIn]Blah item, [PayloadOut]out string response)
-        {
-            response = null;
-        }
 
         [CommandContract(typeof(IDoSomething1))]
         [return: PayloadOut]
@@ -44,6 +39,19 @@ namespace Test.Xigadee
         protected void ThisisMeStupid4([PayloadIn]string item)
         {
 
+        }
+
+        [CommandContract(messageType: "franky", actionType: "johnny5")]
+        [CommandContract(messageType: "franky", actionType: "johnny5b")]
+        private void ThisisMeStupid5([PayloadIn]Blah item, [PayloadOut]out string response)
+        {
+            response = null;
+        }
+
+        [CommandContract(messageType: "franky", actionType: "johnny6")]
+        private async Task<string> ThisisMeStupid6(TransmissionPayload incoming, List<TransmissionPayload> outgoing)
+        {
+            return "ff";
         }
     }
 }
