@@ -11,7 +11,7 @@ namespace Test.Xigadee.Commands
         [TestInitialize]
         public void TearUp()
         {
-            mSimples = new SimpleCommand2();
+            mSimples = new SimpleCommand1();
         }
 
         [TestCleanup]

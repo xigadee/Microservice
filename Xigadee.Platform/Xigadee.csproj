@@ -99,6 +99,9 @@
     <Compile Include="Exceptions\ChannelNotFoundException.cs" />
     <Compile Include="Exceptions\ChannelTypeNotSupportedException.cs" />
     <Compile Include="Exceptions\TransmitRetryExceededException.cs" />
+    <Compile Include="Messaging\ProcessOptions.cs" />
+    <Compile Include="Messaging\RateLimitSignal.cs" />
+    <Compile Include="Messaging\TransmissionPayloadHelper.cs" />
     <Compile Include="Microservice\Events\ProcessRequestErrorEventArgs.cs" />
     <Compile Include="Microservice\Events\ProcessRequestUnresolvedEventArgs.cs" />
     <Compile Include="Microservice\Events\StartEventArgs.cs" />

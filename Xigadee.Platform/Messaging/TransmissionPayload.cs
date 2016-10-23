@@ -21,26 +21,6 @@ using System.Threading;
 namespace Xigadee
 {
     /// <summary>
-    /// This enumeration provides additional information to the dispatcher on how to process the incoming
-    /// payload request.
-    /// </summary>
-    [Flags]
-    public enum ProcessOptions:int
-    {
-        RouteInternal = 1,
-        RouteExternal = 2
-    }
-
-    /// <summary>
-    /// This flag is used to signal.
-    /// </summary>
-    public enum RateLimitSignal
-    {
-        Down,
-        Release
-    }
-
-    /// <summary>
     /// This call wraps the incoming message and provides the ability to signal to the underlying
     /// listener that the message can be released.
     /// </summary>

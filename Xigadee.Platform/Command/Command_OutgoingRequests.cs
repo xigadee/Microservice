@@ -72,7 +72,7 @@ namespace Xigadee
 
             //Check whether the ResponseId has been set, and if so then register the command.
             if (ResponseId == null)
-                throw new CommandStartupException($"Command {GetType().Name}: Outgoing requests are enabled, but the ResponseId parameter has not been set");
+                throw new CommandStartupException($"Command={GetType().Name}: Outgoing requests are enabled, but the ResponseId parameter has not been set");
             
             //This is the return message handler
             CommandRegister(ResponseId, OutgoingRequestResponseProcess);
