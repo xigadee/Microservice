@@ -231,6 +231,9 @@ namespace Xigadee
                 throw new OutgoingRequestTransmitException(errorStr);
             }
 
+            //OK, add the message response type so that it will be picked up.
+
+
             //Submit the payload for processing
             TaskManager(this, holder.Payload);
 

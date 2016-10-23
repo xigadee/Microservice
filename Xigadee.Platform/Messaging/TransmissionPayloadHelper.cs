@@ -27,12 +27,13 @@ namespace Xigadee
     {
         public static TransmissionPayload ToResponse(this TransmissionPayload incoming)
         {
-            var rsMessage = incoming.Message.ToResponse();
+            var m = incoming.Message;
+            var rsMessage = m.ToResponse();
 
-            rsMessage.ChannelId = incoming.Message.ResponseChannelId;
-            rsMessage.ChannelPriority = incoming.Message.ResponseChannelPriority;
-            rsMessage.MessageType = incoming.Message.MessageType;
-            rsMessage.ActionType = "";
+            rsMessage.ChannelId = m.ResponseChannelId;
+            rsMessage.ChannelPriority = m.ResponseChannelPriority;
+            rsMessage.MessageType = m.ResponseMessageType ?? m.MessageType;
+            rsMessage.ActionType = m.ResponseActionType ?? m.ActionType; 
 
             return new TransmissionPayload(rsMessage);
         }

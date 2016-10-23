@@ -139,6 +139,10 @@ namespace Xigadee
             CommandRegister(new CommandHolder(key, command, referenceId));
         }
 
+        /// <summary>
+        /// This method is used to register a command holder for a particular method.
+        /// </summary>
+        /// <param name="cHolder">The holder.</param>
         protected void CommandRegister(CommandHolder cHolder)
         {           
             mSupported.Add(cHolder, CommandHandlerCreate(cHolder));
@@ -273,10 +277,10 @@ namespace Xigadee
 
         #region SupportedResolve...
         /// <summary>
-        /// This attemps to match the message header to the command reigstration collection.
+        /// This attemps to match the message header to the command registration collection.
         /// </summary>
-        /// <param name="header">The message header</param>
-        /// <param name="command">THe command handler as an output.</param>
+        /// <param name="header">The message header.</param>
+        /// <param name="command">The command handler as an output.</param>
         /// <returns>Returns true if there is a match.</returns>
         protected virtual bool SupportedResolve(ServiceMessageHeader header, out H command)
         {
@@ -290,9 +294,9 @@ namespace Xigadee
         }
 
         /// <summary>
-        /// This attemps to match the message header to the command reigstration collection.
+        /// This attemps to match the message header to the command registration collection.
         /// </summary>
-        /// <param name="header">The message header</param>
+        /// <param name="header">The message header.</param>
         /// <param name="command">THe command handler as an output.</param>
         /// <returns>Returns true if there is a match.</returns>
         protected virtual bool SupportedResolveActual(ServiceMessageHeader header, out H command)
@@ -321,7 +325,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region SupportsMessage(ServiceMessageHeader header)
+        #region --> SupportsMessage(ServiceMessageHeader header)
         /// <summary>
         /// This commands returns true is the command channelId and action are supported.
         /// </summary>
@@ -330,7 +334,15 @@ namespace Xigadee
         public virtual bool SupportsMessage(ServiceMessageHeader header)
         {
             H command;
-            return SupportedResolve(header, out command);
+
+            bool supported = SupportedResolve(header, out command);
+
+            //if (!supported && mPolicy.OutgoingRequestsEnabled && mOutgoingRequests.Count > 0)
+            //{
+            //    mOutgoingRequests.Where((o) => o.Value.
+            //}
+
+            return supported;
         }
         #endregion
         #region SupportedMessageTypes()

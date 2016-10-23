@@ -18,7 +18,6 @@ namespace Test.Xigadee
         }
 
 
-
         [TestMethod]
         public void PipelineCommand()
         {
@@ -28,7 +27,8 @@ namespace Test.Xigadee
 
                 pipeline.Start();
 
-                var result1 = mCommandInit.Process<IDoSomething1, Blah, string>(new Blah() { Message = "hello" }).Result;
+                var result1 = mCommandInit.Process<Blah,string>("internalIn", "simples1", "async",
+                    new Blah() { Message = "hello" }, new RequestSettings() { WaitTime = TimeSpan.FromHours(1) }).Result;
 
                 pipeline.Stop();
             }
@@ -43,13 +43,13 @@ namespace Test.Xigadee
     {
         public SimpleCommand1() : base(null){}
 
-        [CommandContract(messageType: nameof(SimpleCommand1), actionType: "async")]
+        [CommandContract(messageType: "simples1", actionType: "async")]
         private async Task ActionAsync(TransmissionPayload incoming, List<TransmissionPayload> outgoing)
         {
             Process(incoming, outgoing);
         }
 
-        [CommandContract(messageType: nameof(SimpleCommand1), actionType: "sync")]
+        [CommandContract(messageType: "simples1", actionType: "sync")]
         private async void ActionSync(TransmissionPayload incoming, List<TransmissionPayload> outgoing)
         {
             Process(incoming, outgoing);
@@ -62,6 +62,4 @@ namespace Test.Xigadee
         }
 
     }
-
-
 }

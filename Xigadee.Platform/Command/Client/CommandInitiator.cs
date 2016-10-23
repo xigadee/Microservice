@@ -65,6 +65,8 @@ namespace Xigadee
             return await Process<RQ, RS>(channelId, messageType, actionType, rq, settings, routing);
         }
         #endregion
+
+        #region Process<RQ, RS> ...
         /// <summary>
         /// This method is used to send requests to the remote command.
         /// </summary>
@@ -79,8 +81,11 @@ namespace Xigadee
         /// <returns></returns>
         public virtual async Task<ResponseWrapper<RS>> Process<RQ, RS>(
               string channelId, string messageType, string actionType
-            , RQ rq, RequestSettings rqSettings = null, ProcessOptions? routingOptions = null
-            , Func<TaskStatus, TransmissionPayload, bool, ResponseWrapper<RS>> processResponse = null)
+            , RQ rq
+            , RequestSettings rqSettings = null
+            , ProcessOptions? routingOptions = null
+            , Func<TaskStatus, TransmissionPayload, bool, ResponseWrapper<RS>> processResponse = null
+            )
         {
             try
             {
@@ -117,7 +122,8 @@ namespace Xigadee
                 //Logger.LogException(string.Format("Error transmitting {0}-{1} internally", actionType, key), ex);
                 throw;
             }
-        }
+        } 
+        #endregion
 
         #region ProcessResponse<KT, ET>(TaskStatus status, TransmissionPayload prs, bool async)
         /// <summary>

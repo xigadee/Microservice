@@ -27,7 +27,15 @@ namespace Xigadee
     /// </summary>
     public class CommandHolder: IEquatable<CommandHolder>
     {
-        public CommandHolder(MessageFilterWrapper message, Func<TransmissionPayload, List<TransmissionPayload>, Task> command, string referenceId = null)
+        /// <summary>
+        /// This is the command holder that contains the necessary data to holds a mapping to a command method.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="command">The command action.</param>
+        /// <param name="referenceId">The reference id.</param>
+        public CommandHolder(MessageFilterWrapper message
+            , Func<TransmissionPayload, List<TransmissionPayload>, Task> command
+            , string referenceId = null)
         {
             if (message == null)
                 throw new CommandHolderException("message cannot be null");
@@ -42,19 +50,19 @@ namespace Xigadee
             Command = command;
             ReferenceId = referenceId;
         }
+
         /// <summary>
         /// This is the message filter.
         /// </summary>
-        public MessageFilterWrapper Message { get; set; }
-
+        public MessageFilterWrapper Message { get; protected set;}
         /// <summary>
         /// This is the reference id used for aiding debugging.
         /// </summary>
-        public string ReferenceId { get; set; }
+        public string ReferenceId { get; protected set; }
         /// <summary>
         /// This is the actual function to execute the command.
         /// </summary>
-        public Func<TransmissionPayload, List<TransmissionPayload>, Task> Command { get; set; }
+        public Func<TransmissionPayload, List<TransmissionPayload>, Task> Command { get; protected set; }
         /// <summary>
         /// This override checks the items that are equivalent.
         /// </summary>
