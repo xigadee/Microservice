@@ -63,6 +63,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Commands\SimpleCommand2.cs" />
     <Compile Include="Commands\SimpleCommand.cs" />
     <Compile Include="Commands\CommandReflectionUnitTest.cs" />
     <Compile Include="EventTestCommand.cs" />

@@ -25,7 +25,7 @@ namespace Xigadee
     /// </summary>
     public interface ICommandHandler
     {
-        void Initialise(MessageFilterWrapper key, Func<TransmissionPayload, List<TransmissionPayload>, Task> action);
+        void Initialise(CommandHolder holder);
 
         MessageFilterWrapper Key { get; }
 

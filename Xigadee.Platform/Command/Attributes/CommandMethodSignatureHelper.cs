@@ -14,13 +14,13 @@ namespace Xigadee
     public static class CommandMethodSignatureHelper
     {
         /// <summary>
-        /// This static helper returns the 
+        /// This static helper returns the list of attributes, methods and references. Not one method may have multiple attributes assigned to them.
         /// </summary>
-        public static List<Tuple<CommandContractAttribute, CommandMethodSignature>> CommandMethodAttributeSignatures(
+        public static List<Tuple<CommandContractAttribute, CommandMethodSignature, string>> CommandMethodAttributeSignatures(
             this ICommand command, bool throwExceptions = false)
         {
             return command.CommandMethodSignatures(throwExceptions)
-                .SelectMany((s) => s.CommandAttributes.Select((a) => new Tuple<CommandContractAttribute, CommandMethodSignature>(a,s)))
+                .SelectMany((s) => s.CommandAttributes.Select((a) => new Tuple<CommandContractAttribute, CommandMethodSignature, string>(a,s, s.Reference(a))))
                 .ToList();
         }
 
@@ -30,13 +30,13 @@ namespace Xigadee
         public static List<CommandMethodSignature> CommandMethodSignatures(this ICommand command, bool throwExceptions)
         {
             return command.CommandMethods()
-                .Select((m) => new Xigadee.CommandMethodSignature(command, m, throwExceptions))
+                .Select((m) => new CommandMethodSignature(command, m, throwExceptions))
                 .Where((t) => t.IsValid)
                 .ToList();
         }
 
         /// <summary>
-        /// This static helper returns the 
+        /// This static helper returns the list of methods that are decorated with a CommandContractAttribute attribute.
         /// </summary>
         public static List<MethodInfo> CommandMethods(this ICommand command)
         {

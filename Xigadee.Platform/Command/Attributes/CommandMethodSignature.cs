@@ -46,7 +46,9 @@ namespace Xigadee
         /// <summary>
         /// Specifies whether this is a generic signature.
         /// </summary>
-        public bool IsGeneric { get; private set; }
+        public bool IsStandard { get; private set; }
+
+        public bool IsAsync { get; private set; }
         /// <summary>
         /// This property specifies whether the signature is valid.
         /// </summary>
@@ -78,42 +80,50 @@ namespace Xigadee
             Parameters = Method.GetParameters().ToList();
             var paramInfo = Method.GetParameters().ToList();
 
-            GenericIn = paramInfo.FirstOrDefault((p) => p.ParameterType == typeof(TransmissionPayload));
-            bool isGeneric = (GenericIn != null) && paramInfo.Remove(GenericIn);
+            //OK, check whether the return parameter is a Task or Task<> construct
+            IsAsync = typeof(Task).IsAssignableFrom(Method.ReturnParameter.ParameterType);
 
-            GenericOut = paramInfo.FirstOrDefault((p) => p.ParameterType == typeof(List<TransmissionPayload>));
-            isGeneric &= (GenericOut != null) && paramInfo.Remove(GenericOut) && paramInfo.Count == 0;
+            StandardIn = paramInfo.FirstOrDefault((p) => p.ParameterType == typeof(TransmissionPayload));
+            bool isStandard = (StandardIn != null) && paramInfo.Remove(StandardIn);
 
-            IsGeneric = isGeneric;
+            StandardOut = paramInfo.FirstOrDefault((p) => p.ParameterType == typeof(List<TransmissionPayload>));
+            isStandard &= (StandardOut != null) && paramInfo.Remove(StandardOut) && paramInfo.Count == 0;
 
-            if (isGeneric)
+            IsStandard = isStandard && typeof(Task) == Method.ReturnParameter.ParameterType;
+
+            if (IsStandard)
             {
                 Action = ReflectionActionStandard();
                 return true;
             }
 
+            if (IsAsync && Method.ReturnParameter.ParameterType.IsGenericType)
+            {
+
+            }
+
             //var rqAttr = paramInfo.Select((p) => ParamAttributes<PayloadInAttribute>(p)).FirstOrDefault();
             //var rsAttr = paramInfo.Select((p) => ParamAttributes<PayloadOutAttribute>(p)).FirstOrDefault();
 
-            ////Ok, this is a generci method so we can quit now.
-            //if (isGeneric && RegisterGenericSignature(commandAttrs, info, genericIn, genericOut))
-            //    return;
+                ////Ok, this is a generci method so we can quit now.
+                //if (isGeneric && RegisterGenericSignature(commandAttrs, info, genericIn, genericOut))
+                //    return;
 
 
-            ////Ok, let's get the request parameter
-            //if (rqAttr != null)
-            //    paramInfo.Remove(rqAttr.Item1);
+                ////Ok, let's get the request parameter
+                //if (rqAttr != null)
+                //    paramInfo.Remove(rqAttr.Item1);
 
-            ////And finally the response parameter
-            //if (rsAttr != null)
-            //    paramInfo.Remove(rsAttr.Item1);
+                ////And finally the response parameter
+                //if (rsAttr != null)
+                //    paramInfo.Remove(rsAttr.Item1);
 
             return false;
         }
 
-        public ParameterInfo GenericIn { get; private set; }
+        public ParameterInfo StandardIn { get; private set; }
 
-        public ParameterInfo GenericOut { get; private set; }
+        public ParameterInfo StandardOut { get; private set; }
 
         #region Reference(CommandContractAttribute attr)
         /// <summary>
@@ -134,10 +144,16 @@ namespace Xigadee
 
         private Func<TransmissionPayload, List<TransmissionPayload>, Task> ReflectionActionStandard()
         {
-            return async (pIn, pOut) =>
-            {
-                await (Task)Method.Invoke(Command, new object[] { pIn, pOut });
-            };
+            if (IsAsync)
+                return async (pIn, pOut) =>
+                {
+                    await (Task)Method.Invoke(Command, new object[] { pIn, pOut });
+                };
+            else
+                return async (pIn, pOut) =>
+                {
+                    await Task.Run(() => Method.Invoke(Command, new object[] { pIn, pOut }));
+                };
         }
 
         private Func<TransmissionPayload, List<TransmissionPayload>, Task> ReflectionActionStandardParameter(Type paramInType)

@@ -26,18 +26,16 @@ namespace Xigadee
     public abstract partial class CommandBase<S, P, H>
     {
         /// <summary>
-        /// This method should be implemented to populate supported commands.
+        /// This method scans through the command and registers commands that are defined using the metadata tags.
         /// </summary>
         protected virtual void CommandsRegisterReflection()
         {
-            foreach (var signature in this.CommandMethodAttributeSignatures())
+            foreach (var signature in this.CommandMethodAttributeSignatures(true))
             {
-                CommandRegister(CommandChannelAdjust(signature.Item1)
-                    , signature.Item2.Action
-                    , referenceId: signature.Item2.Reference(signature.Item1));
+                var handler = new CommandHolder(CommandChannelAdjust(signature.Item1), signature.Item2.Action, referenceId: signature.Item3);
+                CommandRegister(handler);
             }
         }
-
 
         /// <summary>
         /// This method replaces the channel with the command default if the value specified in the attribute is null.
@@ -52,6 +50,5 @@ namespace Xigadee
 
             return new MessageFilterWrapper(header);
         }
-
     }
 }

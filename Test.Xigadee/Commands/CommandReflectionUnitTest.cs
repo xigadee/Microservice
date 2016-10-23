@@ -6,12 +6,12 @@ namespace Test.Xigadee.Commands
     [TestClass]
     public class CommandReflectionUnitTest
     {
-        SimpleCommand mSimples;
+        ICommand mSimples;
 
         [TestInitialize]
         public void TearUp()
         {
-            mSimples = new SimpleCommand();
+            mSimples = new SimpleCommand2();
         }
 
         [TestCleanup]

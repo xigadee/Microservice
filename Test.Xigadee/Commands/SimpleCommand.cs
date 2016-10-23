@@ -49,6 +49,7 @@ namespace Test.Xigadee
         }
 
         [CommandContract(messageType: "franky", actionType: "johnny6")]
+        [return: PayloadOut]
         private async Task<string> ThisisMeStupid6(TransmissionPayload incoming, List<TransmissionPayload> outgoing)
         {
             return "ff";

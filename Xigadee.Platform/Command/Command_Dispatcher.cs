@@ -108,9 +108,6 @@ namespace Xigadee
             Func<Exception, TransmissionPayload, List<TransmissionPayload>, Task> exceptionAction = null, 
             string referenceId = null)
         {
-            if (key == null)
-                throw new ArgumentNullException("CommandRegister: key cannot be null");
-
             Func<TransmissionPayload, List<TransmissionPayload>, Task> command = async (rq, rs) =>
             {
                 bool error = false;
@@ -138,12 +135,13 @@ namespace Xigadee
                 }
             };
 
-            if (key.Header.IsPartialKey && key.Header.ChannelId == null)
-                throw new Exception("You must supply a channel when using a partial key.");
 
-            var cHolder = new CommandHolder(key, referenceId);
+            CommandRegister(new CommandHolder(key, command, referenceId));
+        }
 
-            mSupported.Add(cHolder, CommandHandlerCreate(key, command));
+        protected void CommandRegister(CommandHolder cHolder)
+        {           
+            mSupported.Add(cHolder, CommandHandlerCreate(cHolder));
 
             switch (mPolicy.CommandNotify)
             {
@@ -157,6 +155,7 @@ namespace Xigadee
             }
         }
         #endregion
+
         #region CommandsNotify..
         /// <summary>
         /// This method can be used to nofity the command container of all the current keys currently supported.
@@ -188,14 +187,13 @@ namespace Xigadee
         /// <summary>
         /// This method creates the command handler. You can override this method to set additional properties.
         /// </summary>
-        /// <param name="key">The message key</param>
-        /// <param name="action">The execute action.</param>
+        /// <param name="holder">The command holder</param>
         /// <returns>Returns the handler.</returns>
-        protected virtual H CommandHandlerCreate(MessageFilterWrapper key, Func<TransmissionPayload, List<TransmissionPayload>, Task> action)
+        protected virtual H CommandHandlerCreate(CommandHolder holder)
         {
             var handler = new H();
 
-            handler.Initialise(key, action);
+            handler.Initialise(holder);
 
             return handler;
         } 

@@ -52,10 +52,10 @@ namespace Xigadee
         /// <param name="parent">The name of the parent container.</param>
         /// <param name="key"></param>
         /// <param name="action"></param>
-        public virtual void Initialise(MessageFilterWrapper key, Func<TransmissionPayload, List<TransmissionPayload>, Task> action)
+        public virtual void Initialise(CommandHolder holder)
         {
-            Key = key;
-            Action = action;
+            Key = holder.Message;
+            Action = holder.Command;
         }
         #endregion
 
