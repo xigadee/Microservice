@@ -337,10 +337,10 @@ namespace Xigadee
 
             bool supported = SupportedResolve(header, out command);
 
-            //if (!supported && mPolicy.OutgoingRequestsEnabled && mOutgoingRequests.Count > 0)
-            //{
-            //    mOutgoingRequests.Where((o) => o.Value.
-            //}
+            if (!supported && mPolicy.OutgoingRequestsEnabled && mOutgoingRequests.Count > 0)
+            {
+                supported = mOutgoingRequests.Values.FirstOrDefault((o) => o.ResponseMessage.Equals(header)) != null;
+            }
 
             return supported;
         }

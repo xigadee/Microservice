@@ -363,11 +363,18 @@ namespace Xigadee
                 Tcs = new TaskCompletionSource<TransmissionPayload>();
                 Start = start??Environment.TickCount;
                 MaxTTL = ttl;
+
+                ResponseMessage = new ServiceMessageHeader(
+                      payload.Message.ResponseChannelId
+                    , payload.Message.ResponseMessageType
+                    , payload.Message.ResponseActionType);
             }
 
             public string Id { get; }
 
             public TransmissionPayload Payload { get; }
+
+            public ServiceMessageHeader ResponseMessage { get; }
 
             public int Start { get; }
 

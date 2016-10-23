@@ -32,8 +32,8 @@ namespace Xigadee
 
             rsMessage.ChannelId = m.ResponseChannelId;
             rsMessage.ChannelPriority = m.ResponseChannelPriority;
-            rsMessage.MessageType = m.ResponseMessageType ?? m.MessageType;
-            rsMessage.ActionType = m.ResponseActionType ?? m.ActionType; 
+            rsMessage.MessageType = m.ResponseMessageType;
+            rsMessage.ActionType = m.ResponseActionType; 
 
             return new TransmissionPayload(rsMessage);
         }
