@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -54,7 +55,9 @@ namespace Xigadee
         /// <param name="routing"></param>
         /// <param name="settings"></param>
         /// <returns>Returns a response object of the specified type in a response metadata wrapper.</returns>
-        public virtual async Task<ResponseWrapper<RS>> Process<I, RQ, RS>(RQ rq, RequestSettings settings = null, ProcessOptions? routing = null)
+        public virtual async Task<ResponseWrapper<RS>> Process<I, RQ, RS>(RQ rq
+            , RequestSettings settings = null
+            , ProcessOptions? routing = null)
             where I : IMessageContract
         {
             string channelId, messageType, actionType;
@@ -105,7 +108,9 @@ namespace Xigadee
 
                 payload.Message.Blob = PayloadSerializer.PayloadSerialize(rq);
 
-                payload.Message.ResponseChannelId = ResponseChannelId;
+                payload.Message.ResponseChannelId = ResponseId.Header.ChannelId;
+                payload.Message.ResponseMessageType = ResponseId.Header.MessageType;
+                payload.Message.ResponseActionType = ResponseId.Header.ActionType;
                 payload.Message.ResponseChannelPriority = payload.Message.ChannelPriority;
 
                 payload.Message.ChannelId = channelId ?? ChannelId;
@@ -137,9 +142,10 @@ namespace Xigadee
         protected virtual ResponseWrapper<RS> ProcessResponse<RS>(TaskStatus rType, TransmissionPayload payload, bool processAsync)
         {
             StatisticsInternal.ActiveDecrement(payload != null ? payload.Extent : TimeSpan.Zero);
-
             if (processAsync)
                 return new ResponseWrapper<RS>(responseCode: 202, responseMessage: "Accepted");
+
+            payload.CompleteSet();
 
             try
             {
@@ -149,12 +155,11 @@ namespace Xigadee
                         try
                         {                        
                             //payload.Message.
-                            var response = new ResponseWrapper<RS>(responseCode: 200, responseMessage: "OK");
+                            var response = new ResponseWrapper<RS>(payload);
 
                             if (payload.MessageObject != null)
                                 response.Response = (RS)payload.MessageObject;
-
-                            if (payload.Message.Blob != null)
+                            else if (payload.Message.Blob != null)
                                 response.Response = PayloadSerializer.PayloadDeserialize<RS>(payload);
 
                             return response;
@@ -162,17 +167,17 @@ namespace Xigadee
                         catch (Exception ex)
                         {
                             StatisticsInternal.ErrorIncrement();
-                            return new ResponseWrapper<RS>(responseCode: 500, responseMessage: ex.Message);
+                            return new ResponseWrapper<RS>(500, ex.Message);
                         }
                     case TaskStatus.Canceled:
                         StatisticsInternal.ErrorIncrement();
-                        return new ResponseWrapper<RS>(responseCode: 408, responseMessage: "Time out");
+                        return new ResponseWrapper<RS>(408, "Time out");
                     case TaskStatus.Faulted:
                         StatisticsInternal.ErrorIncrement();
-                        return new ResponseWrapper<RS>() { ResponseCode = (int)PersistenceResponse.GatewayTimeout504, ResponseMessage = "Response timeout." };
+                        return new ResponseWrapper<RS>((int)PersistenceResponse.GatewayTimeout504, "Response timeout.");
                     default:
                         StatisticsInternal.ErrorIncrement();
-                        return new ResponseWrapper<RS>(responseCode: 500, responseMessage: rType.ToString());
+                        return new ResponseWrapper<RS>(500, rType.ToString());
 
                 }
             }
@@ -186,17 +191,29 @@ namespace Xigadee
 
     }
 
+    [DebuggerDisplay("Response={ResponseCode}/{ResponseMessage}")]
     public class ResponseWrapper<RS>
     {
 
-        public ResponseWrapper(int? responseCode = null, string responseMessage = null)
+        public ResponseWrapper(TransmissionPayload payload)
+        {
+            ResponseCode = int.Parse(payload.Message.Status);
+            ResponseMessage = payload.Message.StatusDescription;
+            Payload = payload;
+        }
+        public ResponseWrapper(int responseCode, string responseMessage)
         {
             ResponseCode = responseCode;
             ResponseMessage = responseMessage;
+            Payload = null;
         }
 
-        public int? ResponseCode { get; set; }
-        public string ResponseMessage { get; set; }
+        public int? ResponseCode { get;  }
+
+        public string ResponseMessage { get;  }
+
+        public TransmissionPayload Payload { get; }
+
         public RS Response { get; set; }
     }
 }

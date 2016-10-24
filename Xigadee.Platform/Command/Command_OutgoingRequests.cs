@@ -141,6 +141,9 @@ namespace Xigadee
         #endregion
 
         #region ResponseId
+
+        private MessageFilterWrapper mResponseId = null;
+
         /// <summary>
         /// This override will receive the incoming messages
         /// </summary>
@@ -151,7 +154,10 @@ namespace Xigadee
                 if (ResponseChannelId == null)
                     return null;
 
-                return new MessageFilterWrapper(new ServiceMessageHeader(ResponseChannelId, "MasterJob", FriendlyName)) { ClientId = OriginatorId.ExternalServiceId };
+                if (mResponseId == null)
+                    mResponseId = new MessageFilterWrapper(new ServiceMessageHeader(ResponseChannelId, FriendlyName, ComponentId.ToString("N").ToUpperInvariant() )) { ClientId = OriginatorId.ExternalServiceId };
+
+                return mResponseId;
             }
         }
         #endregion

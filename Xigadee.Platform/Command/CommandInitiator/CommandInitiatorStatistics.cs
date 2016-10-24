@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This contains the default statistics for the command.
+    /// </summary>
     public class CommandInitiatorStatistics: CommandStatistics
     {
     }

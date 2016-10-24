@@ -25,6 +25,11 @@ namespace Xigadee
     /// </summary>
     public static class TransmissionPayloadHelper
     {
+        /// <summary>
+        /// This helper method turns round an incoming payload request in to its corresponding response payload.
+        /// </summary>
+        /// <param name="incoming">The incoming payload.</param>
+        /// <returns></returns>
         public static TransmissionPayload ToResponse(this TransmissionPayload incoming)
         {
             var m = incoming.Message;
@@ -34,7 +39,7 @@ namespace Xigadee
             rsMessage.ChannelPriority = m.ResponseChannelPriority;
             rsMessage.MessageType = m.ResponseMessageType;
             rsMessage.ActionType = m.ResponseActionType; 
-
+            
             return new TransmissionPayload(rsMessage);
         }
     }

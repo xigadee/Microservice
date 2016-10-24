@@ -89,7 +89,7 @@ namespace Xigadee
             StandardOut = paramInfo.FirstOrDefault((p) => p.ParameterType == typeof(List<TransmissionPayload>));
             isStandard &= (StandardOut != null) && paramInfo.Remove(StandardOut) && paramInfo.Count == 0;
 
-            IsStandard = isStandard && typeof(Task) == Method.ReturnParameter.ParameterType;
+            IsStandard = isStandard;
 
             if (IsStandard)
             {
@@ -152,7 +152,7 @@ namespace Xigadee
             else
                 return async (pIn, pOut) =>
                 {
-                    await Task.Run(() => Method.Invoke(Command, new object[] { pIn, pOut }));
+                    Method.Invoke(Command, new object[] { pIn, pOut });
                 };
         }
 

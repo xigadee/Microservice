@@ -61,9 +61,9 @@
     <Compile Include="Command\Attributes\CommandMethodSignature.cs" />
     <Compile Include="Command\Attributes\CommandMethodSignatureException.cs" />
     <Compile Include="Command\Attributes\CommandMethodSignatureHelper.cs" />
-    <Compile Include="Command\Client\CommandInitiator.cs" />
-    <Compile Include="Command\Client\CommandInitiatorPolicy.cs" />
-    <Compile Include="Command\Client\CommandInitiatorStatistics.cs" />
+    <Compile Include="Command\CommandInitiator\CommandInitiator.cs" />
+    <Compile Include="Command\CommandInitiator\CommandInitiatorPolicy.cs" />
+    <Compile Include="Command\CommandInitiator\CommandInitiatorStatistics.cs" />
     <Compile Include="Command\Command_Reflection.cs" />
     <Compile Include="Command\Attributes\CommandInAttribute.cs" />
     <Compile Include="Command\Exceptions\CommandNotSupportedException.cs" />

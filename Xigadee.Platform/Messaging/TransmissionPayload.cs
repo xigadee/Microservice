@@ -39,6 +39,8 @@ namespace Xigadee
         /// This is the time that the payload was created.
         /// </summary>
         private readonly DateTime mCreateTime = DateTime.UtcNow;
+        private DateTime? mEndTime = null;
+        private readonly int mTickCount = Environment.TickCount;
         #endregion
         #region Constructor
         /// <summary>
@@ -82,7 +84,7 @@ namespace Xigadee
         /// </summary>
         public TimeSpan Extent
         {
-            get { return DateTime.UtcNow - mCreateTime; }
+            get { return (DateTime.UtcNow) - mCreateTime; }
         }
         #endregion
         #region CommsWait
@@ -236,7 +238,15 @@ namespace Xigadee
                 {
                     //We are not interested in exceptions from here.
                 }
-        } 
+        }
         #endregion
+
+        public void CompleteSet()
+        {
+            if (!ExecutionTime.HasValue)
+                ExecutionTime = ConversionHelper.DeltaAsTimeSpan(mTickCount);
+        }
+
+        public TimeSpan? ExecutionTime { get; private set; }
     }
 }

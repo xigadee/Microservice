@@ -27,8 +27,27 @@ namespace Test.Xigadee
 
                 pipeline.Start();
 
-                var result1 = mCommandInit.Process<Blah,string>("internalIn", "simples1", "async",
+                int start = Environment.TickCount;
+
+                var result1 = mCommandInit.Process<Blah, string>("internalIn", "simples1", "async",
                     new Blah() { Message = "hello" }, new RequestSettings() { WaitTime = TimeSpan.FromHours(1) }).Result;
+
+                var result2 = mCommandInit.Process<Blah, string>("internalIn", "simples1", "sync",
+                    new Blah() { Message = "hello" }, new RequestSettings() { WaitTime = TimeSpan.FromHours(1) }).Result;
+
+                var result3 = mCommandInit.Process<Blah, string>("internalIn", "simples1", "sync",
+                    new Blah() { Message = "hello" }, new RequestSettings() { WaitTime = TimeSpan.FromHours(1) }).Result;
+
+                var result4 = mCommandInit.Process<Blah, string>("internalIn", "simples1", "sync",
+                    new Blah() { Message = "hello" }, new RequestSettings() { WaitTime = TimeSpan.FromHours(1) }).Result;
+
+                var result5 = mCommandInit.Process<Blah, string>("internalIn", "simples1", "sync",
+                    new Blah() { Message = "hello" }, new RequestSettings() { WaitTime = TimeSpan.FromHours(1) }).Result;
+
+                var result6 = mCommandInit.Process<Blah, string>("internalIn", "simples1", "sync",
+                    new Blah() { Message = "hello" }, new RequestSettings() { WaitTime = TimeSpan.FromHours(1) }).Result;
+
+                var end = ConversionHelper.DeltaAsTimeSpan(start);
 
                 pipeline.Stop();
             }
@@ -46,11 +65,12 @@ namespace Test.Xigadee
         [CommandContract(messageType: "simples1", actionType: "async")]
         private async Task ActionAsync(TransmissionPayload incoming, List<TransmissionPayload> outgoing)
         {
+            await Task.Delay(100);
             Process(incoming, outgoing);
         }
 
         [CommandContract(messageType: "simples1", actionType: "sync")]
-        private async void ActionSync(TransmissionPayload incoming, List<TransmissionPayload> outgoing)
+        private void ActionSync(TransmissionPayload incoming, List<TransmissionPayload> outgoing)
         {
             Process(incoming, outgoing);
         }
@@ -58,6 +78,7 @@ namespace Test.Xigadee
         private void Process(TransmissionPayload incoming, List<TransmissionPayload> outgoing)
         {
             var rs = incoming.ToResponse();
+            rs.Message.Status = "204";
             outgoing.Add(rs);
         }
 
