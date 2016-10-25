@@ -79,8 +79,9 @@ namespace Xigadee
         /// <param name="messageType">The header routing information.</param>
         /// <param name="actionType">The header routing information.</param>
         /// <param name="rq">The request object.</param>
-        /// <param name="routingOptions"></param>
         /// <param name="rqSettings"></param>
+        /// <param name="routingOptions">The routing options by default this will try internal and then external.</param>
+        /// <param name="processResponse"></param>
         /// <returns></returns>
         public virtual async Task<ResponseWrapper<RS>> Process<RQ, RS>(
               string channelId, string messageType, string actionType
@@ -90,11 +91,12 @@ namespace Xigadee
             , Func<TaskStatus, TransmissionPayload, bool, ResponseWrapper<RS>> processResponse = null
             )
         {
+            TransmissionPayload payload = null;
             try
             {
                 StatisticsInternal.ActiveIncrement();
 
-                var payload = TransmissionPayload.Create();
+                payload = TransmissionPayload.Create();
 
                 // Set the originator key to the correlation id if passed through the rq settings
                 if (rqSettings != null && !string.IsNullOrEmpty(rqSettings.CorrelationId))
@@ -102,29 +104,33 @@ namespace Xigadee
 
                 bool processAsync = rqSettings?.ProcessAsync ?? false;
 
-                payload.Message.ChannelPriority = processAsync ? 0 : 1;
-
                 payload.Options = routingOptions ?? ProcessOptions.RouteExternal | ProcessOptions.RouteInternal;
 
-                payload.Message.Blob = PayloadSerializer.PayloadSerialize(rq);
+                //Set the destination message
+                payload.Message.ChannelId = channelId ?? ChannelId;
+                payload.Message.MessageType = messageType;
+                payload.Message.ActionType = actionType;
+                payload.Message.ChannelPriority = processAsync ? 0 : 1;
 
+                //Set the response path
                 payload.Message.ResponseChannelId = ResponseId.Header.ChannelId;
                 payload.Message.ResponseMessageType = ResponseId.Header.MessageType;
                 payload.Message.ResponseActionType = ResponseId.Header.ActionType;
                 payload.Message.ResponseChannelPriority = payload.Message.ChannelPriority;
 
-                payload.Message.ChannelId = channelId ?? ChannelId;
-                payload.Message.MessageType = messageType;
-                payload.Message.ActionType = actionType;
+                //Set the payload
+                payload.Message.Blob = PayloadSerializer.PayloadSerialize(rq);
 
+                //Set the processing time
                 payload.MaxProcessingTime = rqSettings?.WaitTime ?? mDefaultRequestTimespan;
 
+                //Transmit
                 return await TransmitAsync(payload, processResponse ?? ProcessResponse<RS>, processAsync);
             }
             catch (Exception ex)
             {
-                //string key = rq != null && rq.Key != null ? rq.Key.ToString() : string.Empty;
-                //Logger.LogException(string.Format("Error transmitting {0}-{1} internally", actionType, key), ex);
+                string key = payload?.Id.ToString() ?? string.Empty;
+                Logger.LogException(string.Format("Error transmitting {0}-{1} internally", actionType, key), ex);
                 throw;
             }
         } 
@@ -191,6 +197,10 @@ namespace Xigadee
 
     }
 
+    /// <summary>
+    /// This is the wrapper that holds the response data and the deserialized object.
+    /// </summary>
+    /// <typeparam name="RS">The response type.</typeparam>
     [DebuggerDisplay("Response={ResponseCode}/{ResponseMessage}")]
     public class ResponseWrapper<RS>
     {
@@ -207,13 +217,21 @@ namespace Xigadee
             ResponseMessage = responseMessage;
             Payload = null;
         }
-
+        /// <summary>
+        /// The response code.
+        /// </summary>
         public int? ResponseCode { get;  }
-
+        /// <summary>
+        /// The response message.
+        /// </summary>
         public string ResponseMessage { get;  }
-
+        /// <summary>
+        /// The response payload.
+        /// </summary>
         public TransmissionPayload Payload { get; }
-
+        /// <summary>
+        /// The response obejct.
+        /// </summary>
         public RS Response { get; set; }
     }
 }

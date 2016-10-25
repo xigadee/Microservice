@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -49,6 +50,8 @@ namespace Xigadee
         public bool IsStandard { get; private set; }
 
         public bool IsAsync { get; private set; }
+
+        public bool IsReturnValue{ get; private set; }
         /// <summary>
         /// This property specifies whether the signature is valid.
         /// </summary>
@@ -80,6 +83,7 @@ namespace Xigadee
             Parameters = Method.GetParameters().ToList();
             var paramInfo = Method.GetParameters().ToList();
 
+            
             //OK, check whether the return parameter is a Task or Task<> construct
             IsAsync = typeof(Task).IsAssignableFrom(Method.ReturnParameter.ParameterType);
 
@@ -102,28 +106,43 @@ namespace Xigadee
 
             }
 
-            //var rqAttr = paramInfo.Select((p) => ParamAttributes<PayloadInAttribute>(p)).FirstOrDefault();
-            //var rsAttr = paramInfo.Select((p) => ParamAttributes<PayloadOutAttribute>(p)).FirstOrDefault();
+            ParamIn = Parameters.Where((p) => ParamAttributes<PayloadInAttribute>(p)).FirstOrDefault();
+            TypeIn = ParamIn.ParameterType;
 
-                ////Ok, this is a generci method so we can quit now.
-                //if (isGeneric && RegisterGenericSignature(commandAttrs, info, genericIn, genericOut))
-                //    return;
+            ParamOut = Parameters.Where((p) => ParamAttributes<PayloadOutAttribute>(p)).FirstOrDefault();
+
+            if (ParamOut == null && ParamAttributes<PayloadOutAttribute>(Method.ReturnParameter))
+            {
+                ParamOut = Method.ReturnParameter;
+                IsReturnValue = true;
+            }
+            else if (ParamOut != null && !ParamAttributes<OutAttribute>(ParamOut))
+            {
+
+            }
 
 
-                ////Ok, let's get the request parameter
-                //if (rqAttr != null)
-                //    paramInfo.Remove(rqAttr.Item1);
-
-                ////And finally the response parameter
-                //if (rsAttr != null)
-                //    paramInfo.Remove(rsAttr.Item1);
 
             return false;
+        }
+
+        private bool ParamAttributes<A>(ParameterInfo info)
+            where A: Attribute
+        {
+            return Attribute.GetCustomAttribute(info, typeof(A)) != null;
         }
 
         public ParameterInfo StandardIn { get; private set; }
 
         public ParameterInfo StandardOut { get; private set; }
+
+        public ParameterInfo ParamIn { get; private set; }
+
+        public Type TypeIn { get; set; }
+
+        public ParameterInfo ParamOut { get; private set; }
+
+        public Type TypeOut { get; set; }
 
         #region Reference(CommandContractAttribute attr)
         /// <summary>
