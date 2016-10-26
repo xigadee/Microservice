@@ -117,35 +117,6 @@ namespace Xigadee
         public int DispatcherTransitCount { get; set; } 
         #endregion
 
-        #region ResponseChannelId
-        /// <summary>
-        /// Gets or sets the channelId of the response message.
-        /// </summary>
-        [DataMember]
-        public string ResponseChannelId { get; set; }
-        #endregion
-        #region ResponseChannelPriority
-        /// <summary>
-        /// Gets or sets the priority for the ResponseChannelId.
-        /// </summary>
-        [DataMember]
-        public int ResponseChannelPriority { get; set; }
-        #endregion
-        #region ResponseMessageType
-        /// <summary>
-        /// Gets or sets the Response message type.
-        /// </summary>
-        [DataMember]
-        public string ResponseMessageType { get; set; }
-        #endregion
-        #region ResponseActionType
-        /// <summary>
-        /// Gets or sets the response action type.
-        /// </summary>
-        [DataMember]
-        public string ResponseActionType { get; set; }
-        #endregion
-
         #region ChannelId
         /// <summary>
         /// Gets or sets the channelId of the request message.
@@ -173,6 +144,35 @@ namespace Xigadee
         /// </summary>
         [DataMember]
         public string ActionType { get; set; } 
+        #endregion
+
+        #region ResponseChannelId
+        /// <summary>
+        /// Gets or sets the channelId of the response message.
+        /// </summary>
+        [DataMember]
+        public string ResponseChannelId { get; set; }
+        #endregion
+        #region ResponseChannelPriority
+        /// <summary>
+        /// Gets or sets the priority for the ResponseChannelId.
+        /// </summary>
+        [DataMember]
+        public int ResponseChannelPriority { get; set; }
+        #endregion
+        #region ResponseMessageType
+        /// <summary>
+        /// Gets or sets the Response message type.
+        /// </summary>
+        [DataMember]
+        public string ResponseMessageType { get; set; }
+        #endregion
+        #region ResponseActionType
+        /// <summary>
+        /// Gets or sets the response action type.
+        /// </summary>
+        [DataMember]
+        public string ResponseActionType { get; set; }
         #endregion
 
         #region Blob

@@ -83,10 +83,6 @@ namespace Xigadee
             Parameters = Method.GetParameters().ToList();
             var paramInfo = Method.GetParameters().ToList();
 
-            
-            //OK, check whether the return parameter is a Task or Task<> construct
-            IsAsync = typeof(Task).IsAssignableFrom(Method.ReturnParameter.ParameterType);
-
             StandardIn = paramInfo.FirstOrDefault((p) => p.ParameterType == typeof(TransmissionPayload));
             bool isStandard = (StandardIn != null) && paramInfo.Remove(StandardIn);
 
@@ -94,34 +90,40 @@ namespace Xigadee
             isStandard &= (StandardOut != null) && paramInfo.Remove(StandardOut) && paramInfo.Count == 0;
 
             IsStandard = isStandard;
+         
+            //OK, check whether the return parameter is a Task or Task<> construct
+            IsAsync = typeof(Task).IsAssignableFrom(Method.ReturnParameter.ParameterType);
 
             if (IsStandard)
             {
+                //Ok, we can end here.
                 Action = ReflectionActionStandard();
                 return true;
             }
 
-            if (IsAsync && Method.ReturnParameter.ParameterType.IsGenericType)
-            {
+            //Ok, we have additional parameters.There should only be two max 
 
-            }
 
             ParamIn = Parameters.Where((p) => ParamAttributes<PayloadInAttribute>(p)).FirstOrDefault();
             TypeIn = ParamIn.ParameterType;
 
             ParamOut = Parameters.Where((p) => ParamAttributes<PayloadOutAttribute>(p)).FirstOrDefault();
 
+            
             if (ParamOut == null && ParamAttributes<PayloadOutAttribute>(Method.ReturnParameter))
             {
                 ParamOut = Method.ReturnParameter;
                 IsReturnValue = true;
             }
-            else if (ParamOut != null && !ParamAttributes<OutAttribute>(ParamOut))
+
+            if (ParamOut!= null && !IsReturnValue && !ParamOut.IsOut)
+                throw new CommandMethodSignatureException($"Parameter {ParamOut.Name} is not marked as an out parameter.");
+
+
+            if (IsAsync && Method.ReturnParameter.ParameterType.IsGenericType)
             {
-
+                TypeOut = Method.ReturnParameter.ParameterType.GenericTypeArguments[0];
             }
-
-
 
             return false;
         }

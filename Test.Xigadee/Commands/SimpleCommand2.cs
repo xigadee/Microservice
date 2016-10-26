@@ -77,7 +77,7 @@ namespace Test.Xigadee
         [CommandContract(messageType: "simples2", actionType: "syncout")]
         private void ActionSyncOut([PayloadIn] Blah data, [PayloadOut] out string item)
         {
-            item = "Super freaky";
+            item = "Super freaky doo dah";
             //var rs = incoming.ToResponse();
             //rs.Message.Blob = PayloadSerializer.PayloadSerialize("");
             //rs.Message.Status = "204";
