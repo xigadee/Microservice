@@ -97,11 +97,13 @@ namespace Xigadee
                 AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.MessageType), eventData.Payload?.Message?.MessageType);
                 AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.ActionType), eventData.Payload?.Message?.ActionType);
                 AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.CorrelationKey), eventData.Payload?.Message?.CorrelationKey);
-                AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.ProcessCorrelationKey), eventData.Payload?.Message?.ProcessCorrelationKey);
                 AddPropertyData(eventTelemetry, nameof(BoundaryEventType), eventData.Type.ToString());
                 AddPropertyData(eventTelemetry, nameof(Exception), eventData.Ex?.ToString());
                 eventTelemetry.Metrics[$"{nameof(BoundaryEvent)}:{nameof(eventData.Requested)}"] = eventData.Requested;
                 eventTelemetry.Metrics[$"{nameof(BoundaryEvent)}:{nameof(eventData.Actual)}"] = eventData.Actual;
+
+                // If we have the payload and a correlation key use this as the operation id
+                eventTelemetry.Context.Operation.Id = eventData.Payload?.Message?.ProcessCorrelationKey ?? eventTelemetry.Context.Operation.Id;
 
                 mTelemetry?.TrackEvent(eventTelemetry);
             }
@@ -123,10 +125,12 @@ namespace Xigadee
                 AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.MessageType), eventData.Payload?.Message?.MessageType);
                 AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.ActionType), eventData.Payload?.Message?.ActionType);
                 AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.CorrelationKey), eventData.Payload?.Message?.CorrelationKey);
-                AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.ProcessCorrelationKey), eventData.Payload?.Message?.ProcessCorrelationKey);
                 AddPropertyData(eventTelemetry, nameof(PayloadEventType), eventData.Type.ToString());
                 AddPropertyData(eventTelemetry, nameof(Exception), eventData.Ex?.ToString());
                 eventTelemetry.Metrics[$"{nameof(DispatcherEvent)}:{nameof(eventData.Delta)}"] = eventData.Delta;
+
+                // If we have the payload and a correlation key use this as the operation id
+                eventTelemetry.Context.Operation.Id = eventData.Payload?.Message?.ProcessCorrelationKey ?? eventTelemetry.Context.Operation.Id;
 
                 mTelemetry?.TrackEvent(eventTelemetry);
             }
