@@ -16,10 +16,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -31,47 +28,45 @@ namespace Xigadee
     /// </summary>
     public class ApplicationInsightsDataCollector: DataCollectorHolder
     {
+
         #region Declarations
         //https://azure.microsoft.com/en-gb/documentation/articles/app-insights-api-custom-events-metrics/
         private TelemetryClient mTelemetry;
-        private readonly string mKey;
+        private readonly LoggingLevel mLoggingLevel;
+        private readonly TelemetryConfiguration mTelemetryConfig;
         #endregion
 
         #region Constructor
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="key">This is the application insights key.</param>
-        /// <param name="name"></param>
+        /// <param name="loggingLevel">This is the minium level at which to log events.</param>
         /// <param name="developerMode"></param>
-        /// <param name="support"></param>
-        protected ApplicationInsightsDataCollector(string key, bool developerMode = false)
+        public ApplicationInsightsDataCollector(string key, LoggingLevel loggingLevel = LoggingLevel.Warning, bool developerMode = false)
         {
-            var config = new TelemetryConfiguration();
-            config.InstrumentationKey = key;
-            config.TelemetryChannel.DeveloperMode = developerMode;
+            mLoggingLevel = loggingLevel;
+            mTelemetryConfig = new TelemetryConfiguration
+            {
+                InstrumentationKey = key,
+                TelemetryChannel = {DeveloperMode = developerMode}
+            };
+        }
 
-            mKey = key;
-        } 
         #endregion
 
 
         protected override void StartInternal()
         {
-            TelemetryConfiguration.Active.TelemetryChannel.DeveloperMode = true;
-            mTelemetry = new TelemetryClient();
+            mTelemetry = new TelemetryClient(mTelemetryConfig);
 
             //mTelemetry.Context.Component.Version = 
             mTelemetry.Context.Device.Id = OriginatorId.ServiceId;
-
-            //mTelemetry.Context.Operation.Id = 
-
             mTelemetry.Context.Component.Version = (Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly()).GetName().Version.ToString();
             mTelemetry.Context.Properties["ExternalServiceId"] = OriginatorId.ExternalServiceId;
             mTelemetry.Context.Properties["MachineName"] = OriginatorId.MachineName;
             mTelemetry.Context.Properties["ServiceName"] = OriginatorId.Name;
-
-            mTelemetry.InstrumentationKey = mKey;
         }
 
         protected override void StopInternal()
@@ -82,46 +77,169 @@ namespace Xigadee
 
         protected override void SupportLoadDefault()
         {
-            SupportAdd(DataCollectionSupport.BoundaryLogger, (e) => Write((BoundaryEvent)e));
-            SupportAdd(DataCollectionSupport.Dispatcher, (e) => Write((DispatcherEvent)e));
-            SupportAdd(DataCollectionSupport.EventSource, (e) => Write((EventSourceEvent)e));
-            SupportAdd(DataCollectionSupport.Logger, (e) => Write((LogEvent)e));
-            SupportAdd(DataCollectionSupport.Statistics, (e) => Write((MicroserviceStatistics)e));
-            SupportAdd(DataCollectionSupport.Telemetry, (e) => Write((MetricEvent)e));
+            SupportAdd(DataCollectionSupport.BoundaryLogger, e => Write((BoundaryEvent)e));
+            SupportAdd(DataCollectionSupport.Dispatcher, e => Write((DispatcherEvent)e));
+            SupportAdd(DataCollectionSupport.EventSource, e => Write((EventSourceEvent)e));
+            SupportAdd(DataCollectionSupport.Statistics, e => Write((MicroserviceStatistics)e));
+            SupportAdd(DataCollectionSupport.Logger, e => Write((LogEvent)e));
+            SupportAdd(DataCollectionSupport.Telemetry, e => Write((MetricEvent)e));
         }
 
         private void Write(BoundaryEvent eventData)
         {
-            //switch (eventData.
+            if (eventData == null)
+                return;
 
-            //mTelemetry.TrackException(new ExceptionTelemetry() { 
+            try
+            {
+                var eventTelemetry = new EventTelemetry($"Boundary:{eventData.Payload?.Message?.ChannelId}:{eventData.Payload?.Message?.MessageType}:{eventData.Payload?.Message?.ActionType}:{eventData.Direction}");
+                AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.ChannelId), eventData.Payload?.Message?.ChannelId);
+                AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.MessageType), eventData.Payload?.Message?.MessageType);
+                AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.ActionType), eventData.Payload?.Message?.ActionType);
+                AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.CorrelationKey), eventData.Payload?.Message?.CorrelationKey);
+                AddPropertyData(eventTelemetry, nameof(BoundaryEventType), eventData.Type.ToString());
+                AddPropertyData(eventTelemetry, nameof(Exception), eventData.Ex?.ToString());
+                eventTelemetry.Metrics[$"{nameof(BoundaryEvent)}:{nameof(eventData.Requested)}"] = eventData.Requested;
+                eventTelemetry.Metrics[$"{nameof(BoundaryEvent)}:{nameof(eventData.Actual)}"] = eventData.Actual;
 
-            //mTelemetry.TrackEvent(new EventTelemetry() { 
+                // If we have the payload and a correlation key use this as the operation id
+                eventTelemetry.Context.Operation.Id = eventData.Payload?.Message?.ProcessCorrelationKey ?? eventTelemetry.Context.Operation.Id;
+
+                mTelemetry?.TrackEvent(eventTelemetry);
+            }
+            catch (Exception ex)
+            {
+                LogTelemetryException(ex);
+            }
         }
 
         private void Write(DispatcherEvent eventData)
         {
+            if (eventData == null)
+                return;
 
+            try
+            {
+                var eventTelemetry = new EventTelemetry($"Dispatcher:{eventData.Payload?.Message?.ChannelId}:{eventData.Payload?.Message?.MessageType}:{eventData.Payload?.Message?.ActionType}:{eventData.IsSuccess}");
+                AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.ChannelId), eventData.Payload?.Message?.ChannelId);
+                AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.MessageType), eventData.Payload?.Message?.MessageType);
+                AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.ActionType), eventData.Payload?.Message?.ActionType);
+                AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.CorrelationKey), eventData.Payload?.Message?.CorrelationKey);
+                AddPropertyData(eventTelemetry, nameof(PayloadEventType), eventData.Type.ToString());
+                AddPropertyData(eventTelemetry, nameof(Exception), eventData.Ex?.ToString());
+                eventTelemetry.Metrics[$"{nameof(DispatcherEvent)}:{nameof(eventData.Delta)}"] = eventData.Delta;
+
+                // If we have the payload and a correlation key use this as the operation id
+                eventTelemetry.Context.Operation.Id = eventData.Payload?.Message?.ProcessCorrelationKey ?? eventTelemetry.Context.Operation.Id;
+
+                mTelemetry?.TrackEvent(eventTelemetry);
+            }
+            catch (Exception ex)
+            {
+                LogTelemetryException(ex);
+            }
         }
 
         private void Write(EventSourceEvent eventData)
         {
+            if (eventData?.Entry == null)
+                return;
 
+            try
+            {
+                var eventTelemetry = new EventTelemetry($"EventSource:{eventData.Entry.EntityType}:{eventData.Entry.EventType}");
+                AddPropertyData(eventTelemetry, nameof(eventData.Entry.EntityType), eventData.Entry.EntityType);
+                AddPropertyData(eventTelemetry, nameof(eventData.Entry.EventType), eventData.Entry.EventType);
+                AddPropertyData(eventTelemetry, nameof(eventData.OriginatorId), eventData.OriginatorId);
+                AddPropertyData(eventTelemetry, nameof(eventData.Entry.CorrelationId), eventData.Entry.CorrelationId);
+                AddPropertyData(eventTelemetry, nameof(eventData.Entry.EntitySource), eventData.Entry.EntitySource);
+                AddPropertyData(eventTelemetry, nameof(eventData.Entry.Key), eventData.Entry.Key);
+                mTelemetry?.TrackEvent(eventTelemetry);
+            }
+            catch (Exception ex)
+            {
+                LogTelemetryException(ex);
+            }
         }
 
         private void Write(LogEvent eventData)
         {
+            if (eventData == null || eventData.Level < mLoggingLevel)
+                return;
 
+            try
+            {
+                EventTelemetry eventTelemetry = null;
+                ExceptionTelemetry exceptionTelemetry = null;
+                ISupportProperties telemetryProperties;
+
+                // Don't log non errors that have exceptions as exceptions i.e. warnings / info
+                if (eventData.Ex != null && eventData.Level >= LoggingLevel.Error)
+                {
+                    telemetryProperties = exceptionTelemetry = new ExceptionTelemetry(eventData.Ex);
+                }
+                else
+                {
+                    telemetryProperties = eventTelemetry = new EventTelemetry(eventData.Level + (!string.IsNullOrEmpty(eventData.Category) ? $":{eventData.Category}" : string.Empty));
+                }
+
+                AddPropertyData(telemetryProperties, nameof(LoggingLevel), eventData.Level.ToString());
+                if (eventData.AdditionalData != null || !string.IsNullOrEmpty(eventData.Message))
+                {
+                    eventData.AdditionalData?.ForEach(kvp =>AddPropertyData(telemetryProperties, kvp.Key, kvp.Value));
+                    AddPropertyData(telemetryProperties, nameof(eventData.Message), eventData.Message);
+                    AddPropertyData(telemetryProperties, nameof(eventData.Category), eventData.Category);
+                }
+
+                if (exceptionTelemetry != null)
+                {
+                    mTelemetry?.TrackException(exceptionTelemetry);
+                }
+                else
+                {
+                    AddPropertyData(telemetryProperties, nameof(Exception), eventData.Ex?.ToString());
+                    mTelemetry?.TrackEvent(eventTelemetry);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogTelemetryException(ex);
+            }
         }
 
         private void Write(MicroserviceStatistics eventData)
         {
+            if (string.IsNullOrEmpty(eventData?.Name))
+                return;
 
+            try
+            {
+                mTelemetry?.TrackMetric($"{eventData.Name}.Tasks.Active", eventData.Tasks?.Availability?.Active ?? 0);
+                mTelemetry?.TrackMetric($"{eventData.Name}.Tasks.SlotsAvailable", eventData.Tasks?.Availability?.SlotsAvailable ?? 0);
+                mTelemetry?.TrackMetric($"{eventData.Name}.Tasks.Killed", eventData.Tasks?.Availability?.Killed ?? 0);
+                mTelemetry?.TrackMetric($"{eventData.Name}.Tasks.KilledDidReturn", eventData.Tasks?.Availability?.KilledDidReturn ?? 0);
+                mTelemetry?.TrackMetric($"{eventData.Name}.Tasks.KilledTotal", (eventData.Tasks?.Availability?.Killed ?? 0) + (eventData.Tasks?.Availability?.KilledDidReturn ?? 0));
+                mTelemetry?.TrackMetric($"{eventData.Name}.Cpu.ServicePercentage", eventData.Tasks?.Cpu?.ServicePercentage ?? 0);
+            }
+            catch (Exception ex)
+            {
+                LogTelemetryException(ex);
+            }
         }
 
         private void Write(MetricEvent eventData)
         {
+            if (string.IsNullOrEmpty(eventData?.MetricName))
+                return;
 
+            try
+            {
+                mTelemetry?.TrackMetric(eventData.MetricName, eventData.Value);
+            }
+            catch (Exception ex)
+            {
+                LogTelemetryException(ex);
+            }
         }
 
         /// <summary>
@@ -132,69 +250,36 @@ namespace Xigadee
             mTelemetry?.Flush();
         }
 
+        /// <summary>
+        /// Add properties if not null or empty to a telemetry object that supports properties
+        /// </summary>
+        /// <param name="propertiesObject"></param>
+        /// <param name="dataName"></param>
+        /// <param name="dataValue"></param>
+        private void AddPropertyData(ISupportProperties propertiesObject, string dataName, string dataValue)
+        {
+            if (propertiesObject == null || string.IsNullOrEmpty(dataName) || string.IsNullOrEmpty(dataValue))
+                return;
 
-        //public override void BoundaryLog(ChannelDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = default(Guid?))
-        //{
-
-        //    //         // Set up some properties and metrics:
-        //    //         var properties = new Dictionary<string, string>
-        //    //{{"game", currentGame.Name}, {"difficulty", currentGame.Difficulty}};
-        //    //         var metrics = new Dictionary<string, double>
-        //    //{{"Score", currentGame.Score}, {"Opponents", currentGame.OpponentCount}};
-
-        //    //         // Send the event:
-        //    //         mTelemetry.TrackEvent("WinGame", properties, metrics);
-
-        //    var eventAI = new EventTelemetry();
-
-        //    eventAI.Name = "WinGame";
-
-        //    //eventAI.Metrics ["processingTime"] = stopwatch.Elapsed.TotalMilliseconds;
-        //    //eventAI.Properties ["game"] = currentGame.Name;
-        //    //eventAI.Properties ["difficulty"] = currentGame.Difficulty;
-        //    //eventAI.Metrics ["Score"] = currentGame.Score;
-        //    //eventAI.Metrics ["Opponents"] = currentGame.Opponents.Length;
-
-        //    mTelemetry?.TrackEvent(eventAI);
-        //    var mTelem = new MetricTelemetry();
-        //    mTelemetry?.TrackMetric(mTelem);
-
-        //    var rTelem = new RequestTelemetry();
-        //    //rTelem.
-        //    //mTelemetry?.TrackRequest(PerformanceCounterTelemetry);
-        //    //mTelem.Count
-        //}
-
-        //public override async Task Log(LogEvent logEvent)
-        //{
-        //    if (logEvent == null)
-        //        return;
-
-        //    switch (logEvent.Level)
-        //    {
-        //        case LoggingLevel.Info:
-        //            break;
-        //        case LoggingLevel.Status:
-        //            break;
-        //        case LoggingLevel.Fatal:
-        //        case LoggingLevel.Error:
-        //        case LoggingLevel.Warning:
-        //            break;
-        //    }
-        //}
+            propertiesObject.Properties[dataName] = dataValue;
+        }
 
 
-
-        //public override void TrackMetric(string metricName, double value)
-        //{
-        //    mTelemetry?.TrackMetric(metricName, value);
-        //}
-
-        //public override async Task Write<K, E>(string originatorId, EventSourceEntry<K, E> entry, DateTime? utcTimeStamp = default(DateTime?), bool sync = false)
-        //{
-        //}
-
-
+        /// <summary>
+        /// Attempt to log the exception details to telemetry
+        /// </summary>
+        /// <param name="ex"></param>
+        private void LogTelemetryException(Exception ex)
+        {
+            try
+            {
+                mTelemetry?.TrackException(ex, new Dictionary<string, string> { { "Message", "Unable to log correctly" } });
+            }
+            catch (Exception)
+            {
+                // Not much we can do here
+            }
+        }
     }
 }
 
