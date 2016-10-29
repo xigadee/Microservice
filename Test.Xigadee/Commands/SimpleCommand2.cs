@@ -35,6 +35,9 @@ namespace Test.Xigadee
                 var result2 = mCommandInit.Process<Blah, string>("internalIn", "simples2", "sync",
                     new Blah() { Message = "hello" }, new RequestSettings() { WaitTime = TimeSpan.FromHours(1) }).Result;
 
+                var result3 = mCommandInit.Process<Blah, string>("internalIn", "simples2", "syncout",
+                    new Blah() { Message = "hello" }, new RequestSettings() { WaitTime = TimeSpan.FromHours(1) }).Result;
+
                 var end = ConversionHelper.DeltaAsTimeSpan(start);
 
                 pipeline.Stop();

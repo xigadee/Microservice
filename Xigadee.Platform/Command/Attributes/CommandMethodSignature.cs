@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -16,6 +17,7 @@ namespace Xigadee
     [DebuggerDisplay("{Method.Name}")]
     public class CommandMethodSignature
     {
+        #region Constructor
         /// <summary>
         /// This is the default constructor.
         /// </summary>
@@ -36,6 +38,8 @@ namespace Xigadee
 
             IsValid = Validate(throwSignatureException);
         }
+        #endregion
+
         /// <summary>
         /// This is the command connected to the signature
         /// </summary>
@@ -47,11 +51,15 @@ namespace Xigadee
         /// <summary>
         /// Specifies whether this is a generic signature.
         /// </summary>
-        public bool IsStandard { get; private set; }
-
+        public bool IsStandardCall { get; private set; }
+        /// <summary>
+        /// This specifies whether the method call is async.
+        /// </summary>
         public bool IsAsync { get; private set; }
-
-        public bool IsReturnValue{ get; private set; }
+        /// <summary>
+        /// this property specifies whether the return value is the response parameter.
+        /// </summary>
+        public bool IsReturnValue { get; private set; }
         /// <summary>
         /// This property specifies whether the signature is valid.
         /// </summary>
@@ -63,7 +71,7 @@ namespace Xigadee
         /// <summary>
         /// This is the list of the parameters for the method.
         /// </summary>
-        public List<ParameterInfo> Parameters { get; protected set;}
+        public List<ParameterInfo> Parameters { get; protected set; }
         /// <summary>
         /// This method validates the method.
         /// </summary>
@@ -80,69 +88,94 @@ namespace Xigadee
             if (CommandAttributes.Count == 0)
                 throw new CommandMethodSignatureException($"CommandAttributes are not defined for the method.");
 
+            //OK, check whether the return parameter is a Task or Task<> async construct
+            IsAsync = typeof(Task).IsAssignableFrom(Method.ReturnParameter.ParameterType);
+
             Parameters = Method.GetParameters().ToList();
             var paramInfo = Method.GetParameters().ToList();
 
-            StandardIn = paramInfo.FirstOrDefault((p) => p.ParameterType == typeof(TransmissionPayload));
-            bool isStandard = (StandardIn != null) && paramInfo.Remove(StandardIn);
+            //OK, see if the standard parameters exist and aren't decorated as In or Out.
+            StandardIn = paramInfo
+                .Where((p) => !ParamAttributes<PayloadInAttribute>(p))
+                .Where((p) => !ParamAttributes<PayloadOutAttribute>(p))
+                .FirstOrDefault((p) => p.ParameterType == typeof(TransmissionPayload));
+            bool isStandardIn = (StandardIn != null) && paramInfo.Remove(StandardIn);
+            if (StandardIn != null)
+                StandardInPos = Parameters.IndexOf(StandardIn);
 
-            StandardOut = paramInfo.FirstOrDefault((p) => p.ParameterType == typeof(List<TransmissionPayload>));
-            isStandard &= (StandardOut != null) && paramInfo.Remove(StandardOut) && paramInfo.Count == 0;
+            StandardOut = paramInfo
+                .Where((p) => !ParamAttributes<PayloadInAttribute>(p))
+                .Where((p) => !ParamAttributes<PayloadOutAttribute>(p))
+                .FirstOrDefault((p) => p.ParameterType == typeof(List<TransmissionPayload>));
+            bool isStandardOut = (StandardOut != null) && paramInfo.Remove(StandardOut);
+            if (StandardOut != null)
+                StandardOutPos = Parameters.IndexOf(StandardOut);
 
-            IsStandard = isStandard;
-         
-            //OK, check whether the return parameter is a Task or Task<> construct
-            IsAsync = typeof(Task).IsAssignableFrom(Method.ReturnParameter.ParameterType);
+            IsStandardCall = isStandardIn && isStandardOut && paramInfo.Count == 0;
 
-            if (IsStandard)
-            {
-                //Ok, we can end here.
-                Action = ReflectionActionStandard();
+            if (IsStandardCall)
                 return true;
+
+            //Get the In parameter
+            ParamIn = Parameters.Where((p) => ParamAttributes<PayloadInAttribute>(p)).FirstOrDefault();
+            if (ParamIn != null && paramInfo.Remove(ParamIn))
+            {
+                TypeIn = ParamIn?.ParameterType;
+                ParamInPos = Parameters.IndexOf(ParamIn);
             }
 
-            //Ok, we have additional parameters.There should only be two max 
-
-
-            ParamIn = Parameters.Where((p) => ParamAttributes<PayloadInAttribute>(p)).FirstOrDefault();
-            TypeIn = ParamIn.ParameterType;
-
+            //Now get the out parameter
             ParamOut = Parameters.Where((p) => ParamAttributes<PayloadOutAttribute>(p)).FirstOrDefault();
 
-            
             if (ParamOut == null && ParamAttributes<PayloadOutAttribute>(Method.ReturnParameter))
             {
                 ParamOut = Method.ReturnParameter;
                 IsReturnValue = true;
             }
+            else if (ParamOut != null)
+            {
+                ParamOutPos = Parameters.IndexOf(ParamOut);
+            }
 
-            if (ParamOut!= null && !IsReturnValue && !ParamOut.IsOut)
+
+            if (ParamOut != null && !IsReturnValue && !ParamOut.IsOut)
                 throw new CommandMethodSignatureException($"Parameter {ParamOut.Name} is not marked as an out parameter.");
 
 
-            if (IsAsync && Method.ReturnParameter.ParameterType.IsGenericType)
+            if (IsAsync && IsReturnValue && ParamOut.ParameterType.IsGenericType)
             {
-                TypeOut = Method.ReturnParameter.ParameterType.GenericTypeArguments[0];
+                if (ParamOut.ParameterType.GenericTypeArguments.Length != 1)
+                    throw new CommandMethodSignatureException($"Generic Task response parameter can only have one parameter.");
+
+                TypeOut = ParamOut.ParameterType.GenericTypeArguments[0];
+            }
+            else if (!IsAsync)
+            {
+                TypeOut = ParamOut.ParameterType;
             }
 
-            return false;
+            return true;
         }
 
         private bool ParamAttributes<A>(ParameterInfo info)
-            where A: Attribute
+            where A : Attribute
         {
             return Attribute.GetCustomAttribute(info, typeof(A)) != null;
         }
 
         public ParameterInfo StandardIn { get; private set; }
+        public int? StandardInPos { get; private set; }
 
         public ParameterInfo StandardOut { get; private set; }
+        public int? StandardOutPos { get; private set; }
 
         public ParameterInfo ParamIn { get; private set; }
+        public int? ParamInPos { get; private set; }
 
         public Type TypeIn { get; set; }
 
         public ParameterInfo ParamOut { get; private set; }
+        public int? ParamOutPos { get; private set; }
 
         public Type TypeOut { get; set; }
 
@@ -155,34 +188,69 @@ namespace Xigadee
         public string Reference(CommandContractAttribute attr)
         {
             return $"{Method.Name}/{attr.Header.ToKey()}";
-        } 
+        }
         #endregion
 
         /// <summary>
         /// This is the command action that is executed.
         /// </summary>
-        public Func<TransmissionPayload, List<TransmissionPayload>, Task> Action{get; protected set;}
-
-        private Func<TransmissionPayload, List<TransmissionPayload>, Task> ReflectionActionStandard()
+        public Func<TransmissionPayload, List<TransmissionPayload>, IPayloadSerializationContainer, Task> Action
         {
-            if (IsAsync)
-                return async (pIn, pOut) =>
-                {
-                    await (Task)Method.Invoke(Command, new object[] { pIn, pOut });
-                };
-            else
-                return async (pIn, pOut) =>
-                {
-                    Method.Invoke(Command, new object[] { pIn, pOut });
-                };
-        }
-
-        private Func<TransmissionPayload, List<TransmissionPayload>, Task> ReflectionActionStandardParameter(Type paramInType)
-        {
-            return async (pIn, pOut) =>
+            get
             {
-                await (Task)Method.Invoke(Command, new object[] { pIn, pOut });
-            };
+                return async (pIn, pOut, ser) =>
+                {
+                    try
+                    {
+                        var collection = new object[Parameters.Count];
+
+                        if (ParamInPos.HasValue)
+                            collection[ParamInPos.Value] = ser.PayloadDeserialize(pIn.Message);
+
+                        if (StandardInPos.HasValue)
+                            collection[StandardInPos.Value] = pIn;
+
+                        if (StandardOutPos.HasValue)
+                            collection[StandardOutPos.Value] = pOut;
+
+                        object output = null;
+
+                        if (IsAsync)
+                        {
+                            if (TypeOut == null)
+                                await (Task)Method.Invoke(Command, collection);
+                            else
+                                output = await (dynamic)Method.Invoke(Command, collection);
+                        }
+                        else
+                        {
+                            if (!IsReturnValue)
+                            {
+                                Method.Invoke(Command, collection);
+                                if (ParamOutPos.HasValue)
+                                    output = collection[ParamOutPos.Value];
+                            }
+                            else
+                                output = (dynamic)Method.Invoke(Command, collection);
+                        }
+
+                        if (TypeOut != null)
+                        {
+                            var response = pIn.ToResponse();
+                            response.Message.Blob = ser.PayloadSerialize(output);
+                            response.Message.Status = "200";
+
+                            pOut.Add(response);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+
+                        throw;
+                    }
+
+                };
+            }
         }
     }
 }
