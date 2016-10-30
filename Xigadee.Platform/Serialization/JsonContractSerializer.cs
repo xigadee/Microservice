@@ -21,10 +21,15 @@ using Newtonsoft.Json;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This class is used for serialization support, using the standard Newtonsoft Json settings.
+    /// </summary>
     public class JsonContractSerializer : DefaultSerializerBase<JsonSerializer, SerializerState>
     {
         private readonly JsonSerializer mJsonSerializer = new JsonSerializer {TypeNameHandling = TypeNameHandling.Auto};
-
+        /// <summary>
+        /// This is the specific magic number for this serializer: 67,216
+        /// </summary>
         public override byte[] Identifier
         {
             get
@@ -38,7 +43,11 @@ namespace Xigadee
             return mJsonSerializer;
         }
 
-
+        /// <summary>
+        /// This method serializes the entity to a byte stream.
+        /// </summary>
+        /// <param name="entity">The entity to serialize</param>
+        /// <returns>The compressed byte stream with the identifier prepended</returns>
         public override byte[] Serialize(object entity)
         {
             var state = new SerializerState {MagicNumbers = Identifier, EntityType = entity.GetType(), Entity = entity};

@@ -31,6 +31,7 @@ namespace Xigadee
     /// <summary>
     /// This is the default serializer that uses the standard DataContractSerializer
     /// </summary>
+    [Obsolete("Use JsonContractSerializer instead.", false)]
     public class DefaultDataContractSerializer : DefaultSerializerBase<DataContractSerializer, SerializerState>
     {
         public override byte[] Identifier

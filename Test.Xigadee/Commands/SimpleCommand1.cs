@@ -53,7 +53,9 @@ namespace Test.Xigadee
         [CommandContract(messageType: "simples1", actionType: "async")]
         private async Task ActionAsync(TransmissionPayload incoming, List<TransmissionPayload> outgoing)
         {
+            var blahIn = PayloadSerializer.PayloadDeserialize<Blah>(incoming);
             var rs = incoming.ToResponse();
+            rs.Message.Blob = PayloadSerializer.PayloadSerialize(new Blah { ContentId = blahIn.ContentId, Message = "Howdy" });
             rs.MessageObject = "Freaky";
             rs.Message.Status = "204";
             rs.Message.StatusDescription = "Hello";
@@ -63,8 +65,9 @@ namespace Test.Xigadee
         [CommandContract(messageType: "simples1", actionType: "sync")]
         private void ActionSync(TransmissionPayload incoming, List<TransmissionPayload> outgoing)
         {
+            var blahIn = PayloadSerializer.PayloadDeserialize<Blah>(incoming);
             var rs = incoming.ToResponse();
-            rs.Message.Blob = PayloadSerializer.PayloadSerialize("Super freaky");
+            rs.Message.Blob = PayloadSerializer.PayloadSerialize(blahIn.Message);
             rs.Message.Status = "204";
             rs.Message.StatusDescription = "Hello";
             outgoing.Add(rs);

@@ -42,7 +42,6 @@ namespace Test.Xigadee
             mCommand2 = (EventTestCommand<IDoSomething2>)Service.RegisterCommand(new EventTestCommand<IDoSomething2>());
         }
 
-
         [TestMethod]
         public void UnhandledRequestCheck()
         {

@@ -77,6 +77,7 @@
     <Compile Include="Common\TestMicroservice.cs" />
     <Compile Include="Common\TestPopulatorBase.cs" />
     <Compile Include="Microservice_Validate_Persistence.cs" />
+    <Compile Include="Serialization\SerializationTests.cs" />
     <Compile Include="SignatureHelper.cs" />
     <Compile Include="ApiTests.cs" />
     <Compile Include="Pipeline\Pipeline1.cs" />

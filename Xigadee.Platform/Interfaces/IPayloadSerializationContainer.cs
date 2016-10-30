@@ -23,9 +23,17 @@ namespace Xigadee
     /// </summary>
     public interface IPayloadSerializationContainer
     {
+        object PayloadDeserialize(TransmissionPayload message);
+
         object PayloadDeserialize(ServiceMessage message);
 
+        object PayloadDeserialize(byte[] blob);
+
         P PayloadDeserialize<P>(TransmissionPayload payload);
+
+        P PayloadDeserialize<P>(ServiceMessage payload);
+
+        P PayloadDeserialize<P>(byte[] blob);
 
         byte[] PayloadSerialize(object payload);
     }
