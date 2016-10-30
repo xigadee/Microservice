@@ -75,25 +75,31 @@ namespace Xigadee
 
                 var responsePayloads = new List<TransmissionPayload>();
 
-                bool resolveInternal = await mCommands.Execute(requestPayload, responsePayloads);
+                //Execute the message against the internal Microservice commands.
+                bool resolvedInternal = await mCommands.Execute(requestPayload, responsePayloads);
+
                 //Switch the incoming message to the outgoing collection to be processed
                 //by the sender as it has not been processed internally and it is not marked
                 //as internal only.
-                if (!resolveInternal && internalOnly)
+                if (!resolvedInternal && internalOnly)
                 {
                     //OK, we have an problem. We log this as an error and get out of here
                     mDataCollection.DispatcherPayloadUnresolved(requestPayload, DispatcherRequestUnresolvedReason.MessageHandler);
+
                     OnProcessRequestUnresolved(requestPayload, DispatcherRequestUnresolvedReason.MessageHandler);
+
                     isSuccess = PolicyMicroservice.DispatcherUnhandledMessagesIgnore;
                     return;
                 }
-                else if (!resolveInternal)
+                else if (!resolvedInternal)
                 {
-                    //Make sure that this doesn't route back in.
+                    //OK, we are going to send this to the senders, first make sure that this doesn't route back in.
                     requestPayload.Options = ProcessOptions.RouteExternal;
+                    //Switch the incoming message to the response payload so that they are picked up by the senders.
                     responsePayloads.Add(requestPayload);
                 }
 
+                //OK, do we have anything to send on, both internal and external messages?
                 if (responsePayloads.Count > 0)
                 {
                     //Get the payloads that should be processed internally.
@@ -104,13 +110,16 @@ namespace Xigadee
                     //OK, send the payloads off to the Dispatcher for processing.
                     internalPayload.ForEach((p)=>
                     {
-                        //Mark internal only to stop any looping.
+                        //Mark internal only to stop any looping. 
+                        //We can do this as we have checked with the command handler that they will be processed
                         p.Options = ProcessOptions.RouteInternal;
                         mTaskManager.ExecuteOrEnqueue(p,"Dispatcher");
                     });
 
+                    //Extract the payloads that have been processed internally so that we only have the external payloads
                     var externalPayload = responsePayloads.Except(internalPayload).ToList();
-                    //Process the external payload to their specific destination.
+
+                    //Send the external payload to their specific destination.
                     await Task.WhenAll(externalPayload.Select((p) => mCommunication.Send(p)));
                 }
 

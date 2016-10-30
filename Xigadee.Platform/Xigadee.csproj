@@ -46,6 +46,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IdentityModel" />
     <Reference Include="System.Net" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Runtime.Caching" />
@@ -64,6 +65,7 @@
     <Compile Include="Command\CommandInitiator\CommandInitiator.cs" />
     <Compile Include="Command\CommandInitiator\CommandInitiatorPolicy.cs" />
     <Compile Include="Command\CommandInitiator\CommandInitiatorStatistics.cs" />
+    <Compile Include="Command\Command_Process.cs" />
     <Compile Include="Command\Command_Reflection.cs" />
     <Compile Include="Command\Attributes\CommandInAttribute.cs" />
     <Compile Include="Command\Exceptions\CommandNotSupportedException.cs" />
@@ -114,7 +116,7 @@
     <Compile Include="Command\CommandPolicy.cs" />
     <Compile Include="Command\CommandTimerPoll.cs" />
     <Compile Include="Command\Command_Channel.cs" />
-    <Compile Include="Command\Command_Dispatcher.cs" />
+    <Compile Include="Command\Command_Registration.cs" />
     <Compile Include="Command\Command_MasterJob.cs" />
     <Compile Include="Command\Command_OutgoingRequests.cs" />
     <Compile Include="Command\Command_Statistics.cs" />
@@ -390,6 +392,7 @@
     <Compile Include="ResourceTracker\ResourceTrackerStatistics.cs" />
     <Compile Include="Scheduler\SchedulerPolicy.cs" />
     <Compile Include="Scheduler\SchedulerStatistics.cs" />
+    <Compile Include="Security\DispatcherSecurityToken.cs" />
     <Compile Include="Security\Helper\Sha256SignatureHelper.cs" />
     <Compile Include="Security\Helper\Sha512SignatureHelper.cs" />
     <Compile Include="Security\Helper\SignatureHelper.cs" />
@@ -461,7 +464,9 @@
     </Content>
     <Content Include="Communication\TcpTlsChannel\Helper\MakeCert.txt" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Command\Security\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="BeforeBuild">

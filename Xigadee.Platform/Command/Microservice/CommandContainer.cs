@@ -184,7 +184,8 @@ namespace Xigadee
         {
             //This is the message handler that will process the call.
             List<ICommand> messageHandlers;
-            //If the message handler still can't be resolved then quit.
+
+            //If the message handler can't be resolve then quit.
             if (!ResolveMessageHandlers(payload, out messageHandlers))
                 return false;
 
