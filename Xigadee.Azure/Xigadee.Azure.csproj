@@ -183,6 +183,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ApplicationInsights\ApplicationInsightsCollector.cs" />
+    <Compile Include="ApplicationInsights\CommandCorrelationInitializer.cs" />
     <Compile Include="Pipeline\AddApplicationInsightsConnector.cs" />
     <Compile Include="Pipeline\AddAzureStorageEventSource.cs" />
     <Compile Include="Pipeline\AddAzureStorageLogger.cs" />

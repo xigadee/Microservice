@@ -30,9 +30,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class PersistenceSharedService<K, E>: PersistenceInitiatorBase<K, E>
-        , IRequireSharedServices, IPersistenceSharedService
-        where K : IEquatable<K>
+    public class PersistenceSharedService<K, E>: PersistenceInitiatorBase<K, E>, IPersistenceSharedService where K : IEquatable<K>
     {
         #region Declarations
         /// <summary>
@@ -47,11 +45,13 @@ namespace Xigadee
         private readonly string mResponseChannel;
         #endregion
         #region Constructor
+
         /// <summary>
         /// This is the default constructor for the shared service.
         /// </summary>
         /// <param name="responseChannel">This is the internal response channel that the message will listen on.</param>
         /// <param name="cacheManager"></param>
+        /// <param name="defaultRequestTimespan"></param>
         public PersistenceSharedService(string responseChannel = "internalpersistence"
             , ICacheManager<K, E> cacheManager = null
             , TimeSpan? defaultRequestTimespan = null) 
@@ -118,6 +118,10 @@ namespace Xigadee
             StatisticsInternal.ActiveIncrement();
 
             var payloadRq = TransmissionPayload.Create();
+
+            // Set the originator key to the correlation id if passed through the rq settings
+            if (!string.IsNullOrEmpty(rq.Settings?.CorrelationId))
+                payloadRq.Message.ProcessCorrelationKey = rq.Settings.CorrelationId;
 
             bool processAsync = rq.Settings?.ProcessAsync ?? false;
             payloadRq.Options = ProcessOptions.RouteInternal;

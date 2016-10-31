@@ -92,11 +92,11 @@ namespace Xigadee
 
                 var payload = TransmissionPayload.Create();
 
-                // Set the originator key to the correlation id if passed through the rq settings
-                if (rq.Settings != null && !string.IsNullOrEmpty(rq.Settings.CorrelationId))
-                    payload.Message.OriginatorKey = rq.Settings.CorrelationId;
+                // Set the process correlation key to the correlation id if passed through the rq settings
+                if (!string.IsNullOrEmpty(rq.Settings?.CorrelationId))
+                    payload.Message.ProcessCorrelationKey = rq.Settings.CorrelationId;
 
-                bool processAsync = rq.Settings == null ? false : rq.Settings.ProcessAsync;
+                bool processAsync = rq.Settings?.ProcessAsync ?? false;
 
                 payload.Message.ChannelPriority = processAsync ? 0 : 1;
 
@@ -118,7 +118,7 @@ namespace Xigadee
             catch (Exception ex)
             {
                 string key = rq != null && rq.Key != null ? rq.Key.ToString() : string.Empty;
-                Logger.LogException(string.Format("Error transmitting {0}-{1} internally", actionType, key), ex);
+                Logger.LogException($"Error transmitting {actionType}-{key} internally", ex);
                 throw;
             }
         }

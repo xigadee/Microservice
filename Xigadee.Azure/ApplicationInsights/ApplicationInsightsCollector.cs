@@ -20,19 +20,19 @@ using System.Reflection;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
+using Xigadee.ApplicationInsights;
 
 namespace Xigadee
 {
     /// <summary>
     /// This class hooks Application Insights in to the Microservice logging capabilities.
     /// </summary>
-    public class ApplicationInsightsDataCollector: DataCollectorHolder
+    public class ApplicationInsightsDataCollector : DataCollectorHolder
     {
         #region Declarations
         //https://azure.microsoft.com/en-gb/documentation/articles/app-insights-api-custom-events-metrics/
         private TelemetryClient mTelemetry;
         private readonly LoggingLevel mLoggingLevel;
-        private readonly TelemetryConfiguration mTelemetryConfig;
         #endregion
 
         #region Constructor
@@ -42,24 +42,19 @@ namespace Xigadee
         /// </summary>
         /// <param name="key">This is the application insights key.</param>
         /// <param name="loggingLevel">This is the minium level at which to log events.</param>
-        /// <param name="developerMode"></param>
-        public ApplicationInsightsDataCollector(string key, LoggingLevel loggingLevel = LoggingLevel.Warning, bool developerMode = false)
+        public ApplicationInsightsDataCollector(string key, LoggingLevel loggingLevel = LoggingLevel.Warning)
         {
             mLoggingLevel = loggingLevel;
-            mTelemetryConfig = new TelemetryConfiguration
-            {
-                InstrumentationKey = key,
-                TelemetryChannel = {DeveloperMode = developerMode}
-            };
+            TelemetryConfiguration.Active.InstrumentationKey = key;
+            TelemetryConfiguration.Active.TelemetryInitializers.Add(new CommandCorrelationInitializer());
         }
 
         #endregion
 
         protected override void StartInternal()
         {
-            mTelemetry = new TelemetryClient(mTelemetryConfig);
+            mTelemetry = new TelemetryClient();
 
-            //mTelemetry.Context.Component.Version = 
             mTelemetry.Context.Device.Id = OriginatorId.ServiceId;
             mTelemetry.Context.Component.Version = (Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly()).GetName().Version.ToString();
             mTelemetry.Context.Properties["ExternalServiceId"] = OriginatorId.ExternalServiceId;
@@ -70,7 +65,6 @@ namespace Xigadee
         protected override void StopInternal()
         {
             mTelemetry.Flush();
-            mTelemetry = null;
         }
 
         protected override void SupportLoadDefault()
@@ -184,7 +178,7 @@ namespace Xigadee
                 AddPropertyData(telemetryProperties, nameof(LoggingLevel), eventData.Level.ToString());
                 if (eventData.AdditionalData != null || !string.IsNullOrEmpty(eventData.Message))
                 {
-                    eventData.AdditionalData?.ForEach(kvp =>AddPropertyData(telemetryProperties, kvp.Key, kvp.Value));
+                    eventData.AdditionalData?.ForEach(kvp => AddPropertyData(telemetryProperties, kvp.Key, kvp.Value));
                     AddPropertyData(telemetryProperties, nameof(eventData.Message), eventData.Message);
                     AddPropertyData(telemetryProperties, nameof(eventData.Category), eventData.Category);
                 }
@@ -280,4 +274,3 @@ namespace Xigadee
         }
     }
 }
-
