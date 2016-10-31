@@ -243,40 +243,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region --> ProcessMessage(TransmissionPayload payload, List<TransmissionPayload> responses)
-        /// <summary>
-        /// This method is called to process an incoming message.
-        /// </summary>
-        /// <param name="requestPayload">The message to process.</param>
-        /// <param name="responses">The return path for the message.</param>
-        public virtual async Task ProcessMessage(TransmissionPayload requestPayload, List<TransmissionPayload> responses)
-        {
-            int start = StatisticsInternal.ActiveIncrement();
-            try
-            {
-                var header = requestPayload.Message.ToServiceMessageHeader();
-                CommandContext.CorrelationKey = requestPayload.Message.ProcessCorrelationKey;
-
-                H handler;
-                if (!SupportedResolve(header, out handler))
-                    throw new CommandNotSupportedException(requestPayload.Id, header, GetType());
-
-                //Call the registered command.
-                await handler.Execute(requestPayload, responses);
-            }
-            catch (Exception)
-            {
-                StatisticsInternal.ErrorIncrement();
-                throw;
-            }
-            finally
-            {
-                StatisticsInternal.ActiveDecrement(start);
-                CommandContext.CorrelationKey = null;
-            }
-        }
-        #endregion
-
         #region SupportedResolve...
         /// <summary>
         /// This attemps to match the message header to the command registration collection.

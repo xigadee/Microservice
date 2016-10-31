@@ -22,42 +22,42 @@ namespace Test.Xigadee
     [TestClass]
     public partial class PipelineTest2
     {
-        [TestMethod]
-        public void Pipeline2()
-        {
-            try
-            {
-                DebugMemoryDataCollector collector = null;
-                Microservice service;
-                CommandInitiator init = null;
-                var pipeline = Microservice.Create((s) => service = s, serviceName: "TestPipeline");
+        //[TestMethod]
+        //public void Pipeline2()
+        //{
+        //    try
+        //    {
+        //        DebugMemoryDataCollector collector = null;
+        //        Microservice service;
+        //        CommandInitiator init = null;
+        //        var pipeline = Microservice.Create((s) => service = s, serviceName: "TestPipeline");
 
-                ChannelPipelineIncoming cpipeIn = null;
-                ChannelPipelineOutgoing cpipeOut = null;
+        //        ChannelPipelineIncoming cpipeIn = null;
+        //        ChannelPipelineOutgoing cpipeOut = null;
 
-                pipeline
-                    .AddDataCollector<DebugMemoryDataCollector>((c) => collector = c)
-                    .AddPayloadSerializerDefaultJson()
-                    .AddChannelIncoming("internalIn", internalOnly: true)
-                        .AssignPriorityPartition(0, 1)
-                        .AddCommand(new SimpleCommand())
-                        .Revert((c) => cpipeIn = c)
-                    .AddChannelOutgoing("internalOut", internalOnly: true)
-                        .AssignPriorityPartition(0, 1)
-                        .Revert((c) => cpipeOut = c)
-                    .AddCommand(new CommandInitiator(), (c) => init = c);
+        //        pipeline
+        //            .AddDataCollector<DebugMemoryDataCollector>((c) => collector = c)
+        //            .AddPayloadSerializerDefaultJson()
+        //            .AddChannelIncoming("internalIn", internalOnly: true)
+        //                .AssignPriorityPartition(0, 1)
+        //                .AddCommand(new SimpleCommand())
+        //                .Revert((c) => cpipeIn = c)
+        //            .AddChannelOutgoing("internalOut", internalOnly: true)
+        //                .AssignPriorityPartition(0, 1)
+        //                .Revert((c) => cpipeOut = c)
+        //            .AddCommand(new CommandInitiator(), (c) => init = c);
 
-                pipeline.Start();
+        //        pipeline.Start();
 
-                var result1 = init.Process<IDoSomething1, Blah, string>(new Blah() { Message = "hello" }).Result;
-                var result2 = init.Process<Blah,string>("internalIn", "franky", "johnny5", new Blah() { Message = "hello" }).Result;
+        //        var result1 = init.Process<IDoSomething1, Blah, string>(new Blah() { Message = "hello" }).Result;
+        //        var result2 = init.Process<Blah,string>("internalIn", "franky", "johnny5", new Blah() { Message = "hello" }).Result;
 
-                pipeline.Stop();
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-        }
+        //        pipeline.Stop();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Assert.Fail(ex.Message);
+        //    }
+        //}
     }
 }

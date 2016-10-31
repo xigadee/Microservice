@@ -30,8 +30,6 @@ namespace Xigadee
         {
             Ex = ex;
 
-            IsDeadLetterMessage = payload.IsDeadLetterMessage;
-
             MessageHeader = payload.Message.ToServiceMessageHeader().ToKey();
 
             CorrelationUTC = payload.Message.CorrelationUTC;
@@ -61,8 +59,6 @@ namespace Xigadee
 
         public DateTime? CorrelationUTC { get; set; }
 
-        public bool IsDeadLetterMessage { get; set; }
-
         public string MessageHeader { get; set; }
 
         public TimeSpan? ProcessingTime { get; set; }
@@ -91,8 +87,7 @@ namespace Xigadee
                 {
                     {"CorrelationId", CorrelationId},
                     {"MessageId", MessageId},
-                    {"MessageHeader", MessageHeader},
-                    {"IsDeadLetterMessage", IsDeadLetterMessage.ToString()}
+                    {"MessageHeader", MessageHeader},          
                 };
             }
         }

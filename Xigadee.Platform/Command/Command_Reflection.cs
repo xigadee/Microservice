@@ -32,9 +32,12 @@ namespace Xigadee
         {
             foreach (var signature in this.CommandMethodAttributeSignatures(true))
             {
-                var handler = new CommandHolder(CommandChannelAdjust(signature.Item1), signature.Item2.Action, referenceId: signature.Item3);
+                var handler = new CommandHolder(CommandChannelAdjust(signature.Item1)
+                    , (rq,rs) => signature.Item2.Action(rq,rs,PayloadSerializer)
+                    , referenceId: signature.Item3);
+
                 CommandRegister(handler);
-            }
+            }     
         }
 
         /// <summary>
@@ -45,6 +48,7 @@ namespace Xigadee
         protected MessageFilterWrapper CommandChannelAdjust(CommandContractAttribute attr)
         {
             ServiceMessageHeader header = attr.Header;
+
             if (header.ChannelId == null)
                 header = new ServiceMessageHeader(ChannelId, header.MessageType, header.ActionType);
 

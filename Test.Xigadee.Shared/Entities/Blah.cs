@@ -19,7 +19,7 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    public class Blah
+    public class Blah:IEquatable<Blah>
     {
         public Blah()
         {
@@ -32,6 +32,24 @@ namespace Test.Xigadee
         public Guid VersionId { get; set; }
 
         public string Message { get; set; }
+
+        public bool Equals(Blah other)
+        {
+            if (other == null)
+                return false;
+
+            return ContentId == other.ContentId
+                && VersionId == other.VersionId
+                && Message == other.Message;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Blah)
+                return Equals((Blah)obj);
+
+            return false;
+        }
     }
 
     public class BlahXmlTransportSerializer : XmlTransportSerializerBase<Blah>

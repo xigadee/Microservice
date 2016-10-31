@@ -39,36 +39,28 @@ namespace Xigadee
         }
         #endregion
 
-        #region PayloadDeserialize<P>(ServiceMessage message)
+        #region PayloadDeserialize...
         /// <summary>
-        /// This method extracts the binary blob from the message and deserializes it in to the 
-        /// specific message channelId.
+        /// This method extracts the binary blob from the message and deserializes and returns the object.
         /// </summary>
-        /// <typeparam name="P">The requestPayload message channelId.</typeparam>
-        /// <param name="payload">The service message.</param>
+        /// <param name="payload">The transmission payload.</param>
+        /// <returns>Returns the object deserialized from the binary blob.</returns>
+        public object PayloadDeserialize(TransmissionPayload payload)
+        {
+            return PayloadDeserialize(payload.Message);
+        }
+        /// <summary>
+        /// This method extracts the binary blob from the message and deserializes and returns the object.
+        /// </summary>
+        /// <typeparam name="P">The payload message type.</typeparam>
+        /// <param name="payload">The transmission payload.</param>
         /// <returns>Returns the object deserialized from the binary blob.</returns>
         public P PayloadDeserialize<P>(TransmissionPayload payload)
         {
-            try
-            {
-                if (payload.Message.Blob == null || Count == 0)
-                    return default(P);
-
-                var serializer = Items.FirstOrDefault(s => s.SupportsPayloadDeserialization(payload.Message.Blob));
-                if (serializer != null)
-                    return serializer.Deserialize<P>(payload.Message.Blob);
-
-                return default(P);
-            }
-            catch (Exception ex)
-            {
-                throw new PayloadSerializationException(payload.Message.OriginatorKey, ex);
-            }
+            return PayloadDeserialize<P>(payload.Message);
         }
-        #endregion
-        #region PayloadDeserialize(ServiceMessage message)
         /// <summary>
-        /// This method extracts the binary blob from the message and deserializes it.
+        /// This method extracts the binary blob from the message and deserializes and returns the object.
         /// </summary>
         /// <param name="message">The service message.</param>
         /// <returns>Returns the object deserialized from the binary blob.</returns>
@@ -80,6 +72,7 @@ namespace Xigadee
                     return null;
 
                 var serializer = Items.FirstOrDefault(s => s.SupportsPayloadDeserialization(message.Blob));
+
                 if (serializer != null)
                     return serializer.Deserialize(message.Blob);
 
@@ -90,6 +83,61 @@ namespace Xigadee
                 throw new PayloadDeserializationException(message.OriginatorKey, ex);
             }
         }
+
+        /// <summary>
+        /// This method extracts the binary blob from the message and deserializes and returns the object.
+        /// </summary>
+        /// <typeparam name="P">The payload message type.</typeparam>
+        /// <param name="message">The service message.</param>
+        /// <returns>Returns the object deserialized from the binary blob.</returns>
+        public P PayloadDeserialize<P>(ServiceMessage message)
+        {
+            try
+            {
+                return PayloadDeserialize<P>(message.Blob);
+            }
+            catch (Exception ex)
+            {
+                throw new PayloadSerializationException(message.OriginatorKey, ex);
+            }
+        }
+
+        /// <summary>
+        /// This method deserializes the binary blob and returns the object.
+        /// </summary>
+        /// <typeparam name="P">The payload message type.</typeparam>
+        /// <param name="blob">The binary blob.</param>
+        /// <returns>Returns the object deserialized from the binary blob.</returns>
+        public P PayloadDeserialize<P>(byte[] blob)
+        {
+            if (blob == null || Count == 0)
+                return default(P);
+
+            var serializer = Items.FirstOrDefault(s => s.SupportsPayloadDeserialization(blob));
+
+            if (serializer != null)
+                return serializer.Deserialize<P>(blob);
+
+            return default(P);
+        }
+
+        /// <summary>
+        /// This method deserializes the binary blob and returns the object.
+        /// </summary>
+        /// <param name="blob">The binary blob.</param>
+        /// <returns>Returns the object deserialized from the binary blob.</returns>
+        public object PayloadDeserialize(byte[] blob)
+        {
+            if (blob == null || Count == 0)
+                return null;
+
+            var serializer = Items.FirstOrDefault(s => s.SupportsPayloadDeserialization(blob));
+
+            if (serializer != null)
+                return serializer.Deserialize(blob);
+
+            return null;
+        }
         #endregion
 
         #region PayloadSerialize(object requestPayload)
@@ -97,7 +145,7 @@ namespace Xigadee
         /// This method serializes the requestPayload object in to a binary blob using the 
         /// serializer collection.
         /// </summary>
-        /// <param name="requestPayload">The requestPayload to serialize.</param>
+        /// <param name="payload">The requestPayload to serialize.</param>
         /// <returns>Returns the binary blob object.</returns>
         public byte[] PayloadSerialize(object payload)
         {
@@ -129,7 +177,10 @@ namespace Xigadee
         protected override void StopInternal()
         {
             Clear();
-        } 
+        }
         #endregion
+
+
+
     }
 }
