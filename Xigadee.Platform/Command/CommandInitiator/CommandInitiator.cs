@@ -98,9 +98,9 @@ namespace Xigadee
 
                 payload = TransmissionPayload.Create();
 
-                // Set the originator key to the correlation id if passed through the rq settings
-                if (rqSettings != null && !string.IsNullOrEmpty(rqSettings.CorrelationId))
-                    payload.Message.OriginatorKey = rqSettings.CorrelationId;
+                // Set the process correlation key to the correlation id if passed through the rq settings
+                if (!string.IsNullOrEmpty(rqSettings?.CorrelationId))
+                    payload.Message.ProcessCorrelationKey = rqSettings.CorrelationId;
 
                 bool processAsync = rqSettings?.ProcessAsync ?? false;
 

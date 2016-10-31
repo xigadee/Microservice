@@ -255,6 +255,7 @@ namespace Xigadee
             try
             {
                 var header = requestPayload.Message.ToServiceMessageHeader();
+                CommandContext.CorrelationKey = requestPayload.Message.ProcessCorrelationKey;
 
                 H handler;
                 if (!SupportedResolve(header, out handler))
@@ -271,6 +272,7 @@ namespace Xigadee
             finally
             {
                 StatisticsInternal.ActiveDecrement(start);
+                CommandContext.CorrelationKey = null;
             }
         }
         #endregion

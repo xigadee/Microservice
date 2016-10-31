@@ -20,6 +20,7 @@ using System.Reflection;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
+using Xigadee.ApplicationInsights;
 
 namespace Xigadee
 {
@@ -43,15 +44,15 @@ namespace Xigadee
         /// </summary>
         /// <param name="key">This is the application insights key.</param>
         /// <param name="loggingLevel">This is the minium level at which to log events.</param>
-        /// <param name="developerMode"></param>
-        public ApplicationInsightsDataCollector(string key, LoggingLevel loggingLevel = LoggingLevel.Warning, bool developerMode = false)
+        public ApplicationInsightsDataCollector(string key, LoggingLevel loggingLevel = LoggingLevel.Warning)
         {
             mLoggingLevel = loggingLevel;
             mTelemetryConfig = new TelemetryConfiguration
             {
                 InstrumentationKey = key,
-                TelemetryChannel = {DeveloperMode = developerMode}
             };
+
+            mTelemetryConfig.TelemetryInitializers.Add(new CommandCorrelationInitializer());
         }
 
         #endregion
@@ -60,8 +61,7 @@ namespace Xigadee
         protected override void StartInternal()
         {
             mTelemetry = new TelemetryClient(mTelemetryConfig);
-
-            //mTelemetry.Context.Component.Version = 
+          
             mTelemetry.Context.Device.Id = OriginatorId.ServiceId;
             mTelemetry.Context.Component.Version = (Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly()).GetName().Version.ToString();
             mTelemetry.Context.Properties["ExternalServiceId"] = OriginatorId.ExternalServiceId;
@@ -72,7 +72,6 @@ namespace Xigadee
         protected override void StopInternal()
         {
             mTelemetry.Flush();
-            mTelemetry = null;
         }
 
         protected override void SupportLoadDefault()
