@@ -108,13 +108,10 @@ namespace Xigadee
         /// <summary>
         /// This is the constructor for the task manager.
         /// </summary>
-        /// <param name="levels">The number of priorty levels supported in the task manager.</param>
         /// <param name="dispatcher">The dispatcher function that is used to process the specific tasks.</param>
         /// <param name="policy">The task manager policy.</param>
-        public TaskManager(int levels
-            , Func<TransmissionPayload, Task> dispatcher
-            , TaskManagerPolicy policy
-            ) : base(policy, nameof(TaskManager))
+        public TaskManager(Func<TransmissionPayload, Task> dispatcher, TaskManagerPolicy policy)
+            : base(policy, nameof(TaskManager))
         {
             if (policy == null)
                 throw new ArgumentNullException($"{nameof(TaskManager)}: policy can not be null");
@@ -124,9 +121,9 @@ namespace Xigadee
 
             mPauseCheck = new ManualResetEventSlim();
 
-            mAvailability = new TaskAvailability(levels, policy.ConcurrentRequestsMax);
+            mAvailability = new TaskAvailability(policy.PriorityLevels, policy.ConcurrentRequestsMax);
 
-            mTasksQueue = new QueueTrackerContainer<QueueTracker>(levels);
+            mTasksQueue = new QueueTrackerContainer<QueueTracker>(policy.PriorityLevels);
 
             mProcessInternalQueue = new ConcurrentQueue<TaskTracker>();
 

@@ -74,7 +74,8 @@ namespace Xigadee
         /// <param name="correlationIdKeyName"></param>
         /// <param name="level"></param>
         public WebApiAzureBlobLoggingFilter(StorageCredentials credentials, string containerName
-            , string correlationIdKeyName = "X-CorrelationId", LoggingFilterLevel level = LoggingFilterLevel.All):base(correlationIdKeyName)
+            , string correlationIdKeyName = "X-CorrelationId"
+            , LoggingFilterLevel level = LoggingFilterLevel.All):base(correlationIdKeyName)
         {
             mLevel = level;
 

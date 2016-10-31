@@ -157,13 +157,6 @@ namespace Xigadee
         public object MessageObject { get; set; } 
         #endregion
 
-        #region IsDeadLetterMessage
-        /// <summary>
-        /// This identifies whether the incoming message is a deadletter message.
-        /// </summary>
-        public bool IsDeadLetterMessage { get; private set; } 
-        #endregion
-
         #region Options
         /// <summary>
         /// This provides custom routing instructions to the dispatcher.

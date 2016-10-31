@@ -70,5 +70,16 @@ namespace Xigadee
         /// </summary>
         public bool ExecuteInternalDirect { get; set; } = true;
 
+        /// <summary>
+        /// This is the number of priorty levels supported in the Task Manager.
+        /// </summary>
+        public int PriorityLevels { get; set; } = 4;
+
+        public Dictionary<int, PriorityLevelReservation> PriorityLevelReservations => new Dictionary<int, PriorityLevelReservation>();
+    }
+
+    public class PriorityLevelReservation
+    {
+
     }
 }

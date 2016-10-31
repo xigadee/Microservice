@@ -28,7 +28,6 @@ namespace Xigadee
     /// </summary>
     public class ApplicationInsightsDataCollector: DataCollectorHolder
     {
-
         #region Declarations
         //https://azure.microsoft.com/en-gb/documentation/articles/app-insights-api-custom-events-metrics/
         private TelemetryClient mTelemetry;
@@ -55,7 +54,6 @@ namespace Xigadee
         }
 
         #endregion
-
 
         protected override void StartInternal()
         {

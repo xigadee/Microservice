@@ -47,7 +47,29 @@ namespace Xigadee
             ChannelId = header.ChannelId;
             MessageType = header.MessageType;
             ActionType = header.ActionType;
-        } 
+        }
+        #endregion
+
+        #region SecurityHeader
+        /// <summary>
+        /// This is the security header.
+        /// </summary>
+        [DataMember]
+        public string SecurityHeader { get; set; }
+        #endregion
+        #region SecurityPayload
+        /// <summary>
+        /// This is the security payload.
+        /// </summary>
+        [DataMember]
+        public string SecurityPayload { get; set; }
+        #endregion
+        #region SecuritySignature
+        /// <summary>
+        /// This is the security signature.
+        /// </summary>
+        [DataMember]
+        public string SecuritySignature { get; set; }
         #endregion
 
         #region OriginatorKey

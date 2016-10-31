@@ -92,7 +92,9 @@ namespace Xigadee
         /// <returns></returns>
         protected virtual TaskManager InitialiseTaskManager()
         {
-            var taskTracker = new TaskManager(4, Execute, PolicyTaskManager);
+            var policy = PolicyTaskManager;
+
+            var taskTracker = new TaskManager(Execute, policy);
 
             taskTracker.BulkheadReserve(3, 1, 2);
             taskTracker.BulkheadReserve(2, 2, 2);

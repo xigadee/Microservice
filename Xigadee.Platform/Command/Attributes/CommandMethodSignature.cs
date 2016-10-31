@@ -86,7 +86,10 @@ namespace Xigadee
 
             //This shouldn't happen, but check anyway.
             if (CommandAttributes.Count == 0)
-                throw new CommandMethodSignatureException($"CommandAttributes are not defined for the method.");
+                if (throwException)
+                    throw new CommandMethodSignatureException($"CommandAttributes are not defined for the method.");
+                else
+                    return false;
 
             //OK, check whether the return parameter is a Task or Task<> async construct
             IsAsync = typeof(Task).IsAssignableFrom(Method.ReturnParameter.ParameterType);
@@ -132,20 +135,24 @@ namespace Xigadee
                 ParamOut = Method.ReturnParameter;
                 IsReturnValue = true;
             }
-            else if (ParamOut != null)
+            else if (ParamOut != null && paramInfo.Remove(ParamOut))
             {
                 ParamOutPos = Parameters.IndexOf(ParamOut);
             }
 
-
             if (ParamOut != null && !IsReturnValue && !ParamOut.IsOut)
-                throw new CommandMethodSignatureException($"Parameter {ParamOut.Name} is not marked as an out parameter.");
-
+                if (throwException)
+                    throw new CommandMethodSignatureException($"Parameter {ParamOut.Name} is not marked as an out parameter.");
+                else
+                    return false;
 
             if (IsAsync && IsReturnValue && ParamOut.ParameterType.IsGenericType)
             {
                 if (ParamOut.ParameterType.GenericTypeArguments.Length != 1)
-                    throw new CommandMethodSignatureException($"Generic Task response parameter can only have one parameter.");
+                    if (throwException)
+                        throw new CommandMethodSignatureException($"Generic Task response parameter can only have one parameter.");
+                    else
+                        return false;
 
                 TypeOut = ParamOut.ParameterType.GenericTypeArguments[0];
             }
@@ -154,7 +161,11 @@ namespace Xigadee
                 TypeOut = ParamOut.ParameterType;
             }
 
-            return true;
+            //Finally check that we have used all the parameters.
+            if (paramInfo.Count != 0 && throwException)
+                throw new CommandMethodSignatureException($"There are too many parameters in the method ({paramInfo[0].Name}).");
+
+            return paramInfo.Count == 0;
         }
 
         private bool ParamAttributes<A>(ParameterInfo info)
