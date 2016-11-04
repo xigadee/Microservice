@@ -373,6 +373,27 @@ namespace Xigadee
             var query = mContainer.Values.AsQueryable<E>();
 
             Expression expression = mTransform.SearchTranslator.Build(key);
+            bool success = true; //for the time being since we are not executing any queries
+            var resultEntities = query.ToList();
+
+            holder.Rs.Entity = new SearchResponse();
+            
+            //Stubbed data should be removed
+            holder.Rs.Entity.Fields.Add(0,"Id");
+            holder.Rs.Entity.Fields.Add(1,"Name");
+            holder.Rs.Entity.Fields.Add(2, "IsTest");
+            holder.Rs.Entity.Fields.Add(3, "IsXigadee");
+
+            holder.Rs.Entity.Data = new List<string[]>();
+            holder.Rs.Entity.Data.Add(new string[] { "0", "1", "2", "3" });
+            holder.Rs.Entity.Data.Add(new string[] { "a", "b", "c", "d" });
+            holder.Rs.Entity.Data.Add(new string[] { "True", "False", "True", "False" });
+            holder.Rs.Entity.Data.Add(new string[] { "False", "True", "True", "False" });
+
+
+
+            if (success) // will always be success in test mode
+                return new PersistenceResponseHolder<SearchResponse>(PersistenceResponse.Ok200, null, holder.Rs.Entity);
 
             //holder.Rs.
             //key.Select
