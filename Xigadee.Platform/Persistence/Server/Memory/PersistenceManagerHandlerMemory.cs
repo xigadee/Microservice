@@ -388,7 +388,7 @@ namespace Xigadee
                 holder.Rs.Entity.Data= new List<string[]>();
                 for(int i=0; i<fields.Length;i++)
                 {
-                    holder.Rs.Entity.Fields.Add(i, new FieldMetadata() { Name = fields[i].Name, Type = fields[i].PropertyType }); // add a new entry in the fields dictionary for each field
+                    holder.Rs.Entity.Fields.Add(i, new FieldMetadata() { Name = fields[i].Name, Type = fields[i].GetType() }); // add a new entry in the fields dictionary for each field
                     holder.Rs.Entity.Data.Add(new string[resultEntities.Count]); // initialize a new string array for each of these fields in the data list
                 }
                 
