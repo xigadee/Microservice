@@ -365,7 +365,7 @@ namespace Xigadee
             }
             else
                 return new PersistenceResponseHolder(PersistenceResponse.NotFound404);
-
+                
         }
 
         protected async override Task<IResponseHolder<SearchResponse>> InternalSearch(SearchRequest key, PersistenceRequestHolder<SearchRequest, SearchResponse> holder)
@@ -373,22 +373,37 @@ namespace Xigadee
             var query = mContainer.Values.AsQueryable<E>();
 
             Expression expression = mTransform.SearchTranslator.Build(key);
+
+
+            //This is where the query is done
             bool success = true; //for the time being since we are not executing any queries
+
+
+
             var resultEntities = query.ToList();
-
             holder.Rs.Entity = new SearchResponse();
-            
-            //Stubbed data should be removed
-            holder.Rs.Entity.Fields.Add(0,"Id");
-            holder.Rs.Entity.Fields.Add(1,"Name");
-            holder.Rs.Entity.Fields.Add(2, "IsTest");
-            holder.Rs.Entity.Fields.Add(3, "IsXigadee");
+            if (resultEntities.Count>0)
+            {
+                var fields = resultEntities[0].GetType().GetProperties(); // get all the field names
+                holder.Rs.Entity.Data= new List<string[]>();
+                for(int i=0; i<fields.Length;i++)
+                {
+                    holder.Rs.Entity.Fields.Add(i, new FieldMetadata() { Name = fields[i].Name, Type = fields[i].GetType() }); // add a new entry in the fields dictionary for each field
+                    holder.Rs.Entity.Data.Add(new string[resultEntities.Count]); // initialize a new string array for each of these fields in the data list
+                }
+                
+                for (int j=0; j<resultEntities.Count;j++)
+                {
+                    for (int i = 0; i < fields.Length; i++)
+                    {
+                        string fieldValue = resultEntities[j].GetType().GetProperty(holder.Rs.Entity.Fields[i].Name).GetValue(resultEntities[j]).ToString();
+                        holder.Rs.Entity.Data[i][j] = fieldValue;
+                    }
+                        
+                }
+            }
 
-            holder.Rs.Entity.Data = new List<string[]>();
-            holder.Rs.Entity.Data.Add(new string[] { "0", "1", "2", "3" });
-            holder.Rs.Entity.Data.Add(new string[] { "a", "b", "c", "d" });
-            holder.Rs.Entity.Data.Add(new string[] { "True", "False", "True", "False" });
-            holder.Rs.Entity.Data.Add(new string[] { "False", "True", "True", "False" });
+            
 
 
 

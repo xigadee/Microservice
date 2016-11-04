@@ -52,7 +52,10 @@ namespace Xigadee
                     var tempJObject = new JObject();
                     foreach (var field in mResponse.Entity.Fields)
                     {
-                        tempJObject.Add(field.Value,mResponse.Entity.Data[field.Key][j]);
+                        string name = field.Value.Name;
+                        object obj = Convert.ChangeType(mResponse.Entity.Data[field.Key][j], field.Value.Type);
+                        tempJObject[name] = JToken.FromObject(obj);
+                        //tempJObject.Add(, );
                     }
                     entity.Value.Add(tempJObject);
                 }

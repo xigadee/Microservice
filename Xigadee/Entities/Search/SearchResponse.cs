@@ -26,9 +26,15 @@ namespace Xigadee
     {
         public string Etag { get; set; }
 
-        public Dictionary<int, string> Fields { get; } = new Dictionary<int, string>();
+        public Dictionary<int, FieldMetadata> Fields { get; } = new Dictionary<int, FieldMetadata>();
 
         public List<string[]> Data { get; set;} 
 
+    }
+
+    public class FieldMetadata
+    {
+        public string Name { get; set; }
+        public Type Type { get; set; }
     }
 }

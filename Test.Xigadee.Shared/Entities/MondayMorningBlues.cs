@@ -31,6 +31,8 @@ namespace Test.Xigadee
 
         public Guid Id { get; set; }
 
+        public int ObiWan { get; set; }
+
         public bool NotEnoughCoffee { get; set; }
 
         public bool NotEnoughSleep { get; set; }
