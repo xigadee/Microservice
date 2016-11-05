@@ -24,7 +24,6 @@ namespace Xigadee
     /// </summary>
     public class MultipleClientPollSlotAllocationAlgorithm: ListenerClientPollAlgorithmBase
     {
-
         #region CalculateSlots(int available, ClientPriorityHolderMetrics context)
         /// <summary>
         /// This method calculates the number of slots to take from the amount available.
@@ -122,6 +121,7 @@ namespace Xigadee
         /// This method recalculates the metrics after the poll has returned from the fabric.
         /// </summary>
         /// <param name="success">The flag indicating whether the last poll was successful.</param>
+        /// <param name="hasErrored"></param>
         /// <param name="context">The metrics.</param>
         public override void PollMetricsRecalculate(bool success, bool hasErrored, ClientPriorityHolderMetrics context)
         {

@@ -29,5 +29,7 @@ namespace Test.Xigadee.Api.Server.Controllers
         public MondayMorningBluesController(IRepositoryAsync<Guid, MondayMorningBlues> respository) : base(respository)
         {
         }
+
+
     }
 }

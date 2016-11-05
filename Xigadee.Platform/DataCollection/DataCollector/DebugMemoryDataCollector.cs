@@ -39,7 +39,7 @@ namespace Xigadee
             SupportAdd(DataCollectionSupport.EventSource, (e) => EventsEventSource.Add((EventSourceEvent)e));
             SupportAdd(DataCollectionSupport.Logger, (e) => EventsLog.Add((LogEvent)e));
             SupportAdd(DataCollectionSupport.Statistics, (e) => EventsMicroservice.Add((MicroserviceStatistics)e));
-            SupportAdd(DataCollectionSupport.Telemetry, (e) => EventsBoundary.Add((BoundaryEvent)e));
+            SupportAdd(DataCollectionSupport.Telemetry, (e) => EventsMetric.Add((MetricEvent)e));
         }
 
         public ConcurrentBag<EventSourceEvent> EventsEventSource { get; set; } = new ConcurrentBag<EventSourceEvent>();

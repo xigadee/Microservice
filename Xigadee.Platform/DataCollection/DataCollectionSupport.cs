@@ -28,11 +28,19 @@ namespace Xigadee
     public enum DataCollectionSupport
     {
         Logger,
+
         EventSource,
+
         BoundaryLogger,
+
         Telemetry,
+
         Dispatcher,
+
         Statistics,
-        Resource
+
+        Resource,
+
+        Custom
     }
 }

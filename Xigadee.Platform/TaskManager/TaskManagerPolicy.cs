@@ -27,6 +27,41 @@ namespace Xigadee
     /// </summary>
     public class TaskManagerPolicy:PolicyBase
     {
+        protected PriorityLevelReservation[] mPriorityLevels = null;
+
+        private object syncLock = new object();
+
+        /// <summary>
+        /// This constructor sets the default bulkhead configuration.
+        /// </summary>
+        public TaskManagerPolicy()
+        {
+            //Set the default bulk head level
+            BulkheadReserve(0, 0);
+            BulkheadReserve(1, 8, 8);
+            BulkheadReserve(2, 2, 2);
+            BulkheadReserve(3, 1, 2);
+        }
+
+        public void BulkheadReserve(int level, int slotCount, int overage =0)
+        {
+            var res = new PriorityLevelReservation { Level = level, SlotCount = slotCount, Overage = overage };
+
+            lock (syncLock)
+            {
+
+                PriorityLevels = mPriorityLevels.Select((p) => p.Level).Max();
+            }
+
+        }
+
+        /// <summary>
+        /// This is the number of priorty levels supported in the Task Manager.
+        /// </summary>
+        public int PriorityLevels { get; private set; }
+
+        public IEnumerable<PriorityLevelReservation> PriorityLevelReservations { get { return mPriorityLevels; } }
+
         /// <summary>
         /// This specifies whether autotune should be supported.
         /// </summary>
@@ -70,16 +105,15 @@ namespace Xigadee
         /// </summary>
         public bool ExecuteInternalDirect { get; set; } = true;
 
-        /// <summary>
-        /// This is the number of priorty levels supported in the Task Manager.
-        /// </summary>
-        public int PriorityLevels { get; set; } = 4;
 
-        public Dictionary<int, PriorityLevelReservation> PriorityLevelReservations => new Dictionary<int, PriorityLevelReservation>();
     }
 
     public class PriorityLevelReservation
     {
+        public int Level { get; set; }
 
+        public int SlotCount { get; set; }
+
+        public int Overage { get; set; }
     }
 }

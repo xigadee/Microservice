@@ -10,6 +10,10 @@ namespace Test.Xigadee
     {
         protected C mCommand;
         protected CommandInitiator mCommandInit;
+        protected ChannelPipelineIncoming cpipeIn = null;
+        protected ChannelPipelineOutgoing cpipeOut = null;
+        protected DebugMemoryDataCollector collector = null;
+        protected Microservice service = null;
 
         [TestInitialize]
         public void TearUp()
@@ -32,13 +36,11 @@ namespace Test.Xigadee
 
         protected virtual MicroservicePipeline Pipeline()
         {
-            DebugMemoryDataCollector collector = null;
-            Microservice service;
-            var pipeline = Microservice.Create((s) => service = s, serviceName: nameof(SimpleCommand1UnitTest));
+            return PipelineConfigure(Microservice.Create((s) => service = s, serviceName: GetType().Name));
+        }
 
-            ChannelPipelineIncoming cpipeIn = null;
-            ChannelPipelineOutgoing cpipeOut = null;
-
+        protected virtual MicroservicePipeline PipelineConfigure(MicroservicePipeline pipeline)
+        {
             pipeline
                 .AddDataCollector<DebugMemoryDataCollector>((c) => collector = c)
                 .AddPayloadSerializerDefaultJson()
@@ -52,6 +54,7 @@ namespace Test.Xigadee
                 .AddCommand(new CommandInitiator() { ResponseChannelId = cpipeOut.Channel.Id }, (c) => mCommandInit = c);
 
             return pipeline;
+
         }
     }
 }

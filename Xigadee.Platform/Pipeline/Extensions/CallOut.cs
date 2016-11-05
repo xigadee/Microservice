@@ -24,6 +24,12 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
+        /// <summary>
+        /// This method can be used to call out the pipeline flow to an external method.
+        /// </summary>
+        /// <param name="pipe">The pipeline.</param>
+        /// <param name="method">The method to call.</param>
+        /// <returns>Returns the original Pipeline.</returns>
         public static MicroservicePipeline CallOut(this MicroservicePipeline pipe, Action<MicroservicePipeline> method)
         {
             method(pipe);

@@ -368,7 +368,8 @@ namespace Xigadee
 
         }
 
-        protected async override Task<IResponseHolder<SearchResponse>> InternalSearch(SearchRequest key, PersistenceRequestHolder<SearchRequest, SearchResponse> holder)
+        protected async override Task<IResponseHolder<SearchResponse>> InternalSearch(
+            SearchRequest key, PersistenceRequestHolder<SearchRequest, SearchResponse> holder)
         {
             var query = mContainer.Values.AsQueryable<E>();
 

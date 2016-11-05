@@ -132,7 +132,7 @@ namespace Xigadee
 
                     OnProcessRequestUnresolved(request.Payload, DispatcherRequestUnresolvedReason.MessageHandler);
 
-                    isSuccess = PolicyMicroservice.DispatcherUnhandledMessagesIgnore;
+                    isSuccess = PolicyMicroservice.DispatcherUnhandled == DispatcherUnhandledMessageAction.Ignore;
 
                     return;
                 }

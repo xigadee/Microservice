@@ -36,8 +36,28 @@ namespace Xigadee
         public int DispatcherTransitCountMax { get; set; } = 20;
 
         /// <summary>
-        /// This flag ignores unhandled messages and marks then as complete from the queue.
+        /// This setting sets the dispatcher action if an incoming message cannnot be resolved.
         /// </summary>
-        public bool DispatcherUnhandledMessagesIgnore { get; set; } = true;
+        public DispatcherUnhandledMessageAction DispatcherUnhandled { get; set; } = DispatcherUnhandledMessageAction.AttemptResponseFailMessage;
+
+    }
+
+    /// <summary>
+    /// This enum specifies the behaviour to take when receiving an unhandled message.
+    /// </summary>
+    public enum DispatcherUnhandledMessageAction
+    {
+        /// <summary>
+        /// An exception will be raised and logged.
+        /// </summary>
+        Exception,
+        /// <summary>
+        /// The message will be logged an ignored.
+        /// </summary>
+        Ignore,
+        /// <summary>
+        /// The dispatcher will attempt to send a response to the sender.
+        /// </summary>
+        AttemptResponseFailMessage
     }
 }

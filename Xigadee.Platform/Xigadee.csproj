@@ -199,7 +199,7 @@
     <Compile Include="Messaging\MessageFilterWrapper.cs" />
     <Compile Include="Pipeline\Extensions\AddDataCollector.cs" />
     <Compile Include="Pipeline\Extensions\AppendServiceMessageHeaderRewriteRule.cs" />
-    <Compile Include="Pipeline\Extensions\Configure.cs" />
+    <Compile Include="Pipeline\Extensions\Policy.cs" />
     <Compile Include="ResourceTracker\ResourceTrackerPolicy.cs" />
     <Compile Include="Scheduler\Schedule.cs" />
     <Compile Include="Messaging\ServiceMessage.cs" />
