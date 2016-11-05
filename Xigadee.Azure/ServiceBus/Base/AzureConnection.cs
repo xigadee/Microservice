@@ -33,6 +33,11 @@ namespace Xigadee
     /// </summary>
     public class AzureConnection
     {
+        public AzureConnection(string name, string connection)
+        {
+            ConnectionName = name;
+            ConnectionString = connection;
+        }
         /// <summary>
         /// This is the internal namespace manager.
         /// </summary>

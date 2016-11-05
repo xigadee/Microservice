@@ -62,9 +62,8 @@ namespace Xigadee
             , bool listenOnOriginatorId = false
             , string mappingChannelId = null
             , TimeSpan? deleteOnIdleTime = null
-            , IEnumerable<ResourceProfile> resourceProfiles = null)
-            : base(channelId, connectionString, connectionName, priorityPartitions, isDeadLetterListener, mappingChannelId
-                  , resourceProfiles:resourceProfiles)
+            , IEnumerable<ResourceProfile> resourceProfiles = null):base()
+
         {
             mSubscriptionId = subscriptionId ?? mappingChannelId;
             mDeleteOnStop = deleteOnStop;
@@ -155,14 +154,14 @@ namespace Xigadee
 
             client.Type = "Subscription Listener";
 
-            client.Name = mPriorityClientNamer(mAzureSB.ConnectionName, partition.Priority);
+            client.Name = mPriorityClientNamer(AzureConn.ConnectionName, partition.Priority);
 
             client.AssignMessageHelpers();
 
             client.FabricInitialize = () =>
             {
-                mAzureSB.TopicFabricInitialize(client.Name);
-                var subDesc = mAzureSB.SubscriptionFabricInitialize(client.Name, mSubscriptionId
+                AzureConn.TopicFabricInitialize(client.Name);
+                var subDesc = AzureConn.SubscriptionFabricInitialize(client.Name, mSubscriptionId
                     , autoDeleteSubscription: mDeleteOnIdleTime
                     , lockDuration: partition.FabricMaxMessageLock);
             };
@@ -173,7 +172,7 @@ namespace Xigadee
             {
                 try
                 {
-                    var desc = mAzureSB.NamespaceManager.GetSubscription(client.Name, mSubscriptionId);
+                    var desc = AzureConn.NamespaceManager.GetSubscription(client.Name, mSubscriptionId);
 
                     client.QueueLengthLastPoll = DateTime.UtcNow;
 
@@ -189,7 +188,7 @@ namespace Xigadee
 
             client.ClientCreate = () =>
             {
-                var messagingFactory = MessagingFactory.CreateFromConnectionString(mAzureSB.ConnectionString);
+                var messagingFactory = MessagingFactory.CreateFromConnectionString(AzureConn.ConnectionString);
                 var subClient = messagingFactory.CreateSubscriptionClient(client.Name, mSubscriptionId);
 
                 subClient.PrefetchCount = 50;
@@ -220,7 +219,7 @@ namespace Xigadee
             try
             {
                 //Get the list of current rules.
-                var rules = mAzureSB.NamespaceManager.GetRules(name, subscriptionId);
+                var rules = AzureConn.NamespaceManager.GetRules(name, subscriptionId);
 
                 var newFilters = GetFilters()
                     .ToDictionary((f) => FilterToId(f), (f) => f);
@@ -277,10 +276,10 @@ namespace Xigadee
 
             if (mDeleteOnStop && mSubscriptionId != null)
             {
-                if (mAzureSB.NamespaceManager.SubscriptionExists(mAzureSB.ConnectionName, mSubscriptionId))
+                if (AzureConn.NamespaceManager.SubscriptionExists(AzureConn.ConnectionName, mSubscriptionId))
                 {
                     //Listen just for the selected channels and message types
-                    mAzureSB.NamespaceManager.DeleteSubscription(mAzureSB.ConnectionName, mSubscriptionId);
+                    AzureConn.NamespaceManager.DeleteSubscription(AzureConn.ConnectionName, mSubscriptionId);
                 }
             }
         } 

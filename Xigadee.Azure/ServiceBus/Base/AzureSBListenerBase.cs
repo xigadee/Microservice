@@ -33,36 +33,13 @@ namespace Xigadee
     public abstract class AzureSBListenerBase<C, M> : MessagingListenerBase<C, M, AzureClientHolder<C, M>>
         where C : ClientEntity
     {
-        #region Declarations
+
+        #region AzureConn
         /// <summary>
         /// This is the Azure connection class.
         /// </summary>
-        protected AzureConnection mAzureSB;
+        protected AzureConnection AzureConn { get; set; }
         #endregion
-        #region Constructor
-        /// <summary>
-        /// This is the default constructor.
-        /// </summary>
-        /// <param name="channelId">The channelId used to identify internally the comms layer.</param>
-        /// <param name="connectionString">The Azure Service bus connection string.</param>
-        /// <param name="connectionName"></param>
-        /// <param name="defaultTimeout"></param>
-        /// <param name="isDeadLetterListener">Specifies that the listener should process the deadletter messages from the queue.</param>
-        public AzureSBListenerBase(string channelId
-            , string connectionString
-            , string connectionName
-            , IEnumerable<ListenerPartitionConfig> priorityPartitions
-            , bool isDeadLetterListener = false
-            , string mappingChannelId = null
-            , IEnumerable<ResourceProfile> resourceProfiles = null
-            )
-            : base(channelId, priorityPartitions, mappingChannelId, resourceProfiles:resourceProfiles)
-        {
-            mAzureSB = new AzureConnection() { ConnectionName = connectionName, ConnectionString = connectionString };
-            IsDeadLetterListener = isDeadLetterListener;
-        } 
-        #endregion
-
         #region IsDeadLetterListener
         /// <summary>
         /// This property identifies whether the listener is a deadletter listener.
@@ -70,7 +47,7 @@ namespace Xigadee
         public bool IsDeadLetterListener
         {
             get;
-            private set;
+            set;
         } 
         #endregion
 

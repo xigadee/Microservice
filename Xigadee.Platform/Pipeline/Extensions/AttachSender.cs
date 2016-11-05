@@ -31,10 +31,12 @@ namespace Xigadee
             return pipeline;
         }
 
-        public static MicroservicePipeline AttachSender<S>(this MicroservicePipeline pipeline, Func<IEnvironmentConfiguration, S> creator, Action<S> action = null)
-            where S : ISender
+        public static MicroservicePipeline AttachSender<S>(this MicroservicePipeline pipeline
+            , Func<IEnvironmentConfiguration, S> creator = null
+            , Action<S> action = null)
+            where S : ISender, new()
         {
-            var sender = creator(pipeline.Configuration);
+            var sender = creator==null?new S():creator(pipeline.Configuration);
 
             action?.Invoke(sender);
 
@@ -50,11 +52,9 @@ namespace Xigadee
             if (cpipe.Channel.InternalOnly)
                 throw new ChannelInternalOnlyException(cpipe.Channel.Id, cpipe.Channel.Direction);
 
-            if (setFromChannelProperties && sender.ChannelId != cpipe.Channel.Id)
-                throw new ChannelIdMismatchException(cpipe.Channel.Id, cpipe.Channel.Direction, sender.ChannelId);
-
             if (setFromChannelProperties)
             {
+                sender.ChannelId = cpipe.Channel.Id;
                 sender.BoundaryLogger = cpipe.Channel.BoundaryLogger;
                 sender.PriorityPartitions = cpipe.Channel.Partitions.Cast<SenderPartitionConfig>().ToList();
             }
@@ -65,12 +65,12 @@ namespace Xigadee
         }
 
         public static ChannelPipelineOutgoing AttachSender<S>(this ChannelPipelineOutgoing cpipe
-            , Func<IEnvironmentConfiguration, S> creator
+            , Func<IEnvironmentConfiguration, S> creator = null
             , Action<S> action = null
             , bool setFromChannelProperties = true)
-            where S : ISender
+            where S : ISender, new()
         {
-            var sender = creator(cpipe.Pipeline.Configuration);
+            var sender = (creator==null)?new S():creator(cpipe.Pipeline.Configuration);
 
             action?.Invoke(sender);
 

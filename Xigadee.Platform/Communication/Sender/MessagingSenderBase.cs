@@ -31,19 +31,6 @@ namespace Xigadee
     public class MessagingSenderBase<C, M, H> : MessagingServiceBase<C, M, H, SenderPartitionConfig>, ISender
         where H : ClientHolder<C, M>, new()
     {
-        #region Constructor
-        /// <summary>
-        /// This is the default constructor.
-        /// </summary>
-        /// <param name="channelId">The string based channel id.</param>
-        /// <param name="priorityPartitions">The number of priority channels. Null denotes a single channel of priority one.</param>
-        public MessagingSenderBase(string channelId
-            , IEnumerable<SenderPartitionConfig> priorityPartitions
-            )
-            : base(channelId, priorityPartitions)
-        {
-        } 
-        #endregion
 
         #region ProcessMessage(TransmissionPayload payload)
         /// <summary>

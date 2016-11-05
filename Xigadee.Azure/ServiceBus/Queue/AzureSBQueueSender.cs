@@ -32,25 +32,6 @@ namespace Xigadee
     [DebuggerDisplay("AzureSBQueueSender: {ChannelId}")]
     public class AzureSBQueueSender : AzureSBSenderBase<QueueClient,BrokeredMessage>
     {
-        #region Declarations
-        #endregion
-        #region Constructor
-        /// <summary>
-        /// This is the default constructor for the Azure service bus sender.
-        /// </summary>
-        /// <param name="channelId">The channel Id of the sender.</param>
-        /// <param name="connectionString">The Azure connection string.</param>
-        /// <param name="connectionName">The connection name.</param>
-        public AzureSBQueueSender(string channelId
-            , string connectionString
-            , string connectionName
-            , IEnumerable<SenderPartitionConfig> priorityPartitions
-            ) :
-            base(channelId, connectionString, connectionName, priorityPartitions) 
-        { 
-        } 
-        #endregion
-
         #region ClientCreate()
         /// <summary>
         /// This override sets the transmit options for the client.
@@ -61,14 +42,14 @@ namespace Xigadee
             var client = base.ClientCreate(partition);
 
             client.Type = "Queue Sender";
-            client.Name = mPriorityClientNamer(mAzureSB.ConnectionName, partition.Priority);
+            client.Name = mPriorityClientNamer(AzureConn.ConnectionName, partition.Priority);
 
             client.AssignMessageHelpers();
 
-            client.FabricInitialize = () => mAzureSB.QueueFabricInitialize(client.Name);
+            client.FabricInitialize = () => AzureConn.QueueFabricInitialize(client.Name);
 
             //Set the method that creates the client.
-            client.ClientCreate = () => QueueClient.CreateFromConnectionString(mAzureSB.ConnectionString, client.Name);
+            client.ClientCreate = () => QueueClient.CreateFromConnectionString(AzureConn.ConnectionString, client.Name);
 
             //We have to do this due to the stupid inheritance rules for Azure Service Bus.
             client.MessageTransmit = async (b) => await client.Client.SendAsync(b);

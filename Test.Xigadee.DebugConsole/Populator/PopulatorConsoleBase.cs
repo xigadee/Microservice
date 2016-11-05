@@ -47,17 +47,17 @@ namespace Test.Xigadee
 
         protected override void RegisterCommunication()
         {
-            Service.RegisterListener(new AzureSBTopicListener(
-                  Channels.MasterJob
-                , Config.ServiceBusConnection()
-                , Channels.MasterJob
-                , ListenerPartitionConfig.Init(2)));
+            //Service.RegisterListener(new AzureSBTopicListener(
+            //      Channels.MasterJob
+            //    , Config.ServiceBusConnection()
+            //    , Channels.MasterJob
+            //    , ListenerPartitionConfig.Init(2)));
 
-            Service.RegisterSender(new AzureSBTopicSender(
-                  Channels.MasterJob
-                , Config.ServiceBusConnection()
-                , Channels.MasterJob
-                , SenderPartitionConfig.Init(2)));
+            //Service.RegisterSender(new AzureSBTopicSender(
+            //      Channels.MasterJob
+            //    , Config.ServiceBusConnection()
+            //    , Channels.MasterJob
+            //    , SenderPartitionConfig.Init(2)));
         }
 
         protected override void RegisterCommands()

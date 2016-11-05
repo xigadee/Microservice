@@ -27,29 +27,12 @@ namespace Xigadee
     public abstract class AzureSBSenderBase<C, M> : MessagingSenderBase<C, M, AzureClientHolder<C, M>>
         where C : ClientEntity
     {
-        #region Declarations
+        #region AzureConn
         /// <summary>
         /// This is the Azure connection class.
         /// </summary>
-        protected AzureConnection mAzureSB;
+        public AzureConnection AzureConn { get; set; }
         #endregion
-        #region Constructor
-        /// <summary>
-        /// This is the default constructor.
-        /// </summary>
-        /// <param name="channelId">The internal channel id used to resolve the comms resource.</param>
-        /// <param name="connectionString">The Azure connection string.</param>
-        /// <param name="connectionName">The specific connection name to use.</param>
-        public AzureSBSenderBase(string channelId
-            , string connectionString
-            , string connectionName
-            , IEnumerable<SenderPartitionConfig> priorityPartitions) 
-            :base(channelId, priorityPartitions) 
-        {
-            mAzureSB = new AzureConnection() { ConnectionName = connectionName, ConnectionString = connectionString };
-        } 
-        #endregion
-
 
         protected override AzureClientHolder<C, M> ClientCreate(SenderPartitionConfig partition)
         {

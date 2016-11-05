@@ -96,11 +96,6 @@ namespace Xigadee
 
             var taskTracker = new TaskManager(Execute, policy);
 
-            taskTracker.BulkheadReserve(3, 1, 2);
-            taskTracker.BulkheadReserve(2, 2, 2);
-            taskTracker.BulkheadReserve(1, 8, 8);
-            taskTracker.BulkheadReserve(0, 0);
-
             return taskTracker;
         }
         #endregion

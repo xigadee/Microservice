@@ -29,19 +29,6 @@ namespace Xigadee
     [DebuggerDisplay("AzureSBTopicSender: {ChannelId}")]
     public class AzureSBTopicSender : AzureSBSenderBase<TopicClient,BrokeredMessage>
     {
-        #region Constructor
-        /// <summary>
-        /// This is the default constructor.
-        /// </summary>
-        /// <param name="channelId">The internal channel id used to resolve the comms resource.</param>
-        /// <param name="connectionString">The Azure connection string.</param>
-        /// <param name="connectionName">The specific connection name to use.</param>
-        public AzureSBTopicSender(string channelId, string connectionString
-            , string connectionName
-            , IEnumerable<SenderPartitionConfig> priorityPartitions
-            ) :
-            base(channelId, connectionString, connectionName, priorityPartitions) { } 
-        #endregion
 
         protected override AzureClientHolder<TopicClient, BrokeredMessage> ClientCreate(SenderPartitionConfig partition)
         {
@@ -49,13 +36,13 @@ namespace Xigadee
 
             client.Type = "Topic Sender";
 
-            client.Name = mPriorityClientNamer(mAzureSB.ConnectionName, partition.Priority);
+            client.Name = mPriorityClientNamer(AzureConn.ConnectionName, partition.Priority);
 
             client.AssignMessageHelpers();
 
-            client.FabricInitialize = () => mAzureSB.TopicFabricInitialize(client.Name);
+            client.FabricInitialize = () => AzureConn.TopicFabricInitialize(client.Name);
 
-            client.ClientCreate = () => TopicClient.CreateFromConnectionString(mAzureSB.ConnectionString, client.Name);
+            client.ClientCreate = () => TopicClient.CreateFromConnectionString(AzureConn.ConnectionString, client.Name);
 
             client.MessageTransmit = async (b) => await client.Client.SendAsync(b);
 

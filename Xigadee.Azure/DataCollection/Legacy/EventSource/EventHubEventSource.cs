@@ -29,19 +29,6 @@ namespace Xigadee
     public class EventHubEventSource : AzureSBEventHubSender, IEventSourceComponent
     {
 
-        #region Constructor
-        /// <summary>
-        /// This is the default constructor for the Azure service bus sender.
-        /// </summary>
-        /// <param name="channelId">The channel Id of the sender.</param>
-        /// <param name="connectionString">The Azure connection string.</param>
-        /// <param name="connectionName">The connection name.</param>
-        public EventHubEventSource(string channelId, string connectionString, string connectionName) :
-            base(channelId, connectionString, connectionName)
-        {
-        }
-        #endregion
-
         public string Name
         {
             get

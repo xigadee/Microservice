@@ -33,11 +33,10 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor for the Azure service bus sender.
         /// </summary>
-        /// <param name="channelId">The channel Id of the sender.</param>
-        /// <param name="connectionString">The Azure connection string.</param>
-        /// <param name="connectionName">The connection name.</param>
-        public AzureSBEventHubSender(string channelId, string connectionString, string connectionName) :
-            base(channelId, connectionString, connectionName, SenderPartitionConfig.Init(1)) { } 
+        public AzureSBEventHubSender() :base()
+        {
+            PriorityPartitions = SenderPartitionConfig.Init(1).ToList();
+        } 
         #endregion
 
         #region ClientCreate()
@@ -48,13 +47,13 @@ namespace Xigadee
         protected override AzureClientHolder<EventHubClient, EventData> ClientCreate(SenderPartitionConfig partition)
         {
             var client = base.ClientCreate(partition);
-            client.Name = mPriorityClientNamer(mAzureSB.ConnectionName, partition.Priority);
+            client.Name = mPriorityClientNamer(AzureConn.ConnectionName, partition.Priority);
 
             client.AssignMessageHelpers();
 
-            client.FabricInitialize = () => mAzureSB.EventHubFabricInitialize(client.Name);
+            client.FabricInitialize = () => AzureConn.EventHubFabricInitialize(client.Name);
             //Set the method that creates the client.
-            client.ClientCreate = () => EventHubClient.CreateFromConnectionString(mAzureSB.ConnectionString, mAzureSB.ConnectionName);
+            client.ClientCreate = () => EventHubClient.CreateFromConnectionString(AzureConn.ConnectionString, AzureConn.ConnectionName);
 
             //We have to do this due to the stupid inheritance rules for Azure Service Bus.
             client.MessageTransmit = async (b) => await client.Client.SendAsync(b);

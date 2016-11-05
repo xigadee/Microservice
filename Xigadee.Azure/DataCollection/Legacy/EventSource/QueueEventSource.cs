@@ -51,14 +51,10 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor for the Azure service bus sender.
         /// </summary>
-        /// <param name="channelId">The channel Id of the sender.</param>
-        /// <param name="connectionString">The Azure connection string.</param>
-        /// <param name="connectionName">The connection name.</param>
-        public QueueEventSource(string channelId, string connectionString, string connectionName, ResourceProfile resourceProfile = null) :
-            base(channelId, connectionString, connectionName, SenderPartitionConfig.Init(1))
+        public QueueEventSource() :base()
         {
-            mResourceProfile = resourceProfile;
             mJsonSerializer = new JsonSerializer { TypeNameHandling = TypeNameHandling.Auto };
+            PriorityPartitions = SenderPartitionConfig.Init(1).ToList();
         }
         #endregion
 
@@ -70,14 +66,14 @@ namespace Xigadee
         protected override AzureClientHolder<QueueClient, BrokeredMessage> ClientCreate(SenderPartitionConfig partition)
         {
             var client = base.ClientCreate(partition);
-            client.Name = mPriorityClientNamer(mAzureSB.ConnectionName, partition.Priority);
+            client.Name = mPriorityClientNamer(AzureConn.ConnectionName, partition.Priority);
 
             //client.AssignMessageHelpers();
 
-            client.FabricInitialize = () => mAzureSB.QueueFabricInitialize(client.Name);
+            client.FabricInitialize = () => AzureConn.QueueFabricInitialize(client.Name);
 
             //Set the method that creates the client.
-            client.ClientCreate = () => QueueClient.CreateFromConnectionString(mAzureSB.ConnectionString, client.Name);
+            client.ClientCreate = () => QueueClient.CreateFromConnectionString(AzureConn.ConnectionString, client.Name);
 
             //We have to do this due to the stupid inheritance rules for Azure Service Bus.
             client.MessageTransmit = async (b) => await client.Client.SendAsync(b);

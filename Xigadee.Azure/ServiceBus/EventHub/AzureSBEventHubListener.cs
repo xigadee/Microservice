@@ -35,9 +35,9 @@ namespace Xigadee
         /// <param name="connectionName"></param>
         /// <param name="defaultTimeout"></param>
         /// <param name="isDeadLetterListener"></param>
-        public AzureSBEventHubListener(string channelId, string connectionString, string connectionName, IEnumerable<ResourceProfile> resourceProfiles = null)
-            : base(channelId, connectionString, connectionName, ListenerPartitionConfig.Init(1), resourceProfiles:resourceProfiles)
+        public AzureSBEventHubListener()
         {
+            //PriorityPartitions = ListenerPartitionConfig.Init(1).ToList();
         } 
         #endregion
 

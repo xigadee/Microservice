@@ -30,27 +30,7 @@ namespace Xigadee
     [DebuggerDisplay("AzureSBQueueListener: {MappingChannelId} {ChannelId}")]
     public class AzureSBQueueListener : AzureSBListenerBase<QueueClient,BrokeredMessage>
     {
-        #region Constructor
-        /// <summary>
-        /// This is the default constructor.
-        /// </summary>
-        /// <param name="channelId">The listening channelId.</param>
-        /// <param name="connectionString">The service bus connection string.</param>
-        /// <param name="connectionName">The connection name.</param>
-        /// <param name="defaultTimeout">The default timeout for an incoming message.</param>
-        /// <param name="isDeadLetterListener">Specifies whether this listener should listen on the deadletter partition</param>
-        /// <param name="priorityPartitions">An integer array containing the number of priority partitions for the listener</param>
-        /// <param name="mappingChannelId">This is the mapping channel. Incoming messages will have this channel appended to the payload messages.</param>
-        public AzureSBQueueListener(string channelId, string connectionString, string connectionName
-            , IEnumerable<ListenerPartitionConfig> priorityPartitions
-            , bool isDeadLetterListener = false
-            , string mappingChannelId = null
-            , IEnumerable<ResourceProfile> resourceProfiles = null
-            )
-            : base(channelId, connectionString, connectionName, priorityPartitions, isDeadLetterListener, mappingChannelId, resourceProfiles:resourceProfiles)
-        {
-        }
-        #endregion
+
 
         #region ClientCreate()
         /// <summary>
@@ -62,13 +42,13 @@ namespace Xigadee
             var client = base.ClientCreate(partition);
 
             client.Type ="Queue Listener";
-            client.Name = mPriorityClientNamer(mAzureSB.ConnectionName, partition.Priority);
+            client.Name = mPriorityClientNamer(AzureConn.ConnectionName, partition.Priority);
 
             client.AssignMessageHelpers();
 
             client.FabricInitialize = () =>
             {
-                var queuedesc = mAzureSB.QueueFabricInitialize(client.Name, lockDuration: partition.FabricMaxMessageLock);
+                var queuedesc = AzureConn.QueueFabricInitialize(client.Name, lockDuration: partition.FabricMaxMessageLock);
             };
 
             client.SupportsQueueLength = true;
@@ -77,7 +57,7 @@ namespace Xigadee
             {
                 try
                 {
-                    var desc = mAzureSB.NamespaceManager.GetQueue(client.Name);
+                    var desc = AzureConn.NamespaceManager.GetQueue(client.Name);
 
                     client.QueueLengthLastPoll = DateTime.UtcNow;
 
@@ -94,7 +74,7 @@ namespace Xigadee
 
             client.ClientCreate = () =>
             {
-                var messagingFactory = MessagingFactory.CreateFromConnectionString(mAzureSB.ConnectionString);
+                var messagingFactory = MessagingFactory.CreateFromConnectionString(AzureConn.ConnectionString);
 
                 string queueName = IsDeadLetterListener ? QueueClient.FormatDeadLetterPath(client.Name) : client.Name;
 

@@ -77,7 +77,12 @@
     <Compile Include="Communication\TcpTlsChannel\TcpTlsClientHolder.cs" />
     <Compile Include="Communication\TcpTlsChannel\TcpTlsConnection.cs" />
     <Compile Include="Communication\TcpTlsChannel\TcpTlsMessage.cs" />
-    <Compile Include="Communication\TcpTlsChannel\TlsTcpChannelListener.cs" />
+    <Compile Include="Communication\TcpTlsChannel\TcpTlsChannelListener.cs" />
+    <Compile Include="Communication\Test\TestChannelClientHolder.cs" />
+    <Compile Include="Communication\Test\TestChannelListener.cs" />
+    <Compile Include="Communication\Test\TestChannelSender.cs" />
+    <Compile Include="Communication\Test\TestChannelConnection.cs" />
+    <Compile Include="Communication\Test\TestChannelMessage.cs" />
     <Compile Include="DataCollection\ActionQueue\ActionQueueCollectionBase.cs" />
     <Compile Include="DataCollection\ActionQueue\ActionQueuePolicy.cs" />
     <Compile Include="DataCollection\ActionQueue\ActionQueueStatistics.cs" />

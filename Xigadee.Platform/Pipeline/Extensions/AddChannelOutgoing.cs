@@ -27,6 +27,17 @@ namespace Xigadee
     /// </summary>
     public static partial class CorePipelineExtensions
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pipeline"></param>
+        /// <param name="channelId"></param>
+        /// <param name="description"></param>
+        /// <param name="partitions"></param>
+        /// <param name="bLogger"></param>
+        /// <param name="internalOnly"></param>
+        /// <param name="assign"></param>
+        /// <returns></returns>
         public static ChannelPipelineOutgoing AddChannelOutgoing(this MicroservicePipeline pipeline
             , string channelId
             , string description = null

@@ -27,6 +27,18 @@ namespace Xigadee
     /// </summary>
     public static partial class CorePipelineExtensions
     {
+        /// <summary>
+        /// use this command to add a channel to a Microservice.
+        /// </summary>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="channelId">The channel id.</param>
+        /// <param name="description"></param>
+        /// <param name="partitions"></param>
+        /// <param name="bLogger"></param>
+        /// <param name="resourceProfiles"></param>
+        /// <param name="internalOnly"></param>
+        /// <param name="assign"></param>
+        /// <returns>The original pipeline.</returns>
         public static ChannelPipelineIncoming AddChannelIncoming(this MicroservicePipeline pipeline
             , string channelId
             , string description = null

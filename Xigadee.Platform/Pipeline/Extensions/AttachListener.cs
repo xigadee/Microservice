@@ -24,20 +24,27 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cpipe"></param>
+        /// <param name="listener"></param>
+        /// <param name="setFromChannelProperties"></param>
+        /// <returns></returns>
         public static ChannelPipelineIncoming AttachListener(this ChannelPipelineIncoming cpipe
             , IListener listener
             , bool setFromChannelProperties = true
             )
         {
+            if (cpipe.Channel == null)
+                throw new ArgumentNullException("The pipe channel is null.");
+
             if (cpipe.Channel.InternalOnly)
                 throw new ChannelInternalOnlyException(cpipe.Channel.Id, cpipe.Channel.Direction);
 
-            if (setFromChannelProperties && listener.ChannelId != cpipe.Channel.Id)
-                throw new ChannelIdMismatchException(cpipe.Channel.Id, cpipe.Channel.Direction, listener.ChannelId);
-
             if (setFromChannelProperties)
             {
+                listener.ChannelId = cpipe.Channel.Id;
                 listener.BoundaryLogger = cpipe.Channel.BoundaryLogger;
                 listener.PriorityPartitions = cpipe.Channel.Partitions.Cast<ListenerPartitionConfig>().ToList();
                 listener.ResourceProfiles = cpipe.Channel.ResourceProfiles;
@@ -49,13 +56,13 @@ namespace Xigadee
         }
 
         public static ChannelPipelineIncoming AttachListener<S>(this ChannelPipelineIncoming cpipe
-            , Func<IEnvironmentConfiguration, S> creator
+            , Func<IEnvironmentConfiguration, S> creator = null
             , Action<S> action = null
             , bool setFromChannelProperties = true
             )
-            where S : IListener
+            where S : IListener, new()
         {
-            var listener = creator(cpipe.Pipeline.Configuration);
+            var listener = creator!=null?(creator(cpipe.Pipeline.Configuration)):new S();
 
             action?.Invoke(listener);
 

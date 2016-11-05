@@ -45,22 +45,42 @@ namespace Xigadee
 
         public void BulkheadReserve(int level, int slotCount, int overage =0)
         {
+            if (level<0)
+                throw new ArgumentOutOfRangeException("level must be a positive integer");
+
             var res = new PriorityLevelReservation { Level = level, SlotCount = slotCount, Overage = overage };
 
             lock (syncLock)
             {
+                if (mPriorityLevels != null && level <= PriorityLevels)
+                {
+                    mPriorityLevels[level] = res;
+                    return;
+                }
 
-                PriorityLevels = mPriorityLevels.Select((p) => p.Level).Max();
+                var pLevel = new PriorityLevelReservation[level + 1];
+
+                if (mPriorityLevels != null)
+                    Array.Copy(mPriorityLevels,pLevel, mPriorityLevels.Length);
+
+                pLevel[level] = res;
+
+                mPriorityLevels = pLevel;
             }
-
         }
 
         /// <summary>
         /// This is the number of priorty levels supported in the Task Manager.
         /// </summary>
-        public int PriorityLevels { get; private set; }
+        public int PriorityLevels { get { return (mPriorityLevels?.Length ?? 0) - 1;} }
 
-        public IEnumerable<PriorityLevelReservation> PriorityLevelReservations { get { return mPriorityLevels; } }
+        public IEnumerable<PriorityLevelReservation> PriorityLevelReservations
+        {
+            get
+            {
+                return mPriorityLevels;
+            }
+        }
 
         /// <summary>
         /// This specifies whether autotune should be supported.
@@ -108,12 +128,22 @@ namespace Xigadee
 
     }
 
+    /// <summary>
+    /// This is the reservation settings for the particular priority level.
+    /// </summary>
     public class PriorityLevelReservation
     {
+        /// <summary>
+        /// This is the priority level.
+        /// </summary>
         public int Level { get; set; }
-
+        /// <summary>
+        /// This is the slot count.
+        /// </summary>
         public int SlotCount { get; set; }
-
+        /// <summary>
+        /// This is the overage limit.
+        /// </summary>
         public int Overage { get; set; }
     }
 }

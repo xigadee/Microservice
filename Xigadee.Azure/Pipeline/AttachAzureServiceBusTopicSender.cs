@@ -38,12 +38,12 @@ namespace Xigadee
             if (connectionName == null)
                 throw new ArgumentNullException("connectionName cannot be null.");
 
-            var component = new AzureSBTopicSender(
-                  cpipe.Channel.Id
-                , cpipe.Pipeline.Configuration.ServiceBusConnectionValidate(serviceBusConnection)
-                , connectionName
-                , priorityPartitions ?? cpipe.Channel.Partitions.Cast<SenderPartitionConfig>().ToList()
-                );
+            var component = new AzureSBTopicSender();
+                //  cpipe.Channel.Id
+                //, cpipe.Pipeline.Configuration.ServiceBusConnectionValidate(serviceBusConnection)
+                //, connectionName
+                //, priorityPartitions ?? cpipe.Channel.Partitions.Cast<SenderPartitionConfig>().ToList()
+                //);
 
             onCreate?.Invoke(component);
 

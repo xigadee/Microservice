@@ -33,12 +33,11 @@ namespace Xigadee
             , string serviceBusConnection = null
             , Action<AzureSBQueueSender> onCreate = null)
         {
-            var component = new AzureSBQueueSender(
-                  cpipe.Channel.Id
-                , serviceBusConnection ?? cpipe.Pipeline.Configuration.ServiceBusConnection()
-                , connectionName
-                , priorityPartitions ?? cpipe.Channel.Partitions.Cast<SenderPartitionConfig>().ToList());
+            var component = new AzureSBQueueSender();
 
+            component.AzureConn = new AzureConnection(connectionName,serviceBusConnection ?? cpipe.Pipeline.Configuration.ServiceBusConnection() );
+
+            component.PriorityPartitions = (priorityPartitions ?? cpipe.Channel.Partitions.Cast<SenderPartitionConfig>()).ToList();
             onCreate?.Invoke(component);
 
             cpipe.AttachSender(component, false);

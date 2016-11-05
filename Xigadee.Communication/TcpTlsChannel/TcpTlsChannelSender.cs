@@ -26,10 +26,6 @@ namespace Xigadee
 
     public class TcpTlsChannelSender: MessagingSenderBase<TcpTlsConnection, TcpTlsMessage, TcpTlsClientHolder>
     {
-        public TcpTlsChannelSender(string channelId, IEnumerable<SenderPartitionConfig> priorityPartitions) 
-            : base(channelId, priorityPartitions)
-        {
 
-        }
     }
 }

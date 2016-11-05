@@ -35,34 +35,14 @@ namespace Xigadee
         /// <summary>
         /// This is the supported list of message types for the client.
         /// </summary>
-        protected List<MessageFilterWrapper> mSupportedMessageTypes;
-
-        #endregion
-        #region Constructor
-        /// <summary>
-        /// This is the default constructor.
-        /// </summary>
-        /// <param name="channelId">The string based channel id.</param>
-        /// <param name="priorityPartitions">The number of priority channels. Null denotes a single channel of priority one.</param>
-        /// <param name="defaultTimeout">This is the default timeout for incoming messages. By default this is set to 1 minute if left blank.</param>
-        public MessagingListenerBase(string channelId
-            , IEnumerable<ListenerPartitionConfig> priorityPartitions = null
-            , string mappingChannelId = null
-            , IEnumerable<ResourceProfile> resourceProfiles = null
-            )
-            : base(channelId, priorityPartitions)
-        {
-            mSupportedMessageTypes = new List<MessageFilterWrapper>();
-            MappingChannelId = mappingChannelId;
-            ResourceProfiles = resourceProfiles == null?new List<ResourceProfile>(): resourceProfiles.ToList();
-        }
+        protected List<MessageFilterWrapper> mSupportedMessageTypes= new List<MessageFilterWrapper>();
         #endregion
 
         #region ResourceProfiles
         /// <summary>
         /// This is the list of resource profiles that the Listener can be throttled on.
         /// </summary>
-        public List<ResourceProfile> ResourceProfiles { get; set; } 
+        public List<ResourceProfile> ResourceProfiles { get; set; } = new List<ResourceProfile>();
         #endregion
 
         #region SharedServices
@@ -124,15 +104,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region PriorityPartitions
-        /// <summary>
-        /// This property contains the supported priority partitions for the Listener.
-        /// </summary>
-        public int[] PriorityPartitions
-        {
-            get { return null; }
-        }
-        #endregion
         #region MappingChannelId
         /// <summary>
         /// This is the mapping channel id. It is used to map the incoming channel to a new channel when required.
@@ -270,4 +241,6 @@ namespace Xigadee
         }
         #endregion
     }
+
+
 }

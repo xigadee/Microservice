@@ -38,7 +38,7 @@ namespace Xigadee
         /// <summary>
         /// This is the client collection.
         /// </summary>
-        protected Dictionary<int, H> mClients;
+        protected Dictionary<int, H> mClients= new Dictionary<int, H>();
         /// <summary>
         /// This is the default priority. 1 if present
         /// </summary>
@@ -47,33 +47,6 @@ namespace Xigadee
         /// This method is used to name the client based on the priority.
         /// </summary>
         protected Func<string, int, string> mPriorityClientNamer = (s, i) => string.Format("{0}{1}", s, i == 1 ? "" : i.ToString());
-        #endregion
-        #region Constructor
-        /// <summary>
-        /// This is the default constructor.
-        /// </summary>
-        /// <param name="channelId">The string based channel id.</param>
-        /// <param name="priorityPartitions">The number of priority channels. Null denotes a single channel of priority one.</param>
-        public MessagingServiceBase(string channelId
-            , IEnumerable<P> priorityPartitions) 
-            :base()
-        {
-            if (channelId == null)
-                throw new ArgumentNullException("channelId", "channelId cannot be null");
-
-            if (priorityPartitions == null)
-                throw new ArgumentNullException("priorityPartitions", "priorityPartitions cannot be null");
-
-            //Set the partition priority to a single partition if null or an empty set.
-            PriorityPartitions = priorityPartitions.ToList();
-            if (PriorityPartitions.Count == 0)
-                throw new ArgumentOutOfRangeException("priorityPartitions", "priorityPartitions must have at least one member.");
-
-            ChannelId = channelId;
-
-            //This is the collection of client holder for the appropriate partitions.
-            mClients = new Dictionary<int, H>();
-        }
         #endregion
 
         //IMessaging
@@ -96,7 +69,7 @@ namespace Xigadee
         public string ChannelId
         {
             get;
-            protected set;
+            set;
         } 
         #endregion
         #region Clients
@@ -121,7 +94,7 @@ namespace Xigadee
         public bool SupportsChannel(string channel)
         {
             return string.Equals(channel, ChannelId, StringComparison.InvariantCultureIgnoreCase);
-        } 
+        }
         #endregion
 
         #region StartInternal()
@@ -130,6 +103,16 @@ namespace Xigadee
         /// </summary>
         protected override void StartInternal()
         {
+            if (ChannelId == null)
+                throw new ArgumentNullException("ChannelId", "ChannelId cannot be null");
+
+            if (PriorityPartitions == null)
+                throw new ArgumentNullException("PriorityPartitions", "PriorityPartitions cannot be null");
+
+            //Set the partition priority to a single partition if null or an empty set.
+            if (PriorityPartitions.Count == 0)
+                throw new ArgumentOutOfRangeException("PriorityPartitions", "PriorityPartitions must have at least one member.");
+
             try
             {
                 TearUp();

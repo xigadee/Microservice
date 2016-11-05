@@ -32,7 +32,7 @@ namespace Xigadee
         /// <summary>
         /// This is the channel for the messaging agent.
         /// </summary>
-        string ChannelId { get; }
+        string ChannelId { get;set; }
 
         /// <summary>
         /// This is the boundary logger used by the service.
