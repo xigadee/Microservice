@@ -918,7 +918,7 @@ namespace Xigadee
 
             //rs.KeyReference = new Tuple<string, string>(rs.Key.ToString(), rs.Settings.VersionId);
 
-            //holder.Rs.ResponseCode = (int)result.StatusCode
+            holder.Rs.ResponseCode = (int)result.StatusCode;
             //holder.Rs.ResponseMessage = "Search is not implemented.";
         }
 
