@@ -216,6 +216,10 @@ namespace Xigadee
 
             client.QueueLength = () => (int?)null;
 
+            client.FabricInitialize = () => { };
+
+            client.Start = () => { };
+
             client.Stop = () =>
             {
                 if (client == null) return;
@@ -235,7 +239,7 @@ namespace Xigadee
         /// </summary>
         protected virtual void ClientStop(H client)
         {
-            client.Stop();
+            client.Stop?.Invoke();
         }
         #endregion
         #region ClientReset(H client, TransmissionException mex)

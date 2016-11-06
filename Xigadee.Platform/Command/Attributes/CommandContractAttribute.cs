@@ -35,6 +35,11 @@ namespace Xigadee
             Header = new ServiceMessageHeader(channelId, messageType, actionType);
         }
 
+        public CommandContractAttribute(string messageType, string actionType)
+        {
+            Header = new ServiceMessageHeader(null, messageType, actionType);
+        }
+
         public CommandContractAttribute(Type interfaceType)
         {
             if (!interfaceType.IsInterface || interfaceType.IsSubclassOf(typeof(IMessageContract)))

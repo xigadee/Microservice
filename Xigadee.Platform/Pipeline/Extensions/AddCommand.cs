@@ -27,11 +27,11 @@ namespace Xigadee
         public static MicroservicePipeline AddCommand<C>(this MicroservicePipeline pipeline
             , C command
             , Action<C> assignment = null
+            , int startupPriority = 100
             , ChannelPipelineIncoming channelIncoming = null
             , ChannelPipelineOutgoing channelResponse = null
             , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
             , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null
-            , int startupPriority = 100
             )
             where C: ICommand
         {
@@ -67,7 +67,7 @@ namespace Xigadee
         {
             var command = creator(pipeline.Configuration);
 
-            return pipeline.AddCommand(command, assignment, channelIncoming, channelResponse, channelMasterJobNegotiationIncoming, startupPriority: startupPriority);
+            return pipeline.AddCommand(command, assignment, startupPriority, channelIncoming, channelResponse, channelMasterJobNegotiationIncoming);
         }
 
         public static ChannelPipelineIncoming AddCommand<C>(this ChannelPipelineIncoming cpipe, Action<C> assign = null, int startupPriority = 100)
@@ -88,7 +88,7 @@ namespace Xigadee
             )
             where C : ICommand
         {
-            cpipe.Pipeline.AddCommand(command, assignment, cpipe, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing, startupPriority);
+            cpipe.Pipeline.AddCommand(command, assignment, startupPriority, cpipe, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
 
             return cpipe;
         }

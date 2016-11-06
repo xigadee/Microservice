@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class TestChannelConnection
+    public class ManualChannelMessage
     {
     }
 }

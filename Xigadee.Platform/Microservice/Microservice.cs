@@ -213,7 +213,7 @@ namespace Xigadee
                 EventStart(() => ServiceStart(mCommunication), "Communication Container");
 
                 //Start the senders
-                EventStart(() => mCommunication.SendersStart(), "Senders");
+                EventStart(() => mCommunication.SendersStart(), "Communication Senders");
 
                 //Ensure that any handlers are registered.
                 EventStart(() => ServiceStart(mCommands), "Commands Container");

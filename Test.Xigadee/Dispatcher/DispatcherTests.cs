@@ -13,8 +13,10 @@ namespace Test.Xigadee
         DebugMemoryDataCollector collector = null;
         Microservice service = null;
         MicroservicePipeline mPipeline = null;
-        TestChannelListener mListener = null;
-        TestChannelSender mSender = null;
+        DispatcherCommand mDCommand = null;
+
+        ManualChannelListener mListener = null;
+        ManualChannelSender mSender = null;
 
         [TestInitialize]
         public void TearUp()
@@ -41,7 +43,7 @@ namespace Test.Xigadee
         [TestMethod]
         public void DispatcherTest1()
         {
-
+            mListener.Inject(new ServiceMessage(),1);
         }
 
         [TestMethod]
@@ -60,11 +62,12 @@ namespace Test.Xigadee
                     .AddPayloadSerializerDefaultJson()
                     .AddChannelIncoming("internalIn", internalOnly: false)
                         .AssignPriorityPartition(0, 1)
-                        .AttachListener<TestChannelListener>(action: (s) => mListener = s)
+                        .AttachListener<ManualChannelListener>(action: (s) => mListener = s)
+                        .AddCommand<DispatcherCommand>((c) => mDCommand = c)
                         .Revert((c) => cpipeIn = c)
                     .AddChannelOutgoing("internalOut", internalOnly: false)
                         .AssignPriorityPartition(0, 1)
-                        .AttachSender<TestChannelSender>(action: (s) => mSender = s)
+                        .AttachSender<ManualChannelSender>(action: (s) => mSender = s)
                         .Revert((c) => cpipeOut = c)
                     .AddCommand(new CommandInitiator() { ResponseChannelId = cpipeOut.Channel.Id }, (c) => mCommandInit = c);
 
