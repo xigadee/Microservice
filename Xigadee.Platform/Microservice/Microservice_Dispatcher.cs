@@ -31,17 +31,6 @@ namespace Xigadee
     //Dispatcher
     public partial class Microservice
     {
-        protected virtual async Task<bool> Send(TransmissionPayload requestPayload)
-        {
-            bool isSuccess = await mCommunication.Send(requestPayload);
-            if (!isSuccess)
-            {
-                mDataCollection.DispatcherPayloadUnresolved(requestPayload, DispatcherRequestUnresolvedReason.ChannelOutgoing);
-                OnProcessRequestUnresolved(requestPayload, DispatcherRequestUnresolvedReason.ChannelOutgoing);
-            }
-            return isSuccess;
-        }
-
         protected class PayloadWrapper
         {
             public PayloadWrapper(TransmissionPayload payload, int maxTransitCount)
@@ -61,6 +50,7 @@ namespace Xigadee
             public int MaxTransitCount { get; }
 
             public bool ExternalOnly => (Payload.Options & ProcessOptions.RouteInternal) == 0;
+
             public bool InternalOnly => (Payload.Options & ProcessOptions.RouteExternal) == 0;
 
             #region IncrementAndVerifyDispatcherTransitCount(TransmissionPayload request.Payload)
@@ -198,6 +188,16 @@ namespace Xigadee
         }
         #endregion
 
+        protected virtual async Task<bool> Send(TransmissionPayload requestPayload)
+        {
+            bool isSuccess = await mCommunication.Send(requestPayload);
+            if (!isSuccess)
+            {
+                mDataCollection.DispatcherPayloadUnresolved(requestPayload, DispatcherRequestUnresolvedReason.ChannelOutgoing);
+                OnProcessRequestUnresolved(requestPayload, DispatcherRequestUnresolvedReason.ChannelOutgoing);
+            }
+            return isSuccess;
+        }
 
     }
 }

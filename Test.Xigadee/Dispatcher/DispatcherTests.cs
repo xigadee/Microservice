@@ -8,8 +8,6 @@ namespace Test.Xigadee
     [TestClass]
     public class DispatcherTests: DispatcherTestsBase<DispatcherCommand>
     {
-
-
         [TestInitialize]
         public void TearUp()
         {
@@ -47,11 +45,36 @@ namespace Test.Xigadee
 
             mListener.Inject(message);
 
-            mre.WaitOne();
+            mre.WaitOne(2000);
 
             Assert.IsTrue(success);
         }
-     
+
+        [TestMethod]
+        public void DispatcherTestCommandSuccess()
+        {
+            ManualResetEvent mre = new ManualResetEvent(false);
+            bool success = false;
+
+            var message = new TransmissionPayload(cpipeIn.Channel.Id, "friday", "standard", release: (e, f) =>
+            {
+                mre.Set();
+            }
+            , options: ProcessOptions.RouteInternal);
+
+            mDCommand.OnTestCommandReceive += (sender, e) =>
+            {
+                success = true;
+                mre.Set();
+            };
+
+            mListener.Inject(message);
+
+            mre.WaitOne(2000);
+
+            Assert.IsTrue(success);
+        }
+
         [TestMethod]
         public void DispatcherTestFail()
         {
@@ -72,7 +95,7 @@ namespace Test.Xigadee
 
             mListener.Inject(message);
 
-            mre.WaitOne();
+            mre.WaitOne(2000);
 
             Assert.IsTrue(success);
         }
@@ -97,7 +120,7 @@ namespace Test.Xigadee
 
             mListener.Inject(message);
 
-            mre.WaitOne();
+            mre.WaitOne(2000);
 
             Assert.IsTrue(success);
         }

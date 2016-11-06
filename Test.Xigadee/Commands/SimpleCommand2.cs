@@ -30,16 +30,16 @@ namespace Test.Xigadee
                 int start = Environment.TickCount;
 
                 var result1 = mCommandInit.Process<Blah, string>("internalIn", "simples2", "async",
-                    new Blah() { Message = "hello" }, new RequestSettings() { WaitTime = TimeSpan.FromHours(1) }).Result;
+                    new Blah() { Message = "hello" }, new RequestSettings() { WaitTime = TimeSpan.FromSeconds(4) }).Result;
 
                 var result2 = mCommandInit.Process<Blah, string>("internalIn", "simples2", "sync",
-                    new Blah() { Message = "hello" }, new RequestSettings() { WaitTime = TimeSpan.FromHours(1) }).Result;
+                    new Blah() { Message = "hello" }, new RequestSettings() { WaitTime = TimeSpan.FromSeconds(4) }).Result;
 
                 var result3 = mCommandInit.Process<Blah, string>("internalIn", "simples2", "syncout",
-                    new Blah() { Message = "hello" }, new RequestSettings() { WaitTime = TimeSpan.FromHours(1) }).Result;
+                    new Blah() { Message = "hello" }, new RequestSettings() { WaitTime = TimeSpan.FromSeconds(4) }).Result;
 
-                var result4 = mCommandInit.Process<Blah, Blah>("internalIn", "simples2", "asyncobj",
-                    new Blah() { Message = "hello" }, new RequestSettings() { WaitTime = TimeSpan.FromMinutes(1) }).Result;
+                //var result4 = mCommandInit.Process<Blah, Blah>("internalIn", "simples2", "asyncobj",
+                //    new Blah() { Message = "hello" }, new RequestSettings() { WaitTime = TimeSpan.FromSeconds(4) }).Result;
 
                 var end = ConversionHelper.DeltaAsTimeSpan(start);
 
