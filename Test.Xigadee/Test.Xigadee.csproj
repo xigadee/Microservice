@@ -70,6 +70,7 @@
     <Compile Include="Commands\CommandUnitTestBase.cs" />
     <Compile Include="Dispatcher\DispatcherCommand.cs" />
     <Compile Include="Dispatcher\DispatcherTests.cs" />
+    <Compile Include="Dispatcher\DispatcherTestsBase.cs" />
     <Compile Include="EventTestCommand.cs" />
     <Compile Include="Pipeline\Pipeline2.cs" />
     <Compile Include="Microservice_Validate_CommandRequest.cs" />

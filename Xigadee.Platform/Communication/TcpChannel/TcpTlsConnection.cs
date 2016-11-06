@@ -22,9 +22,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class TcpTlsMessage
+    public class TcpConnection
     {
-
-        public byte[] Payload { get; set; }
     }
 }

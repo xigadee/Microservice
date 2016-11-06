@@ -22,10 +22,13 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-
-
-    public class TcpTlsChannelSender: MessagingSenderBase<TcpTlsConnection, TcpTlsMessage, TcpTlsClientHolder>
+    public class TcpTlsChannelListener: MessagingListenerBase<TcpConnection, TcpMessage, TcpTlsClientHolder>
     {
 
+
+        protected override void StartInternal()
+        {
+            base.StartInternal();
+        }
     }
 }

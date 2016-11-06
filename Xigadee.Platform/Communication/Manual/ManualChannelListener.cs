@@ -25,17 +25,19 @@ namespace Xigadee
 
             return client;
         }
+
         /// <summary>
         /// This method injects a service message manually in to the Microservice.
         /// </summary>
-        /// <param name="message">The message.</param>
+        /// <param name="payload">The message payload.</param>
         /// <param name="priority">The optional priority. The default is 1.</param>
-        public void Inject(ServiceMessage message, int priority = 1)
+        public void Inject(TransmissionPayload payload, int? priority = null)
         {
-            var client = ClientResolve(priority);
+            var client = ClientResolve(priority ?? mDefaultPriority ?? 1);
 
-            client.Inject(message);
+            client.Inject(payload);
 
         }
+
     }
 }

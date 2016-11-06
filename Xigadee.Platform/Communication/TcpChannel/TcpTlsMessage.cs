@@ -22,21 +22,10 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class TcpTlsClientHolder: ClientHolder<TcpTlsConnection, TcpTlsMessage>
+    public class TcpMessage
     {
-        public override void MessageComplete(TransmissionPayload payload)
-        {
-            throw new NotImplementedException();
-        }
+        public Dictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
 
-        public override Task<List<TransmissionPayload>> MessagesPull(int? count, int? wait, string mappingChannel = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task Transmit(TransmissionPayload payload, int retry = 0)
-        {
-            throw new NotImplementedException();
-        }
+        public byte[] Payload { get; set; }
     }
 }

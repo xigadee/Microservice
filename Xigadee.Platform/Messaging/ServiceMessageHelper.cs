@@ -42,8 +42,86 @@ namespace Xigadee
         {
             message.Status = status;
             message.StatusDescription = statusDescription;
-        } 
+        }
         #endregion
+        #region DestinationSet...
+        /// <summary>
+        /// This extension method sets destination.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="channelId">The channel id.</param>
+        /// <param name="messageType">The message type.</param>
+        /// <param name="actionType">The action.</param>
+        /// <param name="priority">The optional priority. The default is 1.</param>
+        public static void DestinationSet(this ServiceMessage message, string channelId, string messageType, string actionType, int priority = 1)
+        {
+            message.ChannelId = channelId;
+            message.MessageType = messageType;
+            message.ActionType = actionType;
+            message.ChannelPriority = priority;
+        }
+        /// <summary>
+        /// This extension method sets destination.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="header">The service message header.</param>
+        /// <param name="priority">The optional message priority. The default is 1.</param>
+        public static void DestinationSet(this ServiceMessage message, ServiceMessageHeader header, int priority = 1)
+        {
+            message.ChannelId = header.ChannelId;
+            message.MessageType = header.MessageType;
+            message.ActionType = header.ActionType;
+            message.ChannelPriority = priority;
+        }
+        #endregion
+        #region ResponseSet...
+        /// <summary>
+        /// This extension method sets response destination.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="channelId">The channel id.</param>
+        /// <param name="messageType">The message type.</param>
+        /// <param name="actionType">The action.</param>
+        /// <param name="priority">The optional priority. The default is 1.</param>
+        public static void ResponseSet(this ServiceMessage message, string channelId, string messageType, string actionType, int priority = 1)
+        {
+            message.ResponseChannelId = channelId;
+            message.ResponseMessageType = messageType;
+            message.ResponseActionType = actionType;
+            message.ResponseChannelPriority = priority;
+        }
+        /// <summary>
+        /// This extension method sets response destination.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="header">The service message header.</param>
+        /// <param name="priority">The optional priority. The default is 1.</param>
+        public static void ResponseSet(this ServiceMessage message, ServiceMessageHeader header, int priority = 1)
+        {
+            message.ResponseChannelId = header.ChannelId;
+            message.ResponseMessageType = header.MessageType;
+            message.ResponseActionType = header.ActionType;
+            message.ResponseChannelPriority = priority;
+        }
+        #endregion
+        /// <summary>
+        /// This method gets the destination as a ServiceMessageHeader object.
+        /// </summary>
+        /// <param name="message">The service message.</param>
+        /// <returns>The header.</returns>
+        public static ServiceMessageHeader DestinationGet(this ServiceMessage message)
+        {
+            return new ServiceMessageHeader(message.ChannelId, message.MessageType, message.ActionType);
+        }
+        /// <summary>
+        /// This method gets the response destination as a ServiceMessageHeader object.
+        /// </summary>
+        /// <param name="message">The service message.</param>
+        /// <returns>The header.</returns>
+        public static ServiceMessageHeader ResponseGet(this ServiceMessage message)
+        {
+            return new ServiceMessageHeader(message.ResponseChannelId, message.ResponseMessageType, message.ResponseActionType);
+        }
 
         #region ToResponse(this ServiceMessage message...
         public static ServiceMessage ToResponse(this ServiceMessage message, byte[] blob = null)

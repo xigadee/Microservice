@@ -22,7 +22,10 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class TcpTlsConnection
+
+
+    public class TcpTlsChannelSender: MessagingSenderBase<TcpConnection, TcpMessage, TcpTlsClientHolder>
     {
+
     }
 }

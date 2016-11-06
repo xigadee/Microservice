@@ -1,22 +1,14 @@
 ﻿using System;
+using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Xigadee;
 
 namespace Test.Xigadee
 {
     [TestClass]
-    public class DispatcherTests
+    public class DispatcherTests: DispatcherTestsBase<DispatcherCommand>
     {
-        CommandInitiator mCommandInit;
-        ChannelPipelineIncoming cpipeIn = null;
-        ChannelPipelineOutgoing cpipeOut = null;
-        DebugMemoryDataCollector collector = null;
-        Microservice service = null;
-        MicroservicePipeline mPipeline = null;
-        DispatcherCommand mDCommand = null;
 
-        ManualChannelListener mListener = null;
-        ManualChannelSender mSender = null;
 
         [TestInitialize]
         public void TearUp()
@@ -41,42 +33,75 @@ namespace Test.Xigadee
         }
 
         [TestMethod]
-        public void DispatcherTest1()
+        public void DispatcherTestSuccess()
         {
-            mListener.Inject(new ServiceMessage(),1);
+            ManualResetEvent mre = new ManualResetEvent(false);
+            bool success = false;
+
+            var message = new TransmissionPayload(cpipeIn.Channel.Id, "friday", "feeling", release: (e,f) =>
+            {
+                success = true;
+                mre.Set();
+            }
+            , options: ProcessOptions.RouteInternal);
+
+            mListener.Inject(message);
+
+            mre.WaitOne();
+
+            Assert.IsTrue(success);
+        }
+     
+        [TestMethod]
+        public void DispatcherTestFail()
+        {
+            ManualResetEvent mre = new ManualResetEvent(false);
+            bool success = false;
+
+            var message = new TransmissionPayload(cpipeIn.Channel.Id, "friday", "funky", release: (e, f) =>
+            {
+                mre.Set();
+            }
+            , options: ProcessOptions.RouteInternal);
+
+            service.ProcessRequestUnresolved += (sender, e) => {
+                success = e.Payload.Id == message.Id;
+                mre.Set();
+            };
+
+
+            mListener.Inject(message);
+
+            mre.WaitOne();
+
+            Assert.IsTrue(success);
         }
 
         [TestMethod]
-        public void DispatcherTest2()
+        public void DispatcherTestOut()
         {
+            ManualResetEvent mre = new ManualResetEvent(false);
+            bool success = false;
 
+            var message = new TransmissionPayload(cpipeOut.Channel.Id, "friday", "feeling", release: (e, f) =>
+            {
+                mre.Set();
+            }
+            , options: ProcessOptions.RouteExternal);
+
+            mSender.OnProcess += (sender, e) =>
+            {
+                success = e.Id == message.Id;
+                mre.Set();
+            };
+
+            mListener.Inject(message);
+
+            mre.WaitOne();
+
+            Assert.IsTrue(success);
         }
 
 
-        protected virtual MicroservicePipeline PipelineConfigure(MicroservicePipeline pipeline)
-        {
-            try
-            {
-                pipeline
-                    .AddDataCollector<DebugMemoryDataCollector>((c) => collector = c)
-                    .AddPayloadSerializerDefaultJson()
-                    .AddChannelIncoming("internalIn", internalOnly: false)
-                        .AssignPriorityPartition(0, 1)
-                        .AttachListener<ManualChannelListener>(action: (s) => mListener = s)
-                        .AddCommand<DispatcherCommand>((c) => mDCommand = c)
-                        .Revert((c) => cpipeIn = c)
-                    .AddChannelOutgoing("internalOut", internalOnly: false)
-                        .AssignPriorityPartition(0, 1)
-                        .AttachSender<ManualChannelSender>(action: (s) => mSender = s)
-                        .Revert((c) => cpipeOut = c)
-                    .AddCommand(new CommandInitiator() { ResponseChannelId = cpipeOut.Channel.Id }, (c) => mCommandInit = c);
-
-                return pipeline;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
     }
 }

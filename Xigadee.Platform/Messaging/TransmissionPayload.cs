@@ -39,6 +39,9 @@ namespace Xigadee
         /// This is the time that the payload was created.
         /// </summary>
         private readonly DateTime mCreateTime = DateTime.UtcNow;
+        /// <summary>
+        /// This is the UTC end time for the message.
+        /// </summary>
         private DateTime? mEndTime = null;
         private readonly int mTickCount = Environment.TickCount;
         #endregion
@@ -234,12 +237,16 @@ namespace Xigadee
         }
         #endregion
 
+
         public void CompleteSet()
         {
             if (!ExecutionTime.HasValue)
                 ExecutionTime = ConversionHelper.DeltaAsTimeSpan(mTickCount);
         }
 
+        /// <summary>
+        /// This is the overall execution time.
+        /// </summary>
         public TimeSpan? ExecutionTime { get; private set; }
     }
 }

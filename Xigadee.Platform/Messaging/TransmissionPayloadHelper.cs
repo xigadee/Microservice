@@ -42,5 +42,15 @@ namespace Xigadee
             
             return new TransmissionPayload(rsMessage);
         }
+
+        //public static void DestinationSet(this TransmissionPayload incoming, ServiceMessageHeader header)
+        //{
+        //    incoming.Message.
+        //}
+
+        //public static void DestinationSet(this TransmissionPayload incoming, ServiceMessageHeader header)
+        //{
+
+        //}
     }
 }

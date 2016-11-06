@@ -9,15 +9,20 @@ namespace Xigadee
 {
     public class ManualChannelClientHolder: ClientHolder<ManualChannelConnection, ManualChannelMessage>
     {
-        private ConcurrentQueue<ServiceMessage> mPending = new ConcurrentQueue<ServiceMessage>();
+        private ConcurrentQueue<TransmissionPayload> mPending = new ConcurrentQueue<TransmissionPayload>();
 
         public ManualChannelClientHolder()
         {
 
         }
-        public void Inject(ServiceMessage message)
+
+        /// <summary>
+        /// This method injects a payload to be picked up by the polling algorithm.
+        /// </summary>
+        /// <param name="payload">The payload to inject.</param>
+        public void Inject(TransmissionPayload payload)
         {
-            mPending.Enqueue(message);
+            mPending.Enqueue(payload);
         }
 
         public override void MessageComplete(TransmissionPayload payload)
@@ -30,14 +35,12 @@ namespace Xigadee
 
             int countDown = count ?? 1;
 
-            ServiceMessage message;
+            TransmissionPayload payload;
 
-            while (countDown> 0 && mPending.TryDequeue(out message))
+            while (countDown> 0 && mPending.TryDequeue(out payload))
             {
                 if (mappingChannel != null)
-                    message.ChannelId = mappingChannel;
-
-                var payload = new TransmissionPayload(message);
+                    payload.Message.ChannelId = mappingChannel;
 
                 list.Add(payload);
 

@@ -73,12 +73,12 @@
     <Compile Include="Command\Helper\CommandContext.cs" />
     <Compile Include="Command\Helper\CommandHolderException.cs" />
     <Compile Include="Communication\Channel\ChannelRewriteRule.cs" />
-    <Compile Include="Communication\TcpTlsChannel\Helper\DirectChannelCommunicator.cs" />
-    <Compile Include="Communication\TcpTlsChannel\TcpTlsChannelSender.cs" />
-    <Compile Include="Communication\TcpTlsChannel\TcpTlsClientHolder.cs" />
-    <Compile Include="Communication\TcpTlsChannel\TcpTlsConnection.cs" />
-    <Compile Include="Communication\TcpTlsChannel\TcpTlsMessage.cs" />
-    <Compile Include="Communication\TcpTlsChannel\TcpTlsChannelListener.cs" />
+    <Compile Include="Communication\TcpChannel\Helper\DirectChannelCommunicator.cs" />
+    <Compile Include="Communication\TcpChannel\TcpTlsChannelSender.cs" />
+    <Compile Include="Communication\TcpChannel\TcpTlsClientHolder.cs" />
+    <Compile Include="Communication\TcpChannel\TcpTlsConnection.cs" />
+    <Compile Include="Communication\TcpChannel\TcpTlsMessage.cs" />
+    <Compile Include="Communication\TcpChannel\TcpTlsChannelListener.cs" />
     <Compile Include="Communication\Manual\ManualChannelClientHolder.cs" />
     <Compile Include="Communication\Manual\ManualChannelListener.cs" />
     <Compile Include="Communication\Manual\ManualChannelSender.cs" />
@@ -469,7 +469,7 @@
       <Link>Properties\ApacheLicense-2.0.txt</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Communication\TcpTlsChannel\Helper\MakeCert.txt" />
+    <Content Include="Communication\TcpChannel\Helper\MakeCert.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Command\Security\" />

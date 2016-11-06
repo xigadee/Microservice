@@ -8,10 +8,12 @@ namespace Xigadee
 {
     public class ManualChannelSender:MessagingSenderBase<ManualChannelConnection, ManualChannelMessage, ManualChannelClientHolder>
     {
-
-        public override Task ProcessMessage(TransmissionPayload payload)
+        public event EventHandler<TransmissionPayload> OnProcess;
+        
+        public override async Task ProcessMessage(TransmissionPayload payload)
         {
-            return base.ProcessMessage(payload);
+            OnProcess?.Invoke(this, payload);
+            //return base.ProcessMessage(payload);
         }
     }
 }
