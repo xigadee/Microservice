@@ -25,6 +25,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="M">The Microservice type.</typeparam>
     /// <typeparam name="C">The Configuration type.</typeparam>
+    [Obsolete("Please use the new Microservice pipeline support.", false)]
     public abstract class PopulatorBase<M, C>: IPopulator
         where M : Microservice, new()
         where C : ConfigBase, new()
