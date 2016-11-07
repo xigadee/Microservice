@@ -1,4 +1,5 @@
-﻿using System.Runtime.Remoting.Messaging;
+﻿using System.Collections.Specialized;
+using System.Runtime.Remoting.Messaging;
 
 namespace Xigadee
 {
@@ -7,13 +8,21 @@ namespace Xigadee
     /// </summary>
     public static class CommandContext
     {
+        private const string CorrelationKeyName = "Xigadee.CommandContext.CorrelationKey";
+
         /// <summary>
         /// Correlation Key
         /// </summary>
         public static string CorrelationKey
         {
-            get { return CallContext.LogicalGetData(nameof(CorrelationKey)) as string; }
-            set { CallContext.LogicalSetData(nameof(CorrelationKey), value); }
+            get { return CallContext.LogicalGetData(CorrelationKeyName) as string; }
+            set
+            {
+                if (value == null)
+                    CallContext.FreeNamedDataSlot(CorrelationKeyName);
+                else
+                    CallContext.LogicalSetData(CorrelationKeyName, value);  
+            }
         }
     }
 }
