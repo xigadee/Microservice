@@ -114,7 +114,7 @@ namespace Xigadee
             if (StandardOut != null)
                 StandardOutPos = Parameters.IndexOf(StandardOut);
 
-            IsStandardCall = isStandardIn && isStandardOut && paramInfo.Count == 0;
+            IsStandardCall = (isStandardIn || isStandardOut) && paramInfo.Count == 0;
 
             if (IsStandardCall)
                 return true;

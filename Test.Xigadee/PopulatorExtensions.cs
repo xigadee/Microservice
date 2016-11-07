@@ -24,6 +24,7 @@ namespace Test.Xigadee
     public class PopulatorExtensions
     {
         Microservice mService;
+
         /// <summary>
         /// This method ensures that the populator is started correctly
         /// </summary>
@@ -31,7 +32,6 @@ namespace Test.Xigadee
         public void Initialise()
         {
             mService = new Microservice();
-
 
             //mService.
             mService.Start();

@@ -5,6 +5,9 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
+    /// <summary>
+    /// These unit tests validate the Dispatcher logic.
+    /// </summary>
     [TestClass]
     public class DispatcherTests: DispatcherTestsBase<DispatcherCommand>
     {

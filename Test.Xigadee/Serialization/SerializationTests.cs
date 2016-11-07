@@ -13,6 +13,7 @@ namespace Test.Xigadee.Serialization
             var container = new SerializationContainer(new[] { new JsonContractSerializer() });
 
             var test = new Blah { Message = "Hmm" };
+
             var blob = container.PayloadSerialize(test);
 
             var resolve = container.PayloadDeserialize<Blah>(blob);

@@ -12,14 +12,13 @@ namespace Test.Xigadee
     public class SimpleCommand2UnitTest: CommandUnitTestBase<SimpleCommand2>
     {
         [TestMethod]
-        public void TestStandard()
+        public void TestStandard2()
         {
             DefaultTest();
         }
 
-
         [TestMethod]
-        public void PipelineCommand()
+        public void PipelineCommand2()
         {
             try
             {
