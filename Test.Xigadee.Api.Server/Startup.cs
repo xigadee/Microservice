@@ -41,6 +41,31 @@ namespace Test.Xigadee.Api.Server
     /// <summary>
     /// This is the standard startup class for the service.
     /// </summary>
+    public class StartupPipeline
+    {
+        public void Configuration(IAppBuilder app)
+        {
+            try
+            {
+                var Service = new PopulatorWebApi();
+
+                RouteConfig.Register(Service);
+
+                SwaggerConfig.Register(Service);
+
+                Service.Start(app, AzureHelper.Resolver);
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
+
+    /// <summary>
+    /// This is the standard startup class for the service.
+    /// </summary>
     public class Startup
     {
         public void Configuration(IAppBuilder app)
