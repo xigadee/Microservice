@@ -375,38 +375,16 @@ namespace Xigadee
 
             Expression expression = mTransform.SearchTranslator.Build(key);
 
-
-            //This is where the query is done
+            //Execute Expression on Query
             bool success = true; //for the time being since we are not executing any queries
-
-
-
-            var resultEntities = query.ToList();
-            holder.Rs.Entity = new SearchResponse();
-            if (resultEntities.Count>0)
+            if (success)
             {
-                var fields = resultEntities[0].GetType().GetProperties(); // get all the field names
-                holder.Rs.Entity.Data= new List<string[]>();
-                for(int i=0; i<fields.Length;i++)
-                {
-                    holder.Rs.Entity.Fields.Add(i, new FieldMetadata() { Name = fields[i].Name, Type = fields[i].GetType() }); // add a new entry in the fields dictionary for each field
-                    holder.Rs.Entity.Data.Add(new string[resultEntities.Count]); // initialize a new string array for each of these fields in the data list
-                }
-                
-                for (int j=0; j<resultEntities.Count;j++)
-                {
-                    for (int i = 0; i < fields.Length; i++)
-                    {
-                        string fieldValue = resultEntities[j].GetType().GetProperty(holder.Rs.Entity.Fields[i].Name).GetValue(resultEntities[j]).ToString();
-                        holder.Rs.Entity.Data[i][j] = fieldValue;
-                    }
-                        
-                }
+                var resultEntities = query.ToList();
+                holder.Rs.Entity = ConvertToSearchResponse(resultEntities);
             }
-
+            else
+                holder.Rs.Entity = new SearchResponse(); //default object search response
             
-
-
 
             if (success) // will always be success in test mode
                 return new PersistenceResponseHolder<SearchResponse>(PersistenceResponse.Ok200, null, holder.Rs.Entity);
@@ -435,5 +413,29 @@ namespace Xigadee
             return await base.InternalSearch(key, holder);
         }
 
+        private SearchResponse ConvertToSearchResponse(List<E> resultEntities)
+        {
+            SearchResponse response = new SearchResponse();
+            if (resultEntities.Count > 0)
+            {
+                var fields = resultEntities[0].GetType().GetProperties(); // get all the field names
+                response.Data = new List<object[]>();
+                for (int i = 0; i < fields.Length; i++)
+                {
+                    response.Fields.Add(i, new FieldMetadata() { Name = fields[i].Name, Type = fields[i].PropertyType }); // add a new entry in the fields dictionary for each field
+                    response.Data.Add(new object[resultEntities.Count]); // initialize a new array for each of these fields in the data list
+                }
+
+                for (int j = 0; j < resultEntities.Count; j++)
+                {
+                    for (int i = 0; i < fields.Length; i++)
+                    {
+                        response.Data[i][j] = resultEntities[j].GetType().GetProperty(response.Fields[i].Name).GetValue(resultEntities[j]);
+                    }
+
+                }
+            }
+            return response;
+        }
     }
 }

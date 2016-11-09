@@ -28,7 +28,7 @@ namespace Xigadee
 
         public Dictionary<int, FieldMetadata> Fields { get; } = new Dictionary<int, FieldMetadata>();
 
-        public List<string[]> Data { get; set;} 
+        public List<object[]> Data { get; set;} 
 
     }
 
