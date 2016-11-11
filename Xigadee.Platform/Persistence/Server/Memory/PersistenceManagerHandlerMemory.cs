@@ -22,6 +22,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Linq.Expressions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
 #endregion
 namespace Xigadee
 {
@@ -377,17 +380,20 @@ namespace Xigadee
 
             //Execute Expression on Query
             bool success = true; //for the time being since we are not executing any queries
+            holder.Rs.Entity = new SearchResponse();
+            List<JObject> jObjects = new List<JObject>();
+            foreach (var source in query.ToList())
+            {
+                jObjects.Add(JObject.FromObject(source));
+            }
             if (success)
             {
                 var resultEntities = query.ToList();
-                holder.Rs.Entity = ConvertToSearchResponse(resultEntities);
-            }
-            else
-                holder.Rs.Entity = new SearchResponse(); //default object search response
-            
-
-            if (success) // will always be success in test mode
+                holder.Rs.Entity.Data = jObjects;
                 return new PersistenceResponseHolder<SearchResponse>(PersistenceResponse.Ok200, null, holder.Rs.Entity);
+            }
+            
+            
 
             //holder.Rs.
             //key.Select
@@ -413,29 +419,6 @@ namespace Xigadee
             return await base.InternalSearch(key, holder);
         }
 
-        private SearchResponse ConvertToSearchResponse(List<E> resultEntities)
-        {
-            SearchResponse response = new SearchResponse();
-            if (resultEntities.Count > 0)
-            {
-                var fields = resultEntities[0].GetType().GetProperties(); // get all the field names
-                response.Data = new List<object[]>();
-                for (int i = 0; i < fields.Length; i++)
-                {
-                    response.Fields.Add(i, new FieldMetadata() { Name = fields[i].Name, Type = fields[i].PropertyType }); // add a new entry in the fields dictionary for each field
-                    response.Data.Add(new object[resultEntities.Count]); // initialize a new array for each of these fields in the data list
-                }
-
-                for (int j = 0; j < resultEntities.Count; j++)
-                {
-                    for (int i = 0; i < fields.Length; i++)
-                    {
-                        response.Data[i][j] = resultEntities[j].GetType().GetProperty(response.Fields[i].Name).GetValue(resultEntities[j]);
-                    }
-
-                }
-            }
-            return response;
-        }
+      
     }
 }
