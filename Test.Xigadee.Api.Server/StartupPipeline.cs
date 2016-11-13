@@ -41,7 +41,7 @@ namespace Test.Xigadee.Api.Server
     /// <summary>
     /// This is the standard startup class for the service.
     /// </summary>
-    public class Startup
+    public class StartupPipeline
     {
         public void Configuration(IAppBuilder app)
         {
@@ -61,13 +61,14 @@ namespace Test.Xigadee.Api.Server
                 throw ex;
             }
         }
-     }
+    }
+
 
     /// <summary>
     /// This class is used to change the configuration to move the persistence commands to be registered
     /// locally within the Api service.
     /// </summary>
-    public class StartupLocal
+    public class StartupPipelineLocal
     {
         public void Configuration(IAppBuilder app)
         {

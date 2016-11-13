@@ -306,6 +306,7 @@
     <Compile Include="Microservice\PopulatorWebApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="StartupPipeline.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Web.config" />
