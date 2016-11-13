@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace Xigadee
 {
@@ -28,7 +29,7 @@ namespace Xigadee
 
         public Dictionary<int, FieldMetadata> Fields { get; } = new Dictionary<int, FieldMetadata>();
 
-        public List<string[]> Data { get; set;} 
+        public List<JObject> Data { get; set;} 
 
     }
 

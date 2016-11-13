@@ -26,6 +26,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.ComponentModel;
 
 namespace Xigadee
 {
@@ -42,31 +43,21 @@ namespace Xigadee
 
         protected byte[] Data()
         {
-            //var entity = mResponse.Entity;
             var entity = new OData<JObject>();
             entity.Metadata = $"{mRequest.Scheme}://{mRequest.Authority}{mRequest.AbsolutePath}";
-            if(mResponse.Entity.Data != null)
-                for (int j=0; j<mResponse.Entity.Data[0].Length;j++) //how many entities are there in the response
-                { //foreach of them do the following
-                    //TODO: add error checking here
-                    var tempJObject = new JObject();
-                    foreach (var field in mResponse.Entity.Fields)
-                    {
-                        string name = field.Value.Name;
-                        object obj = Convert.ChangeType(mResponse.Entity.Data[field.Key][j], field.Value.Type);
-                        tempJObject[name] = JToken.FromObject(obj);
-                        //tempJObject.Add(, );
-                    }
-                    entity.Value.Add(tempJObject);
+            // we should change the mresponse.Entity.Data to a JObject since the query result will return a JObject
+            if (mResponse.Entity.Data != null)
+                foreach (JObject obj in mResponse.Entity.Data)
+                {
+                    entity.Value.Add(obj);
                 }
-            //mResponse.Entity.
             else
             {
                 var tempJObject = new JObject();
                 tempJObject.Add("Message", "No Entities Returned");
                 entity.Value.Add(tempJObject);
             }
-            return Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(entity)); ;
+            return Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(entity));
         }
 
         public async Task<HttpResponseMessage> ExecuteAsync(CancellationToken cancellationToken)

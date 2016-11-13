@@ -22,6 +22,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Linq.Expressions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
 #endregion
 namespace Xigadee
 {
@@ -375,41 +378,22 @@ namespace Xigadee
 
             Expression expression = mTransform.SearchTranslator.Build(key);
 
-
-            //This is where the query is done
+            //Execute Expression on Query
             bool success = true; //for the time being since we are not executing any queries
-
-
-
-            var resultEntities = query.ToList();
             holder.Rs.Entity = new SearchResponse();
-            if (resultEntities.Count>0)
+            List<JObject> jObjects = new List<JObject>();
+            foreach (var source in query.ToList())
             {
-                var fields = resultEntities[0].GetType().GetProperties(); // get all the field names
-                holder.Rs.Entity.Data= new List<string[]>();
-                for(int i=0; i<fields.Length;i++)
-                {
-                    holder.Rs.Entity.Fields.Add(i, new FieldMetadata() { Name = fields[i].Name, Type = fields[i].GetType() }); // add a new entry in the fields dictionary for each field
-                    holder.Rs.Entity.Data.Add(new string[resultEntities.Count]); // initialize a new string array for each of these fields in the data list
-                }
-                
-                for (int j=0; j<resultEntities.Count;j++)
-                {
-                    for (int i = 0; i < fields.Length; i++)
-                    {
-                        string fieldValue = resultEntities[j].GetType().GetProperty(holder.Rs.Entity.Fields[i].Name).GetValue(resultEntities[j]).ToString();
-                        holder.Rs.Entity.Data[i][j] = fieldValue;
-                    }
-                        
-                }
+                jObjects.Add(JObject.FromObject(source));
             }
-
-            
-
-
-
-            if (success) // will always be success in test mode
+            if (success)
+            {
+                var resultEntities = query.ToList();
+                holder.Rs.Entity.Data = jObjects;
                 return new PersistenceResponseHolder<SearchResponse>(PersistenceResponse.Ok200, null, holder.Rs.Entity);
+            }
+            
+            
 
             //holder.Rs.
             //key.Select
@@ -435,5 +419,6 @@ namespace Xigadee
             return await base.InternalSearch(key, holder);
         }
 
+      
     }
 }
