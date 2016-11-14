@@ -73,7 +73,6 @@ namespace Xigadee
         /// <summary>
         /// This is the Microservice constructor.
         /// </summary>
-        /// <param name="options">The configuration options.</param>
         /// <param name="name">The Microservice name.</param>
         /// <param name="serviceId">The service id.</param>
         /// <param name="policySettings">The policy settings.</param>

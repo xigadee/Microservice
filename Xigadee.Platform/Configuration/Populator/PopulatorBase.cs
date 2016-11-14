@@ -147,8 +147,23 @@ namespace Xigadee
                 Config = new C();
                 if (resolver != null)
                 {
-                    Config.Resolver = resolver;
-                    Config.ResolverFirst = resolverFirst;
+                    //Config.PriorityAppSettings.HasValue
+                    int priority = Config.PriorityAppSettings ?? 10;
+
+                    if (Config.PriorityAppSettings.HasValue)
+                    {
+                        do
+                        {
+                            if (resolverFirst)
+                                priority++;
+                            else
+                                priority--;
+
+                        }
+                        while (Config[priority] != null);
+                    }
+
+                    Config.ResolverSet(priority, new ConfigResolverFunction(resolver));
                 }
             }
         }

@@ -35,24 +35,39 @@ namespace Xigadee
         protected MicroservicePipeline mInnerPipeline;
         #endregion
         #region Constructor
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="pipeline"></param>
-        public WebApiMicroservicePipeline(MicroservicePipeline pipeline, HttpConfiguration config) : base(pipeline.Service, pipeline.Configuration)
+
+        public WebApiMicroservicePipeline(MicroservicePipeline pipeline, HttpConfiguration httpConfig = null)
         {
-            mInnerPipeline = pipeline;
-            ApiConfig = config ?? new HttpConfiguration();
-        } 
+            if (pipeline == null)
+                throw new ArgumentNullException("pipeline", "pipeline cannot be null");
+
+            Service = pipeline.Service;
+            Configuration = pipeline.Configuration;
+            HttpConfig = httpConfig ?? new HttpConfiguration();
+        }
+
+        /// <summary>
+        /// The default configuration.
+        /// </summary>
+        /// <param name="service">The microservice.</param>
+        /// <param name="config">The microservice config.</param>
+        /// <param name="httpConfig">The http configuration.</param>
+        public WebApiMicroservicePipeline(IMicroservice service
+            , IEnvironmentConfiguration config
+            , HttpConfiguration httpConfig = null):base(service, config)
+        {
+            Service = service;
+            Configuration = config;
+            HttpConfig = httpConfig ?? new HttpConfiguration();
+        }
+
         #endregion
 
-        #region ApiConfig
+        #region HttpConfig
         /// <summary>
         /// This is the http configuration class used for the Web Api instance.
         /// </summary>
-        public HttpConfiguration ApiConfig { get; protected set; }
+        public HttpConfiguration HttpConfig { get; protected set; }
         #endregion
-
     }
-
 }

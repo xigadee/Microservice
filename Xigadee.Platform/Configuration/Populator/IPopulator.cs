@@ -18,6 +18,7 @@ using System;
 
 namespace Xigadee
 {
+    [Obsolete("Use the microservice pipeline.")]
     public interface IPopulator
     {
         Microservice Service { get; }

@@ -15,6 +15,8 @@
 #endregion
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Xigadee
 {
@@ -24,9 +26,17 @@ namespace Xigadee
     /// </summary>
     public interface IEnvironmentConfiguration
     {
-        Func<string, string, string> Resolver { get; set; }
+        ConfigResolverMemory OverrideSettings { get; } 
 
-        bool ResolverFirst { get; set; }
+        ConfigResolver this[int key] { get; set; }
+
+        int? PriorityAppSettings { get; }
+
+        void ResolversClear();
+
+        void ResolverSet(int priority, ConfigResolver resolver);
+
+        IEnumerable<KeyValuePair<int, ConfigResolver>> Resolvers{get;}
 
         string PlatformOrConfigCache(string key, string defaultValue = null);
 

@@ -26,8 +26,10 @@ namespace Xigadee
     {
         [ConfigSettingKey("Service")]
         public const string KeyEnvironment = "Environment";
+
         [ConfigSettingKey("Service")]
         public const string KeyClient = "Client";
+
         [ConfigSettingKey("Service")]
         public const string KeyServiceDisabled = "ServiceDisabled";
 

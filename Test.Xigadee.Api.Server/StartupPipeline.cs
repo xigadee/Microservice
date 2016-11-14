@@ -47,13 +47,15 @@ namespace Test.Xigadee.Api.Server
         {
             try
             {
-                var Service = new PopulatorWebApi();
+                //var Service = new WebApiMicroservicePipeline();
 
-                RouteConfig.Register(Service);
+                
 
-                SwaggerConfig.Register(Service);
+                //RouteConfig.Register(Service);
 
-                Service.Start(app, AzureHelper.Resolver);
+                //SwaggerConfig.Register(Service);
+
+                //Service.Start(app, AzureHelper.Resolver);
 
             }
             catch (Exception ex)

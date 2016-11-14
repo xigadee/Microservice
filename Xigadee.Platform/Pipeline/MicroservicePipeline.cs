@@ -28,6 +28,16 @@ namespace Xigadee
     /// <typeparam name="C">The configuration type.</typeparam>
     public class MicroservicePipeline
     {
+        protected MicroservicePipeline()
+        {
+
+        }
+
+        /// <summary>
+        /// This is the default pipeline.
+        /// </summary>
+        /// <param name="service">The microservice.</param>
+        /// <param name="config">The microservice configuration.</param>
         public MicroservicePipeline(IMicroservice service, IEnvironmentConfiguration config)
         {
             if (service == null)
@@ -40,12 +50,12 @@ namespace Xigadee
         }
 
         /// <summary>
-        /// This is the service contract.
+        /// This is the microservice.
         /// </summary>
         public virtual IMicroservice Service { get; protected set;}
 
         /// <summary>
-        /// This is the external configuration.
+        /// This is the microservice configuration.
         /// </summary>
         public virtual IEnvironmentConfiguration Configuration { get; protected set;}
 

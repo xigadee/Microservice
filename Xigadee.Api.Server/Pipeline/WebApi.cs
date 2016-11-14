@@ -25,9 +25,10 @@ namespace Xigadee
 {
     public static class WebApiExtensionMethods
     {
-        public static WebApiMicroservicePipeline UpgradeToWebApiPipeline(this MicroservicePipeline pipeline, HttpConfiguration config = null)
+        public static WebApiMicroservicePipeline UpgradeToWebApiPipeline(this MicroservicePipeline pipeline
+            , HttpConfiguration httpConfig = null)
         {
-            return new WebApiMicroservicePipeline(pipeline, config);
+            return new WebApiMicroservicePipeline(pipeline, httpConfig);
         }
 
         public static WebApiMicroservicePipeline ToWebApiPipeline(this MicroservicePipeline pipeline)
@@ -44,7 +45,7 @@ namespace Xigadee
         {
             var filter = new WebApiServiceUnavailableFilter();
 
-            webpipe.ApiConfig.Filters.Add(filter);
+            webpipe.HttpConfig.Filters.Add(filter);
             webpipe.Service.StatusChanged += (object sender, StatusChangedEventArgs e) => filter.StatusCurrent = e.StatusNew;
 
             return webpipe;
@@ -54,7 +55,7 @@ namespace Xigadee
         {
             var filter = new WebApiCorrelationIdFilter();
 
-            webpipe.ApiConfig.Filters.Add(filter);
+            webpipe.HttpConfig.Filters.Add(filter);
 
             return webpipe;
         }
@@ -63,7 +64,7 @@ namespace Xigadee
         {
             var filter = new WebApiVersionHeaderFilter(headerName);
 
-            webpipe.ApiConfig.Filters.Add(filter);
+            webpipe.HttpConfig.Filters.Add(filter);
 
             return webpipe;
         }

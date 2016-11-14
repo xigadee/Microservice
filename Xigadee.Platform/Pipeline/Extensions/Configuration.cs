@@ -22,20 +22,28 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class MicroservicePopulator<C>
-        where C:ConfigBase, new()
+    public static partial class CorePipelineExtensions
     {
-        public MicroservicePopulator(Microservice service = null, C config = null)
+        public static P ConfigurationOverrideSet<P>(this P pipeline, string key, string value) 
+            where P : MicroservicePipeline
         {
-            Service = service ?? new Microservice();
-            Config = config ?? new C();
+
+            return pipeline;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="P"></typeparam>
+        /// <param name="pipeline"></param>
+        /// <returns></returns>
+        public static P ConfigResolverSet<P>(this P pipeline) 
+            where P : MicroservicePipeline
+        {
+            if (pipeline == null)
+                throw new ArgumentNullException("pipeline cannot be null");
 
-        public Microservice Service { get; }
 
-        public C Config { get; }
-
+            return pipeline;
+        }
     }
-
-
 }

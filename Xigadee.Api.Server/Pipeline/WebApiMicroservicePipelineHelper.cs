@@ -19,23 +19,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Http;
 
 namespace Xigadee
 {
-    public class MicroservicePopulator<C>
-        where C:ConfigBase, new()
+    /// <summary>
+    /// This is the web api helper class.
+    /// </summary>
+    public static class WebApiMicroservicePipelineHelper
     {
-        public MicroservicePopulator(Microservice service = null, C config = null)
+        /// <summary>
+        /// This is the base setting.
+        /// </summary>
+        /// <param name="service">This is the service.</param>
+        /// <param name="config">This is the configuration settings.</param>
+        /// <returns>Returns the pipeline object.</returns>
+        public static WebApiMicroservicePipeline ToPipeline(this IMicroservice service
+            , IEnvironmentConfiguration config = null
+            , HttpConfiguration httpConfig = null)
         {
-            Service = service ?? new Microservice();
-            Config = config ?? new C();
+            return new WebApiMicroservicePipeline(service, config, httpConfig);
         }
-
-        public Microservice Service { get; }
-
-        public C Config { get; }
-
     }
-
-
 }

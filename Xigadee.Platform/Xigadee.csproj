@@ -84,6 +84,10 @@
     <Compile Include="Communication\Manual\ManualChannelSender.cs" />
     <Compile Include="Communication\Manual\ManualChannelConnection.cs" />
     <Compile Include="Communication\Manual\ManualChannelMessage.cs" />
+    <Compile Include="Configuration\ConfigResolver\ConfigResolver.cs" />
+    <Compile Include="Configuration\ConfigResolver\ConfigResolverAppSettings.cs" />
+    <Compile Include="Configuration\ConfigResolver\ConfigResolverFunction.cs" />
+    <Compile Include="Configuration\ConfigResolver\ConfigResolverMemory.cs" />
     <Compile Include="DataCollection\ActionQueue\ActionQueueCollectionBase.cs" />
     <Compile Include="DataCollection\ActionQueue\ActionQueuePolicy.cs" />
     <Compile Include="DataCollection\ActionQueue\ActionQueueStatistics.cs" />
@@ -170,7 +174,7 @@
     <Compile Include="Persistence\Notification\EntityChangeNotificationStatistics.cs" />
     <Compile Include="Pipeline\Configuration\ConfigBaseHelperDocumentDb.cs" />
     <Compile Include="Pipeline\Configuration\ConfigBaseHelperService.cs" />
-    <Compile Include="Configuration\ConfigKeySettingNameAttribute.cs" />
+    <Compile Include="Configuration\Attributes\ConfigKeySettingNameAttribute.cs" />
     <Compile Include="Interfaces\IEnvironmentConfiguration.cs" />
     <Compile Include="Command\Attributes\CommandContractAttribute.cs" />
     <Compile Include="Command\Attributes\ContractAttribute.cs" />
@@ -205,7 +209,9 @@
     <Compile Include="Messaging\MessageFilterWrapper.cs" />
     <Compile Include="Pipeline\Extensions\AddDataCollector.cs" />
     <Compile Include="Pipeline\Extensions\AppendServiceMessageHeaderRewriteRule.cs" />
+    <Compile Include="Pipeline\Extensions\Configuration.cs" />
     <Compile Include="Pipeline\Extensions\Policy.cs" />
+    <Compile Include="Pipeline\MicroservicePipelineHelper.cs" />
     <Compile Include="ResourceTracker\ResourceTrackerPolicy.cs" />
     <Compile Include="Scheduler\Schedule.cs" />
     <Compile Include="Messaging\ServiceMessage.cs" />
@@ -434,7 +440,6 @@
     <Compile Include="TaskManager\TaskManagerStatistics.cs" />
     <Compile Include="DataCollection\Logger\Implementations\Trace\TraceEventLogger.cs" />
     <Compile Include="Microservice\Microservice_TaskManager.cs" />
-    <Compile Include="Configuration\MicroserviceConfigurationOptions.cs" />
     <Compile Include="Microservice\MicroserviceStatistics.cs" />
     <Compile Include="Scheduler\SchedulerContainer.cs" />
     <Compile Include="Serialization\SerializationContainer.cs" />
