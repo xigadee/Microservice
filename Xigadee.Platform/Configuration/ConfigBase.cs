@@ -134,14 +134,14 @@ namespace Xigadee
                 throw new ArgumentNullException("resolver cannot be null");
 
             mConfigResolvers.AddOrUpdate(priority, resolver, (k, v) => resolver);
-        } 
+        }
         #endregion
 
-        #region Flush()
+        #region CacheFlush()
         /// <summary>
         /// This method flushes the cache of stored values.
         /// </summary>
-        public void Flush()
+        public void CacheFlush()
         {
             mConfigCache.Clear();
         }

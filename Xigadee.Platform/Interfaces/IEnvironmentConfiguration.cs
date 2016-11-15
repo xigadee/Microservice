@@ -43,5 +43,7 @@ namespace Xigadee
         bool PlatformOrConfigCacheBool(string key, string defaultValue = null);
 
         int PlatformOrConfigCacheInt(string key, int? defaultValue = default(int?));
+
+        void CacheFlush();
     }
 }

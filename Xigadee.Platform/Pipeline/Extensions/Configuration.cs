@@ -28,6 +28,7 @@ namespace Xigadee
             where P : MicroservicePipeline
         {
             pipeline.Configuration.OverrideSettings.Add(key,value);
+            pipeline.Configuration.CacheFlush();
             return pipeline;
         }
 
