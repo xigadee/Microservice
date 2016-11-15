@@ -27,21 +27,41 @@ namespace Xigadee
         public static P ConfigurationOverrideSet<P>(this P pipeline, string key, string value) 
             where P : MicroservicePipeline
         {
+            pipeline.Configuration.OverrideSettings.Add(key,value);
+            return pipeline;
+        }
+
+        public static P ConfigResolversClear<P>(this P pipeline)
+            where P : MicroservicePipeline
+        {
+            pipeline.Configuration.ResolversClear();
 
             return pipeline;
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="P"></typeparam>
-        /// <param name="pipeline"></param>
-        /// <returns></returns>
-        public static P ConfigResolverSet<P>(this P pipeline) 
+
+        public static P ConfigResolverSet<P>(this P pipeline, int priority, ConfigResolver resolver, Action<ConfigResolver> assign = null)
             where P : MicroservicePipeline
         {
             if (pipeline == null)
                 throw new ArgumentNullException("pipeline cannot be null");
 
+            pipeline.Configuration.ResolverSet(priority, resolver);
+
+            return pipeline;
+        }
+
+        public static P ConfigResolverSet<P,R>(this P pipeline, int priority, Action<R> assign = null)
+            where P : MicroservicePipeline
+            where R : ConfigResolver, new()
+        {
+            if (pipeline == null)
+                throw new ArgumentNullException("pipeline cannot be null");
+
+            var resolver = new R();
+
+            assign?.Invoke(resolver);
+
+            pipeline.Configuration.ResolverSet(priority, resolver);
 
             return pipeline;
         }

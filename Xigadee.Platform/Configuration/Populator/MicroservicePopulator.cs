@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    [Obsolete("Use the Microservice pipeline.")]
     public class MicroservicePopulator<C>
         where C:ConfigBase, new()
     {

@@ -23,13 +23,40 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This channel is used by extension methods to create a simple channel based configuration.
+    /// The Microservice pipeline is used by extension methods to create a simple channel based service configuration.
     /// </summary>
-    /// <typeparam name="C">The configuration type.</typeparam>
     public class MicroservicePipeline
     {
-        protected MicroservicePipeline()
+        /// <summary>
+        /// This is the default constructor for the pipeline.
+        /// </summary>
+        /// <param name="name">The Microservice name.</param>
+        /// <param name="serviceId">The service id.</param>
+        /// <param name="policy">The policy settings collection.</param>
+        /// <param name="properties">Any additional property key/value pairs.</param>
+        /// <param name="config">The environment config object</param>
+        /// <param name="assign">The action can be used to assign items to the microservice.</param>
+        /// <param name="configAssign">This action can be used to adjust the config settings.</param>
+        /// <param name="addDefaultJsonPayloadSerializer">This property specifies that the default Json 
+        /// payload serializer should be added to the Microservice, set this to false to disable this.</param>
+        public MicroservicePipeline(string name = null
+            , string serviceId = null
+            , IEnumerable<PolicyBase> policy = null
+            , IEnumerable<Tuple<string, string>> properties = null
+            , IEnvironmentConfiguration config = null
+            , Action<IMicroservice> assign = null
+            , Action<IEnvironmentConfiguration> configAssign = null
+            , bool addDefaultJsonPayloadSerializer = true
+            )
         {
+            Service = new Microservice(name, serviceId, policy, properties);
+            Configuration = config ?? new ConfigBase();
+
+            assign?.Invoke(Service);
+            configAssign?.Invoke(Configuration);
+
+            if (addDefaultJsonPayloadSerializer)
+                this.AddPayloadSerializerDefaultJson();
 
         }
 

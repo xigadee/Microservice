@@ -70,6 +70,7 @@
     <Compile Include="Commands\CommandUnitTestBase.cs" />
     <Compile Include="Commands\SimpleCommand3.cs" />
     <Compile Include="Communication\Tcp\CommunicationTcp.cs" />
+    <Compile Include="Configuration\Config1.cs" />
     <Compile Include="Dispatcher\DispatcherCommand.cs" />
     <Compile Include="Dispatcher\DispatcherTests.cs" />
     <Compile Include="Dispatcher\DispatcherTestsBase.cs" />

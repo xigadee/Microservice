@@ -41,6 +41,7 @@ namespace Xigadee
         /// <param name="serviceName">The friendly service name</param>
         /// <param name="serviceId">The service id.</param>
         /// <param name="policy">A set of policy collections that override the default settings.</param>
+        /// <param name="properties">These is the properties container.</param>
         /// <returns>Returns a pipeline that can be used to configure a microservice.</returns>
         public static MicroservicePipeline Create<C>(
               Action<Microservice> assign = null
@@ -48,17 +49,13 @@ namespace Xigadee
             , string serviceName = null
             , string serviceId = null
             , IEnumerable<PolicyBase> policy = null
+            , IEnumerable<Tuple<string, string>> properties = null
             )
             where C : ConfigBase, new()
         {
-            var service = new Microservice(serviceName, serviceId, policy);
+            var service = new Microservice(serviceName, serviceId, policy, properties);
 
             C config = new C();
-            //if (resolver != null)
-            //{
-            //    config.Resolver = resolver;
-            //    config.ResolverFirst = resolverFirst;
-            //}
 
             assign?.Invoke(service);
             configAssign?.Invoke(config);
@@ -75,13 +72,15 @@ namespace Xigadee
         /// <param name="serviceName">The friendly service name</param>
         /// <param name="serviceId">The service id.</param>
         /// <param name="policy">A set of policy collections that override the default settings.</param>
+        /// <param name="properties">These is the properties container.</param>
         /// <returns>Returns a pipeline that can be used to configure a microservice.</returns>
         public static MicroservicePipeline Create(
               Action<Microservice> assign = null
             , Action<ConfigBase> configAction = null
             , string serviceName = null
             , string serviceId = null
-            , IEnumerable<PolicyBase> policy = null)
+            , IEnumerable<PolicyBase> policy = null
+            , IEnumerable<Tuple<string, string>> properties = null)
         {
             return Create<ConfigBase>(
                   assign: assign
@@ -89,6 +88,7 @@ namespace Xigadee
                 , serviceName: serviceName
                 , serviceId: serviceId
                 , policy: policy
+                , properties: properties
                 );
         } 
         #endregion
