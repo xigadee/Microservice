@@ -184,6 +184,7 @@
     </Compile>
     <Compile Include="ApplicationInsights\ApplicationInsightsCollector.cs" />
     <Compile Include="ApplicationInsights\CommandCorrelationInitializer.cs" />
+    <Compile Include="Configuration\ConfigResolver\ConfigResolverAzure.cs" />
     <Compile Include="Pipeline\AddApplicationInsightsConnector.cs" />
     <Compile Include="Pipeline\AddAzureStorageEventSource.cs" />
     <Compile Include="Pipeline\AddAzureStorageLogger.cs" />
@@ -192,8 +193,9 @@
     <Compile Include="Pipeline\AttachAzureServiceBusQueueSender.cs" />
     <Compile Include="Pipeline\AttachAzureServiceBusTopicListener.cs" />
     <Compile Include="Pipeline\AttachAzureServiceBusTopicSender.cs" />
+    <Compile Include="Pipeline\ConfigResolverSetAzure.cs" />
     <Compile Include="Pipeline\Config\ApplicationInsight.cs" />
-    <Compile Include="Pipeline\Config\AzureHelper.cs" />
+    <Compile Include="Configuration\ConfigResolver\AzureHelper.cs" />
     <Compile Include="Pipeline\Config\RedisCache.cs" />
     <Compile Include="Pipeline\Config\ServiceBus.cs" />
     <Compile Include="Pipeline\Config\LogStorage.cs" />
