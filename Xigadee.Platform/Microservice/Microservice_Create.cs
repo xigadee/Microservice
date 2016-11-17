@@ -53,12 +53,11 @@ namespace Xigadee
             )
             where C : ConfigBase, new()
         {
-            var service = new Microservice(serviceName, serviceId, policy, properties);
-
             C config = new C();
-
-            assign?.Invoke(service);
             configAssign?.Invoke(config);
+
+            var service = new Microservice(serviceName, serviceId, policy, properties);
+            assign?.Invoke(service);
 
             return new MicroservicePipeline(service, config);
         }

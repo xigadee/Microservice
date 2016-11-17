@@ -49,11 +49,11 @@ namespace Xigadee
             , bool addDefaultJsonPayloadSerializer = true
             )
         {
-            Service = new Microservice(name, serviceId, policy, properties);
             Configuration = config ?? new ConfigBase();
-
-            assign?.Invoke(Service);
             configAssign?.Invoke(Configuration);
+
+            Service = new Microservice(name, serviceId, policy, properties);
+            assign?.Invoke(Service);
 
             if (addDefaultJsonPayloadSerializer)
                 this.AddPayloadSerializerDefaultJson();
