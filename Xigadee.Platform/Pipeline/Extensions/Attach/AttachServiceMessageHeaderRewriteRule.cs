@@ -25,13 +25,13 @@ namespace Xigadee
     public static partial class CorePipelineExtensions
     {
 
-        public static ChannelPipelineIncoming AppendServiceMessageHeaderRewriteRule(this ChannelPipelineIncoming cpipe)
+        public static ChannelPipelineIncoming AttachServiceMessageHeaderRewriteRule(this ChannelPipelineIncoming cpipe)
         {
 
             return cpipe;
         }
 
-        public static ChannelPipelineOutgoing AppendServiceMessageHeaderRewriteRule(this ChannelPipelineOutgoing cpipe)
+        public static ChannelPipelineOutgoing AttachServiceMessageHeaderRewriteRule(this ChannelPipelineOutgoing cpipe)
         {
 
             return cpipe;

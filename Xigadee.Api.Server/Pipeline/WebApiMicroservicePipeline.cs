@@ -28,39 +28,46 @@ namespace Xigadee
     /// </summary>
     public class WebApiMicroservicePipeline: MicroservicePipeline
     {
-        #region Declarations
-        /// <summary>
-        /// Eat me!
-        /// </summary>
-        protected MicroservicePipeline mInnerPipeline;
-        #endregion
         #region Constructor
-
-        public WebApiMicroservicePipeline(MicroservicePipeline pipeline, HttpConfiguration httpConfig = null)
+        /// <summary>
+        /// This is the default constructor for the pipeline.
+        /// </summary>
+        /// <param name="name">The Microservice name.</param>
+        /// <param name="serviceId">The service id.</param>
+        /// <param name="policy">The policy settings collection.</param>
+        /// <param name="properties">Any additional property key/value pairs.</param>
+        /// <param name="config">The environment config object</param>
+        /// <param name="assign">The action can be used to assign items to the microservice.</param>
+        /// <param name="configAssign">This action can be used to adjust the config settings.</param>
+        /// <param name="addDefaultJsonPayloadSerializer">This property specifies that the default Json 
+        /// payload serializer should be added to the Microservice, set this to false to disable this.</param>
+        /// <param name="httpConfig">The http configuration.</param>
+        public WebApiMicroservicePipeline(string name = null
+            , string serviceId = null
+            , IEnumerable<PolicyBase> policy = null
+            , IEnumerable<Tuple<string, string>> properties = null
+            , IEnvironmentConfiguration config = null
+            , Action<IMicroservice> assign = null
+            , Action<IEnvironmentConfiguration> configAssign = null
+            , bool addDefaultJsonPayloadSerializer = true
+            , HttpConfiguration httpConfig = null
+            ) :base(name, serviceId, policy, properties, config, assign, configAssign, addDefaultJsonPayloadSerializer)
         {
-            if (pipeline == null)
-                throw new ArgumentNullException("pipeline", "pipeline cannot be null");
-
-            Service = pipeline.Service;
-            Configuration = pipeline.Configuration;
             HttpConfig = httpConfig ?? new HttpConfiguration();
         }
 
         /// <summary>
-        /// The default configuration.
+        /// This is the default pipeline.
         /// </summary>
         /// <param name="service">The microservice.</param>
-        /// <param name="config">The microservice config.</param>
+        /// <param name="config">The microservice configuration.</param>
         /// <param name="httpConfig">The http configuration.</param>
         public WebApiMicroservicePipeline(IMicroservice service
             , IEnvironmentConfiguration config
             , HttpConfiguration httpConfig = null):base(service, config)
         {
-            Service = service;
-            Configuration = config;
             HttpConfig = httpConfig ?? new HttpConfiguration();
         }
-
         #endregion
 
         #region HttpConfig

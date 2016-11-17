@@ -45,11 +45,11 @@ namespace Test.Xigadee
                 .AddDataCollector<DebugMemoryDataCollector>((c) => collector = c)
                 .AddPayloadSerializerDefaultJson()
                 .AddChannelIncoming("internalIn", internalOnly: true)
-                    .AssignPriorityPartition(0, 1)
+                    .AttachPriorityPartition(0, 1)
                     .AddCommand(mCommand)
                     .Revert((c) => cpipeIn = c)
                 .AddChannelOutgoing("internalOut", internalOnly: true)
-                    .AssignPriorityPartition(0, 1)
+                    .AttachPriorityPartition(0, 1)
                     .Revert((c) => cpipeOut = c)
                 .AddCommand(new CommandInitiator() { ResponseChannelId = cpipeOut.Channel.Id }, (c) => mCommandInit = c);
 

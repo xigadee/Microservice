@@ -24,14 +24,14 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static ChannelPipelineIncoming AppendResourceProfile(this ChannelPipelineIncoming cpipe
+        public static ChannelPipelineIncoming AttachResourceProfile(this ChannelPipelineIncoming cpipe
             , ResourceProfile profile
             , Action<ResourceProfile> action = null)
         {
             if (profile == null)
                 throw new ArgumentNullException("profile cannot be null");
 
-            cpipe.AppendResourceProfile((c) => profile, action);
+            cpipe.AttachResourceProfile((c) => profile, action);
 
             return cpipe;
         }
@@ -48,7 +48,7 @@ namespace Xigadee
         //    return cpipe;
         //}
 
-        public static ChannelPipelineIncoming AppendResourceProfile(this ChannelPipelineIncoming cpipe
+        public static ChannelPipelineIncoming AttachResourceProfile(this ChannelPipelineIncoming cpipe
             , Func<IEnvironmentConfiguration, ResourceProfile> creator
             , Action<ResourceProfile> action = null)
         {
@@ -64,7 +64,7 @@ namespace Xigadee
             return cpipe;
         }
 
-        public static ChannelPipelineIncoming AppendResourceProfile(this ChannelPipelineIncoming cpipe
+        public static ChannelPipelineIncoming AttachResourceProfile(this ChannelPipelineIncoming cpipe
             , IEnumerable<ResourceProfile> profiles)
         {
             if (profiles == null)

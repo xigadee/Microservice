@@ -25,21 +25,13 @@ namespace Xigadee
 {
     public static partial class WebApiExtensionMethods
     {
-        public static WebApiMicroservicePipeline UpgradeToWebApiMicroservicePipeline(this MicroservicePipeline pipeline
-            , HttpConfiguration httpConfig = null)
+        public static WebApiMicroservicePipeline AddVersionHeaderFilter(this WebApiMicroservicePipeline webpipe, string headerName = "X-XigadeeApiVersion")
         {
-            return new WebApiMicroservicePipeline(pipeline.Service, pipeline.Configuration, httpConfig);
-        }
+            var filter = new WebApiVersionHeaderFilter(headerName);
 
-        public static WebApiMicroservicePipeline ToWebApiMicroservicePipeline(this MicroservicePipeline pipeline)
-        {
-            var webpipe = pipeline as WebApiMicroservicePipeline;
-
-            if (webpipe == null)
-                throw new ArgumentOutOfRangeException("The incoming pipeline is not a WebApiMicroservicePipeline");
+            webpipe.HttpConfig.Filters.Add(filter);
 
             return webpipe;
         }
-
     }
 }

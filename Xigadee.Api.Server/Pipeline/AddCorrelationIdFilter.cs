@@ -19,10 +19,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Http;
 
 namespace Xigadee
 {
-    public static class ApiServerUnityExtensionMethods
+    public static partial class WebApiExtensionMethods
     {
+        public static WebApiMicroservicePipeline AddCorrelationIdFilter(this WebApiMicroservicePipeline webpipe)
+        {
+            var filter = new WebApiCorrelationIdFilter();
+
+            webpipe.HttpConfig.Filters.Add(filter);
+
+            return webpipe;
+        }
     }
 }

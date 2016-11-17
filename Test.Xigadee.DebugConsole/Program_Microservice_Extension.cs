@@ -45,15 +45,15 @@ namespace Test.Xigadee
                     .AddLogger<TraceEventLogger>()
                     .AddPayloadSerializerDefaultJson()
                     .AddChannelIncoming("internalIn")
-                        .AppendResourceProfile(new ResourceProfile("TrackIt"))
+                        .AttachResourceProfile(new ResourceProfile("TrackIt"))
                         //.AppendBoundaryLogger(new MemoryBoundaryLogger(), (p,bl) => bLogger = bl)
-                        .AssignPriorityPartition(0, 1)
+                        .AttachPriorityPartition(0, 1)
                         .AttachAzureServiceBusQueueListener("Myqueue")
                         .AddCommand(new PersistenceBlahMemory())
                         .AddCommand(new PersistenceSharedService<Guid, Blah>(), (c) => persistence = c, cpipeOut)
                         .Revert((c) => cpipeIn = c)
                     .AddChannelOutgoing("internalOut", internalOnly: true)
-                        .AssignPriorityPartition(0, 1)
+                        .AttachPriorityPartition(0, 1)
                         //.AppendBoundaryLogger(bLogger)
                         .Revert((c) => cpipeOut = c);
 

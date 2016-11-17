@@ -19,26 +19,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Http;
 
 namespace Xigadee
 {
-    /// <summary>
-    /// This is the web api helper class.
-    /// </summary>
-    public static class WebApiMicroservicePipelineHelper
+    public static partial class CorePipelineExtensions
     {
-        /// <summary>
-        /// This is the base setting.
-        /// </summary>
-        /// <param name="service">This is the service.</param>
-        /// <param name="config">This is the configuration settings.</param>
-        /// <returns>Returns the pipeline object.</returns>
-        public static WebApiMicroservicePipeline ToPipeline(this IMicroservice service
-            , IEnvironmentConfiguration config = null
-            , HttpConfiguration httpConfig = null)
+        public static MicroservicePipeline AddListener(this MicroservicePipeline pipeline, IListener listener)
         {
-            return new WebApiMicroservicePipeline(service, config, httpConfig);
+            pipeline.Service.RegisterListener(listener);
+
+            return pipeline;
+        }
+
+        public static MicroservicePipeline AddListener<S>(this MicroservicePipeline pipeline, Func<IEnvironmentConfiguration, S> creator, Action<S> action = null)
+            where S : IListener
+        {
+            var listener = creator(pipeline.Configuration);
+
+            action?.Invoke(listener);
+
+            pipeline.AddListener(listener);
+
+            return pipeline;
         }
     }
 }

@@ -165,7 +165,9 @@
     <Compile Include="Apim\ApimResponseHolder.cs" />
     <Compile Include="Controllers\SecurityControllerAsyncBase.cs" />
     <Compile Include="Controllers\WebhookControllerAsyncBase.cs" />
-    <Compile Include="Pipeline\PipelineTest.cs" />
+    <Compile Include="Pipeline\AddCorrelationIdFilter.cs" />
+    <Compile Include="Pipeline\AddMicroserviceUnavailableFilter.cs" />
+    <Compile Include="Pipeline\AddVersionHeaderFilter.cs" />
     <Compile Include="Pipeline\WebApi.cs" />
     <Compile Include="Pipeline\WebApiMicroservicePipeline.cs" />
     <Compile Include="Filters\WebApiCorrelationIdFilter.cs" />
@@ -173,7 +175,6 @@
     <Compile Include="Helper\HttpMethodChangeHandler.cs" />
     <Compile Include="Helper\OData4Helper.cs" />
     <Compile Include="ModelBinders\OData4ServiceDocumentResponse.cs" />
-    <Compile Include="Pipeline\WebApiMicroservicePipelineHelper.cs" />
     <Compile Include="Populator\ConfigWebApi.cs" />
     <Compile Include="Populator\ConfigWebApiHelper\Auth.cs" />
     <Compile Include="Populator\ConfigWebApiHelper\Logging.cs" />

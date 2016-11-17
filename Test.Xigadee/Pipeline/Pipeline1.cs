@@ -35,7 +35,7 @@ namespace Test.Xigadee
         private void ChannelInConfigure(ChannelPipelineIncoming inPipe)
         {
             inPipe
-                .AppendResourceProfile("TrackIt")
+                .AttachResourceProfile("TrackIt")
                 //.AppendBoundaryLogger(new MemoryBoundaryLogger(), (p, bl) => bLogger = bl)
                 ;
         }
@@ -63,12 +63,12 @@ namespace Test.Xigadee
                     .CallOut(ConfigureServiceRoot)
                     .AddChannelIncoming("internalIn", internalOnly: true)
                         .CallOut(ChannelInConfigure)
-                        .AssignPriorityPartition(0, 1)
+                        .AttachPriorityPartition(0, 1)
                         .AddCommand(new PersistenceBlahMemory(),(p) => persistBlah = p)
                         .AddCommand(new PersistenceSharedService<Guid, Blah>(), (c) => persistence = c, cpipeOut)
                         .Revert((c) => cpipeIn = c)
                     .AddChannelOutgoing("internalOut", internalOnly: true)
-                        .AssignPriorityPartition(0, 1)
+                        .AttachPriorityPartition(0, 1)
                         .Revert((c) => cpipeOut = c);
 
                 persistBlah.OnEntityChangeAction += ((o, e) => { signalChange++; });

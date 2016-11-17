@@ -24,26 +24,7 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static MicroservicePipeline AttachSender(this MicroservicePipeline pipeline, ISender sender)
-        {
-            pipeline.Service.RegisterSender(sender);
 
-            return pipeline;
-        }
-
-        public static MicroservicePipeline AttachSender<S>(this MicroservicePipeline pipeline
-            , Func<IEnvironmentConfiguration, S> creator = null
-            , Action<S> action = null)
-            where S : ISender, new()
-        {
-            var sender = creator==null?new S():creator(pipeline.Configuration);
-
-            action?.Invoke(sender);
-
-            pipeline.AttachSender(sender);
-
-            return pipeline;
-        }
 
         public static ChannelPipelineOutgoing AttachSender(this ChannelPipelineOutgoing cpipe
             , ISender sender

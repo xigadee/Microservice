@@ -71,23 +71,6 @@ namespace Xigadee
             return cpipe;
         }
 
-        public static MicroservicePipeline AttachListener(this MicroservicePipeline pipeline, IListener listener)
-        {
-            pipeline.Service.RegisterListener(listener);
 
-            return pipeline;
-        }
-
-        public static MicroservicePipeline AttachListener<S>(this MicroservicePipeline pipeline, Func<IEnvironmentConfiguration, S> creator, Action<S> action = null)
-            where S : IListener
-        {
-            var listener = creator(pipeline.Configuration);
-
-            action?.Invoke(listener);
-
-            pipeline.AttachListener(listener);
-
-            return pipeline;
-        }
     }
 }

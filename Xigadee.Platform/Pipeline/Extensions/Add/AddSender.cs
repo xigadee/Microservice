@@ -19,27 +19,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Http;
 
 namespace Xigadee
 {
-    public static partial class WebApiExtensionMethods
+    public static partial class CorePipelineExtensions
     {
-        public static WebApiMicroservicePipeline UpgradeToWebApiMicroservicePipeline(this MicroservicePipeline pipeline
-            , HttpConfiguration httpConfig = null)
+        public static MicroservicePipeline AddSender(this MicroservicePipeline pipeline, ISender sender)
         {
-            return new WebApiMicroservicePipeline(pipeline.Service, pipeline.Configuration, httpConfig);
+            pipeline.Service.RegisterSender(sender);
+
+            return pipeline;
         }
 
-        public static WebApiMicroservicePipeline ToWebApiMicroservicePipeline(this MicroservicePipeline pipeline)
+        public static MicroservicePipeline AddSender<S>(this MicroservicePipeline pipeline
+            , Func<IEnvironmentConfiguration, S> creator = null
+            , Action<S> action = null)
+            where S : ISender, new()
         {
-            var webpipe = pipeline as WebApiMicroservicePipeline;
+            var sender = creator == null ? new S() : creator(pipeline.Configuration);
 
-            if (webpipe == null)
-                throw new ArgumentOutOfRangeException("The incoming pipeline is not a WebApiMicroservicePipeline");
+            action?.Invoke(sender);
 
-            return webpipe;
+            pipeline.AddSender(sender);
+
+            return pipeline;
         }
-
     }
 }

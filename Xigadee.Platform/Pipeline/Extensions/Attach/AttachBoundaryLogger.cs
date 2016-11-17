@@ -30,36 +30,38 @@ namespace Xigadee
         /// <summary>
         /// This method adds a boundary logger to the channel.
         /// </summary>
-        /// <param name="pipeline">The pipe.</param>
+        /// <param name="cpipe">The pipe.</param>
         /// <param name="boundaryLogger">The boundary logger.</param>
         /// <returns>Returns the pipe.</returns>
-        public static MicroservicePipeline AddBoundaryLogger(this MicroservicePipeline pipeline
+        public static C AttachBoundaryLogger<C>(this C cpipe
             , IBoundaryLoggerComponent boundaryLogger)
+            where C: ChannelPipelineBase
         {
-            pipeline.Service.RegisterBoundaryLogger(boundaryLogger);
+            cpipe.Pipeline.Service.RegisterBoundaryLogger(boundaryLogger);
 
-            return pipeline;
+            return cpipe;
         }
 
         /// <summary>
         /// This method adds a boundary logger to the channel.
         /// </summary>
         /// <typeparam name="L">The boundary logger</typeparam>
-        /// <param name="pipeline">The pipe.</param>
+        /// <param name="cpipe">The pipe.</param>
         /// <param name="boundaryLogger">The boundary logger.</param>
         /// <param name="action">The action that is called when the logger is added.</param>
         /// <returns>Returns the pipe.</returns>
-        public static MicroservicePipeline AddBoundaryLogger<L>(this MicroservicePipeline pipeline
+        public static C AttachBoundaryLogger<C,L>(this C cpipe
             , L boundaryLogger
-            , Action<MicroservicePipeline, L> action = null
+            , Action<C, L> action = null
             )
             where L : IBoundaryLoggerComponent
+            where C : ChannelPipelineBase
         {
 
-            action?.Invoke(pipeline, boundaryLogger);
-            pipeline.AddBoundaryLogger(boundaryLogger);
+            action?.Invoke(cpipe, boundaryLogger);
+            cpipe.AttachBoundaryLogger(boundaryLogger);
 
-            return pipeline;
+            return cpipe;
         }
 
         /// <summary>
@@ -71,15 +73,16 @@ namespace Xigadee
         /// <param name="creator">This function is used to create the boundary logger.</param>
         /// <param name="action">The action that is called when the logger is added.</param>
         /// <returns>Returns the pipe.</returns>
-        public static MicroservicePipeline AddBoundaryLogger<L>(this MicroservicePipeline cpipe
+        public static C AttachBoundaryLogger<C,L>(this C cpipe
             , Func<IEnvironmentConfiguration, L> creator
-            , Action<MicroservicePipeline, L> action = null
+            , Action<C, L> action = null
             )
             where L : IBoundaryLoggerComponent
+            where C : ChannelPipelineBase
         {
-            var bLogger = creator(cpipe.Configuration);
+            var bLogger = creator(cpipe.Pipeline.Configuration);
 
-            return cpipe.AddBoundaryLogger(bLogger, action);
+            return cpipe.AttachBoundaryLogger(bLogger, action);
         }
     }
 }
