@@ -32,6 +32,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="M"></typeparam>
     /// <typeparam name="C"></typeparam>
+    [Obsolete("Use the Microservice pipeline instead")]
     public class PopulatorWebApiUnity<M, C>: PopulatorWebApiBase<M, C>
         where M : Microservice, new()
         where C : ConfigWebApi, new()
