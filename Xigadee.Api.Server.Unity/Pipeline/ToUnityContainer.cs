@@ -19,14 +19,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Http;
+using Microsoft.Practices.Unity;
 
 namespace Xigadee
 {
-    public static partial class CorePipelineExtensions
+    public static partial class UnityWebApiExtensionMethods
     {
-        public static void Start(this MicroservicePipeline pipeline)
+        public static IUnityContainer ToUnityContainer(this UnityWebApiMicroservicePipeline cpipe)
         {
-            pipeline.Service.Start();
+            return cpipe.Unity;
         }
     }
 }

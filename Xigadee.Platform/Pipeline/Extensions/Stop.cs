@@ -24,9 +24,9 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static void Start(this MicroservicePipeline pipeline)
+        public static void Stop(this MicroservicePipeline pipeline)
         {
-            pipeline.Service.Start();
+            pipeline.Service.Stop();
         }
     }
 }

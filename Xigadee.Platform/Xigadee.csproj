@@ -212,7 +212,8 @@
     <Compile Include="Pipeline\Extensions\Add\AddListener.cs" />
     <Compile Include="Pipeline\Extensions\Add\AddSender.cs" />
     <Compile Include="Pipeline\Extensions\Configuration.cs" />
-    <Compile Include="Pipeline\Extensions\Policy.cs" />
+    <Compile Include="Pipeline\Extensions\Adjust\AdjustPolicy.cs" />
+    <Compile Include="Pipeline\Extensions\Stop.cs" />
     <Compile Include="Pipeline\MicroservicePipelineHelper.cs" />
     <Compile Include="ResourceTracker\ResourceTrackerPolicy.cs" />
     <Compile Include="Scheduler\Schedule.cs" />

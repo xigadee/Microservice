@@ -34,7 +34,7 @@ namespace Xigadee.Pipeline.Extensions
             return pipeline.Configuration;
         }
 
-        public static Channel ToChannel(this ChannelPipelineIncoming cpipe)
+        public static Channel ToChannel(this ChannelPipelineBase cpipe)
         {
             return cpipe.Channel;
         }

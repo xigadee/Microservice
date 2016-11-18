@@ -24,7 +24,7 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static MicroservicePipeline ConfigureMicroservice(this MicroservicePipeline pipeline
+        public static MicroservicePipeline AdjustPolicyMicroservice(this MicroservicePipeline pipeline
             , Action<MicroservicePolicy> msAssign = null)
         {
             msAssign?.Invoke(pipeline.Service.PolicyMicroservice);
@@ -32,7 +32,7 @@ namespace Xigadee
             return pipeline;
         }
 
-        public static MicroservicePipeline ConfigureTaskManager(this MicroservicePipeline pipeline
+        public static MicroservicePipeline AdjustPolicyTaskManager(this MicroservicePipeline pipeline
             , Action<TaskManagerPolicy> msAssign = null)
         {
             msAssign?.Invoke(pipeline.Service.PolicyTaskManager);
@@ -40,7 +40,7 @@ namespace Xigadee
             return pipeline;
         }
 
-        public static MicroservicePipeline ConfigureResourceTracker(this MicroservicePipeline pipeline
+        public static MicroservicePipeline AdjustPolicyResourceTracker(this MicroservicePipeline pipeline
             , Action<ResourceTrackerPolicy> msAssign = null)
         {
             msAssign?.Invoke(pipeline.Service.PolicyResourceTracker);
@@ -48,7 +48,7 @@ namespace Xigadee
             return pipeline;
         }
 
-        public static MicroservicePipeline ConfigureCommandContainer(this MicroservicePipeline pipeline
+        public static MicroservicePipeline AdjustPolicyCommandContainer(this MicroservicePipeline pipeline
             , Action<CommandContainerPolicy> msAssign = null)
         {
             msAssign?.Invoke(pipeline.Service.PolicyCommandContainer);
@@ -56,7 +56,7 @@ namespace Xigadee
             return pipeline;
         }
 
-        public static MicroservicePipeline ConfigureCommunication(this MicroservicePipeline pipeline
+        public static MicroservicePipeline AdjustPolicyCommunication(this MicroservicePipeline pipeline
             , Action<CommunicationPolicy> msAssign = null)
         {
             msAssign?.Invoke(pipeline.Service.PolicyCommunication);
@@ -64,7 +64,7 @@ namespace Xigadee
             return pipeline;
         }
 
-        public static MicroservicePipeline ConfigureScheduler(this MicroservicePipeline pipeline
+        public static MicroservicePipeline AdjustPolicyScheduler(this MicroservicePipeline pipeline
             , Action<SchedulerPolicy> msAssign = null)
         {
             msAssign?.Invoke(pipeline.Service.PolicyScheduler);
@@ -72,7 +72,7 @@ namespace Xigadee
             return pipeline;
         }
 
-        public static MicroservicePipeline ConfigureSecurity(this MicroservicePipeline pipeline
+        public static MicroservicePipeline AdjustPolicySecurity(this MicroservicePipeline pipeline
             , Action<SecurityPolicy> msAssign = null)
         {
             msAssign?.Invoke(pipeline.Service.PolicySecurity);
@@ -80,7 +80,7 @@ namespace Xigadee
             return pipeline;
         }
 
-        public static MicroservicePipeline ConfigureDataCollection(this MicroservicePipeline pipeline
+        public static MicroservicePipeline AdjustPolicyDataCollection(this MicroservicePipeline pipeline
             , Action<DataCollectionPolicy> msAssign = null)
         {
             msAssign?.Invoke(pipeline.Service.PolicyDataCollection);

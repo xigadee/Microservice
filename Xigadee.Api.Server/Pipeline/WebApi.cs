@@ -31,15 +31,7 @@ namespace Xigadee
             return new WebApiMicroservicePipeline(pipeline.Service, pipeline.Configuration, httpConfig);
         }
 
-        public static WebApiMicroservicePipeline ToWebApiMicroservicePipeline(this MicroservicePipeline pipeline)
-        {
-            var webpipe = pipeline as WebApiMicroservicePipeline;
 
-            if (webpipe == null)
-                throw new ArgumentOutOfRangeException("The incoming pipeline is not a WebApiMicroservicePipeline");
-
-            return webpipe;
-        }
 
     }
 }
