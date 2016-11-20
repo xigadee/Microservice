@@ -46,7 +46,7 @@ namespace Test.Xigadee
                 .AddPayloadSerializerDefaultJson()
                 .AddChannelIncoming("internalIn", internalOnly: true)
                     .AttachPriorityPartition(0, 1)
-                    .AddCommand(mCommand)
+                    .AttachCommand(mCommand)
                     .Revert((c) => cpipeIn = c)
                 .AddChannelOutgoing("internalOut", internalOnly: true)
                     .AttachPriorityPartition(0, 1)

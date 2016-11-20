@@ -33,12 +33,10 @@ namespace Xigadee
         /// <param name="cpipe">The pipe.</param>
         /// <param name="boundaryLogger">The boundary logger.</param>
         /// <returns>Returns the pipe.</returns>
-        public static C AttachBoundaryLogger<C>(this C cpipe
-            , IBoundaryLoggerComponent boundaryLogger)
+        public static C AttachBoundaryLogger<C>(this C cpipe, IBoundaryLoggerComponent boundaryLogger)
             where C: ChannelPipelineBase
         {
             cpipe.Pipeline.Service.RegisterBoundaryLogger(boundaryLogger);
-
             return cpipe;
         }
 

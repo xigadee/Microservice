@@ -22,24 +22,23 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public static partial class CorePipelineExtensions
+    /// <summary>
+    /// This class is used for configuration that extends the traditional pipeline.
+    /// </summary>
+    public abstract class MicroservicePipelineExtension
     {
         /// <summary>
-        /// This method attaches a rewrite rule to the channel pipeline.
+        /// This is the default constructor that sets the underlying pipeline.
         /// </summary>
-        /// <typeparam name="P">The channel pipeline type.</typeparam>
-        /// <param name="cpipe">The incoming pipeline.</param>
-        /// <param name="rewriteRule">The rewrite rule.</param>
-        /// <returns>Returns the original pipeline.</returns>
-        public static P AttachServiceMessageHeaderRewriteRule<P>(this P cpipe, ChannelRewriteRule rewriteRule)
-            where P: ChannelPipelineBase
+        /// <param name="pipeline">The base pipeline.</param>
+        protected MicroservicePipelineExtension(MicroservicePipeline pipeline)
         {
-            cpipe.Channel.Add(rewriteRule);
-
-            return cpipe;
+            Pipeline = pipeline;
         }
 
-
-
-    }  
+        /// <summary>
+        /// This is the configuration pipeline.
+        /// </summary>
+        public MicroservicePipeline Pipeline { get; }
+    }
 }

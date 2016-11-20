@@ -27,42 +27,14 @@ namespace Xigadee
     /// </summary>
     public class ChannelPipelineOutgoing: ChannelPipelineBase
     {
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="channel">THe channel.</param>
         public ChannelPipelineOutgoing(MicroservicePipeline pipeline, Channel channel) : base(pipeline, channel)
         {
 
         }
-    }
-
-    /// <summary>
-    /// This is the incoming channel.
-    /// </summary>
-    public class ChannelPipelineIncoming: ChannelPipelineBase
-    {
-        public ChannelPipelineIncoming(MicroservicePipeline pipeline, Channel channel) : base(pipeline, channel)
-        {
-
-        }
-    }
-
-    /// <summary>
-    /// This class is used to hold the pipeline configuration.
-    /// </summary>
-    public abstract class ChannelPipelineBase
-    {
-        public ChannelPipelineBase(MicroservicePipeline pipeline, Channel channel)
-        {
-            Pipeline = pipeline;
-            Channel = channel;
-        }
-
-        /// <summary>
-        /// This is the configuration pipeline.
-        /// </summary>
-        public MicroservicePipeline Pipeline { get; }
-        /// <summary>
-        /// This is the registered channel
-        /// </summary>
-        public Channel Channel { get; }
-
     }
 }

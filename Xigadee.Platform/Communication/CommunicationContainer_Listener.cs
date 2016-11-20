@@ -174,7 +174,7 @@ namespace Xigadee
                 var currentContext = ((ClientPriorityHolder)tracker.Context);
 
                 var payloads = await currentContext.Poll();
-
+                
                 if (payloads != null && payloads.Count > 0)
                     foreach (var payload in payloads)
                         PayloadSubmit(currentContext.ClientId, payload);
@@ -205,6 +205,11 @@ namespace Xigadee
 
                 mClientCollection.QueueTimeLog(clientId, payload.Message.EnqueuedTimeUTC);
                 mClientCollection.ActiveIncrement(clientId);
+
+                //Rewrite rule validate
+                var channel = mContainerIncoming[payload.Message.ChannelId];
+                if (channel?.CouldRewrite??false)
+                    channel.Rewrite(payload);
 
                 TaskTracker tracker = TaskManager.TrackerCreateFromPayload(payload, payload.Source);
 

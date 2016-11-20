@@ -27,7 +27,6 @@ namespace Xigadee
     /// </summary>
     public static partial class AzureExtensionMethods
     {
-
         public static ChannelPipelineIncoming AttachAzureServiceBusTopicListener(this ChannelPipelineIncoming cpipe
             , string connectionName
             , string serviceBusConnection = null

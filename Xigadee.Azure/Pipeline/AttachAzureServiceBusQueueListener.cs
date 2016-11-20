@@ -36,23 +36,26 @@ namespace Xigadee
             , IEnumerable<ResourceProfile> resourceProfiles = null
             , IBoundaryLogger boundaryLogger = null
             , Action<AzureSBQueueListener> onCreate = null)
-                {
+        {
 
-                    var component = new AzureSBQueueListener();
+            var component = new AzureSBQueueListener();
 
-                        //  cpipe.Channel.Id
-                        //, cpipe.Pipeline.Configuration.ServiceBusConnectionValidate(serviceBusConnection)
-                        //, connectionName
-                        //, priorityPartitions ?? cpipe.Channel.Partitions.Cast<ListenerPartitionConfig>().ToList()
-                        //, isDeadLetterListener
-                        //, mappingChannelId
-                        //, resourceProfiles ?? cpipe.Channel.ResourceProfiles);
+            component.ChannelId = cpipe.Channel.Id;
+            component.PriorityPartitions = (priorityPartitions ?? cpipe.Channel.Partitions.Cast<ListenerPartitionConfig>()).ToList();
+            component.MappingChannelId = mappingChannelId;
+            //  cpipe.Channel.Id
+            //, cpipe.Pipeline.Configuration.ServiceBusConnectionValidate(serviceBusConnection)
+            //, connectionName
+            //, 
+            //, isDeadLetterListener
+            //, mappingChannelId
+            //, resourceProfiles ?? cpipe.Channel.ResourceProfiles);
 
-                    onCreate?.Invoke(component);
+            onCreate?.Invoke(component);
 
-                    cpipe.AttachListener(component, false);
+            cpipe.AttachListener(component, false);
 
-                    return cpipe;
-                }
-            }
+            return cpipe;
+        }
+    }
 }

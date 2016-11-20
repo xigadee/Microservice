@@ -77,10 +77,19 @@ namespace Xigadee
         {
             try
             {
+                var channelId = payload.Message.ChannelId;
+                if (channelId != null)
+                {
+                    //Rewrite rule validate
+                    var channel = mContainerOutgoing[channelId];
+                    if (channel?.CouldRewrite ?? false)
+                        channel.Rewrite(payload);
+                }
+
                 //No, we want to send the message externally.
                 List<ISender> messageSenders = null;
                 //Get the supported message handler
-                if (payload.Message.ChannelId != null && !mMessageSenderMap.TryGetValue(payload.Message.ChannelId, out messageSenders))
+                if (channelId != null && !mMessageSenderMap.TryGetValue(channelId, out messageSenders))
                     messageSenders = MessageSenderResolve(payload);
 
                 //If there are no supported senders for the particular channelId then throw an exception

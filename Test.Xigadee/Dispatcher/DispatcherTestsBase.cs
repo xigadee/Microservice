@@ -31,7 +31,7 @@ namespace Test.Xigadee
                     .AddChannelIncoming("internalIn", internalOnly: false)
                         .AttachPriorityPartition(0, 1)
                         .AttachListener<ManualChannelListener>(action: (s) => mListener = s)
-                        .AddCommand<C>((c) => mDCommand = c)
+                        .AttachCommand<C>((c) => mDCommand = c)
                         .Revert((c) => cpipeIn = c)
                     .AddChannelOutgoing("internalOut", internalOnly: false)
                         .AttachPriorityPartition(0, 1)

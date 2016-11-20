@@ -30,8 +30,6 @@ namespace Xigadee
     [DebuggerDisplay("AzureSBQueueListener: {MappingChannelId} {ChannelId}")]
     public class AzureSBQueueListener : AzureSBListenerBase<QueueClient,BrokeredMessage>
     {
-
-
         #region ClientCreate()
         /// <summary>
         /// This override sets the receive options for the client.

@@ -28,15 +28,17 @@ namespace Xigadee
     /// </summary>
     public class Channel
     {
+        #region Declarations
         /// <summary>
         /// This is the list of destination rewrite rules.
         /// </summary>
-        protected HashSet<ChannelRewriteRule> mRewriteRules;
+        protected ConcurrentDictionary<Guid, ChannelRewriteRule> mRewriteRules = new ConcurrentDictionary<Guid, ChannelRewriteRule>();
         /// <summary>
         /// This is the cache that is constructed when a rewrite rule is implemented. This is used to speed up the resolution on rules, as ChannelRewriteRules use partial matching.
         /// </summary>
-        protected ConcurrentDictionary<ServiceMessageHeader,ServiceMessageHeader> mRewriteCache = new ConcurrentDictionary<ServiceMessageHeader, ServiceMessageHeader>();
-
+        protected ConcurrentDictionary<ServiceMessageHeader, Guid?> mRewriteCache = new ConcurrentDictionary<ServiceMessageHeader, Guid?>();
+        #endregion
+        #region Constructor
         /// <summary>
         /// The default constructor.
         /// </summary>
@@ -63,10 +65,10 @@ namespace Xigadee
             BoundaryLogger = boundaryLogger;
 
             if (rewriteRules != null)
-                mRewriteRules = new HashSet<ChannelRewriteRule>(rewriteRules);
-            else
-                mRewriteRules = new HashSet<ChannelRewriteRule>();
-        }
+                mRewriteRules = new ConcurrentDictionary<Guid, ChannelRewriteRule>(
+                    rewriteRules.Select((r) => new KeyValuePair<Guid, ChannelRewriteRule>(r.Id,r)));
+        } 
+        #endregion
 
         /// <summary>
         /// The channel Id.
@@ -107,7 +109,7 @@ namespace Xigadee
         /// <returns>Returns true if the rule has been added.</returns>
         public bool Add(ChannelRewriteRule rule)
         {
-            bool success = mRewriteRules.Add(rule);
+            bool success = mRewriteRules.TryAdd(rule.Id, rule);
             if (success)
                 mRewriteCache.Clear();
 
@@ -116,11 +118,12 @@ namespace Xigadee
         /// <summary>
         /// This method removes a rule from the collection.
         /// </summary>
-        /// <param name="rule"></param>
-        /// <returns></returns>
-        public bool Remove(ChannelRewriteRule rule)
+        /// <param name="ruleId">The rule to be removed based on its id.</param>
+        /// <returns>Returns true if the rule has been removed.</returns>
+        public bool Remove(Guid ruleId)
         {
-            bool success = mRewriteRules.Remove(rule);
+            ChannelRewriteRule rule;
+            bool success = mRewriteRules.TryRemove(ruleId, out rule);
             if (success)
                 mRewriteCache.Clear();
             return success;
@@ -133,15 +136,14 @@ namespace Xigadee
         {
             get
             {
-                foreach (var rule in mRewriteRules)
-                    yield return rule;
+                return mRewriteRules.Values;
             }
         }
 
         /// <summary>
         /// This method returns true if the channel has rewrite rules set.
         /// </summary>
-        public bool CanRewriteDestination
+        public bool CouldRewrite
         {
             get
             {
@@ -149,10 +151,20 @@ namespace Xigadee
             }
         }
 
-        public bool Rewrite(ServiceMessageHeader inRule, out ServiceMessageHeader? outRule)
+        /// <summary>
+        /// This method rewrites the rule.
+        /// </summary>
+        /// <param name="payload">The payload to adjust the incoming header infor mation.</param>
+        public void Rewrite(TransmissionPayload payload)
         {
-            outRule = null;
-            return false;
+            //var header = payload.Message.ToServiceMessageHeader();
+            //ChannelRewriteRule rule = null;
+            //if (mRewriteCache.ContainsKey(header))
+            //{
+            //    rule = mRewriteCache[header];
+
+            //}
+
         }
     }
 }

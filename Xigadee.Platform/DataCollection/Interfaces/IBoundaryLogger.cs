@@ -22,8 +22,14 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This interface is for components that require boundary loggers.
+    /// </summary>
     public interface IRequireBoundaryLogger
     {
+        /// <summary>
+        /// This is the boundary logger.
+        /// </summary>
         IBoundaryLogger BoundaryLogger { get; set; }
     }
 
@@ -42,6 +48,9 @@ namespace Xigadee
         Guid BoundaryBatchPoll(int requested, int actual, string channelId);
     }
 
+    /// <summary>
+    /// This is the base interface for boundary loggers.
+    /// </summary>
     public interface IBoundaryLoggerBase
     {
         /// <summary>

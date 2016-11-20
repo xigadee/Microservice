@@ -24,8 +24,15 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
+        /// <summary>
+        /// This method reverts a pipeline extension to the underlying pipeline.
+        /// </summary>
+        /// <typeparam name="C">The pipeline extension type.</typeparam>
+        /// <param name="cpipe">The pipeline extension.</param>
+        /// <param name="assign">An optional action to process the extension.</param>
+        /// <returns>The underlying Microservice extension.</returns>
         public static MicroservicePipeline Revert<C>(this C cpipe, Action<C> assign = null)
-            where C : ChannelPipelineBase
+            where C : MicroservicePipelineExtension
         {
             assign?.Invoke(cpipe);
 

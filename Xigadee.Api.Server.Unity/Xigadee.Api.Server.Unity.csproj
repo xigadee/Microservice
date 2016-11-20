@@ -155,7 +155,7 @@
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Pipeline\ExtensionMethods.cs" />
+    <Compile Include="Pipeline\AddCommandUnity.cs" />
     <Compile Include="Pipeline\ToUnityContainer.cs" />
     <Compile Include="Pipeline\UnityWebApiMicroservicePipeline.cs" />
     <Compile Include="PopulatorWebApiUnity.cs" />
