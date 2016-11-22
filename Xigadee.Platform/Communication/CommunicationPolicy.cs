@@ -30,6 +30,8 @@ namespace Xigadee
     {
         /// <summary>
         /// This property specifies that channel can be created automatically if they do not exist.
+        /// If this is set to false, an error will be generated when a message is sent to a channel
+        /// that has not been explicitly created.
         /// </summary>
         public bool AutoCreateChannels { get; set; } = true;
         /// <summary>

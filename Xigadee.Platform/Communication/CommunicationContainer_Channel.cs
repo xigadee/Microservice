@@ -135,6 +135,12 @@ namespace Xigadee
                     return mContainerOutgoing.TryGetValue(channelId, out channel);
             }
 
+            if (mPolicy.AutoCreateChannels)
+            {
+                channel = new Channel(channelId, direction);
+                Add(channel);
+            }
+
             channel = null;
             return false;
         } 

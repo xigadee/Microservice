@@ -391,7 +391,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region Search -> Search(ApiRequest rq)
+        #region Search(ODataQueryOptions<E> request)
         /// <summary>
         /// Get=Read
         /// </summary>

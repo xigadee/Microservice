@@ -30,22 +30,24 @@ namespace Xigadee
     [DebuggerDisplay("{Header.ToKey()}|{ClientId}")]
     public class MessageFilterWrapper: IEquatable<MessageFilterWrapper>
     {
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="header">THe actual service message header.</param>
         public MessageFilterWrapper(ServiceMessageHeader header)
         {
             Header = header;
         }
 
+        /// <summary>
+        /// This is the message header.
+        /// </summary>
         public ServiceMessageHeader Header { get; }
-
+        /// <summary>
+        /// This is the specific client id for the message.
+        /// </summary>
         public string ClientId { get; set; }
 
-        public override bool Equals(object obj)
-        {
-            if (obj == null || !(obj is MessageFilterWrapper))
-                return false;
-
-            return Equals((MessageFilterWrapper)obj);
-        }
 
 
         #region GetHashCode()
@@ -84,6 +86,14 @@ namespace Xigadee
         }
         #endregion
 
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || !(obj is MessageFilterWrapper))
+                return false;
+
+            return Equals((MessageFilterWrapper)obj);
+        }
 
         public bool Equals(MessageFilterWrapper other)
         {

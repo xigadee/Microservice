@@ -129,10 +129,6 @@ namespace Xigadee
 
         #endregion
 
-        public override void Update(List<MessageFilterWrapper> supported)
-        {
-            base.Update(supported);
-        }
 
         #region SubscriptionId
         /// <summary>

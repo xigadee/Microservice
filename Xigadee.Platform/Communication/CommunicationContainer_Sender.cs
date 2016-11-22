@@ -77,13 +77,13 @@ namespace Xigadee
         {
             try
             {
+                //Rewrite rule validate, and rewrite for outgoing message.
                 var channelId = payload.Message.ChannelId;
-                if (channelId != null)
+                Channel channel;
+                if (TryGet(channelId, ChannelDirection.Outgoing, out channel))
                 {
-                    //Rewrite rule validate
-                    var channel = mContainerOutgoing[channelId];
-                    if (channel?.CouldRewrite ?? false)
-                        channel.Rewrite(payload);
+                    if (channel.CouldRedirect)
+                        channel.Redirect(payload);
                 }
 
                 //No, we want to send the message externally.

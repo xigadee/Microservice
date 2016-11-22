@@ -32,11 +32,11 @@ namespace Xigadee
         /// <summary>
         /// This is the list of destination rewrite rules.
         /// </summary>
-        protected ConcurrentDictionary<Guid, ChannelRewriteRule> mRewriteRules = new ConcurrentDictionary<Guid, ChannelRewriteRule>();
+        protected ConcurrentDictionary<Guid, MessageRedirectRule> mRedirectRules = new ConcurrentDictionary<Guid, MessageRedirectRule>();
         /// <summary>
         /// This is the cache that is constructed when a rewrite rule is implemented. This is used to speed up the resolution on rules, as ChannelRewriteRules use partial matching.
         /// </summary>
-        protected ConcurrentDictionary<ServiceMessageHeader, Guid?> mRewriteCache = new ConcurrentDictionary<ServiceMessageHeader, Guid?>();
+        protected ConcurrentDictionary<ServiceMessageHeader, Guid?> mRedirectCache = new ConcurrentDictionary<ServiceMessageHeader, Guid?>();
         #endregion
         #region Constructor
         /// <summary>
@@ -48,12 +48,14 @@ namespace Xigadee
         /// <param name="boundaryLogger">This is the boundary logger for the channel.</param>
         /// <param name="internalOnly">This property specifies that the channel should only be used for internal messaging.</param>
         /// <param name="rewriteRules">A selection of rewrite rules for the channel.</param>
+        /// <param name="isAutocreated">A boolean property that specifies whether the channel was created automatically by the communications container.</param>
         public Channel(string id
             , ChannelDirection direction
             , string description = null
             , IBoundaryLogger boundaryLogger = null
             , bool internalOnly = false
-            , IEnumerable<ChannelRewriteRule> rewriteRules = null)
+            , IEnumerable<MessageRedirectRule> rewriteRules = null
+            , bool isAutocreated = false)
         {
             if (string.IsNullOrEmpty(id))
                 throw new ArgumentNullException("id cannot be null or empty.");
@@ -63,13 +65,15 @@ namespace Xigadee
             Description = description;
             InternalOnly = internalOnly;
             BoundaryLogger = boundaryLogger;
+            IsAutoCreated = isAutocreated;
 
             if (rewriteRules != null)
-                mRewriteRules = new ConcurrentDictionary<Guid, ChannelRewriteRule>(
-                    rewriteRules.Select((r) => new KeyValuePair<Guid, ChannelRewriteRule>(r.Id,r)));
+                mRedirectRules = new ConcurrentDictionary<Guid, MessageRedirectRule>(
+                    rewriteRules.Select((r) => new KeyValuePair<Guid, MessageRedirectRule>(r.Id,r)));
         } 
         #endregion
 
+        public bool IsAutoCreated { get; }
         /// <summary>
         /// The channel Id.
         /// </summary>
@@ -107,11 +111,11 @@ namespace Xigadee
         /// </summary>
         /// <param name="rule">The rule.</param>
         /// <returns>Returns true if the rule has been added.</returns>
-        public bool Add(ChannelRewriteRule rule)
+        public bool RedirectAdd(MessageRedirectRule rule)
         {
-            bool success = mRewriteRules.TryAdd(rule.Id, rule);
+            bool success = mRedirectRules.TryAdd(rule.Id, rule);
             if (success)
-                mRewriteCache.Clear();
+                mRedirectCache.Clear();
 
             return success;
         }
@@ -120,34 +124,34 @@ namespace Xigadee
         /// </summary>
         /// <param name="ruleId">The rule to be removed based on its id.</param>
         /// <returns>Returns true if the rule has been removed.</returns>
-        public bool Remove(Guid ruleId)
+        public bool RedirectRemove(Guid ruleId)
         {
-            ChannelRewriteRule rule;
-            bool success = mRewriteRules.TryRemove(ruleId, out rule);
+            MessageRedirectRule rule;
+            bool success = mRedirectRules.TryRemove(ruleId, out rule);
             if (success)
-                mRewriteCache.Clear();
+                mRedirectCache.Clear();
             return success;
         }
 
         /// <summary>
         /// This is the set of rules currently held by the channel.
         /// </summary>
-        public IEnumerable<ChannelRewriteRule> RewriteRules
+        public IEnumerable<MessageRedirectRule> Redirects
         {
             get
             {
-                return mRewriteRules.Values;
+                return mRedirectRules.Values;
             }
         }
 
         /// <summary>
         /// This method returns true if the channel has rewrite rules set.
         /// </summary>
-        public bool CouldRewrite
+        public bool CouldRedirect
         {
             get
             {
-                return mRewriteRules.Count>0;
+                return mRedirectRules.Count>0;
             }
         }
 
@@ -155,7 +159,7 @@ namespace Xigadee
         /// This method rewrites the rule.
         /// </summary>
         /// <param name="payload">The payload to adjust the incoming header infor mation.</param>
-        public void Rewrite(TransmissionPayload payload)
+        public void Redirect(TransmissionPayload payload)
         {
             //var header = payload.Message.ToServiceMessageHeader();
             //ChannelRewriteRule rule = null;

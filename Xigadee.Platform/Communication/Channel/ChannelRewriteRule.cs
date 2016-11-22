@@ -7,37 +7,37 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// The rewrite rule is used to reroute incoming messages to their command destination.
+    /// The rewrite rule is used to redirect incoming messages to a different command destination.
     /// </summary>
-    public class ChannelRewriteRule
+    public class MessageRedirectRule
     {
         /// <summary>
         /// This is the private constructor for the static method.
         /// </summary>
-        private ChannelRewriteRule()
+        private MessageRedirectRule()
         {
-            Match = (p) => false;
-            Rewrite = (p) => { };
+            CanRedirect = (p) => false;
+            Redirect = (p) => { };
             CanCache = true;
         }
 
         /// <summary>
         /// This is the public constructor.
         /// </summary>
-        /// <param name="match">The match function.</param>
-        /// <param name="rewrite">The rewrite action.</param>
-        /// <param name="canCache">Specifies whether the rewrite hit can be cached.</param>
-        public ChannelRewriteRule(Func<TransmissionPayload, bool> match
-            , Action<TransmissionPayload> rewrite
+        /// <param name="canRedirect">The match function.</param>
+        /// <param name="redirect">The redirect action.</param>
+        /// <param name="canCache">Specifies whether the redirect hit can be cached.</param>
+        public MessageRedirectRule(Func<TransmissionPayload, bool> canRedirect
+            , Action<TransmissionPayload> redirect
             , bool canCache = true)
         {
-            if (match == null)
+            if (canRedirect == null)
                 throw new ArgumentNullException("match cannot be null.");
-            Match = match;
+            CanRedirect = canRedirect;
 
-            if (rewrite == null)
+            if (redirect == null)
                 throw new ArgumentNullException("rewrite cannot be null.");
-            Rewrite = rewrite;
+            Redirect = redirect;
 
             CanCache = canCache;
         }
@@ -49,23 +49,13 @@ namespace Xigadee
         public Guid Id => Guid.NewGuid();
         
         /// <summary>
-        /// This method states whether it is a match for the incoming message.
-        /// </summary>
-        /// <param name="inMessage"></param>
-        /// <returns></returns>
-        public bool IsMatch(TransmissionPayload inMessage)
-        {
-            return Match(inMessage);
-        }
-
-        /// <summary>
         /// This action rewrites the header to the new value.
         /// </summary>
-        public Action<TransmissionPayload> Rewrite { get; }
+        public Action<TransmissionPayload> Redirect { get; }
         /// <summary>
         /// This function returns true if the message should be rewritten.
         /// </summary>
-        public Func<TransmissionPayload, bool> Match { get; }
+        public Func<TransmissionPayload, bool> CanRedirect { get; }
         /// <summary>
         /// This property specifies whether the match can be cached.
         /// </summary>
@@ -75,6 +65,6 @@ namespace Xigadee
         /// This static method can be used to provide an rewrite placeholder that doesn't do anything. This 
         /// allows for fast look up for incoming messages that have already been scanned.
         /// </summary>
-        public static ChannelRewriteRule DoNothing => new ChannelRewriteRule();
+        public static MessageRedirectRule DoNothing => new MessageRedirectRule();
     }
 }

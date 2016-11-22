@@ -80,6 +80,5 @@ namespace Xigadee
             return conn.NamespaceManager.GetQueue(name);
         }
         #endregion
-
     }
 }

@@ -206,10 +206,13 @@ namespace Xigadee
                 mClientCollection.QueueTimeLog(clientId, payload.Message.EnqueuedTimeUTC);
                 mClientCollection.ActiveIncrement(clientId);
 
-                //Rewrite rule validate
-                var channel = mContainerIncoming[payload.Message.ChannelId];
-                if (channel?.CouldRewrite??false)
-                    channel.Rewrite(payload);
+                //Rewrite rule validate, and rewrite for incoming message.
+                Channel channel;
+                if (TryGet(payload.Message.ChannelId, ChannelDirection.Incoming, out channel))
+                {
+                    if (channel.CouldRedirect)
+                        channel.Redirect(payload);
+                }
 
                 TaskTracker tracker = TaskManager.TrackerCreateFromPayload(payload, payload.Source);
 

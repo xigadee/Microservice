@@ -147,6 +147,7 @@ namespace Xigadee
 
             return filters;
         }
+
         /// <summary>
         /// This method generated the SqlFilter for the message type.
         /// </summary>

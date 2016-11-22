@@ -33,7 +33,6 @@ namespace Xigadee
     public abstract class AzureSBListenerBase<C, M> : MessagingListenerBase<C, M, AzureClientHolder<C, M>>
         where C : ClientEntity
     {
-
         #region AzureConn
         /// <summary>
         /// This is the Azure connection class.

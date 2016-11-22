@@ -211,7 +211,7 @@
     <Compile Include="Messaging\MessageFilterWrapper.cs" />
     <Compile Include="Pipeline\Extensions\Add\AddDataCollector.cs" />
     <Compile Include="Pipeline\Extensions\Attach\AttachCommand.cs" />
-    <Compile Include="Pipeline\Extensions\Attach\AttachServiceMessageHeaderRewriteRule.cs" />
+    <Compile Include="Pipeline\Extensions\Attach\AttachMessageRedirectRule.cs" />
     <Compile Include="Pipeline\Extensions\Add\AddListener.cs" />
     <Compile Include="Pipeline\Extensions\Add\AddSender.cs" />
     <Compile Include="Pipeline\Extensions\Configuration.cs" />

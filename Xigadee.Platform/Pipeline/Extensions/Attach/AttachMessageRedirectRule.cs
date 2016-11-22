@@ -31,10 +31,10 @@ namespace Xigadee
         /// <param name="cpipe">The incoming pipeline.</param>
         /// <param name="rewriteRule">The rewrite rule.</param>
         /// <returns>Returns the original pipeline.</returns>
-        public static P AttachServiceMessageHeaderRewriteRule<P>(this P cpipe, ChannelRewriteRule rewriteRule)
+        public static P AttachMessageRedirectRule<P>(this P cpipe, MessageRedirectRule rewriteRule)
             where P: ChannelPipelineBase
         {
-            cpipe.Channel.Add(rewriteRule);
+            cpipe.Channel.RedirectAdd(rewriteRule);
 
             return cpipe;
         }

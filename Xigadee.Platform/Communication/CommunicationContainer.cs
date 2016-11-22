@@ -37,11 +37,17 @@ namespace Xigadee
         /// This collection holds the priority senders for each individual message.
         /// </summary>
         protected ConcurrentDictionary<string, List<ISender>> mMessageSenderMap;
-
+        /// <summary>
+        /// This is the list of communication listeners.
+        /// </summary>
         private List<IListener> mListener;
-
+        /// <summary>
+        /// This is the list of communication senders.
+        /// </summary>
         private List<ISender> mSenders;
-
+        /// <summary>
+        /// This is the shared service container.
+        /// </summary>
         private ISharedService mSharedServices;
 
         private ISupportedMessageTypes mSupportedMessageTypes;
