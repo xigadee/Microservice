@@ -14,7 +14,7 @@ namespace Test.Xigadee
 
             ms
                 .AddChannelIncoming("freddy")
-                .AttachMessageRedirectRule(MessageRedirectRule.DoNothing)
+                    .AttachMessageRedirectRule(MessageRedirectRule.DoNothing)
                 .Revert()
                 .AddChannelIncoming("findlay")
                 .Revert();
