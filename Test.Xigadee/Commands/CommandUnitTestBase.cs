@@ -42,6 +42,7 @@ namespace Test.Xigadee
         protected virtual MicroservicePipeline PipelineConfigure(MicroservicePipeline pipeline)
         {
             pipeline
+                
                 .AddDataCollector<DebugMemoryDataCollector>((c) => collector = c)
                 .AddPayloadSerializerDefaultJson()
                 .AddChannelIncoming("internalIn", internalOnly: true)

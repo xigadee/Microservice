@@ -25,23 +25,23 @@ namespace Xigadee
     public static partial class CorePipelineExtensions
     {
         /// <summary>
-        /// This method can be used to call out the pipeline flow to an external method.
+        /// This is a helper method that identifies the current pipeline. It is useful for autocomplete identification. 
+        /// This command does not do anything.
         /// </summary>
         /// <param name="pipe">The pipeline.</param>
-        /// <param name="method">The method to call.</param>
-        /// <returns>Returns the original Pipeline.</returns>
-        public static MicroservicePipeline CallOut(this MicroservicePipeline pipe, Action<MicroservicePipeline> method)
+        /// <returns>The pipeline.</returns>
+        public static ChannelPipelineIncoming Actual_ChannelPipelineIncoming(this ChannelPipelineIncoming pipe)
         {
-            method(pipe);
-
             return pipe;
         }
-
-        public static P CallOut<P>(this P pipe, Action<P> method)
-            where P : MicroservicePipelineExtension
+        /// <summary>
+        /// This is a helper method that identifies the current pipeline. It is useful for autocomplete identification. 
+        /// This command does not do anything.
+        /// </summary>
+        /// <param name="pipe">The pipeline.</param>
+        /// <returns>The pipeline.</returns>
+        public static ChannelPipelineOutgoing Actual_ChannelPipelineOutgoing(this ChannelPipelineOutgoing pipe)
         {
-            method(pipe);
-
             return pipe;
         }
     }

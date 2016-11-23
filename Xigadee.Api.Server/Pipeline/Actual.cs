@@ -19,19 +19,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Http;
 
 namespace Xigadee
 {
-    public static partial class CorePipelineExtensions
+    public static partial class WebApiExtensionMethods
     {
-        public static MicroservicePipeline Inspect(this MicroservicePipeline pipeline
-            , Action<IMicroservice> msAssign = null
-            , Action<IEnvironmentConfiguration> cfAssign = null)
+        /// <summary>
+        /// This is a helper method that identifies the current pipeline. It is useful for autocomplete identification. 
+        /// This command does not do anything.
+        /// </summary>
+        /// <param name="pipe">The pipeline.</param>
+        /// <returns>The pipeline.</returns>
+        public static WebApiMicroservicePipeline Actual_WebApiMicroservicePipeline(this WebApiMicroservicePipeline pipe)
         {
-            msAssign?.Invoke(pipeline.Service);
-            cfAssign?.Invoke(pipeline.Configuration);
-
-            return pipeline;
+            return pipe;
         }
     }
 }

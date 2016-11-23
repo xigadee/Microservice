@@ -24,14 +24,19 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static MicroservicePipeline Inspect(this MicroservicePipeline pipeline
-            , Action<IMicroservice> msAssign = null
-            , Action<IEnvironmentConfiguration> cfAssign = null)
+        public static MicroservicePipeline AddCommandInitiator(this MicroservicePipeline pipeline
+            , out CommandInitiator command
+            , TimeSpan? defaultRequestTimespan = null
+            , ChannelPipelineIncoming channelIncoming = null
+            , ChannelPipelineOutgoing channelResponse = null
+            , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
+            , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null
+            , int startupPriority = 100
+            )
         {
-            msAssign?.Invoke(pipeline.Service);
-            cfAssign?.Invoke(pipeline.Configuration);
+            command = new CommandInitiator(defaultRequestTimespan);
 
-            return pipeline;
+            return pipeline.AddCommand(command, null, startupPriority, channelIncoming, channelResponse, channelMasterJobNegotiationIncoming);
         }
     }
 }
