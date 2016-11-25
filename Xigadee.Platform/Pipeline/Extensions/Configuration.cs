@@ -60,6 +60,8 @@ namespace Xigadee
             if (pipeline == null)
                 throw new ArgumentNullException("pipeline cannot be null");
 
+            assign?.Invoke(resolver);
+
             pipeline.Configuration.ResolverSet(priority, resolver);
 
             return pipeline;

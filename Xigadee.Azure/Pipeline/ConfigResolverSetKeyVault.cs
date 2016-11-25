@@ -17,10 +17,10 @@ namespace Xigadee
         /// </summary>
         /// <typeparam name="P">The pipeline type.</typeparam>
         /// <param name="pipeline">The pipeline</param>
-        /// <param name="priority">The optional priority, by default set to 30.</param>
+        /// <param name="priority">The optional priority, by default set to 10.</param>
         /// <param name="assign">An action to allow changes to be made to the resolver after it is created.</param>
         /// <returns>Returns the pipeline to continue the chain.</returns>
-        public static P ConfigResolverSetKeyVault<P>(this P pipeline, int priority = 30, Action<ConfigResolver> assign = null) where P : MicroservicePipeline
+        public static P ConfigResolverSetKeyVault<P>(this P pipeline, int priority = 10, Action<ConfigResolver> assign = null) where P : MicroservicePipeline
         {
             return pipeline.ConfigResolverSetKeyVault(pipeline.Configuration.KeyVaultClientCredential(), pipeline.Configuration.KeyVaultSecretBaseUri(), priority, assign);
         }
@@ -32,10 +32,10 @@ namespace Xigadee
         /// <param name="pipeline">The pipeline</param>
         /// <param name="clientCredential">Key Vault Client Credentials</param>
         /// <param name="secretBaseUri">Key Vault Secret Base Uri</param>
-        /// <param name="priority">The optional priority, by default set to 30.</param>
+        /// <param name="priority">The optional priority, by default set to 10.</param>
         /// <param name="assign">An action to allow changes to be made to the resolver after it is created.</param>
         /// <returns>Returns the pipeline to continue the chain.</returns>
-        public static P ConfigResolverSetKeyVault<P>(this P pipeline, ClientCredential clientCredential, string secretBaseUri, int priority = 30, Action<ConfigResolver> assign = null) where P : MicroservicePipeline
+        public static P ConfigResolverSetKeyVault<P>(this P pipeline, ClientCredential clientCredential, string secretBaseUri, int priority = 10, Action<ConfigResolver> assign = null) where P : MicroservicePipeline
         {
             pipeline.ConfigResolverSet(priority, new ConfigResolverKeyVault(clientCredential, secretBaseUri), assign);
             return pipeline;
