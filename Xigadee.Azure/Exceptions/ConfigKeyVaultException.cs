@@ -2,22 +2,22 @@
 
 namespace Xigadee
 {
-    public class KeyVaultException : Exception
+    public class ConfigKeyVaultException : Exception
     {
         /// <summary>
         /// Initializes a new instance of the KeyVaultException class.
         /// </summary>
-        public KeyVaultException() : base() { }
+        public ConfigKeyVaultException() : base() { }
         /// <summary>
         /// Initializes a new instance of the KeyVaultException class.
         /// </summary>
         /// <param name="message">The error message.</param>
-        public KeyVaultException(string message) : base(message) { }
+        public ConfigKeyVaultException(string message) : base(message) { }
         /// <summary>
         /// Initializes a new instance of the KeyVaultException class.
         /// </summary>
         /// <param name="message">The error message.</param>
         /// <param name="ex">The base exception.</param>
-        public KeyVaultException(string message, Exception ex) : base(message, ex) { }
+        public ConfigKeyVaultException(string message, Exception ex) : base(message, ex) { }
     }
 }

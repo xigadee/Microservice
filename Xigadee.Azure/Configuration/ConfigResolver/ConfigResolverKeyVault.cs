@@ -15,6 +15,7 @@
 #endregion
 
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Azure.KeyVault;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
@@ -30,6 +31,8 @@ namespace Xigadee
         private readonly ClientCredential mclientCredential;
         private AuthenticationResult mAuthenticationResult;
 
+        public int NumberOfRetries { get; set; } = 5;
+
         public ConfigResolverKeyVault(ClientCredential clientCredential, string secretBaseUri)
         {
             if (clientCredential == null)
@@ -44,15 +47,15 @@ namespace Xigadee
 
         public override bool CanResolve(string key)
         {
-            return GetValue(key).Result != null;
+            return GetValue(key, NumberOfRetries).Result != null;
         }
 
         public override string Resolve(string key)
         {
-            return GetValue(key).Result;
+            return GetValue(key, NumberOfRetries).Result;
         }
 
-        protected async Task<string> GetToken(string authority, string resource, string scope, int numberOfRetries = 3)
+        protected async Task<string> GetToken(string authority, string resource, string scope, int remainingRetries)
         {
             try
             {
@@ -64,35 +67,51 @@ namespace Xigadee
                 mAuthenticationResult = await authContext.AcquireTokenAsync(resource, mclientCredential);
                 return mAuthenticationResult?.AccessToken;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 mAuthenticationResult = null;
-                if (numberOfRetries <= 0)
-                    return null;
+                if (remainingRetries <= 0)
+                    throw new ConfigKeyVaultException($"Unable to retrieve access token for {authority}-{resource}-{scope}", ex);
 
                 // Try again after waiting to give transient errors 
-                await Task.Delay(TimeSpan.FromSeconds(numberOfRetries));
-                return await GetToken(authority, resource, scope, --numberOfRetries);
+                await Task.Delay(TimeSpan.FromSeconds(NumberOfRetries - remainingRetries));
+                return await GetToken(authority, resource, scope, --remainingRetries);
             }
         }
 
-        protected async Task<string> GetValue(string key, int numberOfRetries = 3)
+        protected async Task<string> GetValue(string key, int remainingRetries)
         {
+            Exception exception;
             try
             {
-                var kv = new KeyVaultClient((authority, resource, scope) => GetToken(authority, resource, scope));
+                var kv = new KeyVaultClient((authority, resource, scope) => GetToken(authority, resource, scope, NumberOfRetries));
                 var result = await kv.GetSecretAsync(new Uri(mSecretBaseUri, key).AbsoluteUri);
                 return result?.Value;
             }
+            catch (KeyVaultClientException ex)
+            {
+                // Can't find the key so just return a null
+                if (ex.Status == HttpStatusCode.NotFound)
+                    return null;
+
+                exception = ex;
+            }
+            catch (ConfigKeyVaultException)
+            {
+                // Unable to get authentication token - don't bother with retries here
+                throw; 
+            }
             catch (Exception ex)
             {
-                if (numberOfRetries <= 0)
-                    throw new KeyVaultException($"Unable to retrieve {key} from key vault", ex);
-
-                // Try again after waiting to give transient errors 
-                await Task.Delay(TimeSpan.FromSeconds(numberOfRetries));
-                return await GetValue(key, --numberOfRetries);
+                exception = ex;
             }
+
+            if (remainingRetries <= 0)
+                throw new ConfigKeyVaultException($"Unable to retrieve {key} from key vault", exception);
+
+            // Try again after waiting to give transient errors 
+            await Task.Delay(TimeSpan.FromSeconds(NumberOfRetries - remainingRetries));
+            return await GetValue(key, --remainingRetries);
         }
     }
 }
