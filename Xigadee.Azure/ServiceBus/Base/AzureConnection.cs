@@ -41,7 +41,7 @@ namespace Xigadee
         public AzureConnection(string name, string connection)
         {
             if (name == null)
-                throw new ArgumentNullException("name", "name cannot be empty for as Azure Connection"):
+                throw new ArgumentNullException("name", "name cannot be empty for as Azure Connection");
 
             if (string.IsNullOrEmpty(connection))
                 throw new AzureConnectionException();

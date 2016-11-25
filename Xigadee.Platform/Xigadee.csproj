@@ -214,6 +214,7 @@
     <Compile Include="DataCollection\DataCollector\DebugMemoryDataCollector.cs" />
     <Compile Include="DataCollection\Telemetry\TelemetryCounterHolder.cs" />
     <Compile Include="Messaging\MessageFilterWrapper.cs" />
+    <Compile Include="Pipeline\Configuration\ConfigureMessaging.cs" />
     <Compile Include="Pipeline\Extensions\Add\AddCommandInitiator.cs" />
     <Compile Include="Pipeline\Extensions\Add\AddDataCollector.cs" />
     <Compile Include="Pipeline\Extensions\Attach\AttachCommand.cs" />

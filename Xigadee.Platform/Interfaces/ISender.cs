@@ -19,6 +19,9 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This interface is used to identify a message sender.
+    /// </summary>
     public interface ISender: IMessaging
     {
         /// <summary>

@@ -38,6 +38,14 @@ namespace Xigadee
             component.AzureConn = new AzureConnection(connectionName,serviceBusConnection ?? cpipe.Pipeline.Configuration.ServiceBusConnection() );
 
             component.PriorityPartitions = (priorityPartitions ?? cpipe.Channel.Partitions.Cast<SenderPartitionConfig>()).ToList();
+
+            component.ConfigureAzureMessaging(cpipe.Channel.Id
+                , priorityPartitions ?? cpipe.Channel.Partitions.Cast<SenderPartitionConfig>()
+                , null
+                , connectionName
+                , serviceBusConnection ?? cpipe.Pipeline.Configuration.ServiceBusConnection()
+                );
+
             onCreate?.Invoke(component);
 
             cpipe.AttachSender(component, false);

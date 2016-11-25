@@ -29,7 +29,8 @@ namespace Xigadee
     /// <typeparam name="M">The client message class type.</typeparam>
     /// <typeparam name="H">The client holder class type.</typeparam>
     /// <typeparam name="P">The partition configuration class type.</typeparam>
-    public abstract class MessagingServiceBase<C, M, H, P>: ServiceBase<StatusBase>, IMessaging, IPayloadSerializerConsumer, IServiceOriginator, IServiceLogger, IRequireBoundaryLogger, IMessagingService<P> where H: ClientHolder<C, M>, new()
+    public abstract class MessagingServiceBase<C, M, H, P>: ServiceBase<StatusBase>, IMessaging, IPayloadSerializerConsumer, IServiceOriginator, IServiceLogger, IMessagingService<P> 
+        where H: ClientHolder<C, M>, new()
         where P: PartitionConfig
     {
         #region Declarations
@@ -47,7 +48,7 @@ namespace Xigadee
         protected Func<string, int, string> mPriorityClientNamer = (s, i) => string.Format("{0}{1}", s, i == 1 ? "" : i.ToString());
         #endregion
 
-        //IMessaging
+        //IMessagingService<P>
         #region BoundaryLogger
         /// <summary>
         /// The boundary logger can be used to log message metadata when it is received or transmitted.
@@ -70,6 +71,7 @@ namespace Xigadee
             set;
         } 
         #endregion
+
         #region Clients
         /// <summary>
         /// This method returns the clients created for the messaging service.

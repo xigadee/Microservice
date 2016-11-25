@@ -43,7 +43,7 @@ namespace Xigadee
             var conn = serviceBusConnection ?? Configuration.ServiceBusConnection();
 
             if (string.IsNullOrEmpty(conn))
-                throw new AzureConnectionException("Service bus connection string cannot be resolved. Please check the config settings has been set.");
+                throw new AzureConnectionException();//"Service bus connection string cannot be resolved. Please check the config settings has been set.");
 
             return conn;
         }
