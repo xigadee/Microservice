@@ -31,7 +31,7 @@ namespace Xigadee
     {
         public override bool CanResolve(string key)
         {
-            return CloudConfigurationManager.GetSetting(key) == null;
+            return CloudConfigurationManager.GetSetting(key) != null;
         }
 
         public override string Resolve(string key)

@@ -59,6 +59,10 @@
       <HintPath>..\packages\Microsoft.Azure.DocumentDB.1.10.0\lib\net45\Microsoft.Azure.Documents.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Azure.KeyVault, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Azure.KeyVault.1.0.0\lib\net45\Microsoft.Azure.KeyVault.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Azure.KeyVault.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Azure.KeyVault.Core.1.0.0\lib\net40\Microsoft.Azure.KeyVault.Core.dll</HintPath>
       <Private>True</Private>
@@ -73,6 +77,14 @@
     </Reference>
     <Reference Include="Microsoft.Data.Services.Client, Version=5.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Data.Services.Client.5.7.0\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=3.13.7.964, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.13.7\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory.Platform, Version=3.13.7.964, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.13.7\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling, Version=6.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -184,7 +196,9 @@
     </Compile>
     <Compile Include="ApplicationInsights\ApplicationInsightsCollector.cs" />
     <Compile Include="ApplicationInsights\CommandCorrelationInitializer.cs" />
+    <Compile Include="Configuration\ConfigResolver\ConfigResolverKeyVault.cs" />
     <Compile Include="Configuration\ConfigResolver\ConfigResolverAzure.cs" />
+    <Compile Include="Exceptions\ConfigKeyVaultException.cs" />
     <Compile Include="Pipeline\AddApplicationInsightsConnector.cs" />
     <Compile Include="Pipeline\AddAzureStorageEventSource.cs" />
     <Compile Include="Pipeline\AddAzureStorageLogger.cs" />
@@ -193,10 +207,12 @@
     <Compile Include="Pipeline\AttachAzureServiceBusQueueSender.cs" />
     <Compile Include="Pipeline\AttachAzureServiceBusTopicListener.cs" />
     <Compile Include="Pipeline\AttachAzureServiceBusTopicSender.cs" />
+    <Compile Include="Pipeline\ConfigResolverSetKeyVault.cs" />
     <Compile Include="Pipeline\ConfigResolverSetAzure.cs" />
     <Compile Include="Pipeline\Config\ApplicationInsight.cs" />
     <Compile Include="Configuration\ConfigResolver\AzureHelper.cs" />
     <Compile Include="Pipeline\Config\RedisCache.cs" />
+    <Compile Include="Pipeline\Config\KeyVault.cs" />
     <Compile Include="Pipeline\Config\ServiceBus.cs" />
     <Compile Include="Pipeline\Config\LogStorage.cs" />
     <Compile Include="Pipeline\Config\Storage.cs" />
