@@ -31,7 +31,7 @@ namespace Xigadee
             , ResourceProfile resourceProfile = null
             , Action<AzureStorageLogger> onCreate = null)
         {
-            return pipeline.AddAzureStorageLogger(pipeline.Configuration.LogStorageCredentials(), serviceName, containerName, resourceProfile);
+            return pipeline.AddAzureStorageLogger(pipeline.Configuration.LogStorageCredentials(), serviceName ?? pipeline.Service?.Name, containerName, resourceProfile);
         }
 
         public static MicroservicePipeline AddAzureStorageLogger(this MicroservicePipeline pipeline
@@ -41,7 +41,7 @@ namespace Xigadee
             , ResourceProfile resourceProfile = null
             , Action<AzureStorageLogger> onCreate = null)
         {
-            var logger = new AzureStorageLogger(creds, serviceName ?? pipeline.Service.Name, containerName, resourceProfile);
+            var logger = new AzureStorageLogger(creds, serviceName ?? pipeline.Service?.Name, containerName, resourceProfile);
             onCreate?.Invoke(logger);
 
             return pipeline.AddLogger(logger);
