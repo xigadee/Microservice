@@ -231,7 +231,9 @@
     <Compile Include="ServiceBus\Base\AzureSBListenerBase.cs" />
     <Compile Include="ServiceBus\Base\AzureSBSenderBase.cs" />
     <Compile Include="ServiceBus\Base\AzureClientHolder.cs" />
+    <Compile Include="ServiceBus\Base\IAzureServiceBusMessagingService.cs" />
     <Compile Include="ServiceBus\DeadLetterLogger\DeadLetterLoggerMessageHandler.cs" />
+    <Compile Include="ServiceBus\Exceptions\AzureConnectionException.cs" />
     <Compile Include="ServiceBus\Message Helpers\BrokeredMessageHelper.cs" />
     <Compile Include="ServiceBus\Message Helpers\EventDataHelper.cs" />
     <Compile Include="ServiceBus\EventHub\AzureSBEventHubListener.cs" />

@@ -34,6 +34,5 @@ namespace Xigadee
         {
             return pipe;
         }
-
     }
 }

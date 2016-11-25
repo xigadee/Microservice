@@ -14,39 +14,26 @@
 // limitations under the License.
 #endregion
 
+#region using
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Azure;
-
+using Microsoft.ServiceBus.Messaging;
+#endregion
 namespace Xigadee
 {
-    public static class AzureHelper
+    /// <summary>
+    /// This interface is used for Azure service bus messaging.
+    /// </summary>
+    /// <typeparam name="P">The partition config type.</typeparam>
+    public interface IAzureServiceBusMessagingService<P>: IMessagingService<P>
+        where P : PartitionConfig
     {
-        public readonly static Func<string, string, string> Resolver = (k, v) =>
-        {
-            string value = null;
-
-            try
-            {
-                if (k != null)
-                {
-                    value = CloudConfigurationManager.GetSetting(k);
-
-                    if (value == null)
-                        value = ConfigurationManager.AppSettings[k];
-                }
-            }
-            catch (Exception)
-            {
-                // Unable to retrieve from azure
-                return null;
-            }
-
-            return value;
-        };
+        /// <summary>
+        /// This is the Azure connection class.
+        /// </summary>
+        AzureConnection AzureConn { get; set; }
     }
 }

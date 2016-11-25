@@ -33,8 +33,19 @@ namespace Xigadee
     /// </summary>
     public class AzureConnection
     {
+        /// <summary>
+        /// This is the default connection.
+        /// </summary>
+        /// <param name="name">The connection name.</param>
+        /// <param name="connection">The azure connection string.</param>
         public AzureConnection(string name, string connection)
         {
+            if (name == null)
+                throw new ArgumentNullException("name", "name cannot be empty for as Azure Connection"):
+
+            if (string.IsNullOrEmpty(connection))
+                throw new AzureConnectionException();
+
             ConnectionName = name;
             ConnectionString = connection;
         }

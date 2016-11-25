@@ -72,7 +72,10 @@
     <Compile Include="Command\Exceptions\CommandNotSupportedException.cs" />
     <Compile Include="Command\Helper\CommandContext.cs" />
     <Compile Include="Command\Helper\CommandHolderException.cs" />
+    <Compile Include="Communication\Base\IMessagingService.cs" />
     <Compile Include="Communication\Channel\ChannelRewriteRule.cs" />
+    <Compile Include="Communication\Exceptions\MessagingException.cs" />
+    <Compile Include="Communication\Exceptions\StartupMessagingException.cs" />
     <Compile Include="Communication\TcpChannel\Helper\DirectChannelCommunicator.cs" />
     <Compile Include="Communication\TcpChannel\TcpTlsChannelSender.cs" />
     <Compile Include="Communication\TcpChannel\TcpTlsClientHolder.cs" />

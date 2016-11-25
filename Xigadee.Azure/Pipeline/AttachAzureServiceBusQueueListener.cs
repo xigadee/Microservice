@@ -40,11 +40,15 @@ namespace Xigadee
 
             var component = new AzureSBQueueListener();
 
+            
             component.ChannelId = cpipe.Channel.Id;
             component.PriorityPartitions = (priorityPartitions ?? cpipe.Channel.Partitions.Cast<ListenerPartitionConfig>()).ToList();
-            component.MappingChannelId = mappingChannelId;
+            component.ResourceProfiles = resourceProfiles.ToList();
+            component.IsDeadLetterListener = isDeadLetterListener;
+
             //  cpipe.Channel.Id
-            //, cpipe.Pipeline.Configuration.ServiceBusConnectionValidate(serviceBusConnection)
+            //component.
+                cpipe.Pipeline.Configuration.ServiceBusConnectionValidate(serviceBusConnection);
             //, connectionName
             //, 
             //, isDeadLetterListener

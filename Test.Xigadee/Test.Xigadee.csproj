@@ -123,6 +123,7 @@
     <None Include="Test.Xigadee.licenseheader" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="CommandInitiator\" />
     <Folder Include="Microservice\" />
     <Folder Include="Persistence\" />
   </ItemGroup>

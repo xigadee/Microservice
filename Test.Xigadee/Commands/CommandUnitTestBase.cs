@@ -46,6 +46,7 @@ namespace Test.Xigadee
                 .AddDataCollector<DebugMemoryDataCollector>((c) => collector = c)
                 .AddPayloadSerializerDefaultJson()
                 .AddChannelIncoming("internalIn", internalOnly: true)
+                
                     .AttachPriorityPartition(0, 1)
                     .AttachCommand(mCommand)
                     .Revert((c) => cpipeIn = c)

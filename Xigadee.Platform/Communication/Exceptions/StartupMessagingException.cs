@@ -14,39 +14,25 @@
 // limitations under the License.
 #endregion
 
+#region using
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Azure;
 
+#endregion
 namespace Xigadee
 {
-    public static class AzureHelper
+    public class StartupMessagingException:MessagingException
     {
-        public readonly static Func<string, string, string> Resolver = (k, v) =>
+        public StartupMessagingException(string property, string message):base(message)
         {
-            string value = null;
+            Property = property;
+        }
 
-            try
-            {
-                if (k != null)
-                {
-                    value = CloudConfigurationManager.GetSetting(k);
-
-                    if (value == null)
-                        value = ConfigurationManager.AppSettings[k];
-                }
-            }
-            catch (Exception)
-            {
-                // Unable to retrieve from azure
-                return null;
-            }
-
-            return value;
-        };
+        public string Property { get; }
     }
 }
