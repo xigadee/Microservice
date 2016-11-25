@@ -25,6 +25,7 @@ using Microsoft.ServiceBus.Messaging;
 namespace Xigadee
 {
     public abstract class AzureSBSenderBase<C, M> : MessagingSenderBase<C, M, AzureClientHolder<C, M>>
+        , IAzureServiceBusMessagingService<SenderPartitionConfig>
         where C : ClientEntity
     {
         #region AzureConn
@@ -48,5 +49,6 @@ namespace Xigadee
 
             return client;
         }
+
     }
 }

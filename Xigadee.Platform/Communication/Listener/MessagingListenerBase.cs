@@ -116,7 +116,7 @@ namespace Xigadee
 
         #region ClientsValidate(List<MessageFilterWrapper> oldList, List<MessageFilterWrapper> newList)
         /// <summary>
-        /// This method is used to revalidate the clients when a message type is enabled or disabled.
+        /// This method is used to revalidate the clients when a message type is enabled or disabled, and stop or start the appropriate clients.
         /// </summary>
         protected virtual void ClientsValidate(List<MessageFilterWrapper> oldList, List<MessageFilterWrapper> newList)
         {
@@ -227,6 +227,7 @@ namespace Xigadee
         /// </summary>
         protected override void StartInternal()
         {
+            SettingsValidate();
             //Do nothing - the start logic is overriden to make sure the clients only
             //start when there are active message filters for the connection.
         }

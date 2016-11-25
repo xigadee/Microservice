@@ -31,13 +31,14 @@ namespace Xigadee
     /// This is the abstract listener base.
     /// </summary>
     public abstract class AzureSBListenerBase<C, M> : MessagingListenerBase<C, M, AzureClientHolder<C, M>>
+        , IAzureServiceBusMessagingService<ListenerPartitionConfig>
         where C : ClientEntity
     {
         #region AzureConn
         /// <summary>
         /// This is the Azure connection class.
         /// </summary>
-        protected AzureConnection AzureConn { get; set; }
+        public AzureConnection AzureConn { get; set; }
         #endregion
         #region IsDeadLetterListener
         /// <summary>
@@ -66,7 +67,16 @@ namespace Xigadee
             };
           
             return client;
-        } 
+        }
         #endregion
+
+        protected override void SettingsValidate()
+        {
+            if (AzureConn == null)
+                throw new StartupMessagingException("AzureConn", "AzureConn cannot be null");
+
+            base.SettingsValidate();
+        }
+
     }
 }

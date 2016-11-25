@@ -43,6 +43,7 @@ namespace Xigadee
         /// <param name="policy">A set of policy collections that override the default settings.</param>
         /// <param name="properties">These is the properties container.</param>
         /// <returns>Returns a pipeline that can be used to configure a microservice.</returns>
+        [Obsolete("You can now create the MicroservicePipeline object directly")]
         public static MicroservicePipeline Create<C>(
               Action<Microservice> assign = null
             , Action<C> configAssign = null
@@ -73,6 +74,7 @@ namespace Xigadee
         /// <param name="policy">A set of policy collections that override the default settings.</param>
         /// <param name="properties">These is the properties container.</param>
         /// <returns>Returns a pipeline that can be used to configure a microservice.</returns>
+        [Obsolete("You can now create the MicroservicePipeline object directly")]
         public static MicroservicePipeline Create(
               Action<Microservice> assign = null
             , Action<ConfigBase> configAction = null

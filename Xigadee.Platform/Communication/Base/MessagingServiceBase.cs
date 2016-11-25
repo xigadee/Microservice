@@ -29,9 +29,7 @@ namespace Xigadee
     /// <typeparam name="M">The client message class type.</typeparam>
     /// <typeparam name="H">The client holder class type.</typeparam>
     /// <typeparam name="P">The partition configuration class type.</typeparam>
-    public abstract class MessagingServiceBase<C, M, H, P> : ServiceBase<StatusBase>, 
-        IMessaging, IPayloadSerializerConsumer, IServiceOriginator, IServiceLogger, IRequireBoundaryLogger
-        where H: ClientHolder<C, M>, new()
+    public abstract class MessagingServiceBase<C, M, H, P>: ServiceBase<StatusBase>, IMessaging, IPayloadSerializerConsumer, IServiceOriginator, IServiceLogger, IRequireBoundaryLogger, IMessagingService<P> where H: ClientHolder<C, M>, new()
         where P: PartitionConfig
     {
         #region Declarations
@@ -97,21 +95,31 @@ namespace Xigadee
         }
         #endregion
 
+        #region SettingsValidate()
+        /// <summary>
+        /// This method validates the configuration and settings for the connection.
+        /// </summary>
+        protected virtual void SettingsValidate()
+        {
+            if (ChannelId == null)
+                throw new StartupMessagingException("ChannelId", "ChannelId cannot be null");
+
+            if (PriorityPartitions == null)
+                throw new StartupMessagingException("PriorityPartitions", "PriorityPartitions cannot be null");
+
+            //Set the partition priority to a single partition if null or an empty set.
+            if (PriorityPartitions.Count == 0)
+                throw new StartupMessagingException("PriorityPartitions", "PriorityPartitions must have at least one member.");
+        } 
+        #endregion
+
         #region StartInternal()
         /// <summary>
         /// This is the default start method for both listeners and senders.
         /// </summary>
         protected override void StartInternal()
         {
-            if (ChannelId == null)
-                throw new ArgumentNullException("ChannelId", "ChannelId cannot be null");
-
-            if (PriorityPartitions == null)
-                throw new ArgumentNullException("PriorityPartitions", "PriorityPartitions cannot be null");
-
-            //Set the partition priority to a single partition if null or an empty set.
-            if (PriorityPartitions.Count == 0)
-                throw new ArgumentOutOfRangeException("PriorityPartitions", "PriorityPartitions must have at least one member.");
+            SettingsValidate();
 
             try
             {
