@@ -32,21 +32,27 @@ namespace Xigadee
 
         public ConfigResolverKeyVault(ClientCredential clientCredential, string secretBaseUri)
         {
+            if (clientCredential == null)
+                throw new ArgumentNullException(nameof(clientCredential));
+
+            if (secretBaseUri == null)
+                throw new ArgumentNullException(nameof(secretBaseUri));
+
             mclientCredential = clientCredential;
             mSecretBaseUri = new Uri(secretBaseUri);
         }
 
         public override bool CanResolve(string key)
         {
-            return GetValue(key) == null;
+            return GetValue(key).Result != null;
         }
 
         public override string Resolve(string key)
         {
-            return GetValue(key);
+            return GetValue(key).Result;
         }
 
-        public async Task<string> GetToken(string authority, string resource, string scope)
+        protected async Task<string> GetToken(string authority, string resource, string scope, int numberOfRetries = 3)
         {
             try
             {
@@ -61,21 +67,31 @@ namespace Xigadee
             catch (Exception)
             {
                 mAuthenticationResult = null;
-                return null;
+                if (numberOfRetries <= 0)
+                    return null;
+
+                // Try again after waiting to give transient errors 
+                await Task.Delay(TimeSpan.FromSeconds(numberOfRetries));
+                return await GetToken(authority, resource, scope, --numberOfRetries);
             }
         }
 
-        private string GetValue(string key)
+        protected async Task<string> GetValue(string key, int numberOfRetries = 3)
         {
             try
             {
-                var kv = new KeyVaultClient(GetToken);
-                var result = kv.GetSecretAsync(new Uri(mSecretBaseUri, key).AbsoluteUri).Result;
+                var kv = new KeyVaultClient((authority, resource, scope) => GetToken(authority, resource, scope));
+                var result = await kv.GetSecretAsync(new Uri(mSecretBaseUri, key).AbsoluteUri);
                 return result?.Value;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return null;
+                if (numberOfRetries <= 0)
+                    throw new KeyVaultException($"Unable to retrieve {key} from key vault", ex);
+
+                // Try again after waiting to give transient errors 
+                await Task.Delay(TimeSpan.FromSeconds(numberOfRetries));
+                return await GetValue(key, --numberOfRetries);
             }
         }
     }
