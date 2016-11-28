@@ -50,6 +50,8 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Xigadee.Datapump.Sql", "Xig
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Azure", "Test.Xigadee.Azure\Test.Xigadee.Azure.csproj", "{8913D4BB-4E86-40EE-95E1-C6634D41E0BC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.AWS", "Xigadee.AWS\Xigadee.AWS.csproj", "{D246CEDD-05E6-4F32-A6BB-628FA6E3ED4C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -136,6 +138,10 @@ Global
 		{8913D4BB-4E86-40EE-95E1-C6634D41E0BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8913D4BB-4E86-40EE-95E1-C6634D41E0BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8913D4BB-4E86-40EE-95E1-C6634D41E0BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D246CEDD-05E6-4F32-A6BB-628FA6E3ED4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D246CEDD-05E6-4F32-A6BB-628FA6E3ED4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D246CEDD-05E6-4F32-A6BB-628FA6E3ED4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D246CEDD-05E6-4F32-A6BB-628FA6E3ED4C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

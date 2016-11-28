@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Xigadee.AWS</id>
+    <version>{UpdateVersion.ps1.replace}</version>
+    <title>Xigadee AWS Extension Library (Experimental)</title>
+    <authors>Paul Stancer and Guy Steel at Hitachi Consulting (http://hitachiconsulting.com)</authors>
+    <owners>Information Management Group Ltd (http://imgroup.com) part of Hitachi Consulting</owners>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <projectUrl>http://xigadee.com</projectUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>Xigadee AWS library contains a set of communication and persistence components built on the AWS Framework.</description>
+    <releaseNotes>Initial experimental push.</releaseNotes>
+    <copyright>Copyright © Hitachi Consulting 2012-2016</copyright>
+    <tags>Xigadee Microservice AWS .NET Hitachi IMGROUP</tags>
+    <dependencies>
+      <dependency id="Xigadee" version="{UpdateVersion.ps1.replace}" />
+      <dependency id="Newtonsoft.Json" version="9.0.1" />
+      <dependency id="AWSSDK.Core" version="3.3.5" />
+      <dependency id="AWSSDK.DynamoDBv2" version="3.3.1" />
+      <dependency id="AWSSDK.S3" version="3.3.3" />
+      <dependency id="AWSSDK.SQS" version="3.3.3" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\Xigadee*.dll" target="lib\net46\" />
+    <file src="bin\Release\Xigadee*.pdb" target="lib\net46\" />
+  </files>
+</package>
