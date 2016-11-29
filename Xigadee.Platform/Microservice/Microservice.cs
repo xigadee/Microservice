@@ -308,6 +308,9 @@ namespace Xigadee
                 if (service is IServiceEventSource)
                     ((IServiceEventSource)service).EventSource = mDataCollection;
 
+                if (service is IRequireDataCollector)
+                    ((IRequireDataCollector)service).Collector = mDataCollection;
+
                 if (service is IPayloadSerializerConsumer)
                     ((IPayloadSerializerConsumer)service).PayloadSerializer = mSerializer;
 

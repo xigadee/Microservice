@@ -175,8 +175,11 @@ namespace Xigadee
         /// <param name="eventData">The event data.</param>
         /// <param name="support">The event data type.</param>
         /// <param name="sync">Specifies whether the data should be written out immediately.</param>
-        protected void Write(EventBase eventData, DataCollectionSupport support, bool sync = false)
+        public void Write(EventBase eventData, DataCollectionSupport support, bool sync = false)
         {
+            if (eventData == null)
+                throw new ArgumentNullException("eventData", "eventData cannot be null for Write");
+
             if (!Active)
                 throw new ServiceNotStartedException();
 

@@ -22,11 +22,6 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public interface IDataCollector
-    {
-        void Write(DataCollectionSupport eventType, EventBase eventData);
-    }
-
     public interface IDataCollectorComponent: IServiceOriginator
     {
         bool IsSupported(DataCollectionSupport support);

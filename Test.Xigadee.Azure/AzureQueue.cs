@@ -20,8 +20,30 @@ using Xigadee;
 
 namespace Test.Xigadee.Azure
 {
+    /// <summary>
+    /// This is the shared operation contract.
+    /// </summary>
     [Contract(AzureQueue.ChannelIn, "Simple", "Command")]
     public interface ISimpleCommand: IMessageContract{}
+    /// <summary>
+    /// This is a simple command that receives a string and returns a string.
+    /// </summary>
+    public class SimpleCommand: CommandBase, IRequireDataCollector
+    {
+        public IDataCollection Collector{get;set;}
+
+        [CommandContract(typeof(ISimpleCommand))]
+        [return: PayloadOut]
+        private string Method1([PayloadIn] string inData)
+        {
+            return "mom";
+        }
+
+        protected override void StartInternal()
+        {
+            base.StartInternal();
+        }
+    }
 
     [TestClass]
     public class AzureQueue
@@ -34,32 +56,43 @@ namespace Test.Xigadee.Azure
         {
             CommandInitiator init;
 
-            var sender = new MicroservicePipeline("sender")
-                .ConfigurationOverrideSet(AzureExtensionMethods.KeyServiceBusConnection, SbConn)
-                .AddChannelOutgoing("remote")
-                    .AttachAzureServiceBusQueueSender()
-                    .AttachCommandInitiator(out init)
-                .Revert()
-                    .AddChannelIncoming("response")
-                    .AttachAzureServiceBusTopicListener()
-                ;
+            try
+            {
+                var sender = new MicroservicePipeline("sender")
+                    .ConfigurationOverrideSet(AzureExtensionMethods.KeyServiceBusConnection, SbConn)
+                    .AddChannelOutgoing("remote")
+                        //.AttachPriorityPartition(0,1)
+                        .AttachAzureServiceBusQueueSender()
+                        .AttachCommandInitiator(out init)
+                    .Revert()
+                        .AddChannelIncoming("response")
+                        .AttachAzureServiceBusTopicListener()
+                    ;
 
-            var listener = new MicroservicePipeline("listener")
-                .ConfigurationOverrideSet(AzureExtensionMethods.KeyServiceBusConnection, SbConn)
-                .AddChannelIncoming("remote")
-                    .AttachAzureServiceBusQueueListener()
-                .Revert()
-                .AddChannelOutgoing("response")
-                    .AttachAzureServiceBusTopicSender()
-                ;
+                var listener = new MicroservicePipeline("listener")
+                    .ConfigurationOverrideSet(AzureExtensionMethods.KeyServiceBusConnection, SbConn)
+                    .AddChannelIncoming("remote")
+                        .AttachAzureServiceBusQueueListener()
+                        .AttachCommand<SimpleCommand>()
+                    .Revert()
+                    .AddChannelOutgoing("response")
+                        .AttachAzureServiceBusTopicSender()
+                    ;
 
-            listener.Start();
+                listener.Start();
 
-            sender.Start();
+                sender.Start();
 
-            var rs = init.Process<ISimpleCommand,string, string>("hello").Result;
+                var rs = init.Process<ISimpleCommand, string, string>("hello").Result;
 
-            Assert.IsTrue(rs.Response == "mom");
+                Assert.IsTrue(rs.Response == "mom");
+
+
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
         }
     }
 }

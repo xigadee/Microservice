@@ -19,7 +19,8 @@ namespace Xigadee
         public static List<Tuple<CommandContractAttribute, CommandMethodSignature, string>> CommandMethodAttributeSignatures(
             this ICommand command, bool throwExceptions = false)
         {
-            return command.CommandMethodSignatures(throwExceptions)
+            return command
+                .CommandMethodSignatures(throwExceptions)
                 .SelectMany((s) => s.CommandAttributes.Select((a) => new Tuple<CommandContractAttribute, CommandMethodSignature, string>(a,s, s.Reference(a))))
                 .ToList();
         }

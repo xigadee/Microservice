@@ -49,8 +49,10 @@ namespace Xigadee
         {
             var channel = pipeline.Service.RegisterChannel(new Channel(channelId, ChannelDirection.Outgoing, description, bLogger, internalOnly));
 
-            if (partitions != null)
-                channel.Partitions = partitions.ToList();
+            if (partitions == null)
+                partitions = SenderPartitionConfig.Init(0,1);
+
+            channel.Partitions = partitions.ToList();
 
             var cpipe = new ChannelPipelineOutgoing(pipeline, channel);
 

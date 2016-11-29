@@ -44,7 +44,7 @@ namespace Xigadee
             if (priorityPartitions != null)
                 component.PriorityPartitions = priorityPartitions.ToList();
 
-            if (component is IListener)
+            if (component is IListener && resourceProfiles != null)
                 ((IListener)component).ResourceProfiles = resourceProfiles.ToList();
         }
     }
