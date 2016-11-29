@@ -28,5 +28,10 @@ namespace Xigadee
         {
             pipeline.Service.Stop();
         }
+
+        public static void Stop(this ChannelPipelineBase pipeline)
+        {
+            pipeline.Pipeline.Stop();
+        }
     }
 }

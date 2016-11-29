@@ -70,6 +70,9 @@ namespace Xigadee
         }
         #endregion
 
+        /// <summary>
+        /// This override is used to validate the listener configuration settings on startup.
+        /// </summary>
         protected override void SettingsValidate()
         {
             if (AzureConn == null)

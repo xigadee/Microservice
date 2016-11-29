@@ -70,6 +70,7 @@ namespace Test.Xigadee
             //rs.Message.Status = "204";
             //rs.Message.StatusDescription = "Hello";
             //outgoing.Add(rs);
+            
         }
 
         [CommandContract(messageType: "simples2", actionType: "sync")]

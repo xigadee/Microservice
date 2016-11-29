@@ -66,6 +66,7 @@
     <Compile Include="Command\CommandInitiator\CommandInitiator.cs" />
     <Compile Include="Command\CommandInitiator\CommandInitiatorPolicy.cs" />
     <Compile Include="Command\CommandInitiator\CommandInitiatorStatistics.cs" />
+    <Compile Include="Command\CommandInitiator\ResponseWrapper.cs" />
     <Compile Include="Command\Command_Process.cs" />
     <Compile Include="Command\Command_Reflection.cs" />
     <Compile Include="Command\Attributes\PayloadInAttribute.cs" />

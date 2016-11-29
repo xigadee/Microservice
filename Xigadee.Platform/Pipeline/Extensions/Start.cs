@@ -28,5 +28,10 @@ namespace Xigadee
         {
             pipeline.Service.Start();
         }
+
+        public static void Start(this ChannelPipelineBase pipeline)
+        {
+            pipeline.Pipeline.Start();
+        }
     }
 }

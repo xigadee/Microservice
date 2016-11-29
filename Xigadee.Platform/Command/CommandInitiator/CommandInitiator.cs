@@ -196,42 +196,4 @@ namespace Xigadee
         #endregion
 
     }
-
-    /// <summary>
-    /// This is the wrapper that holds the response data and the deserialized object.
-    /// </summary>
-    /// <typeparam name="RS">The response type.</typeparam>
-    [DebuggerDisplay("Response={ResponseCode}/{ResponseMessage}")]
-    public class ResponseWrapper<RS>
-    {
-
-        public ResponseWrapper(TransmissionPayload payload)
-        {
-            ResponseCode = int.Parse(payload.Message.Status);
-            ResponseMessage = payload.Message.StatusDescription;
-            Payload = payload;
-        }
-        public ResponseWrapper(int responseCode, string responseMessage)
-        {
-            ResponseCode = responseCode;
-            ResponseMessage = responseMessage;
-            Payload = null;
-        }
-        /// <summary>
-        /// The response code.
-        /// </summary>
-        public int? ResponseCode { get;  }
-        /// <summary>
-        /// The response message.
-        /// </summary>
-        public string ResponseMessage { get;  }
-        /// <summary>
-        /// The response payload.
-        /// </summary>
-        public TransmissionPayload Payload { get; }
-        /// <summary>
-        /// The response obejct.
-        /// </summary>
-        public RS Response { get; set; }
-    }
 }

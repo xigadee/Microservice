@@ -28,7 +28,7 @@ namespace Xigadee
     public static partial class AzureExtensionMethods
     {
         public static ChannelPipelineIncoming AttachAzureServiceBusTopicListener(this ChannelPipelineIncoming cpipe
-            , string connectionName
+            , string connectionName = null
             , string serviceBusConnection = null
             , string subscriptionId = null
             , bool isDeadLetterListener = false
@@ -42,21 +42,34 @@ namespace Xigadee
             , Action<AzureSBTopicListener> onCreate = null
             , bool setFromChannelProperties = true)
         {
-            if (connectionName == null)
-                throw new ArgumentNullException("connectionName cannot be null.");
+            var component = new AzureSBTopicListener();
 
-            var component = new AzureSBTopicListener(
+            component.ConfigureAzureMessaging(
                   cpipe.Channel.Id
-                , cpipe.Pipeline.Configuration.ServiceBusConnectionValidate(serviceBusConnection)
-                , connectionName
-                , priorityPartitions ?? cpipe.Channel.Partitions.Cast<ListenerPartitionConfig>().ToList()
-                , subscriptionId
-                , isDeadLetterListener
-                , deleteOnStop
-                , listenOnOriginatorId
-                , mappingChannelId
-                , deleteOnIdleTime
-                , resourceProfiles ?? cpipe.Channel.ResourceProfiles);
+                , priorityPartitions ?? cpipe.Channel.Partitions.Cast<ListenerPartitionConfig>()
+                , resourceProfiles
+                , connectionName ?? cpipe.Channel.Id
+                , serviceBusConnection ?? cpipe.Pipeline.Configuration.ServiceBusConnection()
+                );
+
+            component.IsDeadLetterListener = isDeadLetterListener;
+
+            component.DeleteOnIdleTime = deleteOnIdleTime;
+            component.DeleteOnStop = deleteOnStop;
+            component.ListenOnOriginatorId = listenOnOriginatorId;
+
+            //var component = new AzureSBTopicListener(
+            //      cpipe.Channel.Id
+            //    , cpipe.Pipeline.Configuration.ServiceBusConnectionValidate(serviceBusConnection)
+            //    , connectionName
+            //    , priorityPartitions ?? cpipe.Channel.Partitions.Cast<ListenerPartitionConfig>().ToList()
+            //    , subscriptionId
+            //    , isDeadLetterListener
+            //    , deleteOnStop
+            //    , listenOnOriginatorId
+            //    , mappingChannelId
+            //    , deleteOnIdleTime
+            //    , resourceProfiles ?? cpipe.Channel.ResourceProfiles);
 
             onCreate?.Invoke(component);
 

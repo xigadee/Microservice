@@ -27,37 +27,30 @@ namespace Xigadee
     /// </summary>
     public static partial class AzureExtensionMethods
     {
-        public static ChannelPipelineIncoming AttachAzureServiceBusQueueListener(this ChannelPipelineIncoming cpipe
-            , string connectionName
+        public static ChannelPipelineOutgoing AttachAzureServiceBusTopicSender(this ChannelPipelineOutgoing cpipe
+            , string connectionName = null
             , string serviceBusConnection = null
-            , bool isDeadLetterListener = false
-            , string mappingChannelId = null
-            , IEnumerable<ListenerPartitionConfig> priorityPartitions = null
-            , IEnumerable<ResourceProfile> resourceProfiles = null
-            , IBoundaryLogger boundaryLogger = null
-            , Action<AzureSBQueueListener> onCreate = null)
+            , IEnumerable<SenderPartitionConfig> priorityPartitions = null
+            , Action<AzureSBTopicSender> onCreate = null
+            , bool setFromChannelProperties = true
+            )
         {
 
-            var component = new AzureSBQueueListener();
+            var component = new AzureSBTopicSender();
 
-            component.IsDeadLetterListener = isDeadLetterListener;
-
-            component.ConfigureAzureMessaging(cpipe.Channel.Id
-                , priorityPartitions ?? cpipe.Channel.Partitions.Cast<ListenerPartitionConfig>()
-                , resourceProfiles
-                , connectionName
+            component.ConfigureAzureMessaging(
+                  cpipe.Channel.Id
+                , priorityPartitions ?? cpipe.Channel.Partitions.Cast<SenderPartitionConfig>()
+                , null
+                , connectionName ?? cpipe.Channel.Id
                 , serviceBusConnection ?? cpipe.Pipeline.Configuration.ServiceBusConnection()
                 );
 
             onCreate?.Invoke(component);
 
-            cpipe.AttachListener(component, false);
+            cpipe.AttachSender(component, setFromChannelProperties);
 
             return cpipe;
         }
-
-
-
-
     }
 }

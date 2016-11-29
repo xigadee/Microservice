@@ -27,30 +27,38 @@ namespace Xigadee
     /// </summary>
     public static partial class AzureExtensionMethods
     {
-        public static ChannelPipelineOutgoing AttachAzureServiceBusQueueSender(this ChannelPipelineOutgoing cpipe
-            , string connectionName
-            , IEnumerable<SenderPartitionConfig> priorityPartitions = null
+        public static ChannelPipelineIncoming AttachAzureServiceBusQueueListener(this ChannelPipelineIncoming cpipe
+            , string connectionName = null
             , string serviceBusConnection = null
-            , Action<AzureSBQueueSender> onCreate = null)
+            , bool isDeadLetterListener = false
+            , string mappingChannelId = null
+            , IEnumerable<ListenerPartitionConfig> priorityPartitions = null
+            , IEnumerable<ResourceProfile> resourceProfiles = null
+            , IBoundaryLogger boundaryLogger = null
+            , Action<AzureSBQueueListener> onCreate = null)
         {
-            var component = new AzureSBQueueSender();
 
-            component.AzureConn = new AzureConnection(connectionName,serviceBusConnection ?? cpipe.Pipeline.Configuration.ServiceBusConnection() );
+            var component = new AzureSBQueueListener();
 
-            component.PriorityPartitions = (priorityPartitions ?? cpipe.Channel.Partitions.Cast<SenderPartitionConfig>()).ToList();
-
-            component.ConfigureAzureMessaging(cpipe.Channel.Id
-                , priorityPartitions ?? cpipe.Channel.Partitions.Cast<SenderPartitionConfig>()
-                , null
-                , connectionName
+            component.ConfigureAzureMessaging(
+                  cpipe.Channel.Id
+                , priorityPartitions ?? cpipe.Channel.Partitions.Cast<ListenerPartitionConfig>()
+                , resourceProfiles
+                , connectionName ?? cpipe.Channel.Id
                 , serviceBusConnection ?? cpipe.Pipeline.Configuration.ServiceBusConnection()
                 );
 
+            component.IsDeadLetterListener = isDeadLetterListener;
+
             onCreate?.Invoke(component);
 
-            cpipe.AttachSender(component, false);
+            cpipe.AttachListener(component, false);
 
             return cpipe;
         }
+
+
+
+
     }
 }

@@ -40,37 +40,51 @@ namespace Xigadee
         /// <summary>
         /// This is the name of the subscription.
         /// </summary>
-        protected string mSubscriptionId;
+        public string mSubscriptionId { get; set; }
+
         /// <summary>
         /// This property indicates to delete the subscription when the listener stops./
         /// </summary>
-        protected bool mDeleteOnStop;
+        public bool DeleteOnStop { get; set; }
 
-        protected bool mListenOnOriginatorId = false;
+        public bool ListenOnOriginatorId { get; set; }
 
-        protected TimeSpan? mDeleteOnIdleTime;
+        public TimeSpan? DeleteOnIdleTime { get; set; }
         #endregion
         #region Constructor
 
-        public AzureSBTopicListener(string channelId
-            , string connectionString
-            , string connectionName
-            , IEnumerable<ListenerPartitionConfig> priorityPartitions
-            , string subscriptionId = null
-            , bool isDeadLetterListener = false
-            , bool deleteOnStop = true
-            , bool listenOnOriginatorId = false
-            , string mappingChannelId = null
-            , TimeSpan? deleteOnIdleTime = null
-            , IEnumerable<ResourceProfile> resourceProfiles = null):base()
+        /// <summary>
+        /// This is the default constructor used by the pipeline.
+        /// </summary>
+        public AzureSBTopicListener() { }
 
-        {
-            mSubscriptionId = subscriptionId ?? mappingChannelId;
-            mDeleteOnStop = deleteOnStop;
-            mListenOnOriginatorId = listenOnOriginatorId;
-            mDeleteOnIdleTime = deleteOnIdleTime??(deleteOnStop?TimeSpan.FromHours(4):default(TimeSpan?));
-        }
+        //public AzureSBTopicListener(string channelId
+        //    , string connectionString
+        //    , string connectionName
+        //    , IEnumerable<ListenerPartitionConfig> priorityPartitions
+        //    , string subscriptionId = null
+        //    , bool isDeadLetterListener = false
+        //    , bool deleteOnStop = true
+        //    , bool listenOnOriginatorId = false
+        //    , string mappingChannelId = null
+        //    , TimeSpan? deleteOnIdleTime = null
+        //    , IEnumerable<ResourceProfile> resourceProfiles = null):base()
+
+        //{
+        //    mSubscriptionId = subscriptionId ?? mappingChannelId;
+        //    DeleteOnStop = deleteOnStop;
+        //    ListenOnOriginatorId = listenOnOriginatorId;
+        //    DeleteOnIdleTime = deleteOnIdleTime??(deleteOnStop?TimeSpan.FromHours(4):default(TimeSpan?));
+        //}
         #endregion
+
+        protected override void SettingsValidate()
+        {
+            base.SettingsValidate();
+
+            DeleteOnIdleTime = DeleteOnIdleTime ?? (DeleteOnStop ? TimeSpan.FromHours(4) : default(TimeSpan?));
+        }
+
         #region OriginatorId
         /// <summary>
         /// This override sets the SubscriptionId if it is null. This is set from the first 50 characters of the originator id
@@ -91,6 +105,11 @@ namespace Xigadee
         }
         #endregion
 
+        #region SubscriptionIdSet(string originatorId)
+        /// <summary>
+        /// This method sets the subscription id from the first 50 characters of the incoming originator id.
+        /// </summary>
+        /// <param name="originatorId">The originator id.</param>
         protected virtual void SubscriptionIdSet(string originatorId)
         {
             if (mSubscriptionId == null)
@@ -100,7 +119,8 @@ namespace Xigadee
                 if (mSubscriptionId.Length > 50)
                     mSubscriptionId = mSubscriptionId.Substring(0, 50);
             }
-        }
+        } 
+        #endregion
 
         #region GetFilters()
         /// <summary>
@@ -115,7 +135,7 @@ namespace Xigadee
             if (id.Length > 50)
                 id = id.Substring(0, 50);
 
-            if (mListenOnOriginatorId)
+            if (ListenOnOriginatorId)
             {
                 list = new List<SqlFilter>();
                 var servMess = new ServiceMessageHeader(ChannelId);
@@ -128,7 +148,6 @@ namespace Xigadee
         }
 
         #endregion
-
 
         #region SubscriptionId
         /// <summary>
@@ -158,7 +177,7 @@ namespace Xigadee
             {
                 AzureConn.TopicFabricInitialize(client.Name);
                 var subDesc = AzureConn.SubscriptionFabricInitialize(client.Name, mSubscriptionId
-                    , autoDeleteSubscription: mDeleteOnIdleTime
+                    , autoDeleteSubscription: DeleteOnIdleTime
                     , lockDuration: partition.FabricMaxMessageLock);
             };
 
@@ -270,7 +289,7 @@ namespace Xigadee
         {
             base.TearDown();
 
-            if (mDeleteOnStop && mSubscriptionId != null)
+            if (DeleteOnStop && mSubscriptionId != null)
             {
                 if (AzureConn.NamespaceManager.SubscriptionExists(AzureConn.ConnectionName, mSubscriptionId))
                 {

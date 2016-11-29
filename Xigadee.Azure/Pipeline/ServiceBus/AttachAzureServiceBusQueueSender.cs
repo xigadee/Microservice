@@ -27,27 +27,25 @@ namespace Xigadee
     /// </summary>
     public static partial class AzureExtensionMethods
     {
-        public static ChannelPipelineOutgoing AttachAzureServiceBusTopicSender(this ChannelPipelineOutgoing cpipe
-            , string connectionName
-            , string serviceBusConnection = null
+        public static ChannelPipelineOutgoing AttachAzureServiceBusQueueSender(this ChannelPipelineOutgoing cpipe
+            , string connectionName = null
             , IEnumerable<SenderPartitionConfig> priorityPartitions = null
-            , Action<AzureSBTopicSender> onCreate = null
-            , bool setFromChannelProperties = true
-            )
+            , string serviceBusConnection = null
+            , Action<AzureSBQueueSender> onCreate = null)
         {
-            if (connectionName == null)
-                throw new ArgumentNullException("connectionName cannot be null.");
-
-            var component = new AzureSBTopicSender();
-                //  cpipe.Channel.Id
-                //, cpipe.Pipeline.Configuration.ServiceBusConnectionValidate(serviceBusConnection)
-                //, connectionName
-                //, priorityPartitions ?? cpipe.Channel.Partitions.Cast<SenderPartitionConfig>().ToList()
-                //);
+            var component = new AzureSBQueueSender();
+            
+            component.ConfigureAzureMessaging(
+                  cpipe.Channel.Id
+                , priorityPartitions ?? cpipe.Channel.Partitions.Cast<SenderPartitionConfig>()
+                , null
+                , connectionName ?? cpipe.Channel.Id
+                , serviceBusConnection ?? cpipe.Pipeline.Configuration.ServiceBusConnection()
+                );
 
             onCreate?.Invoke(component);
 
-            cpipe.AttachSender(component, setFromChannelProperties);
+            cpipe.AttachSender(component, false);
 
             return cpipe;
         }
