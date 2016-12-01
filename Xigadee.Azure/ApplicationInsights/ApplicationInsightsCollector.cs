@@ -74,7 +74,7 @@ namespace Xigadee
             SupportAdd(DataCollectionSupport.EventSource, e => Write((EventSourceEvent)e));
             SupportAdd(DataCollectionSupport.Statistics, e => Write((MicroserviceStatistics)e));
             SupportAdd(DataCollectionSupport.Logger, e => Write((LogEvent)e));
-            SupportAdd(DataCollectionSupport.Telemetry, e => Write((MetricEvent)e));
+            SupportAdd(DataCollectionSupport.Telemetry, e => Write((TelemetryEvent)e));
         }
 
         private void Write(BoundaryEvent eventData)
@@ -219,7 +219,7 @@ namespace Xigadee
             }
         }
 
-        private void Write(MetricEvent eventData)
+        private void Write(TelemetryEvent eventData)
         {
             if (string.IsNullOrEmpty(eventData?.MetricName))
                 return;

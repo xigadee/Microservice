@@ -23,7 +23,11 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public interface ICommand: IService, IRequireScheduler, IPayloadSerializerConsumer, IServiceEventSource, IServiceLogger, IServiceOriginator, IRequireSharedServices
+    /// <summary>
+    /// 
+    /// </summary>
+    public interface ICommand: IService, IRequireScheduler, IPayloadSerializerConsumer, 
+        IServiceEventSource, IServiceLogger, IServiceOriginator, IRequireSharedServices
     {
         /// <summary>
         /// This is the default listening channel id for incoming requests.

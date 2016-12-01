@@ -99,7 +99,7 @@ namespace Xigadee
             //    catch { }
             //});
 
-            Write(new MetricEvent { MetricName = metricName, Value = value }, DataCollectionSupport.Telemetry);
+            Write(new TelemetryEvent { MetricName = metricName, Value = value }, DataCollectionSupport.Telemetry);
         }
         #endregion
 

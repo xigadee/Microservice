@@ -24,7 +24,7 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static ChannelPipelineOutgoing AttachCommandInitiator(this ChannelPipelineOutgoing cpipe
+        public static ChannelPipelineIncoming AttachCommandInitiator(this ChannelPipelineIncoming cpipe
             , out CommandInitiator command
             , TimeSpan? defaultRequestTimespan = null
             , int startupPriority = 100)

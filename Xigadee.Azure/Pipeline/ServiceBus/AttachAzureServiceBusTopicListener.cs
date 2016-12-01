@@ -57,7 +57,7 @@ namespace Xigadee
             component.DeleteOnIdleTime = deleteOnIdleTime;
             component.DeleteOnStop = deleteOnStop;
             component.ListenOnOriginatorId = listenOnOriginatorId;
-
+            //component.SubscriptionId
             //var component = new AzureSBTopicListener(
             //      cpipe.Channel.Id
             //    , cpipe.Pipeline.Configuration.ServiceBusConnectionValidate(serviceBusConnection)

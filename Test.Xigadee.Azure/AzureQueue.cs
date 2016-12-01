@@ -36,6 +36,8 @@ namespace Test.Xigadee.Azure
         [return: PayloadOut]
         private string Method1([PayloadIn] string inData)
         {
+            Collector.Write(new LogEvent("Hello"), true);
+
             return "mom";
         }
 
@@ -58,18 +60,18 @@ namespace Test.Xigadee.Azure
 
             try
             {
-                var sender = new MicroservicePipeline("sender")
+                var sender = new MicroservicePipeline("initiator")
                     .ConfigurationOverrideSet(AzureExtensionMethods.KeyServiceBusConnection, SbConn)
                     .AddChannelOutgoing("remote")
                         //.AttachPriorityPartition(0,1)
                         .AttachAzureServiceBusQueueSender()
-                        .AttachCommandInitiator(out init)
                     .Revert()
                         .AddChannelIncoming("response")
-                        .AttachAzureServiceBusTopicListener()
+                        .AttachAzureServiceBusTopicListener(listenOnOriginatorId: true)
+                        .AttachCommandInitiator(out init)
                     ;
 
-                var listener = new MicroservicePipeline("listener")
+                var listener = new MicroservicePipeline("responder")
                     .ConfigurationOverrideSet(AzureExtensionMethods.KeyServiceBusConnection, SbConn)
                     .AddChannelIncoming("remote")
                         .AttachAzureServiceBusQueueListener()
@@ -83,9 +85,9 @@ namespace Test.Xigadee.Azure
 
                 sender.Start();
 
-                var rs = init.Process<ISimpleCommand, string, string>("hello").Result;
+                var rs = init.Process<ISimpleCommand, string, string>("hello")?.Result;
 
-                Assert.IsTrue(rs.Response == "mom");
+                Assert.IsTrue(rs?.Response == "mom");
 
 
             }

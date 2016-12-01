@@ -297,7 +297,12 @@ namespace Xigadee
                     AzureConn.NamespaceManager.DeleteSubscription(AzureConn.ConnectionName, mSubscriptionId);
                 }
             }
-        } 
+        }
         #endregion
+
+        protected override void StartInternal()
+        {
+            base.StartInternal();
+        }
     }
 }
