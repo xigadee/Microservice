@@ -17,8 +17,9 @@ namespace Xigadee
         /// This is the metric name.
         /// </summary>
         public string MetricName { get; set; }
+
         /// <summary>
-        /// This is the metric value.
+        /// Value
         /// </summary>
         public double Value { get; set; }
 
