@@ -66,5 +66,17 @@ namespace Xigadee
             return cpipe;
         }
 
+        public static ChannelPipelineIncoming AddChannelIncoming(this ChannelPipelineBase pipeline
+            , string channelId
+            , string description = null
+            , IEnumerable<ListenerPartitionConfig> partitions = null
+            , IBoundaryLogger bLogger = null
+            , IEnumerable<ResourceProfile> resourceProfiles = null
+            , bool internalOnly = false
+            , Action<ChannelPipelineIncoming, Channel> assign = null
+            )
+        {
+            return pipeline.Pipeline.AddChannelIncoming(channelId, description, partitions, bLogger, resourceProfiles, internalOnly, assign);
+        }
     }
 }

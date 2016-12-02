@@ -108,5 +108,33 @@ namespace Xigadee
             return cpipe;
         }
 
+
+        /// <summary>
+        /// This method attaches a rewrite rule to the channel pipeline.
+        /// </summary>
+        /// <typeparam name="P">The channel pipeline type.</typeparam>
+        /// <param name="cpipe">The incoming pipeline.</param>
+        /// <param name="canRedirect">The match function.</param>
+        /// <param name="changeHeader">The redirect header.</param>
+        /// <param name="canCache">Specifies whether the redirect hit can be cached.</param>
+        /// <returns>Returns the original pipeline.</returns>
+        public static P AttachMessageRedirectRule<P>(this P cpipe
+            , Func<TransmissionPayload, bool> canRedirect
+            , ServiceMessageHeader changeHeader
+            , bool canCache = true)
+            where P : ChannelPipelineBase
+        {
+            Action<TransmissionPayload> updateHeader = (p) =>
+            {
+                p.Message.ChannelId = changeHeader.ChannelId;
+                p.Message.MessageType = changeHeader.MessageType;
+                p.Message.ActionType = changeHeader.ActionType;
+            };
+
+            cpipe.AttachMessageRedirectRule(canRedirect, updateHeader, canCache);
+
+            return cpipe;
+        }
+
     }  
 }

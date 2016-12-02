@@ -41,6 +41,12 @@ namespace Test.Xigadee.Azure
             return "mom";
         }
 
+        [CommandContract("process","deadletter")]
+        private void ProcessDeadletter(TransmissionPayload inData)
+        {
+            Collector.Write(new LogEvent("Hello"), true);
+        }
+
         protected override void StartInternal()
         {
             base.StartInternal();
@@ -76,6 +82,11 @@ namespace Test.Xigadee.Azure
                     .AddChannelIncoming("remote")
                         .AttachAzureServiceBusQueueListener()
                         .AttachCommand<SimpleCommand>()
+
+                    .AddChannelIncoming("deadletter")
+                        .AttachMessageRedirectRule((p) => true, new ServiceMessageHeader("remote", "process", "deadletter"))
+                        .AttachAzureServiceBusQueueListener("remote", isDeadLetterListener: true)
+
                     .Revert()
                     .AddChannelOutgoing("response")
                         .AttachAzureServiceBusTopicSender()
@@ -89,7 +100,8 @@ namespace Test.Xigadee.Azure
 
                 Assert.IsTrue(rs?.Response == "mom");
 
-
+                sender.Stop();
+                listener.Stop();
             }
             catch (Exception ex)
             {
