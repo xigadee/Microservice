@@ -79,93 +79,102 @@ namespace Xigadee
         /// <returns>Returns true if the signature is validated.</returns>
         protected virtual bool Validate(bool throwException = false)
         {
-            CommandAttributes = Attribute.GetCustomAttributes(Method)
-                .Where((a) => a is CommandContractAttribute)
-                .Cast<CommandContractAttribute>()
-                .ToList();
-
-            //This shouldn't happen, but check anyway.
-            if (CommandAttributes.Count == 0)
-                if (throwException)
-                    throw new CommandMethodSignatureException($"CommandAttributes are not defined for the method.");
-                else
-                    return false;
-
-            //OK, check whether the return parameter is a Task or Task<> async construct
-            IsAsync = typeof(Task).IsAssignableFrom(Method.ReturnParameter.ParameterType);
-
-            Parameters = Method.GetParameters().ToList();
-            var paramInfo = Method.GetParameters().ToList();
-
-            //OK, see if the standard parameters exist and aren't decorated as In or Out.
-            StandardIn = paramInfo
-                .Where((p) => !ParamAttributes<PayloadInAttribute>(p))
-                .Where((p) => !ParamAttributes<PayloadOutAttribute>(p))
-                .FirstOrDefault((p) => p.ParameterType == typeof(TransmissionPayload));
-            bool isStandardIn = (StandardIn != null) && paramInfo.Remove(StandardIn);
-            if (StandardIn != null)
-                StandardInPos = Parameters.IndexOf(StandardIn);
-
-            StandardOut = paramInfo
-                .Where((p) => !ParamAttributes<PayloadInAttribute>(p))
-                .Where((p) => !ParamAttributes<PayloadOutAttribute>(p))
-                .FirstOrDefault((p) => p.ParameterType == typeof(List<TransmissionPayload>));
-            bool isStandardOut = (StandardOut != null) && paramInfo.Remove(StandardOut);
-            if (StandardOut != null)
-                StandardOutPos = Parameters.IndexOf(StandardOut);
-
-            IsStandardCall = (isStandardIn || isStandardOut) && paramInfo.Count == 0;
-
-            if (IsStandardCall)
-                return true;
-
-            //Get the In parameter
-            ParamIn = Parameters.Where((p) => ParamAttributes<PayloadInAttribute>(p)).FirstOrDefault();
-            if (ParamIn != null && paramInfo.Remove(ParamIn))
+            try
             {
-                TypeIn = ParamIn?.ParameterType;
-                ParamInPos = Parameters.IndexOf(ParamIn);
-            }
 
-            //Now get the out parameter
-            ParamOut = Parameters.Where((p) => ParamAttributes<PayloadOutAttribute>(p)).FirstOrDefault();
+                CommandAttributes = Attribute.GetCustomAttributes(Method)
+                    .Where((a) => a is CommandContractAttribute)
+                    .Cast<CommandContractAttribute>()
+                    .ToList();
 
-            if (ParamOut == null && ParamAttributes<PayloadOutAttribute>(Method.ReturnParameter))
-            {
-                ParamOut = Method.ReturnParameter;
-                IsReturnValue = true;
-            }
-            else if (ParamOut != null && paramInfo.Remove(ParamOut))
-            {
-                ParamOutPos = Parameters.IndexOf(ParamOut);
-            }
-
-            if (ParamOut != null && !IsReturnValue && !ParamOut.IsOut)
-                if (throwException)
-                    throw new CommandMethodSignatureException($"Parameter {ParamOut.Name} is not marked as an out parameter.");
-                else
-                    return false;
-
-            if (IsAsync && IsReturnValue && ParamOut.ParameterType.IsGenericType)
-            {
-                if (ParamOut.ParameterType.GenericTypeArguments.Length != 1)
+                //This shouldn't happen, but check anyway.
+                if (CommandAttributes.Count == 0)
                     if (throwException)
-                        throw new CommandMethodSignatureException($"Generic Task response parameter can only have one parameter.");
+                        throw new CommandMethodSignatureException($"CommandAttributes are not defined for the method.");
                     else
                         return false;
 
-                TypeOut = ParamOut.ParameterType.GenericTypeArguments[0];
+                //OK, check whether the return parameter is a Task or Task<> async construct
+                IsAsync = typeof(Task).IsAssignableFrom(Method.ReturnParameter.ParameterType);
+
+                Parameters = Method.GetParameters().ToList();
+                var paramInfo = Method.GetParameters().ToList();
+
+                //OK, see if the standard parameters exist and aren't decorated as In or Out.
+                StandardIn = paramInfo
+                    .Where((p) => !ParamAttributes<PayloadInAttribute>(p))
+                    .Where((p) => !ParamAttributes<PayloadOutAttribute>(p))
+                    .FirstOrDefault((p) => p.ParameterType == typeof(TransmissionPayload));
+                bool isStandardIn = (StandardIn != null) && paramInfo.Remove(StandardIn);
+                if (StandardIn != null)
+                    StandardInPos = Parameters.IndexOf(StandardIn);
+
+                StandardOut = paramInfo
+                    .Where((p) => !ParamAttributes<PayloadInAttribute>(p))
+                    .Where((p) => !ParamAttributes<PayloadOutAttribute>(p))
+                    .FirstOrDefault((p) => p.ParameterType == typeof(List<TransmissionPayload>));
+                bool isStandardOut = (StandardOut != null) && paramInfo.Remove(StandardOut);
+                if (StandardOut != null)
+                    StandardOutPos = Parameters.IndexOf(StandardOut);
+
+                IsStandardCall = (isStandardIn || isStandardOut) && paramInfo.Count == 0;
+
+                if (IsStandardCall)
+                    return true;
+
+                //Get the In parameter
+                ParamIn = Parameters.Where((p) => ParamAttributes<PayloadInAttribute>(p)).FirstOrDefault();
+                if (ParamIn != null && paramInfo.Remove(ParamIn))
+                {
+                    TypeIn = ParamIn?.ParameterType;
+                    ParamInPos = Parameters.IndexOf(ParamIn);
+                }
+
+                //Now get the out parameter
+                ParamOut = Parameters.Where((p) => ParamAttributes<PayloadOutAttribute>(p)).FirstOrDefault();
+
+                if (ParamOut == null && ParamAttributes<PayloadOutAttribute>(Method.ReturnParameter))
+                {
+                    ParamOut = Method.ReturnParameter;
+                    IsReturnValue = true;
+                }
+                else if (ParamOut != null && paramInfo.Remove(ParamOut))
+                {
+                    ParamOutPos = Parameters.IndexOf(ParamOut);
+                }
+
+                if (ParamOut != null && !IsReturnValue && !ParamOut.IsOut)
+                    if (throwException)
+                        throw new CommandMethodSignatureException($"Parameter {ParamOut.Name} is not marked as an out parameter.");
+                    else
+                        return false;
+
+                if (IsAsync && IsReturnValue && ParamOut.ParameterType.IsGenericType)
+                {
+                    if (ParamOut.ParameterType.GenericTypeArguments.Length != 1)
+                        if (throwException)
+                            throw new CommandMethodSignatureException($"Generic Task response parameter can only have one parameter.");
+                        else
+                            return false;
+
+                    TypeOut = ParamOut.ParameterType.GenericTypeArguments[0];
+                }
+                else if (!IsAsync)
+                {
+                    TypeOut = ParamOut.ParameterType;
+                }
+
+                //Finally check that we have used all the parameters.
+                if (paramInfo.Count != 0 && throwException)
+                    throw new CommandMethodSignatureException($"There are too many parameters in the method ({paramInfo[0].Name}).");
+
+                return paramInfo.Count == 0;
+
             }
-            else if (!IsAsync)
+            catch (Exception ex)
             {
-                TypeOut = ParamOut.ParameterType;
+                throw new CommandMethodSignatureException("PayloadIn or PayloadOut have not been set correctly.") { InnerException = ex };
             }
-
-            //Finally check that we have used all the parameters.
-            if (paramInfo.Count != 0 && throwException)
-                throw new CommandMethodSignatureException($"There are too many parameters in the method ({paramInfo[0].Name}).");
-
-            return paramInfo.Count == 0;
         }
 
         private bool ParamAttributes<A>(ParameterInfo info)

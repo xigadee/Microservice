@@ -38,6 +38,7 @@ namespace Xigadee
         /// <param name="resourceProfiles"></param>
         /// <param name="internalOnly"></param>
         /// <param name="assign"></param>
+        /// <param name="autosetPartition01">This method automatically sets the default priority 0 and 1 partitions for the channel.</param>
         /// <returns>The original pipeline.</returns>
         public static ChannelPipelineIncoming AddChannelIncoming(this MicroservicePipeline pipeline
             , string channelId
@@ -47,17 +48,18 @@ namespace Xigadee
             , IEnumerable<ResourceProfile> resourceProfiles = null
             , bool internalOnly = false
             , Action<ChannelPipelineIncoming, Channel> assign = null
+            , bool autosetPartition01 = true
             )
         {     
             var channel = pipeline.Service.RegisterChannel(new Channel(channelId, ChannelDirection.Incoming, description, bLogger, internalOnly));
 
-            if (partitions == null)
+            if (partitions == null && autosetPartition01)
                 partitions = ListenerPartitionConfig.Init(0,1);
 
-            channel.Partitions = partitions.ToList();
+            channel.Partitions = partitions?.ToList();
 
             if (resourceProfiles != null)
-                channel.ResourceProfiles = resourceProfiles.ToList();
+                channel.ResourceProfiles = resourceProfiles?.ToList();
 
             var cpipe = new ChannelPipelineIncoming(pipeline, channel);
 
@@ -74,9 +76,10 @@ namespace Xigadee
             , IEnumerable<ResourceProfile> resourceProfiles = null
             , bool internalOnly = false
             , Action<ChannelPipelineIncoming, Channel> assign = null
+            , bool autosetPartition01 = true
             )
         {
-            return pipeline.Pipeline.AddChannelIncoming(channelId, description, partitions, bLogger, resourceProfiles, internalOnly, assign);
+            return pipeline.Pipeline.AddChannelIncoming(channelId, description, partitions, bLogger, resourceProfiles, internalOnly, assign, autosetPartition01);
         }
     }
 }

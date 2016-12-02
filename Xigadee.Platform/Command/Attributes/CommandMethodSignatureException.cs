@@ -15,5 +15,7 @@ namespace Xigadee
         {
 
         }
+
+        public Exception InnerException { get; set; }
     }
 }

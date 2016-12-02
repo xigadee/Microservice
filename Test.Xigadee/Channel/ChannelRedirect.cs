@@ -10,26 +10,29 @@ namespace Test.Xigadee
         [TestMethod]
         public void Rewrite1()
         {
-            var ms = new MicroservicePipeline();
-            CommandInitiator init;
-            ms
-                .AddChannelIncoming("deadletter")
-                .Revert()
-                .AddChannelIncoming("freddy")
-                    .AttachCommand<RewriteCommandVerifyFail>()
-                    .AttachMessageRedirectRule(
-                        new ServiceMessageHeader("freddy", "one", "two")
-                       ,new ServiceMessageHeader("findlay", "three", "four")
-                       )
-                .Revert()
-                .AddChannelIncoming("findlay")
-                    .AttachCommand<RewriteCommandVerifySuccess>()
-                .Revert()
-                .AddChannelOutgoing("response")
-                    
-                ;
-            
-            ms.Start();
+            try
+            {
+                var ms = new MicroservicePipeline();
+                CommandInitiator init;
+                ms
+                    .AddChannelIncoming("deadletter")
+                    .AddChannelIncoming("freddy")
+                        .AttachCommand<RewriteCommandVerifyFail>()
+                        .AttachMessageRedirectRule(
+                            new ServiceMessageHeader("freddy", "one", "two")
+                           , new ServiceMessageHeader("findlay", "three", "four")
+                           )
+                    .AddChannelIncoming("findlay")
+                        .AttachCommand<RewriteCommandVerifySuccess>()
+                    .AddChannelOutgoing("response")
+                    ;
+
+                ms.Start();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
     }
 
@@ -37,7 +40,8 @@ namespace Test.Xigadee
     {
 
         [CommandContract("findlay", "three", "four")]
-        public string Verify(string inData)
+        [return: PayloadOut]
+        public string Verify([PayloadIn]string inData)
         {
             return "fail";
         }
@@ -46,7 +50,8 @@ namespace Test.Xigadee
     {
 
         [CommandContract("freddy", "one", "two")]
-        public string Verify(string inData)
+        [return: PayloadOut]
+        public string Verify([PayloadIn]string inData)
         {
             return "pass";
         }

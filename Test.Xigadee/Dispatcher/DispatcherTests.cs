@@ -14,14 +14,14 @@ namespace Test.Xigadee
         [TestInitialize]
         public void TearUp()
         {
+            mPipeline = PipelineConfigure(Microservice.Create((s) => service = s, serviceName: GetType().Name));
+
             try
             {
-                mPipeline = PipelineConfigure(Microservice.Create((s) => service = s, serviceName: GetType().Name));
                 mPipeline.Start();
             }
             catch (Exception ex)
             {
-
                 throw ex;
             }
         }
@@ -43,8 +43,7 @@ namespace Test.Xigadee
             {
                 success = true;
                 mre.Set();
-            }
-            , options: ProcessOptions.RouteInternal);
+            }, options: ProcessOptions.RouteInternal);
 
             mListener.Inject(message);
 

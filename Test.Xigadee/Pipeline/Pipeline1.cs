@@ -63,12 +63,10 @@ namespace Test.Xigadee
                     .CallOut(ConfigureServiceRoot)
                     .AddChannelIncoming("internalIn", internalOnly: true)
                         .CallOut(ChannelInConfigure)
-                        .AttachPriorityPartition(0, 1)
                         .AttachCommand(new PersistenceBlahMemory(),(p) => persistBlah = p)
                         .AttachCommand(new PersistenceSharedService<Guid, Blah>(), (c) => persistence = c, cpipeOut)
                         .Revert((c) => cpipeIn = c)
                     .AddChannelOutgoing("internalOut", internalOnly: true)
-                        .AttachPriorityPartition(0, 1)
                         .Revert((c) => cpipeOut = c);
 
                 persistBlah.OnEntityChangeAction += ((o, e) => { signalChange++; });

@@ -37,6 +37,7 @@ namespace Xigadee
         /// <param name="bLogger"></param>
         /// <param name="internalOnly"></param>
         /// <param name="assign"></param>
+        /// <param name="autosetPartition01"></param>
         /// <returns></returns>
         public static ChannelPipelineOutgoing AddChannelOutgoing(this MicroservicePipeline pipeline
             , string channelId
@@ -45,14 +46,15 @@ namespace Xigadee
             , IBoundaryLogger bLogger = null
             , bool internalOnly = false
             , Action<ChannelPipelineOutgoing, Channel> assign = null
+            , bool autosetPartition01 = true
             )
         {
             var channel = pipeline.Service.RegisterChannel(new Channel(channelId, ChannelDirection.Outgoing, description, bLogger, internalOnly));
 
-            if (partitions == null)
+            if (partitions == null && autosetPartition01)
                 partitions = SenderPartitionConfig.Init(0,1);
 
-            channel.Partitions = partitions.ToList();
+            channel.Partitions = partitions?.ToList();
 
             var cpipe = new ChannelPipelineOutgoing(pipeline, channel);
 
@@ -71,6 +73,7 @@ namespace Xigadee
         /// <param name="bLogger"></param>
         /// <param name="internalOnly"></param>
         /// <param name="assign"></param>
+        /// <param name="autosetPartition01"></param>
         /// <returns></returns>
         public static ChannelPipelineOutgoing AddChannelOutgoing(this ChannelPipelineBase pipeline
             , string channelId
@@ -79,9 +82,10 @@ namespace Xigadee
             , IBoundaryLogger bLogger = null
             , bool internalOnly = false
             , Action<ChannelPipelineOutgoing, Channel> assign = null
+            , bool autosetPartition01 = true
             )
         {
-            return pipeline.Pipeline.AddChannelOutgoing(channelId, description, partitions, bLogger, internalOnly, assign);
+            return pipeline.Pipeline.AddChannelOutgoing(channelId, description, partitions, bLogger, internalOnly, assign, autosetPartition01);
         }
     }
 }
