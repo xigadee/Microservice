@@ -226,7 +226,7 @@ namespace Xigadee
 
             try
             {
-                mTelemetry?.TrackMetric(eventData.MetricName, eventData.Value);
+                mTelemetry?.TrackMetric(eventData.MetricName, eventData.Value, eventData.AdditionalData);
             }
             catch (Exception ex)
             {

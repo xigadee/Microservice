@@ -21,5 +21,10 @@ namespace Xigadee
         /// This is the metric value.
         /// </summary>
         public double Value { get; set; }
+
+        /// <summary>
+        /// Addition data to associate when logging the metric
+        /// </summary>
+        public virtual Dictionary<string, string> AdditionalData { get; } = new Dictionary<string, string>();
     }
 }
