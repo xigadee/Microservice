@@ -27,7 +27,21 @@ namespace Xigadee
     /// </summary>
     public static partial class CorePipelineExtensions
     {
-        public static MicroservicePipeline AddSharedService<I>(this MicroservicePipeline pipeline, I service, string serviceName = null, Action<I> action = null) where I : class
+        public static MicroservicePipeline AddSharedService<I>(this MicroservicePipeline pipeline
+            , Func<IEnvironmentConfiguration, I> creator, string serviceName = null, Action<I> action = null) where I : class
+        {
+            var service = creator(pipeline.Configuration);
+
+            action?.Invoke(service);
+
+            if (!pipeline.Service.SharedServices.RegisterService<I>(service, serviceName))
+                throw new SharedServiceRegistrationException(typeof(I).Name, serviceName);
+
+            return pipeline;
+        }
+
+        public static MicroservicePipeline AddSharedService<I>(this MicroservicePipeline pipeline
+            , I service, string serviceName = null, Action<I> action = null) where I : class
         {
             action?.Invoke(service);
 
@@ -37,9 +51,10 @@ namespace Xigadee
             return pipeline;
         }
 
-        public static MicroservicePipeline AddSharedService<I>(this MicroservicePipeline pipeline, Lazy<I> service, string serviceName = null) where I : class
+        public static MicroservicePipeline AddSharedService<I>(this MicroservicePipeline pipeline
+            , Lazy<I> creator, string serviceName = null) where I : class
         {
-            if (!pipeline.Service.SharedServices.RegisterService<I>(service, serviceName))
+            if (!pipeline.Service.SharedServices.RegisterService<I>(creator, serviceName))
                 throw new SharedServiceRegistrationException(typeof(I).Name, serviceName);
 
             return pipeline;
