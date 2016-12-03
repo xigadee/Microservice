@@ -24,6 +24,19 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="C"></typeparam>
+        /// <param name="pipeline"></param>
+        /// <param name="command"></param>
+        /// <param name="assignment"></param>
+        /// <param name="startupPriority"></param>
+        /// <param name="channelIncoming"></param>
+        /// <param name="channelResponse"></param>
+        /// <param name="channelMasterJobNegotiationIncoming"></param>
+        /// <param name="channelMasterJobNegotiationOutgoing"></param>
+        /// <returns></returns>
         public static MicroservicePipeline AddCommand<C>(this MicroservicePipeline pipeline
             , C command
             , Action<C> assignment = null
@@ -53,7 +66,19 @@ namespace Xigadee
             pipeline.Service.RegisterCommand(command);
             return pipeline;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="C"></typeparam>
+        /// <param name="pipeline"></param>
+        /// <param name="creator"></param>
+        /// <param name="assignment"></param>
+        /// <param name="channelIncoming"></param>
+        /// <param name="channelResponse"></param>
+        /// <param name="channelMasterJobNegotiationIncoming"></param>
+        /// <param name="channelMasterJobNegotiationOutgoing"></param>
+        /// <param name="startupPriority"></param>
+        /// <returns></returns>
         public static MicroservicePipeline AddCommand<C>(this MicroservicePipeline pipeline
             , Func<IEnvironmentConfiguration, C> creator
             , Action<C> assignment = null

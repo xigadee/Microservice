@@ -15,10 +15,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -27,6 +23,15 @@ namespace Xigadee
     /// </summary>
     public static partial class CorePipelineExtensions
     {
+        /// <summary>
+        /// This pipeline extension is used to add a service to the Microservice shared service container.
+        /// </summary>
+        /// <typeparam name="I">The interface type.</typeparam>
+        /// <param name="pipeline">The pipeline</param>
+        /// <param name="creator">A function that takes in the pipeline configuration and returns an instance of the service.</param>
+        /// <param name="serviceName">The optional service name</param>
+        /// <param name="action">An optional action to access the service on assignment.</param>
+        /// <returns>Returns the pipeliene.</returns>
         public static MicroservicePipeline AddSharedService<I>(this MicroservicePipeline pipeline
             , Func<IEnvironmentConfiguration, I> creator, string serviceName = null, Action<I> action = null) where I : class
         {
@@ -39,7 +44,15 @@ namespace Xigadee
 
             return pipeline;
         }
-
+        /// <summary>
+        /// This pipeline extension is used to add a service to the Microservice shared service container.
+        /// </summary>
+        /// <typeparam name="I">The interface type.</typeparam>
+        /// <param name="pipeline">The pipeline</param>
+        /// <param name="service">The service instance to add.</param>
+        /// <param name="serviceName">The optional service name</param>
+        /// <param name="action">An optional action to access the service on assignment.</param>
+        /// <returns>Returns the pipeliene.</returns>
         public static MicroservicePipeline AddSharedService<I>(this MicroservicePipeline pipeline
             , I service, string serviceName = null, Action<I> action = null) where I : class
         {
@@ -50,7 +63,14 @@ namespace Xigadee
 
             return pipeline;
         }
-
+        /// <summary>
+        /// This pipeline extension is used to add a service to the Microservice shared service container.
+        /// </summary>
+        /// <typeparam name="I">The interface type.</typeparam>
+        /// <param name="pipeline">The pipeline</param>
+        /// <param name="creator">A lazy creator for the service that is called when the service is first accessed.</param>
+        /// <param name="serviceName">The optional service name</param>
+        /// <returns>Returns the pipeliene.</returns>
         public static MicroservicePipeline AddSharedService<I>(this MicroservicePipeline pipeline
             , Lazy<I> creator, string serviceName = null) where I : class
         {
