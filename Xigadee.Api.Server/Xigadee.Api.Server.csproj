@@ -165,6 +165,7 @@
     <Compile Include="Apim\ApimResponseHolder.cs" />
     <Compile Include="Controllers\SecurityControllerAsyncBase.cs" />
     <Compile Include="Controllers\WebhookControllerAsyncBase.cs" />
+    <Compile Include="Helper\MicroserviceDependencyResolver.cs" />
     <Compile Include="Pipeline\Actual.cs" />
     <Compile Include="Pipeline\AddCorrelationIdFilter.cs" />
     <Compile Include="Pipeline\AddMicroserviceUnavailableFilter.cs" />

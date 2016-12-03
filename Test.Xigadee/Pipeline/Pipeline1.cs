@@ -50,8 +50,7 @@ namespace Test.Xigadee
         {
             try
             {
-                Microservice service;
-                var pipeline = Microservice.Create((s) => service = s, serviceName: "TestPipeline");
+                var pipeline = new MicroservicePipeline("TestPipeline");
 
                 ChannelPipelineIncoming cpipeIn = null;
                 ChannelPipelineOutgoing cpipeOut = null;
@@ -68,8 +67,8 @@ namespace Test.Xigadee
                     .CallOut(ConfigureServiceRoot)
                     .AddChannelIncoming("internalIn", internalOnly: true)
                         .CallOut(ChannelInConfigure)
-                        .AttachCommand(new PersistenceBlahMemory(),(p) => persistBlah = p)
-                        .AttachCommand(new PersistenceSharedService<Guid, Blah>(), (c) => persistence = c, cpipeOut)
+                        .AttachCommand(new PersistenceBlahMemory(), assign:(p) => persistBlah = p)
+                        .AttachCommand(new PersistenceSharedService<Guid, Blah>(), assign:(c) => persistence = c, channelResponse: cpipeOut)
                         .Revert((c) => cpipeIn = c)
                     .AddChannelOutgoing("internalOut", internalOnly: true)
                         .CallOut(ChannelOutConfigure)

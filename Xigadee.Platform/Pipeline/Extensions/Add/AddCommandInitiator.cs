@@ -26,17 +26,14 @@ namespace Xigadee
     {
         public static MicroservicePipeline AddCommandInitiator(this MicroservicePipeline pipeline
             , out CommandInitiator command
+            , int startupPriority = 90
             , TimeSpan? defaultRequestTimespan = null
             , ChannelPipelineIncoming channelIncoming = null
-            , ChannelPipelineOutgoing channelResponse = null
-            , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
-            , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null
-            , int startupPriority = 100
             )
         {
-            command = new CommandInitiator(defaultRequestTimespan);
+            command = new CommandInitiator(defaultRequestTimespan) { ResponseChannelId = channelIncoming.Channel.Id };
 
-            return pipeline.AddCommand(command, null, startupPriority, channelIncoming, channelResponse, channelMasterJobNegotiationIncoming);
+            return pipeline.AddCommand(command, startupPriority);
         }
     }
 }

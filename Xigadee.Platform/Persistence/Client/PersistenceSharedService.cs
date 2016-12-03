@@ -25,12 +25,13 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This class is used to connect the internal persistence handler with other internal commands through the use of 
-    /// Shared Services.
+    /// This class is used to connect the internal persistence handler with other internal commands through the use of Shared Services.
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class PersistenceSharedService<K, E>: PersistenceInitiatorBase<K, E>, IPersistenceSharedService where K : IEquatable<K>
+    public class PersistenceSharedService<K, E>: PersistenceInitiatorBase<K, E>
+        , IPersistenceSharedService 
+        where K : IEquatable<K>
     {
         #region Declarations
         /// <summary>

@@ -14,30 +14,16 @@
 // limitations under the License.
 #endregion
 
-#region using
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks; 
-#endregion
 namespace Xigadee
 {
+    /// <summary>
+    /// This interface is implemented by components that need to access the shared service container.
+    /// </summary>
     public interface IRequireSharedServices
     {
+        /// <summary>
+        /// The shared service container.
+        /// </summary>
         ISharedService SharedServices { get; set; }
-    }
-
-    public interface ISharedService
-    {
-        bool RegisterService<I>(I instance, string serviceName = null) where I : class;
-
-        bool RegisterService<I>(Lazy<I> instance, string serviceName = null) where I : class;
-
-        bool RemoveService<I>() where I : class;
-
-        I GetService<I>() where I : class;
-
-        bool HasService<I>() where I : class;
     }
 }

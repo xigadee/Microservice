@@ -119,6 +119,7 @@
     <Compile Include="Exceptions\ChannelTypeNotSupportedException.cs" />
     <Compile Include="Exceptions\TransmitRetryExceededException.cs" />
     <Compile Include="Interfaces\IRequireDataCollector.cs" />
+    <Compile Include="Interfaces\ISharedService.cs" />
     <Compile Include="Messaging\ProcessOptions.cs" />
     <Compile Include="Messaging\RateLimitSignal.cs" />
     <Compile Include="Messaging\TransmissionPayloadHelper.cs" />
@@ -308,7 +309,7 @@
     <Compile Include="Persistence\Client\PersistenceMessageInitiator.cs" />
     <Compile Include="Persistence\Client\PersistenceSharedService.cs" />
     <Compile Include="Persistence\EntityActions.cs" />
-    <Compile Include="Persistence\ExtensionMethods.cs" />
+    <Compile Include="Persistence\Pipeline\ExtensionMethods.cs" />
     <Compile Include="Interfaces\IPersistenceMessageHandler.cs" />
     <Compile Include="Interfaces\IPersistenceMessageInitiator.cs" />
     <Compile Include="Interfaces\IPersistenceSharedService.cs" />
@@ -498,6 +499,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Command\Security\" />
+    <Folder Include="Persistence\Pipeline\Add\" />
+    <Folder Include="Persistence\Pipeline\Attach\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

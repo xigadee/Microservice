@@ -15,16 +15,20 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Http;
 
 namespace Xigadee
 {
     public static partial class UnityWebApiExtensionMethods
     {
+        public static UnityWebApiMicroservicePipeline ToUnityWebApiMicroservicePipeline<P>(this P pipeline)
+            where P : UnityWebApiMicroservicePipeline
+        {
+            var webpipe = pipeline as UnityWebApiMicroservicePipeline;
 
+            if (webpipe == null)
+                throw new ArgumentOutOfRangeException("The incoming pipeline is not a UnityWebApiMicroservicePipeline");
+
+            return webpipe;
+        }
     }
 }

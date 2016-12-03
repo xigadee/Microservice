@@ -14,15 +14,22 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.Practices.Unity;
-
 namespace Xigadee
 {
+    /// <summary>
+    /// This static class contains the pipeline extensions specific to the Unity WebApi pipeline.
+    /// </summary>
     public static partial class UnityWebApiExtensionMethods
     {
-        public static IUnityContainer ToUnityContainer(this UnityWebApiMicroservicePipeline cpipe)
+        /// <summary>
+        /// This is a helper method that identifies the current pipeline. It is useful for autocomplete identification. 
+        /// This command does not do anything.
+        /// </summary>
+        /// <param name="pipe">The pipeline.</param>
+        /// <returns>The pipeline.</returns>
+        public static UnityWebApiMicroservicePipeline Actual_UnityWebApiMicroservicePipeline(this UnityWebApiMicroservicePipeline pipe)
         {
-            return cpipe.Unity;
+            return pipe;
         }
     }
 }

@@ -14,15 +14,19 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.Practices.Unity;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public static partial class UnityWebApiExtensionMethods
+    /// <summary>
+    /// These extension methods are used for extending the persistence support.
+    /// </summary>
+    public static class PersistenceExtensionMethods
     {
-        public static IUnityContainer ToUnityContainer(this UnityWebApiMicroservicePipeline cpipe)
-        {
-            return cpipe.Unity;
-        }
+
     }
 }

@@ -16,9 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Http;
 using Microsoft.Practices.Unity;
 using Unity.WebApi;
@@ -53,12 +50,16 @@ namespace Xigadee
             , Action<IEnvironmentConfiguration> configAssign = null
             , bool addDefaultJsonPayloadSerializer = true
             , HttpConfiguration httpConfig = null
+            , bool registerConfig = true
             ) : base(name, serviceId, policy, properties, config, assign, configAssign, addDefaultJsonPayloadSerializer, httpConfig)
         {
             //ApiConfig.
             Unity = new UnityContainer();
 
             HttpConfig.DependencyResolver = new UnityDependencyResolver(Unity);
+
+            if (registerConfig)
+                Unity.RegisterInstance<IEnvironmentConfiguration>(this.Configuration);
         }
 
         /// <summary>
@@ -69,12 +70,17 @@ namespace Xigadee
         /// <param name="httpConfig">The http configuration.</param>
         public UnityWebApiMicroservicePipeline(IMicroservice service
             , IEnvironmentConfiguration config
-            , HttpConfiguration httpConfig = null) : base(service, config, httpConfig)
+            , HttpConfiguration httpConfig = null
+            , bool registerConfig = true
+            ) : base(service, config, httpConfig)
         {
             //ApiConfig.
             Unity = new UnityContainer();
 
             HttpConfig.DependencyResolver = new UnityDependencyResolver(Unity);
+
+            if (registerConfig)
+                Unity.RegisterInstance<IEnvironmentConfiguration>(this.Configuration);
         }
         #endregion
 

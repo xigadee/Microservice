@@ -14,15 +14,25 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.Practices.Unity;
+using System;
 
 namespace Xigadee
 {
     public static partial class UnityWebApiExtensionMethods
     {
-        public static IUnityContainer ToUnityContainer(this UnityWebApiMicroservicePipeline cpipe)
+        /// <summary>
+        /// This method can be used to call out the pipeline flow to an external method.
+        /// </summary>
+        /// <param name="pipe">The pipeline.</param>
+        /// <param name="method">The method to call.</param>
+        /// <returns>Returns the original Pipeline.</returns>
+        public static UnityWebApiMicroservicePipeline CallOut(this UnityWebApiMicroservicePipeline pipe, Action<UnityWebApiMicroservicePipeline> method)
         {
-            return cpipe.Unity;
+            method(pipe);
+
+            return pipe;
         }
+
+
     }
 }

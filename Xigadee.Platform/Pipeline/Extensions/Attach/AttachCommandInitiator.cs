@@ -26,12 +26,12 @@ namespace Xigadee
     {
         public static ChannelPipelineIncoming AttachCommandInitiator(this ChannelPipelineIncoming cpipe
             , out CommandInitiator command
+            , int startupPriority = 90
             , TimeSpan? defaultRequestTimespan = null
-            , int startupPriority = 100)
+            )
         {
-            command = new CommandInitiator(defaultRequestTimespan) { ResponseChannelId = cpipe.Channel.Id };
-
-            cpipe.Revert().AddCommand(command);
+            cpipe.Pipeline.AddCommandInitiator(out command
+                , startupPriority, defaultRequestTimespan, cpipe);
 
             return cpipe;
         }

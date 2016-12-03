@@ -15,16 +15,13 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Practices.Unity;
 
 namespace Xigadee
 {
-    public static partial class CorePipelineExtensions
+    public static partial class UnityWebApiExtensionMethods
     {
-        public static MicroservicePipeline AddCommand<C>(this MicroservicePipeline pipeline
+        public static UnityWebApiMicroservicePipeline AddCommandUnity<I,C>(this UnityWebApiMicroservicePipeline pipeline
             , int startupPriority = 100
             , Action<C> assign = null
             , ChannelPipelineIncoming channelIncoming = null
@@ -32,12 +29,13 @@ namespace Xigadee
             , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
             , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null
             )
-            where C : ICommand, new()
+            where C : I, ICommand, new()
         {
-            return pipeline.AddCommand(new C(), startupPriority, assign, channelIncoming, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
+            return pipeline.AddCommandUnity<I, C>(new C()
+                , startupPriority, assign, channelIncoming, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
         }
 
-        public static MicroservicePipeline AddCommand<C>(this MicroservicePipeline pipeline
+        public static UnityWebApiMicroservicePipeline AddCommandUnity<I, C>(this UnityWebApiMicroservicePipeline pipeline
             , Func<IEnvironmentConfiguration, C> creator
             , int startupPriority = 100
             , Action<C> assign = null
@@ -46,14 +44,13 @@ namespace Xigadee
             , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
             , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null
             )
-            where C : ICommand
+            where C : I, ICommand
         {
-            var command = creator(pipeline.Configuration);
-
-            return pipeline.AddCommand(command, startupPriority, assign, channelIncoming, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
+            return pipeline.AddCommandUnity<I, C>(creator(pipeline.Configuration)
+                , startupPriority, assign, channelIncoming, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
         }
 
-        public static MicroservicePipeline AddCommand<C>(this MicroservicePipeline pipeline
+        public static UnityWebApiMicroservicePipeline AddCommandUnity<I,C>(this UnityWebApiMicroservicePipeline pipeline
             , C command
             , int startupPriority = 100
             , Action<C> assign = null
@@ -62,27 +59,14 @@ namespace Xigadee
             , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
             , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null
             )
-            where C: ICommand
+            where C : I, ICommand
         {
-            command.StartupPriority = startupPriority;
+            pipeline.AddCommand(command, startupPriority, assign, channelIncoming, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
 
-            if (channelIncoming != null && command.ChannelIdAutoSet)
-                command.ChannelId = channelIncoming.Channel.Id;
+            pipeline.Unity.RegisterInstance<I>(command);
 
-            if (channelResponse != null && command.ResponseChannelIdAutoSet)
-                command.ResponseChannelId = channelResponse.Channel.Id;
-
-            if (channelMasterJobNegotiationIncoming != null && command.MasterJobNegotiationChannelIdAutoSet)
-                command.MasterJobNegotiationChannelIdIncoming = channelMasterJobNegotiationIncoming.Channel.Id;
-
-            if (channelMasterJobNegotiationOutgoing != null && command.MasterJobNegotiationChannelIdAutoSet)
-                command.MasterJobNegotiationChannelIdOutgoing = channelMasterJobNegotiationOutgoing.Channel.Id;
-
-            assign?.Invoke(command);
-            pipeline.Service.RegisterCommand(command);
             return pipeline;
         }
-
 
     }
 }

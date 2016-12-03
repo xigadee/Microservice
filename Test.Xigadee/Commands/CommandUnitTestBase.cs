@@ -27,7 +27,6 @@ namespace Test.Xigadee
             mCommand = default(C);
         }
 
-
         protected void DefaultTest()
         {
             var info1 = mCommand.CommandMethodSignatures(true);
@@ -42,7 +41,6 @@ namespace Test.Xigadee
         protected virtual MicroservicePipeline PipelineConfigure(MicroservicePipeline pipeline)
         {
             pipeline
-                
                 .AddDataCollector<DebugMemoryDataCollector>((c) => collector = c)
                 .AddPayloadSerializerDefaultJson()
                 .AddChannelIncoming("internalIn", internalOnly: true)
@@ -51,7 +49,7 @@ namespace Test.Xigadee
                 .AddChannelOutgoing("internalOut", internalOnly: true, autosetPartition01:false)
                     .AttachPriorityPartition(0, 1)
                     .Revert((c) => cpipeOut = c)
-                .AddCommand(new CommandInitiator() { ResponseChannelId = cpipeOut.Channel.Id }, (c) => mCommandInit = c);
+                .AddCommand(new CommandInitiator() { ResponseChannelId = cpipeOut.Channel.Id },assign: (c) => mCommandInit = c);
 
             return pipeline;
 
