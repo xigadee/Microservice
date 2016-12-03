@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public static partial class CorePipelineExtensions
+    public static partial class WebApiExtensionMethods
     {
         /// <summary>
         /// This method can be used to call out the pipeline flow to an external method.
@@ -30,7 +30,7 @@ namespace Xigadee
         /// <param name="pipe">The pipeline.</param>
         /// <param name="method">The method to call.</param>
         /// <returns>Returns the original Pipeline.</returns>
-        public static MicroservicePipeline CallOut(this MicroservicePipeline pipe, Action<MicroservicePipeline> method)
+        public static WebApiMicroservicePipeline CallOut(this WebApiMicroservicePipeline pipe, Action<WebApiMicroservicePipeline> method)
         {
             method(pipe);
 
@@ -38,13 +38,5 @@ namespace Xigadee
         }
 
 
-            public static P CallOut<P>(this P pipe, Action<P> method)
-                where P : MicroservicePipelineExtension
-            {
-                method(pipe);
-
-                return pipe;
-            }
-        
     }
 }

@@ -15,10 +15,11 @@
 #endregion
 
 using System;
+using System.Web.Http;
 
 namespace Xigadee
 {
-    public static partial class CorePipelineExtensions
+    public static partial class WebApiExtensionMethods
     {
         /// <summary>
         /// This extension allows for specific parts of the Microservice to be inspected or altered.
@@ -26,13 +27,15 @@ namespace Xigadee
         /// <param name="pipeline">The incoming pipeline.</param>
         /// <param name="msInspect">An action to inspect the Microservice</param>
         /// <param name="cfInspect">An action to inspect the configuration.</param>
+        /// <param name="httpInspect">An Action to inspect the WebApi HttpConfiguration.</param>
         /// <returns>The passthrough of the pipeline.</returns>
-        public static MicroservicePipeline Inspect(this MicroservicePipeline pipeline
+        public static WebApiMicroservicePipeline Inspect(this WebApiMicroservicePipeline pipeline
             , Action<IMicroservice> msInspect = null
-            , Action<IEnvironmentConfiguration> cfInspect = null)
+            , Action<IEnvironmentConfiguration> cfInspect = null
+            , Action<HttpConfiguration> httpInspect = null)
         {
-            msInspect?.Invoke(pipeline.Service);
-            cfInspect?.Invoke(pipeline.Configuration);
+            ((MicroservicePipeline)pipeline).Inspect(msInspect, cfInspect);
+            httpInspect?.Invoke(pipeline.HttpConfig);
 
             return pipeline;
         }

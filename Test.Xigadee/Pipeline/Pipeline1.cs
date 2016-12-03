@@ -40,6 +40,11 @@ namespace Test.Xigadee
                 ;
         }
 
+        private void ChannelOutConfigure(ChannelPipelineOutgoing inPipe)
+        {
+
+        }
+
         [TestMethod]
         public void Pipeline1()
         {
@@ -67,6 +72,7 @@ namespace Test.Xigadee
                         .AttachCommand(new PersistenceSharedService<Guid, Blah>(), (c) => persistence = c, cpipeOut)
                         .Revert((c) => cpipeIn = c)
                     .AddChannelOutgoing("internalOut", internalOnly: true)
+                        .CallOut(ChannelOutConfigure)
                         .Revert((c) => cpipeOut = c);
 
                 persistBlah.OnEntityChangeAction += ((o, e) => { signalChange++; });

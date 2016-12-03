@@ -169,6 +169,8 @@
     <Compile Include="Pipeline\AddCorrelationIdFilter.cs" />
     <Compile Include="Pipeline\AddMicroserviceUnavailableFilter.cs" />
     <Compile Include="Pipeline\AddVersionHeaderFilter.cs" />
+    <Compile Include="Pipeline\CallOut.cs" />
+    <Compile Include="Pipeline\Inspect.cs" />
     <Compile Include="Pipeline\ToHttpConfiguration.cs" />
     <Compile Include="Pipeline\ToWebApiMicroservicePipeline.cs" />
     <Compile Include="Pipeline\WebApi.cs" />
