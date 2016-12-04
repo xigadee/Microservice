@@ -24,5 +24,20 @@ namespace Xigadee
 {
     public class TcpConnection
     {
+        public bool IsSecure
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public bool IsBroadcastMode
+        {
+            get
+            {
+                return false;
+            }
+        }
     }
 }

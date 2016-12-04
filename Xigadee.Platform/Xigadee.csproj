@@ -78,6 +78,10 @@
     <Compile Include="Communication\Exceptions\MessagingException.cs" />
     <Compile Include="Communication\Exceptions\StartupMessagingException.cs" />
     <Compile Include="Communication\TcpChannel\Helper\DirectChannelCommunicator.cs" />
+    <Compile Include="Communication\TcpChannel\Pipeline\AttachTcpTlsListener.cs" />
+    <Compile Include="Communication\TcpChannel\Pipeline\AttachTcpTlsSender.cs" />
+    <Compile Include="Communication\TcpChannel\Pipeline\AttachTcpTlsBroadcastListener.cs" />
+    <Compile Include="Communication\TcpChannel\Pipeline\AttachTcpTlsBroadcastSender.cs" />
     <Compile Include="Communication\TcpChannel\TcpTlsChannelSender.cs" />
     <Compile Include="Communication\TcpChannel\TcpTlsClientHolder.cs" />
     <Compile Include="Communication\TcpChannel\TcpTlsConnection.cs" />
@@ -499,6 +503,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Command\Security\" />
+    <Folder Include="Communication\TcpChannel\Configuration\" />
     <Folder Include="Persistence\Pipeline\Add\" />
     <Folder Include="Persistence\Pipeline\Attach\" />
   </ItemGroup>
