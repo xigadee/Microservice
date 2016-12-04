@@ -30,6 +30,7 @@ namespace Xigadee
     internal class SslTcpServer
     {
         static X509Certificate serverCertificate = null;
+
         // The certificate parameter specifies the name of the file 
         // containing the machine certificate.
         public static void RunServer(string certificate)
@@ -47,6 +48,7 @@ namespace Xigadee
                 ProcessClient(client);
             }
         }
+
         static void ProcessClient(TcpClient client)
         {
             // A client has connected. Create the 

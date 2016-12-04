@@ -77,6 +77,7 @@
     <Compile Include="Communication\Channel\ChannelRewriteRule.cs" />
     <Compile Include="Communication\Exceptions\MessagingException.cs" />
     <Compile Include="Communication\Exceptions\StartupMessagingException.cs" />
+    <Compile Include="Communication\TcpChannel\Configuration\TcpTlsConfigurationHelper.cs" />
     <Compile Include="Communication\TcpChannel\Helper\DirectChannelCommunicator.cs" />
     <Compile Include="Communication\TcpChannel\Pipeline\AttachTcpTlsListener.cs" />
     <Compile Include="Communication\TcpChannel\Pipeline\AttachTcpTlsSender.cs" />
@@ -503,7 +504,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Command\Security\" />
-    <Folder Include="Communication\TcpChannel\Configuration\" />
     <Folder Include="Persistence\Pipeline\Add\" />
     <Folder Include="Persistence\Pipeline\Attach\" />
   </ItemGroup>
