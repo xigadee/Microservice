@@ -233,6 +233,7 @@
     <Compile Include="Pipeline\Extensions\Add\AddListener.cs" />
     <Compile Include="Pipeline\Extensions\Add\AddSender.cs" />
     <Compile Include="Pipeline\Extensions\Adjust\AdjustPolicy.cs" />
+    <Compile Include="Pipeline\Extensions\Condition.cs" />
     <Compile Include="Pipeline\Extensions\Configuration\ConfigResolverSet.cs" />
     <Compile Include="Pipeline\Extensions\Configuration\ConfigResolversClear.cs" />
     <Compile Include="Pipeline\Extensions\Configuration\ConfigurationOverrideSet.cs" />
