@@ -25,17 +25,18 @@ namespace Xigadee
     public static partial class WebApiExtensionMethods
     {
         /// <summary>
-        /// This method can be used to call out the pipeline flow to an external method.
-        /// </summary>
-        /// <param name="pipe">The pipeline.</param>
-        /// <param name="method">The method to call.</param>
-        /// <returns>Returns the original Pipeline.</returns>
-        public static WebApiMicroservicePipeline CallOut(this WebApiMicroservicePipeline pipe, Action<WebApiMicroservicePipeline> method)
-        {
-            method(pipe);
+        ///// This method can be used to call out the pipeline flow to an external method.
+        ///// </summary>
+        ///// <param name="pipe">The pipeline.</param>
+        ///// <param name="method">The method to call.</param>
+        ///// <returns>Returns the original Pipeline.</returns>
+        //public static P CallOut(this P pipe
+        //    , Action<P> method)
+        //{
+        //    method(pipe);
 
-            return pipe;
-        }
+        //    return pipe;
+        //}
 
 
     }

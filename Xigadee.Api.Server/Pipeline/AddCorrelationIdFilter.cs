@@ -25,7 +25,8 @@ namespace Xigadee
 {
     public static partial class WebApiExtensionMethods
     {
-        public static WebApiMicroservicePipeline AddCorrelationIdFilter(this WebApiMicroservicePipeline webpipe)
+        public static P AddCorrelationIdFilter<P>(this P webpipe)
+            where P:WebApiMicroservicePipeline
         {
             var filter = new WebApiCorrelationIdFilter();
 

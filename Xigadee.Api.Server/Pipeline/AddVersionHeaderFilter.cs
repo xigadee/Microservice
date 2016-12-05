@@ -25,7 +25,8 @@ namespace Xigadee
 {
     public static partial class WebApiExtensionMethods
     {
-        public static WebApiMicroservicePipeline AddVersionHeaderFilter(this WebApiMicroservicePipeline webpipe, string headerName = "X-XigadeeApiVersion")
+        public static P AddVersionHeaderFilter<P>(this P webpipe, string headerName = "X-XigadeeApiVersion")
+            where P : WebApiMicroservicePipeline
         {
             var filter = new WebApiVersionHeaderFilter(headerName);
 
