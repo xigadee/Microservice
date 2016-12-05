@@ -29,22 +29,37 @@ namespace Xigadee
         /// </summary>
         /// <param name="pipe">The pipeline.</param>
         /// <param name="method">The method to call.</param>
+        /// <param name="condition">A boolean condition for the call out. If not set then this is true.</param>
         /// <returns>Returns the original Pipeline.</returns>
-        public static MicroservicePipeline CallOut(this MicroservicePipeline pipe, Action<MicroservicePipeline> method)
+        public static MicroservicePipeline CallOut(this MicroservicePipeline pipe
+            , Action<MicroservicePipeline> method
+            , Func<IEnvironmentConfiguration, bool> condition = null)
         {
-            method(pipe);
+            if (condition?.Invoke(pipe.Configuration)??true)
+                method(pipe);
 
             return pipe;
         }
 
-
-            public static P CallOut<P>(this P pipe, Action<P> method)
-                where P : MicroservicePipelineExtension
-            {
+        /// <summary>
+        /// This method can be used to call out the pipeline flow to an external method.
+        /// </summary>
+        /// <typeparam name="P">The pipeline extension type.</typeparam>
+        /// <param name="pipe">The pipeline extension.</param>
+        /// <param name="method">The method to call.</param>
+        /// <param name="condition">A boolean condition for the call out. If not set then this is true.</param>
+        /// <returns>Returns the original Pipeline extension.</returns>
+        public static P CallOut<P>(this P pipe
+            , Action<P> method
+            , Func<IEnvironmentConfiguration, bool> condition = null
+            )
+            where P : MicroservicePipelineExtension
+        {
+            if (condition?.Invoke(pipe.Pipeline.Configuration) ?? true)
                 method(pipe);
 
-                return pipe;
-            }
-        
+            return pipe;
+        }
+
     }
 }

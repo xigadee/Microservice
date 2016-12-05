@@ -232,8 +232,10 @@
     <Compile Include="Pipeline\Extensions\Attach\AttachMessageRedirectRule.cs" />
     <Compile Include="Pipeline\Extensions\Add\AddListener.cs" />
     <Compile Include="Pipeline\Extensions\Add\AddSender.cs" />
-    <Compile Include="Pipeline\Extensions\Configuration.cs" />
     <Compile Include="Pipeline\Extensions\Adjust\AdjustPolicy.cs" />
+    <Compile Include="Pipeline\Extensions\Configuration\ConfigResolverSet.cs" />
+    <Compile Include="Pipeline\Extensions\Configuration\ConfigResolversClear.cs" />
+    <Compile Include="Pipeline\Extensions\Configuration\ConfigurationOverrideSet.cs" />
     <Compile Include="Pipeline\Extensions\Stop.cs" />
     <Compile Include="Pipeline\Extensions\Actual.cs" />
     <Compile Include="Pipeline\MicroservicePipelineExtension.cs" />

@@ -25,23 +25,19 @@ namespace Xigadee
     public static partial class CorePipelineExtensions
     {
         /// <summary>
-        /// This method starts the microservice defined in the pipeline.
+        /// This method adds an override setting and clears the cache.
         /// </summary>
+        /// <typeparam name="P">The pipeline type.</typeparam>
         /// <param name="pipeline">The pipeline.</param>
-        public static void Start(this MicroservicePipeline pipeline)
+        /// <param name="key">The key.</param>
+        /// <param name="value"></param>
+        /// <returns>Returns the pipeline.</returns>
+        public static P ConfigurationOverrideSet<P>(this P pipeline, string key, string value)
+            where P : MicroservicePipeline
         {
-            pipeline.Service.Start();
-        }
-
-        /// <summary>
-        /// This method starts the microservice defined in the pipeline extension.
-        /// </summary>
-        /// <typeparam name="P">The pipeline extension type.</typeparam>
-        /// <param name="pipeline">The pipeline extension.</param>
-        public static void Start<P>(this P pipeline)
-            where P : MicroservicePipelineExtension
-        {
-            pipeline.Pipeline.Start();
+            pipeline.Configuration.OverrideSettings.Add(key, value);
+            pipeline.Configuration.CacheFlush();
+            return pipeline;
         }
     }
 }

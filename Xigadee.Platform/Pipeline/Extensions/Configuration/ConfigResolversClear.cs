@@ -25,23 +25,17 @@ namespace Xigadee
     public static partial class CorePipelineExtensions
     {
         /// <summary>
-        /// This method starts the microservice defined in the pipeline.
+        /// This method clears all the registered ConfigResolvers in the configuration.
         /// </summary>
+        /// <typeparam name="P">The pipeline type.</typeparam>
         /// <param name="pipeline">The pipeline.</param>
-        public static void Start(this MicroservicePipeline pipeline)
+        /// <returns>Returns the pipeline.</returns>
+        public static P ConfigResolversClear<P>(this P pipeline)
+            where P : MicroservicePipeline
         {
-            pipeline.Service.Start();
-        }
+            pipeline.Configuration.ResolversClear();
 
-        /// <summary>
-        /// This method starts the microservice defined in the pipeline extension.
-        /// </summary>
-        /// <typeparam name="P">The pipeline extension type.</typeparam>
-        /// <param name="pipeline">The pipeline extension.</param>
-        public static void Start<P>(this P pipeline)
-            where P : MicroservicePipelineExtension
-        {
-            pipeline.Pipeline.Start();
+            return pipeline;
         }
     }
 }

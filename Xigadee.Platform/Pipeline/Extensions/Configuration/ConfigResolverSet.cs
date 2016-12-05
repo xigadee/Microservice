@@ -24,36 +24,6 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        /// <summary>
-        /// This method adds an override setting and clears the cache.
-        /// </summary>
-        /// <typeparam name="P">The pipeline type.</typeparam>
-        /// <param name="pipeline">The pipeline.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="value"></param>
-        /// <returns>Returns the pipeline.</returns>
-        public static P ConfigurationOverrideSet<P>(this P pipeline, string key, string value) 
-            where P : MicroservicePipeline
-        {
-            pipeline.Configuration.OverrideSettings.Add(key,value);
-            pipeline.Configuration.CacheFlush();
-            return pipeline;
-        }
-
-        /// <summary>
-        /// This method clears all the registered ConfigResolvers in the configuration.
-        /// </summary>
-        /// <typeparam name="P">The pipeline type.</typeparam>
-        /// <param name="pipeline">The pipeline.</param>
-        /// <returns>Returns the pipeline.</returns>
-        public static P ConfigResolversClear<P>(this P pipeline)
-            where P : MicroservicePipeline
-        {
-            pipeline.Configuration.ResolversClear();
-
-            return pipeline;
-        }
-
         public static P ConfigResolverSet<P>(this P pipeline, int priority, ConfigResolver resolver, Action<ConfigResolver> assign = null)
             where P : MicroservicePipeline
         {
@@ -67,7 +37,7 @@ namespace Xigadee
             return pipeline;
         }
 
-        public static P ConfigResolverSet<P,R>(this P pipeline, int priority, Action<R> assign = null)
+        public static P ConfigResolverSet<P, R>(this P pipeline, int priority, Action<R> assign = null)
             where P : MicroservicePipeline
             where R : ConfigResolver, new()
         {
