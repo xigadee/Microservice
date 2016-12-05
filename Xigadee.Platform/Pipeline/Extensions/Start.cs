@@ -37,11 +37,10 @@ namespace Xigadee
         /// This method starts the microservice defined in the pipeline extension.
         /// </summary>
         /// <typeparam name="P">The pipeline extension type.</typeparam>
-        /// <param name="pipeline">The pipeline extension.</param>
-        public static void Start<P>(this P pipeline)
-            where P : MicroservicePipelineExtension
+        /// <param name="pext">The pipeline extension.</param>
+        public static void Start(this MicroservicePipelineExtension pext)
         {
-            pipeline.Pipeline.Start();
+            pext.Pipeline.Start();
         }
     }
 }

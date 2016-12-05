@@ -25,7 +25,7 @@ namespace Test.Xigadee
         DebugMemoryDataCollector mDataCollector;
         bool? calloutIn = null, calloutOut = null, calloutDefault = null;
 
-        private void ConfigureServiceRoot(MicroservicePipeline pipe)
+        private void ConfigureServiceRoot<P>(P pipe) where P:MicroservicePipeline
         {
             pipe
                 .AddDataCollector<DebugMemoryDataCollector>((c) => mDataCollector = c)
@@ -72,15 +72,15 @@ namespace Test.Xigadee
                         t.ConcurrentRequestsMin = 1;
                         t.ConcurrentRequestsMax = 4;
                     })
-                    .CallOut(ConfigureServiceRoot)
-                    .CallOut(CallOutDefault)
+                    .AddCallOut(ConfigureServiceRoot)
+                    .AddCallOut(CallOutDefault)
                     .AddChannelIncoming("internalIn", internalOnly: true)
-                        .CallOut(ChannelInConfigure, (c) => true)
+                        .AttachCallOut(ChannelInConfigure, (c) => true)
                         .AttachCommand(new PersistenceBlahMemory(), assign:(p) => persistBlah = p)
                         .AttachCommand(new PersistenceSharedService<Guid, Blah>(), assign:(c) => persistence = c, channelResponse: cpipeOut)
                         .Revert((c) => cpipeIn = c)
                     .AddChannelOutgoing("internalOut", internalOnly: true)
-                        .CallOut(ChannelOutConfigure, (c) => false)
+                        .AttachCallOut(ChannelOutConfigure, (c) => false)
                         .Revert((c) => cpipeOut = c);
 
                 persistBlah.OnEntityChangeAction += ((o, e) => { signalChange++; });

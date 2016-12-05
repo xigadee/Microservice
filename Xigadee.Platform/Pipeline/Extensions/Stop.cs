@@ -36,11 +36,10 @@ namespace Xigadee
         /// This method stops the microservice defined in the pipeline extension.
         /// </summary>
         /// <typeparam name="P">The pipeline extension type.</typeparam>
-        /// <param name="pipeline">The pipeline extension.</param>
-        public static void Stop<P>(this P pipeline)
-            where P : MicroservicePipelineExtension
+        /// <param name="pext">The pipeline extension.</param>
+        public static void Stop(this MicroservicePipelineExtension pext)
         {
-            pipeline.Pipeline.Stop();
+            pext.Pipeline.Stop();
         }
     }
 }

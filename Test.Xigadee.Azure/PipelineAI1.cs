@@ -9,7 +9,7 @@ namespace Test.Xigadee.Azure
     {
         DebugMemoryDataCollector mDataCollector;
 
-        private void ConfigureServiceRoot(MicroservicePipeline pipe)
+        private void ConfigureServiceRoot<P>(P pipe) where P: MicroservicePipeline
         {
             pipe
                 .AddDataCollector<DebugMemoryDataCollector>((c) => mDataCollector = c)
@@ -44,9 +44,9 @@ namespace Test.Xigadee.Azure
                         t.ConcurrentRequestsMin = 1;
                         t.ConcurrentRequestsMax = 4;
                     })
-                    .CallOut(ConfigureServiceRoot)
+                    .AddCallOut(ConfigureServiceRoot)
                     .AddChannelIncoming("internalIn", internalOnly: true)
-                        .CallOut(ChannelInConfigure)
+                        .AttachCallOut(ChannelInConfigure)
                         .AttachCommand(new PersistenceBlahMemory(), assign:(p) => persistBlah = p)
                         .AttachCommand(new PersistenceSharedService<Guid, Blah>(), assign:(c) => persistence = c, channelResponse: cpipeOut)
                         .Revert((c) => cpipeIn = c)
