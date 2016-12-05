@@ -25,7 +25,7 @@ namespace Xigadee
     /// <summary>
     /// This extension pipeline is used by the Web Api pipeline and uses Unity for IOC support.
     /// </summary>
-    public class UnityWebApiMicroservicePipeline: WebApiMicroservicePipeline
+    public class UnityWebApiMicroservicePipeline: WebApiMicroservicePipeline, IPipelineWebApiUnity
     {
         #region Constructor
         /// <summary>

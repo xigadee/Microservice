@@ -21,13 +21,13 @@ namespace Xigadee
 {
     public static partial class UnityWebApiExtensionMethods
     {
-        public static UnityWebApiMicroservicePipeline AddCommandUnity<I,C>(this UnityWebApiMicroservicePipeline pipeline
+        public static IPipelineWebApiUnity AddCommandUnity<I,C>(this IPipelineWebApiUnity pipeline
             , int startupPriority = 100
             , Action<C> assign = null
-            , ChannelPipelineIncoming channelIncoming = null
-            , ChannelPipelineOutgoing channelResponse = null
-            , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
-            , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null
+            , IPipelineChannelIncoming channelIncoming = null
+            , IPipelineChannelOutgoing channelResponse = null
+            , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
+            , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null
             )
             where C : I, ICommand, new()
         {
@@ -35,14 +35,14 @@ namespace Xigadee
                 , startupPriority, assign, channelIncoming, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
         }
 
-        public static UnityWebApiMicroservicePipeline AddCommandUnity<I, C>(this UnityWebApiMicroservicePipeline pipeline
+        public static IPipelineWebApiUnity AddCommandUnity<I, C>(this IPipelineWebApiUnity pipeline
             , Func<IEnvironmentConfiguration, C> creator
             , int startupPriority = 100
             , Action<C> assign = null
-            , ChannelPipelineIncoming channelIncoming = null
-            , ChannelPipelineOutgoing channelResponse = null
-            , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
-            , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null
+            , IPipelineChannelIncoming channelIncoming = null
+            , IPipelineChannelOutgoing channelResponse = null
+            , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
+            , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null
             )
             where C : I, ICommand
         {
@@ -50,14 +50,14 @@ namespace Xigadee
                 , startupPriority, assign, channelIncoming, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
         }
 
-        public static UnityWebApiMicroservicePipeline AddCommandUnity<I,C>(this UnityWebApiMicroservicePipeline pipeline
+        public static IPipelineWebApiUnity AddCommandUnity<I,C>(this IPipelineWebApiUnity pipeline
             , C command
             , int startupPriority = 100
             , Action<C> assign = null
-            , ChannelPipelineIncoming channelIncoming = null
-            , ChannelPipelineOutgoing channelResponse = null
-            , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
-            , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null
+            , IPipelineChannelIncoming channelIncoming = null
+            , IPipelineChannelOutgoing channelResponse = null
+            , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
+            , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null
             )
             where C : I, ICommand
         {

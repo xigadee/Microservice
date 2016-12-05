@@ -25,41 +25,41 @@ namespace Xigadee
 {
     public static partial class UnityWebApiExtensionMethods
     {
-        public static ChannelPipelineIncoming AttachCommandUnity<I,C>(this ChannelPipelineIncoming cpipe
+        public static IPipelineChannelIncoming AttachCommandUnity<I,C>(this IPipelineChannelIncoming cpipe
             , int startupPriority = 100
             , Action<C> assign = null
-            , ChannelPipelineOutgoing channelResponse = null
-            , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
-            , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null)
+            , IPipelineChannelOutgoing channelResponse = null
+            , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
+            , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null)
             where C : I,ICommand, new()
         {
             return cpipe.AttachCommandUnity<I,C>(new C(), startupPriority, assign, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
         }
 
-        public static ChannelPipelineIncoming AttachCommandUnity<I, C>(this ChannelPipelineIncoming cpipe
+        public static IPipelineChannelIncoming AttachCommandUnity<I, C>(this IPipelineChannelIncoming cpipe
             , Func<IEnvironmentConfiguration, C> creator
             , int startupPriority = 100
             , Action<C> assign = null
-            , ChannelPipelineOutgoing channelResponse = null
-            , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
-            , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null
+            , IPipelineChannelOutgoing channelResponse = null
+            , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
+            , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null
             )
             where C : I, ICommand
         {
             return cpipe.AttachCommandUnity<I, C>(creator(cpipe.Pipeline.Configuration), startupPriority, assign, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
         }
 
-        public static ChannelPipelineIncoming AttachCommandUnity<I,C>(this ChannelPipelineIncoming cpipe
+        public static IPipelineChannelIncoming AttachCommandUnity<I,C>(this IPipelineChannelIncoming cpipe
             , C command
             , int startupPriority = 100
             , Action<C> assign = null
-            , ChannelPipelineOutgoing channelResponse = null
-            , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
-            , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null
+            , IPipelineChannelOutgoing channelResponse = null
+            , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
+            , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null
             )
             where C : I,ICommand
         {
-            var pipeline = cpipe.Pipeline as UnityWebApiMicroservicePipeline;
+            var pipeline = cpipe.Pipeline as IPipelineWebApiUnity;
 
             if (pipeline == null)
                 throw new UnityWebApiMicroservicePipelineInvalidException();

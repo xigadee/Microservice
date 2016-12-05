@@ -20,13 +20,13 @@ namespace Xigadee
 {
     public static partial class UnityWebApiExtensionMethods
     {
-        public static UnityWebApiMicroservicePipeline ToUnityWebApiMicroservicePipeline<P>(this P pipeline)
-            where P : UnityWebApiMicroservicePipeline
+        public static IPipelineWebApiUnity ToUnityWebApiMicroservicePipeline<P>(this P pipeline)
+            where P : IPipelineWebApiUnity
         {
-            var webpipe = pipeline as UnityWebApiMicroservicePipeline;
+            var webpipe = pipeline as IPipelineWebApiUnity;
 
             if (webpipe == null)
-                throw new ArgumentOutOfRangeException("The incoming pipeline is not a UnityWebApiMicroservicePipeline");
+                throw new ArgumentOutOfRangeException("The incoming pipeline does not implement IPipelineWebApiUnity");
 
             return webpipe;
         }

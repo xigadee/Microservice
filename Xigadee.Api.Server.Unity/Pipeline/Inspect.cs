@@ -30,14 +30,14 @@ namespace Xigadee
         /// <param name="cfInspect">An action to inspect the configuration.</param>
         /// <param name="httpInspect">An Action to inspect the WebApi HttpConfiguration.</param>
         /// <returns>The passthrough of the pipeline.</returns>
-        public static UnityWebApiMicroservicePipeline Inspect(this UnityWebApiMicroservicePipeline pipeline
+        public static IPipelineWebApiUnity Inspect(this IPipelineWebApiUnity pipeline
             , Action<IMicroservice> msInspect = null
             , Action<IEnvironmentConfiguration> cfInspect = null
             , Action<HttpConfiguration> httpInspect = null
             , Action<IUnityContainer> unityInspect = null
             )
         {
-            ((WebApiMicroservicePipeline)pipeline).Inspect(msInspect, cfInspect, httpInspect);
+            ((IPipelineWebApi)pipeline).Inspect(msInspect, cfInspect, httpInspect);
 
             unityInspect?.Invoke(pipeline.Unity);
 

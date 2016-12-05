@@ -20,7 +20,7 @@ namespace Xigadee
 {
     public static partial class UnityWebApiExtensionMethods
     {
-        public static IUnityContainer ToUnityContainer(this UnityWebApiMicroservicePipeline cpipe)
+        public static IUnityContainer ToUnityContainer(this IPipelineWebApiUnity cpipe)
         {
             return cpipe.Unity;
         }

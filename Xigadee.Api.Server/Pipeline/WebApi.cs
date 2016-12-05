@@ -25,13 +25,10 @@ namespace Xigadee
 {
     public static partial class WebApiExtensionMethods
     {
-        public static WebApiMicroservicePipeline UpgradeToWebApiMicroservicePipeline(this MicroservicePipeline pipeline
+        public static IPipelineWebApi UpgradeToWebApiMicroservicePipeline(this IPipeline pipeline
             , HttpConfiguration httpConfig = null)
         {
             return new WebApiMicroservicePipeline(pipeline.Service, pipeline.Configuration, httpConfig);
         }
-
-
-
     }
 }

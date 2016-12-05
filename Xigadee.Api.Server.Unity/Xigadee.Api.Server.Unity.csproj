@@ -160,6 +160,7 @@
     <Compile Include="Pipeline\Attach\AttachCommandUnity.cs" />
     <Compile Include="Pipeline\Exceptions\UnityWebApiMicroservicePipelineInvalidException.cs" />
     <Compile Include="Pipeline\Inspect.cs" />
+    <Compile Include="Pipeline\Interfaces\IPipelineWebApiUnity.cs" />
     <Compile Include="Pipeline\ToUnityWebApiMicroservicePipeline.cs" />
     <Compile Include="Pipeline\ToUnityContainer.cs" />
     <Compile Include="Pipeline\UnityWebApiMicroservicePipeline.cs" />
