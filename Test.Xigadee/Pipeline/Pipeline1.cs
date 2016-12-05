@@ -23,6 +23,7 @@ namespace Test.Xigadee
     public partial class PipelineTest1
     {
         DebugMemoryDataCollector mDataCollector;
+        bool? calloutIn = null, calloutOut = null, calloutDefault = null;
 
         private void ConfigureServiceRoot(MicroservicePipeline pipe)
         {
@@ -38,11 +39,18 @@ namespace Test.Xigadee
                 .AttachResourceProfile("TrackIt")
                 //.AppendBoundaryLogger(new MemoryBoundaryLogger(), (p, bl) => bLogger = bl)
                 ;
+
+            calloutIn = true;
+        }
+
+        private void CallOutDefault(MicroservicePipeline pipe)
+        {
+            calloutDefault = true;
         }
 
         private void ChannelOutConfigure(ChannelPipelineOutgoing inPipe)
         {
-
+            calloutOut = true;
         }
 
         [TestMethod]
@@ -65,13 +73,14 @@ namespace Test.Xigadee
                         t.ConcurrentRequestsMax = 4;
                     })
                     .CallOut(ConfigureServiceRoot)
+                    .CallOut(CallOutDefault)
                     .AddChannelIncoming("internalIn", internalOnly: true)
-                        .CallOut(ChannelInConfigure)
+                        .CallOut(ChannelInConfigure, (c) => true)
                         .AttachCommand(new PersistenceBlahMemory(), assign:(p) => persistBlah = p)
                         .AttachCommand(new PersistenceSharedService<Guid, Blah>(), assign:(c) => persistence = c, channelResponse: cpipeOut)
                         .Revert((c) => cpipeIn = c)
                     .AddChannelOutgoing("internalOut", internalOnly: true)
-                        .CallOut(ChannelOutConfigure)
+                        .CallOut(ChannelOutConfigure, (c) => false)
                         .Revert((c) => cpipeOut = c);
 
                 persistBlah.OnEntityChangeAction += ((o, e) => { signalChange++; });
@@ -96,6 +105,11 @@ namespace Test.Xigadee
 
 
                 Assert.IsTrue(signalChange == 3);
+
+                Assert.IsTrue(calloutDefault.HasValue);
+                Assert.IsTrue(calloutIn.HasValue);
+                Assert.IsFalse(calloutOut.HasValue);
+
                 pipeline.Stop();
             }
             catch (Exception ex)
