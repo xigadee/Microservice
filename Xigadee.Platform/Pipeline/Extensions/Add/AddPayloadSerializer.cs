@@ -24,28 +24,29 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static MicroservicePipeline AddPayloadSerializerDefaultJson(this MicroservicePipeline pipeline)
+        public static IPipeline AddPayloadSerializerDefaultJson(this IPipeline pipeline)
         {
             var component = pipeline.Service.RegisterPayloadSerializer(new JsonContractSerializer());
 
             return pipeline;
         }
 
-        public static MicroservicePipeline AddPayloadSerializer(this MicroservicePipeline pipeline, IPayloadSerializer serializer)
+        public static IPipeline AddPayloadSerializer(this IPipeline pipeline, IPayloadSerializer serializer)
         {
             pipeline.Service.RegisterPayloadSerializer(serializer);
 
             return pipeline;
         }
 
-        public static MicroservicePipeline ClearPayloadSerializers(this MicroservicePipeline pipeline, IPayloadSerializer serializer)
+        public static IPipeline ClearPayloadSerializers(this IPipeline pipeline)
         {
-            
+            pipeline.Service.ClearPayloadSerializers();
 
             return pipeline;
         }
 
-        public static MicroservicePipeline AddPayloadSerializer(this MicroservicePipeline pipeline, Func<IEnvironmentConfiguration, IPayloadSerializer> creator)
+        public static IPipeline AddPayloadSerializer(this IPipeline pipeline
+            , Func<IEnvironmentConfiguration, IPayloadSerializer> creator)
         {
             pipeline.Service.RegisterPayloadSerializer(creator(pipeline.Configuration));
 

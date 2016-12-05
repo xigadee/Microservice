@@ -26,8 +26,7 @@ namespace Xigadee
     public static partial class AzureExtensionMethods
     {
 
-        public static MicroservicePipeline AddAzureStorageEventSource(
-              this MicroservicePipeline pipeline
+        public static IPipeline AddAzureStorageEventSource(this IPipeline pipeline
             , string serviceName = null
             , string containerName = "eventsource"
             , ResourceProfile resourceProfile = null
@@ -36,8 +35,7 @@ namespace Xigadee
             return pipeline.AddAzureStorageEventSource(pipeline.Configuration.LogStorageCredentials(), serviceName, containerName, resourceProfile, onCreate);
         }
 
-        public static MicroservicePipeline AddAzureStorageEventSource(
-              this MicroservicePipeline pipeline
+        public static IPipeline AddAzureStorageEventSource(this IPipeline pipeline
             , StorageCredentials creds
             , string serviceName = null
             , string containerName = "eventsource"

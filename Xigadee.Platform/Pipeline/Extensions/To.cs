@@ -20,21 +20,32 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Xigadee.Pipeline.Extensions
+namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static IMicroservice ToMicroservice(this MicroservicePipeline pipeline)
+        public static IPipeline ToPipeline(this IPipelineBase pipe)
         {
-            return pipeline.Service;
+            if (pipe is IPipelineExtension)
+                return ((IPipelineChannel)pipe).Pipeline;
+            else if (pipe is IPipeline)
+                return (IPipeline)pipe;
+
+            throw new ArgumentOutOfRangeException("pipe", "pipe must implement IPipelineExtension or IPipeline");
+
         }
 
-        public static IEnvironmentConfiguration ToConfiguration(this MicroservicePipeline pipeline)
+        public static IMicroservice ToMicroservice(this IPipelineBase pipe)
         {
-            return pipeline.Configuration;
+            return pipe.ToPipeline().Service;
         }
 
-        public static Channel ToChannel(this ChannelPipelineBase cpipe)
+        public static IEnvironmentConfiguration ToConfiguration(this IPipelineBase pipe)
+        {
+            return pipe.ToPipeline().Configuration;
+        }
+
+        public static Channel ToChannel(this IPipelineChannel cpipe)
         {
             return cpipe.Channel;
         }

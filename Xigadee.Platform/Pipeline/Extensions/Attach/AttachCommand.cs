@@ -24,24 +24,24 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static ChannelPipelineIncoming AttachCommand<C>(this ChannelPipelineIncoming cpipe
+        public static IPipelineChannelIncoming AttachCommand<C>(this IPipelineChannelIncoming cpipe
             , int startupPriority = 100
             , Action<C> assign = null
-            , ChannelPipelineOutgoing channelResponse = null
-            , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
-            , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null)
+            , IPipelineChannelOutgoing channelResponse = null
+            , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
+            , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null)
             where C : ICommand, new()
         {
             return cpipe.AttachCommand(new C(), startupPriority, assign, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
         }
 
-        public static ChannelPipelineIncoming AttachCommand<C>(this ChannelPipelineIncoming cpipe
+        public static IPipelineChannelIncoming AttachCommand<C>(this IPipelineChannelIncoming cpipe
             , C command
             , int startupPriority = 100
             , Action<C> assign = null
-            , ChannelPipelineOutgoing channelResponse = null
-            , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
-            , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null
+            , IPipelineChannelOutgoing channelResponse = null
+            , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
+            , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null
             )
             where C : ICommand
         {
@@ -50,13 +50,13 @@ namespace Xigadee
             return cpipe;
         }
 
-        public static ChannelPipelineIncoming AttachCommand<C>(this ChannelPipelineIncoming cpipe
+        public static IPipelineChannelIncoming AttachCommand<C>(this IPipelineChannelIncoming cpipe
             , Func<IEnvironmentConfiguration, C> creator
             , int startupPriority = 100
             , Action<C> assign = null
-            , ChannelPipelineOutgoing channelResponse = null
-            , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
-            , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null
+            , IPipelineChannelOutgoing channelResponse = null
+            , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
+            , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null
             )
             where C : ICommand
         {

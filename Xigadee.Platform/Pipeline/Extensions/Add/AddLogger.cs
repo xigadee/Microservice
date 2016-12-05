@@ -24,14 +24,15 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static MicroservicePipeline AddLogger(this MicroservicePipeline pipeline, ILogger logger)
+        public static IPipeline AddLogger(this IPipeline pipeline, ILogger logger)
         {
             pipeline.Service.RegisterLogger(logger);
 
             return pipeline;
         }
 
-        public static MicroservicePipeline AddLogger<L>(this MicroservicePipeline pipeline, Func<IEnvironmentConfiguration, L> creator, Action<L> action = null)
+        public static IPipeline AddLogger<L>(this IPipeline pipeline
+            , Func<IEnvironmentConfiguration, L> creator, Action<L> action = null)
             where L:ILogger
         {
             var logger = creator(pipeline.Configuration);
@@ -43,7 +44,7 @@ namespace Xigadee
             return pipeline;
         }
 
-        public static MicroservicePipeline AddLogger<L>(this MicroservicePipeline pipeline, Action<L> action = null)
+        public static IPipeline AddLogger<L>(this IPipeline pipeline, Action<L> action = null)
             where L : ILogger, new()
         {
             var logger = new L();
@@ -54,6 +55,5 @@ namespace Xigadee
 
             return pipeline;
         }
-
     }
 }

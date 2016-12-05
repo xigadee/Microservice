@@ -24,11 +24,11 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static MicroservicePipeline AddCommandInitiator(this MicroservicePipeline pipeline
+        public static IPipeline AddCommandInitiator(this IPipeline pipeline
             , out CommandInitiator command
             , int startupPriority = 90
             , TimeSpan? defaultRequestTimespan = null
-            , ChannelPipelineIncoming channelIncoming = null
+            , IPipelineChannelIncoming channelIncoming = null
             )
         {
             command = new CommandInitiator(defaultRequestTimespan) { ResponseChannelId = channelIncoming.Channel.Id };

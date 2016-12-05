@@ -40,7 +40,7 @@ namespace Xigadee
         /// <param name="assign"></param>
         /// <param name="autosetPartition01">This method automatically sets the default priority 0 and 1 partitions for the channel.</param>
         /// <returns>The original pipeline.</returns>
-        public static ChannelPipelineIncoming AddChannelIncoming(this MicroservicePipeline pipeline
+        public static IPipelineChannelIncoming AddChannelIncoming(this IPipelineBase pipeline
             , string channelId
             , string description = null
             , IEnumerable<ListenerPartitionConfig> partitions = null
@@ -51,7 +51,8 @@ namespace Xigadee
             , bool autosetPartition01 = true
             )
         {     
-            var channel = pipeline.Service.RegisterChannel(new Channel(channelId, ChannelDirection.Incoming, description, bLogger, internalOnly));
+            var channel = pipeline.ToMicroservice().RegisterChannel(
+                new Channel(channelId, ChannelDirection.Incoming, description, bLogger, internalOnly));
 
             if (partitions == null && autosetPartition01)
                 partitions = ListenerPartitionConfig.Init(0,1);
@@ -61,25 +62,12 @@ namespace Xigadee
             if (resourceProfiles != null)
                 channel.ResourceProfiles = resourceProfiles?.ToList();
 
-            var cpipe = new ChannelPipelineIncoming(pipeline, channel);
+            var cpipe = new ChannelPipelineIncoming(pipeline.ToPipeline(), channel);
 
             assign?.Invoke(cpipe, cpipe.Channel);
 
             return cpipe;
         }
 
-        public static ChannelPipelineIncoming AddChannelIncoming(this ChannelPipelineBase pipeline
-            , string channelId
-            , string description = null
-            , IEnumerable<ListenerPartitionConfig> partitions = null
-            , IBoundaryLogger bLogger = null
-            , IEnumerable<ResourceProfile> resourceProfiles = null
-            , bool internalOnly = false
-            , Action<ChannelPipelineIncoming, Channel> assign = null
-            , bool autosetPartition01 = true
-            )
-        {
-            return pipeline.Pipeline.AddChannelIncoming(channelId, description, partitions, bLogger, resourceProfiles, internalOnly, assign, autosetPartition01);
-        }
     }
 }

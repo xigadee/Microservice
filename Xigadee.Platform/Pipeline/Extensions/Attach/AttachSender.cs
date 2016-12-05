@@ -24,9 +24,7 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-
-
-        public static ChannelPipelineOutgoing AttachSender(this ChannelPipelineOutgoing cpipe
+        public static IPipelineChannelOutgoing AttachSender(this IPipelineChannelOutgoing cpipe
             , ISender sender
             , bool setFromChannelProperties = true)
         {
@@ -45,7 +43,7 @@ namespace Xigadee
             return cpipe;
         }
 
-        public static ChannelPipelineOutgoing AttachSender<S>(this ChannelPipelineOutgoing cpipe
+        public static IPipelineChannelOutgoing AttachSender<S>(this IPipelineChannelOutgoing cpipe
             , Func<IEnvironmentConfiguration, S> creator = null
             , Action<S> action = null
             , bool setFromChannelProperties = true)

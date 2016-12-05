@@ -158,7 +158,6 @@
     <Compile Include="Pipeline\Actual.cs" />
     <Compile Include="Pipeline\Add\AddCommandUnity.cs" />
     <Compile Include="Pipeline\Attach\AttachCommandUnity.cs" />
-    <Compile Include="Pipeline\CallOut.cs" />
     <Compile Include="Pipeline\Exceptions\UnityWebApiMicroservicePipelineInvalidException.cs" />
     <Compile Include="Pipeline\Inspect.cs" />
     <Compile Include="Pipeline\ToUnityWebApiMicroservicePipeline.cs" />

@@ -27,7 +27,7 @@ namespace Xigadee
     /// </summary>
     public static partial class AzureExtensionMethods
     {
-        public static ChannelPipelineOutgoing AttachAzureServiceBusTopicSender(this ChannelPipelineOutgoing cpipe
+        public static IPipelineChannelOutgoing AttachAzureServiceBusTopicSender(this IPipelineChannelOutgoing cpipe
             , string connectionName = null
             , string serviceBusConnection = null
             , IEnumerable<SenderPartitionConfig> priorityPartitions = null

@@ -25,7 +25,7 @@ namespace Xigadee
     public static partial class CorePipelineExtensions
     {
         public static P ConfigResolverSet<P>(this P pipeline, int priority, ConfigResolver resolver, Action<ConfigResolver> assign = null)
-            where P : MicroservicePipeline
+            where P : IPipeline
         {
             if (pipeline == null)
                 throw new ArgumentNullException("pipeline cannot be null");
@@ -38,7 +38,7 @@ namespace Xigadee
         }
 
         public static P ConfigResolverSet<P, R>(this P pipeline, int priority, Action<R> assign = null)
-            where P : MicroservicePipeline
+            where P : IPipeline
             where R : ConfigResolver, new()
         {
             if (pipeline == null)

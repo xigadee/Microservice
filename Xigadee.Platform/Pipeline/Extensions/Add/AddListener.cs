@@ -24,14 +24,15 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static MicroservicePipeline AddListener(this MicroservicePipeline pipeline, IListener listener)
+        public static IPipeline AddListener(this IPipeline pipeline, IListener listener)
         {
             pipeline.Service.RegisterListener(listener);
 
             return pipeline;
         }
 
-        public static MicroservicePipeline AddListener<S>(this MicroservicePipeline pipeline, Func<IEnvironmentConfiguration, S> creator, Action<S> action = null)
+        public static IPipeline AddListener<S>(this IPipeline pipeline
+            , Func<IEnvironmentConfiguration, S> creator, Action<S> action = null)
             where S : IListener
         {
             var listener = creator(pipeline.Configuration);

@@ -15,24 +15,27 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public static partial class UnityWebApiExtensionMethods
+    /// <summary>
+    /// This interface is implemented by the Pipeline.
+    /// </summary>
+    public interface IPipeline: IPipelineBase
     {
+
         /// <summary>
-        /// This method can be used to call out the pipeline flow to an external method.
+        /// This is the microservice.
         /// </summary>
-        /// <param name="pipe">The pipeline.</param>
-        /// <param name="method">The method to call.</param>
-        /// <returns>Returns the original Pipeline.</returns>
-        public static UnityWebApiMicroservicePipeline CallOut(this UnityWebApiMicroservicePipeline pipe, Action<UnityWebApiMicroservicePipeline> method)
-        {
-            method(pipe);
+        IMicroservice Service { get; }
 
-            return pipe;
-        }
-
-
+        /// <summary>
+        /// This is the microservice configuration.
+        /// </summary>
+        IEnvironmentConfiguration Configuration { get; }
     }
 }

@@ -8,7 +8,7 @@ namespace Xigadee
 {
     public static partial class TcpCommunicationPipelineExtensions
     {
-        public static ChannelPipelineIncoming AttachTcpTlsBroadcastListener(this ChannelPipelineIncoming cpipe
+        public static IPipelineChannelIncoming AttachTcpTlsBroadcastListener(this IPipelineChannelIncoming cpipe
             , string connectionName = null
             , string serviceBusConnection = null
             , string subscriptionId = null

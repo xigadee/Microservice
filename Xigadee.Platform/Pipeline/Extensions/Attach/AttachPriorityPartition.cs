@@ -24,7 +24,7 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        private static void AttachPriorityPartition<P>(ChannelPipelineBase pipeline, P config) where P : PartitionConfig
+        private static void AttachPriorityPartition<P>(IPipelineChannel pipeline, P config) where P : PartitionConfig
         {
             var channel = pipeline.Channel;
 
@@ -46,27 +46,31 @@ namespace Xigadee
         }
 
         //Incoming
-        public static ChannelPipelineIncoming AttachPriorityPartition(this ChannelPipelineIncoming pipeline, ListenerPartitionConfig config)
+        public static IPipelineChannelIncoming AttachPriorityPartition(this IPipelineChannelIncoming pipeline
+            , ListenerPartitionConfig config)
         {
             AttachPriorityPartition<ListenerPartitionConfig>(pipeline, config);
             return pipeline;
         }
 
-        public static ChannelPipelineIncoming AttachPriorityPartition(this ChannelPipelineIncoming pipeline, params int[] init)
+        public static IPipelineChannelIncoming AttachPriorityPartition(this IPipelineChannelIncoming pipeline
+            , params int[] init)
         {
             ListenerPartitionConfig.Init(init).ForEach((p) => AttachPriorityPartition<ListenerPartitionConfig>(pipeline, p));
             
             return pipeline;
         }
 
-        public static ChannelPipelineIncoming AttachPriorityPartition(this ChannelPipelineIncoming pipeline, Func<IEnvironmentConfiguration, Channel, ListenerPartitionConfig> creator)
+        public static IPipelineChannelIncoming AttachPriorityPartition(this IPipelineChannelIncoming pipeline
+            , Func<IEnvironmentConfiguration, Channel, ListenerPartitionConfig> creator)
         {
             var config = creator(pipeline.Pipeline.Configuration, pipeline.Channel);
             AttachPriorityPartition<ListenerPartitionConfig>(pipeline, config);
             return pipeline;
         }
 
-        public static ChannelPipelineIncoming AttachPriorityPartition(this ChannelPipelineIncoming pipeline, IEnumerable<ListenerPartitionConfig> config)
+        public static IPipelineChannelIncoming AttachPriorityPartition(this IPipelineChannelIncoming pipeline
+            , IEnumerable<ListenerPartitionConfig> config)
         {
             config?.ForEach((p) => pipeline.AttachPriorityPartition(p));
 
@@ -74,28 +78,32 @@ namespace Xigadee
         }
 
         //Outgoing
-        public static ChannelPipelineOutgoing AttachPriorityPartition(this ChannelPipelineOutgoing pipeline, SenderPartitionConfig config)
+        public static IPipelineChannelOutgoing AttachPriorityPartition(this IPipelineChannelOutgoing pipeline
+            , SenderPartitionConfig config)
         {
             AttachPriorityPartition<SenderPartitionConfig>(pipeline, config);
 
             return pipeline;
         }
 
-        public static ChannelPipelineOutgoing AttachPriorityPartition(this ChannelPipelineOutgoing pipeline, params int[] init)
+        public static IPipelineChannelOutgoing AttachPriorityPartition(this IPipelineChannelOutgoing pipeline
+            , params int[] init)
         {
             SenderPartitionConfig.Init(init).ForEach((p) => AttachPriorityPartition<SenderPartitionConfig>(pipeline, p));
 
             return pipeline;
         }
 
-        public static ChannelPipelineOutgoing AttachPriorityPartition(this ChannelPipelineOutgoing pipeline, Func<IEnvironmentConfiguration, Channel, SenderPartitionConfig> creator)
+        public static IPipelineChannelOutgoing AttachPriorityPartition(this IPipelineChannelOutgoing pipeline
+            , Func<IEnvironmentConfiguration, Channel, SenderPartitionConfig> creator)
         {
             var config = creator(pipeline.Pipeline.Configuration, pipeline.Channel);
             AttachPriorityPartition<SenderPartitionConfig>(pipeline, config);
             return pipeline;
         }
 
-        public static ChannelPipelineOutgoing AttachPriorityPartition(this ChannelPipelineOutgoing pipeline, IEnumerable<SenderPartitionConfig> config)
+        public static IPipelineChannelOutgoing AttachPriorityPartition(this IPipelineChannelOutgoing pipeline
+            , IEnumerable<SenderPartitionConfig> config)
         {
             config?.ForEach((p) => pipeline.AttachPriorityPartition(p));
             return pipeline;

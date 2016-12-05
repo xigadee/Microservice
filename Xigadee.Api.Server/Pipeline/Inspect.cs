@@ -34,7 +34,8 @@ namespace Xigadee
             , Action<IEnvironmentConfiguration> cfInspect = null
             , Action<HttpConfiguration> httpInspect = null)
         {
-            ((MicroservicePipeline)pipeline).Inspect(msInspect, cfInspect);
+            ((IPipeline)pipeline).Inspect(msInspect, cfInspect);
+
             httpInspect?.Invoke(pipeline.HttpConfig);
 
             return pipeline;

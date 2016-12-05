@@ -25,7 +25,7 @@ namespace Xigadee
     /// <summary>
     /// The Microservice pipeline is used by extension methods to create a simple channel based service configuration.
     /// </summary>
-    public class MicroservicePipeline
+    public class MicroservicePipeline: IPipeline
     {
         /// <summary>
         /// This is the default constructor for the pipeline.

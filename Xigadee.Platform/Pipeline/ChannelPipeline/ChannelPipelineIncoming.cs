@@ -25,14 +25,14 @@ namespace Xigadee
     /// <summary>
     /// This is the incoming channel.
     /// </summary>
-    public class ChannelPipelineIncoming: ChannelPipelineBase
+    public class ChannelPipelineIncoming: ChannelPipelineBase, IPipelineChannelIncoming
     {
         /// <summary>
         /// This is the default constructor.
         /// </summary>
         /// <param name="pipeline">The pipeline.</param>
         /// <param name="channel">The channel.</param>
-        public ChannelPipelineIncoming(MicroservicePipeline pipeline, Channel channel) : base(pipeline, channel)
+        public ChannelPipelineIncoming(IPipeline pipeline, Channel channel) : base(pipeline, channel)
         {
 
         }

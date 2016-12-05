@@ -33,7 +33,7 @@ namespace Xigadee
         /// <param name="value"></param>
         /// <returns>Returns the pipeline.</returns>
         public static P ConfigurationOverrideSet<P>(this P pipeline, string key, string value)
-            where P : MicroservicePipeline
+            where P : IPipeline
         {
             pipeline.Configuration.OverrideSettings.Add(key, value);
             pipeline.Configuration.CacheFlush();

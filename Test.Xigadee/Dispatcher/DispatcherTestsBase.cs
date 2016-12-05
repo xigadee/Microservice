@@ -11,11 +11,11 @@ namespace Test.Xigadee
         where C: class, ICommand, new()
     {
         protected CommandInitiator mCommandInit;
-        protected ChannelPipelineIncoming cpipeIn = null;
-        protected ChannelPipelineOutgoing cpipeOut = null;
+        protected IPipelineChannelIncoming cpipeIn = null;
+        protected IPipelineChannelOutgoing cpipeOut = null;
         protected DebugMemoryDataCollector collector = null;
         protected Microservice service = null;
-        protected MicroservicePipeline mPipeline = null;
+        protected IPipeline mPipeline = null;
         protected C mDCommand = null;
 
         protected ManualChannelListener mListener = null;

@@ -33,7 +33,7 @@ namespace Test.Xigadee
                 .AddPayloadSerializerDefaultJson();
         }
 
-        private void ChannelInConfigure(ChannelPipelineIncoming inPipe)
+        private void ChannelInConfigure(IPipelineChannelIncoming inPipe)
         {
             inPipe
                 .AttachResourceProfile("TrackIt")
@@ -43,12 +43,12 @@ namespace Test.Xigadee
             calloutIn = true;
         }
 
-        private void CallOutDefault(MicroservicePipeline pipe)
+        private void CallOutDefault(IPipeline pipe)
         {
             calloutDefault = true;
         }
 
-        private void ChannelOutConfigure(ChannelPipelineOutgoing inPipe)
+        private void ChannelOutConfigure(IPipelineChannelOutgoing inPipe)
         {
             calloutOut = true;
         }
@@ -60,8 +60,8 @@ namespace Test.Xigadee
             {
                 var pipeline = new MicroservicePipeline("TestPipeline");
 
-                ChannelPipelineIncoming cpipeIn = null;
-                ChannelPipelineOutgoing cpipeOut = null;
+                IPipelineChannelIncoming cpipeIn = null;
+                IPipelineChannelOutgoing cpipeOut = null;
                 PersistenceSharedService<Guid, Blah> persistence = null;
                 PersistenceBlahMemory persistBlah = null;
                 int signalChange = 0;
@@ -72,15 +72,15 @@ namespace Test.Xigadee
                         t.ConcurrentRequestsMin = 1;
                         t.ConcurrentRequestsMax = 4;
                     })
-                    .AddCallOut(ConfigureServiceRoot)
-                    .AddCallOut(CallOutDefault)
+                    .CallOut(ConfigureServiceRoot)
+                    .CallOut(CallOutDefault)
                     .AddChannelIncoming("internalIn", internalOnly: true)
-                        .AttachCallOut(ChannelInConfigure, (c) => true)
+                        .CallOut(ChannelInConfigure, (c) => true)
                         .AttachCommand(new PersistenceBlahMemory(), assign:(p) => persistBlah = p)
                         .AttachCommand(new PersistenceSharedService<Guid, Blah>(), assign:(c) => persistence = c, channelResponse: cpipeOut)
                         .Revert((c) => cpipeIn = c)
                     .AddChannelOutgoing("internalOut", internalOnly: true)
-                        .AttachCallOut(ChannelOutConfigure, (c) => false)
+                        .CallOut(ChannelOutConfigure, (c) => false)
                         .Revert((c) => cpipeOut = c);
 
                 persistBlah.OnEntityChangeAction += ((o, e) => { signalChange++; });

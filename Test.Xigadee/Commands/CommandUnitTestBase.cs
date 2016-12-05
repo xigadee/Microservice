@@ -10,8 +10,8 @@ namespace Test.Xigadee
     {
         protected C mCommand;
         protected CommandInitiator mCommandInit;
-        protected ChannelPipelineIncoming cpipeIn = null;
-        protected ChannelPipelineOutgoing cpipeOut = null;
+        protected IPipelineChannelIncoming cpipeIn = null;
+        protected IPipelineChannelOutgoing cpipeOut = null;
         protected DebugMemoryDataCollector collector = null;
         protected Microservice service = null;
 
@@ -33,13 +33,10 @@ namespace Test.Xigadee
             var info2 = mCommand.CommandMethodAttributeSignatures(true);
         }
 
-        protected virtual MicroservicePipeline Pipeline()
+        protected virtual IPipeline Pipeline()
         {
-            return PipelineConfigure(Microservice.Create((s) => service = s, serviceName: GetType().Name));
-        }
+            var pipeline = new MicroservicePipeline(GetType().Name);
 
-        protected virtual MicroservicePipeline PipelineConfigure(MicroservicePipeline pipeline)
-        {
             pipeline
                 .AddDataCollector<DebugMemoryDataCollector>((c) => collector = c)
                 .AddPayloadSerializerDefaultJson()

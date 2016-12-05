@@ -25,14 +25,14 @@ namespace Xigadee
     /// <summary>
     /// This class is used to hold the pipeline configuration.
     /// </summary>
-    public abstract class ChannelPipelineBase: MicroservicePipelineExtension
+    public abstract class ChannelPipelineBase: MicroservicePipelineExtension, IPipelineChannel
     {
         /// <summary>
         /// The default constructor.
         /// </summary>
         /// <param name="pipeline">The pipeline.</param>
         /// <param name="channel">The channel.</param>
-        public ChannelPipelineBase(MicroservicePipeline pipeline, Channel channel):base(pipeline)
+        public ChannelPipelineBase(IPipeline pipeline, Channel channel):base(pipeline)
         {
             Channel = channel;
         }

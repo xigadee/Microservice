@@ -32,7 +32,7 @@ namespace Xigadee
         /// <param name="serviceName">The optional service name</param>
         /// <param name="action">An optional action to access the service on assignment.</param>
         /// <returns>Returns the pipeliene.</returns>
-        public static MicroservicePipeline AddSharedService<I>(this MicroservicePipeline pipeline
+        public static IPipeline AddSharedService<I>(this IPipeline pipeline
             , Func<IEnvironmentConfiguration, I> creator, string serviceName = null, Action<I> action = null) where I : class
         {
             var service = creator(pipeline.Configuration);
@@ -53,7 +53,7 @@ namespace Xigadee
         /// <param name="serviceName">The optional service name</param>
         /// <param name="action">An optional action to access the service on assignment.</param>
         /// <returns>Returns the pipeliene.</returns>
-        public static MicroservicePipeline AddSharedService<I>(this MicroservicePipeline pipeline
+        public static IPipeline AddSharedService<I>(this IPipeline pipeline
             , I service, string serviceName = null, Action<I> action = null) where I : class
         {
             action?.Invoke(service);
@@ -71,7 +71,7 @@ namespace Xigadee
         /// <param name="creator">A lazy creator for the service that is called when the service is first accessed.</param>
         /// <param name="serviceName">The optional service name</param>
         /// <returns>Returns the pipeliene.</returns>
-        public static MicroservicePipeline AddSharedService<I>(this MicroservicePipeline pipeline
+        public static IPipeline AddSharedService<I>(this IPipeline pipeline
             , Lazy<I> creator, string serviceName = null) where I : class
         {
             if (!pipeline.Service.SharedServices.RegisterService<I>(creator, serviceName))

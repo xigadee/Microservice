@@ -22,18 +22,14 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public static partial class CorePipelineExtensions
+    /// <summary>
+    /// This interface is implemented by Pipeline extensions.
+    /// </summary>
+    public interface IPipelineExtension:IPipelineBase
     {
-        public static IPipelineChannelIncoming AttachCommandInitiator(this IPipelineChannelIncoming cpipe
-            , out CommandInitiator command
-            , int startupPriority = 90
-            , TimeSpan? defaultRequestTimespan = null
-            )
-        {
-            cpipe.Pipeline.AddCommandInitiator(out command
-                , startupPriority, defaultRequestTimespan, cpipe);
-
-            return cpipe;
-        }
+        /// <summary>
+        /// This is the configuration pipeline.
+        /// </summary>
+        IPipeline Pipeline { get; }
     }
 }

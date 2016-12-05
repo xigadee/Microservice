@@ -24,7 +24,7 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static ChannelPipelineIncoming AttachResourceProfile(this ChannelPipelineIncoming cpipe
+        public static IPipelineChannelIncoming AttachResourceProfile(this IPipelineChannelIncoming cpipe
             , ResourceProfile profile
             , Action<ResourceProfile> action = null)
         {
@@ -48,7 +48,7 @@ namespace Xigadee
         //    return cpipe;
         //}
 
-        public static ChannelPipelineIncoming AttachResourceProfile(this ChannelPipelineIncoming cpipe
+        public static IPipelineChannelIncoming AttachResourceProfile(this IPipelineChannelIncoming cpipe
             , Func<IEnvironmentConfiguration, ResourceProfile> creator
             , Action<ResourceProfile> action = null)
         {
@@ -64,7 +64,7 @@ namespace Xigadee
             return cpipe;
         }
 
-        public static ChannelPipelineIncoming AttachResourceProfile(this ChannelPipelineIncoming cpipe
+        public static IPipelineChannelIncoming AttachResourceProfile(this IPipelineChannelIncoming cpipe
             , IEnumerable<ResourceProfile> profiles)
         {
             if (profiles == null)

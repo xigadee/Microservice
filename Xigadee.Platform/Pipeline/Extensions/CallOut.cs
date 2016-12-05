@@ -31,36 +31,16 @@ namespace Xigadee
         /// <param name="method">The method to call.</param>
         /// <param name="condition">A boolean condition for the call out. If not set then this is true.</param>
         /// <returns>Returns the original Pipeline.</returns>
-        public static P AddCallOut<P>(this P pipe
+        public static P CallOut<P>(this P pipe
             , Action<P> method
             , Func<IEnvironmentConfiguration, bool> condition = null
             )
-            where P : MicroservicePipeline
+            where P : IPipelineBase
         {
-            if (condition?.Invoke(pipe.Configuration) ?? true)
+            if (condition?.Invoke(pipe.ToPipeline().Configuration) ?? true)
                 method(pipe);
 
             return pipe;
-        }
-
-        /// <summary>
-        /// This method can be used to call out the pipeline flow to an external method.
-        /// </summary>
-        /// <typeparam name="P">The pipeline extension type.</typeparam>
-        /// <param name="pext">The pipeline extension.</param>
-        /// <param name="method">The method to call.</param>
-        /// <param name="condition">A boolean condition for the call out. If not set then this is true.</param>
-        /// <returns>Returns the original Pipeline extension.</returns>
-        public static P AttachCallOut<P>(this P pext
-        , Action<P> method
-        , Func<IEnvironmentConfiguration, bool> condition = null
-        )
-        where P : MicroservicePipelineExtension
-        {
-            if (condition?.Invoke(pext.Pipeline.Configuration) ?? true)
-                method(pext);
-
-            return pext;
         }
 
     }

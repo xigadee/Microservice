@@ -36,46 +36,26 @@ namespace Xigadee
             , Action<P> whenTrue = null
             , Action<P> whenFalse = null
             )
-            where P : MicroservicePipeline
+            where P : IPipelineBase
         {
             if (condition == null)
                 throw new ArgumentNullException("condition", "condition cannot be null for this pipeline extension.");
 
-            if (condition(pipe.Configuration))
+            bool success = false;
+
+            if (pipe is IPipelineExtension)
+                success = condition(((IPipelineExtension)pipe).Pipeline.Configuration);
+            else if (pipe is IPipeline)
+                success = condition(((IPipeline)pipe).Configuration);
+            else
+                throw new ArgumentOutOfRangeException("pipe", "pipe must implement IPipelineChannel or IPipeline");
+
+            if (success)
                 whenTrue?.Invoke(pipe);
             else
                 whenFalse?.Invoke(pipe);
 
             return pipe;
-        }
-    }
-
-    public static partial class CorePipelineExtensionsExtended
-    {
-        /// <summary>
-        /// This method can be used to call out the pipeline flow to an external method.
-        /// </summary>
-        /// <typeparam name="P">The pipeline extension type.</typeparam>
-        /// <param name="pext">The pipeline extension.</param>
-        /// <param name="condition">A boolean condition for the call out.</param>
-        /// <param name="whenTrue">The condition true action.</param>
-        /// <param name="whenFalse">The condition false action.</param>
-        /// <returns>Returns the original Pipeline extension.</returns>
-        public static P Condition<P>(this P pext, Func<IEnvironmentConfiguration, bool> condition
-            , Action<P> whenTrue = null
-            , Action<P> whenFalse = null
-            )
-            where P : MicroservicePipelineExtension
-        {
-            if (condition == null)
-                throw new ArgumentNullException("condition", "condition cannot be null for this pipeline extension.");
-                    
-            if (condition(pext.Pipeline.Configuration))
-                whenTrue?.Invoke(pext);
-            else
-                whenFalse?.Invoke(pext);
-
-            return pext;
         }
 
     }

@@ -30,7 +30,8 @@ namespace Xigadee
         /// </summary>
         /// <param name="pipe">The pipeline.</param>
         /// <returns>The pipeline.</returns>
-        public static ChannelPipelineIncoming Actual_ChannelPipelineIncoming(this ChannelPipelineIncoming pipe)
+        public static C Actual_ChannelPipelineIncoming<C>(this C pipe)
+            where C: ChannelPipelineBase, IPipelineChannelIncoming
         {
             return pipe;
         }
@@ -40,7 +41,8 @@ namespace Xigadee
         /// </summary>
         /// <param name="pipe">The pipeline.</param>
         /// <returns>The pipeline.</returns>
-        public static ChannelPipelineOutgoing Actual_ChannelPipelineOutgoing(this ChannelPipelineOutgoing pipe)
+        public static C Actual_ChannelPipelineOutgoing<C>(this C pipe)
+             where C : ChannelPipelineBase, IPipelineChannelOutgoing
         {
             return pipe;
         }

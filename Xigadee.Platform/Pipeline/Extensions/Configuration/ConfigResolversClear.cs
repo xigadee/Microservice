@@ -31,7 +31,7 @@ namespace Xigadee
         /// <param name="pipeline">The pipeline.</param>
         /// <returns>Returns the pipeline.</returns>
         public static P ConfigResolversClear<P>(this P pipeline)
-            where P : MicroservicePipeline
+            where P : IPipeline
         {
             pipeline.Configuration.ResolversClear();
 

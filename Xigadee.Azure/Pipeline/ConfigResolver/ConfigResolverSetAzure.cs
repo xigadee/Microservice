@@ -20,7 +20,7 @@ namespace Xigadee
         /// <param name="assign">An action to allow changes to be made to the resolver after it is created.</param>
         /// <returns>Returns the pipeline to continue the chain.</returns>
         public static P ConfigResolverSetAzure<P>(this P pipeline, int priority = 20, Action<ConfigResolverAzure> assign = null)
-            where P : MicroservicePipeline
+            where P : IPipeline
         {
             pipeline.ConfigResolverSet<P, ConfigResolverAzure>(priority, assign);
 

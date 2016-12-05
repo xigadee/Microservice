@@ -239,6 +239,10 @@
     <Compile Include="Pipeline\Extensions\Configuration\ConfigurationOverrideSet.cs" />
     <Compile Include="Pipeline\Extensions\Stop.cs" />
     <Compile Include="Pipeline\Extensions\Actual.cs" />
+    <Compile Include="Pipeline\Interfaces\IPipelineBase.cs" />
+    <Compile Include="Pipeline\Interfaces\IPipelineChannel.cs" />
+    <Compile Include="Pipeline\Interfaces\IPipeline.cs" />
+    <Compile Include="Pipeline\Interfaces\IPipelineExtension.cs" />
     <Compile Include="Pipeline\MicroservicePipelineExtension.cs" />
     <Compile Include="Pipeline\Extensions\ToPipeline.cs" />
     <Compile Include="ResourceTracker\ResourceTrackerPolicy.cs" />

@@ -17,7 +17,7 @@ namespace Xigadee
         /// <param name="service">This is the service.</param>
         /// <param name="config">This is the configuration settings.</param>
         /// <returns>Returns the pipeline object.</returns>
-        public static MicroservicePipeline ToPipeline(this IMicroservice service, IEnvironmentConfiguration config)
+        public static IPipeline ToPipeline(this IMicroservice service, IEnvironmentConfiguration config)
         {
             return new MicroservicePipeline(service, config);
         }

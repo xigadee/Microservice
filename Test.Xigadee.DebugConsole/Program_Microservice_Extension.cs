@@ -29,19 +29,20 @@ namespace Test.Xigadee
 {
     static partial class Program
     {
-        static Microservice sExtensionService = null;
+        static IMicroservice sExtensionService = null;
 
         static void ExtensionMicroserviceStart()
         {
             try
             {
-                var pipeline = Microservice.Create((s) => sExtensionService = s);
+                var pipeline = new MicroservicePipeline();
 
-                ChannelPipelineIncoming cpipeIn = null;
-                ChannelPipelineOutgoing cpipeOut = null;
+                IPipelineChannelIncoming cpipeIn = null;
+                IPipelineChannelOutgoing cpipeOut = null;
                 PersistenceSharedService<Guid, Blah> persistence = null;
 
                 pipeline
+                    .Inspect(msInspect: (s) => sExtensionService = s)
                     .AddLogger<TraceEventLogger>()
                     .AddPayloadSerializerDefaultJson()
                     .AddChannelIncoming("internalIn")

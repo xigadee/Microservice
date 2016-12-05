@@ -24,27 +24,27 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static MicroservicePipeline AddCommand<C>(this MicroservicePipeline pipeline
+        public static IPipeline AddCommand<C>(this IPipeline pipeline
             , int startupPriority = 100
             , Action<C> assign = null
-            , ChannelPipelineIncoming channelIncoming = null
-            , ChannelPipelineOutgoing channelResponse = null
-            , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
-            , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null
+            , IPipelineChannelIncoming channelIncoming = null
+            , IPipelineChannelOutgoing channelResponse = null
+            , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
+            , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null
             )
             where C : ICommand, new()
         {
             return pipeline.AddCommand(new C(), startupPriority, assign, channelIncoming, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
         }
 
-        public static MicroservicePipeline AddCommand<C>(this MicroservicePipeline pipeline
+        public static IPipeline AddCommand<C>(this IPipeline pipeline
             , Func<IEnvironmentConfiguration, C> creator
             , int startupPriority = 100
             , Action<C> assign = null
-            , ChannelPipelineIncoming channelIncoming = null
-            , ChannelPipelineOutgoing channelResponse = null
-            , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
-            , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null
+            , IPipelineChannelIncoming channelIncoming = null
+            , IPipelineChannelOutgoing channelResponse = null
+            , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
+            , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null
             )
             where C : ICommand
         {
@@ -53,14 +53,14 @@ namespace Xigadee
             return pipeline.AddCommand(command, startupPriority, assign, channelIncoming, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
         }
 
-        public static MicroservicePipeline AddCommand<C>(this MicroservicePipeline pipeline
+        public static IPipeline AddCommand<C>(this IPipeline pipeline
             , C command
             , int startupPriority = 100
             , Action<C> assign = null
-            , ChannelPipelineIncoming channelIncoming = null
-            , ChannelPipelineOutgoing channelResponse = null
-            , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
-            , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null
+            , IPipelineChannelIncoming channelIncoming = null
+            , IPipelineChannelOutgoing channelResponse = null
+            , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
+            , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null
             )
             where C: ICommand
         {
