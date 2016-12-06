@@ -25,7 +25,7 @@ namespace Xigadee
     /// <summary>
     /// This is the base exception class for the CSV enumerator.
     /// </summary>
-    public class CommandStartupException: Exception
+    public class CommandStartupException: CommandException
     {
         /// <summary>
         /// Initializes a new instance of the XimuraException class.

@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class OutgoingRequestTransmitException: Exception
+    public class OutgoingRequestTransmitException: CommandException
     {
         public OutgoingRequestTransmitException(string message) : base(message)
         {

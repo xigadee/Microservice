@@ -67,10 +67,13 @@
     <Compile Include="Command\CommandInitiator\CommandInitiatorPolicy.cs" />
     <Compile Include="Command\CommandInitiator\CommandInitiatorStatistics.cs" />
     <Compile Include="Command\CommandInitiator\ResponseWrapper.cs" />
+    <Compile Include="Command\Command_Initiator.cs" />
     <Compile Include="Command\Command_Process.cs" />
     <Compile Include="Command\Command_Reflection.cs" />
     <Compile Include="Command\Attributes\PayloadInAttribute.cs" />
+    <Compile Include="Command\Exceptions\CommandException.cs" />
     <Compile Include="Command\Exceptions\CommandNotSupportedException.cs" />
+    <Compile Include="Command\Exceptions\OutgoingRequestsNotEnabledException.cs" />
     <Compile Include="Command\Helper\CommandContext.cs" />
     <Compile Include="Command\Helper\CommandHolderException.cs" />
     <Compile Include="Communication\Base\IMessagingService.cs" />

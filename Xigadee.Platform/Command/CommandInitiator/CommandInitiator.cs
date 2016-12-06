@@ -68,7 +68,6 @@ namespace Xigadee
             return await Process<RQ, RS>(channelId, messageType, actionType, rq, settings, routing);
         }
         #endregion
-
         #region Process<RQ, RS> ...
         /// <summary>
         /// This method is used to send requests to the remote command.
@@ -91,109 +90,8 @@ namespace Xigadee
             , Func<TaskStatus, TransmissionPayload, bool, ResponseWrapper<RS>> processResponse = null
             )
         {
-            TransmissionPayload payload = null;
-            try
-            {
-                StatisticsInternal.ActiveIncrement();
-
-                payload = TransmissionPayload.Create();
-
-                // Set the process correlation key to the correlation id if passed through the rq settings
-                if (!string.IsNullOrEmpty(rqSettings?.CorrelationId))
-                    payload.Message.ProcessCorrelationKey = rqSettings.CorrelationId;
-
-                bool processAsync = rqSettings?.ProcessAsync ?? false;
-
-                payload.Options = routingOptions ?? ProcessOptions.RouteExternal | ProcessOptions.RouteInternal;
-
-                //Set the destination message
-                payload.Message.ChannelId = channelId ?? ChannelId;
-                payload.Message.MessageType = messageType;
-                payload.Message.ActionType = actionType;
-                payload.Message.ChannelPriority = processAsync ? 0 : 1;
-
-                //Set the response path
-                payload.Message.ResponseChannelId = ResponseId.Header.ChannelId;
-                payload.Message.ResponseMessageType = ResponseId.Header.MessageType;
-                payload.Message.ResponseActionType = ResponseId.Header.ActionType;
-                payload.Message.ResponseChannelPriority = payload.Message.ChannelPriority;
-
-                //Set the payload
-                payload.Message.Blob = PayloadSerializer.PayloadSerialize(rq);
-
-                //Set the processing time
-                payload.MaxProcessingTime = rqSettings?.WaitTime ?? mDefaultRequestTimespan;
-
-                //Transmit
-                return await TransmitAsync(payload, processResponse ?? ProcessResponse<RS>, processAsync);
-            }
-            catch (Exception ex)
-            {
-                string key = payload?.Id.ToString() ?? string.Empty;
-                Logger.LogException(string.Format("Error transmitting {0}-{1} internally", actionType, key), ex);
-                throw;
-            }
+            return await ProcessOutgoing(channelId, messageType,  actionType, rq, rqSettings, routingOptions, processResponse);
         } 
         #endregion
-
-        #region ProcessResponse<KT, ET>(TaskStatus status, TransmissionPayload prs, bool async)
-        /// <summary>
-        /// This method is used to process the returning message response.
-        /// </summary>
-        /// <typeparam name="RS"></typeparam>
-        /// <param name="rType"></param>
-        /// <param name="payload"></param>
-        /// <param name="processAsync"></param>
-        /// <returns></returns>
-        protected virtual ResponseWrapper<RS> ProcessResponse<RS>(TaskStatus rType, TransmissionPayload payload, bool processAsync)
-        {
-            StatisticsInternal.ActiveDecrement(payload != null ? payload.Extent : TimeSpan.Zero);
-            if (processAsync)
-                return new ResponseWrapper<RS>(responseCode: 202, responseMessage: "Accepted");
-
-            payload.CompleteSet();
-
-            try
-            {
-                switch (rType)
-                {
-                    case TaskStatus.RanToCompletion:
-                        try
-                        {                        
-                            //payload.Message.
-                            var response = new ResponseWrapper<RS>(payload);
-
-                            if (payload.MessageObject != null)
-                                response.Response = (RS)payload.MessageObject;
-                            else if (payload.Message.Blob != null)
-                                response.Response = PayloadSerializer.PayloadDeserialize<RS>(payload);
-
-                            return response;
-                        }
-                        catch (Exception ex)
-                        {
-                            StatisticsInternal.ErrorIncrement();
-                            return new ResponseWrapper<RS>(500, ex.Message);
-                        }
-                    case TaskStatus.Canceled:
-                        StatisticsInternal.ErrorIncrement();
-                        return new ResponseWrapper<RS>(408, "Time out");
-                    case TaskStatus.Faulted:
-                        StatisticsInternal.ErrorIncrement();
-                        return new ResponseWrapper<RS>((int)PersistenceResponse.GatewayTimeout504, "Response timeout.");
-                    default:
-                        StatisticsInternal.ErrorIncrement();
-                        return new ResponseWrapper<RS>(500, rType.ToString());
-
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException("Error processing response for task status " + rType, ex);
-                throw;
-            }
-        }
-        #endregion
-
     }
 }

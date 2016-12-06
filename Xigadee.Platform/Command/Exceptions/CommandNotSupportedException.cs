@@ -9,7 +9,7 @@ namespace Xigadee
     /// <summary>
     /// This exception is thrown when a request is sent to a command that is not recognised.
     /// </summary>
-    public class CommandNotSupportedException:Exception
+    public class CommandNotSupportedException: CommandException
     {
         /// <summary>
         /// This exception is thrown when a request is sent to a command that is not recognised.
