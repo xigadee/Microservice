@@ -41,7 +41,7 @@ namespace Xigadee
                 {
                     if (numberOfRetries >= mPolicy.EventSourceRetryLimit)
                     {
-                        LogException(string.Format("Unable to log to event source {0} for {1}-{2}-{3}", eventSource.GetType().Name, entry.EntityType, entry.Key, entry.EntityVersion), ex);
+                        this.LogException(string.Format("Unable to log to event source {0} for {1}-{2}-{3}", eventSource.GetType().Name, entry.EntityType, entry.Key, entry.EntityVersion), ex);
                         throw;
                     }
                 }
@@ -50,6 +50,21 @@ namespace Xigadee
 
                 numberOfRetries++;
             }
+        }
+
+        /// <summary>
+        /// This is the external method to submit events to the event source.
+        /// </summary>
+        /// <typeparam name="K"></typeparam>
+        /// <typeparam name="E"></typeparam>
+        /// <param name="originatorId"></param>
+        /// <param name="entry"></param>
+        /// <param name="utcTimeStamp"></param>
+        /// <param name="sync"></param>
+        /// <returns></returns>
+        public async Task Write<K, E>(string originatorId, EventSourceEntry<K, E> entry, DateTime? utcTimeStamp = default(DateTime?), bool sync = false)
+        {
+            Write(new EventSourceEvent { OriginatorId = originatorId, Entry = entry, UtcTimeStamp = utcTimeStamp }, DataCollectionSupport.EventSource, sync);
         }
 
     }

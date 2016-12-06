@@ -299,17 +299,14 @@ namespace Xigadee
         {
             try
             {
-                if (service is IServiceLogger)
-                    ((IServiceLogger)service).Logger = mDataCollection;
+                if (service is IRequireDataCollector)
+                    ((IRequireDataCollector)service).Collector = mDataCollection;
 
                 if (service is IServiceOriginator)
                     ((IServiceOriginator)service).OriginatorId = Id;
 
                 if (service is IServiceEventSource)
                     ((IServiceEventSource)service).EventSource = mDataCollection;
-
-                if (service is IRequireDataCollector)
-                    ((IRequireDataCollector)service).Collector = mDataCollection;
 
                 if (service is IPayloadSerializerConsumer)
                     ((IPayloadSerializerConsumer)service).PayloadSerializer = mSerializer;

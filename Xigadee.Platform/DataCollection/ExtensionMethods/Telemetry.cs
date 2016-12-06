@@ -13,17 +13,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xigadee;
 
 namespace Xigadee
 {
-    public interface IServiceLogger
+    /// <summary>
+    /// These extension methods simplify the logging of complex data to a consistent framework.
+    /// </summary>
+    public static partial class DataCollectionExtensionMethods
     {
-        ILoggerExtended Logger { get; set; }
+        /// <summary>
+        /// Track the metric for each of the tranckers.
+        /// </summary>
+        /// <param name="collector">The collector reference.</param>
+        /// <param name="metricName"></param>
+        /// <param name="value"></param>
+        public static void TrackMetric(this IDataCollection collector, string metricName, double value)
+        {
+            collector.Write(new TelemetryEvent { MetricName = metricName, Value = value }, DataCollectionSupport.Telemetry);
+        }
     }
 }

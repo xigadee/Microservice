@@ -31,9 +31,4 @@ namespace Xigadee
         /// <returns>This is an async task.</returns>
         Task Log(LogEvent logEvent);
     }
-
-    public interface ILoggerComponent
-    {
-
-    }
 }

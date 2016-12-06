@@ -41,7 +41,7 @@ namespace Xigadee
             try
             {
                 var statistics = Statistics;
-                mDataCollection?.MicroserviceStatisticsIssued(statistics);
+                mDataCollection?.Write(statistics, DataCollectionSupport.Statistics);
                 OnStatisticsIssued(statistics);
             }
             catch (Exception ex)

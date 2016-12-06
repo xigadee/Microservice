@@ -102,7 +102,7 @@ namespace Xigadee
             Unity.RegisterInstance(Config);
         }
 
-        protected class LoggerInternal: ILoggerExtended
+        protected class LoggerInternal
         {
             private readonly Microservice mService;
 

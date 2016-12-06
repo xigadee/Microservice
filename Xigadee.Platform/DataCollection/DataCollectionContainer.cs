@@ -27,8 +27,7 @@ namespace Xigadee
     /// This class centrally holds all the logging, telemetry and event source support.
     /// </summary>
     public partial class DataCollectionContainer: ServiceContainerBase<DataCollectionStatistics, DataCollectionPolicy>
-        , IDataCollection, ILogger, IEventSource, ITelemetry, IServiceOriginator, ILoggerExtended
-        , ITaskManagerProcess, IRequireSharedServices
+        , IDataCollection, IEventSource, IServiceOriginator, ITaskManagerProcess, IRequireSharedServices
     {
         #region Declarations
         private List<IDataCollectorComponent> mCollectors = new List<IDataCollectorComponent>();
@@ -115,11 +114,6 @@ namespace Xigadee
             return component;
         }
 
-        public ITelemetry Add(ITelemetry component)
-        {
-            //mTelemetry.Add(component);
-            return component;
-        }
         #endregion
 
         #region ServiceStart(object service)
@@ -180,7 +174,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                LogException("DataCollectionContainer/Flush failed.", ex);
+                this.LogException("DataCollectionContainer/Flush failed.", ex);
             }
         } 
         #endregion

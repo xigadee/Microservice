@@ -40,7 +40,6 @@ namespace Xigadee
         ILogger RegisterLogger(ILogger logger);
         IBoundaryLoggerComponent RegisterBoundaryLogger(IBoundaryLoggerComponent logger);
         IDataCollectorComponent RegisterDataCollector(IDataCollectorComponent logger);
-        ITelemetry RegisterTelemetry(ITelemetry telemetry);
 
         IPayloadSerializer RegisterPayloadSerializer(IPayloadSerializer serializer);
         void ClearPayloadSerializers();

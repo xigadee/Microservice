@@ -25,14 +25,14 @@ namespace Xigadee
     /// <summary>
     /// This class sends data to the IoT stream for analysis.
     /// </summary>
-    public class AzureIoTLogger: ServiceBase<LoggingStatistics>, IServiceLogger, IRequireSharedServices, ILogger
+    public class AzureIoTLogger: ServiceBase<LoggingStatistics>, IRequireDataCollector, IRequireSharedServices
     {
         public AzureIoTLogger()
         {
 
         }
 
-        public ILoggerExtended Logger
+        public IDataCollection Collector
         {
             get;set;
         }
@@ -40,11 +40,6 @@ namespace Xigadee
         public ISharedService SharedServices
         {
             get;set;
-        }
-
-        public async Task Log(LogEvent logEvent)
-        {
-
         }
 
         protected override void StartInternal()
