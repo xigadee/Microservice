@@ -29,8 +29,21 @@ namespace Xigadee
         [ConfigSettingKey("ApplicationInsights")]
         public const string KeyApplicationInsights = "ApplicationInsightsKey";
 
+        [ConfigSettingKey("ApplicationInsights")]
+        public const string KeyApplicationInsightsLoggingLevel = "ApplicationInsightsLoggingLevel";
+
         [ConfigSetting("ApplicationInsights")]
         public static string ApplicationInsightsKey(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyApplicationInsights);
 
+        [ConfigSetting("ApplicationInsights")]
+        public static LoggingLevel ApplicationInsightsLoggingLevel(this IEnvironmentConfiguration config)
+        {
+            LoggingLevel loggingLevel;
+            var configLevel = config.PlatformOrConfigCache(KeyApplicationInsightsLoggingLevel);
+            if (!string.IsNullOrEmpty(configLevel) && Enum.TryParse(configLevel, out loggingLevel))
+                return loggingLevel;
+
+            return LoggingLevel.Warning;
+        }
     }
 }
