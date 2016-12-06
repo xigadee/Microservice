@@ -61,6 +61,7 @@ namespace Xigadee
         /// <param name="serviceName"></param>
         /// <param name="idMaker"></param>
         /// <param name="resourceProfile"></param>
+        /// <param name="encryption"></param>
         protected AzureStorageLoggingBase(StorageCredentials credentials
             , string containerName
             , string serviceName
@@ -70,9 +71,10 @@ namespace Xigadee
             , BlobContainerPublicAccessType accessType = BlobContainerPublicAccessType.Off
             , BlobRequestOptions options = null
             , OperationContext context = null
-            , ResourceProfile resourceProfile = null)
+            , ResourceProfile resourceProfile = null
+            , ISymmetricEncryption encryption = null)
         {
-            mStorage = new StorageServiceBase(credentials, containerName, accessType, options, context, defaultTimeout: defaultTimeout);
+            mStorage = new StorageServiceBase(credentials, containerName, accessType, options, context, defaultTimeout: defaultTimeout, encryption: encryption);
             mIdMaker = idMaker ?? IdMaker;
             mDirectoryMaker = directoryMaker ?? DirectoryMaker;
             mServiceName = serviceName;

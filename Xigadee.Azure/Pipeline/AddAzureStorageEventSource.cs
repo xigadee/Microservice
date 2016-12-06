@@ -32,7 +32,7 @@ namespace Xigadee
             , ResourceProfile resourceProfile = null
             , Action<AzureStorageEventSource> onCreate = null)
         {
-            return pipeline.AddAzureStorageEventSource(pipeline.Configuration.LogStorageCredentials(), serviceName, containerName, resourceProfile, onCreate);
+            return pipeline.AddAzureStorageEventSource(pipeline.Configuration.LogStorageCredentials(), serviceName, containerName, resourceProfile, pipeline.Configuration.AesEncryptionWithCompression(), onCreate);
         }
 
         public static IPipeline AddAzureStorageEventSource(this IPipeline pipeline
@@ -40,9 +40,10 @@ namespace Xigadee
             , string serviceName = null
             , string containerName = "eventsource"
             , ResourceProfile resourceProfile = null
+            , ISymmetricEncryption encryption = null
             , Action<AzureStorageEventSource> onCreate = null)
         {
-            var component = new AzureStorageEventSource(creds, serviceName ?? pipeline.Service.Name, containerName, resourceProfile);
+            var component = new AzureStorageEventSource(creds, serviceName ?? pipeline.Service.Name, containerName, resourceProfile, encryption);
 
             onCreate?.Invoke(component);
                 

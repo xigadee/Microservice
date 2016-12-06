@@ -26,10 +26,12 @@ namespace Test.Xigadee
     {
         public PersistenceMondayMorningBluesBlob(StorageCredentials credentials
             , VersionPolicy<MondayMorningBlues> versionPolicy = null
-            , ICacheManager<Guid, MondayMorningBlues> cacheManager = null)
+            , ICacheManager<Guid, MondayMorningBlues> cacheManager = null
+            , ISymmetricEncryption encryption = null) 
             : base(credentials, (k) => k.Id, (s) => new Guid(s), keySerializer: (g) => g.ToString("N").ToUpperInvariant(), cacheManager: cacheManager
             , versionPolicy: versionPolicy
             , referenceMaker: MondayMorningBluesHelper.ToReferences
+            , encryption: encryption
             )
         {
 

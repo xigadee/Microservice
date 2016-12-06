@@ -194,6 +194,7 @@
     <Compile Include="ApplicationInsights\CommandCorrelationInitializer.cs" />
     <Compile Include="Configuration\ConfigResolver\ConfigResolverKeyVault.cs" />
     <Compile Include="Configuration\ConfigResolver\ConfigResolverAzure.cs" />
+    <Compile Include="Pipeline\Config\Encryption.cs" />
     <Compile Include="Pipeline\ServiceBus\ConfigureAzureMessagingHelper.cs" />
     <Compile Include="Exceptions\ConfigKeyVaultException.cs" />
     <Compile Include="Pipeline\AddApplicationInsightsConnector.cs" />

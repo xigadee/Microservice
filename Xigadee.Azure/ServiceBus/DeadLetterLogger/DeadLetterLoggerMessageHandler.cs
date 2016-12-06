@@ -43,6 +43,7 @@ namespace Xigadee
         #endregion
 
         #region Constructor
+
         /// <summary>
         /// This is the default constructor.
         /// </summary>
@@ -52,13 +53,15 @@ namespace Xigadee
         /// <param name="accessType">The blog storage access type. By default this is set to private.</param>
         /// <param name="options">The blod request options.</param>
         /// <param name="context">The options context.</param>
+        /// <param name="encryption">Encryption to be used when logging dead letters</param>
         public DeadLetterLoggerMessageHandler(StorageCredentials credentials, string serviceName
             , TimeSpan? defaultTimeout = null
             , BlobContainerPublicAccessType accessType = BlobContainerPublicAccessType.Off
             , BlobRequestOptions options = null
-            , OperationContext context = null)
+            , OperationContext context = null
+            , ISymmetricEncryption encryption = null)
         {
-            mStorage = new StorageServiceBase(credentials, "DeadLetter", accessType, options, context, defaultTimeout: defaultTimeout);
+            mStorage = new StorageServiceBase(credentials, "DeadLetter", accessType, options, context, defaultTimeout: defaultTimeout, encryption:encryption);
             mServiceName = serviceName;
         } 
         #endregion

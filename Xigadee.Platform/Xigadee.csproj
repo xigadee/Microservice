@@ -128,6 +128,7 @@
     <Compile Include="Exceptions\TransmitRetryExceededException.cs" />
     <Compile Include="Interfaces\IRequireDataCollector.cs" />
     <Compile Include="Interfaces\ISharedService.cs" />
+    <Compile Include="Interfaces\ISymmetricEncryption.cs" />
     <Compile Include="Messaging\ProcessOptions.cs" />
     <Compile Include="Messaging\RateLimitSignal.cs" />
     <Compile Include="Messaging\TransmissionPayloadHelper.cs" />
@@ -441,6 +442,7 @@
     <Compile Include="ResourceTracker\ResourceTrackerStatistics.cs" />
     <Compile Include="Scheduler\SchedulerPolicy.cs" />
     <Compile Include="Scheduler\SchedulerStatistics.cs" />
+    <Compile Include="Security\AesEncryption.cs" />
     <Compile Include="Security\DispatcherSecurityToken.cs" />
     <Compile Include="Security\Helper\Sha256SignatureHelper.cs" />
     <Compile Include="Security\Helper\Sha512SignatureHelper.cs" />
