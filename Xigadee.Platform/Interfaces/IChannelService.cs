@@ -22,11 +22,15 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This interface is implemented by the Communication service and allows
+    /// components to query the system channels.
+    /// </summary>
     public interface IChannelService
     {
         IEnumerable<Channel> Channels { get; }
 
-        void Add(Channel item);
+        bool Add(Channel item);
 
         bool Remove(Channel item);
 
@@ -35,9 +39,15 @@ namespace Xigadee
         bool TryGet(string channelId, ChannelDirection direction, out Channel channel);
 
     }
-
+    /// <summary>
+    /// This interface is implemented by components that require a direct access to the 
+    /// system channels.
+    /// </summary>
     public interface IRequireChannelService
     {
+        /// <summary>
+        /// The service reference.
+        /// </summary>
         IChannelService ChannelService { get; set; }
     }
 }

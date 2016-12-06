@@ -64,6 +64,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Channel\ChannelRedirect.cs" />
+    <Compile Include="Channel\Channels.cs" />
     <Compile Include="Commands\SimpleCommand2.cs" />
     <Compile Include="Commands\SimpleCommand1.cs" />
     <Compile Include="Commands\SimpleCommand.cs" />
