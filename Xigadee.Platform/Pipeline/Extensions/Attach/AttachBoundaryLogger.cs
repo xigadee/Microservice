@@ -36,9 +36,7 @@ namespace Xigadee
         public static C AttachBoundaryLogger<C>(this C cpipe, IBoundaryLoggerComponent boundaryLogger)
             where C: IPipelineExtension
         {
-            cpipe.Pipeline.Service.RegisterBoundaryLogger(boundaryLogger);
-
-            return cpipe;
+            return AttachBoundaryLogger(cpipe, boundaryLogger, null);
         }
 
         /// <summary>
@@ -58,7 +56,7 @@ namespace Xigadee
         {
 
             action?.Invoke(cpipe, boundaryLogger);
-            cpipe.AttachBoundaryLogger(boundaryLogger);
+            cpipe.Pipeline.Service.RegisterBoundaryLogger(boundaryLogger);
 
             return cpipe;
         }
