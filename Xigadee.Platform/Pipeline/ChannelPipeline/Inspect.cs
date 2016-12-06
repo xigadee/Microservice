@@ -24,10 +24,11 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static ChannelPipelineIncoming Inspect(this ChannelPipelineIncoming pipeline
+        public static C Inspect<C>(this C pipeline
             , Action<IMicroservice> msAssign = null
             , Action<IEnvironmentConfiguration> cfAssign = null
             , Action<Channel> cnAssign = null)
+            where C:ChannelPipelineBase
         {
             msAssign?.Invoke(pipeline.Pipeline.Service);
             cfAssign?.Invoke(pipeline.Pipeline.Configuration);

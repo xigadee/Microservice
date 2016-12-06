@@ -25,10 +25,10 @@ namespace Xigadee
 {
     public static partial class WebApiExtensionMethods
     {
-        public static WebApiMicroservicePipeline ToWebApiMicroservicePipeline<P>(this P pipeline)
-            where P: WebApiMicroservicePipeline
+        public static IPipelineWebApi ToWebApiMicroservicePipeline<P>(this P pipeline)
+            where P: IPipelineWebApi
         {
-            var webpipe = pipeline as WebApiMicroservicePipeline;
+            var webpipe = pipeline as IPipelineWebApi;
 
             if (webpipe == null)
                 throw new ArgumentOutOfRangeException("The incoming pipeline is not a WebApiMicroservicePipeline");

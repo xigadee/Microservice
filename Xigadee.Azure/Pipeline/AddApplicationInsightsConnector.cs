@@ -25,14 +25,14 @@ namespace Xigadee
 {
     public static partial class AzureExtensionMethods
     {
-        public static MicroservicePipeline AddApplicationInsightsDataCollector(this MicroservicePipeline pipeline, ApplicationInsightsDataCollector collector)
+        public static IPipeline AddApplicationInsightsDataCollector(this IPipeline pipeline, ApplicationInsightsDataCollector collector)
         {
             pipeline.Service.RegisterDataCollector(collector);
 
             return pipeline;
         }
 
-        public static MicroservicePipeline AddApplicationInsightsDataCollector<L>(this MicroservicePipeline pipeline, Func<IEnvironmentConfiguration, L> creator, Action<L> action = null)
+        public static IPipeline AddApplicationInsightsDataCollector<L>(this IPipeline pipeline, Func<IEnvironmentConfiguration, L> creator, Action<L> action = null)
             where L : ApplicationInsightsDataCollector
         {
             var collector = creator(pipeline.Configuration);
@@ -44,7 +44,7 @@ namespace Xigadee
             return pipeline;
         }
 
-        public static MicroservicePipeline AddApplicationInsightsDataCollector<L>(this MicroservicePipeline pipeline, Action<L> action = null)
+        public static IPipeline AddApplicationInsightsDataCollector<L>(this IPipeline pipeline, Action<L> action = null)
             where L : ApplicationInsightsDataCollector, new()
         {
             var collector = new L();

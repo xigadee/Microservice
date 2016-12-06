@@ -155,7 +155,13 @@
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Pipeline\AddCommandUnity.cs" />
+    <Compile Include="Pipeline\Actual.cs" />
+    <Compile Include="Pipeline\Add\AddCommandUnity.cs" />
+    <Compile Include="Pipeline\Attach\AttachCommandUnity.cs" />
+    <Compile Include="Pipeline\Exceptions\UnityWebApiMicroservicePipelineInvalidException.cs" />
+    <Compile Include="Pipeline\Inspect.cs" />
+    <Compile Include="Pipeline\Interfaces\IPipelineWebApiUnity.cs" />
+    <Compile Include="Pipeline\ToUnityWebApiMicroservicePipeline.cs" />
     <Compile Include="Pipeline\ToUnityContainer.cs" />
     <Compile Include="Pipeline\UnityWebApiMicroservicePipeline.cs" />
     <Compile Include="PopulatorWebApiUnity.cs" />

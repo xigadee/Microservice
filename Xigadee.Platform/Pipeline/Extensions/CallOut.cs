@@ -29,20 +29,19 @@ namespace Xigadee
         /// </summary>
         /// <param name="pipe">The pipeline.</param>
         /// <param name="method">The method to call.</param>
+        /// <param name="condition">A boolean condition for the call out. If not set then this is true.</param>
         /// <returns>Returns the original Pipeline.</returns>
-        public static MicroservicePipeline CallOut(this MicroservicePipeline pipe, Action<MicroservicePipeline> method)
+        public static P CallOut<P>(this P pipe
+            , Action<P> method
+            , Func<IEnvironmentConfiguration, bool> condition = null
+            )
+            where P : IPipelineBase
         {
-            method(pipe);
+            if (condition?.Invoke(pipe.ToPipeline().Configuration) ?? true)
+                method(pipe);
 
             return pipe;
         }
 
-        public static P CallOut<P>(this P pipe, Action<P> method)
-            where P : MicroservicePipelineExtension
-        {
-            method(pipe);
-
-            return pipe;
-        }
     }
 }

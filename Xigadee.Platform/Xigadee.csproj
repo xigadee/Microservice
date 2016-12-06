@@ -77,7 +77,12 @@
     <Compile Include="Communication\Channel\ChannelRewriteRule.cs" />
     <Compile Include="Communication\Exceptions\MessagingException.cs" />
     <Compile Include="Communication\Exceptions\StartupMessagingException.cs" />
+    <Compile Include="Communication\TcpChannel\Configuration\TcpTlsConfigurationHelper.cs" />
     <Compile Include="Communication\TcpChannel\Helper\DirectChannelCommunicator.cs" />
+    <Compile Include="Communication\TcpChannel\Pipeline\AttachTcpTlsListener.cs" />
+    <Compile Include="Communication\TcpChannel\Pipeline\AttachTcpTlsSender.cs" />
+    <Compile Include="Communication\TcpChannel\Pipeline\AttachTcpTlsBroadcastListener.cs" />
+    <Compile Include="Communication\TcpChannel\Pipeline\AttachTcpTlsBroadcastSender.cs" />
     <Compile Include="Communication\TcpChannel\TcpTlsChannelSender.cs" />
     <Compile Include="Communication\TcpChannel\TcpTlsClientHolder.cs" />
     <Compile Include="Communication\TcpChannel\TcpTlsConnection.cs" />
@@ -119,6 +124,7 @@
     <Compile Include="Exceptions\ChannelTypeNotSupportedException.cs" />
     <Compile Include="Exceptions\TransmitRetryExceededException.cs" />
     <Compile Include="Interfaces\IRequireDataCollector.cs" />
+    <Compile Include="Interfaces\ISharedService.cs" />
     <Compile Include="Interfaces\ISymmetricEncryption.cs" />
     <Compile Include="Messaging\ProcessOptions.cs" />
     <Compile Include="Messaging\RateLimitSignal.cs" />
@@ -227,10 +233,17 @@
     <Compile Include="Pipeline\Extensions\Attach\AttachMessageRedirectRule.cs" />
     <Compile Include="Pipeline\Extensions\Add\AddListener.cs" />
     <Compile Include="Pipeline\Extensions\Add\AddSender.cs" />
-    <Compile Include="Pipeline\Extensions\Configuration.cs" />
     <Compile Include="Pipeline\Extensions\Adjust\AdjustPolicy.cs" />
+    <Compile Include="Pipeline\Extensions\Condition.cs" />
+    <Compile Include="Pipeline\Extensions\Configuration\ConfigResolverSet.cs" />
+    <Compile Include="Pipeline\Extensions\Configuration\ConfigResolversClear.cs" />
+    <Compile Include="Pipeline\Extensions\Configuration\ConfigurationOverrideSet.cs" />
     <Compile Include="Pipeline\Extensions\Stop.cs" />
     <Compile Include="Pipeline\Extensions\Actual.cs" />
+    <Compile Include="Pipeline\Interfaces\IPipelineBase.cs" />
+    <Compile Include="Pipeline\Interfaces\IPipelineChannel.cs" />
+    <Compile Include="Pipeline\Interfaces\IPipeline.cs" />
+    <Compile Include="Pipeline\Interfaces\IPipelineExtension.cs" />
     <Compile Include="Pipeline\MicroservicePipelineExtension.cs" />
     <Compile Include="Pipeline\Extensions\ToPipeline.cs" />
     <Compile Include="ResourceTracker\ResourceTrackerPolicy.cs" />
@@ -309,7 +322,7 @@
     <Compile Include="Persistence\Client\PersistenceMessageInitiator.cs" />
     <Compile Include="Persistence\Client\PersistenceSharedService.cs" />
     <Compile Include="Persistence\EntityActions.cs" />
-    <Compile Include="Persistence\ExtensionMethods.cs" />
+    <Compile Include="Persistence\Pipeline\ExtensionMethods.cs" />
     <Compile Include="Interfaces\IPersistenceMessageHandler.cs" />
     <Compile Include="Interfaces\IPersistenceMessageInitiator.cs" />
     <Compile Include="Interfaces\IPersistenceSharedService.cs" />
@@ -500,6 +513,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Command\Security\" />
+    <Folder Include="Persistence\Pipeline\Add\" />
+    <Folder Include="Persistence\Pipeline\Attach\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

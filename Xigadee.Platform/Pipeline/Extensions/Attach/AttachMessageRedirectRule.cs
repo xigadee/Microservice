@@ -33,7 +33,7 @@ namespace Xigadee
         /// <param name="rewriteRule">The rewrite rule.</param>
         /// <returns>Returns the original pipeline.</returns>
         public static P AttachMessageRedirectRule<P>(this P cpipe, MessageRedirectRule rewriteRule)
-            where P: ChannelPipelineBase
+            where P: IPipelineChannel
         {
             cpipe.Channel.RedirectAdd(rewriteRule);
 
@@ -53,7 +53,7 @@ namespace Xigadee
             , Func<TransmissionPayload, bool> canRedirect
             , Action<TransmissionPayload> redirect
             , bool canCache = true)
-            where P : ChannelPipelineBase
+            where P : IPipelineChannel
         {
             return cpipe.AttachMessageRedirectRule(new MessageRedirectRule(canRedirect, redirect, canCache));
         }
@@ -71,7 +71,7 @@ namespace Xigadee
             , ServiceMessageHeader matchHeader
             , Action<TransmissionPayload> redirect
             , bool canCache = true)
-            where P : ChannelPipelineBase
+            where P : IPipelineChannel
         {
             return cpipe.AttachMessageRedirectRule(
                 new MessageRedirectRule(
@@ -94,7 +94,7 @@ namespace Xigadee
             , ServiceMessageHeader matchHeader
             , ServiceMessageHeader changeHeader
             , bool canCache = true)
-            where P : ChannelPipelineBase
+            where P : IPipelineChannel
         {
             Action<TransmissionPayload> updateHeader = (p) => 
             {
@@ -122,7 +122,7 @@ namespace Xigadee
             , Func<TransmissionPayload, bool> canRedirect
             , ServiceMessageHeader changeHeader
             , bool canCache = true)
-            where P : ChannelPipelineBase
+            where P : IPipelineChannel
         {
             Action<TransmissionPayload> updateHeader = (p) =>
             {

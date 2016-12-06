@@ -24,14 +24,43 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static MicroservicePipeline AddCommand<C>(this MicroservicePipeline pipeline
-            , C command
-            , Action<C> assignment = null
+        public static IPipeline AddCommand<C>(this IPipeline pipeline
             , int startupPriority = 100
-            , ChannelPipelineIncoming channelIncoming = null
-            , ChannelPipelineOutgoing channelResponse = null
-            , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
-            , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null
+            , Action<C> assign = null
+            , IPipelineChannelIncoming channelIncoming = null
+            , IPipelineChannelOutgoing channelResponse = null
+            , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
+            , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null
+            )
+            where C : ICommand, new()
+        {
+            return pipeline.AddCommand(new C(), startupPriority, assign, channelIncoming, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
+        }
+
+        public static IPipeline AddCommand<C>(this IPipeline pipeline
+            , Func<IEnvironmentConfiguration, C> creator
+            , int startupPriority = 100
+            , Action<C> assign = null
+            , IPipelineChannelIncoming channelIncoming = null
+            , IPipelineChannelOutgoing channelResponse = null
+            , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
+            , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null
+            )
+            where C : ICommand
+        {
+            var command = creator(pipeline.Configuration);
+
+            return pipeline.AddCommand(command, startupPriority, assign, channelIncoming, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
+        }
+
+        public static IPipeline AddCommand<C>(this IPipeline pipeline
+            , C command
+            , int startupPriority = 100
+            , Action<C> assign = null
+            , IPipelineChannelIncoming channelIncoming = null
+            , IPipelineChannelOutgoing channelResponse = null
+            , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
+            , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null
             )
             where C: ICommand
         {
@@ -49,26 +78,11 @@ namespace Xigadee
             if (channelMasterJobNegotiationOutgoing != null && command.MasterJobNegotiationChannelIdAutoSet)
                 command.MasterJobNegotiationChannelIdOutgoing = channelMasterJobNegotiationOutgoing.Channel.Id;
 
-            assignment?.Invoke(command);
+            assign?.Invoke(command);
             pipeline.Service.RegisterCommand(command);
             return pipeline;
         }
 
-        public static MicroservicePipeline AddCommand<C>(this MicroservicePipeline pipeline
-            , Func<IEnvironmentConfiguration, C> creator
-            , Action<C> assignment = null
-            , ChannelPipelineIncoming channelIncoming = null
-            , ChannelPipelineOutgoing channelResponse = null
-            , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
-            , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null
-            , int startupPriority = 100
-            )
-            where C: ICommand
-        {
-            var command = creator(pipeline.Configuration);
-
-            return pipeline.AddCommand(command, assignment, startupPriority, channelIncoming, channelResponse, channelMasterJobNegotiationIncoming);
-        }
 
     }
 }

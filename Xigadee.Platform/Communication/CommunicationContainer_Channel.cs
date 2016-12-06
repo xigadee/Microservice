@@ -33,6 +33,20 @@ namespace Xigadee
         private Dictionary<string, Channel> mContainerOutgoing;
         #endregion
 
+
+        private bool? Wrapper(ChannelDirection direction, Func<bool?,bool?> incoming, Func<bool?,bool?> outgoing)
+        {
+            bool? result = null;
+
+            if ((direction & ChannelDirection.Incoming) > 0)
+                result = incoming?.Invoke(result);
+
+            if ((direction & ChannelDirection.Outgoing) > 0)
+                result = outgoing?.Invoke(result);
+
+            return result;
+        }
+
         #region Channels
         /// <summary>
         /// This is a list of the incoming and outgoing channels.
@@ -41,7 +55,7 @@ namespace Xigadee
         {
             get
             {
-                return mContainerIncoming.Values.Union(mContainerOutgoing.Values);
+                return mContainerIncoming.Values.Union(mContainerOutgoing.Values).Distinct();
             }
         }
         #endregion
@@ -50,23 +64,25 @@ namespace Xigadee
         /// This method adds a channel to the collection
         /// </summary>
         /// <param name="item">The channel to add.</param>
-        public virtual void Add(Channel item)
+        public virtual bool Add(Channel item)
         {
-            switch (item.Direction)
-            {
-                case ChannelDirection.Incoming:
+            return Wrapper(item.Direction,
+                (r) =>
+                {
                     if (mContainerIncoming.ContainsKey(item.Id))
                         throw new DuplicateChannelException(item.Id, item.Direction);
 
                     mContainerIncoming.Add(item.Id, item);
-                    break;
-                case ChannelDirection.Outgoing:
+                    return true;
+                },
+                (r) =>
+                {
                     if (mContainerOutgoing.ContainsKey(item.Id))
                         throw new DuplicateChannelException(item.Id, item.Direction);
 
                     mContainerOutgoing.Add(item.Id, item);
-                    break;
-            }
+                    return true;
+                }) ?? false;
         }
         #endregion
         #region Remove(Channel item)
@@ -77,22 +93,14 @@ namespace Xigadee
         /// <returns>True if the channel is removed.</returns>
         public virtual bool Remove(Channel item)
         {
-            switch (item.Direction)
-            {
-                case ChannelDirection.Incoming:
-                    if (mContainerIncoming.ContainsKey(item.Id))
-                        return mContainerIncoming.Remove(item.Id);
-                    break;
-                case ChannelDirection.Outgoing:
-                    if (mContainerOutgoing.ContainsKey(item.Id))
-                        return mContainerOutgoing.Remove(item.Id);
-                    break;
-            }
+            var success = Wrapper(item.Direction,
+                 (r) => mContainerIncoming.Remove(item.Id)?true:r
+                ,(r) => mContainerOutgoing.Remove(item.Id)?true:r
+                );
 
-            return false;
+            return success ?? false;
         }
         #endregion
-
         #region Exists(string channelId, ChannelDirection direction)
         /// <summary>
         /// This method checks whether a channel has been adeed.
@@ -102,19 +110,12 @@ namespace Xigadee
         /// <returns></returns>
         public bool Exists(string channelId, ChannelDirection direction)
         {
-            switch (direction)
-            {
-                case ChannelDirection.Incoming:
-                    if (mContainerIncoming.ContainsKey(channelId))
-                        return true;
-                    break;
-                case ChannelDirection.Outgoing:
-                    if (mContainerOutgoing.ContainsKey(channelId))
-                        return true;
-                    break;
-            }
+            var success = Wrapper(direction,
+              (r) => mContainerIncoming.ContainsKey(channelId) ? true : default(bool?)
+            , (r) => mContainerOutgoing.ContainsKey(channelId) ? true : r
+            );
 
-            return false;
+            return success ?? false;
         }
         #endregion
         #region TryGet(string channelId, ChannelDirection direction, out Channel channel)
@@ -127,21 +128,23 @@ namespace Xigadee
         /// <returns></returns>
         public bool TryGet(string channelId, ChannelDirection direction, out Channel channel)
         {
-            switch (direction)
-            {
-                case ChannelDirection.Incoming:
-                    return mContainerIncoming.TryGetValue(channelId, out channel);
-                case ChannelDirection.Outgoing:
-                    return mContainerOutgoing.TryGetValue(channelId, out channel);
-            }
+            channel = null;
+
+            if ((direction & ChannelDirection.Incoming) > 0
+                & mContainerIncoming.TryGetValue(channelId, out channel))
+                return true;
+
+            if ((direction & ChannelDirection.Outgoing) > 0
+                & mContainerOutgoing.TryGetValue(channelId, out channel))
+                return true;
 
             if (mPolicy.AutoCreateChannels)
             {
-                channel = new Channel(channelId, direction);
+                channel = new Channel(channelId, direction, isAutocreated:true);
                 Add(channel);
+                return true;
             }
 
-            channel = null;
             return false;
         } 
         #endregion

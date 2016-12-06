@@ -11,11 +11,11 @@ namespace Test.Xigadee
         where C: class, ICommand, new()
     {
         protected CommandInitiator mCommandInit;
-        protected ChannelPipelineIncoming cpipeIn = null;
-        protected ChannelPipelineOutgoing cpipeOut = null;
+        protected IPipelineChannelIncoming cpipeIn = null;
+        protected IPipelineChannelOutgoing cpipeOut = null;
         protected DebugMemoryDataCollector collector = null;
         protected Microservice service = null;
-        protected MicroservicePipeline mPipeline = null;
+        protected IPipeline mPipeline = null;
         protected C mDCommand = null;
 
         protected ManualChannelListener mListener = null;
@@ -31,13 +31,13 @@ namespace Test.Xigadee
                     .AddChannelIncoming("internalIn", internalOnly: false, autosetPartition01:false)
                         .AttachPriorityPartition(0, 1)
                         .AttachListener<ManualChannelListener>(action: (s) => mListener = s)
-                        .AttachCommand<C>((c) => mDCommand = c)
+                        .AttachCommand<C>(assign:(c) => mDCommand = c)
                         .Revert((c) => cpipeIn = c)
                     .AddChannelOutgoing("internalOut", internalOnly: false, autosetPartition01: false)
                         .AttachPriorityPartition(0, 1)
                         .AttachSender<ManualChannelSender>(action: (s) => mSender = s)
                         .Revert((c) => cpipeOut = c)
-                    .AddCommand(new CommandInitiator() { ResponseChannelId = cpipeOut.Channel.Id }, (c) => mCommandInit = c);
+                    .AddCommand(new CommandInitiator() { ResponseChannelId = cpipeOut.Channel.Id }, assign:(c) => mCommandInit = c);
 
                 return pipeline;
             }

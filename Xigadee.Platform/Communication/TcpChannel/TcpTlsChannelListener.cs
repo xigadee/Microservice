@@ -22,13 +22,26 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This channel uses the TCP and TLS protocol to communicate between Microservices.
+    /// </summary>
     public class TcpTlsChannelListener: MessagingListenerBase<TcpConnection, TcpMessage, TcpTlsClientHolder>
     {
+        public TcpTlsChannelListener()
+        {
 
+        }
+
+        public IEnumerable<Uri> Listeners { get; }
 
         protected override void StartInternal()
         {
             base.StartInternal();
+        }
+
+        protected override void SettingsValidate()
+        {
+            base.SettingsValidate();
         }
     }
 }

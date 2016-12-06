@@ -69,12 +69,11 @@ namespace Test.Xigadee.Azure
                 var sender = new MicroservicePipeline("initiator")
                     .ConfigurationOverrideSet(AzureExtensionMethods.KeyServiceBusConnection, SbConn)
                     .AddChannelOutgoing("remote")
-                        //.AttachPriorityPartition(0,1)
                         .AttachAzureServiceBusQueueSender()
                     .Revert()
                         .AddChannelIncoming("response")
-                        .AttachAzureServiceBusTopicListener(listenOnOriginatorId: true)
-                        .AttachCommandInitiator(out init)
+                            .AttachAzureServiceBusTopicListener(listenOnOriginatorId: true)
+                            .AttachCommandInitiator(out init)
                     ;
 
                 var listener = new MicroservicePipeline("responder")

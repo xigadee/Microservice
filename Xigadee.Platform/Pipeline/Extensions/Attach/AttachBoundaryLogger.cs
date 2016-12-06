@@ -34,9 +34,10 @@ namespace Xigadee
         /// <param name="boundaryLogger">The boundary logger.</param>
         /// <returns>Returns the pipe.</returns>
         public static C AttachBoundaryLogger<C>(this C cpipe, IBoundaryLoggerComponent boundaryLogger)
-            where C: ChannelPipelineBase
+            where C: IPipelineExtension
         {
             cpipe.Pipeline.Service.RegisterBoundaryLogger(boundaryLogger);
+
             return cpipe;
         }
 
@@ -53,7 +54,7 @@ namespace Xigadee
             , Action<C, L> action = null
             )
             where L : IBoundaryLoggerComponent
-            where C : ChannelPipelineBase
+            where C : IPipelineExtension
         {
 
             action?.Invoke(cpipe, boundaryLogger);
@@ -76,7 +77,7 @@ namespace Xigadee
             , Action<C, L> action = null
             )
             where L : IBoundaryLoggerComponent
-            where C : ChannelPipelineBase
+            where C : IPipelineExtension
         {
             var bLogger = creator(cpipe.Pipeline.Configuration);
 

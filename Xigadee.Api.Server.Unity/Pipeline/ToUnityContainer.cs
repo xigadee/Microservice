@@ -14,19 +14,13 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Http;
 using Microsoft.Practices.Unity;
 
 namespace Xigadee
 {
     public static partial class UnityWebApiExtensionMethods
     {
-        public static IUnityContainer ToUnityContainer(this UnityWebApiMicroservicePipeline cpipe)
+        public static IUnityContainer ToUnityContainer(this IPipelineWebApiUnity cpipe)
         {
             return cpipe.Unity;
         }

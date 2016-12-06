@@ -17,12 +17,12 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor for the Microservice Id object.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="serviceId"></param>
-        /// <param name="externalServiceId"></param>
-        /// <param name="serviceVersionId"></param>
-        /// <param name="serviceEngineVersionId"></param>
-        /// <param name="properties">The initial properties.</param>
+        /// <param name="name">The Microservice short name.</param>
+        /// <param name="serviceId">The service unique GUID</param>
+        /// <param name="externalServiceId">The external service id. </param>
+        /// <param name="serviceVersionId">The service version id. If not set, this will be pulled from the calling assembly Dll settings.</param>
+        /// <param name="serviceEngineVersionId">The engine version id. If not set, this will be pulled from the executing assembly Dll settings.</param>
+        /// <param name="properties">Any custom additional properties.</param>
         public MicroserviceId(string name
             , string serviceId = null
             , string externalServiceId = null
@@ -32,9 +32,9 @@ namespace Xigadee
         {
             StartTime = DateTime.UtcNow;
 
-            Name = name;
             MachineName = Environment.MachineName;
             ServiceId = string.IsNullOrEmpty(serviceId) ? Guid.NewGuid().ToString("N").ToUpperInvariant() : serviceId;
+            Name = name ?? $"Service_{ServiceId}";
 
             ServiceVersionId = serviceVersionId ?? Assembly.GetCallingAssembly().GetName().Version.ToString();
             ServiceEngineVersionId = serviceEngineVersionId ?? Assembly.GetExecutingAssembly().GetName().Version.ToString();

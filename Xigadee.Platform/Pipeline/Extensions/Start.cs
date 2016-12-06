@@ -24,14 +24,14 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static void Start(this MicroservicePipeline pipeline)
+        /// <summary>
+        /// This method starts the microservice defined in the pipeline.
+        /// </summary>
+        /// <param name="pipeline">The pipeline.</param>
+        public static void Start(this IPipelineBase pipeline)
         {
-            pipeline.Service.Start();
+            ToMicroservice(pipeline).Start();
         }
 
-        public static void Start(this ChannelPipelineBase pipeline)
-        {
-            pipeline.Pipeline.Start();
-        }
     }
 }

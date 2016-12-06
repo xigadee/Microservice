@@ -157,9 +157,10 @@ namespace Xigadee
         public virtual void PrePopulate()
         {
 
-        } 
+        }
         #endregion
 
+        #region DiagnosticsSetMessageDelay(TimeSpan? delay)
         /// <summary>
         /// This method can be used during testing. It will insert a delay to the task.
         /// </summary>
@@ -167,7 +168,8 @@ namespace Xigadee
         public void DiagnosticsSetMessageDelay(TimeSpan? delay)
         {
             mDelay = delay;
-        }
+        } 
+        #endregion
 
         /// <summary>
         /// This override process the Directive command which can be used to instigate test behaviour.
@@ -310,7 +312,6 @@ namespace Xigadee
                 , IsSuccess = true
                 , Entity = newEntity
             };
-
         }
 
         protected override async Task<IResponseHolder> InternalDelete(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)

@@ -24,64 +24,65 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static MicroservicePipeline AdjustPolicyMicroservice(this MicroservicePipeline pipeline
-            , Action<MicroservicePolicy> msAssign = null)
+        public static P AdjustPolicyMicroservice<P>(this P pipeline
+            , Action<MicroservicePolicy> msAssign = null) where P: IPipeline
+
         {
             msAssign?.Invoke(pipeline.Service.PolicyMicroservice);
 
             return pipeline;
         }
 
-        public static MicroservicePipeline AdjustPolicyTaskManager(this MicroservicePipeline pipeline
-            , Action<TaskManagerPolicy> msAssign = null)
+        public static P AdjustPolicyTaskManager<P>(this P pipeline
+            , Action<TaskManagerPolicy> msAssign = null) where P: IPipeline
         {
             msAssign?.Invoke(pipeline.Service.PolicyTaskManager);
 
             return pipeline;
         }
 
-        public static MicroservicePipeline AdjustPolicyResourceTracker(this MicroservicePipeline pipeline
-            , Action<ResourceTrackerPolicy> msAssign = null)
+        public static P AdjustPolicyResourceTracker<P>(this P pipeline
+            , Action<ResourceTrackerPolicy> msAssign = null) where P : IPipeline
         {
             msAssign?.Invoke(pipeline.Service.PolicyResourceTracker);
 
             return pipeline;
         }
 
-        public static MicroservicePipeline AdjustPolicyCommandContainer(this MicroservicePipeline pipeline
-            , Action<CommandContainerPolicy> msAssign = null)
+        public static P AdjustPolicyCommandContainer<P>(this P pipeline
+            , Action<CommandContainerPolicy> msAssign = null) where P : IPipeline
         {
             msAssign?.Invoke(pipeline.Service.PolicyCommandContainer);
 
             return pipeline;
         }
 
-        public static MicroservicePipeline AdjustPolicyCommunication(this MicroservicePipeline pipeline
-            , Action<CommunicationPolicy> msAssign = null)
+        public static P AdjustPolicyCommunication<P>(this P pipeline
+            , Action<CommunicationPolicy> msAssign = null) where P : IPipeline
         {
             msAssign?.Invoke(pipeline.Service.PolicyCommunication);
 
             return pipeline;
         }
 
-        public static MicroservicePipeline AdjustPolicyScheduler(this MicroservicePipeline pipeline
-            , Action<SchedulerPolicy> msAssign = null)
+        public static P AdjustPolicyScheduler<P>(this P pipeline
+            , Action<SchedulerPolicy> msAssign = null) where P : IPipeline
         {
             msAssign?.Invoke(pipeline.Service.PolicyScheduler);
 
             return pipeline;
         }
 
-        public static MicroservicePipeline AdjustPolicySecurity(this MicroservicePipeline pipeline
-            , Action<SecurityPolicy> msAssign = null)
+        public static P AdjustPolicySecurity<P>(this P pipeline
+            , Action<SecurityPolicy> msAssign = null) where P : IPipeline
         {
             msAssign?.Invoke(pipeline.Service.PolicySecurity);
 
             return pipeline;
         }
 
-        public static MicroservicePipeline AdjustPolicyDataCollection(this MicroservicePipeline pipeline
-            , Action<DataCollectionPolicy> msAssign = null)
+        public static P AdjustPolicyDataCollection<P>(this P pipeline
+            , Action<DataCollectionPolicy> msAssign = null) where P : IPipeline
         {
             msAssign?.Invoke(pipeline.Service.PolicyDataCollection);
 

@@ -26,7 +26,7 @@ namespace Xigadee
     /// <summary>
     /// This extension pipeline is used by the Web Api pipeline.
     /// </summary>
-    public class WebApiMicroservicePipeline: MicroservicePipeline
+    public class WebApiMicroservicePipeline: MicroservicePipeline, IPipelineWebApi
     {
         #region Constructor
         /// <summary>

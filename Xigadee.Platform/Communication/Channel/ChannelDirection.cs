@@ -25,15 +25,20 @@ namespace Xigadee
     /// <summary>
     /// This enumeration specifies the direction of the message.
     /// </summary>
-    public enum ChannelDirection
+    [Flags]
+    public enum ChannelDirection:int
     {
         /// <summary>
         /// The message has been received from an external source.
         /// </summary>
-        Incoming,
+        Incoming = 1,
         /// <summary>
         /// The message has just been transmitted to an external source.
         /// </summary>
-        Outgoing
+        Outgoing = 2,
+        /// <summary>
+        /// This channel supports incoming and outgoing flow.
+        /// </summary>
+        Bidirectional = 3
     }
 }

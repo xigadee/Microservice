@@ -73,6 +73,10 @@ namespace Xigadee
         } 
         #endregion
 
+        /// <summary>
+        /// This boolean property is set if the channel was created by a command request and not explicity 
+        /// during the microservice set up.
+        /// </summary>
         public bool IsAutoCreated { get; }
         /// <summary>
         /// The channel Id.

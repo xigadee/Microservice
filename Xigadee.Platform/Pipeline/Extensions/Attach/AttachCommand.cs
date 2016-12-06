@@ -24,40 +24,43 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static ChannelPipelineIncoming AttachCommand<C>(this ChannelPipelineIncoming cpipe, Action<C> assign = null, int startupPriority = 100)
+        public static IPipelineChannelIncoming AttachCommand<C>(this IPipelineChannelIncoming cpipe
+            , int startupPriority = 100
+            , Action<C> assign = null
+            , IPipelineChannelOutgoing channelResponse = null
+            , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
+            , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null)
             where C : ICommand, new()
         {
-            var command = new C();
-            assign?.Invoke(command);
-            return cpipe.AttachCommand(command, startupPriority: startupPriority);
+            return cpipe.AttachCommand(new C(), startupPriority, assign, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
         }
 
-        public static ChannelPipelineIncoming AttachCommand<C>(this ChannelPipelineIncoming cpipe
+        public static IPipelineChannelIncoming AttachCommand<C>(this IPipelineChannelIncoming cpipe
             , C command
-            , Action<C> assignment = null
-            , ChannelPipelineOutgoing channelResponse = null
-            , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
-            , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null
             , int startupPriority = 100
+            , Action<C> assign = null
+            , IPipelineChannelOutgoing channelResponse = null
+            , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
+            , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null
             )
             where C : ICommand
         {
-            cpipe.Pipeline.AddCommand(command, assignment, startupPriority, cpipe, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
+            cpipe.Pipeline.AddCommand(command, startupPriority, assign, cpipe, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
 
             return cpipe;
         }
 
-        public static ChannelPipelineIncoming AttachCommand<C>(this ChannelPipelineIncoming cpipe
+        public static IPipelineChannelIncoming AttachCommand<C>(this IPipelineChannelIncoming cpipe
             , Func<IEnvironmentConfiguration, C> creator
-            , Action<C> assignment = null
-            , ChannelPipelineOutgoing channelResponse = null
-            , ChannelPipelineIncoming channelMasterJobNegotiationIncoming = null
-            , ChannelPipelineOutgoing channelMasterJobNegotiationOutgoing = null
             , int startupPriority = 100
+            , Action<C> assign = null
+            , IPipelineChannelOutgoing channelResponse = null
+            , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
+            , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null
             )
             where C : ICommand
         {
-            cpipe.Pipeline.AddCommand(creator, assignment, cpipe, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing, startupPriority);
+            cpipe.Pipeline.AddCommand(creator, startupPriority, assign, cpipe, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
 
             return cpipe;
         }

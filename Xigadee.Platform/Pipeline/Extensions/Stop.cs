@@ -24,14 +24,14 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static void Stop(this MicroservicePipeline pipeline)
+        /// <summary>
+        /// This method stops the microservice defined in the pipeline.
+        /// </summary>
+        /// <param name="pipeline">The pipeline.</param>
+        public static void Stop(this IPipelineBase pipeline)
         {
-            pipeline.Service.Stop();
+            pipeline.ToMicroservice().Stop();
         }
 
-        public static void Stop(this ChannelPipelineBase pipeline)
-        {
-            pipeline.Pipeline.Stop();
-        }
     }
 }

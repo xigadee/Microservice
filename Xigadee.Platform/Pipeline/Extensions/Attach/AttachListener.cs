@@ -31,7 +31,7 @@ namespace Xigadee
         /// <param name="listener"></param>
         /// <param name="setFromChannelProperties"></param>
         /// <returns></returns>
-        public static ChannelPipelineIncoming AttachListener(this ChannelPipelineIncoming cpipe
+        public static IPipelineChannelIncoming AttachListener(this IPipelineChannelIncoming cpipe
             , IListener listener
             , bool setFromChannelProperties = true
             )
@@ -55,7 +55,7 @@ namespace Xigadee
             return cpipe;
         }
 
-        public static ChannelPipelineIncoming AttachListener<S>(this ChannelPipelineIncoming cpipe
+        public static IPipelineChannelIncoming AttachListener<S>(this IPipelineChannelIncoming cpipe
             , Func<IEnvironmentConfiguration, S> creator = null
             , Action<S> action = null
             , bool setFromChannelProperties = true

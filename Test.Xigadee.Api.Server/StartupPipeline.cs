@@ -15,40 +15,76 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Web.Http;
-using System.Web.Http.Controllers;
-using System.Web.Http.Dispatcher;
-using System.Web.Http.Routing;
-using System.Web.Mvc;
-using System.Web.Optimization;
-using System.Web.Routing;
 using Microsoft.Owin;
-using Microsoft.Owin.Security.OAuth;
 using Owin;
-using Swashbuckle.Application;
-using Unity.WebApi;
 using Xigadee;
 
 [assembly: OwinStartup(typeof(Test.Xigadee.Api.Server.Startup))]
 
 namespace Test.Xigadee.Api.Server
 {
+    public class StartupPipelineUnity
+    {
+        private void Hello1(UnityWebApiMicroservicePipeline pipe)
+        {
+
+        }
+
+        public void Configuration(IAppBuilder app)
+        {
+            var pipeline = new UnityWebApiMicroservicePipeline();
+
+            pipeline.CallOut(Hello1);
+        }
+    }
+
     /// <summary>
     /// This is the standard startup class for the service.
     /// </summary>
     public class StartupPipeline
     {
+        private void Hello1(WebApiMicroservicePipeline pipe)
+        {
+
+        }
+
+        private void IsTrue(WebApiMicroservicePipeline pipe)
+        {
+
+        }
+        private void IsFalse(WebApiMicroservicePipeline pipe)
+        {
+
+        }
+
+        private void Hello2(IPipelineChannelIncoming pipeEx)
+        {
+
+        }
+
+        private void IsTrueEx(IPipelineChannelIncoming pipeEx)
+        {
+
+        }
+
+        private void IsFalseEx(IPipelineChannelIncoming pipeEx)
+        {
+
+        }
+
         public void Configuration(IAppBuilder app)
         {
             try
             {
-                //var Service = new WebApiMicroservicePipeline();
+                var pipe = new WebApiMicroservicePipeline();
 
+                pipe
+                    .CallOut(Hello1)
+                    .Condition((c) => c.AuthIssuer() == null, IsTrue, IsFalse)
+                    .AddChannelIncoming("mom")
+                        .CallOut(Hello2)
+                        .Condition((c) => c.TcpTlsConnection() == null, IsTrueEx, IsFalseEx)
+                    ;
                 
 
                 //RouteConfig.Register(Service);

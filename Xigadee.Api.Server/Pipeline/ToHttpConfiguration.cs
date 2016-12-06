@@ -25,7 +25,7 @@ namespace Xigadee
 {
     public static partial class WebApiExtensionMethods
     {
-        public static HttpConfiguration ToHttpConfiguration(this WebApiMicroservicePipeline cpipe)
+        public static HttpConfiguration ToHttpConfiguration(this IPipelineWebApi cpipe)
         {
             return cpipe.HttpConfig;
         }

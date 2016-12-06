@@ -25,13 +25,13 @@ namespace Xigadee
     /// <summary>
     /// This class is used for configuration that extends the traditional pipeline.
     /// </summary>
-    public abstract class MicroservicePipelineExtension
+    public abstract class MicroservicePipelineExtension: IPipelineExtension
     {
         /// <summary>
         /// This is the default constructor that sets the underlying pipeline.
         /// </summary>
         /// <param name="pipeline">The base pipeline.</param>
-        protected MicroservicePipelineExtension(MicroservicePipeline pipeline)
+        protected MicroservicePipelineExtension(IPipeline pipeline)
         {
             Pipeline = pipeline;
         }
@@ -39,6 +39,6 @@ namespace Xigadee
         /// <summary>
         /// This is the configuration pipeline.
         /// </summary>
-        public MicroservicePipeline Pipeline { get; }
+        public IPipeline Pipeline { get; }
     }
 }

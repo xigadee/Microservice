@@ -30,7 +30,7 @@ namespace Xigadee
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
     public class PersistenceMessageInitiator<K, E> : PersistenceInitiatorBase<K, E>
-        , IPersistenceMessageInitiator
+        , IPersistenceMessageInitiator 
         where K : IEquatable<K>
     {
         #region Constructor

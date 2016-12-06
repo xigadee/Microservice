@@ -20,7 +20,8 @@ namespace Xigadee
         /// <param name="priority">The optional priority, by default set to 10.</param>
         /// <param name="assign">An action to allow changes to be made to the resolver after it is created.</param>
         /// <returns>Returns the pipeline to continue the chain.</returns>
-        public static P ConfigResolverSetKeyVault<P>(this P pipeline, int priority = 10, Action<ConfigResolver> assign = null) where P : MicroservicePipeline
+        public static P ConfigResolverSetKeyVault<P>(this P pipeline, int priority = 10, Action<ConfigResolver> assign = null) 
+            where P : IPipeline
         {
             return pipeline.ConfigResolverSetKeyVault(pipeline.Configuration.KeyVaultClientCredential(), pipeline.Configuration.KeyVaultSecretBaseUri(), priority, assign);
         }
@@ -35,7 +36,8 @@ namespace Xigadee
         /// <param name="priority">The optional priority, by default set to 10.</param>
         /// <param name="assign">An action to allow changes to be made to the resolver after it is created.</param>
         /// <returns>Returns the pipeline to continue the chain.</returns>
-        public static P ConfigResolverSetKeyVault<P>(this P pipeline, ClientCredential clientCredential, string secretBaseUri, int priority = 10, Action<ConfigResolver> assign = null) where P : MicroservicePipeline
+        public static P ConfigResolverSetKeyVault<P>(this P pipeline, ClientCredential clientCredential, string secretBaseUri, int priority = 10, Action<ConfigResolver> assign = null) 
+            where P : IPipeline
         {
             pipeline.ConfigResolverSet(priority, new ConfigResolverKeyVault(clientCredential, secretBaseUri), assign);
             return pipeline;

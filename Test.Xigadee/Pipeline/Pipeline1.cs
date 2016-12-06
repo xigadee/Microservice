@@ -23,8 +23,9 @@ namespace Test.Xigadee
     public partial class PipelineTest1
     {
         DebugMemoryDataCollector mDataCollector;
+        bool? calloutIn = null, calloutOut = null, calloutDefault = null;
 
-        private void ConfigureServiceRoot(MicroservicePipeline pipe)
+        private void ConfigureServiceRoot<P>(P pipe) where P:MicroservicePipeline
         {
             pipe
                 .AddDataCollector<DebugMemoryDataCollector>((c) => mDataCollector = c)
@@ -32,12 +33,24 @@ namespace Test.Xigadee
                 .AddPayloadSerializerDefaultJson();
         }
 
-        private void ChannelInConfigure(ChannelPipelineIncoming inPipe)
+        private void ChannelInConfigure(IPipelineChannelIncoming inPipe)
         {
             inPipe
                 .AttachResourceProfile("TrackIt")
                 //.AppendBoundaryLogger(new MemoryBoundaryLogger(), (p, bl) => bLogger = bl)
                 ;
+
+            calloutIn = true;
+        }
+
+        private void CallOutDefault(IPipeline pipe)
+        {
+            calloutDefault = true;
+        }
+
+        private void ChannelOutConfigure(IPipelineChannelOutgoing inPipe)
+        {
+            calloutOut = true;
         }
 
         [TestMethod]
@@ -45,11 +58,10 @@ namespace Test.Xigadee
         {
             try
             {
-                Microservice service;
-                var pipeline = Microservice.Create((s) => service = s, serviceName: "TestPipeline");
+                var pipeline = new MicroservicePipeline("TestPipeline");
 
-                ChannelPipelineIncoming cpipeIn = null;
-                ChannelPipelineOutgoing cpipeOut = null;
+                IPipelineChannelIncoming cpipeIn = null;
+                IPipelineChannelOutgoing cpipeOut = null;
                 PersistenceSharedService<Guid, Blah> persistence = null;
                 PersistenceBlahMemory persistBlah = null;
                 int signalChange = 0;
@@ -61,12 +73,14 @@ namespace Test.Xigadee
                         t.ConcurrentRequestsMax = 4;
                     })
                     .CallOut(ConfigureServiceRoot)
+                    .CallOut(CallOutDefault)
                     .AddChannelIncoming("internalIn", internalOnly: true)
-                        .CallOut(ChannelInConfigure)
-                        .AttachCommand(new PersistenceBlahMemory(),(p) => persistBlah = p)
-                        .AttachCommand(new PersistenceSharedService<Guid, Blah>(), (c) => persistence = c, cpipeOut)
+                        .CallOut(ChannelInConfigure, (c) => true)
+                        .AttachCommand(new PersistenceBlahMemory(), assign:(p) => persistBlah = p)
+                        .AttachCommand(new PersistenceSharedService<Guid, Blah>(), assign:(c) => persistence = c, channelResponse: cpipeOut)
                         .Revert((c) => cpipeIn = c)
                     .AddChannelOutgoing("internalOut", internalOnly: true)
+                        .CallOut(ChannelOutConfigure, (c) => false)
                         .Revert((c) => cpipeOut = c);
 
                 persistBlah.OnEntityChangeAction += ((o, e) => { signalChange++; });
@@ -91,6 +105,11 @@ namespace Test.Xigadee
 
 
                 Assert.IsTrue(signalChange == 3);
+
+                Assert.IsTrue(calloutDefault.HasValue);
+                Assert.IsTrue(calloutIn.HasValue);
+                Assert.IsFalse(calloutOut.HasValue);
+
                 pipeline.Stop();
             }
             catch (Exception ex)

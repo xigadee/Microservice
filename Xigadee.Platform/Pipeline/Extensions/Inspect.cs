@@ -15,21 +15,24 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static MicroservicePipeline Inspect(this MicroservicePipeline pipeline
-            , Action<IMicroservice> msAssign = null
-            , Action<IEnvironmentConfiguration> cfAssign = null)
+        /// <summary>
+        /// This extension allows for specific parts of the Microservice to be inspected or altered.
+        /// </summary>
+        /// <param name="pipeline">The incoming pipeline.</param>
+        /// <param name="msInspect">An action to inspect the Microservice</param>
+        /// <param name="cfInspect">An action to inspect the configuration.</param>
+        /// <returns>The passthrough of the pipeline.</returns>
+        public static IPipeline Inspect(this IPipeline pipeline
+            , Action<IMicroservice> msInspect = null
+            , Action<IEnvironmentConfiguration> cfInspect = null)
         {
-            msAssign?.Invoke(pipeline.Service);
-            cfAssign?.Invoke(pipeline.Configuration);
+            msInspect?.Invoke(pipeline.Service);
+            cfInspect?.Invoke(pipeline.Configuration);
 
             return pipeline;
         }

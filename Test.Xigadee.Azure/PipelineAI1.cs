@@ -9,7 +9,7 @@ namespace Test.Xigadee.Azure
     {
         DebugMemoryDataCollector mDataCollector;
 
-        private void ConfigureServiceRoot(MicroservicePipeline pipe)
+        private void ConfigureServiceRoot<P>(P pipe) where P: IPipeline
         {
             pipe
                 .AddDataCollector<DebugMemoryDataCollector>((c) => mDataCollector = c)
@@ -17,7 +17,7 @@ namespace Test.Xigadee.Azure
                 .AddPayloadSerializerDefaultJson();
         }
 
-        private void ChannelInConfigure(ChannelPipelineIncoming inPipe)
+        private void ChannelInConfigure(IPipelineChannelIncoming inPipe)
         {
             inPipe
                 .AttachResourceProfile("TrackIt")
@@ -30,11 +30,10 @@ namespace Test.Xigadee.Azure
         {
             try
             {
-                Microservice service;
-                var pipeline = Microservice.Create((s) => service = s, serviceName: "TestPipeline");
+                var pipeline = new MicroservicePipeline("TestPipeline");
 
-                ChannelPipelineIncoming cpipeIn = null;
-                ChannelPipelineOutgoing cpipeOut = null;
+                IPipelineChannelIncoming cpipeIn = null;
+                IPipelineChannelOutgoing cpipeOut = null;
                 PersistenceSharedService<Guid, Blah> persistence = null;
                 PersistenceBlahMemory persistBlah = null;
                 int signalChange = 0;
@@ -48,8 +47,8 @@ namespace Test.Xigadee.Azure
                     .CallOut(ConfigureServiceRoot)
                     .AddChannelIncoming("internalIn", internalOnly: true)
                         .CallOut(ChannelInConfigure)
-                        .AttachCommand(new PersistenceBlahMemory(), (p) => persistBlah = p)
-                        .AttachCommand(new PersistenceSharedService<Guid, Blah>(), (c) => persistence = c, cpipeOut)
+                        .AttachCommand(new PersistenceBlahMemory(), assign:(p) => persistBlah = p)
+                        .AttachCommand(new PersistenceSharedService<Guid, Blah>(), assign:(c) => persistence = c, channelResponse: cpipeOut)
                         .Revert((c) => cpipeIn = c)
                     .AddChannelOutgoing("internalOut", internalOnly: true)
                         .Revert((c) => cpipeOut = c);

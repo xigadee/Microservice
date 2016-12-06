@@ -25,7 +25,8 @@ namespace Xigadee
 {
     public static partial class WebApiExtensionMethods
     {
-        public static WebApiMicroservicePipeline AddMicroserviceUnavailableFilter(this WebApiMicroservicePipeline webpipe)
+        public static P AddMicroserviceUnavailableFilter<P>(this P webpipe)
+            where P : IPipelineWebApi
         {
             var filter = new WebApiServiceUnavailableFilter();
 

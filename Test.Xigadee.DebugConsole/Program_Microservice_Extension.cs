@@ -29,19 +29,20 @@ namespace Test.Xigadee
 {
     static partial class Program
     {
-        static Microservice sExtensionService = null;
+        static IMicroservice sExtensionService = null;
 
         static void ExtensionMicroserviceStart()
         {
             try
             {
-                var pipeline = Microservice.Create((s) => sExtensionService = s);
+                var pipeline = new MicroservicePipeline();
 
-                ChannelPipelineIncoming cpipeIn = null;
-                ChannelPipelineOutgoing cpipeOut = null;
+                IPipelineChannelIncoming cpipeIn = null;
+                IPipelineChannelOutgoing cpipeOut = null;
                 PersistenceSharedService<Guid, Blah> persistence = null;
 
                 pipeline
+                    .Inspect(msInspect: (s) => sExtensionService = s)
                     .AddLogger<TraceEventLogger>()
                     .AddPayloadSerializerDefaultJson()
                     .AddChannelIncoming("internalIn")
@@ -50,7 +51,7 @@ namespace Test.Xigadee
                         .AttachPriorityPartition(0, 1)
                         .AttachAzureServiceBusQueueListener("Myqueue")
                         .AttachCommand(new PersistenceBlahMemory())
-                        .AttachCommand(new PersistenceSharedService<Guid, Blah>(), (c) => persistence = c, cpipeOut)
+                        .AttachCommand(new PersistenceSharedService<Guid, Blah>(), assign:(c) => persistence = c, channelResponse: cpipeOut)
                         .Revert((c) => cpipeIn = c)
                     .AddChannelOutgoing("internalOut", internalOnly: true)
                         .AttachPriorityPartition(0, 1)

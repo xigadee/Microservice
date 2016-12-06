@@ -4,7 +4,7 @@
     <id>Xigadee.Api.Server.Unity</id>
     <version>{UpdateVersion.ps1.replace}</version>
     <title>Xigadee Api Server Unity Extension</title>
-    <authors>Paul Stancer and Guy Steel at Information Management Group Ltd, part of Hitachi Consulting (http://hitachiconsulting.com)</authors>
+    <authors>Paul Stancer and Guy Steel at Hitachi Consulting (http://hitachiconsulting.com)</authors>
     <owners>Information Management Group Ltd (http://imgroup.com) part of Hitachi Consulting</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <projectUrl>http://xigadee.com</projectUrl>
