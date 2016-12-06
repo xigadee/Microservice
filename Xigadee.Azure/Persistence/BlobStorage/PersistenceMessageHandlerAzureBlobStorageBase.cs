@@ -46,17 +46,26 @@ namespace Xigadee
 
         #endregion
         #region Constructor
+
         /// <summary>
         /// This is the default constructor.
         /// </summary>
         /// <param name="credentials">The azure storage credentials.</param>
+        /// <param name="keyMaker"></param>
+        /// <param name="keyDeserializer"></param>
+        /// <param name="storageIdMaker"></param>
+        /// <param name="keySerializer"></param>
         /// <param name="entityName">The options entity name. If this is not presented then the entity name will be used.</param>
         /// <param name="versionPolicy">The versioning policy.</param>
         /// <param name="defaultTimeout">The default timeout for async requests.</param>
         /// <param name="accessType">The azure access type. BlobContainerPublicAccessType.Off is the default.</param>
         /// <param name="options">The optional blob request options.</param>
         /// <param name="context">The optional operation context.</param>
-        /// <param name="retryPolicy">Persistence retry policy</param>
+        /// <param name="persistenceRetryPolicy">Persistence retry policy</param>
+        /// <param name="resourceProfile"></param>
+        /// <param name="cacheManager"></param>
+        /// <param name="referenceMaker"></param>
+        /// <param name="encryption"></param>
         public PersistenceMessageHandlerAzureBlobStorageBase(StorageCredentials credentials
             , Func<E, K> keyMaker
             , Func<string, K> keyDeserializer
@@ -72,6 +81,7 @@ namespace Xigadee
             , ResourceProfile resourceProfile = null
             , ICacheManager<K, E> cacheManager = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
+            , ISymmetricEncryption encryption = null
             )
             : base( keyMaker, keyDeserializer
                   , entityName: entityName
@@ -85,7 +95,7 @@ namespace Xigadee
                   )
         {
             mDirectory = entityName ?? typeof(E).Name;
-            mStorage = new StorageServiceBase(credentials, "persistence", accessType, options, context, defaultTimeout: defaultTimeout);
+            mStorage = new StorageServiceBase(credentials, "persistence", accessType, options, context, defaultTimeout: defaultTimeout, encryption:encryption);
             mStorageIdMaker = storageIdMaker ?? mTransform.KeySerializer;
         }
         #endregion

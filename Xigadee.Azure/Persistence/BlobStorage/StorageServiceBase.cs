@@ -45,6 +45,7 @@ namespace Xigadee
         protected readonly OperationContext mContext;
         protected StorageCredentials mCredentails;
         protected TimeSpan? mDefaultTimeout;
+        protected readonly ISymmetricEncryption mEncryption;
 
         public const string cnMetaDeleted = "Deleted";
         public const string cnMetaContentId = "ContentId";
@@ -53,6 +54,7 @@ namespace Xigadee
 
         #endregion
         #region Constructor
+
         /// <summary>
         /// This is the default constructor.
         /// </summary>
@@ -62,12 +64,14 @@ namespace Xigadee
         /// <param name="options">The blob request options.</param>
         /// <param name="context">The operation context.</param>
         /// <param name="defaultTimeout">The default timeout for the operations.</param>
+        /// <param name="encryption">Encryption to be used when storing the blob</param>
         public StorageServiceBase(StorageCredentials credentials
             , string containerName
             , BlobContainerPublicAccessType accessType = BlobContainerPublicAccessType.Off
             , BlobRequestOptions options = null
             , OperationContext context = null
-            , TimeSpan? defaultTimeout = null)
+            , TimeSpan? defaultTimeout = null
+            , ISymmetricEncryption encryption = null)
         {
             if (credentials == null)
                 throw new ArgumentNullException("StorageServiceBase: Storage credentials cannot be null.");
@@ -81,6 +85,7 @@ namespace Xigadee
             mOptions = options ?? BlobRequestOptionsDefault;
             mContext = context;
             mDefaultTimeout = defaultTimeout;
+            mEncryption = encryption;
         }
         #endregion
 
@@ -305,7 +310,12 @@ namespace Xigadee
                             rq.Fields = metadata.ToDictionary((k) => k.Key, (k) => k.Value);
                         MetadataSet(rq.Blob, rq);
 
-                        await rq.Blob.UploadFromByteArrayAsync(body, 0, body.Length,
+                        // If encryption provided encrypt the body
+                        var uploadBody = body;
+                        if (mEncryption != null)
+                            uploadBody = mEncryption.Encrypt(body);
+
+                        await rq.Blob.UploadFromByteArrayAsync(uploadBody, 0, uploadBody.Length,
                             access, mOptions, mContext, rq.CancelSet);
 
                         MetadataGet(rq.Blob, rs);
@@ -358,7 +368,12 @@ namespace Xigadee
                     rq.VersionId = version;
                     MetadataSet(rq.Blob, rq);
 
-                    await rq.Blob.UploadFromByteArrayAsync(body, 0, body.Length,
+                    // If encryption provided encrypt the body
+                    var uploadBody = body;
+                    if (mEncryption != null)
+                        uploadBody = mEncryption.Encrypt(body);
+
+                    await rq.Blob.UploadFromByteArrayAsync(uploadBody, 0, uploadBody.Length,
                         AccessCondition.GenerateIfMatchCondition(rq.ETag), mOptions, mContext, rq.CancelSet);
 
                     MetadataGet(rq.Blob, rs);
@@ -399,7 +414,12 @@ namespace Xigadee
                     rq.VersionId = version;
                     MetadataSet(rq.Blob, rq);
 
-                    await rq.Blob.UploadFromByteArrayAsync(body, 0, body.Length,
+                    // If encryption provided encrypt the body
+                    var uploadBody = body;
+                    if (mEncryption != null)
+                        uploadBody = mEncryption.Encrypt(body);
+
+                    await rq.Blob.UploadFromByteArrayAsync(uploadBody, 0, uploadBody.Length,
                         AccessCondition.GenerateIfMatchCondition(rq.ETag), mOptions, mContext, rq.CancelSet);
 
                     MetadataGet(rq.Blob, rs);
@@ -431,6 +451,11 @@ namespace Xigadee
                         rs.Data = new byte[sData.Length];
                         sData.Position = 0;
                         sData.Read(rs.Data, 0, rs.Data.Length);
+
+                        // If encryption provided decrypt the blob
+                        if (mEncryption != null)
+                            rs.Data = mEncryption.Decrypt(rs.Data);
+
                         MetadataGet(rq.Blob, rs);
                     }
                     else
