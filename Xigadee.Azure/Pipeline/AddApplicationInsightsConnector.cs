@@ -44,16 +44,9 @@ namespace Xigadee
             return pipeline;
         }
 
-        public static IPipeline AddApplicationInsightsDataCollector<L>(this IPipeline pipeline, Action<L> action = null)
-            where L : ApplicationInsightsDataCollector, new()
+        public static IPipeline AddApplicationInsightsDataCollector(this IPipeline pipeline, Action<ApplicationInsightsDataCollector> action = null)
         {
-            var collector = new L();
-
-            action?.Invoke(collector);
-
-            pipeline.Service.RegisterDataCollector(collector);
-
-            return pipeline;
+            return pipeline.AddApplicationInsightsDataCollector(ec => new ApplicationInsightsDataCollector(ec.ApplicationInsightsKey(), ec.ApplicationInsightsLoggingLevel()), action);
         }
     }
 }
