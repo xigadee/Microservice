@@ -93,7 +93,7 @@
 //            ServiceStart(mContainerLogger);
 //        }
 //        /// <summary>
-//        /// This method stops the logger.
+//        /// This method stops the Collector?.
 //        /// </summary>
 //        protected virtual void StopLogger()
 //        {

@@ -95,7 +95,7 @@ namespace Xigadee
             catch (Exception ex)
             {
                 string key = payload?.Id.ToString() ?? string.Empty;
-                Logger.LogException(string.Format("Error transmitting {0}-{1} internally", actionType, key), ex);
+                Collector?.LogException(string.Format("Error transmitting {0}-{1} internally", actionType, key), ex);
                 throw;
             }
         }
@@ -154,7 +154,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                Logger.LogException("Error processing response for task status " + rType, ex);
+                Collector?.LogException("Error processing response for task status " + rType, ex);
                 throw;
             }
         }

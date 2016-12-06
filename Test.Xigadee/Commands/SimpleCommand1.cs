@@ -20,6 +20,7 @@ namespace Test.Xigadee
         [TestMethod]
         public void PipelineCommand1()
         {
+            
             try
             {
                 var pipeline = Pipeline();
@@ -59,6 +60,7 @@ namespace Test.Xigadee
             rs.Message.Status = "204";
             rs.Message.StatusDescription = "Hello";
             outgoing.Add(rs);
+
         }
 
         [CommandContract(messageType: "simples1", actionType: "sync")]

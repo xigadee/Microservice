@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// These extension methods allow the channel to auto-set a boundary logger.
+    /// These extension methods allow the channel to auto-set a boundary Collector?.
     /// </summary>
     public static partial class CorePipelineExtensions
     {
@@ -31,7 +31,7 @@ namespace Xigadee
         /// This method adds a boundary logger to the channel.
         /// </summary>
         /// <param name="cpipe">The pipe.</param>
-        /// <param name="boundaryLogger">The boundary logger.</param>
+        /// <param name="boundaryLogger">The boundary Collector?.</param>
         /// <returns>Returns the pipe.</returns>
         public static C AttachBoundaryLogger<C>(this C cpipe, IBoundaryLoggerComponent boundaryLogger)
             where C: IPipelineExtension
@@ -44,7 +44,7 @@ namespace Xigadee
         /// </summary>
         /// <typeparam name="L">The boundary logger</typeparam>
         /// <param name="cpipe">The pipe.</param>
-        /// <param name="boundaryLogger">The boundary logger.</param>
+        /// <param name="boundaryLogger">The boundary Collector?.</param>
         /// <param name="action">The action that is called when the logger is added.</param>
         /// <returns>Returns the pipe.</returns>
         public static C AttachBoundaryLogger<C,L>(this C cpipe
@@ -67,7 +67,7 @@ namespace Xigadee
         /// <typeparam name="P"></typeparam>
         /// <typeparam name="L"></typeparam>
         /// <param name="cpipe">The pipe.</param>
-        /// <param name="creator">This function is used to create the boundary logger.</param>
+        /// <param name="creator">This function is used to create the boundary Collector?.</param>
         /// <param name="action">The action that is called when the logger is added.</param>
         /// <returns>Returns the pipe.</returns>
         public static C AttachBoundaryLogger<C,L>(this C cpipe

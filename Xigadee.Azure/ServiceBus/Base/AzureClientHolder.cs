@@ -55,20 +55,20 @@ namespace Xigadee
 
                 var message = MessagePack(payload);
                 await MessageTransmit(message);
-                BoundaryLogger?.BoundaryLog(ChannelDirection.Outgoing, payload);
+                BoundaryLogger.BoundaryLog(ChannelDirection.Outgoing, payload);
                 fail = false;
             }
             catch (NoMatchingSubscriptionException nex)
             {
                 //OK, this happens when the remote transmitting party has closed or recycled.
                 LogException($"The sender has closed: {payload.Message.CorrelationServiceId}", nex);
-                BoundaryLogger?.BoundaryLog(ChannelDirection.Outgoing, payload, nex);
+                BoundaryLogger.BoundaryLog(ChannelDirection.Outgoing, payload, nex);
             }
             catch (TimeoutException tex)
             {
                 LogException("TimeoutException (Transmit)", tex);
                 tryAgain = true;
-                BoundaryLogger?.BoundaryLog(ChannelDirection.Outgoing, payload, tex);
+                BoundaryLogger.BoundaryLog(ChannelDirection.Outgoing, payload, tex);
             }
             catch (MessagingException dex)
             {
@@ -84,7 +84,7 @@ namespace Xigadee
             catch (Exception ex)
             {
                 LogException("Unhandled Exception (Transmit)", ex);
-                BoundaryLogger?.BoundaryLog(ChannelDirection.Outgoing, payload, ex);
+                BoundaryLogger.BoundaryLog(ChannelDirection.Outgoing, payload, ex);
                 throw;
             }
             finally
@@ -125,7 +125,7 @@ namespace Xigadee
             try
             {
                 var intBatch = (await MessageReceive(count, wait))?.ToList() ?? new List<M>();
-                batchId = BoundaryLogger?.BoundaryBatchPoll(count ?? -1, intBatch.Count, mappingChannel ?? Name);
+                batchId = BoundaryLogger.BoundaryBatchPoll(count ?? -1, intBatch.Count, mappingChannel ?? Name);
                 batch = intBatch.Select(m => TransmissionPayloadUnpack(m, Priority, mappingChannel, batchId)).ToList();
             }
             catch (MessagingException dex)
@@ -168,7 +168,7 @@ namespace Xigadee
             var payload =  PayloadRegisterAndCreate(message, serviceMessage);
 
             //Get the boundary logger to log the metadata.
-            BoundaryLogger?.BoundaryLog(ChannelDirection.Incoming, payload, batchId: batchId);
+            BoundaryLogger.BoundaryLog(ChannelDirection.Incoming, payload, batchId: batchId);
 
             return payload;
         }

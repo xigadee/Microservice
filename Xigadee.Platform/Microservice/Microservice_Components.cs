@@ -57,7 +57,7 @@ namespace Xigadee
         //Channels
         #region RegisterChannel(Channel logger)
         /// <summary>
-        /// This method can be used to manually register an Logger.
+        /// This method can be used to manually register an Collector?.
         /// </summary>
         public virtual Channel RegisterChannel(Channel channel)
         {
@@ -145,7 +145,7 @@ namespace Xigadee
         #endregion
         #region RegisterTelemetry(ITelemetry telemetry)
         /// <summary>
-        /// This method can be used to manually register a telemetry logger.
+        /// This method can be used to manually register a telemetry Collector?.
         /// </summary>
         public virtual ITelemetry RegisterTelemetry(ITelemetry telemetry)
         {
@@ -156,7 +156,7 @@ namespace Xigadee
         #endregion
         #region RegisterLogger(ILogger logger)
         /// <summary>
-        /// This method can be used to manually register an Logger.
+        /// This method can be used to manually register an Collector?.
         /// </summary>
         public virtual ILogger RegisterLogger(ILogger logger)
         {
@@ -167,7 +167,7 @@ namespace Xigadee
         #endregion
         #region RegisterBoundaryLogger(IBoundaryLoggerComponent logger)
         /// <summary>
-        /// This method can be used to manually register an Logger.
+        /// This method can be used to manually register an Collector?.
         /// </summary>
         public virtual IBoundaryLoggerComponent RegisterBoundaryLogger(IBoundaryLoggerComponent logger)
         {

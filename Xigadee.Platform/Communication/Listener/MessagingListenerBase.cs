@@ -184,7 +184,7 @@ namespace Xigadee
                     if (client.CanStart)
                         base.ClientStart(client);
                     else
-                        Logger.LogMessage(string.Format("Client not started: {0} :{1}/{2}", client.Type, client.Name, client.Priority));
+                        Collector?.LogMessage(string.Format("Client not started: {0} :{1}/{2}", client.Type, client.Name, client.Priority));
 
                     if (partition.Priority == 1)
                         mDefaultPriority = 1;

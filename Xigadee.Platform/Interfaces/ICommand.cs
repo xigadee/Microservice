@@ -27,7 +27,7 @@ namespace Xigadee
     /// 
     /// </summary>
     public interface ICommand: IService, IRequireScheduler, IPayloadSerializerConsumer, 
-        IServiceEventSource, IServiceLogger, IServiceOriginator, IRequireSharedServices
+        IServiceEventSource, IServiceOriginator, IRequireSharedServices, IRequireDataCollector
     {
         /// <summary>
         /// This is the default listening channel id for incoming requests.

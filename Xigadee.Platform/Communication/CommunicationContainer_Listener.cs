@@ -66,7 +66,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                Logger.LogException("Communication/ListenersStart", ex);
+                Collector?.LogException("Communication/ListenersStart", ex);
                 throw;
             }
         }
@@ -115,11 +115,11 @@ namespace Xigadee
                 //Close the old collection, note that it will be null the first time.
                 oldColl?.Close();
 
-                Logger?.LogMessage(LoggingLevel.Trace, $"ListenersPriorityRecalculate completed {mListenersPriorityIteration}.");
+                Collector?.LogMessage(LoggingLevel.Trace, $"ListenersPriorityRecalculate completed {mListenersPriorityIteration}.");
             }
             catch (Exception ex)
             {
-                Logger?.LogException("ListenersPriorityCalculate failed. Using the old collection.", ex);
+                Collector?.LogException("ListenersPriorityCalculate failed. Using the old collection.", ex);
             }
         }
         #endregion
@@ -148,7 +148,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                Logger?.LogException("CommunicationContainer/Process", ex);
+                Collector?.LogException("CommunicationContainer/Process", ex);
                 throw;
             }
         }
@@ -231,7 +231,7 @@ namespace Xigadee
                     }
                     catch (Exception exin)
                     {
-                        Logger?.LogException($"Payload completion error-{payload} after {(tr.Context as TransmissionPayload)?.Message?.FabricDeliveryCount} delivery attempts", exin);
+                        Collector?.LogException($"Payload completion error-{payload} after {(tr.Context as TransmissionPayload)?.Message?.FabricDeliveryCount} delivery attempts", exin);
                     }
                 };
 
@@ -240,7 +240,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                Logger?.LogException($"ProcessClientPayload: unhandled error {payload.Source}/{payload.Message.CorrelationKey}-{payload} after {payload.Message?.FabricDeliveryCount} delivery attempts", ex);
+                Collector?.LogException($"ProcessClientPayload: unhandled error {payload.Source}/{payload.Message.CorrelationKey}-{payload} after {payload.Message?.FabricDeliveryCount} delivery attempts", ex);
                 payload.SignalFail();
             }
         }

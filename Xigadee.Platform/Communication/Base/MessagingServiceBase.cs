@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Xigadee;
 #endregion
 namespace Xigadee
 {
@@ -29,7 +30,8 @@ namespace Xigadee
     /// <typeparam name="M">The client message class type.</typeparam>
     /// <typeparam name="H">The client holder class type.</typeparam>
     /// <typeparam name="P">The partition configuration class type.</typeparam>
-    public abstract class MessagingServiceBase<C, M, H, P>: ServiceBase<StatusBase>, IMessaging, IPayloadSerializerConsumer, IServiceOriginator, IServiceLogger, IMessagingService<P> 
+    public abstract class MessagingServiceBase<C, M, H, P>: ServiceBase<StatusBase>, IMessaging, IPayloadSerializerConsumer, 
+        IServiceOriginator, IRequireDataCollector, IMessagingService<P> 
         where H: ClientHolder<C, M>, new()
         where P: PartitionConfig
     {
@@ -137,7 +139,7 @@ namespace Xigadee
                     if (client.CanStart)
                         ClientStart(client);
                     else
-                        Logger.LogMessage(string.Format("Client not started: {0} :{1}/{2}", client.Type, client.Name, client.Priority));
+                        Collector?.LogMessage(string.Format("Client not started: {0} :{1}/{2}", client.Type, client.Name, client.Priority));
 
                     if (priority.Priority == 1)
                         mDefaultPriority = 1;
@@ -214,8 +216,8 @@ namespace Xigadee
         {
             var client = new H();
 
-            //Set the message logger.
-            client.Logger = Logger;
+            //Set the message Collector?.
+            client.Collector = Collector;
 
             //Set the boundary logger if this has been defined in the messaging service.
             client.BoundaryLogger = BoundaryLogger;
@@ -323,18 +325,17 @@ namespace Xigadee
         {
             get;
             set;
-        } 
+        }
 
         #endregion
-        #region Logger
+        #region Collector
         /// <summary>
-        /// This is the system wide logger.
+        /// This is the system wide data collector
         /// </summary>
-        public ILoggerExtended Logger
+        public IDataCollection Collector
         {
-            get;
-            set;
-        } 
+            get;set;
+        }
         #endregion
         #region LogExceptionLocation(string method)
         /// <summary>
@@ -344,7 +345,7 @@ namespace Xigadee
         /// <returns>A combination string.</returns>
         protected void LogExceptionLocation(string method, Exception ex)
         {
-            Logger.LogException(string.Format("{0}/{1}", GetType().Name, method), ex);
+            Collector?.LogException(string.Format("{0}/{1}", GetType().Name, method), ex);
         }
         #endregion
     }

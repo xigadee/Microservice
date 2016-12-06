@@ -27,7 +27,7 @@ namespace Xigadee
     /// <summary>
     /// This container holds the current tasks being processed on the system and calculates the availabile slots for the supported priority levels.
     /// </summary>
-    public class TaskManager: ServiceContainerBase<TaskManagerStatistics, TaskManagerPolicy>, IServiceLogger
+    public class TaskManager: ServiceContainerBase<TaskManagerStatistics, TaskManagerPolicy>, IRequireDataCollector
     {
         #region Declarations
         /// <summary>
@@ -302,7 +302,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                Logger?.LogException($"ProcessExecute failed: {context.Name}", ex);
+                Collector?.LogException($"ProcessExecute failed: {context.Name}", ex);
             }
         }
         #endregion
@@ -343,7 +343,7 @@ namespace Xigadee
                     }
                     catch (Exception tex)
                     {
-                        Logger?.LogException("ProcessLoop unhandled exception", tex);
+                        Collector?.LogException("ProcessLoop unhandled exception", tex);
                     }
                 }
             }
@@ -355,7 +355,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                Logger?.LogException("TaskManager (Unhandled)", ex);
+                Collector?.LogException("TaskManager (Unhandled)", ex);
             }
             finally
             {
@@ -484,7 +484,7 @@ namespace Xigadee
                     catch (Exception ex)
                     {
                         ExecuteTaskComplete(tracker, true, ex);
-                        Logger?.LogException("Task creation failed.", ex);
+                        Collector?.LogException("Task creation failed.", ex);
                     }
 
                     return;
@@ -492,7 +492,7 @@ namespace Xigadee
                 else
                 {
                     TaskTrackerEvent(DiagnosticOnExecuteTaskBeforeEnqueueFailed, tracker);
-                    Logger?.LogMessage(LoggingLevel.Error, $"Task could not be enqueued: {tracker.Id}-{tracker.Caller}");
+                    Collector?.LogMessage(LoggingLevel.Error, $"Task could not be enqueued: {tracker.Id}-{tracker.Caller}");
                 }
             }
             catch (Exception ex)
@@ -500,7 +500,7 @@ namespace Xigadee
                 tracker.IsFailure = true;
                 tracker.FailureException = ex;
                 TaskTrackerEvent(DiagnosticOnExecuteTaskBeforeException, tracker);
-                Logger?.LogException("ExecuteTask execute exception", ex);
+                Collector?.LogException("ExecuteTask execute exception", ex);
             }
 
             try
@@ -509,7 +509,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                Logger?.LogException("ExecuteTask unhandled exception.", ex);
+                Collector?.LogException("ExecuteTask unhandled exception.", ex);
             }
         }
         #endregion
@@ -562,7 +562,7 @@ namespace Xigadee
                     catch (Exception ex)
                     {
                         //We shouldn't throw an exception here, but let's check just in case.
-                        Logger?.LogException("ExecuteTaskComplete/ExecuteComplete", ex);
+                        Collector?.LogException("ExecuteTaskComplete/ExecuteComplete", ex);
                     }
 
                     if (outTracker.ExecuteTickCount.HasValue)
@@ -577,7 +577,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                Logger?.LogException($"Task {tracker.Id} has faulted when completing: {ex.Message}", ex);
+                Collector?.LogException($"Task {tracker.Id} has faulted when completing: {ex.Message}", ex);
             }
 
             try
@@ -593,7 +593,7 @@ namespace Xigadee
 
                     if (tex != null && tex is AggregateException)
                         foreach (Exception ex in ((AggregateException)tex).InnerExceptions)
-                            Logger?.LogException(string.Format("Task exception {0}-{1}", tracker.Id, tracker.Caller), ex);
+                            Collector?.LogException(string.Format("Task exception {0}-{1}", tracker.Id, tracker.Caller), ex);
                 }
                 else
                     TaskTrackerEvent(DiagnosticOnExecuteTaskCompleteSuccess, tracker);
@@ -677,7 +677,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                Logger?.LogException("TaskCancel exception", ex);
+                Collector?.LogException("TaskCancel exception", ex);
             }
 
             TaskTrackerEvent(DiagnosticOnExecuteTaskCancelled, tracker);
@@ -766,19 +766,16 @@ namespace Xigadee
             catch (Exception ex)
             {
                 //Autotune should not throw an exceptions
-                Logger?.LogException("Autotune threw an exception.", ex);
+                Collector?.LogException("Autotune threw an exception.", ex);
             }
         }
         #endregion
 
-        #region Logger
+        #region Collector
         /// <summary>
-        /// This is the system wide logger reference.
+        /// This is the system wide data collection reference.
         /// </summary>
-        public ILoggerExtended Logger
-        {
-            get; set;
-        }
+        public IDataCollection Collector { get; set; }
         #endregion
     }
 }

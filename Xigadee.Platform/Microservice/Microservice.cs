@@ -240,7 +240,7 @@ namespace Xigadee
                 try
                 {
                     //Throw the original exception.
-                    Logger.LogException("StartInternal unhandled exception thrown - service is stopping", ex);
+                    mDataCollection?.LogException("StartInternal unhandled exception thrown - service is stopping", ex);
                     //Just try and tidy up where possible.
                     StopInternal();
                 }
@@ -331,7 +331,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                Logger.LogException(string.Format("Service Start failed for service {0}", service.GetType().Name), ex);
+                mDataCollection?.LogException(string.Format("Service Start failed for service {0}", service.GetType().Name), ex);
                 throw;
             }
         }
@@ -383,14 +383,14 @@ namespace Xigadee
             {
                 return Id.ExternalServiceId;
             }
-        } 
+        }
         #endregion
 
-        #region Logger
+        #region Collector
         /// <summary>
-        /// This is the internal logger. This is exposed to allow external services to log using the Microservice logging services.
+        /// This is the internal Collector?. This is exposed to allow external services to log using the Microservice logging services.
         /// </summary>
-        public ILoggerExtended Logger { get { return mDataCollection; } } 
+        public IDataCollection Collector { get { return mDataCollection; } } 
         #endregion
     }
 }

@@ -149,7 +149,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                Logger.LogException("Unexpected error in ScheduleExpireEntities", ex);
+                Collector?.LogException("Unexpected error in ScheduleExpireEntities", ex);
             }
 
         }
@@ -248,7 +248,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                Logger.LogException("Unable to retrieve the entity change reference", ex);
+                Collector?.LogException("Unable to retrieve the entity change reference", ex);
             }
         }
         #endregion
@@ -379,7 +379,7 @@ namespace Xigadee
                 {
                     cacheHolder.Cancel();
                     status = ResourceRequestResult.TaskCancelled;
-                    Logger.LogException(string.Format("Error requesting {0} - {1} ", typeof(E).Name, key.ToString()), ex);
+                    Collector?.LogException(string.Format("Error requesting {0} - {1} ", typeof(E).Name, key.ToString()), ex);
                 }
                 finally
                 {

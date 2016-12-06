@@ -59,6 +59,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandContainer\SharedService\SharedServiceContainer.cs" />
+    <Compile Include="CommandContainer\SharedService\SharedServiceStatistics.cs" />
     <Compile Include="Command\Attributes\CommandMethodSignature.cs" />
     <Compile Include="Command\Attributes\CommandMethodSignatureException.cs" />
     <Compile Include="Command\Attributes\CommandMethodSignatureHelper.cs" />
@@ -115,6 +117,8 @@
     <Compile Include="DataCollection\DataCollectionSupport.cs" />
     <Compile Include="DataCollection\DataCollector\DataCollectorStatistics.cs" />
     <Compile Include="DataCollection\Events\BoundaryEvent.cs" />
+    <Compile Include="DataCollection\ExtensionMethods\EventSource.cs" />
+    <Compile Include="DataCollection\ExtensionMethods\Logger.cs" />
     <Compile Include="DataCollection\ExtensionMethods\Write.cs" />
     <Compile Include="Interfaces\IDataCollection.cs" />
     <Compile Include="DataCollection\Interfaces\BoundaryEventType.cs" />
@@ -283,7 +287,6 @@
     <Compile Include="DataCollection\Interfaces\ITelemetry.cs" />
     <Compile Include="Exceptions\MicroserviceStatusChangeException.cs" />
     <Compile Include="Microservice\Events\MicroserviceStatusEvent.cs" />
-    <Compile Include="Microservice\Microservice_Create.cs" />
     <Compile Include="Orchestration\Commands\EntityChange\EntityChangeOrchestrationCommandBase.cs" />
     <Compile Include="Orchestration\Commands\Input\InputOrchestrationCommandBase.cs" />
     <Compile Include="Orchestration\Commands\Output\OutputOrchestrationCommandBase.cs" />
@@ -390,9 +393,8 @@
     <Compile Include="Pipeline\Extensions\To.cs" />
     <Compile Include="Pipeline\MicroservicePipeline.cs" />
     <Compile Include="Configuration\Populator\MicroservicePopulator.cs" />
-    <Compile Include="Command\Microservice\CommandContainerPolicy.cs" />
-    <Compile Include="Command\ServiceHolder\ServiceHolderStatistics.cs" />
-    <Compile Include="Command\SharedService\SharedServiceStatistics.cs" />
+    <Compile Include="CommandContainer\CommandContainerPolicy.cs" />
+    <Compile Include="CommandContainer\SharedService\ServiceHolderStatistics.cs" />
     <Compile Include="Communication\ClientPriority\Algorithms\ListenerClientPollAlgorithmBase.cs" />
     <Compile Include="Communication\ClientPriority\Algorithms\MultipleClientPollSlotAllocationAlgorithm.cs" />
     <Compile Include="Communication\ClientPriority\Algorithms\SingleClientPollSlotAllocationAlgorithm.cs" />
@@ -406,8 +408,8 @@
     <Compile Include="Communication\ClientPriority\Statistics\ClientPriorityCollectionStatistics.cs" />
     <Compile Include="Communication\CommunicationContainer.cs" />
     <Compile Include="Communication\Statistics\CommunicationStatistics.cs" />
-    <Compile Include="Command\Microservice\CommandContainer.cs" />
-    <Compile Include="Command\Microservice\CommandContainerStatistics.cs" />
+    <Compile Include="CommandContainer\CommandContainer.cs" />
+    <Compile Include="CommandContainer\CommandContainerStatistics.cs" />
     <Compile Include="Command\Handler\HandlersCollection.cs" />
     <Compile Include="DataCollection\EventSource\EventSourceActionHolder.cs" />
     <Compile Include="Exceptions\EventSourceLogException.cs" />
@@ -419,7 +421,7 @@
     <Compile Include="Components\ServiceContainerBase.cs" />
     <Compile Include="DataCollection\Logger\Implementations\Action\LoggerActionHolder.cs" />
     <Compile Include="Microservice\Microservice_Events.cs" />
-    <Compile Include="Microservice\Microservice_Initialise.cs" />
+    <Compile Include="Microservice\Microservice_Policy.cs" />
     <Compile Include="Microservice\Microservice_Statistics.cs" />
     <Compile Include="Configuration\Populator\IPopulator.cs" />
     <Compile Include="Configuration\Populator\PopulatorBase.cs" />
@@ -481,8 +483,7 @@
     <Compile Include="Microservice\MicroserviceStatistics.cs" />
     <Compile Include="Scheduler\SchedulerContainer.cs" />
     <Compile Include="Serialization\SerializationContainer.cs" />
-    <Compile Include="Command\ServiceHolder\ServiceHolder.cs" />
-    <Compile Include="Command\SharedService\SharedServiceContainer.cs" />
+    <Compile Include="CommandContainer\SharedService\ServiceHolder.cs" />
     <Compile Include="TaskManager\TaskTracker\TaskTracker.cs" />
     <Compile Include="TaskManager\TaskTracker\TaskTrackerType.cs" />
     <Compile Include="DataCollection\Telemetry\TelemetryContainer.cs" />

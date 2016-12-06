@@ -285,10 +285,10 @@
 //                rs.ResponseCode = holderResponse.Ex != null ? 500 : holderResponse.StatusCode;
 
 //                if (holderResponse.Ex != null)
-//                    Logger.LogException(
+//                    Collector?.LogException(
 //                        string.Format("Error in blob storage persistence {0}-{1}", typeof(E).Name, rs.Key), holderResponse.Ex);
 //                else
-//                    Logger.LogMessage(LoggingLevel.Warning,
+//                    Collector?.LogMessage(LoggingLevel.Warning,
 //                        string.Format("Error in blob storage persistence {0}-{1}/{2}-{3}", typeof(E).Name, rs.Key, rs.ResponseCode, rs.ResponseMessage), "BlobStorage");
 //            }
 //        }

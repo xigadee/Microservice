@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using System.Threading;
+using Xigadee;
 #endregion
 namespace Xigadee
 {
@@ -189,7 +190,7 @@ namespace Xigadee
             }
             else if (!string.IsNullOrEmpty(rq.Message.ActionType))
             {
-                Logger.LogMessage(LoggingLevel.Warning, $"{rq.Message.ActionType} is not a valid negotiating action type for master job {FriendlyName}", "MasterJob");
+                Collector?.LogMessage(LoggingLevel.Warning, $"{rq.Message.ActionType} is not a valid negotiating action type for master job {FriendlyName}", "MasterJob");
             }
         }
 
@@ -324,7 +325,7 @@ namespace Xigadee
                 catch (Exception ex)
                 {
                     StatisticsInternal.Ex = ex;
-                    Logger.LogException($"MasterJob '{job.Name} could not be initialised.'",ex);
+                    Collector?.LogException($"MasterJob '{job.Name} could not be initialised.'",ex);
                 }
 
                 SchedulerRegister(job.Schedule);
@@ -349,7 +350,7 @@ namespace Xigadee
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogException($"MasterJob '{mMasterJobs[id].Name}' execute failed", ex);
+                    Collector?.LogException($"MasterJob '{mMasterJobs[id].Name}' execute failed", ex);
                     throw;
                 }
         }
@@ -368,7 +369,7 @@ namespace Xigadee
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogException($"MasterJob '{job.Name}' stop failed",ex);
+                    Collector?.LogException($"MasterJob '{job.Name}' stop failed",ex);
                 }
 
                 Scheduler.Unregister(job.Schedule);

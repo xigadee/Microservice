@@ -21,11 +21,11 @@ namespace Test.Xigadee
         protected ManualChannelListener mListener = null;
         protected ManualChannelSender mSender = null;
 
-        protected virtual MicroservicePipeline PipelineConfigure(MicroservicePipeline pipeline)
+        protected virtual IPipeline PipelineConfigure()
         {
             try
             {
-                pipeline
+                var pipeline = new MicroservicePipeline(GetType().Name)
                     .AddDataCollector<DebugMemoryDataCollector>((c) => collector = c)
                     .AddPayloadSerializerDefaultJson()
                     .AddChannelIncoming("internalIn", internalOnly: false, autosetPartition01:false)

@@ -47,7 +47,7 @@ namespace Xigadee
             catch (Exception ex)
             {
                 //We're not going to throw any exception here
-                Logger?.LogException("LogStatistics unhandled exception", ex);
+                mDataCollection?.LogException("LogStatistics unhandled exception", ex);
             }
         }
         #endregion

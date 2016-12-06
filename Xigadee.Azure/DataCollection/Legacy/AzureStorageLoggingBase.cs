@@ -24,13 +24,14 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json.Linq;
+using Xigadee;
 #endregion
 namespace Xigadee
 {
     /// <summary>
     /// This class supports provides generic logging support for Azure Blob Storage.
     /// </summary>
-    public abstract class AzureStorageLoggingBase<E> : ServiceBase<LoggingStatistics>, IServiceLogger, IRequireSharedServices
+    public abstract class AzureStorageLoggingBase<E> : ServiceBase<LoggingStatistics>, IRequireDataCollector, IRequireSharedServices
     {
         #region Declarations
         /// <summary>
@@ -82,7 +83,12 @@ namespace Xigadee
         }
         #endregion
 
-        public ILoggerExtended Logger { get; set; }
+        #region Collector
+        /// <summary>
+        /// This is the data collector reference.
+        /// </summary>
+        public IDataCollection Collector { get; set; } 
+        #endregion
 
         #region SharedServices
         /// <summary>
@@ -138,7 +144,7 @@ namespace Xigadee
             catch (Exception ex)
             {
                 result = ResourceRequestResult.Exception;
-                Logger?.LogException(string.Format("Unable to output {0} to {1} for {2}", id, directory, typeof(E).Name), ex);
+                Collector?.LogException(string.Format("Unable to output {0} to {1} for {2}", id, directory, typeof(E).Name), ex);
                 StatisticsInternal.ErrorIncrement();
                 throw;
             }
@@ -171,7 +177,7 @@ namespace Xigadee
             catch (Exception ex)
             {
                 result = ResourceRequestResult.Exception;
-                Logger.LogException(string.Format("Unable to output {0} to {1} for {2}", id, directory, contentType), ex);
+                Collector?.LogException(string.Format("Unable to output {0} to {1} for {2}", id, directory, contentType), ex);
                 StatisticsInternal.ErrorIncrement();
                 throw;
             }

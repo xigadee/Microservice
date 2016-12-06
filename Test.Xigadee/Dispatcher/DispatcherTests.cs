@@ -14,7 +14,7 @@ namespace Test.Xigadee
         [TestInitialize]
         public void TearUp()
         {
-            mPipeline = PipelineConfigure(Microservice.Create((s) => service = s, serviceName: GetType().Name));
+            mPipeline = PipelineConfigure();
 
             try
             {

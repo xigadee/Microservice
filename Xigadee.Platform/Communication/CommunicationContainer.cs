@@ -30,7 +30,7 @@ namespace Xigadee
     /// This container holds all the communication components (sender/listener/bidirectional) for the Microservice.
     /// </summary>
     public partial class CommunicationContainer: ServiceContainerBase<CommunicationStatistics, CommunicationPolicy>, 
-        IServiceOriginator, IServiceLogger, IPayloadSerializerConsumer, IRequireSharedServices, IRequireScheduler, ITaskManagerProcess, IRequireBoundaryLogger
+        IServiceOriginator, IRequireDataCollector, IPayloadSerializerConsumer, IRequireSharedServices, IRequireScheduler, ITaskManagerProcess, IRequireBoundaryLogger
     {
         #region Declarations
         /// <summary>
@@ -216,11 +216,12 @@ namespace Xigadee
         /// </summary>
         public ITaskAvailability TaskAvailability { get; set; }
         #endregion
-        #region Logger
+
+        #region Collector
         /// <summary>
-        /// The system logger.
+        /// This is the system wide data collector
         /// </summary>
-        public ILoggerExtended Logger
+        public IDataCollection Collector
         {
             get; set;
         }
@@ -296,8 +297,8 @@ namespace Xigadee
                 if (service is IRequireBoundaryLogger)
                     ((IRequireBoundaryLogger)service).BoundaryLogger = BoundaryLogger;
 
-                if (service is IServiceLogger)
-                    ((IServiceLogger)service).Logger = Logger;
+                if (service is IRequireDataCollector)
+                    ((IRequireDataCollector)service).Collector = Collector;
 
                 if (service is IServiceOriginator)
                     ((IServiceOriginator)service).OriginatorId = OriginatorId;
@@ -318,7 +319,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                Logger.LogException("Communication/ServiceStart" + service.ToString(), ex);
+                Collector?.LogException("Communication/ServiceStart" + service.ToString(), ex);
                 throw;
             }
         }

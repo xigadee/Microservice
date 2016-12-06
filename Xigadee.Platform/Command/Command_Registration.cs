@@ -182,7 +182,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                Logger?.LogException($"Command {GetType().Name} Change Notification failed", ex);
+                Collector?.LogException($"Command {GetType().Name} Change Notification failed", ex);
             }
         }
         #endregion

@@ -383,7 +383,7 @@ namespace Xigadee
             rs.IsSuccess = rs.StatusCode >= 200 && rs.StatusCode <= 299;
 
             if (rs.StatusCode == 401)
-                Logger.LogMessage(LoggingLevel.Error, $"Sql DB action {commandname} failed: ", "SQL");
+                Collector?.LogMessage(LoggingLevel.Error, $"Sql DB action {commandname} failed: ", "SQL");
 
             return rs;
         }

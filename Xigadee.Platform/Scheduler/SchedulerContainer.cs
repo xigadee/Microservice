@@ -28,7 +28,8 @@ namespace Xigadee
     /// <summary>
     /// This class holds the schedule jobs within the Microservice.
     /// </summary>
-    public class SchedulerContainer : CollectionContainerBase<Schedule, SchedulerStatistics>, IScheduler, ITaskManagerProcess, IServiceLogger
+    public class SchedulerContainer : CollectionContainerBase<Schedule, SchedulerStatistics>, IScheduler, ITaskManagerProcess
+        , IRequireDataCollector
     {
         #region Declarations
         /// <summary>
@@ -130,14 +131,11 @@ namespace Xigadee
         //}
         //#endregion
 
-        #region Logger
+        #region Collector
         /// <summary>
-        /// This is the system wide logger.
+        /// This is the system wide data collector.
         /// </summary>
-        public ILoggerExtended Logger
-        {
-            get; set;
-        }
+        public IDataCollection Collector { get; set; }
         #endregion
         #region TaskSubmit
         /// <summary>
@@ -192,7 +190,7 @@ namespace Xigadee
                     catch (Exception ex)
                     {
                         schedule.Ex = ex;
-                        Logger?.LogException(string.Format("Schedule failed: {0}", schedule.Name), ex);
+                        Collector?.LogException(string.Format("Schedule failed: {0}", schedule.Name), ex);
                     }
                 };
 

@@ -28,7 +28,7 @@ namespace Xigadee
     /// implementations away from the task scheduler code.
     /// </summary>
     [DebuggerDisplay("{Type}|{Name}|{Priority} Active={IsActive} {Id}")]
-    public abstract class ClientHolder: StatisticsBase<MessagingServiceStatistics>, IServiceLogger
+    public abstract class ClientHolder: StatisticsBase<MessagingServiceStatistics>, IRequireDataCollector
     {
         #region Declarations
         /// <summary>
@@ -193,21 +193,22 @@ namespace Xigadee
         public Action ClientRefresh;
 
         #region Logger/LogException
-
         protected void LogException(string message, Exception ex)
         {
-            Logger.LogException(string.Format("{0}={1} - {2}", Name, message, ex.Message), ex);
-        }
-
-        /// <summary>
-        /// This is the current service logger.
-        /// </summary>
-        public ILoggerExtended Logger
-        {
-            get;
-            set;
+            Collector?.LogException(string.Format("{0}={1} - {2}", Name, message, ex.Message), ex);
         }
         #endregion
+
+        #region Collector
+        /// <summary>
+        /// This is the system wide data collector
+        /// </summary>
+        public IDataCollection Collector
+        {
+            get; set;
+        }
+        #endregion
+
 
         #region StatisticsRecalculate()
         /// <summary>

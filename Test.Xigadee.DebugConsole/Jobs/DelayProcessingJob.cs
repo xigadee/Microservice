@@ -41,13 +41,13 @@ namespace Test.Xigadee
         protected async Task ExecuteJob(Schedule state, CancellationToken token)
         {
             int currentJob = mCurrentExecutionId++;
-            //mLogger.Log(LogLevel.Info, "DelayedProcessingJob - Executing schedule " + currentJob);
+            //mCollector?.Log(LogLevel.Info, "DelayedProcessingJob - Executing schedule " + currentJob);
             state.State = currentJob;
             
             TaskManager(this, new TransmissionPayload("interserv", "do", "something", options:ProcessOptions.RouteExternal));
 
             //await Task.Delay(TimeSpan.FromSeconds(40), token);
-            //mLogger.Log(LogLevel.Info, "DelayedProcessingJob - Finished executing schedule " + currentJob);
+            //mCollector?.Log(LogLevel.Info, "DelayedProcessingJob - Finished executing schedule " + currentJob);
         }
     }
  

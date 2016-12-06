@@ -56,7 +56,7 @@ namespace Test.Xigadee
 
         private async Task DoSomething(TransmissionPayload rq, List<TransmissionPayload> rs)
         {
-            Logger.LogMessage("all done");
+            Collector?.LogMessage("all done");
         }
 
         protected override void MasterJobCommandsUnregister()

@@ -344,7 +344,7 @@ namespace Xigadee
                                 ProfileRetry(profileHolder, attempt);
 
                                 if (profileHolder.Rs.IsTimeout)
-                                    Logger.LogMessage(LoggingLevel.Warning, $"Timeout occured for {EntityType} {actionType} for request:{profileHolder.Rq} with response:{profileHolder.Rs}", "DBTimeout");
+                                    Collector?.LogMessage(LoggingLevel.Warning, $"Timeout occured for {EntityType} {actionType} for request:{profileHolder.Rq} with response:{profileHolder.Rs}", "DBTimeout");
 
                                 profileHolder.Rq.IsRetry = true;
                                 //These should not be counted against the limit.
@@ -387,13 +387,13 @@ namespace Xigadee
                             if (await timeoutcorrect(profileHolder))
                             {
                                 logEventSource = true;
-                                Logger.LogMessage(LoggingLevel.Info
+                                Collector?.LogMessage(LoggingLevel.Info
                                     , string.Format("Recovered timeout sucessfully for {0}-{1} for request:{2} - response:{3}", EntityType, actionType, profileHolder.Rq, profileHolder.Rs)
                                     , "DBTimeout");
                             }
                             else
                             {
-                                Logger.LogMessage(LoggingLevel.Error
+                                Collector?.LogMessage(LoggingLevel.Error
                                     , string.Format("Not recovered timeout for {0}-{1} for request:{2} - response:{3}", EntityType, actionType, profileHolder.Rq, profileHolder.Rs)
                                     , "DBTimeout");
                             }
@@ -421,7 +421,7 @@ namespace Xigadee
                         incoming.SignalFail();
                         rsPayload.Message.Status = "500";
                         rsPayload.Message.StatusDescription = ex.Message;
-                        Logger.LogException($"Error processing message (was cancelled({incoming.Cancel.IsCancellationRequested}))-{EntityType}-{actionType}-{profileHolder.Rq}", ex);
+                        Collector?.LogException($"Error processing message (was cancelled({incoming.Cancel.IsCancellationRequested}))-{EntityType}-{actionType}-{profileHolder.Rq}", ex);
                         profileHolder.result = ResourceRequestResult.Exception;
                     }
 
@@ -497,7 +497,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                Logger.LogException($"RaiseEntityChangeEvent {entityType}/{actionType} failed for {traceId.ToString("N")}", ex);
+                Collector?.LogException($"RaiseEntityChangeEvent {entityType}/{actionType} failed for {traceId.ToString("N")}", ex);
             }
         } 
         #endregion
@@ -552,7 +552,7 @@ namespace Xigadee
             , LoggingLevel loggingLevel = LoggingLevel.Info, string message = null, string category = null)
         {
             var logEvent = new PersistencePayloadLogEvent(holder.Prq, holder.Rq, holder.Rs, loggingLevel) { Message = message ?? string.Empty, Category = category };
-            Logger.Log(logEvent);
+            Collector?.Log(logEvent);
         }
         #endregion
         #region LogException<KT, ET>...
@@ -575,7 +575,7 @@ namespace Xigadee
             try
             {
                 var logEvent = new PersistencePayloadLogEvent(holder.Prq, holder.Rq, holder.Rs, LoggingLevel.Info, ex);
-                Logger.Log(logEvent);
+                Collector?.Log(logEvent);
 
                 Guid errorId = Guid.NewGuid();
                 string errMessage = string.Format("Exception tracker {0}/{1}/{2}", action, (holder.Prq != null && holder.Prq.Message != null ? holder.Prq.Message.OriginatorKey : string.Empty), errorId);
@@ -584,7 +584,7 @@ namespace Xigadee
                 if (holder.Rq != null)
                     errMessage += string.Format("/{0}-{1}", holder.Rq.Key, (holder.Rq.Entity == null) ? string.Empty : holder.Rq.Entity.ToString());
 
-                Logger.LogException(errMessage, ex);
+                Collector?.LogException(errMessage, ex);
             }
             catch (Exception)
             {
@@ -650,7 +650,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                Logger.LogException($"Exception thrown for log to event source on {typeof (E).Name}-{actionType}-{originatorKey}", ex);
+                Collector?.LogException($"Exception thrown for log to event source on {typeof (E).Name}-{actionType}-{originatorKey}", ex);
             }
         }
         #endregion
@@ -1003,9 +1003,9 @@ namespace Xigadee
         protected virtual void ProcessOutputError(K key, IResponseHolder holderResponse, PersistenceRepositoryHolder<K, E> rs)
         {
             if (holderResponse.Ex != null && !rs.IsTimeout)
-                Logger.LogException($"Error in persistence {typeof (E).Name}-{key}", holderResponse.Ex);
+                Collector?.LogException($"Error in persistence {typeof (E).Name}-{key}", holderResponse.Ex);
             else if (rs.ResponseCode != 404)
-                Logger.LogMessage(
+                Collector?.LogMessage(
                     rs.IsTimeout ? LoggingLevel.Warning : LoggingLevel.Info,
                     $"Error in persistence {typeof (E).Name}-{rs.ResponseCode}-{key}-{holderResponse.Ex?.ToString() ?? rs.ResponseMessage}", typeof(E).Name);
 

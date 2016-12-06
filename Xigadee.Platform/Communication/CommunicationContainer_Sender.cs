@@ -53,7 +53,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                Logger.LogException("Communication/SendersStart", ex);
+                Collector?.LogException("Communication/SendersStart", ex);
                 throw;
             }
         }
@@ -95,7 +95,7 @@ namespace Xigadee
                 //If there are no supported senders for the particular channelId then throw an exception
                 if (messageSenders == null || messageSenders.Count == 0)
                 {
-                    Logger.LogMessage(LoggingLevel.Info, string.Format("Unable to resolve sender for message {0}", payload != null ? payload.Message : null), "Communication");
+                    Collector?.LogMessage(LoggingLevel.Info, string.Format("Unable to resolve sender for message {0}", payload != null ? payload.Message : null), "Communication");
                     return false;
                 }
 
@@ -108,7 +108,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                Logger?.LogException(string.Format("Unable to send message {0}", payload != null ? payload.Message : null), ex);
+                Collector?.LogException(string.Format("Unable to send message {0}", payload != null ? payload.Message : null), ex);
                 return false;
             }
 

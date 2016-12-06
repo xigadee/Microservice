@@ -159,7 +159,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                Logger?.LogException($"Command '{GetType().Name}' start exception", ex);
+                Collector?.LogException($"Command '{GetType().Name}' start exception", ex);
                 throw ex;
             }
         }
@@ -180,7 +180,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                Logger?.LogException($"Command '{GetType().Name}' stop exception", ex);
+                Collector?.LogException($"Command '{GetType().Name}' stop exception", ex);
                 throw;
             }
         }
@@ -217,6 +217,7 @@ namespace Xigadee
             set;
         }
         #endregion
+
         #region OriginatorId
         /// <summary>
         /// This is the service originator Id.
@@ -227,16 +228,7 @@ namespace Xigadee
             set;
         }
         #endregion
-        #region Logger
-        /// <summary>
-        /// This is the logger for the message handler.
-        /// </summary>
-        public ILoggerExtended Logger
-        {
-            get;
-            set;
-        }
-        #endregion
+
         #region Scheduler
         /// <summary>
         /// This is the scheduler. It is needed to process request timeouts.
@@ -268,6 +260,16 @@ namespace Xigadee
         }
         #endregion
 
+        #region Collector
+        /// <summary>
+        /// This is the data collector reference used for managing data change and logging.
+        /// </summary>
+        public virtual IDataCollection Collector
+        {
+            get; set;
+        } 
+        #endregion
+
         #region SharedServices
         /// <summary>
         /// This is the shared service collection for commands that wish to share direct access to internal data.
@@ -284,6 +286,7 @@ namespace Xigadee
                 SharedServicesChange(value);
             }
         }
+
         /// <summary>
         /// This method is called to set or remove the shared service reference.
         /// You can override your logic to safely set the shared service collection here.

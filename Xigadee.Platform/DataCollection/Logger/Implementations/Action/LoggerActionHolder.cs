@@ -25,7 +25,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This method holds the action for the logger.
+    /// This method holds the action for the Collector?.
     /// </summary>
     public class LoggerActionHolder : ILogger
     {

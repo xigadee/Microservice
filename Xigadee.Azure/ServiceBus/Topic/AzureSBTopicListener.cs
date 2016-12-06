@@ -255,7 +255,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                Logger.LogException(string.Format("SetFilters failed for {0}/{1}", name, subscriptionId), ex);
+                Collector?.LogException(string.Format("SetFilters failed for {0}/{1}", name, subscriptionId), ex);
                 throw;
             }
 

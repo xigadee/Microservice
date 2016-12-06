@@ -290,7 +290,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                Logger.LogException("Error processing response for task status " + rType, ex);
+                Collector?.LogException("Error processing response for task status " + rType, ex);
                 throw;
             }
         }

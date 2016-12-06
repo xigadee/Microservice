@@ -117,7 +117,7 @@ namespace Xigadee
             //If there is not a correlation key then quit.
             if (id == null)
             {
-                Logger?.LogMessage(LoggingLevel.Warning, "OutgoingRequestsProcessResponse - id is null");
+                Collector?.LogMessage(LoggingLevel.Warning, "OutgoingRequestsProcessResponse - id is null");
                 return;
             }
 
@@ -130,7 +130,7 @@ namespace Xigadee
                 }
                 catch (Exception ex)
                 {
-                    Logger?.LogException("OnTimedOutResponse", ex);
+                    Collector?.LogException("OnTimedOutResponse", ex);
                     //We do not want to throw exceptions here.
                 }
             }
@@ -233,7 +233,7 @@ namespace Xigadee
             if (!mOutgoingRequests.TryAdd(holder.Id, holder))
             {
                 var errorStr = $"OutgoingRequestTransmit: Duplicate key {holder.Id}";
-                Logger?.LogMessage(LoggingLevel.Error, errorStr);
+                Collector?.LogMessage(LoggingLevel.Error, errorStr);
                 throw new OutgoingRequestTransmitException(errorStr);
             }
 
@@ -277,7 +277,7 @@ namespace Xigadee
                 }
                 catch (Exception ex)
                 {
-                    Logger?.LogException("OnTimedOutRequest", ex);
+                    Collector?.LogException("OnTimedOutRequest", ex);
                     //We do not want to throw exceptions here.
                 }
             }
@@ -320,7 +320,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                Logger?.LogException("OutgoingRequestRemove TCS error", ex);
+                Collector?.LogException("OutgoingRequestRemove TCS error", ex);
             }
 
             return true;
@@ -342,7 +342,7 @@ namespace Xigadee
         public void TaskManagerTimeoutNotification(string originatorKey)
         {
             OutgoingRequestRemove(originatorKey, null);
-            Logger?.LogMessage(LoggingLevel.Info, $"{FriendlyName} received abort notification for {originatorKey}");
+            Collector?.LogMessage(LoggingLevel.Info, $"{FriendlyName} received abort notification for {originatorKey}");
         } 
         #endregion
         #region TaskManager

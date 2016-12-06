@@ -28,7 +28,7 @@ namespace Xigadee
     public interface IRequireBoundaryLogger
     {
         /// <summary>
-        /// This is the boundary logger.
+        /// This is the boundary Collector?.
         /// </summary>
         IBoundaryLogger BoundaryLogger { get; set; }
     }

@@ -450,7 +450,7 @@ namespace Xigadee
                 numberOfRetries++;
             }
 
-            Logger.LogMessage(LoggingLevel.Error
+            Collector?.LogMessage(LoggingLevel.Error
                 , string.Format(
                     "Unable to retrieve entity after {0} retries, message cancelled({1}) on channel({2}) for request: {3} - response: {4}"
                     , numberOfRetries

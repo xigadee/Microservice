@@ -113,33 +113,33 @@ namespace Xigadee
 
             public async Task Log(LogEvent logEvent)
             {
-                if (mService.Logger != null)
-                    await mService.Logger.Log(logEvent);
+                if (mService.Collector != null)
+                    await mService.Collector.Log(logEvent);
             }
 
             public void LogException(Exception ex)
             {
-                mService.Logger?.LogException(ex);
+                mService.Collector?.LogException(ex);
             }
 
             public void LogException(string message, Exception ex)
             {
-                mService.Logger?.LogException(message, ex);
+                mService.Collector?.LogException(message, ex);
             }
 
             public void LogMessage(string message)
             {
-                mService.Logger?.LogMessage(message);
+                mService.Collector?.LogMessage(message);
             }
 
             public void LogMessage(LoggingLevel level, string message)
             {
-                mService.Logger?.LogMessage(level, message);
+                mService.Collector?.LogMessage(level, message);
             }
 
             public void LogMessage(LoggingLevel level, string message, string category)
             {
-                mService.Logger?.LogMessage(level, message, category);
+                mService.Collector?.LogMessage(level, message, category);
             }
         }
     }

@@ -10,7 +10,7 @@ namespace Xigadee
     /// <summary>
     /// These extension methods simplify the logging of complex data to a consistent framework.
     /// </summary>
-    public static partial class DataCollectionExtensionMethods
+    public static partial class DataCollectionExtensionMethodsWrite
     {
         public static void Write(this IDataCollection collector, LogEvent myEvent, bool sync = false)
         {

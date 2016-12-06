@@ -47,7 +47,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                //Logger?.
+                //Collector?.
             }
         }
 

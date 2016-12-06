@@ -118,7 +118,7 @@ namespace Xigadee
             catch (Exception ex)
             {
                 string key = rq != null && rq.Key != null ? rq.Key.ToString() : string.Empty;
-                Logger.LogException($"Error transmitting {actionType}-{key} internally", ex);
+                Collector?.LogException($"Error transmitting {actionType}-{key} internally", ex);
                 throw;
             }
         }
