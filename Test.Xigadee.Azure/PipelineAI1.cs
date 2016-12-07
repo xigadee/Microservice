@@ -12,8 +12,8 @@ namespace Test.Xigadee.Azure
         private void ConfigureServiceRoot<P>(P pipe) where P: IPipeline
         {
             pipe
-                .AddDataCollector<DebugMemoryDataCollector>((c) => mDataCollector = c)
-                .AddLogger<TraceEventLogger>()
+                .AddDataCollector((c) => mDataCollector = new DebugMemoryDataCollector())
+                .AddLogger(new TraceEventLogger())
                 .AddPayloadSerializerDefaultJson();
         }
 

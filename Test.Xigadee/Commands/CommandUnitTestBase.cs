@@ -12,7 +12,7 @@ namespace Test.Xigadee
         protected CommandInitiator mCommandInit;
         protected IPipelineChannelIncoming cpipeIn = null;
         protected IPipelineChannelOutgoing cpipeOut = null;
-        protected DebugMemoryDataCollector collector = null;
+        protected DebugMemoryDataCollector mCollector = null;
         protected Microservice service = null;
 
         [TestInitialize]
@@ -38,7 +38,7 @@ namespace Test.Xigadee
             var pipeline = new MicroservicePipeline(GetType().Name);
 
             pipeline
-                .AddDataCollector<DebugMemoryDataCollector>((c) => collector = c)
+                .AddDataCollector((c) => mCollector = new DebugMemoryDataCollector())
                 .AddPayloadSerializerDefaultJson()
                 .AddChannelIncoming("internalIn", internalOnly: true)
                     .AttachCommand(mCommand)

@@ -24,7 +24,7 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static IPipeline AddCommand<C>(this IPipeline pipeline
+        public static P AddCommand<P,C>(this P pipeline
             , int startupPriority = 100
             , Action<C> assign = null
             , IPipelineChannelIncoming channelIncoming = null
@@ -32,12 +32,13 @@ namespace Xigadee
             , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
             , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null
             )
+            where P: IPipeline
             where C : ICommand, new()
         {
             return pipeline.AddCommand(new C(), startupPriority, assign, channelIncoming, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
         }
 
-        public static IPipeline AddCommand<C>(this IPipeline pipeline
+        public static P AddCommand<P,C>(this P pipeline
             , Func<IEnvironmentConfiguration, C> creator
             , int startupPriority = 100
             , Action<C> assign = null
@@ -46,6 +47,7 @@ namespace Xigadee
             , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
             , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null
             )
+            where P : IPipeline
             where C : ICommand
         {
             var command = creator(pipeline.Configuration);
@@ -53,7 +55,7 @@ namespace Xigadee
             return pipeline.AddCommand(command, startupPriority, assign, channelIncoming, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
         }
 
-        public static IPipeline AddCommand<C>(this IPipeline pipeline
+        public static P AddCommand<P,C>(this P pipeline
             , C command
             , int startupPriority = 100
             , Action<C> assign = null
@@ -62,7 +64,8 @@ namespace Xigadee
             , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
             , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null
             )
-            where C: ICommand
+            where P : IPipeline
+            where C : ICommand
         {
             command.StartupPriority = startupPriority;
 

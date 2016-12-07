@@ -28,8 +28,8 @@ namespace Test.Xigadee
         private void ConfigureServiceRoot<P>(P pipe) where P:MicroservicePipeline
         {
             pipe
-                .AddDataCollector<DebugMemoryDataCollector>((c) => mDataCollector = c)
-                .AddLogger<TraceEventLogger>()
+                .AddDataCollector((c) => mDataCollector = new DebugMemoryDataCollector())
+                .AddLogger(new TraceEventLogger())
                 .AddPayloadSerializerDefaultJson();
         }
 

@@ -43,7 +43,7 @@ namespace Test.Xigadee
 
                 pipeline
                     .Inspect(msInspect: (s) => sExtensionService = s)
-                    .AddLogger<TraceEventLogger>()
+                    .AddLogger(new TraceEventLogger())
                     .AddPayloadSerializerDefaultJson()
                     .AddChannelIncoming("internalIn")
                         .AttachResourceProfile(new ResourceProfile("TrackIt"))

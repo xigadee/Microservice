@@ -24,15 +24,17 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static IPipeline AddListener(this IPipeline pipeline, IListener listener)
+        public static P AddListener<P>(this P pipeline, IListener listener)
+            where P : IPipeline
         {
             pipeline.Service.RegisterListener(listener);
 
             return pipeline;
         }
 
-        public static IPipeline AddListener<S>(this IPipeline pipeline
+        public static P AddListener<P,S>(this P pipeline
             , Func<IEnvironmentConfiguration, S> creator, Action<S> action = null)
+            where P : IPipeline
             where S : IListener
         {
             var listener = creator(pipeline.Configuration);

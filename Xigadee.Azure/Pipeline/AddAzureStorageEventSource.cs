@@ -26,28 +26,34 @@ namespace Xigadee
     public static partial class AzureExtensionMethods
     {
 
-        public static IPipeline AddAzureStorageEventSource(this IPipeline pipeline
+        public static P AddAzureStorageEventSource<P>(this P pipeline
             , string serviceName = null
             , string containerName = "eventsource"
             , ResourceProfile resourceProfile = null
             , Action<AzureStorageEventSource> onCreate = null)
+            where P: IPipeline
         {
-            return pipeline.AddAzureStorageEventSource(pipeline.Configuration.LogStorageCredentials(), serviceName, containerName, resourceProfile, pipeline.Configuration.AesEncryptionWithCompression(), onCreate);
+            return pipeline.AddAzureStorageEventSource(pipeline.ToConfiguration().LogStorageCredentials(), serviceName, containerName, resourceProfile, pipeline.Configuration.AesEncryptionWithCompression(), onCreate);
         }
 
-        public static IPipeline AddAzureStorageEventSource(this IPipeline pipeline
+        public static P AddAzureStorageEventSource<P>(this P pipeline
             , StorageCredentials creds
             , string serviceName = null
             , string containerName = "eventsource"
             , ResourceProfile resourceProfile = null
             , ISymmetricEncryption encryption = null
             , Action<AzureStorageEventSource> onCreate = null)
+            where P: IPipeline
         {
-            var component = new AzureStorageEventSource(creds, serviceName ?? pipeline.Service.Name, containerName, resourceProfile, encryption);
+            IMicroservice service = pipeline.ToMicroservice();
+
+            var component = new AzureStorageEventSource(creds, serviceName ?? service.Name, containerName, resourceProfile, encryption);
 
             onCreate?.Invoke(component);
                 
-            return pipeline.AddEventSource(component);
+            pipeline.AddEventSource(component);
+
+            return pipeline;
         }
     }
 }

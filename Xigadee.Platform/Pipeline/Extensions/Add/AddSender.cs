@@ -24,16 +24,18 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static IPipeline AddSender(this IPipeline pipeline, ISender sender)
+        public static P AddSender<P>(this P pipeline, ISender sender)
+            where P : IPipeline
         {
             pipeline.Service.RegisterSender(sender);
 
             return pipeline;
         }
 
-        public static IPipeline AddSender<S>(this IPipeline pipeline
+        public static P AddSender<P,S>(this P pipeline
             , Func<IEnvironmentConfiguration, S> creator = null
             , Action<S> action = null)
+            where P : IPipeline
             where S : ISender, new()
         {
             var sender = creator == null ? new S() : creator(pipeline.Configuration);
