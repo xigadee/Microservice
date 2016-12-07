@@ -24,11 +24,12 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static IPipelineChannelIncoming AttachCommandInitiator(this IPipelineChannelIncoming cpipe
+        public static C AttachCommandInitiator<C>(this C cpipe
             , out CommandInitiator command
             , int startupPriority = 90
             , TimeSpan? defaultRequestTimespan = null
             )
+            where C:IPipelineChannelIncoming<IPipeline>
         {
             cpipe.Pipeline.AddCommandInitiator(out command
                 , startupPriority, defaultRequestTimespan, cpipe);

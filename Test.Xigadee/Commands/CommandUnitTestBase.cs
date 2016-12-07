@@ -10,8 +10,8 @@ namespace Test.Xigadee
     {
         protected C mCommand;
         protected CommandInitiator mCommandInit;
-        protected IPipelineChannelIncoming cpipeIn = null;
-        protected IPipelineChannelOutgoing cpipeOut = null;
+        protected IPipelineChannelIncoming<MicroservicePipeline> cpipeIn = null;
+        protected IPipelineChannelOutgoing<MicroservicePipeline> cpipeOut = null;
         protected DebugMemoryDataCollector mCollector = null;
         protected Microservice service = null;
 
@@ -42,10 +42,12 @@ namespace Test.Xigadee
                 .AddPayloadSerializerDefaultJson()
                 .AddChannelIncoming("internalIn", internalOnly: true)
                     .AttachCommand(mCommand)
-                    .Revert((c) => cpipeIn = c)
+                    .CallOut((c) => cpipeIn = c)
+                    .Revert()
                 .AddChannelOutgoing("internalOut", internalOnly: true, autosetPartition01:false)
                     .AttachPriorityPartition(0, 1)
-                    .Revert((c) => cpipeOut = c)
+                    .CallOut((c) => cpipeOut = c)
+                    .Revert()
                 .AddCommand(new CommandInitiator() { ResponseChannelId = cpipeOut.Channel.Id },assign: (c) => mCommandInit = c);
 
             return pipeline;

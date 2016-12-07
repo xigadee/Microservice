@@ -9,7 +9,12 @@ namespace Xigadee
     /// <summary>
     /// This is the generic channel interface
     /// </summary>
-    public interface IPipelineChannel:IPipelineExtension
+    public interface IPipelineChannel<out P>: IPipelineChannel, IPipelineExtension<P>
+        where P:IPipeline
+    {
+    }
+
+    public interface IPipelineChannel
     {
         /// <summary>
         /// This is the channel definition.
@@ -17,11 +22,15 @@ namespace Xigadee
         Channel Channel { get; }
     }
 
-    public interface IPipelineChannelIncoming: IPipelineChannel
+    public interface IPipelineChannelIncoming: IPipelineChannel { }
+    public interface IPipelineChannelIncoming<out P>: IPipelineChannelIncoming,IPipelineChannel<P>
+        where P : IPipeline
     {
     }
 
-    public interface IPipelineChannelOutgoing: IPipelineChannel
+    public interface IPipelineChannelOutgoing: IPipelineChannel { }
+    public interface IPipelineChannelOutgoing<out P>: IPipelineChannelOutgoing,IPipelineChannel<P>
+        where P : IPipeline
     {
     }
 }

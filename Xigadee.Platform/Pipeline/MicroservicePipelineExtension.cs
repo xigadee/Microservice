@@ -14,24 +14,20 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
     /// <summary>
     /// This class is used for configuration that extends the traditional pipeline.
     /// </summary>
-    public abstract class MicroservicePipelineExtension: IPipelineExtension
+    public abstract class MicroservicePipelineExtension<P>: IPipelineExtension<P>
+        where P: IPipeline
     {
         /// <summary>
         /// This is the default constructor that sets the underlying pipeline.
         /// </summary>
         /// <param name="pipeline">The base pipeline.</param>
-        protected MicroservicePipelineExtension(IPipeline pipeline)
+        protected MicroservicePipelineExtension(P pipeline)
         {
             Pipeline = pipeline;
         }
@@ -39,6 +35,6 @@ namespace Xigadee
         /// <summary>
         /// This is the configuration pipeline.
         /// </summary>
-        public IPipeline Pipeline { get; }
+        public P Pipeline { get; }
     }
 }

@@ -17,7 +17,7 @@ namespace Test.Xigadee.Azure
                 .AddPayloadSerializerDefaultJson();
         }
 
-        private void ChannelInConfigure(IPipelineChannelIncoming inPipe)
+        private void ChannelInConfigure(IPipelineChannelIncoming<MicroservicePipeline> inPipe)
         {
             inPipe
                 .AttachResourceProfile("TrackIt")
@@ -32,8 +32,8 @@ namespace Test.Xigadee.Azure
             {
                 var pipeline = new MicroservicePipeline("TestPipeline");
 
-                IPipelineChannelIncoming cpipeIn = null;
-                IPipelineChannelOutgoing cpipeOut = null;
+                IPipelineChannelIncoming<MicroservicePipeline> cpipeIn = null;
+                IPipelineChannelOutgoing<MicroservicePipeline> cpipeOut = null;
                 PersistenceSharedService<Guid, Blah> persistence = null;
                 PersistenceBlahMemory persistBlah = null;
                 int signalChange = 0;
@@ -49,9 +49,11 @@ namespace Test.Xigadee.Azure
                         .CallOut(ChannelInConfigure)
                         .AttachCommand(new PersistenceBlahMemory(), assign:(p) => persistBlah = p)
                         .AttachCommand(new PersistenceSharedService<Guid, Blah>(), assign:(c) => persistence = c, channelResponse: cpipeOut)
-                        .Revert((c) => cpipeIn = c)
+                        .CallOut((c) => cpipeIn = c)
+                        .Revert()
                     .AddChannelOutgoing("internalOut", internalOnly: true)
-                        .Revert((c) => cpipeOut = c);
+                        .CallOut((c) => cpipeOut = c)
+                        .Revert();
 
                 persistBlah.OnEntityChangeAction += ((o, e) => { signalChange++; });
 

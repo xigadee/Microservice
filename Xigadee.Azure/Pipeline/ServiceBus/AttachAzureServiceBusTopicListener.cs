@@ -27,7 +27,7 @@ namespace Xigadee
     /// </summary>
     public static partial class AzureExtensionMethods
     {
-        public static IPipelineChannelIncoming AttachAzureServiceBusTopicListener(this IPipelineChannelIncoming cpipe
+        public static C AttachAzureServiceBusTopicListener<C>(this C cpipe
             , string connectionName = null
             , string serviceBusConnection = null
             , string subscriptionId = null
@@ -41,6 +41,7 @@ namespace Xigadee
             , IEnumerable<ResourceProfile> resourceProfiles = null
             , Action<AzureSBTopicListener> onCreate = null
             , bool setFromChannelProperties = true)
+            where C: IPipelineChannelIncoming<IPipeline>
         {
             var component = new AzureSBTopicListener();
 

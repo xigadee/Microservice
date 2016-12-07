@@ -57,17 +57,17 @@ namespace Test.Xigadee.Api.Server
 
         }
 
-        private void Hello2(IPipelineChannelIncoming pipeEx)
+        private void Hello2(IPipelineChannelIncoming<WebApiMicroservicePipeline> pipeEx)
         {
 
         }
 
-        private void IsTrueEx(IPipelineChannelIncoming pipeEx)
+        private void IsTrueEx(IPipelineChannelIncoming<WebApiMicroservicePipeline> pipeEx)
         {
 
         }
 
-        private void IsFalseEx(IPipelineChannelIncoming pipeEx)
+        private void IsFalseEx(IPipelineChannelIncoming<WebApiMicroservicePipeline> pipeEx)
         {
 
         }
@@ -84,6 +84,7 @@ namespace Test.Xigadee.Api.Server
                     .AddChannelIncoming("mom")
                         .CallOut(Hello2)
                         .Condition((c) => c.TcpTlsConnection() == null, IsTrueEx, IsFalseEx)
+                        
                     ;
                 
 

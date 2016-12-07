@@ -24,15 +24,17 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static IPipeline AddEventSource(this IPipeline pipeline, IEventSourceComponent eventSource)
+        public static P AddEventSource<P>(this P pipeline, IEventSourceComponent eventSource)
+            where P:IPipeline
         {
             pipeline.Service.RegisterEventSource(eventSource);
 
             return pipeline;
         }
 
-        public static IPipeline AddEventSource<E>(this IPipeline pipeline, Func<IEnvironmentConfiguration, E> creator, Action<E> assign)
-            where E: IEventSourceComponent
+        public static P AddEventSource<P,E>(this P pipeline, Func<IEnvironmentConfiguration, E> creator, Action<E> assign)
+            where P : IPipeline
+            where E : IEventSourceComponent
         {
             var eSource = creator(pipeline.Configuration);
             assign?.Invoke(eSource);

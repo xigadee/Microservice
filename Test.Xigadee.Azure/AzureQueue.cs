@@ -80,13 +80,12 @@ namespace Test.Xigadee.Azure
                     .ConfigurationOverrideSet(AzureExtensionMethods.KeyServiceBusConnection, SbConn)
                     .AddChannelIncoming("remote")
                         .AttachAzureServiceBusQueueListener()
-                        .AttachCommand<SimpleCommand>()
-
+                        .AttachCommand(new SimpleCommand())
+                        .Revert()
                     .AddChannelIncoming("deadletter")
                         .AttachMessageRedirectRule((p) => true, new ServiceMessageHeader("remote", "process", "deadletter"))
                         .AttachAzureServiceBusQueueListener("remote", isDeadLetterListener: true)
-
-                    .Revert()
+                        .Revert()
                     .AddChannelOutgoing("response")
                         .AttachAzureServiceBusTopicSender()
                     ;

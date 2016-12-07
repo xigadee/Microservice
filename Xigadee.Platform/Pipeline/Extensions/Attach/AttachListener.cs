@@ -31,10 +31,11 @@ namespace Xigadee
         /// <param name="listener"></param>
         /// <param name="setFromChannelProperties"></param>
         /// <returns></returns>
-        public static IPipelineChannelIncoming AttachListener(this IPipelineChannelIncoming cpipe
+        public static C AttachListener<C>(this C cpipe
             , IListener listener
             , bool setFromChannelProperties = true
             )
+            where C: IPipelineChannelIncoming<IPipeline>
         {
             if (cpipe.Channel == null)
                 throw new ArgumentNullException("The pipe channel is null.");
@@ -54,11 +55,12 @@ namespace Xigadee
             return cpipe;
         }
 
-        public static IPipelineChannelIncoming AttachListener<S>(this IPipelineChannelIncoming cpipe
+        public static C AttachListener<C,S>(this C cpipe
             , Func<IEnvironmentConfiguration, S> creator = null
             , Action<S> action = null
             , bool setFromChannelProperties = true
             )
+            where C : IPipelineChannelIncoming<IPipeline>
             where S : IListener, new()
         {
             var listener = creator!=null?(creator(cpipe.Pipeline.Configuration)):new S();

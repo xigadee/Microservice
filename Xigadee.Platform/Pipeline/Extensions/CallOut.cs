@@ -38,7 +38,7 @@ namespace Xigadee
             where P : IPipelineBase
         {
             if (condition?.Invoke(pipe.ToPipeline().Configuration) ?? true)
-                method(pipe);
+                method?.Invoke(pipe);
 
             return pipe;
         }

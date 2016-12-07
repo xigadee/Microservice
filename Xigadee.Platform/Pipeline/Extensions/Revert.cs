@@ -31,10 +31,10 @@ namespace Xigadee
         /// <param name="cpipe">The pipeline extension.</param>
         /// <param name="assign">An optional action to process the extension.</param>
         /// <returns>The underlying Microservice extension.</returns>
-        public static IPipeline Revert<C>(this C cpipe, Action<C> assign = null)
-            where C : IPipelineExtension
+        public static P Revert<P>(this IPipelineExtension<P> cpipe)
+            where P : class, IPipeline
         {
-            assign?.Invoke(cpipe);
+            //assign?.Invoke(cpipe);
 
             return cpipe.Pipeline;
         }

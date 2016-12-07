@@ -15,59 +15,41 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Http;
+using Microsoft.Practices.Unity;
 
 namespace Xigadee
 {
     public static partial class UnityWebApiExtensionMethods
     {
-        public static P AttachCommandUnity<P,I,C>(this P cpipe
-            , int startupPriority = 100
-            , Action<C> assign = null
-            , IPipelineChannelOutgoing channelResponse = null
-            , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
-            , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null)
-            where P : IPipelineChannelIncoming
-            where C : I,ICommand, new()
-        {
-            return cpipe.AttachCommandUnity<P,I,C>(new C(), startupPriority, assign, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
-        }
-
-        public static P AttachCommandUnity<P,I,C>(this P cpipe
+        public static E AttachCommandUnity<E,I,C>(this E cpipe
             , Func<IEnvironmentConfiguration, C> creator
             , int startupPriority = 100
             , Action<C> assign = null
-            , IPipelineChannelOutgoing channelResponse = null
-            , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
-            , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null
             )
-            where P : IPipelineChannelIncoming
+            where E : IPipelineChannelIncoming<IPipelineWebApiUnity>
             where C : I, ICommand
         {
-            return cpipe.AttachCommandUnity<P, I, C>(creator(cpipe.Pipeline.Configuration), startupPriority, assign, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
+            C command = creator(cpipe.Pipeline.Configuration);
+
+            return cpipe.AttachCommandUnity<E, I, C>(command, startupPriority, assign);
         }
 
-        public static P AttachCommandUnity<P,I,C>(this P cpipe
+        public static E AttachCommandUnity<E,I,C>(this E cpipe
             , C command
             , int startupPriority = 100
             , Action<C> assign = null
-            , IPipelineChannelOutgoing channelResponse = null
-            , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
-            , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null
             )
-            where P : IPipelineChannelIncoming
-            where C : I,ICommand
+            where E : IPipelineChannelIncoming<IPipelineWebApiUnity>
+            where C : I, ICommand
         {
             var pipeline = cpipe.Pipeline as IPipelineWebApiUnity;
 
             if (pipeline == null)
                 throw new UnityWebApiMicroservicePipelineInvalidException();
 
-            pipeline.AddCommandUnity<IPipelineWebApiUnity, I,C>(command, startupPriority, assign, cpipe, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
+            cpipe.AttachCommand(command, startupPriority, assign);
+
+            pipeline.Unity.RegisterInstance<I>(command);
 
             return cpipe;
         }

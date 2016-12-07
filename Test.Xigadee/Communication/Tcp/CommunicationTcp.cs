@@ -57,20 +57,22 @@ namespace Test.Xigadee
             {
                 var sender = new MicroservicePipeline("initiator")
                     //.ConfigurationOverrideSet(AzureExtensionMethods.KeyServiceBusConnection, SbConn)
-                    .AddChannelOutgoing("remote")
-                        .AttachTcpTlsSender()
+                    .AddChannelOutgoing("remote").Revert()
+                    
+                        //.AttachTcpTlsSender()
                     .AddChannelIncoming("response")
-                        .AttachTcpTlsBroadcastListener(listenOnOriginatorId: true)
+                        //.AttachTcpTlsBroadcastListener(listenOnOriginatorId: true)
                         .AttachCommandInitiator(out init)
                     ;
 
                 var listener = new MicroservicePipeline("responder")
                     //.ConfigurationOverrideSet(AzureExtensionMethods.KeyServiceBusConnection, SbConn)
                     .AddChannelIncoming("remote")
-                        .AttachTcpTlsListener()
-                        .AttachCommand<TcpSimpleCommand>()
+                        //.AttachTcpTlsListener()
+                        .AttachCommand(new TcpSimpleCommand())
+                        .Revert()
                     .AddChannelOutgoing("response")
-                        .AttachTcpTlsBroadcastSender()
+                        //.AttachTcpTlsBroadcastSender()
                     ;
 
                 listener.Start();

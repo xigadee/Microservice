@@ -27,10 +27,10 @@ namespace Xigadee
         public static P AddCommand<P,C>(this P pipeline
             , int startupPriority = 100
             , Action<C> assign = null
-            , IPipelineChannelIncoming channelIncoming = null
-            , IPipelineChannelOutgoing channelResponse = null
-            , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
-            , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null
+            , IPipelineChannelIncoming<P> channelIncoming = null
+            , IPipelineChannelOutgoing<P> channelResponse = null
+            , IPipelineChannelIncoming<P> channelMasterJobNegotiationIncoming = null
+            , IPipelineChannelOutgoing<P> channelMasterJobNegotiationOutgoing = null
             )
             where P: IPipeline
             where C : ICommand, new()
@@ -42,10 +42,10 @@ namespace Xigadee
             , Func<IEnvironmentConfiguration, C> creator
             , int startupPriority = 100
             , Action<C> assign = null
-            , IPipelineChannelIncoming channelIncoming = null
-            , IPipelineChannelOutgoing channelResponse = null
-            , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
-            , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null
+            , IPipelineChannelIncoming<P> channelIncoming = null
+            , IPipelineChannelOutgoing<P> channelResponse = null
+            , IPipelineChannelIncoming<P> channelMasterJobNegotiationIncoming = null
+            , IPipelineChannelOutgoing<P> channelMasterJobNegotiationOutgoing = null
             )
             where P : IPipeline
             where C : ICommand
@@ -59,10 +59,10 @@ namespace Xigadee
             , C command
             , int startupPriority = 100
             , Action<C> assign = null
-            , IPipelineChannelIncoming channelIncoming = null
-            , IPipelineChannelOutgoing channelResponse = null
-            , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
-            , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null
+            , IPipelineChannelIncoming<P> channelIncoming = null
+            , IPipelineChannelOutgoing<P> channelResponse = null
+            , IPipelineChannelIncoming<P> channelMasterJobNegotiationIncoming = null
+            , IPipelineChannelOutgoing<P> channelMasterJobNegotiationOutgoing = null
             )
             where P : IPipeline
             where C : ICommand

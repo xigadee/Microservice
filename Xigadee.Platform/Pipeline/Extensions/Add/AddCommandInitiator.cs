@@ -28,7 +28,7 @@ namespace Xigadee
             , out CommandInitiator command
             , int startupPriority = 90
             , TimeSpan? defaultRequestTimespan = null
-            , IPipelineChannelIncoming channelIncoming = null
+            , IPipelineChannelIncoming<P> channelIncoming = null
             )
             where P:IPipeline
         {

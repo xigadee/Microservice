@@ -37,8 +37,8 @@ namespace Test.Xigadee
             {
                 var pipeline = new MicroservicePipeline();
 
-                IPipelineChannelIncoming cpipeIn = null;
-                IPipelineChannelOutgoing cpipeOut = null;
+                IPipelineChannelIncoming<MicroservicePipeline> cpipeIn = null;
+                IPipelineChannelOutgoing<MicroservicePipeline> cpipeOut = null;
                 PersistenceSharedService<Guid, Blah> persistence = null;
 
                 pipeline
@@ -52,11 +52,13 @@ namespace Test.Xigadee
                         .AttachAzureServiceBusQueueListener("Myqueue")
                         .AttachCommand(new PersistenceBlahMemory())
                         .AttachCommand(new PersistenceSharedService<Guid, Blah>(), assign:(c) => persistence = c, channelResponse: cpipeOut)
-                        .Revert((c) => cpipeIn = c)
+                        .CallOut((c) => cpipeIn = c)
+                        .Revert()
                     .AddChannelOutgoing("internalOut", internalOnly: true)
                         .AttachPriorityPartition(0, 1)
                         //.AppendBoundaryLogger(bLogger)
-                        .Revert((c) => cpipeOut = c);
+                        .CallOut((c) => cpipeOut = c)
+                        .Revert();
 
                 pipeline.Start();
 

@@ -27,7 +27,6 @@ namespace Xigadee
     /// </summary>
     public interface IPipeline: IPipelineBase
     {
-
         /// <summary>
         /// This is the microservice.
         /// </summary>

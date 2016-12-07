@@ -15,15 +15,15 @@ namespace Test.Xigadee
                 var ms = new MicroservicePipeline();
                 CommandInitiator init;
                 ms
-                    .AddChannelIncoming("deadletter")
+                    .AddChannelIncoming("deadletter").Revert()
                     .AddChannelIncoming("freddy")
-                        .AttachCommand<RewriteCommandVerifyFail>()
+                        .AttachCommand(new RewriteCommandVerifyFail())
                         .AttachMessageRedirectRule(
                             new ServiceMessageHeader("freddy", "one", "two")
                            , new ServiceMessageHeader("findlay", "three", "four")
-                           )
+                           ).Revert()
                     .AddChannelIncoming("findlay")
-                        .AttachCommand<RewriteCommandVerifySuccess>()
+                        .AttachCommand(new RewriteCommandVerifySuccess()).Revert()
                     .AddChannelOutgoing("response")
                     ;
 
