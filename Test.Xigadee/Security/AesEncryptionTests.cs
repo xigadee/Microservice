@@ -14,7 +14,9 @@
 // limitations under the License.
 #endregion
 
+using System;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Xigadee;
@@ -24,7 +26,7 @@ namespace Test.Xigadee
     [TestClass]
     public class AesEncryptionTests
     {
-        private readonly byte[] mKey = Encoding.Default.GetBytes("8FA32E2FEB3317AE8628DEFAB4A7515A");
+        private readonly byte[] mKey = Convert.FromBase64String("hNCV1t5sA/xQgDkHeuXYhrSu8kF72p9H436nQoLDC28=");
         private readonly AesEncryption mAesEncryption;
 
         public AesEncryptionTests()
