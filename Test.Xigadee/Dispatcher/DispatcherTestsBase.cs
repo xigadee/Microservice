@@ -14,7 +14,6 @@ namespace Test.Xigadee
         protected IPipelineChannelIncoming cpipeIn = null;
         protected IPipelineChannelOutgoing cpipeOut = null;
         protected DebugMemoryDataCollector collector = null;
-        protected Microservice service = null;
         protected IPipeline mPipeline = null;
         protected C mDCommand = null;
 
