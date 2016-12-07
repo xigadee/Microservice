@@ -50,12 +50,6 @@ namespace Xigadee
             Filters = new List<string>();
         }
         #endregion
-        #region BoundaryLogger
-        /// <summary>
-        /// This is the logger used to mark the transit for a payload between the underlying fabric and the service.
-        /// </summary>
-        public IBoundaryLogger BoundaryLogger { get; set; } 
-        #endregion
 
         #region Logging
         public void QueueTimeLog(DateTime? EnqueuedTimeUTC)

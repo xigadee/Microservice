@@ -37,6 +37,6 @@ namespace Xigadee
         /// <summary>
         /// This is the boundary logger used by the service.
         /// </summary>
-        IBoundaryLogger BoundaryLogger { get; set; }
+        IDataCollection Collector { get; set; }
     }
 }

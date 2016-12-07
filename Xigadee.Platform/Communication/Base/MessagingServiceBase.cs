@@ -51,12 +51,6 @@ namespace Xigadee
         #endregion
 
         //IMessagingService<P>
-        #region BoundaryLogger
-        /// <summary>
-        /// The boundary logger can be used to log message metadata when it is received or transmitted.
-        /// </summary>
-        public IBoundaryLogger BoundaryLogger { get; set; }
-        #endregion
         #region PriorityPartitions
         /// <summary>
         /// This is the set of priority partitions used to provide different priority for messages.
@@ -218,9 +212,6 @@ namespace Xigadee
 
             //Set the message Collector?.
             client.Collector = Collector;
-
-            //Set the boundary logger if this has been defined in the messaging service.
-            client.BoundaryLogger = BoundaryLogger;
 
             client.ClientRefresh = () => { };
 

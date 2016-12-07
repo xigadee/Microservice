@@ -115,6 +115,7 @@
     <Compile Include="DataCollection\DataCollectionSupport.cs" />
     <Compile Include="DataCollection\DataCollector\DataCollectorStatistics.cs" />
     <Compile Include="DataCollection\Events\BoundaryEvent.cs" />
+    <Compile Include="DataCollection\ExtensionMethods\Boundary.cs" />
     <Compile Include="DataCollection\ExtensionMethods\Dispatcher.cs" />
     <Compile Include="DataCollection\ExtensionMethods\EventSource.cs" />
     <Compile Include="DataCollection\ExtensionMethods\Logger.cs" />

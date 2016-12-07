@@ -34,7 +34,6 @@ namespace Xigadee
             if (setFromChannelProperties)
             {
                 sender.ChannelId = cpipe.Channel.Id;
-                sender.BoundaryLogger = cpipe.Channel.BoundaryLogger;
                 sender.PriorityPartitions = cpipe.Channel.Partitions.Cast<SenderPartitionConfig>().ToList();
             }
 

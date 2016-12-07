@@ -27,8 +27,6 @@ namespace Xigadee
     /// </summary>
     public class DataCollectionStatistics: MessagingStatistics
     {
-
-
         public int ItemCount { get; set; }
 
         public int QueueLength { get; set; }

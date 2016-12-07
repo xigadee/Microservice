@@ -30,7 +30,7 @@ namespace Xigadee
     /// This container holds all the communication components (sender/listener/bidirectional) for the Microservice.
     /// </summary>
     public partial class CommunicationContainer: ServiceContainerBase<CommunicationStatistics, CommunicationPolicy>, 
-        IServiceOriginator, IRequireDataCollector, IPayloadSerializerConsumer, IRequireSharedServices, IRequireScheduler, ITaskManagerProcess, IRequireBoundaryLogger
+        IServiceOriginator, IRequireDataCollector, IPayloadSerializerConsumer, IRequireSharedServices, IRequireScheduler, ITaskManagerProcess
     {
         #region Declarations
         /// <summary>
@@ -161,13 +161,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region BoundaryLogger
-        /// <summary>
-        /// This is the boundary logger
-        /// </summary>
-        public IBoundaryLogger BoundaryLogger { get; set; } 
-        #endregion
-
         //Command message event handling
         #region RegisterSupportedMessages()
         /// <summary>
@@ -295,7 +288,7 @@ namespace Xigadee
             try
             {
                 if (service is IRequireBoundaryLogger)
-                    ((IRequireBoundaryLogger)service).BoundaryLogger = BoundaryLogger;
+                    ((IRequireBoundaryLogger)service).BoundaryLogger = Collector as IBoundaryLogger;
 
                 if (service is IRequireDataCollector)
                     ((IRequireDataCollector)service).Collector = Collector;
