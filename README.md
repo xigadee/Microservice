@@ -1,6 +1,8 @@
 # Xigadee Microservice Library
 
-Copyright Hitachi Consulting
+By Paul Stancer and Guy Steel
+
+Copyright Hitachi Consulting 2012-2016
 
 Licensed under the Apache License, Version 2.0 (the "License").
 You may obtain a copy of the License at
