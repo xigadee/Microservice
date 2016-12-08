@@ -1,5 +1,4 @@
-# Microservice
-Xigadee Microservice library by Hitachi Consulting
+# Xigadee Microservice Library
 
 Copyright Hitachi Consulting
 
