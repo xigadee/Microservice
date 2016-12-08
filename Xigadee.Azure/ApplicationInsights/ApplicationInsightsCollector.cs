@@ -79,7 +79,7 @@ namespace Xigadee
 
         private void Write(BoundaryEvent eventData)
         {
-            if (eventData == null)
+            if (eventData == null || mLoggingLevel > LoggingLevel.Info)
                 return;
 
             try
@@ -107,7 +107,7 @@ namespace Xigadee
 
         private void Write(DispatcherEvent eventData)
         {
-            if (eventData == null)
+            if (eventData == null || mLoggingLevel > LoggingLevel.Info)
                 return;
 
             try
@@ -134,7 +134,7 @@ namespace Xigadee
 
         private void Write(EventSourceEvent eventData)
         {
-            if (eventData?.Entry == null)
+            if (eventData?.Entry == null || mLoggingLevel > LoggingLevel.Info)
                 return;
 
             try
