@@ -21,35 +21,32 @@ namespace Xigadee
 {
     public static partial class UnityWebApiExtensionMethods
     {
-        public static E AttachCommandUnity<E,I,C>(this E cpipe
+        public static E AttachCommandUnity<E, C>(this E cpipe
+            , Type type
             , Func<IEnvironmentConfiguration, C> creator
             , int startupPriority = 100
             , Action<C> assign = null
             )
             where E : IPipelineChannelIncoming<IPipelineWebApiUnity>
-            where C : I, ICommand
+            where C : class, ICommand
         {
             C command = creator(cpipe.Pipeline.Configuration);
 
-            return cpipe.AttachCommandUnity<E, I, C>(command, startupPriority, assign);
+            return cpipe.AttachCommandUnity<E, C>(type, command, startupPriority, assign);
         }
 
-        public static E AttachCommandUnity<E,I,C>(this E cpipe
+        public static E AttachCommandUnity<E,C>(this E cpipe
+            , Type type
             , C command
             , int startupPriority = 100
             , Action<C> assign = null
             )
             where E : IPipelineChannelIncoming<IPipelineWebApiUnity>
-            where C : I, ICommand
+            where C : class, ICommand
         {
-            var pipeline = cpipe.Pipeline as IPipelineWebApiUnity;
-
-            if (pipeline == null)
-                throw new UnityWebApiMicroservicePipelineInvalidException();
-
             cpipe.AttachCommand(command, startupPriority, assign);
 
-            pipeline.Unity.RegisterInstance<I>(command);
+            cpipe.Pipeline.Unity.RegisterInstance(type,command);
 
             return cpipe;
         }

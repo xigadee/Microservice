@@ -22,6 +22,7 @@ namespace Test.Xigadee.Pipeline
         {
             var pipe = new UnityWebApiMicroservicePipeline();
 
+            //pipe.AddSharedService(
             pipe.Start();
 
             pipe.Stop();
