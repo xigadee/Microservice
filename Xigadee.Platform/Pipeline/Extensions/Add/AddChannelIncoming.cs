@@ -27,6 +27,27 @@ namespace Xigadee
     /// </summary>
     public static partial class CorePipelineExtensions
     {
+        public static IPipelineChannelIncoming<P> AddChannelIncoming<P>(this P pipeline
+            , Func<IEnvironmentConfiguration, string> creatorId
+            , string description = null
+            , IEnumerable<ListenerPartitionConfig> partitions = null
+            , IBoundaryLogger bLogger = null
+            , IEnumerable<ResourceProfile> resourceProfiles = null
+            , bool internalOnly = false
+            , Action<IPipelineChannelIncoming<P>, Channel> assign = null
+            , bool autosetPartition01 = true
+            )
+            where P : IPipeline
+        {
+            return pipeline.AddChannelIncoming(creatorId(pipeline.Configuration)
+                , description
+                , partitions
+                , bLogger
+                , resourceProfiles
+                , internalOnly
+                , assign
+                , autosetPartition01);
+        }
         /// <summary>
         /// use this command to add a channel to a Microservice.
         /// </summary>

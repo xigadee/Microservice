@@ -27,18 +27,27 @@ namespace Xigadee
     /// </summary>
     public static partial class CorePipelineExtensions
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="pipeline"></param>
-        /// <param name="channelId"></param>
-        /// <param name="description"></param>
-        /// <param name="partitions"></param>
-        /// <param name="bLogger"></param>
-        /// <param name="internalOnly"></param>
-        /// <param name="assign"></param>
-        /// <param name="autosetPartition01"></param>
-        /// <returns></returns>
+
+        public static IPipelineChannelOutgoing<P> AddChannelOutgoing<P>(this P pipeline
+            , Func<IEnvironmentConfiguration, string> creatorId
+            , string description = null
+            , IEnumerable<SenderPartitionConfig> partitions = null
+            , IBoundaryLogger bLogger = null
+            , bool internalOnly = false
+            , Action<IPipelineChannelOutgoing<P>, Channel> assign = null
+            , bool autosetPartition01 = true
+            )
+            where P : IPipeline
+        {
+            return pipeline.AddChannelOutgoing(creatorId(pipeline.Configuration)
+                , description
+                , partitions
+                , bLogger
+                , internalOnly
+                , assign
+                , autosetPartition01);
+        }
+
         public static IPipelineChannelOutgoing<P> AddChannelOutgoing<P>(this P pipeline
             , string channelId
             , string description = null
