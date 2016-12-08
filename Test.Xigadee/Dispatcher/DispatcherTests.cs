@@ -55,26 +55,35 @@ namespace Test.Xigadee
         [TestMethod]
         public void DispatcherTestCommandSuccess()
         {
-            ManualResetEvent mre = new ManualResetEvent(false);
-            bool success = false;
-
-            var message = new TransmissionPayload(cpipeIn.Channel.Id, "friday", "standard", release: (e, f) =>
+            try
             {
-                mre.Set();
+                ManualResetEvent mre = new ManualResetEvent(false);
+                bool success = false;
+
+                var message = new TransmissionPayload(cpipeIn.Channel.Id, "friday", "standard", release: (e, f) =>
+                {
+                    mre.Set();
+                }
+                , options: ProcessOptions.RouteInternal);
+
+                mDCommand.OnTestCommandReceive += (sender, e) =>
+                {
+                    success = true;
+                    mre.Set();
+                };
+
+                mListener.Inject(message);
+
+                mre.WaitOne(2000);
+
+                Assert.IsTrue(success);
             }
-            , options: ProcessOptions.RouteInternal);
-
-            mDCommand.OnTestCommandReceive += (sender, e) =>
+            catch (Exception ex)
             {
-                success = true;
-                mre.Set();
-            };
 
-            mListener.Inject(message);
+                throw;
+            }
 
-            mre.WaitOne(2000);
-
-            Assert.IsTrue(success);
         }
 
         [TestMethod]
