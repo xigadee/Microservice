@@ -27,14 +27,15 @@ namespace Xigadee
     /// </summary>
     public static partial class AzureExtensionMethods
     {
-        public static IPipelineChannelOutgoing AttachAzureServiceBusQueueSender(this IPipelineChannelOutgoing cpipe
+        public static C AttachAzureServiceBusQueueSender<C>(this C cpipe
             , string connectionName = null
             , IEnumerable<SenderPartitionConfig> priorityPartitions = null
             , string serviceBusConnection = null
             , Action<AzureSBQueueSender> onCreate = null)
+            where C: IPipelineChannelOutgoing<IPipeline>
         {
             var component = new AzureSBQueueSender();
-            
+
             component.ConfigureAzureMessaging(
                   cpipe.Channel.Id
                 , priorityPartitions ?? cpipe.Channel.Partitions.Cast<SenderPartitionConfig>()

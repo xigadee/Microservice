@@ -8,7 +8,7 @@ namespace Xigadee
 {
     public static partial class TcpCommunicationPipelineExtensions
     {
-        public static IPipelineChannelIncoming AttachTcpTlsListener(this IPipelineChannelIncoming cpipe
+        public static C AttachTcpTlsListener<C>(this C cpipe
             , string connectionName = null
             , string serviceBusConnection = null
             , string mappingChannelId = null
@@ -16,6 +16,7 @@ namespace Xigadee
             , IEnumerable<ResourceProfile> resourceProfiles = null
             , IBoundaryLogger boundaryLogger = null
             , Action<TcpTlsChannelListener> onCreate = null)
+            where C: IPipelineChannelIncoming<IPipeline>
         {
             throw new NotImplementedException();
 

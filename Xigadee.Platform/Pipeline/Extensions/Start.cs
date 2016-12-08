@@ -30,7 +30,7 @@ namespace Xigadee
         /// <param name="pipeline">The pipeline.</param>
         public static void Start(this IPipelineBase pipeline)
         {
-            ToMicroservice(pipeline).Start();
+            pipeline.ToMicroservice().Start();
         }
 
     }

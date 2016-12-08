@@ -40,16 +40,17 @@ namespace Xigadee
         /// <param name="assign"></param>
         /// <param name="autosetPartition01">This method automatically sets the default priority 0 and 1 partitions for the channel.</param>
         /// <returns>The original pipeline.</returns>
-        public static IPipelineChannelIncoming AddChannelIncoming(this IPipelineBase pipeline
+        public static IPipelineChannelIncoming<P> AddChannelIncoming<P>(this P pipeline
             , string channelId
             , string description = null
             , IEnumerable<ListenerPartitionConfig> partitions = null
             , IBoundaryLogger bLogger = null
             , IEnumerable<ResourceProfile> resourceProfiles = null
             , bool internalOnly = false
-            , Action<ChannelPipelineIncoming, Channel> assign = null
+            , Action<IPipelineChannelIncoming<P>, Channel> assign = null
             , bool autosetPartition01 = true
             )
+            where P: IPipeline
         {     
             var channel = pipeline.ToMicroservice().RegisterChannel(
                 new Channel(channelId, ChannelDirection.Incoming, description, bLogger, internalOnly));
@@ -62,7 +63,7 @@ namespace Xigadee
             if (resourceProfiles != null)
                 channel.ResourceProfiles = resourceProfiles?.ToList();
 
-            var cpipe = new ChannelPipelineIncoming(pipeline.ToPipeline(), channel);
+            var cpipe = new ChannelPipelineIncoming<P>(pipeline, channel);
 
             assign?.Invoke(cpipe, cpipe.Channel);
 

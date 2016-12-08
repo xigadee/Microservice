@@ -28,12 +28,12 @@ namespace Test.Xigadee
         private void ConfigureServiceRoot<P>(P pipe) where P:MicroservicePipeline
         {
             pipe
-                .AddDataCollector<DebugMemoryDataCollector>((c) => mDataCollector = c)
-                .AddLogger<TraceEventLogger>()
+                .AddDataCollector((c) => mDataCollector = new DebugMemoryDataCollector())
+                .AddLogger(new TraceEventLogger())
                 .AddPayloadSerializerDefaultJson();
         }
 
-        private void ChannelInConfigure(IPipelineChannelIncoming inPipe)
+        private void ChannelInConfigure(IPipelineChannelIncoming<MicroservicePipeline> inPipe)
         {
             inPipe
                 .AttachResourceProfile("TrackIt")
@@ -48,7 +48,7 @@ namespace Test.Xigadee
             calloutDefault = true;
         }
 
-        private void ChannelOutConfigure(IPipelineChannelOutgoing inPipe)
+        private void ChannelOutConfigure(IPipelineChannelOutgoing<MicroservicePipeline> inPipe)
         {
             calloutOut = true;
         }
@@ -60,8 +60,8 @@ namespace Test.Xigadee
             {
                 var pipeline = new MicroservicePipeline("TestPipeline");
 
-                IPipelineChannelIncoming cpipeIn = null;
-                IPipelineChannelOutgoing cpipeOut = null;
+                IPipelineChannelIncoming<MicroservicePipeline> cpipeIn = null;
+                IPipelineChannelOutgoing<MicroservicePipeline> cpipeOut = null;
                 PersistenceSharedService<Guid, Blah> persistence = null;
                 PersistenceBlahMemory persistBlah = null;
                 int signalChange = 0;
@@ -78,10 +78,12 @@ namespace Test.Xigadee
                         .CallOut(ChannelInConfigure, (c) => true)
                         .AttachCommand(new PersistenceBlahMemory(), assign:(p) => persistBlah = p)
                         .AttachCommand(new PersistenceSharedService<Guid, Blah>(), assign:(c) => persistence = c, channelResponse: cpipeOut)
-                        .Revert((c) => cpipeIn = c)
+                        .CallOut((c) => cpipeIn = c)
+                        .Revert()
                     .AddChannelOutgoing("internalOut", internalOnly: true)
                         .CallOut(ChannelOutConfigure, (c) => false)
-                        .Revert((c) => cpipeOut = c);
+                        .CallOut((c) => cpipeOut = c)
+                        .Revert();
 
                 persistBlah.OnEntityChangeAction += ((o, e) => { signalChange++; });
 

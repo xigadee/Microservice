@@ -11,8 +11,8 @@ namespace Test.Xigadee
         where C: class, ICommand, new()
     {
         protected CommandInitiator mCommandInit;
-        protected IPipelineChannelIncoming cpipeIn = null;
-        protected IPipelineChannelOutgoing cpipeOut = null;
+        protected IPipelineChannelIncoming<MicroservicePipeline> cpipeIn = null;
+        protected IPipelineChannelOutgoing<MicroservicePipeline> cpipeOut = null;
         protected DebugMemoryDataCollector collector = null;
         protected IPipeline mPipeline = null;
         protected C mDCommand = null;
@@ -24,18 +24,21 @@ namespace Test.Xigadee
         {
             try
             {
+                mDCommand = new C();
                 var pipeline = new MicroservicePipeline(GetType().Name)
-                    .AddDataCollector<DebugMemoryDataCollector>((c) => collector = c)
+                    .AddDataCollector((c) => collector = new DebugMemoryDataCollector())
                     .AddPayloadSerializerDefaultJson()
                     .AddChannelIncoming("internalIn", internalOnly: false, autosetPartition01:false)
                         .AttachPriorityPartition(0, 1)
-                        .AttachListener<ManualChannelListener>(action: (s) => mListener = s)
-                        .AttachCommand<C>(assign:(c) => mDCommand = c)
-                        .Revert((c) => cpipeIn = c)
+                        .AttachListener((c) => new ManualChannelListener (), action: (s) => mListener = s)
+                        .AttachCommand(mDCommand)
+                        .CallOut((c) => cpipeIn = c)
+                        .Revert()
                     .AddChannelOutgoing("internalOut", internalOnly: false, autosetPartition01: false)
                         .AttachPriorityPartition(0, 1)
-                        .AttachSender<ManualChannelSender>(action: (s) => mSender = s)
-                        .Revert((c) => cpipeOut = c)
+                        .AttachSender((c) => new ManualChannelSender(),action: (s) => mSender = s)
+                        .CallOut((c) => cpipeOut = c)
+                        .Revert()
                     .AddCommand(new CommandInitiator() { ResponseChannelId = cpipeOut.Channel.Id }, assign:(c) => mCommandInit = c);
 
                 return pipeline;

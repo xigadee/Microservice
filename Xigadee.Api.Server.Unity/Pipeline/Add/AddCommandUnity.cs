@@ -21,44 +21,33 @@ namespace Xigadee
 {
     public static partial class UnityWebApiExtensionMethods
     {
-        public static IPipelineWebApiUnity AddCommandUnity<I,C>(this IPipelineWebApiUnity pipeline
-            , int startupPriority = 100
-            , Action<C> assign = null
-            , IPipelineChannelIncoming channelIncoming = null
-            , IPipelineChannelOutgoing channelResponse = null
-            , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
-            , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null
-            )
-            where C : I, ICommand, new()
-        {
-            return pipeline.AddCommandUnity<I, C>(new C()
-                , startupPriority, assign, channelIncoming, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
-        }
 
-        public static IPipelineWebApiUnity AddCommandUnity<I, C>(this IPipelineWebApiUnity pipeline
+        public static P AddCommandUnity<P, I, C>(this P pipeline
             , Func<IEnvironmentConfiguration, C> creator
             , int startupPriority = 100
             , Action<C> assign = null
-            , IPipelineChannelIncoming channelIncoming = null
-            , IPipelineChannelOutgoing channelResponse = null
-            , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
-            , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null
+            , IPipelineChannelIncoming<P> channelIncoming = null
+            , IPipelineChannelOutgoing<P> channelResponse = null
+            , IPipelineChannelIncoming<P> channelMasterJobNegotiationIncoming = null
+            , IPipelineChannelOutgoing<P> channelMasterJobNegotiationOutgoing = null
             )
+            where P : IPipelineWebApiUnity
             where C : I, ICommand
         {
-            return pipeline.AddCommandUnity<I, C>(creator(pipeline.Configuration)
+            return pipeline.AddCommandUnity<P, I, C>(creator(pipeline.Configuration)
                 , startupPriority, assign, channelIncoming, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
         }
 
-        public static IPipelineWebApiUnity AddCommandUnity<I,C>(this IPipelineWebApiUnity pipeline
+        public static P AddCommandUnity<P, I,C>(this P pipeline
             , C command
             , int startupPriority = 100
             , Action<C> assign = null
-            , IPipelineChannelIncoming channelIncoming = null
-            , IPipelineChannelOutgoing channelResponse = null
-            , IPipelineChannelIncoming channelMasterJobNegotiationIncoming = null
-            , IPipelineChannelOutgoing channelMasterJobNegotiationOutgoing = null
+            , IPipelineChannelIncoming<P> channelIncoming = null
+            , IPipelineChannelOutgoing<P> channelResponse = null
+            , IPipelineChannelIncoming<P> channelMasterJobNegotiationIncoming = null
+            , IPipelineChannelOutgoing<P> channelMasterJobNegotiationOutgoing = null
             )
+            where P : IPipelineWebApiUnity
             where C : I, ICommand
         {
             pipeline.AddCommand(command, startupPriority, assign, channelIncoming, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);

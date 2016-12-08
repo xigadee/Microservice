@@ -39,15 +39,16 @@ namespace Xigadee
         /// <param name="assign"></param>
         /// <param name="autosetPartition01"></param>
         /// <returns></returns>
-        public static IPipelineChannelOutgoing AddChannelOutgoing(this IPipelineBase pipeline
+        public static IPipelineChannelOutgoing<P> AddChannelOutgoing<P>(this P pipeline
             , string channelId
             , string description = null
             , IEnumerable<SenderPartitionConfig> partitions = null
             , IBoundaryLogger bLogger = null
             , bool internalOnly = false
-            , Action<ChannelPipelineOutgoing, Channel> assign = null
+            , Action<IPipelineChannelOutgoing<P>, Channel> assign = null
             , bool autosetPartition01 = true
             )
+            where P: IPipeline
         {
             var channel = pipeline.ToMicroservice().RegisterChannel(
                 new Channel(channelId, ChannelDirection.Outgoing, description, bLogger, internalOnly));
@@ -57,7 +58,7 @@ namespace Xigadee
 
             channel.Partitions = partitions?.ToList();
 
-            var cpipe = new ChannelPipelineOutgoing(pipeline.ToPipeline(), channel);
+            var cpipe = new ChannelPipelineOutgoing<P>(pipeline, channel);
 
             assign?.Invoke(cpipe, cpipe.Channel);
 

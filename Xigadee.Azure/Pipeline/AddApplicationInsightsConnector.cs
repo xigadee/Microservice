@@ -25,28 +25,36 @@ namespace Xigadee
 {
     public static partial class AzureExtensionMethods
     {
-        public static IPipeline AddApplicationInsightsDataCollector(this IPipeline pipeline, ApplicationInsightsDataCollector collector)
+        public static P AddApplicationInsightsDataCollector<P>(this P pipeline, ApplicationInsightsDataCollector collector)
+            where P: IPipeline
         {
-            pipeline.Service.RegisterDataCollector(collector);
+            pipeline.ToMicroservice().RegisterDataCollector(collector);
 
             return pipeline;
         }
 
-        public static IPipeline AddApplicationInsightsDataCollector<L>(this IPipeline pipeline, Func<IEnvironmentConfiguration, L> creator, Action<L> action = null)
+        public static P AddApplicationInsightsDataCollector<P,L>(this P pipeline
+            , Func<IEnvironmentConfiguration, L> creator, Action<L> action = null)
+            where P : IPipeline
             where L : ApplicationInsightsDataCollector
         {
-            var collector = creator(pipeline.Configuration);
+            var collector = creator(pipeline.ToConfiguration());
 
             action?.Invoke(collector);
 
-            pipeline.Service.RegisterDataCollector(collector);
+            pipeline.ToMicroservice().RegisterDataCollector(collector);
 
             return pipeline;
         }
 
-        public static IPipeline AddApplicationInsightsDataCollector(this IPipeline pipeline, Action<ApplicationInsightsDataCollector> action = null)
+        public static P AddApplicationInsightsDataCollector<P>(this P pipeline
+            , Action<ApplicationInsightsDataCollector> action = null)
+             where P : IPipeline
         {
-            return pipeline.AddApplicationInsightsDataCollector(ec => new ApplicationInsightsDataCollector(ec.ApplicationInsightsKey(), ec.ApplicationInsightsLoggingLevel()), action);
+            return pipeline.AddApplicationInsightsDataCollector(
+                ec => new ApplicationInsightsDataCollector(ec.ApplicationInsightsKey()
+                , ec.ApplicationInsightsLoggingLevel())
+                , action);
         }
     }
 }

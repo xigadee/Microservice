@@ -8,7 +8,7 @@ namespace Xigadee
 {
     public static partial class TcpCommunicationPipelineExtensions
     {
-        public static IPipelineChannelIncoming AttachTcpTlsBroadcastListener(this IPipelineChannelIncoming cpipe
+        public static C AttachTcpTlsBroadcastListener<C,P>(this C cpipe
             , string connectionName = null
             , string serviceBusConnection = null
             , string subscriptionId = null
@@ -22,6 +22,8 @@ namespace Xigadee
             , Action<TcpTlsChannelListener> onCreate = null
             , bool setFromChannelProperties = true
             )
+            where C: IPipelineChannelIncoming<P>
+            where P: IPipeline
         {
             throw new NotImplementedException();
             //var component = new AzureSBQueueListener();

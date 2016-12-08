@@ -27,7 +27,7 @@ namespace Xigadee
     /// </summary>
     public static partial class AzureExtensionMethods
     {
-        public static IPipelineChannelIncoming AttachAzureServiceBusQueueListener(this IPipelineChannelIncoming cpipe
+        public static C AttachAzureServiceBusQueueListener<C>(this C cpipe
             , string connectionName = null
             , string serviceBusConnection = null
             , bool isDeadLetterListener = false
@@ -36,6 +36,7 @@ namespace Xigadee
             , IEnumerable<ResourceProfile> resourceProfiles = null
             , IBoundaryLogger boundaryLogger = null
             , Action<AzureSBQueueListener> onCreate = null)
+            where C: IPipelineChannelIncoming<IPipeline>
         {
 
             var component = new AzureSBQueueListener();

@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Xigadee;
 namespace Xigadee
 {
     /// <summary>
@@ -27,18 +27,6 @@ namespace Xigadee
     /// </summary>
     public static partial class CorePipelineExtensions
     {
-        /// <summary>
-        /// This method adds a boundary logger to the channel.
-        /// </summary>
-        /// <param name="cpipe">The pipe.</param>
-        /// <param name="boundaryLogger">The boundary Collector?.</param>
-        /// <returns>Returns the pipe.</returns>
-        public static C AttachBoundaryLogger<C>(this C cpipe, IBoundaryLoggerComponent boundaryLogger)
-            where C: IPipelineExtension
-        {
-            return AttachBoundaryLogger(cpipe, boundaryLogger, null);
-        }
-
         /// <summary>
         /// This method adds a boundary logger to the channel.
         /// </summary>
@@ -52,9 +40,8 @@ namespace Xigadee
             , Action<C, L> action = null
             )
             where L : IBoundaryLoggerComponent
-            where C : IPipelineExtension
+            where C : IPipelineExtension<IPipeline>
         {
-
             action?.Invoke(cpipe, boundaryLogger);
             cpipe.Pipeline.Service.RegisterBoundaryLogger(boundaryLogger);
 
@@ -75,11 +62,15 @@ namespace Xigadee
             , Action<C, L> action = null
             )
             where L : IBoundaryLoggerComponent
-            where C : IPipelineExtension
+            where C : IPipelineExtension<IPipeline>
         {
-            var bLogger = creator(cpipe.Pipeline.Configuration);
+            var boundaryLogger = creator(cpipe.Pipeline.Configuration);
 
-            return cpipe.AttachBoundaryLogger(bLogger, action);
+            action?.Invoke(cpipe, boundaryLogger);
+            cpipe.Pipeline.Service.RegisterBoundaryLogger(boundaryLogger);
+
+            return cpipe;
+
         }
     }
 }

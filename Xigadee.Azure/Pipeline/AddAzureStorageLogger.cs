@@ -25,22 +25,24 @@ namespace Xigadee
 {
     public static partial class AzureExtensionMethods
     {
-        public static IPipeline AddAzureStorageLogger(this IPipeline pipeline
+        public static P AddAzureStorageLogger<P>(this P pipeline
             , string serviceName = null
             , string containerName = "log"
             , ResourceProfile resourceProfile = null
             , Action<AzureStorageLogger> onCreate = null)
+            where P:IPipeline
         {
             return pipeline.AddAzureStorageLogger(pipeline.Configuration.LogStorageCredentials(), serviceName ?? pipeline.Service?.Name, containerName, resourceProfile, pipeline.Configuration.AesEncryptionWithCompression(), onCreate);
         }
 
-        public static IPipeline AddAzureStorageLogger(this IPipeline pipeline
+        public static P AddAzureStorageLogger<P>(this P pipeline
             , StorageCredentials creds
             , string serviceName = null
             , string containerName = "log"
             , ResourceProfile resourceProfile = null
             , ISymmetricEncryption encryption = null
             , Action<AzureStorageLogger> onCreate = null)
+            where P : IPipeline
         {
             var logger = new AzureStorageLogger(creds, serviceName ?? pipeline.Service?.Name, containerName, resourceProfile, encryption);
             onCreate?.Invoke(logger);

@@ -26,8 +26,8 @@ namespace Xigadee
     {
         public static IPipeline ToPipeline(this IPipelineBase pipe)
         {
-            if (pipe is IPipelineExtension)
-                return ((IPipelineChannel)pipe).Pipeline;
+            if (pipe is IPipelineExtension<IPipeline>)
+                return ((IPipelineExtension<IPipeline>)pipe).Pipeline;
             else if (pipe is IPipeline)
                 return (IPipeline)pipe;
 
@@ -45,7 +45,7 @@ namespace Xigadee
             return pipe.ToPipeline().Configuration;
         }
 
-        public static Channel ToChannel(this IPipelineChannel cpipe)
+        public static Channel ToChannel(this IPipelineChannel<IPipeline> cpipe)
         {
             return cpipe.Channel;
         }

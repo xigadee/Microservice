@@ -24,9 +24,10 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static IPipelineChannelOutgoing AttachSender(this IPipelineChannelOutgoing cpipe
+        public static C AttachSender<C>(this C cpipe
             , ISender sender
             , bool setFromChannelProperties = true)
+            where C: IPipelineChannelOutgoing<IPipeline>
         {
             if (cpipe.Channel.InternalOnly)
                 throw new ChannelInternalOnlyException(cpipe.Channel.Id, cpipe.Channel.Direction);
@@ -42,11 +43,12 @@ namespace Xigadee
             return cpipe;
         }
 
-        public static IPipelineChannelOutgoing AttachSender<S>(this IPipelineChannelOutgoing cpipe
+        public static C AttachSender<C,S>(this C cpipe
             , Func<IEnvironmentConfiguration, S> creator = null
             , Action<S> action = null
             , bool setFromChannelProperties = true)
             where S : ISender, new()
+            where C : IPipelineChannelOutgoing<IPipeline>
         {
             var sender = (creator==null)?new S():creator(cpipe.Pipeline.Configuration);
 

@@ -19,14 +19,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xigadee;
 
 namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static IPipelineChannelIncoming AttachResourceProfile(this IPipelineChannelIncoming cpipe
+        public static C AttachResourceProfile<C>(this C cpipe
             , ResourceProfile profile
             , Action<ResourceProfile> action = null)
+            where C: IPipelineChannelIncoming<IPipeline>
         {
             if (profile == null)
                 throw new ArgumentNullException("profile cannot be null");
@@ -36,21 +38,11 @@ namespace Xigadee
             return cpipe;
         }
 
-        //public static ChannelPipelineIncoming AppendResourceProfile(this ChannelPipelineIncoming cpipe
-        //    , string profileName
-        //    , Action<ResourceProfile> action = null)
-        //{
-        //    if (string.IsNullOrEmpty(profileName))
-        //        throw new ArgumentNullException("profileName cannot be null or empty");
 
-        //    cpipe.AppendResourceProfile((c) => new ResourceProfile(profileName), action);
-
-        //    return cpipe;
-        //}
-
-        public static IPipelineChannelIncoming AttachResourceProfile(this IPipelineChannelIncoming cpipe
+        public static C AttachResourceProfile<C>(this C cpipe
             , Func<IEnvironmentConfiguration, ResourceProfile> creator
             , Action<ResourceProfile> action = null)
+            where C : IPipelineChannelIncoming<IPipeline>
         {
             if (creator == null)
                 throw new ArgumentNullException("creator cannot be null");
@@ -64,8 +56,9 @@ namespace Xigadee
             return cpipe;
         }
 
-        public static IPipelineChannelIncoming AttachResourceProfile(this IPipelineChannelIncoming cpipe
+        public static C AttachResourceProfile<C>(this C cpipe
             , IEnumerable<ResourceProfile> profiles)
+            where C : IPipelineChannelIncoming<IPipeline>
         {
             if (profiles == null)
                 throw new ArgumentNullException("profiles cannot be null");

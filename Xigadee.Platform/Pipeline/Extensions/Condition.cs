@@ -41,14 +41,7 @@ namespace Xigadee
             if (condition == null)
                 throw new ArgumentNullException("condition", "condition cannot be null for this pipeline extension.");
 
-            bool success = false;
-
-            if (pipe is IPipelineExtension)
-                success = condition(((IPipelineExtension)pipe).Pipeline.Configuration);
-            else if (pipe is IPipeline)
-                success = condition(((IPipeline)pipe).Configuration);
-            else
-                throw new ArgumentOutOfRangeException("pipe", "pipe must implement IPipelineChannel or IPipeline");
+            bool success = condition(pipe.ToConfiguration());
 
             if (success)
                 whenTrue?.Invoke(pipe);
@@ -57,6 +50,7 @@ namespace Xigadee
 
             return pipe;
         }
+
 
     }
 }

@@ -24,17 +24,19 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static IPipeline AddDataCollector(this IPipeline pipeline
+        public static P AddDataCollector<P>(this P pipeline
             , IDataCollectorComponent collector)
+            where P:IPipeline
         {
             pipeline.Service.RegisterDataCollector(collector);
 
             return pipeline;
         }
 
-        public static IPipeline AddDataCollector<L>(this IPipeline pipeline
+        public static P AddDataCollector<P,L>(this P pipeline
             , Func<IEnvironmentConfiguration, L> creator
             , Action<L> action = null)
+            where P : IPipeline
             where L : IDataCollectorComponent
         {
             var collector = creator(pipeline.Configuration);
@@ -46,17 +48,5 @@ namespace Xigadee
             return pipeline;
         }
 
-        public static IPipeline AddDataCollector<L>(this IPipeline pipeline
-            , Action<L> action = null)
-            where L : IDataCollectorComponent, new()
-        {
-            var collector = new L();
-
-            action?.Invoke(collector);
-
-            pipeline.Service.RegisterDataCollector(collector);
-
-            return pipeline;
-        }
     }
 }

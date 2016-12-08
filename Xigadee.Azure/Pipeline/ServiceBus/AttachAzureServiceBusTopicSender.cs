@@ -27,13 +27,14 @@ namespace Xigadee
     /// </summary>
     public static partial class AzureExtensionMethods
     {
-        public static IPipelineChannelOutgoing AttachAzureServiceBusTopicSender(this IPipelineChannelOutgoing cpipe
+        public static C AttachAzureServiceBusTopicSender<C>(this C cpipe
             , string connectionName = null
             , string serviceBusConnection = null
             , IEnumerable<SenderPartitionConfig> priorityPartitions = null
             , Action<AzureSBTopicSender> onCreate = null
             , bool setFromChannelProperties = true
             )
+            where C: IPipelineChannelOutgoing<IPipeline>
         {
 
             var component = new AzureSBTopicSender();

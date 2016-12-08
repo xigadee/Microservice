@@ -71,7 +71,6 @@
     <Compile Include="Commands\CommandReflectionUnitTest.cs" />
     <Compile Include="Commands\CommandUnitTestBase.cs" />
     <Compile Include="Commands\SimpleCommand3.cs" />
-    <Compile Include="Commands\CommandMethodSignatureTests.cs" />
     <Compile Include="Communication\Tcp\CommunicationTcp.cs" />
     <Compile Include="Configuration\Config1.cs" />
     <Compile Include="Dispatcher\DispatcherCommand.cs" />
@@ -82,9 +81,6 @@
     <Compile Include="Microservice_Validate_CommandRequest.cs" />
     <Compile Include="Microservice_Validate_CommandOutgoingRequests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Common\TestConfig.cs" />
-    <Compile Include="Common\TestMicroservice.cs" />
-    <Compile Include="Common\TestPopulatorBase.cs" />
     <Compile Include="Microservice_Validate_Persistence.cs" />
     <Compile Include="Security\AesEncryptionTests.cs" />
     <Compile Include="Serialization\SerializationTests.cs" />
@@ -127,6 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CommandInitiator\" />
+    <Folder Include="Common\" />
     <Folder Include="Microservice\" />
     <Folder Include="Persistence\" />
   </ItemGroup>

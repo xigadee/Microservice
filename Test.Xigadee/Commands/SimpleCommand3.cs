@@ -29,9 +29,10 @@ namespace Test.Xigadee
         [TestMethod]
         public void PipelineCommand3()
         {
+            IPipeline pipeline = null;
             try
             {
-                var pipeline = Pipeline();
+                pipeline = Pipeline();
 
                 pipeline.Start();
                 int start = Environment.TickCount;
@@ -50,11 +51,20 @@ namespace Test.Xigadee
 
                 var end = ConversionHelper.DeltaAsTimeSpan(start);
 
-                pipeline.Stop();
             }
             catch (Exception ex)
             {
                 Assert.Fail(ex.Message);
+            }
+
+            try
+            {
+                pipeline?.Stop();
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
 

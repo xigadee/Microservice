@@ -22,6 +22,7 @@ namespace Xigadee
     /// <summary>
     /// This is the root logger interface to support async logging support through the framework.
     /// </summary>
+    [Obsolete("Use the new data collection interfaces")]
     public interface ILogger
     {
         /// <summary>

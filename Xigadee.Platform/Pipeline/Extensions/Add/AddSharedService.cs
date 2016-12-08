@@ -32,8 +32,9 @@ namespace Xigadee
         /// <param name="serviceName">The optional service name</param>
         /// <param name="action">An optional action to access the service on assignment.</param>
         /// <returns>Returns the pipeliene.</returns>
-        public static IPipeline AddSharedService<I>(this IPipeline pipeline
+        public static P AddSharedService<P,I>(this P pipeline
             , Func<IEnvironmentConfiguration, I> creator, string serviceName = null, Action<I> action = null) where I : class
+            where P : IPipeline
         {
             var service = creator(pipeline.Configuration);
 
@@ -53,8 +54,9 @@ namespace Xigadee
         /// <param name="serviceName">The optional service name</param>
         /// <param name="action">An optional action to access the service on assignment.</param>
         /// <returns>Returns the pipeliene.</returns>
-        public static IPipeline AddSharedService<I>(this IPipeline pipeline
+        public static P AddSharedService<P,I>(this P pipeline
             , I service, string serviceName = null, Action<I> action = null) where I : class
+            where P : IPipeline
         {
             action?.Invoke(service);
 
@@ -71,8 +73,9 @@ namespace Xigadee
         /// <param name="creator">A lazy creator for the service that is called when the service is first accessed.</param>
         /// <param name="serviceName">The optional service name</param>
         /// <returns>Returns the pipeliene.</returns>
-        public static IPipeline AddSharedService<I>(this IPipeline pipeline
+        public static P AddSharedService<P,I>(this P pipeline
             , Lazy<I> creator, string serviceName = null) where I : class
+            where P : IPipeline
         {
             if (!pipeline.Service.SharedServices.RegisterService<I>(creator, serviceName))
                 throw new SharedServiceRegistrationException(typeof(I).Name, serviceName);
