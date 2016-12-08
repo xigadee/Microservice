@@ -26,13 +26,16 @@ namespace Xigadee
             , Func<IEnvironmentConfiguration, C> creator
             , int startupPriority = 100
             , Action<C> assign = null
+            , bool autoSetResponseChannel = true
+            , Channel responseChannel = null
             )
             where E : IPipelineChannelIncoming<IPipelineWebApiUnity>
             where C : class, ICommand
         {
             C command = creator(cpipe.Pipeline.Configuration);
 
-            return cpipe.AttachCommandUnity<E, C>(type, command, startupPriority, assign);
+            return cpipe.AttachCommandUnity<E, C>(type, command, startupPriority, assign
+                , autoSetResponseChannel, responseChannel);
         }
 
         public static E AttachCommandUnity<E,C>(this E cpipe
@@ -40,10 +43,15 @@ namespace Xigadee
             , C command
             , int startupPriority = 100
             , Action<C> assign = null
+            , bool autoSetResponseChannel = true
+            , Channel responseChannel = null
             )
             where E : IPipelineChannelIncoming<IPipelineWebApiUnity>
             where C : class, ICommand
         {
+            if (autoSetResponseChannel)
+                command.ResponseChannelId = responseChannel?.Id ?? cpipe.Channel.Id;
+
             cpipe.AttachCommand(command, startupPriority, assign);
 
             cpipe.Pipeline.Unity.RegisterInstance(type,command);

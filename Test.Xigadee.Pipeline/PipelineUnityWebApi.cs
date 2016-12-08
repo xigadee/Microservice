@@ -8,10 +8,9 @@ namespace Test.Xigadee.Pipeline
     public interface IHello
     {
         void DoSomething();
-
     }
 
-    public class CommandHello: CommandBase, IHello
+    public class CommandHello: CommandBase<CommandStatistics, CommandInitiatorPolicy>, IHello
     {
         public void DoSomething()
         {
@@ -25,22 +24,63 @@ namespace Test.Xigadee.Pipeline
         [TestMethod]
         public void TestMethod1()
         {
-            var pipe = new UnityWebApiMicroservicePipeline();
+            try
+            {
+                var pipe = new UnityWebApiMicroservicePipeline();
 
-            pipe
-                .AddChannelIncoming("freddyin", autosetPartition01: false)
-                    .AttachPriorityPartition(0, 1, 2)
-                    .AttachCommandUnity(typeof(IHello),new CommandHello())
-                .Revert()
-                .AddChannelOutgoing("freddyout", autosetPartition01: false)
-                    .AttachPriorityPartition(1, 2)
-                ;
+                pipe
+                    .AddChannelIncoming("freddyin", autosetPartition01: false)
+                        .AttachPriorityPartition(0, 1, 2)
+                        .AttachCommandUnity(typeof(IHello), new CommandHello())
+                    .Revert()
+                    .AddChannelOutgoing("freddyout", autosetPartition01: false)
+                        .AttachPriorityPartition(1, 2)
+                    ;
 
-            Assert.IsNotNull(pipe.Unity.Resolve(typeof(IHello)));
+                var result = pipe.Unity.Resolve(typeof(IHello));
+                Assert.IsNotNull(result);
+                Assert.IsTrue(((ICommand)result).ResponseChannelId == "freddyin");
 
-            pipe.Start();
+                pipe.Start();
 
-            pipe.Stop();
+                pipe.Stop();
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
+
+        [TestMethod]
+        public void TestMethod2()
+        {
+            try
+            {
+                var pipe = new UnityWebApiMicroservicePipeline();
+
+                pipe
+                    .AddChannelIncoming("freddyin", autosetPartition01: false)
+                        .AttachPriorityPartition(0, 1, 2)
+                        .AttachCommandUnity(typeof(IHello), new CommandHello(), responseChannel: new Channel("freda", ChannelDirection.Incoming))
+                    .Revert()
+                    .AddChannelOutgoing("freddyout", autosetPartition01: false)
+                        .AttachPriorityPartition(1, 2)
+                    ;
+
+                var result = pipe.Unity.Resolve(typeof(IHello));
+                Assert.IsNotNull(result);
+                Assert.IsTrue(((ICommand)result).ResponseChannelId == "freda");
+
+                pipe.Start();
+
+                pipe.Stop();
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
         }
     }
 }
