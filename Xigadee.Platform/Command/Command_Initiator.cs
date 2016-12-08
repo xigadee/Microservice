@@ -26,8 +26,31 @@ namespace Xigadee
 {
     public abstract partial class CommandBase<S, P, H>
     {
+        #region ProcessOutgoing<I, RQ, RS> ...
+        /// <summary>
+        /// This method is used to send requests to the remote command.
+        /// </summary>
+        /// <typeparam name="I">The contract interface.</typeparam>
+        /// <typeparam name="RQ">The request type.</typeparam>
+        /// <typeparam name="RS">The response type.</typeparam>
+        /// <param name="rq">The request object.</param>
+        /// <param name="routing"></param>
+        /// <param name="settings"></param>
+        /// <returns>Returns a response object of the specified type in a response metadata wrapper.</returns>
+        public virtual async Task<ResponseWrapper<RS>> ProcessOutgoing<I, RQ, RS>(RQ rq
+            , RequestSettings settings = null
+            , ProcessOptions? routing = null)
+            where I : IMessageContract
+        {
+            string channelId, messageType, actionType;
 
-        #region Process<RQ, RS> ...
+            if (!ServiceMessageHelper.ExtractContractInfo<I>(out channelId, out messageType, out actionType))
+                throw new InvalidOperationException("Unable to locate message contract attributes for " + typeof(I));
+
+            return await ProcessOutgoing<RQ, RS>(channelId, messageType, actionType, rq, settings, routing);
+        }
+        #endregion
+        #region ProcessOutgoing<RQ, RS> ...
         /// <summary>
         /// This method is used to send requests to the remote command.
         /// </summary>
@@ -159,6 +182,5 @@ namespace Xigadee
             }
         }
         #endregion
-
     }
 }

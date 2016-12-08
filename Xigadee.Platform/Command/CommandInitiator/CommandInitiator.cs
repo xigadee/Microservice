@@ -60,12 +60,7 @@ namespace Xigadee
             , ProcessOptions? routing = null)
             where I : IMessageContract
         {
-            string channelId, messageType, actionType;
-
-            if (!ServiceMessageHelper.ExtractContractInfo<I>(out channelId, out messageType, out actionType))
-                throw new InvalidOperationException("Unable to locate message contract attributes for " + typeof(I));
-
-            return await Process<RQ, RS>(channelId, messageType, actionType, rq, settings, routing);
+            return await ProcessOutgoing<I, RQ, RS>(rq, settings, routing);
         }
         #endregion
         #region Process<RQ, RS> ...
@@ -90,7 +85,7 @@ namespace Xigadee
             , Func<TaskStatus, TransmissionPayload, bool, ResponseWrapper<RS>> processResponse = null
             )
         {
-            return await ProcessOutgoing(channelId, messageType,  actionType, rq, rqSettings, routingOptions, processResponse);
+            return await ProcessOutgoing(channelId, messageType, actionType, rq, rqSettings, routingOptions, processResponse);
         } 
         #endregion
     }
