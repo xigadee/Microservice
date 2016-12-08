@@ -172,6 +172,7 @@
     <Compile Include="Pipeline\AddVersionHeaderFilter.cs" />
     <Compile Include="Pipeline\Inspect.cs" />
     <Compile Include="Pipeline\Interfaces\IPipelineWebApi.cs" />
+    <Compile Include="Pipeline\Start.cs" />
     <Compile Include="Pipeline\ToHttpConfiguration.cs" />
     <Compile Include="Pipeline\ToWebApiMicroservicePipeline.cs" />
     <Compile Include="Pipeline\WebApi.cs" />

@@ -27,7 +27,6 @@ namespace Xigadee
     /// </summary>
     public static partial class CorePipelineExtensions
     {
-
         public static IPipelineChannelOutgoing<P> AddChannelOutgoing<P>(this P pipeline
             , Func<IEnvironmentConfiguration, string> creatorId
             , string description = null
