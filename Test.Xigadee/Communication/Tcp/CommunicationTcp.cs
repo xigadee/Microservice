@@ -57,7 +57,8 @@ namespace Test.Xigadee
             {
                 var sender = new MicroservicePipeline("initiator")
                     //.ConfigurationOverrideSet(AzureExtensionMethods.KeyServiceBusConnection, SbConn)
-                    .AddChannelOutgoing("remote").Revert()
+                    .AddChannelOutgoing("remote")
+                    .Revert()
                     
                         //.AttachTcpTlsSender()
                     .AddChannelIncoming("response")

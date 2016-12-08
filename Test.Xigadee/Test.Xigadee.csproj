@@ -71,7 +71,6 @@
     <Compile Include="Commands\CommandReflectionUnitTest.cs" />
     <Compile Include="Commands\CommandUnitTestBase.cs" />
     <Compile Include="Commands\SimpleCommand3.cs" />
-    <Compile Include="Commands\CommandMethodSignatureTests.cs" />
     <Compile Include="Communication\Tcp\CommunicationTcp.cs" />
     <Compile Include="Configuration\Config1.cs" />
     <Compile Include="Dispatcher\DispatcherCommand.cs" />

@@ -21,7 +21,7 @@ namespace Test.Xigadee.Commands
         }
 
         [TestMethod]
-        public void TestMethod1()
+        public void CommandSignatureTest()
         {
             var info1 = mSimples.CommandMethodSignatures(false);
             var info2 = mSimples.CommandMethodAttributeSignatures();

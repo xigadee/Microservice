@@ -8,24 +8,24 @@ namespace Test.Xigadee
     public class CommandUnitTestBase<C> 
         where C: ICommand, new()
     {
-        protected C mCommand;
+        protected C mCommand  = new C();
         protected CommandInitiator mCommandInit;
         protected IPipelineChannelIncoming<MicroservicePipeline> cpipeIn = null;
         protected IPipelineChannelOutgoing<MicroservicePipeline> cpipeOut = null;
         protected DebugMemoryDataCollector mCollector = null;
         protected Microservice service = null;
 
-        [TestInitialize]
-        public void TearUp()
-        {
-            mCommand = new C();
-        }
+        //[TestInitialize]
+        //public void TearUp()
+        //{
+        //    mCommand
+        //}
 
-        [TestCleanup]
-        public void TearDown()
-        {
-            mCommand = default(C);
-        }
+        //[TestCleanup]
+        //public void TearDown()
+        //{
+        //    mCommand = default(C);
+        //}
 
         protected void DefaultTest()
         {

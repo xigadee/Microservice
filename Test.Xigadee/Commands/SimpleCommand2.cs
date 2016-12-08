@@ -20,9 +20,10 @@ namespace Test.Xigadee
         [TestMethod]
         public void PipelineCommand2()
         {
+            IPipeline pipeline = null;
             try
             {
-                var pipeline = Pipeline();
+                pipeline = Pipeline();
 
                 pipeline.Start();
                 pipeline.Service.ProcessRequestUnresolved += Service_ProcessRequestUnresolved;
@@ -42,11 +43,20 @@ namespace Test.Xigadee
 
                 var end = ConversionHelper.DeltaAsTimeSpan(start);
 
-                pipeline.Stop();
             }
             catch (Exception ex)
             {
                 Assert.Fail(ex.Message);
+            }
+
+            try
+            {
+                pipeline?.Stop();
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
 

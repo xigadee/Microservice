@@ -13,9 +13,13 @@ namespace Test.Xigadee.Pipeline
             var pipe = new MicroservicePipeline();
 
             pipe
-                .AddChannelIncoming("freddy")
-                
+                .AddChannelIncoming("freddyin", autosetPartition01: false)
+                    .AttachPriorityPartition(0, 1, 2)
+                .Revert()
+                .AddChannelOutgoing("freddyout", autosetPartition01: false)
+                    .AttachPriorityPartition(1, 2)
                 ;
+
             pipe.Start();
 
             pipe.Stop();
@@ -27,7 +31,13 @@ namespace Test.Xigadee.Pipeline
             var pipe = new UnityWebApiMicroservicePipeline();
 
             pipe
-                .AddChannelIncoming("freddy")
+                .AddChannelIncoming("freddyin", autosetPartition01:false)
+                    .AttachPriorityPartition(0,1,2)
+                                
+                .Revert()
+                
+                .AddChannelOutgoing("freddyout", autosetPartition01: false)
+                    .AttachPriorityPartition(1, 2)
                 ;
 
             pipe.Start();
@@ -41,7 +51,11 @@ namespace Test.Xigadee.Pipeline
             var pipe = new WebApiMicroservicePipeline();
 
             pipe
-                .AddChannelIncoming("freddy")
+                .AddChannelIncoming("freddyin", autosetPartition01: false)
+                    .AttachPriorityPartition(0, 1, 2)
+                .Revert()
+                .AddChannelOutgoing("freddyout", autosetPartition01: false)
+                    .AttachPriorityPartition(1, 2)
                 ;
 
             pipe.Start();

@@ -68,13 +68,6 @@ namespace Xigadee
             return pipeline;
         }
 
-        //public static C AttachPriorityPartition<C>(this C pipeline, params int[] init)
-        //    where C : IPipelineChannelOutgoing
-        //{
-        //    SenderPartitionConfig.Init(init).ForEach((p) => AttachPriorityPartition<SenderPartitionConfig>(pipeline, p));
-
-        //    return pipeline;
-        //}
 
         public static C AttachPriorityPartition<C>(this C pipeline
             , Func<IEnvironmentConfiguration, Channel, ListenerPartitionConfig> creator)
