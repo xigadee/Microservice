@@ -83,10 +83,14 @@ namespace Xigadee
         protected async Task<string> GetValue(string key, int remainingRetries)
         {
             Exception exception;
+            var uriSafekey = WebUtility.UrlEncode(key);
+            if (string.IsNullOrEmpty(uriSafekey))
+                return null;
+
             try
             {
                 var kv = new KeyVaultClient((authority, resource, scope) => GetToken(authority, resource, scope, NumberOfRetries));
-                var result = await kv.GetSecretAsync(new Uri(mSecretBaseUri, key).AbsoluteUri);
+                var result = await kv.GetSecretAsync(new Uri(mSecretBaseUri, uriSafekey).AbsoluteUri);
                 return result?.Value;
             }
             catch (KeyVaultErrorException ex)
