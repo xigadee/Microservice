@@ -15,6 +15,7 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 
@@ -24,6 +25,7 @@ namespace Xigadee
     /// This call wraps the incoming message and provides the ability to signal to the underlying
     /// listener that the message can be released.
     /// </summary>
+    [DebuggerDisplay("{Message}")]
     public class TransmissionPayload
     {
         #region Declarations

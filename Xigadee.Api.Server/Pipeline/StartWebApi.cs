@@ -23,7 +23,15 @@ namespace Xigadee
 {
     public static partial class WebApiExtensionMethods
     {
-        public static P StartWebApi<P>(this P webpipe, IAppBuilder app)
+        /// <summary>
+        /// This method can be used to start the web api pipeline using the 
+        /// HttpConfiguration embedded in the pipeline.
+        /// </summary>
+        /// <typeparam name="P">The pipeline type.</typeparam>
+        /// <param name="webpipe">The pipeline based on the WebApi.</param>
+        /// <param name="app">The app builder reference.</param>
+        /// <returns>Returns the pipeline</returns>
+        public static void StartWebApi<P>(this P webpipe, IAppBuilder app)
             where P : IPipelineWebApi
         {
             app.UseWebApi(webpipe.HttpConfig);
@@ -31,8 +39,6 @@ namespace Xigadee
             webpipe.HttpConfig.EnsureInitialized();
 
             Task.Run(() => webpipe.Start());
-
-            return webpipe;
         }  
     }
 }

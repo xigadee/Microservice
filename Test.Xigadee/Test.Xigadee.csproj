@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="Channel\ChannelRedirect.cs" />
     <Compile Include="Channel\Channels.cs" />
+    <Compile Include="CommandInitiator\CommandInitiatorTest1.cs" />
     <Compile Include="Commands\SimpleCommand2.cs" />
     <Compile Include="Commands\SimpleCommand1.cs" />
     <Compile Include="Commands\SimpleCommand.cs" />
@@ -122,7 +123,6 @@
     <None Include="Test.Xigadee.licenseheader" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="CommandInitiator\" />
     <Folder Include="Common\" />
     <Folder Include="Microservice\" />
     <Folder Include="Persistence\" />

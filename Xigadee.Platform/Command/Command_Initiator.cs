@@ -135,14 +135,15 @@ namespace Xigadee
         /// <returns></returns>
         protected virtual ResponseWrapper<RS> ProcessResponse<RS>(TaskStatus rType, TransmissionPayload payload, bool processAsync)
         {
-            StatisticsInternal.ActiveDecrement(payload != null ? payload.Extent : TimeSpan.Zero);
+            StatisticsInternal.ActiveDecrement(payload?.Extent ?? TimeSpan.Zero);
+
             if (processAsync)
                 return new ResponseWrapper<RS>(responseCode: 202, responseMessage: "Accepted");
 
-            payload.CompleteSet();
-
             try
             {
+                payload?.CompleteSet();
+
                 switch (rType)
                 {
                     case TaskStatus.RanToCompletion:
