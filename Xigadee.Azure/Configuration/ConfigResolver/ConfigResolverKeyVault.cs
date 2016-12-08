@@ -18,6 +18,7 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Azure.KeyVault;
+using Microsoft.Azure.KeyVault.Models;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace Xigadee
@@ -88,10 +89,10 @@ namespace Xigadee
                 var result = await kv.GetSecretAsync(new Uri(mSecretBaseUri, key).AbsoluteUri);
                 return result?.Value;
             }
-            catch (KeyVaultClientException ex)
+            catch (KeyVaultErrorException ex)
             {
                 // Can't find the key so just return a null
-                if (ex.Status == HttpStatusCode.NotFound)
+                if (ex.Response?.StatusCode == HttpStatusCode.NotFound)
                     return null;
 
                 exception = ex;
