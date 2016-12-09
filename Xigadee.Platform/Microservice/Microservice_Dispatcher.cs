@@ -31,6 +31,9 @@ namespace Xigadee
     //Dispatcher
     public partial class Microservice
     {
+        /// <summary>
+        /// This class holds the incoming payload and its status.
+        /// </summary>
         protected class PayloadWrapper
         {
             public PayloadWrapper(TransmissionPayload payload, int maxTransitCount)
@@ -39,6 +42,8 @@ namespace Xigadee
                 CurrentOptions = payload.Options;
                 MaxTransitCount = maxTransitCount;
             }
+
+            public bool IsSuccess { get; set; } = true;
 
             public TransmissionPayload Payload { get;}
 
@@ -85,7 +90,6 @@ namespace Xigadee
 
             int timerStart = StatisticsInternal.ActiveIncrement();
 
-            bool isSuccess = true;
             try
             {
                 request.Payload.Cancel.ThrowIfCancellationRequested();
@@ -103,7 +107,7 @@ namespace Xigadee
                 //Shortcut for external messages
                 if (request.ExternalOnly)
                 {
-                    isSuccess = await Send(request.Payload);
+                    request.IsSuccess = await Send(request.Payload);
                     return;
                 }
 
@@ -122,7 +126,7 @@ namespace Xigadee
 
                     OnProcessRequestUnresolved(request.Payload, DispatcherRequestUnresolvedReason.MessageHandler);
 
-                    isSuccess = PolicyMicroservice.DispatcherUnhandled == DispatcherUnhandledMessageAction.Ignore;
+                    request.IsSuccess = PolicyMicroservice.DispatcherUnhandled == DispatcherUnhandledMessageAction.Ignore;
 
                     return;
                 }
@@ -155,11 +159,11 @@ namespace Xigadee
                     var externalPayload = responsePayloads.Except(internalPayload).ToList();
 
                     //Send the external payload to their specific destination.
-                    await Task.WhenAll(externalPayload.Select(async (p) => isSuccess &= await Send(p)));
+                    await Task.WhenAll(externalPayload.Select(async (p) => request.IsSuccess &= await Send(p)));
                 }
 
                 //Set the message to success
-                isSuccess &= true;
+                request.IsSuccess &= true;
             }
             catch (TransmissionPayloadException pyex)
             {
@@ -175,14 +179,14 @@ namespace Xigadee
             {
                 //Signal to the underlying listener that the message can be released.
                 if (request.Payload.DispatcherCanSignal)
-                    request.Payload.Signal(isSuccess);
+                    request.Payload.Signal(request.IsSuccess);
 
                 int delta = StatisticsInternal.ActiveDecrement(timerStart);
 
                 //Log the telemtry for the specific message channelId.
-                mDataCollection.DispatcherPayloadComplete(request.Payload, delta, isSuccess);
+                mDataCollection.DispatcherPayloadComplete(request.Payload, delta, request.IsSuccess);
 
-                if (!isSuccess)
+                if (!request.IsSuccess)
                     StatisticsInternal.ErrorIncrement();
             }
         }

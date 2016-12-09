@@ -7,6 +7,7 @@ namespace Test.Xigadee
     [TestClass]
     public class CommandInitiatorTest1
     {
+        [Ignore]
         [TestMethod]
         public void TimeOut1()
         {
@@ -21,7 +22,7 @@ namespace Test.Xigadee
                     .Start();
 
                 var rs = init.Process<string,string>("F1","F2","F3", "hello"
-                    , new RequestSettings() { WaitTime = TimeSpan.FromSeconds(100) }).Result;
+                    , new RequestSettings() { WaitTime = TimeSpan.FromSeconds(1) }).Result;
 
                 Assert.IsTrue(rs?.ResponseCode == 408);
             }
@@ -30,9 +31,7 @@ namespace Test.Xigadee
 
                 throw;
             }
-
-
-            
+           
         }
     }
 }
