@@ -26,27 +26,27 @@ namespace Xigadee
 {
     public abstract partial class CommandBase<S, P, H>
     {
-        #region --> ProcessMessage(TransmissionPayload payload, List<TransmissionPayload> responses)
+        #region --> ProcessRequest(TransmissionPayload payload, List<TransmissionPayload> responses)
         /// <summary>
         /// This method is called to process an incoming payload.
         /// </summary>
-        /// <param name="requestPayload">The message to process.</param>
+        /// <param name="rq">The message to process.</param>
         /// <param name="responses">The return path for the message.</param>
-        public virtual async Task ProcessMessage(TransmissionPayload requestPayload, List<TransmissionPayload> responses)
+        public virtual async Task ProcessRequest(TransmissionPayload rq, List<TransmissionPayload> responses)
         {
             int start = StatisticsInternal.ActiveIncrement();
 
             try
             {
-                var header = requestPayload.Message.ToServiceMessageHeader();
+                var header = rq.Message.ToServiceMessageHeader();
                 //CommandContext.CorrelationKey = requestPayload.Message.ProcessCorrelationKey;
 
                 H handler;
                 if (!SupportedResolve(header, out handler))
-                    throw new CommandNotSupportedException(requestPayload.Id, header, GetType());
+                    throw new CommandNotSupportedException(rq.Id, header, GetType());
 
                 //Call the registered command.
-                await handler.Execute(requestPayload, responses);
+                await handler.Execute(rq, responses);
             }
             catch (Exception)
             {

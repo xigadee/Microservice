@@ -80,7 +80,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="request">The request payload.</param>
         /// <param name="responseMessages">The response collection.</param>
-        Task ProcessMessage(TransmissionPayload request, List<TransmissionPayload> responseMessages);
+        Task ProcessRequest(TransmissionPayload request, List<TransmissionPayload> responseMessages);
         /// <summary>
         /// Returns a list of message header types.
         /// </summary>

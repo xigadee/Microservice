@@ -192,7 +192,7 @@ namespace Xigadee
             var requests = messageHandlers.Select((m) => new { handler = m, response = new List<TransmissionPayload>() }).ToArray();
 
             //OK, then let's call each of the message handlers and catch any errors so that a return message can be logged.
-            await Task.WhenAll(requests.Select(async h => await h.handler.ProcessMessage(payload, h.response)));
+            await Task.WhenAll(requests.Select(async h => await h.handler.ProcessRequest(payload, h.response)));
 
             responseMessages.AddRange(requests.SelectMany((h) => h.response));
 

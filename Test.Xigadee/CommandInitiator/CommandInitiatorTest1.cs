@@ -22,7 +22,7 @@ namespace Test.Xigadee
                     .Start();
 
                 var rs = init.Process<string,string>("F1","F2","F3", "hello"
-                    , new RequestSettings() { WaitTime = TimeSpan.FromSeconds(100) }).Result;
+                    , new RequestSettings() { WaitTime = TimeSpan.FromSeconds(5) }).Result;
 
                 Assert.IsTrue(rs?.ResponseCode == 408);
             }

@@ -20,13 +20,6 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    [Flags]
-    public enum CommandOutgoingRequestMode
-    {
-        NotEnabled = 0,
-        TimeoutInternal = 1,
-        TimeoutExternal = 2
-    }
     /// <summary>
     /// The command policy sets or enables various settings for the command.
     /// </summary>
@@ -75,15 +68,15 @@ namespace Xigadee
         /// The default is 30s.
         /// </summary>
         public virtual TimeSpan OutgoingRequestMaxProcessingTimeDefault { get; set; } = TimeSpan.FromSeconds(30);
-        /// <summary>
-        /// This property specifies that outgoing settings are enabled. By default this is not set.
-        /// </summary>
-        public virtual CommandOutgoingRequestMode OutgoingRequestMode { get; set; } = CommandOutgoingRequestMode.NotEnabled;
 
+        /// <summary>
+        /// This boolean property specifies whether outgoing requests are enables.
+        /// </summary>
+        public virtual bool OutgoingRequestsEnabled { get; set; } = false;
         /// <summary>
         /// This is the default time out poll, which is set at an initial 10 second wait and then a repeated 5 seconds poll by default.
         /// </summary>
-        public virtual CommandTimerPoll OutgoingRequestsTimeoutPoll { get; set; } = new CommandTimerPoll();
+        public virtual CommandTimerPoll OutgoingRequestsTimeoutPoll { get; set; } = new CommandTimerPoll() { Interval = TimeSpan.FromSeconds(1) };
 
         //Job Poll
         public virtual bool JobPollEnabled { get; set; } = false;
@@ -114,7 +107,6 @@ namespace Xigadee
                   JobPollEnabled = true
                 , JobPollIsLongRunning = isLongRunningJob
                 , MasterJobEnabled = false
-                , OutgoingRequestMode = CommandOutgoingRequestMode.TimeoutInternal
                 , JobPollSchedule = new CommandTimerPoll(interval, initialWait, initialTime)
             };
         }
@@ -135,7 +127,6 @@ namespace Xigadee
                 , MasterJobNegotiationChannelType = negotiationChannelType
                 , MasterJobNegotiationChannelPriority = negotiationChannelPriority
                 , MasterJobName = name
-                , OutgoingRequestMode = CommandOutgoingRequestMode.TimeoutInternal
             };
         }
 

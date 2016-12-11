@@ -30,6 +30,12 @@ namespace Xigadee
         /// <summary>
         /// By default outgoing requests are enabled.
         /// </summary>
-        public override CommandOutgoingRequestMode OutgoingRequestMode { get; set; } = CommandOutgoingRequestMode.TimeoutInternal;
+        public override bool OutgoingRequestsEnabled
+        {
+            get
+            {
+                return true;
+            }
+        }
     }
 }

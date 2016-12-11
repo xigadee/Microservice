@@ -106,7 +106,7 @@ namespace Xigadee
                 if (mPolicy.CommandReflectionSupported)
                     CommandsRegisterReflection();
 
-                if (mPolicy.OutgoingRequestMode != CommandOutgoingRequestMode.NotEnabled)
+                if (mPolicy.OutgoingRequestsEnabled)
                     OutgoingRequestsInitialise();
 
                 if (mPolicy.MasterJobEnabled)
@@ -134,7 +134,7 @@ namespace Xigadee
                 mSchedules.ForEach((s) => Scheduler.Unregister(s));
                 mSchedules.Clear();
 
-                if (mPolicy.OutgoingRequestMode != CommandOutgoingRequestMode.NotEnabled)
+                if (mPolicy.OutgoingRequestsEnabled)
                     OutgoingRequestsStop();
 
                 CommandsNotify(true);

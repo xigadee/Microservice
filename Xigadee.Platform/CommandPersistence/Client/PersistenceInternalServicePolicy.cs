@@ -25,8 +25,8 @@ namespace Xigadee
     /// <summary>
     /// This class is used for persistence based shortcuts.
     /// </summary>
-    public class PersistenceInternalServicePolicy: CommandPolicy
+    public class PersistenceInternalServicePolicy: CommandInitiatorPolicy
     {
-        public override CommandOutgoingRequestMode OutgoingRequestMode { get; set; } = CommandOutgoingRequestMode.TimeoutExternal;
+
     }
 }

@@ -15,17 +15,6 @@ namespace Test.Xigadee
         protected DebugMemoryDataCollector mCollector = null;
         protected Microservice service = null;
 
-        //[TestInitialize]
-        //public void TearUp()
-        //{
-        //    mCommand
-        //}
-
-        //[TestCleanup]
-        //public void TearDown()
-        //{
-        //    mCommand = default(C);
-        //}
 
         protected void DefaultTest()
         {

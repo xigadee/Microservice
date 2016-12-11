@@ -141,7 +141,7 @@ namespace Xigadee
             , TimeSpan? fallbackMaxProcessingTime = null
             )
         {
-            if (mPolicy.OutgoingRequestMode != CommandOutgoingRequestMode.NotEnabled)
+            if (!mPolicy.OutgoingRequestsEnabled)
                 throw new OutgoingRequestsNotEnabledException();
 
             TransmissionPayload payload = null;
@@ -306,7 +306,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region OutgoingRequestsStart()
+        #region OutgoingRequestsInitialise()
         /// <summary>
         /// This method starts the outgoing request support.
         /// </summary>
@@ -314,15 +314,12 @@ namespace Xigadee
         {
             mOutgoingRequests = new ConcurrentDictionary<string, OutgoingRequestTracker>();
 
-            //Set a timer for aborted requests if the Task
-            if (mPolicy.OutgoingRequestMode == CommandOutgoingRequestMode.TimeoutExternal)
-            {
-                mScheduleTimeout = new CommandTimeoutSchedule(TimeOutScheduler
-                    , mPolicy.OutgoingRequestsTimeoutPoll
-                    , string.Format("{0} Command OutgoingRequests Timeout Poll", FriendlyName));
+            //Set a timer to signal timeout requests
+            mScheduleTimeout = new CommandTimeoutSchedule(TimeOutScheduler
+                , mPolicy.OutgoingRequestsTimeoutPoll
+                , string.Format("{0} Command OutgoingRequests Timeout Poll", FriendlyName));
 
-                Scheduler.Register(mScheduleTimeout);
-            }
+            Scheduler.Register(mScheduleTimeout);
 
             //Check whether the ResponseId has been set, and if not then raise an error 
             //as outgoing messages will not work without a return path.

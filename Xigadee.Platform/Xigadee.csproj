@@ -69,7 +69,7 @@
     <Compile Include="Command\CommandInitiator\CommandInitiatorPolicy.cs" />
     <Compile Include="Command\CommandInitiator\CommandInitiatorStatistics.cs" />
     <Compile Include="Command\CommandInitiator\ResponseWrapper.cs" />
-    <Compile Include="Command\Command_Incoming.cs" />
+    <Compile Include="Command\Command_Request.cs" />
     <Compile Include="Command\Command_Reflection.cs" />
     <Compile Include="Command\Attributes\PayloadInAttribute.cs" />
     <Compile Include="Command\Exceptions\CommandException.cs" />

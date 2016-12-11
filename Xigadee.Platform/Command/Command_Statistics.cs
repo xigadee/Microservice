@@ -34,10 +34,8 @@ namespace Xigadee
 
             stats.SupportedHandlers = mSupported.Select((h) => h.Value.HandlerStatistics).ToList();
 
-            if (mPolicy.OutgoingRequestMode != CommandOutgoingRequestMode.NotEnabled)
-            {
+            if (mPolicy.OutgoingRequestsEnabled)
                 stats.OutgoingRequests = mOutgoingRequests?.Select((h) => h.Value.Debug).ToList();
-            }
 
             stats.MasterJob.Active = mPolicy.MasterJobEnabled;
             if (mPolicy.MasterJobEnabled)
@@ -51,7 +49,6 @@ namespace Xigadee
                     );
                 stats.MasterJob.Standbys = mStandbyPartner.Values.ToList();
             }
-
         }
     }
 }
