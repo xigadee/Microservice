@@ -109,7 +109,7 @@ namespace Xigadee
         /// This method register the job expiry task.
         /// </summary>
         /// <param name="config">The job configuration</param>
-        protected override void TimerPollSchedulesRegister()
+        protected override void JobSchedulesInitialise()
         {
             var job = new CommandSchedule(ScheduleExpireEntities
                 , mPolicy.JobPollSchedule

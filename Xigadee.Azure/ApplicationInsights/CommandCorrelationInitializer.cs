@@ -13,7 +13,7 @@ namespace Xigadee.ApplicationInsights
     {
         public void Initialize(Microsoft.ApplicationInsights.Channel.ITelemetry telemetry)
         {
-            telemetry.Context.Operation.Id = CommandContext.CorrelationKey ?? telemetry.Context.Operation.Id;
+            //telemetry.Context.Operation.Id = CommandContext.CorrelationKey ?? telemetry.Context.Operation.Id;
         }
     }
 }

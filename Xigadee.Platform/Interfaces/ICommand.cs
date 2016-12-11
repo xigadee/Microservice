@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// 
+    /// This is the root interface implemented by the command class.
     /// </summary>
     public interface ICommand: IService, IRequireScheduler, IPayloadSerializerConsumer, 
         IServiceEventSource, IServiceOriginator, IRequireSharedServices, IRequireDataCollector
@@ -59,19 +59,15 @@ namespace Xigadee
         bool MasterJobNegotiationChannelIdAutoSet { get; }
 
         /// <summary>
-        /// This flag specifies whether the command should be informed when a submitted process has timed out.
-        /// </summary>
-        bool TaskManagerTimeoutSupported { get; }
-        /// <summary>
         /// This is the reference to the task manager that can be called to submit new jobs for processing.
         /// </summary>
-        Action<IService, TransmissionPayload> TaskManager { get; set; }
+        Action<ICommand, string, TransmissionPayload> TaskManager { get; set; }
         /// <summary>
         /// This method is called for processes that support direct notification from the Task Manager that a process has been
         /// cancelled.
         /// </summary>
         /// <param name="originatorKey">The is the originator tracking key.</param>
-        void TaskManagerTimeoutNotification(string originatorKey);
+        void TimeoutTaskManager(string originatorKey);
 
         /// <summary>
         /// This method should return true if the handler support this specific message.

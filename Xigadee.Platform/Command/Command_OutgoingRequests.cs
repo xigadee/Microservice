@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Diagnostics;
 #endregion
 namespace Xigadee
 {
@@ -28,120 +29,38 @@ namespace Xigadee
     {
         #region Declarations
         /// <summary>
-        /// This is the tracker used to record outgoing messages.
+        /// This is the collection of inplay messages.
         /// </summary>
-        //protected RequestTrackerContainer<CommandOutgoingRequestTracker> mTracker;
+        protected ConcurrentDictionary<string, OutgoingRequestTracker> mOutgoingRequests;
         /// <summary>
         /// This is the inititator timeout schedule.
         /// </summary>
         protected CommandTimeoutSchedule mScheduleTimeout;
-        /// <summary>
-        /// This event can be subscribed for timed out requests.
-        /// </summary>
-        public event EventHandler<TransmissionPayload> OnTimedOutRequest;
-        /// <summary>
-        /// This event can be subscribed to detect unrecognised response messages.
-        /// </summary>
-        public event EventHandler<TransmissionPayload> OnTimedOutResponse;
-        /// <summary>
-        /// This is the collection of inplay messages.
-        /// </summary>
-        protected ConcurrentDictionary<string, OutgoingRequestTracker> mOutgoingRequests;
-
-        public event EventHandler<OutgoingRequestTracker> DiagnosticsOnOutgoingRequest;
-        public event EventHandler<OutgoingRequestTracker> DiagnosticsOnOutgoingRequestTimeout;
-        public event EventHandler<OutgoingRequestTracker> DiagnosticsOnOutgoingRequestComplete;
         #endregion
-
-        #region OutgoingRequestsStart()
+        #region Events
         /// <summary>
-        /// This method starts the outgoing request support.
+        /// This event is fired when an outgoing request is initiated.
         /// </summary>
-        protected virtual void OutgoingRequestsInitialise()
-        {
-            mOutgoingRequests = new ConcurrentDictionary<string, OutgoingRequestTracker>();
-
-            //Set a timer for aborted requests if the Task
-            if (!TaskManagerTimeoutSupported)
-            {
-                mScheduleTimeout = new CommandTimeoutSchedule(OutgoingRequestsProcessTimeouts, mPolicy.OutgoingRequestsTimeoutPoll,
-                    string.Format("{0} Command OutgoingRequests Timeout Poll", FriendlyName));
-
-                Scheduler.Register(mScheduleTimeout);
-            }
-
-            //Check whether the ResponseId has been set, and if so then register the command.
-            if (ResponseId == null)
-                throw new CommandStartupException($"Command={GetType().Name}: Outgoing requests are enabled, but the ResponseId parameter has not been set");
-            
-            //This is the return message handler
-            CommandRegister(ResponseId, OutgoingRequestResponseProcess);
-        }
-        #endregion
-        #region OutgoingRequestsTimeoutStop()
+        public event EventHandler<OutgoingRequestTracker> OnOutgoingRequest;
         /// <summary>
-        /// This method stops the outgoing request supports and marks any pending jobs as cancelled.
+        /// This event is fired when an outgoing request times out.
         /// </summary>
-        protected virtual void OutgoingRequestsTimeoutStop()
-        {
-            if (mScheduleTimeout != null)
-            {
-                Scheduler.Unregister(mScheduleTimeout);
-                mScheduleTimeout = null;
-            }
-
-            try
-            {
-                foreach (var key in mOutgoingRequests.Keys.ToList())
-                    OutgoingRequestRemove(key, null);
-
-                mOutgoingRequests.Clear();
-                mOutgoingRequests = null;
-            }
-            catch (Exception ex)
-            {
-            }
-
-        }
-        #endregion
-        #region --> OutgoingRequestResponseProcess(TransmissionPayload payload, List<TransmissionPayload> responses)
+        public event EventHandler<OutgoingRequestTracker> OnOutgoingRequestTimeout;
         /// <summary>
-        /// This method processes the returning messages.
+        /// This event is fired when an outgoing request completes
         /// </summary>
-        /// <param name="payload">The incoming payload.</param>
-        /// <param name="responses">The responses collection is not currently used.</param>
-        protected virtual async Task OutgoingRequestResponseProcess(TransmissionPayload payload, List<TransmissionPayload> responses)
-        {
-            string id = payload?.Message?.CorrelationKey?.ToUpperInvariant(); ;
-
-            //If there is not a correlation key then quit.
-            if (id == null)
-            {
-                Collector?.LogMessage(LoggingLevel.Warning, "OutgoingRequestsProcessResponse - id is null");
-                return;
-            }
-
-            //This method signals the request as completed or failed and sets the incoming payload.
-            if (!OutgoingRequestRemove(id, payload))
-            {
-                try
-                {
-                    OnTimedOutResponse?.Invoke(this, payload);
-                }
-                catch (Exception ex)
-                {
-                    Collector?.LogException("OnTimedOutResponse", ex);
-                    //We do not want to throw exceptions here.
-                }
-            }
-
-            //Signal to the listener to release the message.
-            payload.SignalSuccess();
-        }
+        public event EventHandler<OutgoingRequestTracker> OnOutgoingRequestComplete;
         #endregion
-
+        #region UseASPNETThreadModel
+        /// <summary>
+        /// This property should be set when hosted in an ASP.NET container.
+        /// </summary>
+        public virtual bool UseASPNETThreadModel { get; set; }
+        #endregion
         #region ResponseId
-
+        /// <summary>
+        /// This is the internal resonse id.
+        /// </summary>
         private MessageFilterWrapper mResponseId = null;
 
         /// <summary>
@@ -161,15 +80,116 @@ namespace Xigadee
             }
         }
         #endregion
-
-        #region UseASPNETThreadModel
+        #region TaskManager
         /// <summary>
-        /// This property should be set when hosted in an ASP.NET container.
+        /// This is the link to the Microservice dispatcher.
         /// </summary>
-        public virtual bool UseASPNETThreadModel { get; set; }
+        public virtual Action<ICommand, string, TransmissionPayload> TaskManager
+        {
+            get;
+            set;
+        }
         #endregion
 
-        #region TransmitAsync<K>...
+        #region ProcessOutgoing<I, RQ, RS> ...
+        /// <summary>
+        /// This method is used to send requests to the remote command.
+        /// </summary>
+        /// <typeparam name="I">The contract interface.</typeparam>
+        /// <typeparam name="RQ">The request type.</typeparam>
+        /// <typeparam name="RS">The response type.</typeparam>
+        /// <param name="rq">The request object.</param>
+        /// <param name="routing"></param>
+        /// <param name="settings"></param>
+        /// <returns>Returns a response object of the specified type in a response metadata wrapper.</returns>
+        public virtual async Task<ResponseWrapper<RS>> ProcessOutgoing<I, RQ, RS>(RQ rq
+            , RequestSettings settings = null
+            , ProcessOptions? routing = null)
+            where I : IMessageContract
+        {
+            string channelId, messageType, actionType;
+
+            if (!ServiceMessageHelper.ExtractContractInfo<I>(out channelId, out messageType, out actionType))
+                throw new InvalidOperationException("Unable to locate message contract attributes for " + typeof(I));
+
+            return await ProcessOutgoing<RQ, RS>(channelId, messageType, actionType, rq, settings, routing);
+        }
+        #endregion
+        #region ProcessOutgoing<RQ, RS> ...
+        /// <summary>
+        /// This method is used to send requests to the remote command.
+        /// </summary>
+        /// <typeparam name="RQ">The request type.</typeparam>
+        /// <typeparam name="RS">The response type.</typeparam>
+        /// <param name="channelId">The header routing information.</param>
+        /// <param name="messageType">The header routing information.</param>
+        /// <param name="actionType">The header routing information.</param>
+        /// <param name="rq">The request object.</param>
+        /// <param name="rqSettings">The request settings. Use this to specifically set the timeout parameters.</param>
+        /// <param name="routingOptions">The routing options by default this will try internal and then external.</param>
+        /// <param name="processResponse"></param>
+        /// <param name="fallbackMaxProcessingTime">This is the fallback max processing time used if the timeout 
+        /// is not set in the request settings. 
+        /// If this is also null, the max time out will fall back to the policy settings.</param>
+        /// <returns>Returns the async response wrapper.</returns>
+        protected virtual async Task<ResponseWrapper<RS>> ProcessOutgoing<RQ, RS>(
+              string channelId, string messageType, string actionType
+            , RQ rq
+            , RequestSettings rqSettings = null
+            , ProcessOptions? routingOptions = null
+            , Func<TaskStatus, TransmissionPayload, bool, ResponseWrapper<RS>> processResponse = null
+            , TimeSpan? fallbackMaxProcessingTime = null
+            )
+        {
+            if (mPolicy.OutgoingRequestMode != CommandOutgoingRequestMode.NotEnabled)
+                throw new OutgoingRequestsNotEnabledException();
+
+            TransmissionPayload payload = null;
+            try
+            {
+                StatisticsInternal.ActiveIncrement();
+
+                payload = TransmissionPayload.Create();
+
+                // Set the process correlation key to the correlation id if passed through the rq settings
+                if (!string.IsNullOrEmpty(rqSettings?.CorrelationId))
+                    payload.Message.ProcessCorrelationKey = rqSettings.CorrelationId;
+
+                bool processAsync = rqSettings?.ProcessAsync ?? false;
+
+                payload.Options = routingOptions ?? ProcessOptions.RouteExternal | ProcessOptions.RouteInternal;
+
+                //Set the destination message
+                payload.Message.ChannelId = channelId ?? ChannelId;
+                payload.Message.MessageType = messageType;
+                payload.Message.ActionType = actionType;
+                payload.Message.ChannelPriority = processAsync ? 0 : 1;
+
+                //Set the response path
+                payload.Message.ResponseChannelId = ResponseId.Header.ChannelId;
+                payload.Message.ResponseMessageType = ResponseId.Header.MessageType;
+                payload.Message.ResponseActionType = ResponseId.Header.ActionType;
+                payload.Message.ResponseChannelPriority = payload.Message.ChannelPriority;
+
+                //Set the payload
+                payload.Message.Blob = PayloadSerializer.PayloadSerialize(rq);
+
+                //Set the processing time
+                payload.MaxProcessingTime = rqSettings?.WaitTime ?? fallbackMaxProcessingTime ?? mPolicy.OutgoingRequestMaxProcessingTimeDefault;
+
+                //Transmit
+                return await OutgoingRequestOut(payload, processResponse ?? ProcessOutgoingResponse<RS>, processAsync);
+            }
+            catch (Exception ex)
+            {
+                string key = payload?.Id.ToString() ?? string.Empty;
+                Collector?.LogException(string.Format("Error transmitting {0}-{1} internally", actionType, key), ex);
+                throw;
+            }
+        }
+        #endregion
+
+        #region OutgoingRequestOut<K>...
         /// <summary>
         /// This method sends a message to the underlying dispatcher and tracks its progress.
         /// </summary>
@@ -178,196 +198,286 @@ namespace Xigadee
         /// <param name="processResponse"></param>
         /// <param name="processAsync"></param>
         /// <returns></returns>
-        protected async Task<K> TransmitAsync<K>(TransmissionPayload payloadRq,
+        protected async Task<K> OutgoingRequestOut<K>(TransmissionPayload payloadRq,
             Func<TaskStatus, TransmissionPayload, bool, K> processResponse,
             bool processAsync = false)
         {
-            if (payloadRq == null)
-                throw new ArgumentNullException("payloadRequest");
-            if (processResponse == null)
-                throw new ArgumentNullException("processPayload");
-
             ValidateServiceStarted();
 
-            var tracker = OutgoingRequestTransmit(payloadRq);
-
-            if (processAsync)
-            {
-                return processResponse(tracker.Tcs.Task.Status, payloadRq, true);
-            }
-
-            TransmissionPayload payloadRs = null;
-            try
-            {
-                if (UseASPNETThreadModel)
-                    payloadRs = Task.Run(async () => await tracker.Tcs.Task).Result;
-                else
-                    payloadRs = await tracker.Tcs.Task;
-            }
-            catch (Exception) { }
-
-            var response = processResponse(tracker.Tcs.Task.Status, payloadRs, false);
-
-            return response;
-        }
-        #endregion
-
-        #region OutgoingRequestTransmit(TransmissionPayload requestPayload)
-        /// <summary>
-        /// This method marshalls the incoming requests from the Initiators.
-        /// </summary>
-        /// <param name="payload">The outgoing payload.</param>
-        protected virtual OutgoingRequestTracker OutgoingRequestTransmit(TransmissionPayload payload)
-        {
-            //Create and register the request holder.
-            string id = payload.Message.OriginatorKey.ToUpperInvariant();
-
-            //Get the maximum processing time.
-            TimeSpan processingTime = payload.MaxProcessingTime.HasValue ? 
-                payload.MaxProcessingTime.Value : mPolicy.OutgoingRequestMaxProcessingTimeDefault;
+            if (payloadRq == null)
+                throw new ArgumentNullException("payloadRequest has not been set.");
+            if (processResponse == null)
+                throw new ArgumentNullException("processPayload has not been set.");
 
             //Create and register the request holder.
-            var holder = new OutgoingRequestTracker(id, payload, processingTime);
+            var tracker = new OutgoingRequestTracker(payloadRq, payloadRq.MaxProcessingTime ?? mPolicy.OutgoingRequestMaxProcessingTimeDefault);
 
             //Add the outgoing holder to the collection
-            if (!mOutgoingRequests.TryAdd(holder.Id, holder))
+            if (!mOutgoingRequests.TryAdd(tracker.Id, tracker))
             {
-                var errorStr = $"OutgoingRequestTransmit: Duplicate key {holder.Id}";
+                var errorStr = $"OutgoingRequestTransmit: Duplicate key {tracker.Id}";
                 Collector?.LogMessage(LoggingLevel.Error, errorStr);
                 throw new OutgoingRequestTransmitException(errorStr);
             }
 
-            //OK, add the message response type so that it will be picked up.
+            //Raise the event.
+            OnOutgoingRequest?.Invoke(this, tracker);
 
+            //Submit the payload for processing to the task manager
+            TaskManager(this, tracker.Id, tracker.Payload);
 
-            //Submit the payload for processing
-            TaskManager(this, holder.Payload);
+            //Ok, this is a sync process, let's wait until it responsds or times out.
+            TransmissionPayload payloadRs = null;
 
-            return holder;
+            //This has not been marked async so hold the current task until completion.
+            if (!processAsync)
+                try
+                {
+                    if (UseASPNETThreadModel)
+                        payloadRs = Task.Run(async () => await tracker.Tcs.Task).Result;
+                    else
+                        payloadRs = await tracker.Tcs.Task;
+                }
+                catch (Exception) { }
+
+            return processResponse(tracker.Tcs.Task.Status, payloadRs, processAsync);
         }
         #endregion
 
-        #region --> OutgoingRequestsProcessTimeouts...
+        #region ProcessOutgoingResponse<KT, ET>(TaskStatus status, TransmissionPayload prs, bool async)
         /// <summary>
-        /// This method is used to process any payloadRs timeouts.
+        /// This method is the default method used to process the returning message response.
         /// </summary>
-        protected virtual async Task OutgoingRequestsProcessTimeouts(Schedule schedule, CancellationToken token)
+        /// <typeparam name="RS">The response type.</typeparam>
+        /// <param name="rType"></param>
+        /// <param name="payloadRs">The incoming response payload.</param>
+        /// <param name="processAsync"></param>
+        /// <returns></returns>
+        protected virtual ResponseWrapper<RS> ProcessOutgoingResponse<RS>(TaskStatus rType, TransmissionPayload payloadRs, bool processAsync)
+        {
+            StatisticsInternal.ActiveDecrement(payloadRs?.Extent ?? TimeSpan.Zero);
+
+            if (processAsync)
+                return new ResponseWrapper<RS>(responseCode: 202, responseMessage: "Accepted");
+
+            try
+            {
+                payloadRs?.CompleteSet();
+
+                switch (rType)
+                {
+                    case TaskStatus.RanToCompletion:
+                        try
+                        {
+                            //payload.Message.
+                            var response = new ResponseWrapper<RS>(payloadRs);
+
+                            if (payloadRs.MessageObject != null)
+                                response.Response = (RS)payloadRs.MessageObject;
+                            else if (payloadRs.Message.Blob != null)
+                                response.Response = PayloadSerializer.PayloadDeserialize<RS>(payloadRs);
+
+                            return response;
+                        }
+                        catch (Exception ex)
+                        {
+                            StatisticsInternal.ErrorIncrement();
+                            return new ResponseWrapper<RS>(500, ex.Message);
+                        }
+                    case TaskStatus.Canceled:
+                        StatisticsInternal.ErrorIncrement();
+                        return new ResponseWrapper<RS>(408, "Time out");
+                    case TaskStatus.Faulted:
+                        StatisticsInternal.ErrorIncrement();
+                        return new ResponseWrapper<RS>((int)PersistenceResponse.GatewayTimeout504, "Response timeout.");
+                    default:
+                        StatisticsInternal.ErrorIncrement();
+                        return new ResponseWrapper<RS>(500, rType.ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                Collector?.LogException("Error processing response for task status " + rType, ex);
+                throw;
+            }
+        }
+        #endregion
+
+        #region OutgoingRequestsStart()
+        /// <summary>
+        /// This method starts the outgoing request support.
+        /// </summary>
+        protected virtual void OutgoingRequestsInitialise()
+        {
+            mOutgoingRequests = new ConcurrentDictionary<string, OutgoingRequestTracker>();
+
+            //Set a timer for aborted requests if the Task
+            if (mPolicy.OutgoingRequestMode == CommandOutgoingRequestMode.TimeoutExternal)
+            {
+                mScheduleTimeout = new CommandTimeoutSchedule(TimeOutScheduler
+                    , mPolicy.OutgoingRequestsTimeoutPoll
+                    , string.Format("{0} Command OutgoingRequests Timeout Poll", FriendlyName));
+
+                Scheduler.Register(mScheduleTimeout);
+            }
+
+            //Check whether the ResponseId has been set, and if not then raise an error 
+            //as outgoing messages will not work without a return path.
+            if (ResponseId == null)
+                throw new CommandStartupException($"Command={GetType().Name}: Outgoing requests are enabled, but the ResponseId parameter has not been set");
+            
+            //This is the return message handler
+            CommandRegister(ResponseId, OutgoingRequestResponseIn);
+        }
+        #endregion
+        #region OutgoingRequestsStop()
+        /// <summary>
+        /// This method stops the outgoing request supports and marks any pending jobs as cancelled.
+        /// </summary>
+        protected virtual void OutgoingRequestsStop()
+        {
+            //Unregister the time out schedule.
+            if (mScheduleTimeout != null)
+            {
+                Scheduler.Unregister(mScheduleTimeout);
+                mScheduleTimeout = null;
+            }
+
+            try
+            {
+                foreach (var key in mOutgoingRequests.Keys.ToList())
+                    OutgoingRequestTimeout(key);
+
+                mOutgoingRequests.Clear();
+                mOutgoingRequests = null;
+            }
+            catch (Exception ex)
+            {
+                Collector?.LogException("OutgoingRequestsStop error", ex);
+            }
+
+        }
+        #endregion
+
+        #region --> OutgoingRequestResponseIn(TransmissionPayload payload, List<TransmissionPayload> responses)
+        /// <summary>
+        /// This method processes the returning messages.
+        /// </summary>
+        /// <param name="payload">The incoming payload.</param>
+        /// <param name="responses">The responses collection is not currently used.</param>
+        protected virtual async Task OutgoingRequestResponseIn(TransmissionPayload payload, List<TransmissionPayload> responses)
+        {
+            try
+            {
+                string id = payload?.Message?.CorrelationKey?.ToUpperInvariant();
+
+                //Get the original request.
+                OutgoingRequestTracker holder;
+                if (id == null || !mOutgoingRequests.TryRemove(id, out holder))
+                {
+                    //If there is not a match key then quit.
+                    Collector?.LogMessage(LoggingLevel.Warning, $"OutgoingRequestResponseIn - id {id ?? "is null"} not matched.");
+                    return;
+                }
+
+                holder.Tcs.SetResult(payload);
+
+                OnOutgoingRequestComplete?.Invoke(this, holder);
+            }
+            catch (Exception ex)
+            {
+                Collector?.LogException("OutgoingRequestResponseIn unexpected exception", ex);
+            }
+            finally
+            {
+                //Signal to the listener to release the message.
+                payload?.SignalSuccess();
+            }
+        }
+        #endregion
+
+        #region --> TimeOutScheduler...
+        /// <summary>
+        /// This method receives the timeout timer poll calls.
+        /// </summary>
+        /// <param name="schedule">The timer schedule.</param>
+        /// <param name="token">The cancellation token.</param>
+        protected virtual async Task TimeOutScheduler(Schedule schedule, CancellationToken token)
         {
             if (mOutgoingRequests.IsEmpty)
                 return;
 
             var timeoutSchedule = schedule as CommandTimeoutSchedule;
 
-            var results = mOutgoingRequests.Where(i => i.Value.HasExpired()).ToList();
-            if (results.Count == 0)
-                return;
+            var results = mOutgoingRequests.Values
+                .Where(i => i.HasExpired())
+                .Select((k) => k.Id)
+                .ToList();
 
-            timeoutSchedule?.TimeoutIncrement(results.Count);
-
-            foreach (var key in results)
+            if (results.Count > 0)
             {
-                //Check that the object has not be removed by another process.
-                TransmissionPayload payloadRq;
-                if (!OutgoingRequestRemove(key.Key, null, out payloadRq))
-                    continue;
+                //Increment the record of time out requests.
+                timeoutSchedule?.TimeoutIncrement(results.Count);
 
-                try
-                {
-                    OnTimedOutRequest?.Invoke(this, payloadRq);
-                }
-                catch (Exception ex)
-                {
-                    Collector?.LogException("OnTimedOutRequest", ex);
-                    //We do not want to throw exceptions here.
-                }
+                //Loop through each time out and cancel it.
+                results.ForEach((id) => OutgoingRequestTimeout(id));
             }
         }
         #endregion
-
-        #region OutgoingRequestRemove(string id, out CommandOutgoingRequestTracker holder)
+        #region --> TimeoutTaskManager(string originatorKey)
         /// <summary>
-        /// This method removes a request from the inplay collection.
+        /// This method is called for processes that support direct notification from the Task Manager 
+        /// when a process has been cancelled.
         /// </summary>
-        /// <param name="id">The request id.</param>
-        /// <param name="holder">An output containing the holder object.</param>
-        /// <returns>Returns true if successful.</returns>
-        protected virtual bool OutgoingRequestRemove(string id, TransmissionPayload payloadIn)
+        /// <param name="originatorKey">The is the originator tracking key.</param>
+        public void TimeoutTaskManager(string originatorKey)
         {
-            TransmissionPayload payloadOut;
-            return OutgoingRequestRemove(id, payloadIn, out payloadOut);
+            OutgoingRequestTimeout(originatorKey);
         }
+        #endregion
 
-        protected virtual bool OutgoingRequestRemove(string id, TransmissionPayload payloadIn, out TransmissionPayload payloadOut)
+        #region OutgoingRequestTimeout(string id)
+        /// <summary>
+        /// This method processes the timeout request.
+        /// </summary>
+        /// <param name="id">The process id.</param>
+        protected virtual void OutgoingRequestTimeout(string id)
         {
-            payloadOut = null;
-            OutgoingRequestTracker holder;
-            if (!mOutgoingRequests.TryRemove(id, out holder))
-                return false;
-
             try
             {
-                if (holder.Tcs != null)
-                    if (payloadIn == null)
-                    {
-                        //This method signals that the request has been cancelled.
-                        holder.Tcs.SetCanceled();
-                    }
-                    else
-                    {
-                        //This next method signal to the waiting request that it has completed.
-                        holder.Tcs.SetResult(payloadIn);
-                    }
+                //Check that the object has not be removed by another process.
+                OutgoingRequestTracker holder;
+                if (!mOutgoingRequests.TryRemove(id, out holder))
+                    return;
+
+                holder.Tcs.SetCanceled();
+
+                //Raise the reference to the time out
+                OnOutgoingRequestTimeout?.Invoke(this, holder);
             }
             catch (Exception ex)
             {
-                Collector?.LogException("OutgoingRequestRemove TCS error", ex);
+                Collector?.LogException($"OutgoingRequestTimeout exception for {id}", ex);
             }
-
-            return true;
-        }
-        #endregion
-
-        #region TaskManagerTimeoutSupported
-        /// <summary>
-        /// This boolean property indicates to the task manager that the command should be notified if a submitted task is cancelled.
-        /// </summary>
-        public virtual bool TaskManagerTimeoutSupported { get { return true; } }
-        #endregion
-        #region TaskManagerTimeoutNotification(string originatorKey)
-        /// <summary>
-        /// This method is called for processes that support direct notification from the Task Manager that a process has been
-        /// cancelled.
-        /// </summary>
-        /// <param name="originatorKey">The is the originator tracking key.</param>
-        public void TaskManagerTimeoutNotification(string originatorKey)
-        {
-            OutgoingRequestRemove(originatorKey, null);
-            Collector?.LogMessage(LoggingLevel.Info, $"{FriendlyName} received abort notification for {originatorKey}");
+            finally
+            {
+                Collector?.LogMessage(LoggingLevel.Info, $"{FriendlyName} received timeout notification for {id}");
+            }
         } 
-        #endregion
-        #region TaskManager
-        /// <summary>
-        /// This is the link to the Microservice dispatcher.
-        /// </summary>
-        public virtual Action<IService, TransmissionPayload> TaskManager
-        {
-            get;
-            set;
-        }
         #endregion
 
         #region Class -> OutgoingRequestTracker
         /// <summary>
-        /// This class holds the parent task while it is being processed.
+        /// This is the core message used for tracking outgoing messages.
         /// </summary>
-        public class OutgoingRequestTracker
+        [DebuggerDisplay("{Debug}")]
+        public class OutgoingRequest
         {
-            public OutgoingRequestTracker(string id, TransmissionPayload payload, TimeSpan ttl, int? start = null)
+            public OutgoingRequest(TransmissionPayload payload, TimeSpan ttl, int? start = null)
             {
-                Id = id;
+                Id = payload.Message.OriginatorKey.ToUpperInvariant(); 
                 Payload = payload;
-                Tcs = new TaskCompletionSource<TransmissionPayload>();
-                Start = start??Environment.TickCount;
+                Start = start ?? Environment.TickCount;
                 MaxTTL = ttl;
 
                 ResponseMessage = new ServiceMessageHeader(
@@ -379,8 +489,6 @@ namespace Xigadee
             public string Id { get; }
 
             public TransmissionPayload Payload { get; }
-
-            public ServiceMessageHeader ResponseMessage { get; }
 
             public int Start { get; }
 
@@ -399,21 +507,34 @@ namespace Xigadee
                 return extent > MaxTTL;
             }
 
-            /// <summary>
-            /// This is the task holder for the command.
-            /// </summary>
-            public TaskCompletionSource<TransmissionPayload> Tcs { get; set; }
+            public ServiceMessageHeader ResponseMessage { get; }
 
             public string Debug
             {
                 get
                 {
-                    var debug =  $"{Id} TTL: {(MaxTTL - Extent).ToFriendlyString()} HasExpired: {(HasExpired()?"Yes":"No")}";
-                    return debug;
+                    return $"{Id} TTL: {(MaxTTL - Extent).ToFriendlyString()} HasExpired: {(HasExpired() ? "Yes" : "No")}";
                 }
             }
+
+
+        }
+        /// <summary>
+        /// This class holds the additional task information during processing.
+        /// </summary>
+        [DebuggerDisplay("{Debug}")]
+        public class OutgoingRequestTracker: OutgoingRequest
+        {
+            public OutgoingRequestTracker(TransmissionPayload payload, TimeSpan ttl, int? start = null):base(payload, ttl, start)
+            {
+                Tcs = new TaskCompletionSource<TransmissionPayload>();
+            }
+
+            /// <summary>
+            /// This is the task holder for the command.
+            /// </summary>
+            public TaskCompletionSource<TransmissionPayload> Tcs { get; set; }
         }
         #endregion
-
     }
 }

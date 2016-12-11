@@ -29,7 +29,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class PersistenceMessageInitiator<K, E> : PersistenceInitiatorBase<K, E>
+    public class PersistenceMessageInitiator<K, E> : PersistenceInitiatorBase<K, E, PersistenceMessageInitiatorPolicy>
         , IPersistenceMessageInitiator 
         where K : IEquatable<K>
     {
@@ -113,7 +113,7 @@ namespace Xigadee
 
                 payload.MaxProcessingTime = rq.Settings?.WaitTime ?? mDefaultRequestTimespan;
 
-                return await TransmitAsync(payload, ProcessResponse<KT, ET>, processAsync);
+                return await OutgoingRequestOut(payload, ProcessResponse<KT, ET>, processAsync);
             }
             catch (Exception ex)
             {
@@ -124,18 +124,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region TaskManagerTimeoutSupported
-        /// <summary>
-        /// Shared services operate as remote bridge and provides its own timeout support
-        /// as there is no guarantee that a message will return from a remote party.
-        /// </summary>
-        public override bool TaskManagerTimeoutSupported
-        {
-            get
-            {
-                return false;
-            }
-        }
-        #endregion
+
     }
 }

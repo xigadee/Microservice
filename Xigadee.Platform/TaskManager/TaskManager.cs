@@ -195,19 +195,19 @@ namespace Xigadee
 
         #region --> ExecuteOrEnqueue(ServiceBase service, TransmissionPayload payload)
         /// <summary>
-        /// This method takes incoming messages from the initiators. It is the method set on the Dispatcher property.
+        /// This method takes incoming messages from the commands. It is the method set on the Dispatcher property.
         /// </summary>
-        /// <param name="service">The calling service.</param>
+        /// <param name="service">The calling command.</param>
+        /// <param name="id">The callback id. If this is not set then timeouts will not be signalled.</param>
         /// <param name="payload">The payload to process.</param>
-        public virtual void ExecuteOrEnqueue(IService service, TransmissionPayload payload)
+        public virtual void ExecuteOrEnqueue(ICommand service, string id, TransmissionPayload payload)
         {
             TaskTracker tracker = TrackerCreateFromPayload(payload, service.GetType().Name);
 
-            ICommand command = service as ICommand;
-            if (command != null && command.TaskManagerTimeoutSupported)
+            if (id != null)
             {
-                tracker.Callback = command;
-                tracker.CallbackId = payload?.Message?.OriginatorKey;
+                tracker.CallbackId = id;
+                tracker.Callback = service;
             }
 
             ExecuteOrEnqueue(tracker);

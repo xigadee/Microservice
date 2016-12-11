@@ -20,6 +20,13 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    [Flags]
+    public enum CommandOutgoingRequestMode
+    {
+        NotEnabled = 0,
+        TimeoutInternal = 1,
+        TimeoutExternal = 2
+    }
     /// <summary>
     /// The command policy sets or enables various settings for the command.
     /// </summary>
@@ -59,7 +66,9 @@ namespace Xigadee
         /// This is the command startup prioroty.
         /// </summary>
         public int? StartupPriority { get; set; }=0;
-
+        /// <summary>
+        /// This property specifies how the command notifies the communication container when a new command is registered and becomes active.
+        /// </summary>
         public CommandNotificationBehaviour CommandNotify { get; set; } = CommandNotificationBehaviour.OnRegistration;
         /// <summary>
         /// This is the default timeout for outgoing requests from the Command to other commands when not set in the settings.
@@ -69,8 +78,11 @@ namespace Xigadee
         /// <summary>
         /// This property specifies that outgoing settings are enabled. By default this is not set.
         /// </summary>
-        public virtual bool OutgoingRequestsEnabled { get; set; } = false;
+        public virtual CommandOutgoingRequestMode OutgoingRequestMode { get; set; } = CommandOutgoingRequestMode.NotEnabled;
 
+        /// <summary>
+        /// This is the default time out poll, which is set at an initial 10 second wait and then a repeated 5 seconds poll by default.
+        /// </summary>
         public virtual CommandTimerPoll OutgoingRequestsTimeoutPoll { get; set; } = new CommandTimerPoll();
 
         //Job Poll
@@ -102,7 +114,7 @@ namespace Xigadee
                   JobPollEnabled = true
                 , JobPollIsLongRunning = isLongRunningJob
                 , MasterJobEnabled = false
-                , OutgoingRequestsEnabled = false
+                , OutgoingRequestMode = CommandOutgoingRequestMode.TimeoutInternal
                 , JobPollSchedule = new CommandTimerPoll(interval, initialWait, initialTime)
             };
         }
@@ -123,7 +135,7 @@ namespace Xigadee
                 , MasterJobNegotiationChannelType = negotiationChannelType
                 , MasterJobNegotiationChannelPriority = negotiationChannelPriority
                 , MasterJobName = name
-                , OutgoingRequestsEnabled = false
+                , OutgoingRequestMode = CommandOutgoingRequestMode.TimeoutInternal
             };
         }
 

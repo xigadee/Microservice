@@ -34,7 +34,7 @@ namespace Xigadee
 
             stats.SupportedHandlers = mSupported.Select((h) => h.Value.HandlerStatistics).ToList();
 
-            if (mPolicy.OutgoingRequestsEnabled)
+            if (mPolicy.OutgoingRequestMode != CommandOutgoingRequestMode.NotEnabled)
             {
                 stats.OutgoingRequests = mOutgoingRequests?.Select((h) => h.Value.Debug).ToList();
             }

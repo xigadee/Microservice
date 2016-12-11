@@ -21,46 +21,6 @@ using System.Collections.Generic;
 #endregion
 namespace Xigadee
 {
-    #region CommandBase
-    /// <summary>
-    /// This is the standard command base constructor.
-    /// </summary>
-    public abstract class CommandBase: CommandBase<CommandStatistics>
-    {
-        public CommandBase(CommandPolicy policy = null) : base(policy)
-        {
-        }
-    }
-    #endregion
-    #region CommandBase<S>
-    /// <summary>
-    /// This is the extended command constructor that allows for custom statistics.
-    /// </summary>
-    /// <typeparam name="S">The statistics class type.</typeparam>
-    public abstract class CommandBase<S>: CommandBase<S, CommandPolicy>
-        where S : CommandStatistics, new()
-    {
-        public CommandBase(CommandPolicy policy = null) : base(policy)
-        {
-        }
-    }
-    #endregion
-    #region CommandBase<S,P>
-    /// <summary>
-    /// This is the extended command constructor that allows for custom statistics.
-    /// </summary>
-    /// <typeparam name="S">The statistics class type.</typeparam>
-    /// <typeparam name="P">The customer command policy.</typeparam>
-    public abstract class CommandBase<S, P>: CommandBase<S, P, CommandHandler<CommandHandlerStatistics>>
-        where S : CommandStatistics, new()
-        where P : CommandPolicy, new()
-    {
-        public CommandBase(P policy = null) : base(policy)
-        {
-        }
-    }
-    #endregion
-
     /// <summary>
     /// This is the default custom command class that allows for full customization in policy and statistics.
     /// </summary>
@@ -90,6 +50,7 @@ namespace Xigadee
         /// Implement IMessageHandlerDynamic to enable this feature.
         /// </summary>
         public event EventHandler<CommandChange> OnCommandChange;
+
         /// <summary>
         /// This is the job timer
         /// </summary>
@@ -145,14 +106,14 @@ namespace Xigadee
                 if (mPolicy.CommandReflectionSupported)
                     CommandsRegisterReflection();
 
-                if (mPolicy.OutgoingRequestsEnabled)
+                if (mPolicy.OutgoingRequestMode != CommandOutgoingRequestMode.NotEnabled)
                     OutgoingRequestsInitialise();
 
                 if (mPolicy.MasterJobEnabled)
                     MasterJobInitialise();
 
                 if (mPolicy.JobPollEnabled)
-                    TimerPollSchedulesRegister();
+                    JobSchedulesInitialise();
 
                 if (mPolicy.CommandNotify == CommandNotificationBehaviour.OnStartUp)
                     CommandsNotify();
@@ -173,8 +134,8 @@ namespace Xigadee
                 mSchedules.ForEach((s) => Scheduler.Unregister(s));
                 mSchedules.Clear();
 
-                if (mPolicy.OutgoingRequestsEnabled)
-                    OutgoingRequestsTimeoutStop();
+                if (mPolicy.OutgoingRequestMode != CommandOutgoingRequestMode.NotEnabled)
+                    OutgoingRequestsStop();
 
                 CommandsNotify(true);
             }
@@ -197,11 +158,11 @@ namespace Xigadee
         }
         #endregion
 
-        #region TimerPollSchedulesRegister()
+        #region JobSchedulesInitialise()
         /// <summary>
         /// This method can be overriden to enable additional schedules to be registered for the job.
         /// </summary>
-        protected virtual void TimerPollSchedulesRegister()
+        protected virtual void JobSchedulesInitialise()
         {
 
         }
@@ -298,6 +259,46 @@ namespace Xigadee
         }
         #endregion
     }
+
+    #region CommandBase
+    /// <summary>
+    /// This is the standard command base constructor.
+    /// </summary>
+    public abstract class CommandBase: CommandBase<CommandStatistics>
+    {
+        public CommandBase(CommandPolicy policy = null) : base(policy)
+        {
+        }
+    }
+    #endregion
+    #region CommandBase<S>
+    /// <summary>
+    /// This is the extended command constructor that allows for custom statistics.
+    /// </summary>
+    /// <typeparam name="S">The statistics class type.</typeparam>
+    public abstract class CommandBase<S>: CommandBase<S, CommandPolicy>
+        where S : CommandStatistics, new()
+    {
+        public CommandBase(CommandPolicy policy = null) : base(policy)
+        {
+        }
+    }
+    #endregion
+    #region CommandBase<S,P>
+    /// <summary>
+    /// This is the extended command constructor that allows for custom statistics.
+    /// </summary>
+    /// <typeparam name="S">The statistics class type.</typeparam>
+    /// <typeparam name="P">The customer command policy.</typeparam>
+    public abstract class CommandBase<S, P>: CommandBase<S, P, CommandHandler<CommandHandlerStatistics>>
+        where S : CommandStatistics, new()
+        where P : CommandPolicy, new()
+    {
+        public CommandBase(P policy = null) : base(policy)
+        {
+        }
+    }
+    #endregion
 }
 
 

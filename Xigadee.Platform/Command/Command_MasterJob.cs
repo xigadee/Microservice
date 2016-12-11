@@ -114,7 +114,7 @@ namespace Xigadee
 
             //Go straight to the dispatcher as we don't want to use the tracker for this job
             //as it is transmit only.
-            TaskManager(this, payload);
+            TaskManager(this, null, payload);
         }
         #endregion
 

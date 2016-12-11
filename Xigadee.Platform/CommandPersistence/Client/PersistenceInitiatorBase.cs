@@ -22,9 +22,10 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public abstract class PersistenceInitiatorBase<K, E> : CommandBase<PersistenceInitiatorStatistics, PersistenceInitiatorPolicy>
+    public abstract class PersistenceInitiatorBase<K, E, P> : CommandBase<PersistenceInitiatorStatistics, P>
         , IRepositoryAsync<K, E>
         where K : IEquatable<K>
+        where P : CommandPolicy, new()
     {
         #region Declarations
         /// <summary>
@@ -295,6 +296,5 @@ namespace Xigadee
             }
         }
         #endregion
-
     }
 }

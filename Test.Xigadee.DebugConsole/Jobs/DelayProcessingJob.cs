@@ -31,7 +31,7 @@ namespace Test.Xigadee
         {
         }
 
-        protected override void TimerPollSchedulesRegister()
+        protected override void JobSchedulesInitialise()
         {
             var job = mPolicy.ToCommandSchedule(ExecuteJob, $"DelayedProcessingJob: {GetType().Name}");
             
@@ -43,8 +43,8 @@ namespace Test.Xigadee
             int currentJob = mCurrentExecutionId++;
             //mCollector?.Log(LogLevel.Info, "DelayedProcessingJob - Executing schedule " + currentJob);
             state.State = currentJob;
-            
-            TaskManager(this, new TransmissionPayload("interserv", "do", "something", options:ProcessOptions.RouteExternal));
+            var payload = new TransmissionPayload("interserv", "do", "something", options:ProcessOptions.RouteExternal);
+            TaskManager(this, null, payload);
 
             //await Task.Delay(TimeSpan.FromSeconds(40), token);
             //mCollector?.Log(LogLevel.Info, "DelayedProcessingJob - Finished executing schedule " + currentJob);

@@ -29,7 +29,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class PersistenceSharedService<K, E>: PersistenceInitiatorBase<K, E>
+    public class PersistenceSharedService<K, E>: PersistenceInitiatorBase<K, E, PersistenceSharedServicePolicy>
         , IPersistenceSharedService 
         where K : IEquatable<K>
     {
@@ -140,22 +140,9 @@ namespace Xigadee
 
             message.Blob = PayloadSerializer.PayloadSerialize(rq);
 
-            return await TransmitAsync(payloadRq, ProcessResponse<KT, ET>, processAsync: processAsync);
+            return await OutgoingRequestOut(payloadRq, ProcessResponse<KT, ET>, processAsync: processAsync);
         }
         #endregion
 
-        #region TaskManagerTimeoutSupported
-        /// <summary>
-        /// Shared services operate as a bridge to the internal commands and use
-        /// the Task Manager to support timeouts.
-        /// </summary>
-        public override bool TaskManagerTimeoutSupported
-        {
-            get
-            {
-                return true;
-            }
-        } 
-        #endregion
     }
 }

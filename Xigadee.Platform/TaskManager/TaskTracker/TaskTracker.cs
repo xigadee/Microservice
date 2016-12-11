@@ -67,8 +67,13 @@ namespace Xigadee
         /// </summary>
         public CancellationTokenSource Cts { get; } = new CancellationTokenSource();
 
+        /// <summary>
+        /// This is the command that initiated the request.
+        /// </summary>
         public ICommand Callback { get; set; }
-
+        /// <summary>
+        /// This is the id that the command has registered the request under.
+        /// </summary>
         public string CallbackId { get; set; }
 
         public int? ExecuteTickCount { get; set; }
@@ -174,7 +179,7 @@ namespace Xigadee
             try
             {
                 if (Callback != null && !string.IsNullOrEmpty(CallbackId))
-                    Callback.TaskManagerTimeoutNotification(CallbackId);
+                    Callback.TimeoutTaskManager(CallbackId);
             }
             catch (Exception)
             {
