@@ -42,7 +42,7 @@ namespace Test.Xigadee
 
             Persistence = (IRepositoryAsync<Guid, MondayMorningBlues>)Service.RegisterCommand
                 (
-                    new PersistenceSharedService<Guid, MondayMorningBlues>(Channels.Internal)
+                    new PersistenceInternalService<Guid, MondayMorningBlues>(Channels.Internal)
                     { ChannelId = Channels.TestB }
                 );
 

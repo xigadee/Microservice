@@ -189,7 +189,7 @@
     <Compile Include="Microservice\MicroserviceId.cs" />
     <Compile Include="Microservice\Microservice_Process.cs" />
     <Compile Include="Microservice\Policy\MicroservicePolicy.cs" />
-    <Compile Include="CommandPersistence\Client\PersistenceSharedServicePolicy.cs" />
+    <Compile Include="CommandPersistence\Client\PersistenceInternalServicePolicy.cs" />
     <Compile Include="CommandPersistence\Events\EntityChangeEventArgs.cs" />
     <Compile Include="CommandPersistence\Notification\EntityChangeNotificationCommand.cs" />
     <Compile Include="CommandPersistence\Notification\EntityChangeNotificationPolicy.cs" />
@@ -324,7 +324,7 @@
     <Compile Include="CommandPersistence\Client\PersistenceMessageInitiatorPolicy.cs" />
     <Compile Include="CommandPersistence\Client\PersistenceInitiatorStatistics.cs" />
     <Compile Include="CommandPersistence\Client\PersistenceMessageInitiator.cs" />
-    <Compile Include="CommandPersistence\Client\PersistenceSharedService.cs" />
+    <Compile Include="CommandPersistence\Client\PersistenceInternalService.cs" />
     <Compile Include="CommandPersistence\EntityActions.cs" />
     <Compile Include="CommandPersistence\Pipeline\ExtensionMethods.cs" />
     <Compile Include="Interfaces\IPersistenceMessageHandler.cs" />

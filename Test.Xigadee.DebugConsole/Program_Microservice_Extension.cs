@@ -39,7 +39,7 @@ namespace Test.Xigadee
 
                 IPipelineChannelIncoming<MicroservicePipeline> cpipeIn = null;
                 IPipelineChannelOutgoing<MicroservicePipeline> cpipeOut = null;
-                PersistenceSharedService<Guid, Blah> persistence = null;
+                PersistenceInternalService<Guid, Blah> persistence = null;
 
                 pipeline
                     .Inspect(msInspect: (s) => sExtensionService = s)
@@ -51,7 +51,7 @@ namespace Test.Xigadee
                         .AttachPriorityPartition(0, 1)
                         .AttachAzureServiceBusQueueListener("Myqueue")
                         .AttachCommand(new PersistenceBlahMemory())
-                        .AttachCommand(new PersistenceSharedService<Guid, Blah>(), assign:(c) => persistence = c, channelResponse: cpipeOut)
+                        .AttachCommand(new PersistenceInternalService<Guid, Blah>(), assign:(c) => persistence = c, channelResponse: cpipeOut)
                         .CallOut((c) => cpipeIn = c)
                         .Revert()
                     .AddChannelOutgoing("internalOut", internalOnly: true)

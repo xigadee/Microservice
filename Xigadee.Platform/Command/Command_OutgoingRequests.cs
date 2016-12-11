@@ -196,7 +196,8 @@ namespace Xigadee
         /// <typeparam name="K"></typeparam>
         /// <param name="payloadRq">The payload to process.</param>
         /// <param name="processResponse"></param>
-        /// <param name="processAsync"></param>
+        /// <param name="processAsync">Specifies whether the process in asyn in which case it is 
+        /// returned immediately without waiting for the payload to be processed.</param>
         /// <returns></returns>
         protected async Task<K> OutgoingRequestOut<K>(TransmissionPayload payloadRq,
             Func<TaskStatus, TransmissionPayload, bool, K> processResponse,
@@ -216,7 +217,9 @@ namespace Xigadee
             if (!mOutgoingRequests.TryAdd(tracker.Id, tracker))
             {
                 var errorStr = $"OutgoingRequestTransmit: Duplicate key {tracker.Id}";
+
                 Collector?.LogMessage(LoggingLevel.Error, errorStr);
+
                 throw new OutgoingRequestTransmitException(errorStr);
             }
 
