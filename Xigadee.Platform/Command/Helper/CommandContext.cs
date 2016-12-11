@@ -4,7 +4,8 @@ using System.Runtime.Remoting.Messaging;
 namespace Xigadee
 {
     /// <summary>
-    /// Helper to get and set Command Context Data
+    /// Provides Context Information for the currently executing Xigadee Command. Data stored / retrieved 
+    /// via the CallContext logical Get / Set
     /// </summary>
     public static class CommandContext
     {
