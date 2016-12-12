@@ -102,7 +102,7 @@ namespace Xigadee
         /// <param name="routing"></param>
         /// <param name="settings"></param>
         /// <returns>Returns a response object of the specified type in a response metadata wrapper.</returns>
-        public virtual async Task<ResponseWrapper<RS>> ProcessOutgoing<I, RQ, RS>(RQ rq
+        protected virtual async Task<ResponseWrapper<RS>> ProcessOutgoing<I, RQ, RS>(RQ rq
             , RequestSettings settings = null
             , ProcessOptions? routing = null)
             where I : IMessageContract
