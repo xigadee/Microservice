@@ -31,11 +31,21 @@ namespace Xigadee
     //Dispatcher
     public partial class Microservice
     {
+        #region Events
+        /// <summary>
+        /// This event handler can be used to inspect an incoming message before it executes.
+        /// </summary>
+        public event EventHandler<TransmissionPayloadState> OnExecuteBegin;
+        /// <summary>
+        /// This event handler can be used to inspect an incoming message after it has executed.
+        /// </summary>
+        public event EventHandler<TransmissionPayloadState> OnExecuteComplete; 
+        #endregion
         #region Class -> TransmissionPayloadState
         /// <summary>
         /// This class holds the incoming payload state.
         /// </summary>
-        protected class TransmissionPayloadState
+        public class TransmissionPayloadState
         {
             public TransmissionPayloadState(TransmissionPayload payload, int maxTransitCount, int timerStart)
             {
@@ -127,6 +137,8 @@ namespace Xigadee
 
             try
             {
+                OnExecuteBegin?.Invoke(this, request);
+
                 //Validate the imcoming request is correct and not cancelled.
                 request.IncomingValidate();
 
@@ -219,6 +231,8 @@ namespace Xigadee
 
                 if (!request.IsSuccess)
                     StatisticsInternal.ErrorIncrement();
+
+                OnExecuteComplete?.Invoke(this, request);
             }
         }
         #endregion
