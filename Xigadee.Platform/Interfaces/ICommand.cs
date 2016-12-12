@@ -23,10 +23,33 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    public interface ICommandEvents
+    {
+        /// <summary>
+        /// This event is fired when an request is received and resolved.
+        /// </summary>
+        event EventHandler<TransmissionPayload> OnRequest;
+        /// <summary>
+        /// This event is fired when a request is received but not resolved.
+        /// </summary>
+        event EventHandler<TransmissionPayload> OnRequestUnresolved;
+        /// <summary>
+        /// This event is fired when an outgoing request is initiated.
+        /// </summary>
+        event EventHandler<OutgoingRequest> OnOutgoingRequest;
+        /// <summary>
+        /// This event is fired when an outgoing request times out.
+        /// </summary>
+        event EventHandler<OutgoingRequest> OnOutgoingRequestTimeout;
+        /// <summary>
+        /// This event is fired when an outgoing request completes
+        /// </summary>
+        event EventHandler<OutgoingRequest> OnOutgoingRequestComplete;
+    }
     /// <summary>
     /// This is the root interface implemented by the command class.
     /// </summary>
-    public interface ICommand: IService, IRequireScheduler, IPayloadSerializerConsumer, 
+    public interface ICommand: ICommandEvents, IService, IRequireScheduler, IPayloadSerializerConsumer, 
         IServiceEventSource, IServiceOriginator, IRequireSharedServices, IRequireDataCollector
     {
         /// <summary>

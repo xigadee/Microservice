@@ -41,15 +41,15 @@ namespace Xigadee
         /// <summary>
         /// This event is fired when an outgoing request is initiated.
         /// </summary>
-        public event EventHandler<OutgoingRequestTracker> OnOutgoingRequest;
+        public event EventHandler<OutgoingRequest> OnOutgoingRequest;
         /// <summary>
         /// This event is fired when an outgoing request times out.
         /// </summary>
-        public event EventHandler<OutgoingRequestTracker> OnOutgoingRequestTimeout;
+        public event EventHandler<OutgoingRequest> OnOutgoingRequestTimeout;
         /// <summary>
         /// This event is fired when an outgoing request completes
         /// </summary>
-        public event EventHandler<OutgoingRequestTracker> OnOutgoingRequestComplete;
+        public event EventHandler<OutgoingRequest> OnOutgoingRequestComplete;
         #endregion
         #region UseASPNETThreadModel
         /// <summary>
@@ -467,63 +467,12 @@ namespace Xigadee
         #endregion
 
         #region Class -> OutgoingRequestTracker
-        /// <summary>
-        /// This is the core message used for tracking outgoing messages.
-        /// </summary>
-        [DebuggerDisplay("{Debug}")]
-        public class OutgoingRequest
-        {
-            public OutgoingRequest(TransmissionPayload payload, TimeSpan ttl, int? start = null)
-            {
-                Id = payload.Message.OriginatorKey.ToUpperInvariant(); 
-                Payload = payload;
-                Start = start ?? Environment.TickCount;
-                MaxTTL = ttl;
 
-                ResponseMessage = new ServiceMessageHeader(
-                      payload.Message.ResponseChannelId
-                    , payload.Message.ResponseMessageType
-                    , payload.Message.ResponseActionType);
-            }
-
-            public string Id { get; }
-
-            public TransmissionPayload Payload { get; }
-
-            public int Start { get; }
-
-            public TimeSpan MaxTTL { get; }
-
-            public TimeSpan Extent { get { return ExtentNow(); } }
-
-            private TimeSpan ExtentNow(int? now = null)
-            {
-                return ConversionHelper.DeltaAsTimeSpan(Start, now ?? Environment.TickCount).Value;
-            }
-
-            public bool HasExpired(int? now = null)
-            {
-                var extent = ExtentNow();
-                return extent > MaxTTL;
-            }
-
-            public ServiceMessageHeader ResponseMessage { get; }
-
-            public string Debug
-            {
-                get
-                {
-                    return $"{Id} TTL: {(MaxTTL - Extent).ToFriendlyString()} HasExpired: {(HasExpired() ? "Yes" : "No")}";
-                }
-            }
-
-
-        }
         /// <summary>
         /// This class holds the additional task information during processing.
         /// </summary>
         [DebuggerDisplay("{Debug}")]
-        public class OutgoingRequestTracker: OutgoingRequest
+        protected class OutgoingRequestTracker: OutgoingRequest
         {
             public OutgoingRequestTracker(TransmissionPayload payload, TimeSpan ttl, int? start = null):base(payload, ttl, start)
             {
@@ -536,5 +485,58 @@ namespace Xigadee
             public TaskCompletionSource<TransmissionPayload> Tcs { get; set; }
         }
         #endregion
+    }
+
+    /// <summary>
+    /// This is the core message used for tracking outgoing messages.
+    /// </summary>
+    [DebuggerDisplay("{Debug}")]
+    public class OutgoingRequest
+    {
+        public OutgoingRequest(TransmissionPayload payload, TimeSpan ttl, int? start = null)
+        {
+            Id = payload.Message.OriginatorKey.ToUpperInvariant();
+            Payload = payload;
+            Start = start ?? Environment.TickCount;
+            MaxTTL = ttl;
+
+            ResponseMessage = new ServiceMessageHeader(
+                  payload.Message.ResponseChannelId
+                , payload.Message.ResponseMessageType
+                , payload.Message.ResponseActionType);
+        }
+
+        public string Id { get; }
+
+        public TransmissionPayload Payload { get; }
+
+        public int Start { get; }
+
+        public TimeSpan MaxTTL { get; }
+
+        public TimeSpan Extent { get { return ExtentNow(); } }
+
+        private TimeSpan ExtentNow(int? now = null)
+        {
+            return ConversionHelper.DeltaAsTimeSpan(Start, now ?? Environment.TickCount).Value;
+        }
+
+        public bool HasExpired(int? now = null)
+        {
+            var extent = ExtentNow();
+            return extent > MaxTTL;
+        }
+
+        public ServiceMessageHeader ResponseMessage { get; }
+
+        public string Debug
+        {
+            get
+            {
+                return $"{Id} TTL: {(MaxTTL - Extent).ToFriendlyString()} HasExpired: {(HasExpired() ? "Yes" : "No")}";
+            }
+        }
+
+
     }
 }
