@@ -20,18 +20,28 @@ using System.Collections.Generic;
 namespace Xigadee
 {
     /// <summary>
-    /// This interface is used by the configuration pipeline to add necessary components to the microservice.
+    /// This interface defines the Microservice definition.
     /// </summary>
-    public interface IMicroserviceConfigure: IService
+    public interface IMicroservice: IMicroserviceConfigure, IMicroserviceProcess, IMicroserviceEvents, IMicroservicePolicy, IService
     {
         MicroserviceId Id { get; }
+
         string ExternalServiceId { get; }
+
         string Name { get; }
+
         string ServiceId { get; }
 
         IEnumerable<ICommand> Commands { get; }
-        IEnumerable<Channel> Channels { get; }
 
+        IEnumerable<Channel> Channels { get; }
+    }
+
+    /// <summary>
+    /// This interface is used by the configuration pipeline to add necessary components to the microservice.
+    /// </summary>
+    public interface IMicroserviceConfigure
+    {
         Channel RegisterChannel(Channel channel);
 
         ICommand RegisterCommand(ICommand command);
@@ -48,7 +58,13 @@ namespace Xigadee
         ISender RegisterSender(ISender sender);
 
         ISharedService SharedServices { get; }
+    }
 
+    /// <summary>
+    /// This interface lists the policy options for the Microservice.
+    /// </summary>
+    public interface IMicroservicePolicy
+    {
         MicroservicePolicy PolicyMicroservice { get; }
         TaskManagerPolicy PolicyTaskManager { get; }
         ResourceTrackerPolicy PolicyResourceTracker { get; }
@@ -59,14 +75,28 @@ namespace Xigadee
         DataCollectionPolicy PolicyDataCollection { get; }
     }
 
-    public interface IMicroservice: IMicroserviceConfigure
+    /// <summary>
+    /// This interface lists the events available from the Microservice.
+    /// </summary>
+    public interface IMicroserviceEvents
     {
         event EventHandler<ProcessRequestErrorEventArgs> ProcessRequestError;
 
         event EventHandler<DispatcherRequestUnresolvedEventArgs> ProcessRequestUnresolved;
 
         event EventHandler<MicroserviceStatusEventArgs> ComponentStatusChange;
+        /// <summary>
+        /// This event handler can be used to inspect an incoming message before it executes.
+        /// </summary>
+        event EventHandler<Microservice.TransmissionPayloadState> OnExecuteBegin;
+        /// <summary>
+        /// This event handler can be used to inspect an incoming message after it has executed.
+        /// </summary>
+        event EventHandler<Microservice.TransmissionPayloadState> OnExecuteComplete;
+    }
 
+    public interface IMicroserviceProcess
+    {
         void Process(TransmissionPayload payload);
 
         void Process(ServiceMessage message, ProcessOptions options = ProcessOptions.RouteInternal | ProcessOptions.RouteExternal, Action<bool, Guid> release = null, bool isDeadLetterMessage = false);
@@ -77,6 +107,5 @@ namespace Xigadee
 
         void Process<C>(object package = null, int ChannelPriority = 1, ProcessOptions options = ProcessOptions.RouteInternal | ProcessOptions.RouteExternal, Action<bool, Guid> release = null, bool isDeadLetterMessage = false) 
             where C : IMessageContract;
-
     }
 }
