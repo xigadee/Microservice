@@ -14,13 +14,29 @@
 // limitations under the License.
 #endregion
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Xigadee
 {
     /// <summary>
-    /// This is the policy container for the security container.
+    /// This class is used to hold the pipeline configuration.
     /// </summary>
-    public class SecurityPolicy: PolicyBase
+    public class SecurityPipelineExtension<P>: MicroservicePipelineExtension<P>, IPipelineSecurity<P>
+        where P : IPipeline
     {
+        /// <summary>
+        /// The default constructor.
+        /// </summary>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="channel">The channel.</param>
+        public SecurityPipelineExtension(P pipeline) : base(pipeline)
+        {
+        }
+
+
     }
 }

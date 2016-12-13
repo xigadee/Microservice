@@ -68,6 +68,7 @@ namespace Xigadee
         }
         #endregion
 
+
         #region Send(TransmissionPayload requestPayload)
         /// <summary>
         /// This method transmits the messages to the relevant senders.
@@ -77,19 +78,14 @@ namespace Xigadee
         {
             try
             {
-                //Rewrite rule validate, and rewrite for outgoing message.
-                var channelId = payload.Message.ChannelId;
-                Channel channel;
-                if (TryGet(channelId, ChannelDirection.Outgoing, out channel))
-                {
-                    if (channel.CouldRedirect)
-                        channel.Redirect(payload);
-                }
+                Channel channel = PayloadOutgoingRedirectChecks(payload);
+
+                PayloadOutgoingSecurity(payload);
 
                 //No, we want to send the message externally.
                 List<ISender> messageSenders = null;
                 //Get the supported message handler
-                if (channelId != null && !mMessageSenderMap.TryGetValue(channelId, out messageSenders))
+                if (channel != null && !mMessageSenderMap.TryGetValue(channel.Id, out messageSenders))
                     messageSenders = MessageSenderResolve(payload);
 
                 //If there are no supported senders for the particular channelId then throw an exception

@@ -37,6 +37,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="M">The microsercice type.</typeparam>
     /// <typeparam name="C">The config type.</typeparam>
+    [Obsolete("Use the WebApiMicroservice pipeline.")]
     public abstract class PopulatorWebApiBase<M, C>: PopulatorBase<M, C>
         where M : Microservice, new()
         where C : ConfigWebApi, new()

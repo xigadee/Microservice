@@ -14,13 +14,29 @@
 // limitations under the License.
 #endregion
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    /// <summary>
-    /// This is the policy container for the security container.
-    /// </summary>
-    public class SecurityPolicy: PolicyBase
+    public static partial class CorePipelineExtensions
     {
+        public static C Inspect<C,P>(this C pipeline
+            , Action<IMicroservice> msAssign = null
+            , Action<IEnvironmentConfiguration> cfAssign = null
+            )
+            where C:SecurityPipelineExtension<P>
+            where P:IPipeline
+        {
+            msAssign?.Invoke(pipeline.Pipeline.Service);
+            cfAssign?.Invoke(pipeline.Pipeline.Configuration);
+
+            return pipeline;
+        }
+
+
     }
 }

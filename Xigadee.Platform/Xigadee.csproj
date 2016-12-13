@@ -79,6 +79,7 @@
     <Compile Include="Command\Helper\CommandHolderException.cs" />
     <Compile Include="Communication\Base\IMessagingService.cs" />
     <Compile Include="Communication\Channel\ChannelRewriteRule.cs" />
+    <Compile Include="Communication\CommunicationContainer_Security.cs" />
     <Compile Include="Communication\Exceptions\MessagingException.cs" />
     <Compile Include="Communication\Exceptions\StartupMessagingException.cs" />
     <Compile Include="Communication\TcpChannel\Configuration\TcpTlsConfigurationHelper.cs" />
@@ -251,8 +252,13 @@
     <Compile Include="Pipeline\Interfaces\IPipelineChannel.cs" />
     <Compile Include="Pipeline\Interfaces\IPipeline.cs" />
     <Compile Include="Pipeline\Interfaces\IPipelineExtension.cs" />
+    <Compile Include="Pipeline\Interfaces\IPipelineSecurity.cs" />
     <Compile Include="Pipeline\MicroservicePipelineExtension.cs" />
     <Compile Include="Pipeline\Extensions\ToPipeline.cs" />
+    <Compile Include="Pipeline\SecurityPipeline\Actual.cs" />
+    <Compile Include="Pipeline\SecurityPipeline\Add\AddAuthorization.cs" />
+    <Compile Include="Pipeline\SecurityPipeline\Inspect.cs" />
+    <Compile Include="Pipeline\SecurityPipeline\SecurityPipelineExtension.cs" />
     <Compile Include="ResourceTracker\ResourceTrackerPolicy.cs" />
     <Compile Include="Scheduler\Schedule.cs" />
     <Compile Include="Messaging\ServiceMessage.cs" />
@@ -447,6 +453,7 @@
     <Compile Include="Security\Helper\Sha256SignatureHelper.cs" />
     <Compile Include="Security\Helper\Sha512SignatureHelper.cs" />
     <Compile Include="Security\Helper\SignatureHelper.cs" />
+    <Compile Include="Security\ISecurityContainer.cs" />
     <Compile Include="Security\SecurityContainer.cs" />
     <Compile Include="Security\SecurityPolicy.cs" />
     <Compile Include="Security\SecurityStatistics.cs" />
@@ -497,6 +504,8 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Security\_Documents\rfc7515.pdf" />
+    <None Include="Security\_Documents\rfc7519.pdf" />
     <None Include="Xigadee.nuspec" />
     <None Include="Xigadee.Platform.licenseheader" />
   </ItemGroup>

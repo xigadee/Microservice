@@ -314,6 +314,9 @@ namespace Xigadee
                 if (service is IRequireScheduler)
                     ((IRequireScheduler)service).Scheduler = mScheduler;
 
+                if (service is IRequireSecurityService)
+                    ((IRequireSecurityService)service).Security = mSecurity;
+
                 if (service is IRequireSharedServices)
                     ((IRequireSharedServices)service).SharedServices = SharedServices;
 
