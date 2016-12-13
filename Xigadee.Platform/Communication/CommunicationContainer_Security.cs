@@ -35,7 +35,6 @@ namespace Xigadee
         /// </summary>
         public ISecurityService Security { get; set;}
 
-
         #region PayloadIncomingSecurityCheck(TransmissionPayload payload)
         /// <summary>
         /// This method validates the payload with the security container.
@@ -43,7 +42,7 @@ namespace Xigadee
         /// <param name="payload">The incoming payload.</param>
         protected virtual void PayloadIncomingSecurity(TransmissionPayload payload)
         {
-            payload.SecurityPrincipal = new ClaimsPrincipal();
+            Security.Verify(payload);
         }
         #endregion
 
@@ -54,6 +53,7 @@ namespace Xigadee
         /// <param name="payload">The incoming payload.</param>
         protected virtual void PayloadOutgoingSecurity(TransmissionPayload payload)
         {
+            Security.Secure(payload);
         }
         #endregion
     }

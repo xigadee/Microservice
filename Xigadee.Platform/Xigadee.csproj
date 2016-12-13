@@ -455,6 +455,7 @@
     <Compile Include="Security\Helper\SignatureHelper.cs" />
     <Compile Include="Security\ISecurityContainer.cs" />
     <Compile Include="Security\SecurityContainer.cs" />
+    <Compile Include="Security\SecurityContainer_Communication.cs" />
     <Compile Include="Security\SecurityPolicy.cs" />
     <Compile Include="Security\SecurityStatistics.cs" />
     <Compile Include="Serialization\DefaultDataContractSerializer.cs" />

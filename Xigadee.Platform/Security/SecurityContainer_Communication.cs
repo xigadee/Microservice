@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,19 +28,15 @@ namespace Xigadee
     /// The security container class contains all the components to secure the incoming messaging for a Microservice, 
     /// and to ensure that incoming message requests have the correct permissions necessary to be processed.
     /// </summary>
-    public partial class SecurityContainer: ServiceContainerBase<SecurityStatistics, SecurityPolicy>, ISecurityService
+    public partial class SecurityContainer
     {
-        public SecurityContainer(SecurityPolicy policy):base(policy)
+
+        public void Verify(TransmissionPayload payloadIn)
         {
-            
+            payloadIn.SecurityPrincipal = new ClaimsPrincipal();
         }
 
-        protected override void StartInternal()
-        {
-
-        }
-
-        protected override void StopInternal()
+        public void Secure(TransmissionPayload payloadOut)
         {
 
         }
