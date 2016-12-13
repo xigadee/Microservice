@@ -23,6 +23,9 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This interface includes the events supported by a command.
+    /// </summary>
     public interface ICommandEvents
     {
         /// <summary>

@@ -37,7 +37,7 @@ namespace Xigadee
                     , referenceId: signature.Item3);
 
                 CommandRegister(handler);
-            }     
+            }
         }
 
         /// <summary>

@@ -34,6 +34,8 @@ namespace Xigadee
         public void Verify(TransmissionPayload payloadIn)
         {
             payloadIn.SecurityPrincipal = new ClaimsPrincipal();
+
+            //payloadIn.SecurityPrincipal.is
         }
 
         public void Secure(TransmissionPayload payloadOut)

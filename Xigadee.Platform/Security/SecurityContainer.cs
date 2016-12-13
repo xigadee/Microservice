@@ -27,11 +27,32 @@ namespace Xigadee
     /// The security container class contains all the components to secure the incoming messaging for a Microservice, 
     /// and to ensure that incoming message requests have the correct permissions necessary to be processed.
     /// </summary>
-    public partial class SecurityContainer: ServiceContainerBase<SecurityStatistics, SecurityPolicy>, ISecurityService
+    public partial class SecurityContainer: ServiceContainerBase<SecurityStatistics, SecurityPolicy>
+        , ISecurityService, IRequireDataCollector, IServiceOriginator
     {
-        public SecurityContainer(SecurityPolicy policy):base(policy)
+        #region Constructor
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="policy">The security policy.</param>
+        public SecurityContainer(SecurityPolicy policy) : base(policy)
         {
-            
+
+        } 
+        #endregion
+        #region Collector
+        /// <summary>
+        /// This is teh data collector used for logging.
+        /// </summary>
+        public IDataCollection Collector
+        {
+            get; set;
+        }
+        #endregion
+
+        public MicroserviceId OriginatorId
+        {
+            get;set;
         }
 
         protected override void StartInternal()
