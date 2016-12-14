@@ -33,16 +33,26 @@ namespace Xigadee
         /// <summary>
         /// This dictionary object holds the action mapping for the logging type.
         /// </summary>
-        protected Dictionary<DataCollectionSupport, Action<EventBase>> mSupported; 
+        protected Dictionary<DataCollectionSupport, Action<EventBase>> mSupported;
+        /// <summary>
+        /// This is the support map which indicates which type of logging is supported by the collector.
+        /// </summary>
+        protected readonly DataCollectionSupport mSupportMap;
         #endregion
         #region Constructor
         /// <summary>
         /// This constructor passes in the support types for the collector.
         /// </summary>
-        protected DataCollectorBase():base()
+        protected DataCollectorBase(DataCollectionSupport? supportMap = null) :base()
         {
             mSupported = new Dictionary<DataCollectionSupport, Action<EventBase>>();
             SupportLoadDefault();
+
+            var support = mSupported.Select((k) => k.Key).Aggregate((a,b) => a & b);
+            if (supportMap.HasValue)
+                mSupportMap = support & supportMap.Value;
+            else
+                mSupportMap = support;
         }
         #endregion
 
@@ -61,7 +71,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="eventType">The event type.</param>
         /// <param name="eventData">The event data.</param>
-        public virtual void SupportAdd(DataCollectionSupport eventType, Action<EventBase> eventData)
+        protected virtual void SupportAdd(DataCollectionSupport eventType, Action<EventBase> eventData)
         {
             mSupported[eventType] = eventData;
         } 
@@ -75,7 +85,7 @@ namespace Xigadee
         /// <returns></returns>
         public virtual bool IsSupported(DataCollectionSupport support)
         {
-            return mSupported.ContainsKey(support);
+            return (mSupportMap & support)>0;
         }
         #endregion
         #region OriginatorId

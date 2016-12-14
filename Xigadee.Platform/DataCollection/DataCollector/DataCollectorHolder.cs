@@ -28,6 +28,10 @@ namespace Xigadee
     /// </summary>
     public class DataCollectorHolder: DataCollectorBase<DataCollectorStatistics>
     {
+        public DataCollectorHolder(DataCollectionSupport? supportMap = null):base(supportMap)
+        {
+
+        }
         protected override void StartInternal()
         {
         }

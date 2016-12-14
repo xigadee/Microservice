@@ -54,7 +54,6 @@ namespace Xigadee
 
         #endregion
         #region Constructor
-
         /// <summary>
         /// This is the default constructor.
         /// </summary>
@@ -291,7 +290,8 @@ namespace Xigadee
             string contentType = null, string contentEncoding = null,
             string version = null,
             string directory = null, IEnumerable<KeyValuePair<string, string>> metadata = null,
-            CancellationToken? cancel = null)
+            CancellationToken? cancel = null,
+            bool useEncryption = true)
         {
             var request = new StorageRequestHolder(key, cancel, directory);
 
@@ -312,7 +312,7 @@ namespace Xigadee
 
                         // If encryption provided encrypt the body
                         var uploadBody = body;
-                        if (mEncryption != null)
+                        if (useEncryption && mEncryption != null)
                             uploadBody = mEncryption.Encrypt(body);
 
                         await rq.Blob.UploadFromByteArrayAsync(uploadBody, 0, uploadBody.Length,
@@ -334,7 +334,7 @@ namespace Xigadee
             string contentType = null, string contentEncoding = null,
             string version = null, string oldVersion = null,
             string directory = null, IEnumerable<KeyValuePair<string, string>> metadata = null,
-            CancellationToken? cancel = null, bool createSnapshot = false)
+            CancellationToken? cancel = null, bool createSnapshot = false, bool useEncryption = true)
         {
             var request = new StorageRequestHolder(key, cancel, directory);
             return await CallCloudBlockBlob(request,
@@ -370,7 +370,7 @@ namespace Xigadee
 
                     // If encryption provided encrypt the body
                     var uploadBody = body;
-                    if (mEncryption != null)
+                    if (useEncryption && mEncryption != null)
                         uploadBody = mEncryption.Encrypt(body);
 
                     await rq.Blob.UploadFromByteArrayAsync(uploadBody, 0, uploadBody.Length,
@@ -388,7 +388,7 @@ namespace Xigadee
             string contentType = null, string contentEncoding = null,
             string version = null, string oldVersion = null,
             string directory = null, IEnumerable<KeyValuePair<string, string>> metadata = null,
-            CancellationToken? cancel = null, bool createSnapshot = false)
+            CancellationToken? cancel = null, bool createSnapshot = false, bool useEncryption = true)
         {
             var request = new StorageRequestHolder(key, cancel, directory);
             var response = await CallCloudBlockBlob(request,
@@ -416,7 +416,7 @@ namespace Xigadee
 
                     // If encryption provided encrypt the body
                     var uploadBody = body;
-                    if (mEncryption != null)
+                    if (useEncryption && mEncryption != null)
                         uploadBody = mEncryption.Encrypt(body);
 
                     await rq.Blob.UploadFromByteArrayAsync(uploadBody, 0, uploadBody.Length,
@@ -436,7 +436,10 @@ namespace Xigadee
         }
         #endregion
         #region Read...
-        public virtual async Task<StorageResponseHolder> Read(string key, string directory = null, CancellationToken? cancel = null)
+        public virtual async Task<StorageResponseHolder> Read(string key
+            , string directory = null
+            , CancellationToken? cancel = null
+            , bool useEncryption = true)
         {
             var request = new StorageRequestHolder(key, cancel, directory);
             return await CallCloudBlockBlob(request,
@@ -453,7 +456,7 @@ namespace Xigadee
                         sData.Read(rs.Data, 0, rs.Data.Length);
 
                         // If encryption provided decrypt the blob
-                        if (mEncryption != null)
+                        if (useEncryption && mEncryption != null)
                             rs.Data = mEncryption.Decrypt(rs.Data);
 
                         MetadataGet(rq.Blob, rs);
@@ -531,7 +534,6 @@ namespace Xigadee
                 });
         }
         #endregion
-
 
     }
 }
