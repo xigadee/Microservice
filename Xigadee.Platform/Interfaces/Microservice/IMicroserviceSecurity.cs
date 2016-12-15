@@ -14,41 +14,28 @@
 // limitations under the License.
 #endregion
 
-#region using
-
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Runtime.Caching;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-#endregion
+
 namespace Xigadee
 {
-    //Process
-    public partial class Microservice
+    /// <summary>
+    /// This interface is responsible for the Microservice security.
+    /// </summary>
+    public interface IMicroserviceSecurity
     {
         /// <summary>
-        /// This method registers a symmetric encryption handler with the Security container.
+        /// This method registers an encryption handler with the Security container, which can encrypt and decrypt a binary blob.
         /// </summary>
         /// <param name="identifier">The identifier. This is used to identify the handler so that it can be assigned to multiple channels.</param>
         /// <param name="handler">The actual handler.</param>
-        public void RegisterEncryptionHandler(string identifier, IEncryptionHandler handler)
-        {
-            mSecurity.RegisterEncryptionHandler(identifier, handler);
-        }
+        void RegisterEncryptionHandler(string identifier, IEncryptionHandler handler);
 
         /// <summary>
         /// This method specifies whether the microservice has the encryption handler registered.
         /// </summary>
         /// <param name="identifier">The identifier for the handler.</param>
         /// <returns>Returns true if the handler is registered.</returns>
-        public bool HasEncryptionHandler(string identifier)
-        {
-            return mSecurity.HasEncryptionHandler(identifier);
-        }
+        bool HasEncryptionHandler(string identifier);
     }
 }

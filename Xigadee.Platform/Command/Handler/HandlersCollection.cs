@@ -32,6 +32,9 @@ namespace Xigadee
     {
         private Func<List<MessageFilterWrapper>> mSupportedMessageTypes;
 
+        /// <summary>
+        /// The handler change event.
+        /// </summary>
         public event EventHandler<SupportedMessagesChange> OnCommandChange;
 
         public HandlersCollection(Func<List<MessageFilterWrapper>> supportedMessageTypes)
@@ -39,6 +42,10 @@ namespace Xigadee
             mSupportedMessageTypes = supportedMessageTypes;
         }
 
+        /// <summary>
+        /// This message is fired when a command status changes.
+        /// </summary>
+        /// <param name="messages"></param>
         public void NotifyChange(List<MessageFilterWrapper> messages)
         {
             try
@@ -51,6 +58,9 @@ namespace Xigadee
             }
         }
 
+        /// <summary>
+        /// This is a list of supported messages.
+        /// </summary>
         public List<MessageFilterWrapper> SupportedMessages
         {
             get

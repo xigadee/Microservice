@@ -56,7 +56,19 @@ namespace Xigadee
         }
         #endregion
 
-        public void RegisterSymmetricEncryptionHandler(string identifier, IEncryptionHandler handler)
+        public bool HasEncryptionHandler(string identifier)
+        {
+            return mEncryptionHandlers.ContainsKey(identifier);
+        }
+
+        /////
+        //public IEnumerable<KeyValuePair<string, IEncryptionHandler>> EncryptionHandlers()
+        //{
+        //    return mEncryptionHandlers;
+        //}
+
+
+        public void RegisterEncryptionHandler(string identifier, IEncryptionHandler handler)
         {
             try
             {

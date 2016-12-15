@@ -133,6 +133,11 @@
     <Compile Include="Exceptions\TransmitRetryExceededException.cs" />
     <Compile Include="Interfaces\IRequireDataCollector.cs" />
     <Compile Include="Interfaces\ISharedService.cs" />
+    <Compile Include="Interfaces\Microservice\IMicroserviceConfigure.cs" />
+    <Compile Include="Interfaces\Microservice\IMicroserviceEvents.cs" />
+    <Compile Include="Interfaces\Microservice\IMicroservicePolicy.cs" />
+    <Compile Include="Interfaces\Microservice\IMicroserviceProcess.cs" />
+    <Compile Include="Interfaces\Microservice\IMicroserviceSecurity.cs" />
     <Compile Include="Security\Exceptions\EncryptionHandlerNotFoundException.cs" />
     <Compile Include="Security\Interfaces\IEncryptionHandler.cs" />
     <Compile Include="Messaging\ProcessOptions.cs" />
@@ -241,7 +246,7 @@
     <Compile Include="Pipeline\Extensions\Add\AddEncryptionHandler.cs" />
     <Compile Include="Pipeline\Extensions\Attach\AttachCommand.cs" />
     <Compile Include="Pipeline\Extensions\Attach\AttachCommandInitiator.cs" />
-    <Compile Include="Pipeline\Extensions\Attach\AttachEncryptionPolicy.cs" />
+    <Compile Include="Pipeline\Extensions\Attach\AttachTransportEncryption.cs" />
     <Compile Include="Pipeline\Extensions\Attach\AttachMessageRedirectRule.cs" />
     <Compile Include="Pipeline\Extensions\Add\AddListener.cs" />
     <Compile Include="Pipeline\Extensions\Add\AddSender.cs" />
@@ -281,7 +286,7 @@
     <Compile Include="Messaging\ServiceMessageHelper.cs" />
     <Compile Include="Components\ServiceStatus.cs" />
     <Compile Include="Components\Statistics\StatisticsBase.cs" />
-    <Compile Include="Interfaces\IMicroservice.cs" />
+    <Compile Include="Interfaces\Microservice\IMicroservice.cs" />
     <Compile Include="Interfaces\ICache.cs" />
     <Compile Include="Interfaces\IContainerService.cs" />
     <Compile Include="DataCollection\Interfaces\IDataCollectorComponent.cs" />

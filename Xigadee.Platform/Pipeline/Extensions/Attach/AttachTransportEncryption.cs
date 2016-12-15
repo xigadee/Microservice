@@ -25,19 +25,22 @@ namespace Xigadee
     public static partial class CorePipelineExtensions
     {
         /// <summary>
-        /// This extension method can be used to assign a registered encryption policy to the channel to ensure
-        /// that the message payload in secured during transmission.
+        /// This extension method can be used to assign a registered encryption handler to the channel to ensure
+        /// that the message payload in encrypted during transmission.
         /// </summary>
         /// <typeparam name="C">The pipeline channel extension type.</typeparam>
-        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="cpipe">The pipeline.</param>
         /// <param name="identifier">The encryption id.</param>
         /// <returns>Returns the pipeline.</returns>
-        public static C AttachEncrytionPolicy<C>(this C pipeline, string identifier)
-            where C : IPipelineChannel
-        {        
-            pipeline.Channel.EncryptionHandlerId = identifier;
+        public static C AttachTransportEncryption<C>(this C cpipe, string identifier)
+            where C : IPipelineChannelIncoming<IPipeline>
+        {
+            if (!cpipe.Pipeline.Service.HasEncryptionHandler(identifier))
+                throw new Exception(identifier);
 
-            return pipeline;
+            cpipe.Channel.EncryptionHandlerId = identifier;
+
+            return cpipe;
         }
 
         
