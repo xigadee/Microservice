@@ -192,7 +192,6 @@ namespace Xigadee
         }
         #endregion
 
-
         #region PayloadSubmit(ClientHolder client, TransmissionPayload payload)
         /// <summary>
         /// This method processes an individual payload returned from a client.

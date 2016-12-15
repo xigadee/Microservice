@@ -30,15 +30,27 @@ namespace Xigadee
     /// </summary>
     public partial class SecurityContainer
     {
-
-        public void Verify(TransmissionPayload payloadIn)
+        /// <summary>
+        /// This method verifies the incoming payload, and decrypts the channel payload if this has been specified 
+        /// for the channel.
+        /// </summary>
+        /// <param name="channel">The channel.</param>
+        /// <param name="payloadIn">The incoming payload.</param>
+        public void Verify(Channel channel, TransmissionPayload payloadIn)
         {
+            //if (channel.SymmetricEncryptionPolicyId != null)
+
             payloadIn.SecurityPrincipal = new ClaimsPrincipal();
 
             //payloadIn.SecurityPrincipal.is
         }
 
-        public void Secure(TransmissionPayload payloadOut)
+        /// <summary>
+        /// This method encrypts the outgoing payload if this has been set.
+        /// </summary>
+        /// <param name="channel">The channel</param>
+        /// <param name="payloadOut"></param>
+        public void Secure(Channel channel, TransmissionPayload payloadOut)
         {
 
         }

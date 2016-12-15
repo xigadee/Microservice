@@ -174,5 +174,10 @@ namespace Xigadee
             //}
 
         }
+
+        /// <summary>
+        /// This identifier is set when we require an symmetric encrpytion to be applied to the traffic.
+        /// </summary>
+        public string SymmetricEncryptionPolicyId { get; set; }
     }
 }

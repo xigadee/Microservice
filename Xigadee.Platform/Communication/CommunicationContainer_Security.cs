@@ -29,11 +29,13 @@ namespace Xigadee
 {
     public partial class CommunicationContainer
     {
+        #region Security
         /// <summary>
         /// This interface contains a referece to the security container and is used to provide extensible
         /// security support.
         /// </summary>
-        public ISecurityService Security { get; set;}
+        public ISecurityService Security { get; set; } 
+        #endregion
 
         #region PayloadIncomingSecurityCheck(TransmissionPayload payload)
         /// <summary>
@@ -41,11 +43,15 @@ namespace Xigadee
         /// </summary>
         /// <param name="payload">The incoming payload.</param>
         protected virtual void PayloadIncomingSecurity(TransmissionPayload payload)
-        {
-            Security.Verify(payload);
+        { 
+            //Try and resolve the channel.
+            Channel channel = null;
+            TryGet(payload.Message.ChannelId, ChannelDirection.Incoming, out channel);
+
+            //Decrypt and verify the incoming message.
+            Security.Verify(channel, payload);
         }
         #endregion
-
         #region PayloadOutgoingSecurity(TransmissionPayload payload)
         /// <summary>
         /// This method validates the payload with the security container.
@@ -53,7 +59,12 @@ namespace Xigadee
         /// <param name="payload">The incoming payload.</param>
         protected virtual void PayloadOutgoingSecurity(TransmissionPayload payload)
         {
-            Security.Secure(payload);
+            //Try and resolve the channel.
+            Channel channel = null;
+            TryGet(payload.Message.ChannelId, ChannelDirection.Outgoing, out channel);
+
+            //Secure the outgoing payload.
+            Security.Secure(channel, payload);
         }
         #endregion
     }

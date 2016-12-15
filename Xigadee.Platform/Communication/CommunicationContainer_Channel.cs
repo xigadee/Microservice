@@ -33,8 +33,15 @@ namespace Xigadee
         private Dictionary<string, Channel> mContainerOutgoing;
         #endregion
 
-
-        private bool? Wrapper(ChannelDirection direction, Func<bool?,bool?> incoming, Func<bool?,bool?> outgoing)
+        #region Wrapper...
+        /// <summary>
+        /// This method is used to ensure either of both collections are invoked for channel based methods.
+        /// </summary>
+        /// <param name="direction">The channel direction.</param>
+        /// <param name="incoming">The incoming function.</param>
+        /// <param name="outgoing">The outgoing funtion.</param>
+        /// <returns></returns>
+        private bool? Wrapper(ChannelDirection direction, Func<bool?, bool?> incoming, Func<bool?, bool?> outgoing)
         {
             bool? result = null;
 
@@ -45,7 +52,8 @@ namespace Xigadee
                 result = outgoing?.Invoke(result);
 
             return result;
-        }
+        } 
+        #endregion
 
         #region Channels
         /// <summary>

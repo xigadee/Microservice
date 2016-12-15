@@ -30,6 +30,12 @@ namespace Xigadee
     public partial class SecurityContainer: ServiceContainerBase<SecurityStatistics, SecurityPolicy>
         , ISecurityService, IRequireDataCollector, IServiceOriginator
     {
+        #region Declarations
+        /// <summary>
+        /// These are the handlers used to encrpyt and decrypt blob payloads
+        /// </summary>
+        private Dictionary<string, ISymmetricEncryption> mSymmetricEncryptionHandlers;
+        #endregion        
         #region Constructor
         /// <summary>
         /// This is the default constructor.
@@ -37,7 +43,7 @@ namespace Xigadee
         /// <param name="policy">The security policy.</param>
         public SecurityContainer(SecurityPolicy policy) : base(policy)
         {
-
+            mSymmetricEncryptionHandlers = new Dictionary<string, ISymmetricEncryption>();
         } 
         #endregion
         #region Collector
@@ -50,14 +56,32 @@ namespace Xigadee
         }
         #endregion
 
+        public void RegisterSymmetricEncryptionHandler(string identifier, ISymmetricEncryption handler)
+        {
+            try
+            {
+                mSymmetricEncryptionHandlers.Add(identifier, handler);
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
+
+        #region OriginatorId
+        /// <summary>
+        /// This is the system information.
+        /// </summary>
         public MicroserviceId OriginatorId
         {
-            get;set;
-        }
+            get; set;
+        } 
+        #endregion
 
         protected override void StartInternal()
         {
-
+            
         }
 
         protected override void StopInternal()

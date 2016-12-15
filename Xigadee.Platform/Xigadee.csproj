@@ -189,6 +189,7 @@
     <Compile Include="Configuration\ConfigBase.cs" />
     <Compile Include="Microservice\MicroserviceId.cs" />
     <Compile Include="Microservice\Microservice_Process.cs" />
+    <Compile Include="Microservice\Microservice_Security.cs" />
     <Compile Include="Microservice\Policy\MicroservicePolicy.cs" />
     <Compile Include="CommandPersistence\Client\PersistenceInternalServicePolicy.cs" />
     <Compile Include="CommandPersistence\Events\EntityChangeEventArgs.cs" />
@@ -236,8 +237,10 @@
     <Compile Include="Pipeline\Configuration\ConfigureMessaging.cs" />
     <Compile Include="Pipeline\Extensions\Add\AddCommandInitiator.cs" />
     <Compile Include="Pipeline\Extensions\Add\AddDataCollector.cs" />
+    <Compile Include="Pipeline\Extensions\Add\AddEncryptionHandler.cs" />
     <Compile Include="Pipeline\Extensions\Attach\AttachCommand.cs" />
     <Compile Include="Pipeline\Extensions\Attach\AttachCommandInitiator.cs" />
+    <Compile Include="Pipeline\Extensions\Attach\AttachEncryptionPolicy.cs" />
     <Compile Include="Pipeline\Extensions\Attach\AttachMessageRedirectRule.cs" />
     <Compile Include="Pipeline\Extensions\Add\AddListener.cs" />
     <Compile Include="Pipeline\Extensions\Add\AddSender.cs" />

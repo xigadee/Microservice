@@ -22,7 +22,8 @@ namespace Xigadee
     /// <summary>
     /// This interface defines the Microservice definition.
     /// </summary>
-    public interface IMicroservice: IMicroserviceConfigure, IMicroserviceProcess, IMicroserviceEvents, IMicroservicePolicy, IService
+    public interface IMicroservice: IMicroserviceConfigure, IMicroserviceProcess, IMicroserviceSecurity
+        , IMicroserviceEvents, IMicroservicePolicy, IService
     {
         MicroserviceId Id { get; }
 
@@ -37,6 +38,15 @@ namespace Xigadee
         IEnumerable<Channel> Channels { get; }
     }
 
+    public interface IMicroserviceSecurity
+    {
+        /// <summary>
+        /// This method registers a symmetric encryption handler with the Security container.
+        /// </summary>
+        /// <param name="identifier">The identifier. This is used to identify the handler so that it can be assigned to multiple channels.</param>
+        /// <param name="handler">The actual handler.</param>
+        void RegisterSymmetricEncryptionHandler(string identifier, ISymmetricEncryption handler);
+    }
     /// <summary>
     /// This interface is used by the configuration pipeline to add necessary components to the microservice.
     /// </summary>

@@ -18,9 +18,9 @@ namespace Xigadee
     /// </summary>
     public interface ISecurityCommunication
     {
-        void Verify(TransmissionPayload payloadIn);
+        void Verify(Channel channel, TransmissionPayload payloadIn);
 
-        void Secure(TransmissionPayload payloadOut);
+        void Secure(Channel channel, TransmissionPayload payloadOut);
     }
 
     /// <summary>
