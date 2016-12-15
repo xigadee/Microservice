@@ -45,7 +45,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="identifier">The identifier. This is used to identify the handler so that it can be assigned to multiple channels.</param>
         /// <param name="handler">The actual handler.</param>
-        void RegisterSymmetricEncryptionHandler(string identifier, ISymmetricEncryption handler);
+        void RegisterSymmetricEncryptionHandler(string identifier, IEncryptionHandler handler);
     }
     /// <summary>
     /// This interface is used by the configuration pipeline to add necessary components to the microservice.

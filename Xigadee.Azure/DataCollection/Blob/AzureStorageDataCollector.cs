@@ -35,7 +35,7 @@ namespace Xigadee
         protected string mServiceName;
         protected readonly ResourceProfile mResourceProfile;
         protected readonly IResourceConsumer mResourceConsumer;
-        protected readonly ISymmetricEncryption mEncryption;
+        protected readonly IEncryptionHandler mEncryption;
         #endregion
         #region Constructor
 
@@ -60,7 +60,7 @@ namespace Xigadee
             , BlobRequestOptions options = null
             , OperationContext context = null
             , ResourceProfile resourceProfile = null
-            , ISymmetricEncryption encryption = null
+            , IEncryptionHandler encryption = null
             , DataCollectionSupport? supportMap = null):base(supportMap)
         {
             mStorage = new StorageServiceBase(credentials, containerName, accessType, options, context, defaultTimeout, encryption);

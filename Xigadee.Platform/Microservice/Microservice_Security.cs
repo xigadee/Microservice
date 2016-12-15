@@ -36,7 +36,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="identifier">The identifier. This is used to identify the handler so that it can be assigned to multiple channels.</param>
         /// <param name="handler">The actual handler.</param>
-        public void RegisterSymmetricEncryptionHandler(string identifier, ISymmetricEncryption handler)
+        public void RegisterSymmetricEncryptionHandler(string identifier, IEncryptionHandler handler)
         {
             mSecurity.RegisterSymmetricEncryptionHandler(identifier, handler);
         }

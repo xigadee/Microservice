@@ -41,7 +41,7 @@ namespace Xigadee
             , string serviceName = null
             , string containerName = "eventsource"
             , ResourceProfile resourceProfile = null
-            , ISymmetricEncryption encryption = null
+            , IEncryptionHandler encryption = null
             , Action<AzureStorageEventSource> onCreate = null)
             where P: IPipeline
         {

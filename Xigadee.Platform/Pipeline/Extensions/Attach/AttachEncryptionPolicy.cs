@@ -35,7 +35,7 @@ namespace Xigadee
         public static C AttachEncrytionPolicy<C>(this C pipeline, string identifier)
             where C : IPipelineChannel
         {        
-            pipeline.Channel.SymmetricEncryptionPolicyId = identifier;
+            pipeline.Channel.EncryptionHandlerId = identifier;
 
             return pipeline;
         }

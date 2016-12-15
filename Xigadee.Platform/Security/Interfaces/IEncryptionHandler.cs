@@ -19,20 +19,20 @@ namespace Xigadee
     /// <summary>
     /// Provide symmetric i.e. Encrypt / Decrypt Functionality
     /// </summary>
-    public interface ISymmetricEncryption
+    public interface IEncryptionHandler
     {
         /// <summary>
         /// Encrypt a byte array
         /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
+        /// <param name="input">The byte array to encrypt.</param>
+        /// <returns>Returns the encrypted byte array.</returns>
         byte[] Encrypt(byte[] input);
 
         /// <summary>
         /// Decrypt a byte array
         /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
+        /// <param name="input">The byte array to decrypt.</param>
+        /// <returns>Returns the decrpypted byte array.</returns>
         byte[] Decrypt(byte[] input);
     }
 }

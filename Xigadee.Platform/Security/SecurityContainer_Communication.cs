@@ -38,20 +38,35 @@ namespace Xigadee
         /// <param name="payloadIn">The incoming payload.</param>
         public void Verify(Channel channel, TransmissionPayload payloadIn)
         {
-            //if (channel.SymmetricEncryptionPolicyId != null)
-
             payloadIn.SecurityPrincipal = new ClaimsPrincipal();
 
-            //payloadIn.SecurityPrincipal.is
+            if (channel.EncryptionHandlerId != null)
+            {
+                if (!mEncryptionHandlers.ContainsKey(channel.Id))
+                    throw new ChannelEncryptionIdNotResolvedException(channel);
+
+                byte[] decrypt = mEncryptionHandlers[channel.Id].Decrypt(payloadIn.Message.Blob);
+
+                payloadIn.Message.Blob = decrypt;
+            }
         }
 
         /// <summary>
         /// This method encrypts the outgoing payload if this has been set.
         /// </summary>
         /// <param name="channel">The channel</param>
-        /// <param name="payloadOut"></param>
+        /// <param name="payloadOut">The outgoing payload.</param>
         public void Secure(Channel channel, TransmissionPayload payloadOut)
         {
+            if (channel.EncryptionHandlerId != null)
+            {
+                if (!mEncryptionHandlers.ContainsKey(channel.Id))
+                    throw new ChannelEncryptionIdNotResolvedException(channel);
+
+                byte[] encrypt = mEncryptionHandlers[channel.Id].Encrypt(payloadOut.Message.Blob);
+
+                payloadOut.Message.Blob = encrypt;
+            }
 
         }
     }

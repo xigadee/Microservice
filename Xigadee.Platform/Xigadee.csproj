@@ -133,7 +133,8 @@
     <Compile Include="Exceptions\TransmitRetryExceededException.cs" />
     <Compile Include="Interfaces\IRequireDataCollector.cs" />
     <Compile Include="Interfaces\ISharedService.cs" />
-    <Compile Include="Interfaces\ISymmetricEncryption.cs" />
+    <Compile Include="Security\Exceptions\EncryptionHandlerNotFoundException.cs" />
+    <Compile Include="Security\Interfaces\IEncryptionHandler.cs" />
     <Compile Include="Messaging\ProcessOptions.cs" />
     <Compile Include="Messaging\RateLimitSignal.cs" />
     <Compile Include="Messaging\TransmissionPayloadHelper.cs" />

@@ -26,8 +26,8 @@ namespace Xigadee
     {
         public static P AddSymmetricEncryptionHandler<P>(this P pipeline
             , string identifier
-            , ISymmetricEncryption method
-            , Action<ISymmetricEncryption> action = null)
+            , IEncryptionHandler method
+            , Action<IEncryptionHandler> action = null)
             where P : IPipeline
         {
             //var collector = creator(pipeline.Configuration);
@@ -41,8 +41,8 @@ namespace Xigadee
 
         public static P AddSymmetricEncryptionHandler<P>(this P pipeline
             , string identifier
-            , Func<IEnvironmentConfiguration, ISymmetricEncryption> creator
-            , Action<ISymmetricEncryption> action = null)
+            , Func<IEnvironmentConfiguration, IEncryptionHandler> creator
+            , Action<IEncryptionHandler> action = null)
             where P : IPipeline
         {
             var handler = creator(pipeline.Configuration);
