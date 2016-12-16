@@ -29,6 +29,7 @@ namespace Xigadee
     public class CommandContainer:ServiceContainerBase<CommandContainerStatistics, CommandContainerPolicy>
     {
         #region Declarations
+        //public event EventHandler<> OnCommandStatusChange;
         /// <summary>
         /// This concurrent dictionary contains the map used to resolve handlers to messages.
         /// </summary>

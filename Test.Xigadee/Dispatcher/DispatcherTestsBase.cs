@@ -27,7 +27,6 @@ namespace Test.Xigadee
                 mDCommand = new C();
                 var pipeline = new MicroservicePipeline(GetType().Name)
                     .AddDataCollector((c) => collector = new DebugMemoryDataCollector())
-                    .AddPayloadSerializerDefaultJson()
                     .AddChannelIncoming("internalIn", internalOnly: false, autosetPartition01:false)
                         .AttachPriorityPartition(0, 1)
                         .AttachListener((c) => new ManualChannelListener (), action: (s) => mListener = s)

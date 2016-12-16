@@ -18,6 +18,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -175,7 +176,9 @@ namespace Xigadee
         /// <param name="eventData">The event data.</param>
         /// <param name="support">The event data type.</param>
         /// <param name="sync">Specifies whether the data should be written out immediately.</param>
-        public void Write(EventBase eventData, DataCollectionSupport support, bool sync = false)
+        /// <param name="claims">The optional claims of the calling party. If not set explicity, then this
+        /// will be populated from the current thread. If you don't want this then pass an empty claims object.</param>
+        public void Write(EventBase eventData, DataCollectionSupport support, bool sync = false, ClaimsPrincipal claims = null)
         {
             if (eventData == null)
                 throw new ArgumentNullException("eventData", "eventData cannot be null for Write");
@@ -183,7 +186,9 @@ namespace Xigadee
             if (!Active)
                 throw new ServiceNotStartedException();
 
-            var item = new EventHolder(support) { Data = eventData, Sync = sync, Timestamp = StatisticsInternal.ActiveIncrement() };
+            //Create the event holder and set the identity based on the claims passed or if null, picked up from the 
+            //current thread.
+            var item = new EventHolder(support, claims) { Data = eventData, Sync = sync, Timestamp = StatisticsInternal.ActiveIncrement() };
 
             //Do we have to write this straight away, or can we push it on to an async thread.
             if (item.Sync)

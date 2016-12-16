@@ -19,6 +19,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -190,6 +191,7 @@ namespace Xigadee
             TaskSubmit(tracker);
         }
         #endregion
+
         #region PayloadSubmit(ClientHolder client, TransmissionPayload payload)
         /// <summary>
         /// This method processes an individual payload returned from a client.
@@ -206,13 +208,11 @@ namespace Xigadee
                 mClientCollection.QueueTimeLog(clientId, payload.Message.EnqueuedTimeUTC);
                 mClientCollection.ActiveIncrement(clientId);
 
-                //Rewrite rule validate, and rewrite for incoming message.
-                Channel channel;
-                if (TryGet(payload.Message.ChannelId, ChannelDirection.Incoming, out channel))
-                {
-                    if (channel.CouldRedirect)
-                        channel.Redirect(payload);
-                }
+                //Verify the incoming payload with the security container.
+                PayloadIncomingSecurity(payload);
+
+                //Do we need to redirect the payload based on the redirect/rewrite rules.
+                PayloadIncomingRedirectCheck(payload);
 
                 TaskTracker tracker = TaskManager.TrackerCreateFromPayload(payload, payload.Source);
 

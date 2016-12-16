@@ -29,8 +29,9 @@ namespace Xigadee
     /// <summary>
     /// This container holds all the communication components (sender/listener/bidirectional) for the Microservice.
     /// </summary>
-    public partial class CommunicationContainer: ServiceContainerBase<CommunicationStatistics, CommunicationPolicy>, 
-        IServiceOriginator, IRequireDataCollector, IPayloadSerializerConsumer, IRequireSharedServices, IRequireScheduler, ITaskManagerProcess
+    public partial class CommunicationContainer: ServiceContainerBase<CommunicationStatistics, CommunicationPolicy>
+        , IServiceOriginator, IRequireDataCollector, IPayloadSerializerConsumer, IRequireSharedServices
+        , IRequireScheduler, ITaskManagerProcess, IRequireSecurityService
     {
         #region Declarations
         /// <summary>

@@ -14,25 +14,15 @@
 // limitations under the License.
 #endregion
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
 namespace Xigadee
 {
-    /// <summary>
-    /// Provide symmetric i.e. Encrypt / Decrypt Functionality
-    /// </summary>
-    public interface ISymmetricEncryption
+    public static partial class CorePipelineExtensions
     {
-        /// <summary>
-        /// Encrypt a byte array
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        byte[] Encrypt(byte[] input);
-
-        /// <summary>
-        /// Decrypt a byte array
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        byte[] Decrypt(byte[] input);
     }
 }

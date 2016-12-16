@@ -79,6 +79,7 @@
     <Compile Include="Command\Helper\CommandHolderException.cs" />
     <Compile Include="Communication\Base\IMessagingService.cs" />
     <Compile Include="Communication\Channel\ChannelRewriteRule.cs" />
+    <Compile Include="Communication\CommunicationContainer_Security.cs" />
     <Compile Include="Communication\Exceptions\MessagingException.cs" />
     <Compile Include="Communication\Exceptions\StartupMessagingException.cs" />
     <Compile Include="Communication\TcpChannel\Configuration\TcpTlsConfigurationHelper.cs" />
@@ -132,7 +133,13 @@
     <Compile Include="Exceptions\TransmitRetryExceededException.cs" />
     <Compile Include="Interfaces\IRequireDataCollector.cs" />
     <Compile Include="Interfaces\ISharedService.cs" />
-    <Compile Include="Interfaces\ISymmetricEncryption.cs" />
+    <Compile Include="Interfaces\Microservice\IMicroserviceConfigure.cs" />
+    <Compile Include="Interfaces\Microservice\IMicroserviceEvents.cs" />
+    <Compile Include="Interfaces\Microservice\IMicroservicePolicy.cs" />
+    <Compile Include="Interfaces\Microservice\IMicroserviceProcess.cs" />
+    <Compile Include="Interfaces\Microservice\IMicroserviceSecurity.cs" />
+    <Compile Include="Security\Exceptions\EncryptionHandlerNotFoundException.cs" />
+    <Compile Include="Security\Interfaces\IEncryptionHandler.cs" />
     <Compile Include="Messaging\ProcessOptions.cs" />
     <Compile Include="Messaging\RateLimitSignal.cs" />
     <Compile Include="Messaging\TransmissionPayloadHelper.cs" />
@@ -188,6 +195,7 @@
     <Compile Include="Configuration\ConfigBase.cs" />
     <Compile Include="Microservice\MicroserviceId.cs" />
     <Compile Include="Microservice\Microservice_Process.cs" />
+    <Compile Include="Microservice\Microservice_Security.cs" />
     <Compile Include="Microservice\Policy\MicroservicePolicy.cs" />
     <Compile Include="CommandPersistence\Client\PersistenceInternalServicePolicy.cs" />
     <Compile Include="CommandPersistence\Events\EntityChangeEventArgs.cs" />
@@ -235,8 +243,10 @@
     <Compile Include="Pipeline\Configuration\ConfigureMessaging.cs" />
     <Compile Include="Pipeline\Extensions\Add\AddCommandInitiator.cs" />
     <Compile Include="Pipeline\Extensions\Add\AddDataCollector.cs" />
+    <Compile Include="Pipeline\Extensions\Add\AddEncryptionHandler.cs" />
     <Compile Include="Pipeline\Extensions\Attach\AttachCommand.cs" />
     <Compile Include="Pipeline\Extensions\Attach\AttachCommandInitiator.cs" />
+    <Compile Include="Pipeline\Extensions\Attach\AttachTransportEncryption.cs" />
     <Compile Include="Pipeline\Extensions\Attach\AttachMessageRedirectRule.cs" />
     <Compile Include="Pipeline\Extensions\Add\AddListener.cs" />
     <Compile Include="Pipeline\Extensions\Add\AddSender.cs" />
@@ -251,8 +261,13 @@
     <Compile Include="Pipeline\Interfaces\IPipelineChannel.cs" />
     <Compile Include="Pipeline\Interfaces\IPipeline.cs" />
     <Compile Include="Pipeline\Interfaces\IPipelineExtension.cs" />
+    <Compile Include="Pipeline\Interfaces\IPipelineSecurity.cs" />
     <Compile Include="Pipeline\MicroservicePipelineExtension.cs" />
     <Compile Include="Pipeline\Extensions\ToPipeline.cs" />
+    <Compile Include="Pipeline\SecurityPipeline\Actual.cs" />
+    <Compile Include="Pipeline\SecurityPipeline\Add\AddAuthorization.cs" />
+    <Compile Include="Pipeline\SecurityPipeline\Inspect.cs" />
+    <Compile Include="Pipeline\SecurityPipeline\SecurityPipelineExtension.cs" />
     <Compile Include="ResourceTracker\ResourceTrackerPolicy.cs" />
     <Compile Include="Scheduler\Schedule.cs" />
     <Compile Include="Messaging\ServiceMessage.cs" />
@@ -271,7 +286,7 @@
     <Compile Include="Messaging\ServiceMessageHelper.cs" />
     <Compile Include="Components\ServiceStatus.cs" />
     <Compile Include="Components\Statistics\StatisticsBase.cs" />
-    <Compile Include="Interfaces\IMicroservice.cs" />
+    <Compile Include="Interfaces\Microservice\IMicroservice.cs" />
     <Compile Include="Interfaces\ICache.cs" />
     <Compile Include="Interfaces\IContainerService.cs" />
     <Compile Include="DataCollection\Interfaces\IDataCollectorComponent.cs" />
@@ -447,7 +462,9 @@
     <Compile Include="Security\Helper\Sha256SignatureHelper.cs" />
     <Compile Include="Security\Helper\Sha512SignatureHelper.cs" />
     <Compile Include="Security\Helper\SignatureHelper.cs" />
+    <Compile Include="Security\ISecurityContainer.cs" />
     <Compile Include="Security\SecurityContainer.cs" />
+    <Compile Include="Security\SecurityContainer_Communication.cs" />
     <Compile Include="Security\SecurityPolicy.cs" />
     <Compile Include="Security\SecurityStatistics.cs" />
     <Compile Include="Serialization\DefaultDataContractSerializer.cs" />
@@ -497,6 +514,8 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Security\_Documents\rfc7515.pdf" />
+    <None Include="Security\_Documents\rfc7519.pdf" />
     <None Include="Xigadee.nuspec" />
     <None Include="Xigadee.Platform.licenseheader" />
   </ItemGroup>

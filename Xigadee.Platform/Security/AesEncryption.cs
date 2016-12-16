@@ -24,7 +24,7 @@ namespace Xigadee
     /// <summary>
     /// Perform Encryption / Decryption using AES with IV prepended in encrypted output and used in decryption
     /// </summary>
-    public class AesEncryption : ISymmetricEncryption
+    public class AesEncryption : IEncryptionHandler
     {
         private readonly byte[] mKey;
 

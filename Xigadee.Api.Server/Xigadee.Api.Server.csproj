@@ -167,6 +167,7 @@
     <Compile Include="Controllers\WebhookControllerAsyncBase.cs" />
     <Compile Include="Helper\MicroserviceDependencyResolver.cs" />
     <Compile Include="Pipeline\Actual.cs" />
+    <Compile Include="Pipeline\AddAuthorizationServer.cs" />
     <Compile Include="Pipeline\AddCorrelationIdFilter.cs" />
     <Compile Include="Pipeline\AddMicroserviceUnavailableFilter.cs" />
     <Compile Include="Pipeline\AddVersionHeaderFilter.cs" />

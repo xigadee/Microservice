@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Xigadee
@@ -15,9 +17,11 @@ namespace Xigadee
         /// This constructor sets the data type for the event data holder.
         /// </summary>
         /// <param name="dataType">The data type.</param>
-        public EventHolder(DataCollectionSupport dataType)
+        /// <param name="claims">This </param>
+        public EventHolder(DataCollectionSupport dataType, ClaimsPrincipal claims = null)
         {
             DataType = dataType;
+            Claims = claims ??(Thread.CurrentPrincipal as ClaimsPrincipal);
         }
         /// <summary>
         /// This property specifies whether the event can be queued for logging (false) or should be logged immediately.
@@ -37,5 +41,9 @@ namespace Xigadee
         /// This is the datatype for the event.
         /// </summary>
         public DataCollectionSupport DataType { get; }
+        /// <summary>
+        /// This is the identify of the calling party based on the claims passed with the request,
+        /// </summary>
+        public ClaimsPrincipal Claims {get;}
     }
 }

@@ -27,16 +27,73 @@ namespace Xigadee
     /// The security container class contains all the components to secure the incoming messaging for a Microservice, 
     /// and to ensure that incoming message requests have the correct permissions necessary to be processed.
     /// </summary>
-    public class SecurityContainer: ServiceContainerBase<SecurityStatistics, SecurityPolicy>
+    public partial class SecurityContainer: ServiceContainerBase<SecurityStatistics, SecurityPolicy>
+        , ISecurityService, IRequireDataCollector, IServiceOriginator
     {
-        public SecurityContainer(SecurityPolicy policy):base(policy)
+        #region Declarations
+        /// <summary>
+        /// These are the handlers used to encrpyt and decrypt blob payloads
+        /// </summary>
+        private Dictionary<string, IEncryptionHandler> mEncryptionHandlers;
+        #endregion        
+        #region Constructor
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="policy">The security policy.</param>
+        public SecurityContainer(SecurityPolicy policy) : base(policy)
         {
-            
+            mEncryptionHandlers = new Dictionary<string, IEncryptionHandler>();
+        } 
+        #endregion
+        #region Collector
+        /// <summary>
+        /// This is teh data collector used for logging.
+        /// </summary>
+        public IDataCollection Collector
+        {
+            get; set;
         }
+        #endregion
+
+        public bool HasEncryptionHandler(string identifier)
+        {
+            return mEncryptionHandlers.ContainsKey(identifier);
+        }
+
+        /////
+        //public IEnumerable<KeyValuePair<string, IEncryptionHandler>> EncryptionHandlers()
+        //{
+        //    return mEncryptionHandlers;
+        //}
+
+
+        public void RegisterEncryptionHandler(string identifier, IEncryptionHandler handler)
+        {
+            try
+            {
+                mEncryptionHandlers.Add(identifier, handler);
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
+
+        #region OriginatorId
+        /// <summary>
+        /// This is the system information.
+        /// </summary>
+        public MicroserviceId OriginatorId
+        {
+            get; set;
+        } 
+        #endregion
 
         protected override void StartInternal()
         {
-
+            
         }
 
         protected override void StopInternal()

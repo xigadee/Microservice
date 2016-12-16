@@ -17,6 +17,7 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 
 namespace Xigadee
@@ -239,6 +240,12 @@ namespace Xigadee
         }
         #endregion
 
+        #region SecurityPrincipal
+        /// <summary>
+        /// This is the security principal generated from the incoming service message security headers.
+        /// </summary>
+        public ClaimsPrincipal SecurityPrincipal { get; set; } 
+        #endregion
 
         public void CompleteSet()
         {

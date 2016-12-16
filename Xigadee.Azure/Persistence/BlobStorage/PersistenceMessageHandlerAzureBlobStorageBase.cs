@@ -81,7 +81,7 @@ namespace Xigadee
             , ResourceProfile resourceProfile = null
             , ICacheManager<K, E> cacheManager = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
-            , ISymmetricEncryption encryption = null
+            , IEncryptionHandler encryption = null
             )
             : base( keyMaker, keyDeserializer
                   , entityName: entityName

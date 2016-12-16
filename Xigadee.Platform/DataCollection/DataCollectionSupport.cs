@@ -25,22 +25,40 @@ namespace Xigadee
     /// <summary>
     /// This enumeration is used to specify the type of data collection supported by the component.
     /// </summary>
-    public enum DataCollectionSupport
+    [Flags]
+    public enum DataCollectionSupport:int
     {
-        Logger,
-
-        EventSource,
-
-        BoundaryLogger,
-
-        Telemetry,
-
-        Dispatcher,
-
-        Statistics,
-
-        Resource,
-
-        Custom
+        /// <summary>
+        /// The data is a log message.
+        /// </summary>
+        Logger = 1,
+        /// <summary>
+        /// The data is a event source record.
+        /// </summary>
+        EventSource = 2,
+        /// <summary>
+        /// The data is a boundary log event.
+        /// </summary>
+        BoundaryLogger = 4,
+        /// <summary>
+        /// The data is telemetry.
+        /// </summary>
+        Telemetry = 8,
+        /// <summary>
+        /// The data is a dispatcher transit event.
+        /// </summary>
+        Dispatcher = 16,
+        /// <summary>
+        /// The data is Microservice statistics
+        /// </summary>
+        Statistics = 32,
+        /// <summary>
+        /// The data is a resource event.
+        /// </summary>
+        Resource = 64,
+        /// <summary>
+        /// The data is a customer event.
+        /// </summary>
+        Custom = 128
     }
 }

@@ -22,6 +22,9 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This class holds a reference to the statistics.
+    /// </summary>
     public class SecurityStatistics: CollectionStatistics
     {
     }

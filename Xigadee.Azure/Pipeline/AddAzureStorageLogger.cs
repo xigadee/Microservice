@@ -40,7 +40,7 @@ namespace Xigadee
             , string serviceName = null
             , string containerName = "log"
             , ResourceProfile resourceProfile = null
-            , ISymmetricEncryption encryption = null
+            , IEncryptionHandler encryption = null
             , Action<AzureStorageLogger> onCreate = null)
             where P : IPipeline
         {

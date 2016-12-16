@@ -24,7 +24,7 @@ namespace Xigadee
     public class AzureStorageLogger : AzureStorageLoggingBase<LogEvent>, ILogger
     {
         public AzureStorageLogger(StorageCredentials credentials, string serviceName, string containerName = "log"
-            , ResourceProfile resourceProfile = null, ISymmetricEncryption encryption = null)
+            , ResourceProfile resourceProfile = null, IEncryptionHandler encryption = null)
             :base(credentials, containerName, serviceName, resourceProfile:resourceProfile, encryption:encryption)
         {
         }

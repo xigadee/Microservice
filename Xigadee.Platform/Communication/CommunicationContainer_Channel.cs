@@ -33,8 +33,15 @@ namespace Xigadee
         private Dictionary<string, Channel> mContainerOutgoing;
         #endregion
 
-
-        private bool? Wrapper(ChannelDirection direction, Func<bool?,bool?> incoming, Func<bool?,bool?> outgoing)
+        #region Wrapper...
+        /// <summary>
+        /// This method is used to ensure either of both collections are invoked for channel based methods.
+        /// </summary>
+        /// <param name="direction">The channel direction.</param>
+        /// <param name="incoming">The incoming function.</param>
+        /// <param name="outgoing">The outgoing funtion.</param>
+        /// <returns></returns>
+        private bool? Wrapper(ChannelDirection direction, Func<bool?, bool?> incoming, Func<bool?, bool?> outgoing)
         {
             bool? result = null;
 
@@ -45,7 +52,8 @@ namespace Xigadee
                 result = outgoing?.Invoke(result);
 
             return result;
-        }
+        } 
+        #endregion
 
         #region Channels
         /// <summary>
@@ -146,6 +154,48 @@ namespace Xigadee
             }
 
             return false;
+        }
+        #endregion
+
+        #region PayloadIncomingRedirectCheck(TransmissionPayload payload)
+        /// <summary>
+        /// This method validates any rewrite rules for the incoming payload.
+        /// </summary>
+        /// <param name="payload">The incoming payload.</param>
+        protected virtual void PayloadIncomingRedirectCheck(TransmissionPayload payload)
+        {
+            var channelId = payload.Message.ChannelId;
+            //Rewrite rule validate, and rewrite for incoming message.
+            Channel channel;
+            if (TryGet(channelId, ChannelDirection.Incoming, out channel))
+            {
+                if (channel.CouldRedirect)
+                    channel.Redirect(payload);
+            }
+        }
+        #endregion
+        #region PayloadOutgoingRedirectChecks(TransmissionPayload payload)
+        /// <summary>
+        /// This method checks for any redirect rules for the outgoing payload.
+        /// </summary>
+        /// <param name="payload">The outgoing payload.</param>
+        /// <returns>The outgoing channel.</returns>
+        protected virtual Channel PayloadOutgoingRedirectChecks(TransmissionPayload payload)
+        {
+            //Rewrite rule validate, and rewrite for outgoing message.
+            var channelId = payload.Message.ChannelId;
+            Channel channel;
+            if (TryGet(channelId, ChannelDirection.Outgoing, out channel))
+            {
+                if (channel.CouldRedirect)
+                {
+                    channel.Redirect(payload);
+                    //Get the new outgoing channel.
+                    TryGet(payload.Message.ChannelId, ChannelDirection.Outgoing, out channel);
+                }
+            }
+
+            return channel;
         } 
         #endregion
     }

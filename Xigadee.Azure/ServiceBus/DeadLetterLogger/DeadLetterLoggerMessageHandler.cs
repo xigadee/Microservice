@@ -59,7 +59,7 @@ namespace Xigadee
             , BlobContainerPublicAccessType accessType = BlobContainerPublicAccessType.Off
             , BlobRequestOptions options = null
             , OperationContext context = null
-            , ISymmetricEncryption encryption = null)
+            , IEncryptionHandler encryption = null)
         {
             mStorage = new StorageServiceBase(credentials, "DeadLetter", accessType, options, context, defaultTimeout: defaultTimeout, encryption:encryption);
             mServiceName = serviceName;
