@@ -25,6 +25,9 @@ using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This class can be used to log collection data to the Windows Azure Blob storage.
+    /// </summary>
     public partial class AzureStorageDataCollector: DataCollectorBase<DataCollectorStatistics>
     {
         #region Declarations
@@ -38,7 +41,6 @@ namespace Xigadee
         protected readonly IEncryptionHandler mEncryption;
         #endregion
         #region Constructor
-
         /// <summary>
         /// 
         /// </summary>
@@ -77,16 +79,11 @@ namespace Xigadee
         protected override void SupportLoadDefault()
         {
             SupportAdd(DataCollectionSupport.BoundaryLogger, (e) => WriteBoundaryEvent((BoundaryEvent)e));
-            //SupportAdd(DataCollectionSupport.Dispatcher, (e) => EventsDispatcher.Add((DispatcherEvent)e));
+            SupportAdd(DataCollectionSupport.Dispatcher, (e) => WriteDispatcherEvent((DispatcherEvent)e));
             SupportAdd(DataCollectionSupport.EventSource, (e) => WriteEventSource((EventSourceEvent)e));
-            SupportAdd(DataCollectionSupport.Logger, (e) => WriteLog((LogEvent)e));
+            SupportAdd(DataCollectionSupport.Logger, (e) => WriteLogEvent((LogEvent)e));
             SupportAdd(DataCollectionSupport.Statistics, (e) => WriteStatistics((MicroserviceStatistics)e));
-            //SupportAdd(DataCollectionSupport.Telemetry, (e) => EventsMetric.Add((TelemetryEvent)e));
-        }
-
-        protected virtual void WriteLog(LogEvent log)
-        {
-
+            SupportAdd(DataCollectionSupport.Telemetry, (e) => WriteTelemetryEvent((TelemetryEvent)e));
         }
 
 
@@ -109,22 +106,32 @@ namespace Xigadee
             return string.Format("{0}_{1}", logEvent.GetType().Name, Guid.NewGuid().ToString("N"));
         }
 
-
-
-        protected virtual void WriteEventSource(EventSourceEvent log)
+        private Guid ProfileStart(string id, string directory)
         {
+            if (mResourceConsumer == null)
+                return Guid.NewGuid();
 
+            return mResourceConsumer.Start($"{directory}/{id}", Guid.NewGuid());
         }
 
-        protected virtual void WriteBoundaryEvent(BoundaryEvent log)
+        private void ProfileEnd(Guid profileId, int start, ResourceRequestResult result)
         {
+            if (mResourceConsumer == null)
+                return;
 
+            mResourceConsumer.End(profileId, start, result);
         }
 
-        protected virtual void WriteStatistics(MicroserviceStatistics log)
+        private void ProfileRetry(Guid profileId, int retryStart, ResourceRetryReason reason)
         {
+            if (mResourceConsumer == null)
+                return;
 
+            mResourceConsumer.Retry(profileId, retryStart, reason);
         }
+
+
+
 
 
 

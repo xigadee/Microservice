@@ -27,7 +27,18 @@ namespace Xigadee
 {
     public partial class AzureStorageDataCollector: DataCollectorBase<DataCollectorStatistics>
     {
-        private async Task Output(DataCollectionSupport support
+        /// <summary>
+        /// This method outputs a binary blob to Azure blob storage.
+        /// </summary>
+        /// <param name="support"></param>
+        /// <param name="id"></param>
+        /// <param name="directory"></param>
+        /// <param name="blob"></param>
+        /// <param name="contentType"></param>
+        /// <param name="contentEncoding"></param>
+        /// <param name="useEncryption"></param>
+        /// <returns></returns>
+        protected async Task OutputBlob(DataCollectionSupport support
             , string id
             , string directory
             , byte[] blob
@@ -67,28 +78,5 @@ namespace Xigadee
             }
         }
 
-        private Guid ProfileStart(string id, string directory)
-        {
-            if (mResourceConsumer == null)
-                return Guid.NewGuid();
-
-            return mResourceConsumer.Start(string.Format("{0}/{1}", directory, id), Guid.NewGuid());
-        }
-
-        private void ProfileEnd(Guid profileId, int start, ResourceRequestResult result)
-        {
-            if (mResourceConsumer == null)
-                return;
-
-            mResourceConsumer.End(profileId, start, result);
-        }
-
-        private void ProfileRetry(Guid profileId, int retryStart, ResourceRetryReason reason)
-        {
-            if (mResourceConsumer == null)
-                return;
-
-            mResourceConsumer.Retry(profileId, retryStart, reason);
-        }
     }
 }
