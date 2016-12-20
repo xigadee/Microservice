@@ -62,10 +62,13 @@ namespace Xigadee
             mTelemetry.Context.Properties["ExternalServiceId"] = OriginatorId.ExternalServiceId;
             mTelemetry.Context.Properties["MachineName"] = OriginatorId.MachineName;
             mTelemetry.Context.Properties["ServiceName"] = OriginatorId.Name;
+
+            mTelemetry.TrackEvent($"Startup:{OriginatorId.Name}");
         }
 
         protected override void StopInternal()
         {
+            mTelemetry.TrackEvent($"Shutdown:{OriginatorId.Name}");
             mTelemetry.Flush();
 
             base.StopInternal();
