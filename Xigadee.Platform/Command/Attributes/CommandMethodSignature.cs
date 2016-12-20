@@ -81,7 +81,6 @@ namespace Xigadee
         {
             try
             {
-
                 CommandAttributes = Attribute.GetCustomAttributes(Method)
                     .Where((a) => a is CommandContractAttribute)
                     .Cast<CommandContractAttribute>()
@@ -182,9 +181,9 @@ namespace Xigadee
         {
             try
             {
-                var attrs = Attribute.GetCustomAttributes(info, typeof(A), false);
+                var attr = Attribute.GetCustomAttribute(info, typeof(A), false);
 
-                return attrs.Count() > 0;
+                return attr != null;
             }
             catch (Exception ex)
             {

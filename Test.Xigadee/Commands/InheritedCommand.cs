@@ -20,7 +20,6 @@ namespace Test.Xigadee
         {
             return base.DoSomething(item);
         }
-
     }
 
     public abstract class InheritedClassBase: CommandBase
@@ -36,18 +35,17 @@ namespace Test.Xigadee
     }
 
 
-    //[Ignore]
     [TestClass]
     public class InheritedCommandUnitTest: CommandUnitTestBase<InheritedCommand1>
     {
         [TestMethod]
-        public void TestStandard1()
+        public void InheritedCommandTest1()
         {
             DefaultTest();
         }
 
         [TestMethod]
-        public void InheritedCommandTest1()
+        public void InheritedCommandTest2()
         {
             IPipeline pipeline = null;
             try
