@@ -24,7 +24,7 @@ namespace Xigadee
 {
     /// <summary>
     /// This container contains all the internal handlers, initiators and jobs that are responsible for 
-    /// processing messages on the system.
+    /// processing messages on the system. This class also holds and maintains the shared service collections.
     /// </summary>
     public class CommandContainer:ServiceContainerBase<CommandContainerStatistics, CommandContainerPolicy>
     {
@@ -46,7 +46,9 @@ namespace Xigadee
         /// This is the list of registered commands.
         /// </summary>
         protected List<ICommand> mCommands;
-
+        /// <summary>
+        /// Specifies whether the notifications are active.
+        /// </summary>
         protected bool mNotificationsActive = false;
         #endregion
         #region Constructor
@@ -68,7 +70,7 @@ namespace Xigadee
 
         #region Add(IMessageHandler command)
         /// <summary>
-        /// This consolidated method is used in preparation of consolidating Jobs, Initiators and Handlers in to a single entity.
+        /// This method adds a command to the collection.
         /// </summary>
         /// <param name="command">The command to add to the collection.</param>
         /// <returns>Returns the command that has been added to the collection.</returns>
@@ -89,7 +91,7 @@ namespace Xigadee
             //Ensure that any handlers are registered.
             Commands.ForEach((h) =>
             {
-                h.OnCommandChange += Dynamic_OnCommandChange;
+                h.OnCommandChange += Internal_OnCommandChange;
             });
         }
         /// <summary>
@@ -99,24 +101,25 @@ namespace Xigadee
         {
             Commands.ForEach((h) =>
             {
-                h.OnCommandChange -= Dynamic_OnCommandChange;
+                h.OnCommandChange -= Internal_OnCommandChange;
             });
         }
         #endregion
 
-        #region Dynamic_OnCommandChange(object sender, CommandChange e)
+        #region Internal_OnCommandChange(object sender, CommandChange e)
         /// <summary>
         /// This event is fired when a dymanic command changes the supported commands.
         /// This might happen specifically when a master job becomes active.
         /// </summary>
         /// <param name="sender">The command which changes.</param>
         /// <param name="e">The change parameters.</param>
-        private void Dynamic_OnCommandChange(object sender, CommandChange e)
+        private void Internal_OnCommandChange(object sender, CommandChange e)
         {
             //Clear the message map cache as the cache is no longer valid due to removal.
             if (e.IsRemoval)
                 mMessageMap.Clear();
 
+            //Check that we current support notifications. This is disabled during startup.
             if (mNotificationsActive)
                 //Notify the relevant parties (probably just communication) to refresh what they are doing.
                 mHandlersCollection.NotifyChange(SupportedMessageTypes());
@@ -154,7 +157,7 @@ namespace Xigadee
                 }
                 catch (Exception)
                 {
-                    return new List<ICommand>();
+                    return new HashSet<ICommand>();
                 }
             }
         }
@@ -264,7 +267,8 @@ namespace Xigadee
         #endregion
         #region SharedServicesConnect()
         /// <summary>
-        /// This method is used to connect the message handler components to the shared service catalogue.
+        /// This method is called during the Microservice startup and 
+        /// is used to connect the commands to the shared service collection when required.
         /// </summary>
         public virtual void SharedServicesConnect()
         {
@@ -279,21 +283,24 @@ namespace Xigadee
         /// <summary>
         /// This method starts the commands
         /// </summary>
+        /// <param name="serviceStart">The action parameter used to pass the command to the parent startup method.</param>
         public void CommandsStart(Action<ICommand> serviceStart)
         {
             var commands = Commands.ToList();
 
-            //Start the handlers in decending priority
+            //Get the list of handler priorities.
             int[] commandPriorities = commands.Select((c) => c.StartupPriority)
                 .Distinct()
                 .OrderByDescending((k) => k)
                 .ToArray();
 
+            //Start each of the commands together at the same priority.
             foreach (int priorityGroup in commandPriorities)
             {
                 Task.WaitAll(CommandsStart(priorityGroup, commands, serviceStart));
             }
 
+            //Set the notifications to active.
             mNotificationsActive = true;
 
             //Notify the relevant parties (probably just communication) to refresh what they are doing.
@@ -321,13 +328,12 @@ namespace Xigadee
         /// <param name="serviceStop">The action to stop the command.</param>
         public void CommandsStop(Action<ICommand> serviceStop)
         {
-            //Ok, stop the commands.
+            //Ok, stop the commands sequentially in reverse order.
             Commands
                 .OrderBy((h) => h.StartupPriority)
                 .ForEach(h => serviceStop(h));
 
             mNotificationsActive = false;
-
         } 
         #endregion
     }

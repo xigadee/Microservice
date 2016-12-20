@@ -34,6 +34,7 @@ namespace Test.Xigadee.Azure
 
                 IPipelineChannelIncoming<MicroservicePipeline> cpipeIn = null;
                 IPipelineChannelOutgoing<MicroservicePipeline> cpipeOut = null;
+
                 PersistenceInternalService<Guid, Blah> persistence = null;
                 PersistenceBlahMemory persistBlah = null;
                 int signalChange = 0;

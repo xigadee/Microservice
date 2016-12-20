@@ -180,7 +180,16 @@ namespace Xigadee
         private bool ParamAttributes<A>(ParameterInfo info)
             where A : Attribute
         {
-            return Attribute.GetCustomAttribute(info, typeof(A)) != null;
+            try
+            {
+                var attrs = Attribute.GetCustomAttributes(info, typeof(A), false);
+
+                return attrs.Count() > 0;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public ParameterInfo StandardIn { get; private set; }

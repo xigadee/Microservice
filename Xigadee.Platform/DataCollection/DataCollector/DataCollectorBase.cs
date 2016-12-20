@@ -37,7 +37,11 @@ namespace Xigadee
         /// <summary>
         /// This is the support map which indicates which type of logging is supported by the collector.
         /// </summary>
-        protected readonly DataCollectionSupport mSupportMap;
+        protected readonly DataCollectionSupport? mSupportMapSubmitted;
+        /// <summary>
+        /// This is the actual calculated support map based on the mappings available.
+        /// </summary>
+        protected DataCollectionSupport mSupportMapActual;
         #endregion
         #region Constructor
         /// <summary>
@@ -45,15 +49,34 @@ namespace Xigadee
         /// </summary>
         protected DataCollectorBase(DataCollectionSupport? supportMap = null) :base()
         {
+            mSupportMapSubmitted = supportMap;
+        }
+        #endregion
+
+        #region Start/Stop ...
+        /// <summary>
+        /// This method configures the mapping.
+        /// </summary>
+        protected override void StartInternal()
+        {
             mSupported = new Dictionary<DataCollectionSupport, Action<EventBase>>();
+
             SupportLoadDefault();
 
-            var support = mSupported.Select((k) => k.Key).Aggregate((a,b) => a & b);
-            if (supportMap.HasValue)
-                mSupportMap = support & supportMap.Value;
+            var support = mSupported.Select((k) => k.Key).Aggregate((a, b) => a | b);
+
+            if (mSupportMapSubmitted.HasValue)
+                mSupportMapActual = support & mSupportMapSubmitted.Value;
             else
-                mSupportMap = support;
+                mSupportMapActual = support;
         }
+        /// <summary>
+        /// This method stops the collection.
+        /// </summary>
+        protected override void StopInternal()
+        {
+            mSupported.Clear();
+        } 
         #endregion
 
         #region SupportLoadDefault()
@@ -62,7 +85,7 @@ namespace Xigadee
         /// </summary>
         protected virtual void SupportLoadDefault()
         {
-
+            throw new NotImplementedException("DataCollectorBase/SupportLoadDefault must be implemented to enable support.");
         }
         #endregion
         #region SupportAdd(DataCollectionSupport eventType, Action<EventBase> eventData)
@@ -85,7 +108,7 @@ namespace Xigadee
         /// <returns></returns>
         public virtual bool IsSupported(DataCollectionSupport support)
         {
-            return (mSupportMap & support)>0;
+            return (mSupportMapActual & support)>0;
         }
         #endregion
         #region OriginatorId
@@ -111,11 +134,19 @@ namespace Xigadee
         }
         #endregion
 
+        #region Flush ...
+        /// <summary>
+        /// This method is called to flush the collector, if CanFlush is set to true.
+        /// </summary>
         public virtual void Flush()
         {
-
+            //This does nothing by default.
         }
 
-        public bool CanFlush { get; set; }
+        /// <summary>
+        /// This method specifies whether the collector supports flushing. The default is false.
+        /// </summary>
+        public bool CanFlush { get; set; } 
+        #endregion
     }
 }

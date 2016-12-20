@@ -108,7 +108,6 @@
     <Compile Include="DataCollection\DataCollectionContainer_EventSource.cs" />
     <Compile Include="DataCollection\DataCollectionContainer_Queue.cs" />
     <Compile Include="DataCollection\DataCollector\DataCollectorBase.cs" />
-    <Compile Include="DataCollection\DataCollector\DataCollectorHolder.cs" />
     <Compile Include="DataCollection\DataCollector\DataCollectorLegacySupport.cs" />
     <Compile Include="DataCollection\Events\Base\EventHolder.cs" />
     <Compile Include="DataCollection\Events\ResourceEvent.cs" />
@@ -265,7 +264,7 @@
     <Compile Include="Pipeline\MicroservicePipelineExtension.cs" />
     <Compile Include="Pipeline\Extensions\ToPipeline.cs" />
     <Compile Include="Pipeline\SecurityPipeline\Actual.cs" />
-    <Compile Include="Pipeline\SecurityPipeline\Add\AddAuthorization.cs" />
+    <Compile Include="Pipeline\SecurityPipeline\Add\AddAuthorizationHandler.cs" />
     <Compile Include="Pipeline\SecurityPipeline\Inspect.cs" />
     <Compile Include="Pipeline\SecurityPipeline\SecurityPipelineExtension.cs" />
     <Compile Include="ResourceTracker\ResourceTrackerPolicy.cs" />

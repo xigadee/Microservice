@@ -27,7 +27,7 @@ namespace Xigadee
     /// <summary>
     /// This class hooks Application Insights in to the Microservice logging capabilities.
     /// </summary>
-    public class ApplicationInsightsDataCollector : DataCollectorHolder
+    public class ApplicationInsightsDataCollector : DataCollectorBase<DataCollectorStatistics>
     {
         #region Declarations
         //https://azure.microsoft.com/en-gb/documentation/articles/app-insights-api-custom-events-metrics/
@@ -53,6 +53,8 @@ namespace Xigadee
 
         protected override void StartInternal()
         {
+            base.StartInternal();
+
             mTelemetry = new TelemetryClient();
 
             mTelemetry.Context.Device.Id = OriginatorId.ServiceId;
@@ -65,6 +67,8 @@ namespace Xigadee
         protected override void StopInternal()
         {
             mTelemetry.Flush();
+
+            base.StopInternal();
         }
 
         protected override void SupportLoadDefault()

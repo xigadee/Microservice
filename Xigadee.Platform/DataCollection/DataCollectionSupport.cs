@@ -29,6 +29,10 @@ namespace Xigadee
     public enum DataCollectionSupport:int
     {
         /// <summary>
+        /// This is a default setting.
+        /// </summary>
+        None = 0,
+        /// <summary>
         /// The data is a log message.
         /// </summary>
         Logger = 1,

@@ -36,7 +36,13 @@ namespace Xigadee
         IEventSourceComponent RegisterEventSource(IEventSourceComponent eventSource);
         ILogger RegisterLogger(ILogger logger);
         IBoundaryLoggerComponent RegisterBoundaryLogger(IBoundaryLoggerComponent logger);
-        IDataCollectorComponent RegisterDataCollector(IDataCollectorComponent logger);
+
+        /// <summary>
+        /// This method adds a data collection component.
+        /// </summary>
+        /// <param name="collector">The collector.</param>
+        /// <returns>Returns the component.</returns>
+        IDataCollectorComponent RegisterDataCollector(IDataCollectorComponent collector);
 
         IPayloadSerializer RegisterPayloadSerializer(IPayloadSerializer serializer);
         void ClearPayloadSerializers();

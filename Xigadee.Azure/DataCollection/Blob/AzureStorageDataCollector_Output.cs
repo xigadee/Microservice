@@ -25,7 +25,7 @@ using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace Xigadee
 {
-    public partial class AzureStorageDataCollector: DataCollectorHolder
+    public partial class AzureStorageDataCollector: DataCollectorBase<DataCollectorStatistics>
     {
         private async Task Output(DataCollectionSupport support
             , string id

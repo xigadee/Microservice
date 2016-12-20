@@ -174,11 +174,11 @@ namespace Xigadee
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="remove">Set this to true to remove the command mapping, false is default.</param>
-        protected virtual void CommandNotify(CommandHolder key, bool remove = false, bool isQuorum = false)
+        protected virtual void CommandNotify(CommandHolder key, bool remove = false)
         {
             try
             {
-                OnCommandChange?.Invoke(this, new CommandChange(remove, key.Message, isQuorum));
+                OnCommandChange?.Invoke(this, new CommandChange(remove, key.Message));
             }
             catch (Exception ex)
             {
@@ -248,17 +248,17 @@ namespace Xigadee
         /// This attemps to match the message header to the command registration collection.
         /// </summary>
         /// <param name="header">The message header.</param>
-        /// <param name="command">The command handler as an output.</param>
+        /// <param name="handler">The command handler as an output.</param>
         /// <returns>Returns true if there is a match.</returns>
-        protected virtual bool SupportedResolve(ServiceMessageHeader header, out H command)
+        protected virtual bool SupportedResolve(ServiceMessageHeader header, out H handler)
         {
-            if (!mCommandCache.TryGetValue(header, out command))
+            if (!mCommandCache.TryGetValue(header, out handler))
             {
-                SupportedResolveActual(header, out command);
-                mCommandCache.TryAdd(header, command);
+                SupportedResolveActual(header, out handler);
+                mCommandCache.TryAdd(header, handler);
             }
 
-            return command != null;
+            return handler != null;
         }
 
         /// <summary>

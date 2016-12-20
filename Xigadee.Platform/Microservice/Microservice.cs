@@ -203,7 +203,7 @@ namespace Xigadee
                 EventStart(() => ServiceStart(mResourceTracker), "Resource Tracker");
 
                 //This method connects any components that require Shared Service together before they start.
-                EventStart(() => mCommands.SharedServicesConnect(), "Shared Services");
+                EventStart(() => mCommands.SharedServicesConnect(), "Command Shared Services");
 
                 //Start the channel controller.
                 EventStart(() => ServiceStart(mSecurity), "Security Container");

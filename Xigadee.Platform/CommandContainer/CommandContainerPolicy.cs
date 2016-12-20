@@ -22,6 +22,9 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This is the specific policy for the command container.
+    /// </summary>
     public class CommandContainerPolicy:PolicyBase
     {
     }

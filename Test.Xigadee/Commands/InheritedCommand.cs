@@ -8,7 +8,35 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    [Ignore]
+    /// <summary>
+    /// This command tests how the command contract code handles inherited methods ... currently not very well.
+    /// </summary>
+    public class InheritedCommand1: InheritedClassBase
+    {
+
+        [CommandContract(messageType: "simples1", actionType: "async")]
+        [return: PayloadOut]
+        public override string DoSomething([PayloadIn] string item)
+        {
+            return base.DoSomething(item);
+        }
+
+    }
+
+    public abstract class InheritedClassBase: CommandBase
+    {
+        protected InheritedClassBase() : base(null) { }
+
+
+        [return: PayloadOut]
+        public virtual string DoSomething([PayloadIn] string item)
+        {
+            return item+"momma";
+        }
+    }
+
+
+    //[Ignore]
     [TestClass]
     public class InheritedCommandUnitTest: CommandUnitTestBase<InheritedCommand1>
     {
@@ -19,7 +47,7 @@ namespace Test.Xigadee
         }
 
         [TestMethod]
-        public void PipelineCommand1()
+        public void InheritedCommandTest1()
         {
             IPipeline pipeline = null;
             try
@@ -31,8 +59,10 @@ namespace Test.Xigadee
                 int start = Environment.TickCount;
 
                 var result1 = mCommandInit.Process<string, string>("internalIn", "simples1", "async",
-                    "bunga", new RequestSettings() { WaitTime = TimeSpan.FromHours(1) }).Result;
+                    "bunga", new RequestSettings() { WaitTime = TimeSpan.FromSeconds(5) }).Result;
 
+                Assert.IsTrue(result1.ResponseCode == 200);
+                Assert.IsTrue(result1.Response == "bungamomma");
 
                 var end = ConversionHelper.DeltaAsTimeSpan(start);
 
@@ -54,27 +84,4 @@ namespace Test.Xigadee
         }
     }
 
-    public class InheritedCommand1: InheritedClassBase
-    {
-
-        [CommandContract(messageType: "simples1", actionType: "async")]
-        [return: PayloadOut]
-        public override string DoSomething([PayloadIn] string item)
-        {
-            return base.DoSomething(item);
-        }
-
-    }
-
-    public abstract class InheritedClassBase: CommandBase
-    {
-        protected InheritedClassBase() : base(null) { }
-
-
-        [return: PayloadOut]
-        public virtual string DoSomething([PayloadIn] string item)
-        {
-            return "momma";
-        }
-    }
 }

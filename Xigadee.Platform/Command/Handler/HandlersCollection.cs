@@ -30,13 +30,23 @@ namespace Xigadee
     /// </summary>
     public class HandlersCollection: ISupportedMessageTypes
     {
-        private Func<List<MessageFilterWrapper>> mSupportedMessageTypes;
-
+        #region Events
         /// <summary>
         /// The handler change event.
         /// </summary>
-        public event EventHandler<SupportedMessagesChange> OnCommandChange;
+        public event EventHandler<SupportedMessagesChange> OnCommandChange; 
+        #endregion
+        #region Declarations
+        /// <summary>
+        /// This internal function is used to retrieve the handler collection.
+        /// </summary>
+        private Func<List<MessageFilterWrapper>> mSupportedMessageTypes;
+        #endregion
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="supportedMessageTypes"></param>
         public HandlersCollection(Func<List<MessageFilterWrapper>> supportedMessageTypes)
         {
             mSupportedMessageTypes = supportedMessageTypes;

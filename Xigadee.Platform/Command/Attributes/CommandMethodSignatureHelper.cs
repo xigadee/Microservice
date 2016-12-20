@@ -30,10 +30,12 @@ namespace Xigadee
         /// </summary>
         public static List<CommandMethodSignature> CommandMethodSignatures(this ICommand command, bool throwExceptions)
         {
-            return command.CommandMethods()
+            var results = command.CommandMethods()
                 .Select((m) => new CommandMethodSignature(command, m, throwExceptions))
                 .Where((t) => t.IsValid)
                 .ToList();
+
+            return results;
         }
 
         /// <summary>
@@ -49,10 +51,12 @@ namespace Xigadee
         /// </summary>
         public static List<MethodInfo> CommandMethods(this Type objectType)
         {
-            return objectType
+            var results = objectType
                 .GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance)
                 .Where((m) => m.CustomAttributes.Count((a) => a.AttributeType == typeof(CommandContractAttribute)) > 0)
                 .ToList();
+
+            return results;
         }
     }
 }

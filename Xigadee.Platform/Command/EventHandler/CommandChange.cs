@@ -27,16 +27,13 @@ namespace Xigadee
     /// </summary>
     public class CommandChange
     {
-        public CommandChange(bool isRemoval, MessageFilterWrapper key, bool requiresQuorum = false)
+        public CommandChange(bool isRemoval, MessageFilterWrapper key)
         {
             IsRemoval = isRemoval;
             Key = key;
-            RequiresQuorum = requiresQuorum;
         }
 
         public bool IsRemoval { get; protected set; }
-
-        public bool RequiresQuorum { get; protected set; }
 
         public MessageFilterWrapper Key { get; protected set; }
     }

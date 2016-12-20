@@ -30,10 +30,17 @@ namespace Xigadee
         , IDataCollection, IEventSource, IServiceOriginator, ITaskManagerProcess, IRequireSharedServices
     {
         #region Declarations
-        private List<IDataCollectorComponent> mCollectors = new List<IDataCollectorComponent>();
+        /// <summary>
+        /// This is a collection of the supported collectors. You cannot add the same collector more than once.
+        /// </summary>
+        private HashSet<IDataCollectorComponent> mCollectors = new HashSet<IDataCollectorComponent>();
+
         private Action<TaskTracker> mTaskSubmit;
+
         private ITaskAvailability mTaskAvailability;
-        private Dictionary<DataCollectionSupport, List<IDataCollectorComponent>> mCollectorSupported;
+
+
+        private Dictionary<DataCollectionSupport, HashSet<IDataCollectorComponent>> mCollectorSupported;
         #endregion
         #region Constructor
         /// <summary>
@@ -63,15 +70,15 @@ namespace Xigadee
         /// </summary>
         private void CollectorSupportSet()
         {
-            mCollectorSupported = new Dictionary<DataCollectionSupport, List<IDataCollectorComponent>>();
+            mCollectorSupported = new Dictionary<DataCollectionSupport, HashSet<IDataCollectorComponent>>();
 
             var dataTypes = Enum.GetValues(typeof(DataCollectionSupport)).Cast<DataCollectionSupport>();
 
             foreach (var enumitem in dataTypes)
             {
-                var items = mCollectors.Where((i) => i.IsSupported(enumitem)).ToList();
+                var items = mCollectors.Where((i) => i.IsSupported(enumitem)).Distinct().ToList();
 
-                mCollectorSupported.Add(enumitem, items.Count == 0?null:items);
+                mCollectorSupported.Add(enumitem, items.Count == 0?null:new HashSet<IDataCollectorComponent>(items));
             }
         }
         /// <summary>
@@ -82,6 +89,7 @@ namespace Xigadee
             StopQueue();
 
             mCollectors.ForEach((c) => ServiceStop(c));
+
             mCollectorSupported.Clear();
         }
         #endregion
@@ -95,7 +103,8 @@ namespace Xigadee
 
         public ILogger Add(ILogger component)
         {
-            var legacy = new DataCollectorLegacySupport<LogEvent, ILogger>(DataCollectionSupport.Logger, component, (l,e) => l.Log(e));
+            var legacy = new DataCollectorLegacySupport<LogEvent, ILogger>(
+                DataCollectionSupport.Logger, component, (l,e) => l.Log(e));
 
             Add(legacy);
 
