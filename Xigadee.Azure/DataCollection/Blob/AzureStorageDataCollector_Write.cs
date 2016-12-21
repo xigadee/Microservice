@@ -15,46 +15,68 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
-using Microsoft.WindowsAzure.Storage.Blob;
+using System.IO;
 
 namespace Xigadee
 {
-    public partial class AzureStorageDataCollector: DataCollectorBase<DataCollectorStatistics>
+    public partial class AzureStorageDataCollector
     {
-        protected virtual void WriteLogEvent(LogEvent log)
-        {
 
+        protected virtual void WriteLogEvent(LogEvent e)
+        {
+            string level = Enum.GetName(typeof(LoggingLevel), e.Level);
+            string id = "";
+            string folder = string.Format("{0}/{1}/{2:yyyy-MM-dd}/{2:HH}", mServiceName, level, DateTime.UtcNow);
+
+            //if (e is ILogStoreName)
+            //    return ((ILogStoreName)logEvent).StorageId;
+
+            //// If there is a category specified and it contains valid digits or characters then make it part of the log name to make it easier to filter log events
+            //if (!string.IsNullOrEmpty(logEvent.Category) && logEvent.Category.Any(char.IsLetterOrDigit))
+            //    return string.Format("{0}_{1}_{2}", logEvent.GetType().Name, new string(logEvent.Category.Where(char.IsLetterOrDigit).ToArray()), Guid.NewGuid().ToString("N"));
+
+            //return string.Format("{0}_{1}", logEvent.GetType().Name, Guid.NewGuid().ToString("N"));
+
+            Write(mPolicy.Log, e);
         }
 
         protected virtual void WriteEventSource(EventSourceEvent e)
         {
+            string id = string.Format("{0}.json", string.Join("_", e.Entry.Key.Split(Path.GetInvalidFileNameChars())));
+            string folder = string.Format("{0}/{1:yyyy-MM-dd}/{2}", mServiceName, e.Entry.UTCTimeStamp, e.Entry.EntityType);
 
+            Write(mPolicy.EventSource, e);
         }
 
         protected virtual void WriteStatistics(MicroserviceStatistics e)
         {
-
+            Write(mPolicy.Statistics, e);
         }
 
         protected virtual void WriteDispatcherEvent(DispatcherEvent e)
         {
-
+            Write(mPolicy.Dispatcher, e);
         }
 
         protected virtual void WriteBoundaryEvent(BoundaryEvent e)
         {
-
+            Write(mPolicy.Boundary, e);
         }
 
         protected virtual void WriteTelemetryEvent(TelemetryEvent e)
         {
+            Write(mPolicy.Telemetry, e);
+        }
+
+        protected virtual void WriteCustom(EventBase e)
+        {
+            Write(mPolicy.Custom, e);
+        }
+
+        protected void Write(AzureStorageDataCollectorOptions option, EventBase e)
+        {
 
         }
+
     }
 }

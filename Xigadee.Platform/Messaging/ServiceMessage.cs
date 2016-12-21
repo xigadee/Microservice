@@ -272,5 +272,15 @@ namespace Xigadee
             return ServiceMessageHeader.ToKey(ChannelId, MessageType, ActionType);
         }
         #endregion
+        #region ToResponseKey()
+        /// <summary>
+        /// This method converts the message response metadata in to a header.
+        /// </summary>
+        /// <returns></returns>
+        public virtual string ToResponseKey()
+        {
+            return ServiceMessageHeader.ToKey(ResponseChannelId, ResponseMessageType, ResponseActionType);
+        }
+        #endregion
     }
 }

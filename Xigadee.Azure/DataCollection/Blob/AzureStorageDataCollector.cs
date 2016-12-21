@@ -26,9 +26,9 @@ using Microsoft.WindowsAzure.Storage.Blob;
 namespace Xigadee
 {
     /// <summary>
-    /// This class can be used to log collection data to the Windows Azure Blob storage.
+    /// This class can be used to log collection data to the Windows Azure Blob and Table storage.
     /// </summary>
-    public partial class AzureStorageDataCollector: DataCollectorBase<DataCollectorStatistics>
+    public partial class AzureStorageDataCollector: DataCollectorBase<DataCollectorStatistics, AzureStorageDataCollectorPolicy>
     {
         #region Declarations
         /// <summary>
@@ -70,9 +70,10 @@ namespace Xigadee
             mServiceName = serviceName;
             mResourceProfile = resourceProfile;
             mEncryption = encryption;
-        } 
+        }
         #endregion
 
+        #region SupportLoadDefault()
         /// <summary>
         /// This maps the default support for the event types.
         /// </summary>
@@ -84,56 +85,24 @@ namespace Xigadee
             SupportAdd(DataCollectionSupport.Logger, (e) => WriteLogEvent((LogEvent)e));
             SupportAdd(DataCollectionSupport.Statistics, (e) => WriteStatistics((MicroserviceStatistics)e));
             SupportAdd(DataCollectionSupport.Telemetry, (e) => WriteTelemetryEvent((TelemetryEvent)e));
+            SupportAdd(DataCollectionSupport.Custom, (e) => WriteCustom(e));
         }
+        #endregion
 
-
-        protected string DirectoryMaker(LogEvent logEvent)
+        private Guid ProfileStart(string id)
         {
-            string level = Enum.GetName(typeof(LoggingLevel), logEvent.Level);
-
-            return string.Format("{0}/{1}/{2:yyyy-MM-dd}/{2:HH}", mServiceName, level, DateTime.UtcNow);
-        }
-
-        protected string IdMaker(LogEvent logEvent)
-        {
-            if (logEvent is ILogStoreName)
-                return ((ILogStoreName)logEvent).StorageId;
-
-            // If there is a category specified and it contains valid digits or characters then make it part of the log name to make it easier to filter log events
-            if (!string.IsNullOrEmpty(logEvent.Category) && logEvent.Category.Any(char.IsLetterOrDigit))
-                return string.Format("{0}_{1}_{2}", logEvent.GetType().Name, new string(logEvent.Category.Where(char.IsLetterOrDigit).ToArray()), Guid.NewGuid().ToString("N"));
-
-            return string.Format("{0}_{1}", logEvent.GetType().Name, Guid.NewGuid().ToString("N"));
-        }
-
-        private Guid ProfileStart(string id, string directory)
-        {
-            if (mResourceConsumer == null)
-                return Guid.NewGuid();
-
-            return mResourceConsumer.Start($"{directory}/{id}", Guid.NewGuid());
+            return mResourceConsumer?.Start(id, Guid.NewGuid()) ?? Guid.NewGuid();
         }
 
         private void ProfileEnd(Guid profileId, int start, ResourceRequestResult result)
         {
-            if (mResourceConsumer == null)
-                return;
-
-            mResourceConsumer.End(profileId, start, result);
+            mResourceConsumer?.End(profileId, start, result);
         }
 
         private void ProfileRetry(Guid profileId, int retryStart, ResourceRetryReason reason)
         {
-            if (mResourceConsumer == null)
-                return;
-
-            mResourceConsumer.Retry(profileId, retryStart, reason);
+            mResourceConsumer?.Retry(profileId, retryStart, reason);
         }
-
-
-
-
-
 
     }
 }

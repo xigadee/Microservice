@@ -26,6 +26,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using System.IO;
+using Microsoft.WindowsAzure.Storage.Table;
 
 #endregion
 namespace Xigadee
@@ -187,8 +188,9 @@ namespace Xigadee
         /// </summary>
         /// <param name="holder">The storage request holder.</param>
         /// <param name="deleted">A property indicating whether the entity has been deleted.</param>
-        protected virtual void MetadataSet(CloudBlockBlob blob, StorageHolderBase holder,
-            bool deleted = false)
+        protected virtual void MetadataSet(CloudBlockBlob blob
+            , StorageHolderBase holder
+            , bool deleted = false)
         {
             blob.Metadata.Clear();
 
@@ -286,12 +288,15 @@ namespace Xigadee
         #endregion
 
         #region Create...
-        public virtual async Task<StorageResponseHolder> Create(string key, byte[] body,
-            string contentType = null, string contentEncoding = null,
-            string version = null,
-            string directory = null, IEnumerable<KeyValuePair<string, string>> metadata = null,
-            CancellationToken? cancel = null,
-            bool useEncryption = true)
+        public virtual async Task<StorageResponseHolder> Create(string key
+            , byte[] body
+            , string contentType = null
+            , string contentEncoding = null
+            , string version = null
+            , string directory = null
+            , IEnumerable<KeyValuePair<string, string>> metadata = null
+            , CancellationToken? cancel = null
+            , bool useEncryption = true)
         {
             var request = new StorageRequestHolder(key, cancel, directory);
 
@@ -536,4 +541,5 @@ namespace Xigadee
         #endregion
 
     }
+
 }

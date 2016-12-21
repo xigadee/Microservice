@@ -24,10 +24,45 @@ using Xigadee;
 namespace Xigadee
 {
     /// <summary>
+    /// This abstract class allows data collectors to be create without the need for a policy.
+    /// </summary>
+    public abstract class DataCollectorBase: DataCollectorBase<DataCollectorStatistics, DataCollectorPolicy>
+    {
+        #region Constructor
+        /// <summary>
+        /// This constructor passes in the support types for the collector.
+        /// </summary>
+        protected DataCollectorBase(DataCollectionSupport? supportMap = null) : base(supportMap)
+        {
+        }
+        #endregion
+    }
+
+    /// <summary>
+    /// This abstract class allows data collectors to be create without the need for a policy.
+    /// </summary>
+    /// <typeparam name="S">The statistics type.</typeparam>
+    public abstract class DataCollectorBase<S>: DataCollectorBase<S, DataCollectorPolicy>
+        where S : DataCollectorStatistics, new()
+    {
+        #region Constructor
+        /// <summary>
+        /// This constructor passes in the support types for the collector.
+        /// </summary>
+        protected DataCollectorBase(DataCollectionSupport? supportMap = null) : base(supportMap)
+        {
+        }
+        #endregion
+    }
+
+    /// <summary>
     /// This abstract class is used to implement data collectors.
     /// </summary>
-    public abstract class DataCollectorBase<S>: ServiceBase<S>, IDataCollectorComponent
+    /// <typeparam name="S">The statistics type.</typeparam>
+    /// <typeparam name="P">The policy type.</typeparam>
+    public abstract class DataCollectorBase<S, P>: ServiceContainerBase<S, P>, IDataCollectorComponent
         where S : DataCollectorStatistics, new()
+        where P : DataCollectorPolicy, new()
     {
         #region Declarations
         /// <summary>

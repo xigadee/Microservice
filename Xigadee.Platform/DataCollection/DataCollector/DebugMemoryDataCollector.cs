@@ -27,7 +27,7 @@ namespace Xigadee
     /// <summary>
     /// This is a test collector. It is primarily used for unit testing to ensure the correct logging has occurred.
     /// </summary>
-    public class DebugMemoryDataCollector: DataCollectorBase<DataCollectorStatistics>
+    public class DebugMemoryDataCollector: DataCollectorBase
     {
         /// <summary>
         /// This maps the default support for the event types.

@@ -22,10 +22,11 @@ using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Xigadee
 {
-    public partial class AzureStorageDataCollector: DataCollectorBase<DataCollectorStatistics>
+    public partial class AzureStorageDataCollector
     {
         /// <summary>
         /// This method outputs a binary blob to Azure blob storage.
@@ -47,7 +48,9 @@ namespace Xigadee
             , bool useEncryption = true)
         {
             int start = StatisticsInternal.ActiveIncrement(support);
-            Guid traceId = ProfileStart(id, directory);
+
+            Guid traceId = ProfileStart($"{directory}/{id}");
+
             var result = ResourceRequestResult.Unknown;
             try
             {
@@ -78,5 +81,15 @@ namespace Xigadee
             }
         }
 
+
+        protected void OutputBlob(AzureStorageBlobLocation location, EventBase e)
+        {
+
+        }
+
+        protected void OutputTable(string tableId, ITableEntity entity)
+        {
+
+        }
     }
 }
