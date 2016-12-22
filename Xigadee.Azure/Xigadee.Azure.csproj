@@ -206,8 +206,10 @@
     <Compile Include="ApplicationInsights\CommandCorrelationInitializer.cs" />
     <Compile Include="Configuration\ConfigResolver\ConfigResolverKeyVault.cs" />
     <Compile Include="Configuration\ConfigResolver\ConfigResolverAzure.cs" />
-    <Compile Include="DataCollection\Blob\AzureStorageBlobLocation.cs" />
+    <Compile Include="DataCollection\Blob\AzureStorageContainerBlob.cs" />
+    <Compile Include="DataCollection\Blob\AzureStorageContainerTable.cs" />
     <Compile Include="DataCollection\Blob\AzureStorageDataCollectorExtensionMethods.cs" />
+    <Compile Include="DataCollection\Blob\AzureStorageDataCollectorOptions.cs" />
     <Compile Include="DataCollection\Blob\AzureStorageDataCollectorPolicy.cs" />
     <Compile Include="DataCollection\Blob\AzureStorageDataCollector_Output.cs" />
     <Compile Include="DataCollection\Blob\AzureStorageDataCollector.cs" />

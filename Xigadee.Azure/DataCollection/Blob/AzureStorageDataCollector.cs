@@ -35,6 +35,7 @@ namespace Xigadee
         /// This is the azure storage wrapper.
         /// </summary>
         protected readonly StorageServiceBase mStorage;
+        protected readonly StorageCredentials mStorageCredentials;
         protected string mServiceName;
         protected readonly ResourceProfile mResourceProfile;
         protected readonly IResourceConsumer mResourceConsumer;
@@ -65,7 +66,9 @@ namespace Xigadee
             , IEncryptionHandler encryption = null
             , DataCollectionSupport? supportMap = null):base(supportMap)
         {
-            mStorage = new StorageServiceBase(credentials, containerName, accessType, options, context, defaultTimeout, encryption);
+            mStorageCredentials = credentials;
+
+            mStorage = new StorageServiceBase(credentials, containerName, accessType, options, context, defaultTimeout, null);
 
             mServiceName = serviceName;
             mResourceProfile = resourceProfile;
@@ -89,6 +92,7 @@ namespace Xigadee
         }
         #endregion
 
+        #region Profiling ...
         private Guid ProfileStart(string id)
         {
             return mResourceConsumer?.Start(id, Guid.NewGuid()) ?? Guid.NewGuid();
@@ -102,7 +106,7 @@ namespace Xigadee
         private void ProfileRetry(Guid profileId, int retryStart, ResourceRetryReason reason)
         {
             mResourceConsumer?.Retry(profileId, retryStart, reason);
-        }
-
+        } 
+        #endregion
     }
 }

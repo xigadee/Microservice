@@ -23,41 +23,27 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Table;
+using Newtonsoft.Json.Linq;
 
 namespace Xigadee
 {
     public partial class AzureStorageDataCollector
     {
-        /// <summary>
-        /// This method outputs a binary blob to Azure blob storage.
-        /// </summary>
-        /// <param name="support"></param>
-        /// <param name="id"></param>
-        /// <param name="directory"></param>
-        /// <param name="blob"></param>
-        /// <param name="contentType"></param>
-        /// <param name="contentEncoding"></param>
-        /// <param name="useEncryption"></param>
-        /// <returns></returns>
-        protected async Task OutputBlob(DataCollectionSupport support
-            , string id
-            , string directory
-            , byte[] blob
-            , string contentType
-            , string contentEncoding
-            , bool useEncryption = true)
+        protected async Task OutputBlob(AzureStorageDataCollectorOptions option, EventBase e)
         {
-            int start = StatisticsInternal.ActiveIncrement(support);
+            AzureStorageContainerBlob cont = (option.BlobConverter ?? DefaultBlobConverter)(OriginatorId, e);
+            int start = StatisticsInternal.ActiveIncrement(option.Support);
 
-            Guid traceId = ProfileStart($"{directory}/{id}");
+            Guid traceId = ProfileStart($"{cont.Directory}/{cont.Id}");
 
             var result = ResourceRequestResult.Unknown;
             try
             {
-                await mStorage.CreateOrUpdate(id, blob
-                    , directory: directory
-                    , contentType: contentType
-                    , contentEncoding: contentEncoding
+                await mStorage.CreateOrUpdate(cont.Id
+                    , cont.Blob
+                    , directory: cont.Directory
+                    , contentType: cont.ContentType
+                    , contentEncoding: cont.ContentEncoding
                     , createSnapshot: false);
 
                 result = ResourceRequestResult.Success;
@@ -71,25 +57,70 @@ namespace Xigadee
             {
                 result = ResourceRequestResult.Exception;
                 //Collector?.LogException(string.Format("Unable to output {0} to {1} for {2}", id, directory, typeof(E).Name), ex);
-                StatisticsInternal.ErrorIncrement(support);
+                StatisticsInternal.ErrorIncrement(option.Support);
                 throw;
             }
             finally
             {
-                StatisticsInternal.ActiveDecrement(support,start);
+                StatisticsInternal.ActiveDecrement(option.Support, start);
                 ProfileEnd(traceId, start, result);
             }
         }
 
-
-        protected void OutputBlob(AzureStorageBlobLocation location, EventBase e)
+        protected async Task OutputTable(AzureStorageDataCollectorOptions option, EventBase e)
         {
+            AzureStorageContainerTable cont = (option.TableConverter ?? DefaultTableConverter)(OriginatorId, e);
+            int start = StatisticsInternal.ActiveIncrement(option.Support);
 
+            Guid traceId = ProfileStart($"{cont.Id}");
+            var result = ResourceRequestResult.Unknown;
+            try
+            {
+                //await mStorage.CreateOrUpdate(cont.Id
+                //    , cont.Blob
+                //    , directory: cont.Directory
+                //    , contentType: cont.ContentType
+                //    , contentEncoding: cont.ContentEncoding
+                //    , createSnapshot: false);
+
+                //result = ResourceRequestResult.Success;
+            }
+            catch (StorageThrottlingException)
+            {
+                result = ResourceRequestResult.Exception;
+                throw;
+            }
+            catch (Exception ex)
+            {
+                result = ResourceRequestResult.Exception;
+                //Collector?.LogException(string.Format("Unable to output {0} to {1} for {2}", id, directory, typeof(E).Name), ex);
+                StatisticsInternal.ErrorIncrement(option.Support);
+                throw;
+            }
+            finally
+            {
+                StatisticsInternal.ActiveDecrement(option.Support, start);
+                ProfileEnd(traceId, start, result);
+            }
         }
 
-        protected void OutputTable(string tableId, ITableEntity entity)
+        private AzureStorageContainerTable DefaultTableConverter(MicroserviceId id, EventBase e)
         {
+            var cont = new AzureStorageContainerTable();
 
+            return cont;
+        }
+
+        private AzureStorageContainerBlob DefaultBlobConverter(MicroserviceId id, EventBase e)
+        {
+            var cont = new AzureStorageContainerBlob();
+
+            var jObj = JObject.FromObject(e);
+            var body = jObj.ToString();
+
+            cont.Blob = Encoding.UTF8.GetBytes(body);
+
+            return cont;
         }
     }
 }

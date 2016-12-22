@@ -16,17 +16,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
-using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Xigadee
 {
-    public static partial class AzureStorageDataCollectorExtensionMethods
+    public static partial class AzureStorageDCExtensions
     {
         private static string DatePartition(DateTime? time = null)
         {
@@ -38,7 +32,7 @@ namespace Xigadee
             return (id ?? Guid.NewGuid()).ToString("N").ToUpperInvariant();
         }
 
-        private static EntityProperty GetEnum<E>(object value)
+        public static EntityProperty GetEnum<E>(object value)
         {
             try
             {

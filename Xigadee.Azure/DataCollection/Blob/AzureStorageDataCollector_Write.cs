@@ -15,12 +15,31 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Xigadee
 {
     public partial class AzureStorageDataCollector
     {
+
+        /// <summary>
+        /// Output the data for the two option type.
+        /// </summary>
+        /// <param name="option">The storage options</param>
+        /// <param name="e">The event object.</param>
+        protected void Write(AzureStorageDataCollectorOptions option, EventBase e)
+        {
+            List<Task> mActions = new List<Task>();
+
+            if ((option.Behaviour & AzureStorageDataCollectorOptions.StorageBehaviour.Blob) > 0)
+                mActions.Add(OutputBlob(option, e));
+            if ((option.Behaviour & AzureStorageDataCollectorOptions.StorageBehaviour.Blob) > 0)
+                mActions.Add(OutputTable(option, e));
+
+            Task.WhenAll(mActions).Wait();
+        }
 
         protected virtual void WriteLogEvent(LogEvent e)
         {
@@ -73,10 +92,6 @@ namespace Xigadee
             Write(mPolicy.Custom, e);
         }
 
-        protected void Write(AzureStorageDataCollectorOptions option, EventBase e)
-        {
-
-        }
 
     }
 }
