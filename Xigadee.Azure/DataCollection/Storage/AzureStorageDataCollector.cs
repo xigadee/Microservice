@@ -82,13 +82,14 @@ namespace Xigadee
         /// </summary>
         protected override void SupportLoadDefault()
         {
-            SupportAdd(DataCollectionSupport.BoundaryLogger, (e) => WriteBoundaryEvent((BoundaryEvent)e));
-            SupportAdd(DataCollectionSupport.Dispatcher, (e) => WriteDispatcherEvent((DispatcherEvent)e));
-            SupportAdd(DataCollectionSupport.EventSource, (e) => WriteEventSource((EventSourceEvent)e));
-            SupportAdd(DataCollectionSupport.Logger, (e) => WriteLogEvent((LogEvent)e));
-            SupportAdd(DataCollectionSupport.Statistics, (e) => WriteStatistics((MicroserviceStatistics)e));
-            SupportAdd(DataCollectionSupport.Telemetry, (e) => WriteTelemetryEvent((TelemetryEvent)e));
-            SupportAdd(DataCollectionSupport.Custom, (e) => WriteCustom(e));
+            SupportAdd(DataCollectionSupport.BoundaryLogger, (e) => Write(mPolicy.Boundary,(BoundaryEvent)e));
+            SupportAdd(DataCollectionSupport.Dispatcher, (e) => Write(mPolicy.Dispatcher, (DispatcherEvent)e));
+            SupportAdd(DataCollectionSupport.EventSource, (e) => Write(mPolicy.EventSource, (EventSourceEvent)e));
+            SupportAdd(DataCollectionSupport.Logger, (e) => Write(mPolicy.Log, (LogEvent)e));
+            SupportAdd(DataCollectionSupport.Statistics, (e) => Write(mPolicy.Statistics, (MicroserviceStatistics)e));
+            SupportAdd(DataCollectionSupport.Telemetry, (e) => Write(mPolicy.Telemetry, (TelemetryEvent)e));
+            SupportAdd(DataCollectionSupport.Resource, (e) => Write(mPolicy.Resource, (ResourceEvent)e));
+            SupportAdd(DataCollectionSupport.Custom, (e) => Write(mPolicy.Custom, e));
         }
         #endregion
 

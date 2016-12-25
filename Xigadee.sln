@@ -54,6 +54,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.AWS", "Xigadee.AWS\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Pipeline", "Test.Xigadee.Pipeline\Test.Xigadee.Pipeline.csproj", "{24A970DC-3FB0-4541-9ADB-175F04D64B53}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Api.Web2", "Test.Xigadee.Api.Web2\Test.Xigadee.Api.Web2.csproj", "{4D69E325-6478-4E09-A2CF-9D909D6318DF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -148,6 +150,10 @@ Global
 		{24A970DC-3FB0-4541-9ADB-175F04D64B53}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24A970DC-3FB0-4541-9ADB-175F04D64B53}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{24A970DC-3FB0-4541-9ADB-175F04D64B53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D69E325-6478-4E09-A2CF-9D909D6318DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D69E325-6478-4E09-A2CF-9D909D6318DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D69E325-6478-4E09-A2CF-9D909D6318DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D69E325-6478-4E09-A2CF-9D909D6318DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -163,6 +169,7 @@ Global
 		{C66F3869-118D-4962-A904-4359E396AEB7} = {8A962CE2-CA28-441A-B6BE-F688E62A6AF8}
 		{8913D4BB-4E86-40EE-95E1-C6634D41E0BC} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 		{24A970DC-3FB0-4541-9ADB-175F04D64B53} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
+		{4D69E325-6478-4E09-A2CF-9D909D6318DF} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
