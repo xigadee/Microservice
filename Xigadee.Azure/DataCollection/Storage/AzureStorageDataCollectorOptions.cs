@@ -47,6 +47,10 @@ namespace Xigadee
         /// <summary>
         /// This method converts the entity in to a blob ready for blob storage
         /// </summary>
+        public Func<MicroserviceId, EventBase, AzureStorageContainerQueue> QueueConverter { get; set; } = null;
+        /// <summary>
+        /// This method converts the entity in to a blob ready for blob storage
+        /// </summary>
         public Func<MicroserviceId, EventBase, AzureStorageContainerBlob> BlobConverter { get; set; } = null;
         /// <summary>
         /// This method converts the entity in to a dynamic Table entity.

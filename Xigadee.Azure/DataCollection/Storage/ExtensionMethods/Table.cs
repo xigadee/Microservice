@@ -37,6 +37,14 @@ namespace Xigadee
             dict.Add("PayloadResponseKey", new EntityProperty(payload.Message?.ToResponseKey()));
         }
 
+        public static AzureStorageContainerTable DefaultTableConverter(this EventBase e, MicroserviceId id)
+        {
+            var cont = new AzureStorageContainerTable();
+
+            return cont;
+        }
+
+
         public static ITableEntity ToTableClient(this DispatcherEvent ev, MicroserviceId msId)
         {
             var dict = new Dictionary<string, EntityProperty>();

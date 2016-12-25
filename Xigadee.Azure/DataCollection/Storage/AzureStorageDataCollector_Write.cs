@@ -55,7 +55,8 @@ namespace Xigadee
         /// <returns>An async process.</returns>
         protected async Task WriteBlob(AzureStorageDataCollectorOptions option, EventBase e)
         {
-            AzureStorageContainerBlob cont = (option.BlobConverter ?? DefaultBlobConverter)(OriginatorId, e);
+            AzureStorageContainerBlob cont = option.BlobConverter?.Invoke(OriginatorId, e) ?? e.DefaultBlobConverter(OriginatorId);
+
             int start = StatisticsInternal.ActiveIncrement(option.Support);
 
             Guid? traceId = option.ShouldProfile ? (ProfileStart($"{cont.Directory}/{cont.Id}")) : default(Guid?);
@@ -99,7 +100,8 @@ namespace Xigadee
         /// <returns>An async process.</returns>
         protected async Task WriteTable(AzureStorageDataCollectorOptions option, EventBase e)
         {
-            AzureStorageContainerTable cont = (option.TableConverter ?? DefaultTableConverter)(OriginatorId, e);
+            AzureStorageContainerTable cont = option.TableConverter?.Invoke(OriginatorId, e) ?? e.DefaultTableConverter(OriginatorId);
+
             int start = StatisticsInternal.ActiveIncrement(option.Support);
 
             Guid? traceId = option.ShouldProfile ? ProfileStart($"{cont.Id}") : default(Guid?);
@@ -142,9 +144,8 @@ namespace Xigadee
         /// <returns>An async process.</returns>
         protected async Task WriteQueue(AzureStorageDataCollectorOptions option, EventBase e)
         {
-            //CloudQueueMessage message;
+            AzureStorageContainerQueue cont = option.QueueConverter?.Invoke(OriginatorId, e) ?? e.DefaultQueueConverter(OriginatorId);
 
-            AzureStorageContainerTable cont = (option.TableConverter ?? DefaultTableConverter)(OriginatorId, e);
             int start = StatisticsInternal.ActiveIncrement(option.Support);
 
             Guid? traceId = option.ShouldProfile ? ProfileStart($"{cont.Id}") : default(Guid?);
@@ -180,23 +181,5 @@ namespace Xigadee
             }
         }
 
-        private AzureStorageContainerTable DefaultTableConverter(MicroserviceId id, EventBase e)
-        {
-            var cont = new AzureStorageContainerTable();
-
-            return cont;
-        }
-
-        private AzureStorageContainerBlob DefaultBlobConverter(MicroserviceId id, EventBase e)
-        {
-            var cont = new AzureStorageContainerBlob();
-
-            var jObj = JObject.FromObject(e);
-            var body = jObj.ToString();
-
-            cont.Blob = Encoding.UTF8.GetBytes(body);
-
-            return cont;
-        }
     }
 }
