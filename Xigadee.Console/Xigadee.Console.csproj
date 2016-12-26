@@ -62,16 +62,26 @@
     <Compile Include="Options\ConsoleOption.cs" />
     <Compile Include="ConsoleWriter.cs" />
     <Compile Include="ErrorInfo.cs" />
+    <Compile Include="Pipeline\ConfigurationConsoleSet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WriterBase.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Xigadee.Azure\Xigadee.Azure.csproj">
+      <Project>{069f5121-bc8e-4f1f-b08c-ba3f4806db78}</Project>
+      <Name>Xigadee.Azure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Xigadee.Platform\Xigadee.csproj">
+      <Project>{4788fc0b-e692-4762-a4f4-aeab2a77da42}</Project>
+      <Name>Xigadee</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj">
       <Project>{4f785b7b-1fdc-4dcc-9453-fe42447fded2}</Project>
       <Name>Xigadee.Helper</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="Xigadee.Console.licenseheader" />
     <None Include="Xigadee.Console.nuspec" />

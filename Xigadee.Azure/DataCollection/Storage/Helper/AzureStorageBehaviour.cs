@@ -21,7 +21,7 @@ namespace Xigadee
         /// </summary>
         Blob = 1,
         /// <summary>
-        /// This entity should be stored using table storage.
+        /// This data should be stored using table storage.
         /// </summary>
         Table = 2,
         /// <summary>
@@ -32,6 +32,10 @@ namespace Xigadee
         /// This entity should be stored using Azure Queue storage.
         /// </summary>
         Queue = 4,
+        /// <summary>
+        /// This data should be stored using Azure File storage.
+        /// </summary>
+        File = 8,
         /// <summary>
         /// This entity should be stored using all methods.
         /// </summary>

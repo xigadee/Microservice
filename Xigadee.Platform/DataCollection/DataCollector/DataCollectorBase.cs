@@ -32,7 +32,7 @@ namespace Xigadee
         /// <summary>
         /// This constructor passes in the support types for the collector.
         /// </summary>
-        protected DataCollectorBase(DataCollectionSupport? supportMap = null) : base(supportMap)
+        protected DataCollectorBase(DataCollectionSupport? supportMap = null, DataCollectorPolicy policy = null) : base(supportMap, policy)
         {
         }
         #endregion
@@ -49,7 +49,7 @@ namespace Xigadee
         /// <summary>
         /// This constructor passes in the support types for the collector.
         /// </summary>
-        protected DataCollectorBase(DataCollectionSupport? supportMap = null) : base(supportMap)
+        protected DataCollectorBase(DataCollectionSupport? supportMap = null, DataCollectorPolicy policy = null) : base(supportMap, policy)
         {
         }
         #endregion
@@ -82,7 +82,7 @@ namespace Xigadee
         /// <summary>
         /// This constructor passes in the support types for the collector.
         /// </summary>
-        protected DataCollectorBase(DataCollectionSupport? supportMap = null) :base()
+        protected DataCollectorBase(DataCollectionSupport? supportMap = null, P policy = null) :base(policy)
         {
             mSupportMapSubmitted = supportMap;
         }

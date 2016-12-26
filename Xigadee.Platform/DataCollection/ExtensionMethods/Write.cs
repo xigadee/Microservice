@@ -45,7 +45,7 @@ namespace Xigadee
         /// <param name="sync">Specifies whether this method should be written syncronously or on to the async queue for offline processing.</param>
         public static void Write(this IDataCollection collector, BoundaryEvent myEvent, bool sync = false)
         {
-            collector.Write(myEvent, DataCollectionSupport.BoundaryLogger, sync);
+            collector.Write(myEvent, DataCollectionSupport.Boundary, sync);
         }
         /// <summary>
         /// This extension method writes the raw object to the data collector.

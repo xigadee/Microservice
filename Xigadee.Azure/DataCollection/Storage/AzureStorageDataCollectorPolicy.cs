@@ -15,7 +15,9 @@
 #endregion
 
 using System;
-using System.IO;
+using System.Collections.Generic;
+using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.RetryPolicies;
 
 namespace Xigadee
 {
@@ -30,21 +32,24 @@ namespace Xigadee
         public AzureStorageDataCollectorOptions Log { get; set; } 
             = new AzureStorageDataCollectorOptions(DataCollectionSupport.Logger
                 , AzureStorageBehaviour.Blob)
-            { BlobConverter = LogLocalBlobConverter };
+            { BlobConverter = AzureStorageDCExtensions.BlobConverterLogger };
         /// <summary>
         /// This is the EventSource options.
         /// </summary>
         public AzureStorageDataCollectorOptions EventSource { get; set; } 
             = new AzureStorageDataCollectorOptions(DataCollectionSupport.EventSource
                 , AzureStorageBehaviour.Blob)
-            { BlobConverter = EventSourceLocalBlobConverter };
+            { BlobConverter = AzureStorageDCExtensions.BlobConverterEventSource };
         /// <summary>
         /// This is the Statistics options. By default encryption is not set for statistics.
         /// </summary>
         public AzureStorageDataCollectorOptions Statistics { get; set; } 
             = new AzureStorageDataCollectorOptions(DataCollectionSupport.Statistics
                 , AzureStorageBehaviour.BlobAndTable)
-            { Encryption = AzureStorageEncryption.None };
+            {
+              BlobConverter = AzureStorageDCExtensions.BlobConverterStatistics 
+             ,Encryption = AzureStorageEncryption.None
+            };
         /// <summary>
         /// This is the Dispatcher options.
         /// </summary>
@@ -55,7 +60,7 @@ namespace Xigadee
         /// This is the Boundary Table storage options.
         /// </summary>
         public AzureStorageDataCollectorOptions Boundary { get; set; } 
-            = new AzureStorageDataCollectorOptions(DataCollectionSupport.BoundaryLogger
+            = new AzureStorageDataCollectorOptions(DataCollectionSupport.Boundary
                 , AzureStorageBehaviour.Table);
         /// <summary>
         /// This is the Telemetry Table storage options.
@@ -67,7 +72,7 @@ namespace Xigadee
         /// This is the Resource Table storage options.
         /// </summary>
         public AzureStorageDataCollectorOptions Resource { get; set; }
-            = new AzureStorageDataCollectorOptions(DataCollectionSupport.Telemetry
+            = new AzureStorageDataCollectorOptions(DataCollectionSupport.Resource
                 , AzureStorageBehaviour.Table);
         /// <summary>
         /// This is the Custom options.
@@ -75,33 +80,24 @@ namespace Xigadee
         public AzureStorageDataCollectorOptions Custom { get; set; } 
             = new AzureStorageDataCollectorOptions(DataCollectionSupport.Custom);
 
-        public static AzureStorageContainerBlob LogLocalBlobConverter(MicroserviceId msId, EventBase ev)
+        /// <summary>
+        /// This is an enumeration of all the options.
+        /// </summary>
+        public virtual IEnumerable<AzureStorageDataCollectorOptions> Options
         {
-            var e = ev as LogEvent;
-
-            string level = Enum.GetName(typeof(LoggingLevel), e.Level);
-            string id = "";
-            string folder = string.Format("{0}/{1}/{2:yyyy-MM-dd}/{2:HH}", msId.Name, level, DateTime.UtcNow);
-
-            //if (e is ILogStoreName)
-            //    return ((ILogStoreName)logEvent).StorageId;
-
-            //// If there is a category specified and it contains valid digits or characters then make it part of the log name to make it easier to filter log events
-            //if (!string.IsNullOrEmpty(logEvent.Category) && logEvent.Category.Any(char.IsLetterOrDigit))
-            //    return string.Format("{0}_{1}_{2}", logEvent.GetType().Name, new string(logEvent.Category.Where(char.IsLetterOrDigit).ToArray()), Guid.NewGuid().ToString("N"));
-
-            //return string.Format("{0}_{1}", logEvent.GetType().Name, Guid.NewGuid().ToString("N"));
-            return new Xigadee.AzureStorageContainerBlob();
+            get
+            {
+                yield return Log;
+                yield return EventSource;
+                yield return Statistics;
+                yield return Dispatcher;
+                yield return Boundary;
+                yield return Telemetry;
+                yield return Resource;
+                yield return Custom;
+            }
         }
 
-        public static AzureStorageContainerBlob EventSourceLocalBlobConverter(MicroserviceId msId, EventBase ev)
-        {
-            var e = ev as EventSourceEntry;
-
-            string id = string.Format("{0}.json", string.Join("_", e.Key.Split(Path.GetInvalidFileNameChars())));
-            string folder = string.Format("{0}/{1:yyyy-MM-dd}/{2}", msId.Name, e.UTCTimeStamp, e.EntityType);
-
-            return new AzureStorageContainerBlob();
-        }
+        public BlobContainerPublicAccessType BlobAccessType { get; set; } = BlobContainerPublicAccessType.Off;
     }
 }

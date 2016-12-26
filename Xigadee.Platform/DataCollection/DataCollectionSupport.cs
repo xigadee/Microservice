@@ -43,7 +43,7 @@ namespace Xigadee
         /// <summary>
         /// The data is a boundary log event.
         /// </summary>
-        BoundaryLogger = 4,
+        Boundary = 4,
         /// <summary>
         /// The data is telemetry.
         /// </summary>

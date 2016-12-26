@@ -24,7 +24,7 @@ namespace Xigadee
         public const string KeyEncryptionKey = "EncryptionKey";
 
         [ConfigSetting("Encryption")]
-        public static string EncryptionKey(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyStorageAccountAccessKey);
+        public static string EncryptionKey(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyEncryptionKey);
 
         [ConfigSetting("Encryption")]
         public static AesEncryption AesEncryption(this IEnvironmentConfiguration config)

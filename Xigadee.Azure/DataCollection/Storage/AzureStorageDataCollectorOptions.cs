@@ -31,6 +31,21 @@ namespace Xigadee
         public DataCollectionSupport Support { get; }
 
         /// <summary>
+        /// The storage behaviour, i.e. currently blob, table or both.
+        /// </summary>
+        public AzureStorageBehaviour Behaviour { get; set; }
+
+        /// <summary>
+        /// The encryption type.
+        /// </summary>
+        public AzureStorageEncryption Encryption { get; set; } = AzureStorageEncryption.BlobWhenPresent;
+
+        /// <summary>
+        /// Specifies whether the profiler should be used for the write action.
+        /// </summary>
+        public bool ShouldProfile { get; set; }=true;
+
+        /// <summary>
         /// This is the name of the storage table.
         /// </summary>
         public string TableId { get; set; }
@@ -39,10 +54,6 @@ namespace Xigadee
         /// </summary>
         public string QueueId { get; set; }
 
-        /// <summary>
-        /// Specifies whether the profiler should be used for the write action.
-        /// </summary>
-        public bool ShouldProfile { get; set; }=true;
 
         /// <summary>
         /// This method converts the entity in to a blob ready for blob storage
@@ -56,15 +67,10 @@ namespace Xigadee
         /// This method converts the entity in to a dynamic Table entity.
         /// </summary>
         public Func<MicroserviceId, EventBase, AzureStorageContainerTable> TableConverter { get; set; } = null;
-
         /// <summary>
-        /// The storage behaviour, i.e. currently blob, table or both.
+        /// This method converts the entity in to a dynamic Table entity.
         /// </summary>
-        public AzureStorageBehaviour Behaviour { get; set; }
+        public Func<MicroserviceId, EventBase, AzureStorageContainerFile> FileConverter { get; set; } = null;
 
-        /// <summary>
-        /// The encryption type.
-        /// </summary>
-        public AzureStorageEncryption Encryption { get; set; } = AzureStorageEncryption.BlobWhenPresent;
     }
 }

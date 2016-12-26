@@ -30,6 +30,17 @@ namespace Xigadee
     }
 
     /// <summary>
+    /// This class represents the location of a blob artefact.
+    /// </summary>
+    public class AzureStorageContainerFile: AzureStorageContainerBinaryBase
+    {
+        /// <summary>
+        /// The file directory.
+        /// </summary>
+        public string Directory { get; set; }
+    }
+
+    /// <summary>
     /// This class represents the location of a queue artefact.
     /// </summary>
     public class AzureStorageContainerQueue: AzureStorageContainerBinaryBase

@@ -34,7 +34,7 @@ namespace Xigadee
         /// </summary>
         protected override void SupportLoadDefault()
         {
-            SupportAdd(DataCollectionSupport.BoundaryLogger, (e) => EventsBoundary.Add((BoundaryEvent)e));
+            SupportAdd(DataCollectionSupport.Boundary, (e) => EventsBoundary.Add((BoundaryEvent)e));
             SupportAdd(DataCollectionSupport.Dispatcher, (e) => EventsDispatcher.Add((DispatcherEvent)e));
             SupportAdd(DataCollectionSupport.EventSource, (e) => EventsEventSource.Add((EventSourceEvent)e));
             SupportAdd(DataCollectionSupport.Logger, (e) => EventsLog.Add((LogEvent)e));

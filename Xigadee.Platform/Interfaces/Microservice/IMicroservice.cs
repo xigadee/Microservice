@@ -22,8 +22,8 @@ namespace Xigadee
     /// <summary>
     /// This interface defines the Microservice definition.
     /// </summary>
-    public interface IMicroservice: IMicroserviceConfigure, IMicroserviceProcess, IMicroserviceSecurity
-        , IMicroserviceEvents, IMicroservicePolicy, IService
+    public interface IMicroservice: IMicroserviceConfigure, IMicroserviceProcess, IMicroserviceSecurity, IMicroserviceCommunication
+        , IMicroserviceDataCollection, IMicroserviceEvents, IMicroservicePolicy, IService
     {
         MicroserviceId Id { get; }
 
@@ -35,6 +35,5 @@ namespace Xigadee
 
         IEnumerable<ICommand> Commands { get; }
 
-        IEnumerable<Channel> Channels { get; }
     }
 }

@@ -27,42 +27,6 @@ namespace Xigadee
     /// </summary>
     public static class ArgumentsParser
     {
-        #region CommandArgsParse(this string[] Args)
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="Args"></param>
-        /// <returns>Returns a dictionary containing the collection of parameters and values.</returns>
-        public static Dictionary<string, string> CommandArgsParse(this string[] Args)
-        {
-            return CommandArgsParse(Args, false);
-        }
-        #endregion // CommandArgsParse(string[] Args)
-        #region CommandArgsParse(this string[] Args, bool throwErrors)
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="Args"></param>
-        /// <param name="throwErrors"></param>
-        /// <returns>Returns a dictionary containing the collection of parameters and values.</returns>
-        public static Dictionary<string, string> CommandArgsParse(this string[] Args, bool throwErrors)
-        {
-            return CommandArgsParse(Args, @"/", @":", throwErrors);
-        }
-        #endregion // CommandArgsParse(string[] Args, bool throwErrors)
-        #region CommandArgsParse(this string[] Args, string strStart, bool throwErrors)
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="Args"></param>
-        /// <param name="strStart"></param>
-        /// <param name="throwErrors"></param>
-        /// <returns>Returns a dictionary containing the collection of parameters and values.</returns>
-        public static Dictionary<string, string> CommandArgsParse(string[] Args, string strStart, bool throwErrors)
-        {
-            return CommandArgsParse(Args, strStart, @":", throwErrors);
-        }
-        #endregion // CommandArgsParse(string[] Args, string strStart, bool throwErrors)
         #region CommandArgsParse(this string[] Args, string strStart, string strDelim, bool throwErrors)
         /// <summary>
         /// 
@@ -72,7 +36,7 @@ namespace Xigadee
         /// <param name="strDelim"></param>
         /// <param name="throwErrors"></param>
         /// <returns>Returns a dictionary containing the collection of parameters and values.</returns>
-        public static Dictionary<string, string> CommandArgsParse(this string[] Args, string strStart, string strDelim, bool throwErrors)
+        public static Dictionary<string, string> CommandArgsParse(this string[] Args, string strStart= @"/", string strDelim= @":", bool throwErrors = false)
         {
             //	This function parses the command line arguments to find the correct type
             //	based on the syntax /strOption:[strReturnData]

@@ -36,7 +36,7 @@ namespace Xigadee
     [AttributeUsage(AttributeTargets.Method)]
     public class ConfigSettingAttribute: Attribute
     {
-        public ConfigSettingAttribute(string category = null)
+        public ConfigSettingAttribute(string category)
         {
             Category = category;
         }

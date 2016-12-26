@@ -14,6 +14,8 @@
 // limitations under the License.
 #endregion
 
+using System;
+using System.IO;
 using System.Text;
 using Newtonsoft.Json.Linq;
 
@@ -22,14 +24,58 @@ namespace Xigadee
     public static partial class AzureStorageDCExtensions
     {
 
-        public static AzureStorageContainerBlob DefaultBlobConverter(this EventBase e, MicroserviceId id)
+        public static B DefaultBlobConverter<B>(this EventBase e)
+            where B: AzureStorageContainerBinaryBase, new()
         {
-            var cont = new AzureStorageContainerBlob();
+            var cont = new B();
 
             var jObj = JObject.FromObject(e);
             var body = jObj.ToString();
 
             cont.Blob = Encoding.UTF8.GetBytes(body);
+
+            return cont;
+        }
+
+
+        public static AzureStorageContainerBlob BlobConverterStatistics(MicroserviceId msId, EventBase ev)
+        {
+            var e = ev as MicroserviceStatistics;
+            var cont = ev.DefaultBlobConverter<AzureStorageContainerBlob>();
+            cont.Id = e.StorageId;
+            cont.Directory = string.Format("Statistics/{0}/{1:yyyy-MM-dd}/{1:HH}", msId.Name, DateTime.UtcNow);
+
+            return cont;
+        }
+
+        public static AzureStorageContainerBlob BlobConverterLogger(MicroserviceId msId, EventBase ev)
+        {
+            var e = ev as LogEvent;
+            var cont = ev.DefaultBlobConverter<AzureStorageContainerBlob>();
+
+            string level = Enum.GetName(typeof(LoggingLevel), e.Level);
+            cont.Id = ev.TraceId;
+            cont.Directory = string.Format("{0}/{1}/{2:yyyy-MM-dd}/{2:HH}", msId.Name, level, DateTime.UtcNow);
+
+            //if (e is ILogStoreName)
+            //    return ((ILogStoreName)logEvent).StorageId;
+
+            //// If there is a category specified and it contains valid digits or characters then make it part of the log name to make it easier to filter log events
+            //if (!string.IsNullOrEmpty(logEvent.Category) && logEvent.Category.Any(char.IsLetterOrDigit))
+            //    return string.Format("{0}_{1}_{2}", logEvent.GetType().Name, new string(logEvent.Category.Where(char.IsLetterOrDigit).ToArray()), Guid.NewGuid().ToString("N"));
+
+            //return string.Format("{0}_{1}", logEvent.GetType().Name, Guid.NewGuid().ToString("N"));
+
+            return cont;
+        }
+
+        public static AzureStorageContainerBlob BlobConverterEventSource(MicroserviceId msId, EventBase ev)
+        {
+            var e = ev as EventSourceEntry;
+            var cont = ev.DefaultBlobConverter<AzureStorageContainerBlob>();
+
+            cont.Id = string.Format("{0}.json", string.Join("_", e.Key.Split(Path.GetInvalidFileNameChars())));
+            cont.Directory = string.Format("{0}/{1:yyyy-MM-dd}/{2}", msId.Name, e.UTCTimeStamp, e.EntityType);
 
             return cont;
         }

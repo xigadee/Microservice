@@ -24,31 +24,14 @@ namespace Xigadee
     /// </summary>
     public interface IMicroserviceConfigure
     {
-        /// <summary>
-        /// This method registers a channel with the Microservice.
-        /// </summary>
-        /// <param name="channel">The channel.</param>
-        /// <returns>Returns the channel registered.</returns>
-        Channel RegisterChannel(Channel channel);
+
 
         ICommand RegisterCommand(ICommand command);
 
-        IEventSourceComponent RegisterEventSource(IEventSourceComponent eventSource);
-        ILogger RegisterLogger(ILogger logger);
-        IBoundaryLoggerComponent RegisterBoundaryLogger(IBoundaryLoggerComponent logger);
-
-        /// <summary>
-        /// This method adds a data collection component.
-        /// </summary>
-        /// <param name="collector">The collector.</param>
-        /// <returns>Returns the component.</returns>
-        IDataCollectorComponent RegisterDataCollector(IDataCollectorComponent collector);
 
         IPayloadSerializer RegisterPayloadSerializer(IPayloadSerializer serializer);
         void ClearPayloadSerializers();
 
-        IListener RegisterListener(IListener listener);
-        ISender RegisterSender(ISender sender);
 
         ISharedService SharedServices { get; }
     }

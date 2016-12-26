@@ -47,7 +47,21 @@ namespace Xigadee
             }
         }
 
-
+        public static bool SupportsTable(this AzureStorageDataCollectorOptions option)
+        {
+            return (option.Behaviour & AzureStorageBehaviour.Table) > 0;
+        }
+        public static bool SupportsBlob(this AzureStorageDataCollectorOptions option)
+        {
+            return (option.Behaviour & AzureStorageBehaviour.Blob) > 0;
+        }
+        public static bool SupportsQueue(this AzureStorageDataCollectorOptions option)
+        {
+            return (option.Behaviour & AzureStorageBehaviour.Queue) > 0;
+        }
+        public static bool SupportsFile(this AzureStorageDataCollectorOptions option)
+        {
+            return (option.Behaviour & AzureStorageBehaviour.File) > 0;
+        }
     }
-
 }

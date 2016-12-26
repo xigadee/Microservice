@@ -24,14 +24,9 @@ namespace Xigadee
 {
     public static partial class AzureStorageDCExtensions
     {
-        public static AzureStorageContainerQueue DefaultQueueConverter(this EventBase e, MicroserviceId id)
+        public static AzureStorageContainerQueue QueueConverterDefault(this EventBase e, MicroserviceId id)
         {
-            var cont = new AzureStorageContainerQueue();
-
-            var jObj = JObject.FromObject(e);
-            var body = jObj.ToString();
-
-            cont.Blob = Encoding.UTF8.GetBytes(body);
+            var cont = e.DefaultBlobConverter<AzureStorageContainerQueue>();
 
             return cont;
         }

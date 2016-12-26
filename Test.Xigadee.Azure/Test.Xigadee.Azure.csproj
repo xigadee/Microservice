@@ -64,6 +64,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AzureQueue.cs" />
     <Compile Include="ConfigResolverKeyVaultTest.cs" />
+    <Compile Include="TestAzureDataCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Test.Xigadee.Shared\Test.Xigadee.Shared.csproj">

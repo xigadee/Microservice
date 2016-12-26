@@ -170,7 +170,23 @@ namespace Xigadee
             }
 
             return value;
-        } 
+        }
+        #endregion
+
+        #region CanResolve(string key)
+        /// <summary>
+        /// This property returns true if the key can be resolved within the resolver hierarchy.
+        /// </summary>
+        /// <param name="key">The key to resolve.</param>
+        /// <returns>Returns true if resolved.</returns>
+        public bool CanResolve(string key)
+        {
+            var resolver = mConfigResolvers
+                .Values
+                .FirstOrDefault((k) => k.CanResolve(key));
+
+            return resolver != null;
+        }
         #endregion
 
         #region PlatformOrConfigCache(string key, string defaultValue = null)

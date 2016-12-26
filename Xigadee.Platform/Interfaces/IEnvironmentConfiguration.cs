@@ -45,5 +45,11 @@ namespace Xigadee
         int PlatformOrConfigCacheInt(string key, int? defaultValue = default(int?));
 
         void CacheFlush();
+
+        /// This property returns true if the key can be resolved within the resolver hierarchy.
+        /// </summary>
+        /// <param name="key">The key to resolve.</param>
+        /// <returns>Returns true if resolved.</returns>
+        bool CanResolve(string key);
     }
 }
