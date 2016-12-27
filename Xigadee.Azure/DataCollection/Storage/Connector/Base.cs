@@ -50,6 +50,10 @@ namespace Xigadee
         /// </summary>
         OperationContext Context { get; set; }
         /// <summary>
+        /// This is the binary encryption handler.
+        /// </summary>
+        IEncryptionHandler EncryptionHandler { get; set; }
+        /// <summary>
         /// This method initializes the connector.
         /// </summary>
         void Initialize();
@@ -100,6 +104,10 @@ namespace Xigadee
         /// This method returns the default request options if set.
         /// </summary>
         public virtual O RequestOptionsDefault { get; set; }
+        /// <summary>
+        /// This is the binary encryption handler.
+        /// </summary>
+        public IEncryptionHandler EncryptionHandler { get; set; }
         /// <summary>
         /// This method writes to the incoming event to the underlying storage technology.
         /// </summary>

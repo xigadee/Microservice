@@ -32,7 +32,7 @@ namespace Xigadee
     /// <summary>
     /// This class can be used to log collection data to the Windows Azure Blob and Table storage.
     /// </summary>
-    public partial class AzureStorageDataCollector: DataCollectorBase<DataCollectorStatistics, AzureStorageDataCollectorPolicy>
+    public class AzureStorageDataCollector: DataCollectorBase<DataCollectorStatistics, AzureStorageDataCollectorPolicy>
     {
         #region Declarations
         /// <summary>
@@ -40,21 +40,20 @@ namespace Xigadee
         /// </summary>
         protected readonly ResourceProfile mResourceProfile;
         protected readonly IResourceConsumer mResourceConsumer;
-        protected readonly IEncryptionHandler mEncryption;
+        protected readonly IEncryptionHandler mEncryptionHandler;
 
+        protected StorageCredentials mCredentails;
         protected CloudStorageAccount mStorageAccount;
 
         protected readonly BlobContainerPublicAccessType mAccessType;
         protected readonly BlobRequestOptions mOptions;
         protected readonly OperationContext mContext;
-        protected StorageCredentials mCredentails;
         protected TimeSpan? mDefaultTimeout;
 
         protected Dictionary<DataCollectionSupport, AzureStorageConnectorBlob> mHoldersBlob;
         protected Dictionary<DataCollectionSupport, AzureStorageConnectorTable> mHoldersTable;
         protected Dictionary<DataCollectionSupport, AzureStorageConnectorQueue> mHoldersQueue;
         protected Dictionary<DataCollectionSupport, AzureStorageConnectorFile> mHoldersFile;
-
         #endregion
         #region Constructor
         /// <summary>
@@ -79,13 +78,16 @@ namespace Xigadee
 
             mContext = context;
 
-            mEncryption = encryption;
+            mEncryptionHandler = encryption;
 
             mResourceProfile = resourceProfile;
         }
         #endregion
 
         #region Start/Stop...
+        /// <summary>
+        /// This method creates the storage connectors.
+        /// </summary>
         protected override void StartInternal()
         {
             base.StartInternal();
@@ -101,7 +103,9 @@ namespace Xigadee
             //Create the queue client
             mHoldersFile = Start<AzureStorageConnectorFile>((o) => o.SupportsFile());
         }
-
+        /// <summary>
+        /// This method clears the storage connectors.
+        /// </summary>
         protected override void StopInternal()
         {
             mHoldersFile.Clear();
@@ -113,14 +117,15 @@ namespace Xigadee
 
             base.StopInternal();
         }
-
         /// <summary>
         /// This method creates a collection of connectors for each specific storage type.
         /// </summary>
         /// <typeparam name="R">The connector type.</typeparam>
         /// <param name="isValid">A function that filters the specific type.</param>
+        /// <param name="customize">This method customizes the collector.</param>
         /// <returns>Returns a dictionary containing the support types and their associated connectors.</returns>
-        protected virtual Dictionary<DataCollectionSupport,R> Start<R>(Func<AzureStorageDataCollectorOptions, bool> isValid) 
+        protected virtual Dictionary<DataCollectionSupport,R> Start<R>(Func<AzureStorageDataCollectorOptions, bool> isValid
+            , Action<R> customize = null) 
             where R:IAzureStorageConnectorBase,new()
         {
             var holders = mPolicy.Options.Where((o) => isValid(o))
@@ -131,7 +136,12 @@ namespace Xigadee
                     , StorageAccount = mStorageAccount
                     , DefaultTimeout = mDefaultTimeout
                     , Context = mContext
+                    , EncryptionHandler = mEncryptionHandler
                 });
+
+            if (customize != null)
+                holders.Values
+                    .ForEach((v) => customize(v));
 
             //Do we have any supported clients?
             holders.Values

@@ -21,6 +21,7 @@ namespace Xigadee
         {
             Support = support;
             Behaviour = behavior;
+
             var id = AzureStorageDCExtensions.GetEnum<DataCollectionSupport>(support).StringValue;
             ConnectorBlob.RootId = id;
             ConnectorTable.RootId = id;
@@ -39,9 +40,9 @@ namespace Xigadee
         public AzureStorageBehaviour Behaviour { get; set; }
 
         /// <summary>
-        /// The encryption type.
+        /// The encryption storage policy.
         /// </summary>
-        public AzureStorageEncryption Encryption { get; set; } = AzureStorageEncryption.BlobWhenPresent;
+        public AzureStorageEncryption EncryptionPolicy { get; set; } = AzureStorageEncryption.BlobWhenPresent;
 
         /// <summary>
         /// Specifies whether the profiler should be used for the write action.

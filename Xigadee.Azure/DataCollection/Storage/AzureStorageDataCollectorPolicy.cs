@@ -30,45 +30,38 @@ namespace Xigadee
         /// This is the Log options.
         /// </summary>
         public AzureStorageDataCollectorOptions Log { get; set; } 
-            = new AzureStorageDataCollectorOptions(DataCollectionSupport.Logger
-                , AzureStorageBehaviour.Blob);
+            = new AzureStorageDataCollectorOptions(DataCollectionSupport.Logger, AzureStorageBehaviour.Blob);
         /// <summary>
         /// This is the EventSource options.
         /// </summary>
         public AzureStorageDataCollectorOptions EventSource { get; set; } 
-            = new AzureStorageDataCollectorOptions(DataCollectionSupport.EventSource
-                , AzureStorageBehaviour.Blob);
+            = new AzureStorageDataCollectorOptions(DataCollectionSupport.EventSource, AzureStorageBehaviour.Blob);
         /// <summary>
         /// This is the Statistics options. By default encryption is not set for statistics.
         /// </summary>
         public AzureStorageDataCollectorOptions Statistics { get; set; } 
-            = new AzureStorageDataCollectorOptions(DataCollectionSupport.Statistics
-                , AzureStorageBehaviour.BlobAndTable)
-            {Encryption = AzureStorageEncryption.None};
+            = new AzureStorageDataCollectorOptions(DataCollectionSupport.Statistics, AzureStorageBehaviour.BlobAndTable)
+            {EncryptionPolicy = AzureStorageEncryption.None};
         /// <summary>
         /// This is the Dispatcher options.
         /// </summary>
         public AzureStorageDataCollectorOptions Dispatcher { get; set; } 
-            = new AzureStorageDataCollectorOptions(DataCollectionSupport.Dispatcher
-                , AzureStorageBehaviour.Table);
+            = new AzureStorageDataCollectorOptions(DataCollectionSupport.Dispatcher, AzureStorageBehaviour.Table);
         /// <summary>
         /// This is the Boundary Table storage options.
         /// </summary>
         public AzureStorageDataCollectorOptions Boundary { get; set; } 
-            = new AzureStorageDataCollectorOptions(DataCollectionSupport.Boundary
-                , AzureStorageBehaviour.Table);
+            = new AzureStorageDataCollectorOptions(DataCollectionSupport.Boundary, AzureStorageBehaviour.Table);
         /// <summary>
         /// This is the Telemetry Table storage options.
         /// </summary>
         public AzureStorageDataCollectorOptions Telemetry { get; set; }
-            = new AzureStorageDataCollectorOptions(DataCollectionSupport.Telemetry
-                , AzureStorageBehaviour.Table);
+            = new AzureStorageDataCollectorOptions(DataCollectionSupport.Telemetry, AzureStorageBehaviour.Table);
         /// <summary>
         /// This is the Resource Table storage options.
         /// </summary>
         public AzureStorageDataCollectorOptions Resource { get; set; }
-            = new AzureStorageDataCollectorOptions(DataCollectionSupport.Resource
-                , AzureStorageBehaviour.Table);
+            = new AzureStorageDataCollectorOptions(DataCollectionSupport.Resource, AzureStorageBehaviour.Table);
         /// <summary>
         /// This is the Custom options.
         /// </summary>
