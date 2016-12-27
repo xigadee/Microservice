@@ -20,7 +20,7 @@ using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Xigadee
 {
-    public class AzureStorageConnectorTable: AzureStorageConnectorBase<TableRequestOptions, AzureStorageContainerTable, ITableEntity>
+    public class AzureStorageConnectorTable: AzureStorageConnectorBase<TableRequestOptions, ITableEntity>
     {
 
         public CloudTableClient Client { get; set; }

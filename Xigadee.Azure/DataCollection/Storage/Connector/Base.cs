@@ -59,9 +59,8 @@ namespace Xigadee
     /// <typeparam name="O">The request options that determines the retry policy.</typeparam>
     /// <typeparam name="C">The container type.</typeparam>
     /// <typeparam name="S">The serialization type.</typeparam>
-    public abstract class AzureStorageConnectorBase<O,C,S>: IAzureStorageConnectorBase
+    public abstract class AzureStorageConnectorBase<O,S>: IAzureStorageConnectorBase
         where O: Microsoft.WindowsAzure.Storage.IRequestOptions
-        where C: AzureStorageContainerBase
     {
         /// <summary>
         /// This is the specific EventBase type supported for the connector.
@@ -82,7 +81,7 @@ namespace Xigadee
         /// <summary>
         /// This function is used to create the specific ids for the entity;
         /// </summary>
-        public Func<EventBase, MicroserviceId, Tuple<string, string>> IdMaker { get; set; }
+        public Func<EventBase, MicroserviceId, AzureStorageId> IdMaker { get; set; }
         /// <summary>
         /// This function serializes the event entity.
         /// </summary>

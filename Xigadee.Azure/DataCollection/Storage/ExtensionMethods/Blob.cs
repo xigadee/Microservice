@@ -35,17 +35,17 @@ namespace Xigadee
             return Encoding.UTF8.GetBytes(body);
         }
 
-        public static Tuple<string, string> IdMakerStatistics(EventBase ev, MicroserviceId msId)
+        public static AzureStorageId IdMakerStatistics(EventBase ev, MicroserviceId msId)
         {
             var e = ev as MicroserviceStatistics;
 
             string Id = $"{e.StorageId}.json";
             string Directory = string.Format("Statistics/{0}/{1:yyyy-MM-dd}/{1:HH}", msId.Name, DateTime.UtcNow);
 
-            return new Tuple<string, string>(Id, Directory);
+            return new AzureStorageId { Id = Id, Directory = Directory };
         }
 
-        public static Tuple<string, string> IdMakerLogger(EventBase ev, MicroserviceId msId)
+        public static AzureStorageId IdMakerLogger(EventBase ev, MicroserviceId msId)
         {
             var e = ev as LogEvent;
             
@@ -62,17 +62,17 @@ namespace Xigadee
 
             //return string.Format("{0}_{1}", logEvent.GetType().Name, Guid.NewGuid().ToString("N"));
 
-            return new Tuple<string, string>(Id, Directory);
+            return new AzureStorageId { Id = Id, Directory = Directory };
         }
 
-        public static Tuple<string, string> IdMakerEventSource(EventBase ev, MicroserviceId msId)
+        public static AzureStorageId IdMakerEventSource(EventBase ev, MicroserviceId msId)
         {
             var e = ev as EventSourceEntry;
 
             string Id = string.Format("{0}.json", string.Join("_", e.Key.Split(Path.GetInvalidFileNameChars())));
             string Directory = string.Format("{0}/{1:yyyy-MM-dd}/{2}", msId.Name, e.UTCTimeStamp, e.EntityType);
 
-            return new Tuple<string, string>(Id, Directory);
+            return new AzureStorageId { Id = Id, Directory = Directory };
         }
     }
 }

@@ -28,9 +28,8 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="O">The request options that determines the retry policy.</typeparam>
     /// <typeparam name="C">The container type.</typeparam>
-    public abstract class AzureStorageConnectorBinary<O, C>: AzureStorageConnectorBase<O, C, byte[]>
+    public abstract class AzureStorageConnectorBinary<O>: AzureStorageConnectorBase<O, byte[]>
         where O : Microsoft.WindowsAzure.Storage.IRequestOptions
-        where C : AzureStorageContainerBase
     {
         public AzureStorageConnectorBinary()
         {

@@ -29,7 +29,7 @@ using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Xigadee
 {
-    public class AzureStorageConnectorBlob: AzureStorageConnectorBinary<BlobRequestOptions, AzureStorageContainerBlob>
+    public class AzureStorageConnectorBlob: AzureStorageConnectorBinary<BlobRequestOptions>
     {
         public CloudBlobContainer Container { get; set; }
 

@@ -210,7 +210,7 @@
     <Compile Include="DataCollection\Storage\ExtensionMethods\Blob.cs" />
     <Compile Include="DataCollection\Storage\ExtensionMethods\Table.cs" />
     <Compile Include="DataCollection\Storage\Enumerations\AzureStorageBehaviour.cs" />
-    <Compile Include="DataCollection\Storage\Connector\AzureStorageContainer.cs" />
+    <Compile Include="DataCollection\Storage\Connector\AzureStorageId.cs" />
     <Compile Include="DataCollection\Storage\ExtensionMethods\Misc.cs" />
     <Compile Include="DataCollection\Storage\AzureStorageDataCollectorOptions.cs" />
     <Compile Include="DataCollection\Storage\AzureStorageDataCollectorPolicy.cs" />

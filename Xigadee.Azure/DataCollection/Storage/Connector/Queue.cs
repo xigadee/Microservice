@@ -29,7 +29,7 @@ using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Xigadee
 {
-    public class AzureStorageConnectorQueue: AzureStorageConnectorBinary<QueueRequestOptions, AzureStorageContainerFile>
+    public class AzureStorageConnectorQueue: AzureStorageConnectorBinary<QueueRequestOptions>
     {
 
         public CloudQueueClient Client { get; set; }

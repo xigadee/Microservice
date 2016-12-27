@@ -35,6 +35,7 @@ namespace Xigadee
             where P : IPipeline
         {
             AzureStorageDataCollectorPolicy policy = new AzureStorageDataCollectorPolicy();
+
             adjustPolicy?.Invoke(policy);
 
             if (creds == null)
