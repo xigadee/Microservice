@@ -31,26 +31,37 @@ namespace Xigadee
 {
     public class AzureStorageConnectorBlob: AzureStorageConnectorBinary<BlobRequestOptions, AzureStorageContainerBlob>
     {
-        public AzureStorageConnectorBlob()
-        {
-            //RequestOptionsDefault = new BlobRequestOptions()
-            //{
-            //    RetryPolicy = new LinearRetry(TimeSpan.FromMilliseconds(200), 5)
-            //        , ServerTimeout = defaultTimeout ?? TimeSpan.FromSeconds(1)
-            //    //, ParallelOperationThreadCount = 64 
-            //};
-        }
-
-
+        public CloudBlobContainer Container { get; set; }
 
         public CloudBlobClient Client { get; set; }
 
-        public CloudBlobContainer Container { get; set; }
-
         public CloudBlob Blob { get; set; }
 
+        public BlobContainerPublicAccessType BlobAccessType { get; set; } = BlobContainerPublicAccessType.Off;
 
+        public override async Task Write(EventBase e, MicroserviceId id)
+        {
+            var ids = IdMaker(e, id);
+            var output = Serializer(e);
 
+            throw new NotImplementedException();
+        }
 
+        public override void Initialize()
+        {
+            Client = StorageAccount.CreateCloudBlobClient();
+            if (RequestOptionsDefault != null)
+                Client.DefaultRequestOptions = RequestOptionsDefault;
+
+            Container = Client.GetContainerReference(RootId);
+            Container.CreateIfNotExists(BlobAccessType, RequestOptionsDefault, Context);
+
+            RequestOptionsDefault = new BlobRequestOptions()
+            {
+                RetryPolicy = new LinearRetry(TimeSpan.FromMilliseconds(200), 5)
+                    , ServerTimeout = DefaultTimeout ?? TimeSpan.FromSeconds(1)
+                //, ParallelOperationThreadCount = 64 
+            };
+        }
     }
 }

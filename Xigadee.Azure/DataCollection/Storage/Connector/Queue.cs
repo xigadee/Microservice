@@ -36,5 +36,34 @@ namespace Xigadee
 
         public CloudQueue Queue { get; set; }
 
+        public override Task Write(EventBase e, MicroserviceId id)
+        {
+            throw new NotImplementedException();
+
+
+            //// Retrieve a reference to a queue.
+            //CloudQueue queue = queueClient.GetQueueReference("myqueue");
+
+            //// Create the queue if it doesn't already exist.
+            //queue.CreateIfNotExists();
+
+            //// Create a message and add it to the queue.
+            //CloudQueueMessage message = new CloudQueueMessage("Hello, World");
+            //queue.AddMessage(message);
+
+            // Async enqueue the message
+            //await queue.AddMessageAsync(cloudQueueMessage);
+            //Console.WriteLine("Message added");
+        }
+
+        public override void Initialize()
+        {
+            Client = StorageAccount.CreateCloudQueueClient();
+            if (RequestOptionsDefault != null)
+                Client.DefaultRequestOptions = RequestOptionsDefault;
+
+            Queue = Client.GetQueueReference(RootId);
+            Queue.CreateIfNotExists();
+        }
     }
 }

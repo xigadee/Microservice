@@ -93,140 +93,51 @@ namespace Xigadee
             mStorageAccount = new CloudStorageAccount(mCredentails, true);
 
             //Create the blob client
-            StartClientBlob();
+            mHoldersBlob = Start<AzureStorageConnectorBlob>((o) => o.SupportsBlob());
             //Create the table client
-            StartClientTable();
+            mHoldersTable = Start<AzureStorageConnectorTable>((o) => o.SupportsTable());
             //Create the queue client
-            StartClientQueue();
+            mHoldersQueue = Start<AzureStorageConnectorQueue>((o) => o.SupportsQueue());
             //Create the queue client
-            StartClientFile();
+            mHoldersFile = Start<AzureStorageConnectorFile>((o) => o.SupportsFile());
         }
 
         protected override void StopInternal()
         {
-            StopClientFile();
-            StopClientQueue();
-            StopClientTable();
-            StopClientBlob();
+            mHoldersFile.Clear();
+            mHoldersQueue.Clear();
+            mHoldersTable.Clear();
+            mHoldersBlob.Clear();
 
             mStorageAccount = null;
 
             base.StopInternal();
         }
-        #endregion
 
-        #region Start/Stop Blob...
-        protected virtual void StartClientBlob()
+        /// <summary>
+        /// This method creates a collection of connectors for each specific storage type.
+        /// </summary>
+        /// <typeparam name="R">The connector type.</typeparam>
+        /// <param name="isValid">A function that filters the specific type.</param>
+        /// <returns>Returns a dictionary containing the support types and their associated connectors.</returns>
+        protected virtual Dictionary<DataCollectionSupport,R> Start<R>(Func<AzureStorageDataCollectorOptions, bool> isValid) 
+            where R:IAzureStorageConnectorBase,new()
         {
-            mHoldersBlob = mPolicy.Options.Where((o) => o.SupportsBlob())
-                .ToDictionary((k) => k.Support, (k) => new AzureStorageConnectorBlob(mDefaultTimeout) { Support = k.Support, Options = k }); 
+            var holders = mPolicy.Options.Where((o) => isValid(o))
+                .ToDictionary((k) => k.Support, (k) => new R()
+                {
+                      Support = k.Support
+                    , Options = k
+                    , StorageAccount = mStorageAccount
+                    , DefaultTimeout = mDefaultTimeout
+                    , Context = mContext
+                });
 
             //Do we have any supported clients?
-            if (mHoldersBlob.Count == 0)
-                return;
+            holders.Values
+                .ForEach((v) => v.Initialize());
 
-            var client = mStorageAccount.CreateCloudBlobClient();
-            if (mOptions != null)
-                client.DefaultRequestOptions = mOptions;
-
-            foreach (var item in mHoldersBlob.Values)
-            {
-                //item.Container = client.GetContainerReference(item.RequestOptionsDefault);
-                item.Container.CreateIfNotExists(mAccessType, mOptions, mContext);
-
-            }
-
-        }
-        protected virtual void StopClientBlob()
-        {
-            mHoldersBlob.Clear();
-        }
-        #endregion
-        #region Start/Stop Table...
-        protected virtual void StartClientTable()
-        {
-            mHoldersTable = mPolicy.Options.Where((o) => o.SupportsTable())
-                .ToDictionary((k) => k.Support, (k) => new AzureStorageConnectorTable() { Support = k.Support, Options = k });
-
-            //Do we have any supported clients?
-            if (mHoldersTable.Count == 0)
-                return;
-
-            var client = mStorageAccount.CreateCloudTableClient();
-
-            foreach (var item in mHoldersTable.Values)
-            {
-                item.Client = client;
-                item.Table = client.GetTableReference(item.Options.ConnectorTable.RootId);
-                item.Table.CreateIfNotExists();
-            }
-        }
-        protected virtual void StopClientTable()
-        {
-            mHoldersTable.Clear();
-        }
-        #endregion
-        #region Start/Stop Queue...
-        protected virtual void StartClientQueue()
-        {
-            mHoldersQueue = mPolicy.Options.Where((o) => o.SupportsQueue())
-                .ToDictionary((k) => k.Support, (k) => new AzureStorageConnectorQueue() { Support = k.Support, Options = k });
-
-            //Do we have any supported clients?
-            if (mHoldersQueue.Count == 0)
-                return;
-            // Create the queue client.
-            var client = mStorageAccount.CreateCloudQueueClient();
-
-            foreach (var item in mHoldersQueue.Values)
-            {
-                item.Client = client;
-                item.Queue = client.GetQueueReference(item.Options.QueueId);
-                item.Queue.CreateIfNotExists();
-            }
-
-            //// Retrieve a reference to a queue.
-            //CloudQueue queue = queueClient.GetQueueReference("myqueue");
-
-            //// Create the queue if it doesn't already exist.
-            //queue.CreateIfNotExists();
-
-            //// Create a message and add it to the queue.
-            //CloudQueueMessage message = new CloudQueueMessage("Hello, World");
-            //queue.AddMessage(message);
-
-            // Async enqueue the message
-            //await queue.AddMessageAsync(cloudQueueMessage);
-            //Console.WriteLine("Message added");
-        }
-        protected virtual void StopClientQueue()
-        {
-            mHoldersQueue.Clear();
-        }
-        #endregion
-        #region Start/Stop File...
-        protected virtual void StartClientFile()
-        {
-            mHoldersFile = mPolicy.Options.Where((o) => o.SupportsFile())
-                .ToDictionary((k) => k.Support, (k) => new AzureStorageConnectorFile() { Support = k.Support, Options = k });
-
-            //Do we have any supported clients?
-            if (mHoldersFile.Count == 0)
-                return;
-
-            // Create the queue client.
-            var client = mStorageAccount.CreateCloudFileClient();
-            
-            foreach (var item in mHoldersFile.Values)
-            {
-                item.Client = client;
-                //item.Queue = client.getf(item.Options.QueueId);
-                //item.Queue.CreateIfNotExists();
-            }
-        }
-        protected virtual void StopClientFile()
-        {
-            mHoldersFile.Clear();
+            return holders;
         }
         #endregion
 
@@ -300,16 +211,14 @@ namespace Xigadee
             if (option == null)
                 return;
 
-            AzureStorageContainerBlob cont = option.BlobConverter(OriginatorId, e);
-
             int start = StatisticsInternal.ActiveIncrement(option.Support);
 
-            Guid? traceId = option.ShouldProfile ? (ProfileStart($"{cont.Directory}/{cont.Id}")) : default(Guid?);
+            Guid? traceId = option.ShouldProfile ? (ProfileStart($"AzureBlob_{e.TraceId}")) : default(Guid?);
 
             var result = ResourceRequestResult.Unknown;
             try
             {
- 
+                await option.ConnectorBlob.Write(e, OriginatorId);
 
                 result = ResourceRequestResult.Success;
             }
@@ -346,15 +255,13 @@ namespace Xigadee
             if (option == null)
                 return;
 
-            AzureStorageContainerTable cont = option.TableConverter?.Invoke(OriginatorId, e) ?? e.DefaultTableConverter(OriginatorId);
-
             int start = StatisticsInternal.ActiveIncrement(option.Support);
 
-            Guid? traceId = option.ShouldProfile ? ProfileStart($"{cont.Id}") : default(Guid?);
+            Guid? traceId = option.ShouldProfile ? ProfileStart($"AzureTable_{e.TraceId}") : default(Guid?);
             var result = ResourceRequestResult.Unknown;
             try
             {
-
+                await option.ConnectorTable.Write(e, OriginatorId);
 
                 result = ResourceRequestResult.Success;
             }
@@ -391,15 +298,13 @@ namespace Xigadee
             if (option == null)
                 return;
 
-            AzureStorageContainerQueue cont = option.QueueConverter?.Invoke(OriginatorId, e) ?? e.QueueConverterDefault(OriginatorId);
-
             int start = StatisticsInternal.ActiveIncrement(option.Support);
 
-            Guid? traceId = option.ShouldProfile ? ProfileStart($"{cont.Id}") : default(Guid?);
+            Guid? traceId = option.ShouldProfile ? ProfileStart($"AzureQueue_{e.TraceId}") : default(Guid?);
             var result = ResourceRequestResult.Unknown;
             try
             {
-
+                await option.ConnectorQueue.Write(e, OriginatorId);
 
                 result = ResourceRequestResult.Success;
             }
@@ -436,15 +341,13 @@ namespace Xigadee
             if (option == null)
                 return;
 
-            AzureStorageContainerQueue cont = option.QueueConverter?.Invoke(OriginatorId, e) ?? e.QueueConverterDefault(OriginatorId);
-
             int start = StatisticsInternal.ActiveIncrement(option.Support);
 
-            Guid? traceId = option.ShouldProfile ? ProfileStart($"{cont.Id}") : default(Guid?);
+            Guid? traceId = option.ShouldProfile ? ProfileStart($"AzureFile_{e.TraceId}") : default(Guid?);
             var result = ResourceRequestResult.Unknown;
             try
             {
-                //Currently do nothing
+                await option.ConnectorFile.Write(e, OriginatorId);
 
                 result = ResourceRequestResult.Success;
             }

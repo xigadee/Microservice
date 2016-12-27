@@ -13,34 +13,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.WindowsAzure.Storage.File;
-using Microsoft.WindowsAzure.Storage.Queue;
 using Microsoft.WindowsAzure.Storage.RetryPolicies;
-using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Xigadee
 {
-    public class AzureStorageConnectorFile: AzureStorageConnectorBinary<FileRequestOptions, AzureStorageContainerFile>
+    /// <summary>
+    /// This is the abstract class shared by binary output type, i.e. Blob, Queue, File.
+    /// </summary>
+    /// <typeparam name="O">The request options that determines the retry policy.</typeparam>
+    /// <typeparam name="C">The container type.</typeparam>
+    public abstract class AzureStorageConnectorBinary<O, C>: AzureStorageConnectorBase<O, C, byte[]>
+        where O : Microsoft.WindowsAzure.Storage.IRequestOptions
+        where C : AzureStorageContainerBase
     {
-        public CloudFileClient Client { get; set; }
-
-        public override Task Write(EventBase e, MicroserviceId id)
+        public AzureStorageConnectorBinary()
         {
-            throw new NotImplementedException();
-        }
-
-        public override void Initialize()
-        {
-            throw new NotImplementedException();
-        }
+            Serializer = AzureStorageDCExtensions.DefaultJsonBinarySerializer;
+        }       
     }
 }

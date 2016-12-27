@@ -15,16 +15,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
-using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.WindowsAzure.Storage.File;
-using Microsoft.WindowsAzure.Storage.Queue;
-using Microsoft.WindowsAzure.Storage.RetryPolicies;
 using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Xigadee
@@ -36,12 +27,22 @@ namespace Xigadee
 
         public CloudTable Table { get; set; }
 
-        public override AzureStorageContainerTable Convert(EventBase e, MicroserviceId id)
+        public override async Task Write(EventBase e, MicroserviceId id)
         {
-            var cont = new AzureStorageContainerTable();
-            cont.TableEntity = Serializer(e);
+            var ids = IdMaker(e,id);
+            var output = Serializer(e);
 
-            return cont;
+            //await Table.
+        }
+
+        public override void Initialize()
+        {
+            Client = StorageAccount.CreateCloudTableClient();
+            if (RequestOptionsDefault != null)
+                Client.DefaultRequestOptions = RequestOptionsDefault;
+
+            Table = Client.GetTableReference(RootId);
+            Table.CreateIfNotExists();
         }
     }
 }

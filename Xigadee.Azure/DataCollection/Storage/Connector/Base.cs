@@ -18,59 +18,98 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.RetryPolicies;
 
 namespace Xigadee
 {
     /// <summary>
-    /// 
+    /// This is the common interface for storage connectors.
     /// </summary>
-    /// <typeparam name="O"></typeparam>
-    /// <typeparam name="C"></typeparam>
-    public abstract class AzureStorageConnectorBase<O,C,S>
+    public interface IAzureStorageConnectorBase
+    {
+        /// <summary>
+        /// This is the default timeout.
+        /// </summary>
+        TimeSpan? DefaultTimeout { get; set; }
+        /// <summary>
+        /// This is the specific EventBase type supported for the connector.
+        /// </summary>
+        DataCollectionSupport Support { get; set; }
+        /// <summary>
+        /// This is the cloud storage account used for all connectivity.
+        /// </summary>
+        CloudStorageAccount StorageAccount { get; set; }
+        /// <summary>
+        /// This is the specific storage options.
+        /// </summary>
+        AzureStorageDataCollectorOptions Options { get; set; }
+        /// <summary>
+        /// This is the Azure storage operation context.
+        /// </summary>
+        OperationContext Context { get; set; }
+        /// <summary>
+        /// This method initializes the connector.
+        /// </summary>
+        void Initialize();
+    }
+    /// <summary>
+    /// This is the base class shared by all connectors.
+    /// </summary>
+    /// <typeparam name="O">The request options that determines the retry policy.</typeparam>
+    /// <typeparam name="C">The container type.</typeparam>
+    /// <typeparam name="S">The serialization type.</typeparam>
+    public abstract class AzureStorageConnectorBase<O,C,S>: IAzureStorageConnectorBase
         where O: Microsoft.WindowsAzure.Storage.IRequestOptions
         where C: AzureStorageContainerBase
     {
+        /// <summary>
+        /// This is the specific EventBase type supported for the connector.
+        /// </summary>
         public DataCollectionSupport Support { get; set; }
-
+        /// <summary>
+        /// This is the specific storage options.
+        /// </summary>
         public AzureStorageDataCollectorOptions Options { get; set; }
-
+        /// <summary>
+        /// This is the cloud storage account used for all connectivity.
+        /// </summary>
+        public CloudStorageAccount StorageAccount { get; set; }
+        /// <summary>
+        /// This is the Azure storage operation context.
+        /// </summary>
+        public OperationContext Context { get; set; }
+        /// <summary>
+        /// This function is used to create the specific ids for the entity;
+        /// </summary>
+        public Func<EventBase, MicroserviceId, Tuple<string, string>> IdMaker { get; set; }
+        /// <summary>
+        /// This function serializes the event entity.
+        /// </summary>
         public Func<EventBase, S> Serializer { get; set; }
-
+        /// <summary>
+        /// This is the default timeout.
+        /// </summary>
+        public TimeSpan? DefaultTimeout { get; set; } 
         /// <summary>
         /// This is the root id for the storage container.
         /// </summary>
         public string RootId { get; set; }
-
         /// <summary>
         /// This method returns the default request options if set.
         /// </summary>
         public virtual O RequestOptionsDefault { get; set; }
         /// <summary>
-        /// This abstract method is used to convert the incoming entity to a serializable format
-        /// and associated metadata that is ready to be written to the underlying storage.
+        /// This method writes to the incoming event to the underlying storage technology.
         /// </summary>
-        /// <param name="e">The event entity.</param>
-        /// <param name="id">The microservice properties.</param>
-        /// <returns>Returns a container containing the serialized entity and associated metadata.</returns>
-        public abstract C Convert(EventBase e, MicroserviceId id);
-
+        /// <param name="e">The event.</param>
+        /// <param name="id">The microservice metadata.</param>
+        /// <returns>This is an async task.</returns>
+        public abstract Task Write(EventBase e, MicroserviceId id);
+        /// <summary>
+        /// This method initializes the connector.
+        /// </summary>
+        public abstract void Initialize();
     }
-
-    public abstract class AzureStorageConnectorBinary<O, C>: AzureStorageConnectorBase<O, C, byte[]>
-        where O : Microsoft.WindowsAzure.Storage.IRequestOptions
-        where C : AzureStorageContainerBase
-    {
-        public AzureStorageConnectorBinary()
-        {
-             Serializer = AzureStorageDCExtensions.DefaultJsonBinarySerializer;
-        }
-
-        public override C Convert(EventBase e, MicroserviceId id)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
 }

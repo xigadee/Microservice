@@ -31,25 +31,20 @@ namespace Xigadee
         /// </summary>
         public AzureStorageDataCollectorOptions Log { get; set; } 
             = new AzureStorageDataCollectorOptions(DataCollectionSupport.Logger
-                , AzureStorageBehaviour.Blob)
-            { BlobConverter = AzureStorageDCExtensions.BlobConverterLogger };
+                , AzureStorageBehaviour.Blob);
         /// <summary>
         /// This is the EventSource options.
         /// </summary>
         public AzureStorageDataCollectorOptions EventSource { get; set; } 
             = new AzureStorageDataCollectorOptions(DataCollectionSupport.EventSource
-                , AzureStorageBehaviour.Blob)
-            { BlobConverter = AzureStorageDCExtensions.BlobConverterEventSource };
+                , AzureStorageBehaviour.Blob);
         /// <summary>
         /// This is the Statistics options. By default encryption is not set for statistics.
         /// </summary>
         public AzureStorageDataCollectorOptions Statistics { get; set; } 
             = new AzureStorageDataCollectorOptions(DataCollectionSupport.Statistics
                 , AzureStorageBehaviour.BlobAndTable)
-            {
-              BlobConverter = AzureStorageDCExtensions.BlobConverterStatistics 
-             ,Encryption = AzureStorageEncryption.None
-            };
+            {Encryption = AzureStorageEncryption.None};
         /// <summary>
         /// This is the Dispatcher options.
         /// </summary>
@@ -98,6 +93,6 @@ namespace Xigadee
             }
         }
 
-        public BlobContainerPublicAccessType BlobAccessType { get; set; } = BlobContainerPublicAccessType.Off;
+
     }
 }

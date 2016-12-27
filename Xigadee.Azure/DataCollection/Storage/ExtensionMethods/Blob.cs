@@ -23,12 +23,15 @@ namespace Xigadee
 {
     public static partial class AzureStorageDCExtensions
     {
-
+        /// <summary>
+        /// This method serializes incoming objects in to standard JSON format encoded as UTF8.
+        /// </summary>
+        /// <param name="e">The incoming EventBase.</param>
+        /// <returns>Returns the byte array.</returns>
         public static byte[] DefaultJsonBinarySerializer(EventBase e)
         {
             var jObj = JObject.FromObject(e);
             var body = jObj.ToString();
-
             return Encoding.UTF8.GetBytes(body);
         }
 
@@ -36,12 +39,7 @@ namespace Xigadee
             where B: AzureStorageContainerBinaryBase, new()
         {
             var cont = new B();
-
-            var jObj = JObject.FromObject(e);
-            var body = jObj.ToString();
-
-            cont.Blob = Encoding.UTF8.GetBytes(body);
-
+            cont.Blob = DefaultJsonBinarySerializer(e);
             return cont;
         }
 
@@ -50,6 +48,7 @@ namespace Xigadee
         {
             var e = ev as MicroserviceStatistics;
             var cont = ev.DefaultBlobConverter<AzureStorageContainerBlob>();
+
             cont.Id = e.StorageId;
             cont.Directory = string.Format("Statistics/{0}/{1:yyyy-MM-dd}/{1:HH}", msId.Name, DateTime.UtcNow);
 

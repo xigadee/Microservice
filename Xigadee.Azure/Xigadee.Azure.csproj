@@ -206,6 +206,7 @@
     <Compile Include="ApplicationInsights\CommandCorrelationInitializer.cs" />
     <Compile Include="Configuration\ConfigResolver\ConfigResolverKeyVault.cs" />
     <Compile Include="Configuration\ConfigResolver\ConfigResolverAzure.cs" />
+    <Compile Include="DataCollection\Storage\Connector\Binary.cs" />
     <Compile Include="DataCollection\Storage\ExtensionMethods\Blob.cs" />
     <Compile Include="DataCollection\Storage\ExtensionMethods\Queue.cs" />
     <Compile Include="DataCollection\Storage\ExtensionMethods\Table.cs" />
@@ -302,7 +303,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="DataCollection\Storage\Exceptions\" />
     <Folder Include="Telemetry\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
