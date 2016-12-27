@@ -30,7 +30,7 @@ namespace Xigadee
         public override async Task Write(EventBase e, MicroserviceId id)
         {
             var ids = IdMaker(e,id);
-            var output = Serializer(e);
+            var output = Serializer(e, id);
 
             //await Table.
         }

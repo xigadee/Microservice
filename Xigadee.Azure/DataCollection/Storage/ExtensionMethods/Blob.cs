@@ -35,7 +35,7 @@ namespace Xigadee
             return Encoding.UTF8.GetBytes(body);
         }
 
-        public static Tuple<string,string> IdMakerStatistics(EventBase ev, MicroserviceId msId)
+        public static Tuple<string, string> IdMakerStatistics(EventBase ev, MicroserviceId msId)
         {
             var e = ev as MicroserviceStatistics;
 
@@ -48,7 +48,7 @@ namespace Xigadee
         public static Tuple<string, string> IdMakerLogger(EventBase ev, MicroserviceId msId)
         {
             var e = ev as LogEvent;
-
+            
             string level = Enum.GetName(typeof(LoggingLevel), e.Level);
             string Id = $"{ev.TraceId}.json";
             string Directory = string.Format("{0}/{1}/{2:yyyy-MM-dd}/{2:HH}", msId.Name, level, DateTime.UtcNow);
