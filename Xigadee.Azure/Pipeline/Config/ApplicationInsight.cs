@@ -33,10 +33,11 @@ namespace Xigadee
         public const string KeyApplicationInsightsLoggingLevel = "ApplicationInsightsLoggingLevel";
 
         [ConfigSetting("ApplicationInsights")]
-        public static string ApplicationInsightsKey(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyApplicationInsights);
+        public static string ApplicationInsightsKey(this IEnvironmentConfiguration config, bool throwException = false) 
+            => config.PlatformOrConfigCache(KeyApplicationInsights);
 
         [ConfigSetting("ApplicationInsights")]
-        public static LoggingLevel ApplicationInsightsLoggingLevel(this IEnvironmentConfiguration config)
+        public static LoggingLevel ApplicationInsightsLoggingLevel(this IEnvironmentConfiguration config, bool throwException = false)
         {
             LoggingLevel loggingLevel;
             var configLevel = config.PlatformOrConfigCache(KeyApplicationInsightsLoggingLevel);

@@ -157,7 +157,7 @@ namespace Xigadee
             foreach (var item in mHoldersTable.Values)
             {
                 item.Client = client;
-                item.Table = client.GetTableReference(item.Options.TableId);
+                item.Table = client.GetTableReference(item.Options.ConnectorTable.RootId);
                 item.Table.CreateIfNotExists();
             }
         }

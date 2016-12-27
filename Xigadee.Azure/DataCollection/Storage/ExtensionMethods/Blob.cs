@@ -24,6 +24,14 @@ namespace Xigadee
     public static partial class AzureStorageDCExtensions
     {
 
+        public static byte[] DefaultJsonBinarySerializer(EventBase e)
+        {
+            var jObj = JObject.FromObject(e);
+            var body = jObj.ToString();
+
+            return Encoding.UTF8.GetBytes(body);
+        }
+
         public static B DefaultBlobConverter<B>(this EventBase e)
             where B: AzureStorageContainerBinaryBase, new()
         {

@@ -140,7 +140,9 @@
     <Compile Include="Interfaces\Microservice\IMicroservicePolicy.cs" />
     <Compile Include="Interfaces\Microservice\IMicroserviceProcess.cs" />
     <Compile Include="Interfaces\Microservice\IMicroserviceSecurity.cs" />
+    <Compile Include="Pipeline\Extensions\Configuration\ConfigAssertKeyExists.cs" />
     <Compile Include="Pipeline\Extensions\Add\AddSchedule.cs" />
+    <Compile Include="Pipeline\Extensions\Configuration\ConfigAssertKeyNotPresentException.cs" />
     <Compile Include="Security\Exceptions\EncryptionHandlerNotFoundException.cs" />
     <Compile Include="Security\Interfaces\IEncryptionHandler.cs" />
     <Compile Include="Messaging\ProcessOptions.cs" />

@@ -147,14 +147,15 @@ namespace Xigadee
         }
         #endregion
 
-        #region PlatformOrConfig(string key)
+        #region PlatformOrConfig(string key, bool throwExceptionIfNotFound = false)
         /// <summary>
         /// This method returns a string value from configuration. It tries to resolve values from 
         /// either the resolver function, or from the Azure configuration and then the windows configuration.
         /// </summary>
         /// <param name="key">The key to resolve.</param>
+        /// <param name="throwExceptionIfNotFound">Throw an exception if the key is not found.</param>
         /// <returns>The value or null if not resolved.</returns>
-        protected virtual string PlatformOrConfig(string key)
+        protected virtual string PlatformOrConfig(string key, bool throwExceptionIfNotFound = false)
         {
             string value = null;
 
@@ -189,14 +190,15 @@ namespace Xigadee
         }
         #endregion
 
-        #region PlatformOrConfigCache(string key, string defaultValue = null)
+        #region PlatformOrConfigCache(string key, string defaultValue = null, bool throwExceptionIfNotFound = false)
         /// <summary>
         /// This method resolves a specific value or insert the default value.
         /// </summary>
         /// <param name="key">The key to resolve.</param>
         /// <param name="defaultValue">The default value.</param>
+        /// <param name="throwExceptionIfNotFound">Throw an exception if the key is not found.</param>
         /// <returns>Returns the setting or the default.</returns>
-        public string PlatformOrConfigCache(string key, string defaultValue = null)
+        public string PlatformOrConfigCache(string key, string defaultValue = null, bool throwExceptionIfNotFound = false)
         {
             string value = null;
             if (!mConfigCache.TryGetValue(key, out value))
@@ -205,29 +207,30 @@ namespace Xigadee
             }
 
             return value;
-        } 
+        }
         #endregion
-
-        #region PlatformOrConfigCacheBool(string key, string defaultValue = null)
+        #region PlatformOrConfigCacheBool(string key, string defaultValue = null, bool throwExceptionIfNotFound = false)
         /// <summary>
         /// This method resolves a specific value or insert the default value for boolean properties.
         /// </summary>
         /// <param name="key">The key to resolve.</param>
         /// <param name="defaultValue">The default value.</param>
+        /// <param name="throwExceptionIfNotFound">Throw an exception if the key is not found.</param>
         /// <returns>Returns the setting or the default as boolean false.</returns>
-        public virtual bool PlatformOrConfigCacheBool(string key, string defaultValue = null)
+        public virtual bool PlatformOrConfigCacheBool(string key, string defaultValue = null, bool throwExceptionIfNotFound = false)
         {
             return Convert.ToBoolean(PlatformOrConfigCache(key, defaultValue));
-        } 
+        }
         #endregion
-        #region PlatformOrConfigCacheInt(string key, int? defaultValue = null)
+        #region PlatformOrConfigCacheInt(string key, int? defaultValue = null, bool throwExceptionIfNotFound = false)
         /// <summary>
         /// This method resolves a specific value or insert the default value for boolean properties.
         /// </summary>
         /// <param name="key">The key to resolve.</param>
         /// <param name="defaultValue">The default value.</param>
+        /// <param name="throwExceptionIfNotFound">Throw an exception if the key is not found.</param>
         /// <returns>Returns the setting or the default as boolean false.</returns>
-        public virtual int PlatformOrConfigCacheInt(string key, int? defaultValue = null)
+        public virtual int PlatformOrConfigCacheInt(string key, int? defaultValue = null, bool throwExceptionIfNotFound = false)
         {
             return Convert.ToInt32(PlatformOrConfigCache(key, defaultValue?.ToString()));
         }

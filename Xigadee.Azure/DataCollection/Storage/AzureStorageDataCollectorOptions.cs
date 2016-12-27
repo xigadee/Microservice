@@ -17,12 +17,15 @@ namespace Xigadee
         /// <param name="support">The collection support type.</param>
         /// <param name="behavior">The default storage behaviour.</param>
         public AzureStorageDataCollectorOptions(DataCollectionSupport support
-            , AzureStorageBehaviour behavior = AzureStorageBehaviour.None
-            )
+            , AzureStorageBehaviour behavior = AzureStorageBehaviour.None)
         {
             Support = support;
-            TableId = AzureStorageDCExtensions.GetEnum<DataCollectionSupport>(support).StringValue;
             Behaviour = behavior;
+            var id = AzureStorageDCExtensions.GetEnum<DataCollectionSupport>(support).StringValue;
+            ConnectorBlob.RootId = id;
+            ConnectorTable.RootId = id;
+            ConnectorQueue.RootId = id;
+            ConnectorFile.RootId = id;
         }
 
         /// <summary>
@@ -45,32 +48,10 @@ namespace Xigadee
         /// </summary>
         public bool ShouldProfile { get; set; }=true;
 
-        /// <summary>
-        /// This is the name of the storage table.
-        /// </summary>
-        public string TableId { get; set; }
-        /// <summary>
-        /// This is the name of the storage queue.
-        /// </summary>
-        public string QueueId { get; set; }
-
-
-        /// <summary>
-        /// This method converts the entity in to a blob ready for blob storage
-        /// </summary>
-        public Func<MicroserviceId, EventBase, AzureStorageContainerQueue> QueueConverter { get; set; } = null;
-        /// <summary>
-        /// This method converts the entity in to a blob ready for blob storage
-        /// </summary>
-        public Func<MicroserviceId, EventBase, AzureStorageContainerBlob> BlobConverter { get; set; } = null;
-        /// <summary>
-        /// This method converts the entity in to a dynamic Table entity.
-        /// </summary>
-        public Func<MicroserviceId, EventBase, AzureStorageContainerTable> TableConverter { get; set; } = null;
-        /// <summary>
-        /// This method converts the entity in to a dynamic Table entity.
-        /// </summary>
-        public Func<MicroserviceId, EventBase, AzureStorageContainerFile> FileConverter { get; set; } = null;
+        public AzureStorageConnectorBlob ConnectorBlob { get; set; } = new AzureStorageConnectorBlob();
+        public AzureStorageConnectorTable ConnectorTable { get; set; } = new AzureStorageConnectorTable();
+        public AzureStorageConnectorQueue ConnectorQueue { get; set; } = new AzureStorageConnectorQueue();
+        public AzureStorageConnectorFile ConnectorFile { get; set; } = new AzureStorageConnectorFile();
 
     }
 }

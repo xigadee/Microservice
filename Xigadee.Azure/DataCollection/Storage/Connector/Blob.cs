@@ -29,23 +29,28 @@ using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Xigadee
 {
-    public class AzureStorageConnectorBlob: AzureStorageConnectorBase<BlobRequestOptions>
+    public class AzureStorageConnectorBlob: AzureStorageConnectorBinary<BlobRequestOptions, AzureStorageContainerBlob>
     {
-        public AzureStorageConnectorBlob(TimeSpan? defaultTimeout)
+        public AzureStorageConnectorBlob()
         {
-            RequestOptionsDefault = new BlobRequestOptions()
-            {
-                RetryPolicy = new LinearRetry(TimeSpan.FromMilliseconds(200), 5)
-                    , ServerTimeout = defaultTimeout ?? TimeSpan.FromSeconds(1)
-                //, ParallelOperationThreadCount = 64 
-            };
+            //RequestOptionsDefault = new BlobRequestOptions()
+            //{
+            //    RetryPolicy = new LinearRetry(TimeSpan.FromMilliseconds(200), 5)
+            //        , ServerTimeout = defaultTimeout ?? TimeSpan.FromSeconds(1)
+            //    //, ParallelOperationThreadCount = 64 
+            //};
         }
+
+
 
         public CloudBlobClient Client { get; set; }
 
         public CloudBlobContainer Container { get; set; }
 
         public CloudBlob Blob { get; set; }
+
+
+
 
     }
 }

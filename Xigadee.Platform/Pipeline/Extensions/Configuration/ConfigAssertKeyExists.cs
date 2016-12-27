@@ -19,22 +19,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
-using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.WindowsAzure.Storage.File;
-using Microsoft.WindowsAzure.Storage.Queue;
-using Microsoft.WindowsAzure.Storage.RetryPolicies;
-using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Xigadee
 {
-    public class AzureStorageConnectorQueue: AzureStorageConnectorBinary<QueueRequestOptions, AzureStorageContainerFile>
+    public static partial class CorePipelineExtensions
     {
 
-        public CloudQueueClient Client { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Configuration"></param>
+        /// <param name="key"></param>
+        /// <param name="errorMessage"></param>
+        public static void ConfigAssertKeyPresent(this IEnvironmentConfiguration Configuration, string key, string errorMessage = null)
+        {
+            if (Configuration.CanResolve(key))
+                return;
 
-        public CloudQueue Queue { get; set; }
-
+            throw new ConfigAssertKeyNotPresentException(key,errorMessage);
+        }
     }
 }

@@ -29,11 +29,19 @@ using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Xigadee
 {
-    public class AzureStorageConnectorTable: AzureStorageConnectorBase<TableRequestOptions>
+    public class AzureStorageConnectorTable: AzureStorageConnectorBase<TableRequestOptions, AzureStorageContainerTable, ITableEntity>
     {
+
         public CloudTableClient Client { get; set; }
 
         public CloudTable Table { get; set; }
 
+        public override AzureStorageContainerTable Convert(EventBase e, MicroserviceId id)
+        {
+            var cont = new AzureStorageContainerTable();
+            cont.TableEntity = Serializer(e);
+
+            return cont;
+        }
     }
 }

@@ -38,11 +38,11 @@ namespace Xigadee
 
         IEnumerable<KeyValuePair<int, ConfigResolver>> Resolvers{get;}
 
-        string PlatformOrConfigCache(string key, string defaultValue = null);
+        string PlatformOrConfigCache(string key, string defaultValue = null, bool throwExceptionIfNotFound = false);
 
-        bool PlatformOrConfigCacheBool(string key, string defaultValue = null);
+        bool PlatformOrConfigCacheBool(string key, string defaultValue = null, bool throwExceptionIfNotFound = false);
 
-        int PlatformOrConfigCacheInt(string key, int? defaultValue = default(int?));
+        int PlatformOrConfigCacheInt(string key, int? defaultValue = default(int?), bool throwExceptionIfNotFound = false);
 
         void CacheFlush();
 
