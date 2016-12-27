@@ -20,7 +20,7 @@ using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Xigadee
 {
-    public static partial class AzureStorageDCExtensions
+    public static partial class AzureStorageHelper
     {
         public static void AddPayloadCommon(this Dictionary<string, EntityProperty> dict, TransmissionPayload payload)
         {
@@ -37,16 +37,18 @@ namespace Xigadee
             dict.Add("PayloadResponseKey", new EntityProperty(payload.Message?.ToResponseKey()));
         }
 
-        public static AzureStorageContainerTable DefaultTableConverter(this EventBase e, MicroserviceId id)
+        public static ITableEntity ToTableGeneric(EventBase e, MicroserviceId id)
         {
-            var cont = new AzureStorageContainerTable();
+            var dict = new Dictionary<string, EntityProperty>();
 
-            return cont;
+            return new DynamicTableEntity(e.GetType().Name + DatePartition(), e.TraceId, "*", dict);
         }
 
 
-        public static ITableEntity ToTableClient(this DispatcherEvent ev, MicroserviceId msId)
+        public static ITableEntity ToTableDispatcherEvent(EventBase e, MicroserviceId msId)
         {
+            var ev = e as DispatcherEvent;
+
             var dict = new Dictionary<string, EntityProperty>();
             dict.Add("IsSuccess", new EntityProperty(ev.IsSuccess));
             dict.Add("Type", GetEnum<PayloadEventType>(ev.Type));
@@ -59,8 +61,10 @@ namespace Xigadee
             return new DynamicTableEntity("Dispatcher" + DatePartition(), ev.TraceId, "*", dict);
         }
 
-        public static ITableEntity ToTableClient(this BoundaryEvent ev, MicroserviceId msId)
+        public static ITableEntity ToTableBoundaryEvent(EventBase e, MicroserviceId msId)
         {
+            var ev = e as BoundaryEvent;
+
             var dict = new Dictionary<string, EntityProperty>();
             dict.Add("ChannelId", new EntityProperty(ev.ChannelId));
             dict.Add("Direction", GetEnum<ChannelDirection>(ev.Direction));
@@ -74,8 +78,10 @@ namespace Xigadee
             return new DynamicTableEntity("Boundary" + DatePartition(), ev.TraceId, "*", dict);
         }
 
-        public static ITableEntity ToTableClient(this TelemetryEvent ev, MicroserviceId msId)
+        public static ITableEntity ToTableTelemetryEvent(EventBase e, MicroserviceId msId)
         {
+            var ev = e as TelemetryEvent;
+
             var dict = new Dictionary<string, EntityProperty>();
             dict.Add("Metric", new EntityProperty(ev.MetricName));
             dict.Add("Value", new EntityProperty(ev.Value));

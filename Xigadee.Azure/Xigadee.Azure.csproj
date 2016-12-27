@@ -208,7 +208,6 @@
     <Compile Include="Configuration\ConfigResolver\ConfigResolverAzure.cs" />
     <Compile Include="DataCollection\Storage\Connector\Binary.cs" />
     <Compile Include="DataCollection\Storage\ExtensionMethods\Blob.cs" />
-    <Compile Include="DataCollection\Storage\ExtensionMethods\Queue.cs" />
     <Compile Include="DataCollection\Storage\ExtensionMethods\Table.cs" />
     <Compile Include="DataCollection\Storage\Enumerations\AzureStorageBehaviour.cs" />
     <Compile Include="DataCollection\Storage\Connector\AzureStorageContainer.cs" />

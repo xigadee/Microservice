@@ -21,48 +21,37 @@ using Newtonsoft.Json.Linq;
 
 namespace Xigadee
 {
-    public static partial class AzureStorageDCExtensions
+    public static partial class AzureStorageHelper
     {
         /// <summary>
         /// This method serializes incoming objects in to standard JSON format encoded as UTF8.
         /// </summary>
         /// <param name="e">The incoming EventBase.</param>
         /// <returns>Returns the byte array.</returns>
-        public static byte[] DefaultJsonBinarySerializer(EventBase e)
+        public static byte[] DefaultJsonBinarySerializer(EventBase e, MicroserviceId id)
         {
             var jObj = JObject.FromObject(e);
             var body = jObj.ToString();
             return Encoding.UTF8.GetBytes(body);
         }
 
-        public static B DefaultBlobConverter<B>(this EventBase e)
-            where B: AzureStorageContainerBinaryBase, new()
-        {
-            var cont = new B();
-            cont.Blob = DefaultJsonBinarySerializer(e);
-            return cont;
-        }
-
-
-        public static AzureStorageContainerBlob BlobConverterStatistics(MicroserviceId msId, EventBase ev)
+        public static Tuple<string,string> IdMakerStatistics(EventBase ev, MicroserviceId msId)
         {
             var e = ev as MicroserviceStatistics;
-            var cont = ev.DefaultBlobConverter<AzureStorageContainerBlob>();
 
-            cont.Id = e.StorageId;
-            cont.Directory = string.Format("Statistics/{0}/{1:yyyy-MM-dd}/{1:HH}", msId.Name, DateTime.UtcNow);
+            string Id = $"{e.StorageId}.json";
+            string Directory = string.Format("Statistics/{0}/{1:yyyy-MM-dd}/{1:HH}", msId.Name, DateTime.UtcNow);
 
-            return cont;
+            return new Tuple<string, string>(Id, Directory);
         }
 
-        public static AzureStorageContainerBlob BlobConverterLogger(MicroserviceId msId, EventBase ev)
+        public static Tuple<string, string> IdMakerLogger(EventBase ev, MicroserviceId msId)
         {
             var e = ev as LogEvent;
-            var cont = ev.DefaultBlobConverter<AzureStorageContainerBlob>();
 
             string level = Enum.GetName(typeof(LoggingLevel), e.Level);
-            cont.Id = ev.TraceId;
-            cont.Directory = string.Format("{0}/{1}/{2:yyyy-MM-dd}/{2:HH}", msId.Name, level, DateTime.UtcNow);
+            string Id = $"{ev.TraceId}.json";
+            string Directory = string.Format("{0}/{1}/{2:yyyy-MM-dd}/{2:HH}", msId.Name, level, DateTime.UtcNow);
 
             //if (e is ILogStoreName)
             //    return ((ILogStoreName)logEvent).StorageId;
@@ -73,18 +62,17 @@ namespace Xigadee
 
             //return string.Format("{0}_{1}", logEvent.GetType().Name, Guid.NewGuid().ToString("N"));
 
-            return cont;
+            return new Tuple<string, string>(Id, Directory);
         }
 
-        public static AzureStorageContainerBlob BlobConverterEventSource(MicroserviceId msId, EventBase ev)
+        public static Tuple<string, string> IdMakerEventSource(EventBase ev, MicroserviceId msId)
         {
             var e = ev as EventSourceEntry;
-            var cont = ev.DefaultBlobConverter<AzureStorageContainerBlob>();
 
-            cont.Id = string.Format("{0}.json", string.Join("_", e.Key.Split(Path.GetInvalidFileNameChars())));
-            cont.Directory = string.Format("{0}/{1:yyyy-MM-dd}/{2}", msId.Name, e.UTCTimeStamp, e.EntityType);
+            string Id = string.Format("{0}.json", string.Join("_", e.Key.Split(Path.GetInvalidFileNameChars())));
+            string Directory = string.Format("{0}/{1:yyyy-MM-dd}/{2}", msId.Name, e.UTCTimeStamp, e.EntityType);
 
-            return cont;
+            return new Tuple<string, string>(Id, Directory);
         }
     }
 }

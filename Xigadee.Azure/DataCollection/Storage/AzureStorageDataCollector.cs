@@ -97,7 +97,8 @@ namespace Xigadee
             //Create the blob client
             mHoldersBlob = Start<AzureStorageConnectorBlob>((o) => o.SupportsBlob());
             //Create the table client
-            mHoldersTable = Start<AzureStorageConnectorTable>((o) => o.SupportsTable());
+            mHoldersTable = Start<AzureStorageConnectorTable>((o) => o.SupportsTable()
+            , (v) => v.Serializer = v.Options.ConnectorTable.Serializer);
             //Create the queue client
             mHoldersQueue = Start<AzureStorageConnectorQueue>((o) => o.SupportsQueue());
             //Create the queue client

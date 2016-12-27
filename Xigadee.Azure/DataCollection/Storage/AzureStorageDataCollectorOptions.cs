@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Xigadee
 {
@@ -17,14 +18,18 @@ namespace Xigadee
         /// <param name="support">The collection support type.</param>
         /// <param name="behavior">The default storage behaviour.</param>
         public AzureStorageDataCollectorOptions(DataCollectionSupport support
-            , AzureStorageBehaviour behavior = AzureStorageBehaviour.None)
+            , AzureStorageBehaviour behavior = AzureStorageBehaviour.None
+            , Func<EventBase, MicroserviceId, ITableEntity> tableSerializer = null)
         {
             Support = support;
             Behaviour = behavior;
 
-            var id = AzureStorageDCExtensions.GetEnum<DataCollectionSupport>(support).StringValue;
+            var id = AzureStorageHelper.GetEnum<DataCollectionSupport>(support).StringValue;
             ConnectorBlob.RootId = id;
+
             ConnectorTable.RootId = id;
+            ConnectorTable.Serializer = tableSerializer;
+
             ConnectorQueue.RootId = id;
             ConnectorFile.RootId = id;
         }

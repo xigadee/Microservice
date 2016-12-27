@@ -14,13 +14,8 @@
 // limitations under the License.
 #endregion
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.WindowsAzure.Storage.RetryPolicies;
 
 namespace Xigadee
 {
@@ -91,7 +86,7 @@ namespace Xigadee
         /// <summary>
         /// This function serializes the event entity.
         /// </summary>
-        public Func<EventBase, S> Serializer { get; set; }
+        public Func<EventBase, MicroserviceId, S> Serializer { get; set; }
         /// <summary>
         /// This is the default timeout.
         /// </summary>

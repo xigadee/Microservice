@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xigadee;
 
 namespace Xigadee
 {
@@ -32,27 +33,17 @@ namespace Xigadee
         /// <param name="key">The key.</param>
         /// <param name="value"></param>
         /// <returns>Returns the pipeline.</returns>
-        public static P ConfigurationSetFromConsoleArgs<P>(this P pipeline, string[] args, string strStart = @"/", string strDelim = @":", bool throwErrors = false
-            , Func<string,string,bool> fnInclude = null, int priority = 1000)
+        public static P StartWithConsole<P>(this P pipeline, ConsoleMenu mainMenu = null)
             where P : IPipeline
         {
-            var settings = args.CommandArgsParse(strStart, strDelim, throwErrors);
+            var ms = pipeline.ToMicroservice();
 
-            if (settings.Count > 0)
-            {
-                if (fnInclude == null)
-                    fnInclude = (k, v) => true;
+            if (mainMenu == null)
+                mainMenu = new ConsoleMenu(ms.Id.Name);
+     
+            
 
-                ConfigResolverMemory cfResolver = new ConfigResolverMemory();
-
-                settings
-                    .Where((k) => fnInclude(k.Key, k.Value))
-                    .ForEach((k) => cfResolver.Add(k.Key, k.Value));
-
-                pipeline.Configuration.ResolverSet(priority, cfResolver);
-
-                pipeline.Configuration.CacheFlush();
-            }
+            mainMenu.Show();
 
             return pipeline;
         }

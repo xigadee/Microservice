@@ -34,7 +34,7 @@ namespace Xigadee
     {
         public AzureStorageConnectorBinary()
         {
-            Serializer = AzureStorageDCExtensions.DefaultJsonBinarySerializer;
+            Serializer = AzureStorageHelper.DefaultJsonBinarySerializer;
         }       
     }
 }

@@ -20,7 +20,7 @@ using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Xigadee
 {
-    public static partial class AzureStorageDCExtensions
+    public static partial class AzureStorageHelper
     {
         private static string DatePartition(DateTime? time = null)
         {
