@@ -98,7 +98,7 @@ namespace Xigadee
             mHoldersBlob = Start<AzureStorageConnectorBlob>((o) => o.SupportsBlob());
             //Create the table client
             mHoldersTable = Start<AzureStorageConnectorTable>((o) => o.SupportsTable()
-            , (v) => v.Serializer = v.Options.ConnectorTable.Serializer);
+            , (v) => v.Serializer = v.Options.SerializerTable);
             //Create the queue client
             mHoldersQueue = Start<AzureStorageConnectorQueue>((o) => o.SupportsQueue());
             //Create the queue client
@@ -132,21 +132,29 @@ namespace Xigadee
             var holders = mPolicy.Options.Where((o) => isValid(o))
                 .ToDictionary((k) => k.Support, (k) => new R()
                 {
-                      Support = k.Support
+                    Support = k.Support
                     , Options = k
                     , StorageAccount = mStorageAccount
                     , DefaultTimeout = mDefaultTimeout
                     , Context = mContext
                     , EncryptionHandler = mEncryptionHandler
+
                 });
 
-            if (customize != null)
-                holders.Values
-                    .ForEach((v) => customize(v));
+            try
+            {
+                if (customize != null)
+                    holders.Values
+                        .ForEach((v) => customize(v));
 
-            //Do we have any supported clients?
-            holders.Values
-                .ForEach((v) => v.Initialize());
+                //Do we have any supported clients?
+                holders.Values
+                    .ForEach((v) => v.Initialize());
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
 
             return holders;
         }
@@ -158,14 +166,14 @@ namespace Xigadee
         /// </summary>
         protected override void SupportLoadDefault()
         {
-            SupportAdd(DataCollectionSupport.Boundary, (e) => Write(mPolicy.Boundary,(BoundaryEvent)e));
-            SupportAdd(DataCollectionSupport.Dispatcher, (e) => Write(mPolicy.Dispatcher, (DispatcherEvent)e));
-            SupportAdd(DataCollectionSupport.EventSource, (e) => Write(mPolicy.EventSource, (EventSourceEvent)e));
-            SupportAdd(DataCollectionSupport.Logger, (e) => Write(mPolicy.Log, (LogEvent)e));
-            SupportAdd(DataCollectionSupport.Statistics, (e) => Write(mPolicy.Statistics, (MicroserviceStatistics)e));
-            SupportAdd(DataCollectionSupport.Telemetry, (e) => Write(mPolicy.Telemetry, (TelemetryEvent)e));
-            SupportAdd(DataCollectionSupport.Resource, (e) => Write(mPolicy.Resource, (ResourceEvent)e));
-            SupportAdd(DataCollectionSupport.Custom, (e) => Write(mPolicy.Custom, e));
+            SupportAdd(DataCollectionSupport.Boundary, (e) => WriteConnectors(DataCollectionSupport.Boundary,e));
+            SupportAdd(DataCollectionSupport.Dispatcher, (e) => WriteConnectors(DataCollectionSupport.Dispatcher, e));
+            SupportAdd(DataCollectionSupport.EventSource, (e) => WriteConnectors(DataCollectionSupport.EventSource, e));
+            SupportAdd(DataCollectionSupport.Logger, (e) => WriteConnectors(DataCollectionSupport.Logger, e));
+            SupportAdd(DataCollectionSupport.Statistics, (e) => WriteConnectors(DataCollectionSupport.Statistics, e));
+            SupportAdd(DataCollectionSupport.Telemetry, (e) => WriteConnectors(DataCollectionSupport.Telemetry, e));
+            SupportAdd(DataCollectionSupport.Resource, (e) => WriteConnectors(DataCollectionSupport.Resource, e));
+            SupportAdd(DataCollectionSupport.Custom, (e) => WriteConnectors(DataCollectionSupport.Custom, e));
         }
         #endregion
 
@@ -186,50 +194,42 @@ namespace Xigadee
         }
         #endregion
 
-        #region Write(AzureStorageDataCollectorOptions option, EventBase e)
+        #region WriteConnectors(DataCollectionSupport support, EventBase e)
         /// <summary>
         /// Output the data for the three option types.
         /// </summary>
         /// <param name="option">The storage options</param>
         /// <param name="e">The event object.</param>
-        protected void Write(AzureStorageDataCollectorOptions option, EventBase e)
+        protected void WriteConnectors(DataCollectionSupport support, EventBase e)
         {
             List<Task> mActions = new List<Task>();
-
-            if (option.SupportsBlob())
-                mActions.Add(WriteBlob(option.Support, e));
-            if (option.SupportsTable())
-                mActions.Add(WriteTable(option.Support, e));
-            if (option.SupportsQueue())
-                mActions.Add(WriteQueue(option.Support, e));
-            if (option.SupportsFile())
-                mActions.Add(WriteFile(option.Support, e));
+            //Blob
+            if (mHoldersBlob.ContainsKey(support))
+                mActions.Add(WriteConnector(mHoldersBlob[support], e));
+            //Table
+            if (mHoldersTable.ContainsKey(support))
+                mActions.Add(WriteConnector(mHoldersTable[support], e));
+            //Queue
+            if (mHoldersQueue.ContainsKey(support))
+                mActions.Add(WriteConnector(mHoldersQueue[support], e));
+            //File
+            if (mHoldersFile.ContainsKey(support))
+                mActions.Add(WriteConnector(mHoldersFile[support], e));
 
             Task.WhenAll(mActions).Wait();
         }
         #endregion
 
-        #region WriteBlob(AzureStorageDataCollectorOptions option, EventBase e)
-        /// <summary>
-        /// This method writes the EventBase entity to blob storage.
-        /// </summary>
-        /// <param name="option">The options.</param>
-        /// <param name="e">The entity.</param>
-        /// <returns>An async process.</returns>
-        protected async Task WriteBlob(DataCollectionSupport support, EventBase e)
+        protected virtual async Task WriteConnector(IAzureStorageConnectorBase connector, EventBase e)
         {
-            var option = mHoldersBlob[support]?.Options;
-            if (option == null)
-                return;
+            int start = StatisticsInternal.ActiveIncrement(connector.Support);
 
-            int start = StatisticsInternal.ActiveIncrement(option.Support);
-
-            Guid? traceId = option.ShouldProfile ? (ProfileStart($"AzureBlob_{e.TraceId}")) : default(Guid?);
+            Guid? traceId = connector.Options.ShouldProfile ? (ProfileStart($"Azure{connector.Support}_{e.TraceId}")) : default(Guid?);
 
             var result = ResourceRequestResult.Unknown;
             try
             {
-                await option.ConnectorBlob.Write(e, OriginatorId);
+                await connector.Write(e, OriginatorId);
 
                 result = ResourceRequestResult.Success;
             }
@@ -242,145 +242,15 @@ namespace Xigadee
             {
                 result = ResourceRequestResult.Exception;
                 //Collector?.LogException(string.Format("Unable to output {0} to {1} for {2}", id, directory, typeof(E).Name), ex);
-                StatisticsInternal.ErrorIncrement(option.Support);
+                StatisticsInternal.ErrorIncrement(connector.Support);
                 throw;
             }
             finally
             {
-                StatisticsInternal.ActiveDecrement(option.Support, start);
+                StatisticsInternal.ActiveDecrement(connector.Support, start);
                 if (traceId.HasValue)
                     ProfileEnd(traceId.Value, start, result);
             }
         }
-        #endregion
-        #region WriteTable(AzureStorageDataCollectorOptions option, EventBase e)
-        /// <summary>
-        /// This method transforms the EventBase entity to a Table Storage entity and saves it to the table specified in the options.
-        /// </summary>
-        /// <param name="option">The options.</param>
-        /// <param name="e">The entity.</param>
-        /// <returns>An async process.</returns>
-        protected async Task WriteTable(DataCollectionSupport support, EventBase e)
-        {
-            var option = mHoldersTable[support]?.Options;
-            if (option == null)
-                return;
-
-            int start = StatisticsInternal.ActiveIncrement(option.Support);
-
-            Guid? traceId = option.ShouldProfile ? ProfileStart($"AzureTable_{e.TraceId}") : default(Guid?);
-            var result = ResourceRequestResult.Unknown;
-            try
-            {
-                await option.ConnectorTable.Write(e, OriginatorId);
-
-                result = ResourceRequestResult.Success;
-            }
-            catch (StorageThrottlingException)
-            {
-                result = ResourceRequestResult.Exception;
-                throw;
-            }
-            catch (Exception ex)
-            {
-                result = ResourceRequestResult.Exception;
-                //Collector?.LogException(string.Format("Unable to output {0} to {1} for {2}", id, directory, typeof(E).Name), ex);
-                StatisticsInternal.ErrorIncrement(option.Support);
-                throw;
-            }
-            finally
-            {
-                StatisticsInternal.ActiveDecrement(option.Support, start);
-                if (traceId.HasValue)
-                    ProfileEnd(traceId.Value, start, result);
-            }
-        }
-        #endregion
-        #region WriteQueue(AzureStorageDataCollectorOptions option, EventBase e)
-        /// <summary>
-        /// This method writes the EventBase entity to a blob queue.
-        /// </summary>
-        /// <param name="option">The options.</param>
-        /// <param name="e">The entity.</param>
-        /// <returns>An async process.</returns>
-        protected async Task WriteQueue(DataCollectionSupport support, EventBase e)
-        {
-            var option = mHoldersQueue[support]?.Options;
-            if (option == null)
-                return;
-
-            int start = StatisticsInternal.ActiveIncrement(option.Support);
-
-            Guid? traceId = option.ShouldProfile ? ProfileStart($"AzureQueue_{e.TraceId}") : default(Guid?);
-            var result = ResourceRequestResult.Unknown;
-            try
-            {
-                await option.ConnectorQueue.Write(e, OriginatorId);
-
-                result = ResourceRequestResult.Success;
-            }
-            catch (StorageThrottlingException)
-            {
-                result = ResourceRequestResult.Exception;
-                throw;
-            }
-            catch (Exception ex)
-            {
-                result = ResourceRequestResult.Exception;
-                //Collector?.LogException(string.Format("Unable to output {0} to {1} for {2}", id, directory, typeof(E).Name), ex);
-                StatisticsInternal.ErrorIncrement(option.Support);
-                throw;
-            }
-            finally
-            {
-                StatisticsInternal.ActiveDecrement(option.Support, start);
-                if (traceId.HasValue)
-                    ProfileEnd(traceId.Value, start, result);
-            }
-        }
-        #endregion
-        #region WriteFile(AzureStorageDataCollectorOptions option, EventBase e)
-        /// <summary>
-        /// This method writes the EventBase entity to a blob queue.
-        /// </summary>
-        /// <param name="option">The options.</param>
-        /// <param name="e">The entity.</param>
-        /// <returns>An async process.</returns>
-        protected async Task WriteFile(DataCollectionSupport support, EventBase e)
-        {
-            var option = mHoldersFile[support]?.Options;
-            if (option == null)
-                return;
-
-            int start = StatisticsInternal.ActiveIncrement(option.Support);
-
-            Guid? traceId = option.ShouldProfile ? ProfileStart($"AzureFile_{e.TraceId}") : default(Guid?);
-            var result = ResourceRequestResult.Unknown;
-            try
-            {
-                await option.ConnectorFile.Write(e, OriginatorId);
-
-                result = ResourceRequestResult.Success;
-            }
-            catch (StorageThrottlingException)
-            {
-                result = ResourceRequestResult.Exception;
-                throw;
-            }
-            catch (Exception ex)
-            {
-                result = ResourceRequestResult.Exception;
-                //Collector?.LogException(string.Format("Unable to output {0} to {1} for {2}", id, directory, typeof(E).Name), ex);
-                StatisticsInternal.ErrorIncrement(option.Support);
-                throw;
-            }
-            finally
-            {
-                StatisticsInternal.ActiveDecrement(option.Support, start);
-                if (traceId.HasValue)
-                    ProfileEnd(traceId.Value, start, result);
-            }
-        }
-        #endregion
     }
 }

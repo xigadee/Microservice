@@ -38,11 +38,21 @@ namespace Xigadee
         public override void Initialize()
         {
             Client = StorageAccount.CreateCloudTableClient();
+
             if (RequestOptionsDefault != null)
                 Client.DefaultRequestOptions = RequestOptionsDefault;
 
+            if (RootId == null)
+                RootId = AzureStorageHelper.GetEnum<DataCollectionSupport>(Support).StringValue;
+
+            RootId = StorageServiceBase.ValidateAzureContainerName(RootId);
+
+            // Retrieve a reference to the table.
             Table = Client.GetTableReference(RootId);
+
+            // Create the table if it doesn't exist.
             Table.CreateIfNotExists();
+
         }
     }
 }

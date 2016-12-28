@@ -62,6 +62,9 @@ namespace Xigadee
             if (RequestOptionsDefault != null)
                 Client.DefaultRequestOptions = RequestOptionsDefault;
 
+            if (RootId == null)
+                RootId = AzureStorageHelper.GetEnum<DataCollectionSupport>(Support).StringValue;
+
             Queue = Client.GetQueueReference(RootId);
             Queue.CreateIfNotExists();
         }

@@ -31,16 +31,6 @@ namespace Xigadee
     /// </summary>
     public partial class ConsoleMenu
     {
-        #region Declarations
-        /// <summary>
-        /// This is the menu context that holds the current state.
-        /// </summary>
-        protected ConsoleMenuContext mContext;
-        /// <summary>
-        /// This context holds the context info.
-        /// </summary>
-        protected ConsoleInfoContext mContextInfo; 
-        #endregion
         #region Constructor
         /// <summary>
         /// This is the main constructor for the menu.
@@ -52,43 +42,37 @@ namespace Xigadee
             , params ConsoleOption[] options
             )
         {
-            mContext = new ConsoleMenuContext(options);
-            mContextInfo = new ConsoleInfoContext();
+            Context = new ConsoleMenuContext(options);
+            ContextInfo = new ConsoleInfoContext();
 
-            mContext.Title = title;
-            mContext.ConsoleTitle = title;
-            mContext.Subtitle = "Please select from the following options";
+            Context.Title = title;
+            Context.ConsoleTitle = title;
+            Context.Subtitle = "Please select from the following options";
 
-            mContext.EscapeText = "Press escape to exit";
-            mContext.EscapeWrapper = true;
+            Context.EscapeText = "Press escape to exit";
+            Context.EscapeWrapper = true;
 
-            mContext.Indent1 = 3;
-            mContext.Indent2 = 6;
-        } 
-        #endregion
-
-        #region AddInfoMessage(string message, bool refresh = false, EventLogEntryType type = EventLogEntryType.Information)
-        /// <summary>
-        /// This method can be called by an external process to update the info messages displayed in the menu.
-        /// </summary>
-        /// <param name="message">The info message</param>
-        /// <param name="refresh">The refresh option flag.</param>
-        /// <param name="type">The log type.</param>
-        public void AddInfoMessage(string message, bool refresh = false, EventLogEntryType type = EventLogEntryType.Information)
-        {
-            mContextInfo.InfoMessages.Add(new ErrorInfo() { Type = type, Message = message });
-
-            if (refresh)
-                Refresh();
+            Context.Indent1 = 3;
+            Context.Indent2 = 6;
         }
         #endregion
+
+        /// <summary>
+        /// This is the menu context that holds the current state.
+        /// </summary>
+        public ConsoleMenuContext Context { get; set; }
+        /// <summary>
+        /// This context holds the context info.
+        /// </summary>
+        public ConsoleInfoContext ContextInfo { get; set; }
+
         #region Refresh()
         /// <summary>
         /// This method call be called to force a refresh of the display.
         /// </summary>
         public virtual void Refresh()
         {
-            mContextInfo.Refresh = true;
+            ContextInfo.Refresh = true;
         }
         #endregion
 
@@ -102,19 +86,19 @@ namespace Xigadee
         public virtual void Show(object state = null, int pageLength = 9, string shortcut = null, ConsoleInfoContext contextInfo = null)
         {
             if (contextInfo != null)
-                mContextInfo = contextInfo;
+                ContextInfo = contextInfo;
 
-            mContext.State = state;
-            mContext.PageCurrent = 1;
-            mContext.PageSet(pageLength);
+            Context.State = state;
+            Context.PageCurrent = 1;
+            Context.PageSet(pageLength);
 
-            if (mContext.ConsoleTitle != null)
-                System.Console.Title = mContext.ConsoleTitle;
+            if (Context.ConsoleTitle != null)
+                System.Console.Title = Context.ConsoleTitle;
 
             //Execute any registered shortcut
             if (shortcut != null)
             {
-                var option = mContext.Options.FirstOrDefault((o) => o.Shortcut == shortcut);
+                var option = Context.Options.FirstOrDefault((o) => o.Shortcut == shortcut);
                 option.Action?.Invoke(this, option);
             }
 
@@ -140,10 +124,10 @@ namespace Xigadee
                     if (ProcessKey(key))
                         break;
                 }
-                else if (mContextInfo != null && mContextInfo.Refresh)
+                else if (ContextInfo != null && ContextInfo.Refresh)
                 {
                     key = new ConsoleKeyInfo();
-                    mContextInfo.Refresh = false;
+                    ContextInfo.Refresh = false;
                     break;
                 }
 
@@ -165,18 +149,18 @@ namespace Xigadee
                 return true;
 
             if (key.Key == ConsoleKey.LeftArrow)
-                return mContext.PageDecrement();
+                return Context.PageDecrement();
 
             if (key.Key == ConsoleKey.RightArrow)
-                return mContext.PageIncrement();
+                return Context.PageIncrement();
 
-            if (mContextInfo != null)
+            if (ContextInfo != null)
             {
                 if (key.Key == ConsoleKey.UpArrow)
-                    return mContextInfo.InfoDecrement();
+                    return ContextInfo.InfoDecrement();
 
                 if (key.Key == ConsoleKey.DownArrow)
-                    return mContextInfo.InfoIncrement();
+                    return ContextInfo.InfoIncrement();
             }
 
             //Keys 1 - 9
@@ -184,7 +168,7 @@ namespace Xigadee
             {
                 int optionVal = (int)key.KeyChar - 48;
 
-                var option = mContext.PageOptionSelect(optionVal);
+                var option = Context.PageOptionSelect(optionVal);
 
                 if (option != null && option.FnEnabled(this, option))
                 {
@@ -209,7 +193,7 @@ namespace Xigadee
 
                 DisplayOptions();
 
-                mContextInfo?.DisplaySummary();
+                ContextInfo?.DisplaySummary();
 
                 DisplayFooter();
             }
@@ -223,12 +207,12 @@ namespace Xigadee
         /// </summary>
         private void DisplayHeader()
         {
-            ConsoleHelper.Header(mContext.Title);
+            ConsoleHelper.Header(Context.Title);
 
             System.Console.ForegroundColor = ConsoleColor.Yellow;
             System.Console.WriteLine();
-            System.Console.Write(new string(' ', mContext.Indent1));
-            System.Console.WriteLine("{0}:", mContext.Subtitle);
+            System.Console.Write(new string(' ', Context.Indent1));
+            System.Console.WriteLine("{0}:", Context.Subtitle);
             System.Console.WriteLine();
         }
         #endregion
@@ -242,9 +226,9 @@ namespace Xigadee
         private void DisplayOptions()
         {
             int pos = 1;
-            for (; pos <= mContext.PageOptionsLength; pos++)
+            for (; pos <= Context.PageOptionsLength; pos++)
             {
-                var option = mContext.PageOptionSelect(pos);
+                var option = Context.PageOptionSelect(pos);
                 if (option == null)
                     break;
 
@@ -253,7 +237,7 @@ namespace Xigadee
                 else
                     System.Console.ForegroundColor = ConsoleColor.DarkYellow;
 
-                System.Console.Write(new string(' ', mContext.Indent2));
+                System.Console.Write(new string(' ', Context.Indent2));
                 string display = option.FnDisplay == null ? option.Text : option.FnDisplay(this, option);
 
                 if (option.FnSelected != null)
@@ -262,7 +246,7 @@ namespace Xigadee
                 System.Console.WriteLine("{0}. {1}", pos, display);
             }
 
-            while (pos <= mContext.PageOptionsLength)
+            while (pos <= Context.PageOptionsLength)
             {
                 System.Console.WriteLine();
                 pos++;
@@ -280,23 +264,23 @@ namespace Xigadee
             System.Console.ResetColor();
             System.Console.ForegroundColor = ConsoleColor.Yellow;
 
-            if (mContext.PageMax > 1)
+            if (Context.PageMax > 1)
             {
                 ConsoleHelper.HeaderBar(string.Format("{2} Page {0} of {1} {3}"
-                    , mContext.PageCurrent
-                    , mContext.PageMax
-                    , mContext.PageCurrent > 1 ? "<" : "-"
-                    , mContext.PageCurrent < mContext.PageMax ? ">" : "-"
+                    , Context.PageCurrent
+                    , Context.PageMax
+                    , Context.PageCurrent > 1 ? "<" : "-"
+                    , Context.PageCurrent < Context.PageMax ? ">" : "-"
                     ), character: ' ');
             }
             else
                 System.Console.WriteLine();
 
-            if (!string.IsNullOrWhiteSpace(mContext.EscapeText))
+            if (!string.IsNullOrWhiteSpace(Context.EscapeText))
             {
-                if (mContext.EscapeWrapper) ConsoleHelper.HeaderBar();
-                ConsoleHelper.HeaderBar(mContext.EscapeText, character: ' ');
-                if (mContext.EscapeWrapper) ConsoleHelper.HeaderBar();
+                if (Context.EscapeWrapper) ConsoleHelper.HeaderBar();
+                ConsoleHelper.HeaderBar(Context.EscapeText, character: ' ');
+                if (Context.EscapeWrapper) ConsoleHelper.HeaderBar();
             }
 
             System.Console.ResetColor();
@@ -314,7 +298,7 @@ namespace Xigadee
             option.Action?.Invoke(this, option);
 
             if (option.Menu != null)
-                option.Menu.Show(mContext.State, mContext.PageOptionsLength, contextInfo:mContextInfo);
+                option.Menu.Show(Context.State, Context.PageOptionsLength, contextInfo:ContextInfo);
         } 
         #endregion
     }

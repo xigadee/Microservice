@@ -52,6 +52,14 @@ namespace Xigadee
         /// This method initializes the connector.
         /// </summary>
         void Initialize();
+
+        /// <summary>
+        /// This method writes to the incoming event to the underlying storage technology.
+        /// </summary>
+        /// <param name="e">The event.</param>
+        /// <param name="id">The microservice metadata.</param>
+        /// <returns>This is an async task.</returns>
+        Task Write(EventBase e, MicroserviceId id);
     }
     /// <summary>
     /// This is the base class shared by all connectors.

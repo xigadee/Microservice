@@ -54,6 +54,9 @@
     <Compile Include="ArgumentsParser.cs" />
     <Compile Include="ConsoleConfigurationBase.cs" />
     <Compile Include="ConsoleHelper.cs" />
+    <Compile Include="Extensions\AddInfoMessage.cs" />
+    <Compile Include="Extensions\AddMicroservice.cs" />
+    <Compile Include="Extensions\AddOption.cs" />
     <Compile Include="Info\ConsoleInfoContext.cs" />
     <Compile Include="Info\InfoHelper.cs" />
     <Compile Include="Menu\ConsoleMenu.cs" />

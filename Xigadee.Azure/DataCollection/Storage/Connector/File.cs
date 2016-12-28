@@ -40,6 +40,9 @@ namespace Xigadee
 
         public override void Initialize()
         {
+            if (RootId == null)
+                RootId = AzureStorageHelper.GetEnum<DataCollectionSupport>(Support).StringValue;
+
             throw new NotImplementedException();
         }
     }

@@ -53,7 +53,14 @@ namespace Xigadee
             if (RequestOptionsDefault != null)
                 Client.DefaultRequestOptions = RequestOptionsDefault;
 
+            if (RootId == null)
+                RootId = AzureStorageHelper.GetEnum<DataCollectionSupport>(Support).StringValue;
+
+            RootId = StorageServiceBase.ValidateAzureContainerName(RootId);
+
+
             Container = Client.GetContainerReference(RootId);
+
             Container.CreateIfNotExists(BlobAccessType, RequestOptionsDefault, Context);
 
             RequestOptionsDefault = new BlobRequestOptions()

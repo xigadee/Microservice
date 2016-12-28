@@ -23,16 +23,10 @@ namespace Xigadee
         {
             Support = support;
             Behaviour = behavior;
-
-            var id = AzureStorageHelper.GetEnum<DataCollectionSupport>(support).StringValue;
-            ConnectorBlob.RootId = id;
-
-            ConnectorTable.RootId = id;
-            ConnectorTable.Serializer = tableSerializer;
-
-            ConnectorQueue.RootId = id;
-            ConnectorFile.RootId = id;
+            SerializerTable = tableSerializer;
         }
+
+        public Func<EventBase, MicroserviceId, ITableEntity> SerializerTable { get; set; }
 
         /// <summary>
         /// This is the support type for the options handler, i.e. LogEvent, EventSource, etc.
@@ -53,11 +47,6 @@ namespace Xigadee
         /// Specifies whether the profiler should be used for the write action.
         /// </summary>
         public bool ShouldProfile { get; set; }=true;
-
-        public AzureStorageConnectorBlob ConnectorBlob { get; set; } = new AzureStorageConnectorBlob();
-        public AzureStorageConnectorTable ConnectorTable { get; set; } = new AzureStorageConnectorTable();
-        public AzureStorageConnectorQueue ConnectorQueue { get; set; } = new AzureStorageConnectorQueue();
-        public AzureStorageConnectorFile ConnectorFile { get; set; } = new AzureStorageConnectorFile();
 
     }
 }

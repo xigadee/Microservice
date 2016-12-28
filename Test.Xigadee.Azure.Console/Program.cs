@@ -12,13 +12,16 @@ namespace Test.Xigadee.Azure.Console
         static void Main(string[] args)
         {
             var pipeline = new MicroservicePipeline("Azure Storage Test");
+            var mainMenu = new ConsoleMenu(pipeline.ToMicroservice().Id.Name);
 
             pipeline
                 .ConfigurationSetFromConsoleArgs(args)
                 .AddAzureStorageDataCollector()
                 ;
 
-            pipeline.StartWithConsole();
+            mainMenu.AddMicroservicePipeline(pipeline);
+
+            mainMenu.Show();
         }
     }
 }
