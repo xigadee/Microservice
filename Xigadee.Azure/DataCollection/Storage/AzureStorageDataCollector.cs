@@ -95,14 +95,34 @@ namespace Xigadee
             mStorageAccount = new CloudStorageAccount(mCredentails, true);
 
             //Create the blob client
-            mHoldersBlob = Start<AzureStorageConnectorBlob>((o) => o.SupportsBlob());
+            mHoldersBlob = Start<AzureStorageConnectorBlob>((o) => o.SupportsBlob()
+            , (v) =>
+            {
+                v.Serializer = v.Options.SerializerBinary;
+                v.MakeId = v.Options.BinaryMakeId;
+                v.MakeFolder = v.Options.BinaryMakeFolder;
+            });
             //Create the table client
             mHoldersTable = Start<AzureStorageConnectorTable>((o) => o.SupportsTable()
-            , (v) => v.Serializer = v.Options.SerializerTable);
+            , (v) =>
+            {
+                v.Serializer = v.Options.SerializerTable;
+                v.MakeId = v.Options.MakeId;
+            });
             //Create the queue client
-            mHoldersQueue = Start<AzureStorageConnectorQueue>((o) => o.SupportsQueue());
+            mHoldersQueue = Start<AzureStorageConnectorQueue>((o) => o.SupportsQueue()
+            , (v) =>
+            {
+                v.Serializer = v.Options.SerializerBinary;
+                v.MakeId = v.Options.BinaryMakeId;
+            });
             //Create the queue client
-            mHoldersFile = Start<AzureStorageConnectorFile>((o) => o.SupportsFile());
+            mHoldersFile = Start<AzureStorageConnectorFile>((o) => o.SupportsFile()
+            , (v) =>
+            {
+                v.Serializer = v.Options.SerializerBinary;
+                v.MakeId = v.Options.BinaryMakeId;
+            });
         }
         /// <summary>
         /// This method clears the storage connectors.

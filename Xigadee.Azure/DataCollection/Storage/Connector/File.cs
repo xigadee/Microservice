@@ -29,7 +29,7 @@ using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Xigadee
 {
-    public class AzureStorageConnectorFile: AzureStorageConnectorBinary<FileRequestOptions>
+    public class AzureStorageConnectorFile: AzureStorageConnectorBase<FileRequestOptions, AzureStorageBinary>
     {
         public CloudFileClient Client { get; set; }
 
@@ -40,8 +40,8 @@ namespace Xigadee
 
         public override void Initialize()
         {
-            if (RootId == null)
-                RootId = AzureStorageHelper.GetEnum<DataCollectionSupport>(Support).StringValue;
+            if (ContainerId == null)
+                ContainerId = AzureStorageHelper.GetEnum<DataCollectionSupport>(Support).StringValue;
 
             throw new NotImplementedException();
         }

@@ -29,46 +29,58 @@ using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Xigadee
 {
-    public class AzureStorageConnectorBlob: AzureStorageConnectorBinary<BlobRequestOptions>
+    public class AzureStorageConnectorBlob: AzureStorageConnectorBase<BlobRequestOptions, AzureStorageBinary>
     {
         public CloudBlobContainer Container { get; set; }
 
         public CloudBlobClient Client { get; set; }
 
-        public CloudBlob Blob { get; set; }
-
         public BlobContainerPublicAccessType BlobAccessType { get; set; } = BlobContainerPublicAccessType.Off;
+
+        /// <summary>
+        /// This function is used to create the folder for the entity;
+        /// </summary>
+        public Func<EventBase, MicroserviceId, string> MakeFolder { get; set; }
 
         public override async Task Write(EventBase e, MicroserviceId id)
         {
-            var ids = IdMaker(e, id);
+            string storageId = MakeId(e, id);
+            string storageFolder = MakeFolder(e, id);
+
             var output = Serializer(e, id);
 
-            throw new NotImplementedException();
+            var refEntityDirectory = Container.GetDirectoryReference(storageFolder);
+
+            var Blob = refEntityDirectory.GetBlockBlobReference(storageId);
+
+            await Blob.UploadFromByteArrayAsync(output.Blob, 0, output.Blob.Length);
         }
 
+        /// <summary>
+        /// This method initializes the blob client and container.
+        /// </summary>
         public override void Initialize()
         {
             Client = StorageAccount.CreateCloudBlobClient();
-            if (RequestOptionsDefault != null)
-                Client.DefaultRequestOptions = RequestOptionsDefault;
 
-            if (RootId == null)
-                RootId = AzureStorageHelper.GetEnum<DataCollectionSupport>(Support).StringValue;
+            if (RequestOptionsDefault == null)
+                RequestOptionsDefault = new BlobRequestOptions()
+                {
+                    RetryPolicy = new LinearRetry(TimeSpan.FromMilliseconds(200), 5)
+                        , ServerTimeout = DefaultTimeout ?? TimeSpan.FromSeconds(1)
+                    //, ParallelOperationThreadCount = 64 
+                };
 
-            RootId = StorageServiceBase.ValidateAzureContainerName(RootId);
+            Client.DefaultRequestOptions = RequestOptionsDefault;
 
+            if (ContainerId == null)
+                ContainerId = AzureStorageHelper.GetEnum<DataCollectionSupport>(Support).StringValue;
 
-            Container = Client.GetContainerReference(RootId);
+            ContainerId = StorageServiceBase.ValidateAzureContainerName(ContainerId);
 
+            Container = Client.GetContainerReference(ContainerId);
+                                                                                                                                           
             Container.CreateIfNotExists(BlobAccessType, RequestOptionsDefault, Context);
-
-            RequestOptionsDefault = new BlobRequestOptions()
-            {
-                RetryPolicy = new LinearRetry(TimeSpan.FromMilliseconds(200), 5)
-                    , ServerTimeout = DefaultTimeout ?? TimeSpan.FromSeconds(1)
-                //, ParallelOperationThreadCount = 64 
-            };
         }
     }
 }

@@ -20,48 +20,6 @@ using Microsoft.WindowsAzure.Storage;
 namespace Xigadee
 {
     /// <summary>
-    /// This is the common interface for storage connectors.
-    /// </summary>
-    public interface IAzureStorageConnectorBase
-    {
-        /// <summary>
-        /// This is the default timeout.
-        /// </summary>
-        TimeSpan? DefaultTimeout { get; set; }
-        /// <summary>
-        /// This is the specific EventBase type supported for the connector.
-        /// </summary>
-        DataCollectionSupport Support { get; set; }
-        /// <summary>
-        /// This is the cloud storage account used for all connectivity.
-        /// </summary>
-        CloudStorageAccount StorageAccount { get; set; }
-        /// <summary>
-        /// This is the specific storage options.
-        /// </summary>
-        AzureStorageDataCollectorOptions Options { get; set; }
-        /// <summary>
-        /// This is the Azure storage operation context.
-        /// </summary>
-        OperationContext Context { get; set; }
-        /// <summary>
-        /// This is the binary encryption handler.
-        /// </summary>
-        IEncryptionHandler EncryptionHandler { get; set; }
-        /// <summary>
-        /// This method initializes the connector.
-        /// </summary>
-        void Initialize();
-
-        /// <summary>
-        /// This method writes to the incoming event to the underlying storage technology.
-        /// </summary>
-        /// <param name="e">The event.</param>
-        /// <param name="id">The microservice metadata.</param>
-        /// <returns>This is an async task.</returns>
-        Task Write(EventBase e, MicroserviceId id);
-    }
-    /// <summary>
     /// This is the base class shared by all connectors.
     /// </summary>
     /// <typeparam name="O">The request options that determines the retry policy.</typeparam>
@@ -87,9 +45,9 @@ namespace Xigadee
         /// </summary>
         public OperationContext Context { get; set; }
         /// <summary>
-        /// This function is used to create the specific ids for the entity;
+        /// This function is used to create the storage id for the entity;
         /// </summary>
-        public Func<EventBase, MicroserviceId, AzureStorageId> IdMaker { get; set; }
+        public Func<EventBase, MicroserviceId, string> MakeId { get; set; }
         /// <summary>
         /// This function serializes the event entity.
         /// </summary>
@@ -101,7 +59,7 @@ namespace Xigadee
         /// <summary>
         /// This is the root id for the storage container.
         /// </summary>
-        public string RootId { get; set; }
+        public string ContainerId { get; set; }
         /// <summary>
         /// This method returns the default request options if set.
         /// </summary>

@@ -19,14 +19,38 @@ namespace Xigadee
         /// <param name="behavior">The default storage behaviour.</param>
         public AzureStorageDataCollectorOptions(DataCollectionSupport support
             , AzureStorageBehaviour behavior = AzureStorageBehaviour.None
-            , Func<EventBase, MicroserviceId, ITableEntity> tableSerializer = null)
+            , Func<EventBase, MicroserviceId, ITableEntity> serializerTable = null
+            , Func<EventBase, MicroserviceId, AzureStorageBinary> serializerBinary = null
+            , Func<EventBase, MicroserviceId, string> makeId = null
+            , Func<EventBase, MicroserviceId, string> binaryMakeId = null
+            , Func<EventBase, MicroserviceId, string> binaryMakeFolder = null
+            )
         {
             Support = support;
             Behaviour = behavior;
-            SerializerTable = tableSerializer;
+            SerializerTable = serializerTable;
+            SerializerBinary = serializerBinary ?? AzureStorageHelper.DefaultJsonBinarySerializer;
+
+            MakeId = makeId ?? ((EventBase e, MicroserviceId i) => e.TraceId);
+            BinaryMakeId = BinaryMakeId ?? MakeId;
+            BinaryMakeFolder = binaryMakeFolder;
         }
 
+        public Func<EventBase, MicroserviceId, string> MakeId { get; set; }
+
+        public Func<EventBase, MicroserviceId, string> BinaryMakeId { get; set; }
+
+        public Func<EventBase, MicroserviceId, string> BinaryMakeFolder { get; set; }
+
+        /// <summary>
+        /// This function can be set to provide specific table serialization.
+        /// </summary>
         public Func<EventBase, MicroserviceId, ITableEntity> SerializerTable { get; set; }
+
+        /// <summary>
+        /// This function can be set to provide specific binary serialization.
+        /// </summary>
+        public Func<EventBase, MicroserviceId, AzureStorageBinary> SerializerBinary { get; set; }
 
         /// <summary>
         /// This is the support type for the options handler, i.e. LogEvent, EventSource, etc.

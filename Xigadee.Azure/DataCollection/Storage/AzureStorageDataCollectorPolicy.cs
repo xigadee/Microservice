@@ -28,13 +28,19 @@ namespace Xigadee
         /// </summary>
         public AzureStorageDataCollectorOptions Log { get; set; } 
             = new AzureStorageDataCollectorOptions(DataCollectionSupport.Logger
-                , AzureStorageBehaviour.Blob);
+                , AzureStorageBehaviour.Blob
+                , binaryMakeId: AzureStorageHelper.LoggerMakeId
+                , binaryMakeFolder: AzureStorageHelper.LoggerMakeFolder
+                );
         /// <summary>
         /// This is the EventSource options.
         /// </summary>
         public AzureStorageDataCollectorOptions EventSource { get; set; } 
             = new AzureStorageDataCollectorOptions(DataCollectionSupport.EventSource
-                , AzureStorageBehaviour.Blob);
+                , AzureStorageBehaviour.Blob
+                , binaryMakeId: AzureStorageHelper.EventSourceMakeId
+                , binaryMakeFolder: AzureStorageHelper.EventSourceMakeFolder
+                );
         /// <summary>
         /// This is the Statistics options. By default encryption is not set for statistics.
         /// </summary>
@@ -42,8 +48,10 @@ namespace Xigadee
             = new AzureStorageDataCollectorOptions(DataCollectionSupport.Statistics
                 , AzureStorageBehaviour.BlobAndTable
                 , AzureStorageHelper.ToTableGeneric
+                , binaryMakeId: AzureStorageHelper.StatisticsMakeId
+                , binaryMakeFolder: AzureStorageHelper.StatisticsMakeFolder
                 )
-            {EncryptionPolicy = AzureStorageEncryption.None};
+            { EncryptionPolicy = AzureStorageEncryption.None};
         /// <summary>
         /// This is the Dispatcher options.
         /// </summary>

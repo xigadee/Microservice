@@ -29,9 +29,8 @@ using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Xigadee
 {
-    public class AzureStorageConnectorQueue: AzureStorageConnectorBinary<QueueRequestOptions>
+    public class AzureStorageConnectorQueue: AzureStorageConnectorBase<QueueRequestOptions, AzureStorageBinary>
     {
-
         public CloudQueueClient Client { get; set; }
 
         public CloudQueue Queue { get; set; }
@@ -40,12 +39,6 @@ namespace Xigadee
         {
             throw new NotImplementedException();
 
-
-            //// Retrieve a reference to a queue.
-            //CloudQueue queue = queueClient.GetQueueReference("myqueue");
-
-            //// Create the queue if it doesn't already exist.
-            //queue.CreateIfNotExists();
 
             //// Create a message and add it to the queue.
             //CloudQueueMessage message = new CloudQueueMessage("Hello, World");
@@ -62,10 +55,10 @@ namespace Xigadee
             if (RequestOptionsDefault != null)
                 Client.DefaultRequestOptions = RequestOptionsDefault;
 
-            if (RootId == null)
-                RootId = AzureStorageHelper.GetEnum<DataCollectionSupport>(Support).StringValue;
+            if (ContainerId == null)
+                ContainerId = AzureStorageHelper.GetEnum<DataCollectionSupport>(Support).StringValue;
 
-            Queue = Client.GetQueueReference(RootId);
+            Queue = Client.GetQueueReference(ContainerId);
             Queue.CreateIfNotExists();
         }
     }

@@ -22,14 +22,14 @@ namespace Xigadee
 {
     public class AzureStorageConnectorTable: AzureStorageConnectorBase<TableRequestOptions, ITableEntity>
     {
-
         public CloudTableClient Client { get; set; }
 
         public CloudTable Table { get; set; }
 
         public override async Task Write(EventBase e, MicroserviceId id)
         {
-            var ids = IdMaker(e,id);
+            var tableId = MakeId(e,id);
+
             var output = Serializer(e, id);
 
             //await Table.
@@ -42,17 +42,16 @@ namespace Xigadee
             if (RequestOptionsDefault != null)
                 Client.DefaultRequestOptions = RequestOptionsDefault;
 
-            if (RootId == null)
-                RootId = AzureStorageHelper.GetEnum<DataCollectionSupport>(Support).StringValue;
+            if (ContainerId == null)
+                ContainerId = AzureStorageHelper.GetEnum<DataCollectionSupport>(Support).StringValue;
 
-            RootId = StorageServiceBase.ValidateAzureContainerName(RootId);
+            ContainerId = StorageServiceBase.ValidateAzureContainerName(ContainerId);
 
             // Retrieve a reference to the table.
-            Table = Client.GetTableReference(RootId);
+            Table = Client.GetTableReference(ContainerId);
 
             // Create the table if it doesn't exist.
             Table.CreateIfNotExists();
-
         }
     }
 }

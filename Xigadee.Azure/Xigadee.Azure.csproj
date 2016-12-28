@@ -206,11 +206,11 @@
     <Compile Include="ApplicationInsights\CommandCorrelationInitializer.cs" />
     <Compile Include="Configuration\ConfigResolver\ConfigResolverKeyVault.cs" />
     <Compile Include="Configuration\ConfigResolver\ConfigResolverAzure.cs" />
-    <Compile Include="DataCollection\Storage\Connector\Binary.cs" />
+    <Compile Include="DataCollection\Storage\Helper\BinaryContainer.cs" />
+    <Compile Include="DataCollection\Storage\Interfaces\IAzureStorageConnectorBase.cs" />
     <Compile Include="DataCollection\Storage\ExtensionMethods\Blob.cs" />
     <Compile Include="DataCollection\Storage\ExtensionMethods\Table.cs" />
     <Compile Include="DataCollection\Storage\Enumerations\AzureStorageBehaviour.cs" />
-    <Compile Include="DataCollection\Storage\Connector\AzureStorageId.cs" />
     <Compile Include="DataCollection\Storage\ExtensionMethods\Misc.cs" />
     <Compile Include="DataCollection\Storage\AzureStorageDataCollectorOptions.cs" />
     <Compile Include="DataCollection\Storage\AzureStorageDataCollectorPolicy.cs" />
