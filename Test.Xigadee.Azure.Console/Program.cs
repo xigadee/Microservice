@@ -11,17 +11,26 @@ namespace Test.Xigadee.Azure.Console
     {
         static void Main(string[] args)
         {
-            var pipeline = new MicroservicePipeline("Azure Storage Test");
-            var mainMenu = new ConsoleMenu(pipeline.ToMicroservice().Id.Name);
+            try
+            {
+                var pipeline = new MicroservicePipeline("Azure Storage Test");
+                var mainMenu = new ConsoleMenu(pipeline.ToMicroservice().Id.Name);
 
-            pipeline
-                .ConfigurationSetFromConsoleArgs(args)
-                .AddAzureStorageDataCollector()
-                ;
+                pipeline
+                    .ConfigurationSetFromConsoleArgs(args)
+                    .AddAzureStorageDataCollector()
+                    ;
 
-            mainMenu.AddMicroservicePipeline(pipeline);
+                mainMenu.AddMicroservicePipeline(pipeline);
 
-            mainMenu.Show();
+                mainMenu.Show();
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
         }
     }
 }

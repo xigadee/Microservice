@@ -32,7 +32,7 @@ namespace Xigadee
             SerializerBinary = serializerBinary ?? AzureStorageHelper.DefaultJsonBinarySerializer;
 
             MakeId = makeId ?? ((EventBase e, MicroserviceId i) => e.TraceId);
-            BinaryMakeId = BinaryMakeId ?? MakeId;
+            BinaryMakeId = binaryMakeId ?? MakeId;
             BinaryMakeFolder = binaryMakeFolder;
         }
 
