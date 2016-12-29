@@ -101,6 +101,7 @@ namespace Xigadee
                 v.Serializer = v.Options.SerializerBinary;
                 v.MakeId = v.Options.BinaryMakeId;
                 v.MakeFolder = v.Options.BinaryMakeFolder;
+                ValidateEncryptionPolicy(v);
             });
             //Create the table client
             mHoldersTable = Start<AzureStorageConnectorTable>((o) => o.SupportsTable()
@@ -115,6 +116,7 @@ namespace Xigadee
             {
                 v.Serializer = v.Options.SerializerBinary;
                 v.MakeId = v.Options.BinaryMakeId;
+                ValidateEncryptionPolicy(v);
             });
             //Create the queue client
             mHoldersFile = Start<AzureStorageConnectorFile>((o) => o.SupportsFile()
@@ -122,7 +124,19 @@ namespace Xigadee
             {
                 v.Serializer = v.Options.SerializerBinary;
                 v.MakeId = v.Options.BinaryMakeId;
+                ValidateEncryptionPolicy(v);
             });
+        }
+
+        /// <summary>
+        /// This method validates the encryption policy.
+        /// </summary>
+        /// <param name="connector">The connector to validate.</param>
+        protected virtual void ValidateEncryptionPolicy(IAzureStorageConnectorBase connector)
+        {
+            if (connector.EncryptionPolicy == AzureStorageEncryption.BlobAlwaysWithException
+                && connector.EncryptionHandler == null)
+                    throw new AzureStorageDataCollectorEncryptionPolicyException(connector.Support);
         }
         /// <summary>
         /// This method clears the storage connectors.
@@ -152,13 +166,13 @@ namespace Xigadee
             var holders = mPolicy.Options.Where((o) => isValid(o))
                 .ToDictionary((k) => k.Support, (k) => new R()
                 {
-                    Support = k.Support
+                      Support = k.Support
                     , Options = k
                     , StorageAccount = mStorageAccount
                     , DefaultTimeout = mDefaultTimeout
                     , Context = mContext
                     , EncryptionHandler = mEncryptionHandler
-
+                    , EncryptionPolicy = k.EncryptionPolicy
                 });
 
             try
@@ -250,6 +264,8 @@ namespace Xigadee
         {
             if (!connector.ShouldWrite(e))
                 return;
+
+            
 
             int start = StatisticsInternal.ActiveIncrement(connector.Support);
 

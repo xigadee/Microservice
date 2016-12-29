@@ -37,9 +37,14 @@ namespace Xigadee
 
         public override async Task Write(EventBase e, MicroserviceId id)
         {
-            string storageId = MakeId(e, id);
-
             var output = Serializer(e, id);
+
+            //Encrypt the payload when required.
+            if (EncryptionPolicy != AzureStorageEncryption.None && EncryptionHandler != null)
+            {
+                //The checks for always encrypt are done externally.
+                output.Blob = EncryptionHandler.Encrypt(output.Blob);
+            }
 
             // Create a message and add it to the queue.
             CloudQueueMessage message = new CloudQueueMessage(output.Blob);

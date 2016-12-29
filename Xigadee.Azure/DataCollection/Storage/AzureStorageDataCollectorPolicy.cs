@@ -49,7 +49,6 @@ namespace Xigadee
         public AzureStorageDataCollectorOptions Statistics { get; set; } 
             = new AzureStorageDataCollectorOptions(DataCollectionSupport.Statistics
                 , AzureStorageBehaviour.Blob
-                , AzureStorageHelper.ToTableGeneric
                 , makeId: AzureStorageHelper.StatisticsMakeId
                 , binaryMakeId: AzureStorageHelper.StatisticsMakeId
                 , binaryMakeFolder: AzureStorageHelper.StatisticsMakeFolder

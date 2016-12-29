@@ -49,6 +49,10 @@ namespace Xigadee
         /// </summary>
         IEncryptionHandler EncryptionHandler { get; set; }
         /// <summary>
+        /// The encryption storage policy.
+        /// </summary>
+        AzureStorageEncryption EncryptionPolicy { get; set; }
+        /// <summary>
         /// This method initializes the connector.
         /// </summary>
         void Initialize();

@@ -46,8 +46,14 @@ namespace Xigadee
         {
             string storageId = MakeId(e, id);
             string storageFolder = MakeFolder(e, id);
-
             var output = Serializer(e, id);
+
+            //Encrypt the payload when required.
+            if (EncryptionPolicy != AzureStorageEncryption.None && EncryptionHandler!=null)
+            {
+                //The checks for always encrypt are done externally.
+                output.Blob = EncryptionHandler.Encrypt(output.Blob);
+            }
 
             var refEntityDirectory = Container.GetDirectoryReference(storageFolder);
 

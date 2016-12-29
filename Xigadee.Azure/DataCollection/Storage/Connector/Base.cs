@@ -87,5 +87,9 @@ namespace Xigadee
         /// <returns>Returns true if the event should be written.</returns>
         public abstract bool ShouldWrite(EventBase e);
 
+        /// <summary>
+        /// The encryption storage policy.
+        /// </summary>
+        public AzureStorageEncryption EncryptionPolicy { get; set; }
     }
 }
