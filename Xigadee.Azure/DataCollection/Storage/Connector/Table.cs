@@ -32,7 +32,11 @@ namespace Xigadee
 
             var output = Serializer(e, id);
 
-            //await Table.
+            // Create the TableOperation object that inserts the customer entity.
+            TableOperation insert = TableOperation.Insert(output);
+
+            // Execute the insert operation.
+            await Table.ExecuteAsync(insert);
         }
 
         public override void Initialize()

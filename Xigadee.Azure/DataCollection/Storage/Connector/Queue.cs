@@ -35,18 +35,17 @@ namespace Xigadee
 
         public CloudQueue Queue { get; set; }
 
-        public override Task Write(EventBase e, MicroserviceId id)
+        public override async Task Write(EventBase e, MicroserviceId id)
         {
-            throw new NotImplementedException();
+            string storageId = MakeId(e, id);
 
+            var output = Serializer(e, id);
 
-            //// Create a message and add it to the queue.
-            //CloudQueueMessage message = new CloudQueueMessage("Hello, World");
-            //queue.AddMessage(message);
+            // Create a message and add it to the queue.
+            CloudQueueMessage message = new CloudQueueMessage(output.Blob);
 
             // Async enqueue the message
-            //await queue.AddMessageAsync(cloudQueueMessage);
-            //Console.WriteLine("Message added");
+            await Queue.AddMessageAsync(message);
         }
 
         public override void Initialize()
@@ -57,6 +56,8 @@ namespace Xigadee
 
             if (ContainerId == null)
                 ContainerId = AzureStorageHelper.GetEnum<DataCollectionSupport>(Support).StringValue;
+
+            ContainerId = StorageServiceBase.ValidateAzureContainerName(ContainerId);
 
             Queue = Client.GetQueueReference(ContainerId);
             Queue.CreateIfNotExists();

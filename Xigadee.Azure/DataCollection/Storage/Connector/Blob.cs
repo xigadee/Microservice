@@ -53,6 +53,10 @@ namespace Xigadee
 
             var Blob = refEntityDirectory.GetBlockBlobReference(storageId);
 
+            Blob.Properties.ContentType = output.ContentType;
+
+            Blob.Properties.ContentEncoding = output.ContentEncoding;
+
             await Blob.UploadFromByteArrayAsync(output.Blob, 0, output.Blob.Length);
         }
 

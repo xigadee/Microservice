@@ -47,7 +47,7 @@ namespace Xigadee
         {
             var e = ev as MicroserviceStatistics;
 
-            string Directory = string.Format("Statistics/{0}/{1:yyyy-MM-dd}/{1:HH}", msId.Name, DateTime.UtcNow);
+            string Directory = string.Format("{0}/{1:yyyy-MM-dd}/{1:HH}", msId.Name, DateTime.UtcNow);
 
             return  Directory;
         }
