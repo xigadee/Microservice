@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Xigadee
@@ -14,6 +16,20 @@ namespace Xigadee
     [DebuggerDisplay("{ExternalServiceId}")]
     public class MicroserviceId
     {
+        /// <summary>
+        /// This method validates that a name is legal. This is that the name only contains A-Za-z0-9
+        /// </summary>
+        /// <param name="id">The string to validate.</param>
+        /// <returns>Returns true if the name is legal.</returns>
+        public static bool ValidServiceIdentifier(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return false;
+
+            return id.Length == id.ToLowerInvariant().ToCharArray()
+                .Where((c) => c>='a' & c<='z' | c>='0' & c<= '9')
+                .Count();
+        }
         /// <summary>
         /// This is the default constructor for the Microservice Id object.
         /// </summary>
@@ -30,12 +46,17 @@ namespace Xigadee
             , string serviceEngineVersionId = null
             , IEnumerable<Tuple<string,string>> properties = null)
         {
-            StartTime = DateTime.UtcNow;
-
-            MachineName = Environment.MachineName;
             ServiceId = string.IsNullOrEmpty(serviceId) ? Guid.NewGuid().ToString("N").ToUpperInvariant() : serviceId;
-            Name = name ?? $"Service_{ServiceId}";
+            Name = string.IsNullOrEmpty(name) ? $"Service{ServiceId}" : name;
 
+            if (!ValidServiceIdentifier(ServiceId))
+                throw new MicroserviceIdNotValidException(nameof(ServiceId), ServiceId);
+
+            if (!ValidServiceIdentifier(Name))
+                throw new MicroserviceIdNotValidException(nameof(Name), Name);
+
+            StartTime = DateTime.UtcNow;
+            MachineName = Environment.MachineName;
             ServiceVersionId = serviceVersionId ?? Assembly.GetCallingAssembly().GetName().Version.ToString();
             ServiceEngineVersionId = serviceEngineVersionId ?? Assembly.GetExecutingAssembly().GetName().Version.ToString();
 

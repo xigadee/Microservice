@@ -79,6 +79,7 @@
     <Compile Include="Dispatcher\DispatcherTests.cs" />
     <Compile Include="Dispatcher\DispatcherTestsBase.cs" />
     <Compile Include="EventTestCommand.cs" />
+    <Compile Include="Microservice\ServiceIdentifierValidation.cs" />
     <Compile Include="Pipeline\Pipeline2.cs" />
     <Compile Include="Microservice_Validate_CommandRequest.cs" />
     <Compile Include="Microservice_Validate_CommandOutgoingRequests.cs" />
@@ -125,7 +126,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Common\" />
-    <Folder Include="Microservice\" />
     <Folder Include="Persistence\" />
   </ItemGroup>
   <Choose>

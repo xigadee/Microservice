@@ -86,8 +86,10 @@ namespace Xigadee
         {
             mPolicySettings = policySettings?.ToList()??new List<PolicyBase>();
 
-            Id = new MicroserviceId(
-                  string.IsNullOrEmpty(name) ? GetType().Name : name
+            if (string.IsNullOrEmpty(name))
+                name = GetType().Name;
+
+            Id = new MicroserviceId(name
                 , serviceId: serviceId
                 , serviceVersionId: Assembly.GetCallingAssembly().GetName().Version.ToString()
                 , serviceEngineVersionId: Assembly.GetExecutingAssembly().GetName().Version.ToString()

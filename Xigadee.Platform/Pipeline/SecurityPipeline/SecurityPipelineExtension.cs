@@ -32,7 +32,6 @@ namespace Xigadee
         /// The default constructor.
         /// </summary>
         /// <param name="pipeline">The pipeline.</param>
-        /// <param name="channel">The channel.</param>
         public SecurityPipelineExtension(P pipeline) : base(pipeline)
         {
         }

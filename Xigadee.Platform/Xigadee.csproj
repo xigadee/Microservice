@@ -121,6 +121,7 @@
     <Compile Include="DataCollection\ExtensionMethods\Logger.cs" />
     <Compile Include="DataCollection\ExtensionMethods\Telemetry.cs" />
     <Compile Include="DataCollection\ExtensionMethods\Write.cs" />
+    <Compile Include="Exceptions\MicroserviceIdNotValidException.cs" />
     <Compile Include="Interfaces\IDataCollection.cs" />
     <Compile Include="DataCollection\Interfaces\BoundaryEventType.cs" />
     <Compile Include="DataCollection\Events\Base\EventBase.cs" />
