@@ -24,6 +24,7 @@ namespace Xigadee
             , Func<EventBase, MicroserviceId, string> makeId = null
             , Func<EventBase, MicroserviceId, string> binaryMakeId = null
             , Func<EventBase, MicroserviceId, string> binaryMakeFolder = null
+            , Func<AzureStorageBehaviour, EventBase, bool> isSupported = null
             )
         {
             Support = support;
@@ -34,6 +35,8 @@ namespace Xigadee
             MakeId = makeId ?? ((EventBase e, MicroserviceId i) => e.TraceId);
             BinaryMakeId = binaryMakeId ?? MakeId;
             BinaryMakeFolder = binaryMakeFolder;
+
+            IsSupported = isSupported ?? ((b,e) => true);
         }
 
         public Func<EventBase, MicroserviceId, string> MakeId { get; set; }
@@ -51,7 +54,10 @@ namespace Xigadee
         /// This function can be set to provide specific binary serialization.
         /// </summary>
         public Func<EventBase, MicroserviceId, AzureStorageBinary> SerializerBinary { get; set; }
-
+        /// <summary>
+        /// This function can be used to filter out specific event from writing for certain storage support.
+        /// </summary>
+        public Func<AzureStorageBehaviour, EventBase, bool> IsSupported { get; set; }
         /// <summary>
         /// This is the support type for the options handler, i.e. LogEvent, EventSource, etc.
         /// </summary>

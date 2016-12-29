@@ -63,5 +63,30 @@ namespace Xigadee
         {
             return (option.Behaviour & AzureStorageBehaviour.File) > 0;
         }
+
+        /// <summary>
+        /// This method provides the default logging level support for the types of logs.
+        /// </summary>
+        /// <param name="behaviour">The storage type.</param>
+        /// <param name="e">The log event.</param>
+        /// <returns>Returns true if the message should be logged.</returns>
+        public static bool DefaultLogLevelSupport(AzureStorageBehaviour behaviour, EventBase ev)
+        {
+            var e = ev as LogEvent;
+            if (e == null)
+                return false;
+
+            switch (behaviour)
+            {
+                case AzureStorageBehaviour.Table:
+                    return true;
+                case AzureStorageBehaviour.Blob:
+                    return e.Level == LoggingLevel.Fatal
+                        || e.Level == LoggingLevel.Error
+                        || e.Level == LoggingLevel.Warning;
+                default:
+                    return false;
+            }
+        }
     }
 }

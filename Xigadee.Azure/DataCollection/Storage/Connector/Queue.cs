@@ -62,5 +62,10 @@ namespace Xigadee
             Queue = Client.GetQueueReference(ContainerId);
             Queue.CreateIfNotExists();
         }
+
+        public override bool ShouldWrite(EventBase e)
+        {
+            return Options.IsSupported(AzureStorageBehaviour.Queue, e);
+        }
     }
 }

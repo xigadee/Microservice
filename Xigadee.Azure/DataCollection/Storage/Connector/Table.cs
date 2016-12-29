@@ -57,5 +57,10 @@ namespace Xigadee
             // Create the table if it doesn't exist.
             Table.CreateIfNotExists();
         }
+
+        public override bool ShouldWrite(EventBase e)
+        {
+            return Options.IsSupported(AzureStorageBehaviour.Table, e);
+        }
     }
 }

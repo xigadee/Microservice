@@ -44,6 +44,25 @@ namespace Xigadee
             return new DynamicTableEntity(e.GetType().Name + DatePartition(), e.TraceId, "*", dict);
         }
 
+        public static ITableEntity ToTableLogEvent(EventBase e, MicroserviceId id)
+        {
+            var ev = e as LogEvent;
+
+            var dict = new Dictionary<string, EntityProperty>();
+
+            dict.Add("Machine", new EntityProperty(id.MachineName));
+            dict.Add("Name", new EntityProperty(id.Name));
+            dict.Add("ServiceId", new EntityProperty(id.ServiceId));
+
+            dict.Add("Level", GetEnum<LoggingLevel>(ev.Level));
+            dict.Add("Category", new EntityProperty(ev.Category));
+            dict.Add("Message", new EntityProperty(ev.Message));
+
+            dict.Add("Ex", new EntityProperty(ev.Ex?.Message));
+
+            //ETag: Set this value to '*' to blindly overwrite an entity as part of an update operation.
+            return new DynamicTableEntity("Logger" + DatePartition(), ev.TraceId, "*", dict);
+        }
 
         public static ITableEntity ToTableDispatcherEvent(EventBase e, MicroserviceId msId)
         {

@@ -28,9 +28,11 @@ namespace Xigadee
         /// </summary>
         public AzureStorageDataCollectorOptions Log { get; set; } 
             = new AzureStorageDataCollectorOptions(DataCollectionSupport.Logger
-                , AzureStorageBehaviour.Blob
+                , AzureStorageBehaviour.BlobAndTable
+                , serializerTable: AzureStorageHelper.ToTableLogEvent
                 , binaryMakeId: AzureStorageHelper.LoggerMakeId
                 , binaryMakeFolder: AzureStorageHelper.LoggerMakeFolder
+                , isSupported: AzureStorageHelper.DefaultLogLevelSupport
                 );
         /// <summary>
         /// This is the EventSource options.
@@ -46,8 +48,9 @@ namespace Xigadee
         /// </summary>
         public AzureStorageDataCollectorOptions Statistics { get; set; } 
             = new AzureStorageDataCollectorOptions(DataCollectionSupport.Statistics
-                , AzureStorageBehaviour.BlobAndTable
+                , AzureStorageBehaviour.Blob
                 , AzureStorageHelper.ToTableGeneric
+                , makeId: AzureStorageHelper.StatisticsMakeId
                 , binaryMakeId: AzureStorageHelper.StatisticsMakeId
                 , binaryMakeFolder: AzureStorageHelper.StatisticsMakeFolder
                 )

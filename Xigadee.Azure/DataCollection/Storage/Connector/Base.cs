@@ -79,5 +79,13 @@ namespace Xigadee
         /// This method initializes the connector.
         /// </summary>
         public abstract void Initialize();
+
+        /// <summary>
+        /// This method is used to check that the specific event should be written to the underlying storage.
+        /// </summary>
+        /// <param name="e">The event.</param>
+        /// <returns>Returns true if the event should be written.</returns>
+        public abstract bool ShouldWrite(EventBase e);
+
     }
 }

@@ -86,5 +86,10 @@ namespace Xigadee
                                                                                                                                            
             Container.CreateIfNotExists(BlobAccessType, RequestOptionsDefault, Context);
         }
+
+        public override bool ShouldWrite(EventBase e)
+        {
+            return Options.IsSupported(AzureStorageBehaviour.Blob, e);
+        }
     }
 }

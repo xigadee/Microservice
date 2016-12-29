@@ -23,6 +23,7 @@ namespace Xigadee
 {
     public static partial class AzureStorageHelper
     {
+
         /// <summary>
         /// This method serializes incoming objects in to standard JSON format encoded as UTF8.
         /// </summary>

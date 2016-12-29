@@ -240,8 +240,17 @@ namespace Xigadee
         }
         #endregion
 
+        /// <summary>
+        /// This method writes the event data to the underlying storage.
+        /// </summary>
+        /// <param name="connector">The generic connector.</param>
+        /// <param name="e">The event to write.</param>
+        /// <returns>This is an async process.</returns>
         protected virtual async Task WriteConnector(IAzureStorageConnectorBase connector, EventBase e)
         {
+            if (!connector.ShouldWrite(e))
+                return;
+
             int start = StatisticsInternal.ActiveIncrement(connector.Support);
 
             Guid? traceId = connector.Options.ShouldProfile ? (ProfileStart($"Azure{connector.Support}_{e.TraceId}")) : default(Guid?);

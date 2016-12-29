@@ -45,5 +45,11 @@ namespace Xigadee
 
             throw new NotImplementedException();
         }
+
+        public override bool ShouldWrite(EventBase e)
+        {
+            return false;
+            //return Options.IsSupported(AzureStorageBehaviour.File, e);
+        }
     }
 }

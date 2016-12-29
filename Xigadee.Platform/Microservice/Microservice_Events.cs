@@ -125,6 +125,7 @@ namespace Xigadee
         {
             try
             {
+                mDataCollection.LogMessage(LoggingLevel.Status, "Microservice has started.");
                 StartCompleted?.Invoke(this, new StartEventArgs());
             }
             catch (Exception ex)
@@ -141,6 +142,7 @@ namespace Xigadee
         {
             try
             {
+                mDataCollection.LogMessage(LoggingLevel.Status, "Microservice is stopping.");
                 StopRequested?.Invoke(this, new StopEventArgs());
             }
             catch (Exception ex)
