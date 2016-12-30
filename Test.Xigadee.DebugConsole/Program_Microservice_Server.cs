@@ -40,9 +40,9 @@ namespace Test.Xigadee
                 sContext.Server.StatusChanged += StatusChanged;
                 //sContext.Server.
 
-                sContext.Server.Service.StartRequested += ServerStartRequested;
-                sContext.Server.Service.StopRequested += ServerStopRequested;
-                sContext.Server.Service.ComponentStatusChange += ServiceComponentStatusChange;
+                sContext.Server.Service.Events.StartRequested += ServerStartRequested;
+                sContext.Server.Service.Events.StopRequested += ServerStopRequested;
+                sContext.Server.Service.Events.ComponentStatusChange += ServiceComponentStatusChange;
                 sContext.Server.Populate(ResolveServerSetting, true);
 
                 sContext.Server.Start();
@@ -59,7 +59,7 @@ namespace Test.Xigadee
         {
             sContext.Server.Stop();
             sContext.Server.StatusChanged -= StatusChanged;
-            sContext.Server.Service.ComponentStatusChange -= ServiceComponentStatusChange;
+            sContext.Server.Service.Events.ComponentStatusChange -= ServiceComponentStatusChange;
         }
 
         static string ResolveServerSetting(string key, string value)

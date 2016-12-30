@@ -13,24 +13,43 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-
-#region using
-
 using System;
-using System.Collections.Concurrent;
+using System.Collections;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
-using System.Runtime.Caching;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-#endregion
+
 namespace Xigadee
 {
-    //TaskManager
-    public partial class Microservice
+    /// <summary>
+    /// This wrapper provides a single place for all Microservice events.
+    /// </summary>
+    internal class EventsWrapper: WrapperBase, IMicroserviceEvents
     {
+        private IDataCollection mDataCollection = null;
+        private IMicroservice mService;
+
+        public EventsWrapper(IMicroservice service, IDataCollection dataCollection, Func<ServiceStatus> getStatus) : base(getStatus)
+        {
+            mService = service;
+            mService.StatusChanged += OnStatusChanged;
+            mDataCollection = dataCollection;
+        }
+
+        /// <summary>
+        /// This event can be used to subscribe to status changes.
+        /// </summary>
+        public event EventHandler<StatusChangedEventArgs> StatusChanged;
+        /// <summary>
+        /// This event handler can be used to inspect an incoming message before it executes.
+        /// </summary>
+        public event EventHandler<Microservice.TransmissionPayloadState> ExecuteBegin;
+        /// <summary>
+        /// This event handler can be used to inspect an incoming message after it has executed.
+        /// </summary>
+        public event EventHandler<Microservice.TransmissionPayloadState> ExecuteComplete;
+
         /// <summary>
         /// This event is raised when the service start begins
         /// </summary>
@@ -64,13 +83,61 @@ namespace Xigadee
         /// </summary>
         public event EventHandler<ProcessRequestErrorEventArgs> ProcessRequestError;
 
+
+        private void OnStatusChanged(object sender, StatusChangedEventArgs e)
+        {
+            try
+            {
+                StatusChanged?.Invoke(mService, e);
+            }
+            catch (Exception ex)
+            {
+                mDataCollection?.LogException("OnStatusChanged / external exception thrown on event", ex);
+            }
+        }
+
+
+        #region OnExecuteBegin(Microservice.TransmissionPayloadState state)
+        /// <summary>
+        /// This method is called when the Microservice receives a start request.
+        /// </summary>
+        internal virtual void OnExecuteBegin(Microservice.TransmissionPayloadState state)
+        {
+            try
+            {
+                ExecuteBegin?.Invoke(mService, state);
+            }
+            catch (Exception ex)
+            {
+                mDataCollection?.LogException("OnExecuteBegin / external exception thrown on event", ex);
+            }
+        }
+        #endregion
+        #region OnExecuteComplete(Microservice.TransmissionPayloadState state)
+        /// <summary>
+        /// This method is called when the Microservice completes the start request.
+        /// </summary>
+        internal virtual void OnExecuteComplete(Microservice.TransmissionPayloadState state)
+        {
+            try
+            {
+                ExecuteComplete?.Invoke(mService, state);
+            }
+            catch (Exception ex)
+            {
+                mDataCollection?.LogException("OnExecuteComplete / external exception thrown on event", ex);
+            }
+        }
+        #endregion
+
+
         #region OnProcessRequestUnresolved(TransmissionPayload payload)
         /// <summary>
         /// This method is called when an incoming request cannot be matched to a command within the Microservice.
         /// </summary>
         /// <param name="payload">The request payload.</param>
         /// <param name="reason">The reason the request was unsesolved</param>
-        protected virtual void OnProcessRequestUnresolved(TransmissionPayload payload, DispatcherRequestUnresolvedReason reason)
+        internal virtual void OnProcessRequestUnresolved(TransmissionPayload payload, DispatcherRequestUnresolvedReason reason)
         {
             try
             {
@@ -88,7 +155,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="payload">The request payload.</param>
         /// <param name="pex">The unhandled exception.</param>
-        protected virtual void OnProcessRequestError(TransmissionPayload payload, Exception pex)
+        internal virtual void OnProcessRequestError(TransmissionPayload payload, Exception pex)
         {
             try
             {
@@ -105,11 +172,11 @@ namespace Xigadee
         /// <summary>
         /// This method is called when the Microservice receives a start request.
         /// </summary>
-        protected virtual void OnStartRequested()
+        internal virtual void OnStartRequested()
         {
             try
             {
-                StartRequested?.Invoke(this, new StartEventArgs());
+                StartRequested?.Invoke(mService, new StartEventArgs());
             }
             catch (Exception ex)
             {
@@ -121,12 +188,12 @@ namespace Xigadee
         /// <summary>
         /// This method is called when the Microservice completes the start request.
         /// </summary>
-        protected virtual void OnStartCompleted()
+        internal virtual void OnStartCompleted()
         {
             try
             {
                 mDataCollection.LogMessage(LoggingLevel.Status, "Microservice has started.");
-                StartCompleted?.Invoke(this, new StartEventArgs());
+                StartCompleted?.Invoke(mService, new StartEventArgs());
             }
             catch (Exception ex)
             {
@@ -138,12 +205,12 @@ namespace Xigadee
         /// <summary>
         /// This method is called when the Microservice receives a stop request.
         /// </summary>
-        protected virtual void OnStopRequested()
+        internal virtual void OnStopRequested()
         {
             try
             {
                 mDataCollection.LogMessage(LoggingLevel.Status, "Microservice is stopping.");
-                StopRequested?.Invoke(this, new StopEventArgs());
+                StopRequested?.Invoke(mService, new StopEventArgs());
             }
             catch (Exception ex)
             {
@@ -155,11 +222,11 @@ namespace Xigadee
         /// <summary>
         /// This method is called when the Microservice completed a stop request.
         /// </summary>
-        protected virtual void OnStopCompleted()
+        internal virtual void OnStopCompleted()
         {
             try
             {
-                StopCompleted?.Invoke(this, new StopEventArgs());
+                StopCompleted?.Invoke(mService, new StopEventArgs());
             }
             catch (Exception ex)
             {
@@ -173,60 +240,42 @@ namespace Xigadee
         /// This method is called on a regular interval when the statistics are updated.
         /// </summary>
         /// <param name="statistics">The statistics collection.</param>
-        protected virtual void OnStatisticsIssued(MicroserviceStatistics statistics)
+        internal virtual void OnStatisticsIssued(MicroserviceStatistics statistics)
         {
             try
             {
-                StatisticsIssued?.Invoke(this, new StatisticsEventArgs() { Statistics = statistics });
+                StatisticsIssued?.Invoke(mService, new StatisticsEventArgs() { Statistics = statistics });
             }
             catch (Exception ex)
             {
                 mDataCollection?.LogException("Action_OnStatistics / external exception thrown on event", ex);
             }
-        } 
+        }
         #endregion
 
         #region Event wrappers...
-        /// <summary>
-        /// This wrapper is used for starting
-        /// </summary>
-        /// <param name="action">The action to wrap.</param>
-        /// <param name="title">The section title.</param>
-        protected virtual void EventStart(Action action, string title)
-        {
-            EventGeneric(action, title, MicroserviceComponentStatusChangeAction.Starting);
-        }
-        /// <summary>
-        /// This wrapper is used for stopping
-        /// </summary>
-        /// <param name="action">The action to wrap.</param>
-        /// <param name="title">The section title.</param>
-        protected virtual void EventStop(Action action, string title)
-        {
-            EventGeneric(action, title, MicroserviceComponentStatusChangeAction.Stopping);
-        }
         /// <summary>
         /// This is the generic exception wrapper.
         /// </summary>
         /// <param name="action">The action to wrap.</param>
         /// <param name="title">The section title.</param>
         /// <param name="type">The action type, i.e. starting or stopping.</param>
-        protected virtual void EventGeneric(Action action, string title, MicroserviceComponentStatusChangeAction type)
+        internal virtual void EventGeneric(Action action, string title, MicroserviceComponentStatusChangeAction type)
         {
             var args = new MicroserviceStatusEventArgs(type, title);
 
             try
             {
-                ComponentStatusChange?.Invoke(this, args);
+                ComponentStatusChange?.Invoke(mService, args);
                 action();
                 args.State = MicroserviceComponentStatusChangeState.Completed;
-                ComponentStatusChange?.Invoke(this, args);
+                ComponentStatusChange?.Invoke(mService, args);
             }
             catch (Exception ex)
             {
                 args.Ex = new MicroserviceStatusChangeException(title, ex);
                 args.State = MicroserviceComponentStatusChangeState.Failed;
-                ComponentStatusChange?.Invoke(this, args);
+                ComponentStatusChange?.Invoke(mService, args);
                 throw args.Ex;
             }
         }

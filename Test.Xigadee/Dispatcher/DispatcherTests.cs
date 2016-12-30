@@ -98,7 +98,7 @@ namespace Test.Xigadee
             }
             , options: ProcessOptions.RouteInternal);
 
-            mPipeline.Service.ProcessRequestUnresolved += (sender, e) => {
+            mPipeline.Service.Events.ProcessRequestUnresolved += (sender, e) => {
                 success = e.Payload.Id == message.Id;
                 mre.Set();
             };

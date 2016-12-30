@@ -36,9 +36,9 @@ namespace Test.Xigadee.Api.Server
         {
             ServicePointManager.DefaultConnectionLimit = 50000;
 #if (DEBUG)
-            StartCompleted += MicroserviceBff_StartCompleted;
-            StatisticsIssued += MicroserviceBff_StatisticsIssued;
-            StatusChanged += MicroserviceBff_StatusChanged;
+            Events.StartCompleted += MicroserviceBff_StartCompleted;
+            Events.StatisticsIssued += MicroserviceBff_StatisticsIssued;
+            Events.StatusChanged += MicroserviceBff_StatusChanged;
 #endif
         }
 

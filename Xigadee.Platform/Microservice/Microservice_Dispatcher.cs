@@ -31,16 +31,6 @@ namespace Xigadee
     //Dispatcher
     public partial class Microservice
     {
-        #region Events
-        /// <summary>
-        /// This event handler can be used to inspect an incoming message before it executes.
-        /// </summary>
-        public event EventHandler<TransmissionPayloadState> OnExecuteBegin;
-        /// <summary>
-        /// This event handler can be used to inspect an incoming message after it has executed.
-        /// </summary>
-        public event EventHandler<TransmissionPayloadState> OnExecuteComplete; 
-        #endregion
         #region Class -> TransmissionPayloadState
         /// <summary>
         /// This class holds the incoming payload state.
@@ -137,7 +127,7 @@ namespace Xigadee
 
             try
             {
-                OnExecuteBegin?.Invoke(this, request);
+                mEventsWrapper.OnExecuteBegin(request);
 
                 //Validate the imcoming request is correct and not cancelled.
                 request.IncomingValidate();
@@ -166,7 +156,7 @@ namespace Xigadee
                     //OK, we have an problem. We log this as an error and get out of here
                     mDataCollection.DispatcherPayloadUnresolved(request.Payload, DispatcherRequestUnresolvedReason.MessageHandler);
 
-                    OnProcessRequestUnresolved(request.Payload, DispatcherRequestUnresolvedReason.MessageHandler);
+                    mEventsWrapper.OnProcessRequestUnresolved(request.Payload, DispatcherRequestUnresolvedReason.MessageHandler);
 
                     request.IsSuccess = Policy.Microservice.DispatcherUnhandled == DispatcherUnhandledMessageAction.Ignore;
 
@@ -211,13 +201,13 @@ namespace Xigadee
             {
                 mDataCollection.DispatcherPayloadException(request.Payload, pyex);
 
-                OnProcessRequestError(pyex.Payload, pyex);
+                mEventsWrapper.OnProcessRequestError(pyex.Payload, pyex);
             }
             catch (Exception ex)
             {
                 mDataCollection.DispatcherPayloadException(request.Payload, ex);
 
-                OnProcessRequestError(request.Payload, ex);
+                mEventsWrapper.OnProcessRequestError(request.Payload, ex);
             }
             finally
             {
@@ -232,7 +222,7 @@ namespace Xigadee
                 if (!request.IsSuccess)
                     StatisticsInternal.ErrorIncrement();
 
-                OnExecuteComplete?.Invoke(this, request);
+                mEventsWrapper.OnExecuteComplete(request);
             }
         }
         #endregion
@@ -251,7 +241,7 @@ namespace Xigadee
             {
                 mDataCollection.DispatcherPayloadUnresolved(Payload, DispatcherRequestUnresolvedReason.ChannelOutgoing);
 
-                OnProcessRequestUnresolved(Payload, DispatcherRequestUnresolvedReason.ChannelOutgoing);
+                mEventsWrapper.OnProcessRequestUnresolved(Payload, DispatcherRequestUnresolvedReason.ChannelOutgoing);
             }
             return isSuccess;
         } 

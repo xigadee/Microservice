@@ -37,7 +37,7 @@ namespace Test.Xigadee
                     .AttachSender(bridgein.GetSender())
                     ;
 
-            p2.ToMicroservice().OnExecuteBegin += CommunicationBridgeTests_OnExecuteBegin;
+            p2.ToMicroservice().Events.ExecuteBegin += CommunicationBridgeTests_OnExecuteBegin;
             p1.Start();
             p2.Start();
 

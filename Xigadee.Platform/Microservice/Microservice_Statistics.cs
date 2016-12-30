@@ -42,7 +42,7 @@ namespace Xigadee
             {
                 var statistics = Statistics;
                 mDataCollection?.Write(statistics, DataCollectionSupport.Statistics);
-                OnStatisticsIssued(statistics);
+                mEventsWrapper.OnStatisticsIssued(statistics);
             }
             catch (Exception ex)
             {

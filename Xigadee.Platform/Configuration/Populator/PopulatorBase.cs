@@ -45,12 +45,12 @@ namespace Xigadee
         protected PopulatorBase()
         {
             Service = new M();
-            Service.StartRequested += ServiceStartRequested;
-            Service.StartCompleted += ServiceStartCompleted;
-            Service.StopRequested += ServiceStopRequested;
-            Service.StopCompleted += ServiceStopCompleted;
-            Service.StatisticsIssued += ServiceStatisticsIssued;
-            Service.StatusChanged += ServiceStatusChanged;
+            Service.Events.StartRequested += ServiceStartRequested;
+            Service.Events.StartCompleted += ServiceStartCompleted;
+            Service.Events.StopRequested += ServiceStopRequested;
+            Service.Events.StopCompleted += ServiceStopCompleted;
+            Service.Events.StatisticsIssued += ServiceStatisticsIssued;
+            Service.Events.StatusChanged += ServiceStatusChanged;
         }
         #endregion
 

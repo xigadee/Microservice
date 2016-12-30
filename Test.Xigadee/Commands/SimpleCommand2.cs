@@ -26,7 +26,7 @@ namespace Test.Xigadee
                 pipeline = Pipeline();
 
                 pipeline.Start();
-                pipeline.Service.ProcessRequestUnresolved += Service_ProcessRequestUnresolved;
+                pipeline.Service.Events.ProcessRequestUnresolved += Service_ProcessRequestUnresolved;
                 int start = Environment.TickCount;
 
                 var result1 = mCommandInit.Process<Blah, string>("internalIn", "simples2", "async",

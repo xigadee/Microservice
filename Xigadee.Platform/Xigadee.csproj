@@ -147,6 +147,7 @@
     <Compile Include="Microservice\Wrapper\CommandWrapper.cs" />
     <Compile Include="Microservice\Wrapper\CommunicationWrapper.cs" />
     <Compile Include="Microservice\Wrapper\DispatchWrapper.cs" />
+    <Compile Include="Microservice\Wrapper\EventsWrapper.cs" />
     <Compile Include="Microservice\Wrapper\PolicyWrapper.cs" />
     <Compile Include="Microservice\Wrapper\SecurityWrapper.cs" />
     <Compile Include="Microservice\Wrapper\WrapperBase.cs" />
@@ -453,8 +454,7 @@
     <Compile Include="Microservice\Helper\CpuStats.cs" />
     <Compile Include="Components\ServiceContainerBase.cs" />
     <Compile Include="DataCollection\Logger\Implementations\Action\LoggerActionHolder.cs" />
-    <Compile Include="Microservice\Microservice_Events.cs" />
-    <Compile Include="Microservice\Microservice_Policy.cs" />
+    <Compile Include="Microservice\Microservice_Initialization.cs" />
     <Compile Include="Microservice\Microservice_Statistics.cs" />
     <Compile Include="Configuration\Populator\IPopulator.cs" />
     <Compile Include="Configuration\Populator\PopulatorBase.cs" />

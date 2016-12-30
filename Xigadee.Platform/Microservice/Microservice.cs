@@ -63,6 +63,8 @@ namespace Xigadee
         /// This contains the supported serializers.
         /// </summary>
         protected Dictionary<byte[],IPayloadSerializer> mPayloadSerializers;
+
+        EventsWrapper mEventsWrapper;
         #endregion
         #region Constructors
         /// <summary>
@@ -104,6 +106,10 @@ namespace Xigadee
 
             mResourceTracker = InitialiseResourceTracker();
             mDataCollection = InitialiseDataCollectionContainer();
+
+            mEventsWrapper = new EventsWrapper(this, mDataCollection, () => Status);
+            Events = mEventsWrapper;
+
             mPayloadSerializers = new Dictionary<byte[], IPayloadSerializer>();
         }
         #endregion
@@ -181,7 +187,7 @@ namespace Xigadee
             //This method starts the components in the service in the correct order.
             try
             {
-                OnStartRequested();
+                mEventsWrapper.OnStartRequested();
 
                 //This method initialises the configuration.
                 EventStart(() => ConfigurationInitialise(), "Configuration");
@@ -233,7 +239,7 @@ namespace Xigadee
                     , "Dispatch Wrapper");
 
                 //Signal that start has completed.
-                OnStartCompleted();
+                mEventsWrapper.OnStartCompleted();
 
                 //Do a final log now that everything has started up.
                 LogStatistics().Wait(TimeSpan.FromSeconds(1));
@@ -263,7 +269,7 @@ namespace Xigadee
         /// </summary>
         protected override void StopInternal()
         {
-            OnStopRequested();
+            mEventsWrapper.OnStopRequested();
 
             LogStatistics().Wait(TimeSpan.FromSeconds(15));
 
@@ -289,9 +295,28 @@ namespace Xigadee
 
             EventStop(() => ServiceStop(mSerializer), "Serialization");
 
-            OnStopCompleted();
+            mEventsWrapper.OnStopCompleted();
         }
         #endregion
+
+        /// <summary>
+        /// This wrapper is used for starting
+        /// </summary>
+        /// <param name="action">The action to wrap.</param>
+        /// <param name="title">The section title.</param>
+        internal virtual void EventStart(Action action, string title)
+        {
+            mEventsWrapper.EventGeneric(action, title, MicroserviceComponentStatusChangeAction.Starting);
+        }
+        /// <summary>
+        /// This wrapper is used for stopping
+        /// </summary>
+        /// <param name="action">The action to wrap.</param>
+        /// <param name="title">The section title.</param>
+        internal virtual void EventStop(Action action, string title)
+        {
+            mEventsWrapper.EventGeneric(action, title, MicroserviceComponentStatusChangeAction.Stopping);
+        }
 
         #region ServiceStart(object service)
         /// <summary>
@@ -367,6 +392,7 @@ namespace Xigadee
         public IDataCollection Collector { get { return mDataCollection; } }
         #endregion
 
+        public IMicroserviceEvents Events { get; }
         /// <summary>
         /// This is the set of policy settings for the microservice.
         /// </summary>
@@ -384,7 +410,9 @@ namespace Xigadee
         /// This wrapper is used to send requests direct to
         /// </summary>
         public IMicroserviceDispatch Dispatch { get; protected set;}
-
+        /// <summary>
+        /// This is the command wrapper used for interacting with the command collection.
+        /// </summary>
         public IMicroserviceCommand Commands { get; }
     }
 }

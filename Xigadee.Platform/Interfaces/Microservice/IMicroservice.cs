@@ -24,11 +24,12 @@ namespace Xigadee
     /// </summary>
     public interface IMicroservice: IService
         , IMicroserviceDataCollection
-        , IMicroserviceEvents
     {
         MicroserviceId Id { get; }
 
         ServiceStatus Status { get; }
+
+        IMicroserviceEvents Events { get; }
 
         IMicroserviceSecurity Security { get; }
 
