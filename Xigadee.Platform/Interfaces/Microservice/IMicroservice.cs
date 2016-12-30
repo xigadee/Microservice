@@ -25,7 +25,6 @@ namespace Xigadee
     public interface IMicroservice: IService
         , IMicroserviceDataCollection
         , IMicroserviceEvents
-        , IMicroservicePolicy
     {
         MicroserviceId Id { get; }
 
@@ -38,6 +37,8 @@ namespace Xigadee
         IMicroserviceDispatch Dispatch { get; }
 
         IMicroserviceCommand Commands { get; }
+
+        IMicroservicePolicy Policy { get; }
 
         IPayloadSerializer RegisterPayloadSerializer(IPayloadSerializer serializer);
 

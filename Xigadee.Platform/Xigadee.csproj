@@ -142,11 +142,12 @@
     <Compile Include="Interfaces\Microservice\IMicroserviceDataCollection.cs" />
     <Compile Include="Interfaces\Microservice\IMicroserviceEvents.cs" />
     <Compile Include="Interfaces\Microservice\IMicroservicePolicy.cs" />
-    <Compile Include="Interfaces\Microservice\IMicroserviceProcess.cs" />
+    <Compile Include="Interfaces\Microservice\IMicroserviceDispatch.cs" />
     <Compile Include="Interfaces\Microservice\IMicroserviceSecurity.cs" />
     <Compile Include="Microservice\Wrapper\CommandWrapper.cs" />
     <Compile Include="Microservice\Wrapper\CommunicationWrapper.cs" />
     <Compile Include="Microservice\Wrapper\DispatchWrapper.cs" />
+    <Compile Include="Microservice\Wrapper\PolicyWrapper.cs" />
     <Compile Include="Microservice\Wrapper\SecurityWrapper.cs" />
     <Compile Include="Microservice\Wrapper\WrapperBase.cs" />
     <Compile Include="Pipeline\Extensions\Add\AddAuthenticationHandler.cs" />

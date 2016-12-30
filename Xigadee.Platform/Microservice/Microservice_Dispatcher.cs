@@ -132,7 +132,7 @@ namespace Xigadee
         protected virtual async Task Execute(TransmissionPayload requestPayload)
         {
             var request = new TransmissionPayloadState(requestPayload
-                , PolicyMicroservice.DispatcherTransitCountMax
+                , Policy.Microservice.DispatcherTransitCountMax
                 , StatisticsInternal.ActiveIncrement());
 
             try
@@ -168,7 +168,7 @@ namespace Xigadee
 
                     OnProcessRequestUnresolved(request.Payload, DispatcherRequestUnresolvedReason.MessageHandler);
 
-                    request.IsSuccess = PolicyMicroservice.DispatcherUnhandled == DispatcherUnhandledMessageAction.Ignore;
+                    request.IsSuccess = Policy.Microservice.DispatcherUnhandled == DispatcherUnhandledMessageAction.Ignore;
 
                     return;
                 }

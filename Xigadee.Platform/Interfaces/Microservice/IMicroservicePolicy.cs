@@ -24,13 +24,13 @@ namespace Xigadee
     /// </summary>
     public interface IMicroservicePolicy
     {
-        MicroservicePolicy PolicyMicroservice { get; }
-        TaskManagerPolicy PolicyTaskManager { get; }
-        ResourceTrackerPolicy PolicyResourceTracker { get; }
-        CommandContainerPolicy PolicyCommandContainer { get; }
-        CommunicationPolicy PolicyCommunication { get; }
-        SchedulerPolicy PolicyScheduler { get; }
-        SecurityPolicy PolicySecurity { get; }
-        DataCollectionPolicy PolicyDataCollection { get; }
+        MicroservicePolicy Microservice { get; }
+        TaskManagerPolicy TaskManager { get; }
+        ResourceTrackerPolicy ResourceTracker { get; }
+        CommandContainerPolicy CommandContainer { get; }
+        CommunicationPolicy Communication { get; }
+        SchedulerPolicy Scheduler { get; }
+        SecurityPolicy Security { get; }
+        DataCollectionPolicy DataCollection { get; }
     }
 }

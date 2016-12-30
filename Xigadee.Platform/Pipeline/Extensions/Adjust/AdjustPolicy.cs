@@ -28,7 +28,7 @@ namespace Xigadee
             , Action<MicroservicePolicy> msAssign = null) where P: IPipeline
 
         {
-            msAssign?.Invoke(pipeline.Service.PolicyMicroservice);
+            msAssign?.Invoke(pipeline.Service.Policy.Microservice);
 
             return pipeline;
         }
@@ -36,7 +36,7 @@ namespace Xigadee
         public static P AdjustPolicyTaskManager<P>(this P pipeline
             , Action<TaskManagerPolicy> msAssign = null) where P: IPipeline
         {
-            msAssign?.Invoke(pipeline.Service.PolicyTaskManager);
+            msAssign?.Invoke(pipeline.Service.Policy.TaskManager);
 
             return pipeline;
         }
@@ -44,7 +44,7 @@ namespace Xigadee
         public static P AdjustPolicyResourceTracker<P>(this P pipeline
             , Action<ResourceTrackerPolicy> msAssign = null) where P : IPipeline
         {
-            msAssign?.Invoke(pipeline.Service.PolicyResourceTracker);
+            msAssign?.Invoke(pipeline.Service.Policy.ResourceTracker);
 
             return pipeline;
         }
@@ -52,7 +52,7 @@ namespace Xigadee
         public static P AdjustPolicyCommandContainer<P>(this P pipeline
             , Action<CommandContainerPolicy> msAssign = null) where P : IPipeline
         {
-            msAssign?.Invoke(pipeline.Service.PolicyCommandContainer);
+            msAssign?.Invoke(pipeline.Service.Policy.CommandContainer);
 
             return pipeline;
         }
@@ -60,7 +60,7 @@ namespace Xigadee
         public static P AdjustPolicyCommunication<P>(this P pipeline
             , Action<CommunicationPolicy> msAssign = null) where P : IPipeline
         {
-            msAssign?.Invoke(pipeline.Service.PolicyCommunication);
+            msAssign?.Invoke(pipeline.Service.Policy.Communication);
 
             return pipeline;
         }
@@ -68,7 +68,7 @@ namespace Xigadee
         public static P AdjustPolicyScheduler<P>(this P pipeline
             , Action<SchedulerPolicy> msAssign = null) where P : IPipeline
         {
-            msAssign?.Invoke(pipeline.Service.PolicyScheduler);
+            msAssign?.Invoke(pipeline.Service.Policy.Scheduler);
 
             return pipeline;
         }
@@ -76,7 +76,7 @@ namespace Xigadee
         public static P AdjustPolicySecurity<P>(this P pipeline
             , Action<SecurityPolicy> msAssign = null) where P : IPipeline
         {
-            msAssign?.Invoke(pipeline.Service.PolicySecurity);
+            msAssign?.Invoke(pipeline.Service.Policy.Security);
 
             return pipeline;
         }
@@ -84,7 +84,7 @@ namespace Xigadee
         public static P AdjustPolicyDataCollection<P>(this P pipeline
             , Action<DataCollectionPolicy> msAssign = null) where P : IPipeline
         {
-            msAssign?.Invoke(pipeline.Service.PolicyDataCollection);
+            msAssign?.Invoke(pipeline.Service.Policy.DataCollection);
 
             return pipeline;
         }

@@ -41,7 +41,8 @@ namespace Test.Xigadee
             p1.Start();
             p2.Start();
 
-            int check = p2.ToMicroservice().Commands.Count();
+            int check1 = p1.ToMicroservice().Commands.Count();
+            int check2 = p2.ToMicroservice().Commands.Count();
 
             var entity = new BridgeMe() { Message = "Momma" };
             var rs = init.Create(entity, new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
