@@ -22,5 +22,8 @@ namespace Xigadee
     public interface IMicroserviceCommand: IEnumerable<ICommand>
     {
         ICommand Register(ICommand command);
+
+        ISharedService SharedServices { get; }
+
     }
 }

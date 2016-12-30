@@ -26,6 +26,7 @@ namespace Xigadee
         /// <summary>
         /// This pipeline extension is used to add a service to the Microservice shared service container.
         /// </summary>
+        /// <typeparam name="P">The pipeline type.</typeparam>
         /// <typeparam name="I">The interface type.</typeparam>
         /// <param name="pipeline">The pipeline</param>
         /// <param name="creator">A function that takes in the pipeline configuration and returns an instance of the service.</param>
@@ -40,7 +41,7 @@ namespace Xigadee
 
             action?.Invoke(service);
 
-            if (!pipeline.Service.SharedServices.RegisterService<I>(service, serviceName))
+            if (!pipeline.Service.Commands.SharedServices.RegisterService<I>(service, serviceName))
                 throw new SharedServiceRegistrationException(typeof(I).Name, serviceName);
 
             return pipeline;
@@ -48,6 +49,7 @@ namespace Xigadee
         /// <summary>
         /// This pipeline extension is used to add a service to the Microservice shared service container.
         /// </summary>
+        /// <typeparam name="P">The pipeline type.</typeparam>
         /// <typeparam name="I">The interface type.</typeparam>
         /// <param name="pipeline">The pipeline</param>
         /// <param name="service">The service instance to add.</param>
@@ -60,7 +62,7 @@ namespace Xigadee
         {
             action?.Invoke(service);
 
-            if (!pipeline.Service.SharedServices.RegisterService<I>(service, serviceName))
+            if (!pipeline.Service.Commands.SharedServices.RegisterService<I>(service, serviceName))
                 throw new SharedServiceRegistrationException(typeof(I).Name, serviceName);
 
             return pipeline;
@@ -68,6 +70,7 @@ namespace Xigadee
         /// <summary>
         /// This pipeline extension is used to add a service to the Microservice shared service container.
         /// </summary>
+        /// <typeparam name="P">The pipeline type.</typeparam>
         /// <typeparam name="I">The interface type.</typeparam>
         /// <param name="pipeline">The pipeline</param>
         /// <param name="creator">A lazy creator for the service that is called when the service is first accessed.</param>
@@ -77,7 +80,7 @@ namespace Xigadee
             , Lazy<I> creator, string serviceName = null) where I : class
             where P : IPipeline
         {
-            if (!pipeline.Service.SharedServices.RegisterService<I>(creator, serviceName))
+            if (!pipeline.Service.Commands.SharedServices.RegisterService<I>(creator, serviceName))
                 throw new SharedServiceRegistrationException(typeof(I).Name, serviceName);
 
             return pipeline;

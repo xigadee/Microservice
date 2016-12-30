@@ -34,6 +34,12 @@ namespace Xigadee
             mCommands = commands;
         }
 
+        #region SharedServices
+        /// <summary>
+        /// This collection holds the shared services for the Microservice.
+        /// </summary>
+        public ISharedService SharedServices { get { return mCommands.SharedServices; } }
+        #endregion
         //Command
         #region Register(IMessageHandler command)
         /// <summary>

@@ -70,7 +70,7 @@ namespace Test.Xigadee.Api.Server
         {
             base.RegisterEventSources();
 
-            Service.RegisterEventSource(new AzureStorageEventSource(
+            Service.DataCollection.RegisterEventSource(new AzureStorageEventSource(
                 Config.LogStorageCredentials()
                 , Service.Id.Name
                 , resourceProfile: mResourceBlobStorage));
@@ -80,7 +80,7 @@ namespace Test.Xigadee.Api.Server
         {
             base.RegisterLogging();
 
-            Service.RegisterLogger(new AzureStorageLogger(
+            Service.DataCollection.RegisterLogger(new AzureStorageLogger(
                 Config.LogStorageCredentials()
                 , Service.Id.Name
                 , resourceProfile: mResourceBlobStorage));

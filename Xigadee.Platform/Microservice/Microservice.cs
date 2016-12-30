@@ -352,7 +352,7 @@ namespace Xigadee
                     ((IRequireSecurityService)service).Security = mSecurity;
 
                 if (service is IRequireSharedServices)
-                    ((IRequireSharedServices)service).SharedServices = SharedServices;
+                    ((IRequireSharedServices)service).SharedServices = mCommands.SharedServices;
 
                 if (service is IContainerService)
                     ((IContainerService)service).Services.ForEach(s => ServiceStart(s));

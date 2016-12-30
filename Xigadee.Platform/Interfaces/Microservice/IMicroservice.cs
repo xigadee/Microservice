@@ -45,7 +45,5 @@ namespace Xigadee
         IPayloadSerializer RegisterPayloadSerializer(IPayloadSerializer serializer);
 
         void ClearPayloadSerializers();
-
-        ISharedService SharedServices { get; }
     }
 }

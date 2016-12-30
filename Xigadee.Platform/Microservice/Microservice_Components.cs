@@ -29,62 +29,6 @@ namespace Xigadee
     //Components
     public partial class Microservice
     {
-
-        #region SharedServices
-        /// <summary>
-        /// This collection holds the shared services for the Microservice.
-        /// </summary>
-        public ISharedService SharedServices { get { return mCommands.SharedServices; } }
-        #endregion
-
-        //Data Collector
-        #region RegisterDataCollector(IDataCollectorComponent collector)
-        /// <summary>
-        /// This method is used to register a collector.
-        /// </summary>
-        /// <param name="collector">The collector component.</param>
-        /// <returns>Returns the collector passed through the registration.</returns>
-        public IDataCollectorComponent RegisterDataCollector(IDataCollectorComponent collector)
-        {
-            ValidateServiceNotStarted();
-            mDataCollection.Add(collector);
-            return collector;
-        }
-        #endregion
-        #region RegisterEventSource(IEventSourceComponent eventSource)
-        /// <summary>
-        /// This method can be used to manually register an EventSource.
-        /// </summary>
-        public virtual IEventSourceComponent RegisterEventSource(IEventSourceComponent eventSource)
-        {
-            ValidateServiceNotStarted();
-            mDataCollection.Add(eventSource);
-            return eventSource;
-        }
-        #endregion
-        #region RegisterLogger(ILogger logger)
-        /// <summary>
-        /// This method can be used to manually register an Collector?.
-        /// </summary>
-        public virtual ILogger RegisterLogger(ILogger logger)
-        {
-            ValidateServiceNotStarted();
-            mDataCollection.Add(logger);
-            return logger;
-        }
-        #endregion
-        #region RegisterBoundaryLogger(IBoundaryLoggerComponent logger)
-        /// <summary>
-        /// This method can be used to manually register an Collector?.
-        /// </summary>
-        public virtual IBoundaryLoggerComponent RegisterBoundaryLogger(IBoundaryLoggerComponent logger)
-        {
-            ValidateServiceNotStarted();
-            mDataCollection.Add(logger);
-            return logger;
-        }
-        #endregion
-
         //Serializer
         #region RegisterPayloadSerializer(IPayloadSerializer serializer)
         /// <summary>
