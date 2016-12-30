@@ -31,6 +31,9 @@ namespace Xigadee
     /// </summary>
     public partial class ConsoleMenu
     {
+        /// <summary>
+        /// This event is fired when the escape key is pressed on the menu causing it to exit the screen.
+        /// </summary>
         public event EventHandler<EventArgs> OnClose;
 
         #region Constructor
@@ -58,6 +61,8 @@ namespace Xigadee
             Context.Indent2 = 6;
         }
         #endregion
+
+        public bool ContextInfoInherit { get; set; } = true;
 
         /// <summary>
         /// This is the menu context that holds the current state.
@@ -87,7 +92,7 @@ namespace Xigadee
         /// <param name="shortcut"></param>
         public virtual void Show(object state = null, int pageLength = 9, string shortcut = null, ConsoleInfoContext contextInfo = null)
         {
-            if (contextInfo != null)
+            if (contextInfo != null && ContextInfoInherit)
                 ContextInfo = contextInfo;
 
             Context.State = state;

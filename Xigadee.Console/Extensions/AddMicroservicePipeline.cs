@@ -30,13 +30,14 @@ namespace Xigadee
         /// <param name="message">The info message</param>
         /// <param name="refresh">The refresh option flag.</param>
         /// <param name="type">The log type.</param>
-        public static ConsoleMenu AddMicroservicePipeline(this ConsoleMenu menu, MicroservicePipeline pipeline)
+        public static ConsoleMenu AddMicroservicePipeline(this ConsoleMenu menu, MicroservicePipeline pipeline
+            , bool useParentContextInfo = true)
         {
             var ms = pipeline.ToMicroservice();
 
             string title = $"Microservice: {ms.Name}";
 
-            var msMenu = new ConsoleMenu(title);
+            var msMenu = new ConsoleMenu(title) { ContextInfoInherit = useParentContextInfo };
 
             ms.StatusChanged += (s,e) =>
             {
