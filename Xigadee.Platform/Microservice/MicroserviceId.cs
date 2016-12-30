@@ -26,6 +26,8 @@ namespace Xigadee
             if (string.IsNullOrWhiteSpace(id))
                 return false;
 
+            // "^[A-Za-z0-9_]+$" is the Regex but this works just fine.
+
             return id.Length == id.ToLowerInvariant().ToCharArray()
                 .Where((c) => c>='a' & c<='z' | c>='0' & c<= '9')
                 .Count();

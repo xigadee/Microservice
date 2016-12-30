@@ -20,13 +20,12 @@ using System.Collections.Generic;
 namespace Xigadee
 {
     /// <summary>
-    /// This interface defines the publically accessible CommandContainer support.
+    /// This interface is responsible for the Microservice security.
     /// </summary>
-    public interface IMicroserviceCommand: IEnumerable<ICommand>
+    public interface IMicroserviceSerialization
     {
-        ICommand Register(ICommand command);
+        IPayloadSerializer RegisterPayloadSerializer(IPayloadSerializer serializer);
 
-        ISharedService SharedServices { get; }
-
+        void ClearPayloadSerializers();
     }
 }

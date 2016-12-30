@@ -414,7 +414,6 @@ namespace Xigadee
         /// This is the communication wrapper.
         /// </summary>
         public IMicroserviceCommunication Communication { get; }
-
         /// <summary>
         /// This wrapper is used to send requests direct to
         /// </summary>
@@ -426,6 +425,10 @@ namespace Xigadee
         /// <summary>
         /// This is the data collection container.
         /// </summary>
-        public IMicroserviceDataCollection DataCollection { get; }
+        public IMicroserviceDataCollection DataCollection { get; } 
+        /// <summary>
+        /// This is the data collection container.
+        /// </summary>
+        public IMicroserviceSerialization Serialization { get; }
     }
 }

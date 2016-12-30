@@ -42,6 +42,8 @@ namespace Xigadee
 
         IMicroserviceDataCollection DataCollection { get; }
 
+        IMicroserviceSerialization Serialization { get; }
+
         IPayloadSerializer RegisterPayloadSerializer(IPayloadSerializer serializer);
 
         void ClearPayloadSerializers();

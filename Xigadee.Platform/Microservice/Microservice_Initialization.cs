@@ -45,7 +45,6 @@ namespace Xigadee
             return taskTracker;
         }
         #endregion
-
         #region InitialiseResourceTracker()
         /// <summary>
         /// This method creates the default resource tracker for the Microservice.
@@ -60,7 +59,6 @@ namespace Xigadee
             return container;
         }
         #endregion
-
         #region InitialiseCommandContainer()
         /// <summary>
         /// This method creates the component container.
@@ -75,7 +73,6 @@ namespace Xigadee
             return container;
         }
         #endregion
-
         #region InitialiseCommunicationContainer()
         /// <summary>
         /// This method creates the communication container. This container comtains all the 
@@ -90,7 +87,6 @@ namespace Xigadee
             return container;
         }
         #endregion
-
         #region InitialiseSchedulerContainer()
         /// <summary>
         /// This method returns the default scheduler container.
@@ -103,7 +99,6 @@ namespace Xigadee
             return container;
         }
         #endregion
-
         #region InitialiseSecurityContainer()
         /// <summary>
         /// This method creates the component container.
@@ -118,7 +113,6 @@ namespace Xigadee
             return container;
         }
         #endregion
-
         #region InitialiseSerializationContainer(List<IPayloadSerializer> payloadSerializers)
         /// <summary>
         /// THis method returns the default scheduler container.
@@ -130,7 +124,6 @@ namespace Xigadee
             return container;
         }
         #endregion
-
         #region InitialiseDataCollectionContainer()
         /// <summary>
         /// This method creates the data collection container, which is responsible for logging, event source management, and telemetry.

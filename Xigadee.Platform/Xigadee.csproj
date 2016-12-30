@@ -144,6 +144,7 @@
     <Compile Include="Interfaces\Microservice\IMicroservicePolicy.cs" />
     <Compile Include="Interfaces\Microservice\IMicroserviceDispatch.cs" />
     <Compile Include="Interfaces\Microservice\IMicroserviceSecurity.cs" />
+    <Compile Include="Interfaces\Microservice\IMicroserviceSerialization.cs" />
     <Compile Include="Microservice\Wrapper\CommandWrapper.cs" />
     <Compile Include="Microservice\Wrapper\CommunicationWrapper.cs" />
     <Compile Include="Microservice\Wrapper\DataCollectionWrapper.cs" />
@@ -151,6 +152,7 @@
     <Compile Include="Microservice\Wrapper\EventsWrapper.cs" />
     <Compile Include="Microservice\Wrapper\PolicyWrapper.cs" />
     <Compile Include="Microservice\Wrapper\SecurityWrapper.cs" />
+    <Compile Include="Microservice\Wrapper\SerializationWrapper.cs" />
     <Compile Include="Microservice\Wrapper\WrapperBase.cs" />
     <Compile Include="Pipeline\Extensions\Add\AddAuthenticationHandler.cs" />
     <Compile Include="Pipeline\Extensions\Attach\AttachTransportDecryption.cs" />
