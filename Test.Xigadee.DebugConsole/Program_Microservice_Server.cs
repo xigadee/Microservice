@@ -82,38 +82,38 @@ namespace Test.Xigadee
             switch (sContext.PersistenceType)
             {
                 case PersistenceOptions.Sql:
-                    sContext.Server.Service.RegisterCommand(
+                    sContext.Server.Service.Commands.Register(
                         new PersistenceMondayMorningBluesSql(e.Config.SqlConnection()
                         , MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
                         { ChannelId = Channels.TestB });
                     break;
                 case PersistenceOptions.Blob:
-                    e.Service.RegisterCommand(
+                    e.Service.Commands.Register(
                         new PersistenceMondayMorningBluesBlob(e.Config.StorageCredentials()
                         , MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
                         { ChannelId = Channels.TestB });
                     break;
                 case PersistenceOptions.DocumentDb:
-                    e.Service.RegisterCommand(
+                    e.Service.Commands.Register(
                         new PersistenceMondayMorningBluesDocDb(e.Config.DocDBConnection(), e.Config.DocDBDatabaseName()
                         , MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
                         { ChannelId = Channels.TestB });
                     break;
                 case PersistenceOptions.DocumentDbSdk:
-                    e.Service.RegisterCommand(
+                    e.Service.Commands.Register(
                         new PersistenceMondayMorningBluesDocDbSdk(e.Config.DocDBConnection(), e.Config.DocDBDatabaseName()
                         , MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
                         { ChannelId = Channels.TestB });
                     break;
                 case PersistenceOptions.Memory:
-                    e.Service.RegisterCommand(
+                    e.Service.Commands.Register(
                         new PersistenceMondayMorningBluesMemory(
                           MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
                         { ChannelId = Channels.TestB });
                     break;
 
                 case PersistenceOptions.RedisCache:
-                    e.Service.RegisterCommand(
+                    e.Service.Commands.Register(
                         new PersistenceMondayMorningBluesRedis(e.Config.RedisCacheConnection()
                         , MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
                         { ChannelId = Channels.TestB });
@@ -131,7 +131,7 @@ namespace Test.Xigadee
         {
             var serv = sender as Microservice;
 
-            sMenuMain.Value.AddInfoMessage($"{serv.Name} {e.Debug()}", true);
+            sMenuMain.Value.AddInfoMessage($"{serv.Id.Name} {e.Debug()}", true);
 
         }
 

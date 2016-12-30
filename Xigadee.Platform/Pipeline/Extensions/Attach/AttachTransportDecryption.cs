@@ -35,7 +35,7 @@ namespace Xigadee
         public static C AttachTransportDecryption<C>(this C cpipe, string identifier)
             where C : IPipelineChannelOutgoing<IPipeline>
         {
-            if (!cpipe.Pipeline.Service.HasEncryptionHandler(identifier))
+            if (!cpipe.Pipeline.Service.Security.HasEncryptionHandler(identifier))
                 throw new EncryptionHandlerNotResolvedException(cpipe.Channel.Id, identifier);
 
             if (cpipe.Channel.EncryptionHandlerId != null)

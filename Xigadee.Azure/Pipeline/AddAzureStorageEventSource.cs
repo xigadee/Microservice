@@ -47,7 +47,7 @@ namespace Xigadee
         {
             IMicroservice service = pipeline.ToMicroservice();
 
-            var component = new AzureStorageEventSource(creds, serviceName ?? service.Name, containerName, resourceProfile, encryption);
+            var component = new AzureStorageEventSource(creds, serviceName ?? service.Id.Name, containerName, resourceProfile, encryption);
 
             onCreate?.Invoke(component);
                 

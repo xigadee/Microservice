@@ -80,7 +80,7 @@ namespace Xigadee
         {
             try
             {
-                Service.RegisterCommand(instance);
+                Service.Commands.Register(instance);
                 Unity.RegisterInstance<I>(instance);
             }
             catch (Exception ex)

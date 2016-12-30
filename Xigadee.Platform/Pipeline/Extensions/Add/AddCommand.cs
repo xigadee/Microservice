@@ -82,7 +82,7 @@ namespace Xigadee
                 command.MasterJobNegotiationChannelIdOutgoing = channelMasterJobNegotiationOutgoing.Channel.Id;
 
             assign?.Invoke(command);
-            pipeline.Service.RegisterCommand(command);
+            pipeline.Service.Commands.Register(command);
             return pipeline;
         }
 

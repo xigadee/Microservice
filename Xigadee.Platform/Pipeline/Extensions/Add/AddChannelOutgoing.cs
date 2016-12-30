@@ -58,7 +58,7 @@ namespace Xigadee
             )
             where P: IPipeline
         {
-            var channel = pipeline.ToMicroservice().RegisterChannel(
+            var channel = pipeline.ToMicroservice().Communication.RegisterChannel(
                 new Channel(channelId, ChannelDirection.Outgoing, description, bLogger, internalOnly));
 
             if (partitions == null && autosetPartition01)

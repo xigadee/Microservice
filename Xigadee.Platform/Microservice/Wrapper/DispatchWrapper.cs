@@ -13,24 +13,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-
-#region using
-
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
-using System.Runtime.Caching;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-#endregion
+
 namespace Xigadee
 {
-    //Process
-    public partial class Microservice
+    internal class DispatchWrapper: WrapperBase, IMicroserviceDispatch
     {
+        private Action<TransmissionPayload, string> ExecuteOrEnqueue { get; }
+
+        private IPayloadSerializationContainer mSerializer;
+
+        public DispatchWrapper(IPayloadSerializationContainer serializer, Action<TransmissionPayload, string> executeOrEnqueue 
+            ,Func<ServiceStatus> getStatus) : base(getStatus)
+        {
+            ExecuteOrEnqueue = executeOrEnqueue;
+            mSerializer = serializer;
+        }
+
         #region --> Process ...
         /// <summary>
         /// This method creates a service message and injects it in to the execution path and bypasses the listener infrastructure.
@@ -130,7 +133,7 @@ namespace Xigadee
         {
             ValidateServiceStarted();
 
-            mTaskManager.ExecuteOrEnqueue(payload, "Incoming Process method request");
+            ExecuteOrEnqueue(payload, "Incoming Process method request");
         }
         #endregion
     }

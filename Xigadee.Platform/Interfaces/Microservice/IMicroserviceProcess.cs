@@ -19,7 +19,7 @@ using System.Collections.Generic;
 
 namespace Xigadee
 {
-    public interface IMicroserviceProcess
+    public interface IMicroserviceDispatch
     {
         void Process(TransmissionPayload payload);
 

@@ -24,27 +24,25 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static P AddSender<P>(this P pipeline, ISender sender)
-            where P : IPipeline
+        public static C AttachPersistenceMessageInitiator<C,K,E>(this C cpipe
+            , out PersistenceMessageInitiator<K,E> command
+            , string outgoingChannel
+            , int startupPriority = 90
+            , ICacheManager<K,E> cacheManager = null
+            , TimeSpan? defaultRequestTimespan = null
+            )
+            where C : IPipelineChannelIncoming<IPipeline>
+            where K : IEquatable<K>
         {
-            pipeline.Service.Communication.RegisterSender(sender);
+            var ms = cpipe.ToMicroservice();
 
-            return pipeline;
-        }
+            
+            command = new PersistenceMessageInitiator<K, E>(cacheManager, defaultRequestTimespan)
+            { ResponseChannelId = cpipe.Channel.Id, ChannelId = outgoingChannel };
 
-        public static P AddSender<P,S>(this P pipeline
-            , Func<IEnvironmentConfiguration, S> creator = null
-            , Action<S> action = null)
-            where P : IPipeline
-            where S : ISender, new()
-        {
-            var sender = creator == null ? new S() : creator(pipeline.Configuration);
+            cpipe.Pipeline.AddCommand(command, startupPriority);
 
-            action?.Invoke(sender);
-
-            pipeline.AddSender(sender);
-
-            return pipeline;
+            return cpipe;
         }
     }
 }

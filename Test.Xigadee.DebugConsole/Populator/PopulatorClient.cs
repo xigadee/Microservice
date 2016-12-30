@@ -30,14 +30,14 @@ namespace Test.Xigadee
 
             var cacheManager = new RedisCacheManager<Guid, MondayMorningBlues>(Config.RedisCacheConnection(), true, new EntityTransformHolder<Guid, MondayMorningBlues>(true) { KeyDeserializer = s => new Guid(s) });
 
-            Persistence = (IRepositoryAsync<Guid, MondayMorningBlues>)Service.RegisterCommand(
+            Persistence = (IRepositoryAsync<Guid, MondayMorningBlues>)Service.Commands.Register(
                 new PersistenceMessageInitiator<Guid, MondayMorningBlues>(cacheManager)
                 {
                     ChannelId = Channels.TestB
                     , ResponseChannelId = Channels.Interserve
                 });
 
-            Service.RegisterCommand(
+            Service.Commands.Register(
                 new PersistenceMessageInitiator<Guid, Blah>()
                 {
                       ChannelId = Channels.TestB

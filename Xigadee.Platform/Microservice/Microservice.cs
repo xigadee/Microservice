@@ -99,19 +99,18 @@ namespace Xigadee
                 , properties: properties);
 
             mSecurity = InitialiseSecurityContainer();
+            Security = new SecurityWrapper(mSecurity, () => Status);
+
             mCommunication = InitialiseCommunicationContainer();
+            Communication = new CommunicationWrapper(mCommunication, () => Status);
+
             mCommands = InitialiseCommandContainer();
+            Commands = new CommandWrapper(mCommands, () => Status);
+
             mResourceTracker = InitialiseResourceTracker();
             mDataCollection = InitialiseDataCollectionContainer();
             mPayloadSerializers = new Dictionary<byte[], IPayloadSerializer>();
         }
-        #endregion
-
-        #region Id
-        /// <summary>
-        /// This contains the set of identifiers for the Microservice.
-        /// </summary>
-        public MicroserviceId Id { get; } 
         #endregion
 
         #region ConfigurationInitialise()
@@ -234,6 +233,10 @@ namespace Xigadee
                 //Ok start the commands in parallel at the same priority group.
                 EventStart(() => mCommands.CommandsStart(ServiceStart), "Commands");
 
+                //Ok start the commands in parallel at the same priority group.
+                EventStart(() => Dispatch = new DispatchWrapper(mSerializer, mTaskManager.ExecuteOrEnqueue, () => Status)
+                    , "Dispatch Wrapper");
+
                 //Signal that start has completed.
                 OnStartCompleted();
 
@@ -354,48 +357,33 @@ namespace Xigadee
         }
         #endregion
 
-        #region Name
+        //Identifiers
+        #region Id
         /// <summary>
-        /// This is the public name of the service.
+        /// This contains the set of identifiers for the Microservice.
         /// </summary>
-        public string Name
-        {
-            get
-            {
-                return Id.Name;
-            }
-        }
-        #endregion
-        #region ServiceId
-        /// <summary>
-        /// This is the public ServiceId of the service.
-        /// </summary>
-        public string ServiceId
-        {
-            get
-            {
-                return Id.ServiceId;
-            }
-        }
-        #endregion
-        #region ExternalServiceId
-        /// <summary>
-        /// This is the service id used for communication.
-        /// </summary>
-        public virtual string ExternalServiceId
-        {
-            get
-            {
-                return Id.ExternalServiceId;
-            }
-        }
+        public MicroserviceId Id { get; } 
         #endregion
 
         #region Collector
         /// <summary>
         /// This is the internal Collector?. This is exposed to allow external services to log using the Microservice logging services.
         /// </summary>
-        public IDataCollection Collector { get { return mDataCollection; } } 
+        public IDataCollection Collector { get { return mDataCollection; } }
         #endregion
+
+        /// <summary>
+        /// This is the security wrapper.
+        /// </summary>
+        public IMicroserviceSecurity Security { get; }
+        /// <summary>
+        /// This is the communication wrapper.
+        /// </summary>
+        public IMicroserviceCommunication Communication { get; }
+
+
+        public IMicroserviceDispatch Dispatch { get; protected set;}
+
+        public IMicroserviceCommand Commands { get; }
     }
 }

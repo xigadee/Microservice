@@ -19,20 +19,8 @@ using System.Collections.Generic;
 
 namespace Xigadee
 {
-    /// <summary>
-    /// This interface is used by the configuration pipeline to add necessary components to the microservice.
-    /// </summary>
-    public interface IMicroserviceConfigure
+    public interface IMicroserviceCommand: IEnumerable<ICommand>
     {
-
-
-        ICommand RegisterCommand(ICommand command);
-
-
-        IPayloadSerializer RegisterPayloadSerializer(IPayloadSerializer serializer);
-        void ClearPayloadSerializers();
-
-
-        ISharedService SharedServices { get; }
+        ICommand Register(ICommand command);
     }
 }

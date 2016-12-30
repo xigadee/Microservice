@@ -55,13 +55,13 @@ namespace Test.Xigadee.Api.Server
             RegisterCommand<IRepositoryAsync<Guid, MondayMorningBlues>, ProviderMondayMorningBluesAsyncLocal>(new ProviderMondayMorningBluesAsyncLocal());
             RegisterCommand<IRepositoryAsync<ComplexKey, ComplexEntity>, ProviderComplexEntityAsyncLocal>(new ProviderComplexEntityAsyncLocal());
 
-            Service.RegisterCommand(new PersistenceBlahMemory()
+            Service.Commands.Register(new PersistenceBlahMemory()
             { ChannelId = CoreChannels.Internal, StartupPriority = 99 });
 
-            Service.RegisterCommand(new PersistenceComplexEntityMemory()
+            Service.Commands.Register(new PersistenceComplexEntityMemory()
             { ChannelId = CoreChannels.Internal, StartupPriority = 99 });
 
-            Service.RegisterCommand(new PersistenceMondayMorningBluesMemory()
+            Service.Commands.Register(new PersistenceMondayMorningBluesMemory()
             { ChannelId = CoreChannels.Internal, StartupPriority = 99 });
 
         }
@@ -72,7 +72,7 @@ namespace Test.Xigadee.Api.Server
 
             Service.RegisterEventSource(new AzureStorageEventSource(
                 Config.LogStorageCredentials()
-                , Service.Name
+                , Service.Id.Name
                 , resourceProfile: mResourceBlobStorage));
         }
 
@@ -82,7 +82,7 @@ namespace Test.Xigadee.Api.Server
 
             Service.RegisterLogger(new AzureStorageLogger(
                 Config.LogStorageCredentials()
-                , Service.Name
+                , Service.Id.Name
                 , resourceProfile: mResourceBlobStorage));
         }
 

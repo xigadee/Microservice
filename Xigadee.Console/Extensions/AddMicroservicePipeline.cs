@@ -36,13 +36,13 @@ namespace Xigadee
         {
             var ms = pipeline.ToMicroservice();
 
-            string title = $"Microservice: {ms.Name}";
+            string title = $"Microservice: {ms.Id.Name}";
 
             var msMenu = new ConsoleMenu(title) { ContextInfoInherit = useParentContextInfo };
 
             ms.StatusChanged += (s,e) =>
             {
-                msMenu.AddInfoMessage($"{ms.Name} service status changed: {e.StatusNew}", true);
+                msMenu.AddInfoMessage($"{ms.Id.Name} service status changed: {e.StatusNew}", true);
             };
 
             menu.OnClose += (m,e) =>
@@ -59,7 +59,7 @@ namespace Xigadee
                 }
                 catch (Exception ex)
                 {
-                    msMenu.AddInfoMessage($"{ms.Name} start error: {ex.Message}", true, EventLogEntryType.Error);
+                    msMenu.AddInfoMessage($"{ms.Id.Name} start error: {ex.Message}", true, EventLogEntryType.Error);
                 }
             }, enabled:(m,o) => ms.Status != ServiceStatus.Running);
 

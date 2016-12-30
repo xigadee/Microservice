@@ -13,24 +13,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-
-#region using
-
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
-using System.Runtime.Caching;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-#endregion
+
 namespace Xigadee
 {
-    //Process
-    public partial class Microservice
+    /// <summary>
+    /// This wrapper is used to reduce the number of security interfaces implemented by the Microservice.
+    /// </summary>
+    internal class SecurityWrapper: WrapperBase, IMicroserviceSecurity
     {
+        /// <summary>
+        /// This container is used to hold the security infrastructure for the Microservice.
+        /// </summary>
+        private SecurityContainer mSecurity;
+
+        public SecurityWrapper(SecurityContainer security, Func<ServiceStatus> getStatus):base(getStatus)
+        {
+            mSecurity = security;
+        }
+
         /// <summary>
         /// This method registers a symmetric encryption handler with the Security container.
         /// </summary>
@@ -49,6 +54,26 @@ namespace Xigadee
         public bool HasEncryptionHandler(string identifier)
         {
             return mSecurity.HasEncryptionHandler(identifier);
+        }
+
+        /// <summary>
+        /// This method registers an encryption handler with the Security container, which can encrypt and decrypt a binary blob.
+        /// </summary>
+        /// <param name="identifier">The identifier. This is used to identify the handler so that it can be assigned to multiple channels.</param>
+        /// <param name="handler">The actual handler.</param>
+        public void RegisterAuthenticationHandler(string identifier, IAuthenticationHandler handler)
+        {
+            mSecurity.RegisterAuthenticationHandler(identifier, handler);
+        }
+
+        /// <summary>
+        /// This method specifies whether the microservice has the encryption handler registered.
+        /// </summary>
+        /// <param name="identifier">The identifier for the handler.</param>
+        /// <returns>Returns true if the handler is registered.</returns>
+        public bool HasAuthenticationHandler(string identifier)
+        {
+            return mSecurity.HasAuthenticationHandler(identifier);
         }
     }
 }

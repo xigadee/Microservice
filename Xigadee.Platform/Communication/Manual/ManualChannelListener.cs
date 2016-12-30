@@ -36,7 +36,6 @@ namespace Xigadee
             var client = ClientResolve(priority ?? mDefaultPriority ?? 1);
 
             client.Inject(payload);
-
         }
 
     }

@@ -27,7 +27,7 @@ namespace Xigadee
         public static P AddListener<P>(this P pipeline, IListener listener)
             where P : IPipeline
         {
-            pipeline.Service.RegisterListener(listener);
+            pipeline.Service.Communication.RegisterListener(listener);
 
             return pipeline;
         }

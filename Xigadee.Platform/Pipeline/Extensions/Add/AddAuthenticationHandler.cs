@@ -34,15 +34,15 @@ namespace Xigadee
         /// <param name="handler">The handler instance.</param>
         /// <param name="action">The action on the handler.</param>
         /// <returns>The pipeline.</returns>
-        public static P AddEncryptionHandler<P>(this P pipeline
+        public static P AddAuthenticationHandler<P>(this P pipeline
             , string identifier
-            , IEncryptionHandler handler
-            , Action<IEncryptionHandler> action = null)
+            , IAuthenticationHandler handler
+            , Action<IAuthenticationHandler> action = null)
             where P : IPipeline
         {
             action?.Invoke(handler);
 
-            pipeline.Service.Security.RegisterEncryptionHandler(identifier, handler);
+            pipeline.Service.Security.RegisterAuthenticationHandler(identifier, handler);
 
             return pipeline;
         }
@@ -56,17 +56,17 @@ namespace Xigadee
         /// <param name="creator">This function is used to create the handler from the configuration collection.</param>
         /// <param name="action">The action on the handler.</param>
         /// <returns>The pipeline.</returns>
-        public static P AddEncryptionHandler<P>(this P pipeline
+        public static P AddAuthenticationHandler<P>(this P pipeline
             , string identifier
-            , Func<IEnvironmentConfiguration, IEncryptionHandler> creator
-            , Action<IEncryptionHandler> action = null)
+            , Func<IEnvironmentConfiguration, IAuthenticationHandler> creator
+            , Action<IAuthenticationHandler> action = null)
             where P : IPipeline
         {
             var handler = creator(pipeline.Configuration);
 
             action?.Invoke(handler);
 
-            pipeline.Service.Security.RegisterEncryptionHandler(identifier, handler);
+            pipeline.Service.Security.RegisterAuthenticationHandler(identifier, handler);
 
             return pipeline;
         }

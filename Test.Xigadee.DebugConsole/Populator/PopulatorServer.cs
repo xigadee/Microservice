@@ -40,15 +40,15 @@ namespace Test.Xigadee
         {
             base.RegisterCommands();
 
-            Persistence = (IRepositoryAsync<Guid, MondayMorningBlues>)Service.RegisterCommand
+            Persistence = (IRepositoryAsync<Guid, MondayMorningBlues>)Service.Commands.Register
                 (
                     new PersistenceInternalService<Guid, MondayMorningBlues>(Channels.Internal)
                     { ChannelId = Channels.TestB }
                 );
 
-            Service.RegisterCommand(new DoNothingJob { ChannelId = Channels.TestC, ResponseChannelId = Channels.InternalCallback });
+            Service.Commands.Register(new DoNothingJob { ChannelId = Channels.TestC, ResponseChannelId = Channels.InternalCallback });
 
-            Service.RegisterCommand(new DelayedProcessingJob { ChannelId = Channels.TestA, ResponseChannelId = Channels.InternalCallback });
+            Service.Commands.Register(new DelayedProcessingJob { ChannelId = Channels.TestA, ResponseChannelId = Channels.InternalCallback });
 
             //Service.RegisterCommand(new DelayedProcessingJob { ChannelId = Channels.TestA });
             //Service.RegisterCommand(new DelayedProcessingJob { ChannelId = Channels.TestA });

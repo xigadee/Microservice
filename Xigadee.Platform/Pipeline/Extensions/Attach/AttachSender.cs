@@ -38,7 +38,7 @@ namespace Xigadee
                 sender.PriorityPartitions = cpipe.Channel.Partitions.Cast<SenderPartitionConfig>().ToList();
             }
 
-            cpipe.Pipeline.Service.RegisterSender(sender);
+            cpipe.Pipeline.Service.Communication.RegisterSender(sender);
 
             return cpipe;
         }

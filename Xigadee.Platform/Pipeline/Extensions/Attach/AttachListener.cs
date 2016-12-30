@@ -50,7 +50,7 @@ namespace Xigadee
                 listener.ResourceProfiles = cpipe.Channel.ResourceProfiles;
             }
 
-            cpipe.Pipeline.Service.RegisterListener(listener);
+            cpipe.Pipeline.Service.Communication.RegisterListener(listener);
 
             return cpipe;
         }

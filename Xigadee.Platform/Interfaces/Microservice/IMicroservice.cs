@@ -22,19 +22,34 @@ namespace Xigadee
     /// <summary>
     /// This interface defines the Microservice definition.
     /// </summary>
-    public interface IMicroservice: IMicroserviceConfigure, IMicroserviceProcess, IMicroserviceSecurity, IMicroserviceCommunication
-        , IMicroserviceDataCollection, IMicroserviceEvents, IMicroservicePolicy, IService
+    public interface IMicroservice: IService
+        , IMicroserviceDataCollection
+        , IMicroserviceEvents
+        , IMicroservicePolicy
     {
         MicroserviceId Id { get; }
 
-        string ExternalServiceId { get; }
-
-        string Name { get; }
-
-        string ServiceId { get; }
-
-        IEnumerable<ICommand> Commands { get; }
-
         ServiceStatus Status { get; }
+
+        IMicroserviceSecurity Security { get; }
+
+        IMicroserviceCommunication Communication { get; }
+
+        IMicroserviceDispatch Dispatch { get; }
+
+        IMicroserviceCommand Commands { get; }
+
+        IPayloadSerializer RegisterPayloadSerializer(IPayloadSerializer serializer);
+
+        void ClearPayloadSerializers();
+
+        ISharedService SharedServices { get; }
+
+        /// <summary>
+        /// This method adds a data collection component.
+        /// </summary>
+        /// <param name="collector">The collector.</param>
+        /// <returns>Returns the component.</returns>
+        IDataCollectorComponent RegisterDataCollector(IDataCollectorComponent collector);
     }
 }

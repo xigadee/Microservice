@@ -41,7 +41,7 @@ namespace Test.Xigadee
         {
             get
             {
-                return Service.Name;
+                return Service.Id.Name;
             }
         }
 
@@ -75,7 +75,7 @@ namespace Test.Xigadee
         {
             Service.RegisterEventSource(new AzureStorageEventSource(
                   Config.StorageCredentials()
-                , Service.Name
+                , Service.Id.Name
                 , resourceProfile: mResourceBlob));
 
         }
@@ -88,7 +88,7 @@ namespace Test.Xigadee
 
             Service.RegisterLogger(new AzureStorageLogger(
                   Config.StorageCredentials()
-                , Service.Name
+                , Service.Id.Name
                 , resourceProfile: mResourceBlob));
 
         }

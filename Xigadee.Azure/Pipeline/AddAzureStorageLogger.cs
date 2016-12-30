@@ -32,7 +32,7 @@ namespace Xigadee
             , Action<AzureStorageLogger> onCreate = null)
             where P:IPipeline
         {
-            return pipeline.AddAzureStorageLogger(pipeline.Configuration.LogStorageCredentials(), serviceName ?? pipeline.Service?.Name, containerName, resourceProfile, pipeline.Configuration.AesEncryptionWithCompression(), onCreate);
+            return pipeline.AddAzureStorageLogger(pipeline.Configuration.LogStorageCredentials(), serviceName ?? pipeline.Service?.Id.Name, containerName, resourceProfile, pipeline.Configuration.AesEncryptionWithCompression(), onCreate);
         }
 
         public static P AddAzureStorageLogger<P>(this P pipeline
@@ -44,7 +44,7 @@ namespace Xigadee
             , Action<AzureStorageLogger> onCreate = null)
             where P : IPipeline
         {
-            var logger = new AzureStorageLogger(creds, serviceName ?? pipeline.Service?.Name, containerName, resourceProfile, encryption);
+            var logger = new AzureStorageLogger(creds, serviceName ?? pipeline.Service?.Id.Name, containerName, resourceProfile, encryption);
             onCreate?.Invoke(logger);
 
             return pipeline.AddLogger(logger);
