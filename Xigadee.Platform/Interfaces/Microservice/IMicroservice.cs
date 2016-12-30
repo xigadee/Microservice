@@ -35,5 +35,6 @@ namespace Xigadee
 
         IEnumerable<ICommand> Commands { get; }
 
+        ServiceStatus Status { get; }
     }
 }

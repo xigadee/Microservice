@@ -17,7 +17,7 @@ namespace Xigadee
         /// <param name="paramName">The parameter name.</param>
         /// <param name="paramValue">The parameter value.</param>
         public MicroserviceIdNotValidException(string paramName, string paramValue)
-            :base($"The parameter '{paramName}' contains invalid characters. Only A-Za-z0-9 are allowed.")
+            :base($"The Microservice identifier '{paramName}' contains invalid characters. Only A-Z, a-z and 0-9 are allowed.")
         {
             ParamName = paramName;
             ParamValue = paramValue;

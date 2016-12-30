@@ -13,15 +13,17 @@ namespace Test.Xigadee.Azure.Console
         {
             try
             {
-                var pipeline = new MicroservicePipeline("Azure Storage Test");
-                var mainMenu = new ConsoleMenu(pipeline.ToMicroservice().Id.Name);
+                var pipeline1 = new MicroservicePipeline("AzureStorageTest1");
+                var pipeline2 = new MicroservicePipeline("AzureStorageTest2");
+                var mainMenu = new ConsoleMenu("Azure Storage DataCollector validation");
 
-                pipeline
+                pipeline1
                     .ConfigurationSetFromConsoleArgs(args)
-                    .AddAzureStorageDataCollector()
+                    //.AddAzureStorageDataCollector()
                     ;
 
-                mainMenu.AddMicroservicePipeline(pipeline);
+                mainMenu.AddMicroservicePipeline(pipeline1);
+                mainMenu.AddMicroservicePipeline(pipeline2);
 
                 mainMenu.Show();
             }

@@ -17,7 +17,7 @@ namespace Xigadee
         /// <param name="type">The log type.</param>
         public static ConsoleMenu AddInfoMessage(this ConsoleMenu menu, string message, bool refresh = false, EventLogEntryType type = EventLogEntryType.Information)
         {
-            menu.ContextInfo.InfoMessages.Add(new ErrorInfo() { Type = type, Message = message });
+            menu.ContextInfo.Add(new ErrorInfo() { Type = type, Message = message });
 
             if (refresh)
                 menu.Refresh();

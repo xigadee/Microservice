@@ -29,6 +29,9 @@ namespace Xigadee
     /// </summary>
     public interface IService 
     {
+        /// <summary>
+        /// This event is fired when the service status changes.
+        /// </summary>
         event EventHandler<StatusChangedEventArgs> StatusChanged;
 
         /// <summary>

@@ -36,7 +36,9 @@ namespace Xigadee
         /// This is the message to be displayed
         /// </summary>
         public string Message;
-
-        public readonly int Priority = Environment.TickCount;
+        /// <summary>
+        /// This is the incremental logging id.
+        /// </summary>
+        public long LoggingId;
     }
 }

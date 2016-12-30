@@ -19,6 +19,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Xigadee
@@ -28,6 +29,33 @@ namespace Xigadee
     /// </summary>
     public class ConsoleInfoContext
     {
+        protected long mCount = 0;
+
+        /// <summary>
+        /// This is the number of info messages that have been logged.
+        /// </summary>
+        public long Count { get { return mCount; } }
+
+        public void Add(ErrorInfo info)
+        {
+            info.LoggingId = Interlocked.Increment(ref mCount) -1;
+            InfoMessages.Add(info);
+            InfoCurrent = info.LoggingId;
+        }
+
+        public IEnumerable<ErrorInfo> GetCurrent(int count)
+        {
+            if (InfoCurrent < (count-1))
+                InfoCurrent = count-1;
+
+            var result =  InfoMessages
+                .OrderByDescending((i) => i.LoggingId)
+                .Where((c) => c.LoggingId <= InfoCurrent)
+                .Take(count)
+                .ToList();
+
+            return result;
+        }
         /// <summary>
         /// This is the list of info messages.
         /// </summary>
@@ -45,7 +73,7 @@ namespace Xigadee
 
         public bool InfoIncrement()
         {
-            if (InfoCurrent == InfoMax - 1)
+            if (InfoCurrent == Count - 1)
                 return false;
 
             InfoCurrent++;
@@ -53,15 +81,8 @@ namespace Xigadee
             return true;
         }
 
-        public int InfoCurrent { get; set; }
+        public long InfoCurrent { get; set; }
 
-        public int InfoMax
-        {
-            get
-            {
-                return InfoMessages.Count;
-            }
-        }
 
         public bool Refresh { get; set; }
     }

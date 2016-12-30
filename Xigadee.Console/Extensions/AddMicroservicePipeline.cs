@@ -38,8 +38,19 @@ namespace Xigadee
 
             var msMenu = new ConsoleMenu(title);
 
-            msMenu.AddOption("Start", (m, o) => pipeline.Start());
-            msMenu.AddOption("Stop", (m, o) => pipeline.Stop());
+            ms.StatusChanged += (s,e) =>
+            {
+                msMenu.AddInfoMessage($"{ms.Name} service status changed: {e.StatusNew}", true);
+            };
+
+            menu.OnClose += (a,b) =>
+            {
+                if (ms.Status == ServiceStatus.Running)
+                    pipeline.Stop();
+            };
+
+            msMenu.AddOption("Start", (m, o) => pipeline.Start(), enabled:(m,o) => ms.Status != ServiceStatus.Running);
+            msMenu.AddOption("Stop", (m, o) => pipeline.Stop(), enabled: (m, o) => ms.Status == ServiceStatus.Running);
 
             //Add an option to the main menu.
             menu.AddOption(new ConsoleOption(title, msMenu));
@@ -47,6 +58,9 @@ namespace Xigadee
             return menu;
         }
 
-
+        private static void se(object sender, StatusChangedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

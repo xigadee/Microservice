@@ -75,11 +75,13 @@ namespace Xigadee
         /// </summary>
         /// <param name="name">The Microservice name.</param>
         /// <param name="serviceId">The service id.</param>
+        /// <param name="description">An optional description for the Microservice.</param>
         /// <param name="policySettings">The policy settings.</param>
         /// <param name="properties">Any additional property key.</param>
         public Microservice(
               string name = null
             , string serviceId = null
+            , string description = null
             , IEnumerable<PolicyBase> policySettings = null
             , IEnumerable<Tuple<string,string>> properties = null)
             : base(name)
@@ -91,6 +93,7 @@ namespace Xigadee
 
             Id = new MicroserviceId(name
                 , serviceId: serviceId
+                , description: description
                 , serviceVersionId: Assembly.GetCallingAssembly().GetName().Version.ToString()
                 , serviceEngineVersionId: Assembly.GetExecutingAssembly().GetName().Version.ToString()
                 , properties: properties);

@@ -35,12 +35,14 @@ namespace Xigadee
         /// </summary>
         /// <param name="name">The Microservice short name.</param>
         /// <param name="serviceId">The service unique GUID</param>
+        /// <param name="description">An optional description for the Microservice.</param>
         /// <param name="externalServiceId">The external service id. </param>
         /// <param name="serviceVersionId">The service version id. If not set, this will be pulled from the calling assembly Dll settings.</param>
         /// <param name="serviceEngineVersionId">The engine version id. If not set, this will be pulled from the executing assembly Dll settings.</param>
         /// <param name="properties">Any custom additional properties.</param>
         public MicroserviceId(string name
             , string serviceId = null
+            , string description = null
             , string externalServiceId = null
             , string serviceVersionId = null
             , string serviceEngineVersionId = null
@@ -55,6 +57,7 @@ namespace Xigadee
             if (!ValidServiceIdentifier(Name))
                 throw new MicroserviceIdNotValidException(nameof(Name), Name);
 
+            Description = description;
             StartTime = DateTime.UtcNow;
             MachineName = Environment.MachineName;
             ServiceVersionId = serviceVersionId ?? Assembly.GetCallingAssembly().GetName().Version.ToString();
@@ -72,6 +75,10 @@ namespace Xigadee
         /// This is the friendly name of the service.
         /// </summary>
         public string Name { get; }
+        /// <summary>
+        /// This is an optional description for the Microservice.
+        /// </summary>
+        public string Description { get; }
         /// <summary>
         /// This is the underlying machine name that hosts the service.
         /// </summary>

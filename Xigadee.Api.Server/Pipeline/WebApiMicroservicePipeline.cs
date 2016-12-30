@@ -34,6 +34,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="name">The Microservice name.</param>
         /// <param name="serviceId">The service id.</param>
+        /// <param name="description">This is an optional Microservice description.</param>
         /// <param name="policy">The policy settings collection.</param>
         /// <param name="properties">Any additional property key/value pairs.</param>
         /// <param name="config">The environment config object</param>
@@ -44,6 +45,7 @@ namespace Xigadee
         /// <param name="httpConfig">The http configuration.</param>
         public WebApiMicroservicePipeline(string name = null
             , string serviceId = null
+            , string description = null
             , IEnumerable<PolicyBase> policy = null
             , IEnumerable<Tuple<string, string>> properties = null
             , IEnvironmentConfiguration config = null
@@ -51,7 +53,7 @@ namespace Xigadee
             , Action<IEnvironmentConfiguration> configAssign = null
             , bool addDefaultJsonPayloadSerializer = true
             , HttpConfiguration httpConfig = null
-            ) :base(name, serviceId, policy, properties, config, assign, configAssign, addDefaultJsonPayloadSerializer)
+            ) :base(name, serviceId, description, policy, properties, config, assign, configAssign, addDefaultJsonPayloadSerializer)
         {
             HttpConfig = httpConfig ?? new HttpConfiguration();
         }

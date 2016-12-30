@@ -31,6 +31,8 @@ namespace Xigadee
     /// </summary>
     public partial class ConsoleMenu
     {
+        public event EventHandler<EventArgs> OnClose;
+
         #region Constructor
         /// <summary>
         /// This is the main constructor for the menu.
@@ -103,6 +105,8 @@ namespace Xigadee
             }
 
             Display();
+
+            OnClose?.Invoke(this, null);
         }
         #endregion
 
@@ -157,10 +161,10 @@ namespace Xigadee
             if (ContextInfo != null)
             {
                 if (key.Key == ConsoleKey.UpArrow)
-                    return ContextInfo.InfoDecrement();
+                    return ContextInfo.InfoIncrement();
 
                 if (key.Key == ConsoleKey.DownArrow)
-                    return ContextInfo.InfoIncrement();
+                    return ContextInfo.InfoDecrement();
             }
 
             //Keys 1 - 9

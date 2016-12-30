@@ -23,6 +23,9 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This class holds the Menu status.
+    /// </summary>
     public class ConsoleMenuContext
     {
         public ConsoleMenuContext(ConsoleOption[] options)
