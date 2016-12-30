@@ -146,6 +146,7 @@
     <Compile Include="Interfaces\Microservice\IMicroserviceSecurity.cs" />
     <Compile Include="Microservice\Wrapper\CommandWrapper.cs" />
     <Compile Include="Microservice\Wrapper\CommunicationWrapper.cs" />
+    <Compile Include="Microservice\Wrapper\DataCollectionWrapper.cs" />
     <Compile Include="Microservice\Wrapper\DispatchWrapper.cs" />
     <Compile Include="Microservice\Wrapper\EventsWrapper.cs" />
     <Compile Include="Microservice\Wrapper\PolicyWrapper.cs" />

@@ -27,7 +27,7 @@ namespace Xigadee
         public static P AddLogger<P>(this P pipeline, ILogger logger)
             where P:IPipeline
         {
-            pipeline.Service.RegisterLogger(logger);
+            pipeline.Service.DataCollection.RegisterLogger(logger);
 
             return pipeline;
         }
@@ -41,7 +41,7 @@ namespace Xigadee
 
             action?.Invoke(logger);
 
-            pipeline.Service.RegisterLogger(logger);
+            pipeline.Service.DataCollection.RegisterLogger(logger);
 
             return pipeline;
         }

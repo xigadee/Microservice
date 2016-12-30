@@ -28,7 +28,7 @@ namespace Xigadee
             , IDataCollectorComponent collector)
             where P:IPipeline
         {
-            pipeline.Service.RegisterDataCollector(collector);
+            pipeline.Service.DataCollection.Register(collector);
 
             return pipeline;
         }
@@ -43,7 +43,7 @@ namespace Xigadee
 
             action?.Invoke(collector);
 
-            pipeline.Service.RegisterDataCollector(collector);
+            pipeline.Service.DataCollection.Register(collector);
 
             return pipeline;
         }

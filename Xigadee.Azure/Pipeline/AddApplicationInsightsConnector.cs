@@ -28,7 +28,7 @@ namespace Xigadee
         public static P AddApplicationInsightsDataCollector<P>(this P pipeline, ApplicationInsightsDataCollector collector)
             where P: IPipeline
         {
-            pipeline.ToMicroservice().RegisterDataCollector(collector);
+            pipeline.ToMicroservice().DataCollection.Register(collector);
 
             return pipeline;
         }
@@ -42,7 +42,7 @@ namespace Xigadee
 
             action?.Invoke(collector);
 
-            pipeline.ToMicroservice().RegisterDataCollector(collector);
+            pipeline.ToMicroservice().DataCollection.Register(collector);
 
             return pipeline;
         }

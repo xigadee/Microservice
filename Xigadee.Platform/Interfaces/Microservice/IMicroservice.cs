@@ -23,7 +23,6 @@ namespace Xigadee
     /// This interface defines the Microservice definition.
     /// </summary>
     public interface IMicroservice: IService
-        , IMicroserviceDataCollection
     {
         MicroserviceId Id { get; }
 
@@ -41,17 +40,12 @@ namespace Xigadee
 
         IMicroservicePolicy Policy { get; }
 
+        IMicroserviceDataCollection DataCollection { get; }
+
         IPayloadSerializer RegisterPayloadSerializer(IPayloadSerializer serializer);
 
         void ClearPayloadSerializers();
 
         ISharedService SharedServices { get; }
-
-        /// <summary>
-        /// This method adds a data collection component.
-        /// </summary>
-        /// <param name="collector">The collector.</param>
-        /// <returns>Returns the component.</returns>
-        IDataCollectorComponent RegisterDataCollector(IDataCollectorComponent collector);
     }
 }

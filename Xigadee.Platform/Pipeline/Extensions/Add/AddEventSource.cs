@@ -27,7 +27,7 @@ namespace Xigadee
         public static P AddEventSource<P>(this P pipeline, IEventSourceComponent eventSource)
             where P:IPipeline
         {
-            pipeline.Service.RegisterEventSource(eventSource);
+            pipeline.Service.DataCollection.RegisterEventSource(eventSource);
 
             return pipeline;
         }
@@ -38,7 +38,7 @@ namespace Xigadee
         {
             var eSource = creator(pipeline.Configuration);
             assign?.Invoke(eSource);
-            pipeline.Service.RegisterEventSource(eSource);
+            pipeline.Service.DataCollection.RegisterEventSource(eSource);
             return pipeline;
         }
     }

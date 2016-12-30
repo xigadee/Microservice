@@ -63,7 +63,9 @@ namespace Xigadee
         /// This contains the supported serializers.
         /// </summary>
         protected Dictionary<byte[],IPayloadSerializer> mPayloadSerializers;
-
+        /// <summary>
+        /// This wrapper holds the events for the Microservice.
+        /// </summary>
         EventsWrapper mEventsWrapper;
         #endregion
         #region Constructors
@@ -105,7 +107,9 @@ namespace Xigadee
             Commands = new CommandWrapper(mCommands, () => Status);
 
             mResourceTracker = InitialiseResourceTracker();
+
             mDataCollection = InitialiseDataCollectionContainer();
+            DataCollection = new DataCollectionWrapper(mDataCollection, () => Status);
 
             mEventsWrapper = new EventsWrapper(this, mDataCollection, () => Status);
             Events = mEventsWrapper;
@@ -299,6 +303,7 @@ namespace Xigadee
         }
         #endregion
 
+        #region EventStart/EventStop
         /// <summary>
         /// This wrapper is used for starting
         /// </summary>
@@ -316,7 +321,8 @@ namespace Xigadee
         internal virtual void EventStop(Action action, string title)
         {
             mEventsWrapper.EventGeneric(action, title, MicroserviceComponentStatusChangeAction.Stopping);
-        }
+        } 
+        #endregion
 
         #region ServiceStart(object service)
         /// <summary>
@@ -392,6 +398,9 @@ namespace Xigadee
         public IDataCollection Collector { get { return mDataCollection; } }
         #endregion
 
+        /// <summary>
+        /// This is the events collection for the microservice.
+        /// </summary>
         public IMicroserviceEvents Events { get; }
         /// <summary>
         /// This is the set of policy settings for the microservice.
@@ -414,5 +423,9 @@ namespace Xigadee
         /// This is the command wrapper used for interacting with the command collection.
         /// </summary>
         public IMicroserviceCommand Commands { get; }
+        /// <summary>
+        /// This is the data collection container.
+        /// </summary>
+        public IMicroserviceDataCollection DataCollection { get; }
     }
 }

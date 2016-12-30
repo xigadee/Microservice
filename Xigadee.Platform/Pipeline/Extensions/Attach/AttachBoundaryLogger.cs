@@ -43,7 +43,7 @@ namespace Xigadee
             where C : IPipelineExtension<IPipeline>
         {
             action?.Invoke(cpipe, boundaryLogger);
-            cpipe.Pipeline.Service.RegisterBoundaryLogger(boundaryLogger);
+            cpipe.Pipeline.Service.DataCollection.RegisterBoundaryLogger(boundaryLogger);
 
             return cpipe;
         }
@@ -67,7 +67,7 @@ namespace Xigadee
             var boundaryLogger = creator(cpipe.Pipeline.Configuration);
 
             action?.Invoke(cpipe, boundaryLogger);
-            cpipe.Pipeline.Service.RegisterBoundaryLogger(boundaryLogger);
+            cpipe.Pipeline.Service.DataCollection.RegisterBoundaryLogger(boundaryLogger);
 
             return cpipe;
 
