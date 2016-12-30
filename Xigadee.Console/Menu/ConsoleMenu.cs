@@ -36,6 +36,8 @@ namespace Xigadee
         /// </summary>
         public event EventHandler<EventArgs> OnClose;
 
+        public Dictionary<string, ConsoleInfoContext> mCustomInfo;
+
         #region Constructor
         /// <summary>
         /// This is the main constructor for the menu.
@@ -59,9 +61,13 @@ namespace Xigadee
 
             Context.Indent1 = 3;
             Context.Indent2 = 6;
+
+            mCustomInfo = new Dictionary<string, ConsoleInfoContext>();
         }
         #endregion
-
+        /// <summary>
+        /// This property specifies whether the display should use the default context.
+        /// </summary>
         public bool ContextInfoInherit { get; set; } = true;
 
         /// <summary>

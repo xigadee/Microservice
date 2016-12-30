@@ -35,6 +35,11 @@ namespace Xigadee
         /// These are the handlers used to encrpyt and decrypt blob payloads
         /// </summary>
         private Dictionary<string, IEncryptionHandler> mEncryptionHandlers;
+        /// <summary>
+        /// These are the handlers used to authenticate the incoming payloads, and
+        /// sign the outgoing payloads.
+        /// </summary>
+        private Dictionary<string, IAuthenticationHandler> mAuthenticationHandlers;
         #endregion        
         #region Constructor
         /// <summary>
@@ -44,11 +49,12 @@ namespace Xigadee
         public SecurityContainer(SecurityPolicy policy) : base(policy)
         {
             mEncryptionHandlers = new Dictionary<string, IEncryptionHandler>();
-        } 
+            mAuthenticationHandlers = new Dictionary<string, IAuthenticationHandler>();
+        }
         #endregion
         #region Collector
         /// <summary>
-        /// This is teh data collector used for logging.
+        /// This is the data collector used for logging.
         /// </summary>
         public IDataCollection Collector
         {
@@ -56,30 +62,84 @@ namespace Xigadee
         }
         #endregion
 
+        #region HasAuthenticationHandler(string identifier)
+        /// <summary>
+        /// This method returns true if the authentication handler can be found.
+        /// </summary>
+        /// <param name="identifier">The identifier.</param>
+        /// <returns></returns>
+        public bool HasAuthenticationHandler(string identifier)
+        {
+            return mAuthenticationHandlers.ContainsKey(identifier);
+        }
+        #endregion
+        #region HasEncryptionHandler(string identifier)
+        /// <summary>
+        /// This method returns true if the encryption handler can be found.
+        /// </summary>
+        /// <param name="identifier">The identifier.</param>
+        /// <returns></returns>
         public bool HasEncryptionHandler(string identifier)
         {
             return mEncryptionHandlers.ContainsKey(identifier);
         }
+        #endregion
+        #region RegisterAuthenticationHandler(string identifier, IEncryptionHandler handler)
+        /// <summary>
+        /// This method registers an authentication handler with the collection.
+        /// </summary>
+        /// <param name="identifier">The identifier for the handler.</param>
+        /// <param name="handler">The handler to register.</param>
+        public void RegisterAuthenticationHandler(string identifier, IAuthenticationHandler handler)
+        {
+            if (string.IsNullOrEmpty(identifier))
+                throw new ArgumentNullException("identifier");
 
-        /////
-        //public IEnumerable<KeyValuePair<string, IEncryptionHandler>> EncryptionHandlers()
-        //{
-        //    return mEncryptionHandlers;
-        //}
+            if (handler == null)
+                throw new ArgumentNullException("handler");
 
+            if (mAuthenticationHandlers.ContainsKey(identifier))
+                throw new AuthenticationHandlerAlreadyExistsException(identifier);
 
+            try
+            {
+                mAuthenticationHandlers.Add(identifier, handler);
+            }
+            catch (Exception ex)
+            {
+                Collector?.LogException($"{nameof(RegisterAuthenticationHandler)} unexpected error.", ex);
+                throw;
+            }
+        }
+        #endregion
+        #region RegisterEncryptionHandler(string identifier, IEncryptionHandler handler)
+        /// <summary>
+        /// This method registers an encryption handler with the collection.
+        /// </summary>
+        /// <param name="identifier">The identifier for the handler.</param>
+        /// <param name="handler">The handler to register.</param>
         public void RegisterEncryptionHandler(string identifier, IEncryptionHandler handler)
         {
+            if (string.IsNullOrEmpty(identifier))
+                throw new ArgumentNullException("identifier");
+
+            if (handler == null)
+                throw new ArgumentNullException("handler");
+
+            if (mEncryptionHandlers.ContainsKey(identifier))
+                throw new EncryptionHandlerAlreadyExistsException(identifier);
+
             try
             {
                 mEncryptionHandlers.Add(identifier, handler);
             }
             catch (Exception ex)
             {
-
+                Collector?.LogException($"{nameof(RegisterEncryptionHandler)} unexpected error.", ex);
                 throw;
             }
         }
+        #endregion
 
         #region OriginatorId
         /// <summary>

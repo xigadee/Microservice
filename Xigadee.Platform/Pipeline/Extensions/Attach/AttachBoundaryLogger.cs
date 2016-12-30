@@ -51,7 +51,7 @@ namespace Xigadee
         /// <summary>
         /// This method adds a boundary logger to the channel.
         /// </summary>
-        /// <typeparam name="P"></typeparam>
+        /// <typeparam name="C"></typeparam>
         /// <typeparam name="L"></typeparam>
         /// <param name="cpipe">The pipe.</param>
         /// <param name="creator">This function is used to create the boundary Collector?.</param>

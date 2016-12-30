@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xigadee;
 
 namespace Test.Xigadee.Azure.Console
@@ -19,7 +15,7 @@ namespace Test.Xigadee.Azure.Console
 
                 pipeline1
                     .ConfigurationSetFromConsoleArgs(args)
-                    //.AddAzureStorageDataCollector()
+                    .AddAzureStorageDataCollector()
                     ;
 
                 mainMenu.AddMicroservicePipeline(pipeline1);

@@ -24,7 +24,7 @@ namespace Xigadee
     /// <summary>
     /// Perform Encryption / Decryption using AES with IV prepended in encrypted output and used in decryption
     /// </summary>
-    public class AesEncryption : IEncryptionHandler
+    public class AesEncryptionHandler : IEncryptionHandler
     {
         private readonly byte[] mKey;
 
@@ -38,7 +38,7 @@ namespace Xigadee
         /// <param name="key"></param>
         /// <param name="useCompression"></param>
         /// <param name="blockSize"></param>
-        public AesEncryption(byte[] key, bool useCompression = false, int blockSize = 128)
+        public AesEncryptionHandler(byte[] key, bool useCompression = false, int blockSize = 128)
         {
             mKey = key;
             mUseCompression = useCompression;

@@ -27,11 +27,11 @@ namespace Test.Xigadee
     public class AesEncryptionTests
     {
         private readonly byte[] mKey = Convert.FromBase64String("hNCV1t5sA/xQgDkHeuXYhrSu8kF72p9H436nQoLDC28=");
-        private readonly AesEncryption mAesEncryption;
+        private readonly AesEncryptionHandler mAesEncryption;
 
         public AesEncryptionTests()
         {
-            mAesEncryption = new AesEncryption(mKey);
+            mAesEncryption = new AesEncryptionHandler(mKey);
         }
 
         [TestMethod]
@@ -52,7 +52,7 @@ namespace Test.Xigadee
         [TestMethod]
         public void EncryptDecryptWithCompression()
         {
-            var encryption = new AesEncryption(mKey, true);
+            var encryption = new AesEncryptionHandler(mKey, true);
             var secret = "I know a secret";
             var encryptedData = encryption.Encrypt(Encoding.UTF8.GetBytes(secret));
             Assert.AreNotEqual(secret, Encoding.UTF8.GetString(encryptedData));

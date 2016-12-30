@@ -27,15 +27,15 @@ namespace Xigadee
         public static string EncryptionKey(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyEncryptionKey);
 
         [ConfigSetting("Encryption")]
-        public static AesEncryption AesEncryption(this IEnvironmentConfiguration config)
+        public static AesEncryptionHandler AesEncryption(this IEnvironmentConfiguration config)
         {
-            return string.IsNullOrEmpty(config.EncryptionKey()) ? null : new AesEncryption(Convert.FromBase64String(config.EncryptionKey()));
+            return string.IsNullOrEmpty(config.EncryptionKey()) ? null : new AesEncryptionHandler(Convert.FromBase64String(config.EncryptionKey()));
         }
 
         [ConfigSetting("Encryption")]
-        public static AesEncryption AesEncryptionWithCompression(this IEnvironmentConfiguration config)
+        public static AesEncryptionHandler AesEncryptionWithCompression(this IEnvironmentConfiguration config)
         {
-            return string.IsNullOrEmpty(config.EncryptionKey()) ? null : new AesEncryption(Convert.FromBase64String(config.EncryptionKey()), true);
+            return string.IsNullOrEmpty(config.EncryptionKey()) ? null : new AesEncryptionHandler(Convert.FromBase64String(config.EncryptionKey()), true);
         }
     }
 }

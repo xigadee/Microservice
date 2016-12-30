@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -44,14 +45,26 @@ namespace Xigadee
                 msMenu.AddInfoMessage($"{ms.Name} service status changed: {e.StatusNew}", true);
             };
 
-            menu.OnClose += (a,b) =>
+            menu.OnClose += (m,e) =>
             {
                 if (ms.Status == ServiceStatus.Running)
                     pipeline.Stop();
             };
 
-            msMenu.AddOption("Start", (m, o) => pipeline.Start(), enabled:(m,o) => ms.Status != ServiceStatus.Running);
+            msMenu.AddOption("Start", (m, o) =>
+            {
+                try
+                {
+                    pipeline.Start();
+                }
+                catch (Exception ex)
+                {
+                    msMenu.AddInfoMessage($"{ms.Name} start error: {ex.Message}", true, EventLogEntryType.Error);
+                }
+            }, enabled:(m,o) => ms.Status != ServiceStatus.Running);
+
             msMenu.AddOption("Stop", (m, o) => pipeline.Stop(), enabled: (m, o) => ms.Status == ServiceStatus.Running);
+            //msMenu.AddOption("View Data Collection", (m, o) => pipeline.Stop(), enabled: (m, o) => ms.Status == ServiceStatus.Running);
 
             //Add an option to the main menu.
             menu.AddOption(new ConsoleOption(title, msMenu));

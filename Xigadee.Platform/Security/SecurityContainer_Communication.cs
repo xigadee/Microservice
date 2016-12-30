@@ -14,13 +14,7 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -40,10 +34,20 @@ namespace Xigadee
         {
             payloadIn.SecurityPrincipal = new ClaimsPrincipal();
 
+            //if (channel.AuthenticationHandlerId != null)
+            //{
+            //    if (!mAuthenticationHandlers.ContainsKey(channel.AuthenticationHandlerId))
+            //        throw new ChannelAuthenticationHandlerNotResolvedException(channel);
+
+            //}
+            //else
+            //    payloadIn.SecurityPrincipal = new ClaimsPrincipal();
+
+
             if (channel.EncryptionHandlerId != null)
             {
-                if (!mEncryptionHandlers.ContainsKey(channel.Id))
-                    throw new ChannelEncryptionIdNotResolvedException(channel);
+                if (!mEncryptionHandlers.ContainsKey(channel.EncryptionHandlerId))
+                    throw new ChannelEncryptionHandlerNotResolvedException(channel);
 
                 byte[] decrypt = mEncryptionHandlers[channel.Id].Decrypt(payloadIn.Message.Blob);
 
@@ -61,7 +65,7 @@ namespace Xigadee
             if (channel.EncryptionHandlerId != null)
             {
                 if (!mEncryptionHandlers.ContainsKey(channel.Id))
-                    throw new ChannelEncryptionIdNotResolvedException(channel);
+                    throw new ChannelEncryptionHandlerNotResolvedException(channel);
 
                 byte[] encrypt = mEncryptionHandlers[channel.Id].Encrypt(payloadOut.Message.Blob);
 
