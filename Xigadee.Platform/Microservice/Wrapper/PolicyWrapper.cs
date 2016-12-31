@@ -32,7 +32,7 @@ namespace Xigadee
         CommunicationPolicy mPolicyCommunication = null;
         SchedulerPolicy mPolicyScheduler = null;
         SecurityPolicy mPolicySecurity = null;
-        ResourceTrackerPolicy mPolicyResourceTracker = null;
+        ResourceContainerPolicy mPolicyResourceTracker = null;
         DataCollectionPolicy mPolicyDataCollection = null;
         SerializationPolicy mPolicySerialization = null;
 
@@ -106,7 +106,7 @@ namespace Xigadee
         /// This is the policy for the resource tracker.
         /// </summary>
         /// <returns></returns>
-        public virtual ResourceTrackerPolicy ResourceTracker
+        public virtual ResourceContainerPolicy ResourceTracker
         {
             get
             {

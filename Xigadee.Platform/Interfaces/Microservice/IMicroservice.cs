@@ -43,5 +43,7 @@ namespace Xigadee
         IMicroserviceDataCollection DataCollection { get; }
 
         IMicroserviceSerialization Serialization { get; }
+
+        IMicroserviceResourceMonitor ResourceMonitor { get; }
     }
 }

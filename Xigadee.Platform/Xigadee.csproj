@@ -143,6 +143,7 @@
     <Compile Include="Interfaces\Microservice\IMicroserviceEvents.cs" />
     <Compile Include="Interfaces\Microservice\IMicroservicePolicy.cs" />
     <Compile Include="Interfaces\Microservice\IMicroserviceDispatch.cs" />
+    <Compile Include="Interfaces\Microservice\IMicroserviceResourceMonitoring.cs" />
     <Compile Include="Interfaces\Microservice\IMicroserviceSecurity.cs" />
     <Compile Include="Interfaces\Microservice\IMicroserviceSerialization.cs" />
     <Compile Include="Microservice\Wrapper\CommandWrapper.cs" />
@@ -151,6 +152,7 @@
     <Compile Include="Microservice\Wrapper\DispatchWrapper.cs" />
     <Compile Include="Microservice\Wrapper\EventsWrapper.cs" />
     <Compile Include="Microservice\Wrapper\PolicyWrapper.cs" />
+    <Compile Include="Microservice\Wrapper\ResourceWrapper.cs" />
     <Compile Include="Microservice\Wrapper\SecurityWrapper.cs" />
     <Compile Include="Microservice\Wrapper\SerializationWrapper.cs" />
     <Compile Include="Microservice\Wrapper\WrapperBase.cs" />
@@ -292,7 +294,7 @@
     <Compile Include="Pipeline\SecurityPipeline\Add\AddAuthorizationHandler.cs" />
     <Compile Include="Pipeline\SecurityPipeline\Inspect.cs" />
     <Compile Include="Pipeline\SecurityPipeline\SecurityPipelineExtension.cs" />
-    <Compile Include="ResourceTracker\ResourceTrackerPolicy.cs" />
+    <Compile Include="ResourceTracker\ResourceContainerPolicy.cs" />
     <Compile Include="Scheduler\Schedule.cs" />
     <Compile Include="Messaging\ServiceMessage.cs" />
     <Compile Include="Messaging\ServiceMessageHeader.cs" />
@@ -470,14 +472,14 @@
     <Compile Include="ResourceTracker\Interfaces\ResourceRequestResult.cs" />
     <Compile Include="ResourceTracker\Interfaces\ResourceRetryReason.cs" />
     <Compile Include="ResourceTracker\Base\ResourceBase.cs" />
-    <Compile Include="ResourceTracker\ResourceConsumer.cs" />
+    <Compile Include="ResourceTracker\ResourceConsumer\ResourceConsumer.cs" />
     <Compile Include="ResourceTracker\ResourceProfile.cs" />
-    <Compile Include="ResourceTracker\ResourceRateLimiter.cs" />
+    <Compile Include="ResourceTracker\ResourceRateLimiter\ResourceRateLimiter.cs" />
     <Compile Include="ResourceTracker\ResourceRequestTrack.cs" />
     <Compile Include="ResourceTracker\ResourceStatistics.cs" />
     <Compile Include="ResourceTracker\ResourceStatsContainer.cs" />
-    <Compile Include="ResourceTracker\ResourceTracker.cs" />
-    <Compile Include="ResourceTracker\ResourceTrackerStatistics.cs" />
+    <Compile Include="ResourceTracker\ResourceContainer.cs" />
+    <Compile Include="ResourceTracker\ResourceContainerStatistics.cs" />
     <Compile Include="Scheduler\SchedulerPolicy.cs" />
     <Compile Include="Scheduler\SchedulerStatistics.cs" />
     <Compile Include="Security\EncryptionHandler\AesEncryptionHandler.cs" />

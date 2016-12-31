@@ -71,7 +71,7 @@ namespace Xigadee
 
             stats.Communication = mCommunication?.Statistics;
 
-            stats.Resources = mResourceTracker?.Statistics;
+            stats.Resources = mResourceMonitor?.Statistics;
 
             stats.Commands = mCommands?.Statistics;
 

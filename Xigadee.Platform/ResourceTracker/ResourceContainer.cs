@@ -26,7 +26,8 @@ namespace Xigadee
     /// This class is used to connect resource consumers with resource limiters.
     /// Limiters are typically connected to listener clients and reduce the imcoming traffic when the resource becomes stressed.
     /// </summary>
-    public class ResourceTracker: ServiceContainerBase<ResourceTrackerStatistics, ResourceTrackerPolicy>, IRequireSharedServices, IResourceTracker
+    public class ResourceContainer: ServiceContainerBase<ResourceContainerStatistics, ResourceContainerPolicy>
+        , IRequireSharedServices, IResourceTracker
     {
         //AKA Dependency Monitor
         #region Declarations
@@ -39,7 +40,7 @@ namespace Xigadee
         #endregion
 
         #region Constructor
-        public ResourceTracker(ResourceTrackerPolicy policy = null):base(policy)
+        public ResourceContainer(ResourceContainerPolicy policy = null):base(policy)
         {
             mResources = new ConcurrentDictionary<string, ResourceStatistics>();
 
@@ -86,7 +87,7 @@ namespace Xigadee
         } 
         #endregion
 
-        protected override void StatisticsRecalculate(ResourceTrackerStatistics stats)
+        protected override void StatisticsRecalculate(ResourceContainerStatistics stats)
         {
             if (mResources!=null)
                 stats.Resources = mResources.Values.ToArray();

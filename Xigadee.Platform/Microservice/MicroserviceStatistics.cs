@@ -102,7 +102,7 @@ namespace Xigadee
         /// <summary>
         /// The resource statistics.
         /// </summary>
-        public ResourceTrackerStatistics Resources { get; set; }
+        public ResourceContainerStatistics Resources { get; set; }
 
         /// <summary>
         /// The security statictics.

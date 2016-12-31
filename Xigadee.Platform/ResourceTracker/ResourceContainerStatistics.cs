@@ -16,22 +16,21 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    /// <summary>
-    /// This interface lists the policy options for the Microservice.
-    /// </summary>
-    public interface IMicroservicePolicy
+    public class ResourceContainerStatistics: StatusBase
     {
-        MicroservicePolicy Microservice { get; }
-        TaskManagerPolicy TaskManager { get; }
-        ResourceContainerPolicy ResourceTracker { get; }
-        CommandContainerPolicy CommandContainer { get; }
-        CommunicationPolicy Communication { get; }
-        SchedulerPolicy Scheduler { get; }
-        SecurityPolicy Security { get; }
-        DataCollectionPolicy DataCollection { get; }
-        SerializationPolicy Serialization { get; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public ResourceStatistics[] Resources { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string[] RateLimiters { get; set; }
     }
 }

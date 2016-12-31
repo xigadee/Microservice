@@ -42,7 +42,7 @@ namespace Xigadee
         }
 
         public static P AdjustPolicyResourceTracker<P>(this P pipeline
-            , Action<ResourceTrackerPolicy> msAssign = null) where P : IPipeline
+            , Action<ResourceContainerPolicy> msAssign = null) where P : IPipeline
         {
             msAssign?.Invoke(pipeline.Service.Policy.ResourceTracker);
 

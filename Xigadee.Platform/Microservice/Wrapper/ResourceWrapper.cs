@@ -13,25 +13,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    /// <summary>
-    /// This interface lists the policy options for the Microservice.
-    /// </summary>
-    public interface IMicroservicePolicy
+    internal class ResourceWrapper: WrapperBase, IMicroserviceResourceMonitor
     {
-        MicroservicePolicy Microservice { get; }
-        TaskManagerPolicy TaskManager { get; }
-        ResourceContainerPolicy ResourceTracker { get; }
-        CommandContainerPolicy CommandContainer { get; }
-        CommunicationPolicy Communication { get; }
-        SchedulerPolicy Scheduler { get; }
-        SecurityPolicy Security { get; }
-        DataCollectionPolicy DataCollection { get; }
-        SerializationPolicy Serialization { get; }
+        ResourceContainer mResourceContainer;
+
+        public ResourceWrapper(ResourceContainer resourceMonitor, Func<ServiceStatus> getStatus) : base(getStatus)
+        {
+            mResourceContainer = resourceMonitor;
+        }
     }
 }

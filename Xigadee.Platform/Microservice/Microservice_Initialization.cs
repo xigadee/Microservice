@@ -52,9 +52,9 @@ namespace Xigadee
         /// that is overloaded.
         /// </summary>
         /// <returns>Returns the resource tracker.</returns>
-        protected virtual ResourceTracker InitialiseResourceTracker()
+        protected virtual ResourceContainer InitialiseResourceMonitor()
         {
-            var container = new ResourceTracker(Policy.ResourceTracker);
+            var container = new ResourceContainer(Policy.ResourceTracker);
 
             return container;
         }

@@ -58,7 +58,7 @@ namespace Xigadee
         /// <summary>
         /// This class is used to track resource starvation and to rate limit incoming requests.
         /// </summary>
-        protected ResourceTracker mResourceTracker;
+        protected ResourceContainer mResourceMonitor;
         /// <summary>
         /// This wrapper holds the events for the Microservice.
         /// </summary>
@@ -102,7 +102,8 @@ namespace Xigadee
             mCommands = InitialiseCommandContainer();
             Commands = new CommandWrapper(mCommands, () => Status);
 
-            mResourceTracker = InitialiseResourceTracker();
+            mResourceMonitor = InitialiseResourceMonitor();
+            ResourceMonitor = new ResourceWrapper(mResourceMonitor, () => Status);
 
             mDataCollection = InitialiseDataCollectionContainer();
             DataCollection = new DataCollectionWrapper(mDataCollection, () => Status);
@@ -203,7 +204,7 @@ namespace Xigadee
                 EventStart(() => ServiceStart(mDataCollection), "Data Collection");
 
                 //OK, register the resource tracker
-                EventStart(() => ServiceStart(mResourceTracker), "Resource Tracker");
+                EventStart(() => ServiceStart(mResourceMonitor), "Resource Tracker");
 
                 //This method connects any components that require Shared Service together before they start.
                 EventStart(() => mCommands.SharedServicesConnect(), "Command Shared Services");
@@ -287,7 +288,7 @@ namespace Xigadee
             //Stop the channel controller.
             EventStop(() => ServiceStop(mSecurity), "Security Container");
 
-            EventStop(() => ServiceStop(mResourceTracker), "Resource Tracker");
+            EventStop(() => ServiceStop(mResourceMonitor), "Resource Tracker");
 
             EventStop(() => ServiceStop(mDataCollection), "Data Collection");
 
@@ -424,5 +425,9 @@ namespace Xigadee
         /// This is the data collection container.
         /// </summary>
         public IMicroserviceSerialization Serialization { get; }
+        /// <summary>
+        /// This is the resource monitoring wrapper.
+        /// </summary>
+        public IMicroserviceResourceMonitor ResourceMonitor { get; }
     }
 }
