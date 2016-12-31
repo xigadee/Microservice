@@ -29,7 +29,7 @@ namespace Xigadee
         /// </summary>
         private CommandContainer mCommands;
 
-        public CommandWrapper(CommandContainer commands, Func<ServiceStatus> getStatus) : base(getStatus)
+        internal CommandWrapper(CommandContainer commands, Func<ServiceStatus> getStatus) : base(getStatus)
         {
             mCommands = commands;
         }

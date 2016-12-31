@@ -29,7 +29,7 @@ namespace Xigadee
         /// </summary>
         private DataCollectionContainer mDataCollection;
 
-        public DataCollectionWrapper(DataCollectionContainer dataCollection, Func<ServiceStatus> getStatus) : base(getStatus)
+        internal DataCollectionWrapper(DataCollectionContainer dataCollection, Func<ServiceStatus> getStatus) : base(getStatus)
         {
             mDataCollection = dataCollection;
         }

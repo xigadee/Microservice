@@ -28,7 +28,7 @@ namespace Xigadee
         /// </summary>
         protected CommunicationContainer mCommunication;
 
-        public CommunicationWrapper(CommunicationContainer communication, Func<ServiceStatus> getStatus) : base(getStatus)
+        internal CommunicationWrapper(CommunicationContainer communication, Func<ServiceStatus> getStatus) : base(getStatus)
         {
             mCommunication = communication;
         }

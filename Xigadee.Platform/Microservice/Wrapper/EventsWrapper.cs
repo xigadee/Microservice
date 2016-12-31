@@ -30,7 +30,7 @@ namespace Xigadee
         private IDataCollection mDataCollection = null;
         private IMicroservice mService;
 
-        public EventsWrapper(IMicroservice service, IDataCollection dataCollection, Func<ServiceStatus> getStatus) : base(getStatus)
+        internal EventsWrapper(IMicroservice service, IDataCollection dataCollection, Func<ServiceStatus> getStatus) : base(getStatus)
         {
             mService = service;
             mService.StatusChanged += OnStatusChanged;

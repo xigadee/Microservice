@@ -31,7 +31,7 @@ namespace Xigadee
         /// </summary>
         private SecurityContainer mSecurity;
 
-        public SecurityWrapper(SecurityContainer security, Func<ServiceStatus> getStatus):base(getStatus)
+        internal SecurityWrapper(SecurityContainer security, Func<ServiceStatus> getStatus):base(getStatus)
         {
             mSecurity = security;
         }

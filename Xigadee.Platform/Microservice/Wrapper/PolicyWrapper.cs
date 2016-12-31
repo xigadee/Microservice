@@ -42,7 +42,7 @@ namespace Xigadee
         List<PolicyBase> mPolicySettings;
         #endregion
 
-        public PolicyWrapper(IEnumerable<PolicyBase> policySettings, Func<ServiceStatus> getStatus) : base(getStatus)
+        internal PolicyWrapper(IEnumerable<PolicyBase> policySettings, Func<ServiceStatus> getStatus) : base(getStatus)
         {
             mPolicySettings = policySettings?.ToList() ?? new List<PolicyBase>();
 

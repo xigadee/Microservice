@@ -31,7 +31,7 @@ namespace Xigadee
         /// </summary>
         SerializationContainer mContainer;
 
-        public SerializationWrapper(SerializationContainer container, Func<ServiceStatus> getStatus) : base(getStatus)
+        internal SerializationWrapper(SerializationContainer container, Func<ServiceStatus> getStatus) : base(getStatus)
         {
             mContainer = container;
         }

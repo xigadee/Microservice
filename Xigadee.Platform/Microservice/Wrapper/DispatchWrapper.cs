@@ -27,7 +27,7 @@ namespace Xigadee
 
         private IPayloadSerializationContainer mSerializer;
 
-        public DispatchWrapper(IPayloadSerializationContainer serializer, Action<TransmissionPayload, string> executeOrEnqueue 
+        internal DispatchWrapper(IPayloadSerializationContainer serializer, Action<TransmissionPayload, string> executeOrEnqueue 
             ,Func<ServiceStatus> getStatus) : base(getStatus)
         {
             ExecuteOrEnqueue = executeOrEnqueue;

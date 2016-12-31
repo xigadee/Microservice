@@ -25,7 +25,7 @@ namespace Xigadee
     {
         ResourceContainer mResourceContainer;
 
-        public ResourceWrapper(ResourceContainer resourceMonitor, Func<ServiceStatus> getStatus) : base(getStatus)
+        internal ResourceWrapper(ResourceContainer resourceMonitor, Func<ServiceStatus> getStatus) : base(getStatus)
         {
             mResourceContainer = resourceMonitor;
         }
