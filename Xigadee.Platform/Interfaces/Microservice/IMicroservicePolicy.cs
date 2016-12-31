@@ -32,5 +32,6 @@ namespace Xigadee
         SchedulerPolicy Scheduler { get; }
         SecurityPolicy Security { get; }
         DataCollectionPolicy DataCollection { get; }
+        SerializationPolicy Serialization { get; }
     }
 }

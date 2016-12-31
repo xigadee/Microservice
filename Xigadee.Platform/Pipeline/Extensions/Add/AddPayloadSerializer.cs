@@ -27,7 +27,7 @@ namespace Xigadee
         public static P AddPayloadSerializerDefaultJson<P>(this P pipeline)
             where P : IPipeline
         {
-            var component = pipeline.Service.RegisterPayloadSerializer(new JsonContractSerializer());
+            var component = pipeline.Service.Serialization.RegisterPayloadSerializer(new JsonContractSerializer());
 
             return pipeline;
         }
@@ -35,7 +35,7 @@ namespace Xigadee
         public static P AddPayloadSerializer<P>(this P pipeline, IPayloadSerializer serializer)
             where P : IPipeline
         {
-            pipeline.Service.RegisterPayloadSerializer(serializer);
+            pipeline.Service.Serialization.RegisterPayloadSerializer(serializer);
 
             return pipeline;
         }
@@ -43,7 +43,7 @@ namespace Xigadee
         public static P ClearPayloadSerializers<P>(this P pipeline)
             where P : IPipeline
         {
-            pipeline.Service.ClearPayloadSerializers();
+            pipeline.Service.Serialization.ClearPayloadSerializers();
 
             return pipeline;
         }
@@ -52,7 +52,7 @@ namespace Xigadee
             , Func<IEnvironmentConfiguration, IPayloadSerializer> creator)
             where P : IPipeline
         {
-            pipeline.Service.RegisterPayloadSerializer(creator(pipeline.Configuration));
+            pipeline.Service.Serialization.RegisterPayloadSerializer(creator(pipeline.Configuration));
 
             return pipeline;
         }

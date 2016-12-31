@@ -10,7 +10,11 @@ namespace Test.Xigadee.Serialization
         [TestMethod]
         public void Test1()
         {
-            var container = new SerializationContainer(new[] { new JsonContractSerializer() });
+            var container = new SerializationContainer();
+
+            container.Add( new JsonContractSerializer());
+
+            container.Start();
 
             var test = new Blah { Message = "Hmm" };
 

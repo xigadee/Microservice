@@ -153,12 +153,12 @@ namespace Xigadee
         }
 
         #region SupportsPayloadDeserialization ...
-            /// <summary>
-            /// This method matches the incoming byte stream and identifies whether the serializer
-            /// can deserialize on the basis of the index of the byte array.
-            /// </summary>
-            /// <param name="blob">The incoming byte array</param>
-            /// <returns>Returns true if it is a match.</returns>
+        /// <summary>
+        /// This method matches the incoming byte stream and identifies whether the serializer
+        /// can deserialize on the basis of the index of the byte array.
+        /// </summary>
+        /// <param name="blob">The incoming byte array</param>
+        /// <returns>Returns true if it is a match.</returns>
         public virtual bool SupportsPayloadDeserialization(byte[] blob)
         {
             return SupportsPayloadDeserialization(blob, 0, blob.Length);
@@ -169,8 +169,8 @@ namespace Xigadee
         /// can deserialize on the basis of the index of the byte array.
         /// </summary>
         /// <param name="blob">The incoming byte array</param>
-        /// <param name="index">The index point in the incoming byte array.</param>
-        /// <param name="count">The count of the data in the byte array.</param>
+        /// <param name="start">The index point in the incoming byte array.</param>
+        /// <param name="length">The count of the data in the byte array.</param>
         /// <returns>Returns true if it is a match.</returns>
         public virtual bool SupportsPayloadDeserialization(byte[] blob, int start, int length)
         {

@@ -70,6 +70,18 @@ namespace Xigadee
             return channel;
         }
         #endregion
+
+        /// <summary>
+        /// This method returns true if the channel is registered for that specific direction.
+        /// </summary>
+        /// <param name="channelId">The channel id.</param>
+        /// <param name="direction">The channel direction.</param>
+        /// <returns>Returns true if the channel exists.</returns>
+        public bool HasChannel(string channelId, ChannelDirection direction)
+        {
+            return mCommunication.Exists(channelId, direction);
+        }
+
         #region Channels
         /// <summary>
         /// This is a list of jobs currently register in the service.

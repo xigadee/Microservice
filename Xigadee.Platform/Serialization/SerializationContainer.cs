@@ -16,6 +16,7 @@
 
 #region using
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,18 +27,61 @@ namespace Xigadee
     /// <summary>
     /// This container holds the system serialization/deserialization components that are used when transmitting data outside of the system.
     /// </summary>
-    public class SerializationContainer : CollectionContainerBase<IPayloadSerializer>, IPayloadSerializationContainer
+    public class SerializationContainer : ServiceContainerBase<SerializationStatistics, SerializationPolicy>
+        , IPayloadSerializationContainer
     {
+        #region Declarations
+        /// <summary>
+        /// This contains the supported serializers.
+        /// </summary>
+        protected Dictionary<byte[], IPayloadSerializer> mPayloadSerializers;
+
+        protected ConcurrentDictionary<Type, IPayloadSerializer> mLookUpCache;
+        #endregion
         #region Constructor
         /// <summary>
         /// This default constrcutor takes the list of registered serializers.
         /// </summary>
-        /// <param name="collection">The collection of serializers</param>
-        public SerializationContainer(IEnumerable<IPayloadSerializer> collection)
-            : base(collection)
+        /// <param name="policy">The collection of serializers</param>
+        public SerializationContainer(SerializationPolicy policy = null)
+            : base(policy)
         {
+            mPayloadSerializers = new Dictionary<byte[], Xigadee.IPayloadSerializer>();
         }
         #endregion
+
+        #region StartInternal()
+        /// <summary>
+        /// This override checks whether there is a default serialization container set.
+        /// </summary>
+        protected override void StartInternal()
+        {
+            if (mPayloadSerializers.Count == 0)
+                throw new PayloadSerializerCollectionIsEmptyException();
+
+            mLookUpCache = new ConcurrentDictionary<Type, Xigadee.IPayloadSerializer>();
+        }
+        #endregion
+        #region StopInternal()
+        /// <summary>
+        /// This method clears the container.
+        /// </summary>
+        protected override void StopInternal()
+        {
+            mLookUpCache.Clear();
+            mPayloadSerializers.Clear();
+        }
+        #endregion
+
+        public void Add(IPayloadSerializer serializer)
+        {
+            mPayloadSerializers.Add(serializer.Identifier, serializer);
+        }
+
+        public void Clear()
+        {
+            mPayloadSerializers.Clear();
+        }
 
         #region PayloadDeserialize...
         /// <summary>
@@ -68,10 +112,10 @@ namespace Xigadee
         {
             try
             {
-                if (message.Blob == null || Count == 0)
+                if (message.Blob == null || mPayloadSerializers.Count == 0)
                     return null;
 
-                var serializer = Items.FirstOrDefault(s => s.SupportsPayloadDeserialization(message.Blob));
+                var serializer = mPayloadSerializers.Values.FirstOrDefault(s => s.SupportsPayloadDeserialization(message.Blob));
 
                 if (serializer != null)
                     return serializer.Deserialize(message.Blob);
@@ -110,10 +154,10 @@ namespace Xigadee
         /// <returns>Returns the object deserialized from the binary blob.</returns>
         public P PayloadDeserialize<P>(byte[] blob)
         {
-            if (blob == null || Count == 0)
+            if (blob == null || mPayloadSerializers.Count == 0)
                 return default(P);
 
-            var serializer = Items.FirstOrDefault(s => s.SupportsPayloadDeserialization(blob));
+            var serializer = mPayloadSerializers.Values.FirstOrDefault(s => s.SupportsPayloadDeserialization(blob));
 
             if (serializer != null)
                 return serializer.Deserialize<P>(blob);
@@ -128,10 +172,10 @@ namespace Xigadee
         /// <returns>Returns the object deserialized from the binary blob.</returns>
         public object PayloadDeserialize(byte[] blob)
         {
-            if (blob == null || Count == 0)
+            if (blob == null || mPayloadSerializers.Count == 0)
                 return null;
 
-            var serializer = Items.FirstOrDefault(s => s.SupportsPayloadDeserialization(blob));
+            var serializer = mPayloadSerializers.Values.FirstOrDefault(s => s.SupportsPayloadDeserialization(blob));
 
             if (serializer != null)
                 return serializer.Deserialize(blob);
@@ -152,35 +196,13 @@ namespace Xigadee
             if (payload == null)
                 return null;
 
-            var serializer = Items.FirstOrDefault(s => s.SupportsObjectTypeSerialization(payload.GetType()));
+            var serializer = mPayloadSerializers.Values.FirstOrDefault(s => s.SupportsObjectTypeSerialization(payload.GetType()));
             if (serializer != null)
                 return serializer.Serialize(payload);
 
             throw new PayloadTypeSerializationNotSupportedException(payload.GetType().AssemblyQualifiedName);
         }
         #endregion
-
-        #region StartInternal()
-        /// <summary>
-        /// This override checks whether there is a default serialization container set.
-        /// </summary>
-        protected override void StartInternal()
-        {
-            if (Count == 0)
-                throw new PayloadSerializerCollectionIsEmptyException();
-        }
-        #endregion
-        #region StopInternal()
-        /// <summary>
-        /// This method clears the container.
-        /// </summary>
-        protected override void StopInternal()
-        {
-            Clear();
-        }
-        #endregion
-
-
 
     }
 }

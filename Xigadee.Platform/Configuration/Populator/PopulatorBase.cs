@@ -215,7 +215,7 @@ namespace Xigadee
         /// </summary>
         protected virtual void RegisterSerializers()
         {
-            Service.RegisterPayloadSerializer(new JsonContractSerializer());
+            Service.Serialization.RegisterPayloadSerializer(new JsonContractSerializer());
         }
 
         protected virtual void RegisterCommunication()

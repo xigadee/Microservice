@@ -117,9 +117,9 @@ namespace Xigadee
         /// <summary>
         /// THis method returns the default scheduler container.
         /// </summary>
-        protected virtual SerializationContainer InitialiseSerializationContainer(IEnumerable<IPayloadSerializer> payloadSerializers)
+        protected virtual SerializationContainer InitialiseSerializationContainer()
         {
-            var container = new SerializationContainer(payloadSerializers);
+            var container = new SerializationContainer(Policy.Serialization);
 
             return container;
         }

@@ -60,10 +60,6 @@ namespace Xigadee
         /// </summary>
         protected ResourceTracker mResourceTracker;
         /// <summary>
-        /// This contains the supported serializers.
-        /// </summary>
-        protected Dictionary<byte[],IPayloadSerializer> mPayloadSerializers;
-        /// <summary>
         /// This wrapper holds the events for the Microservice.
         /// </summary>
         EventsWrapper mEventsWrapper;
@@ -114,7 +110,8 @@ namespace Xigadee
             mEventsWrapper = new EventsWrapper(this, mDataCollection, () => Status);
             Events = mEventsWrapper;
 
-            mPayloadSerializers = new Dictionary<byte[], IPayloadSerializer>();
+            mSerializer = InitialiseSerializationContainer();
+            Serialization = new SerializationWrapper(mSerializer, () => Status);
         }
         #endregion
 
@@ -198,9 +195,6 @@ namespace Xigadee
 
                 //This initialises the process loop.
                 EventStart(() => TaskManagerInitialise(), "Task Manager Initialization");
-
-                //This method populates the components in the service.
-                EventStart(() => PopulateComponents(), "Components");
 
                 //This method initialises the serialization container.
                 EventStart(() => ServiceStart(mSerializer), "Serialization");

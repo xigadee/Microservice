@@ -108,6 +108,11 @@ namespace Xigadee
         /// The security statictics.
         /// </summary>
         public SecurityStatistics Security { get; set; }
+
+        /// <summary>
+        /// The security statictics.
+        /// </summary>
+        public SerializationStatistics Serialization { get; set; }
         /// <summary>
         /// The scheduler statistics.
         /// </summary>

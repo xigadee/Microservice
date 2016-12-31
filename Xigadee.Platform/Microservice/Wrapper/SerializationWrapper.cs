@@ -29,10 +29,11 @@ namespace Xigadee
         /// <summary>
         /// This contains the supported serializers.
         /// </summary>
-        protected Dictionary<byte[], IPayloadSerializer> mPayloadSerializers;
+        SerializationContainer mContainer;
 
-        public SerializationWrapper(Func<ServiceStatus> getStatus) : base(getStatus)
+        public SerializationWrapper(SerializationContainer container, Func<ServiceStatus> getStatus) : base(getStatus)
         {
+            mContainer = container;
         }
 
         //Serializer
@@ -44,7 +45,7 @@ namespace Xigadee
         public virtual IPayloadSerializer RegisterPayloadSerializer(IPayloadSerializer serializer)
         {
             ValidateServiceNotStarted();
-            mPayloadSerializers.Add(serializer.Identifier, serializer);
+            mContainer.Add(serializer);
             return serializer;
         }
         #endregion
@@ -55,7 +56,7 @@ namespace Xigadee
         public virtual void ClearPayloadSerializers()
         {
             ValidateServiceNotStarted();
-            mPayloadSerializers.Clear();
+            mContainer.Clear();
         }
         #endregion
 

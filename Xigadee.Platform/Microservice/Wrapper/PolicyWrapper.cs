@@ -34,6 +34,7 @@ namespace Xigadee
         SecurityPolicy mPolicySecurity = null;
         ResourceTrackerPolicy mPolicyResourceTracker = null;
         DataCollectionPolicy mPolicyDataCollection = null;
+        SerializationPolicy mPolicySerialization = null;
 
         /// <summary>
         /// This is the collection of policy settings for the Microservice.
@@ -74,7 +75,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region PolicyMicroservice
+        #region Microservice
         /// <summary>
         /// This is the policy used to set the Microservice default settings.
         /// </summary>
@@ -87,7 +88,7 @@ namespace Xigadee
             }
         }
         #endregion
-        #region PolicyTaskManager
+        #region TaskManager
         /// <summary>
         /// This method retrieves the policy for the task manager.
         /// </summary>
@@ -100,7 +101,7 @@ namespace Xigadee
             }
         }
         #endregion
-        #region PolicyResourceTracker
+        #region ResourceTracker
         /// <summary>
         /// This is the policy for the resource tracker.
         /// </summary>
@@ -113,7 +114,7 @@ namespace Xigadee
             }
         }
         #endregion
-        #region PolicyCommandContainer
+        #region CommandContainer
         /// <summary>
         /// This is the policy used to set the command container.
         /// </summary>
@@ -126,7 +127,7 @@ namespace Xigadee
             }
         }
         #endregion
-        #region PolicyCommunication
+        #region Communication
         /// <summary>
         /// This is the policy used to set the communication component settings.
         /// </summary>
@@ -139,7 +140,7 @@ namespace Xigadee
             }
         }
         #endregion
-        #region PolicyScheduler
+        #region Scheduler
         /// <summary>
         /// This is the policy for the scheduler.
         /// </summary>
@@ -151,7 +152,7 @@ namespace Xigadee
             }
         }
         #endregion
-        #region PolicySecurity
+        #region Security
         /// <summary>
         /// This is the policy used to set the securty container settings.
         /// </summary>
@@ -164,7 +165,7 @@ namespace Xigadee
             }
         }
         #endregion
-        #region PolicyDataCollection
+        #region DataCollection
         /// <summary>
         /// This is the policy used to set the data collection container settings.
         /// </summary>
@@ -174,6 +175,19 @@ namespace Xigadee
             get
             {
                 return PolicyResolve(mPolicyDataCollection, (p) => mPolicyDataCollection = p);
+            }
+        }
+        #endregion
+        #region Serialization
+        /// <summary>
+        /// This is the policy used to set the data collection container settings.
+        /// </summary>
+        /// <returns>The policy</returns>
+        public virtual SerializationPolicy Serialization
+        {
+            get
+            {
+                return PolicyResolve(mPolicySerialization, (p) => mPolicySerialization = p);
             }
         }
         #endregion

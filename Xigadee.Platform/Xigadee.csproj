@@ -490,12 +490,12 @@
     <Compile Include="Security\SecurityContainer_Communication.cs" />
     <Compile Include="Security\SecurityPolicy.cs" />
     <Compile Include="Security\SecurityStatistics.cs" />
-    <Compile Include="Serialization\DefaultDataContractSerializer.cs" />
-    <Compile Include="Serialization\DefaultSerializerBase.cs" />
+    <Compile Include="Serialization\Serializers\DefaultDataContractSerializer.cs" />
+    <Compile Include="Serialization\Serializers\DefaultSerializerBase.cs" />
     <Compile Include="Interfaces\IPayloadSerialization.cs" />
     <Compile Include="Interfaces\IPayloadSerializationContainer.cs" />
-    <Compile Include="Serialization\JsonContractSerializer.cs" />
-    <Compile Include="Serialization\PayloadDelivery.cs" />
+    <Compile Include="Serialization\Serializers\JsonContractSerializer.cs" />
+    <Compile Include="Serialization\Serializers\PayloadDelivery.cs" />
     <Compile Include="Serialization\Exceptions\PayloadSerializerCollectionEmptyException.cs" />
     <Compile Include="Components\Statistics\CollectionStatistics.cs" />
     <Compile Include="Interfaces\ICollectionStatistics.cs" />
@@ -503,6 +503,8 @@
     <Compile Include="Components\Statistics\StatsContainer.cs" />
     <Compile Include="Components\Statistics\StatsCounter.cs" />
     <Compile Include="Components\StatusBase.cs" />
+    <Compile Include="Serialization\SerializationPolicy.cs" />
+    <Compile Include="Serialization\SerializationStatistics.cs" />
     <Compile Include="TaskManager\Interface\IQueueTracker.cs" />
     <Compile Include="TaskManager\Interface\ITaskAvailability.cs" />
     <Compile Include="TaskManager\Interface\ITaskManagerProcess.cs" />
@@ -526,7 +528,6 @@
     <Compile Include="TaskManager\TaskTracker\TaskTrackerType.cs" />
     <Compile Include="DataCollection\Telemetry\TelemetryContainer.cs" />
     <Compile Include="Microservice\Microservice.cs" />
-    <Compile Include="Microservice\Microservice_Components.cs" />
     <Compile Include="Microservice\Microservice_Dispatcher.cs" />
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>

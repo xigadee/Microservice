@@ -29,7 +29,8 @@ namespace Xigadee
         /// <param name="channel">The channel.</param>
         /// <returns>Returns the channel registered.</returns>
         Channel RegisterChannel(Channel channel);
-
+   
+        bool HasChannel(string channelId, ChannelDirection direction);
 
         IListener RegisterListener(IListener listener);
 

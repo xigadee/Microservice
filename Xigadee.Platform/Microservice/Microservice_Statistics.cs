@@ -78,6 +78,8 @@ namespace Xigadee
             stats.Scheduler = mScheduler?.Statistics;
 
             stats.Security = mSecurity?.Statistics;
+
+            stats.Serialization = mSerializer?.Statistics;
         }
         #endregion
     }
