@@ -136,5 +136,18 @@ namespace Xigadee
             return container;
         }
         #endregion
+
+        #region CoreInitialise()
+        /// <summary>
+        /// This method initialises the process loop components.
+        /// </summary>
+        protected virtual void CoreEngineInitialize()
+        {
+            mScheduler = InitialiseSchedulerContainer();
+
+            mTaskManager = InitialiseTaskManager();
+        }
+        #endregion
+
     }
 }

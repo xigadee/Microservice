@@ -31,69 +31,6 @@ namespace Xigadee
     //TaskManager
     public partial class Microservice
     {
-        #region Declarations
-        /// <summary>
-        /// This class contains the running tasks and provides a breakdown of the current availability for new tasks.
-        /// </summary>
-        private TaskManager mTaskManager;
-        /// <summary>
-        /// This is the scheduler container.
-        /// </summary>
-        private SchedulerContainer mScheduler;
-        #endregion
 
-        #region TaskManagerInitialise()
-        /// <summary>
-        /// This method initialises the process loop components.
-        /// </summary>
-        protected virtual void TaskManagerInitialise()
-        {
-            mScheduler = InitialiseSchedulerContainer();
-
-            mTaskManager = InitialiseTaskManager();
-        }
-        #endregion
-        #region TaskManagerStart()
-        /// <summary>
-        /// This method starts the processing process loop.
-        /// </summary>
-        protected virtual void TaskManagerStart()
-        {
-            TaskManagerRegisterProcesses();
-
-            ServiceStart(mTaskManager);
-
-            ServiceStart(mScheduler);
-        }
-        #endregion
-        #region TaskManagerStop()
-        /// <summary>
-        /// This method stops the process loop.
-        /// </summary>
-        protected virtual void TaskManagerStop()
-        {
-            ServiceStop(mScheduler);
-
-            ServiceStop(mTaskManager);
-        }
-        #endregion
-
-        #region TaskManagerProcessRegister()
-        /// <summary>
-        /// 
-        /// </summary>
-        protected virtual void TaskManagerRegisterProcesses()
-        {
-            mTaskManager.ProcessRegister("SchedulesProcess"
-                , 5, mScheduler);
-
-            mTaskManager.ProcessRegister("ListenersProcess"
-                , 4, mCommunication);
-
-            mTaskManager.ProcessRegister("Overload Check"
-                , 3, mDataCollection);
-
-        }
-        #endregion
     }
 }

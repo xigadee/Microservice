@@ -63,6 +63,14 @@ namespace Xigadee
         /// This wrapper holds the events for the Microservice.
         /// </summary>
         EventsWrapper mEventsWrapper;
+        /// <summary>
+        /// This class contains the running tasks and provides a breakdown of the current availability for new tasks.
+        /// </summary>
+        private TaskManager mTaskManager;
+        /// <summary>
+        /// This is the scheduler container.
+        /// </summary>
+        private SchedulerContainer mScheduler;
         #endregion
         #region Constructors
         /// <summary>
@@ -195,7 +203,7 @@ namespace Xigadee
                 EventStart(() => ConfigurationInitialise(), "Configuration");
 
                 //This initialises the process loop.
-                EventStart(() => TaskManagerInitialise(), "Task Manager Initialization");
+                EventStart(() => CoreEngineInitialize(), "Core Engine Initialization");
 
                 //This method initialises the serialization container.
                 EventStart(() => ServiceStart(mSerializer), "Serialization");
@@ -375,6 +383,48 @@ namespace Xigadee
         {
             (service as IContainerService)?.Services.ForEach(ServiceStop);
             base.ServiceStop(service);
+        }
+        #endregion
+
+        #region TaskManagerStart()
+        /// <summary>
+        /// This method starts the processing process loop.
+        /// </summary>
+        protected virtual void TaskManagerStart()
+        {
+            TaskManagerRegisterProcesses();
+
+            ServiceStart(mTaskManager);
+
+            ServiceStart(mScheduler);
+        }
+        #endregion
+        #region TaskManagerStop()
+        /// <summary>
+        /// This method stops the process loop.
+        /// </summary>
+        protected virtual void TaskManagerStop()
+        {
+            ServiceStop(mScheduler);
+
+            ServiceStop(mTaskManager);
+        }
+        #endregion
+        #region TaskManagerProcessRegister()
+        /// <summary>
+        /// 
+        /// </summary>
+        protected virtual void TaskManagerRegisterProcesses()
+        {
+            mTaskManager.ProcessRegister("SchedulesProcess"
+                , 5, mScheduler);
+
+            mTaskManager.ProcessRegister("ListenersProcess"
+                , 4, mCommunication);
+
+            mTaskManager.ProcessRegister("Overload Check"
+                , 3, mDataCollection);
+
         }
         #endregion
 

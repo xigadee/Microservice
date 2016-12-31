@@ -222,7 +222,7 @@
     <Compile Include="Communication\TransmissionPayloadTrack.cs" />
     <Compile Include="Configuration\ConfigBase.cs" />
     <Compile Include="Microservice\MicroserviceId.cs" />
-    <Compile Include="Microservice\Policy\MicroservicePolicy.cs" />
+    <Compile Include="Microservice\MicroservicePolicy.cs" />
     <Compile Include="CommandPersistence\Client\PersistenceInternalServicePolicy.cs" />
     <Compile Include="CommandPersistence\Events\EntityChangeEventArgs.cs" />
     <Compile Include="CommandPersistence\Notification\EntityChangeNotificationCommand.cs" />
