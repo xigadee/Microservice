@@ -74,7 +74,7 @@ namespace Xigadee
         }
 
         public static P AdjustPolicySecurity<P>(this P pipeline
-            , Action<SecurityPolicy> msAssign = null) where P : IPipeline
+            , Action<SecurityContainerPolicy> msAssign = null) where P : IPipeline
         {
             msAssign?.Invoke(pipeline.Service.Policy.Security);
 

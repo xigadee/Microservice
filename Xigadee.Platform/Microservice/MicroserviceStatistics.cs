@@ -107,7 +107,7 @@ namespace Xigadee
         /// <summary>
         /// The security statictics.
         /// </summary>
-        public SecurityStatistics Security { get; set; }
+        public SecurityContainerStatistics Security { get; set; }
 
         /// <summary>
         /// The security statictics.

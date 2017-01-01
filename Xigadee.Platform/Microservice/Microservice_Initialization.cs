@@ -31,6 +31,18 @@ namespace Xigadee
     //Initialise
     public partial class Microservice
     {
+        #region CoreEngineInitialize()
+        /// <summary>
+        /// This method initialises the process loop components.
+        /// </summary>
+        protected virtual void CoreEngineInitialize()
+        {
+            mScheduler = InitialiseSchedulerContainer();
+
+            mTaskManager = InitialiseTaskManager();
+        }
+        #endregion
+
         #region InitialiseTaskManager()
         /// <summary>
         /// This method creates the task manager and sets the default bulkhead reservations.
@@ -134,18 +146,6 @@ namespace Xigadee
             var container = new DataCollectionContainer(Policy.DataCollection);
 
             return container;
-        }
-        #endregion
-
-        #region CoreInitialise()
-        /// <summary>
-        /// This method initialises the process loop components.
-        /// </summary>
-        protected virtual void CoreEngineInitialize()
-        {
-            mScheduler = InitialiseSchedulerContainer();
-
-            mTaskManager = InitialiseTaskManager();
         }
         #endregion
 

@@ -487,11 +487,11 @@
     <Compile Include="Security\Helper\Sha256SignatureHelper.cs" />
     <Compile Include="Security\Helper\Sha512SignatureHelper.cs" />
     <Compile Include="Security\Helper\SignatureHelper.cs" />
-    <Compile Include="Security\ISecurityContainer.cs" />
+    <Compile Include="Security\Interfaces\ISecurityContainer.cs" />
     <Compile Include="Security\SecurityContainer.cs" />
     <Compile Include="Security\SecurityContainer_Communication.cs" />
-    <Compile Include="Security\SecurityPolicy.cs" />
-    <Compile Include="Security\SecurityStatistics.cs" />
+    <Compile Include="Security\SecurityContainerPolicy.cs" />
+    <Compile Include="Security\SecurityContainerStatistics.cs" />
     <Compile Include="Serialization\Serializers\DefaultDataContractSerializer.cs" />
     <Compile Include="Serialization\Serializers\DefaultSerializerBase.cs" />
     <Compile Include="Interfaces\IPayloadSerialization.cs" />
@@ -521,7 +521,6 @@
     <Compile Include="TaskManager\TaskManagerProcessContext.cs" />
     <Compile Include="TaskManager\TaskManagerStatistics.cs" />
     <Compile Include="DataCollection\Logger\Implementations\Trace\TraceEventLogger.cs" />
-    <Compile Include="Microservice\Microservice_TaskManager.cs" />
     <Compile Include="Microservice\MicroserviceStatistics.cs" />
     <Compile Include="Scheduler\SchedulerContainer.cs" />
     <Compile Include="Serialization\SerializationContainer.cs" />

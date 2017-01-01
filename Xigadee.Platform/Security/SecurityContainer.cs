@@ -27,7 +27,7 @@ namespace Xigadee
     /// The security container class contains all the components to secure the incoming messaging for a Microservice, 
     /// and to ensure that incoming message requests have the correct permissions necessary to be processed.
     /// </summary>
-    public partial class SecurityContainer: ServiceContainerBase<SecurityStatistics, SecurityPolicy>
+    public partial class SecurityContainer: ServiceContainerBase<SecurityContainerStatistics, SecurityContainerPolicy>
         , ISecurityService, IRequireDataCollector, IServiceOriginator
     {
         #region Declarations
@@ -46,7 +46,7 @@ namespace Xigadee
         /// This is the default constructor.
         /// </summary>
         /// <param name="policy">The security policy.</param>
-        public SecurityContainer(SecurityPolicy policy) : base(policy)
+        public SecurityContainer(SecurityContainerPolicy policy) : base(policy)
         {
             mEncryptionHandlers = new Dictionary<string, IEncryptionHandler>();
             mAuthenticationHandlers = new Dictionary<string, IAuthenticationHandler>();
@@ -62,6 +62,7 @@ namespace Xigadee
         }
         #endregion
 
+        //Authentication
         #region HasAuthenticationHandler(string identifier)
         /// <summary>
         /// This method returns true if the authentication handler can be found.
@@ -71,17 +72,6 @@ namespace Xigadee
         public bool HasAuthenticationHandler(string identifier)
         {
             return mAuthenticationHandlers.ContainsKey(identifier);
-        }
-        #endregion
-        #region HasEncryptionHandler(string identifier)
-        /// <summary>
-        /// This method returns true if the encryption handler can be found.
-        /// </summary>
-        /// <param name="identifier">The identifier.</param>
-        /// <returns></returns>
-        public bool HasEncryptionHandler(string identifier)
-        {
-            return mEncryptionHandlers.ContainsKey(identifier);
         }
         #endregion
         #region RegisterAuthenticationHandler(string identifier, IEncryptionHandler handler)
@@ -110,6 +100,19 @@ namespace Xigadee
                 Collector?.LogException($"{nameof(RegisterAuthenticationHandler)} unexpected error.", ex);
                 throw;
             }
+        }
+        #endregion
+
+        //Encryption
+        #region HasEncryptionHandler(string identifier)
+        /// <summary>
+        /// This method returns true if the encryption handler can be found.
+        /// </summary>
+        /// <param name="identifier">The identifier.</param>
+        /// <returns></returns>
+        public bool HasEncryptionHandler(string identifier)
+        {
+            return mEncryptionHandlers.ContainsKey(identifier);
         }
         #endregion
         #region RegisterEncryptionHandler(string identifier, IEncryptionHandler handler)

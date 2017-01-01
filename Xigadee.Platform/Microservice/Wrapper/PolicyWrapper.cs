@@ -31,7 +31,7 @@ namespace Xigadee
         CommandContainerPolicy mPolicyCommand = null;
         CommunicationPolicy mPolicyCommunication = null;
         SchedulerPolicy mPolicyScheduler = null;
-        SecurityPolicy mPolicySecurity = null;
+        SecurityContainerPolicy mPolicySecurity = null;
         ResourceContainerPolicy mPolicyResourceTracker = null;
         DataCollectionPolicy mPolicyDataCollection = null;
         SerializationPolicy mPolicySerialization = null;
@@ -157,7 +157,7 @@ namespace Xigadee
         /// This is the policy used to set the securty container settings.
         /// </summary>
         /// <returns></returns>
-        public virtual SecurityPolicy Security
+        public virtual SecurityContainerPolicy Security
         {
             get
             {

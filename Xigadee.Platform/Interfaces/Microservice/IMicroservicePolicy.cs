@@ -30,7 +30,7 @@ namespace Xigadee
         CommandContainerPolicy CommandContainer { get; }
         CommunicationPolicy Communication { get; }
         SchedulerPolicy Scheduler { get; }
-        SecurityPolicy Security { get; }
+        SecurityContainerPolicy Security { get; }
         DataCollectionPolicy DataCollection { get; }
         SerializationPolicy Serialization { get; }
     }
