@@ -213,6 +213,8 @@ namespace Xigadee
             //Set the message Collector?.
             client.Collector = Collector;
 
+            client.BoundaryLoggingActive = BoundaryLoggingActive ?? false;
+
             client.ClientRefresh = () => { };
 
             client.Priority = partition.Priority;
@@ -339,5 +341,10 @@ namespace Xigadee
             Collector?.LogException(string.Format("{0}/{1}", GetType().Name, method), ex);
         }
         #endregion
+
+        /// <summary>
+        /// This property specifies whether the boundary logger is active.
+        /// </summary>
+        public bool? BoundaryLoggingActive { get; set; }
     }
 }

@@ -36,6 +36,7 @@ namespace Xigadee
             {
                 sender.ChannelId = cpipe.Channel.Id;
                 sender.PriorityPartitions = cpipe.Channel.Partitions.Cast<SenderPartitionConfig>().ToList();
+                sender.BoundaryLoggingActive = cpipe.Channel.BoundaryLoggingActive;
             }
 
             cpipe.Pipeline.Service.Communication.RegisterSender(sender);

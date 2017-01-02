@@ -207,12 +207,13 @@ namespace Xigadee
             get; set;
         }
         #endregion
-
+        #region BoundaryLoggingActive
         /// <summary>
         /// This boolean property specifies whether boundary logging is active for this client.
         /// The default is false.
         /// </summary>
-        public bool BoundaryLogActive { get; set; }
+        public bool BoundaryLoggingActive { get; set; } 
+        #endregion
 
         #region StatisticsRecalculate()
         /// <summary>

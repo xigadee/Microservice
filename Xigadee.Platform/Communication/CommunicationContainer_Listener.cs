@@ -40,6 +40,9 @@ namespace Xigadee
             if (listener == null)
                 throw new ArgumentNullException("listener", "listener cannot be null.");
 
+            if (!listener.BoundaryLoggingActive.HasValue)
+                listener.BoundaryLoggingActive = mPolicy.BoundaryLoggingActiveDefault;
+
             mListener.Add(listener);
         }
         #endregion

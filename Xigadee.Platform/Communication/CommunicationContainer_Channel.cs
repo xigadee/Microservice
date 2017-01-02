@@ -78,7 +78,7 @@ namespace Xigadee
                 throw new ArgumentNullException("item", "The channel cannot be null.");
 
             if (!item.BoundaryLoggingActive.HasValue)
-                item.BoundaryLoggingActive = mPolicy.BoundaryLogDefaultStatus;
+                item.BoundaryLoggingActive = mPolicy.BoundaryLoggingActiveDefault;
 
             return Wrapper(item.Direction,
                 (r) =>

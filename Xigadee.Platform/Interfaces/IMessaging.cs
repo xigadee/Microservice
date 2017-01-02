@@ -22,6 +22,9 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This is the base interface shared by both listeners and senders.
+    /// </summary>
     public interface IMessaging
     {
         /// <summary>
@@ -38,5 +41,10 @@ namespace Xigadee
         /// This is the boundary logger used by the service.
         /// </summary>
         IDataCollection Collector { get; set; }
+
+        /// <summary>
+        /// This property specifies whether the boundary logging is active for the messaging component..
+        /// </summary>
+        bool? BoundaryLoggingActive { get; set; }
     }
 }

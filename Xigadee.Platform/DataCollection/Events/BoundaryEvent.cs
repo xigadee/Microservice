@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    [DebuggerDisplay("{Id}={Type}/{Direction} {ChannelId}")]
+    /// <summary>
+    /// This is the event class for logging message boundary transitions.
+    /// </summary>
+    [DebuggerDisplay("{Direction}/{ChannelId}/{Type} [{Id}]")]
     public class BoundaryEvent: EventBase
     {
         public BoundaryEventType Type { get; set; }

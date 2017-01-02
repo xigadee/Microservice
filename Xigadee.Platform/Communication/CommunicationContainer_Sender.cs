@@ -39,7 +39,11 @@ namespace Xigadee
             if (sender == null)
                 throw new ArgumentNullException("sender", "sender cannot be null.");
 
+            if (!sender.BoundaryLoggingActive.HasValue)
+                sender.BoundaryLoggingActive = mPolicy.BoundaryLoggingActiveDefault;
+
             mSenders.Add(sender);
+
             mMessageSenderMap.Clear();
         }
         #endregion
@@ -70,7 +74,6 @@ namespace Xigadee
             mSenders.ForEach(l => ServiceStop(l));
         }
         #endregion
-
 
         #region Send(TransmissionPayload requestPayload)
         /// <summary>
