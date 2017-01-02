@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This enumeration contains the boundary logging types.
+    /// </summary>
     public enum BoundaryEventType
     {
         /// <summary>

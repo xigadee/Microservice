@@ -40,6 +40,12 @@ namespace Xigadee
             SupportAdd(DataCollectionSupport.Logger, (e) => EventsLog.Add((LogEvent)e));
             SupportAdd(DataCollectionSupport.Statistics, (e) => EventsMicroservice.Add((MicroserviceStatistics)e));
             SupportAdd(DataCollectionSupport.Telemetry, (e) => EventsMetric.Add((TelemetryEvent)e));
+
+            SupportAdd(DataCollectionSupport.Resource, (e) => EventsResource.Add((ResourceEvent)e));
+
+            SupportAdd(DataCollectionSupport.Custom, (e) => EventsCustom.Add(e));
+
+            SupportAdd(DataCollectionSupport.Security, (e) => EventsSecurity.Add((SecurityEvent)e));
         }
 
         public ConcurrentBag<EventSourceEvent> EventsEventSource { get; set; } = new ConcurrentBag<EventSourceEvent>();
@@ -53,6 +59,12 @@ namespace Xigadee
         public ConcurrentBag<TelemetryEvent> EventsMetric { get; set; } = new ConcurrentBag<TelemetryEvent>();
 
         public ConcurrentBag<MicroserviceStatistics> EventsMicroservice { get; set; } = new ConcurrentBag<MicroserviceStatistics>();
+
+        public ConcurrentBag<EventBase> EventsCustom { get; set; } = new ConcurrentBag<EventBase>();
+
+        public ConcurrentBag<SecurityEvent> EventsSecurity { get; set; } = new ConcurrentBag<SecurityEvent>();
+
+        public ConcurrentBag<ResourceEvent> EventsResource { get; set; } = new ConcurrentBag<ResourceEvent>();
 
     }
 }

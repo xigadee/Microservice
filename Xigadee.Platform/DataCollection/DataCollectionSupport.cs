@@ -61,8 +61,13 @@ namespace Xigadee
         /// </summary>
         Resource = 64,
         /// <summary>
-        /// The data is a customer event.
+        /// The data is the custom event.
         /// </summary>
-        Custom = 128
+        Custom = 128,
+        /// <summary>
+        /// The data is a security event.
+        /// </summary>
+        Security = 256
+
     }
 }

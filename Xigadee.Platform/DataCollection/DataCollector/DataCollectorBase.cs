@@ -24,38 +24,6 @@ using Xigadee;
 namespace Xigadee
 {
     /// <summary>
-    /// This abstract class allows data collectors to be create without the need for a policy.
-    /// </summary>
-    public abstract class DataCollectorBase: DataCollectorBase<DataCollectorStatistics, DataCollectorPolicy>
-    {
-        #region Constructor
-        /// <summary>
-        /// This constructor passes in the support types for the collector.
-        /// </summary>
-        protected DataCollectorBase(DataCollectionSupport? supportMap = null, DataCollectorPolicy policy = null) : base(supportMap, policy)
-        {
-        }
-        #endregion
-    }
-
-    /// <summary>
-    /// This abstract class allows data collectors to be create without the need for a policy.
-    /// </summary>
-    /// <typeparam name="S">The statistics type.</typeparam>
-    public abstract class DataCollectorBase<S>: DataCollectorBase<S, DataCollectorPolicy>
-        where S : DataCollectorStatistics, new()
-    {
-        #region Constructor
-        /// <summary>
-        /// This constructor passes in the support types for the collector.
-        /// </summary>
-        protected DataCollectorBase(DataCollectionSupport? supportMap = null, DataCollectorPolicy policy = null) : base(supportMap, policy)
-        {
-        }
-        #endregion
-    }
-
-    /// <summary>
     /// This abstract class is used to implement data collectors.
     /// </summary>
     /// <typeparam name="S">The statistics type.</typeparam>
@@ -182,6 +150,38 @@ namespace Xigadee
         /// This method specifies whether the collector supports flushing. The default is false.
         /// </summary>
         public bool CanFlush { get; set; } 
+        #endregion
+    }
+
+    /// <summary>
+    /// This abstract class allows data collectors to be create without the need for a policy.
+    /// </summary>
+    public abstract class DataCollectorBase: DataCollectorBase<DataCollectorStatistics, DataCollectorPolicy>
+    {
+        #region Constructor
+        /// <summary>
+        /// This constructor passes in the support types for the collector.
+        /// </summary>
+        protected DataCollectorBase(DataCollectionSupport? supportMap = null, DataCollectorPolicy policy = null) : base(supportMap, policy)
+        {
+        }
+        #endregion
+    }
+
+    /// <summary>
+    /// This abstract class allows data collectors to be create without the need for a policy.
+    /// </summary>
+    /// <typeparam name="S">The statistics type.</typeparam>
+    public abstract class DataCollectorBase<S>: DataCollectorBase<S, DataCollectorPolicy>
+        where S : DataCollectorStatistics, new()
+    {
+        #region Constructor
+        /// <summary>
+        /// This constructor passes in the support types for the collector.
+        /// </summary>
+        protected DataCollectorBase(DataCollectionSupport? supportMap = null, DataCollectorPolicy policy = null) : base(supportMap, policy)
+        {
+        }
         #endregion
     }
 }

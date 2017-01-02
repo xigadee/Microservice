@@ -49,7 +49,7 @@ namespace Xigadee
                 if (!mEncryptionHandlers.ContainsKey(channel.EncryptionHandlerId))
                     throw new ChannelEncryptionHandlerNotResolvedException(channel);
 
-                byte[] decrypt = mEncryptionHandlers[channel.Id].Decrypt(payloadIn.Message.Blob);
+                byte[] decrypt = mEncryptionHandlers[channel.EncryptionHandlerId].Decrypt(payloadIn.Message.Blob);
 
                 payloadIn.Message.Blob = decrypt;
             }
@@ -64,10 +64,10 @@ namespace Xigadee
         {
             if (channel.EncryptionHandlerId != null)
             {
-                if (!mEncryptionHandlers.ContainsKey(channel.Id))
+                if (!mEncryptionHandlers.ContainsKey(channel.EncryptionHandlerId))
                     throw new ChannelEncryptionHandlerNotResolvedException(channel);
 
-                byte[] encrypt = mEncryptionHandlers[channel.Id].Encrypt(payloadOut.Message.Blob);
+                byte[] encrypt = mEncryptionHandlers[channel.EncryptionHandlerId].Encrypt(payloadOut.Message.Blob);
 
                 payloadOut.Message.Blob = encrypt;
             }

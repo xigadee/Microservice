@@ -38,7 +38,18 @@ namespace Xigadee
         /// <param name="key"></param>
         /// <param name="useCompression"></param>
         /// <param name="blockSize"></param>
-        public AesEncryptionHandler(byte[] key, bool useCompression = false, int blockSize = 128)
+        public AesEncryptionHandler(string key, bool useCompression = true, int blockSize = 128)
+            :this(Convert.FromBase64String(key),useCompression, blockSize)
+        {
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="useCompression"></param>
+        /// <param name="blockSize"></param>
+        public AesEncryptionHandler(byte[] key, bool useCompression = true, int blockSize = 128)
         {
             mKey = key;
             mUseCompression = useCompression;

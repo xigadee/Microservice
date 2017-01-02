@@ -265,8 +265,6 @@ namespace Xigadee
             if (!connector.ShouldWrite(e))
                 return;
 
-            
-
             int start = StatisticsInternal.ActiveIncrement(connector.Support);
 
             Guid? traceId = connector.Options.ShouldProfile ? (ProfileStart($"Azure{connector.Support}_{e.TraceId}")) : default(Guid?);
