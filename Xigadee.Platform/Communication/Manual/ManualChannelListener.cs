@@ -12,14 +12,11 @@ namespace Xigadee
     public class ManualChannelListener: MessagingListenerBase<ManualChannelConnection, ManualChannelMessage, ManualChannelClientHolder>
     {
 
-        protected override void ClientsStart()
-        {
-            base.ClientsStart();
-        }
-
         protected override ManualChannelClientHolder ClientCreate(ListenerPartitionConfig partition)
         {
             var client = base.ClientCreate(partition);
+
+            client.Name = mPriorityClientNamer(ChannelId, partition.Priority);
 
             client.ClientCreate = () => new ManualChannelConnection();
 

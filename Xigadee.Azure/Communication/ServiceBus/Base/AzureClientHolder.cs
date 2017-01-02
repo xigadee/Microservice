@@ -56,7 +56,7 @@ namespace Xigadee
                 var message = MessagePack(payload);
                 await MessageTransmit(message);
                 if (BoundaryLoggingActive)
-                    Collector?.BoundaryLog(ChannelDirection.Outgoing, payload);
+                    Collector?.BoundaryLog(ChannelDirection.Outgoing, payload, ChannelId, Priority);
                 fail = false;
             }
             catch (NoMatchingSubscriptionException nex)
@@ -64,14 +64,14 @@ namespace Xigadee
                 //OK, this happens when the remote transmitting party has closed or recycled.
                 LogException($"The sender has closed: {payload.Message.CorrelationServiceId}", nex);
                 if (BoundaryLoggingActive)
-                    Collector?.BoundaryLog(ChannelDirection.Outgoing, payload, nex);
+                    Collector?.BoundaryLog(ChannelDirection.Outgoing, payload, ChannelId, Priority, nex);
             }
             catch (TimeoutException tex)
             {
                 LogException("TimeoutException (Transmit)", tex);
                 tryAgain = true;
                 if (BoundaryLoggingActive)
-                    Collector?.BoundaryLog(ChannelDirection.Outgoing, payload, tex);
+                    Collector?.BoundaryLog(ChannelDirection.Outgoing, payload, ChannelId, Priority, tex);
             }
             catch (MessagingException dex)
             {
@@ -88,7 +88,7 @@ namespace Xigadee
             {
                 LogException("Unhandled Exception (Transmit)", ex);
                 if (BoundaryLoggingActive)
-                    Collector?.BoundaryLog(ChannelDirection.Outgoing, payload, ex);
+                    Collector?.BoundaryLog(ChannelDirection.Outgoing, payload, ChannelId, Priority, ex);
                 throw;
             }
             finally
@@ -130,7 +130,8 @@ namespace Xigadee
             {
                 var intBatch = (await MessageReceive(count, wait))?.ToList() ?? new List<M>();
                 if (BoundaryLoggingActive)
-                    batchId = Collector?.BoundaryBatchPoll(count ?? -1, intBatch.Count, mappingChannel ?? Name);
+                    batchId = Collector?.BoundaryBatchPoll(count ?? -1, intBatch.Count, mappingChannel ?? ChannelId, Priority);
+
                 batch = intBatch.Select(m => TransmissionPayloadUnpack(m, Priority, mappingChannel, batchId)).ToList();
             }
             catch (MessagingException dex)
@@ -173,7 +174,8 @@ namespace Xigadee
             var payload =  PayloadRegisterAndCreate(message, serviceMessage);
 
             //Get the boundary logger to log the metadata.
-            if (BoundaryLoggingActive) Collector?.BoundaryLog(ChannelDirection.Incoming, payload, batchId: batchId);
+            if (BoundaryLoggingActive)
+                Collector?.BoundaryLog(ChannelDirection.Incoming, payload, ChannelId, Priority, batchId: batchId);
 
             return payload;
         }

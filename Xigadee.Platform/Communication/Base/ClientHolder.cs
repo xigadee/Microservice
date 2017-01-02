@@ -110,6 +110,10 @@ namespace Xigadee
         /// </summary>
         public string MappingChannelId { get; set; }
         /// <summary>
+        /// This is the channelId.
+        /// </summary>
+        public string ChannelId { get; set; }
+        /// <summary>
         /// This is the client message priority.
         /// </summary>
         public int Priority { get; set; }

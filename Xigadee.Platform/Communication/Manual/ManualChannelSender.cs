@@ -24,11 +24,13 @@ namespace Xigadee
 
         protected override ManualChannelClientHolder ClientCreate(SenderPartitionConfig partition)
         {
-            var holder = base.ClientCreate(partition);
+            var client = base.ClientCreate(partition);
 
-            holder.IncomingAction = ProcessInvoke;
+            client.Name = mPriorityClientNamer(ChannelId, partition.Priority);
 
-            return holder;
+            client.IncomingAction = ProcessInvoke;
+
+            return client;
         }
     }
 }

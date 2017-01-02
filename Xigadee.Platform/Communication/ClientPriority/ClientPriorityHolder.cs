@@ -252,6 +252,7 @@ namespace Xigadee
             {
                 int? fabricWaitTimeInMs = mMetrics.PollBegin(Reserved.Value);
                 payloads = await Client.MessagesPull(Reserved.Value, fabricWaitTimeInMs, mMappingChannel);
+
             }
             catch (Exception ex)
             {
