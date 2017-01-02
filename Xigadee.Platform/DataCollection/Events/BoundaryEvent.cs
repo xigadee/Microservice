@@ -29,8 +29,6 @@ namespace Xigadee
 
         public int Actual { get; set; }
 
-        public string ClientName { get; set; }
-
         public string ChannelId { get; set; }
 
         public int ChannelPriority { get; set; }

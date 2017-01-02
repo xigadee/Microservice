@@ -85,12 +85,14 @@ namespace Xigadee
             var ev = e as BoundaryEvent;
 
             var dict = new Dictionary<string, EntityProperty>();
-            dict.Add("ChannelId", new EntityProperty(ev.ChannelId));
-            dict.Add("Direction", GetEnum<ChannelDirection>(ev.Direction));
             dict.Add("Type", GetEnum<BoundaryEventType>(ev.Type));
+            dict.Add("Direction", GetEnum<ChannelDirection>(ev.Direction));
+            dict.Add("ChannelId", new EntityProperty(ev.ChannelId));
+            dict.Add("ChannelPriority", new EntityProperty(ev.ChannelPriority));
+            dict.Add("Id", new EntityProperty(ev.Id));
+            dict.Add("BatchId", new EntityProperty(ev.BatchId));
             dict.Add("Requested", new EntityProperty(ev.Requested));
             dict.Add("Actual", new EntityProperty(ev.Actual));
-            dict.Add("BatchId", new EntityProperty(ev.Id));
             dict.Add("Ex", new EntityProperty(ev.Ex?.Message));
             dict.AddPayloadCommon(ev.Payload);
 

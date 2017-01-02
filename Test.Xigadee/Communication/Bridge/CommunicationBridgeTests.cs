@@ -20,22 +20,22 @@ namespace Test.Xigadee
             var p1 = new MicroservicePipeline("Sender")
                 .AdjustPolicyCommunication((p) => p.BoundaryLoggingActiveDefault = true)
                 .AddDataCollector((c) => new DebugMemoryDataCollector(), (c) => memp1 = c)
-                .AddChannelOutgoing("out")
+                .AddChannelOutgoing("crequest")
                     .AttachSender(bridgeOut.GetSender())
                     .Revert()
-                .AddChannelIncoming("response")
+                .AddChannelIncoming("cresponse")
                     .AttachListener(bridgein.GetListener())
-                    .AttachPersistenceMessageInitiator(out init, "out")
+                    .AttachPersistenceMessageInitiator(out init, "crequest")
                     ;
 
             var p2 = new MicroservicePipeline("Receiver")
                 .AdjustPolicyCommunication((p) => p.BoundaryLoggingActiveDefault = true)
                 .AddDataCollector((c) => new DebugMemoryDataCollector(), (c) => memp2 = c)
-                .AddChannelIncoming("out")
+                .AddChannelIncoming("crequest")
                     .AttachListener(bridgeOut.GetListener())
                     .AttachCommand(new PersistenceManagerHandlerMemory<Guid,BridgeMe>((e) => e.Id,(s) => new Guid(s)))
                     .Revert()
-                .AddChannelOutgoing("response")
+                .AddChannelOutgoing("cresponse")
                     .AttachSender(bridgein.GetSender())
                     ;
 
