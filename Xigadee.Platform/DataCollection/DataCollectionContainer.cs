@@ -117,12 +117,6 @@ namespace Xigadee
             return component;
         }
 
-        public IBoundaryLoggerComponent Add(IBoundaryLoggerComponent component)
-        {
-            //mBoundaryLoggers.Add(component);
-            return component;
-        }
-
         #endregion
 
         #region ServiceStart(object service)

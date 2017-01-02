@@ -288,9 +288,6 @@ namespace Xigadee
         {
             try
             {
-                if (service is IRequireBoundaryLogger)
-                    ((IRequireBoundaryLogger)service).BoundaryLogger = Collector as IBoundaryLogger;
-
                 if (service is IRequireDataCollector)
                     ((IRequireDataCollector)service).Collector = Collector;
 

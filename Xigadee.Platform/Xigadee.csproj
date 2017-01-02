@@ -118,6 +118,7 @@
     <Compile Include="DataCollection\DataCollectionSupport.cs" />
     <Compile Include="DataCollection\DataCollector\DataCollectorStatistics.cs" />
     <Compile Include="DataCollection\Events\BoundaryEvent.cs" />
+    <Compile Include="DataCollection\Events\SecurityEvent.cs" />
     <Compile Include="DataCollection\ExtensionMethods\Boundary.cs" />
     <Compile Include="DataCollection\ExtensionMethods\Dispatcher.cs" />
     <Compile Include="DataCollection\ExtensionMethods\EventSource.cs" />
@@ -418,7 +419,6 @@
     <Compile Include="DataCollection\Pipeline\Add\AddLogger.cs" />
     <Compile Include="Serialization\Pipeline\AddPayloadSerializer.cs" />
     <Compile Include="CommandContainer\Pipeline\Add\AddSharedService.cs" />
-    <Compile Include="DataCollection\Pipeline\Attach\AttachBoundaryLogger.cs" />
     <Compile Include="Pipeline\Extensions\Attach\AttachResourceProfile.cs" />
     <Compile Include="Communication\Pipeline\Attach\AttachPriorityPartition.cs" />
     <Compile Include="Communication\Pipeline\Attach\AttachListener.cs" />
@@ -562,6 +562,7 @@
     <Folder Include="Command\Pipeline\Exceptions\" />
     <Folder Include="Command\Security\" />
     <Folder Include="Configuration\Exceptions\" />
+    <Folder Include="DataCollection\Pipeline\Attach\" />
     <Folder Include="Pipeline\Exceptions\" />
     <Folder Include="Pipeline\Extensions\Add\" />
     <Folder Include="Security\AuthenticationHandler\" />

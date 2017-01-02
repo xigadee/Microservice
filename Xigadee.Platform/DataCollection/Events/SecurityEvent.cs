@@ -16,20 +16,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public interface IMicroserviceDataCollection
+    /// <summary>
+    /// This is the root class for logging events for the Microservice framework.
+    /// </summary>
+    //[DebuggerDisplay("{Level} {Category} ")]
+    public class SecurityEvent: EventBase
     {
-        IEventSourceComponent RegisterEventSource(IEventSourceComponent eventSource);
-        ILogger RegisterLogger(ILogger logger);
-
-        /// <summary>
-        /// This method adds a data collection component.
-        /// </summary>
-        /// <param name="collector">The collector.</param>
-        /// <returns>Returns the component.</returns>
-        IDataCollectorComponent Register(IDataCollectorComponent collector);
-
     }
 }

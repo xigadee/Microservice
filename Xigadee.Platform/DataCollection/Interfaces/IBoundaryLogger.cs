@@ -23,17 +23,6 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This interface is for components that require boundary loggers.
-    /// </summary>
-    public interface IRequireBoundaryLogger
-    {
-        /// <summary>
-        /// This is the boundary Collector?.
-        /// </summary>
-        IBoundaryLogger BoundaryLogger { get; set; }
-    }
-
-    /// <summary>
     /// This interface is used to log payload metadata to a central source when it transitions a channel.
     /// </summary>
     public interface IBoundaryLogger: IBoundaryLoggerBase
@@ -62,11 +51,4 @@ namespace Xigadee
         void BoundaryLog(ChannelDirection direction, TransmissionPayload payload, Exception ex = null, Guid? batchId = null);
     }
 
-    /// <summary>
-    /// This interface is implemented by BoundaryLogger components.
-    /// </summary>
-    public interface IBoundaryLoggerComponent: IBoundaryLoggerBase
-    {
-        void BoundaryLogPoll(Guid id, int requested, int actual, string channelId);
-    }
 }
