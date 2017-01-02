@@ -40,14 +40,6 @@ namespace Xigadee
             return pipeline;
         }
 
-        public static P ClearPayloadSerializers<P>(this P pipeline)
-            where P : IPipeline
-        {
-            pipeline.Service.Serialization.ClearPayloadSerializers();
-
-            return pipeline;
-        }
-
         public static P AddPayloadSerializer<P>(this P pipeline
             , Func<IEnvironmentConfiguration, IPayloadSerializer> creator)
             where P : IPipeline

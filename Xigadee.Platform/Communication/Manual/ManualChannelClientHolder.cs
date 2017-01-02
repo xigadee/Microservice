@@ -16,6 +16,8 @@ namespace Xigadee
 
         }
 
+        public Action<TransmissionPayload> IncomingAction { get; set; }
+
         /// <summary>
         /// This method injects a payload to be picked up by the polling algorithm.
         /// </summary>
@@ -37,6 +39,10 @@ namespace Xigadee
 
             TransmissionPayload payload;
 
+            Guid? batchId = null;
+            if (ShouldBoundaryLog)
+                batchId = Collector?.BoundaryBatchPoll(count ?? -1, mPending.Count, mappingChannel ?? Name);
+
             while (countDown> 0 && mPending.TryDequeue(out payload))
             {
                 if (mappingChannel != null)
@@ -52,7 +58,7 @@ namespace Xigadee
 
         public override async Task Transmit(TransmissionPayload payload, int retry = 0)
         {
-
+            IncomingAction?.Invoke(payload);
         }
     }
 }

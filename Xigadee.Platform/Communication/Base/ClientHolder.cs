@@ -187,6 +187,11 @@ namespace Xigadee
         public Action ClientRefresh;
 
         #region Logger/LogException
+        /// <summary>
+        /// This shortcut logs to the collector for log messaging
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="ex">The exception.</param>
         protected void LogException(string message, Exception ex)
         {
             Collector?.LogException(string.Format("{0}={1} - {2}", Name, message, ex.Message), ex);
@@ -203,6 +208,11 @@ namespace Xigadee
         }
         #endregion
 
+        /// <summary>
+        /// This boolean property specifies whether boundary logging is active for this client.
+        /// The default is false.
+        /// </summary>
+        public bool ShouldBoundaryLog { get; set; }
 
         #region StatisticsRecalculate()
         /// <summary>

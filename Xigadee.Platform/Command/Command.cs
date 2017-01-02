@@ -266,6 +266,10 @@ namespace Xigadee
     /// </summary>
     public abstract class CommandBase: CommandBase<CommandStatistics>
     {
+        /// <summary>
+        /// This is the default constructor for the command class.
+        /// </summary>
+        /// <param name="policy">The optional command policy. If this is null, then the policy will be created.</param>
         public CommandBase(CommandPolicy policy = null) : base(policy)
         {
         }
@@ -279,6 +283,10 @@ namespace Xigadee
     public abstract class CommandBase<S>: CommandBase<S, CommandPolicy>
         where S : CommandStatistics, new()
     {
+        /// <summary>
+        /// This is the default constructor for the command class.
+        /// </summary>
+        /// <param name="policy">The optional command policy. If this is null, then the policy will be created.</param>
         public CommandBase(CommandPolicy policy = null) : base(policy)
         {
         }
@@ -294,6 +302,10 @@ namespace Xigadee
         where S : CommandStatistics, new()
         where P : CommandPolicy, new()
     {
+        /// <summary>
+        /// This is the default constructor for the command class.
+        /// </summary>
+        /// <param name="policy">The optional command policy. If this is null, then the policy will be created.</param>
         public CommandBase(P policy = null) : base(policy)
         {
         }

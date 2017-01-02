@@ -95,6 +95,7 @@ namespace Xigadee
         /// This property specifies that the channel should only be used for internal messaging.
         /// </summary>
         public bool InternalOnly { get; }
+
         /// <summary>
         /// This is the boundary logger set for the channel
         /// </summary>

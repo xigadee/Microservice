@@ -22,11 +22,14 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    /// <summary>
-    /// These extension methods are used for extending the persistence support.
-    /// </summary>
-    public static class PersistenceExtensionMethods
+    public static partial class CorePipelineExtensions
     {
+        public static P ClearPayloadSerializers<P>(this P pipeline)
+            where P : IPipeline
+        {
+            pipeline.Service.Serialization.ClearPayloadSerializers();
 
+            return pipeline;
+        }
     }
 }
