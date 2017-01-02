@@ -18,6 +18,7 @@ namespace Test.Xigadee
             DebugMemoryDataCollector memp1,memp2;
 
             var p1 = new MicroservicePipeline("Sender")
+                .AdjustPolicyCommunication((p) => p.BoundaryLogDefaultStatus = true)
                 .AddDataCollector((c) => new DebugMemoryDataCollector(), (c) => memp1 = c)
                 .AddChannelOutgoing("out")
                     .AttachSender(bridgeOut.GetSender())
@@ -28,6 +29,7 @@ namespace Test.Xigadee
                     ;
 
             var p2 = new MicroservicePipeline("Receiver")
+                .AdjustPolicyCommunication((p) => p.BoundaryLogDefaultStatus = true)
                 .AddDataCollector((c) => new DebugMemoryDataCollector(), (c) => memp2 = c)
                 .AddChannelIncoming("out")
                     .AttachListener(bridgeOut.GetListener())

@@ -37,6 +37,9 @@ namespace Xigadee
         /// <param name="listener">The listener.</param>
         public void ListenerAdd(IListener listener)
         {
+            if (listener == null)
+                throw new ArgumentNullException("listener", "listener cannot be null.");
+
             mListener.Add(listener);
         }
         #endregion

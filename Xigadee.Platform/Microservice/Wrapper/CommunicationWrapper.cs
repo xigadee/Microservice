@@ -71,6 +71,7 @@ namespace Xigadee
         }
         #endregion
 
+        #region HasChannel(string channelId, ChannelDirection direction)
         /// <summary>
         /// This method returns true if the channel is registered for that specific direction.
         /// </summary>
@@ -80,7 +81,8 @@ namespace Xigadee
         public bool HasChannel(string channelId, ChannelDirection direction)
         {
             return mCommunication.Exists(channelId, direction);
-        }
+        } 
+        #endregion
 
         #region Channels
         /// <summary>

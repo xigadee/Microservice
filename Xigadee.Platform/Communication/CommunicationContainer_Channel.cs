@@ -74,6 +74,12 @@ namespace Xigadee
         /// <param name="item">The channel to add.</param>
         public virtual bool Add(Channel item)
         {
+            if (item == null)
+                throw new ArgumentNullException("item", "The channel cannot be null.");
+
+            if (!item.BoundaryLoggingActive.HasValue)
+                item.BoundaryLoggingActive = mPolicy.BoundaryLogDefaultStatus;
+
             return Wrapper(item.Direction,
                 (r) =>
                 {

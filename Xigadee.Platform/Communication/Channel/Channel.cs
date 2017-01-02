@@ -45,14 +45,14 @@ namespace Xigadee
         /// <param name="id">The channel Id.</param>
         /// <param name="direction">The direction of the channel - Incoming or outgoing</param>
         /// <param name="description">The optional description</param>
-        /// <param name="boundaryLogger">This is the boundary logger for the channel.</param>
+        /// <param name="bLoggerActive">This is the boundary logger active status for the channel.</param>
         /// <param name="internalOnly">This property specifies that the channel should only be used for internal messaging.</param>
         /// <param name="rewriteRules">A selection of rewrite rules for the channel.</param>
         /// <param name="isAutocreated">A boolean property that specifies whether the channel was created automatically by the communications container.</param>
         public Channel(string id
             , ChannelDirection direction
             , string description = null
-            , IBoundaryLogger boundaryLogger = null
+            , bool? bLoggerActive = null
             , bool internalOnly = false
             , IEnumerable<MessageRedirectRule> rewriteRules = null
             , bool isAutocreated = false)
@@ -64,7 +64,7 @@ namespace Xigadee
             Direction = direction;
             Description = description;
             InternalOnly = internalOnly;
-            BoundaryLogger = boundaryLogger;
+            BoundaryLoggingActive = bLoggerActive;
             IsAutoCreated = isAutocreated;
 
             if (rewriteRules != null)
@@ -97,9 +97,10 @@ namespace Xigadee
         public bool InternalOnly { get; }
 
         /// <summary>
-        /// This is the boundary logger set for the channel
+        /// This is the boundary logger active status for the channel. 
+        /// If null, the default communication policy will be used.
         /// </summary>
-        public IBoundaryLogger BoundaryLogger {get;set;}
+        public bool? BoundaryLoggingActive {get;set;}
 
         /// <summary>
         /// This is a set of resource profiles attached to the channel.

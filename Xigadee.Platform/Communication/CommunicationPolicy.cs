@@ -29,6 +29,11 @@ namespace Xigadee
     public class CommunicationPolicy:PolicyBase
     {
         /// <summary>
+        /// This is the default boundary logging status. When the specific status is not set, then this value 
+        /// will be used. The default value is false.
+        /// </summary>
+        public bool BoundaryLogDefaultStatus { get; set; }
+        /// <summary>
         /// This property specifies that channel can be created automatically if they do not exist.
         /// If this is set to false, an error will be generated when a message is sent to a channel
         /// that has not been explicitly created.

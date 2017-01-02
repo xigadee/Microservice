@@ -40,7 +40,7 @@ namespace Xigadee
             TransmissionPayload payload;
 
             Guid? batchId = null;
-            if (ShouldBoundaryLog)
+            if (BoundaryLogActive)
                 batchId = Collector?.BoundaryBatchPoll(count ?? -1, mPending.Count, mappingChannel ?? Name);
 
             while (countDown> 0 && mPending.TryDequeue(out payload))

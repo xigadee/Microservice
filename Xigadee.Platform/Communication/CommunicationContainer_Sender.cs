@@ -36,6 +36,9 @@ namespace Xigadee
         /// <param name="sender">The sender to add.</param>
         public void SenderAdd(ISender sender)
         {
+            if (sender == null)
+                throw new ArgumentNullException("sender", "sender cannot be null.");
+
             mSenders.Add(sender);
             mMessageSenderMap.Clear();
         }
