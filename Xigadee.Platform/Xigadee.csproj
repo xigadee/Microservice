@@ -252,7 +252,6 @@
     <Compile Include="DataCollection\EventSource\Implementation\DocumentDbEventSource.cs" />
     <Compile Include="DataCollection\EventSource\Entry\EventSourceEntry.cs" />
     <Compile Include="DataCollection\EventSource\Entry\EventSourceEntryBase.cs" />
-    <Compile Include="DataCollection\Interfaces\IBoundaryLogger.cs" />
     <Compile Include="DataCollection\Interfaces\IEventSource.cs" />
     <Compile Include="DataCollection\Interfaces\DispatcherLoggerDirection.cs" />
     <Compile Include="DataCollection\Logger\Implementations\DocumentDb\DocumentDbLogger.cs" />

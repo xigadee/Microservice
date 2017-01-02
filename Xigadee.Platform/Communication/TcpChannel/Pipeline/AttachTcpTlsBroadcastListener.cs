@@ -17,7 +17,6 @@ namespace Xigadee
             , string mappingChannelId = null
             , TimeSpan? deleteOnIdleTime = null
             , IEnumerable<ListenerPartitionConfig> priorityPartitions = null
-            , IBoundaryLogger boundaryLogger = null
             , IEnumerable<ResourceProfile> resourceProfiles = null
             , Action<TcpTlsChannelListener> onCreate = null
             , bool setFromChannelProperties = true

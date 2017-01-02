@@ -34,7 +34,6 @@ namespace Xigadee
             , string mappingChannelId = null
             , IEnumerable<ListenerPartitionConfig> priorityPartitions = null
             , IEnumerable<ResourceProfile> resourceProfiles = null
-            , IBoundaryLogger boundaryLogger = null
             , Action<AzureSBQueueListener> onCreate = null)
             where C: IPipelineChannelIncoming<IPipeline>
         {
