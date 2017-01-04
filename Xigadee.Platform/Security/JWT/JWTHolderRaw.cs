@@ -40,7 +40,14 @@ namespace Xigadee
             if (split.Length < 2)
                 throw new InvalidJWTTokenStructureException();
 
-            Raw = split.Select((s) => Safeb64UrlDecode(s)).ToList();
+            var dict = new Dictionary<int, byte[]>();
+
+            for (int i = 0; i < split.Length; i++)
+            {
+                dict.Add(i, SafeBase64UrlDecode(split[i]));
+            }
+
+            Raw = dict;
 
             JoseHeader = JSONConvert(Raw[0]);
         }
@@ -48,14 +55,27 @@ namespace Xigadee
         /// <summary>
         /// This is the list of raw binary parameters.
         /// </summary>
-        public List<byte[]> Raw { get; }
+        public Dictionary<int,byte[]> Raw { get; }
+
+        #region RawOrdered()
+        /// <summary>
+        /// This method can be used to return the serializable pieces in their correct order.
+        /// </summary>
+        /// <returns>This is a selection of values in the correct order.</returns>
+        protected virtual IEnumerable<byte[]> RawOrdered()
+        {
+            return Raw
+                .OrderBy((k) => k.Key)
+                .Select((v) => v.Value);
+        } 
+        #endregion
 
         /// <summary>
         /// This is the raw JSON string containing the JOSE Header.
         /// </summary>
         public string JoseHeader { get; set; }
 
-        public static string Safeb64UrlEncode(byte[] arg)
+        public static string SafeBase64UrlEncode(byte[] arg)
         {
             string s = Convert.ToBase64String(arg); // Standard base64 encoder
             s = s.Split('=')[0]; // Remove any trailing '='s
@@ -64,7 +84,7 @@ namespace Xigadee
             return s;
         }
 
-        static byte[] Safeb64UrlDecode(string arg)
+        public static byte[] SafeBase64UrlDecode(string arg)
         {
             string s = arg;
             s = s.Replace('-', '+'); // 62nd char of encoding
@@ -80,7 +100,12 @@ namespace Xigadee
             return Convert.FromBase64String(s); // Standard base64 decoder
         }
 
-        protected string JSONConvert(byte[] raw)
+        /// <summary>
+        /// This method converts the binary UTF8 data to a string.
+        /// </summary>
+        /// <param name="raw">The UTF8 byte array.</param>
+        /// <returns>returns the string formatted data.</returns>
+        protected virtual string JSONConvert(byte[] raw)
         {
             try
             {
@@ -93,18 +118,25 @@ namespace Xigadee
 
         }
 
+        /// <summary>
+        /// This method outputs the necessary pieces in the correct order.
+        /// </summary>
+        /// <returns></returns>
         public string ToJWSCompactSerialization()
         {
             StringBuilder sb = new StringBuilder();
 
-            Raw.ForIndex((i,s) =>
+            RawOrdered()
+                .ForIndex((i,s) =>
             {
                 if (i>0)
                     sb.Append('.');
-                sb.Append(Safeb64UrlEncode(s));
+                sb.Append(SafeBase64UrlEncode(s));
                 });
 
             return sb.ToString();
         }
     }
+
+    //https://medium.facilelogin.com/jwt-jws-and-jwe-for-not-so-dummies-b63310d201a3#.fmgvwdaz9
 }

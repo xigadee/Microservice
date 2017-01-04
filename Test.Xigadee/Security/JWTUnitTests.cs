@@ -39,7 +39,6 @@ namespace Test.Xigadee.Security
 
         }
 
-
         [TestMethod]
         public void ValidateParsing()
         {           

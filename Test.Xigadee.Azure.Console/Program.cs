@@ -25,7 +25,6 @@ namespace Test.Xigadee.Azure.Console
             }
             catch (Exception ex)
             {
-
                 throw;
             }
 

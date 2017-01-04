@@ -87,8 +87,8 @@ namespace Xigadee
 
         public string ToString(JWTHashAlgorithm algo, byte[] key)
         {
-            string b64joseHeader = Safeb64UrlEncode(Encoding.UTF8.GetBytes(JoseHeader));
-            string b64jwtClaimsSet = Safeb64UrlEncode(Encoding.UTF8.GetBytes(JWTPayload));
+            string b64joseHeader = SafeBase64UrlEncode(Encoding.UTF8.GetBytes(JoseHeader));
+            string b64jwtClaimsSet = SafeBase64UrlEncode(Encoding.UTF8.GetBytes(JWTPayload));
 
             return $"{b64joseHeader}.{b64jwtClaimsSet}.{CalculateAuthSignature(algo, key, b64joseHeader, b64jwtClaimsSet)}";
         }
@@ -114,7 +114,7 @@ namespace Xigadee
             {
                 byte[] sha256Hash = hashstring.ComputeHash(bySig);
 
-                signature = Safeb64UrlEncode(sha256Hash);
+                signature = SafeBase64UrlEncode(sha256Hash);
             }
 
             return signature;
@@ -138,7 +138,7 @@ namespace Xigadee
                 case JWTHashAlgorithm.HS512:
                     return new HMACSHA512(key);
                 default:
-                    throw new NotSupportedException();
+                    throw new AlgorithmNotSupportedException(type.ToString());
             }
         } 
         #endregion

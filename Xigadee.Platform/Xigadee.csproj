@@ -552,6 +552,7 @@
     <None Include="Security\_Documents\rfc7517.pdf" />
     <None Include="Security\_Documents\rfc7518.pdf" />
     <None Include="Security\_Documents\rfc7519.pdf" />
+    <None Include="Security\_Documents\rfc7800.pdf" />
     <None Include="Xigadee.nuspec" />
     <None Include="Xigadee.Platform.licenseheader" />
   </ItemGroup>
