@@ -15,9 +15,10 @@ namespace Test.Xigadee.Azure.Console
 
                 pipeline1
                     .ConfigurationSetFromConsoleArgs(args)
-                    .AddAzureStorageDataCollector()
+                    .AddAzureStorageDataCollector(adjustPolicy: (AzureStorageDataCollectorPolicy a) => a.Log.EncryptionPolicy = AzureStorageEncryption.None)
                     ;
 
+                
                 mainMenu.AddMicroservicePipeline(pipeline1);
                 mainMenu.AddMicroservicePipeline(pipeline2);
 

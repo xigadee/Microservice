@@ -34,17 +34,17 @@ namespace Xigadee
 
         public static void LogException(this IDataCollection collector, Exception ex)
         {
-            collector.Write(new LogEvent(ex));
+            collector.Write(new LogEvent(ex) { Level = LoggingLevel.Error });
         }
 
         public static void LogException(this IDataCollection collector, string message, Exception ex)
         {
-            collector.Write(new LogEvent(message, ex));
+            collector.Write(new LogEvent(message, ex) { Level = LoggingLevel.Error });
         }
 
         public static void LogMessage(this IDataCollection collector, string message)
         {
-            collector.Write(new LogEvent(message));
+            collector.Write(new LogEvent(message) { Level = LoggingLevel.Info });
         }
 
         public static void LogMessage(this IDataCollection collector, LoggingLevel level, string message)

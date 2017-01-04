@@ -26,7 +26,7 @@ namespace Xigadee
         /// <summary>
         /// This is the Log options.
         /// </summary>
-        public AzureStorageDataCollectorOptions Log { get; set; } 
+        public AzureStorageDataCollectorOptions Log { get; set; }
             = new AzureStorageDataCollectorOptions(DataCollectionSupport.Logger
                 , AzureStorageBehaviour.BlobAndTable
                 , serializerTable: AzureStorageHelper.ToTableLogEvent
@@ -34,6 +34,7 @@ namespace Xigadee
                 , binaryMakeFolder: AzureStorageHelper.LoggerMakeFolder
                 , isSupported: AzureStorageHelper.DefaultLogLevelSupport
                 );
+
         /// <summary>
         /// This is the EventSource options.
         /// </summary>
@@ -41,7 +42,7 @@ namespace Xigadee
             = new AzureStorageDataCollectorOptions(DataCollectionSupport.EventSource
                 , AzureStorageBehaviour.Blob
                 , binaryMakeId: AzureStorageHelper.EventSourceMakeId
-                , binaryMakeFolder: AzureStorageHelper.EventSourceMakeFolder
+                , binaryMakeFolder: AzureStorageHelper.StatisticsMakeFolder
                 );
         /// <summary>
         /// This is the Statistics options. By default encryption is not set for statistics.
