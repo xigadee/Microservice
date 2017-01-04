@@ -18,16 +18,30 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Xigadee;
 
 namespace Xigadee
 {
     /// <summary>
-    /// This is the default policy for the Data Collector.
+    /// This is the signed JWT Token.
     /// </summary>
-    public class DataCollectorPolicy: PolicyBase
+    public class JWTSigned:JWTHolderRaw
     {
+        public JWTSigned(string encoding) : base(encoding)
+        {
+        }
 
+        /// <summary>
+        /// This is the raw JSON string containing the claims set.
+        /// </summary>
+        public string JWTPayload { get; set; }
+        /// <summary>
+        /// This is the raw JSON string containing the claims set.
+        /// </summary>
+        public string JWSSignature { get; set; }
+
+        public bool Validate(byte[] key)
+        {
+            return false;
+        }
     }
 }

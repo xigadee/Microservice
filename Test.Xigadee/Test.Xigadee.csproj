@@ -87,7 +87,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Microservice_Validate_Persistence.cs" />
     <Compile Include="Security\AesEncryptionTests.cs" />
-    <Compile Include="Security\UnitTest1.cs" />
+    <Compile Include="Security\TransportEncryptionTests.cs" />
+    <Compile Include="Security\TransportVerificationTests.cs" />
+    <Compile Include="Security\JWTUnitTests.cs" />
     <Compile Include="Serialization\SerializationTests.cs" />
     <Compile Include="SignatureHelper.cs" />
     <Compile Include="ApiTests.cs" />

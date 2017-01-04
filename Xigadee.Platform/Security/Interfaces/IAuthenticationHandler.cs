@@ -11,5 +11,6 @@ namespace Xigadee
     /// </summary>
     public interface IAuthenticationHandler
     {
+
     }
 }

@@ -7,21 +7,11 @@ using Xigadee;
 namespace Test.Xigadee
 {
     [TestClass]
-    public class TransportEncryptionTests
+    public class TransportVerificationTests
     {
         [TestClass]
         public class CommunicationBridgeTests
         {
-            private static string CreateSalt(int size)
-            {
-                //Generate a cryptographic random number.
-                RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-                byte[] buff = new byte[size/8];
-                rng.GetBytes(buff);
-
-                // Return a Base64 string representation of the random number.
-                return Convert.ToBase64String(buff);
-            }
 
             [TestMethod]
             public void TestMethod1()
@@ -29,22 +19,16 @@ namespace Test.Xigadee
                 var bridgeOut = new CommunicationBridge(CommunicationBridgeMode.RoundRobin);
                 var bridgein = new CommunicationBridge(CommunicationBridgeMode.Broadcast);
 
-                var key = CreateSalt(128);
-
-                var enc1 = new AesEncryptionHandler(key, true, 128);
-                var enc2 = new AesEncryptionHandler(key, true, 128);
-
 
                 PersistenceMessageInitiator<Guid, SecureMe> init;
                 DebugMemoryDataCollector memp1, memp2;
 
                 var p1 = new MicroservicePipeline("Sender")
-                    .AddEncryptionHandler("rogue1",enc1)
                     .AdjustPolicyCommunication((p) => p.BoundaryLoggingActiveDefault = true)
                     .AddDataCollector((c) => new DebugMemoryDataCollector(), (c) => memp1 = c)
                     .AddChannelOutgoing("crequest")
-                        .AttachTransportEncryption("rogue1")
                         .AttachSender(bridgeOut.GetSender())
+                        //.AttachTransportMessageSignature()
                         .Revert()
                     .AddChannelIncoming("cresponse")
                         .AttachListener(bridgein.GetListener())
@@ -52,11 +36,10 @@ namespace Test.Xigadee
                         ;
 
                 var p2 = new MicroservicePipeline("Receiver")
-                    .AddEncryptionHandler("rogue2", enc2)
                     .AdjustPolicyCommunication((p) => p.BoundaryLoggingActiveDefault = true)
                     .AddDataCollector((c) => new DebugMemoryDataCollector(), (c) => memp2 = c)
                     .AddChannelIncoming("crequest")
-                        .AttachTransportDecryption("rogue2")
+                        //.AttachTransportMessageVerification()
                         .AttachListener(bridgeOut.GetListener())
                         .AttachCommand(new PersistenceManagerHandlerMemory<Guid, SecureMe>((e) => e.Id, (s) => new Guid(s)))
                         .Revert()
@@ -78,10 +61,6 @@ namespace Test.Xigadee
                 Assert.IsTrue(rs2.Entity.Message == "Momma");
             }
 
-            private void CommunicationBridgeTests_OnExecuteBegin(object sender, Microservice.TransmissionPayloadState e)
-            {
-
-            }
         }
 
         public class SecureMe

@@ -18,16 +18,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Xigadee;
 
 namespace Xigadee
 {
-    /// <summary>
-    /// This is the default policy for the Data Collector.
-    /// </summary>
-    public class DataCollectorPolicy: PolicyBase
+    public class AlgorithmNotSupportedException: Exception
     {
+        public AlgorithmNotSupportedException(string alg):base($"{alg}")
+        {
 
+        }
     }
 }

@@ -18,16 +18,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Xigadee;
 
 namespace Xigadee
 {
     /// <summary>
-    /// This is the default policy for the Data Collector.
+    /// This enumeration contains the supported HMAC hash algorithms for 
     /// </summary>
-    public class DataCollectorPolicy: PolicyBase
+    public enum JWTHashAlgorithm
     {
-
+        HS256,
+        HS384,
+        HS512
     }
 }

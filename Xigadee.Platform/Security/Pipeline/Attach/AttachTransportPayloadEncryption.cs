@@ -32,8 +32,8 @@ namespace Xigadee
         /// <param name="cpipe">The pipeline.</param>
         /// <param name="identifier">The encryption id.</param>
         /// <returns>Returns the pipeline.</returns>
-        public static C AttachTransportDecryption<C>(this C cpipe, string identifier)
-            where C : IPipelineChannelIncoming<IPipeline>
+        public static C AttachTransportPayloadEncryption<C>(this C cpipe, string identifier)
+            where C : IPipelineChannelOutgoing<IPipeline>
         {
             if (!cpipe.Pipeline.Service.Security.HasEncryptionHandler(identifier))
                 throw new EncryptionHandlerNotResolvedException(cpipe.Channel.Id, identifier);
@@ -44,6 +44,6 @@ namespace Xigadee
             cpipe.Channel.EncryptionHandlerId = identifier;
 
             return cpipe;
-        }
+        } 
     }
 }
