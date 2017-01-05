@@ -20,24 +20,24 @@ namespace Test.Xigadee.Security
             109, 112, 108, 101, 46, 99, 111, 109, 47, 105, 115, 95, 114, 111,
             111, 116, 34, 58, 116, 114, 117, 101, 125};
 
-        [TestMethod]
-        public void TestMethod1()
-        {
-            var jwt = new JWTHolder(JWTHashAlgorithm.HS256);
+        //[TestMethod]
+        //public void TestMethod1()
+        //{
+        //    var jwt = new JWTHolder(JWTHashAlgorithm.HS256);
 
-            //jwt.JoseHeader = Encoding.UTF8.GetString(exampleHeader);
-            jwt.JWTPayload = Encoding.UTF8.GetString(exampleClaims);
+        //    //jwt.JoseHeader = Encoding.UTF8.GetString(exampleHeader);
+        //    jwt.JWTPayload = Encoding.UTF8.GetString(exampleClaims);
 
-            var check = "eyJ0eXAiOiJKV1QiLA0KICJhbGciOiJIUzI1NiJ9";
-            var check2 = "eyJpc3MiOiJqb2UiLA0KICJleHAiOjEzMDA4MTkzODAsDQogImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ";
+        //    var check = "eyJ0eXAiOiJKV1QiLA0KICJhbGciOiJIUzI1NiJ9";
+        //    var check2 = "eyJpc3MiOiJqb2UiLA0KICJleHAiOjEzMDA4MTkzODAsDQogImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ";
 
-            byte[] key = Guid.NewGuid().ToByteArray();
-            string keyCheck = Convert.ToBase64String(key);
+        //    byte[] key = Guid.NewGuid().ToByteArray();
+        //    string keyCheck = Convert.ToBase64String(key);
 
-            string result = jwt.ToString(key);
+        //    string result = jwt.ToString(key);
 
 
-        }
+        //}
 
         [TestMethod]
         public void ValidateParsing()
