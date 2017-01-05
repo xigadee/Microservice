@@ -60,7 +60,7 @@ namespace Xigadee
 
         public override bool ShouldWrite(EventBase e)
         {
-            return Options.IsSupported(AzureStorageBehaviour.Table, e);
+            return Options.IsSupported?.Invoke(AzureStorageBehaviour.Table, e)??false;
         }
     }
 }

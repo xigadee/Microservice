@@ -21,7 +21,7 @@ namespace Test.Xigadee.Azure.Console
                 
                 mainMenu.AddMicroservicePipeline(pipeline1);
                 mainMenu.AddMicroservicePipeline(pipeline2);
-
+                mainMenu.AddOption("Aruba", (m,o) => pipeline1.Service.DataCollection.LogException(new Exception()));
                 mainMenu.Show();
             }
             catch (Exception ex)

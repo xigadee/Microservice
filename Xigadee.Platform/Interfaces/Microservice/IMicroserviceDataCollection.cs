@@ -19,9 +19,13 @@ using System.Collections.Generic;
 
 namespace Xigadee
 {
-    public interface IMicroserviceDataCollection
+    /// <summary>
+    /// This interface provides the external facing support for data collection
+    /// </summary>
+    public interface IMicroserviceDataCollection: IDataCollection
     {
         IEventSourceComponent RegisterEventSource(IEventSourceComponent eventSource);
+
         ILogger RegisterLogger(ILogger logger);
 
         /// <summary>

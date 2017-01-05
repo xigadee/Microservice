@@ -17,6 +17,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -70,5 +71,18 @@ namespace Xigadee
             return logger;
         }
         #endregion
+
+        /// <summary>
+        /// This method is used by the extension method to write data to the collector.
+        /// </summary>
+        /// <param name="eventData">The event data.</param>
+        /// <param name="support">The support type.</param>
+        /// <param name="sync">The sync identifier. </param>
+        /// <param name="claims">Any specific claims.</param>
+        public void Write(EventBase eventData, DataCollectionSupport support, bool sync = false, ClaimsPrincipal claims = null)
+        {
+            ValidateServiceStarted();
+            mDataCollection.Write(eventData, support, sync, claims);
+        }
     }
 }

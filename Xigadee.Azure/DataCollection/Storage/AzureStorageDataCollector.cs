@@ -238,16 +238,16 @@ namespace Xigadee
         {
             List<Task> mActions = new List<Task>();
             //Blob
-            if (mHoldersBlob.ContainsKey(support))
+            if (mHoldersBlob.ContainsKey(support) && mHoldersBlob[support].ShouldWrite(e))
                 mActions.Add(WriteConnector(mHoldersBlob[support], e));
             //Table
-            if (mHoldersTable.ContainsKey(support))
+            if (mHoldersTable.ContainsKey(support) && mHoldersTable[support].ShouldWrite(e))
                 mActions.Add(WriteConnector(mHoldersTable[support], e));
             //Queue
-            if (mHoldersQueue.ContainsKey(support))
+            if (mHoldersQueue.ContainsKey(support) && mHoldersQueue[support].ShouldWrite(e))
                 mActions.Add(WriteConnector(mHoldersQueue[support], e));
             //File
-            if (mHoldersFile.ContainsKey(support))
+            if (mHoldersFile.ContainsKey(support) && mHoldersFile[support].ShouldWrite(e))
                 mActions.Add(WriteConnector(mHoldersFile[support], e));
 
             Task.WhenAll(mActions).Wait();
@@ -262,9 +262,6 @@ namespace Xigadee
         /// <returns>This is an async process.</returns>
         protected virtual async Task WriteConnector(IAzureStorageConnectorBase connector, EventBase e)
         {
-            if (!connector.ShouldWrite(e))
-                return;
-
             int start = StatisticsInternal.ActiveIncrement(connector.Support);
 
             Guid? traceId = connector.Options.ShouldProfile ? (ProfileStart($"Azure{connector.Support}_{e.TraceId}")) : default(Guid?);

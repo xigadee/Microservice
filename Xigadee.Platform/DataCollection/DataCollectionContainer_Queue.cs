@@ -186,6 +186,9 @@ namespace Xigadee
             if (!Active)
                 throw new ServiceNotStartedException();
 
+            if (claims == null)
+                claims = Thread.CurrentPrincipal as ClaimsPrincipal;
+
             //Create the event holder and set the identity based on the claims passed or if null, picked up from the 
             //current thread.
             var item = new EventHolder(support, claims) { Data = eventData, Sync = sync, Timestamp = StatisticsInternal.ActiveIncrement() };
