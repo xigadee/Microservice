@@ -36,7 +36,6 @@ namespace Test.Xigadee.Security
 
         //    string result = jwt.ToString(key);
 
-
         //}
 
         [TestMethod]

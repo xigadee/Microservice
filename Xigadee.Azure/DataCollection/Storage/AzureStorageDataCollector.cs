@@ -17,15 +17,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.WindowsAzure.Storage.File;
-using Microsoft.WindowsAzure.Storage.Queue;
-using Microsoft.WindowsAzure.Storage.RetryPolicies;
-using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Xigadee
 {
@@ -208,6 +203,7 @@ namespace Xigadee
             SupportAdd(DataCollectionSupport.Telemetry, (e) => WriteConnectors(DataCollectionSupport.Telemetry, e));
             SupportAdd(DataCollectionSupport.Resource, (e) => WriteConnectors(DataCollectionSupport.Resource, e));
             SupportAdd(DataCollectionSupport.Custom, (e) => WriteConnectors(DataCollectionSupport.Custom, e));
+            SupportAdd(DataCollectionSupport.Security, (e) => WriteConnectors(DataCollectionSupport.Security, e));
         }
         #endregion
 
@@ -236,24 +232,22 @@ namespace Xigadee
         /// <param name="e">The event object.</param>
         protected void WriteConnectors(DataCollectionSupport support, EventBase e)
         {
-            List<Task> mActions = new List<Task>();
             //Blob
             if (mHoldersBlob.ContainsKey(support) && mHoldersBlob[support].ShouldWrite(e))
-                mActions.Add(WriteConnector(mHoldersBlob[support], e));
+                WriteConnector(mHoldersBlob[support], e).Wait();
             //Table
             if (mHoldersTable.ContainsKey(support) && mHoldersTable[support].ShouldWrite(e))
-                mActions.Add(WriteConnector(mHoldersTable[support], e));
+                WriteConnector(mHoldersTable[support], e).Wait();
             //Queue
             if (mHoldersQueue.ContainsKey(support) && mHoldersQueue[support].ShouldWrite(e))
-                mActions.Add(WriteConnector(mHoldersQueue[support], e));
+                WriteConnector(mHoldersQueue[support], e).Wait();
             //File
             if (mHoldersFile.ContainsKey(support) && mHoldersFile[support].ShouldWrite(e))
-                mActions.Add(WriteConnector(mHoldersFile[support], e));
-
-            Task.WhenAll(mActions).Wait();
+                WriteConnector(mHoldersFile[support], e).Wait();
         }
         #endregion
 
+        #region WriteConnector(IAzureStorageConnectorBase connector, EventBase e)
         /// <summary>
         /// This method writes the event data to the underlying storage.
         /// </summary>
@@ -291,6 +285,7 @@ namespace Xigadee
                 if (traceId.HasValue)
                     ProfileEnd(traceId.Value, start, result);
             }
-        }
+        } 
+        #endregion
     }
 }

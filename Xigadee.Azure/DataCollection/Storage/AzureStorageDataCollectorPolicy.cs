@@ -87,6 +87,16 @@ namespace Xigadee
                 , AzureStorageBehaviour.Table
                 , AzureStorageHelper.ToTableGeneric
                 );
+
+        /// <summary>
+        /// This is the Resource Table storage options.
+        /// </summary>
+        public AzureStorageDataCollectorOptions Security { get; set; }
+            = new AzureStorageDataCollectorOptions(DataCollectionSupport.Security
+                , AzureStorageBehaviour.Table
+                , AzureStorageHelper.ToTableGeneric
+                );
+
         /// <summary>
         /// This is the Custom options.
         /// </summary>
@@ -108,6 +118,7 @@ namespace Xigadee
                 yield return Telemetry;
                 yield return Resource;
                 yield return Custom;
+                yield return Security;
             }
         }
 
