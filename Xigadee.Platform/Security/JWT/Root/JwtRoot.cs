@@ -50,7 +50,7 @@ namespace Xigadee
 
             Raw = dict;
 
-            JoseHeader = JSONConvert(Raw[0]);
+            JoseHeader = UTF8ToJSONConvert(Raw[0]);
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="raw">The UTF8 byte array.</param>
         /// <returns>returns the string formatted data.</returns>
-        public static string JSONConvert(byte[] raw)
+        public static string UTF8ToJSONConvert(byte[] raw)
         {
             try
             {

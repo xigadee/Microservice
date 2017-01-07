@@ -23,6 +23,9 @@ namespace Test.Xigadee.Security
             109, 112, 108, 101, 46, 99, 111, 109, 47, 105, 115, 95, 114, 111,
             111, 116, 34, 58, 116, 114, 117, 101, 125};
 
+        static string check = "eyJ0eXAiOiJKV1QiLA0KICJhbGciOiJIUzI1NiJ9";
+        static string check2 = "eyJpc3MiOiJqb2UiLA0KICJleHAiOjEzMDA4MTkzODAsDQogImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ";
+
         [TestMethod]
         public void TestMethod1()
         {
@@ -31,8 +34,6 @@ namespace Test.Xigadee.Security
             //jwt.JoseHeader = Encoding.UTF8.GetString(exampleHeader);
             jwt.JWTPayload = Encoding.UTF8.GetString(exampleClaims);
 
-            var check = "eyJ0eXAiOiJKV1QiLA0KICJhbGciOiJIUzI1NiJ9";
-            var check2 = "eyJpc3MiOiJqb2UiLA0KICJleHAiOjEzMDA4MTkzODAsDQogImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ";
 
             byte[] key = Guid.NewGuid().ToByteArray();
             string keyCheck = Convert.ToBase64String(key);
@@ -42,7 +43,7 @@ namespace Test.Xigadee.Security
         }
 
         [TestMethod]
-        public void JOSEHeaderTest()
+        public void ClaimsSetTest()
         {
             try
             {
@@ -56,10 +57,12 @@ namespace Test.Xigadee.Security
 
                 var json = set.ToString();
 
-                Assert.AreEqual(set["typ"], "Scooby");
-                Assert.AreEqual(set["alg"], "HS256");
-                Assert.AreEqual(set["awkward"], 24);
-                Assert.AreEqual(set["hmm"], 42);
+                var set2 = new ClaimsSet(json);
+
+                Assert.AreEqual(set2["typ"], "Scooby");
+                Assert.AreEqual(set2["alg"], "HS256");
+                Assert.AreEqual((long)set2["awkward"], 24L);
+                Assert.AreEqual((long)set2["hmm"], 42L);
             }
             catch (Exception ex)
             {
@@ -77,6 +80,14 @@ namespace Test.Xigadee.Security
             Assert.AreEqual(id, jwtbase.ToJWSCompactSerialization());
         }
 
+        [TestMethod]
+        public void JwtTokenTest1()
+        {
+            var check1 = JwtRoot.SafeBase64UrlEncode(Encoding.UTF8.GetBytes("{\"typ\":\"JWT\",      \"alg\":\"HS256\"}"));
+
+            var jwtbase = new JwtToken($"{check1}.{check2}", null);
+            var algo = jwtbase.Header.Algorithm;
+        }
 
         [TestMethod]
         public void ValidateNames()
@@ -88,6 +99,25 @@ namespace Test.Xigadee.Security
             Assert.IsTrue(JwtRoot.GetAlgorithm(JWTHolder.ConvertToJWTHashAlgorithm("HS384"), key) is HMACSHA384);
             Assert.IsTrue(JwtRoot.GetAlgorithm(JWTHolder.ConvertToJWTHashAlgorithm("HS512"), key) is HMACSHA512);
 
+        }
+
+
+        [TestMethod]
+        public void JwtTokenTest2()
+        {
+            var token = new JwtToken();
+            var secret = Guid.NewGuid().ToByteArray();
+
+            token.Claims[JwtToken.HeaderIssuer] = "stano";
+
+            var signed = token.ToString(secret);
+
+            var token2 = new JwtToken(signed, secret);
+
+            var token3 = new JwtToken(signed, null, false);
+
+            Assert.IsTrue(token3.ValidateIncoming(secret));
+            Assert.IsFalse(token3.ValidateIncoming(Guid.NewGuid().ToByteArray()));
         }
 
     }

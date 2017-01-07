@@ -21,7 +21,16 @@ using System.Text;
 
 namespace Xigadee
 {
-    public class InvalidJwtTokenStructureException:Exception
+    public class InvalidJwtTokenStructureException: JwtException
     {
+        public InvalidJwtTokenStructureException()
+        {
+
+        }
+
+        public InvalidJwtTokenStructureException(string message):base(message)
+        {
+
+        }
     }
 }

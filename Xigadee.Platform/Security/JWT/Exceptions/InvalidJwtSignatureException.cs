@@ -21,11 +21,7 @@ using System.Text;
 
 namespace Xigadee
 {
-    public class AlgorithmNotSupportedException: JwtException
+    public class InvalidJwtSignatureException: JwtException
     {
-        public AlgorithmNotSupportedException(string alg):base($"{alg}")
-        {
-
-        }
     }
 }

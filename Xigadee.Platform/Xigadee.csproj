@@ -158,13 +158,17 @@
     <Compile Include="Microservice\Wrapper\SerializationWrapper.cs" />
     <Compile Include="Microservice\Wrapper\WrapperBase.cs" />
     <Compile Include="Security\JWT\Exceptions\AlgorithmNotSupportedException.cs" />
+    <Compile Include="Security\JWT\Exceptions\InvalidJwtSignatureException.cs" />
+    <Compile Include="Security\JWT\Exceptions\JwtException.cs" />
     <Compile Include="Security\JWT\Helper\JwtClaimsBase.cs" />
     <Compile Include="Security\JWT\Helper\JwtClaimsSet.cs" />
     <Compile Include="Security\JWT\JwtHelper.cs" />
     <Compile Include="Security\JWT\Exceptions\InvalidJWTTokenStructureException.cs" />
     <Compile Include="Security\JWT\Helper\JwtHashAlgorithm.cs" />
     <Compile Include="Security\JWT\JWTHolderBase.cs" />
+    <Compile Include="Security\JWT\JwtToken.cs" />
     <Compile Include="Security\JWT\Root\ClaimsSet.cs" />
+    <Compile Include="Security\JWT\Root\JOSEHeader.cs" />
     <Compile Include="Security\JWT\Root\JwtRoot.cs" />
     <Compile Include="Security\JWT\JWTSigned.cs" />
     <Compile Include="Security\Pipeline\Add\AddAesEncryptionHandler.cs" />

@@ -25,6 +25,11 @@ namespace Xigadee
             jObj = JObject.Parse(json);
         }
 
+        public bool Exists(string claimType)
+        {
+            JToken token;
+            return jObj.TryGetValue(claimType, out token);
+        }
 
         public object this[string claimType]
         {
@@ -53,9 +58,13 @@ namespace Xigadee
             return GetEnumerator();
         }
 
+        /// <summary>
+        /// This is the JSON formatted data.
+        /// </summary>
+        /// <returns>A JSON data format.</returns>
         public override string ToString()
         {
-            return jObj.ToString();
+            return jObj.ToString(Newtonsoft.Json.Formatting.None);
         }
     }
 }

@@ -29,10 +29,10 @@ namespace Xigadee
         {
             mRoot = new JwtRoot(token);
 
-            JWTPayload = JwtRoot.JSONConvert(mRoot.Raw[1]);
+            JWTPayload = JwtRoot.UTF8ToJSONConvert(mRoot.Raw[1]);
 
             if (mRoot.Raw.Count > 2)
-                JWSSignature = JwtRoot.JSONConvert(mRoot.Raw[2]);
+                JWSSignature = JwtRoot.UTF8ToJSONConvert(mRoot.Raw[2]);
         }
 
         /// <summary>
