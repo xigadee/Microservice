@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Xigadee;
 
 namespace Test.Xigadee.Security
@@ -20,30 +23,56 @@ namespace Test.Xigadee.Security
             109, 112, 108, 101, 46, 99, 111, 109, 47, 105, 115, 95, 114, 111,
             111, 116, 34, 58, 116, 114, 117, 101, 125};
 
-        //[TestMethod]
-        //public void TestMethod1()
-        //{
-        //    var jwt = new JWTHolder(JWTHashAlgorithm.HS256);
+        [TestMethod]
+        public void TestMethod1()
+        {
+            var jwt = new JWTHolder(JWTHashAlgorithm.HS256);
 
-        //    //jwt.JoseHeader = Encoding.UTF8.GetString(exampleHeader);
-        //    jwt.JWTPayload = Encoding.UTF8.GetString(exampleClaims);
+            //jwt.JoseHeader = Encoding.UTF8.GetString(exampleHeader);
+            jwt.JWTPayload = Encoding.UTF8.GetString(exampleClaims);
 
-        //    var check = "eyJ0eXAiOiJKV1QiLA0KICJhbGciOiJIUzI1NiJ9";
-        //    var check2 = "eyJpc3MiOiJqb2UiLA0KICJleHAiOjEzMDA4MTkzODAsDQogImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ";
+            var check = "eyJ0eXAiOiJKV1QiLA0KICJhbGciOiJIUzI1NiJ9";
+            var check2 = "eyJpc3MiOiJqb2UiLA0KICJleHAiOjEzMDA4MTkzODAsDQogImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ";
 
-        //    byte[] key = Guid.NewGuid().ToByteArray();
-        //    string keyCheck = Convert.ToBase64String(key);
+            byte[] key = Guid.NewGuid().ToByteArray();
+            string keyCheck = Convert.ToBase64String(key);
 
-        //    string result = jwt.ToString(key);
+            string result = jwt.ToString(key);
 
-        //}
+        }
+
+        [TestMethod]
+        public void JOSEHeaderTest()
+        {
+            try
+            {
+                var set = new ClaimsSet("{\"typ\":\"JWT\",      \"alg\":\"HS256\"}");
+
+                var keys = set.ToList();
+
+                set["awkward"] = (int)24;
+                set["typ"] = "Scooby";
+                set["hmm"] = 42;
+
+                var json = set.ToString();
+
+                Assert.AreEqual(set["typ"], "Scooby");
+                Assert.AreEqual(set["alg"], "HS256");
+                Assert.AreEqual(set["awkward"], 24);
+                Assert.AreEqual(set["hmm"], 42);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
 
         [TestMethod]
         public void ValidateParsing()
         {           
             var id = "eyJhbGciOiJSU0ExXzUiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiY3R5IjoiSldUIn0.g_hEwksO1Ax8Qn7HoN-BVeBoa8FXe0kpyk_XdcSmxvcM5_P296JXXtoHISr_DD_MqewaQSH4dZOQHoUgKLeFly-9RI11TG-_Ge1bZFazBPwKC5lJ6OLANLMd0QSL4fYEb9ERe-epKYE3xb2jfY1AltHqBO-PM6j23Guj2yDKnFv6WO72tteVzm_2n17SBFvhDuR9a2nHTE67pe0XGBUS_TK7ecA-iVq5COeVdJR4U4VZGGlxRGPLRHvolVLEHx6DYyLpw30Ay9R6d68YCLi9FYTq3hIXPK_-dmPlOUlKvPr1GgJzRoeC9G5qCvdcHWsqJGTO_z3Wfo5zsqwkxruxwA.UmVkbW9uZCBXQSA5ODA1Mg.VwHERHPvCNcHHpTjkoigx3_ExK0Qc71RMEParpatm0X_qpg-w8kozSjfNIPPXiTBBLXR65CIPkFqz4l1Ae9w_uowKiwyi9acgVztAi-pSL8GQSXnaamh9kX1mdh3M_TT-FZGQFQsFhu0Z72gJKGdfGE-OE7hS1zuBD5oEUfk0Dmb0VzWEzpxxiSSBbBAzP10l56pPfAtrjEYw-7ygeMkwBl6Z_mLS6w6xUgKlvW6ULmkV-uLC4FUiyKECK4e3WZYKw1bpgIqGYsw2v_grHjszJZ-_I5uM-9RA8ycX9KqPRp9gc6pXmoU_-27ATs9XCvrZXUtK2902AUzqpeEUJYjWWxSNsS-r1TJ1I-FMJ4XyAiGrfmo9hQPcNBYxPz3GQb28Y5CLSQfNgKSGt0A4isp1hBUXBHAndgtcslt7ZoQJaKe_nNJgNliWtWpJ_ebuOpEl8jdhehdccnRMIwAmU1n7SPkmhIl1HlSOpvcvDfhUN5wuqU955vOBvfkBOh5A11UzBuo2WlgZ6hYi9-e3w29bR0C2-pp3jbqxEDw3iWaf2dc5b-LnR0FEYXvI_tYk5rd_J9N0mg0tQ6RbpxNEMNoA9QWk5lgdPvbh9BaO195abQ.AVO9iT5AV4CzvDJCdhSFlQ";
 
-            var jwtbase = new JWTHolderRaw(id);
+            var jwtbase = new JwtRoot(id);
 
             Assert.AreEqual(id, jwtbase.ToJWSCompactSerialization());
         }
@@ -55,9 +84,9 @@ namespace Test.Xigadee.Security
             byte[] key = Guid.NewGuid().ToByteArray();
             string keyCheck = Convert.ToBase64String(key);
 
-            Assert.IsTrue(JWTHolder.GetAlgorithm(JWTHolder.ConvertToJWTHashAlgorithm("HS256"), key) is HMACSHA256);
-            Assert.IsTrue(JWTHolder.GetAlgorithm(JWTHolder.ConvertToJWTHashAlgorithm("HS384"), key) is HMACSHA384);
-            Assert.IsTrue(JWTHolder.GetAlgorithm(JWTHolder.ConvertToJWTHashAlgorithm("HS512"), key) is HMACSHA512);
+            Assert.IsTrue(JwtRoot.GetAlgorithm(JWTHolder.ConvertToJWTHashAlgorithm("HS256"), key) is HMACSHA256);
+            Assert.IsTrue(JwtRoot.GetAlgorithm(JWTHolder.ConvertToJWTHashAlgorithm("HS384"), key) is HMACSHA384);
+            Assert.IsTrue(JwtRoot.GetAlgorithm(JWTHolder.ConvertToJWTHashAlgorithm("HS512"), key) is HMACSHA512);
 
         }
 

@@ -158,11 +158,14 @@
     <Compile Include="Microservice\Wrapper\SerializationWrapper.cs" />
     <Compile Include="Microservice\Wrapper\WrapperBase.cs" />
     <Compile Include="Security\JWT\Exceptions\AlgorithmNotSupportedException.cs" />
-    <Compile Include="Security\JWT\JOSEHeader.cs" />
-    <Compile Include="Security\JWT\JWTHelper.cs" />
+    <Compile Include="Security\JWT\Helper\JwtClaimsBase.cs" />
+    <Compile Include="Security\JWT\Helper\JwtClaimsSet.cs" />
+    <Compile Include="Security\JWT\JwtHelper.cs" />
     <Compile Include="Security\JWT\Exceptions\InvalidJWTTokenStructureException.cs" />
-    <Compile Include="Security\JWT\JWTHashAlgorithm.cs" />
-    <Compile Include="Security\JWT\JWTHolderRaw.cs" />
+    <Compile Include="Security\JWT\Helper\JwtHashAlgorithm.cs" />
+    <Compile Include="Security\JWT\JWTHolderBase.cs" />
+    <Compile Include="Security\JWT\Root\ClaimsSet.cs" />
+    <Compile Include="Security\JWT\Root\JwtRoot.cs" />
     <Compile Include="Security\JWT\JWTSigned.cs" />
     <Compile Include="Security\Pipeline\Add\AddAesEncryptionHandler.cs" />
     <Compile Include="Security\Pipeline\Add\AddAuthenticationHandler.cs" />
@@ -548,11 +551,12 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Security\_Documents\rfc7515.pdf" />
-    <None Include="Security\_Documents\rfc7517.pdf" />
-    <None Include="Security\_Documents\rfc7518.pdf" />
-    <None Include="Security\_Documents\rfc7519.pdf" />
-    <None Include="Security\_Documents\rfc7800.pdf" />
+    <None Include="Security\_Documents\rfc7515 - JSON Web Signature.pdf" />
+    <None Include="Security\_Documents\rfc7516 - JSON Web Encryption.pdf" />
+    <None Include="Security\_Documents\rfc7517 - JSON Web Key.pdf" />
+    <None Include="Security\_Documents\rfc7518 - JSON Web Algorithms.pdf" />
+    <None Include="Security\_Documents\rfc7519 - JSON Web Token.pdf" />
+    <None Include="Security\_Documents\rfc7800 - Proof-of-Possession .pdf" />
     <None Include="Xigadee.nuspec" />
     <None Include="Xigadee.Platform.licenseheader" />
   </ItemGroup>

@@ -21,14 +21,24 @@ using System.Text;
 
 namespace Xigadee
 {
-    /// <summary>
-    /// This is the signed JWT Token.
-    /// </summary>
-    public class JWTSigned
+    public class JWTHolderBase
     {
-        public JWTSigned(string encoding)
+        private JwtRoot mRoot;
+
+        public JWTHolderBase(string token)
         {
+            mRoot = new JwtRoot(token);
+
+            JWTPayload = JwtRoot.JSONConvert(mRoot.Raw[1]);
+
+            if (mRoot.Raw.Count > 2)
+                JWSSignature = JwtRoot.JSONConvert(mRoot.Raw[2]);
         }
+
+        /// <summary>
+        /// This is the raw JSON string containing the JOSE Header.
+        /// </summary>
+        public virtual string JoseHeader { get { return mRoot.JoseHeader; } set { } }
 
         /// <summary>
         /// This is the raw JSON string containing the claims set.
@@ -39,9 +49,15 @@ namespace Xigadee
         /// </summary>
         public string JWSSignature { get; set; }
 
-        public bool Validate(byte[] key)
+        /// <summary>
+        /// This method verifies the signature based 
+        /// </summary>
+        /// <param name="secret"></param>
+        /// <returns></returns>
+        public bool Verify(byte[] secret)
         {
             return false;
         }
     }
+
 }

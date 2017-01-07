@@ -26,26 +26,6 @@ namespace Xigadee
 
     //Returns a numeric value representing the number of seconds from 1970-01-01T0:0:0Z UTC until the given UTC date/time
 
-    public class JWTHolderBase: JWTHolderRaw
-    {
-        public JWTHolderBase(string encoding):base(encoding)
-        {
-            JWTPayload = JSONConvert(Raw[1]);
-
-            if (Raw.Count > 2)
-                JWSSignature = JSONConvert(Raw[2]);
-        }
-
-
-        /// <summary>
-        /// This is the raw JSON string containing the claims set.
-        /// </summary>
-        public string JWTPayload { get; set; }
-        /// <summary>
-        /// This is the raw JSON string containing the claims set.
-        /// </summary>
-        public string JWSSignature { get; set; }
-    }
 
     public class JWTHolder: JWTHolderBase
     {
@@ -87,60 +67,11 @@ namespace Xigadee
 
         public string ToString(JWTHashAlgorithm algo, byte[] key)
         {
-            string b64joseHeader = SafeBase64UrlEncode(Encoding.UTF8.GetBytes(JoseHeader));
-            string b64jwtClaimsSet = SafeBase64UrlEncode(Encoding.UTF8.GetBytes(JWTPayload));
+            string b64joseHeader = JwtRoot.SafeBase64UrlEncode(Encoding.UTF8.GetBytes(JoseHeader));
+            string b64jwtClaimsSet = JwtRoot.SafeBase64UrlEncode(Encoding.UTF8.GetBytes(JWTPayload));
 
-            return $"{b64joseHeader}.{b64jwtClaimsSet}.{CalculateAuthSignature(algo, key, b64joseHeader, b64jwtClaimsSet)}";
+            return $"{b64joseHeader}.{b64jwtClaimsSet}.{JwtRoot.CalculateAuthSignature(algo, key, b64joseHeader, b64jwtClaimsSet)}";
         }
 
-        #region CalculateAuthSignature(JWTHashAlgorithm algo, byte[] key, string joseHeader, string jwtClaimsSet)
-        /// <summary>
-        /// This method creates the necessary signature based on the header and claims passed.
-        /// </summary>
-        /// <param name="algo">The hash algorithm.</param>
-        /// <param name="key">The hash key.</param>
-        /// <param name="joseHeader">The base64 encoded header.</param>
-        /// <param name="jwtClaimsSet">The base64 encoded claims set.</param>
-        /// <returns>Returns the Base64 encoded header.</returns>
-        public static string CalculateAuthSignature(JWTHashAlgorithm algo, byte[] key, string joseHeader, string jwtClaimsSet)
-        {
-            //Thanks to https://jwt.io/
-            string sig = $"{joseHeader}.{jwtClaimsSet}";
-
-            byte[] bySig = Encoding.UTF8.GetBytes(sig);
-
-            string signature;
-            using (var hashstring = GetAlgorithm(algo, key))
-            {
-                byte[] sha256Hash = hashstring.ComputeHash(bySig);
-
-                signature = SafeBase64UrlEncode(sha256Hash);
-            }
-
-            return signature;
-        }
-        #endregion
-        #region GetAlgorithm(JWTHashAlgorithm type, byte[] key)
-        /// <summary>
-        /// This method returns the relevant hash algorithm based on the enum type.
-        /// </summary>
-        /// <param name="type">The supported algorithm enum.</param>
-        /// <param name="key">The hash key,</param>
-        /// <returns>Returns the relevant algorithm.</returns>
-        public static HMAC GetAlgorithm(JWTHashAlgorithm type, byte[] key)
-        {
-            switch (type)
-            {
-                case JWTHashAlgorithm.HS256:
-                    return new HMACSHA256(key);
-                case JWTHashAlgorithm.HS384:
-                    return new HMACSHA384(key);
-                case JWTHashAlgorithm.HS512:
-                    return new HMACSHA512(key);
-                default:
-                    throw new AlgorithmNotSupportedException(type.ToString());
-            }
-        } 
-        #endregion
     }
 }
