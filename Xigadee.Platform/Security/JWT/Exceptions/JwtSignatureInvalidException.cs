@@ -21,7 +21,7 @@ using System.Text;
 
 namespace Xigadee
 {
-    public class JWTClaimsSet: JWTClaimsBase
+    public class JwtSignatureInvalidException: JwtException
     {
     }
 }

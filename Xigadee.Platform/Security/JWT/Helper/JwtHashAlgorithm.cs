@@ -24,8 +24,9 @@ namespace Xigadee
     /// <summary>
     /// This enumeration contains the supported HMAC hash algorithms for 
     /// </summary>
-    public enum JWTHashAlgorithm
+    public enum JwtHashAlgorithm
     {
+        None,
         HS256,
         HS384,
         HS512

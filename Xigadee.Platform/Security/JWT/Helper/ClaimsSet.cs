@@ -66,5 +66,12 @@ namespace Xigadee
         {
             return jObj.ToString(Newtonsoft.Json.Formatting.None);
         }
+
+
+        protected S GetClaim<S>(string header)
+        {
+            return Exists(header) ? ((S)this[header]) : default(S);
+        }
+
     }
 }

@@ -26,21 +26,6 @@ namespace Test.Xigadee.Security
         static string check = "eyJ0eXAiOiJKV1QiLA0KICJhbGciOiJIUzI1NiJ9";
         static string check2 = "eyJpc3MiOiJqb2UiLA0KICJleHAiOjEzMDA4MTkzODAsDQogImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ";
 
-        [TestMethod]
-        public void TestMethod1()
-        {
-            var jwt = new JWTHolder(JWTHashAlgorithm.HS256);
-
-            //jwt.JoseHeader = Encoding.UTF8.GetString(exampleHeader);
-            jwt.JWTPayload = Encoding.UTF8.GetString(exampleClaims);
-
-
-            byte[] key = Guid.NewGuid().ToByteArray();
-            string keyCheck = Convert.ToBase64String(key);
-
-            string result = jwt.ToString(key);
-
-        }
 
         [TestMethod]
         public void ClaimsSetTest()
@@ -83,10 +68,10 @@ namespace Test.Xigadee.Security
         [TestMethod]
         public void JwtTokenTest1()
         {
-            var check1 = JwtRoot.SafeBase64UrlEncode(Encoding.UTF8.GetBytes("{\"typ\":\"JWT\",      \"alg\":\"HS256\"}"));
+            var check1 = JwtHelper.SafeBase64UrlEncode(Encoding.UTF8.GetBytes("{\"typ\":\"JWT\",      \"alg\":\"HS256\"}"));
 
             var jwtbase = new JwtToken($"{check1}.{check2}", null);
-            var algo = jwtbase.Header.Algorithm;
+            var algo = jwtbase.Header.SupportedAlgorithm;
         }
 
         [TestMethod]
@@ -95,9 +80,9 @@ namespace Test.Xigadee.Security
             byte[] key = Guid.NewGuid().ToByteArray();
             string keyCheck = Convert.ToBase64String(key);
 
-            Assert.IsTrue(JwtRoot.GetAlgorithm(JWTHolder.ConvertToJWTHashAlgorithm("HS256"), key) is HMACSHA256);
-            Assert.IsTrue(JwtRoot.GetAlgorithm(JWTHolder.ConvertToJWTHashAlgorithm("HS384"), key) is HMACSHA384);
-            Assert.IsTrue(JwtRoot.GetAlgorithm(JWTHolder.ConvertToJWTHashAlgorithm("HS512"), key) is HMACSHA512);
+            Assert.IsTrue(JwtRoot.GetAlgorithm(JwtHelper.ConvertToJwtHashAlgorithm("HS256"), key) is HMACSHA256);
+            Assert.IsTrue(JwtRoot.GetAlgorithm(JwtHelper.ConvertToJwtHashAlgorithm("HS384"), key) is HMACSHA384);
+            Assert.IsTrue(JwtRoot.GetAlgorithm(JwtHelper.ConvertToJwtHashAlgorithm("HS512"), key) is HMACSHA512);
 
         }
 
@@ -108,7 +93,7 @@ namespace Test.Xigadee.Security
             var token = new JwtToken();
             var secret = Guid.NewGuid().ToByteArray();
 
-            token.Claims[JwtToken.HeaderIssuer] = "stano";
+            token.Claims[JwtClaims.HeaderIssuer] = "stano";
 
             var signed = token.ToString(secret);
 
@@ -118,6 +103,38 @@ namespace Test.Xigadee.Security
 
             Assert.IsTrue(token3.ValidateIncoming(secret));
             Assert.IsFalse(token3.ValidateIncoming(Guid.NewGuid().ToByteArray()));
+        }
+
+        [TestMethod]
+        public void JwtTokenTest3()
+        {
+            var key = Encoding.ASCII.GetBytes("616161A");
+            var id = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2p3dC1pZHAuZXhhbXBsZS5jb20iLCJzdWIiOiJtYWlsdG86bWlrZUBleGFtcGxlLmNvbSIsIm5iZiI6MTQ4Mzg3MjcyMSwiZXhwIjoxNDgzODc2MzIxLCJpYXQiOjE0ODM4NzI3MjEsImp0aSI6ImlkMTIzNDU2IiwidHlwIjoiaHR0cHM6Ly9leGFtcGxlLmNvbS9yZWdpc3RlciJ9.bMdGRvtLXSzZvF_3vlJ1T8DQ_Uc6AOa0Fr9-p8pU3UI";
+            var token = new JwtToken(id, null, false);
+
+            var result = token.ValidateIncoming(key);
+        }
+
+
+        [TestMethod]
+        public void JwtTokenTest4()
+        {
+            var key = Encoding.UTF8.GetBytes("616161A");
+            var id = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2p3dC1pZHAuZXhhbXBsZS5jb20iLCJzdWIiOiJtYWlsdG86bWlrZUBleGFtcGxlLmNvbSIsIm5iZiI6MTQ4Mzg3MjcyMSwiZXhwIjoxNDgzODc2MzIxLCJpYXQiOjE0ODM4NzI3MjEsImp0aSI6ImlkMTIzNDU2IiwidHlwIjoiaHR0cHM6Ly9leGFtcGxlLmNvbS9yZWdpc3RlciJ9.bMdGRvtLXSzZvF_3vlJ1T8DQ_Uc6AOa0Fr9-p8pU3UI";
+            var token = new JwtToken(id, null, false);
+
+            var result = token.ValidateIncoming(key);
+
+            token.Claims.IssuedAt = DateTime.UtcNow;
+        }
+
+
+        [TestMethod]
+        public void JwtTokenTest5()
+        {
+            var key = Encoding.ASCII.GetBytes("SuperSecret");
+            var id = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0NjQzNDg4MTcsInVzZXIiOiJqZXJvZW4iLCJzZXNzaW9uX2tleSI6MTIzNDU2fQ.HvR8WTLm7d5lfuPCH7vC9RjKliWOoljXScIAoshm1YM";
+            var token = new JwtToken(id, key, true);
         }
 
     }

@@ -31,7 +31,7 @@ namespace Xigadee
         /// This constructor parses the incoming JSON token in to its main parts.
         /// </summary>
         /// <param name="token">The string token.</param>
-        /// <exception cref="Xigadee.InvalidJwtTokenStructureException">This exception is thrown if the token does not have at least one period (.) character.</exception>
+        /// <exception cref="Xigadee.JwtTokenStructureInvalidException">This exception is thrown if the token does not have at least one period (.) character.</exception>
         public JwtRoot(string token)
         {
             if (token == null)
@@ -39,13 +39,13 @@ namespace Xigadee
 
             var split = token.Split('.');
             if (split.Length < 2)
-                throw new InvalidJwtTokenStructureException();
+                throw new JwtTokenStructureInvalidException();
 
             var dict = new Dictionary<int, byte[]>();
 
             for (int i = 0; i < split.Length; i++)
             {
-                dict.Add(i, SafeBase64UrlDecode(split[i]));
+                dict.Add(i, JwtHelper.SafeBase64UrlDecode(split[i]));
             }
 
             Raw = dict;
@@ -76,41 +76,7 @@ namespace Xigadee
         /// </summary>
         public string JoseHeader { get; set; }
 
-        #region SafeBase64...
-        /// <summary>
-        /// This method encodes the byte array in to a url safe Base64 string.
-        /// </summary>
-        /// <param name="arg">The byte array to convert.</param>
-        /// <returns></returns>
-        public static string SafeBase64UrlEncode(byte[] arg)
-        {
-            string s = Convert.ToBase64String(arg); // Standard base64 encoder
-            s = s.Split('=')[0]; // Remove any trailing '='s
-            s = s.Replace('+', '-'); // 62nd char of encoding
-            s = s.Replace('/', '_'); // 63rd char of encoding
-            return s;
-        }
-        /// <summary>
-        /// This method recodes the Base64 string in to the correct format.
-        /// </summary>
-        /// <param name="arg">The incoming string.</param>
-        /// <returns>Returns the byte array</returns>
-        public static byte[] SafeBase64UrlDecode(string arg)
-        {
-            string s = arg;
-            s = s.Replace('-', '+'); // 62nd char of encoding
-            s = s.Replace('_', '/'); // 63rd char of encoding
-            switch (s.Length % 4) // Pad with trailing '='s
-            {
-                case 0: break; // No pad chars in this case
-                case 2: s += "=="; break; // Two pad chars
-                case 3: s += "="; break; // One pad char
-                default:
-                    throw new System.Exception("Illegal base64url string!");
-            }
-            return Convert.FromBase64String(s); // Standard base64 decoder
-        } 
-        #endregion
+
         #region JSONConvert(byte[] raw)
         /// <summary>
         /// This method converts the binary UTF8 data to a string.
@@ -144,7 +110,7 @@ namespace Xigadee
             {
                 if (i > 0)
                     sb.Append('.');
-                sb.Append(SafeBase64UrlEncode(s));
+                sb.Append(JwtHelper.SafeBase64UrlEncode(s));
             });
 
             return sb.ToString();
@@ -160,7 +126,7 @@ namespace Xigadee
         /// <param name="joseHeader">The base64 encoded header.</param>
         /// <param name="jwtClaimsSet">The base64 encoded claims set.</param>
         /// <returns>Returns the Base64 encoded header.</returns>
-        public static string CalculateAuthSignature(JWTHashAlgorithm algo, byte[] key, string joseHeader, string jwtClaimsSet)
+        public static string CalculateAuthSignature(JwtHashAlgorithm algo, byte[] key, string joseHeader, string jwtClaimsSet)
         {
             //Thanks to https://jwt.io/
             string sig = $"{joseHeader}.{jwtClaimsSet}";
@@ -172,7 +138,7 @@ namespace Xigadee
             {
                 byte[] sha256Hash = hashstring.ComputeHash(bySig);
 
-                signature = JwtRoot.SafeBase64UrlEncode(sha256Hash);
+                signature = JwtHelper.SafeBase64UrlEncode(sha256Hash);
             }
 
             return signature;
@@ -185,18 +151,18 @@ namespace Xigadee
         /// <param name="type">The supported algorithm enum.</param>
         /// <param name="key">The hash key,</param>
         /// <returns>Returns the relevant algorithm.</returns>
-        public static HMAC GetAlgorithm(JWTHashAlgorithm type, byte[] key)
+        public static HMAC GetAlgorithm(JwtHashAlgorithm type, byte[] key)
         {
             switch (type)
             {
-                case JWTHashAlgorithm.HS256:
+                case JwtHashAlgorithm.HS256:
                     return new HMACSHA256(key);
-                case JWTHashAlgorithm.HS384:
+                case JwtHashAlgorithm.HS384:
                     return new HMACSHA384(key);
-                case JWTHashAlgorithm.HS512:
+                case JwtHashAlgorithm.HS512:
                     return new HMACSHA512(key);
                 default:
-                    throw new AlgorithmNotSupportedException(type.ToString());
+                    throw new JwtAlgorithmNotSupportedException(type.ToString());
             }
         }
         #endregion

@@ -21,27 +21,11 @@ using System.Text;
 
 namespace Xigadee
 {
-    /// <summary>
-    /// This is the signed JWT Token.
-    /// </summary>
-    public class JWTSigned
+    public class JwtAlgorithmNotSupportedException: JwtException
     {
-        public JWTSigned(string encoding)
+        public JwtAlgorithmNotSupportedException(string alg):base($"{alg}")
         {
-        }
 
-        /// <summary>
-        /// This is the raw JSON string containing the claims set.
-        /// </summary>
-        public string JWTPayload { get; set; }
-        /// <summary>
-        /// This is the raw JSON string containing the claims set.
-        /// </summary>
-        public string JWSSignature { get; set; }
-
-        public bool Validate(byte[] key)
-        {
-            return false;
         }
     }
 }

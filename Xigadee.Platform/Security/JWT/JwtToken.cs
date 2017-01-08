@@ -10,24 +10,15 @@ namespace Xigadee
     /// <summary>
     /// This class contains and validates the Jwt Token.
     /// This class currently only supports simple HMAC-based verification.
+    /// Thanks to http://kjur.github.io/jsjws/tool_jwt.html for verification.
     /// </summary>
     public class JwtToken
     {
-        #region Registered claims
-        public const string HeaderIssuer = "iss";
-        public const string HeaderSubject = "sub";
-        public const string HeaderAudience = "aud";
-        public const string HeaderExpirationTime = "exp";
-        public const string HeaderNotBefore = "nbf";
-        public const string HeaderIssuedAt = "iat";
-        public const string HeaderJWTID = "jti"; 
-        #endregion
-
         #region Declarations
         /// <summary>
         /// The underlying 
         /// </summary>
-        protected JwtRoot mRoot = null;
+        protected JwtRoot mIncoming = null;
         #endregion
         #region Constructor
         /// <summary>
@@ -37,68 +28,71 @@ namespace Xigadee
         {
             Header = new JOSEHeader();
             //Set the default settings.
-            Header.Algorithm = JWTHashAlgorithm.HS256;
+            Header.SupportedAlgorithm = JwtHashAlgorithm.HS256;
             Header.Type = "JWT";
 
             //Set the empty claims.
-            Claims = new ClaimsSet();
+            Claims = new JwtClaims();
         }
         /// <summary>
         /// This constructor should be used to load and incoming token.
         /// </summary>
         /// <param name="token">The compact serialized token.</param>
         /// <param name="secret">The secret to validate the token.</param>
-        /// <param name="validateToken">A boolean value that indicates when token should be validated with the secret.</param>
-        public JwtToken(string token, byte[] secret, bool validateToken = true)
+        /// <param name="validateSignature">A boolean value that indicates when token should be validated with the secret.</param>
+        /// <param name="supportNoneAlgo">This property specifies whether the none algorithm should be supported. As this is a security risk, it has to be explicitly set to accept.</param>
+        public JwtToken(string token, byte[] secret, bool validateSignature = true, bool supportNoneAlgo = false)
         {
-            mRoot = new JwtRoot(token);
+            mIncoming = new JwtRoot(token);
 
-            Header = new JOSEHeader(mRoot.JoseHeader);
+            Header = new JOSEHeader(mIncoming.JoseHeader);
             if (!string.Equals(Header.Type,"JWT", StringComparison.InvariantCultureIgnoreCase))
-                throw new InvalidJwtTokenStructureException("The JOSE Header type is not JWT");
+                throw new JwtTokenStructureInvalidException("The JWT declaration is not in the JOSE Header");
 
             //Check that the algorithm is supported.
-            var algo = Header.Algorithm;
+            var algo = Header.SupportedAlgorithm;
+            if (algo == JwtHashAlgorithm.None && !supportNoneAlgo)
+                throw new JwtAlgorithmNoneNotAllowedException();
 
-            Claims = new ClaimsSet(JwtRoot.UTF8ToJSONConvert(mRoot.Raw[1]));
+            Claims = new JwtClaims(JwtRoot.UTF8ToJSONConvert(mIncoming.Raw[1]));
 
-            if (validateToken && !JwtValidateIncoming(mRoot, algo, secret))
-                throw new InvalidJwtSignatureException();
+            if (validateSignature && !JwtValidateIncoming(mIncoming, algo, secret))
+                throw new JwtSignatureInvalidException();
         } 
         #endregion
 
         /// <summary>
         /// This is the JOSE Header collection.
         /// </summary>
-        public JOSEHeader Header { get; set; }
+        public JOSEHeader Header { get; }
         /// <summary>
         /// This is the Jwt Cliams set.
         /// </summary>
-        public ClaimsSet Claims { get; set; }
+        public JwtClaims Claims { get; }
 
         /// <summary>
         /// This method validates teh 
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public bool ValidateIncoming(byte[] key, JWTHashAlgorithm? algo = null)
+        public bool ValidateIncoming(byte[] key, JwtHashAlgorithm? algo = null)
         {
-            return JwtValidateIncoming(mRoot, algo ?? Header.Algorithm, key);
+            return JwtValidateIncoming(mIncoming, algo ?? Header.SupportedAlgorithm, key);
         }
 
-        private bool JwtValidateIncoming(JwtRoot root, JWTHashAlgorithm algo, byte[] key)
+        private bool JwtValidateIncoming(JwtRoot incoming, JwtHashAlgorithm algo, byte[] key)
         {
-            if (root == null)
+            if (incoming == null)
                 throw new ArgumentOutOfRangeException("Incoming token not set.");
 
             if (key == null)
                 throw new ArgumentNullException("key", $"{nameof(JwtValidateIncoming)} - key cannot be null");
 
-            string b64joseHeader = JwtRoot.SafeBase64UrlEncode(root.Raw[0]);
-            string b64jwtClaimsSet = JwtRoot.SafeBase64UrlEncode(root.Raw[1]);
+            string b64joseHeader = JwtHelper.SafeBase64UrlEncode(incoming.Raw[0]);
+            string b64jwtClaimsSet = JwtHelper.SafeBase64UrlEncode(incoming.Raw[1]);
 
             var signed = JwtRoot.CalculateAuthSignature(algo, key, b64joseHeader, b64jwtClaimsSet);
-            var original = JwtRoot.SafeBase64UrlEncode(root.Raw[2]);
+            var original = JwtHelper.SafeBase64UrlEncode(incoming.Raw[2]);
             return original == signed;
         }
 
@@ -109,10 +103,10 @@ namespace Xigadee
         /// <returns>Returns a compact serialization key.</returns>
         public string ToString(byte[] key)
         {
-            JWTHashAlgorithm algo = Header.Algorithm;
+            JwtHashAlgorithm algo = Header.SupportedAlgorithm;
 
-            string b64joseHeader = JwtRoot.SafeBase64UrlEncode(Encoding.UTF8.GetBytes(Header.ToString()));
-            string b64jwtClaimsSet = JwtRoot.SafeBase64UrlEncode(Encoding.UTF8.GetBytes(Claims.ToString()));
+            string b64joseHeader = JwtHelper.SafeBase64UrlEncode(Encoding.UTF8.GetBytes(Header.ToString()));
+            string b64jwtClaimsSet = JwtHelper.SafeBase64UrlEncode(Encoding.UTF8.GetBytes(Claims.ToString()));
 
             string signature = JwtRoot.CalculateAuthSignature(algo, key, b64joseHeader, b64jwtClaimsSet);
 
