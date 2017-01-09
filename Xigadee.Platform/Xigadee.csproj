@@ -159,6 +159,7 @@
     <Compile Include="Microservice\Wrapper\WrapperBase.cs" />
     <Compile Include="Security\AuthenticationHandler\AuthenticationHandlerBase.cs" />
     <Compile Include="Security\AuthenticationHandler\JwtTokenAuthenticationHandler.cs" />
+    <Compile Include="Security\Exceptions\AuthenticationHandlerInvalidSecretException.cs" />
     <Compile Include="Security\Exceptions\AuthenticationHandlerNotResolvedException.cs" />
     <Compile Include="Security\Exceptions\ChannelAuthenticationHandlerAlreadySetException.cs" />
     <Compile Include="Security\Exceptions\ChannelAuthenticationHandlerNotResolvedException.cs" />
@@ -503,7 +504,6 @@
     <Compile Include="Scheduler\SchedulerPolicy.cs" />
     <Compile Include="Scheduler\SchedulerStatistics.cs" />
     <Compile Include="Security\EncryptionHandler\AesEncryptionHandler.cs" />
-    <Compile Include="Security\DispatcherSecurityToken.cs" />
     <Compile Include="Security\Helper\Sha256SignatureHelper.cs" />
     <Compile Include="Security\Helper\Sha512SignatureHelper.cs" />
     <Compile Include="Security\Helper\SignatureHelper.cs" />

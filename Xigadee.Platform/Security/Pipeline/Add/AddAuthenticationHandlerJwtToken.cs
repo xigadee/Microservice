@@ -25,7 +25,7 @@ namespace Xigadee
     public static partial class CorePipelineExtensions
     {
         /// <summary>
-        /// This method adds the encryption handler to the Microservice.
+        /// This method adds the Jwt authentication handler to the Microservice.
         /// </summary>
         /// <typeparam name="P">The pipeline type.</typeparam>
         /// <param name="pipeline">The pipeline.</param>
@@ -58,7 +58,50 @@ namespace Xigadee
         }
 
         /// <summary>
-        /// This method adds the encryption handler to the Microservice.
+        /// This method adds the Jwt authentication handler to the Microservice.
+        /// </summary>
+        /// <typeparam name="P">The pipeline type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="identifier">The encryption type identifier. 
+        /// This is will be used when assigning the handler to a channel or collector.</param>
+        /// <param name="algo">The HMAC algorithm.</param>
+        /// <param name="secretSetter">This is the fucntion to return the base64 encoded secret from configuration.</param>
+        /// <param name="action">The action on the handler.</param>
+        /// <returns>The pipeline.</returns>
+        public static P AddJwtTokenAuthenticationHandler<P>(this P pipeline
+            , string identifier
+            , JwtHashAlgorithm algo
+            , Func<IEnvironmentConfiguration, string> secretSetter
+            , Action<IAuthenticationHandler> action = null)
+            where P : IPipeline
+        {
+            if (algo == JwtHashAlgorithm.None)
+                throw new ArgumentOutOfRangeException("JwtHashAlgorithm.None is not supported.");
+
+            if (secretSetter == null)
+                throw new ArgumentNullException($"secretSetter cannot be null or empty for {nameof(AddJwtTokenAuthenticationHandler)}");
+
+            byte[] bySecret = null;
+            try
+            {
+                bySecret = Convert.FromBase64String(secretSetter(pipeline.Configuration));
+            }
+            catch (Exception ex)
+            {
+                throw new AuthenticationHandlerInvalidSecretException(ex);
+            }
+
+            var handler = new JwtTokenAuthenticationHandler(algo, bySecret);
+
+            action?.Invoke(handler);
+
+            pipeline.Service.Security.RegisterAuthenticationHandler(identifier, handler);
+
+            return pipeline;
+        }
+
+        /// <summary>
+        /// This method adds the Jwt authentication handler to the Microservice.
         /// </summary>
         /// <typeparam name="P">The pipeline type.</typeparam>
         /// <param name="pipeline">The pipeline.</param>

@@ -63,7 +63,6 @@ namespace Xigadee
             token.Claims.IssuedAt = DateTime.UtcNow;
             token.Claims.JWTId = payload.Message.OriginatorKey;
 
-
             return token;
         }
 
