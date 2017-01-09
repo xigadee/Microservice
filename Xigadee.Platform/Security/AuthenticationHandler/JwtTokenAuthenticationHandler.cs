@@ -66,8 +66,8 @@ namespace Xigadee
 
             ClaimsPrincipal principal = payload.SecurityPrincipal;
 
-            var userId = principal.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var role = principal.FindFirst(ClaimTypes.Role).Value;
+            var userId = principal?.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var role = principal?.FindFirst(ClaimTypes.Role).Value;
 
             return token;
         }
