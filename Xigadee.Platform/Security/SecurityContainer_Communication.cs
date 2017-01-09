@@ -24,6 +24,8 @@ namespace Xigadee
     /// </summary>
     public partial class SecurityContainer
     {
+
+
         /// <summary>
         /// This method verifies the incoming payload, and decrypts the channel payload if this has been specified 
         /// for the channel.
@@ -33,23 +35,20 @@ namespace Xigadee
         public void Verify(Channel channel, TransmissionPayload payloadIn)
         {
             //First decrypt the payload.
-            if (channel.EncryptionHandlerId != null)
+            if (channel.Encryption != null)
             {
-                if (!mEncryptionHandlers.ContainsKey(channel.EncryptionHandlerId))
-                    throw new ChannelEncryptionHandlerNotResolvedException(channel);
-
-                byte[] decrypt = mEncryptionHandlers[channel.EncryptionHandlerId].Decrypt(payloadIn.Message.Blob);
+                byte[] decrypt = Decrypt(channel.Encryption, payloadIn.Message.Blob);
 
                 payloadIn.Message.Blob = decrypt;
             }
 
             //Now verify the signature
-            if (channel.AuthenticationHandlerId != null)
+            if (channel.Authentication != null)
             {
-                if (!mAuthenticationHandlers.ContainsKey(channel.AuthenticationHandlerId))
+                if (!mAuthenticationHandlers.ContainsKey(channel.Authentication.Id))
                     throw new ChannelAuthenticationHandlerNotResolvedException(channel);
 
-                mAuthenticationHandlers[channel.AuthenticationHandlerId].Verify(payloadIn);
+                mAuthenticationHandlers[channel.Authentication.Id].Verify(payloadIn);
             }
             else
                 payloadIn.SecurityPrincipal = new ClaimsPrincipal();
@@ -64,21 +63,18 @@ namespace Xigadee
         public void Secure(Channel channel, TransmissionPayload payloadOut)
         {
             //First sign the message, if set.
-            if (channel.AuthenticationHandlerId != null)
+            if (channel.Authentication != null)
             {
-                if (!mAuthenticationHandlers.ContainsKey(channel.AuthenticationHandlerId))
+                if (!mAuthenticationHandlers.ContainsKey(channel.Authentication.Id))
                     throw new ChannelAuthenticationHandlerNotResolvedException(channel);
 
-                mAuthenticationHandlers[channel.AuthenticationHandlerId].Sign(payloadOut);
+                mAuthenticationHandlers[channel.Authentication.Id].Sign(payloadOut);
             }
 
             //Now encrpyt the payload.
-            if (channel.EncryptionHandlerId != null)
+            if (channel.Encryption != null)
             {
-                if (!mEncryptionHandlers.ContainsKey(channel.EncryptionHandlerId))
-                    throw new ChannelEncryptionHandlerNotResolvedException(channel);
-
-                byte[] encrypt = mEncryptionHandlers[channel.EncryptionHandlerId].Encrypt(payloadOut.Message.Blob);
+                byte[] encrypt = Encrypt(channel.Encryption, payloadOut.Message.Blob);
 
                 payloadOut.Message.Blob = encrypt;
             }

@@ -67,7 +67,7 @@ namespace Xigadee
         /// <summary>
         /// This is the binary encryption handler.
         /// </summary>
-        public IEncryptionHandler EncryptionHandler { get; set; }
+        public Func<byte[], byte[]> Encryptor { get; set; }
         /// <summary>
         /// This method writes to the incoming event to the underlying storage technology.
         /// </summary>

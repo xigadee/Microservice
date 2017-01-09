@@ -21,5 +21,15 @@ namespace Xigadee
         {
 
         }
+
+        /// <summary>
+        /// This is he default constructor.
+        /// </summary>
+        /// <param name="id">The encryption handler identifier.</param>
+        public EncryptionHandlerNotResolvedException(string id)
+            : base($"Encryption handler '{id}' was not found in the security collection")
+        {
+
+        }
     }
 }

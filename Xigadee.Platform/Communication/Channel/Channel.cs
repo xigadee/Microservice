@@ -180,11 +180,11 @@ namespace Xigadee
         /// <summary>
         /// This identifier is set when we require an symmetric encrpytion to be applied to the traffic.
         /// </summary>
-        public string EncryptionHandlerId { get; set; }
+        public EncryptionHandlerId Encryption { get; set; }
 
         /// <summary>
         /// This identifier is set when we require authentication of the incoming message.
         /// </summary>
-        public string AuthenticationHandlerId { get; set; }
+        public AuthenticationHandlerId Authentication { get; set; }
     }
 }

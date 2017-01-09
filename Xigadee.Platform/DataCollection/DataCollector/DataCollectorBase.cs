@@ -28,7 +28,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="S">The statistics type.</typeparam>
     /// <typeparam name="P">The policy type.</typeparam>
-    public abstract class DataCollectorBase<S, P>: ServiceContainerBase<S, P>, IDataCollectorComponent
+    public abstract class DataCollectorBase<S, P>: ServiceContainerBase<S, P>, IDataCollectorComponent, IRequireSecurityService
         where S : DataCollectorStatistics, new()
         where P : DataCollectorPolicy, new()
     {
@@ -149,8 +149,17 @@ namespace Xigadee
         /// <summary>
         /// This method specifies whether the collector supports flushing. The default is false.
         /// </summary>
-        public bool CanFlush { get; set; } 
+        public bool CanFlush { get; set; }
         #endregion
+
+        /// <summary>
+        /// This is a reference to the security service used for encrpytion.
+        /// </summary>
+        public ISecurityService Security
+        {
+            get;set;
+        }
+
     }
 
     /// <summary>

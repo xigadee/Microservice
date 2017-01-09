@@ -40,10 +40,10 @@ namespace Xigadee
             var output = Serializer(e, id);
 
             //Encrypt the payload when required.
-            if (EncryptionPolicy != AzureStorageEncryption.None && EncryptionHandler != null)
+            if (EncryptionPolicy != AzureStorageEncryption.None && Encryptor != null)
             {
                 //The checks for always encrypt are done externally.
-                output.Blob = EncryptionHandler.Encrypt(output.Blob);
+                output.Blob = Encryptor(output.Blob);
             }
 
             // Create a message and add it to the queue.

@@ -164,5 +164,31 @@ namespace Xigadee
         {
 
         }
+
+
+        public byte[] Encrypt(EncryptionHandlerId handler, byte[] input)
+        {
+            EncryptionValidate(handler);
+
+            return mEncryptionHandlers[handler.Id].Encrypt(input);
+        }
+
+        public byte[] Decrypt(EncryptionHandlerId handler, byte[] input)
+        {
+            EncryptionValidate(handler);
+
+            return mEncryptionHandlers[handler.Id].Decrypt(input);
+        }
+
+        public bool EncryptionValidate(EncryptionHandlerId handler, bool throwErrors = true)
+        {
+            if (!mEncryptionHandlers.ContainsKey(handler.Id))
+                if (throwErrors)
+                    throw new EncryptionHandlerNotResolvedException(handler.Id);
+            else
+                    return false;
+
+            return true;
+        }
     }
 }

@@ -9,7 +9,7 @@ namespace Xigadee
     /// <summary>
     /// This interface is used to validate incoming messages and to set their SecurityPrincipal value.
     /// </summary>
-    public interface ISecurityService: ISecurityCommunication
+    public interface ISecurityService: ISecurityCommunication, ISecurityEncryption
     {
     }
 
@@ -21,6 +21,15 @@ namespace Xigadee
         void Verify(Channel channel, TransmissionPayload payloadIn);
 
         void Secure(Channel channel, TransmissionPayload payloadOut);
+    }
+
+    public interface ISecurityEncryption
+    {
+        byte[] Encrypt(EncryptionHandlerId id, byte[] input);
+
+        byte[] Decrypt(EncryptionHandlerId id, byte[] input);
+
+        bool EncryptionValidate(EncryptionHandlerId id, bool throwErrors = true);
     }
 
     /// <summary>

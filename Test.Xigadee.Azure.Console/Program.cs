@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using Xigadee;
 
 namespace Test.Xigadee.Azure.Console
@@ -15,7 +16,8 @@ namespace Test.Xigadee.Azure.Console
 
                 pipeline1
                     .ConfigurationSetFromConsoleArgs(args)
-                    .AddAzureStorageDataCollector(adjustPolicy: (AzureStorageDataCollectorPolicy a) => a.Log.EncryptionPolicy = AzureStorageEncryption.None)
+                    .AddEncryptionHandlerAes("myid", Encoding.UTF8.GetBytes("A very long string"))
+                    .AddAzureStorageDataCollector(handler:"myid")
                     ;
 
                 

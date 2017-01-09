@@ -25,6 +25,7 @@ namespace Xigadee
 {
     public static partial class AzureExtensionMethods
     {
+        [Obsolete("This will be removed. Used the Azure Storage DataCollector instead")]
         public static P AddAzureStorageLogger<P>(this P pipeline
             , string serviceName = null
             , string containerName = "log"
@@ -35,6 +36,7 @@ namespace Xigadee
             return pipeline.AddAzureStorageLogger(pipeline.Configuration.LogStorageCredentials(), serviceName ?? pipeline.Service?.Id.Name, containerName, resourceProfile, pipeline.Configuration.AesEncryptionWithCompression(), onCreate);
         }
 
+        [Obsolete("This will be removed. Used the Azure Storage DataCollector instead")]
         public static P AddAzureStorageLogger<P>(this P pipeline
             , StorageCredentials creds
             , string serviceName = null

@@ -35,7 +35,7 @@ namespace Xigadee
         /// </summary>
         protected readonly ResourceProfile mResourceProfile;
         protected readonly IResourceConsumer mResourceConsumer;
-        protected readonly IEncryptionHandler mEncryptionHandler;
+        
 
         protected StorageCredentials mCredentails;
         protected CloudStorageAccount mStorageAccount;
@@ -49,6 +49,8 @@ namespace Xigadee
         protected Dictionary<DataCollectionSupport, AzureStorageConnectorTable> mHoldersTable;
         protected Dictionary<DataCollectionSupport, AzureStorageConnectorQueue> mHoldersQueue;
         protected Dictionary<DataCollectionSupport, AzureStorageConnectorFile> mHoldersFile;
+
+        protected readonly EncryptionHandlerId mEncryption;
         #endregion
         #region Constructor
         /// <summary>
@@ -63,7 +65,7 @@ namespace Xigadee
             , AzureStorageDataCollectorPolicy policy = null
             , OperationContext context = null
             , ResourceProfile resourceProfile = null
-            , IEncryptionHandler encryption = null
+            , EncryptionHandlerId encryptionId = null
             , DataCollectionSupport? supportMap = null):base(supportMap, policy)
         {
             if (credentials == null)
@@ -73,7 +75,7 @@ namespace Xigadee
 
             mContext = context;
 
-            mEncryptionHandler = encryption;
+            mEncryption = encryptionId;
 
             mResourceProfile = resourceProfile;
         }
@@ -86,6 +88,12 @@ namespace Xigadee
         protected override void StartInternal()
         {
             base.StartInternal();
+
+            //Check that the key is valid.
+            if (mEncryption != null)
+            {
+                Security.EncryptionValidate(mEncryption);
+            }
 
             mStorageAccount = new CloudStorageAccount(mCredentails, true);
 
@@ -130,7 +138,7 @@ namespace Xigadee
         protected virtual void ValidateEncryptionPolicy(IAzureStorageConnectorBase connector)
         {
             if (connector.EncryptionPolicy == AzureStorageEncryption.BlobAlwaysWithException
-                && connector.EncryptionHandler == null)
+                && connector.Encryptor == null)
                     throw new AzureStorageDataCollectorEncryptionPolicyException(connector.Support);
         }
         /// <summary>
@@ -166,7 +174,7 @@ namespace Xigadee
                     , StorageAccount = mStorageAccount
                     , DefaultTimeout = mDefaultTimeout
                     , Context = mContext
-                    , EncryptionHandler = mEncryptionHandler
+                    , Encryptor = (b) => mEncryption == null?null:Security.Encrypt(mEncryption,b)
                     , EncryptionPolicy = k.EncryptionPolicy
                 });
 

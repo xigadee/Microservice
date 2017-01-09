@@ -21,6 +21,7 @@ using Microsoft.WindowsAzure.Storage.Auth;
 
 namespace Xigadee
 {
+    [Obsolete("This will be removed. Used the Azure Storage DataCollector instead")]
     public class AzureStorageLogger : AzureStorageLoggingBase<LogEvent>, ILogger
     {
         public AzureStorageLogger(StorageCredentials credentials, string serviceName, string containerName = "log"

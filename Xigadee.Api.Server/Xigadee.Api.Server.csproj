@@ -169,6 +169,7 @@
     <Compile Include="Pipeline\Actual.cs" />
     <Compile Include="Pipeline\AddAuthorizationServer.cs" />
     <Compile Include="Pipeline\AddCorrelationIdFilter.cs" />
+    <Compile Include="Pipeline\AddJwtTokenAuthentication.cs" />
     <Compile Include="Pipeline\AddMicroserviceUnavailableFilter.cs" />
     <Compile Include="Pipeline\AddVersionHeaderFilter.cs" />
     <Compile Include="Pipeline\Inspect.cs" />

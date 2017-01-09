@@ -16,7 +16,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="channel">The channel.</param>
         public ChannelAuthenticationHandlerNotResolvedException(Channel channel) 
-            :base($"Channel {channel.Id} authentication handler {channel.AuthenticationHandlerId} was not found in the security collection")
+            :base($"Channel {channel.Id} authentication handler {channel.Authentication} was not found in the security collection")
         {
 
         }

@@ -47,7 +47,7 @@ namespace Xigadee
         /// <summary>
         /// This is the binary encryption handler.
         /// </summary>
-        IEncryptionHandler EncryptionHandler { get; set; }
+        Func<byte[], byte[]> Encryptor { get; set; }
         /// <summary>
         /// The encryption storage policy.
         /// </summary>

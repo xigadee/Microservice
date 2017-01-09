@@ -25,7 +25,8 @@ namespace Test.Xigadee
 
                 var p1 = new MicroservicePipeline("Sender")
                     .AdjustPolicyCommunication((p) => p.BoundaryLoggingActiveDefault = true)
-                    .AddAuthenticationHandlerJwtToken("id1", JwtHashAlgorithm.HS256, Encoding.UTF8.GetBytes("My big secret"))
+                    .AddAuthenticationHandlerJwtToken("id1", JwtHashAlgorithm.HS256
+                        , Encoding.UTF8.GetBytes("My big secret"))
                     .AddDataCollector((c) => new DebugMemoryDataCollector(), (c) => memp1 = c)
                     .AddChannelOutgoing("crequest", boundaryLoggingEnabled: true)
                         .AttachSender(bridgeOut.GetSender())
@@ -38,7 +39,8 @@ namespace Test.Xigadee
 
                 var p2 = new MicroservicePipeline("Receiver")
                     .AdjustPolicyCommunication((p) => p.BoundaryLoggingActiveDefault = true)
-                    .AddAuthenticationHandlerJwtToken("id1", JwtHashAlgorithm.HS256, Encoding.UTF8.GetBytes("My big secret"))
+                    .AddAuthenticationHandlerJwtToken("id1", JwtHashAlgorithm.HS256
+                        , Encoding.UTF8.GetBytes("My big secret"))
                     .AddDataCollector((c) => new DebugMemoryDataCollector(), (c) => memp2 = c)
                     .AddChannelIncoming("crequest", boundaryLoggingEnabled: true)
                         .AttachListener(bridgeOut.GetListener())

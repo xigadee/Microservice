@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -63,6 +64,11 @@ namespace Xigadee
             token.Claims.IssuedAt = DateTime.UtcNow;
             token.Claims.JWTId = payload.Message.OriginatorKey;
 
+            ClaimsPrincipal principal = payload.SecurityPrincipal;
+
+            var userId = principal.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var role = principal.FindFirst(ClaimTypes.Role).Value;
+
             return token;
         }
 
@@ -78,7 +84,10 @@ namespace Xigadee
 
         protected virtual ClaimsPrincipal GenerateClaimsPrincipal(JwtToken token)
         {
+            IIdentity ident = null;
+            ClaimsIdentity ident2 = new ClaimsIdentity();
             var principal = new ClaimsPrincipal();
+
 
             return principal;
         }

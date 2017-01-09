@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Auth;
 
 namespace Xigadee
@@ -30,18 +31,28 @@ namespace Xigadee
             , StorageCredentials creds = null
             , Action<AzureStorageDataCollectorPolicy> adjustPolicy = null
             , ResourceProfile resourceProfile = null
-            , IEncryptionHandler encryption = null
-            , Action<AzureStorageDataCollector> onCreate = null)
+            , EncryptionHandlerId handler = null
+            , Action<AzureStorageDataCollector> onCreate = null
+            , OperationContext context = null
+            )
             where P : IPipeline
         {
             AzureStorageDataCollectorPolicy policy = new AzureStorageDataCollectorPolicy();
+
+            if (handler != null)
+            {
+                if (!pipeline.Service.Security.HasEncryptionHandler(handler.Id))
+                    throw new EncryptionHandlerNotResolvedException(handler.Id);
+            }
 
             adjustPolicy?.Invoke(policy);
 
             if (creds == null)
                 creds = pipeline.Configuration.AzureStorageCredentials(true);
 
-            var component = new AzureStorageDataCollector(creds, policy);//, serviceName ?? service.Name, containerName, resourceProfile, encryption);
+            var component = new AzureStorageDataCollector(creds, policy
+                , context: context
+                , encryptionId:handler);
 
             onCreate?.Invoke(component);
 

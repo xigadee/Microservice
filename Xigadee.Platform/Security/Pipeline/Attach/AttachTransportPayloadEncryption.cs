@@ -30,18 +30,18 @@ namespace Xigadee
         /// </summary>
         /// <typeparam name="C">The pipeline channel extension type.</typeparam>
         /// <param name="cpipe">The pipeline.</param>
-        /// <param name="identifier">The encryption id.</param>
+        /// <param name="handler">The encryption id.</param>
         /// <returns>Returns the pipeline.</returns>
-        public static C AttachTransportPayloadEncryption<C>(this C cpipe, string identifier)
+        public static C AttachTransportPayloadEncryption<C>(this C cpipe, EncryptionHandlerId handler)
             where C : IPipelineChannelOutgoing<IPipeline>
         {
-            if (!cpipe.Pipeline.Service.Security.HasEncryptionHandler(identifier))
-                throw new EncryptionHandlerNotResolvedException(cpipe.Channel.Id, identifier);
+            if (!cpipe.Pipeline.Service.Security.HasEncryptionHandler(handler.Id))
+                throw new EncryptionHandlerNotResolvedException(cpipe.Channel.Id, handler.Id);
 
-            if (cpipe.Channel.EncryptionHandlerId != null)
+            if (cpipe.Channel.Encryption != null)
                 throw new ChannelEncryptionHandlerAlreadySetException(cpipe.Channel.Id);
 
-            cpipe.Channel.EncryptionHandlerId = identifier;
+            cpipe.Channel.Encryption = handler;
 
             return cpipe;
         } 

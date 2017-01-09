@@ -27,7 +27,8 @@ namespace Xigadee
     /// This class centrally holds all the logging, telemetry and event source support.
     /// </summary>
     public partial class DataCollectionContainer: ServiceContainerBase<DataCollectionStatistics, DataCollectionPolicy>
-        , IDataCollection, IEventSource, IServiceOriginator, ITaskManagerProcess, IRequireSharedServices
+        , IDataCollection, IEventSource, IServiceOriginator
+        , ITaskManagerProcess, IRequireSharedServices, IRequireSecurityService
     {
         #region Declarations
         /// <summary>
@@ -134,6 +135,9 @@ namespace Xigadee
                 if ((service as IRequireSharedServices) != null)
                     ((IRequireSharedServices)service).SharedServices = SharedServices;
 
+                if ((service as IRequireSecurityService) != null)
+                    ((IRequireSecurityService)service).Security = Security;
+
                 base.ServiceStart(service);
             }
             catch (Exception ex)
@@ -162,8 +166,16 @@ namespace Xigadee
         {
             get;
             set;
-        } 
+        }
         #endregion
+
+        /// <summary>
+        /// This is the security service primarily used for encryption.
+        /// </summary>
+        public ISecurityService Security
+        {
+            get;set;
+        }
 
         #region Flush()
         /// <summary>

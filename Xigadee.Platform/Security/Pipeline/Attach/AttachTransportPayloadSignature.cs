@@ -30,18 +30,18 @@ namespace Xigadee
         /// </summary>
         /// <typeparam name="C">The pipeline channel extension type.</typeparam>
         /// <param name="cpipe">The pipeline.</param>
-        /// <param name="identifier">The authentication id.</param>
+        /// <param name="handler">The authentication id.</param>
         /// <returns>Returns the pipeline.</returns>
-        public static C AttachTransportPayloadSignature<C>(this C cpipe, string identifier)
+        public static C AttachTransportPayloadSignature<C>(this C cpipe, AuthenticationHandlerId handler)
             where C : IPipelineChannelOutgoing<IPipeline>
         {
-            if (!cpipe.Pipeline.Service.Security.HasAuthenticationHandler(identifier))
-                throw new AuthenticationHandlerNotResolvedException(cpipe.Channel.Id, identifier);
+            if (!cpipe.Pipeline.Service.Security.HasAuthenticationHandler(handler.Id))
+                throw new AuthenticationHandlerNotResolvedException(cpipe.Channel.Id, handler.Id);
 
-            if (cpipe.Channel.AuthenticationHandlerId != null)
+            if (cpipe.Channel.Authentication != null)
                 throw new ChannelAuthenticationHandlerAlreadySetException(cpipe.Channel.Id);
 
-            cpipe.Channel.AuthenticationHandlerId = identifier;
+            cpipe.Channel.Authentication = handler;
 
             return cpipe;
         }

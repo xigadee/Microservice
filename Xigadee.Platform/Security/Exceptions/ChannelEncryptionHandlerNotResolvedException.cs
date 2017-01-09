@@ -16,7 +16,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="channel">The channel.</param>
         public ChannelEncryptionHandlerNotResolvedException(Channel channel) 
-            :base($"Channel {channel.Id} encryption handler {channel.EncryptionHandlerId} was not found in the security collection")
+            :base($"Channel {channel.Id} encryption handler {channel.Encryption} was not found in the security collection")
         {
 
         }
