@@ -22,8 +22,19 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This is the abstract base class for setting authentication
+    /// </summary>
     public abstract class AuthenticationHandlerBase: IAuthenticationHandler
     {
+        /// <summary>
+        /// This property contains the Microservice identifiers used for claims source information.
+        /// </summary>
+        public MicroserviceId OriginatorId{get;set;}
+
+        public abstract void Sign(TransmissionPayload payload);
+
+        public abstract void Verify(TransmissionPayload payload);
 
     }
 }

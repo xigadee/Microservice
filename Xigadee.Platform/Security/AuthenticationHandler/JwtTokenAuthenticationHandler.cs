@@ -15,7 +15,7 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,17 +25,63 @@ namespace Xigadee
     {
         readonly byte[] mSecret;
         readonly JwtHashAlgorithm mAlgorithm;
+        readonly string mAudience;
 
-        public JwtTokenAuthenticationHandler(JwtHashAlgorithm algo, string base64Secret)
+        public JwtTokenAuthenticationHandler(JwtHashAlgorithm algo, string base64Secret, string audience = "comms")
         {
             mAlgorithm = algo;
             mSecret = Convert.FromBase64String(base64Secret);
+            mAudience = audience;
         }
 
-        public JwtTokenAuthenticationHandler(JwtHashAlgorithm algo, byte[] secret)
+        public JwtTokenAuthenticationHandler(JwtHashAlgorithm algo, byte[] secret, string audience = "comms")
         {
             mAlgorithm = algo;
             mSecret = secret;
+            mAudience = audience;
+        }
+
+        public override void Sign(TransmissionPayload payload)
+        {
+            var token = TokenGenerate(payload);
+
+            payload.Message.SecuritySignature = token.ToString(mSecret);
+        }
+
+        public override void Verify(TransmissionPayload payload)
+        {
+            var token = TokenValidate(payload);
+
+        }
+
+        protected virtual JwtToken TokenGenerate(TransmissionPayload payload)
+        {
+            JwtToken token = new JwtToken(mAlgorithm);
+
+            token.Claims.Issuer = OriginatorId.ExternalServiceId;
+            token.Claims.Audience = mAudience;
+            token.Claims.IssuedAt = DateTime.UtcNow;
+            token.Claims.JWTId = payload.Message.OriginatorKey;
+
+
+            return token;
+        }
+
+
+        protected virtual JwtToken TokenValidate(TransmissionPayload payload)
+        {
+            JwtToken token = new JwtToken(payload.Message.SecuritySignature, mSecret);
+
+            payload.SecurityPrincipal = GenerateClaimsPrincipal(token);
+
+            return token;
+        }
+
+        protected virtual ClaimsPrincipal GenerateClaimsPrincipal(JwtToken token)
+        {
+            var principal = new ClaimsPrincipal();
+
+            return principal;
         }
     }
 }

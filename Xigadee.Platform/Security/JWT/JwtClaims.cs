@@ -12,10 +12,12 @@ namespace Xigadee
         public const string HeaderIssuer = "iss";
         public const string HeaderSubject = "sub";
         public const string HeaderAudience = "aud";
+        public const string HeaderJWTID = "jti";
+
         public const string HeaderExpirationTime = "exp";
         public const string HeaderNotBefore = "nbf";
         public const string HeaderIssuedAt = "iat";
-        public const string HeaderJWTID = "jti";
+
 
         #endregion
 

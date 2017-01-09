@@ -161,6 +161,8 @@
     <Compile Include="Security\AuthenticationHandler\JwtTokenAuthenticationHandler.cs" />
     <Compile Include="Security\Exceptions\AuthenticationHandlerNotResolvedException.cs" />
     <Compile Include="Security\Exceptions\ChannelAuthenticationHandlerAlreadySetException.cs" />
+    <Compile Include="Security\Exceptions\ChannelAuthenticationHandlerNotResolvedException.cs" />
+    <Compile Include="Security\Helper\JwtClaimsPrincipal.cs" />
     <Compile Include="Security\Jwt\Exceptions\JwtAlgorithmNoneNotAllowedException.cs" />
     <Compile Include="Security\Jwt\Exceptions\JwtAlgorithmNotSupportedException.cs" />
     <Compile Include="Security\Jwt\Exceptions\JwtSignatureInvalidException.cs" />

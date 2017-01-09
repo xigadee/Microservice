@@ -156,7 +156,8 @@ namespace Xigadee
 
         protected override void StartInternal()
         {
-            
+            //Set the originators
+            mAuthenticationHandlers.Values.ForEach((a) => a.OriginatorId = OriginatorId);
         }
 
         protected override void StopInternal()

@@ -77,8 +77,6 @@ namespace Xigadee
             else
                 bMessage = new BrokeredMessage(sMessage.Blob);
 
-            bMessage.Properties.Add("SecurityHeader", sMessage.SecurityHeader);
-            bMessage.Properties.Add("SecurityPayload", sMessage.SecurityPayload);
             bMessage.Properties.Add("SecuritySignature", sMessage.SecuritySignature);
 
             bMessage.Properties.Add("OriginatorKey", sMessage.OriginatorKey);
@@ -124,12 +122,6 @@ namespace Xigadee
         public static ServiceMessage Unpack(BrokeredMessage bMessage)
         {
             var sMessage = new ServiceMessage();
-
-            if (bMessage.Properties.ContainsKey("SecurityHeader"))
-                sMessage.SecurityHeader = bMessage.Properties["SecurityHeader"] as string;
-
-            if (bMessage.Properties.ContainsKey("SecurityPayload"))
-                sMessage.SecurityPayload = bMessage.Properties["SecurityPayload"] as string;
 
             if (bMessage.Properties.ContainsKey("SecuritySignature"))
                 sMessage.SecuritySignature = bMessage.Properties["SecuritySignature"] as string;

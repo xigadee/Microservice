@@ -24,11 +24,11 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor for creating a new token.
         /// </summary>
-        public JwtToken()
+        public JwtToken(JwtHashAlgorithm? algo = null)
         {
             Header = new JOSEHeader();
             //Set the default settings.
-            Header.SupportedAlgorithm = JwtHashAlgorithm.HS256;
+            Header.SupportedAlgorithm = algo ?? JwtHashAlgorithm.HS256;
             Header.Type = "JWT";
 
             //Set the empty claims.
@@ -58,8 +58,10 @@ namespace Xigadee
 
             if (validateSignature && !JwtValidateIncoming(mIncoming, algo, secret))
                 throw new JwtSignatureInvalidException();
-        } 
+        }
         #endregion
+
+        //Be aware: https://auth0.com/blog/critical-vulnerabilities-in-json-web-token-libraries/
 
         /// <summary>
         /// This is the JOSE Header collection.

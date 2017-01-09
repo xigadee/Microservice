@@ -31,6 +31,11 @@ namespace Xigadee
             return jObj.TryGetValue(claimType, out token);
         }
 
+        public void Add(string claimType, object value)
+        {
+            this[claimType] = value;
+        }
+
         public object this[string claimType]
         {
             get

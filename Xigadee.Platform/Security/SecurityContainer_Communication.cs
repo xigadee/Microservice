@@ -32,18 +32,7 @@ namespace Xigadee
         /// <param name="payloadIn">The incoming payload.</param>
         public void Verify(Channel channel, TransmissionPayload payloadIn)
         {
-            payloadIn.SecurityPrincipal = new ClaimsPrincipal();
-
-            //if (channel.AuthenticationHandlerId != null)
-            //{
-            //    if (!mAuthenticationHandlers.ContainsKey(channel.AuthenticationHandlerId))
-            //        throw new ChannelAuthenticationHandlerNotResolvedException(channel);
-
-            //}
-            //else
-            //    payloadIn.SecurityPrincipal = new ClaimsPrincipal();
-
-
+            //First decrypt the payload.
             if (channel.EncryptionHandlerId != null)
             {
                 if (!mEncryptionHandlers.ContainsKey(channel.EncryptionHandlerId))
@@ -53,6 +42,18 @@ namespace Xigadee
 
                 payloadIn.Message.Blob = decrypt;
             }
+
+            //Now verify the signature
+            if (channel.AuthenticationHandlerId != null)
+            {
+                if (!mAuthenticationHandlers.ContainsKey(channel.AuthenticationHandlerId))
+                    throw new ChannelAuthenticationHandlerNotResolvedException(channel);
+
+                mAuthenticationHandlers[channel.AuthenticationHandlerId].Verify(payloadIn);
+            }
+            else
+                payloadIn.SecurityPrincipal = new ClaimsPrincipal();
+
         }
 
         /// <summary>
@@ -62,6 +63,16 @@ namespace Xigadee
         /// <param name="payloadOut">The outgoing payload.</param>
         public void Secure(Channel channel, TransmissionPayload payloadOut)
         {
+            //First sign the message, if set.
+            if (channel.AuthenticationHandlerId != null)
+            {
+                if (!mAuthenticationHandlers.ContainsKey(channel.AuthenticationHandlerId))
+                    throw new ChannelAuthenticationHandlerNotResolvedException(channel);
+
+                mAuthenticationHandlers[channel.AuthenticationHandlerId].Sign(payloadOut);
+            }
+
+            //Now encrpyt the payload.
             if (channel.EncryptionHandlerId != null)
             {
                 if (!mEncryptionHandlers.ContainsKey(channel.EncryptionHandlerId))
