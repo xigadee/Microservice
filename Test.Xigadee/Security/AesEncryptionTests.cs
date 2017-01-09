@@ -31,7 +31,7 @@ namespace Test.Xigadee
 
         public AesEncryptionTests()
         {
-            mAesEncryption = new AesEncryptionHandler(mKey);
+            mAesEncryption = new AesEncryptionHandler(mKey, 256, false);
         }
 
         [TestMethod]
@@ -52,7 +52,7 @@ namespace Test.Xigadee
         [TestMethod]
         public void EncryptDecryptWithCompression()
         {
-            var encryption = new AesEncryptionHandler(mKey, true);
+            var encryption = new AesEncryptionHandler(mKey, 256);
             var secret = "I know a secret";
             var encryptedData = encryption.Encrypt(Encoding.UTF8.GetBytes(secret));
             Assert.AreNotEqual(secret, Encoding.UTF8.GetString(encryptedData));
@@ -60,6 +60,14 @@ namespace Test.Xigadee
             // Verify that the string can be decrypted
             var decryptedData = encryption.Decrypt(encryptedData);
             Assert.AreEqual(secret, Encoding.UTF8.GetString(decryptedData));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void InvalidKeySize()
+        {
+            var encryption = new AesEncryptionHandler(mKey, 128);
+            Assert.Fail("Key size is incorrect so should have thrown an exception");
         }
     }
 }

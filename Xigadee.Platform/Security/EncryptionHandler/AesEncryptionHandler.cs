@@ -36,10 +36,11 @@ namespace Xigadee
         /// Constructor
         /// </summary>
         /// <param name="key"></param>
+        /// <param name="keySize"></param>
         /// <param name="useCompression"></param>
         /// <param name="blockSize"></param>
-        public AesEncryptionHandler(string key, bool useCompression = true, int blockSize = 128)
-            :this(Convert.FromBase64String(key),useCompression, blockSize)
+        public AesEncryptionHandler(string key, int keySize,  bool useCompression = true, int blockSize = 128)
+            :this(Convert.FromBase64String(key), keySize, useCompression, blockSize)
         {
         }
 
@@ -47,13 +48,17 @@ namespace Xigadee
         /// Constructor
         /// </summary>
         /// <param name="key"></param>
+        /// <param name="keySize"></param>
         /// <param name="useCompression"></param>
         /// <param name="blockSize"></param>
-        public AesEncryptionHandler(byte[] key, bool useCompression = true, int blockSize = 128)
+        public AesEncryptionHandler(byte[] key, int keySize, bool useCompression = true, int blockSize = 128)
         {
             mKey = key;
             mUseCompression = useCompression;
             mBlockSize = blockSize;
+
+            if (key.Length * 8 != keySize)
+                throw new ArgumentException($"Key size of {keySize} does not match supplied key which has a size of {(key.Length * 8)}");           
         }
 
         /// <summary>
