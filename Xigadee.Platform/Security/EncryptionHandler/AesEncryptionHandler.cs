@@ -36,11 +36,11 @@ namespace Xigadee
         /// Constructor
         /// </summary>
         /// <param name="key"></param>
-        /// <param name="keySize"></param>
         /// <param name="useCompression"></param>
+        /// <param name="keySize"></param>
         /// <param name="blockSize"></param>
-        public AesEncryptionHandler(string key, int keySize,  bool useCompression = true, int blockSize = 128)
-            :this(Convert.FromBase64String(key), keySize, useCompression, blockSize)
+        public AesEncryptionHandler(string key, bool useCompression = true, int? keySize = null, int blockSize = 128)
+            :this(Convert.FromBase64String(key), useCompression, keySize, blockSize)
         {
         }
 
@@ -48,17 +48,21 @@ namespace Xigadee
         /// Constructor
         /// </summary>
         /// <param name="key"></param>
-        /// <param name="keySize"></param>
         /// <param name="useCompression"></param>
+        /// <param name="keySize"></param>
         /// <param name="blockSize"></param>
-        public AesEncryptionHandler(byte[] key, int keySize, bool useCompression = true, int blockSize = 128)
+        public AesEncryptionHandler(byte[] key, bool useCompression = true, int? keySize = null, int blockSize = 128)
         {
             mKey = key;
             mUseCompression = useCompression;
             mBlockSize = blockSize;
 
-            if (key.Length * 8 != keySize)
-                throw new ArgumentException($"Key size of {keySize} does not match supplied key which has a size of {(key.Length * 8)}");           
+            var calculatedKeySize = key.Length*8;
+            if (!keySize.HasValue && calculatedKeySize != 128 && calculatedKeySize != 192 && calculatedKeySize != 256)
+                throw new ArgumentException($"Calculated key size of {calculatedKeySize} does not match a valid key size of 128, 192 or 256");
+
+            if (keySize.HasValue && calculatedKeySize != keySize)
+                throw new ArgumentException($"Key size of {keySize} does not match supplied key which has a size of {calculatedKeySize}");           
         }
 
         /// <summary>

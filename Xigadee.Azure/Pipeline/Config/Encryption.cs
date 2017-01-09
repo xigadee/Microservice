@@ -30,18 +30,18 @@ namespace Xigadee
         public static string EncryptionKey(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyEncryptionKey);
 
         [ConfigSetting("Encryption")]
-        public static int EncryptionKeySize(this IEnvironmentConfiguration config) => config.PlatformOrConfigCacheInt(KeyEncryptionKeySize);
+        public static int? EncryptionKeySize(this IEnvironmentConfiguration config) => string.IsNullOrEmpty(config.PlatformOrConfigCache(KeyEncryptionKeySize)) ? default (int?) : config.PlatformOrConfigCacheInt(KeyEncryptionKeySize);
 
         [ConfigSetting("Encryption")]
         public static AesEncryptionHandler AesEncryption(this IEnvironmentConfiguration config)
         {
-            return string.IsNullOrEmpty(config.EncryptionKey()) ? null : new AesEncryptionHandler(Convert.FromBase64String(config.EncryptionKey()), config.EncryptionKeySize());
+            return string.IsNullOrEmpty(config.EncryptionKey()) ? null : new AesEncryptionHandler(Convert.FromBase64String(config.EncryptionKey()), keySize:config.EncryptionKeySize());
         }
 
         [ConfigSetting("Encryption")]
         public static AesEncryptionHandler AesEncryptionWithCompression(this IEnvironmentConfiguration config)
         {
-            return string.IsNullOrEmpty(config.EncryptionKey()) ? null : new AesEncryptionHandler(Convert.FromBase64String(config.EncryptionKey()), config.EncryptionKeySize(), true);
+            return string.IsNullOrEmpty(config.EncryptionKey()) ? null : new AesEncryptionHandler(Convert.FromBase64String(config.EncryptionKey()), true, config.EncryptionKeySize());
         }
     }
 }

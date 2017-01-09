@@ -65,12 +65,12 @@ namespace Xigadee
         public static P AddEncryptionHandlerAes<P>(this P pipeline
             , string identifier
             , byte[] key
-            , int keySize
             , bool useCompression = true
+            , int? keySize = null
             , Action<IEncryptionHandler> action = null)
             where P : IPipeline
         {
-            var handler = new AesEncryptionHandler(key, keySize, useCompression);
+            var handler = new AesEncryptionHandler(key, useCompression, keySize);
 
             action?.Invoke(handler);
 

@@ -16,7 +16,7 @@ namespace Test.Xigadee.Azure.Console
 
                 pipeline1
                     .ConfigurationSetFromConsoleArgs(args)
-                    .AddEncryptionHandlerAes("myid", Convert.FromBase64String("hNCV1t5sA/xQgDkHeuXYhrSu8kF72p9H436nQoLDC28="), 256)
+                    .AddEncryptionHandlerAes("myid", Convert.FromBase64String("hNCV1t5sA/xQgDkHeuXYhrSu8kF72p9H436nQoLDC28="), keySize:256)
                     .AddAzureStorageDataCollector(handler:"myid")
                     ;
 
