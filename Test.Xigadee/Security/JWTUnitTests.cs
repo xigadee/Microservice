@@ -69,8 +69,8 @@ namespace Test.Xigadee.Security
         public void JwtTokenTest1()
         {
             var check1 = JwtHelper.SafeBase64UrlEncode(Encoding.UTF8.GetBytes("{\"typ\":\"JWT\",      \"alg\":\"HS256\"}"));
-
-            var jwtbase = new JwtToken($"{check1}.{check2}", null);
+            var check2 = JwtHelper.SafeBase64UrlEncode(Encoding.UTF8.GetBytes("{}"));
+            var jwtbase = new JwtToken($"{check1}.{check2}", null, false);
             var algo = jwtbase.Header.SupportedAlgorithm;
         }
 
