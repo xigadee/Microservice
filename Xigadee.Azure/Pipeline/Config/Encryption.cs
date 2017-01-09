@@ -35,7 +35,7 @@ namespace Xigadee
         [ConfigSetting("Encryption")]
         public static AesEncryptionHandler AesEncryption(this IEnvironmentConfiguration config)
         {
-            return string.IsNullOrEmpty(config.EncryptionKey()) ? null : new AesEncryptionHandler(Convert.FromBase64String(config.EncryptionKey()), keySize:config.EncryptionKeySize());
+            return string.IsNullOrEmpty(config.EncryptionKey()) ? null : new AesEncryptionHandler(Convert.FromBase64String(config.EncryptionKey()), false, config.EncryptionKeySize());
         }
 
         [ConfigSetting("Encryption")]

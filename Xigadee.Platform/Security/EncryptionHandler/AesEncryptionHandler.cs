@@ -59,10 +59,10 @@ namespace Xigadee
 
             var calculatedKeySize = key.Length*8;
             if (!keySize.HasValue && calculatedKeySize != 128 && calculatedKeySize != 192 && calculatedKeySize != 256)
-                throw new ArgumentException($"Calculated key size of {calculatedKeySize} does not match a valid key size of 128, 192 or 256");
+                throw new ArgumentException($"Calculated key size of {calculatedKeySize} does not match a valid key size of 128, 192 or 256", nameof(key));
 
             if (keySize.HasValue && calculatedKeySize != keySize)
-                throw new ArgumentException($"Key size of {keySize} does not match supplied key which has a size of {calculatedKeySize}");           
+                throw new ArgumentException($"Key size of {keySize} does not match supplied key which has a size of {calculatedKeySize}", nameof(key));
         }
 
         /// <summary>

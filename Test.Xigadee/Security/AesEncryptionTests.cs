@@ -69,5 +69,13 @@ namespace Test.Xigadee
             var encryption = new AesEncryptionHandler(mKey, keySize:128);
             Assert.Fail("Key size is incorrect so should have thrown an exception");
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void InvalidKey()
+        {
+            var encryption = new AesEncryptionHandler(Convert.FromBase64String("hNCV1t5sA/xQgDkHeuXYhrSu8kF72p9H436nQoLD"));
+            Assert.Fail("Key is incorrect so should have thrown an exception");
+        }
     }
 }
