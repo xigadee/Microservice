@@ -51,7 +51,7 @@ namespace Xigadee
             , string channelId
             , string description = null
             , IEnumerable<SenderPartitionConfig> partitions = null
-            , bool? bLoggerStatus = null
+            , bool? boundaryLoggingEnabled = null
             , bool internalOnly = false
             , Action<IPipelineChannelOutgoing<P>, Channel> assign = null
             , bool autosetPartition01 = true
@@ -59,7 +59,7 @@ namespace Xigadee
             where P: IPipeline
         {
             var channel = pipeline.ToMicroservice().Communication.RegisterChannel(
-                new Channel(channelId, ChannelDirection.Outgoing, description, bLoggerStatus, internalOnly));
+                new Channel(channelId, ChannelDirection.Outgoing, description, boundaryLoggingEnabled, internalOnly));
 
             if (partitions == null && autosetPartition01)
                 partitions = SenderPartitionConfig.Init(0,1);

@@ -55,7 +55,7 @@ namespace Xigadee
         /// <param name="channelId">The channel id.</param>
         /// <param name="description"></param>
         /// <param name="partitions"></param>
-        /// <param name="bLoggerStatus"></param>
+        /// <param name="boundaryLoggingEnabled"></param>
         /// <param name="resourceProfiles"></param>
         /// <param name="internalOnly"></param>
         /// <param name="assign"></param>
@@ -65,7 +65,7 @@ namespace Xigadee
             , string channelId
             , string description = null
             , IEnumerable<ListenerPartitionConfig> partitions = null
-            , bool? bLoggerStatus = null
+            , bool? boundaryLoggingEnabled = null
             , IEnumerable<ResourceProfile> resourceProfiles = null
             , bool internalOnly = false
             , Action<IPipelineChannelIncoming<P>, Channel> assign = null
@@ -74,7 +74,7 @@ namespace Xigadee
             where P: IPipeline
         {     
             var channel = pipeline.ToMicroservice().Communication.RegisterChannel(
-                new Channel(channelId, ChannelDirection.Incoming, description, bLoggerStatus, internalOnly));
+                new Channel(channelId, ChannelDirection.Incoming, description, boundaryLoggingEnabled, internalOnly));
 
             if (partitions == null && autosetPartition01)
                 partitions = ListenerPartitionConfig.Init(0,1);

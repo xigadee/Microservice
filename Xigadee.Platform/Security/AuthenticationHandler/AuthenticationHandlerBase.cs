@@ -22,7 +22,8 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public static partial class CorePipelineExtensions
+    public abstract class AuthenticationHandlerBase: IAuthenticationHandler
     {
+
     }
 }

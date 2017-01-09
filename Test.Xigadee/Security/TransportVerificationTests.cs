@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Xigadee;
 
@@ -19,31 +20,32 @@ namespace Test.Xigadee
                 var bridgeOut = new CommunicationBridge(CommunicationBridgeMode.RoundRobin);
                 var bridgein = new CommunicationBridge(CommunicationBridgeMode.Broadcast);
 
-
                 PersistenceMessageInitiator<Guid, SecureMe> init;
                 DebugMemoryDataCollector memp1, memp2;
 
                 var p1 = new MicroservicePipeline("Sender")
                     .AdjustPolicyCommunication((p) => p.BoundaryLoggingActiveDefault = true)
+                    .AddAuthenticationHandlerJwtToken("id1", JwtHashAlgorithm.HS256, Encoding.UTF8.GetBytes("My big secret"))
                     .AddDataCollector((c) => new DebugMemoryDataCollector(), (c) => memp1 = c)
-                    .AddChannelOutgoing("crequest")
+                    .AddChannelOutgoing("crequest", boundaryLoggingEnabled: true)
                         .AttachSender(bridgeOut.GetSender())
-                        //.AttachTransportMessageSignature()
+                        .AttachTransportPayloadSignature("id1")
                         .Revert()
-                    .AddChannelIncoming("cresponse")
+                    .AddChannelIncoming("cresponse", boundaryLoggingEnabled: true)
                         .AttachListener(bridgein.GetListener())
                         .AttachPersistenceMessageInitiator(out init, "crequest")
                         ;
 
                 var p2 = new MicroservicePipeline("Receiver")
                     .AdjustPolicyCommunication((p) => p.BoundaryLoggingActiveDefault = true)
+                    .AddAuthenticationHandlerJwtToken("id1", JwtHashAlgorithm.HS256, Encoding.UTF8.GetBytes("My big secret"))
                     .AddDataCollector((c) => new DebugMemoryDataCollector(), (c) => memp2 = c)
-                    .AddChannelIncoming("crequest")
-                        //.AttachTransportMessageVerification()
+                    .AddChannelIncoming("crequest", boundaryLoggingEnabled: true)
                         .AttachListener(bridgeOut.GetListener())
+                        .AttachTransportPayloadVerification("id1")
                         .AttachCommand(new PersistenceManagerHandlerMemory<Guid, SecureMe>((e) => e.Id, (s) => new Guid(s)))
                         .Revert()
-                    .AddChannelOutgoing("cresponse")
+                    .AddChannelOutgoing("cresponse", boundaryLoggingEnabled: true)
                         .AttachSender(bridgein.GetSender())
                         ;
 

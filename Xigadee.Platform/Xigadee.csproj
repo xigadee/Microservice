@@ -157,22 +157,27 @@
     <Compile Include="Microservice\Wrapper\SecurityWrapper.cs" />
     <Compile Include="Microservice\Wrapper\SerializationWrapper.cs" />
     <Compile Include="Microservice\Wrapper\WrapperBase.cs" />
-    <Compile Include="Security\JWT\Exceptions\JwtAlgorithmNoneNotAllowedException.cs" />
-    <Compile Include="Security\JWT\Exceptions\JwtAlgorithmNotSupportedException.cs" />
-    <Compile Include="Security\JWT\Exceptions\JwtSignatureInvalidException.cs" />
-    <Compile Include="Security\JWT\Exceptions\JwtException.cs" />
-    <Compile Include="Security\JWT\Helper\JwtHelper.cs" />
-    <Compile Include="Security\JWT\Exceptions\JwtTokenStructureInvalidException.cs" />
-    <Compile Include="Security\JWT\Helper\JwtHashAlgorithm.cs" />
-    <Compile Include="Security\JWT\JwtClaims.cs" />
-    <Compile Include="Security\JWT\JwtToken.cs" />
-    <Compile Include="Security\JWT\Helper\ClaimsSet.cs" />
-    <Compile Include="Security\JWT\JOSEHeader.cs" />
-    <Compile Include="Security\JWT\Helper\JwtRoot.cs" />
-    <Compile Include="Security\Pipeline\Add\AddAesEncryptionHandler.cs" />
+    <Compile Include="Security\AuthenticationHandler\AuthenticationHandlerBase.cs" />
+    <Compile Include="Security\AuthenticationHandler\JwtTokenAuthenticationHandler.cs" />
+    <Compile Include="Security\Exceptions\AuthenticationHandlerNotResolvedException.cs" />
+    <Compile Include="Security\Exceptions\ChannelAuthenticationHandlerAlreadySetException.cs" />
+    <Compile Include="Security\Jwt\Exceptions\JwtAlgorithmNoneNotAllowedException.cs" />
+    <Compile Include="Security\Jwt\Exceptions\JwtAlgorithmNotSupportedException.cs" />
+    <Compile Include="Security\Jwt\Exceptions\JwtSignatureInvalidException.cs" />
+    <Compile Include="Security\Jwt\Exceptions\JwtException.cs" />
+    <Compile Include="Security\Jwt\Helper\JwtHelper.cs" />
+    <Compile Include="Security\Jwt\Exceptions\JwtTokenStructureInvalidException.cs" />
+    <Compile Include="Security\Jwt\Helper\JwtHashAlgorithm.cs" />
+    <Compile Include="Security\Jwt\JwtClaims.cs" />
+    <Compile Include="Security\Jwt\JwtToken.cs" />
+    <Compile Include="Security\Jwt\Helper\ClaimsSet.cs" />
+    <Compile Include="Security\Jwt\JOSEHeader.cs" />
+    <Compile Include="Security\Jwt\Helper\JwtRoot.cs" />
+    <Compile Include="Security\Pipeline\Add\AddEncryptionHandlerAes.cs" />
     <Compile Include="Security\Pipeline\Add\AddAuthenticationHandler.cs" />
-    <Compile Include="Security\Pipeline\Attach\AttachTransportPayloadSignatureVerification.cs" />
-    <Compile Include="Security\Pipeline\Attach\AttachTransportPayloadSignatureGeneration.cs" />
+    <Compile Include="Security\Pipeline\Add\AddAuthenticationHandlerJwtToken.cs" />
+    <Compile Include="Security\Pipeline\Attach\AttachTransportPayloadVerification.cs" />
+    <Compile Include="Security\Pipeline\Attach\AttachTransportPayloadSignature.cs" />
     <Compile Include="Security\Pipeline\Attach\AttachTransportPayloadDecryption.cs" />
     <Compile Include="Pipeline\Extensions\Configuration\ConfigAssertKeyExists.cs" />
     <Compile Include="Scheduler\Pipeline\Add\AddSchedule.cs" />
@@ -553,12 +558,12 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Security\JWT\_Documents\rfc7515 - JSON Web Signature.pdf" />
-    <None Include="Security\JWT\_Documents\rfc7516 - JSON Web Encryption.pdf" />
-    <None Include="Security\JWT\_Documents\rfc7517 - JSON Web Key.pdf" />
-    <None Include="Security\JWT\_Documents\rfc7518 - JSON Web Algorithms.pdf" />
-    <None Include="Security\JWT\_Documents\rfc7519 - JSON Web Token.pdf" />
-    <None Include="Security\JWT\_Documents\rfc7800 - Proof-of-Possession .pdf" />
+    <None Include="Security\Jwt\_Documents\rfc7515 - JSON Web Signature.pdf" />
+    <None Include="Security\Jwt\_Documents\rfc7516 - JSON Web Encryption.pdf" />
+    <None Include="Security\Jwt\_Documents\rfc7517 - JSON Web Key.pdf" />
+    <None Include="Security\Jwt\_Documents\rfc7518 - JSON Web Algorithms.pdf" />
+    <None Include="Security\Jwt\_Documents\rfc7519 - JSON Web Token.pdf" />
+    <None Include="Security\Jwt\_Documents\rfc7800 - Proof-of-Possession .pdf" />
     <None Include="Xigadee.nuspec" />
     <None Include="Xigadee.Platform.licenseheader" />
   </ItemGroup>
@@ -584,7 +589,7 @@
     <Folder Include="DataCollection\Pipeline\Attach\" />
     <Folder Include="Pipeline\Exceptions\" />
     <Folder Include="Pipeline\Extensions\Add\" />
-    <Folder Include="Security\AuthenticationHandler\" />
+    <Folder Include="Security\Jwt\Interfaces\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

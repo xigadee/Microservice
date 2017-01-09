@@ -24,6 +24,32 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
+        ///// <summary>
+        ///// This method adds the encryption handler to the Microservice.
+        ///// </summary>
+        ///// <typeparam name="P">The pipeline type.</typeparam>
+        ///// <param name="pipeline">The pipeline.</param>
+        ///// <param name="identifier">The encryption type identifier. 
+        ///// This is will be used when assigning the handler to a channel or collector.</param>
+        ///// <param name="action">The action on the handler.</param>
+        ///// <returns>The pipeline.</returns>
+        //public static P AddAesEncryptionHandler<P>(this P pipeline
+        //    , string identifier
+        //    , Action<IEncryptionHandler> action = null)
+        //    where P : IPipeline
+        //{
+        //    var config = pipeline.Configuration;
+
+        //    string keyStr = pipeline.Configuration.AesTransportEncryptionKey();
+        //    byte[] key = Convert.FromBase64String(keyStr);
+
+        //    bool useCompression = pipeline.Configuration.AesTransportEncryptionUseCompression();
+        //    int keySize = pipeline.Configuration.AesTransportEncryptionKeySize();
+
+        //    throw new NotImplementedException();
+        //    //return pipeline.AddAesEncryptionHandler(identifier, key, useCompression, blockSize, action);
+        //}
+
         /// <summary>
         /// This method adds the encryption handler to the Microservice.
         /// </summary>
@@ -33,33 +59,7 @@ namespace Xigadee
         /// This is will be used when assigning the handler to a channel or collector.</param>
         /// <param name="action">The action on the handler.</param>
         /// <returns>The pipeline.</returns>
-        public static P AddAesEncryptionHandler<P>(this P pipeline
-            , string identifier
-            , Action<IEncryptionHandler> action = null)
-            where P : IPipeline
-        {
-            var config = pipeline.Configuration;
-
-            string keyStr = pipeline.Configuration.AesTransportEncryptionKey();
-            byte[] key = Convert.FromBase64String(keyStr);
-
-            bool useCompression = pipeline.Configuration.AesTransportEncryptionUseCompression();
-            int keySize = pipeline.Configuration.AesTransportEncryptionKeySize();
-
-            throw new NotImplementedException();
-            //return pipeline.AddAesEncryptionHandler(identifier, key, useCompression, blockSize, action);
-        }
-
-        /// <summary>
-        /// This method adds the encryption handler to the Microservice.
-        /// </summary>
-        /// <typeparam name="P">The pipeline type.</typeparam>
-        /// <param name="pipeline">The pipeline.</param>
-        /// <param name="identifier">The encryption type identifier. 
-        /// This is will be used when assigning the handler to a channel or collector.</param>
-        /// <param name="action">The action on the handler.</param>
-        /// <returns>The pipeline.</returns>
-        public static P AddAesEncryptionHandler<P>(this P pipeline
+        public static P AddEncryptionHandlerAes<P>(this P pipeline
             , string identifier
             , byte[] key
             , bool useCompression = true
@@ -85,7 +85,7 @@ namespace Xigadee
         /// <param name="creator">This function is used to create the handler from the configuration collection.</param>
         /// <param name="action">The action on the handler.</param>
         /// <returns>The pipeline.</returns>
-        public static P AddAesEncryptionHandler<P>(this P pipeline
+        public static P AddEncryptionHandlerAes<P>(this P pipeline
             , string identifier
             , Func<IEnvironmentConfiguration, IEncryptionHandler> creator
             , Action<IEncryptionHandler> action = null)
