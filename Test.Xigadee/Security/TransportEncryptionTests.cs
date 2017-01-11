@@ -31,8 +31,8 @@ namespace Test.Xigadee
 
                 var key = CreateSalt(128);
 
-                var encOut = new AesEncryptionHandler(key, true, 128);
-                var encIn = new AesEncryptionHandler(key, true, 128);
+                var encOut = new AesEncryptionHandler(key, keySize:128);
+                var encIn = new AesEncryptionHandler(key, keySize:128);
 
 
                 PersistenceMessageInitiator<Guid, SecureMe> init;

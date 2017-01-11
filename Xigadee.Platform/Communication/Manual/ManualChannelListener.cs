@@ -19,6 +19,7 @@ namespace Xigadee
             client.Name = mPriorityClientNamer(ChannelId, partition.Priority);
 
             client.ClientCreate = () => new ManualChannelConnection();
+            client.ClientClose = () => { };
 
             return client;
         }
