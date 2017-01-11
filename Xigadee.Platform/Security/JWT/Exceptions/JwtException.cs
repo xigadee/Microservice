@@ -23,12 +23,12 @@ namespace Xigadee
 {
     public abstract class JwtException:Exception
     {
-        public JwtException()
+        protected JwtException()
         {
 
         }
 
-        public JwtException(string message):base(message)
+        protected JwtException(string message):base(message)
         {
                 
         }

@@ -18,10 +18,10 @@ namespace Xigadee
         /// </summary>
         /// <param name="dataType">The data type.</param>
         /// <param name="claims">This </param>
-        public EventHolder(DataCollectionSupport dataType, ClaimsPrincipal claims = null)
+        public EventHolder(DataCollectionSupport dataType, ClaimsPrincipal claims)
         {
             DataType = dataType;
-            Claims = claims ??(Thread.CurrentPrincipal as ClaimsPrincipal);
+            Claims = claims;
         }
         /// <summary>
         /// This property specifies whether the event can be queued for logging (false) or should be logged immediately.

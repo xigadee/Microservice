@@ -15,20 +15,29 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Xigadee
 {
     /// <summary>
-    /// This is the root class for logging events for the Microservice framework.
+    /// These extension methods simplify the logging of complex data to a consistent framework.
     /// </summary>
-    //[DebuggerDisplay("{Level} {Category} ")]
-    public class SecurityEvent: EventBase
+    public static partial class DataCollectionExtensionMethods
     {
-        public SecurityEventDirection Direction { get; set; } = SecurityEventDirection.NotSet;
+        public static async Task SecurityEvent(this IDataCollection collector, SecurityEvent secEvent)
+        {
+            collector.Write(secEvent, DataCollectionSupport.Security);
+        }
+        public static async Task SecurityEvent(this IDataCollection collector, SecurityEventDirection direction, Exception ex)
+        {
+            collector.Write(new SecurityEvent() { Direction = direction, Ex = ex }, DataCollectionSupport.Security);
+        }
+    }
 
-        public Exception Ex { get; set; }
+    public enum SecurityEventDirection
+    {
+        NotSet,
+        Verification,
+        Signing
     }
 }

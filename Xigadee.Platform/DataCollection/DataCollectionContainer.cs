@@ -169,13 +169,15 @@ namespace Xigadee
         }
         #endregion
 
+        #region Security
         /// <summary>
         /// This is the security service primarily used for encryption.
         /// </summary>
         public ISecurityService Security
         {
-            get;set;
-        }
+            get; set;
+        } 
+        #endregion
 
         #region Flush()
         /// <summary>

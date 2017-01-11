@@ -1,4 +1,5 @@
-﻿#region Copyright
+﻿
+#region Copyright
 // Copyright Hitachi Consulting
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,37 +14,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
+using Xigadee;
+
 
 namespace Xigadee
 {
     /// <summary>
-    /// This is the abstract base class for setting authentication
+    /// This method holds the security information for the current request with the Microservice.
+    /// These claims can be set from the remote party.
     /// </summary>
-    public abstract class AuthenticationHandlerBase: IAuthenticationHandler
+    public class MicroserviceSecurityPrincipal:ClaimsPrincipal
     {
-
-        /// <summary>
-        /// This property contains the Microservice identifiers used for claims source information.
-        /// </summary>
-        public MicroserviceId OriginatorId{get;set;}
-
-        public abstract void Sign(TransmissionPayload payload);
-
-        public abstract void Verify(TransmissionPayload payload);
-
-        /// <summary>
-        /// This is the data collector used for logging security events.
-        /// </summary>
-        public IDataCollection Collector
+        public MicroserviceSecurityPrincipal()
         {
-            get; set;
+
+        }
+
+        public MicroserviceSecurityPrincipal(JwtToken incoming):base(new MicroserviceIdentity(incoming))
+        {
+
+        }
+    }
+
+    public class MicroserviceIdentity: ClaimsIdentity
+    {
+        public MicroserviceIdentity(JwtToken incoming)
+        {
+            incoming.Claims
+                .Where((c) => c.Value is string)
+                .ForEach((c) => AddClaim(new Claim(c.Key, c.Value as string)));
         }
     }
 }

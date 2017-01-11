@@ -20,7 +20,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks; 
+using System.Threading;
+using System.Threading.Tasks;
 #endregion
 namespace Xigadee
 {
@@ -91,6 +92,8 @@ namespace Xigadee
                 StatisticsInternal.ActiveIncrement();
 
                 var payload = TransmissionPayload.Create();
+
+                payload.SecurityPrincipal = TransmissionPayload.ConvertToClaimsPrincipal(rq.Settings?.SecurityPrincipal ?? Thread.CurrentPrincipal);
 
                 // Set the process correlation key to the correlation id if passed through the rq settings
                 if (!string.IsNullOrEmpty(rq.Settings?.CorrelationId))

@@ -18,6 +18,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading;
 
 namespace Xigadee
@@ -244,7 +245,18 @@ namespace Xigadee
         /// <summary>
         /// This is the security principal generated from the incoming service message security headers.
         /// </summary>
-        public ClaimsPrincipal SecurityPrincipal { get; set; } 
+        public ClaimsPrincipal SecurityPrincipal { get; set; }
+
+        public static ClaimsPrincipal ConvertToClaimsPrincipal(IPrincipal principal)
+        {
+            if (principal == null)
+                return null;
+
+            if (principal is ClaimsPrincipal)
+                return (ClaimsPrincipal)principal;
+
+            return new ClaimsPrincipal(principal);
+        }
         #endregion
 
         public void CompleteSet()

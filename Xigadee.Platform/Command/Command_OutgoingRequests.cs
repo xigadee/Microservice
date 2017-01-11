@@ -22,6 +22,8 @@ using System.Threading;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Diagnostics;
+using System.Security.Claims;
+using System.Security.Principal;
 #endregion
 namespace Xigadee
 {
@@ -104,7 +106,8 @@ namespace Xigadee
         /// <returns>Returns a response object of the specified type in a response metadata wrapper.</returns>
         protected virtual async Task<ResponseWrapper<RS>> ProcessOutgoing<I, RQ, RS>(RQ rq
             , RequestSettings settings = null
-            , ProcessOptions? routing = null)
+            , ProcessOptions? routing = null
+            , IPrincipal principal = null)
             where I : IMessageContract
         {
             string channelId, messageType, actionType;
@@ -112,7 +115,8 @@ namespace Xigadee
             if (!ServiceMessageHelper.ExtractContractInfo<I>(out channelId, out messageType, out actionType))
                 throw new InvalidOperationException("Unable to locate message contract attributes for " + typeof(I));
 
-            return await ProcessOutgoing<RQ, RS>(channelId, messageType, actionType, rq, settings, routing);
+            return await ProcessOutgoing<RQ, RS>(channelId, messageType, actionType, rq, settings, routing
+                , principal: principal ?? Thread.CurrentPrincipal);
         }
         #endregion
         #region ProcessOutgoing<RQ, RS> ...
@@ -139,6 +143,7 @@ namespace Xigadee
             , ProcessOptions? routingOptions = null
             , Func<TaskStatus, TransmissionPayload, bool, ResponseWrapper<RS>> processResponse = null
             , TimeSpan? fallbackMaxProcessingTime = null
+            , IPrincipal principal = null
             )
         {
             if (!mPolicy.OutgoingRequestsEnabled)
@@ -150,6 +155,7 @@ namespace Xigadee
                 StatisticsInternal.ActiveIncrement();
 
                 payload = TransmissionPayload.Create();
+                payload.SecurityPrincipal = TransmissionPayload.ConvertToClaimsPrincipal(principal ?? Thread.CurrentPrincipal);
 
                 // Set the process correlation key to the correlation id if passed through the rq settings
                 if (!string.IsNullOrEmpty(rqSettings?.CorrelationId))

@@ -22,74 +22,166 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This class handles the token handshake between Microservices. It takes the submitted ClaimsPrincipal and passes
+    /// it through to the remote Microservice along with the current service's metadata.
+    /// </summary>
     public class JwtTokenAuthenticationHandler: AuthenticationHandlerBase
     {
+        #region Static claims definitions
+        public static string ClaimDestination = "http://claims.xigadee.com/dest";
+        public static string ClaimProcessCorrelationKey = "http://claims.xigadee.com/paypck";
+        public static string ClaimPayloadId = "http://claims.xigadee.com/payid";
+        public static string ClaimServiceVersion = "http://claims.xigadee.com/ver";
+        public static string ClaimServiceEngineVersion = "http://claims.xigadee.com/engver";
+        #endregion
+        #region Declarations
         readonly byte[] mSecret;
         readonly JwtHashAlgorithm mAlgorithm;
         readonly string mAudience;
+        #endregion
 
+        #region Constructor
+        /// <summary>
+        /// This constructor sets the secret and the auidence for the handler.
+        /// </summary>
+        /// <param name="algo">The hash algorithm to be used.</param>
+        /// <param name="base64Secret">The secret byte array as a base64 string.</param>
+        /// <param name="audience">The audience. This is compared when the token is received and validated. 
+        /// By default it is set to 'comms'</param>
         public JwtTokenAuthenticationHandler(JwtHashAlgorithm algo, string base64Secret, string audience = "comms")
         {
             mAlgorithm = algo;
             mSecret = Convert.FromBase64String(base64Secret);
             mAudience = audience;
         }
-
+        /// <summary>
+        /// This constructor sets the secret and the auidence for the handler.
+        /// </summary>
+        /// <param name="algo">The hash algorithm to be used.</param>
+        /// <param name="secret">The secret byte array.</param>
+        /// <param name="audience">The audience. This is compared when the token is received and validated. 
+        /// By default it is set to 'comms'</param>
         public JwtTokenAuthenticationHandler(JwtHashAlgorithm algo, byte[] secret, string audience = "comms")
         {
             mAlgorithm = algo;
             mSecret = secret;
             mAudience = audience;
         }
+        #endregion
 
+        #region Sign(TransmissionPayload payload)
+        /// <summary>
+        /// This method adds the Jwt signature to the outgoing message.
+        /// </summary>
+        /// <param name="payload"></param>
         public override void Sign(TransmissionPayload payload)
         {
-            var token = TokenGenerate(payload);
+            try
+            {
+                var token = TokenGenerate(payload);
 
-            payload.Message.SecuritySignature = token.ToString(mSecret);
+                payload.Message.SecuritySignature = token.ToString(mSecret);
+
+            }
+            catch (Exception ex)
+            {
+                Collector?.SecurityEvent(SecurityEventDirection.Signing, ex);
+                throw;
+            }
         }
-
+        #endregion
+        #region Verify(TransmissionPayload payload)
+        /// <summary>
+        /// This method validates the incoming payload and Jwt token and sets the SecurityPrincipal 
+        /// from teh token.
+        /// </summary>
+        /// <param name="payload"></param>
         public override void Verify(TransmissionPayload payload)
         {
-            var token = TokenValidate(payload);
+            try
+            {
+                var token = TokenValidate(payload);
+                //Does the token audience match.
+                if (token.Claims.Audience != mAudience)
+                    throw new TokenInvalidAudienceException(token.Claims.Audience, mAudience);
+                //Does the payload destination match the claims.
+                if (token.Claims.JWTId != payload.Message.OriginatorKey)
+                    throw new TokenInvalidInformationException(token.Claims.JWTId, "twtid"
+                        , token.Claims.JWTId, payload.Message.OriginatorKey);
+                //Has the token expired.
+                if (token.Claims.ExpirationTime.HasValue && token.Claims.ExpirationTime.Value < DateTime.UtcNow)
+                    throw new TokenExpiredException(token.Claims.JWTId);
+                //Does the destiantion match the token.
+                if (!token.Claims.Exists(ClaimDestination)
+                    || (string)token.Claims[ClaimDestination] != payload.Message.ToKey())
+                    throw new TokenInvalidInformationException(token.Claims.JWTId, ClaimDestination
+                        , token.Claims.Exists(ClaimDestination) ? (string)token.Claims[ClaimDestination] : "", payload.Message.ToKey());
 
-        }
+                //Create the principal, which will be passed through the Microservice.
+                payload.SecurityPrincipal = new MicroserviceSecurityPrincipal(token);
+            }
+            catch (Exception ex)
+            {
+                Collector?.SecurityEvent(SecurityEventDirection.Verification, ex);
+                throw;
+            }
+        } 
+        #endregion
 
+        #region TokenGenerate(TransmissionPayload payload)
+        /// <summary>
+        /// This method generates a Jwt token from the payload and it associated security principal and Microservice metadata.
+        /// </summary>
+        /// <param name="payload">The payload to sign.</param>
+        /// <returns>The corresponsing token</returns>
         protected virtual JwtToken TokenGenerate(TransmissionPayload payload)
         {
             JwtToken token = new JwtToken(mAlgorithm);
 
-            token.Claims.Issuer = OriginatorId.ExternalServiceId;
             token.Claims.Audience = mAudience;
+            token.Claims.Issuer = OriginatorId.ExternalServiceId;
             token.Claims.IssuedAt = DateTime.UtcNow;
             token.Claims.JWTId = payload.Message.OriginatorKey;
 
-            ClaimsPrincipal principal = payload.SecurityPrincipal;
+            token.Claims.Add(ClaimPayloadId, payload.Id.ToString("N").ToUpperInvariant());
+            token.Claims.Add(ClaimServiceVersion, OriginatorId.ServiceVersionId);
+            token.Claims.Add(ClaimServiceEngineVersion, OriginatorId.ServiceEngineVersionId);
 
-            var userId = principal?.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var role = principal?.FindFirst(ClaimTypes.Role).Value;
+            var correl = payload.Message.ProcessCorrelationKey;
+            if (correl != null)
+                token.Claims.Add(ClaimProcessCorrelationKey, correl);
+
+            token.Claims.Add(ClaimDestination, payload.Message.ToKey());
+
+            IPrincipal principal = payload.SecurityPrincipal;
+            IIdentity identity = payload.SecurityPrincipal.Identity;
+
+            token.Claims.Add(ClaimTypes.Name, identity.Name);
+            token.Claims.Add(ClaimTypes.Authentication, identity.IsAuthenticated ? "1" : "0");
+            token.Claims.Add(ClaimTypes.Role, "Default");
+            if (identity.IsAuthenticated)
+                token.Claims.Add(ClaimTypes.AuthenticationMethod, identity.AuthenticationType);
 
             return token;
-        }
-
-
+        } 
+        #endregion
+        #region TokenValidate(TransmissionPayload payload)
+        /// <summary>
+        /// This method validated the incoming signature.
+        /// </summary>
+        /// <param name="payload">The payload containing the signature.</param>
+        /// <returns></returns>
         protected virtual JwtToken TokenValidate(TransmissionPayload payload)
         {
-            JwtToken token = new JwtToken(payload.Message.SecuritySignature, mSecret);
+            var tokensig = payload.Message.SecuritySignature;
+            if (string.IsNullOrEmpty(tokensig))
+                throw new IncomingPayloadTokenSignatureNotPresentException();
 
-            payload.SecurityPrincipal = GenerateClaimsPrincipal(token);
+            JwtToken token = new JwtToken(tokensig, mSecret, true, false);
 
             return token;
-        }
-
-        protected virtual ClaimsPrincipal GenerateClaimsPrincipal(JwtToken token)
-        {
-            IIdentity ident = null;
-            ClaimsIdentity ident2 = new ClaimsIdentity();
-            var principal = new ClaimsPrincipal();
-
-
-            return principal;
-        }
+        } 
+        #endregion
     }
 }

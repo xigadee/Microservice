@@ -17,13 +17,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Xigadee
 {
     public class RequestSettings
     {
+        /// <summary>
+        /// This is the current principal for the thread.
+        /// </summary>
+        public IPrincipal SecurityPrincipal { get; set; } = Thread.CurrentPrincipal;
 
         /// <summary>
         /// This is the time the request should wait for a response until signalling a time out.

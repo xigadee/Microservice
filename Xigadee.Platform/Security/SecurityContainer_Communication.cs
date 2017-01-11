@@ -24,8 +24,7 @@ namespace Xigadee
     /// </summary>
     public partial class SecurityContainer
     {
-
-
+        #region Verify(Channel channel, TransmissionPayload payloadIn)
         /// <summary>
         /// This method verifies the incoming payload, and decrypts the channel payload if this has been specified 
         /// for the channel.
@@ -51,10 +50,12 @@ namespace Xigadee
                 mAuthenticationHandlers[channel.Authentication.Id].Verify(payloadIn);
             }
             else
-                payloadIn.SecurityPrincipal = new ClaimsPrincipal();
+                payloadIn.SecurityPrincipal = new MicroserviceSecurityPrincipal();
 
         }
+        #endregion
 
+        #region Secure(Channel channel, TransmissionPayload payloadOut)
         /// <summary>
         /// This method encrypts the outgoing payload if this has been set.
         /// </summary>
@@ -68,7 +69,9 @@ namespace Xigadee
                 if (!mAuthenticationHandlers.ContainsKey(channel.Authentication.Id))
                     throw new ChannelAuthenticationHandlerNotResolvedException(channel);
 
-                mAuthenticationHandlers[channel.Authentication.Id].Sign(payloadOut);
+                var handler = mAuthenticationHandlers[channel.Authentication.Id];
+
+                handler.Sign(payloadOut);
             }
 
             //Now encrpyt the payload.
@@ -78,7 +81,7 @@ namespace Xigadee
 
                 payloadOut.Message.Blob = encrypt;
             }
-
-        }
+        } 
+        #endregion
     }
 }

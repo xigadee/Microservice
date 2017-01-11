@@ -14,21 +14,9 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading.Tasks;
-
 namespace Xigadee
 {
-    /// <summary>
-    /// This is the root class for logging events for the Microservice framework.
-    /// </summary>
-    //[DebuggerDisplay("{Level} {Category} ")]
-    public class SecurityEvent: EventBase
+    public class IncomingPayloadTokenSignatureNotPresentException: TokenValidationException
     {
-        public SecurityEventDirection Direction { get; set; } = SecurityEventDirection.NotSet;
-
-        public Exception Ex { get; set; }
     }
 }

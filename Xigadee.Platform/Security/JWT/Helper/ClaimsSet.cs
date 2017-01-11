@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Xigadee
@@ -54,7 +55,9 @@ namespace Xigadee
         {
             foreach (var item in jObj)
             {
-                yield return new KeyValuePair<string, object>(item.Key, (object)item.Value);
+                if (!item.Value.HasValues)
+                    //yield return new KeyValuePair<string, object>(item.Key, item.Value.Value<object>());
+                    yield return new KeyValuePair<string, object>(item.Key, item.Value.ToObject<object>());
             }
         }
 

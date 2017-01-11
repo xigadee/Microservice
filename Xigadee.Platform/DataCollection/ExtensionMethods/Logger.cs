@@ -14,11 +14,7 @@
 // limitations under the License.
 #endregion
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Xigadee;
 
 namespace Xigadee
 {
@@ -55,14 +51,6 @@ namespace Xigadee
         public static void LogMessage(this IDataCollection collector, LoggingLevel level, string message, string category)
         {
             collector.Write(new LogEvent(level, message, category));
-        }
-    }
-
-    public class Fuck: ILogger
-    {
-        public Task Log(LogEvent logEvent)
-        {
-            throw new NotImplementedException();
         }
     }
 }

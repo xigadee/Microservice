@@ -18,7 +18,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Claims;
+using System.Security.Principal;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xigadee;
 namespace Xigadee
@@ -57,10 +60,12 @@ namespace Xigadee
         /// <returns>Returns a response object of the specified type in a response metadata wrapper.</returns>
         public virtual async Task<ResponseWrapper<RS>> Process<I, RQ, RS>(RQ rq
             , RequestSettings settings = null
-            , ProcessOptions? routing = null)
+            , ProcessOptions? routing = null
+            , IPrincipal principal = null)
             where I : IMessageContract
         {
-            return await ProcessOutgoing<I, RQ, RS>(rq, settings, routing);
+            return await ProcessOutgoing<I, RQ, RS>(rq, settings, routing
+                , principal: principal ?? Thread.CurrentPrincipal);
         }
         #endregion
         #region Process<RQ, RS> ...
@@ -82,10 +87,11 @@ namespace Xigadee
             , RQ rq
             , RequestSettings rqSettings = null
             , ProcessOptions? routingOptions = null
-            , Func<TaskStatus, TransmissionPayload, bool, ResponseWrapper<RS>> processResponse = null
-            )
+            , Func<TaskStatus, TransmissionPayload, bool
+            , ResponseWrapper<RS>> processResponse = null
+            , IPrincipal principal = null)
         {
-            return await ProcessOutgoing(channelId, messageType, actionType, rq, rqSettings, routingOptions, processResponse);
+            return await ProcessOutgoing(channelId, messageType, actionType, rq, rqSettings, routingOptions, processResponse, principal: principal);
         } 
         #endregion
     }
