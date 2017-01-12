@@ -126,7 +126,7 @@ namespace Xigadee
                 Collector?.SecurityEvent(SecurityEventDirection.Verification, ex);
                 throw;
             }
-        } 
+        }
         #endregion
 
         #region TokenGenerate(TransmissionPayload payload)

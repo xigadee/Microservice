@@ -28,6 +28,7 @@ namespace Xigadee
         {
             collector.Write(secEvent, DataCollectionSupport.Security);
         }
+
         public static async Task SecurityEvent(this IDataCollection collector, SecurityEventDirection direction, Exception ex)
         {
             collector.Write(new SecurityEvent() { Direction = direction, Ex = ex }, DataCollectionSupport.Security);

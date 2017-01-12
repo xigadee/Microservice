@@ -16,20 +16,99 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web.Http;
+using System.IdentityModel.Claims;
+using System.Security.Claims;
+using System.Threading;
+using System.Web.Http.Controllers;
+using System.Web.Http.Filters;
+using System.Web.Http.Results;
 
 namespace Xigadee
 {
     public static partial class WebApiExtensionMethods
     {
-        public static P AddJwtTokenAuthentication<P>(this P webpipe)
+        public static P AddJwtTokenAuthentication<P>(this P webpipe
+            , JwtHashAlgorithm algo
+            , string base64Secret
+            , Action<IAuthenticationFilter> action = null)
             where P : IPipelineWebApi
         {
+            webpipe.HttpConfig.Filters.Add(new JwtAuthenticationFilter(algo, base64Secret));
 
             return webpipe;
         }
     }
+
+    public class JwtAuthenticationFilter: IAuthenticationFilter
+    {
+        private JwtHashAlgorithm mAlgorithm;
+        private byte[] mSecret;
+
+        public JwtAuthenticationFilter(JwtHashAlgorithm algo, string base64Secret)
+        {
+
+        }
+
+        public bool AllowMultiple
+        {
+            get { return true; }
+        }
+
+
+        public Task AuthenticateAsync(HttpAuthenticationContext context, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ChallengeAsync(HttpAuthenticationChallengeContext context, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnAuthorization(HttpActionContext actionContext)
+        {
+            //var identity = new GenericIdentity("Paul", "Xigadee");
+
+            //var principal = new GenericPrincipal(identity, null);
+
+            //Thread.CurrentPrincipal = principal;
+
+            //actionContext.Response = actionContext.Request.CreateErrorResponse(HttpStatusCode.Unauthorized,
+            //        new SecurityException("Invalid API key Provided"));
+
+            //base.OnAuthorization(actionContext);
+
+      //      var req = actionContext.Request;
+      //      // Get credential from the Authorization header 
+      //      //(if present) and authenticate
+      //      if (req.Headers.Authorization != null &&
+      //        "somescheme".Equals(req.Headers.Authorization.Scheme,
+      //          StringComparison.OrdinalIgnoreCase))
+      //      {
+      //          var creds = req.Headers.Authorization.Parameter;
+      //          if (creds == "opensesame") // Replace with a real check
+      //          {
+      //              var claims = new List<Claim>()
+      //{
+      //  new Claim(ClaimTypes.Name, "badri"),
+      //  new Claim(ClaimTypes.Role, "admin")
+      //};
+      //              var id = new ClaimsIdentity(claims, "Token");
+      //              var principal = new ClaimsPrincipal(new[] { id });
+      //              // The request message contains valid credential
+      //              actionContext.Principal = principal;
+      //          }
+      //          else
+      //          {
+      //              // The request message contains invalid credential
+      //              actionContext.ErrorResult = new UnauthorizedResult(
+      //                new AuthenticationHeaderValue[0], context.Request);
+      //          }
+      //      }
+      //      return Task.FromResult(0);
+        }
+
+    }
+
 }
