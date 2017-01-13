@@ -14,17 +14,17 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Http;
-
 namespace Xigadee
 {
     public static partial class WebApiExtensionMethods
     {
+        /// <summary>
+        /// This method will ensure the service returns a HTTP 503 service unavailable error if the underlying Microservice
+        /// is not currently running.
+        /// </summary>
+        /// <typeparam name="P">The pipeline type.</typeparam>
+        /// <param name="webpipe">The pipe.</param>
+        /// <returns>Returns the pipeline.</returns>
         public static P AddMicroserviceUnavailableFilter<P>(this P webpipe)
             where P : IPipelineWebApi
         {

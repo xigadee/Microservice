@@ -19,6 +19,14 @@ namespace Xigadee
 {
     public static partial class WebApiExtensionMethods
     {
+        /// <summary>
+        /// This method adds the Api version number to the response header. 
+        /// This can be used for debugging.
+        /// </summary>
+        /// <typeparam name="P"></typeparam>
+        /// <param name="webpipe"></param>
+        /// <param name="headerName">The HTTP header name, which by default is X-XigadeeApiVersion</param>
+        /// <returns>Returns the pipe.</returns>
         public static P AddVersionHeaderFilter<P>(this P webpipe, string headerName = "X-XigadeeApiVersion")
             where P : IPipelineWebApi
         {

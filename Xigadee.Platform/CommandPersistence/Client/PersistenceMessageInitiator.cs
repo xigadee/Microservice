@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -85,7 +86,8 @@ namespace Xigadee
         /// <param Name="actionType">The action type.</param>
         /// <param Name="rq">The repository holder request.</param>
         /// <returns>Returns an async task that will be signalled when the request completes or times out.</returns>
-        protected override async Task<RepositoryHolder<KT, ET>> TransmitInternal<KT, ET>(string actionType, RepositoryHolder<KT, ET> rq, ProcessOptions? routing = null)
+        protected override async Task<RepositoryHolder<KT, ET>> TransmitInternal<KT, ET>(
+            string actionType, RepositoryHolder<KT, ET> rq, ProcessOptions? routing = null, IPrincipal principal = null)
         {
             try
             {
@@ -93,7 +95,7 @@ namespace Xigadee
 
                 var payload = TransmissionPayload.Create();
 
-                payload.SecurityPrincipal = TransmissionPayload.ConvertToClaimsPrincipal(rq.Settings?.SecurityPrincipal ?? Thread.CurrentPrincipal);
+                payload.SecurityPrincipal = TransmissionPayload.ConvertToClaimsPrincipal(principal ?? Thread.CurrentPrincipal);
 
                 // Set the process correlation key to the correlation id if passed through the rq settings
                 if (!string.IsNullOrEmpty(rq.Settings?.CorrelationId))

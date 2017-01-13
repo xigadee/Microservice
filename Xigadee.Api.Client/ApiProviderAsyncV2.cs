@@ -22,6 +22,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http.Headers;
+using System.Security.Principal;
 #endregion
 namespace Xigadee
 {
@@ -51,6 +52,7 @@ namespace Xigadee
         /// </summary>
         protected string mPrimaryTransport;
         #endregion
+
         #region Constructor
         /// <summary>
         /// This is the default constructor.

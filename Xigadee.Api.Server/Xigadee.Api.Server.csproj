@@ -166,6 +166,8 @@
     <Compile Include="Controllers\SecurityControllerAsyncBase.cs" />
     <Compile Include="Controllers\WebhookControllerAsyncBase.cs" />
     <Compile Include="Helper\MicroserviceDependencyResolver.cs" />
+    <Compile Include="Owin\JwtAuthenticationFilter.cs" />
+    <Compile Include="Owin\JwtTokenVerificationPolicy.cs" />
     <Compile Include="Pipeline\Actual.cs" />
     <Compile Include="Pipeline\AddAuthorizationServer.cs" />
     <Compile Include="Pipeline\AddCorrelationIdFilter.cs" />
