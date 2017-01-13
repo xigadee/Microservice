@@ -31,82 +31,42 @@ namespace Xigadee
         public static P AddJwtTokenAuthentication<P>(this P webpipe
             , JwtHashAlgorithm algo
             , string base64Secret
+            , string audience = "api"
             , Action<IAuthenticationFilter> action = null)
             where P : IPipelineWebApi
         {
-            webpipe.HttpConfig.Filters.Add(new JwtAuthenticationFilter(algo, base64Secret));
+            var policy = new JwtTokenVerificationPolicy
+            {
+                  Algorithm = algo
+                , Audience = audience
+                , Secret = Convert.FromBase64String(base64Secret)
+            };
+
+            return webpipe.AddJwtTokenAuthentication(policy, action);
+        }
+
+        public static P AddJwtTokenAuthentication<P>(this P webpipe
+           , Func<IEnvironmentConfiguration, JwtTokenVerificationPolicy> creator
+           , Action<IAuthenticationFilter> action = null)
+           where P : IPipelineWebApi
+        {
+            var policy = creator(webpipe.Configuration);
+
+            return webpipe.AddJwtTokenAuthentication(policy, action);
+        }
+
+        public static P AddJwtTokenAuthentication<P>(this P webpipe
+           , JwtTokenVerificationPolicy policy
+           , Action<IAuthenticationFilter> action = null)
+           where P : IPipelineWebApi
+        {
+            var filter = new JwtAuthenticationFilter(policy);
+
+            action?.Invoke(filter);
+
+            webpipe.HttpConfig.Filters.Add(filter);
 
             return webpipe;
-        }
-    }
-
-    public class JwtAuthenticationFilter: IAuthenticationFilter
-    {
-        private JwtHashAlgorithm mAlgorithm;
-        private byte[] mSecret;
-
-        public JwtAuthenticationFilter(JwtHashAlgorithm algo, string base64Secret)
-        {
-
-        }
-
-        public bool AllowMultiple
-        {
-            get { return true; }
-        }
-
-
-        public Task AuthenticateAsync(HttpAuthenticationContext context, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task ChallengeAsync(HttpAuthenticationChallengeContext context, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void OnAuthorization(HttpActionContext actionContext)
-        {
-            //var identity = new GenericIdentity("Paul", "Xigadee");
-
-            //var principal = new GenericPrincipal(identity, null);
-
-            //Thread.CurrentPrincipal = principal;
-
-            //actionContext.Response = actionContext.Request.CreateErrorResponse(HttpStatusCode.Unauthorized,
-            //        new SecurityException("Invalid API key Provided"));
-
-            //base.OnAuthorization(actionContext);
-
-      //      var req = actionContext.Request;
-      //      // Get credential from the Authorization header 
-      //      //(if present) and authenticate
-      //      if (req.Headers.Authorization != null &&
-      //        "somescheme".Equals(req.Headers.Authorization.Scheme,
-      //          StringComparison.OrdinalIgnoreCase))
-      //      {
-      //          var creds = req.Headers.Authorization.Parameter;
-      //          if (creds == "opensesame") // Replace with a real check
-      //          {
-      //              var claims = new List<Claim>()
-      //{
-      //  new Claim(ClaimTypes.Name, "badri"),
-      //  new Claim(ClaimTypes.Role, "admin")
-      //};
-      //              var id = new ClaimsIdentity(claims, "Token");
-      //              var principal = new ClaimsPrincipal(new[] { id });
-      //              // The request message contains valid credential
-      //              actionContext.Principal = principal;
-      //          }
-      //          else
-      //          {
-      //              // The request message contains invalid credential
-      //              actionContext.ErrorResult = new UnauthorizedResult(
-      //                new AuthenticationHeaderValue[0], context.Request);
-      //          }
-      //      }
-      //      return Task.FromResult(0);
         }
 
     }
