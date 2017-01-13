@@ -27,11 +27,6 @@ namespace Xigadee
     public class RequestSettings
     {
         /// <summary>
-        /// This is the current principal for the thread.
-        /// </summary>
-        public IPrincipal SecurityPrincipal { get; set; } = Thread.CurrentPrincipal;
-
-        /// <summary>
         /// This is the time the request should wait for a response until signalling a time out.
         /// </summary>
         public TimeSpan? WaitTime { get; set; }

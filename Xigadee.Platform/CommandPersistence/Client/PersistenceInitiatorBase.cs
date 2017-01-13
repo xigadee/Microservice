@@ -17,13 +17,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Xigadee
 {
     public abstract class PersistenceInitiatorBase<K, E, P> : CommandBase<PersistenceInitiatorStatistics, P>
-        , IRepositoryAsync<K, E>
+        , IRepositoryAsyncServer<K, E>
         where K : IEquatable<K>
         where P : CommandPolicy, new()
     {
@@ -60,8 +61,17 @@ namespace Xigadee
                 return $"{base.FriendlyName}-{typeof(E).Name}";
             }
         }
-        #endregion
 
+        #endregion
+        #region DefaultPrincipal
+        /// <summary>
+        /// This is the default principal that the inititor works under.
+        /// </summary>
+        public IPrincipal DefaultPrincipal
+        {
+            get; set;
+        } 
+        #endregion
         #region Persistence shortcuts
 
         #region Create(E entity, RepositorySettings settings = null)
@@ -73,7 +83,7 @@ namespace Xigadee
         /// <returns>Returns a response holder that indicates the status of the request and the entity or key and version id where appropriate.</returns>
         public virtual async Task<RepositoryHolder<K, E>> Create(E entity, RepositorySettings settings = null)
         {
-            return await TransmitInternal(EntityActions.Create, new RepositoryHolder<K, E> { Entity = entity, Settings = settings });
+            return await TransmitInternal(EntityActions.Create, new RepositoryHolder<K, E> { Entity = entity, Settings = settings }, principal: DefaultPrincipal);
         }
         #endregion
         #region Read(K key, RepositorySettings settings = null)
@@ -94,7 +104,7 @@ namespace Xigadee
                 }
             }
 
-            return await TransmitInternal(EntityActions.Read, new RepositoryHolder<K, E> { Key = key, Settings = settings });
+            return await TransmitInternal(EntityActions.Read, new RepositoryHolder<K, E> { Key = key, Settings = settings }, principal: DefaultPrincipal);
         }
         #endregion
         #region ReadByRef(string refKey, string refValue, RepositorySettings settings = null)
@@ -119,7 +129,7 @@ namespace Xigadee
                 }
             }
 
-            return await TransmitInternal(EntityActions.ReadByRef, new RepositoryHolder<K, E> { KeyReference = new Tuple<string, string>(refKey, refValue), Settings = settings });
+            return await TransmitInternal(EntityActions.ReadByRef, new RepositoryHolder<K, E> { KeyReference = new Tuple<string, string>(refKey, refValue), Settings = settings }, principal: DefaultPrincipal);
         }
         #endregion
         #region Update(E entity, RepositorySettings settings = null)
@@ -131,7 +141,7 @@ namespace Xigadee
         /// <returns>Returns a response holder that indicates the status of the request and the entity or key and version id where appropriate.</returns>
         public virtual async Task<RepositoryHolder<K, E>> Update(E entity, RepositorySettings settings = null)
         {
-            return await TransmitInternal(EntityActions.Update, new RepositoryHolder<K, E> { Entity = entity, Settings = settings });
+            return await TransmitInternal(EntityActions.Update, new RepositoryHolder<K, E> { Entity = entity, Settings = settings }, principal: DefaultPrincipal);
         }
         #endregion
         #region Delete(K key, RepositorySettings settings = null)
@@ -143,7 +153,7 @@ namespace Xigadee
         /// <returns>Returns a response holder that indicates the status of the request and the entity or key and version id where appropriate.</returns>
         public virtual async Task<RepositoryHolder<K, Tuple<K, string>>> Delete(K key, RepositorySettings settings = null)
         {
-            return await TransmitInternal(EntityActions.Delete, new RepositoryHolder<K, Tuple<K, string>> { Key = key, Settings = settings });
+            return await TransmitInternal(EntityActions.Delete, new RepositoryHolder<K, Tuple<K, string>> { Key = key, Settings = settings }, principal: DefaultPrincipal);
         }
         #endregion
         #region DeleteByRef(string refKey, string refValue, RepositorySettings settings = null)
@@ -156,7 +166,7 @@ namespace Xigadee
         /// <returns>Returns a response holder that indicates the status of the request and the entity or key and version id where appropriate.</returns>
         public virtual async Task<RepositoryHolder<K, Tuple<K, string>>> DeleteByRef(string refKey, string refValue, RepositorySettings settings = null)
         {
-            return await TransmitInternal(EntityActions.DeleteByRef, new RepositoryHolder<K, Tuple<K, string>> { KeyReference = new Tuple<string, string>(refKey, refValue), Settings = settings });
+            return await TransmitInternal(EntityActions.DeleteByRef, new RepositoryHolder<K, Tuple<K, string>> { KeyReference = new Tuple<string, string>(refKey, refValue), Settings = settings }, principal: DefaultPrincipal);
         }
         #endregion
         #region Version(K key, RepositorySettings settings = null)
@@ -177,7 +187,7 @@ namespace Xigadee
                 }
             }
 
-            return await TransmitInternal(EntityActions.Version, new RepositoryHolder<K, Tuple<K, string>> { Key = key, Settings = settings });
+            return await TransmitInternal(EntityActions.Version, new RepositoryHolder<K, Tuple<K, string>> { Key = key, Settings = settings }, principal: DefaultPrincipal);
         }
         #endregion
         #region VersionByRef(string refKey, string refValue, RepositorySettings settings = null)
@@ -199,7 +209,7 @@ namespace Xigadee
                 }
             }
 
-            return await TransmitInternal(EntityActions.VersionByRef, new RepositoryHolder<K, Tuple<K, string>> { KeyReference = new Tuple<string, string>(refKey, refValue), Settings = settings });
+            return await TransmitInternal(EntityActions.VersionByRef, new RepositoryHolder<K, Tuple<K, string>> { KeyReference = new Tuple<string, string>(refKey, refValue), Settings = settings }, principal: DefaultPrincipal);
         }
         #endregion
 
@@ -221,7 +231,7 @@ namespace Xigadee
             //    }
             //}
 
-            return await TransmitInternal(EntityActions.Search, new RepositoryHolder<SearchRequest, SearchResponse> { Key = rq, Settings = settings });
+            return await TransmitInternal(EntityActions.Search, new RepositoryHolder<SearchRequest, SearchResponse> { Key = rq, Settings = settings }, principal: DefaultPrincipal);
         } 
         #endregion
 
@@ -236,7 +246,7 @@ namespace Xigadee
         /// <param name="rq">The request.</param>
         /// <param name="routing">The routing options.</param>
         /// <returns>Returns the request response.</returns>
-        protected abstract Task<RepositoryHolder<KT, ET>> TransmitInternal<KT, ET>(string actionType, RepositoryHolder<KT, ET> rq, ProcessOptions? routing = null) 
+        protected abstract Task<RepositoryHolder<KT, ET>> TransmitInternal<KT, ET>(string actionType, RepositoryHolder<KT, ET> rq, ProcessOptions? routing = null, IPrincipal principal = null) 
             where KT : IEquatable<KT>;
 
         #region ProcessResponse<KT, ET>(TaskStatus status, TransmissionPayload prs, bool async)

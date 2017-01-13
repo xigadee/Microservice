@@ -30,9 +30,21 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The entity key object.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
+    public interface IRepositoryAsyncServer<K, E>: IRepositoryAsync<K, E>
+        where K : IEquatable<K>
+    {
+        IPrincipal DefaultPrincipal { get; set; }
+    }
+
+    /// <summary>
+    /// This is a default repositry async interface for entities within the system.
+    /// </summary>
+    /// <typeparam name="K">The entity key object.</typeparam>
+    /// <typeparam name="E">The entity type.</typeparam>
     public interface IRepositoryAsync<K, E>
         where K : IEquatable<K>
     {
+
         Task<RepositoryHolder<K, E>> Create(E entity, RepositorySettings options = null);
 
         Task<RepositoryHolder<K, E>> Read(K key, RepositorySettings options = null);

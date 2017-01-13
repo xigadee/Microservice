@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 #endregion
@@ -77,7 +78,7 @@ namespace Xigadee
                 && mSharedServices != null 
                 && !mSharedServices.HasService<IRepositoryAsync<K, E>>())
                     mShared = mSharedServices.RegisterService<IRepositoryAsync<K, E>>(
-                        new Lazy<IRepositoryAsync<K, E>>(() => this), typeof(E).Name);
+                        new Lazy<IRepositoryAsync<K, E>>(() => (IRepositoryAsync<K, E>)this), typeof(E).Name);
         }
         #endregion
         #region StopInternal()
@@ -113,7 +114,7 @@ namespace Xigadee
         /// <param name="rq">The repository holder request.</param>
         /// <param name="routing"></param>
         /// <returns>Returns an async task that will be signalled when the request completes or times out.</returns>
-        protected override async Task<RepositoryHolder<KT, ET>> TransmitInternal<KT, ET>(string actionType, RepositoryHolder<KT, ET> rq, ProcessOptions? routing = null)
+        protected override async Task<RepositoryHolder<KT, ET>> TransmitInternal<KT, ET>(string actionType, RepositoryHolder<KT, ET> rq, ProcessOptions? routing = null, IPrincipal principal = null)
         {
             StatisticsInternal.ActiveIncrement();
 
