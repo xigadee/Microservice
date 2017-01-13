@@ -15,19 +15,22 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.IdentityModel.Claims;
-using System.Security.Claims;
-using System.Threading;
-using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
-using System.Web.Http.Results;
 
 namespace Xigadee
 {
     public static partial class WebApiExtensionMethods
     {
+        /// <summary>
+        /// This method adds basic Jwt authentication to the web app
+        /// </summary>
+        /// <typeparam name="P">The web pipe type</typeparam>
+        /// <param name="webpipe">The pipe.</param>
+        /// <param name="algo">The supported HMAC algorithm</param>
+        /// <param name="base64Secret">The base64secret</param>
+        /// <param name="audience">The audience value to check.</param>
+        /// <param name="action">The action to be called on the filter creation.</param>
+        /// <returns>Returns the web pipe.</returns>
         public static P AddJwtTokenAuthentication<P>(this P webpipe
             , JwtHashAlgorithm algo
             , string base64Secret
@@ -44,7 +47,14 @@ namespace Xigadee
 
             return webpipe.AddJwtTokenAuthentication(policy, action);
         }
-
+        /// <summary>
+        /// This method adds basic Jwt authentication to the web app
+        /// </summary>
+        /// <typeparam name="P">The web pipe type</typeparam>
+        /// <param name="webpipe">The pipe.</param>
+        /// <param name="creator">This method can be used to create the token policy from configuration.</param>
+        /// <param name="action">The action to be called on the filter creation.</param>
+        /// <returns>Returns the web pipe.</returns>
         public static P AddJwtTokenAuthentication<P>(this P webpipe
            , Func<IEnvironmentConfiguration, JwtTokenVerificationPolicy> creator
            , Action<IAuthenticationFilter> action = null)
@@ -54,7 +64,14 @@ namespace Xigadee
 
             return webpipe.AddJwtTokenAuthentication(policy, action);
         }
-
+        /// <summary>
+        /// This method adds basic Jwt authentication to the web app
+        /// </summary>
+        /// <typeparam name="P">The web pipe type</typeparam>
+        /// <param name="webpipe">The pipe.</param>
+        /// <param name="policy">The token policy.</param>
+        /// <param name="action">The action to be called on the filter creation.</param>
+        /// <returns>Returns the web pipe.</returns>
         public static P AddJwtTokenAuthentication<P>(this P webpipe
            , JwtTokenVerificationPolicy policy
            , Action<IAuthenticationFilter> action = null)
