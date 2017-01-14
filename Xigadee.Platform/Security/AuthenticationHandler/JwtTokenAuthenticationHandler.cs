@@ -154,14 +154,17 @@ namespace Xigadee
 
             token.Claims.Add(ClaimDestination, payload.Message.ToKey());
 
-            IPrincipal principal = payload.SecurityPrincipal;
-            IIdentity identity = payload.SecurityPrincipal.Identity;
+            IPrincipal principal = payload?.SecurityPrincipal;
+            IIdentity identity = principal?.Identity;
 
-            token.Claims.Add(ClaimTypes.Name, identity.Name);
-            token.Claims.Add(ClaimTypes.Authentication, identity.IsAuthenticated ? "1" : "0");
-            token.Claims.Add(ClaimTypes.Role, "Default");
-            if (identity.IsAuthenticated)
-                token.Claims.Add(ClaimTypes.AuthenticationMethod, identity.AuthenticationType);
+            if (identity != null)
+            {
+                token.Claims.Add(ClaimTypes.Name, identity.Name);
+                token.Claims.Add(ClaimTypes.Authentication, identity.IsAuthenticated ? "true" : "false");
+                token.Claims.Add(ClaimTypes.Role, "Default");
+                if (identity.IsAuthenticated)
+                    token.Claims.Add(ClaimTypes.AuthenticationMethod, identity.AuthenticationType);
+            }
 
             return token;
         } 

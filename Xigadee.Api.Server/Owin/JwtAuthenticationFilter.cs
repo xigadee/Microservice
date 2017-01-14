@@ -23,6 +23,11 @@ using System.Threading;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 using System.Web.Http.Results;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Security.Principal;
+using System.Web.Http;
+using System.Net;
 
 namespace Xigadee
 {
@@ -43,12 +48,51 @@ namespace Xigadee
 
         public async Task AuthenticateAsync(HttpAuthenticationContext context, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            // 1. Look for credentials in the request.
+            HttpRequestMessage request = context.Request;
+            AuthenticationHeaderValue authorization = request.Headers.Authorization;
+
+            // 2. If there are no credentials - or the filter does not recognize the 
+            //    authentication scheme - do nothing.
+            if (authorization == null
+                || !authorization.Scheme.Equals("bearer", StringComparison.InvariantCultureIgnoreCase))
+                return;
+
+            try
+            {
+                var token = new JwtToken(authorization.Parameter, mtokenPolicy.Secret);
+
+                context.Principal = new MicroserviceSecurityPrincipal(token);
+
+                return;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+            context.ErrorResult = new AuthenticationFailureResult("Unauthorized", request);
+            return;
+
+            //context.ActionContext = context.Request.CreateResponse(HttpStatusCode.Unauthorized);
+            //context.ErrorResult = new HttpError("Tits! up.");
+            //IPrincipal principal = await AuthenticateAsync(userName, password, cancellationToken);
+            //if (principal == null)
+            //{
+            //    context.ErrorResult = new AuthenticationFailureResult("Invalid username or password", request);
+            //}
+
+            //// 6. If the credentials are valid, set principal.
+            //else
+            //{
+            //    context.Principal = principal;
+            //}
         }
 
         public async Task ChallengeAsync(HttpAuthenticationChallengeContext context, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return;
         }
 
         public void OnAuthorization(HttpActionContext actionContext)
@@ -94,6 +138,32 @@ namespace Xigadee
             //      return Task.FromResult(0);
         }
 
+    }
+
+    public class AuthenticationFailureResult: IHttpActionResult
+    {
+        public AuthenticationFailureResult(string reasonPhrase, HttpRequestMessage request)
+        {
+            ReasonPhrase = reasonPhrase;
+            Request = request;
+        }
+
+        public string ReasonPhrase { get; private set; }
+
+        public HttpRequestMessage Request { get; private set; }
+
+        public Task<HttpResponseMessage> ExecuteAsync(CancellationToken cancellationToken)
+        {
+            return Task.FromResult(Execute());
+        }
+
+        private HttpResponseMessage Execute()
+        {
+            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+            response.RequestMessage = Request;
+            response.ReasonPhrase = ReasonPhrase;
+            return response;
+        }
     }
 
 }

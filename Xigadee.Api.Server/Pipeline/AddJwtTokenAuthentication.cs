@@ -31,7 +31,7 @@ namespace Xigadee
         /// <param name="audience">The audience value to check.</param>
         /// <param name="action">The action to be called on the filter creation.</param>
         /// <returns>Returns the web pipe.</returns>
-        public static P AddJwtTokenAuthentication<P>(this P webpipe
+        public static P AddWebApiJwtTokenAuthentication<P>(this P webpipe
             , JwtHashAlgorithm algo
             , string base64Secret
             , string audience = "api"
@@ -45,7 +45,34 @@ namespace Xigadee
                 , Secret = Convert.FromBase64String(base64Secret)
             };
 
-            return webpipe.AddJwtTokenAuthentication(policy, action);
+            return webpipe.AddWebApiJwtTokenAuthentication(policy, action);
+        }
+
+        /// <summary>
+        /// This method adds basic Jwt authentication to the web app
+        /// </summary>
+        /// <typeparam name="P">The web pipe type</typeparam>
+        /// <param name="webpipe">The pipe.</param>
+        /// <param name="algo">The supported HMAC algorithm</param>
+        /// <param name="secret">The secret</param>
+        /// <param name="audience">The audience value to check.</param>
+        /// <param name="action">The action to be called on the filter creation.</param>
+        /// <returns>Returns the web pipe.</returns>
+        public static P AddWebApiJwtTokenAuthentication<P>(this P webpipe
+            , JwtHashAlgorithm algo
+            , byte[] secret
+            , string audience = "api"
+            , Action<IAuthenticationFilter> action = null)
+            where P : IPipelineWebApi
+        {
+            var policy = new JwtTokenVerificationPolicy
+            {
+                  Algorithm = algo
+                , Audience = audience
+                , Secret = secret
+            };
+
+            return webpipe.AddWebApiJwtTokenAuthentication(policy, action);
         }
         /// <summary>
         /// This method adds basic Jwt authentication to the web app
@@ -55,14 +82,14 @@ namespace Xigadee
         /// <param name="creator">This method can be used to create the token policy from configuration.</param>
         /// <param name="action">The action to be called on the filter creation.</param>
         /// <returns>Returns the web pipe.</returns>
-        public static P AddJwtTokenAuthentication<P>(this P webpipe
+        public static P AddWebApiJwtTokenAuthentication<P>(this P webpipe
            , Func<IEnvironmentConfiguration, JwtTokenVerificationPolicy> creator
            , Action<IAuthenticationFilter> action = null)
            where P : IPipelineWebApi
         {
             var policy = creator(webpipe.Configuration);
 
-            return webpipe.AddJwtTokenAuthentication(policy, action);
+            return webpipe.AddWebApiJwtTokenAuthentication(policy, action);
         }
         /// <summary>
         /// This method adds basic Jwt authentication to the web app
@@ -72,7 +99,7 @@ namespace Xigadee
         /// <param name="policy">The token policy.</param>
         /// <param name="action">The action to be called on the filter creation.</param>
         /// <returns>Returns the web pipe.</returns>
-        public static P AddJwtTokenAuthentication<P>(this P webpipe
+        public static P AddWebApiJwtTokenAuthentication<P>(this P webpipe
            , JwtTokenVerificationPolicy policy
            , Action<IAuthenticationFilter> action = null)
            where P : IPipelineWebApi

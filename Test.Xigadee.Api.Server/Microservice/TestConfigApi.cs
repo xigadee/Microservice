@@ -30,5 +30,6 @@ namespace Test.Xigadee.Api.Server
 {
     public class TestConfigApi: ConfigWebApi
     {
+
     }
 }
