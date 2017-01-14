@@ -44,5 +44,12 @@ namespace Xigadee
         /// The token audience. Set this to null if you do not require it to check the audience value.
         /// </summary>
         public string Audience { get; set; }
+
+        public bool ValidateAudience { get; set; } = true;
+
+        public bool ValidateExpiry { get; set; } = true;
+
+        public bool ValidateNotBefore { get; set; } = true;
+
     }
 }

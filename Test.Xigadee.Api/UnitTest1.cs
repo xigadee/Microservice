@@ -33,14 +33,18 @@ namespace Test.Xigadee.Api
         }
 
         [TestMethod]
-        public void TestMethod1()
+        public void TestMethodSuccess()
         {
             var token =  new JwtToken();
 
             token.Claims.Audience="api";
+            token.Claims.NotBefore = DateTime.UtcNow.AddHours(-1);
+            token.Claims.ExpirationTime = DateTime.UtcNow.AddHours(1);
+            token.Claims.IssuedAt = DateTime.UtcNow;
+            
 
             HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Get, "/api/test");
-            message.Headers.Authorization = new AuthenticationHeaderValue("bearer", token.ToString(mSecretFalse));
+            message.Headers.Authorization = new AuthenticationHeaderValue("bearer", token.ToString(mSecret));
 
             var response = mServer.HttpClient
                 .SendAsync(message)
@@ -50,6 +54,27 @@ namespace Test.Xigadee.Api
             Assert.AreEqual(2, result.Count());
             Assert.AreEqual("hello", result.First());
             Assert.AreEqual("world", result.Last());
+        }
+
+
+        [TestMethod]
+        public void TestMethodFail401()
+        {
+            var token = new JwtToken();
+
+            token.Claims.Audience = "api";
+            token.Claims.NotBefore = DateTime.UtcNow.AddHours(-1);
+            token.Claims.ExpirationTime = DateTime.UtcNow.AddHours(1);
+            token.Claims.IssuedAt = DateTime.UtcNow;
+
+            HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Get, "/api/test");
+            message.Headers.Authorization = new AuthenticationHeaderValue("bearer", token.ToString(mSecretFalse));
+
+            var response = mServer.HttpClient
+                .SendAsync(message)
+                .Result;
+
+            Assert.IsTrue(response.StatusCode == System.Net.HttpStatusCode.Forbidden);
         }
 
     }
@@ -79,6 +104,7 @@ namespace Test.Xigadee.Api
             webpipe.HttpConfig.Routes.MapHttpRoute("DefaultApi", "api/{controller}/{id}", new { id = RouteParameter.Optional });
 
             webpipe
+                
                 .AddWebApiJwtTokenAuthentication(JwtHashAlgorithm.HS256, mSecret)
                 ;
 

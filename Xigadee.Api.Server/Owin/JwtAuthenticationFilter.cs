@@ -33,11 +33,11 @@ namespace Xigadee
 {
     public class JwtAuthenticationFilter: IAuthenticationFilter
     {
-        private JwtTokenVerificationPolicy mtokenPolicy;
+        private JwtTokenVerificationPolicy mValidationPolicy;
 
         public JwtAuthenticationFilter(JwtTokenVerificationPolicy policy)
         {
-            mtokenPolicy = policy;
+            mValidationPolicy = policy;
         }
 
         public bool AllowMultiple
@@ -58,7 +58,19 @@ namespace Xigadee
                     || !auth.Scheme.Equals("bearer", StringComparison.InvariantCultureIgnoreCase))
                     return;
 
-                var token = new JwtToken(auth.Parameter, mtokenPolicy.Secret);
+                var token = new JwtToken(auth.Parameter, mValidationPolicy.Secret);
+
+                if (mValidationPolicy.ValidateAudience &&
+                    !token.Claims.Audience.Equals(mValidationPolicy.Audience, StringComparison.InvariantCultureIgnoreCase))
+                    throw new WebApiJwtFilterValidationException(JwtClaims.HeaderAudience);
+
+                if (mValidationPolicy.ValidateExpiry &&
+                    (!token.Claims.ExpirationTime.HasValue || token.Claims.ExpirationTime.Value < DateTime.UtcNow))
+                    throw new WebApiJwtFilterValidationException(JwtClaims.HeaderExpirationTime);
+
+                if (mValidationPolicy.ValidateNotBefore &&
+                    (!token.Claims.NotBefore.HasValue || token.Claims.NotBefore.Value >= DateTime.UtcNow))
+                    throw new WebApiJwtFilterValidationException(JwtClaims.HeaderNotBefore);
 
                 context.Principal = new MicroserviceSecurityPrincipal(token);
 
@@ -69,8 +81,10 @@ namespace Xigadee
                 
             }
 
+            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.Forbidden);
+
             //On error, set to unauthorized.
-            context.ErrorResult = new AuthenticationFailureResult("Unauthorized", context.Request);
+            context.ErrorResult = new StatusResult(HttpStatusCode.Forbidden, context.Request);
 
             return;
         }
@@ -125,13 +139,23 @@ namespace Xigadee
 
     }
 
-    public class AuthenticationFailureResult: IHttpActionResult
+    public class WebApiJwtFilterValidationException: TokenValidationException
     {
-        public AuthenticationFailureResult(string reasonPhrase, HttpRequestMessage request)
+        public WebApiJwtFilterValidationException(string value) : base(value)
         {
+        }
+    }
+
+    public class StatusResult: IHttpActionResult
+    {
+        public StatusResult(HttpStatusCode status, HttpRequestMessage request, string reasonPhrase = null)
+        {
+            Status = status;
             ReasonPhrase = reasonPhrase;
             Request = request;
         }
+
+        public HttpStatusCode Status { get; private set; }
 
         public string ReasonPhrase { get; private set; }
 
@@ -144,9 +168,9 @@ namespace Xigadee
 
         private HttpResponseMessage Execute()
         {
-            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+            HttpResponseMessage response = new HttpResponseMessage(Status);
             response.RequestMessage = Request;
-            response.ReasonPhrase = ReasonPhrase;
+            response.ReasonPhrase = ReasonPhrase ?? Enum.GetName(typeof(HttpStatusCode), Status);
             return response;
         }
     }
