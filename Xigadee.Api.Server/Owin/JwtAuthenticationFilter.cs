@@ -48,46 +48,31 @@ namespace Xigadee
 
         public async Task AuthenticateAsync(HttpAuthenticationContext context, CancellationToken cancellationToken)
         {
-            // 1. Look for credentials in the request.
-            HttpRequestMessage request = context.Request;
-            AuthenticationHeaderValue authorization = request.Headers.Authorization;
-
-            // 2. If there are no credentials - or the filter does not recognize the 
-            //    authentication scheme - do nothing.
-            if (authorization == null
-                || !authorization.Scheme.Equals("bearer", StringComparison.InvariantCultureIgnoreCase))
-                return;
-
             try
             {
-                var token = new JwtToken(authorization.Parameter, mtokenPolicy.Secret);
+                // Look for credentials in the request.
+                AuthenticationHeaderValue auth = context.Request.Headers.Authorization;
+
+                // If there aren't any credentials - or the filter does not recognize the authentication scheme - do nothing.
+                if (auth == null
+                    || !auth.Scheme.Equals("bearer", StringComparison.InvariantCultureIgnoreCase))
+                    return;
+
+                var token = new JwtToken(auth.Parameter, mtokenPolicy.Secret);
 
                 context.Principal = new MicroserviceSecurityPrincipal(token);
 
                 return;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                
             }
 
-            context.ErrorResult = new AuthenticationFailureResult("Unauthorized", request);
+            //On error, set to unauthorized.
+            context.ErrorResult = new AuthenticationFailureResult("Unauthorized", context.Request);
+
             return;
-
-            //context.ActionContext = context.Request.CreateResponse(HttpStatusCode.Unauthorized);
-            //context.ErrorResult = new HttpError("Tits! up.");
-            //IPrincipal principal = await AuthenticateAsync(userName, password, cancellationToken);
-            //if (principal == null)
-            //{
-            //    context.ErrorResult = new AuthenticationFailureResult("Invalid username or password", request);
-            //}
-
-            //// 6. If the credentials are valid, set principal.
-            //else
-            //{
-            //    context.Principal = principal;
-            //}
         }
 
         public async Task ChallengeAsync(HttpAuthenticationChallengeContext context, CancellationToken cancellationToken)

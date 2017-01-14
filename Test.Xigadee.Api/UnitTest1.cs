@@ -18,6 +18,7 @@ namespace Test.Xigadee.Api
     {
         private TestServer mServer;
         private byte[] mSecret = Encoding.ASCII.GetBytes("Jwt is cool");
+        private byte[] mSecretFalse = Encoding.ASCII.GetBytes("Jwt is wack");
 
         [TestInitialize]
         public void FixtureInit()
@@ -26,7 +27,7 @@ namespace Test.Xigadee.Api
         }
 
         [TestCleanup]
-        public void FixtureDispose()
+        public void FixtureCleanUp()
         {
             mServer.Dispose();
         }
@@ -39,7 +40,7 @@ namespace Test.Xigadee.Api
             token.Claims.Audience="api";
 
             HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Get, "/api/test");
-            message.Headers.Authorization = new AuthenticationHeaderValue("bearer", token.ToString(mSecret));
+            message.Headers.Authorization = new AuthenticationHeaderValue("bearer", token.ToString(mSecretFalse));
 
             var response = mServer.HttpClient
                 .SendAsync(message)
