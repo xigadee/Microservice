@@ -82,6 +82,7 @@ namespace Xigadee
             SupportAdd(DataCollectionSupport.Statistics, e => Write((MicroserviceStatistics)e));
             SupportAdd(DataCollectionSupport.Logger, e => Write((LogEvent)e));
             SupportAdd(DataCollectionSupport.Telemetry, e => Write((TelemetryEvent)e));
+            SupportAdd(DataCollectionSupport.Security, e => Write((SecurityEvent)e));
         }
 
         private void Write(BoundaryEvent eventData)
@@ -153,6 +154,7 @@ namespace Xigadee
                 AddPropertyData(eventTelemetry, nameof(eventData.Entry.CorrelationId), eventData.Entry.CorrelationId);
                 AddPropertyData(eventTelemetry, nameof(eventData.Entry.EntitySource), eventData.Entry.EntitySource);
                 AddPropertyData(eventTelemetry, nameof(eventData.Entry.Key), eventData.Entry.Key);
+                AddPropertyData(eventTelemetry, nameof(eventData.TraceId), eventData.TraceId);
                 mTelemetry?.TrackEvent(eventTelemetry);
             }
             catch (Exception ex)
@@ -183,6 +185,7 @@ namespace Xigadee
                 }
 
                 AddPropertyData(telemetryProperties, nameof(LoggingLevel), eventData.Level.ToString());
+                AddPropertyData(telemetryProperties, nameof(eventData.TraceId), eventData.TraceId);
                 if (eventData.AdditionalData != null || !string.IsNullOrEmpty(eventData.Message))
                 {
                     eventData.AdditionalData?.ForEach(kvp => AddPropertyData(telemetryProperties, kvp.Key, kvp.Value));
@@ -234,6 +237,29 @@ namespace Xigadee
             try
             {
                 mTelemetry?.TrackMetric(eventData.MetricName, eventData.Value, eventData.AdditionalData);
+            }
+            catch (Exception ex)
+            {
+                LogTelemetryException(ex);
+            }
+        }
+
+        private void Write(SecurityEvent eventData)
+        {
+            if (eventData == null)
+                return;
+
+            try
+            {
+                var traceId = new KeyValuePair<string,string>(nameof(eventData.TraceId), eventData.TraceId);
+                if (eventData.Ex != null)
+                {
+                    mTelemetry?.TrackException(new ExceptionTelemetry(eventData.Ex) { Message = $"Security Event - {eventData.Direction}", Properties = { traceId } });
+                }
+                else
+                {
+                    mTelemetry?.TrackEvent(new EventTelemetry($"{LoggingLevel.Error}:{eventData.Direction}") { Properties = { traceId }});
+                }
             }
             catch (Exception ex)
             {
