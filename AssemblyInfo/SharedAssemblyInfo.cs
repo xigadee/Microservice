@@ -4,7 +4,7 @@ using System.Reflection;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyCompany("Hitachi Consulting")]
-[assembly: AssemblyCopyright("Copyright (c) Hitachi Consulting 2012-2016")]
+[assembly: AssemblyCopyright("Copyright (c) Hitachi Consulting 2012-2017")]
 [assembly: AssemblyTrademark("")]
 
 [assembly: AssemblyVersion("0.0.0.0")]
