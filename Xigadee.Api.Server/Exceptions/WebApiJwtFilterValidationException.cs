@@ -14,25 +14,19 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Http;
-
 namespace Xigadee
 {
-    public static partial class WebApiExtensionMethods
+    /// <summary>
+    /// This exception is thrown if there is a jwt validation exception
+    /// </summary>
+    public class WebApiJwtFilterValidationException: TokenValidationException
     {
-        public static P AddCorrelationIdFilter<P>(this P webpipe)
-            where P:IPipelineWebApi
+        /// <summary>
+        /// The default constructor.
+        /// </summary>
+        /// <param name="value">The token claim that triggered the exception.</param>
+        public WebApiJwtFilterValidationException(string value) : base(value)
         {
-            var filter = new WebApiCorrelationIdFilter();
-
-            webpipe.HttpConfig.Filters.Add(filter);
-
-            return webpipe;
         }
     }
 }

@@ -49,6 +49,7 @@ namespace Test.Xigadee.Api
             var response = mServer.HttpClient
                 .SendAsync(message)
                 .Result;
+
             var result = response.Content.ReadAsAsync<IEnumerable<string>>().Result;
 
             Assert.AreEqual(2, result.Count());
@@ -105,7 +106,7 @@ namespace Test.Xigadee.Api
 
             webpipe
                 
-                .AddWebApiJwtTokenAuthentication(JwtHashAlgorithm.HS256, mSecret)
+                .ApiAddJwtTokenAuthentication(JwtHashAlgorithm.HS256, mSecret)
                 ;
 
             webpipe.StartWebApi(app);

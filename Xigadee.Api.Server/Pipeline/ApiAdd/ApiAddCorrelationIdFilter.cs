@@ -14,28 +14,25 @@
 // limitations under the License.
 #endregion
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web.Http;
 
 namespace Xigadee
 {
     public static partial class WebApiExtensionMethods
     {
-        /// <summary>
-        /// This method adds the Api version number to the response header. 
-        /// This can be used for debugging.
-        /// </summary>
-        /// <typeparam name="P"></typeparam>
-        /// <param name="webpipe"></param>
-        /// <param name="headerName">The HTTP header name, which by default is X-XigadeeApiVersion</param>
-        /// <returns>Returns the pipe.</returns>
-        public static P AddVersionHeaderFilter<P>(this P webpipe, string headerName = "X-XigadeeApiVersion")
-            where P : IPipelineWebApi
+        public static P ApiAddCorrelationIdFilter<P>(this P webpipe)
+            where P:IPipelineWebApi
         {
-            var filter = new WebApiVersionHeaderFilter(headerName);
+            var filter = new WebApiCorrelationIdFilter();
 
             webpipe.HttpConfig.Filters.Add(filter);
 
             return webpipe;
         }
     }
-
 }

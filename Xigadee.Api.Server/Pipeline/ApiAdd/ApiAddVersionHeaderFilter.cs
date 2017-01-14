@@ -14,26 +14,28 @@
 // limitations under the License.
 #endregion
 
+
 namespace Xigadee
 {
     public static partial class WebApiExtensionMethods
     {
         /// <summary>
-        /// This method will ensure the service returns a HTTP 503 service unavailable error if the underlying Microservice
-        /// is not currently running.
+        /// This method adds the Api version number to the response header. 
+        /// This can be used for debugging.
         /// </summary>
-        /// <typeparam name="P">The pipeline type.</typeparam>
-        /// <param name="webpipe">The pipe.</param>
-        /// <returns>Returns the pipeline.</returns>
-        public static P AddMicroserviceUnavailableFilter<P>(this P webpipe)
+        /// <typeparam name="P"></typeparam>
+        /// <param name="webpipe"></param>
+        /// <param name="headerName">The HTTP header name, which by default is X-XigadeeApiVersion</param>
+        /// <returns>Returns the pipe.</returns>
+        public static P ApiAddVersionHeaderFilter<P>(this P webpipe, string headerName = "X-XigadeeApiVersion")
             where P : IPipelineWebApi
         {
-            var filter = new WebApiServiceUnavailableFilter();
+            var filter = new WebApiVersionHeaderFilter(headerName);
 
             webpipe.HttpConfig.Filters.Add(filter);
-            webpipe.Service.StatusChanged += (object sender, StatusChangedEventArgs e) => filter.StatusCurrent = e.StatusNew;
 
             return webpipe;
         }
     }
+
 }

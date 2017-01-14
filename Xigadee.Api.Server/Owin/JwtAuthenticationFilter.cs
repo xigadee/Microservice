@@ -15,17 +15,12 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.IdentityModel.Claims;
-using System.Security.Claims;
 using System.Threading;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
-using System.Web.Http.Results;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Security.Principal;
 using System.Web.Http;
 using System.Net;
 
@@ -33,18 +28,17 @@ namespace Xigadee
 {
     public class JwtAuthenticationFilter: IAuthenticationFilter
     {
-        private JwtTokenVerificationPolicy mValidationPolicy;
+        private IJwtTokenVerificationPolicy mPolicy;
 
-        public JwtAuthenticationFilter(JwtTokenVerificationPolicy policy)
+        public JwtAuthenticationFilter(IJwtTokenVerificationPolicy policy)
         {
-            mValidationPolicy = policy;
+            mPolicy = policy;
         }
 
         public bool AllowMultiple
         {
             get { return true; }
         }
-
 
         public async Task AuthenticateAsync(HttpAuthenticationContext context, CancellationToken cancellationToken)
         {
@@ -54,23 +48,10 @@ namespace Xigadee
                 AuthenticationHeaderValue auth = context.Request.Headers.Authorization;
 
                 // If there aren't any credentials - or the filter does not recognize the authentication scheme - do nothing.
-                if (auth == null
-                    || !auth.Scheme.Equals("bearer", StringComparison.InvariantCultureIgnoreCase))
+                if (auth == null || !auth.Scheme.Equals("bearer", StringComparison.InvariantCultureIgnoreCase))
                     return;
 
-                var token = new JwtToken(auth.Parameter, mValidationPolicy.Secret);
-
-                if (mValidationPolicy.ValidateAudience &&
-                    !token.Claims.Audience.Equals(mValidationPolicy.Audience, StringComparison.InvariantCultureIgnoreCase))
-                    throw new WebApiJwtFilterValidationException(JwtClaims.HeaderAudience);
-
-                if (mValidationPolicy.ValidateExpiry &&
-                    (!token.Claims.ExpirationTime.HasValue || token.Claims.ExpirationTime.Value < DateTime.UtcNow))
-                    throw new WebApiJwtFilterValidationException(JwtClaims.HeaderExpirationTime);
-
-                if (mValidationPolicy.ValidateNotBefore &&
-                    (!token.Claims.NotBefore.HasValue || token.Claims.NotBefore.Value >= DateTime.UtcNow))
-                    throw new WebApiJwtFilterValidationException(JwtClaims.HeaderNotBefore);
+                var token = mPolicy.Validete(auth.Parameter);
 
                 context.Principal = new MicroserviceSecurityPrincipal(token);
 
@@ -78,10 +59,8 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                
-            }
 
-            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.Forbidden);
+            }
 
             //On error, set to unauthorized.
             context.ErrorResult = new StatusResult(HttpStatusCode.Forbidden, context.Request);
@@ -93,59 +72,13 @@ namespace Xigadee
         {
             return;
         }
-
-        public void OnAuthorization(HttpActionContext actionContext)
-        {
-            //var identity = new GenericIdentity("Paul", "Xigadee");
-
-            //var principal = new GenericPrincipal(identity, null);
-
-            //Thread.CurrentPrincipal = principal;
-
-            //actionContext.Response = actionContext.Request.CreateErrorResponse(HttpStatusCode.Unauthorized,
-            //        new SecurityException("Invalid API key Provided"));
-
-            //base.OnAuthorization(actionContext);
-
-            //      var req = actionContext.Request;
-            //      // Get credential from the Authorization header 
-            //      //(if present) and authenticate
-            //      if (req.Headers.Authorization != null &&
-            //        "somescheme".Equals(req.Headers.Authorization.Scheme,
-            //          StringComparison.OrdinalIgnoreCase))
-            //      {
-            //          var creds = req.Headers.Authorization.Parameter;
-            //          if (creds == "opensesame") // Replace with a real check
-            //          {
-            //              var claims = new List<Claim>()
-            //{
-            //  new Claim(ClaimTypes.Name, "badri"),
-            //  new Claim(ClaimTypes.Role, "admin")
-            //};
-            //              var id = new ClaimsIdentity(claims, "Token");
-            //              var principal = new ClaimsPrincipal(new[] { id });
-            //              // The request message contains valid credential
-            //              actionContext.Principal = principal;
-            //          }
-            //          else
-            //          {
-            //              // The request message contains invalid credential
-            //              actionContext.ErrorResult = new UnauthorizedResult(
-            //                new AuthenticationHeaderValue[0], context.Request);
-            //          }
-            //      }
-            //      return Task.FromResult(0);
-        }
-
     }
 
-    public class WebApiJwtFilterValidationException: TokenValidationException
-    {
-        public WebApiJwtFilterValidationException(string value) : base(value)
-        {
-        }
-    }
 
+
+    /// <summary>
+    /// This class is used to assign the status.
+    /// </summary>
     public class StatusResult: IHttpActionResult
     {
         public StatusResult(HttpStatusCode status, HttpRequestMessage request, string reasonPhrase = null)

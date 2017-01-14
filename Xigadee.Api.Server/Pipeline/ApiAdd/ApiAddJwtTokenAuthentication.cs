@@ -15,6 +15,7 @@
 #endregion
 
 using System;
+using System.Web.Http;
 using System.Web.Http.Filters;
 
 namespace Xigadee
@@ -30,12 +31,15 @@ namespace Xigadee
         /// <param name="base64Secret">The base64secret</param>
         /// <param name="audience">The audience value to check.</param>
         /// <param name="action">The action to be called on the filter creation.</param>
+        /// <param name="removeUnderlyingPrincipal">If this method is set to true, then the principal set from the underlying principal is cleared.</param>
         /// <returns>Returns the web pipe.</returns>
-        public static P AddWebApiJwtTokenAuthentication<P>(this P webpipe
+        public static P ApiAddJwtTokenAuthentication<P>(this P webpipe
             , JwtHashAlgorithm algo
             , string base64Secret
             , string audience = "api"
-            , Action<IAuthenticationFilter> action = null)
+            , Action<IAuthenticationFilter> action = null
+            , bool removeUnderlyingPrincipal = true
+            )
             where P : IPipelineWebApi
         {
             var policy = new JwtTokenVerificationPolicy
@@ -45,7 +49,7 @@ namespace Xigadee
                 , Secret = Convert.FromBase64String(base64Secret)
             };
 
-            return webpipe.AddWebApiJwtTokenAuthentication(policy, action);
+            return webpipe.ApiAddJwtTokenAuthentication(policy, action, removeUnderlyingPrincipal);
         }
 
         /// <summary>
@@ -57,12 +61,15 @@ namespace Xigadee
         /// <param name="secret">The secret</param>
         /// <param name="audience">The audience value to check.</param>
         /// <param name="action">The action to be called on the filter creation.</param>
+        /// <param name="removeUnderlyingPrincipal">If this method is set to true, then the principal set from the underlying principal is cleared.</param>
         /// <returns>Returns the web pipe.</returns>
-        public static P AddWebApiJwtTokenAuthentication<P>(this P webpipe
+        public static P ApiAddJwtTokenAuthentication<P>(this P webpipe
             , JwtHashAlgorithm algo
             , byte[] secret
             , string audience = "api"
-            , Action<IAuthenticationFilter> action = null)
+            , Action<IAuthenticationFilter> action = null
+            , bool removeUnderlyingPrincipal = true
+            )
             where P : IPipelineWebApi
         {
             var policy = new JwtTokenVerificationPolicy
@@ -72,7 +79,7 @@ namespace Xigadee
                 , Secret = secret
             };
 
-            return webpipe.AddWebApiJwtTokenAuthentication(policy, action);
+            return webpipe.ApiAddJwtTokenAuthentication(policy, action, removeUnderlyingPrincipal);
         }
         /// <summary>
         /// This method adds basic Jwt authentication to the web app
@@ -81,15 +88,18 @@ namespace Xigadee
         /// <param name="webpipe">The pipe.</param>
         /// <param name="creator">This method can be used to create the token policy from configuration.</param>
         /// <param name="action">The action to be called on the filter creation.</param>
+        /// <param name="removeUnderlyingPrincipal">If this method is set to true, then the principal set from the underlying principal is cleared.</param>
         /// <returns>Returns the web pipe.</returns>
-        public static P AddWebApiJwtTokenAuthentication<P>(this P webpipe
+        public static P ApiAddJwtTokenAuthentication<P>(this P webpipe
            , Func<IEnvironmentConfiguration, JwtTokenVerificationPolicy> creator
-           , Action<IAuthenticationFilter> action = null)
+           , Action<IAuthenticationFilter> action = null
+           , bool removeUnderlyingPrincipal = true
+           )
            where P : IPipelineWebApi
         {
             var policy = creator(webpipe.Configuration);
 
-            return webpipe.AddWebApiJwtTokenAuthentication(policy, action);
+            return webpipe.ApiAddJwtTokenAuthentication(policy, action, removeUnderlyingPrincipal);
         }
         /// <summary>
         /// This method adds basic Jwt authentication to the web app
@@ -98,12 +108,19 @@ namespace Xigadee
         /// <param name="webpipe">The pipe.</param>
         /// <param name="policy">The token policy.</param>
         /// <param name="action">The action to be called on the filter creation.</param>
+        /// <param name="removeUnderlyingPrincipal">If this method is set to true, then the principal set from the underlying principal is cleared.</param>
         /// <returns>Returns the web pipe.</returns>
-        public static P AddWebApiJwtTokenAuthentication<P>(this P webpipe
+        public static P ApiAddJwtTokenAuthentication<P>(this P webpipe
            , JwtTokenVerificationPolicy policy
-           , Action<IAuthenticationFilter> action = null)
+           , Action<IAuthenticationFilter> action = null
+           , bool removeUnderlyingPrincipal = true
+           )
            where P : IPipelineWebApi
         {
+            //Remove any auth created by the underlying fabric.
+            if (removeUnderlyingPrincipal)
+                webpipe.HttpConfig.SuppressHostPrincipal();
+
             var filter = new JwtAuthenticationFilter(policy);
 
             action?.Invoke(filter);
@@ -112,7 +129,6 @@ namespace Xigadee
 
             return webpipe;
         }
-
     }
 
 }

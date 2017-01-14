@@ -30,7 +30,7 @@ namespace Xigadee
     /// <summary>
     /// This is the token verification policy.
     /// </summary>
-    public class JwtTokenVerificationPolicy
+    public class JwtTokenVerificationPolicy: IJwtTokenVerificationPolicy
     {
         /// <summary>
         /// The token secret
@@ -51,5 +51,24 @@ namespace Xigadee
 
         public bool ValidateNotBefore { get; set; } = true;
 
+
+        public virtual JwtToken Validete(string tokenParameter)
+        {
+            var token = new JwtToken(tokenParameter, Secret);
+
+            if (ValidateAudience &&
+                !token.Claims.Audience.Equals(Audience, StringComparison.InvariantCultureIgnoreCase))
+                throw new WebApiJwtFilterValidationException(JwtClaims.HeaderAudience);
+
+            if (ValidateExpiry &&
+                (!token.Claims.ExpirationTime.HasValue || token.Claims.ExpirationTime.Value < DateTime.UtcNow))
+                throw new WebApiJwtFilterValidationException(JwtClaims.HeaderExpirationTime);
+
+            if (ValidateNotBefore &&
+                (!token.Claims.NotBefore.HasValue || token.Claims.NotBefore.Value >= DateTime.UtcNow))
+                throw new WebApiJwtFilterValidationException(JwtClaims.HeaderNotBefore);
+
+            return token;
+        }
     }
 }
