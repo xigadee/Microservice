@@ -44,7 +44,7 @@ namespace Xigadee
         {
             var policy = new JwtTokenVerificationPolicy
             {
-                  Algorithm = algo
+                Algorithm = algo
                 , Audience = audience
                 , Secret = Convert.FromBase64String(base64Secret)
             };
@@ -74,7 +74,7 @@ namespace Xigadee
         {
             var policy = new JwtTokenVerificationPolicy
             {
-                  Algorithm = algo
+                Algorithm = algo
                 , Audience = audience
                 , Secret = secret
             };
@@ -130,5 +130,4 @@ namespace Xigadee
             return webpipe;
         }
     }
-
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IdentityModel.Claims;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Xigadee;
@@ -15,9 +16,14 @@ namespace Xigadee
     /// </summary>
     public static partial class JwtTokenExtensionMethods
     {
-        public static IEnumerable<Claim> ToClaims(this JwtToken token)
+        public static void ShortcutSetRole(this JwtClaims claims, string role)
         {
-            return null;
+            claims[ClaimsIdentity.DefaultRoleClaimType] = role;
+        }
+    
+        public static void ShortcutSetName(this JwtClaims claims, string name)
+        {
+            claims[ClaimsIdentity.DefaultNameClaimType] = name;
         }
     }
 }
