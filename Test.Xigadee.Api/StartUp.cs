@@ -26,7 +26,7 @@ namespace Test.Xigadee.Api
 
             webpipe
                 .ApiAddMicroserviceUnavailableFilter()
-                .ApiAddJwtTokenAuthentication(JwtHashAlgorithm.HS256, mSecret)
+                .ApiAddJwtTokenAuthentication(JwtHashAlgorithm.HS256, mSecret, audience: JwtTests.Audience)
                 ;
 
             webpipe.StartWebApi(app);

@@ -20,6 +20,7 @@ namespace Test.Xigadee.Api
         public const string SecretPass = "Jwt is cool";
         public const string SecretFail = "Jwt is whack";
 
+        public const string Audience = "JWTTests";
         public const string Username = "Paul";
         public const string Role = "CoolCoder";
         #endregion
@@ -48,10 +49,12 @@ namespace Test.Xigadee.Api
         {
             var token = new JwtToken();
 
-            token.Claims.Audience = "api";
+            token.Claims.Audience = Audience;
+
             token.Claims.NotBefore = DateTime.UtcNow.AddHours(-1);
             token.Claims.ExpirationTime = DateTime.UtcNow.AddHours(1);
             token.Claims.IssuedAt = DateTime.UtcNow;
+            token.Claims.JWTId = Guid.NewGuid().ToString("N");
 
             token.Claims.ShortcutSetRole(Role);
             token.Claims.ShortcutSetName(Username);
