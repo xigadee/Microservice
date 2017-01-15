@@ -14,7 +14,7 @@ using Xigadee;
 namespace Test.Xigadee.Api
 {
     [TestClass]
-    public class JwtTests
+    public class JwtTests:JwtTestBase
     {
         #region Constants
         public const string SecretPass = "Jwt is cool";
@@ -25,23 +25,21 @@ namespace Test.Xigadee.Api
         public const string Role = "CoolCoder";
         #endregion
         #region Declarations
-        private TestServer mServer;
-
         private byte[] mSecret = Encoding.ASCII.GetBytes(SecretPass);
         private byte[] mSecretFail = Encoding.ASCII.GetBytes(SecretFail);
         #endregion
 
         #region Initialization
         [TestInitialize]
-        public void FixtureInit()
+        public override void FixtureInit()
         {
-            mServer = TestServer.Create<StartUp>();
+            base.FixtureInit();
         }
 
         [TestCleanup]
-        public void FixtureCleanUp()
+        public override void FixtureCleanUp()
         {
-            mServer.Dispose();
+            base.FixtureCleanUp();
         }
         #endregion
 
@@ -62,17 +60,13 @@ namespace Test.Xigadee.Api
             return token;
         }
 
+
         [TestMethod]
         public void TestMethodSuccess1()
         {
             var token = GetToken();
 
-            HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Get, "/api/test");
-            message.Headers.Authorization = new AuthenticationHeaderValue("bearer", token.ToString(mSecret));
-
-            var response = mServer.HttpClient
-                .SendAsync(message)
-                .Result;
+            var response = ReadWithRetry(token.ToString(mSecret),() => new HttpRequestMessage(HttpMethod.Get, "/api/test"));
 
             var result = response.Content.ReadAsAsync<IEnumerable<string>>().Result;
 
@@ -87,12 +81,10 @@ namespace Test.Xigadee.Api
             var token = GetToken();
 
             int id = 2;
-            HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Get, $"/api/test/{id}");
-            message.Headers.Authorization = new AuthenticationHeaderValue("bearer", token.ToString(mSecret));
 
-            var response = mServer.HttpClient
-                .SendAsync(message)
-                .Result;
+            var response = ReadWithRetry(token.ToString(mSecret), () => new HttpRequestMessage(HttpMethod.Get, $"/api/test/{id}"));
+
+            Assert.AreEqual(response.StatusCode, System.Net.HttpStatusCode.OK);
 
             var result = response.Content.ReadAsAsync<string>().Result;
 
@@ -106,12 +98,10 @@ namespace Test.Xigadee.Api
             token.Claims.ShortcutSetRole("BOring");
 
             int id = 2;
-            HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Get, $"/api/test/{id}");
-            message.Headers.Authorization = new AuthenticationHeaderValue("bearer", token.ToString(mSecret));
 
-            var response = mServer.HttpClient
-                .SendAsync(message)
-                .Result;
+            var response = ReadWithRetry(token.ToString(mSecret), () => new HttpRequestMessage(HttpMethod.Get, $"/api/test/{id}"));
+
+            Assert.AreEqual(response.StatusCode, System.Net.HttpStatusCode.OK);
 
             var result = response.Content.ReadAsAsync<string>().Result;
 
@@ -123,12 +113,8 @@ namespace Test.Xigadee.Api
         public void TestMethodFail403_BadSecret()
         {
             var token = GetToken();
-            HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Get, "/api/test");
-            message.Headers.Authorization = new AuthenticationHeaderValue("bearer", token.ToString(mSecretFail));
 
-            var response = mServer.HttpClient
-                .SendAsync(message)
-                .Result;
+            var response = ReadWithRetry(token.ToString(mSecretFail), () => new HttpRequestMessage(HttpMethod.Get, "/api/test"));
 
             Assert.IsTrue(response.StatusCode == System.Net.HttpStatusCode.Forbidden);
         }
@@ -139,12 +125,7 @@ namespace Test.Xigadee.Api
             var token = GetToken();
             token.Claims.ExpirationTime = DateTime.UtcNow.AddHours(-1);
 
-            HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Get, "/api/test");
-            message.Headers.Authorization = new AuthenticationHeaderValue("bearer", token.ToString(mSecret));
-
-            var response = mServer.HttpClient
-                .SendAsync(message)
-                .Result;
+            var response = ReadWithRetry(token.ToString(mSecretFail), () => new HttpRequestMessage(HttpMethod.Get, "/api/test"));
 
             Assert.IsTrue(response.StatusCode == System.Net.HttpStatusCode.Forbidden);
         }
@@ -155,12 +136,7 @@ namespace Test.Xigadee.Api
             var token = GetToken();
             token.Claims.NotBefore = DateTime.UtcNow.AddMinutes(30);
 
-            HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Get, "/api/test");
-            message.Headers.Authorization = new AuthenticationHeaderValue("bearer", token.ToString(mSecret));
-
-            var response = mServer.HttpClient
-                .SendAsync(message)
-                .Result;
+            var response = ReadWithRetry(token.ToString(mSecretFail), () => new HttpRequestMessage(HttpMethod.Get, "/api/test"));
 
             Assert.IsTrue(response.StatusCode == System.Net.HttpStatusCode.Forbidden);
         }
@@ -171,12 +147,7 @@ namespace Test.Xigadee.Api
             var token = GetToken();
             token.Claims.Audience = "notgood";
 
-            HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Get, "/api/test");
-            message.Headers.Authorization = new AuthenticationHeaderValue("bearer", token.ToString(mSecret));
-
-            var response = mServer.HttpClient
-                .SendAsync(message)
-                .Result;
+            var response = ReadWithRetry(token.ToString(mSecretFail), () => new HttpRequestMessage(HttpMethod.Get, "/api/test"));
 
             Assert.IsTrue(response.StatusCode == System.Net.HttpStatusCode.Forbidden);
         }
@@ -196,9 +167,9 @@ namespace Test.Xigadee.Api
         public string Get(int id)
         {
             if (Thread.CurrentPrincipal.IsInRole(JwtTests.Role))
-                return $"super hello world {id} {Thread.CurrentPrincipal.Identity.Name}";
+                return $"super hello world {id} {Thread.CurrentPrincipal?.Identity?.Name}";
             else
-                return $"hello world {id} {Thread.CurrentPrincipal.Identity.Name}";
+                return $"hello world {id} {Thread.CurrentPrincipal?.Identity?.Name}";
         }
     }
 

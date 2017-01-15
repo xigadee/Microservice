@@ -120,6 +120,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="JwtTestBase.cs" />
     <Compile Include="JwtTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StartUp.cs" />
