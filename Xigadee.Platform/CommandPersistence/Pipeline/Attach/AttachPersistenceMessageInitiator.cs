@@ -35,10 +35,12 @@ namespace Xigadee
             where K : IEquatable<K>
         {
             var ms = cpipe.ToMicroservice();
-
-            
+   
             command = new PersistenceMessageInitiator<K, E>(cacheManager, defaultRequestTimespan)
-            { ResponseChannelId = cpipe.Channel.Id, ChannelId = outgoingChannel };
+            {
+                  ResponseChannelId = cpipe.Channel.Id
+                , ChannelId = outgoingChannel
+            };
 
             cpipe.Pipeline.AddCommand(command, startupPriority);
 

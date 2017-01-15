@@ -43,6 +43,11 @@ namespace Test.Xigadee.Api
         }
         #endregion
 
+        #region GetToken()
+        /// <summary>
+        /// This method gets the default token.
+        /// </summary>
+        /// <returns>Returns a JwtToken with a set of default claims.</returns>
         private JwtToken GetToken()
         {
             var token = new JwtToken();
@@ -58,8 +63,8 @@ namespace Test.Xigadee.Api
             token.Claims.ShortcutSetName(Username);
 
             return token;
-        }
-
+        } 
+        #endregion
 
         [TestMethod]
         public void TestMethodSuccess1()
@@ -107,7 +112,6 @@ namespace Test.Xigadee.Api
 
             Assert.AreEqual(result, $"hello world {id} {Username}");
         }
-
 
         [TestMethod]
         public void TestMethodFail403_BadSecret()

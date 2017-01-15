@@ -13,7 +13,6 @@ using Xigadee;
 
 namespace Test.Xigadee.Api
 {
-
     public class StartUp
     {
         private byte[] mSecret = Encoding.ASCII.GetBytes(JwtTests.SecretPass);
@@ -22,9 +21,8 @@ namespace Test.Xigadee.Api
         {
             var webpipe = new WebApiMicroservicePipeline();
 
-            webpipe.HttpConfig.Routes.MapHttpRoute("DefaultApi", "api/{controller}/{id}", new { id = RouteParameter.Optional });
-
             webpipe
+                .ApiConfig((c) => c.Routes.MapHttpRoute("Default", "api/{controller}/{id}", new { id = RouteParameter.Optional }))
                 .ApiAddMicroserviceUnavailableFilter()
                 .ApiAddJwtTokenAuthentication(JwtHashAlgorithm.HS256, mSecret, audience: JwtTests.Audience)
                 ;

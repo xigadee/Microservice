@@ -172,6 +172,7 @@
     <Compile Include="Exceptions\WebApiJwtFilterValidationException.cs" />
     <Compile Include="Pipeline\Actual.cs" />
     <Compile Include="Pipeline\AddAuthorizationServer.cs" />
+    <Compile Include="Pipeline\ApiAdjust\ApiAdjust.cs" />
     <Compile Include="Pipeline\ApiAdd\ApiAddCorrelationIdFilter.cs" />
     <Compile Include="Pipeline\ApiAdd\ApiAddJwtTokenAuthentication.cs" />
     <Compile Include="Pipeline\ApiAdd\ApiAddMicroserviceUnavailableFilter.cs" />
