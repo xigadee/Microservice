@@ -26,7 +26,6 @@ using System.Web.Http.Results;
 
 namespace Xigadee
 {
-
     /// <summary>
     /// This is the token verification policy.
     /// </summary>
@@ -51,8 +50,9 @@ namespace Xigadee
 
         public bool ValidateNotBefore { get; set; } = true;
 
+        public bool DenyByDefault { get; set; } = true;
 
-        public virtual JwtToken Validete(string tokenParameter)
+        public virtual JwtToken Validate(string tokenParameter)
         {
             var token = new JwtToken(tokenParameter, Secret);
 

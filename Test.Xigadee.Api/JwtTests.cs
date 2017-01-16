@@ -114,6 +114,16 @@ namespace Test.Xigadee.Api
         }
 
         [TestMethod]
+        public void TestMethodFail403_NoToken()
+        {
+            var token = GetToken();
+
+            var response = ReadWithRetry(null, () => new HttpRequestMessage(HttpMethod.Get, "/api/test"));
+
+            Assert.IsTrue(response.StatusCode == System.Net.HttpStatusCode.Forbidden);
+        }
+
+        [TestMethod]
         public void TestMethodFail403_BadSecret()
         {
             var token = GetToken();

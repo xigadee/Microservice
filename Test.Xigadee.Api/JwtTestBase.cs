@@ -42,7 +42,8 @@ namespace Test.Xigadee.Api
             do
             {
                 var rq = message();
-                rq.Headers.Authorization = new AuthenticationHeaderValue("bearer", jwt);
+                if (jwt != null)
+                    rq.Headers.Authorization = new AuthenticationHeaderValue("bearer", jwt);
 
                 response = mServer.HttpClient
                     .SendAsync(rq)

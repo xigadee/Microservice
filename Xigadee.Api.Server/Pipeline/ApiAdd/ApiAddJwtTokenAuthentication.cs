@@ -69,14 +69,16 @@ namespace Xigadee
             , string audience = "api"
             , Action<IAuthenticationFilter> action = null
             , bool removeUnderlyingPrincipal = true
+            , bool denyByDefault = true
             )
             where P : IPipelineWebApi
         {
             var policy = new JwtTokenVerificationPolicy
             {
-                Algorithm = algo
+                  Algorithm = algo
                 , Audience = audience
                 , Secret = secret
+                , DenyByDefault = denyByDefault
             };
 
             return webpipe.ApiAddJwtTokenAuthentication(policy, action, removeUnderlyingPrincipal);

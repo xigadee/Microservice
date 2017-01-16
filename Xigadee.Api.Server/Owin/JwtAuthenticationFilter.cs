@@ -49,9 +49,14 @@ namespace Xigadee
 
                 // If there aren't any credentials - or the filter does not recognize the authentication scheme - do nothing.
                 if (auth == null || !auth.Scheme.Equals("bearer", StringComparison.InvariantCultureIgnoreCase))
-                    return;
+                {
+                    if (mPolicy.DenyByDefault)
+                        context.ErrorResult = new StatusResult(HttpStatusCode.Forbidden, context.Request);
 
-                var token = mPolicy.Validete(auth.Parameter);
+                    return;
+                }
+
+                var token = mPolicy.Validate(auth.Parameter);
 
                 context.Principal = new MicroserviceSecurityPrincipal(token);
 

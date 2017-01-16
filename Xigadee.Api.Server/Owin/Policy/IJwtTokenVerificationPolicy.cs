@@ -10,6 +10,8 @@
         /// </summary>
         /// <param name="tokenParameter">The token string parameter.</param>
         /// <returns></returns>
-        JwtToken Validete(string tokenParameter);
+        JwtToken Validate(string tokenParameter);
+
+        bool DenyByDefault { get; set; } 
     }
 }
