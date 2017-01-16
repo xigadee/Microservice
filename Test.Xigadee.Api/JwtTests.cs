@@ -114,7 +114,7 @@ namespace Test.Xigadee.Api
         }
 
         [TestMethod]
-        public void TestMethodFail403_NoToken()
+        public void TestMethodFail403_NoToken_DenyByDefault()
         {
             var token = GetToken();
 
