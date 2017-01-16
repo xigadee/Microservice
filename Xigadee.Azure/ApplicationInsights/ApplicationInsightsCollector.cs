@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
 using Xigadee.ApplicationInsights;
@@ -76,23 +77,24 @@ namespace Xigadee
 
         protected override void SupportLoadDefault()
         {
-            SupportAdd(DataCollectionSupport.Boundary, e => Write((BoundaryEvent)e.Data));
-            SupportAdd(DataCollectionSupport.Dispatcher, e => Write((DispatcherEvent)e.Data));
-            SupportAdd(DataCollectionSupport.EventSource, e => Write((EventSourceEvent)e.Data));
-            SupportAdd(DataCollectionSupport.Statistics, e => Write((MicroserviceStatistics)e.Data));
-            SupportAdd(DataCollectionSupport.Logger, e => Write((LogEvent)e.Data));
-            SupportAdd(DataCollectionSupport.Telemetry, e => Write((TelemetryEvent)e.Data));
-            SupportAdd(DataCollectionSupport.Security, e => Write((SecurityEvent)e.Data));
+            SupportAdd(DataCollectionSupport.Boundary, WriteBoundaryEvent);
+            SupportAdd(DataCollectionSupport.Dispatcher, WriteDispatcherEvent);
+            SupportAdd(DataCollectionSupport.EventSource, WriteEventSourceEvent);
+            SupportAdd(DataCollectionSupport.Statistics, WriteMicroserviceStatistics);
+            SupportAdd(DataCollectionSupport.Logger, WriteLogEvent);
+            SupportAdd(DataCollectionSupport.Telemetry, WriteTelemetryEvent);
+            SupportAdd(DataCollectionSupport.Security, WriteSecurityEvent);
         }
 
-        private void Write(BoundaryEvent eventData)
+        private void WriteBoundaryEvent(EventHolder eventHolder)
         {
+            var eventData = eventHolder.Data as BoundaryEvent;
             if (eventData == null || mLoggingLevel > LoggingLevel.Info)
                 return;
 
             try
             {
-                var eventTelemetry = new EventTelemetry($"Boundary:{eventData.Payload?.Message?.ChannelId}:{eventData.Payload?.Message?.MessageType}:{eventData.Payload?.Message?.ActionType}:{eventData.Direction}");
+                var eventTelemetry = AddTelemetryContext(new EventTelemetry($"Boundary:{eventData.Payload?.Message?.ChannelId}:{eventData.Payload?.Message?.MessageType}:{eventData.Payload?.Message?.ActionType}:{eventData.Direction}"), eventHolder);
                 AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.ChannelId), eventData.Payload?.Message?.ChannelId);
                 AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.MessageType), eventData.Payload?.Message?.MessageType);
                 AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.ActionType), eventData.Payload?.Message?.ActionType);
@@ -113,14 +115,15 @@ namespace Xigadee
             }
         }
 
-        private void Write(DispatcherEvent eventData)
+        private void WriteDispatcherEvent(EventHolder eventHolder)
         {
+            var eventData = eventHolder.Data as DispatcherEvent;
             if (eventData == null || mLoggingLevel > LoggingLevel.Info)
                 return;
 
             try
             {
-                var eventTelemetry = new EventTelemetry($"Dispatcher:{eventData.Payload?.Message?.ChannelId}:{eventData.Payload?.Message?.MessageType}:{eventData.Payload?.Message?.ActionType}:{eventData.IsSuccess}");
+                var eventTelemetry = AddTelemetryContext(new EventTelemetry($"Dispatcher:{eventData.Payload?.Message?.ChannelId}:{eventData.Payload?.Message?.MessageType}:{eventData.Payload?.Message?.ActionType}:{eventData.IsSuccess}"), eventHolder);
                 AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.ChannelId), eventData.Payload?.Message?.ChannelId);
                 AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.MessageType), eventData.Payload?.Message?.MessageType);
                 AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.ActionType), eventData.Payload?.Message?.ActionType);
@@ -140,14 +143,15 @@ namespace Xigadee
             }
         }
 
-        private void Write(EventSourceEvent eventData)
+        private void WriteEventSourceEvent(EventHolder eventHolder)
         {
+            var eventData = eventHolder.Data as EventSourceEvent;
             if (eventData?.Entry == null || mLoggingLevel > LoggingLevel.Info)
                 return;
 
             try
             {
-                var eventTelemetry = new EventTelemetry($"EventSource:{eventData.Entry.EntityType}:{eventData.Entry.EventType}");
+                var eventTelemetry = AddTelemetryContext(new EventTelemetry($"EventSource:{eventData.Entry.EntityType}:{eventData.Entry.EventType}"), eventHolder);
                 AddPropertyData(eventTelemetry, nameof(eventData.Entry.EntityType), eventData.Entry.EntityType);
                 AddPropertyData(eventTelemetry, nameof(eventData.Entry.EventType), eventData.Entry.EventType);
                 AddPropertyData(eventTelemetry, nameof(eventData.OriginatorId), eventData.OriginatorId);
@@ -163,8 +167,10 @@ namespace Xigadee
             }
         }
 
-        private void Write(LogEvent eventData)
+        private void WriteLogEvent(EventHolder eventHolder)
         {
+
+            var eventData = eventHolder.Data as LogEvent;
             if (eventData == null || eventData.Level < mLoggingLevel)
                 return;
 
@@ -177,11 +183,11 @@ namespace Xigadee
                 // Don't log non errors that have exceptions as exceptions i.e. warnings / info
                 if (eventData.Ex != null && eventData.Level >= LoggingLevel.Error)
                 {
-                    telemetryProperties = exceptionTelemetry = new ExceptionTelemetry(eventData.Ex) { Message = eventData.Message };
+                    telemetryProperties = exceptionTelemetry = AddTelemetryContext(new ExceptionTelemetry(eventData.Ex) { Message = eventData.Message }, eventHolder);
                 }
                 else
                 {
-                    telemetryProperties = eventTelemetry = new EventTelemetry(eventData.Level + (!string.IsNullOrEmpty(eventData.Category) ? $":{eventData.Category}" : string.Empty));
+                    telemetryProperties = eventTelemetry = AddTelemetryContext(new EventTelemetry(eventData.Level + (!string.IsNullOrEmpty(eventData.Category) ? $":{eventData.Category}" : string.Empty)), eventHolder);
                 }
 
                 AddPropertyData(telemetryProperties, nameof(LoggingLevel), eventData.Level.ToString());
@@ -209,8 +215,9 @@ namespace Xigadee
             }
         }
 
-        private void Write(MicroserviceStatistics eventData)
+        private void WriteMicroserviceStatistics(EventHolder eventHolder)
         {
+            var eventData = eventHolder.Data as MicroserviceStatistics;
             if (string.IsNullOrEmpty(eventData?.Name))
                 return;
 
@@ -229,8 +236,9 @@ namespace Xigadee
             }
         }
 
-        private void Write(TelemetryEvent eventData)
+        private void WriteTelemetryEvent(EventHolder eventHolder)
         {
+            var eventData = eventHolder.Data as TelemetryEvent;
             if (string.IsNullOrEmpty(eventData?.MetricName))
                 return;
 
@@ -244,8 +252,9 @@ namespace Xigadee
             }
         }
 
-        private void Write(SecurityEvent eventData)
+        private void WriteSecurityEvent(EventHolder eventHolder)
         {
+            var eventData = eventHolder.Data as SecurityEvent;
             if (eventData == null)
                 return;
 
@@ -254,11 +263,11 @@ namespace Xigadee
                 var traceId = new KeyValuePair<string,string>(nameof(eventData.TraceId), eventData.TraceId);
                 if (eventData.Ex != null)
                 {
-                    mTelemetry?.TrackException(new ExceptionTelemetry(eventData.Ex) { Message = $"Security Event - {eventData.Direction}", Properties = { traceId } });
+                    mTelemetry?.TrackException(AddTelemetryContext(new ExceptionTelemetry(eventData.Ex) { Message = $"Security Event - {eventData.Direction}", Properties = { traceId } }, eventHolder));
                 }
                 else
                 {
-                    mTelemetry?.TrackEvent(new EventTelemetry($"{LoggingLevel.Error}:{eventData.Direction}") { Properties = { traceId }});
+                    mTelemetry?.TrackEvent(AddTelemetryContext(new EventTelemetry($"{LoggingLevel.Error}:{eventData.Direction}") { Properties = { traceId }}, eventHolder));
                 }
             }
             catch (Exception ex)
@@ -289,6 +298,22 @@ namespace Xigadee
             propertiesObject.Properties[dataName] = dataValue;
         }
 
+        /// <summary>
+        /// Update telemetry context based on meta data held in the event holder
+        /// </summary>
+        /// <param name="telemetry"></param>
+        /// <param name="eventHolder"></param>
+        private T AddTelemetryContext<T>(T telemetry, EventHolder eventHolder) where T:ITelemetry
+        {
+            if (telemetry == null || eventHolder?.Claims == null)
+                return telemetry;
+
+            var correlationClaim = eventHolder.Claims.FindFirst(JwtTokenAuthenticationHandler.ClaimProcessCorrelationKey);
+            if (!string.IsNullOrEmpty(correlationClaim?.Value))
+                telemetry.Context.Operation.Id = correlationClaim.Value;
+
+            return telemetry;
+        }
 
         /// <summary>
         /// Attempt to log the exception details to telemetry
