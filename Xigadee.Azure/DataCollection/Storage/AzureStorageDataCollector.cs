@@ -238,7 +238,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="option">The storage options</param>
         /// <param name="e">The event object.</param>
-        protected void WriteConnectors(DataCollectionSupport support, EventBase e)
+        protected void WriteConnectors(DataCollectionSupport support, EventHolder e)
         {
             //Blob
             if (mHoldersBlob.ContainsKey(support) && mHoldersBlob[support].ShouldWrite(e))
@@ -262,11 +262,11 @@ namespace Xigadee
         /// <param name="connector">The generic connector.</param>
         /// <param name="e">The event to write.</param>
         /// <returns>This is an async process.</returns>
-        protected virtual async Task WriteConnector(IAzureStorageConnectorBase connector, EventBase e)
+        protected virtual async Task WriteConnector(IAzureStorageConnectorBase connector, EventHolder e)
         {
             int start = StatisticsInternal.ActiveIncrement(connector.Support);
 
-            Guid? traceId = connector.Options.ShouldProfile ? (ProfileStart($"Azure{connector.Support}_{e.TraceId}")) : default(Guid?);
+            Guid? traceId = connector.Options.ShouldProfile ? (ProfileStart($"Azure{connector.Support}_{e.Data.TraceId}")) : default(Guid?);
 
             var result = ResourceRequestResult.Unknown;
             try

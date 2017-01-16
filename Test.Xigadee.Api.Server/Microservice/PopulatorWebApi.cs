@@ -70,20 +70,20 @@ namespace Test.Xigadee.Api.Server
         {
             base.RegisterEventSources();
 
-            Service.DataCollection.RegisterEventSource(new AzureStorageEventSource(
-                Config.LogStorageCredentials()
-                , Service.Id.Name
-                , resourceProfile: mResourceBlobStorage));
+            //Service.DataCollection.RegisterEventSource(new AzureStorageEventSource(
+            //    Config.LogStorageCredentials()
+            //    , Service.Id.Name
+            //    , resourceProfile: mResourceBlobStorage));
         }
 
         protected override void RegisterLogging()
         {
             base.RegisterLogging();
 
-            Service.DataCollection.RegisterLogger(new AzureStorageLogger(
-                Config.LogStorageCredentials()
-                , Service.Id.Name
-                , resourceProfile: mResourceBlobStorage));
+            //Service.DataCollection.RegisterLogger(new AzureStorageLogger(
+            //    Config.LogStorageCredentials()
+            //    , Service.Id.Name
+            //    , resourceProfile: mResourceBlobStorage));
         }
 
         protected override void RegisterCommunication()

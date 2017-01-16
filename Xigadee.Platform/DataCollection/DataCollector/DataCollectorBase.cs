@@ -36,7 +36,7 @@ namespace Xigadee
         /// <summary>
         /// This dictionary object holds the action mapping for the logging type.
         /// </summary>
-        protected Dictionary<DataCollectionSupport, Action<EventBase>> mSupported;
+        protected Dictionary<DataCollectionSupport, Action<EventHolder>> mSupported;
         /// <summary>
         /// This is the support map which indicates which type of logging is supported by the collector.
         /// </summary>
@@ -62,7 +62,7 @@ namespace Xigadee
         /// </summary>
         protected override void StartInternal()
         {
-            mSupported = new Dictionary<DataCollectionSupport, Action<EventBase>>();
+            mSupported = new Dictionary<DataCollectionSupport, Action<EventHolder>>();
 
             SupportLoadDefault();
 
@@ -97,7 +97,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="eventType">The event type.</param>
         /// <param name="eventData">The event data.</param>
-        protected virtual void SupportAdd(DataCollectionSupport eventType, Action<EventBase> eventData)
+        protected virtual void SupportAdd(DataCollectionSupport eventType, Action<EventHolder> eventData)
         {
             mSupported[eventType] = eventData;
         } 
@@ -124,16 +124,15 @@ namespace Xigadee
         }
         #endregion
 
-        #region Write(DataCollectionSupport eventType, EventBase eventData)
+        #region Write...
         /// <summary>
-        /// This method is the generic write that maps to the collection.
+        /// This is the extended write method for collectors that require the additional data.
         /// </summary>
-        /// <param name="eventType">The event type.</param>
-        /// <param name="eventData">The event data.</param>
-        public virtual void Write(DataCollectionSupport eventType, EventBase eventData)
+        /// <param name="holder"></param>
+        public virtual void Write(EventHolder holder)
         {
-            if (IsSupported(eventType))
-                mSupported[eventType](eventData);
+            if (IsSupported(holder.DataType))
+                mSupported[holder.DataType](holder);
         }
         #endregion
 

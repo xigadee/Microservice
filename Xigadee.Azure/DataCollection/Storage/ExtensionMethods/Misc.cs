@@ -70,9 +70,9 @@ namespace Xigadee
         /// <param name="behaviour">The storage type.</param>
         /// <param name="e">The log event.</param>
         /// <returns>Returns true if the message should be logged.</returns>
-        public static bool DefaultLogLevelSupport(AzureStorageBehaviour behaviour, EventBase ev)
+        public static bool DefaultLogLevelSupport(AzureStorageBehaviour behaviour, EventHolder ev)
         {
-            var e = ev as LogEvent;
+            var e = ev.Data as LogEvent;
             if (e == null)
                 return false;
 

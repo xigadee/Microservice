@@ -116,8 +116,6 @@ namespace Test.Xigadee.Api
         [TestMethod]
         public void TestMethodFail403_NoToken_DenyByDefault()
         {
-            var token = GetToken();
-
             var response = ReadWithRetry(null, () => new HttpRequestMessage(HttpMethod.Get, "/api/test"));
 
             Assert.IsTrue(response.StatusCode == System.Net.HttpStatusCode.Forbidden);

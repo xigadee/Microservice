@@ -73,10 +73,10 @@ namespace Test.Xigadee
 
         protected override void RegisterEventSources()
         {
-            Service.DataCollection.RegisterEventSource(new AzureStorageEventSource(
-                  Config.StorageCredentials()
-                , Service.Id.Name
-                , resourceProfile: mResourceBlob));
+            //Service.DataCollection.RegisterEventSource(new AzureStorageEventSource(
+            //      Config.StorageCredentials()
+            //    , Service.Id.Name
+            //    , resourceProfile: mResourceBlob));
 
         }
 
@@ -84,12 +84,12 @@ namespace Test.Xigadee
         {
             base.RegisterLogging();
 
-            Service.DataCollection.RegisterLogger(new TraceEventLogger());
+            //Service.DataCollection.RegisterLogger(new TraceEventLogger());
 
-            Service.DataCollection.RegisterLogger(new AzureStorageLogger(
-                  Config.StorageCredentials()
-                , Service.Id.Name
-                , resourceProfile: mResourceBlob));
+            //Service.DataCollection.RegisterLogger(new AzureStorageLogger(
+            //      Config.StorageCredentials()
+            //    , Service.Id.Name
+            //    , resourceProfile: mResourceBlob));
 
         }
 

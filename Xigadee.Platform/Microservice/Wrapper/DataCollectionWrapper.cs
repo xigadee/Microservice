@@ -49,28 +49,6 @@ namespace Xigadee
             return collector;
         }
         #endregion
-        #region RegisterEventSource(IEventSourceComponent eventSource)
-        /// <summary>
-        /// This method can be used to manually register an EventSource.
-        /// </summary>
-        public virtual IEventSourceComponent RegisterEventSource(IEventSourceComponent eventSource)
-        {
-            ValidateServiceNotStarted();
-            mDataCollection.Add(eventSource);
-            return eventSource;
-        }
-        #endregion
-        #region RegisterLogger(ILogger logger)
-        /// <summary>
-        /// This method can be used to manually register an Collector?.
-        /// </summary>
-        public virtual ILogger RegisterLogger(ILogger logger)
-        {
-            ValidateServiceNotStarted();
-            mDataCollection.Add(logger);
-            return logger;
-        }
-        #endregion
 
         /// <summary>
         /// This method is used by the extension method to write data to the collector.

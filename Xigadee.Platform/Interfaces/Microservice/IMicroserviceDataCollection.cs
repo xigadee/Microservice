@@ -24,10 +24,6 @@ namespace Xigadee
     /// </summary>
     public interface IMicroserviceDataCollection: IDataCollection
     {
-        IEventSourceComponent RegisterEventSource(IEventSourceComponent eventSource);
-
-        ILogger RegisterLogger(ILogger logger);
-
         /// <summary>
         /// This method adds a data collection component.
         /// </summary>

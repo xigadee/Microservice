@@ -62,12 +62,12 @@ namespace Xigadee
         /// <param name="e">The event.</param>
         /// <param name="id">The microservice metadata.</param>
         /// <returns>This is an async task.</returns>
-        Task Write(EventBase e, MicroserviceId id);
+        Task Write(EventHolder e, MicroserviceId id);
         /// <summary>
         /// This method is used to check that the specific event should be written to the underlying storage.
         /// </summary>
         /// <param name="e">The event.</param>
         /// <returns>Returns true if the event should be written.</returns>
-        bool ShouldWrite(EventBase e);
+        bool ShouldWrite(EventHolder e);
     }
 }

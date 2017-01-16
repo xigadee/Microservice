@@ -47,11 +47,11 @@ namespace Xigadee
         /// <summary>
         /// This function is used to create the storage id for the entity;
         /// </summary>
-        public Func<EventBase, MicroserviceId, string> MakeId { get; set; }
+        public Func<EventHolder, MicroserviceId, string> MakeId { get; set; }
         /// <summary>
         /// This function serializes the event entity.
         /// </summary>
-        public Func<EventBase, MicroserviceId, S> Serializer { get; set; }
+        public Func<EventHolder, MicroserviceId, S> Serializer { get; set; }
         /// <summary>
         /// This is the default timeout.
         /// </summary>
@@ -74,7 +74,7 @@ namespace Xigadee
         /// <param name="e">The event.</param>
         /// <param name="id">The microservice metadata.</param>
         /// <returns>This is an async task.</returns>
-        public abstract Task Write(EventBase e, MicroserviceId id);
+        public abstract Task Write(EventHolder e, MicroserviceId id);
         /// <summary>
         /// This method initializes the connector.
         /// </summary>
@@ -85,7 +85,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="e">The event.</param>
         /// <returns>Returns true if the event should be written.</returns>
-        public abstract bool ShouldWrite(EventBase e);
+        public abstract bool ShouldWrite(EventHolder e);
 
         /// <summary>
         /// The encryption storage policy.

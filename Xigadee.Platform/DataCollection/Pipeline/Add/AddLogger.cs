@@ -24,27 +24,27 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static P AddLogger<P>(this P pipeline, ILogger logger)
-            where P:IPipeline
-        {
-            pipeline.Service.DataCollection.RegisterLogger(logger);
+        //public static P AddLogger<P>(this P pipeline, ILogger logger)
+        //    where P:IPipeline
+        //{
+        //    pipeline.Service.DataCollection.RegisterLogger(logger);
 
-            return pipeline;
-        }
+        //    return pipeline;
+        //}
 
-        public static P AddLogger<P,L>(this P pipeline
-            , Func<IEnvironmentConfiguration, L> creator, Action<L> action = null)
-            where P : IPipeline
-            where L :ILogger
-        {
-            var logger = creator(pipeline.Configuration);
+        //public static P AddLogger<P,L>(this P pipeline
+        //    , Func<IEnvironmentConfiguration, L> creator, Action<L> action = null)
+        //    where P : IPipeline
+        //    where L :ILogger
+        //{
+        //    var logger = creator(pipeline.Configuration);
 
-            action?.Invoke(logger);
+        //    action?.Invoke(logger);
 
-            pipeline.Service.DataCollection.RegisterLogger(logger);
+        //    pipeline.Service.DataCollection.RegisterLogger(logger);
 
-            return pipeline;
-        }
+        //    return pipeline;
+        //}
 
     }
 }

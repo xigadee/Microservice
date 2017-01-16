@@ -37,16 +37,16 @@ namespace Xigadee
             dict.Add("PayloadResponseKey", new EntityProperty(payload.Message?.ToResponseKey()));
         }
 
-        public static ITableEntity ToTableGeneric(EventBase e, MicroserviceId id)
+        public static ITableEntity ToTableGeneric(EventHolder e, MicroserviceId id)
         {
             var dict = new Dictionary<string, EntityProperty>();
 
-            return new DynamicTableEntity(e.GetType().Name + DatePartition(), e.TraceId, "*", dict);
+            return new DynamicTableEntity(e.GetType().Name + DatePartition(), e.Data.TraceId, "*", dict);
         }
 
-        public static ITableEntity ToTableLogEvent(EventBase e, MicroserviceId id)
+        public static ITableEntity ToTableLogEvent(EventHolder e, MicroserviceId id)
         {
-            var ev = e as LogEvent;
+            var ev = e.Data as LogEvent;
 
             var dict = new Dictionary<string, EntityProperty>();
 
@@ -64,9 +64,9 @@ namespace Xigadee
             return new DynamicTableEntity("Logger" + DatePartition(), ev.TraceId, "*", dict);
         }
 
-        public static ITableEntity ToTableDispatcherEvent(EventBase e, MicroserviceId msId)
+        public static ITableEntity ToTableDispatcherEvent(EventHolder e, MicroserviceId msId)
         {
-            var ev = e as DispatcherEvent;
+            var ev = e.Data as DispatcherEvent;
 
             var dict = new Dictionary<string, EntityProperty>();
             dict.Add("IsSuccess", new EntityProperty(ev.IsSuccess));
@@ -80,9 +80,9 @@ namespace Xigadee
             return new DynamicTableEntity("Dispatcher" + DatePartition(), ev.TraceId, "*", dict);
         }
 
-        public static ITableEntity ToTableBoundaryEvent(EventBase e, MicroserviceId msId)
+        public static ITableEntity ToTableBoundaryEvent(EventHolder e, MicroserviceId msId)
         {
-            var ev = e as BoundaryEvent;
+            var ev = e.Data as BoundaryEvent;
 
             var dict = new Dictionary<string, EntityProperty>();
             dict.Add("Type", GetEnum<BoundaryEventType>(ev.Type));
@@ -99,9 +99,9 @@ namespace Xigadee
             return new DynamicTableEntity("Boundary" + DatePartition(), ev.TraceId, "*", dict);
         }
 
-        public static ITableEntity ToTableTelemetryEvent(EventBase e, MicroserviceId msId)
+        public static ITableEntity ToTableTelemetryEvent(EventHolder e, MicroserviceId msId)
         {
-            var ev = e as TelemetryEvent;
+            var ev = e.Data as TelemetryEvent;
 
             var dict = new Dictionary<string, EntityProperty>();
             dict.Add("Metric", new EntityProperty(ev.MetricName));

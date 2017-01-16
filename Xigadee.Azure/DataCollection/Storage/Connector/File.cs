@@ -33,7 +33,7 @@ namespace Xigadee
     {
         public CloudFileClient Client { get; set; }
 
-        public override Task Write(EventBase e, MicroserviceId id)
+        public override Task Write(EventHolder e, MicroserviceId id)
         {
             throw new NotImplementedException();
         }
@@ -46,7 +46,7 @@ namespace Xigadee
             throw new NotImplementedException();
         }
 
-        public override bool ShouldWrite(EventBase e)
+        public override bool ShouldWrite(EventHolder e)
         {
             return false;
             //return Options.IsSupported(AzureStorageBehaviour.File, e);

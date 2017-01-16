@@ -13,7 +13,6 @@ namespace Test.Xigadee.Azure
         {
             pipe
                 .AddDataCollector((c) => mDataCollector = new DebugMemoryDataCollector())
-                .AddLogger(new TraceEventLogger())
                 .AddPayloadSerializerDefaultJson();
         }
 

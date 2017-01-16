@@ -32,9 +32,9 @@ namespace Xigadee
         /// <summary>
         /// This function is used to create the folder for the entity;
         /// </summary>
-        public Func<EventBase, MicroserviceId, string> MakeFolder { get; set; }
+        public Func<EventHolder, MicroserviceId, string> MakeFolder { get; set; }
 
-        public override async Task Write(EventBase e, MicroserviceId id)
+        public override async Task Write(EventHolder e, MicroserviceId id)
         {
             string storageId = MakeId(e, id);
             string storageFolder = MakeFolder(e, id);
@@ -85,7 +85,7 @@ namespace Xigadee
             Container.CreateIfNotExists(BlobAccessType, RequestOptionsDefault, Context);
         }
 
-        public override bool ShouldWrite(EventBase e)
+        public override bool ShouldWrite(EventHolder e)
         {
             return Options.IsSupported?.Invoke(AzureStorageBehaviour.Blob, e)??false;
         }

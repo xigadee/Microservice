@@ -26,7 +26,7 @@ namespace Xigadee
 
         public CloudTable Table { get; set; }
 
-        public override async Task Write(EventBase e, MicroserviceId id)
+        public override async Task Write(EventHolder e, MicroserviceId id)
         {
             var tableId = MakeId(e,id);
 
@@ -58,7 +58,7 @@ namespace Xigadee
             Table.CreateIfNotExists();
         }
 
-        public override bool ShouldWrite(EventBase e)
+        public override bool ShouldWrite(EventHolder e)
         {
             return Options.IsSupported?.Invoke(AzureStorageBehaviour.Table, e)??false;
         }

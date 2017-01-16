@@ -34,37 +34,37 @@ namespace Xigadee
         /// </summary>
         protected override void SupportLoadDefault()
         {
-            SupportAdd(DataCollectionSupport.Boundary, (e) => EventsBoundary.Add((BoundaryEvent)e));
-            SupportAdd(DataCollectionSupport.Dispatcher, (e) => EventsDispatcher.Add((DispatcherEvent)e));
-            SupportAdd(DataCollectionSupport.EventSource, (e) => EventsEventSource.Add((EventSourceEvent)e));
-            SupportAdd(DataCollectionSupport.Logger, (e) => EventsLog.Add((LogEvent)e));
-            SupportAdd(DataCollectionSupport.Statistics, (e) => EventsMicroservice.Add((MicroserviceStatistics)e));
-            SupportAdd(DataCollectionSupport.Telemetry, (e) => EventsMetric.Add((TelemetryEvent)e));
+            SupportAdd(DataCollectionSupport.Boundary, (e) => EventsBoundary.Add(e));
+            SupportAdd(DataCollectionSupport.Dispatcher, (e) => EventsDispatcher.Add(e));
+            SupportAdd(DataCollectionSupport.EventSource, (e) => EventsEventSource.Add(e));
+            SupportAdd(DataCollectionSupport.Logger, (e) => EventsLog.Add(e));
+            SupportAdd(DataCollectionSupport.Statistics, (e) => EventsMicroservice.Add(e));
+            SupportAdd(DataCollectionSupport.Telemetry, (e) => EventsMetric.Add(e));
 
-            SupportAdd(DataCollectionSupport.Resource, (e) => EventsResource.Add((ResourceEvent)e));
+            SupportAdd(DataCollectionSupport.Resource, (e) => EventsResource.Add(e));
 
             SupportAdd(DataCollectionSupport.Custom, (e) => EventsCustom.Add(e));
 
-            SupportAdd(DataCollectionSupport.Security, (e) => EventsSecurity.Add((SecurityEvent)e));
+            SupportAdd(DataCollectionSupport.Security, (e) => EventsSecurity.Add(e));
         }
 
-        public ConcurrentBag<EventSourceEvent> EventsEventSource { get; set; } = new ConcurrentBag<EventSourceEvent>();
+        public ConcurrentBag<EventHolder> EventsEventSource { get; set; } = new ConcurrentBag<EventHolder>();
 
-        public ConcurrentBag<BoundaryEvent> EventsBoundary { get; set; } = new ConcurrentBag<BoundaryEvent>();
+        public ConcurrentBag<EventHolder> EventsBoundary { get; set; } = new ConcurrentBag<EventHolder>();
 
-        public ConcurrentBag<DispatcherEvent> EventsDispatcher { get; set; } = new ConcurrentBag<DispatcherEvent>();
+        public ConcurrentBag<EventHolder> EventsDispatcher { get; set; } = new ConcurrentBag<EventHolder>();
 
-        public ConcurrentBag<LogEvent> EventsLog { get; set; } = new ConcurrentBag<LogEvent>();
+        public ConcurrentBag<EventHolder> EventsLog { get; set; } = new ConcurrentBag<EventHolder>();
 
-        public ConcurrentBag<TelemetryEvent> EventsMetric { get; set; } = new ConcurrentBag<TelemetryEvent>();
+        public ConcurrentBag<EventHolder> EventsMetric { get; set; } = new ConcurrentBag<EventHolder>();
 
-        public ConcurrentBag<MicroserviceStatistics> EventsMicroservice { get; set; } = new ConcurrentBag<MicroserviceStatistics>();
+        public ConcurrentBag<EventHolder> EventsMicroservice { get; set; } = new ConcurrentBag<EventHolder>();
 
-        public ConcurrentBag<EventBase> EventsCustom { get; set; } = new ConcurrentBag<EventBase>();
+        public ConcurrentBag<EventHolder> EventsCustom { get; set; } = new ConcurrentBag<EventHolder>();
 
-        public ConcurrentBag<SecurityEvent> EventsSecurity { get; set; } = new ConcurrentBag<SecurityEvent>();
+        public ConcurrentBag<EventHolder> EventsSecurity { get; set; } = new ConcurrentBag<EventHolder>();
 
-        public ConcurrentBag<ResourceEvent> EventsResource { get; set; } = new ConcurrentBag<ResourceEvent>();
+        public ConcurrentBag<EventHolder> EventsResource { get; set; } = new ConcurrentBag<EventHolder>();
 
     }
 }

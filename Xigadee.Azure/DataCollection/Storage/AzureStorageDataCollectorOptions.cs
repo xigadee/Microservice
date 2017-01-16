@@ -19,12 +19,12 @@ namespace Xigadee
         /// <param name="behavior">The default storage behaviour.</param>
         public AzureStorageDataCollectorOptions(DataCollectionSupport support
             , AzureStorageBehaviour behavior = AzureStorageBehaviour.None
-            , Func<EventBase, MicroserviceId, ITableEntity> serializerTable = null
-            , Func<EventBase, MicroserviceId, AzureStorageBinary> serializerBinary = null
-            , Func<EventBase, MicroserviceId, string> makeId = null
-            , Func<EventBase, MicroserviceId, string> binaryMakeId = null
-            , Func<EventBase, MicroserviceId, string> binaryMakeFolder = null
-            , Func<AzureStorageBehaviour, EventBase, bool> isSupported = null
+            , Func<EventHolder, MicroserviceId, ITableEntity> serializerTable = null
+            , Func<EventHolder, MicroserviceId, AzureStorageBinary> serializerBinary = null
+            , Func<EventHolder, MicroserviceId, string> makeId = null
+            , Func<EventHolder, MicroserviceId, string> binaryMakeId = null
+            , Func<EventHolder, MicroserviceId, string> binaryMakeFolder = null
+            , Func<AzureStorageBehaviour, EventHolder, bool> isSupported = null
             )
         {
             Support = support;
@@ -32,32 +32,32 @@ namespace Xigadee
             SerializerTable = serializerTable;
             SerializerBinary = serializerBinary ?? AzureStorageHelper.DefaultJsonBinarySerializer;
 
-            MakeId = makeId ?? ((EventBase e, MicroserviceId i) => e.TraceId);
+            MakeId = makeId ?? ((EventHolder e, MicroserviceId i) => e.Data.TraceId);
             BinaryMakeId = binaryMakeId ?? MakeId;
             BinaryMakeFolder = binaryMakeFolder;
 
             IsSupported = isSupported ?? ((b,e) => true);
         }
 
-        public Func<EventBase, MicroserviceId, string> MakeId { get; set; }
+        public Func<EventHolder, MicroserviceId, string> MakeId { get; set; }
 
-        public Func<EventBase, MicroserviceId, string> BinaryMakeId { get; set; }
+        public Func<EventHolder, MicroserviceId, string> BinaryMakeId { get; set; }
 
-        public Func<EventBase, MicroserviceId, string> BinaryMakeFolder { get; set; }
+        public Func<EventHolder, MicroserviceId, string> BinaryMakeFolder { get; set; }
 
         /// <summary>
         /// This function can be set to provide specific table serialization.
         /// </summary>
-        public Func<EventBase, MicroserviceId, ITableEntity> SerializerTable { get; set; }
+        public Func<EventHolder, MicroserviceId, ITableEntity> SerializerTable { get; set; }
 
         /// <summary>
         /// This function can be set to provide specific binary serialization.
         /// </summary>
-        public Func<EventBase, MicroserviceId, AzureStorageBinary> SerializerBinary { get; set; }
+        public Func<EventHolder, MicroserviceId, AzureStorageBinary> SerializerBinary { get; set; }
         /// <summary>
         /// This function can be used to filter out specific event from writing for certain storage support.
         /// </summary>
-        public Func<AzureStorageBehaviour, EventBase, bool> IsSupported { get; set; }
+        public Func<AzureStorageBehaviour, EventHolder, bool> IsSupported { get; set; }
         /// <summary>
         /// This is the support type for the options handler, i.e. LogEvent, EventSource, etc.
         /// </summary>

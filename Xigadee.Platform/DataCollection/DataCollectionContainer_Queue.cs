@@ -158,7 +158,7 @@ namespace Xigadee
         {
             try
             {
-                dataCollector.Write(eventData.DataType, eventData.Data);
+                dataCollector.Write(eventData);
             }
             catch (Exception ex)
             {

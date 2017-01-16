@@ -29,7 +29,6 @@ namespace Test.Xigadee
         {
             pipe
                 .AddDataCollector((c) => mDataCollector = new DebugMemoryDataCollector())
-                .AddLogger(new TraceEventLogger())
                 .AddPayloadSerializerDefaultJson();
         }
 

@@ -342,9 +342,6 @@ namespace Xigadee
                 if (service is IServiceOriginator)
                     ((IServiceOriginator)service).OriginatorId = Id;
 
-                if (service is IServiceEventSource)
-                    ((IServiceEventSource)service).EventSource = mDataCollection;
-
                 if (service is IPayloadSerializerConsumer)
                     ((IPayloadSerializerConsumer)service).PayloadSerializer = mSerializer;
 

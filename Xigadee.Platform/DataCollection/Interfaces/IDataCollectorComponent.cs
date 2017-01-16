@@ -26,7 +26,7 @@ namespace Xigadee
     {
         bool IsSupported(DataCollectionSupport support);
 
-        void Write(DataCollectionSupport eventType, EventBase eventData);
+        void Write(EventHolder eventData);
 
         bool CanFlush { get; }
 

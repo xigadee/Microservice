@@ -35,7 +35,7 @@ namespace Xigadee
 
         public CloudQueue Queue { get; set; }
 
-        public override async Task Write(EventBase e, MicroserviceId id)
+        public override async Task Write(EventHolder e, MicroserviceId id)
         {
             var output = Serializer(e, id);
 
@@ -68,7 +68,7 @@ namespace Xigadee
             Queue.CreateIfNotExists();
         }
 
-        public override bool ShouldWrite(EventBase e)
+        public override bool ShouldWrite(EventHolder e)
         {
             return Options.IsSupported(AzureStorageBehaviour.Queue, e);
         }

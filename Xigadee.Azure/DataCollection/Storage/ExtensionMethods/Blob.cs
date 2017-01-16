@@ -29,41 +29,41 @@ namespace Xigadee
         /// </summary>
         /// <param name="e">The incoming EventBase.</param>
         /// <returns>Returns the byte array.</returns>
-        public static AzureStorageBinary DefaultJsonBinarySerializer(EventBase e, MicroserviceId id)
+        public static AzureStorageBinary DefaultJsonBinarySerializer(EventHolder e, MicroserviceId id)
         {
-            var jObj = JObject.FromObject(e);
+            var jObj = JObject.FromObject(e.Data);
             var body = jObj.ToString();
             return new AzureStorageBinary { Blob = Encoding.UTF8.GetBytes(body) };
         }
 
         //Statistics
-        public static string StatisticsMakeId(EventBase ev, MicroserviceId msId)
+        public static string StatisticsMakeId(EventHolder ev, MicroserviceId msId)
         {
-            var e = ev as MicroserviceStatistics;
+            var e = ev.Data as MicroserviceStatistics;
 
             string Id = $"{e.StorageId}.json";
             return Id;
         }
-        public static string StatisticsMakeFolder(EventBase ev, MicroserviceId msId)
+        public static string StatisticsMakeFolder(EventHolder ev, MicroserviceId msId)
         {
-            var e = ev as MicroserviceStatistics;
+            var e = ev.Data as MicroserviceStatistics;
 
             string Directory = string.Format("{0}/{1:yyyy-MM-dd}/{1:HH}", msId.Name, DateTime.UtcNow);
 
             return  Directory;
         }
         //Logger
-        public static string LoggerMakeId(EventBase ev, MicroserviceId msId)
+        public static string LoggerMakeId(EventHolder ev, MicroserviceId msId)
         {
-            var e = ev as LogEvent;
+            var e = ev.Data as LogEvent;
             
-            string Id = $"{ev.TraceId}.json";
+            string Id = $"{e.TraceId}.json";
 
             return Id;
         }
-        public static string LoggerMakeFolder(EventBase ev, MicroserviceId msId)
+        public static string LoggerMakeFolder(EventHolder ev, MicroserviceId msId)
         {
-            var e = ev as LogEvent;
+            var e = ev.Data as LogEvent;
 
             string level = Enum.GetName(typeof(LoggingLevel), e.Level);
             string Directory = string.Format("{0}/{1}/{2:yyyy-MM-dd}/{2:HH}", msId.Name, level, DateTime.UtcNow);
@@ -80,16 +80,16 @@ namespace Xigadee
             return Directory;
         }
         //Event Source
-        public static string EventSourceMakeId(EventBase ev, MicroserviceId msId)
+        public static string EventSourceMakeId(EventHolder ev, MicroserviceId msId)
         {
-            var e = ev as EventSourceEntry;
+            var e = ev.Data as EventSourceEntry;
 
             string Id = string.Format("{0}.json", string.Join("_", e.Key.Split(Path.GetInvalidFileNameChars())));
             return Id;
         }
-        public static string EventSourceMakeFolder(EventBase ev, MicroserviceId msId)
+        public static string EventSourceMakeFolder(EventHolder ev, MicroserviceId msId)
         {
-            var e = ev as EventSourceEntry;
+            var e = ev.Data as EventSourceEntry;
 
             string Directory = string.Format("{0}/{1:yyyy-MM-dd}/{2}", msId.Name, e.UTCTimeStamp, e.EntityType);
 

@@ -27,7 +27,7 @@ namespace Xigadee
     /// This class centrally holds all the logging, telemetry and event source support.
     /// </summary>
     public partial class DataCollectionContainer: ServiceContainerBase<DataCollectionStatistics, DataCollectionPolicy>
-        , IDataCollection, IEventSource, IServiceOriginator
+        , IDataCollection, IServiceOriginator
         , ITaskManagerProcess, IRequireSharedServices, IRequireSecurityService
     {
         #region Declarations
@@ -101,23 +101,6 @@ namespace Xigadee
             mCollectors.Add(component);
             return component;
         }
-
-        public ILogger Add(ILogger component)
-        {
-            var legacy = new DataCollectorLegacySupport<LogEvent, ILogger>(
-                DataCollectionSupport.Logger, component, (l,e) => l.Log(e));
-
-            Add(legacy);
-
-            return component;
-        }
-
-        public IEventSource Add(IEventSourceComponent component)
-        {
-            //mEventSource.Add(component);
-            return component;
-        }
-
         #endregion
 
         #region ServiceStart(object service)

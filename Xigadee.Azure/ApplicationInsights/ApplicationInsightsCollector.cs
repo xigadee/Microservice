@@ -76,13 +76,13 @@ namespace Xigadee
 
         protected override void SupportLoadDefault()
         {
-            SupportAdd(DataCollectionSupport.Boundary, e => Write((BoundaryEvent)e));
-            SupportAdd(DataCollectionSupport.Dispatcher, e => Write((DispatcherEvent)e));
-            SupportAdd(DataCollectionSupport.EventSource, e => Write((EventSourceEvent)e));
-            SupportAdd(DataCollectionSupport.Statistics, e => Write((MicroserviceStatistics)e));
-            SupportAdd(DataCollectionSupport.Logger, e => Write((LogEvent)e));
-            SupportAdd(DataCollectionSupport.Telemetry, e => Write((TelemetryEvent)e));
-            SupportAdd(DataCollectionSupport.Security, e => Write((SecurityEvent)e));
+            SupportAdd(DataCollectionSupport.Boundary, e => Write((BoundaryEvent)e.Data));
+            SupportAdd(DataCollectionSupport.Dispatcher, e => Write((DispatcherEvent)e.Data));
+            SupportAdd(DataCollectionSupport.EventSource, e => Write((EventSourceEvent)e.Data));
+            SupportAdd(DataCollectionSupport.Statistics, e => Write((MicroserviceStatistics)e.Data));
+            SupportAdd(DataCollectionSupport.Logger, e => Write((LogEvent)e.Data));
+            SupportAdd(DataCollectionSupport.Telemetry, e => Write((TelemetryEvent)e.Data));
+            SupportAdd(DataCollectionSupport.Security, e => Write((SecurityEvent)e.Data));
         }
 
         private void Write(BoundaryEvent eventData)
