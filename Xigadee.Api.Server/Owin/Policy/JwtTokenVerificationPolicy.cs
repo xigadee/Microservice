@@ -52,7 +52,7 @@ namespace Xigadee
         public bool ValidateNotBefore { get; set; } = true;
 
 
-        public virtual JwtToken Validete(string tokenParameter)
+        public virtual JwtToken Validate(string tokenParameter)
         {
             var token = new JwtToken(tokenParameter, Secret);
 

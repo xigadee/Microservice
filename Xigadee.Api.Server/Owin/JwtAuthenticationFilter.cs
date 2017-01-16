@@ -51,7 +51,7 @@ namespace Xigadee
                 if (auth == null || !auth.Scheme.Equals("bearer", StringComparison.InvariantCultureIgnoreCase))
                     return;
 
-                var token = mPolicy.Validete(auth.Parameter);
+                var token = mPolicy.Validate(auth.Parameter);
 
                 context.Principal = new MicroserviceSecurityPrincipal(token);
 
