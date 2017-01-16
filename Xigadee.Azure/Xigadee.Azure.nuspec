@@ -16,8 +16,8 @@
     <dependencies>
       <dependency id="Newtonsoft.Json" version="9.0.1" />
       <dependency id="Xigadee" version="{UpdateVersion.ps1.replace}" />
-      <dependency id="WindowsAzure.ServiceBus" version="3.4.3" />
-      <dependency id="WindowsAzure.Storage" version="8.0.0" />
+      <dependency id="WindowsAzure.ServiceBus" version="3.4.4" />
+      <dependency id="WindowsAzure.Storage" version="8.0.1" />
       <dependency id="Microsoft.Azure.DocumentDB" version="1.11.1" />
       <dependency id="Microsoft.WindowsAzure.ConfigurationManager" version="3.2.3" />
       <dependency id="Microsoft.WindowsAzure.Management.Monitoring" version="4.1.0" />

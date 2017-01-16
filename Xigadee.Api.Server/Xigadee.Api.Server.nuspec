@@ -29,7 +29,7 @@
 
       <dependency id="Owin" version="1.0" />
 
-      <dependency id="WindowsAzure.Storage" version="7.2.0" />
+      <dependency id="WindowsAzure.Storage" version="8.0.1" />
       <dependency id="Xigadee" version="{UpdateVersion.ps1.replace}" />
       <dependency id="Newtonsoft.Json" version="9.0.1" />
       <dependency id="System.IdentityModel.Tokens.Jwt" version="4.0.2.206221351" />
