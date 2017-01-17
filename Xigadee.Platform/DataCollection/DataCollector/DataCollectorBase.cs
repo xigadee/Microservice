@@ -151,14 +151,15 @@ namespace Xigadee
         public bool CanFlush { get; set; }
         #endregion
 
+        #region Security
         /// <summary>
         /// This is a reference to the security service used for encrpytion.
         /// </summary>
         public ISecurityService Security
         {
-            get;set;
-        }
-
+            get; set;
+        } 
+        #endregion
     }
 
     /// <summary>

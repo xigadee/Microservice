@@ -200,7 +200,7 @@
     <Compile Include="ModelBinders\ApiRequestModelBinder.cs" />
     <Compile Include="ModelBinders\ApiRequest.cs" />
     <Compile Include="ModelBinders\ApiResponse.cs" />
-    <Compile Include="Filters\WebApiApimAuthentication.cs" />
+    <Compile Include="Apim\WebApiApimAuthentication.cs" />
     <Compile Include="Filters\WebApiAzureBlobLoggingFilter.cs" />
     <Compile Include="Filters\WebApiVersionHeaderFilter.cs" />
     <Compile Include="Owin\OpenCorsPolicy.cs" />

@@ -37,7 +37,7 @@ namespace Xigadee
 
         public bool AllowMultiple
         {
-            get { return true; }
+            get { return false; }
         }
 
         public async Task AuthenticateAsync(HttpAuthenticationContext context, CancellationToken cancellationToken)

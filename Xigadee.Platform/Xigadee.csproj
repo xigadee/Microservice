@@ -111,7 +111,6 @@
     <Compile Include="DataCollection\DataCollectionContainer_EventSource.cs" />
     <Compile Include="DataCollection\DataCollectionContainer_Queue.cs" />
     <Compile Include="DataCollection\DataCollector\DataCollectorBase.cs" />
-    <Compile Include="DataCollection\DataCollector\DataCollectorLegacySupport.cs" />
     <Compile Include="DataCollection\DataCollector\DataCollectorPolicy.cs" />
     <Compile Include="DataCollection\Events\Base\EventHolder.cs" />
     <Compile Include="DataCollection\Events\ResourceEvent.cs" />
