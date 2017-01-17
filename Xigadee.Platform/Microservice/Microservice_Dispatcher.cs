@@ -121,12 +121,16 @@ namespace Xigadee
         /// <param name="requestPayload">The request payload.</param>
         protected virtual async Task Execute(TransmissionPayload requestPayload)
         {
+            var storedPrincipal = Thread.CurrentPrincipal;
             var request = new TransmissionPayloadState(requestPayload
                 , Policy.Microservice.DispatcherTransitCountMax
                 , StatisticsInternal.ActiveIncrement());
 
             try
             {
+                if (requestPayload?.SecurityPrincipal != null)
+                    Thread.CurrentPrincipal = requestPayload.SecurityPrincipal;
+
                 mEventsWrapper.OnExecuteBegin(request);
 
                 //Validate the imcoming request is correct and not cancelled.
@@ -211,6 +215,9 @@ namespace Xigadee
             }
             finally
             {
+                // Restore the existing principal
+                Thread.CurrentPrincipal = storedPrincipal;
+
                 //Signal to the underlying listener that the message can be released.
                 request.Signal();
 
