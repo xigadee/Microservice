@@ -99,14 +99,13 @@ namespace Xigadee
                 ISupportProperties telemetryProperties;
 
                 // If we have en exception log as such
-                string message = $"Boundary:{eventData.Payload?.Message?.ChannelId}:{eventData.Payload?.Message?.MessageType}:{eventData.Payload?.Message?.ActionType}:{eventData.Direction}";
                 if (eventData.Ex != null)
                 {
-                    telemetryProperties = exceptionTelemetry = AddTelemetryContext(new ExceptionTelemetry(eventData.Ex) { Message = message }, eventHolder);
+                    telemetryProperties = exceptionTelemetry = AddTelemetryContext(new ExceptionTelemetry(eventData.Ex) { Message = eventData.Ex.Message }, eventHolder);
                 }
                 else
                 {
-                    telemetryProperties = eventTelemetry = AddTelemetryContext(new EventTelemetry(message), eventHolder);
+                    telemetryProperties = eventTelemetry = AddTelemetryContext(new EventTelemetry($"Boundary:{eventData.Payload?.Message?.ChannelId}:{eventData.Payload?.Message?.MessageType}:{eventData.Payload?.Message?.ActionType}:{eventData.Direction}"), eventHolder);
                 }
 
                 AddPropertyData(telemetryProperties, nameof(eventData.Payload.Message.ChannelId), eventData.Payload?.Message?.ChannelId);
@@ -150,14 +149,13 @@ namespace Xigadee
                 ISupportProperties telemetryProperties;
 
                 // If we have en exception log as such
-                string message = $"Dispatcher:{eventData.Payload?.Message?.ChannelId}:{eventData.Payload?.Message?.MessageType}:{eventData.Payload?.Message?.ActionType}:{eventData.IsSuccess}";
                 if (eventData.Ex != null)
                 {
-                    telemetryProperties = exceptionTelemetry = AddTelemetryContext(new ExceptionTelemetry(eventData.Ex) { Message = message }, eventHolder);
+                    telemetryProperties = exceptionTelemetry = AddTelemetryContext(new ExceptionTelemetry(eventData.Ex) { Message = eventData.Ex.Message }, eventHolder);
                 }
                 else
                 {
-                    telemetryProperties = eventTelemetry = AddTelemetryContext(new EventTelemetry(message), eventHolder);
+                    telemetryProperties = eventTelemetry = AddTelemetryContext(new EventTelemetry($"Dispatcher:{eventData.Payload?.Message?.ChannelId}:{eventData.Payload?.Message?.MessageType}:{eventData.Payload?.Message?.ActionType}:{eventData.IsSuccess}"), eventHolder);
                 }
 
                 AddPropertyData(telemetryProperties, nameof(eventData.Reason), eventData.Reason?.ToString());
