@@ -94,7 +94,6 @@ namespace Test.Xigadee.Azure
 
                 sender.Start();
 
-
                 var rs = init.Process<ISimpleCommand, string, string>("hello")?.Result;
 
                 Assert.IsTrue(rs?.Response == "mom");
