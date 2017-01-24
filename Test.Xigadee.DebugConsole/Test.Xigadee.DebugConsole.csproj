@@ -227,10 +227,6 @@
     <None Include="Test.Xigadee.DebugConsole.licenseheader" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Test.Xigadee.Api.Client\Test.Xigadee.Api.Client.csproj">
-      <Project>{37a0a4fc-647e-4115-b72e-62b043b84d7a}</Project>
-      <Name>Test.Xigadee.Api.Client</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Test.Xigadee.Api.Server\Test.Xigadee.Api.Server.csproj">
       <Project>{3c7d695d-4111-499e-9764-6b9e6ec93952}</Project>
       <Name>Test.Xigadee.Api.Server</Name>
@@ -250,10 +246,6 @@
     <ProjectReference Include="..\Xigadee.Azure\Xigadee.Azure.csproj">
       <Project>{069f5121-bc8e-4f1f-b08c-ba3f4806db78}</Project>
       <Name>Xigadee.Azure</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Xigadee.Communication\Xigadee.Communication.csproj">
-      <Project>{7e70924f-c120-4259-8069-da466afe8bc1}</Project>
-      <Name>Xigadee.Communication</Name>
     </ProjectReference>
     <ProjectReference Include="..\Xigadee.Console\Xigadee.Console.csproj">
       <Project>{af748540-d35c-409a-ad23-d990cf19ded9}</Project>

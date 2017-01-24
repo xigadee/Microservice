@@ -19,6 +19,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Xigadee;
 namespace Test.Xigadee
 {
+    /// <summary>
+    /// These test validate the pipeline.
+    /// </summary>
     [TestClass]
     public partial class PipelineTest1
     {
