@@ -89,25 +89,46 @@ namespace Xigadee
         private void WriteBoundaryEvent(EventHolder eventHolder)
         {
             var eventData = eventHolder.Data as BoundaryEvent;
-            if (eventData == null || mLoggingLevel > LoggingLevel.Info)
+            if (eventData == null || (mLoggingLevel > LoggingLevel.Info && eventData.Ex == null))
                 return;
 
             try
             {
-                var eventTelemetry = AddTelemetryContext(new EventTelemetry($"Boundary:{eventData.Payload?.Message?.ChannelId}:{eventData.Payload?.Message?.MessageType}:{eventData.Payload?.Message?.ActionType}:{eventData.Direction}"), eventHolder);
-                AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.ChannelId), eventData.Payload?.Message?.ChannelId);
-                AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.MessageType), eventData.Payload?.Message?.MessageType);
-                AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.ActionType), eventData.Payload?.Message?.ActionType);
-                AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.CorrelationKey), eventData.Payload?.Message?.CorrelationKey);
-                AddPropertyData(eventTelemetry, nameof(BoundaryEventType), eventData.Type.ToString());
-                AddPropertyData(eventTelemetry, nameof(Exception), eventData.Ex?.ToString());
-                eventTelemetry.Metrics[$"{nameof(BoundaryEvent)}:{nameof(eventData.Requested)}"] = eventData.Requested;
-                eventTelemetry.Metrics[$"{nameof(BoundaryEvent)}:{nameof(eventData.Actual)}"] = eventData.Actual;
+                EventTelemetry eventTelemetry = null;
+                ExceptionTelemetry exceptionTelemetry = null;
+                ISupportProperties telemetryProperties;
+
+                // If we have en exception log as such
+                if (eventData.Ex != null)
+                {
+                    telemetryProperties = exceptionTelemetry = AddTelemetryContext(new ExceptionTelemetry(eventData.Ex) { Message = eventData.Ex.Message }, eventHolder);
+                }
+                else
+                {
+                    telemetryProperties = eventTelemetry = AddTelemetryContext(new EventTelemetry($"Boundary:{eventData.Payload?.Message?.ChannelId}:{eventData.Payload?.Message?.MessageType}:{eventData.Payload?.Message?.ActionType}:{eventData.Direction}"), eventHolder);
+                }
+
+                AddPropertyData(telemetryProperties, nameof(eventData.Payload.Message.ChannelId), eventData.Payload?.Message?.ChannelId);
+                AddPropertyData(telemetryProperties, nameof(eventData.Payload.Message.MessageType), eventData.Payload?.Message?.MessageType);
+                AddPropertyData(telemetryProperties, nameof(eventData.Payload.Message.ActionType), eventData.Payload?.Message?.ActionType);
+                AddPropertyData(telemetryProperties, nameof(eventData.Payload.Message.CorrelationKey), eventData.Payload?.Message?.CorrelationKey);
+                AddPropertyData(telemetryProperties, nameof(BoundaryEventType), eventData.Type.ToString());
 
                 // If we have the payload and a correlation key use this as the operation id
-                eventTelemetry.Context.Operation.Id = eventData.Payload?.Message?.ProcessCorrelationKey ?? eventTelemetry.Context.Operation.Id;
+                var telemetry = (ITelemetry)eventTelemetry ?? exceptionTelemetry;
+                if (telemetry != null)
+                    telemetry.Context.Operation.Id = eventData.Payload?.Message?.ProcessCorrelationKey ?? telemetry.Context.Operation.Id;
 
-                mTelemetry?.TrackEvent(eventTelemetry);
+                if (exceptionTelemetry != null)
+                {
+                    mTelemetry?.TrackException(exceptionTelemetry);
+                }
+                else if (eventTelemetry != null)
+                {
+                    eventTelemetry.Metrics[$"{nameof(BoundaryEvent)}:{nameof(eventData.Requested)}"] = eventData.Requested;
+                    eventTelemetry.Metrics[$"{nameof(BoundaryEvent)}:{nameof(eventData.Actual)}"] = eventData.Actual;
+                    mTelemetry?.TrackEvent(eventTelemetry);
+                }
             }
             catch (Exception ex)
             {
@@ -118,24 +139,46 @@ namespace Xigadee
         private void WriteDispatcherEvent(EventHolder eventHolder)
         {
             var eventData = eventHolder.Data as DispatcherEvent;
-            if (eventData == null || mLoggingLevel > LoggingLevel.Info)
+            if (eventData == null || (mLoggingLevel > LoggingLevel.Info && eventData.Ex == null))
                 return;
 
             try
             {
-                var eventTelemetry = AddTelemetryContext(new EventTelemetry($"Dispatcher:{eventData.Payload?.Message?.ChannelId}:{eventData.Payload?.Message?.MessageType}:{eventData.Payload?.Message?.ActionType}:{eventData.IsSuccess}"), eventHolder);
-                AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.ChannelId), eventData.Payload?.Message?.ChannelId);
-                AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.MessageType), eventData.Payload?.Message?.MessageType);
-                AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.ActionType), eventData.Payload?.Message?.ActionType);
-                AddPropertyData(eventTelemetry, nameof(eventData.Payload.Message.CorrelationKey), eventData.Payload?.Message?.CorrelationKey);
-                AddPropertyData(eventTelemetry, nameof(PayloadEventType), eventData.Type.ToString());
-                AddPropertyData(eventTelemetry, nameof(Exception), eventData.Ex?.ToString());
-                eventTelemetry.Metrics[$"{nameof(DispatcherEvent)}:{nameof(eventData.Delta)}"] = eventData.Delta;
+                EventTelemetry eventTelemetry = null;
+                ExceptionTelemetry exceptionTelemetry = null;
+                ISupportProperties telemetryProperties;
+
+                // If we have en exception log as such
+                if (eventData.Ex != null)
+                {
+                    telemetryProperties = exceptionTelemetry = AddTelemetryContext(new ExceptionTelemetry(eventData.Ex) { Message = eventData.Ex.Message }, eventHolder);
+                }
+                else
+                {
+                    telemetryProperties = eventTelemetry = AddTelemetryContext(new EventTelemetry($"Dispatcher:{eventData.Payload?.Message?.ChannelId}:{eventData.Payload?.Message?.MessageType}:{eventData.Payload?.Message?.ActionType}:{eventData.IsSuccess}"), eventHolder);
+                }
+
+                AddPropertyData(telemetryProperties, nameof(eventData.Reason), eventData.Reason?.ToString());
+                AddPropertyData(telemetryProperties, nameof(eventData.Payload.Message.ChannelId), eventData.Payload?.Message?.ChannelId);
+                AddPropertyData(telemetryProperties, nameof(eventData.Payload.Message.MessageType), eventData.Payload?.Message?.MessageType);
+                AddPropertyData(telemetryProperties, nameof(eventData.Payload.Message.ActionType), eventData.Payload?.Message?.ActionType);
+                AddPropertyData(telemetryProperties, nameof(eventData.Payload.Message.CorrelationKey), eventData.Payload?.Message?.CorrelationKey);
+                AddPropertyData(telemetryProperties, nameof(PayloadEventType), eventData.Type.ToString());
 
                 // If we have the payload and a correlation key use this as the operation id
-                eventTelemetry.Context.Operation.Id = eventData.Payload?.Message?.ProcessCorrelationKey ?? eventTelemetry.Context.Operation.Id;
+                var telemetry = (ITelemetry) eventTelemetry ?? exceptionTelemetry;
+                if (telemetry != null)
+                    telemetry.Context.Operation.Id = eventData.Payload?.Message?.ProcessCorrelationKey ?? telemetry.Context.Operation.Id;
 
-                mTelemetry?.TrackEvent(eventTelemetry);
+                if (exceptionTelemetry != null)
+                {
+                    mTelemetry?.TrackException(exceptionTelemetry);
+                }
+                else if (eventTelemetry != null)
+                {
+                    eventTelemetry.Metrics[$"{nameof(DispatcherEvent)}:{nameof(eventData.Delta)}"] = eventData.Delta;
+                    mTelemetry?.TrackEvent(eventTelemetry);
+                }
             }
             catch (Exception ex)
             {
