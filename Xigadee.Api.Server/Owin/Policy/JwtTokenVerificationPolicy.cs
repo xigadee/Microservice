@@ -32,7 +32,7 @@ namespace Xigadee
     public class JwtTokenVerificationPolicy: IJwtTokenVerificationPolicy
     {
         /// <summary>
-        /// The token secret
+        /// The token secret used to hash the token.
         /// </summary>
         public byte[] Secret { get; set; }
         /// <summary>
@@ -43,15 +43,27 @@ namespace Xigadee
         /// The token audience. Set this to null if you do not require it to check the audience value.
         /// </summary>
         public string Audience { get; set; }
-
+        /// <summary>
+        /// This property indicates whether the token audience should be validated. The default is true.
+        /// </summary>
         public bool ValidateAudience { get; set; } = true;
-
+        /// <summary>
+        /// This property indicates whether the token expiry date should be checked. The default is true.
+        /// </summary>
         public bool ValidateExpiry { get; set; } = true;
-
+        /// <summary>
+        /// This property indicates whether the token valid from date should be checked. The default is true.
+        /// </summary>
         public bool ValidateNotBefore { get; set; } = true;
-
+        /// <summary>
+        /// This property specifies whether the filter should deny access by default.
+        /// </summary>
         public bool DenyByDefault { get; set; } = true;
-
+        /// <summary>
+        /// This method is used to validate the token.
+        /// </summary>
+        /// <param name="tokenParameter">The token auth string parameter.</param>
+        /// <returns>Returns a Jwt token if the validation is passed.</returns>
         public virtual JwtToken Validate(string tokenParameter)
         {
             var token = new JwtToken(tokenParameter, Secret);
