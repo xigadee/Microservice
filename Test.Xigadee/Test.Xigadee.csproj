@@ -77,7 +77,7 @@
     <Compile Include="Communication\Tcp\CommunicationTcp.cs" />
     <Compile Include="Configuration\Config1.cs" />
     <Compile Include="Dispatcher\DispatcherCommand.cs" />
-    <Compile Include="Dispatcher\DispatcherTests.cs" />
+    <Compile Include="Dispatcher\DispatcherTestRouting.cs" />
     <Compile Include="Dispatcher\DispatcherTestsBase.cs" />
     <Compile Include="EventTestCommand.cs" />
     <Compile Include="Microservice\ServiceIdentifierValidation.cs" />

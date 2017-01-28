@@ -26,6 +26,7 @@ namespace Test.Xigadee
             {
                 mDCommand = new C();
                 var pipeline = new MicroservicePipeline(GetType().Name)
+                    .AdjustPolicyMicroservice((p) => p.DispatcherUnhandledMode = DispatcherUnhandledMessageAction.AttemptResponseFailMessage)
                     .AddDataCollector((c) => collector = new DebugMemoryDataCollector())
                     .AddChannelIncoming("internalIn", internalOnly: false, autosetPartition01:false)
                         .AttachPriorityPartition(0, 1)

@@ -80,7 +80,6 @@ namespace Xigadee
             Message = message;
             mListenerSignalRelease = release;
             Options = options;
-            DispatcherCanSignal = true;
             Id = Guid.NewGuid();
         }
         #endregion
@@ -187,7 +186,7 @@ namespace Xigadee
 
         #region MessageCanSignal
         /// <summary>
-        /// This readonly property identifies whether the message can be singalled complete.
+        /// This readonly property identifies whether the message can be signalled complete.
         /// </summary>
         public bool MessageCanSignal { get { return mListenerSignalRelease != null; } } 
         #endregion
@@ -198,7 +197,7 @@ namespace Xigadee
         /// has completed. You may want to turn off this default action in specific scenarios. The default action
         /// is to signal (true).
         /// </summary>
-        public bool DispatcherCanSignal { get; set; }
+        public bool DispatcherCanSignal { get; set; } = true;
         #endregion
 
         #region SignalSuccess()
@@ -229,7 +228,7 @@ namespace Xigadee
         {
             var release = Interlocked.Exchange<Action<bool, Guid>>(ref mListenerSignalRelease, null);
 
-            if (release != null)
+            if (release != null && DispatcherCanSignal)
                 try
                 {
                     release(success, Id);

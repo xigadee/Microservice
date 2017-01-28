@@ -38,7 +38,7 @@ namespace Xigadee
         /// <summary>
         /// This setting sets the dispatcher action if an incoming message cannnot be resolved.
         /// </summary>
-        public DispatcherUnhandledMessageAction DispatcherUnhandled { get; set; } = DispatcherUnhandledMessageAction.AttemptResponseFailMessage;
+        public DispatcherUnhandledMessageAction DispatcherUnhandledMode { get; set; } = DispatcherUnhandledMessageAction.AttemptResponseFailMessage;
 
     }
 

@@ -37,6 +37,12 @@ namespace Xigadee
         /// </summary>
         public class TransmissionPayloadState
         {
+            /// <summary>
+            /// This is the default constructor.
+            /// </summary>
+            /// <param name="payload">The incoming payload.</param>
+            /// <param name="maxTransitCount">The maximum transit count.</param>
+            /// <param name="timerStart">The start time.</param>
             public TransmissionPayloadState(TransmissionPayload payload, int maxTransitCount, int timerStart)
             {
                 Payload = payload;
@@ -44,9 +50,14 @@ namespace Xigadee
                 MaxTransitCount = maxTransitCount;
                 TimerStart = timerStart;
             }
-
+            /// <summary>
+            /// This is the tickcount of when the incoming payload was first received.
+            /// </summary>
             public int TimerStart { get; }
 
+            /// <summary>
+            /// This signals the payload as complete.
+            /// </summary>
             public void Signal()
             {
                 //Signal to the underlying listener that the message can be released.
@@ -121,15 +132,13 @@ namespace Xigadee
         /// <param name="requestPayload">The request payload.</param>
         protected virtual async Task Execute(TransmissionPayload requestPayload)
         {
-            var storedPrincipal = Thread.CurrentPrincipal;
             var request = new TransmissionPayloadState(requestPayload
                 , Policy.Microservice.DispatcherTransitCountMax
                 , StatisticsInternal.ActiveIncrement());
 
             try
             {
-                if (requestPayload?.SecurityPrincipal != null)
-                    Thread.CurrentPrincipal = requestPayload.SecurityPrincipal;
+                Thread.CurrentPrincipal = request.Payload.SecurityPrincipal;
 
                 mEventsWrapper.OnExecuteBegin(request);
 
@@ -162,7 +171,7 @@ namespace Xigadee
 
                     mEventsWrapper.OnProcessRequestUnresolved(request.Payload, DispatcherRequestUnresolvedReason.MessageHandler);
 
-                    request.IsSuccess = Policy.Microservice.DispatcherUnhandled == DispatcherUnhandledMessageAction.Ignore;
+                    request.IsSuccess = Policy.Microservice.DispatcherUnhandledMode == DispatcherUnhandledMessageAction.Ignore;
 
                     return;
                 }
@@ -205,7 +214,7 @@ namespace Xigadee
             {
                 mDataCollection.DispatcherPayloadException(request.Payload, pyex);
 
-                mEventsWrapper.OnProcessRequestError(pyex.Payload, pyex);
+                mEventsWrapper.OnProcessRequestError(pyex.Payload, pyex);     
             }
             catch (Exception ex)
             {
@@ -216,7 +225,7 @@ namespace Xigadee
             finally
             {
                 // Restore the existing principal
-                Thread.CurrentPrincipal = storedPrincipal;
+                Thread.CurrentPrincipal = null;
 
                 //Signal to the underlying listener that the message can be released.
                 request.Signal();
