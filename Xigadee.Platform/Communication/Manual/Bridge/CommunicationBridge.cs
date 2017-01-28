@@ -14,15 +14,15 @@ namespace Xigadee
     /// </summary>
     public class CommunicationBridge
     {
-        private List<ManualChannelListener> mListeners = new List<ManualChannelListener>();
-        private List<ManualChannelSender> mSenders = new List<ManualChannelSender>();
-        private long mSendCount = 0;
-        private JsonContractSerializer mSerializer = new JsonContractSerializer();
+        List<ManualChannelListener> mListeners = new List<ManualChannelListener>();
+        List<ManualChannelSender> mSenders = new List<ManualChannelSender>();
+        long mSendCount = 0;
+        JsonContractSerializer mSerializer = new JsonContractSerializer();
 
         /// <summary>
         /// This is the default constructor that specifies the broadcast mode.
         /// </summary>
-        /// <param name="mode"></param>
+        /// <param name="mode">This property specifies how the bridge communicates to the senders from the listeners.</param>
         public CommunicationBridge(CommunicationBridgeMode mode)
         {
             Mode = mode;
@@ -31,8 +31,18 @@ namespace Xigadee
         /// <summary>
         /// This is the communication mode that the bridge is working under.
         /// </summary>
-        public CommunicationBridgeMode Mode { get; }
+        public CommunicationBridgeMode Mode { get; set;}
 
+        /// <summary>
+        /// This method adds a listener to the bridge.
+        /// </summary>
+        /// <returns>The listener.</returns>
+        public IListener AddListener(ManualChannelListener listener)
+        {
+            mListeners.Add(listener);
+
+            return listener;
+        }
         /// <summary>
         /// This method returns a new listener.
         /// </summary>
@@ -41,9 +51,19 @@ namespace Xigadee
         {
             var listener = new ManualChannelListener();
 
-            mListeners.Add(listener);
+            return AddListener(listener);
+        }
 
-            return listener;
+        /// <summary>
+        /// This method adds a sender to the bridge.
+        /// </summary>
+        /// <returns>The sender.</returns>
+        public ISender AddSender(ManualChannelSender sender)
+        {
+            sender.OnProcess += Sender_OnProcess;
+            mSenders.Add(sender);
+
+            return sender;
         }
         /// <summary>
         /// This method returns a new sender.
@@ -52,10 +72,8 @@ namespace Xigadee
         public ISender GetSender()
         {
             var sender = new ManualChannelSender();
-            sender.OnProcess += Sender_OnProcess;
-            mSenders.Add(sender);
 
-            return sender;
+            return AddSender(sender);
         }
 
         private void Sender_OnProcess(object sender, TransmissionPayload e)

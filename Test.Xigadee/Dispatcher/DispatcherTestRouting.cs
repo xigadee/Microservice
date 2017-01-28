@@ -12,10 +12,8 @@ namespace Test.Xigadee
     public class DispatcherTestRouting
     {
         IPipeline mPipeline = null;
-        CommandInitiator mCommandInit;
         ManualChannelListener mListener = null;
         ManualChannelSender mSender = null;
-        DebugMemoryDataCollector collector = null;
         DispatcherCommand mDCommand = null;
 
         const string channelIn = "internalIn";
@@ -24,23 +22,18 @@ namespace Test.Xigadee
         [TestInitialize]
         public void TearUp()
         {
-            mPipeline = new MicroservicePipeline(GetType().Name)
-                    .AdjustPolicyMicroservice((p) => p.DispatcherUnhandledMode = DispatcherUnhandledMessageAction.AttemptResponseFailMessage)
-                    .AddDataCollector((c) => collector = new DebugMemoryDataCollector())
-                    .AddChannelIncoming(channelIn, internalOnly: false, autosetPartition01: false)
-                        .AttachPriorityPartition(0, 1)
-                        .AttachListener((c) => new ManualChannelListener(), action: (s) => mListener = s)
+            try
+            {
+                mPipeline = new MicroservicePipeline(GetType().Name)
+                    .AddChannelIncoming(channelIn)
+                        .AttachManualListener(out mListener)
                         .AttachCommand(new DispatcherCommand(), assign: (c) => mDCommand = c)
-                        .AttachCommandInitiator(out mCommandInit)
                         .Revert()
-                    .AddChannelOutgoing("internalOut", internalOnly: false, autosetPartition01: false)
-                        .AttachPriorityPartition(0, 1)
-                        .AttachSender((c) => new ManualChannelSender(), action: (s) => mSender = s)
+                    .AddChannelOutgoing(channelOut)
+                        .AttachManualSender(out mSender)
                         .Revert()
                     ;
 
-            try
-            {
                 mPipeline.Start();
             }
             catch (Exception ex)

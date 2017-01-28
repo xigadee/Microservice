@@ -56,6 +56,16 @@ namespace Xigadee
             return cpipe;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="C"></typeparam>
+        /// <typeparam name="S"></typeparam>
+        /// <param name="cpipe"></param>
+        /// <param name="creator"></param>
+        /// <param name="action"></param>
+        /// <param name="setFromChannelProperties"></param>
+        /// <returns></returns>
         public static C AttachListener<C,S>(this C cpipe
             , Func<IEnvironmentConfiguration, S> creator = null
             , Action<S> action = null
