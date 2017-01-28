@@ -112,6 +112,7 @@ namespace Xigadee
                 AddPropertyData(telemetryProperties, nameof(eventData.Payload.Message.MessageType), eventData.Payload?.Message?.MessageType);
                 AddPropertyData(telemetryProperties, nameof(eventData.Payload.Message.ActionType), eventData.Payload?.Message?.ActionType);
                 AddPropertyData(telemetryProperties, nameof(eventData.Payload.Message.CorrelationKey), eventData.Payload?.Message?.CorrelationKey);
+                AddPropertyData(telemetryProperties, nameof(eventData.Payload.Message.FabricDeliveryCount), eventData.Payload?.Message?.FabricDeliveryCount.ToString());
                 AddPropertyData(telemetryProperties, nameof(BoundaryEventType), eventData.Type.ToString());
 
                 // If we have the payload and a correlation key use this as the operation id
@@ -163,6 +164,7 @@ namespace Xigadee
                 AddPropertyData(telemetryProperties, nameof(eventData.Payload.Message.MessageType), eventData.Payload?.Message?.MessageType);
                 AddPropertyData(telemetryProperties, nameof(eventData.Payload.Message.ActionType), eventData.Payload?.Message?.ActionType);
                 AddPropertyData(telemetryProperties, nameof(eventData.Payload.Message.CorrelationKey), eventData.Payload?.Message?.CorrelationKey);
+                AddPropertyData(telemetryProperties, nameof(eventData.Payload.Message.FabricDeliveryCount), eventData.Payload?.Message?.FabricDeliveryCount.ToString());
                 AddPropertyData(telemetryProperties, nameof(PayloadEventType), eventData.Type.ToString());
 
                 // If we have the payload and a correlation key use this as the operation id
