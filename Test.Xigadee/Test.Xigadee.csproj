@@ -76,9 +76,9 @@
     <Compile Include="Communication\Bridge\CommunicationBridgeTests.cs" />
     <Compile Include="Communication\Tcp\CommunicationTcp.cs" />
     <Compile Include="Configuration\Config1.cs" />
-    <Compile Include="Dispatcher\DispatcherCommand.cs" />
+    <Compile Include="Dispatcher\Commands\DispatcherCommand.cs" />
+    <Compile Include="Dispatcher\DispatcherTestSecurity.cs" />
     <Compile Include="Dispatcher\DispatcherTestRouting.cs" />
-    <Compile Include="Dispatcher\DispatcherTestsBase.cs" />
     <Compile Include="EventTestCommand.cs" />
     <Compile Include="Microservice\ServiceIdentifierValidation.cs" />
     <Compile Include="Pipeline\Pipeline2.cs" />
