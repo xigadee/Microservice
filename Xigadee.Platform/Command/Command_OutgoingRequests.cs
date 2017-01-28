@@ -135,6 +135,8 @@ namespace Xigadee
         /// <param name="fallbackMaxProcessingTime">This is the fallback max processing time used if the timeout 
         /// is not set in the request settings. 
         /// If this is also null, the max time out will fall back to the policy settings.</param>
+        /// <param name="principal">This is the principal that you wish the command to be executed under. 
+        /// By default this is taken from the calling thread if not passed.</param>
         /// <returns>Returns the async response wrapper.</returns>
         protected virtual async Task<ResponseWrapper<RS>> ProcessOutgoing<RQ, RS>(
               string channelId, string messageType, string actionType

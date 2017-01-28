@@ -11,25 +11,27 @@ namespace Test.Xigadee
     [TestClass]
     public class DispatcherTestRouting
     {
+        #region Declarations
         IPipeline mPipeline = null;
         ManualChannelListener mListener = null;
         ManualChannelSender mSender = null;
         DispatcherCommand mDCommand = null;
 
-        const string channelIn = "internalIn";
-        const string channelOut = "internalOut";
-
+        const string cnChannelIn = "internalIn";
+        const string cnChannelOut = "internalOut"; 
+        #endregion
+        #region Init/Cleanup
         [TestInitialize]
         public void TearUp()
         {
             try
             {
                 mPipeline = new MicroservicePipeline(GetType().Name)
-                    .AddChannelIncoming(channelIn)
+                    .AddChannelIncoming(cnChannelIn)
                         .AttachManualListener(out mListener)
                         .AttachCommand(new DispatcherCommand(), assign: (c) => mDCommand = c)
                         .Revert()
-                    .AddChannelOutgoing(channelOut)
+                    .AddChannelOutgoing(cnChannelOut)
                         .AttachManualSender(out mSender)
                         .Revert()
                     ;
@@ -48,7 +50,8 @@ namespace Test.Xigadee
             mPipeline.Stop();
             mPipeline = null;
         }
-
+        #endregion
+        #region Wait(ManualResetEvent mre)
         private void Wait(ManualResetEvent mre)
         {
 #if (DEBUG)
@@ -56,21 +59,27 @@ namespace Test.Xigadee
 #else 
             mre.WaitOne(2000);
 #endif
-        }
+        } 
+        #endregion
 
+        /// <summary>
+        /// This test 
+        /// </summary>
         [TestMethod]
         public void DispatcherTestSuccess()
         {
             ManualResetEvent mre = new ManualResetEvent(false);
             bool success = false;
 
-            var message = new TransmissionPayload(channelIn, "friday", "feeling"
+            var message = new TransmissionPayload(cnChannelIn, "friday", "feeling"
                 , release: (e,f) =>
                 {
                     success = true;
                     mre.Set();
                 }
-            , options: ProcessOptions.RouteInternal);
+                , options: ProcessOptions.RouteInternal
+                
+            );
 
             mListener.Inject(message);
 
@@ -87,11 +96,13 @@ namespace Test.Xigadee
                 ManualResetEvent mre = new ManualResetEvent(false);
                 bool success = false;
 
-                var message = new TransmissionPayload(channelIn, "friday", "exception", release: (e, f) =>
-                {
-                    mre.Set();
-                }
-                , options: ProcessOptions.RouteInternal);
+                var message = new TransmissionPayload(cnChannelIn, "friday", "exception"
+                    , release: (e, f) =>
+                    {
+                        mre.Set();
+                    }
+                    , options: ProcessOptions.RouteInternal
+                );
 
                 mDCommand.OnTestCommandReceive += (sender, e) =>
                 {
@@ -121,11 +132,13 @@ namespace Test.Xigadee
                 ManualResetEvent mre = new ManualResetEvent(false);
                 bool success = false;
 
-                var message = new TransmissionPayload(channelIn, "friday", "standard", release: (e, f) =>
-                {
-                    mre.Set();
-                }
-                , options: ProcessOptions.RouteInternal);
+                var message = new TransmissionPayload(cnChannelIn, "friday", "standard"
+                    , release: (e, f) =>
+                    {
+                        mre.Set();
+                    }
+                    , options: ProcessOptions.RouteInternal
+                );
 
                 mDCommand.OnTestCommandReceive += (sender, e) =>
                 {
@@ -144,7 +157,6 @@ namespace Test.Xigadee
 
                 throw;
             }
-
         }
 
         [TestMethod]
@@ -153,11 +165,13 @@ namespace Test.Xigadee
             ManualResetEvent mre = new ManualResetEvent(false);
             bool success = false;
 
-            var message = new TransmissionPayload(channelIn, "friday", "funky", release: (e, f) =>
-            {
-                mre.Set();
-            }
-            , options: ProcessOptions.RouteInternal);
+            var message = new TransmissionPayload(cnChannelIn, "friday", "funky"
+                , release: (e, f) =>
+                {
+                    mre.Set();
+                }
+                , options: ProcessOptions.RouteInternal
+            );
 
             mPipeline.Service.Events.ProcessRequestUnresolved += (sender, e) => {
                 success = e.Payload.Id == message.Id;
@@ -178,11 +192,13 @@ namespace Test.Xigadee
             ManualResetEvent mre = new ManualResetEvent(false);
             bool success = false;
 
-            var message = new TransmissionPayload(channelOut, "another", "monday", release: (e, f) =>
-            {
-                //mre.Set();
-            }
-            , options: ProcessOptions.RouteExternal);
+            var message = new TransmissionPayload(cnChannelOut, "another", "monday"
+                , release: (e, f) =>
+                {
+                    //mre.Set();
+                }
+                , options: ProcessOptions.RouteExternal
+            );
 
             mSender.OnProcess += (sender, e) =>
             {
