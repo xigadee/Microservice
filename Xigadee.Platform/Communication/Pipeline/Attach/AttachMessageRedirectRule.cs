@@ -35,7 +35,13 @@ namespace Xigadee
         public static C AttachMessageRedirectRule<C>(this C cpipe, MessageRedirectRule rewriteRule)
             where C: IPipelineChannel<IPipeline>
         {
-            cpipe.Channel.RedirectAdd(rewriteRule);
+            if (cpipe is IPipelineChannelBroadcast)
+            {
+                ((IPipelineChannelBroadcast)cpipe).ChannelListener.RedirectAdd(rewriteRule);
+                ((IPipelineChannelBroadcast)cpipe).ChannelSender.RedirectAdd(rewriteRule);
+            }
+            else
+                cpipe.Channel.RedirectAdd(rewriteRule);
 
             return cpipe;
         }

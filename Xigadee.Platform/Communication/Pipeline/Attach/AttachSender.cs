@@ -29,14 +29,21 @@ namespace Xigadee
             , bool setFromChannelProperties = true)
             where C: IPipelineChannelOutgoing<IPipeline>
         {
-            if (cpipe.Channel.InternalOnly)
-                throw new ChannelInternalOnlyException(cpipe.Channel.Id, cpipe.Channel.Direction);
+            Channel channel;
+
+            if (cpipe is IPipelineChannelBroadcast)
+                channel = ((IPipelineChannelBroadcast)cpipe).ChannelSender;
+            else
+                channel = cpipe.Channel;
+
+            if (channel.InternalOnly)
+                throw new ChannelInternalOnlyException(channel.Id, channel.Direction);
 
             if (setFromChannelProperties)
             {
-                sender.ChannelId = cpipe.Channel.Id;
-                sender.PriorityPartitions = cpipe.Channel.Partitions.Cast<SenderPartitionConfig>().ToList();
-                sender.BoundaryLoggingActive = cpipe.Channel.BoundaryLoggingActive;
+                sender.ChannelId = channel.Id;
+                sender.PriorityPartitions = channel.Partitions.Cast<SenderPartitionConfig>().ToList();
+                sender.BoundaryLoggingActive = channel.BoundaryLoggingActive;
             }
 
             cpipe.Pipeline.Service.Communication.RegisterSender(sender);

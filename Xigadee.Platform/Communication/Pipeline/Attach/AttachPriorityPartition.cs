@@ -27,6 +27,9 @@ namespace Xigadee
         private static void AttachPriorityPartition<P>(IPipelineChannel pipeline, P config)
             where P : PartitionConfig
         {
+            if (pipeline is IPipelineChannelBroadcast)
+                throw new NotSupportedException("AttachPriorityPartition is not supported for broadcast channels.");
+
             var channel = pipeline.Channel;
 
             if (channel.Partitions == null)

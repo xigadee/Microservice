@@ -13,13 +13,18 @@ namespace Test.Xigadee
         [TestClass]
         public class CommunicationBridgeTests
         {
-
+            /// <summary>
+            /// This method test the connectivity between multiple Microservices
+            /// 
+            /// [Sender] (t:id1) /o-|crequest|-/i [Receiver]
+            /// [Sender] \i-|cresponse|-\o [Receiver]
+            /// 
+            /// </summary>
             [TestMethod]
             public void TestMethod1()
             {
                 try
                 {
-
                     var bridgeOut = new CommunicationBridge(CommunicationBridgeMode.RoundRobin);
                     var bridgein = new CommunicationBridge(CommunicationBridgeMode.Broadcast);
 
@@ -28,8 +33,7 @@ namespace Test.Xigadee
 
                     var p1 = new MicroservicePipeline("Sender")
                         .AdjustPolicyCommunication((p) => p.BoundaryLoggingActiveDefault = true)
-                        .AddAuthenticationHandlerJwtToken("id1", JwtHashAlgorithm.HS256
-                            , Encoding.UTF8.GetBytes("My big secret"))
+                        .AddAuthenticationHandlerJwtToken("id1", JwtHashAlgorithm.HS256, Encoding.UTF8.GetBytes("My big secret"))
                         .AddDataCollector((c) => new DebugMemoryDataCollector(), (c) => memp1 = c)
                         .AddChannelOutgoing("crequest", boundaryLoggingEnabled: true)
                             .AttachSender(bridgeOut.GetSender())
@@ -38,12 +42,12 @@ namespace Test.Xigadee
                         .AddChannelIncoming("cresponse", boundaryLoggingEnabled: true)
                             .AttachListener(bridgein.GetListener())
                             .AttachPersistenceMessageInitiator(out init, "crequest")
+                            .Revert()
                             ;
 
                     var p2 = new MicroservicePipeline("Receiver")
                         .AdjustPolicyCommunication((p) => p.BoundaryLoggingActiveDefault = true)
-                        .AddAuthenticationHandlerJwtToken("id1", JwtHashAlgorithm.HS256
-                            , Encoding.UTF8.GetBytes("My big secret"))
+                        .AddAuthenticationHandlerJwtToken("id1", JwtHashAlgorithm.HS256, Encoding.UTF8.GetBytes("My big secret"))
                         .AddDataCollector((c) => new DebugMemoryDataCollector(), (c) => memp2 = c)
                         .AddChannelIncoming("crequest", boundaryLoggingEnabled: true)
                             .AttachListener(bridgeOut.GetListener())
@@ -66,11 +70,9 @@ namespace Test.Xigadee
 
                     Assert.IsTrue(rs2.IsSuccess);
                     Assert.IsTrue(rs2.Entity.Message == "Momma");
-
                 }
                 catch (Exception ex)
                 {
-
                     throw;
                 }
             }

@@ -87,6 +87,8 @@
     <Compile Include="Communication\Exceptions\StartupMessagingException.cs" />
     <Compile Include="Communication\Manual\Pipeline\AttachManualListener.cs" />
     <Compile Include="Communication\Manual\Pipeline\AttachManualSender.cs" />
+    <Compile Include="Communication\Pipeline\Add\AddChannelBroadcast.cs" />
+    <Compile Include="Communication\Pipeline\ChannelPipelineBroadcast.cs" />
     <Compile Include="Communication\TcpChannel\Configuration\TcpTlsConfigurationHelper.cs" />
     <Compile Include="Communication\TcpChannel\Helper\DirectChannelCommunicator.cs" />
     <Compile Include="Communication\TcpChannel\Pipeline\AttachTcpTlsListener.cs" />

@@ -109,12 +109,14 @@ namespace Xigadee
         /// This is will be used when assigning the handler to a channel or collector.</param>
         /// <param name="algo">The HMAC algorithm.</param>
         /// <param name="secret">This is the byte array used for the HMAC secret.</param>
+        /// <param name="audience">This is the audience value generated for the token and used for validation when a token is received.</param>
         /// <param name="action">The action on the handler.</param>
         /// <returns>The pipeline.</returns>
         public static P AddAuthenticationHandlerJwtToken<P>(this P pipeline
             , string identifier
             , JwtHashAlgorithm algo
             , byte[] secret
+            , string audience = "comms"
             , Action<IAuthenticationHandler> action = null)
             where P : IPipeline
         {
@@ -124,7 +126,7 @@ namespace Xigadee
             if (secret == null || secret.Length == 0)
                 throw new ArgumentNullException($"secret cannot be null or empty for {nameof(AddJwtTokenAuthenticationHandler)}");
 
-            var handler = new JwtTokenAuthenticationHandler(algo, secret);
+            var handler = new JwtTokenAuthenticationHandler(algo, secret, audience: audience);
 
             action?.Invoke(handler);
 

@@ -37,18 +37,25 @@ namespace Xigadee
             )
             where C: IPipelineChannelIncoming<IPipeline>
         {
-            if (cpipe.Channel == null)
+            Channel channel;
+
+            if (cpipe is IPipelineChannelBroadcast)
+                channel = ((IPipelineChannelBroadcast)cpipe).ChannelListener;
+            else
+                channel = cpipe.Channel;
+
+            if (channel == null)
                 throw new ArgumentNullException("The pipe channel is null.");
 
-            if (cpipe.Channel.InternalOnly)
-                throw new ChannelInternalOnlyException(cpipe.Channel.Id, cpipe.Channel.Direction);
+            if (channel.InternalOnly)
+                throw new ChannelInternalOnlyException(channel.Id, channel.Direction);
 
             if (setFromChannelProperties)
             {
-                listener.ChannelId = cpipe.Channel.Id;
-                listener.PriorityPartitions = cpipe.Channel.Partitions.Cast<ListenerPartitionConfig>().ToList();
-                listener.BoundaryLoggingActive = cpipe.Channel.BoundaryLoggingActive;
-                listener.ResourceProfiles = cpipe.Channel.ResourceProfiles;
+                listener.ChannelId = channel.Id;
+                listener.PriorityPartitions = channel.Partitions.Cast<ListenerPartitionConfig>().ToList();
+                listener.BoundaryLoggingActive = channel.BoundaryLoggingActive;
+                listener.ResourceProfiles = channel.ResourceProfiles;
             }
 
             cpipe.Pipeline.Service.Communication.RegisterListener(listener);
