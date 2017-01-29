@@ -71,6 +71,11 @@ namespace Xigadee
         /// Specifies whether the response channel can be set during configuration.
         /// </summary>
         bool ResponseChannelIdAutoSet { get; }
+
+        /// <summary>
+        /// This is the channel type used to handle the messaging handshake.
+        /// </summary>
+        string MasterJobNegotiationChannelType { get; set; }
         /// <summary>
         /// This is the channel used to negotiate control for a master job.
         /// </summary>

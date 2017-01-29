@@ -83,8 +83,8 @@ namespace Xigadee
             var masterjobPoll = new Schedule(MasterJobStateNotificationOutgoing
                 , $"MasterJob: {mPolicy.MasterJobName ?? FriendlyName}");
 
-            masterjobPoll.Frequency = TimeSpan.FromSeconds(20);
-            masterjobPoll.InitialWait = TimeSpan.FromSeconds(5);
+            masterjobPoll.Frequency = mPolicy.MasterJobPollFrequency ?? TimeSpan.FromSeconds(20);
+            masterjobPoll.InitialWait = mPolicy.MasterJobPollInitialWait ?? TimeSpan.FromSeconds(5);
             masterjobPoll.IsLongRunning = false;
 
             SchedulerRegister(masterjobPoll);

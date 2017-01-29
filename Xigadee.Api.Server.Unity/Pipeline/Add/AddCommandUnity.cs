@@ -28,14 +28,12 @@ namespace Xigadee
             , Action<C> assign = null
             , IPipelineChannelIncoming<P> channelIncoming = null
             , IPipelineChannelOutgoing<P> channelResponse = null
-            , IPipelineChannelIncoming<P> channelMasterJobNegotiationIncoming = null
-            , IPipelineChannelOutgoing<P> channelMasterJobNegotiationOutgoing = null
             )
             where P : IPipelineWebApiUnity
             where C : I, ICommand
         {
             return pipeline.AddCommandUnity<P, I, C>(creator(pipeline.Configuration)
-                , startupPriority, assign, channelIncoming, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
+                , startupPriority, assign, channelIncoming, channelResponse);
         }
 
         public static P AddCommandUnity<P, I,C>(this P pipeline
@@ -44,13 +42,11 @@ namespace Xigadee
             , Action<C> assign = null
             , IPipelineChannelIncoming<P> channelIncoming = null
             , IPipelineChannelOutgoing<P> channelResponse = null
-            , IPipelineChannelIncoming<P> channelMasterJobNegotiationIncoming = null
-            , IPipelineChannelOutgoing<P> channelMasterJobNegotiationOutgoing = null
             )
             where P : IPipelineWebApiUnity
             where C : I, ICommand
         {
-            pipeline.AddCommand(command, startupPriority, assign, channelIncoming, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
+            pipeline.AddCommand(command, startupPriority, assign, channelIncoming, channelResponse);
 
             pipeline.Unity.RegisterInstance<I>(command);
 

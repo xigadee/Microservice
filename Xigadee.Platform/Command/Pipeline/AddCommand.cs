@@ -29,13 +29,11 @@ namespace Xigadee
             , Action<C> assign = null
             , IPipelineChannelIncoming<P> channelIncoming = null
             , IPipelineChannelOutgoing<P> channelResponse = null
-            , IPipelineChannelIncoming<P> channelMasterJobNegotiationIncoming = null
-            , IPipelineChannelOutgoing<P> channelMasterJobNegotiationOutgoing = null
             )
             where P: IPipeline
             where C : ICommand, new()
         {
-            return pipeline.AddCommand(new C(), startupPriority, assign, channelIncoming, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
+            return pipeline.AddCommand(new C(), startupPriority, assign, channelIncoming, channelResponse);
         }
 
         public static P AddCommand<P,C>(this P pipeline
@@ -44,15 +42,13 @@ namespace Xigadee
             , Action<C> assign = null
             , IPipelineChannelIncoming<P> channelIncoming = null
             , IPipelineChannelOutgoing<P> channelResponse = null
-            , IPipelineChannelIncoming<P> channelMasterJobNegotiationIncoming = null
-            , IPipelineChannelOutgoing<P> channelMasterJobNegotiationOutgoing = null
             )
             where P : IPipeline
             where C : ICommand
         {
             var command = creator(pipeline.Configuration);
 
-            return pipeline.AddCommand(command, startupPriority, assign, channelIncoming, channelResponse, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
+            return pipeline.AddCommand(command, startupPriority, assign, channelIncoming, channelResponse);
         }
 
         public static P AddCommand<P,C>(this P pipeline
@@ -61,8 +57,6 @@ namespace Xigadee
             , Action<C> assign = null
             , IPipelineChannelIncoming<P> channelIncoming = null
             , IPipelineChannelOutgoing<P> channelResponse = null
-            , IPipelineChannelIncoming<P> channelMasterJobNegotiationIncoming = null
-            , IPipelineChannelOutgoing<P> channelMasterJobNegotiationOutgoing = null
             )
             where P : IPipeline
             where C : ICommand
@@ -74,12 +68,6 @@ namespace Xigadee
 
             if (channelResponse != null && command.ResponseChannelIdAutoSet)
                 command.ResponseChannelId = channelResponse.Channel.Id;
-
-            if (channelMasterJobNegotiationIncoming != null && command.MasterJobNegotiationChannelIdAutoSet)
-                command.MasterJobNegotiationChannelIdIncoming = channelMasterJobNegotiationIncoming.Channel.Id;
-
-            if (channelMasterJobNegotiationOutgoing != null && command.MasterJobNegotiationChannelIdAutoSet)
-                command.MasterJobNegotiationChannelIdOutgoing = channelMasterJobNegotiationOutgoing.Channel.Id;
 
             assign?.Invoke(command);
             pipeline.Service.Commands.Register(command);

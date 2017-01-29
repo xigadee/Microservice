@@ -78,6 +78,7 @@
     <Compile Include="Command\Exceptions\OutgoingRequestsNotEnabledException.cs" />
     <Compile Include="Command\Helper\CommandContext.cs" />
     <Compile Include="Command\Helper\CommandHolderException.cs" />
+    <Compile Include="Command\Pipeline\AssignMasterJob.cs" />
     <Compile Include="Communication\Base\IMessagingService.cs" />
     <Compile Include="Communication\Manual\Bridge\CommunicationBridge.cs" />
     <Compile Include="Communication\Manual\Bridge\Interfaces\CommunicationBridgeMode.cs" />

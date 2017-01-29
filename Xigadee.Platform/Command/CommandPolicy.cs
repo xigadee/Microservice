@@ -56,6 +56,15 @@ namespace Xigadee
         public bool MasterJobNegotiationChannelIdAutoSet { get; set; } = true;
 
         /// <summary>
+        /// This is the frequency that jobs wait between polling for status. The default is 20s.
+        /// </summary>
+        public TimeSpan? MasterJobPollFrequency { get; set; } = TimeSpan.FromSeconds(20);
+        /// <summary>
+        /// This is the initial wait after a master job starts that it waits to begin polling. The default is 5s.
+        /// </summary>
+        public TimeSpan? MasterJobPollInitialWait { get; set; } = TimeSpan.FromSeconds(5);
+
+        /// <summary>
         /// This is the command startup prioroty.
         /// </summary>
         public int? StartupPriority { get; set; }=0;

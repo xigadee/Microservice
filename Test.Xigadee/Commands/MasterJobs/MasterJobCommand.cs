@@ -7,10 +7,24 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    public class MasterJobCommand:CommandBase
+    public class TestMasterJobCommand:CommandBase
     {
-        public MasterJobCommand() : base(new CommandPolicy { MasterJobEnabled = true, MasterJobName = "freddy" })
+        public event EventHandler<string> OnGoingMaster;
+
+        public TestMasterJobCommand() : base(
+            new CommandPolicy
+            {
+                  MasterJobEnabled = true
+                , MasterJobName = "freddy"
+                , MasterJobPollFrequency = TimeSpan.FromSeconds(1)
+                , MasterJobPollInitialWait = TimeSpan.FromSeconds(1)
+            }
+            ){}
+
+
+        protected override void MasterJobStart()
         {
+            OnGoingMaster?.Invoke(this, this.OriginatorId.Name);
         }
     }
 }
