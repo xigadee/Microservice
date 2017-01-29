@@ -35,10 +35,6 @@ namespace Xigadee
         /// <summary>
         /// The message has just been transmitted to an external source.
         /// </summary>
-        Outgoing = 2,
-        /// <summary>
-        /// This channel supports incoming and outgoing flow.
-        /// </summary>
-        Bidirectional = 3
+        Outgoing = 2
     }
 }

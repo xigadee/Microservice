@@ -29,8 +29,6 @@ namespace Xigadee
             , int startupPriority = 100
             , Action<C> assign = null
             , IPipelineChannelOutgoing<IPipeline> channelResponse = null
-            //, IPipelineChannelIncoming<P> channelMasterJobNegotiationIncoming = null
-            //, IPipelineChannelOutgoing<P> channelMasterJobNegotiationOutgoing = null
             )
             where E: IPipelineChannelIncoming<IPipeline>
             where C : ICommand
@@ -45,8 +43,6 @@ namespace Xigadee
             , int startupPriority = 100
             , Action<C> assign = null
             , IPipelineChannelOutgoing<IPipeline> channelResponse = null
-            //, IPipelineChannelIncoming<P> channelMasterJobNegotiationIncoming = null
-            //, IPipelineChannelOutgoing<P> channelMasterJobNegotiationOutgoing = null
             )
             where E : IPipelineChannelIncoming<IPipeline>
             //where P : IPipeline

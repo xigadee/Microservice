@@ -29,12 +29,7 @@ namespace Xigadee
             , bool setFromChannelProperties = true)
             where C: IPipelineChannelOutgoing<IPipeline>
         {
-            Channel channel;
-
-            if (cpipe is IPipelineChannelBroadcast)
-                channel = ((IPipelineChannelBroadcast)cpipe).ChannelSender;
-            else
-                channel = cpipe.Channel;
+            Channel channel = cpipe.ChannelResolve(ChannelDirection.Outgoing);
 
             if (channel.InternalOnly)
                 throw new ChannelInternalOnlyException(channel.Id, channel.Direction);

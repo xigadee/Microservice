@@ -45,9 +45,5 @@ namespace Xigadee
             return pipe.ToPipeline().Configuration;
         }
 
-        public static Channel ToChannel(this IPipelineChannel<IPipeline> cpipe)
-        {
-            return cpipe.Channel;
-        }
     }
 }

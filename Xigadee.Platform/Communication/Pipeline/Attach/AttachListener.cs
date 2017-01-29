@@ -24,6 +24,30 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
+        public static Channel ChannelResolve(this IPipelineChannel cpipe, ChannelDirection direction, bool throwIfChannelIsNull = true)
+        {
+            Channel channel = null;
+
+            if (cpipe is IPipelineChannelBroadcast)
+                switch (direction)
+                {
+                    case ChannelDirection.Incoming:
+                        channel = ((IPipelineChannelBroadcast)cpipe).ChannelListener;
+                        break;
+                    case ChannelDirection.Outgoing:
+                        channel = ((IPipelineChannelBroadcast)cpipe).ChannelSender;
+                        break;
+                    default:
+                        throw new NotSupportedException($"ChannelDirection {direction} not supported in {nameof(CorePipelineExtensions)}/{nameof(ChannelResolve)}");
+                }
+            else
+                channel = cpipe.Channel;
+
+            if (channel == null)
+                throw new ArgumentNullException($"The pipe channel is null -> {direction}");
+
+            return channel;
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -37,15 +61,7 @@ namespace Xigadee
             )
             where C: IPipelineChannelIncoming<IPipeline>
         {
-            Channel channel;
-
-            if (cpipe is IPipelineChannelBroadcast)
-                channel = ((IPipelineChannelBroadcast)cpipe).ChannelListener;
-            else
-                channel = cpipe.Channel;
-
-            if (channel == null)
-                throw new ArgumentNullException("The pipe channel is null.");
+            Channel channel = cpipe.ChannelResolve(ChannelDirection.Incoming);
 
             if (channel.InternalOnly)
                 throw new ChannelInternalOnlyException(channel.Id, channel.Direction);

@@ -37,8 +37,8 @@ namespace Xigadee
         {
             if (cpipe is IPipelineChannelBroadcast)
             {
-                ((IPipelineChannelBroadcast)cpipe).ChannelListener.RedirectAdd(rewriteRule);
-                ((IPipelineChannelBroadcast)cpipe).ChannelSender.RedirectAdd(rewriteRule);
+                cpipe.ChannelResolve(ChannelDirection.Incoming).RedirectAdd(rewriteRule);
+                cpipe.ChannelResolve(ChannelDirection.Outgoing).RedirectAdd(rewriteRule);
             }
             else
                 cpipe.Channel.RedirectAdd(rewriteRule);
@@ -49,7 +49,7 @@ namespace Xigadee
         /// <summary>
         /// This method attaches a rewrite rule to the channel pipeline.
         /// </summary>
-        /// <typeparam name="P">The channel pipeline type.</typeparam>
+        /// <typeparam name="C">The channel pipeline type.</typeparam>
         /// <param name="cpipe">The incoming pipeline.</param>
         /// <param name="canRedirect">The match function.</param>
         /// <param name="redirect">The redirect action.</param>
@@ -67,7 +67,7 @@ namespace Xigadee
         /// <summary>
         /// This method attaches a rewrite rule to the channel pipeline.
         /// </summary>
-        /// <typeparam name="P">The channel pipeline type.</typeparam>
+        /// <typeparam name="C">The channel pipeline type.</typeparam>
         /// <param name="cpipe">The incoming pipeline.</param>
         /// <param name="matchHeader">The match header.</param>
         /// <param name="redirect">The redirect action.</param>
@@ -90,7 +90,7 @@ namespace Xigadee
         /// <summary>
         /// This method attaches a rewrite rule to the channel pipeline.
         /// </summary>
-        /// <typeparam name="P">The channel pipeline type.</typeparam>
+        /// <typeparam name="C">The channel pipeline type.</typeparam>
         /// <param name="cpipe">The incoming pipeline.</param>
         /// <param name="matchHeader">The match header.</param>
         /// <param name="changeHeader">The redirect action.</param>
@@ -118,7 +118,7 @@ namespace Xigadee
         /// <summary>
         /// This method attaches a rewrite rule to the channel pipeline.
         /// </summary>
-        /// <typeparam name="P">The channel pipeline type.</typeparam>
+        /// <typeparam name="C">The channel pipeline type.</typeparam>
         /// <param name="cpipe">The incoming pipeline.</param>
         /// <param name="canRedirect">The match function.</param>
         /// <param name="changeHeader">The redirect header.</param>

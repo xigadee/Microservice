@@ -14,7 +14,6 @@ namespace Test.Xigadee
         {
             TestsAddRemove(new Channel("Hello", ChannelDirection.Incoming));
             TestsAddRemove(new Channel("Hello", ChannelDirection.Outgoing));
-            TestsAddRemove(new Channel("Hello", ChannelDirection.Bidirectional));
         }
 
         private void TestsAddRemove(Channel c1)
@@ -41,7 +40,6 @@ namespace Test.Xigadee
         {
             TestChannelAutocreateSuccess(ChannelDirection.Incoming);
             TestChannelAutocreateSuccess(ChannelDirection.Outgoing);
-            TestChannelAutocreateSuccess(ChannelDirection.Bidirectional);
         }
 
         private void TestChannelAutocreateSuccess(ChannelDirection direction)
@@ -66,7 +64,6 @@ namespace Test.Xigadee
         {
             TestChannelAutocreateFail(ChannelDirection.Incoming);
             TestChannelAutocreateFail(ChannelDirection.Outgoing);
-            TestChannelAutocreateFail(ChannelDirection.Bidirectional);
         }
 
         private void TestChannelAutocreateFail(ChannelDirection direction)

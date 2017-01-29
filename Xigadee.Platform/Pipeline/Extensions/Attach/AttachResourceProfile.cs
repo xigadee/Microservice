@@ -31,7 +31,7 @@ namespace Xigadee
             where C: IPipelineChannelIncoming<IPipeline>
         {
             if (profile == null)
-                throw new ArgumentNullException("profile cannot be null");
+                throw new ArgumentNullException($"{nameof(AttachResourceProfile)}: profile cannot be null");
 
             cpipe.AttachResourceProfile((c) => profile, action);
 
@@ -45,13 +45,13 @@ namespace Xigadee
             where C : IPipelineChannelIncoming<IPipeline>
         {
             if (creator == null)
-                throw new ArgumentNullException("creator cannot be null");
+                throw new ArgumentNullException($"{nameof(AttachResourceProfile)}: creator cannot be null");
 
             var profile = creator(cpipe.Pipeline.Configuration);
 
             action?.Invoke(profile);
 
-            cpipe.Channel.ResourceProfiles.Add(profile);
+            cpipe.ChannelResolve(ChannelDirection.Incoming).ResourceProfiles.Add(profile);
 
             return cpipe;
         }
@@ -61,9 +61,9 @@ namespace Xigadee
             where C : IPipelineChannelIncoming<IPipeline>
         {
             if (profiles == null)
-                throw new ArgumentNullException("profiles cannot be null");
+                throw new ArgumentNullException($"{nameof(AttachResourceProfile)}: profiles cannot be null");
 
-            profiles.ForEach((p) => cpipe.Channel.ResourceProfiles.Add(p));
+            profiles.ForEach((p) => cpipe.ChannelResolve(ChannelDirection.Incoming).ResourceProfiles.Add(p));
 
             return cpipe;
         }

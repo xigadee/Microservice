@@ -35,13 +35,15 @@ namespace Xigadee
         public static C AttachTransportPayloadVerification<C>(this C cpipe, AuthenticationHandlerId handler)
             where C : IPipelineChannelIncoming<IPipeline>
         {
+            Channel channel = cpipe.ChannelResolve(ChannelDirection.Incoming);
+
             if (!cpipe.Pipeline.Service.Security.HasAuthenticationHandler(handler.Id))
-                throw new AuthenticationHandlerNotResolvedException(cpipe.Channel.Id, handler.Id);
+                throw new AuthenticationHandlerNotResolvedException(channel.Id, handler.Id);
 
-            if (cpipe.Channel.Authentication != null)
-                throw new ChannelAuthenticationHandlerAlreadySetException(cpipe.Channel.Id);
+            if (channel.Authentication != null)
+                throw new ChannelAuthenticationHandlerAlreadySetException(channel.Id);
 
-            cpipe.Channel.Authentication = handler;
+            channel.Authentication = handler;
 
             return cpipe;
         }
