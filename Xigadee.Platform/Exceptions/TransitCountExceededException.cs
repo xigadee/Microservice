@@ -25,7 +25,7 @@ namespace Xigadee
     /// <summary>
     /// This is the base exception class for the CSV enumerator.
     /// </summary>
-    public class TransitCountExceededException : TransmissionPayloadException
+    public class TransitCountExceededException : DispatcherException
     {
         /// <summary>
         /// Initializes a new instance of the TransitCountExceededException class.

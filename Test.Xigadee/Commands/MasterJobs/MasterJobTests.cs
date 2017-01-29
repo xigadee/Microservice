@@ -12,7 +12,7 @@ namespace Test.Xigadee
     public class MasterJobTests
     {
         [TestMethod]
-        public void Startup()
+        public void MasterJobNegotiation()
         {
             ManualResetEvent mre = new ManualResetEvent(false);
             var services = new Dictionary<string, MicroservicePipeline>();
@@ -140,7 +140,6 @@ namespace Test.Xigadee
             }
             catch (Exception ex)
             {
-
                 throw;
             }
         }

@@ -25,7 +25,7 @@ namespace Xigadee
     /// <summary>
     /// This is the base exception class for the DispatcherException
     /// </summary>
-    public class SenderNotResolvedException : TransmissionPayloadException
+    public class SenderNotResolvedException : DispatcherException
     {
         /// <summary>
         /// Initializes a new instance of the DispatcherException class.

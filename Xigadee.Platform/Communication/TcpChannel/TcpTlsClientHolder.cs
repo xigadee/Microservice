@@ -24,10 +24,7 @@ namespace Xigadee
 {
     public class TcpTlsClientHolder: ClientHolder<TcpConnection, TcpMessage>
     {
-        public override void MessageComplete(TransmissionPayload payload)
-        {
-            throw new NotImplementedException();
-        }
+
 
         public override Task<List<TransmissionPayload>> MessagesPull(int? count, int? wait, string mappingChannel = null)
         {

@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Runtime.Caching;
+using System.Security.Claims;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -56,16 +57,32 @@ namespace Xigadee
             public int TimerStart { get; }
 
             /// <summary>
+            /// This property determines if the incoming request was succesful.
+            /// </summary>
+            /// <returns></returns>
+            public bool IsSuccess()
+            {
+                return TransmitSuccess && ExecuteSuccess;
+            }
+            /// <summary>
             /// This signals the payload as complete.
             /// </summary>
             public void Signal()
             {
                 //Signal to the underlying listener that the message can be released.
-                if (Payload.DispatcherCanSignal)
-                    Payload.Signal(IsSuccess);
+                if (Payload.ServiceCanSignalToFabric)
+                    Payload.Signal(TransmitSuccess && ExecuteSuccess);
             }
 
-            public bool IsSuccess { get; set; } = true;
+            /// <summary>
+            /// Set the transmission success. This is true by default. Do not change it.
+            /// </summary>
+            public bool TransmitSuccess { get; set; } = true;
+
+            /// <summary>
+            /// Set the execution success. This is true by default. Do not change it.
+            /// </summary>
+            public bool ExecuteSuccess { get; set; } = true;
 
             /// <summary>
             /// This is the incoming payload that needs to be processed.
@@ -77,6 +94,10 @@ namespace Xigadee
             /// </summary>
             public List<TransmissionPayload> Responses { get; } = new List<TransmissionPayload>();
 
+            /// <summary>
+            /// This method validates the incoming payload and ensures that it is not null and that a
+            /// message is available.
+            /// </summary>
             public void IncomingValidate()
             {
                 Payload.Cancel.ThrowIfCancellationRequested();
@@ -85,42 +106,45 @@ namespace Xigadee
                 if (Payload == null || Payload.Message == null)
                     throw new ArgumentNullException("Payload or Message not present");
             }
-
+            /// <summary>
+            /// This is the last exception generated during the execution
+            /// </summary>
+            public Exception Ex { get; set; }
+            /// <summary>
+            /// This is set to true if the request generated an exception during exception.
+            /// </summary>
+            public bool IsFaulted { get { return Ex != null; } }
             /// <summary>
             /// This provides custom routing instructions to the dispatcher.
             /// </summary>
             public ProcessOptions CurrentOptions { get; set; }
             /// <summary>
-            /// This boolean property indicates whether the payload was resolved internally.
-            /// </summary>
-            public bool ResolvedInternal { get; set; }
-            /// <summary>
             /// This is the maximum number of attempts permitted.
             /// </summary>
             public int MaxTransitCount { get; }
-
+            /// <summary>
+            /// A boolean property that specifies whether the payload can only be processed externally.
+            /// </summary>
             public bool ExternalOnly => (Payload.Options & ProcessOptions.RouteInternal) == 0;
-
+            /// <summary>
+            /// A boolean property that specifies if a payload can only be processed internally.
+            /// </summary>
             public bool InternalOnly => (Payload.Options & ProcessOptions.RouteExternal) == 0;
 
             #region IncrementAndVerifyDispatcherTransitCount(TransmissionPayload request.Payload)
             /// <summary>
             /// This method checks that the incoming message has not exceeded the maximum number of hops.
             /// </summary>
-            /// <param name="payload">The requestPayload to check.</param>
             public void IncrementAndVerifyDispatcherTransitCount()
             {
                 //Increase the Dispatcher transit count.
                 Payload.Message.DispatcherTransitCount = Payload.Message.DispatcherTransitCount + 1;
                 //Have we exceeded the transit count for the message.
                 if (Payload.Message.DispatcherTransitCount > MaxTransitCount)
-                {
-                    //this is not supported message - the message handler will be null if previously processed.
                     throw new TransitCountExceededException(Payload);
-                }
             }
             #endregion
-        } 
+        }
         #endregion
 
         #region -->Execute(TransmissionPayload requestPayload)
@@ -151,70 +175,24 @@ namespace Xigadee
                 //Check that we have not exceeded the maximum transit count.
                 request.IncrementAndVerifyDispatcherTransitCount();
 
-                //Shortcut for external messages
+                //Shortcut for external messages - send straight out
                 if (request.ExternalOnly)
+                    await TransmitPayload(request.Payload, request);
+                else
                 {
-                    request.IsSuccess = await Send(request.Payload);
-                    return;
+                    //Execute the message against the internal commands
+                    await ExecuteCommands(request);
+
+                    //OK, do we have any response from the commands to send on, both internal and external messages?
+                    if (request.Responses.Count > 0)
+                        await TransmitResponses(request);
                 }
-
-                //Execute the message against the internal Microservice commands.
-                request.ResolvedInternal = await mCommands.Execute(request.Payload, request.Responses);
-
-                //Switch the incoming message to the outgoing collection to be processed
-                //by the sender as it has not been processed internally and it is not marked
-                //as internal only.
-                if (!request.ResolvedInternal && request.InternalOnly)
-                {
-                    //OK, we have an problem. We log this as an error and get out of here
-                    mDataCollection.DispatcherPayloadUnresolved(request.Payload, DispatcherRequestUnresolvedReason.MessageHandler);
-
-                    mEventsWrapper.OnProcessRequestUnresolved(request.Payload, DispatcherRequestUnresolvedReason.MessageHandler);
-
-                    request.IsSuccess = Policy.Microservice.DispatcherUnhandledMode == DispatcherUnhandledMessageAction.Ignore;
-
-                    return;
-                }
-                else if (!request.ResolvedInternal)
-                {
-                    //OK, we are going to send this to the senders, first make sure that this doesn't route back in.
-                    request.CurrentOptions = ProcessOptions.RouteExternal;
-                    //Switch the incoming message to the response payload so that they are picked up by the senders.
-                    request.Responses.Add(request.Payload);
-                }
-
-                //OK, do we have anything to send on, both internal and external messages?
-                if (request.Responses.Count > 0)
-                {
-                    //Get the payloads that should be processed internally.
-                    var internalPayload = request.Responses
-                        .Where((p) => ((request.CurrentOptions & ProcessOptions.RouteInternal) > 0) && mCommands.Resolve(p))
-                        .ToList();
-
-                    //OK, send the payloads off to the Dispatcher for processing.
-                    internalPayload.ForEach((p) =>
-                    {
-                        //Mark internal only to stop any looping. 
-                        //We can do this as we have checked with the command handler that they will be processed
-                        p.Options = ProcessOptions.RouteInternal;
-                        mTaskManager.ExecuteOrEnqueue(p, "Dispatcher");
-                    });
-
-                    //Extract the payloads that have been processed internally so that we only have the external payloads
-                    var externalPayload = request.Responses.Except(internalPayload).ToList();
-
-                    //Send the external payload to their specific destination.
-                    await Task.WhenAll(externalPayload.Select(async (p) => request.IsSuccess &= await Send(p)));
-                }
-
-                //Set the message to success
-                request.IsSuccess &= true;
             }
-            catch (TransmissionPayloadException pyex)
+            catch (DispatcherException dex)
             {
-                mDataCollection.DispatcherPayloadException(request.Payload, pyex);
+                mDataCollection.DispatcherPayloadException(dex.Payload, dex);
 
-                mEventsWrapper.OnProcessRequestError(pyex.Payload, pyex);     
+                mEventsWrapper.OnProcessRequestError(dex.Payload, dex);
             }
             catch (Exception ex)
             {
@@ -224,25 +202,129 @@ namespace Xigadee
             }
             finally
             {
-                // Restore the existing principal
-                Thread.CurrentPrincipal = null;
-
                 //Signal to the underlying listener that the message can be released.
                 request.Signal();
 
                 int delta = StatisticsInternal.ActiveDecrement(request.TimerStart);
 
                 //Log the telemtry for the specific message channelId.
-                mDataCollection.DispatcherPayloadComplete(request.Payload, delta, request.IsSuccess);
+                mDataCollection.DispatcherPayloadComplete(request.Payload, delta, request.IsSuccess());
 
-                if (!request.IsSuccess)
+                if (!request.IsSuccess())
                     StatisticsInternal.ErrorIncrement();
 
                 mEventsWrapper.OnExecuteComplete(request);
+
+                //Set the thread principal to null before leaving.
+                Thread.CurrentPrincipal = null;
             }
         }
         #endregion
+        #region ExecuteCommands(TransmissionPayloadState request)
+        /// <summary>
+        /// This method executes the request against the command collection.
+        /// </summary>
+        /// <param name="request">The request state.</param>
+        private async Task ExecuteCommands(TransmissionPayloadState request)
+        {
+            try
+            {
+                request.ExecuteSuccess = await mCommands.Execute(request.Payload, request.Responses);
+            }
+            catch (Exception ex)
+            {
+                request.Ex = ex;
+            }
 
+            //All good.
+            if (request.ExecuteSuccess)
+                return;
+
+            //Switch the incoming message to the outgoing collection to be processed
+            //by the sender as it has not been processed internally. This will happen if it 
+            //is not marked as internal only and cannot be resolved locally.
+            if (!request.InternalOnly)
+            {
+                //OK, we are going to send this to the senders, first make sure that this doesn't route back in.
+                request.CurrentOptions = ProcessOptions.RouteExternal;
+                //Switch the incoming message to the response payload so that they are picked up by the senders.
+                request.Responses.Add(request.Payload);
+
+                return;
+            }
+
+            //OK, we have an problem. We log this as an error and get out of here.
+            mDataCollection.DispatcherPayloadUnresolved(request.Payload, DispatcherRequestUnresolvedReason.MessageHandler);
+
+            //Raise an event for the unresolved wrapper
+            mEventsWrapper.OnProcessRequestUnresolved(request.Payload, DispatcherRequestUnresolvedReason.MessageHandler);
+
+            switch (Policy.Microservice.DispatcherUnhandledMode)
+            {
+                case DispatcherUnhandledMessageAction.Ignore:
+                    //request.IsSuccess = !request.IsFaulted;
+                    break;
+                case DispatcherUnhandledMessageAction.AttemptResponseFailMessage:
+                    //request.IsSuccess = true;
+                    break;
+                case DispatcherUnhandledMessageAction.Exception:
+                    //request.IsSuccess = true;
+                    break;
+            }
+        }
+        #endregion
+        #region TransmitResponses(TransmissionPayloadState request)
+        /// <summary>
+        /// This method executes the request against the command collection.
+        /// </summary>
+        /// <param name="request">The request state.</param>
+        private async Task TransmitResponses(TransmissionPayloadState request)
+        {
+            //Set the follow on security.
+            request.Responses
+                .Where((p) => p.SecurityPrincipal == null)
+                .ForEach((p) => p.SecurityPrincipal = Thread.CurrentPrincipal as ClaimsPrincipal);
+
+            //Get the payloads that can be processed internally.
+            var internalPayload = request.Responses
+                .Where((p) => ((request.CurrentOptions & ProcessOptions.RouteInternal) > 0) && mCommands.Resolve(p))
+                .ToList();
+
+            //OK, send the payloads off to the Task Manager for processing.
+            internalPayload.ForEach((p) =>
+            {
+                //Mark internal only to stop any looping. 
+                //We can do this as we have checked with the command handler that they will be processed
+                p.Options = ProcessOptions.RouteInternal;
+                mTaskManager.ExecuteOrEnqueue(p, "Dispatcher");
+            });
+
+            //Extract the payloads that have been processed internally so that we only have the external payloads left
+            var externalPayload = request.Responses.Except(internalPayload).ToList();
+
+            //Send the external payload to their specific destination in paralle;.
+            await Task.WhenAll(externalPayload.Select(async (p) => await TransmitPayload(p, request)));
+        }
+        #endregion
+        #region TransmitPayload(TransmissionPayload payload, TransmissionPayloadState request)
+        /// <summary>
+        /// This method transits a payload and captures and exceptions.
+        /// </summary>
+        /// <param name="payload">The payload to process.</param>
+        /// <param name="request">The request state.</param>
+        private async Task TransmitPayload(TransmissionPayload payload, TransmissionPayloadState request)
+        {
+            try
+            {
+                request.TransmitSuccess &= await Send(payload);
+            }
+            catch (Exception ex)
+            {
+                request.Ex = ex;
+                request.TransmitSuccess = false;
+            }
+        } 
+        #endregion
         #region Send(TransmissionPayload Payload)
         /// <summary>
         /// This method passes the payload to the communication container for transmission. This can be an incoming payload or

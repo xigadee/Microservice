@@ -82,11 +82,6 @@ namespace Xigadee
         /// to a new incoming channel on the same topic.</param>
         /// <returns>Returns a list of transmission for processing.</returns>
         public abstract Task<List<TransmissionPayload>> MessagesPull(int? count, int? wait, string mappingChannel = null);
-        /// <summary>
-        /// This override is used to mark a message as completed.
-        /// </summary>
-        /// <param name="payload"></param>
-        public abstract void MessageComplete(TransmissionPayload payload);
 
         /// <summary>
         /// This boolean property idemtifies whether the client is active and should be polled
@@ -297,6 +292,7 @@ namespace Xigadee
                 MaxProcessingTime = MessageMaxProcessingTime,
                 Options = ProcessOptions.RouteInternal,
                 Source = Name,
+                
             };
            
             return payload;

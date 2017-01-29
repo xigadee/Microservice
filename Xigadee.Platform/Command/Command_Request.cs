@@ -64,6 +64,7 @@ namespace Xigadee
             catch (Exception)
             {
                 StatisticsInternal.ErrorIncrement();
+                //throw any errors back out to the dispatcher.
                 throw;
             }
             finally

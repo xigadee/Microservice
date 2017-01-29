@@ -30,10 +30,6 @@ namespace Xigadee
             mPending.Enqueue(payload);
         }
 
-        public override void MessageComplete(TransmissionPayload payload)
-        {
-        }
-
         public override async Task<List<TransmissionPayload>> MessagesPull(int? count, int? wait, string mappingChannel = null)
         {
             var list = new List<TransmissionPayload>();

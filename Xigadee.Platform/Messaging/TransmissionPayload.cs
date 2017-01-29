@@ -188,16 +188,16 @@ namespace Xigadee
         /// <summary>
         /// This readonly property identifies whether the message can be signalled complete.
         /// </summary>
-        public bool MessageCanSignal { get { return mListenerSignalRelease != null; } } 
+        public bool MessageCanSignal { get { return mListenerSignalRelease != null; } }
         #endregion
 
-        #region DispatcherCanSignal
+        #region ServiceCanSignalToFabric
         /// <summary>
         /// This property signals to the Dispatcher that it can signal to the underlying listener the message
         /// has completed. You may want to turn off this default action in specific scenarios. The default action
         /// is to signal (true).
         /// </summary>
-        public bool DispatcherCanSignal { get; set; } = true;
+        public bool ServiceCanSignalToFabric { get; set; } = true;
         #endregion
 
         #region SignalSuccess()
@@ -228,7 +228,7 @@ namespace Xigadee
         {
             var release = Interlocked.Exchange<Action<bool, Guid>>(ref mListenerSignalRelease, null);
 
-            if (release != null && DispatcherCanSignal)
+            if (release != null && ServiceCanSignalToFabric)
                 try
                 {
                     release(success, Id);

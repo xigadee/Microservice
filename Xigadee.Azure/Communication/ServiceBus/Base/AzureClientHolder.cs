@@ -102,19 +102,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region MessageComplete(TransmissionPayload payload)
-        /// <summary>
-        /// This method is used to signal that a message has completed to the underlying fabric.
-        /// </summary>
-        /// <param name="payload">The payload to singnal completion.</param>
-        public override void MessageComplete(TransmissionPayload payload)
-        {
-            // Remove message from queue if the message cannot be signalled.
-            if (!payload.MessageCanSignal)
-                payload.SignalSuccess();
-        } 
-        #endregion
-
         #region MessagesPull(int? count, int? wait)
         /// <summary>
         /// This method pulls a set of messages from the fabric and unpacks them in to TransmissionPayload messages.
