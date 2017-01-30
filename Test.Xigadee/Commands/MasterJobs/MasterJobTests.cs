@@ -9,6 +9,7 @@ using Xigadee;
 namespace Test.Xigadee
 {
     [TestClass]
+    [Ignore]
     public class MasterJobTests
     {
         [TestMethod]
