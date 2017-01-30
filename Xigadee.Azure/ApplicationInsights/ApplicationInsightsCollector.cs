@@ -357,6 +357,9 @@ namespace Xigadee
             if (!string.IsNullOrEmpty(correlationClaim?.Value))
                 telemetry.Context.Operation.Id = correlationClaim.Value;
 
+            if (!string.IsNullOrEmpty(eventHolder.Claims?.Identity?.Name))
+                telemetry.Context.User.AuthenticatedUserId = eventHolder.Claims?.Identity?.Name;
+
             return telemetry;
         }
 
