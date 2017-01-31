@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,17 +29,17 @@ namespace Xigadee
     public class WebApiCorrelationIdFilter: ActionFilterAttribute
     {
         protected readonly string mCorrelationIdKeyName;
+        private readonly bool mAddToClaimsPrincipal;
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="credentials"></param>
-        /// <param name="containerName"></param>
-        /// <param name="correlationIdKeyName"></param>
-        /// <param name="level"></param>
-        public WebApiCorrelationIdFilter(string correlationIdKeyName = "X-CorrelationId")
+        /// <param name="correlationIdKeyName">Correlation Id key in the request/response header</param>
+        /// <param name="addToClaimsPrincipal">Add the correlation key to the claims principal</param>
+        public WebApiCorrelationIdFilter(string correlationIdKeyName = "X-CorrelationId", bool addToClaimsPrincipal = true)
         {
             mCorrelationIdKeyName = correlationIdKeyName;
+            mAddToClaimsPrincipal = addToClaimsPrincipal;
         }
 
         #region CorrelationIdGet()
@@ -60,13 +61,23 @@ namespace Xigadee
                 IEnumerable<string> correlationValues;
                 var correlationId = CorrelationIdGet();
                 if (!request.Headers.TryGetValues(mCorrelationIdKeyName, out correlationValues))
+                {
                     actionContext.Request.Headers.Add(mCorrelationIdKeyName, correlationId);
+                }
+                else
+                {
+                    correlationId = correlationValues.FirstOrDefault() ?? correlationId;
+                }
 
-                IRequestOptions apiRequest = actionContext.ActionArguments.Values.FirstOrDefault(
-                        aa => aa != null && aa is IRequestOptions) as IRequestOptions;
+                IRequestOptions apiRequest = actionContext.ActionArguments.Values.OfType<IRequestOptions>().FirstOrDefault();
 
                 if (apiRequest?.Options != null)
                     apiRequest.Options.CorrelationId = correlationId;
+
+                // If 
+                var claimsIdentity = actionContext.RequestContext?.Principal?.Identity as ClaimsIdentity;
+                if (mAddToClaimsPrincipal && claimsIdentity !=null && !claimsIdentity.HasClaim(c => c.Type == JwtTokenAuthenticationHandler.ClaimProcessCorrelationKey))
+                    claimsIdentity.AddClaim(new Claim(JwtTokenAuthenticationHandler.ClaimProcessCorrelationKey, correlationId));
             }
             catch (Exception)
             {

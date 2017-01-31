@@ -25,10 +25,10 @@ namespace Xigadee
 {
     public static partial class WebApiExtensionMethods
     {
-        public static P ApiAddCorrelationIdFilter<P>(this P webpipe)
+        public static P ApiAddCorrelationIdFilter<P>(this P webpipe, string correlationIdKey = "X-CorrelationId", bool addToClaimsPrincipal = true)
             where P:IPipelineWebApi
         {
-            var filter = new WebApiCorrelationIdFilter();
+            var filter = new WebApiCorrelationIdFilter(correlationIdKey, addToClaimsPrincipal);
 
             webpipe.HttpConfig.Filters.Add(filter);
 
