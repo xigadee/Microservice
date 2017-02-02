@@ -460,7 +460,7 @@ namespace Xigadee
 
                 holder.Tcs.SetCanceled();
                 //If there is not a match key then quit.
-                Collector?.LogMessage(LoggingLevel.Warning, $"OutgoingRequestTimeout - id={id} has timeout.", "RqRsMismatch");
+                Collector?.LogMessage(LoggingLevel.Warning, $"OutgoingRequestTimeout - id={id} has timeout.", "RqRsTimeout");
 
                 //Raise the reference to the time out
                 OnOutgoingRequestTimeout?.Invoke(this, holder);

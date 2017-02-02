@@ -40,33 +40,24 @@ namespace Xigadee
         public static string StatisticsMakeId(EventHolder ev, MicroserviceId msId)
         {
             var e = ev.Data as MicroserviceStatistics;
-
-            string Id = $"{e.StorageId}.json";
-            return Id;
+            return $"{e.StorageId}.json";
         }
         public static string StatisticsMakeFolder(EventHolder ev, MicroserviceId msId)
         {
             var e = ev.Data as MicroserviceStatistics;
-
-            string Directory = string.Format("{0}/{1:yyyy-MM-dd}/{1:HH}", msId.Name, DateTime.UtcNow);
-
-            return  Directory;
+            return string.Format("{0}/{1:yyyy-MM-dd}/{1:HH}", msId.Name, DateTime.UtcNow);
         }
         //Logger
         public static string LoggerMakeId(EventHolder ev, MicroserviceId msId)
         {
-            var e = ev.Data as LogEvent;
-            
-            string Id = $"{e.TraceId}.json";
-
-            return Id;
+            var e = ev.Data as LogEvent;           
+            return $"{e.TraceId}.json";
         }
         public static string LoggerMakeFolder(EventHolder ev, MicroserviceId msId)
         {
             var e = ev.Data as LogEvent;
-
             string level = Enum.GetName(typeof(LoggingLevel), e.Level);
-            string Directory = string.Format("{0}/{1}/{2:yyyy-MM-dd}/{2:HH}", msId.Name, level, DateTime.UtcNow);
+            return string.Format("{0}/{1}/{2:yyyy-MM-dd}/{2:HH}", msId.Name, level, DateTime.UtcNow);
 
             //if (e is ILogStoreName)
             //    return ((ILogStoreName)logEvent).StorageId;
@@ -76,24 +67,18 @@ namespace Xigadee
             //    return string.Format("{0}_{1}_{2}", logEvent.GetType().Name, new string(logEvent.Category.Where(char.IsLetterOrDigit).ToArray()), Guid.NewGuid().ToString("N"));
 
             //return string.Format("{0}_{1}", logEvent.GetType().Name, Guid.NewGuid().ToString("N"));
-
-            return Directory;
         }
         //Event Source
         public static string EventSourceMakeId(EventHolder ev, MicroserviceId msId)
         {
-            var e = ev.Data as EventSourceEntry;
-
-            string Id = string.Format("{0}.json", string.Join("_", e.Key.Split(Path.GetInvalidFileNameChars())));
-            return Id;
+            var e = ev.Data as EventSourceEntryBase;
+            return $"{string.Join("_", e.Key.Split(Path.GetInvalidFileNameChars()))}.json";
         }
+
         public static string EventSourceMakeFolder(EventHolder ev, MicroserviceId msId)
         {
-            var e = ev.Data as EventSourceEntry;
-
-            string Directory = string.Format("{0}/{1:yyyy-MM-dd}/{2}", msId.Name, e.UTCTimeStamp, e.EntityType);
-
-            return Directory;
+            var e = ev.Data as EventSourceEntryBase;
+            return $"{msId.Name}/{e.UTCTimeStamp:yyyy-MM-dd}/{e.EntityType}";
         }
     }
 }
