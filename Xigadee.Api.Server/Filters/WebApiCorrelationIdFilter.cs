@@ -74,7 +74,7 @@ namespace Xigadee
                 if (apiRequest?.Options != null)
                     apiRequest.Options.CorrelationId = correlationId;
 
-                // If 
+                // If we have a claims identity then add the correlation id to it (if component configured to do it)
                 var claimsIdentity = actionContext.RequestContext?.Principal?.Identity as ClaimsIdentity;
                 if (mAddToClaimsPrincipal && claimsIdentity !=null && !claimsIdentity.HasClaim(c => c.Type == JwtTokenAuthenticationHandler.ClaimProcessCorrelationKey))
                     claimsIdentity.AddClaim(new Claim(JwtTokenAuthenticationHandler.ClaimProcessCorrelationKey, correlationId));
