@@ -15,6 +15,7 @@
 #endregion
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Web.Http.Controllers;
@@ -28,22 +29,24 @@ namespace Xigadee
 {
     public class JwtAuthenticationFilter: IAuthenticationFilter
     {
-        private IJwtTokenVerificationPolicy mPolicy;
+        private readonly IJwtTokenVerificationPolicy mPolicy;
 
         public JwtAuthenticationFilter(IJwtTokenVerificationPolicy policy)
         {
             mPolicy = policy;
         }
 
-        public bool AllowMultiple
-        {
-            get { return false; }
-        }
+        public bool AllowMultiple => false;
 
-        public async Task AuthenticateAsync(HttpAuthenticationContext context, CancellationToken cancellationToken)
+        public Task AuthenticateAsync(HttpAuthenticationContext context, CancellationToken cancellationToken)
         {
             try
             {
+                // Verify that the action / controller isn't set to allow anonymous access
+                if (context.ActionContext.ActionDescriptor.GetCustomAttributes<AllowAnonymousAttribute>().Any() ||
+                    context.ActionContext.ActionDescriptor.ControllerDescriptor.GetCustomAttributes<AllowAnonymousAttribute>().Any())
+                    return Task.CompletedTask;
+
                 // Look for credentials in the request.
                 AuthenticationHeaderValue auth = context.Request.Headers.Authorization;
 
@@ -53,33 +56,30 @@ namespace Xigadee
                     if (mPolicy.DenyByDefault)
                         context.ErrorResult = new StatusResult(HttpStatusCode.Forbidden, context.Request);
 
-                    return;
+                    return Task.CompletedTask;
                 }
 
                 var token = mPolicy.Validate(auth.Parameter);
 
                 context.Principal = new MicroserviceSecurityPrincipal(token);
 
-                return;
+                return Task.CompletedTask;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
+                // Ignore exceptions
             }
 
             //On error, set to unauthorized.
             context.ErrorResult = new StatusResult(HttpStatusCode.Forbidden, context.Request);
-
-            return;
+            return Task.CompletedTask;
         }
 
-        public async Task ChallengeAsync(HttpAuthenticationChallengeContext context, CancellationToken cancellationToken)
+        public Task ChallengeAsync(HttpAuthenticationChallengeContext context, CancellationToken cancellationToken)
         {
-            return;
+            return Task.CompletedTask;
         }
     }
-
-
 
     /// <summary>
     /// This class is used to assign the status.
