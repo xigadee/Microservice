@@ -71,14 +71,14 @@ namespace Xigadee
         //Event Source
         public static string EventSourceMakeId(EventHolder ev, MicroserviceId msId)
         {
-            var e = ev.Data as EventSourceEntryBase;
-            return $"{string.Join("_", e.Key.Split(Path.GetInvalidFileNameChars()))}.json";
+            var e = ev.Data as EventSourceEvent;
+            return $"{string.Join("_", e.Entry.Key.Split(Path.GetInvalidFileNameChars()))}.json";
         }
 
         public static string EventSourceMakeFolder(EventHolder ev, MicroserviceId msId)
         {
-            var e = ev.Data as EventSourceEntryBase;
-            return $"{msId.Name}/{e.UTCTimeStamp:yyyy-MM-dd}/{e.EntityType}";
+            var e = ev.Data as EventSourceEvent;
+            return $"{msId.Name}/{e.UtcTimeStamp:yyyy-MM-dd}/{e.Entry.EntityType}";
         }
     }
 }
