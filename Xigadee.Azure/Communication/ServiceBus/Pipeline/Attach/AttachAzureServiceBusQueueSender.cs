@@ -35,12 +35,13 @@ namespace Xigadee
             where C: IPipelineChannelOutgoing<IPipeline>
         {
             var component = new AzureSBQueueSender();
+            Channel channel = cpipe.ChannelResolve(ChannelDirection.Outgoing);
 
             component.ConfigureAzureMessaging(
-                  cpipe.Channel.Id
-                , priorityPartitions ?? cpipe.Channel.Partitions.Cast<SenderPartitionConfig>()
+                  channel.Id
+                , priorityPartitions ?? channel.Partitions.Cast<SenderPartitionConfig>()
                 , null
-                , connectionName ?? cpipe.Channel.Id
+                , connectionName ?? channel.Id
                 , serviceBusConnection ?? cpipe.Pipeline.Configuration.ServiceBusConnection()
                 );
 

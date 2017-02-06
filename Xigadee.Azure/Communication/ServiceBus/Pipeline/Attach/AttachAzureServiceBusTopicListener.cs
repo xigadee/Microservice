@@ -43,12 +43,13 @@ namespace Xigadee
             where C: IPipelineChannelIncoming<IPipeline>
         {
             var component = new AzureSBTopicListener();
+            Channel channel = cpipe.ChannelResolve(ChannelDirection.Incoming);
 
             component.ConfigureAzureMessaging(
-                  cpipe.Channel.Id
-                , priorityPartitions ?? cpipe.Channel.Partitions.Cast<ListenerPartitionConfig>()
+                  channel.Id
+                , priorityPartitions ?? channel.Partitions.Cast<ListenerPartitionConfig>()
                 , resourceProfiles
-                , connectionName ?? cpipe.Channel.Id
+                , connectionName ?? channel.Id
                 , serviceBusConnection ?? cpipe.Pipeline.Configuration.ServiceBusConnection()
                 );
 
