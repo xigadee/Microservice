@@ -124,7 +124,7 @@ namespace Xigadee
             catch (MessagingException dex)
             {
                 //OK, something has gone wrong with the Azure fabric.
-                LogException("Messaging Exception (Transmit)", dex);
+                LogException("Messaging Exception (Pull)", dex);
                 //Let's reinitialise the client
                 if (ClientReset == null)
                     throw;

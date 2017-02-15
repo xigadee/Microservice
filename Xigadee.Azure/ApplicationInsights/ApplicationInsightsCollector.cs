@@ -228,7 +228,7 @@ namespace Xigadee
                 // Don't log non errors that have exceptions as exceptions i.e. warnings / info
                 if (eventData.Ex != null && eventData.Level >= LoggingLevel.Error)
                 {
-                    telemetryProperties = exceptionTelemetry = AddTelemetryContext(new ExceptionTelemetry(eventData.Ex) { Message = eventData.Message }, eventHolder);
+                    telemetryProperties = exceptionTelemetry = AddTelemetryContext(new ExceptionTelemetry(eventData.Ex) { Message = $"{eventData.Message}-{eventData.Ex.Message}" }, eventHolder);
                 }
                 else
                 {
