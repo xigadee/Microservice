@@ -228,7 +228,7 @@ namespace Xigadee
                 // Don't log non errors that have exceptions as exceptions i.e. warnings / info
                 if (eventData.Ex != null && eventData.Level >= LoggingLevel.Error)
                 {
-                    telemetryProperties = exceptionTelemetry = AddTelemetryContext(new ExceptionTelemetry(eventData.Ex) { Message = $"{eventData.Message}-{eventData.Ex.Message}" }, eventHolder);
+                    telemetryProperties = exceptionTelemetry = AddTelemetryContext(new ExceptionTelemetry(eventData.Ex), eventHolder);
                 }
                 else
                 {
@@ -237,12 +237,10 @@ namespace Xigadee
 
                 AddPropertyData(telemetryProperties, nameof(LoggingLevel), eventData.Level.ToString());
                 AddPropertyData(telemetryProperties, nameof(eventData.TraceId), eventData.TraceId);
-                if (eventData.AdditionalData != null || !string.IsNullOrEmpty(eventData.Message))
-                {
-                    eventData.AdditionalData?.ForEach(kvp => AddPropertyData(telemetryProperties, kvp.Key, kvp.Value));
-                    AddPropertyData(telemetryProperties, nameof(eventData.Message), eventData.Message);
-                    AddPropertyData(telemetryProperties, nameof(eventData.Category), eventData.Category);
-                }
+                AddPropertyData(telemetryProperties, nameof(eventData.Message), eventData.Message);
+                AddPropertyData(telemetryProperties, nameof(eventData.Category), eventData.Category);
+                AddPropertyData(telemetryProperties, "Exception.Message", eventData.Ex?.Message);
+                eventData.AdditionalData?.ForEach(kvp => AddPropertyData(telemetryProperties, kvp.Key, kvp.Value));
 
                 if (exceptionTelemetry != null)
                 {
