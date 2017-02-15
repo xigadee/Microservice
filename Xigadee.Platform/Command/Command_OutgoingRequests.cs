@@ -412,7 +412,7 @@ namespace Xigadee
         /// <param name="token">The cancellation token.</param>
         protected virtual async Task TimeOutScheduler(Schedule schedule, CancellationToken token)
         {
-            if (mOutgoingRequests.IsEmpty)
+            if (mOutgoingRequests?.IsEmpty ?? true)
                 return;
 
             var timeoutSchedule = schedule as CommandTimeoutSchedule;
