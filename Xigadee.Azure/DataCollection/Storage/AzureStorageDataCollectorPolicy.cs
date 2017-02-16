@@ -42,7 +42,7 @@ namespace Xigadee
             = new AzureStorageDataCollectorOptions(DataCollectionSupport.EventSource
                 , AzureStorageBehaviour.Blob
                 , binaryMakeId: AzureStorageHelper.EventSourceMakeId
-                , binaryMakeFolder: AzureStorageHelper.StatisticsMakeFolder
+                , binaryMakeFolder: AzureStorageHelper.EventSourceMakeFolder
                 );
         /// <summary>
         /// This is the Statistics options. By default encryption is not set for statistics.
