@@ -35,13 +35,12 @@ namespace Xigadee
         {
             try
             {
-                var assName = actionExecutedContext.ActionContext.ControllerContext.Controller.GetType().Assembly.GetName();
-
-                actionExecutedContext.Response.Headers.Add(mHeaderName, assName.Version.ToString());
+                var assName = actionExecutedContext?.ActionContext?.ControllerContext?.Controller?.GetType().Assembly.GetName();
+                actionExecutedContext?.Response?.Headers?.Add(mHeaderName, assName?.Version.ToString() ?? "Unknown");
             }
             catch(Exception)
             {
-                actionExecutedContext.Response.Headers.Add(mHeaderName, "Error");
+                actionExecutedContext?.Response?.Headers?.Add(mHeaderName, "Error");
             }
 
             base.OnActionExecuted(actionExecutedContext);
