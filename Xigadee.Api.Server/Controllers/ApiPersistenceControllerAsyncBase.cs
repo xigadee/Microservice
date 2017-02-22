@@ -392,10 +392,11 @@ namespace Xigadee
         #endregion
 
         #region Search(ODataQueryOptions<E> request)
+
         /// <summary>
-        /// Get=Read
+        /// Search=Search
         /// </summary>
-        /// <param name="rq">The incoming request.</param>
+        /// <param name="request">The incoming request.</param>
         /// <returns>Returns a HTTP Action result</returns>
         [AcceptVerbs("Search")]
         public virtual async Task<IHttpActionResult> Search(ODataQueryOptions<E> request)
@@ -417,7 +418,7 @@ namespace Xigadee
             }
             catch (Exception vex)
             {
-                return BadRequest();
+                return BadRequest($"Unable to process Odata request - {vex.Message}");
             }
         }
         #endregion
