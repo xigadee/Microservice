@@ -166,12 +166,15 @@
     <Compile Include="Controllers\SecurityControllerAsyncBase.cs" />
     <Compile Include="Controllers\WebhookControllerAsyncBase.cs" />
     <Compile Include="Helper\MicroserviceDependencyResolver.cs" />
+    <Compile Include="Owin\RequireHttpsFilter.cs" />
     <Compile Include="Owin\Policy\IJwtTokenVerificationPolicy.cs" />
     <Compile Include="Owin\JwtAuthenticationFilter.cs" />
     <Compile Include="Owin\Policy\JwtTokenVerificationPolicy.cs" />
     <Compile Include="Exceptions\WebApiJwtFilterValidationException.cs" />
+    <Compile Include="Owin\StatusResult.cs" />
     <Compile Include="Pipeline\Actual.cs" />
     <Compile Include="Pipeline\AddAuthorizationServer.cs" />
+    <Compile Include="Pipeline\ApiAdd\ApiAddRequiresHttpsFilter.cs" />
     <Compile Include="Pipeline\ApiAdjust\ApiAdjust.cs" />
     <Compile Include="Pipeline\ApiAdd\ApiAddCorrelationIdFilter.cs" />
     <Compile Include="Pipeline\ApiAdd\ApiAddJwtTokenAuthentication.cs" />
