@@ -6,6 +6,7 @@ using Xigadee;
 namespace Test.Xigadee
 {
     [Ignore]
+
     [TestClass]
     public class CommunicationRedirectTests
     {
