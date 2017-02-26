@@ -12,7 +12,7 @@
     <description>Xigadee Azure library contains a set of communication and persistence components built on the Microsoft Azure libraries.</description>
     <releaseNotes>Initial push.</releaseNotes>
     <copyright>Copyright © Hitachi Consulting 2012-2017</copyright>
-    <tags>Xigadee Microservice Azure Blob Storage Redis ServiceBus ApplicationInsights DocumentDb .NET Hitachi</tags>
+    <tags>Xigadee Microservice Azure Blob Storage Redis ServiceBus ApplicationInsights DocumentDb .NET Hitachi serverless-architectures serverless serverless-framework</tags>
     <dependencies>
       <dependency id="Newtonsoft.Json" version="9.0.1" />
       <dependency id="Xigadee" version="{UpdateVersion.ps1.replace}" />
