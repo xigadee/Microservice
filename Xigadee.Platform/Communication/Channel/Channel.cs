@@ -168,12 +168,28 @@ namespace Xigadee
         public void Redirect(TransmissionPayload payload)
         {
             var header = payload.Message.ToServiceMessageHeader();
-            MessageRedirectRule rule = null;
-            if (mRedirectCache.ContainsKey(header))
-            {
-                var id = mRedirectCache[header];
-            }
 
+            if (!mRedirectCache.ContainsKey(header))
+                RedirectBuildCacheEntry(header, payload);
+
+            Guid? id = mRedirectCache[header];
+
+            //There is an entry, but this may be null if there isn't a match.
+            if (id.HasValue)
+                mRedirectRules[id.Value].Redirect(payload);
+
+            return;
+        }
+
+        private void RedirectBuildCacheEntry(ServiceMessageHeader header, TransmissionPayload payload)
+        {
+            //if (mRedirectCache.ContainsKey(header))
+            //    return;
+
+            //var result = mRedirectRules.FirstOrDefault((r) => r.Value.CanRedirect(payload));
+
+            //if (result.Value.CanCache)
+            //    mRedirectCache.AddOrUpdate(header, 
         }
 
         /// <summary>
