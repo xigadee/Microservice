@@ -25,7 +25,7 @@ namespace Xigadee
     public static partial class ConsoleHelper
     {
         /// <summary>
-        /// This class allows switches to be registered against the various config helper classes.
+        /// This console class allows switches to be registered against the various config helper classes.
         /// </summary>
 
         public static void RegisterSwitch<C>(this C config, string id, Action<C, string> setter)
