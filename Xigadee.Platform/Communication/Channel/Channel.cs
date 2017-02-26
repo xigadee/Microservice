@@ -167,7 +167,7 @@ namespace Xigadee
         /// <param name="payload">The payload to adjust the incoming header infor mation.</param>
         public void Redirect(TransmissionPayload payload)
         {
-            //var header = payload.Message.ToServiceMessageHeader();
+            var header = payload.Message.ToServiceMessageHeader();
             //ChannelRewriteRule rule = null;
             //if (mRewriteCache.ContainsKey(header))
             //{
