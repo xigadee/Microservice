@@ -353,7 +353,7 @@ namespace Xigadee
 
                                 profileHolder.Rq.IsTimeout = false;
 
-                                retryExceeded = incoming.Cancel.IsCancellationRequested 
+                                retryExceeded = incoming.Cancel.IsCancellationRequested
                                     || profileHolder.Rq.Retry > mPolicy.PersistenceRetryPolicy.GetMaximumRetries(incoming);
                             }
                             while (!retryExceeded);
@@ -415,6 +415,14 @@ namespace Xigadee
 
                         if (!profileHolder.result.HasValue)
                             profileHolder.result = ResourceRequestResult.Success;
+                    }
+                    catch (PayloadSerializationException payex)
+                    {
+                        incoming.SignalSuccess(); //It's a success as there isn't anything that we can do with it except send an error.
+                        rsPayload.Message.Status = "422"; //Unprocessable Entity (WebDAV) - we use this to show there is an error with the payload.
+                        rsPayload.Message.StatusDescription = $"Invalid payload: {payex.Message}/{payex.InnerException?.Message}";
+                        Collector?.LogException($"Error processing message (was cancelled({incoming.Cancel.IsCancellationRequested}))-{EntityType}-{actionType}-{profileHolder.Rq}", payex);
+                        profileHolder.result = ResourceRequestResult.Exception;
                     }
                     catch (Exception ex)
                     {

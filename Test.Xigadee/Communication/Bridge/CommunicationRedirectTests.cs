@@ -5,7 +5,6 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    [Ignore]
     [TestClass]
     public class CommunicationRedirectTests
     {
@@ -33,10 +32,10 @@ namespace Test.Xigadee
                 .AdjustPolicyCommunication((p) => p.BoundaryLoggingActiveDefault = true)
                 .AddDataCollector((c) => new DebugMemoryDataCollector(), (c) => memp2 = c)
                 .AddChannelIncoming("crequest")
-                .AttachMessageRedirectRule(
-                      canRedirect:  (p) => p.Message.ChannelId.Equals("bridgeme", StringComparison.InvariantCultureIgnoreCase)
-                    , redirect:     (p) => p.Message.ChannelId = "BridgeMe2"
-                    )
+                    .AttachMessageRedirectRule(
+                          canRedirect:  (p) => p.Message.MessageType.Equals("bridgeme", StringComparison.InvariantCultureIgnoreCase)
+                        , redirect:     (p) => p.Message.MessageType = "BridgeMe2"
+                        )
                     .AttachListener(bridgeOut.GetListener())
                     .AttachCommand(new PersistenceManagerHandlerMemory<Guid, BridgeMe2>((e) => e.Id, (s) => new Guid(s)))
                     .Revert()
@@ -51,11 +50,9 @@ namespace Test.Xigadee
             int check2 = p2.ToMicroservice().Commands.Count();
 
             var entity = new BridgeMe() { Message = "Momma" };
-            var rs = init.Create(entity, new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
-            var rs2 = init.Read(entity.Id).Result;
+            var rs = init.Create(entity, new RepositorySettings() { WaitTime = TimeSpan.FromSeconds(20) }).Result;
 
-            Assert.IsTrue(rs2.IsSuccess);
-            Assert.IsTrue(rs2.Entity.Message == "Momma");
+            Assert.IsTrue(!rs.IsSuccess && rs.ResponseCode == 422);
         }
 
     }

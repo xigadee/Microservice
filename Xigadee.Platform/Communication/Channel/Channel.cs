@@ -169,10 +169,12 @@ namespace Xigadee
         {
             var header = payload.Message.ToServiceMessageHeader();
 
-            if (!mRedirectCache.ContainsKey(header))
-                RedirectBuildCacheEntry(header, payload);
+            Guid? id = null;
 
-            Guid? id = mRedirectCache[header];
+            if (!mRedirectCache.ContainsKey(header))
+                id = RedirectBuildCacheEntry(header, payload);
+            else
+                id = mRedirectCache[header];
 
             //There is an entry, but this may be null if there isn't a match.
             if (id.HasValue)
@@ -181,15 +183,23 @@ namespace Xigadee
             return;
         }
 
-        private void RedirectBuildCacheEntry(ServiceMessageHeader header, TransmissionPayload payload)
+        /// <summary>
+        /// This method specifically builds the redirect cache.
+        /// </summary>
+        /// <param name="header"></param>
+        /// <param name="payload"></param>
+        private Guid? RedirectBuildCacheEntry(ServiceMessageHeader header, TransmissionPayload payload)
         {
-            //if (mRedirectCache.ContainsKey(header))
-            //    return;
+            Guid? id = null;
 
-            //var result = mRedirectRules.FirstOrDefault((r) => r.Value.CanRedirect(payload));
+            var result = mRedirectRules.Where((r) => r.Value.CanRedirect(payload)).ToList();
 
-            //if (result.Value.CanCache)
-            //    mRedirectCache.AddOrUpdate(header, 
+            id = (result.Count == 0)?default(Guid?):result[0].Key;
+
+            if (id.HasValue && result[0].Value.CanCache)
+                mRedirectCache.AddOrUpdate(header, id, (h, g) => id);
+
+            return id;
         }
 
         /// <summary>

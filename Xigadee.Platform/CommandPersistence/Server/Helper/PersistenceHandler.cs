@@ -87,12 +87,12 @@ namespace Xigadee
                 ActiveDecrement(extent.Value);
             }
 
-            if (rs.IsRetry)
+            if (rs?.IsRetry??false)
             {
                 Interlocked.Increment(ref mRetries);
             }
 
-            if (rs.IsCached)
+            if (rs?.IsCached??false)
             {
                 Interlocked.Increment(ref mCacheHits);
             }
