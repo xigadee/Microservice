@@ -622,7 +622,7 @@ namespace Xigadee
         /// <param name="key"></param>
         /// <param name="entity"></param>
         /// <param name="settings"></param>
-        protected async virtual Task LogEventSource<KT>(string actionType, string originatorKey, KT key, E entity, RepositorySettings settings)
+        protected virtual Task LogEventSource<KT>(string actionType, string originatorKey, KT key, E entity, RepositorySettings settings)
         {
             try
             {
@@ -646,12 +646,14 @@ namespace Xigadee
                     data.EntityVersion = settings.VersionId;
                 }
 
-                await EventSource.Write(originatorKey, data, sync: true);
+                Collector.Write(new EventSourceEvent {Entry = data, OriginatorId = originatorKey, UtcTimeStamp = DateTime.UtcNow}, true);
             }
             catch (Exception ex)
             {
                 Collector?.LogException($"Exception thrown for log to event source on {typeof (E).Name}-{actionType}-{originatorKey}", ex);
             }
+
+            return Task.CompletedTask;
         }
         #endregion
 
