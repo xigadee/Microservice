@@ -84,6 +84,19 @@ namespace Xigadee
             return null;
         }
 
+        public static double? ToDouble(string data)
+        {
+            if (data == null)
+                return null;
+
+            double val;
+
+            if (double.TryParse(data, out val))
+                return val;
+
+            return null;
+        }
+
 
         public static int? ToInt(string data)
         {

@@ -164,17 +164,42 @@ namespace Xigadee
         /// <summary>
         /// This method rewrites the rule.
         /// </summary>
-        /// <param name="payload">The payload to adjust the incoming header infor mation.</param>
+        /// <param name="payload">The payload to adjust the incoming header information.</param>
         public void Redirect(TransmissionPayload payload)
         {
-            //var header = payload.Message.ToServiceMessageHeader();
-            //ChannelRewriteRule rule = null;
-            //if (mRewriteCache.ContainsKey(header))
-            //{
-            //    rule = mRewriteCache[header];
+            var header = payload.Message.ToServiceMessageHeader();
 
-            //}
+            Guid? id = null;
 
+            if (!mRedirectCache.ContainsKey(header))
+                id = RedirectBuildCacheEntry(header, payload);
+            else
+                id = mRedirectCache[header];
+
+            //There is an entry, but this may be null if there isn't a match.
+            if (id.HasValue)
+                mRedirectRules[id.Value].Redirect(payload);
+
+            return;
+        }
+
+        /// <summary>
+        /// This method specifically builds the redirect cache.
+        /// </summary>
+        /// <param name="header"></param>
+        /// <param name="payload"></param>
+        private Guid? RedirectBuildCacheEntry(ServiceMessageHeader header, TransmissionPayload payload)
+        {
+            Guid? id = null;
+
+            var result = mRedirectRules.Where((r) => r.Value.CanRedirect(payload)).ToList();
+
+            id = (result.Count == 0)?default(Guid?):result[0].Key;
+
+            if (id.HasValue && result[0].Value.CanCache)
+                mRedirectCache.AddOrUpdate(header, id, (h, g) => id);
+
+            return id;
         }
 
         /// <summary>

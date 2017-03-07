@@ -12,7 +12,7 @@
     <description>Xigadee Api Server library is used to construct API gateways to the Microservice.</description>
     <releaseNotes>Initial push.</releaseNotes>
     <copyright>Copyright © Hitachi Consulting 2012-2017</copyright>
-    <tags>Xigadee Microservice Azure .NET Hitachi IMGROUP</tags>
+    <tags>Xigadee Microservice Azure .NET Hitachi serverless-architectures serverless serverless-framework</tags>
     <dependencies>
       <dependency id="Microsoft.AspNet.WebApi" version="5.2.3" />
       <dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.3" />

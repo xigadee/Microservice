@@ -275,7 +275,14 @@ namespace Xigadee
                             return payload.MessageObject as RepositoryHolder<KT, ET>;
 
                         if (payload.Message.Blob == null)
-                            return new RepositoryHolder<KT, ET>(responseCode: 500, responseMessage: "Unexpected response (no payload)");
+                        {
+                            int rsCode = 500;
+                            int.TryParse(payload.Message?.Status, out rsCode);
+
+                            string rsMessage = payload.Message?.StatusDescription ?? "Unexpected response (no payload)";
+
+                            return new RepositoryHolder<KT, ET>(responseCode: rsCode, responseMessage: rsMessage);
+                        }
 
                         try
                         {

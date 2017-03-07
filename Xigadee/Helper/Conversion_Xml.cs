@@ -118,5 +118,15 @@ namespace Xigadee
             return el == null ? null : ToBoolean(el.Value);
         }
 
+        public static double? ToDouble(XElement el)
+        {
+            return el == null ? null : ToDouble(el.Value);
+        }
+
+        public static double? ToDouble(XAttribute el)
+        {
+            return el == null ? null : ToDouble(el.Value);
+        }
+
     }
 }
