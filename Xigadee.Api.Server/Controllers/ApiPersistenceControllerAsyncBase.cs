@@ -160,7 +160,7 @@ namespace Xigadee
 
             try
             {
-                string mediaType = rq.BodyType.ToLowerInvariant();
+                string mediaType = rq.BodyType.MediaType.ToLowerInvariant();
                 if (mSerializers.ContainsKey(mediaType))
                 {
                     transport = mSerializers[mediaType];

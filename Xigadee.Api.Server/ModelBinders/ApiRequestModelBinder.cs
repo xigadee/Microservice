@@ -46,7 +46,7 @@ namespace Xigadee
             
             if (actionContext.Request.Content.Headers.ContentLength > 0)
             {
-                result.BodyType = actionContext.Request.Content.Headers.ContentType.ToString();
+                result.BodyType = actionContext.Request.Content.Headers.ContentType;
                 result.Body = actionContext.Request.Content.ReadAsByteArrayAsync().Result;
 
                 return true;

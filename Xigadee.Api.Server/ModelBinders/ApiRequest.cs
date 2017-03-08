@@ -40,7 +40,7 @@ namespace Xigadee
 
         public byte[] Body { get; set; }
 
-        public string BodyType { get; set; }
+        public MediaTypeHeaderValue BodyType { get; set; }
 
         public bool HasReference { get; set; }
 
