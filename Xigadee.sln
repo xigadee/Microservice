@@ -54,13 +54,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Azure.Console"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Api", "Test.Xigadee.Api\Test.Xigadee.Api.csproj", "{D10589C2-5487-4860-A756-292946D5AE9B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{A24CAFF0-C746-4FC1-B060-7DD77BBA9A29}"
-	ProjectSection(SolutionItems) = preProject
-		15-minute-microservice.md = 15-minute-microservice.md
-		docs\Xigadee-Introduction.md = docs\Xigadee-Introduction.md
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{B8E24825-6CA4-4B9D-8C24-0036DEF91F8C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{2553C817-4FA9-4C11-889D-7415B44CF3E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -172,7 +166,6 @@ Global
 		{24A970DC-3FB0-4541-9ADB-175F04D64B53} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 		{9CA85091-9308-44B5-A99E-EF6E579C286B} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 		{D10589C2-5487-4860-A756-292946D5AE9B} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
-		{B8E24825-6CA4-4B9D-8C24-0036DEF91F8C} = {A24CAFF0-C746-4FC1-B060-7DD77BBA9A29}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
