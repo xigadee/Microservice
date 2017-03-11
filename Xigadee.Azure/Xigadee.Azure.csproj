@@ -279,6 +279,7 @@
     <None Include="Xigadee.Azure.nuspec">
       <SubType>Designer</SubType>
     </None>
+    <None Include="_docs\Introduction.md" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xigadee.Platform\Xigadee.csproj">

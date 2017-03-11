@@ -79,6 +79,7 @@
   <ItemGroup>
     <Folder Include="BoundaryLogger\Sql\" />
     <Folder Include="EventSource\" />
+    <Folder Include="_docs\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\AssemblyInfo\ApacheLicense-2.0.txt">

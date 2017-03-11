@@ -54,6 +54,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Azure.Console"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Api", "Test.Xigadee.Api\Test.Xigadee.Api.csproj", "{D10589C2-5487-4860-A756-292946D5AE9B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{DCA58A2C-4AC0-4978-944C-DC8ABB50DC42}"
+	ProjectSection(SolutionItems) = preProject
+		15-minute-microservice.md = 15-minute-microservice.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
