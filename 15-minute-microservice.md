@@ -2,5 +2,5 @@
 
 It probably doesn't take as long as 15 minutes.
 
-Xigadee[/Xigadee/_docs/Introduction.md]
-Xigadee Azure[/Xigadee.Azure/_docs/Introduction.md]
+* [Xigadee](/Xigadee Platform/_docs/Introduction.md])
+* [Xigadee Azure](/Xigadee.Azure/_docs/Introduction.md])
