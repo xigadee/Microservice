@@ -83,6 +83,7 @@
     <None Include="packages.config" />
     <None Include="Xigadee.Api.Client.licenseheader" />
     <None Include="Xigadee.Api.Client.nuspec" />
+    <None Include="_docs\Introduction.md" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xigadee.Api\Xigadee.Api.csproj">

@@ -171,6 +171,7 @@
     <None Include="packages.config" />
     <None Include="Xigadee.Api.Server.Unity.licenseheader" />
     <None Include="Xigadee.Api.Server.Unity.nuspec" />
+    <None Include="_docs\Introduction.md" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xigadee.Api.Server\Xigadee.Api.Server.csproj">

@@ -75,11 +75,11 @@
     <None Include="packages.config" />
     <None Include="Xigadee.Framework.licenseheader" />
     <None Include="Xigadee.Framework.nuspec" />
+    <None Include="_docs\Introduction.md" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BoundaryLogger\Sql\" />
     <Folder Include="EventSource\" />
-    <Folder Include="_docs\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\AssemblyInfo\ApacheLicense-2.0.txt">

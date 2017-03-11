@@ -1,4 +1,4 @@
-﻿#Xigadee Api Server
+﻿#Xigadee.Api.Server Library
 
 ##Introduction
 
