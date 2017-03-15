@@ -63,6 +63,9 @@ namespace Xigadee
             }
         }
 
+        /// <summary>
+        /// This is the count of retries attempted on the resource
+        /// </summary>
         public int RetryCount { get { return mRetryCount; } }
 
         /// <summary>

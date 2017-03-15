@@ -20,6 +20,7 @@ namespace Xigadee
 {
     /// <summary>
     /// This abstract class is used to implement circuit breaker functionality.
+    /// Specifically, it is used to calculate the Half-open state when requested should be retried. 
     /// </summary>
     public abstract class CircuitBreakerAlgorithmBase
     {

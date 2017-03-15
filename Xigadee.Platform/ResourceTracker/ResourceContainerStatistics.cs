@@ -22,6 +22,9 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This class measures the statistics for the resource container.
+    /// </summary>
     public class ResourceContainerStatistics: StatusBase
     {
         /// <summary>

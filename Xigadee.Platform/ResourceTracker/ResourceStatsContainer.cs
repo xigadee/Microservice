@@ -23,7 +23,7 @@ using System.Threading;
 namespace Xigadee
 {
     /// <summary>
-    /// This container holds the usage statistics.
+    /// This container holds the usage statistics for a particular resource.
     /// </summary>
     public class ResourceStatsContainer
     {

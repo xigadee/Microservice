@@ -576,6 +576,7 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="ResourceTracker\_docs\Introduction.md" />
     <None Include="Security\Jwt\_Documents\rfc7515 - JSON Web Signature.pdf" />
     <None Include="Security\Jwt\_Documents\rfc7516 - JSON Web Encryption.pdf" />
     <None Include="Security\Jwt\_Documents\rfc7517 - JSON Web Key.pdf" />

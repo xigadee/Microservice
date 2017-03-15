@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This policy is used by the ResourceContainer class
+    /// </summary>
     public class ResourceContainerPolicy:PolicyBase
     {
     }

@@ -24,23 +24,33 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// The Rate limiter class is used to track the error rate from a managed resource and 
+    /// </summary>
     [DebuggerDisplay("ResourceRateLimiter: {Name}={RateLimitAdjustmentPercentage} [{Debug}]")]
     public class ResourceRateLimiter: ResourceBase, IResourceRequestRateLimiter
     {
         #region Declarations
         List<ResourceStatistics> mProfiles;
         #endregion
-
+        #region Constructor
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="name">The name of the rate limiter.</param>
+        /// <param name="profiles">The prfiles that are tracker by this limiter.</param>
         public ResourceRateLimiter(string name, List<ResourceStatistics> profiles)
         {
             Name = name;
             mProfiles = profiles;
-        }
- 
+        } 
+        #endregion
+
         #region RateLimitAdjustmentPercentage
         /// <summary>
         /// This is the current rate limit summation across the active payload requests.
-        /// If rate limiting is not supported the value will be null.
+        /// If rate limiting is not supported the value will be 1.
+        /// Otherwise, the profiles are scanned and the lowest percentage is returned.
         /// </summary>
         public double RateLimitAdjustmentPercentage
         {
@@ -54,6 +64,10 @@ namespace Xigadee
         }
         #endregion
 
+        #region Debug
+        /// <summary>
+        /// This property is used for debug purposes.
+        /// </summary>
         public string Debug
         {
             get
@@ -61,6 +75,7 @@ namespace Xigadee
                 string concatRates = string.Concat(mProfiles.Select((e) => string.Format("{0}-{1} ", e.Name, e.RateLimitAdjustmentPercentage)));
                 return string.Format("{0} ({1}): {2}", Name, RateLimitAdjustmentPercentage, concatRates);
             }
-        }     
+        }   
+        #endregion
     }
 }
