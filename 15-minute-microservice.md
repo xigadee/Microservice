@@ -2,7 +2,7 @@
 
 Xigadee is a new Microservice framework, developed using the .NET Framework. It is designed to rapidly deploy scalable cloud based services.
 
-##Packages
+## Packages
 Xigadee is made up of a number of distinct packages. Below are the key packages within the framework.
 
 * [Xigadee](Xigadee.Platform/_Docs/Introduction.md)
