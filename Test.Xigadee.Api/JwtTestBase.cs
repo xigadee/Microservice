@@ -38,9 +38,12 @@ namespace Test.Xigadee.Api
         public HttpResponseMessage ReadWithRetry(string jwt, Func<HttpRequestMessage> message, int maxRetry = 20)
         {
             HttpResponseMessage response;
+            int retryCount = -1;
 
             do
             {
+                retryCount++;
+
                 var rq = message();
                 if (jwt != null)
                     rq.Headers.Authorization = new AuthenticationHeaderValue("bearer", jwt);
@@ -50,12 +53,13 @@ namespace Test.Xigadee.Api
                     .SendAsync(rq)
                     .Result;
 
-                maxRetry--;
-
-                if (maxRetry < 0)
-                    throw new ArgumentOutOfRangeException("maxRetry", maxRetry, "maxRetry has been exceeded");
+                if (retryCount > 0)
+                    Thread.Sleep(retryCount * 10);
             }
-            while (response.StatusCode == System.Net.HttpStatusCode.ServiceUnavailable);
+            while (response.StatusCode == System.Net.HttpStatusCode.ServiceUnavailable && retryCount < maxRetry);
+
+            if (retryCount > maxRetry)
+                throw new ArgumentOutOfRangeException("maxRetry", maxRetry, "maxRetry has been exceeded");
 
             return response;
         }
