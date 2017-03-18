@@ -89,6 +89,7 @@
     <Compile Include="Microservice_Validate_CommandOutgoingRequests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Microservice_Validate_Persistence.cs" />
+    <Compile Include="ResourceTracker\UnitTest1.cs" />
     <Compile Include="Security\AesEncryptionTests.cs" />
     <Compile Include="Security\TransportEncryptionTests.cs" />
     <Compile Include="Security\TransportVerificationTests.cs" />

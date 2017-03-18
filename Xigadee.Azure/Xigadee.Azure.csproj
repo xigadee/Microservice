@@ -298,6 +298,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="ResourceTracker\" />
     <Folder Include="Telemetry\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

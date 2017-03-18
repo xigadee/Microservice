@@ -33,6 +33,11 @@ namespace Xigadee
         private long mRetryTime = 0;
         private string mGroup;
 
+        /// <summary>
+        /// This is the default constructor
+        /// </summary>
+        /// <param name="id">Trace Id</param>
+        /// <param name="group"></param>
         public ResourceRequestTrack(Guid id, string group)
         {
             mStart = Environment.TickCount;
@@ -79,6 +84,11 @@ namespace Xigadee
             }
         }
 
+        /// <summary>
+        /// This method signals a retry on the resource
+        /// </summary>
+        /// <param name="delta">The retry time.</param>
+        /// <param name="reason">The last retry reason.</param>
         public void RetrySignal(int delta, ResourceRetryReason reason)
         {
             Interlocked.Increment(ref mRetryCount);
