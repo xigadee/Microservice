@@ -1,6 +1,6 @@
 ![Xigadee](/docs/xigadee.png)
 
-Xigadee is a Microservice framework, developed by Paul Stancer and Guy Steel at Hitachi Consulting. 
+Xigadee is a Microservice framework, developed by [Paul Stancer](https://github.com/paulstancer) and [Guy Steel](https://github.com/guysteel) at Hitachi Consulting. 
 
 The libraries are designed to provide a simplified and consistent approach to building complex scalable cloud based applications, particularly those targetting PAAS technologies, and using a Microservice-based serverless approach.
 
@@ -33,8 +33,6 @@ See the License for the specific language governing permissions and limitations 
 
 ## Feedback
 
-Xigadee is in active development across a number of development projects, and we welcome feedback and suggestions for future versions of the Framework, and more importantly bug reports. 
-
-@paulstancer @guysteel
+Xigadee is in active development across a number of development projects, and we welcome feedback and suggestions for future versions of the Framework, and more importantly bug reports.
 
 ![Hitachi](/docs/hitachi.png)
