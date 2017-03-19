@@ -1,4 +1,4 @@
-![Xigadee](/xigadee.png)
+![Xigadee](/docs/xigadee.png)
 
 Xigadee is a Microservice framework, developed by Paul Stancer and Guy Steel at Hitachi Consulting. 
 
