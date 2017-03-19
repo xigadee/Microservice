@@ -307,7 +307,6 @@ namespace Xigadee
         /// This method executes the action or selects the menu option.
         /// </summary>
         /// <param name="option">The option to execute.</param>
-        /// <param name="pageLength">The page length.</param>
         protected virtual void OptionAction(ConsoleOption option)
         {
             option.Action?.Invoke(this, option);

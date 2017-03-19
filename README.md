@@ -12,22 +12,16 @@ Xigadee is made up of a number of distinct NuGet packages, which are listed belo
 
 * [Xigadee](Xigadee.Platform/_Docs/Introduction.md) 
 	- This is the core library that is used to create Microservice and serverless based solutions.
-	- [Nuget](https://www.nuget.org/packages/Xigadee)
 * [Xigadee Azure](Xigadee.Azure/_docs/Introduction.md) 
 	- This library allows for the detailed integration with many of the Azure platform PAAS services.
-	- [Nuget](https://www.nuget.org/packages/Xigadee.Azure)
 * [Xigadee Api Server](Xigadee.Api.Server/_docs/Introduction.md)
 	- This package allows for the rapid development of API based services.
-	- [Nuget](https://www.nuget.org/packages/Xigadee.Api.Server)
 * [Xigadee Api Server Unity](Xigadee.Api.Server.Unity/_docs/Introduction.md) 
 	- This package provides helper functions to integrate Xigadee with a web based application that uses Unity as its Dependency Injection mechanism
-	- [Nuget](https://www.nuget.org/packages/Xigadee.Api.Server.Unity)
 * [Xigadee Api Client](Xigadee.Api.Client/_docs/Introduction.md)
 	- This package speeds up the development of client libraries that consume API services.
-	- [Nuget](https://www.nuget.org/packages/Xigadee.Api.Client)
 * [Xigadee Api Console](Xigadee.Console/_docs/Introduction.md)
 	- This package is designed to help in creating simple console based test harnesses for Microservice applications.
-	- [Nuget](https://www.nuget.org/packages/Xigadee.Console)
 
 ## Legal Stuff
 

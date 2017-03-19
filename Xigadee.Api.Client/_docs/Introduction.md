@@ -1,3 +1,5 @@
-﻿#Xigadee.Api.Client
+﻿# Xigadee.Api.Client
 
-##Introduction
+## Introduction
+
+**[Nuget package can be found here](https://www.nuget.org/packages/Xigadee.Api.Client)**
