@@ -42,6 +42,6 @@ See the License for the specific language governing permissions and limitations 
 
 Xigadee is in active development across a number of development projects, and we welcome feedback and suggestions for future versions of the Framework, and more importantly bug reports.
 
-![Hitachi](/docs/hitachi.png)
-
 _@paulstancer_
+
+![Hitachi](/docs/hitachi.png)
