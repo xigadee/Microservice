@@ -2,3 +2,5 @@
 
 
 **[Nuget package can be found here](https://www.nuget.org/packages/Xigadee.Api.Server.Unity)**
+
+![Hitachi](../../docs/hitachi.png)

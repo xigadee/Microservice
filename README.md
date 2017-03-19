@@ -4,7 +4,7 @@ Xigadee is a Microservice framework, developed by Paul Stancer and Guy Steel at 
 
 The libraries are designed to provide a consistent approach when building complex scalable cloud based applications, particularly those targetting PAAS technologies.
 
-The framework is built on Microsoft .NET technologies, and has deep integration in to many of the Azure technology stack.
+The framework is built on Microsoft .NET technologies, and has deep integration in to the Azure technology stack.
 
 ## Introduction
 
@@ -13,15 +13,13 @@ Xigadee is made up of a number of distinct NuGet packages, which are listed belo
 * [Xigadee](Xigadee.Platform/_Docs/Introduction.md) 
 	- This is the core library that is used to create Microservice and serverless based solutions.
 * [Xigadee Azure](Xigadee.Azure/_docs/Introduction.md) 
-	- This library allows for the detailed integration with many of the Azure platform PAAS services.
+	- This library allows for the seamless integration with many of the Azure platform PAAS services.
 * [Xigadee Api Server](Xigadee.Api.Server/_docs/Introduction.md)
-	- This package allows for the rapid development of API based services.
-* [Xigadee Api Server Unity](Xigadee.Api.Server.Unity/_docs/Introduction.md) 
-	- This package provides helper functions to integrate Xigadee with a web based application that uses Unity as its Dependency Injection mechanism
+	- This package allows for the rapid development of API based services, and includes integration with the Unity DI framework.
 * [Xigadee Api Client](Xigadee.Api.Client/_docs/Introduction.md)
 	- This package speeds up the development of client libraries that consume API services.
-* [Xigadee Api Console](Xigadee.Console/_docs/Introduction.md)
-	- This package is designed to help in creating simple console based test harnesses for Microservice applications.
+* [Xigadee Console](Xigadee.Console/_docs/Introduction.md)
+	- This package is designed to help in building simple console based test harnesses, for your Microservice applications.
 
 ## Legal Stuff
 
