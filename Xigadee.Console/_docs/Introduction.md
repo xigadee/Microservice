@@ -1,4 +1,4 @@
-﻿# Xigadee.Console Library
+# Xigadee.Console Library
 
 ## Introduction
 
