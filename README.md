@@ -8,7 +8,8 @@ The framework is built using Microsoft .NET technologies, and has deep integrati
 
 ## Introduction
 
-
+Xigadee is designed to simplify the creation of a Microservice. 
+* [The 15 minute Microservice](Xigadee.Platform/_Docs/fifteenminuteMicroservice.md)
 
 ## Packages
 
