@@ -31,4 +31,5 @@ Xigadee is designed to try and simplify much of the complexity of setting up a M
         }
 ```
 
+![Hitachi](../../docs/hitachi.png)
 @paulstancer 

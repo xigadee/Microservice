@@ -7,3 +7,4 @@ Xigadee is a Microservice framework that can be used to build extensible server 
 **[Nuget package can be found here](https://www.nuget.org/packages/Xigadee)**
 
 ![Hitachi](../../docs/hitachi.png)
+@paulstancer 
