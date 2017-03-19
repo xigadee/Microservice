@@ -7,7 +7,7 @@
     <authors>Paul Stancer and Guy Steel at Hitachi Consulting (http://hitachiconsulting.com)</authors>
     <owners>Information Management Group Ltd (http://imgroup.com) part of Hitachi Consulting</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
-    <projectUrl>http://xigadee.com</projectUrl>
+    <projectUrl>https://github.com/xigadee/Microservice</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Xigadee .NET Framework library is used to construct Microservices.</description>
     <releaseNotes>Initial push.</releaseNotes>
