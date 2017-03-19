@@ -1,20 +1,21 @@
 ![Xigadee](/docs/xigadee.png)
 
-Xigadee is an open-source Microservice framework, developed by [Paul Stancer](https://github.com/paulstancer) and [Guy Steel](https://github.com/guysteel) at Hitachi Consulting. The framework was developed over a number of years, based on the excperience of building large-scale distributed cloud applications. 
+Xigadee is a Microservice framework, developed by [Paul Stancer](https://github.com/paulstancer) and [Guy Steel](https://github.com/guysteel) at Hitachi Consulting. The framework has been in development for a number of years, and is based on our experience - and more importantly our pain - in building large-scale distributed cloud applications for our clients. 
 
-The libraries are designed to provide a simplified and consistent approach to building complex scalable Microservice-based cloud applications, particularly those targetting PAAS technologies.
+The libraries are designed to simplify, and provide a consistent approach to our consulting teams, in building modern applications that target Platform-As-A-Service (PAAS) technologies. 
 
-It is built using Microsoft .NET technologies, and has deep integration in to the Azure technology stack. Xigadee is particularly suited to the serverless 
+Xigadee is now open-source, released under the Apache 2 license, and you are free to use it within your own commercial applications without restriction. It is built using Microsoft .NET technologies, and has deep integration in to the Azure technology stack. 
 
 ## Introduction
 
-The aim of Xigadee is to provide a simple extensible framework that allows a development team to create a set of services that naturally support the scale out necessary in a cloud based, without the complexity of implementing the complex concurrent coding needed.
+To get started, please read the links below. These will give you an understanding of how we have put Xigadee toghther, and how you can use it in your software projects.
 
-* [The 15 minute Microservice](Xigadee.Platform/_Docs/fifteenminuteMicroservice.md)
+* [What is a Microservice?](Xigadee.Platform/_Docs/WhatIsAMicroservice.md)
+* [The 15 minute Microservice - an introduction to the configuration pipeline.](Xigadee.Platform/_Docs/fifteenminuteMicroservice.md)
 
 ## Packages
 
-Xigadee is made up of a number of distinct NuGet packages, which are listed below. They support different areas of a Microservice application.
+Xigadee is made up of a number of distinct NuGet packages, which are listed below. They support different areas of Microservice functionality. These packages can be added to your project through the relevant [NuGet](https://www.nuget.org/packages?q=Tags%3A%22Xigadee%22) packages. These packages are currently in a pre-release state, but we are working to complete the documentation, and improve the code test coverage, so that we can provide a full set of releases.
 
 * [Xigadee](Xigadee.Platform/_Docs/Introduction.md) 
 	- This is the core library that is used to create Microservice and serverless based solutions.
@@ -40,5 +41,7 @@ See the License for the specific language governing permissions and limitations 
 ## Feedback
 
 Xigadee is in active development across a number of development projects, and we welcome feedback and suggestions for future versions of the Framework, and more importantly bug reports.
+
+_@paulstancer_
 
 ![Hitachi](/docs/hitachi.png)
