@@ -36,7 +36,10 @@ namespace Xigadee
         /// </summary>
         public event EventHandler<EventArgs> OnClose;
 
-        public Dictionary<string, ConsoleInfoContext> mCustomInfo;
+        /// <summary>
+        /// This property contains any custom information for the menu.
+        /// </summary>
+        public Dictionary<string, ConsoleInfoContext> CustomInfo { get; set; }
 
         #region Constructor
         /// <summary>
@@ -62,7 +65,7 @@ namespace Xigadee
             Context.Indent1 = 3;
             Context.Indent2 = 6;
 
-            mCustomInfo = new Dictionary<string, ConsoleInfoContext>();
+            CustomInfo = new Dictionary<string, ConsoleInfoContext>();
         }
         #endregion
         /// <summary>
