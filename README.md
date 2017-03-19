@@ -1,11 +1,12 @@
 # Xigadee Microservice Library
 
-Xigadee is a Microservice framework, developed by Paul Stancer and Guy Steel to provide a consistent approach . 
+![Xigadee](/xigadee.png)
+
+Xigadee is a Microservice framework, developed by Paul Stancer and Guy Steel. The libraries were developed to provide a consistent approach to building complex scalable cloud based applications, what were built on PAAS technologies.
 
 It based on the .NET Framework, and is designed to enable the rapid development and deployment of scalable cloud based solutions.
 
 ## Introduction
-
 
 Xigadee is made up of a number of distinct NuGet packages, which are listed below. They are arranged to support distinct part of a Microservice application.
 
@@ -21,7 +22,6 @@ Xigadee is made up of a number of distinct NuGet packages, which are listed belo
 	- This package speeds up the development of client libraries that consume API services.
 * [Xigadee Api Console](Xigadee.Console/_docs/Introduction.md)
 	- This package is designed to help in creating simple console based test harnesses for Microservice applications.
-
 
 ## Legal Stuff
 
