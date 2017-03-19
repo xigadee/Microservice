@@ -1,14 +1,15 @@
 ![Xigadee](/docs/xigadee.png)
 
-Xigadee is a Microservice framework, developed by [Paul Stancer](https://github.com/paulstancer) and [Guy Steel](https://github.com/guysteel) at Hitachi Consulting. 
+Xigadee is an open-source Microservice framework, developed by [Paul Stancer](https://github.com/paulstancer) and [Guy Steel](https://github.com/guysteel) at Hitachi Consulting. The framework was developed over a number of years, based on the excperience of building large-scale distributed cloud applications. 
 
-The libraries are designed to provide a simplified and consistent approach to building complex scalable cloud based applications, particularly those targetting PAAS technologies, and using a Microservice-based serverless approach.
+The libraries are designed to provide a simplified and consistent approach to building complex scalable Microservice-based cloud applications, particularly those targetting PAAS technologies.
 
-The framework is built using Microsoft .NET technologies, and has deep integration in to the Azure technology stack.
+It is built using Microsoft .NET technologies, and has deep integration in to the Azure technology stack. Xigadee is particularly suited to the serverless 
 
 ## Introduction
 
-Xigadee is designed to simplify the creation of a Microservice. 
+The aim of Xigadee is to provide a simple extensible framework that allows a development team to create a set of services that naturally support the scale out necessary in a cloud based, without the complexity of implementing the complex concurrent coding needed.
+
 * [The 15 minute Microservice](Xigadee.Platform/_Docs/fifteenminuteMicroservice.md)
 
 ## Packages
