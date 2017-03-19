@@ -2,7 +2,7 @@
 
 Xigadee is designed to try and simplify much of the complexity of setting up a Microservice. This example gives a brief outline of how you can build a Microservice based application using the Xigadee framework.
 
-'''
+```
         static void Main(string[] args)
         {
             try
@@ -29,6 +29,6 @@ Xigadee is designed to try and simplify much of the complexity of setting up a M
             }
 
         }
-'''
+```
 
 @paulstancer 
