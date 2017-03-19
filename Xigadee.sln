@@ -60,8 +60,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Pipeline", "Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Shared", "Test\Test.Xigadee.Shared\Test.Xigadee.Shared.csproj", "{6AA8F0E5-AB72-4DF5-BD02-A23FBD8FDB83}"
 EndProject
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Test.Xigadee.Sql", "Test\Test.Xigadee.Sql\Test.Xigadee.Sql.sqlproj", "{FE000961-2CD9-49C4-9C6D-B8A5AAAC1844}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -154,12 +152,6 @@ Global
 		{6AA8F0E5-AB72-4DF5-BD02-A23FBD8FDB83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6AA8F0E5-AB72-4DF5-BD02-A23FBD8FDB83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6AA8F0E5-AB72-4DF5-BD02-A23FBD8FDB83}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FE000961-2CD9-49C4-9C6D-B8A5AAAC1844}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FE000961-2CD9-49C4-9C6D-B8A5AAAC1844}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FE000961-2CD9-49C4-9C6D-B8A5AAAC1844}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{FE000961-2CD9-49C4-9C6D-B8A5AAAC1844}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FE000961-2CD9-49C4-9C6D-B8A5AAAC1844}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FE000961-2CD9-49C4-9C6D-B8A5AAAC1844}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -176,7 +168,6 @@ Global
 		{F81F3402-897C-40AE-832C-7EF1000D2595} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 		{24A970DC-3FB0-4541-9ADB-175F04D64B53} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 		{6AA8F0E5-AB72-4DF5-BD02-A23FBD8FDB83} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
-		{FE000961-2CD9-49C4-9C6D-B8A5AAAC1844} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
