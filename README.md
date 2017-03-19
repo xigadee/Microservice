@@ -8,7 +8,11 @@ The framework is built using Microsoft .NET technologies, and has deep integrati
 
 ## Introduction
 
-Xigadee is made up of a number of distinct NuGet packages, which are listed below. They are arranged to support distinct part of a Microservice application.
+
+
+## Packages
+
+Xigadee is made up of a number of distinct NuGet packages, which are listed below. They support different areas of a Microservice application.
 
 * [Xigadee](Xigadee.Platform/_Docs/Introduction.md) 
 	- This is the core library that is used to create Microservice and serverless based solutions.

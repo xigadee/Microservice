@@ -5,9 +5,9 @@
     <version>{UpdateVersion.ps1.replace}</version>
     <title>Xigadee Api Client Library</title>
     <authors>Paul Stancer and Guy Steel at Hitachi Consulting (http://hitachiconsulting.com)</authors>
-    <owners>Information Management Group Ltd (http://imgroup.com) part of Hitachi Consulting</owners>
+    <owners>Hitachi Consulting</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
-    <projectUrl>https://github.com/xigadee/Microservice</projectUrl>
+    <projectUrl>https://github.com/xigadee/Microservice/blob/master/README.md</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Xigadee API client library is used to access Api gateways for client applications.</description>
     <releaseNotes>Initial push.</releaseNotes>
