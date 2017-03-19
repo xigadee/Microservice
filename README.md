@@ -2,9 +2,9 @@
 
 Xigadee is a Microservice framework, developed by Paul Stancer and Guy Steel at Hitachi Consulting. 
 
-The libraries are designed to provide a consistent approach when building complex scalable cloud based applications, particularly those targetting PAAS technologies.
+The libraries are designed to provide a simplified and consistent approach to building complex scalable cloud based applications, particularly those targetting PAAS technologies, and using a Microservice-based serverless approach.
 
-The framework is built on Microsoft .NET technologies, and has deep integration in to the Azure technology stack.
+The framework is built using Microsoft .NET technologies, and has deep integration in to the Azure technology stack.
 
 ## Introduction
 
