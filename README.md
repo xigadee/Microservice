@@ -1,6 +1,6 @@
 ![Xigadee](/docs/xigadee.png)
 
-Xigadee is a Microservice framework, developed by [Paul Stancer](https://github.com/paulstancer) and [Guy Steel](https://github.com/guysteel) at Hitachi Consulting. The framework was developed over a number of years, based on our experience - and more importantly our pain - in building large-scale distributed cloud applications for our clients. 
+Xigadee is a Microservice framework, developed by [Paul Stancer](https://github.com/paulstancer) and [Guy Steel](https://github.com/guysteel) at Hitachi Consulting. The framework has been in development for a number of years, and is based on our experience - and more importantly our pain - in building large-scale distributed cloud applications for our clients. 
 
 The libraries are designed to simplify, and provide a consistent approach to our consulting teams, in building modern applications that target Platform-As-A-Service (PAAS) technologies. 
 
@@ -15,7 +15,7 @@ To get started, please read the links below. These will give you an understandin
 
 ## Packages
 
-Xigadee is made up of a number of distinct NuGet packages, which are listed below. They support different areas of a Microservice functionality. These packages can be added to your project through the relevant [NuGet](https://www.nuget.org/packages?q=Tags%3A%22Xigadee%22) packages. These packages are currently in a pre-release state, but we are working to complete the documentation, and improve the code test coverage so that we can provide a full set of releases.
+Xigadee is made up of a number of distinct NuGet packages, which are listed below. They support different areas of Microservice functionality. These packages can be added to your project through the relevant [NuGet](https://www.nuget.org/packages?q=Tags%3A%22Xigadee%22) packages. These packages are currently in a pre-release state, but we are working to complete the documentation, and improve the code test coverage, so that we can provide a full set of releases.
 
 * [Xigadee](Xigadee.Platform/_Docs/Introduction.md) 
 	- This is the core library that is used to create Microservice and serverless based solutions.
@@ -42,6 +42,5 @@ See the License for the specific language governing permissions and limitations 
 
 Xigadee is in active development across a number of development projects, and we welcome feedback and suggestions for future versions of the Framework, and more importantly bug reports.
 
-@paulstancer
-
+_@paulstancer_
 ![Hitachi](/docs/hitachi.png)
