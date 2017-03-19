@@ -29,6 +29,7 @@ Xigadee is made up of a number of distinct NuGet packages, which are listed belo
 	- This package is designed to help in building simple console based test harnesses, for your Microservice applications.
 
 ## Legal Stuff
+![Hitachi](/docs/hitachi.png)
 
 **Copyright Hitachi Consulting 2012-2017**
 
@@ -43,5 +44,3 @@ See the License for the specific language governing permissions and limitations 
 Xigadee is in active development across a number of development projects, and we welcome feedback and suggestions for future versions of the Framework, and more importantly bug reports.
 
 _@paulstancer_
-
-![Hitachi](/docs/hitachi.png)
