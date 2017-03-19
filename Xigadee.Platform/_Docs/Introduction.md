@@ -1,4 +1,3 @@
-﻿# Xigadee library
-
-## The Microservice
+﻿
+## Xigadee library
 Xigadee is a Microservice framework that can be used to build extensible server based systems.

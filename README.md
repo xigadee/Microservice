@@ -1,5 +1,3 @@
-# Xigadee Microservice Library
-
 ![Xigadee](/xigadee.png)
 
 Xigadee is a Microservice framework, developed by Paul Stancer and Guy Steel. 
