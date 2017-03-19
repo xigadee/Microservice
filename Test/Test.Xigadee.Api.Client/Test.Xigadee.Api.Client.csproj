@@ -52,11 +52,11 @@
       <Project>{6aa8f0e5-ab72-4df5-bd02-a23fbd8fdb83}</Project>
       <Name>Test.Xigadee.Shared</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Xigadee.Api.Client\Xigadee.Api.Client.csproj">
+    <ProjectReference Include="..\..\Xigadee.Api.Client\Xigadee.Api.Client.csproj">
       <Project>{19f45b9b-5c21-4ec3-ae73-84001ebccc4b}</Project>
       <Name>Xigadee.Api.Client</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj">
+    <ProjectReference Include="..\..\Xigadee\Xigadee.Helper.csproj">
       <Project>{4f785b7b-1fdc-4dcc-9453-fe42447fded2}</Project>
       <Name>Xigadee.Helper</Name>
     </ProjectReference>

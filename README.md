@@ -41,6 +41,6 @@ See the License for the specific language governing permissions and limitations 
 
 ## Feedback
 
-Xigadee is in active development across a number of evelopment projects, and we welcome feedback and suggestions for future versions of the Framework, and more importantly bug reports. 
+Xigadee is in active development across a number of development projects, and we welcome feedback and suggestions for future versions of the Framework, and more importantly bug reports. 
 
 @paulstancer @guysteel
