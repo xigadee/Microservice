@@ -585,6 +585,7 @@
     <None Include="Security\Jwt\_Documents\rfc7800 - Proof-of-Possession .pdf" />
     <None Include="Xigadee.nuspec" />
     <None Include="Xigadee.Platform.licenseheader" />
+    <None Include="_Docs\15-minute-Microservice.md" />
     <None Include="_Docs\Introduction.md" />
   </ItemGroup>
   <ItemGroup>
