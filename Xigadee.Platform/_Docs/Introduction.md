@@ -4,29 +4,31 @@ Xigadee is a Microservice framework that can be used to build extensible server 
 
 It is made up of a number of key components. In this section, I will outline the basic building blocks of a Xigadee Microservice.
 
-##The pipeline
+## The pipeline
 
-##The command
+## The command
 
-###Policy
+### Policy
 
-###Statistics
+### Statistics
 
-###Type of command
+### The types of command
+#### Persistence
+#### Master Jobs
 
-##The channels
+## The channels
 
-##Persistence
 
-##Serialization
 
-##Security
+## Serialization
 
-##More information
+## Security
+
+## More information
 * [15 Minute Microservice](fifteenminuteMicroservice.md)
 
-##Nuget
-**[Nuget package can be found here](https://www.nuget.org/packages/Xigadee)**
+## Nuget
+**[The Nuget package can be found here](https://www.nuget.org/packages/Xigadee)**
 
 _@paulstancer_
 
