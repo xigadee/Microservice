@@ -1,4 +1,4 @@
-﻿# Xigadee.Api.Client
+# Xigadee.Api.Client
 
 ## Introduction
 

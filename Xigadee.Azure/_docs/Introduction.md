@@ -1,4 +1,4 @@
-﻿# Xigadee.Azure library
+# Xigadee.Azure library
 
 ## What's new
 

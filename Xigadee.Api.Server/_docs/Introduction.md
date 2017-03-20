@@ -1,4 +1,4 @@
-﻿# Xigadee.Api.Server Library
+# Xigadee.Api.Server Library
 
 ## Introduction
 
