@@ -85,20 +85,18 @@
     <Compile Include="EventTestCommand.cs" />
     <Compile Include="Microservice\ServiceIdentifierValidation.cs" />
     <Compile Include="Pipeline\Pipeline2.cs" />
-    <Compile Include="Microservice_Validate_CommandRequest.cs" />
-    <Compile Include="Microservice_Validate_CommandOutgoingRequests.cs" />
+    <Compile Include="Commands\Microservice_Validate_CommandRequest.cs" />
+    <Compile Include="Commands\Microservice_Validate_CommandOutgoingRequests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Microservice_Validate_Persistence.cs" />
+    <Compile Include="Persistence\Microservice_Validate_Persistence.cs" />
     <Compile Include="ResourceTracker\UnitTest1.cs" />
     <Compile Include="Security\AesEncryptionTests.cs" />
     <Compile Include="Security\TransportEncryptionTests.cs" />
     <Compile Include="Security\TransportVerificationTests.cs" />
     <Compile Include="Security\JWTUnitTests.cs" />
     <Compile Include="Serialization\SerializationTests.cs" />
-    <Compile Include="SignatureHelper.cs" />
-    <Compile Include="ApiTests.cs" />
+    <Compile Include="Security\SignatureHelper.cs" />
     <Compile Include="Pipeline\Pipeline1.cs" />
-    <Compile Include="UnitTest1.cs" />
     <Compile Include="PopulatorExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -134,7 +132,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Common\" />
-    <Folder Include="Persistence\" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
