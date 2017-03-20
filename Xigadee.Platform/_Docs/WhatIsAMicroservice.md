@@ -6,6 +6,9 @@
 4. Minimal
 5. Complete
 
+## How is that different from before?
+
+
 _@paulstancer_
 
 ![Hitachi](../../docs/hitachi.png)
