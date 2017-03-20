@@ -6,6 +6,10 @@ Xigadee is a Microservice framework that can be used to build extensible server 
 
 It is made up of a number of key components. In this section, I will outline the basic building blocks of a Xigadee Microservice.
 
+## The message flow
+
+## The channels
+
 ## The pipeline
 
 ## The command
@@ -17,9 +21,6 @@ It is made up of a number of key components. In this section, I will outline the
 ### The types of command
 #### Persistence
 #### Master Jobs
-
-## The channels
-
 
 
 ## Serialization
