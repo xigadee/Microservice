@@ -22,7 +22,9 @@ Instead of building your application as one big system, we break it down in to s
 
 ## How does Xigadee work?
 
-### Footnotes
+## Next: [Introduction To Xigadee](Introduction.md)
+
+#### Footnotes
 
  - [Mr Fowler](https://martinfowler.com/articles/microservices.html)
  - [Nirmata](http://www.nirmata.com/2015/02/microservices-five-architectural-constraints/)

@@ -1,4 +1,4 @@
-# Xigadee library
+# Xigadee library - an introduction
 
 Xigadee is a Microservice framework that can be used to build extensible server based systems.
 
@@ -24,9 +24,7 @@ It is made up of a number of key components. In this section, I will outline the
 
 ## Security
 
-## More information
-* [15 Minute Microservice](fifteenminuteMicroservice.md)
-* [What is a Microservice?](WhatIsAMicroservice.md)
+## Next: [15 Minute Microservice](fifteenminuteMicroservice.md)
 
 ## Nuget
 **[The Nuget package can be found here](https://www.nuget.org/packages/Xigadee)**
