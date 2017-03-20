@@ -1,4 +1,4 @@
-![Work In Progress](../../docs/smallWIP.jpg)
+![Work In Progress](../../docs/smallWIP.jpg  "Sorry, I'm still working here")
 
 # What is a Microservice?
 
