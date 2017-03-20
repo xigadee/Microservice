@@ -1,3 +1,5 @@
+![Work In Progress](../../docs/smallWIP.jpg  "Sorry, I'm still working here")
+
 # Xigadee library - an introduction
 
 Xigadee is a Microservice framework that can be used to build extensible server based systems.

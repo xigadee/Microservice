@@ -1,3 +1,5 @@
+![Work In Progress](../../docs/smallWIP.jpg  "Sorry, I'm still working here")
+
 # What is a Microservice?
 
 Microservices are a relatively new concept that change the approach in how way we build software systems. 
@@ -19,6 +21,8 @@ Instead of building your application as one big system, we break it down in to s
 ## How is that different from before?
 
 ## The Gotcha law!
+
+It's important to understand [CAP Theorem](https://en.wikipedia.org/wiki/CAP_theorem) when building a Microservice based application. If you don't them things can get very complicated and messy, very fast. 
 
 ## How does Xigadee work?
 
