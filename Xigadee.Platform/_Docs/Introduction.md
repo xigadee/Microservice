@@ -12,14 +12,16 @@ It is made up of a number of key components. In this section, I will outline the
 
 ## The pipeline
 
-## The command
+## The command object
 
 ### Policy
 
 ### Statistics
 
 ### The types of command
+
 #### Persistence
+
 #### Master Jobs
 
 
