@@ -2,9 +2,9 @@
 
 # What is a Microservice?
 
-Microservices are a relatively new concept that change the way in how way we design and build software systems. They are essentially small autonomous services that work together to form an overall solution.
+Microservices are a relatively new concept that change the way in how we design and build software systems. They are essentially small autonomous services that work together to form an overall solution.
 
-Instead of building your application as one big system, we break it down in to these smaller composable pieces called Microservices. In general Microservices have the following properties:
+Instead of building your application as one big system, we break it down in to these smaller composable piece, that can be designed, tested and deployed independently from each other. In general Microservices have the following properties:
 
 1. **Complete**
 	- A Microservice should only seek to deliver a small - but complete - set of business funtionality; otherwise we will start to build the type of application that we are trying to avoid. 
@@ -29,7 +29,9 @@ The [Monolith](https://en.wikipedia.org/wiki/Monolithic_application).
 
 It's important to understand [CAP Theorem](https://en.wikipedia.org/wiki/CAP_theorem) when building a Microservice based application. If you don't them things can get very complicated and messy, very fast. 
 
-## How does Xigadee work?
+## Why use Xigadee?
+
+Xigadee has been built from experience. Many of the problems that we have faced building commercial enterprise-grade Microservice based solutions have been incorporated in to the Xigadee framework. Build these types of application, particularly in a PASS based environment, have particular challenges especially ensuring that your solution is fault tolerant. Xigadee solves many of those challenges for you.
 
 ## Next: [Introduction To Xigadee](Introduction.md)
 
