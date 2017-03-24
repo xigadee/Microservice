@@ -7,7 +7,7 @@ Microservices are a relatively new concept that change the way in how way we des
 Instead of building your application as one big system, we break it down in to these smaller composable pieces called Microservices. In general Microservices have the following properties:
 
 1. **Complete**
-	- A Microservice should only seek to deliver a small complete set of business funtionality; otherwise we will start to build the type of application that we are trying to avoid. 
+	- A Microservice should only seek to deliver a small - but complete - set of business funtionality; otherwise we will start to build the type of application that we are trying to avoid. 
 	A good example of this would be a Customer Microservice that only deals with the interaction with a customer, while another Microservice would handle the purchases for that customer.
 	Basically, a Microservice should do one job well, not a multitude of disparate unrelated tasks. In a sense this is similar to the [Single Responsibility Principle](https://en.wikipedia.org/wiki/Single_responsibility_principle) for software development, but on a slightly larger scale.
 	
@@ -22,6 +22,8 @@ Instead of building your application as one big system, we break it down in to t
 
 
 ## How is that different from before?
+
+The [Monolith](https://en.wikipedia.org/wiki/Monolithic_application).
 
 ## The Gotcha law!
 
