@@ -33,6 +33,8 @@ It is made up of a number of key components. In this section, I will outline the
 
 #### Master Jobs
 
+#### Command Initiators
+
 ## Serialization
 
 ## Security
