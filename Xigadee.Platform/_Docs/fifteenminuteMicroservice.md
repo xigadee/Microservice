@@ -38,6 +38,7 @@ Xigadee is designed to try and simplify much of the complexity of setting up a M
         }
 ```
 
-_@paulstancer_
-
-![Hitachi](../../docs/hitachi.png)
+<table><tr> 
+  <td><img src="../../docs/hitachi.png" alt="Hitachi Consulting" height="50"/></td> 
+  <td>Posted by: <a href="http://github.com/paulstancer">Paul Stancer</a></td>
+</tr></table>
