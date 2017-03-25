@@ -39,7 +39,7 @@ Xigadee is designed to try and simplify much of the complexity of setting up a M
 ```
 
 <table><tr> 
-  <td><img src="../../docs/hitachi.png" alt="Hitachi Consulting" height="50"/></td> 
+<td><a href="http://www.hitachiconsulting.com"><img src="../../docs/hitachi.png" alt="Hitachi Consulting" height="50"/></a></td> 
   <td>Posted by: <a href="http://github.com/paulstancer">Paul Stancer</a></td>
   <td><a href="../../README.md">Back</a></td>
 </tr></table>
