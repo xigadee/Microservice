@@ -1,6 +1,6 @@
 ![Xigadee](../../docs/Xigadee2.png)
-<div>Hello</div>
-![Work In Progress](../../docs/smallWIP.jpg  "Sorry, I'm still working here")
+<div><img src="../../docs/smallWIP.jpg" alt ="Sorry, I'm still working here" height="50"></div>
+
 
 # Xigadee library - an introduction
 
@@ -38,6 +38,8 @@ It is made up of a number of key components. In this section, I will outline the
 ## Nuget
 **[The Nuget package can be found here](https://www.nuget.org/packages/Xigadee)**
 
-_@paulstancer_
+<address>
+Written by <a href="http://github.com/paulstancer">Paul Stancer</a>.<br> 
+</address>
 
 ![Hitachi](../../docs/hitachi.png)
