@@ -44,7 +44,7 @@ It is made up of a number of key components. In this section, I will outline the
 
 <footer>
 <tr> 
-  <td><img src="../../docs/hitachi.png" alt="Hitachi Consulting" height="50"></td> 
+  <td><img src="../../docs/hitachi.png" alt="Hitachi Consulting" height="50"/></td> 
   <td>Posted by: <a href="http://github.com/paulstancer">Paul Stancer</a></td>
 </tr>
 </footer>
