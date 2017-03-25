@@ -8,12 +8,13 @@ Xigadee is now open-source, released under the Apache 2 license, and you are fre
 
 ## Introduction
 
-To get started, please read the links below. These will give you an understanding of how we have put Xigadee toghther, and how you can use it in your software projects.
-
+If you are new to Microservice development, then the following link will give you an overview of Microservices and how we would compose a Microservice based application.
 * [What is a Microservice?](Xigadee.Platform/_Docs/WhatIsAMicroservice.md)
+
+If you just want a quick overview of how we have put Xigadee together, and how to quickly spin up an application, then read the next link.
 * [The 15-minute Microservice - an introduction to the configuration pipeline.](Xigadee.Platform/_Docs/fifteenminuteMicroservice.md)
 
-## Packages
+### Packages
 
 Xigadee is made up of a number of distinct NuGet packages, which are listed below. They support different areas of Microservice functionality. These packages can be added to your project through the relevant [NuGet](https://www.nuget.org/packages?q=Tags%3A%22Xigadee%22) packages. These packages are currently in a pre-release state, but we are working to complete the documentation, and improve the code test coverage, so that we can provide a full set of releases.
 
@@ -43,6 +44,6 @@ See the License for the specific language governing permissions and limitations 
 
 ## Feedback
 
-Xigadee is in active development across a number of development projects, and we welcome feedback and suggestions for future versions of the Framework, and more importantly bug reports.
+Xigadee is in active development across a number of development projects. We welcome feedback and suggestions for future versions of the Framework. More importantly, if you are using the libraries and discover a bug, please let us know so we can fix it.
 
 _[Paul Stancer](https://github.com/paulstancer)_
