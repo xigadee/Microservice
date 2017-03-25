@@ -46,6 +46,6 @@ See the License for the specific language governing permissions and limitations 
 Xigadee is in active development across a number of development projects. We welcome feedback and suggestions for future versions of the Framework. More importantly, if you are using the libraries and discover a [bug](https://github.com/xigadee/Microservice/issues/new), please let us know so we can fix it.
 
 <table><tr> 
-  <td><img src="docs/hitachi.png" alt="Hitachi Consulting" height="50"/></td> 
-  <td>Posted by: <a href="http://github.com/paulstancer">Paul Stancer</a></td>
+<td><a href="http://www.hitachiconsulting.com"><img src="docs/hitachi.png" alt="Hitachi Consulting" height="50"/></a></td>   
+<td>Posted by: <a href="http://github.com/paulstancer">Paul Stancer</a></td>
 </tr></table>
