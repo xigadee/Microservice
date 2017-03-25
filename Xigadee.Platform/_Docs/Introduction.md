@@ -1,5 +1,8 @@
-![Xigadee](../../docs/Xigadee2.png)
-<div><img src="../../docs/smallWIP.jpg" alt ="Sorry, I'm still working here" height="50"></div>
+<div>
+<tr>
+<td><img src="../../docs/Xigadee2.png" alt ="Xigadee"></td>
+<td><img src="../../docs/smallWIP.jpg" alt ="Sorry, I'm still working here" height="100"></td>
+</div>
 
 
 # Xigadee library - an introduction
@@ -38,8 +41,8 @@ It is made up of a number of key components. In this section, I will outline the
 ## Nuget
 **[The Nuget package can be found here](https://www.nuget.org/packages/Xigadee)**
 
-<address>
-Written by <a href="http://github.com/paulstancer">Paul Stancer</a>.<br> 
-</address>
+<footer>
+  <p>Posted by: <a href="http://github.com/paulstancer">Paul Stancer</a></p>
+</footer>
 
 ![Hitachi](../../docs/hitachi.png)
