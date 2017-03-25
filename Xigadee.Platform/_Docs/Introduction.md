@@ -1,3 +1,4 @@
+![Xigadee](../../docs/Xigadee2.png)
 ![Work In Progress](../../docs/smallWIP.jpg  "Sorry, I'm still working here")
 
 # Xigadee library - an introduction
