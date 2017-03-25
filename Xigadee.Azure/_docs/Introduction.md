@@ -1,4 +1,32 @@
-# Xigadee.Azure library
+﻿# Xigadee.Azure library
+
+The Xigadee Azure library contains a set of components that help in integrating Azure's PAAS based services in to your Microservice application.
+
+## Communication
+
+### Azure Service Bus
+
+#### Queues
+
+#### Topics (Broadcast)
+
+## Persistence
+
+### Blob Storage
+
+### DocumentDb
+
+### Redis Cache
+
+## Monitoring
+
+## Configuration
+
+### Azure KeyVault
+
+## Logging
+
+### Azure Application Insights
 
 ## What's new
 
