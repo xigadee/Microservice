@@ -1,7 +1,8 @@
 <div>
 <tr>
-<td><img src="../../docs/Xigadee2.png" alt ="Xigadee"></td>
-<td><img src="../../docs/smallWIP.jpg" alt ="Sorry, I'm still working here" height="100"></td>
+<td><img src="../../docs/Xigadee2.png" alt="Xigadee"></td>
+<td align="right"><img src="../../docs/smallWIP.jpg" alt="Sorry, I'm still working here" height="100"></td>
+</tr>
 </div>
 
 
@@ -43,6 +44,5 @@ It is made up of a number of key components. In this section, I will outline the
 
 <footer>
   <p>Posted by: <a href="http://github.com/paulstancer">Paul Stancer</a></p>
+  <p><img src="../../docs/hitachi.png" alt="Hitachi Consulting" height="100"></p>
 </footer>
-
-![Hitachi](../../docs/hitachi.png)
