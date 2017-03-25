@@ -10,13 +10,13 @@ Instead of building your application as one big system, we break it down in to t
 	- A Microservice should only seek to deliver a small - but complete - set of business funtionality; otherwise we will start to build the type of application that we are trying to avoid. 
 	A good example of this would be a Customer Microservice that only deals with the interaction with a customer, while another Microservice would handle the purchases for that customer.
 	Basically, a Microservice should do one job well, not a multitude of disparate unrelated tasks. In a sense this is similar to the [Single Responsibility Principle](https://en.wikipedia.org/wiki/Single_responsibility_principle) for software development, but on a slightly larger scale.
-	
+	A Microservice should have the ability to be independently updated without affecting the rest of the application.	
 2. **Scalable and Elastic**
-	- Generally when the load on a particular service increases, the technology that implements the service allows it to scale-out to multiple instances to handle this additional load.
-	
+	- Generally when the load on a particular service increases, the technology that implements the service allows it to scale-out to multiple instances to handle this additional load.	
 3. **Resilient**
 	- Microservices based applications should handle a particular service being unavailable, and should be eventually consistent.
 4. **Composable**
+	- One of the key benefits of using a Microservice approach, is that it allows for the reuse of the Microservice in other applications or services. We are building a capability that can be used by other services, i.e. a Customer Microservice. How we consume that service can be changed and adjusted over time. We now have a Customer capability, but we are open to integrate that in to other applications as our needs change, without the worry of breaking existing functionality as this service is not tightly coupled in to a specific business funtion.
 5. **Minimal**
 	- They do one things, and they do it well.
 
