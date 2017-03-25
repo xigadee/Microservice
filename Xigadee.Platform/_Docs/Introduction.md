@@ -1,4 +1,4 @@
-<table>
+<table style="width:100%">
 <tr>
 <td><img src="../../docs/Xigadee2.png" alt="Xigadee"></td>
 <td align="right"><img src="../../docs/smallWIP.jpg" alt="Sorry, I'm still working here" height="100"></td>
