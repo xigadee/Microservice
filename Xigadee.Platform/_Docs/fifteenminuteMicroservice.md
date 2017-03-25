@@ -1,4 +1,9 @@
-![Work In Progress](../../docs/smallWIP.jpg  "Sorry, I'm still working here")
+<table style="border: 1px solid black;">
+<tr>
+<td width="80%"><img src="../../docs/Xigadee2.png" alt="Xigadee"></td>
+<td width = "*" align="right"><img src="../../docs/smallWIP.jpg" alt="Sorry, I'm still working here" height="100"></td>
+</tr>
+</table>
 
 # The 15 minute Microservice
 
