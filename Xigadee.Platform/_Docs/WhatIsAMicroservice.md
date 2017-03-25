@@ -35,7 +35,7 @@ Xigadee has been built from experience. Many of the problems that we have faced 
 
 ## Next: [Introduction To Xigadee](Introduction.md)
 
-#### Footnotes
+##### Footnotes & Thanks
 
  - [Mr Fowler](https://martinfowler.com/articles/microservices.html)
  - [Nirmata](http://www.nirmata.com/2015/02/microservices-five-architectural-constraints/)
