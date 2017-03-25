@@ -16,7 +16,7 @@ Or if you want a quick introduction on how to build a new Microservice applicati
 
 ### Packages
 
-Xigadee is made up of a number of distinct NuGet packages, which are listed below. They support different areas of Microservice functionality. These packages can be added to your project through the relevant [NuGet](https://www.nuget.org/packages?q=Tags%3A%22Xigadee%22) packages. These packages are currently in a pre-release state, but we are working to complete the documentation, and improve the code test coverage, so that we can provide a full set of releases.
+Xigadee is made up of a number of distinct NuGet packages, which are listed below. They support different areas of Microservice functionality. These capabilities can be added to your project through the relevant [NuGet](https://www.nuget.org/packages?q=Tags%3A%22Xigadee%22) packages. Currently Xigadee is in a pre-release state, but we are working to complete the documentation, and improve the code test coverage, so that we can provide a base line set of releases.
 
 * [Xigadee](Xigadee.Platform/_Docs/Introduction.md) 
 	- This is the core library that is used to create Microservice and serverless based solutions.
