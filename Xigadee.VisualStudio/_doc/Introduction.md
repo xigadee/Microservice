@@ -7,7 +7,7 @@
 
 # Xigadee.VisualStudio integration
 
-This is the primary library for the .NET framework. It contains references to core classes that aren't supported in the new .NET Core.
+This library is experimental. We are looking at VSTS integration to enable on-premise components to automatically update when a build completes.
 
 ## Introduction
 
