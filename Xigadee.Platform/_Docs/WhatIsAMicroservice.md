@@ -9,7 +9,9 @@
 
 Microservices are a relatively new concept that change the way in how we design and build software systems. They are essentially small autonomous services that work together to form an overall solution.
 
-Instead of building your application as one big system, we break it down in to these smaller composable piece, that can be designed, tested and deployed independently from each other. In general Microservices have the following properties:
+Instead of designing your application as one big tightly coupled system, we break it down in to smaller composable piece, that can be designed, tested, and deployed independently from each other. 
+
+In general Microservices have the following properties:
 
 1. **Complete**
 	- A Microservice should deliver a small - but complete - set of business capability.
