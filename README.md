@@ -13,7 +13,7 @@ If you are new to Microservice development, then the following link will give yo
 * [An introduction to Xigadee.](Xigadee.Platform/_Docs/Introduction.md)
 
 Or if you want a quick introduction on how to build a new Microservice application using the Xigadee libraries, then read the following:
-* [The 15-minute Microservice - an introduction to the configuration pipeline.](Xigadee.Platform/_Docs/fifteenminuteMicroservice.md)
+* [The 15-minute Microservice.](Xigadee.Platform/_Docs/fifteenminuteMicroservice.md)
 
 ### Packages
 
