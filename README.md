@@ -47,5 +47,5 @@ Xigadee is in active development across a number of development projects. We wel
 
 <table><tr> 
 <td><a href="http://www.hitachiconsulting.com"><img src="docs/hitachi.png" alt="Hitachi Consulting" height="50"/></a></td>   
-<td>Posted by: <a href="http://github.com/paulstancer">Paul Stancer</a></td>
+<td>Created by: <a href="http://github.com/paulstancer">Paul Stancer</a></td>
 </tr></table>
