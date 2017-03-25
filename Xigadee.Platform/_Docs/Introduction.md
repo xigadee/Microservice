@@ -2,9 +2,9 @@
 
 # Xigadee library - an introduction
 
-Xigadee is a Microservice framework that can be used to build extensible server based systems.
+Xigadee is an extensible Microservice framework that can be used to build modern scalable applications using Platform-As-A-Service technologies.
 
-It is made up of a number of key components. In this section, I will outline the basic building blocks of a Xigadee Microservice.
+It is made up of a number of key components. In this section, I will outline the basic building blocks of a Xigadee Microservice, and explain how you can use them to build your application.
 
 ![Xigadee](Xigadee.png)
 
