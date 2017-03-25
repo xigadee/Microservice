@@ -32,7 +32,6 @@ Xigadee is made up of a number of distinct NuGet packages, which are listed belo
 	- This package is used to provide deeper integration in to the Windows platform.
 
 ## Legal Stuff
-![Hitachi](/docs/hitachi.png)
 
 _**Copyright © [Hitachi Consulting](http://www.hitachiconsulting.com) 2012-2017**_
 
@@ -46,4 +45,7 @@ See the License for the specific language governing permissions and limitations 
 
 Xigadee is in active development across a number of development projects. We welcome feedback and suggestions for future versions of the Framework. More importantly, if you are using the libraries and discover a bug, please let us know so we can fix it.
 
-_[Paul Stancer](https://github.com/paulstancer)_
+<table><tr> 
+  <td><img src="docs/hitachi.png" alt="Hitachi Consulting" height="50"/></td> 
+  <td>Posted by: <a href="http://github.com/paulstancer">Paul Stancer</a></td>
+</tr></table>
