@@ -7,11 +7,16 @@
 
 # Xigadee.Framework Library
 
-This is the primary library for the .NET framework. It contains references to core classes that aren't supported in the new .NET Core.
+This is a Xigadee extension library for the .NET framework. It contains references to core classes that aren't supported in the new .NET Core.
 
 ## Introduction
 
 More to come...
+
+### Sql Boundary Logger
+
+### Sql Persistence Base Class
+
 
 <table><tr> 
   <td><img src="../../docs/hitachi.png" alt="Hitachi Consulting" height="50"/></td> 
