@@ -6,6 +6,8 @@ Xigadee is a Microservice framework that can be used to build extensible server 
 
 It is made up of a number of key components. In this section, I will outline the basic building blocks of a Xigadee Microservice.
 
+![Xigadee](Xigadee.png)
+
 ## The message flow
 
 ## The channels
