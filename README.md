@@ -10,6 +10,7 @@ Xigadee is now open-source, released under the Apache 2 license, and you are fre
 
 If you are new to Microservice development, then the following link will give you an overview of Microservices and how we would compose a Microservice based application.
 * [What is a Microservice?](Xigadee.Platform/_Docs/WhatIsAMicroservice.md)
+* [An introduction to Xigadee](Xigadee.Platform/_Docs/Introduction.md)
 
 Or if you want a quick introduction on how to build a new Microservice application using the Xigadee libraries, then read the following:
 * [The 15-minute Microservice - an introduction to the configuration pipeline.](Xigadee.Platform/_Docs/fifteenminuteMicroservice.md)
