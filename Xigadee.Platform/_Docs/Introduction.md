@@ -1,11 +1,9 @@
-<table style="width:100%">
+<table style="border: 1px solid black;">
 <tr>
 <td width="80%"><img src="../../docs/Xigadee2.png" alt="Xigadee"></td>
 <td width = "*" align="right"><img src="../../docs/smallWIP.jpg" alt="Sorry, I'm still working here" height="100"></td>
 </tr>
 </table>
-
-
 # Xigadee library - an introduction
 
 Xigadee is an extensible Microservice framework that can be used to build modern scalable applications using Platform-As-A-Service technologies.
