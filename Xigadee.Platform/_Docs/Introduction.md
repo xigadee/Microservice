@@ -21,8 +21,6 @@ It is made up of a number of key components. In this section, I will outline the
 
 ### Syncronous messaging
 
-## The pipeline
-
 ## The command object
 
 ### Policy
@@ -35,10 +33,13 @@ It is made up of a number of key components. In this section, I will outline the
 
 #### Master Jobs
 
-
 ## Serialization
 
 ## Security
+
+## The configuration pipeline
+
+Xigadee uses a declarative programming model which simplifies the setup of a Microservice within it's container.
 
 ## Next: [15 Minute Microservice](fifteenminuteMicroservice.md)
 
