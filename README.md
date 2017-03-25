@@ -43,7 +43,7 @@ See the License for the specific language governing permissions and limitations 
 
 ## Feedback
 
-Xigadee is in active development across a number of development projects. We welcome feedback and suggestions for future versions of the Framework. More importantly, if you are using the libraries and discover a bug, please let us know so we can fix it.
+Xigadee is in active development across a number of development projects. We welcome feedback and suggestions for future versions of the Framework. More importantly, if you are using the libraries and discover a [bug](https://github.com/xigadee/Microservice/issues/new), please let us know so we can fix it.
 
 <table><tr> 
   <td><img src="docs/hitachi.png" alt="Hitachi Consulting" height="50"/></td> 
