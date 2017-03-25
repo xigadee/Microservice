@@ -40,6 +40,7 @@ Xigadee has been built from experience. Many of the problems that we have faced 
  - [Mr Fowler](https://martinfowler.com/articles/microservices.html)
  - [Nirmata](http://www.nirmata.com/2015/02/microservices-five-architectural-constraints/)
 
-_@paulstancer_
-
-![Hitachi](../../docs/hitachi.png)
+<table><tr> 
+  <td><img src="../../docs/hitachi.png" alt="Hitachi Consulting" height="50"/></td> 
+  <td>Posted by: <a href="http://github.com/paulstancer">Paul Stancer</a></td>
+</tr></table>
