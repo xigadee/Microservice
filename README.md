@@ -6,12 +6,12 @@ The libraries are designed to simplify, and provide a consistent approach to our
 
 Xigadee is now open-source, released under the Apache 2 license, and you are free to use it within your own commercial applications without restriction. It is built using Microsoft .NET technologies, and has deep integration in to the Azure technology stack. 
 
-## Introduction
+## Quick guides
 
 If you are new to Microservice development, then the following link will give you an overview of Microservices and how we would compose a Microservice based application.
 * [What is a Microservice?](Xigadee.Platform/_Docs/WhatIsAMicroservice.md)
 
-If you just want a quick overview of how we have put Xigadee together, and how to quickly spin up an application, then read the next link.
+Or if you want a quick introduction on how to build a new Microservice application using the Xigadee libraries, then read the following:
 * [The 15-minute Microservice - an introduction to the configuration pipeline.](Xigadee.Platform/_Docs/fifteenminuteMicroservice.md)
 
 ### Packages
