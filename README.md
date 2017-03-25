@@ -27,6 +27,8 @@ Xigadee is made up of a number of distinct NuGet packages, which are listed belo
 	- This package speeds up the development of client libraries that consume API services.
 * [Xigadee Console](Xigadee.Console/_docs/Introduction.md)
 	- This package is designed to help in building simple console based test harnesses, for your Microservice applications.
+* [Xigadee Framework](Xigadee.Framework/_docs/Introduction.md)
+	- This package is used to provide deeper integration in to the Windows platform.
 
 ## Legal Stuff
 ![Hitachi](/docs/hitachi.png)

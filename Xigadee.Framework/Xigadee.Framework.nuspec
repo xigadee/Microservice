@@ -9,7 +9,7 @@
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <projectUrl>https://github.com/xigadee/Microservice/blob/master/README.md</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>Xigadee .NET Framework library is used to construct Microservices.</description>
+    <description>Xigadee .NET Framework library is used to construct Microservices. This package is concerned with providing deeper integration in to the Windows platform.</description>
     <releaseNotes>Initial push.</releaseNotes>
     <copyright>Copyright © Hitachi Consulting 2012-2017</copyright>
     <tags>Xigadee Microservice .NET Hitachi IMGROUP</tags>
