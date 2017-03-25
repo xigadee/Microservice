@@ -15,7 +15,11 @@ It is made up of a number of key components. In this section, I will outline the
 
 ## The message flow
 
-## The channels
+### The channels
+
+### Asyncronous messaging
+
+### Syncronous messaging
 
 ## The pipeline
 
