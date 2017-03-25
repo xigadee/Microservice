@@ -44,5 +44,5 @@ It is made up of a number of key components. In this section, I will outline the
 
 <footer>
   <p>Posted by: <a href="http://github.com/paulstancer">Paul Stancer</a></p>
-  <p><img src="../../docs/hitachi.png" alt="Hitachi Consulting" height="100"></p>
+  <p><img src="../../docs/hitachi.png" alt="Hitachi Consulting" height="50"></p>
 </footer>
