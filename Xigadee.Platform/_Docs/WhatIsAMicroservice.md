@@ -16,7 +16,7 @@ Instead of building your application as one big system, we break it down in to t
 3. **Resilient**
 	- Microservices based applications should handle a particular service being unavailable, and should be eventually consistent.
 4. **Composable**
-	- One of the key benefits of using a Microservice approach, is that it allows for the reuse of the Microservice in other applications or services. We are building a capability that can be used by other services, i.e. a Customer Microservice. How we consume that service can be changed and adjusted over time. We now have a Customer capability, but we are open to integrate that in to other applications as our needs change, without the worry of breaking existing functionality as this service is not tightly coupled in to a specific business funtion.
+	- One of the key benefits of using Microservices, is that it allows for the reuse of the Microservice in other applications or services. We are building a capability that can be consumed when needed, i.e. a Customer Microservice. How we consolidate that service in to the application can be changed and adjusted over time. We now have a Customer capability, but we are open to integrate that in to other applications as our needs change, without the worry of breaking existing functionality as this service is not tightly coupled in to a specific business function.
 5. **Minimal**
 	- They do one thing, and they do it well.
 
