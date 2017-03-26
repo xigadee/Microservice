@@ -602,6 +602,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Communication\TcpChannel\Helper\MakeCert.txt" />
+    <Content Include="_Docs\MessageFlow.png" />
     <Content Include="_Docs\Xigadee.png" />
   </ItemGroup>
   <ItemGroup>
