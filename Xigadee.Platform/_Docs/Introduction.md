@@ -19,17 +19,27 @@ Xigadee works as a message processing system. Messages are passed between the Mi
 
 <img src="MessageFlow.png" alt="Message Flow" height="350"/>
 
-1. Message arrives
-2. Message is assigned an execution slot
-3. Messages is passed to the Dispatcher and matched against the relevant commands
-4. Response is received and is passed to the relevant channel
-5. Response message is transmitted.
+1. Message is received through the communication channel and is passed to the Task Manager for processing.
+2. The Task Manager will queue the message until a processing slot is available. Once a slot is free the message is passed to the Dispatcher.
+3. The Dispatcher will match the message to the commands available in the Microservice through the destination information in the message header. The message will then be passed to the commands that can accept the message.
+4. A response message is received from the command and is then passed to the relevant channel for transmission. Response messages can also be passed to additional commands within the same Microservice for additional processing. Commands can return zero or many response messages to each request message.
+5. Finally the response message is passed to the channel specified in its destination and is transmitted.
+
+### The message
+
 
 ### The channels
+
+Channels are an important concept in Xigadee. They are used to route information between and within Microservice
+
+### The Listeners and the Senders
+
 
 ### Asynchronous messaging
 
 ### Synchronous messaging
+
+### Priority lanes
 
 ## The command object
 
