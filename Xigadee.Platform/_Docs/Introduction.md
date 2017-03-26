@@ -15,7 +15,15 @@ It is made up of a number of key components. In this section, I will outline the
 
 ## The message flow
 
+Xigadee works as a message processing system. Messages are passed between the Microservices throough the channels. Once a message is received by a Microservice, it will be routed to the relevant command object through the path documented below.
+
 <img src="MessageFlow.png" alt="Message Flow" height="350"/>
+
+1. Message arrives
+2. Message is assigned an execution slot
+3. Messages is passed to the Dispatcher and matched against the relevant commands
+4. Response is received and is passed to the relevant channel
+5. Response message is transmitted.
 
 ### The channels
 
