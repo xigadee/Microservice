@@ -11,13 +11,13 @@ Xigadee is an extensible Microservice framework that can be used to build modern
 
 It is made up of a number of key components. In this section, I will outline the basic building blocks of a Xigadee Microservice, and explain how you can use them to build your application.
 
-<img src="Xigadee.png" alt="Xigadee" width="800"/>
+<img src="Images/Xigadee.png" alt="Xigadee" width="800"/>
 
 ## The message flow
 
 Xigadee works as a message processing system. Messages are passed between the Microservices throough the channels. Once a message is received by a Microservice, it will be routed to the relevant command object through the path documented below.
 
-<img src="MessageFlow.png" alt="Message Flow" width="800"/>
+<img src="Images/MessageFlow.png" alt="Message Flow" width="800"/>
 
 1. Message is received through the communication channel and is passed to the Task Manager for processing.
 2. The Task Manager will queue the message until a processing slot is available. Once a slot is free the message is passed to the Dispatcher.
@@ -27,7 +27,7 @@ Xigadee works as a message processing system. Messages are passed between the Mi
 
 ### The message
 
-<img src="MessageProcessing.png" alt="Message Flow" width="600"/>
+<img src="Images/MessageProcessing.png" alt="Message Flow" width="600"/>
 
 1. The binary payload is received by the Listener. 
 2. The listener creates a ServiceMessage object with the binary payload and adds the relevant service message metadata. The metadata will include information such as the destination command, and the response destination if required.

@@ -602,9 +602,10 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Communication\TcpChannel\Helper\MakeCert.txt" />
-    <Content Include="_Docs\MessageFlow.png" />
-    <Content Include="_Docs\MessageProcessing.png" />
-    <Content Include="_Docs\Xigadee.png" />
+    <Content Include="_Docs\Images\MessageFlow.png" />
+    <Content Include="_Docs\Images\MessageProcessing.png" />
+    <Content Include="_Docs\Images\Microservice.png" />
+    <Content Include="_Docs\Images\Xigadee.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CommandPersistence\Pipeline\Add\" />
