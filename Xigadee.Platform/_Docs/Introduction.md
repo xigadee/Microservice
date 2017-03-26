@@ -15,7 +15,7 @@ It is made up of a number of key components. In this section, I will outline the
 
 ## The message flow
 
-![Xigadee](MessageFlow.png)
+<img src="MessageFlow.png" alt="Message Flow" height="100">
 
 ### The channels
 
