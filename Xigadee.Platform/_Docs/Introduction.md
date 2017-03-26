@@ -11,11 +11,11 @@ Xigadee is an extensible Microservice framework that can be used to build modern
 
 It is made up of a number of key components. In this section, I will outline the basic building blocks of a Xigadee Microservice, and explain how you can use them to build your application.
 
-![Xigadee](Xigadee.png)
+<img src="Xigadee.png" alt="Xigadeew" height="400"/>
 
 ## The message flow
 
-<img src="MessageFlow.png" alt="Message Flow" height="100">
+<img src="MessageFlow.png" alt="Message Flow" height="350"/>
 
 ### The channels
 
