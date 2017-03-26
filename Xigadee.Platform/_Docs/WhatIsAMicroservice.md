@@ -15,7 +15,7 @@ In general Microservices have the following properties:
 
 1. **Complete**
 	- A Microservice should deliver a small - but complete - set of business capability.
-	A good example of this would be in a eCommerce solution, where we create a Customer Microservice that specifically deals with the storing a customer's details. Another Microservice would be created to handle the purchases for that customer.
+	An example of this would be an eCommerce solution, where we create a Customer Microservice that specifically deals with the storing a customer's details. Another Microservice would be created to handle the purchases for that customer.
 	Basically, a Microservice should do one job well, not a multitude of disparate unrelated tasks. In a sense this is similar to the [Single Responsibility Principle](https://en.wikipedia.org/wiki/Single_responsibility_principle) for software development, but on a slightly larger scale.
 	A Microservice should have the ability to be independently updated without affecting the rest of the application.	
 2. **Scalable and Elastic**
@@ -25,8 +25,7 @@ In general Microservices have the following properties:
 4. **Composable**
 	- One of the key benefits of using Microservices, is that it allows for the reuse of the Microservice in other applications or services. We are building a capability that can be consumed when needed, i.e. a Customer Microservice. How we consolidate that service in to the application can be changed and adjusted over time. We now have a Customer capability, but we are open to integrate that in to other applications as our needs change, without the worry of breaking existing functionality as this service is not tightly coupled in to a specific business function.
 5. **Minimal**
-	- They do one thing, and they do it well.
-
+	- They do one thing, and they do it well. typically different teams can be involved in building the various Microservices within a solution.
 
 ## How is that different from before?
 
