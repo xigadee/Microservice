@@ -19,9 +19,9 @@ It is made up of a number of key components. In this section, I will outline the
 
 ### The channels
 
-### Asyncronous messaging
+### Asynchronous messaging
 
-### Syncronous messaging
+### Synchronous messaging
 
 ## The command object
 
