@@ -14,7 +14,7 @@ Instead of designing your application as one big tightly coupled system, we brea
 In general Microservices have the following properties:
 
 1. **Complete and Minimal**
-	- A Microservice should deliver a small - but complete - set of business capability. 
+	- A Microservice should deliver a small - but complete - set of business capability built ideally around a specific business domain. 
 	An example of this would be an eCommerce solution, where we create a Customer Microservice that encapsulated the management of a customer's details. Another Microservice would be created to handle the purchases for that customer.
 	Basically, a Microservice should do one job well, not a multitude of disparate unrelated tasks. In a sense this is similar to the [Single Responsibility Principle](https://en.wikipedia.org/wiki/Single_responsibility_principle) for software development, but on a slightly larger scale.
 	A Microservice should have the ability to be independently updated without affecting the rest of the application.	
