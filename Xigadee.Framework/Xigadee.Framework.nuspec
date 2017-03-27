@@ -8,7 +8,7 @@
     <summary>Xigadee Microservice Framework for .NET</summary>
     <authors>Paul Stancer, Guy Steel</authors>
     <owners>pstancer</owners>
-    <iconUrl>https://github.com/xigadee/Microservice/blob/master/docs/Logo.png</iconUrl>
+    <iconUrl>https://raw.githubusercontent.com/xigadee/Microservice/master/docs/Logo.png</iconUrl>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <projectUrl>https://github.com/xigadee/Microservice/blob/master/README.md</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
