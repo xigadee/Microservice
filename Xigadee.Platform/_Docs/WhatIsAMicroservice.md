@@ -7,9 +7,11 @@
 
 # What is a Microservice?
 
-Microservices are a relatively new concept that change the way in how we design and build software systems. They are essentially small autonomous services that work together to form an overall solution.
+Microservices are a relatively recent concept that change the way in how we design and build software systems. They are essentially small autonomous services that work together to form an overall solution.
 
 Instead of designing your application as one big tightly coupled system, we break it down in to smaller composable piece, that can be designed, tested, and deployed independently from each other. 
+
+Microservices have grown out of the experience of building large SOA-based systems, and seek to remedy much of the problems caused by that approach.
 
 In general Microservices have the following properties:
 
