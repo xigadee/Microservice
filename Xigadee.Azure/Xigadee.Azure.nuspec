@@ -6,6 +6,7 @@
     <title>Xigadee Azure Extension Library</title>
     <authors>Paul Stancer and Guy Steel at Hitachi Consulting (http://hitachiconsulting.com)</authors>
     <owners>Hitachi Consulting</owners>
+    <iconUrl>https://github.com/xigadee/Microservice/blob/master/docs/Logo.png</iconUrl>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <projectUrl>https://github.com/xigadee/Microservice/blob/master/README.md</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
