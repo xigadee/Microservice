@@ -23,7 +23,6 @@ namespace Xigadee
     /// This is the base class shared by all connectors.
     /// </summary>
     /// <typeparam name="O">The request options that determines the retry policy.</typeparam>
-    /// <typeparam name="C">The container type.</typeparam>
     /// <typeparam name="S">The serialization type.</typeparam>
     public abstract class AzureStorageConnectorBase<O,S>: IAzureStorageConnectorBase
         where O: Microsoft.WindowsAzure.Storage.IRequestOptions

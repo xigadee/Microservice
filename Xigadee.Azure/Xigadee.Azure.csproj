@@ -200,6 +200,7 @@
     <Compile Include="ApplicationInsights\CommandCorrelationInitializer.cs" />
     <Compile Include="Configuration\ConfigResolver\ConfigResolverKeyVault.cs" />
     <Compile Include="Configuration\ConfigResolver\ConfigResolverAzure.cs" />
+    <Compile Include="Configuration\ConfigResolver\ConfigResolverTableStorage.cs" />
     <Compile Include="DataCollection\Storage\Exceptions\EncryptionPolicyException.cs" />
     <Compile Include="DataCollection\Storage\Helper\BinaryContainer.cs" />
     <Compile Include="DataCollection\Storage\Interfaces\IAzureStorageConnectorBase.cs" />
@@ -298,6 +299,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Communication\Queue\" />
     <Folder Include="ResourceTracker\" />
     <Folder Include="Telemetry\" />
   </ItemGroup>
