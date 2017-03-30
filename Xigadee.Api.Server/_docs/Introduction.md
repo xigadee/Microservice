@@ -9,7 +9,7 @@
 
 ## Introduction
 
-It's all good.
+The Api Server library provides the functionality to integrate the Xigadee framework in to the API web pipeline.
 
 * [Xigadee Api Server Unity](../../Xigadee.Api.Server.Unity/_docs/Introduction.md) 
 	- This package provides helper functions to integrate Xigadee with a web based application that uses Unity as its Dependency Injection mechanism

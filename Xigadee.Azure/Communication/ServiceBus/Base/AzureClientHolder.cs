@@ -108,6 +108,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="count">The number of messages to pull.</param>
         /// <param name="wait">The maximum wait time.</param>
+        /// <param name="mappingChannel">This is channel map name.</param>
         /// <returns>Returns a list of messages or null if the request times out.</returns>
         public override async Task<List<TransmissionPayload>> MessagesPull(int? count, int? wait, string mappingChannel = null)
         {
@@ -148,6 +149,9 @@ namespace Xigadee
         /// This method wraps the incoming fabric message in to a generic payload.
         /// </summary>
         /// <param name="message">The incoming fabric message.</param>
+        /// <param name="priority">The message priority.</param>
+        /// <param name="mappingChannel">The mapping channel.</param>
+        /// <param name="batchId">The current batch id.</param>
         /// <returns>Returns the payload with the service message.</returns>
         protected virtual TransmissionPayload TransmissionPayloadUnpack(M message, int priority, string mappingChannel = null, Guid? batchId = null)
         {

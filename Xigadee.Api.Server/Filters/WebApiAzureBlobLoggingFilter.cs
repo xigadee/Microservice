@@ -37,7 +37,7 @@ using Newtonsoft.Json.Linq;
 namespace Xigadee
 {
     /// <summary>
-    /// This class logs the incoming request and subsequent response to the Azure Storage container.
+    /// This class logs the incoming API requests and subsequent responses to the Azure Storage container.
     /// </summary>
     public class WebApiAzureBlobLoggingFilter : WebApiCorrelationIdFilter
     {
@@ -48,6 +48,9 @@ namespace Xigadee
         [Flags]
         public enum LoggingFilterLevel
         {
+            /// <summary>
+            /// No logging of any information.
+            /// </summary>
             None = 0,
 
             Exception = 1,
