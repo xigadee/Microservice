@@ -7,8 +7,12 @@
 
 # The 15 minute Microservice
 
-Xigadee is designed to try and simplify much of the complexity of setting up a Microservice. This example gives a brief outline of how you can build a Microservice based application using the Xigadee framework.
+Xigadee is designed to try and simplify much of the complexity of setting up a Microservice. 
+This example gives a brief outline of how you can quickly build a Microservice based application using the Xigadee framework.
 
+For this exmple, we'll construct an API based service that can persist an entity (i.e. Create/Read/Update/Delete) in memory through a simple set of RESTful API call.
+
+First we are going to create a new console application.
 ```
         static void Main(string[] args)
         {
