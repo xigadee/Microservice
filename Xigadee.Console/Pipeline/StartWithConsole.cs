@@ -30,20 +30,34 @@ namespace Xigadee
         /// </summary>
         /// <typeparam name="P">The pipeline type.</typeparam>
         /// <param name="pipeline">The pipeline.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="value"></param>
+        /// <param name="title">The alternate title.</param>
         /// <returns>Returns the pipeline.</returns>
-        public static P StartWithConsole<P>(this P pipeline, ConsoleMenu mainMenu = null)
+        public static P StartWithConsole<P>(this P pipeline, string title = null)
             where P : IPipeline
         {
             var ms = pipeline.ToMicroservice();
 
-            if (mainMenu == null)
-                mainMenu = new ConsoleMenu(ms.Id.Name);
-     
-            
+            Lazy<ConsoleMenu> mainMenu = new Lazy<ConsoleMenu>(
+                () => new ConsoleMenu(title ?? $"Xigadee Test Console: {ms.Id.Name}"
+                , new ConsoleOption(
+                    "Run Microservice"
+                    , (m, o) =>
+                    {
+                        ms.Start();
+                    }
+                    , enabled: (m, o) => ms.Status == ServiceStatus.Stopped
+                )
+                , new ConsoleOption(
+                    "Stop Microservice"
+                    , (m, o) =>
+                    {
+                        ms.Stop();
+                    }
+                    , enabled: (m, o) => ms.Status == ServiceStatus.Running
+                )
+                ));
 
-            mainMenu.Show();
+            mainMenu.Value.Show();
 
             return pipeline;
         }
