@@ -173,6 +173,7 @@
     <Compile Include="Owin\StatusResult.cs" />
     <Compile Include="Pipeline\Actual.cs" />
     <Compile Include="Pipeline\AddAuthorizationServer.cs" />
+    <Compile Include="Pipeline\ApiAdd\ApiAddBoundaryLoggerFilter.cs" />
     <Compile Include="Pipeline\ApiAdd\ApiAddClientCertificateAuthorizationFilter.cs" />
     <Compile Include="Pipeline\ApiAdd\ApiAddRequiresHttpsFilter.cs" />
     <Compile Include="Pipeline\ApiAdjust\ApiAdjust.cs" />
@@ -236,9 +237,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Pipeline\AddAPIBoundaryLogger\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="BeforeBuild">

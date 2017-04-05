@@ -64,6 +64,8 @@ Channels are an important concept in Xigadee. They are used to route information
 
 ## Security
 
+## Data Collection
+
 ## The configuration pipeline
 
 Xigadee uses a declarative programming model which simplifies the setup of a Microservice within it's container.
