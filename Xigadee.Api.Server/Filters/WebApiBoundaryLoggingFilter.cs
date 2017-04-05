@@ -29,9 +29,6 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
-using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json.Linq;
 #endregion
 namespace Xigadee
@@ -39,8 +36,7 @@ namespace Xigadee
     /// <summary>
     /// This class logs the incoming API requests and subsequent responses to the Azure Storage container.
     /// </summary>
-    [Obsolete("Use the new boundary logging filter.")]
-    public class WebApiAzureBlobLoggingFilter : WebApiCorrelationIdFilter
+    public class WebApiBoundaryLoggingFilter : WebApiCorrelationIdFilter
     {
         #region LoggingFilterLevel
         /// <summary>
@@ -61,12 +57,9 @@ namespace Xigadee
             ResponseContent = 16,
 
             All = 31
-        } 
+        }
         #endregion
         #region Declarations
-        protected CloudStorageAccount mStorageAccount;
-        protected CloudBlobClient mStorageClient;
-        protected CloudBlobContainer mEntityContainer;
         protected readonly LoggingFilterLevel mLevel;
         #endregion
         #region Constructor
@@ -77,16 +70,12 @@ namespace Xigadee
         /// <param name="containerName"></param>
         /// <param name="correlationIdKeyName"></param>
         /// <param name="level"></param>
-        public WebApiAzureBlobLoggingFilter(StorageCredentials credentials, string containerName
+        public WebApiBoundaryLoggingFilter(string containerName
             , string correlationIdKeyName = "X-CorrelationId"
-            , LoggingFilterLevel level = LoggingFilterLevel.All):base(correlationIdKeyName)
+            , LoggingFilterLevel level = LoggingFilterLevel.All) : base(correlationIdKeyName)
         {
             mLevel = level;
 
-            mStorageAccount = new CloudStorageAccount(credentials, true);
-            mStorageClient = mStorageAccount.CreateCloudBlobClient();
-            mEntityContainer = mStorageClient.GetContainerReference(containerName.ToLowerInvariant()); // Containers names must be lowercase
-            var result = mEntityContainer.CreateIfNotExistsAsync(BlobContainerPublicAccessType.Blob, null, null).Result;
         }
         #endregion
 
@@ -115,72 +104,72 @@ namespace Xigadee
                 if (!string.IsNullOrEmpty(correlationId))
                     response.Headers.Add(mCorrelationIdKeyName, correlationId);
 
-                var refDirectory = mEntityContainer.GetDirectoryReference(folder);
-                var refEntityDirectory =
-                    refDirectory.GetDirectoryReference(FormatDirectoryName(correlationId, principal, request.Method, response));
+                //var refDirectory = mEntityContainer.GetDirectoryReference(folder);
+                //var refEntityDirectory =
+                //    refDirectory.GetDirectoryReference(FormatDirectoryName(correlationId, principal, request.Method, response));
 
-                if ((mLevel & LoggingFilterLevel.Exception) > 0 && exception != null)
-                    tasks.Add(UploadBlob(refEntityDirectory, exception, $"{correlationId}.exception.json", cancellationToken));
+                //if ((mLevel & LoggingFilterLevel.Exception) > 0 && exception != null)
+                //    tasks.Add(UploadBlob(refEntityDirectory, exception, $"{correlationId}.exception.json", cancellationToken));
 
-                if ((mLevel & LoggingFilterLevel.Request) > 0)
-                    tasks.Add(UploadBlob(refEntityDirectory, new HttpRequestWrapper(request, principal),
-                        $"{correlationId}.request.json", cancellationToken));
+                //if ((mLevel & LoggingFilterLevel.Request) > 0)
+                //    tasks.Add(UploadBlob(refEntityDirectory, new HttpRequestWrapper(request, principal),
+                //        $"{correlationId}.request.json", cancellationToken));
 
-                if ((mLevel & LoggingFilterLevel.Response) > 0)
-                    tasks.Add(UploadBlob(refEntityDirectory, new HttpResponseWrapper(response),
-                        $"{correlationId}.response.json", cancellationToken));
+                //if ((mLevel & LoggingFilterLevel.Response) > 0)
+                //    tasks.Add(UploadBlob(refEntityDirectory, new HttpResponseWrapper(response),
+                //        $"{correlationId}.response.json", cancellationToken));
 
-                if ((mLevel & LoggingFilterLevel.RequestContent) > 0)
-                    tasks.Add(UploadContentBlob(refEntityDirectory, request.Content,
-                        $"{correlationId}.request.content", cancellationToken));
+                //if ((mLevel & LoggingFilterLevel.RequestContent) > 0)
+                //    tasks.Add(UploadContentBlob(refEntityDirectory, request.Content,
+                //        $"{correlationId}.request.content", cancellationToken));
 
-                if ((mLevel & LoggingFilterLevel.ResponseContent) > 0)
-                    tasks.Add(UploadContentBlob(refEntityDirectory, response.Content,
-                        $"{correlationId}.response.content", cancellationToken));
+                //if ((mLevel & LoggingFilterLevel.ResponseContent) > 0)
+                //    tasks.Add(UploadContentBlob(refEntityDirectory, response.Content,
+                //        $"{correlationId}.response.content", cancellationToken));
             }
 
             await Task.WhenAll(tasks);
         }
 
-        private async Task UploadBlob(CloudBlobDirectory dir, object entity, string blobName, CancellationToken cancellationToken)
-        {
-            if (entity == null)
-                return;
+        //private async Task UploadBlob(CloudBlobDirectory dir, object entity, string blobName, CancellationToken cancellationToken)
+        //{
+        //    if (entity == null)
+        //        return;
 
-            try
-            {
-                var jObj = JObject.FromObject(entity);
-                var blob = dir.GetBlockBlobReference(blobName);
-                blob.Properties.ContentType = "application/json";
-                await blob.UploadTextAsync(jObj.ToString(), cancellationToken);
-            }
-            catch(Exception)
-            {
-                // Do not cause application to throw an exception due to logging failure
-            }
-        }
+        //    try
+        //    {
+        //        var jObj = JObject.FromObject(entity);
+        //        var blob = dir.GetBlockBlobReference(blobName);
+        //        blob.Properties.ContentType = "application/json";
+        //        await blob.UploadTextAsync(jObj.ToString(), cancellationToken);
+        //    }
+        //    catch (Exception)
+        //    {
+        //        // Do not cause application to throw an exception due to logging failure
+        //    }
+        //}
 
-        private async Task UploadContentBlob(CloudBlobDirectory dir, HttpContent content, string blobName, CancellationToken cancellationToken)
-        {
-            if (content == null || content.Headers.ContentLength == 0)
-                return;
+        //private async Task UploadContentBlob(CloudBlobDirectory dir, HttpContent content, string blobName, CancellationToken cancellationToken)
+        //{
+        //    if (content == null || content.Headers.ContentLength == 0)
+        //        return;
 
-            IEnumerable<string> contentTypes;
-            string contentType = null;
-            if (content.Headers.TryGetValues("Content-Type", out contentTypes))
-                contentType = contentTypes.FirstOrDefault();
+        //    IEnumerable<string> contentTypes;
+        //    string contentType = null;
+        //    if (content.Headers.TryGetValues("Content-Type", out contentTypes))
+        //        contentType = contentTypes.FirstOrDefault();
 
-            try
-            {
-                var blob = dir.GetBlockBlobReference(blobName);
-                blob.Properties.ContentType = contentType ?? "text/plain";
-                await blob.UploadFromStreamAsync(await content.ReadAsStreamAsync(), cancellationToken);
-            }
-            catch (Exception)
-            {
-                // Do not cause application to throw an exception due to logging failure
-            }
-        }
+        //    try
+        //    {
+        //        var blob = dir.GetBlockBlobReference(blobName);
+        //        blob.Properties.ContentType = contentType ?? "text/plain";
+        //        await blob.UploadFromStreamAsync(await content.ReadAsStreamAsync(), cancellationToken);
+        //    }
+        //    catch (Exception)
+        //    {
+        //        // Do not cause application to throw an exception due to logging failure
+        //    }
+        //}
 
         private static string FormatDirectoryName(string correlationId, IPrincipal principal, HttpMethod requestMethod, HttpResponseMessage responseMessage)
         {
@@ -193,7 +182,7 @@ namespace Xigadee
             }
 
             // CMS/GET.200.05.04785AB98F8843C7BC972F27CF1E5C68
-            return $"{directoryName}/{requestMethod}.{(responseMessage != null ? (int) responseMessage.StatusCode : 0)}.{DateTime.UtcNow.ToString("ss")}.{correlationId}";
+            return $"{directoryName}/{requestMethod}.{(responseMessage != null ? (int)responseMessage.StatusCode : 0)}.{DateTime.UtcNow.ToString("ss")}.{correlationId}";
         }
 
         #region Request Wrapper

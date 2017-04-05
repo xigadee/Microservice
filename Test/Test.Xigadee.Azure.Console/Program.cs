@@ -17,13 +17,15 @@ namespace Test.Xigadee.Azure.Console
                 pipeline1
                     .ConfigurationSetFromConsoleArgs(args)
                     .AddEncryptionHandlerAes("myid", Convert.FromBase64String("hNCV1t5sA/xQgDkHeuXYhrSu8kF72p9H436nQoLDC28="), keySize:256)
-                    .AddAzureStorageDataCollector(handler:"myid")
+                    //.AddAzureStorageDataCollector(handler:"myid")
                     ;
 
                 
                 mainMenu.AddMicroservicePipeline(pipeline1);
                 mainMenu.AddMicroservicePipeline(pipeline2);
+
                 mainMenu.AddOption("Aruba", (m,o) => pipeline1.Service.DataCollection.LogException(new Exception()));
+
                 mainMenu.Show();
             }
             catch (Exception ex)

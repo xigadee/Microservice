@@ -452,8 +452,6 @@
     <Compile Include="Communication\Pipeline\Add\AddChannelIncoming.cs" />
     <Compile Include="Communication\Pipeline\Add\AddChannelOutgoing.cs" />
     <Compile Include="Command\Pipeline\AddCommand.cs" />
-    <Compile Include="DataCollection\Pipeline\Add\AddEventSource.cs" />
-    <Compile Include="DataCollection\Pipeline\Add\AddLogger.cs" />
     <Compile Include="Security\Pipeline\Configuration\ConfigAesTransportEncryption.cs" />
     <Compile Include="Security\MicroserviceSecurityPrincipal.cs" />
     <Compile Include="Serialization\Pipeline\AddPayloadSerializer.cs" />

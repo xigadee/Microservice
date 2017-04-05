@@ -29,7 +29,7 @@ namespace Xigadee
     public static partial class DataCollectionExtensionMethods
     {
         /// <summary>
-        /// This method is used to record the success rate of a batch poll so that messages can be reconciled against the request, and polling algoritm assessed.
+        /// This method is used to record the success rate of a batch poll so that messages can be reconciled against the request, and polling algorithm assessed.
         /// </summary>
         /// <param name="collector">The data collector.</param>
         /// <param name="requested">The number of messages requested.</param>

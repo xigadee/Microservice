@@ -37,27 +37,11 @@ namespace Xigadee
         {
             var ms = pipeline.ToMicroservice();
 
-            Lazy<ConsoleMenu> mainMenu = new Lazy<ConsoleMenu>(
-                () => new ConsoleMenu(title ?? $"Xigadee Test Console: {ms.Id.Name}"
-                , new ConsoleOption(
-                    "Run Microservice"
-                    , (m, o) =>
-                    {
-                        ms.Start();
-                    }
-                    , enabled: (m, o) => ms.Status == ServiceStatus.Stopped
-                )
-                , new ConsoleOption(
-                    "Stop Microservice"
-                    , (m, o) =>
-                    {
-                        ms.Stop();
-                    }
-                    , enabled: (m, o) => ms.Status == ServiceStatus.Running
-                )
-                ));
+            var mainMenu = new ConsoleMenu(title ?? "Xigadee Microservice Test Console");
 
-            mainMenu.Value.Show();
+            mainMenu.AddMicroservicePipeline(pipeline);
+
+            mainMenu.Show();
 
             return pipeline;
         }

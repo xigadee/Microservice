@@ -28,10 +28,10 @@ namespace Xigadee
         /// <summary>
         /// This method can be called by an external process to update the info messages displayed in the menu.
         /// </summary>
-        /// <param name="message">The info message</param>
-        /// <param name="refresh">The refresh option flag.</param>
-        /// <param name="type">The log type.</param>
-        public static ConsoleMenu AddMicroservicePipeline(this ConsoleMenu menu, MicroservicePipeline pipeline
+        /// <param name="menu">The info message</param>
+        /// <param name="pipeline">The refresh option flag.</param>
+        /// <param name="useParentContextInfo">The log type.</param>
+        public static ConsoleMenu AddMicroservicePipeline(this ConsoleMenu menu, IPipeline pipeline
             , bool useParentContextInfo = true)
         {
             var ms = pipeline.ToMicroservice();
@@ -70,11 +70,6 @@ namespace Xigadee
             menu.AddOption(new ConsoleOption(title, msMenu));
 
             return menu;
-        }
-
-        private static void se(object sender, StatusChangedEventArgs e)
-        {
-            throw new NotImplementedException();
         }
     }
 }
