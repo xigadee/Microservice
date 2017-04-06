@@ -60,20 +60,27 @@ namespace Xigadee
         }
         #endregion
         #region Declarations
-        protected readonly LoggingFilterLevel mLevel;
+        private readonly LoggingFilterLevel mLevel;
+
+        private readonly IMicroservice mMs;
         #endregion
         #region Constructor
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="credentials"></param>
-        /// <param name="containerName"></param>
-        /// <param name="correlationIdKeyName"></param>
-        /// <param name="level"></param>
-        public WebApiBoundaryLoggingFilter(string containerName
+        /// <param name="ms">The Microservice.</param>
+        /// <param name="correlationIdKeyName">The keyname for the correlation id. By default this is X-CorrelationId</param>
+        /// <param name="level">The logging level</param>
+        /// <param name="addToClaimsPrincipal">Specifies whether the correlation Id should be added to the claims principal</param>
+        public WebApiBoundaryLoggingFilter(IMicroservice ms
+            , LoggingFilterLevel level = LoggingFilterLevel.All
             , string correlationIdKeyName = "X-CorrelationId"
-            , LoggingFilterLevel level = LoggingFilterLevel.All) : base(correlationIdKeyName)
+            , bool addToClaimsPrincipal = true) : base(correlationIdKeyName, addToClaimsPrincipal)
         {
+            if (ms == null)
+                throw new ArgumentNullException("ms");
+
+            mMs = ms;
             mLevel = level;
 
         }

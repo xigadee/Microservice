@@ -25,15 +25,27 @@ namespace Xigadee
 {
     public static partial class WebApiExtensionMethods
     {
-        public static P ApiAddBoundaryLoggerFilter<P>(this P webpipe, string correlationIdKey = "X-CorrelationId", bool addToClaimsPrincipal = true)
+        /// <summary>
+        /// This pipeline method is used to add boundary logging to the WebApi. 
+        /// This means that all incoming requests and outgoing response can be logged to the boundary logger.
+        /// </summary>
+        /// <typeparam name="P">The IPipelineWebApi type.</typeparam>
+        /// <param name="webpipe">The pipe.</param>
+        /// <param name="level">The logging level.</param>
+        /// <param name="correlationIdKey">The correlation key reftype name.</param>
+        /// <param name="addToClaimsPrincipal">Specifies whether the correlation id should be added to the claims principal. The default is yes.</param>
+        /// <returns></returns>
+        public static P ApiAddBoundaryLoggerFilter<P>(this P webpipe
+            , WebApiBoundaryLoggingFilter.LoggingFilterLevel level = WebApiBoundaryLoggingFilter.LoggingFilterLevel.All
+            , string correlationIdKey = "X-CorrelationId"
+            , bool addToClaimsPrincipal = true)
             where P : IPipelineWebApi
         {
             var ms = webpipe.ToMicroservice();
 
-            //ms.DataCollection.
-            //var filter = new WebApiCorrelationIdFilter(correlationIdKey, addToClaimsPrincipal);
+            var filter = new WebApiBoundaryLoggingFilter(ms, level, correlationIdKey, addToClaimsPrincipal);
 
-            //webpipe.HttpConfig.Filters.Add(filter);
+            webpipe.HttpConfig.Filters.Add(filter);
 
             return webpipe;
         }
