@@ -5,20 +5,14 @@
 </tr>
 </table>
 
-# Resource Management
+# The Command pattern
 
-Managing cloud based resources is a key aspect of serverless architecture. Cloud resources may become temporarily unavailable due to transient network faults or other cloud based issues.
+## Policy
 
-## Resource Tracker
-
-## Resource Consumer
-
-## Resource Rate Limiter
-
+## Statistics
 <table><tr> 
 <td><a href="http://www.hitachiconsulting.com"><img src="../../../docs/hitachi.png" alt="Hitachi Consulting" height="50"/></a></td> 
 <td>Created by: <a href="http://github.com/paulstancer">Paul Stancer</a></td>
   <td><a href="https://www.nuget.org/packages/Xigadee">NuGet Package</a></td>
   <td><a href="../../README.md">Home</a></td>
 </tr></table>
-

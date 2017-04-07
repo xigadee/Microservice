@@ -571,16 +571,26 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Command\_doc\Command.md" />
+    <None Include="Communication\_doc\Communication.md" />
+    <None Include="Configuration\_docs\Configuration.md" />
+    <None Include="DataCollection\_docs\DataCollection.md" />
+    <None Include="Messaging\_docs\Messaging.md" />
+    <None Include="Microservice\_docs\Microservice.md" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
     <None Include="ResourceTracker\_docs\Introduction.md" />
+    <None Include="Scheduler\_doc\Scheduler.md" />
     <None Include="Security\Jwt\_Documents\rfc7515 - JSON Web Signature.pdf" />
     <None Include="Security\Jwt\_Documents\rfc7516 - JSON Web Encryption.pdf" />
     <None Include="Security\Jwt\_Documents\rfc7517 - JSON Web Key.pdf" />
     <None Include="Security\Jwt\_Documents\rfc7518 - JSON Web Algorithms.pdf" />
     <None Include="Security\Jwt\_Documents\rfc7519 - JSON Web Token.pdf" />
     <None Include="Security\Jwt\_Documents\rfc7800 - Proof-of-Possession .pdf" />
+    <None Include="Security\_doc\Security.md" />
+    <None Include="Serialization\_doc\Serialization.md" />
+    <None Include="TaskManager\_doc\TaskManager.md" />
     <None Include="Xigadee.nuspec" />
     <None Include="Xigadee.Platform.licenseheader" />
     <None Include="_Docs\WhatIsAMicroservice.md" />

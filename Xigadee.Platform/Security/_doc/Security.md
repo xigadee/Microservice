@@ -5,15 +5,7 @@
 </tr>
 </table>
 
-# Resource Management
-
-Managing cloud based resources is a key aspect of serverless architecture. Cloud resources may become temporarily unavailable due to transient network faults or other cloud based issues.
-
-## Resource Tracker
-
-## Resource Consumer
-
-## Resource Rate Limiter
+# Security
 
 <table><tr> 
 <td><a href="http://www.hitachiconsulting.com"><img src="../../../docs/hitachi.png" alt="Hitachi Consulting" height="50"/></a></td> 
