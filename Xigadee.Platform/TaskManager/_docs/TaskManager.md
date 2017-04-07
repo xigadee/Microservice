@@ -5,7 +5,38 @@
 </tr>
 </table>
 
-# Task Management
+# Task Manager
+
+Scheduling tasks within a Microservice, especially when those tasks have different priority levels, is one of the most complex parts of the Xigadee Microservice architecture.
+
+
+## Priority Queues
+
+
+## Process Loop
+
+### Task Manager Loop Processes
+
+#### Time-out
+
+#### Dequeue and Execute
+
+#### Extension Processes
+
+- Schedules
+- Listeners
+- Overload
+
+
+## Autotune
+
+## Policy
+
+### Priority Levels
+
+### Bulkhead reservation
+
+## Statistics
 
 <table><tr> 
 <td><a href="http://www.hitachiconsulting.com"><img src="../../../docs/hitachi.png" alt="Hitachi Consulting" height="50"/></a></td> 

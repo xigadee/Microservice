@@ -129,6 +129,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="Test.Xigadee.licenseheader" />
+    <None Include="_docs\ReadMe.md" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Common\" />
