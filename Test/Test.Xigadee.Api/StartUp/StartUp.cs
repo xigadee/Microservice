@@ -18,6 +18,8 @@ namespace Test.Xigadee.Api
     {
         private byte[] mSecret = Encoding.ASCII.GetBytes(JwtTests.SecretPass);
 
+        private DebugMemoryDataCollector mDataCollector;
+
         public void Configuration(IAppBuilder app)
         {
             var webpipe = new WebApiMicroservicePipeline();
@@ -26,6 +28,8 @@ namespace Test.Xigadee.Api
                 .ApiConfig((c) => c.Routes.MapHttpRoute("Default", "api/{controller}/{id}", new { id = RouteParameter.Optional }))
                 .ApiAddMicroserviceUnavailableFilter()
                 .ApiAddJwtTokenAuthentication(JwtHashAlgorithm.HS256, mSecret, audience: JwtTests.Audience)
+                .ApiAddBoundaryLoggerFilter()
+                .AddDataCollector((c) => mDataCollector = new DebugMemoryDataCollector())
                 ;
 
             webpipe.StartWebApi(app);

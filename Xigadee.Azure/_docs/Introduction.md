@@ -7,9 +7,11 @@
 
 # Xigadee.Azure library
 
-The Xigadee Azure library contains a set of components that help in integrating Azure's PAAS based services in to your Microservice application.
+The Xigadee Azure library contains a set of components that integrate Azure's PAAS based services in to your Microservice application.
 
 ## Communication
+
+Azure contains a number of communciation services.
 
 ### Azure Service Bus
 
@@ -25,19 +27,22 @@ The Xigadee Azure library contains a set of components that help in integrating 
 
 ### Redis Cache
 
-## Monitoring
+### SQL Server
+
+## Data Collection and Monitoring
+
+### Azure Application Insights
+
+### Blob Storage
 
 ## Configuration
 
 ### Azure KeyVault
 
-## Logging
-
-### Azure Application Insights
 
 ## What's new
 
-It's all new!
+This is still pre-release software.
 
 <table><tr> 
 <td><a href="http://www.hitachiconsulting.com"><img src="../../docs/hitachi.png" alt="Hitachi Consulting" height="50"/></a></td> 

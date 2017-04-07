@@ -66,7 +66,7 @@ namespace Xigadee
         #endregion
         #region Constructor
         /// <summary>
-        /// 
+        /// This filter can be used to log filtered incoming and outgoing Api messages and payloads to the Xigadee DataCollection infrastructure.
         /// </summary>
         /// <param name="ms">The Microservice.</param>
         /// <param name="correlationIdKeyName">The keyname for the correlation id. By default this is X-CorrelationId</param>
@@ -78,14 +78,13 @@ namespace Xigadee
             , bool addToClaimsPrincipal = true) : base(correlationIdKeyName, addToClaimsPrincipal)
         {
             if (ms == null)
-                throw new ArgumentNullException("ms");
+                throw new ArgumentNullException("ms","The Microservice cannot be null.");
 
             mMs = ms;
             mLevel = level;
 
         }
         #endregion
-
 
         public override async Task OnActionExecutedAsync(HttpActionExecutedContext actionExecutedContext, CancellationToken cancellationToken)
         {
@@ -138,45 +137,6 @@ namespace Xigadee
             await Task.WhenAll(tasks);
         }
 
-        //private async Task UploadBlob(CloudBlobDirectory dir, object entity, string blobName, CancellationToken cancellationToken)
-        //{
-        //    if (entity == null)
-        //        return;
-
-        //    try
-        //    {
-        //        var jObj = JObject.FromObject(entity);
-        //        var blob = dir.GetBlockBlobReference(blobName);
-        //        blob.Properties.ContentType = "application/json";
-        //        await blob.UploadTextAsync(jObj.ToString(), cancellationToken);
-        //    }
-        //    catch (Exception)
-        //    {
-        //        // Do not cause application to throw an exception due to logging failure
-        //    }
-        //}
-
-        //private async Task UploadContentBlob(CloudBlobDirectory dir, HttpContent content, string blobName, CancellationToken cancellationToken)
-        //{
-        //    if (content == null || content.Headers.ContentLength == 0)
-        //        return;
-
-        //    IEnumerable<string> contentTypes;
-        //    string contentType = null;
-        //    if (content.Headers.TryGetValues("Content-Type", out contentTypes))
-        //        contentType = contentTypes.FirstOrDefault();
-
-        //    try
-        //    {
-        //        var blob = dir.GetBlockBlobReference(blobName);
-        //        blob.Properties.ContentType = contentType ?? "text/plain";
-        //        await blob.UploadFromStreamAsync(await content.ReadAsStreamAsync(), cancellationToken);
-        //    }
-        //    catch (Exception)
-        //    {
-        //        // Do not cause application to throw an exception due to logging failure
-        //    }
-        //}
 
         private static string FormatDirectoryName(string correlationId, IPrincipal principal, HttpMethod requestMethod, HttpResponseMessage responseMessage)
         {
@@ -192,72 +152,5 @@ namespace Xigadee
             return $"{directoryName}/{requestMethod}.{(responseMessage != null ? (int)responseMessage.StatusCode : 0)}.{DateTime.UtcNow.ToString("ss")}.{correlationId}";
         }
 
-        #region Request Wrapper
-
-        private class HttpRequestWrapper
-        {
-            private readonly HttpRequestMessage mRequestMessage;
-            private readonly IPrincipal mRequestPrincipal;
-
-            public HttpRequestHeaders Headers => mRequestMessage.Headers;
-
-            public HttpContentHeaders ContentHeaders => mRequestMessage.Content?.Headers;
-
-            public HttpMethod Method => mRequestMessage.Method;
-
-            public Uri RequestUri => mRequestMessage.RequestUri;
-
-            public IIdentity Identity => mRequestPrincipal?.Identity;
-
-            public string ClientIPAddress
-            {
-                get
-                {
-                    try
-                    {
-                        if (mRequestMessage.Properties.ContainsKey("MS_HttpContext"))
-                            return ((HttpContextWrapper)mRequestMessage.Properties["MS_HttpContext"]).Request.UserHostAddress;
-
-                        if (mRequestMessage.Properties.ContainsKey(RemoteEndpointMessageProperty.Name))
-                            return ((RemoteEndpointMessageProperty)mRequestMessage.Properties[RemoteEndpointMessageProperty.Name]).Address;
-                    }
-                    catch (Exception)
-                    {
-                        return null;
-                    }
-
-                    return null;
-                }
-            }
-
-            public HttpRequestWrapper(HttpRequestMessage requestMessage, IPrincipal requestPrincipal)
-            {
-                mRequestMessage = requestMessage;
-                mRequestPrincipal = requestPrincipal;
-            }
-        }
-
-        #endregion
-
-        #region Response Wrapper
-
-        private class HttpResponseWrapper
-        {
-            private readonly HttpResponseMessage mResponseMessage;
-
-            public HttpResponseHeaders Headers => mResponseMessage.Headers;
-
-            public HttpContentHeaders ContentHeaders => mResponseMessage.Content?.Headers;
-
-
-            public HttpStatusCode StatusCode => mResponseMessage.StatusCode;
-
-            public HttpResponseWrapper(HttpResponseMessage responseMessage)
-            {
-                mResponseMessage = responseMessage;
-            }
-        }
-
-        #endregion
     }
 }

@@ -18,11 +18,16 @@ namespace Test.Xigadee.Api
         protected TestServer mServer;
 
         #region Initialization
+        /// <summary>
+        /// This method creates the Microservice API pipeline
+        /// </summary>
         public virtual void FixtureInit()
         {
             mServer = TestServer.Create<StartUp>();
         }
-
+        /// <summary>
+        /// This method disposes of the pipeline.
+        /// </summary>
         public virtual void FixtureCleanUp()
         {
             mServer.Dispose();

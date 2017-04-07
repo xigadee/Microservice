@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class ApiBoundaryEvent: BoundaryEventBase
+    /// <summary>
+    /// This is the base event class for the Api Boundary Event logger.
+    /// </summary>
+    public abstract class ApiBoundaryEvent: BoundaryEventBase
     {
 
     }

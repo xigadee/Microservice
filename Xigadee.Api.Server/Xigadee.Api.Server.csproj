@@ -162,6 +162,8 @@
     <Compile Include="Controllers\SecurityControllerAsyncBase.cs" />
     <Compile Include="Controllers\WebhookControllerAsyncBase.cs" />
     <Compile Include="DataCollection\Events\ApiBoundaryEvent.cs" />
+    <Compile Include="DataCollection\Events\HttpRequestBoundaryEvent.cs" />
+    <Compile Include="DataCollection\Events\HttpResponseBoundaryEvent.cs" />
     <Compile Include="Filters\WebApiBoundaryLoggingFilter.cs" />
     <Compile Include="Helper\MicroserviceDependencyResolver.cs" />
     <Compile Include="Owin\ClientCertificateAuthorizationFilter.cs" />

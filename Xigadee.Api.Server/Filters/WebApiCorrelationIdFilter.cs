@@ -26,13 +26,16 @@ using System.Web.Http.Filters;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This base class adds a tracking correlation id to each incoming request to allow for tracking and tracing.
+    /// </summary>
     public class WebApiCorrelationIdFilter: ActionFilterAttribute
     {
         protected readonly string mCorrelationIdKeyName;
         private readonly bool mAddToClaimsPrincipal;
 
         /// <summary>
-        /// 
+        /// This is the default constructor.
         /// </summary>
         /// <param name="correlationIdKeyName">Correlation Id key in the request/response header</param>
         /// <param name="addToClaimsPrincipal">Add the correlation key to the claims principal</param>
@@ -109,6 +112,5 @@ namespace Xigadee
 
             await Task.WhenAll(tasks);
         }
-
     }
 }

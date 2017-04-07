@@ -7,7 +7,8 @@
 
 # Data Collection and Monitoring
 
-Data collection is one of the key requirements for a Microservice based application. This is due to the distributed nature of the solutions. It is critical that each key component can be monitored 
+Data collection is one of the key requirements for a Microservice based application. This is due to the distributed nature of the solutions. 
+It is critical that each key component can be monitored independently.
 <table><tr> 
 <td><a href="http://www.hitachiconsulting.com"><img src="../../../docs/hitachi.png" alt="Hitachi Consulting" height="50"/></a></td> 
 <td>Created by: <a href="http://github.com/paulstancer">Paul Stancer</a></td>
