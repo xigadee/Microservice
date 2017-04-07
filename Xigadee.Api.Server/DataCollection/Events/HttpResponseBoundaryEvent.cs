@@ -38,16 +38,16 @@ namespace Xigadee
     {
         private readonly HttpResponseMessage mResponseMessage;
 
+        public HttpResponseBoundaryEvent(HttpResponseMessage responseMessage) : base(ChannelDirection.Outgoing)
+        {
+            mResponseMessage = responseMessage;
+        }
+
         public HttpResponseHeaders Headers => mResponseMessage.Headers;
 
         public HttpContentHeaders ContentHeaders => mResponseMessage.Content?.Headers;
 
 
         public HttpStatusCode StatusCode => mResponseMessage.StatusCode;
-
-        public HttpResponseBoundaryEvent(HttpResponseMessage responseMessage)
-        {
-            mResponseMessage = responseMessage;
-        }
     }
 }

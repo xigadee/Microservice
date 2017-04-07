@@ -39,6 +39,13 @@ namespace Xigadee
         private readonly HttpRequestMessage mRequestMessage;
         private readonly IPrincipal mRequestPrincipal;
 
+        public HttpRequestBoundaryEvent(HttpRequestMessage requestMessage, IPrincipal requestPrincipal)
+            :base(ChannelDirection.Incoming)
+        {
+            mRequestMessage = requestMessage;
+            mRequestPrincipal = requestPrincipal;
+        }
+
         public HttpRequestHeaders Headers => mRequestMessage.Headers;
 
         public HttpContentHeaders ContentHeaders => mRequestMessage.Content?.Headers;
@@ -70,11 +77,6 @@ namespace Xigadee
             }
         }
 
-        public HttpRequestBoundaryEvent(HttpRequestMessage requestMessage, IPrincipal requestPrincipal)
-        {
-            mRequestMessage = requestMessage;
-            mRequestPrincipal = requestPrincipal;
-        }
     }
 
 }
