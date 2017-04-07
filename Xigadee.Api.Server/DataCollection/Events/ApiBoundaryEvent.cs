@@ -27,6 +27,10 @@ namespace Xigadee
     /// </summary>
     public abstract class ApiBoundaryEvent: BoundaryEventBase
     {
+        /// <summary>
+        /// This is the base constructor.
+        /// </summary>
+        /// <param name="Direction">The event direction.</param>
         public ApiBoundaryEvent(ChannelDirection Direction)
         {
             this.Direction = Direction;
