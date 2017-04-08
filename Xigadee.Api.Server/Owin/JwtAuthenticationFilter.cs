@@ -27,6 +27,9 @@ using System.Net;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This filter is used to implement JWT based authentication for the API.
+    /// </summary>
     public class JwtAuthenticationFilter: IAuthenticationFilter
     {
         private readonly IJwtTokenVerificationPolicy mPolicy;

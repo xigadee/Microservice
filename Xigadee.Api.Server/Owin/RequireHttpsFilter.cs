@@ -22,6 +22,9 @@ using System.Web.Http.Filters;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This filter is used to force the API to only allow secure connections.
+    /// </summary>
     public class RequireHttpsFilter : IAuthenticationFilter
     {
         public bool AllowMultiple => true;
