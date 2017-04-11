@@ -11,11 +11,7 @@ namespace Test.Xigadee
     {
         public override ServiceStatus Status => throw new NotImplementedException();
 
-        public override IRepositoryAsync<Guid, MondayMorningBlues> Persistence => throw new NotImplementedException();
-
         public override string Name => throw new NotImplementedException();
-
-        public override event EventHandler<StatusChangedEventArgs> StatusChanged;
 
         public override void Start()
         {

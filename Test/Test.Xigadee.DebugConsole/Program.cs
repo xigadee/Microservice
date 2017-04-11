@@ -24,10 +24,15 @@ namespace Test.Xigadee
     static partial class Program
     {
         static ConsoleContext sContext;
+        static MicroserviceWrapper sClient;
+        static MicroserviceWrapper sServer;
+        static ApiWrapper sApi;
 
         static void Main(string[] args)
         {
             sContext = new ConsoleContext(args);
+
+            //sContext
 
             sMenuMain.Value.Show(args, shortcut:sContext.Shortcut);
         }

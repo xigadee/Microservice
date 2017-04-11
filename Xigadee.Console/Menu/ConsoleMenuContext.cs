@@ -14,12 +14,7 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -28,6 +23,10 @@ namespace Xigadee
     /// </summary>
     public class ConsoleMenuContext
     {
+        /// <summary>
+        /// This is the constructor.
+        /// </summary>
+        /// <param name="options">The menu options.</param>
         public ConsoleMenuContext(ConsoleOption[] options)
         {
             Options = new List<ConsoleOption>(options);
@@ -38,6 +37,10 @@ namespace Xigadee
         /// </summary>
         public List<ConsoleOption> Options { get; }
 
+        /// <summary>
+        /// This method sets the menu page length options.
+        /// </summary>
+        /// <param name="pageLength">The number of menu items</param>
         public void PageSet(int pageLength)
         {
             if (pageLength > 9 || pageLength < 1)
@@ -78,6 +81,10 @@ namespace Xigadee
         /// </summary>
         public int PageMax { get; private set; }=1;
 
+        /// <summary>
+        /// This method moves to the previous page.
+        /// </summary>
+        /// <returns>Returns true if the page has changed.</returns>
         public bool PageDecrement()
         {
             if (PageCurrent == 1)
@@ -88,6 +95,10 @@ namespace Xigadee
             return true;
         }
 
+        /// <summary>
+        /// This method moves to the next page.
+        /// </summary>
+        /// <returns>Returns true if the page has changed.</returns>
         public bool PageIncrement()
         {
             if (PageCurrent == PageMax)

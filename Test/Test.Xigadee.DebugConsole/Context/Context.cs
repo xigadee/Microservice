@@ -71,7 +71,7 @@ namespace Test.Xigadee
         /// </summary>
         public MicroserviceWrapper Server { get; private set; }
         /// <summary>
-        /// This is the Api instancer service.
+        /// This is the Api instance.
         /// </summary>
         public PopulatorApiService ApiServer { get; private set; }
 
