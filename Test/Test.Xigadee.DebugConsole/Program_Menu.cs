@@ -31,14 +31,14 @@ namespace Test.Xigadee
                     {
                         MicroserviceLoadSettings();
                     }
-                    , enabled: (m, o) => sContext.Client.Status == 0 && sContext.Server.Status == 0
+                    , enabled: (m, o) => sContext.Client.Status == ServiceStatus.Created && sContext.Server.Status == ServiceStatus.Created
                 )
                 , new ConsoleOption(
                     "Set Persistence storage options"
                     , (m, o) =>
                     {
                     }
-                    , enabled: (m, o) => sContext.Server.Status == 0
+                    , enabled: (m, o) => sContext.Server.Status == ServiceStatus.Created
                     , childMenu: sMenuServerPersistenceSettings.Value
                 )
                 , new ConsoleSwitchOption(

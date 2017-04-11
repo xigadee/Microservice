@@ -201,7 +201,6 @@
     <Compile Include="Controllers\ApiPersistenceControllerAsyncBase.cs" />
     <Compile Include="Controllers\OData4SearchRedirectControllerAsync.cs" />
     <Compile Include="Populator\MicroserviceWebApi.cs" />
-    <Compile Include="Populator\PopulatorWebApiBase.cs" />
     <Compile Include="ModelBinders\ApiUtility.cs" />
     <Compile Include="ModelBinders\ApiRequestModelBinder.cs" />
     <Compile Include="ModelBinders\ApiRequest.cs" />

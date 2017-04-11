@@ -26,7 +26,7 @@ namespace Test.Xigadee
 
         static void StatusChanged(object sender, StatusChangedEventArgs e)
         {
-            var serv = sender as IPopulatorConsole;
+            var serv = sender as IConsolePersistence;
 
             sMenuMain.Value.AddInfoMessage($"{serv.Name}={e.StatusNew.ToString()}{e.Message}", true);
         }

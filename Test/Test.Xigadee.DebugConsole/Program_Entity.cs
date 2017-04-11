@@ -21,6 +21,13 @@ namespace Test.Xigadee
 {
     static partial class Program
     {
+        /// <summary>
+        /// This static method creates a new entity for persistence testing.
+        /// </summary>
+        /// <param name="Id">The optional Guid</param>
+        /// <param name="versionId">The optional version id.</param>
+        /// <param name="email">The optional email.</param>
+        /// <returns>Returns a new entity.</returns>
         static MondayMorningBlues CreateEntity(Guid? Id = null, Guid? versionId = null, string email = null)
         {
             Guid newId = Id ?? Guid.NewGuid();

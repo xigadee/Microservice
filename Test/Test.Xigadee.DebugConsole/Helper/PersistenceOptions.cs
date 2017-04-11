@@ -17,21 +17,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using Xigadee;
 
 namespace Test.Xigadee
 {
     /// <summary>
-    /// This is the server Microservice.
+    /// This enum contains the persistence storage options.
     /// </summary>
-    public class MicroserviceServer: Microservice
+    enum PersistenceOptions
     {
-        public MicroserviceServer()
-        {
-            ServicePointManager.DefaultConnectionLimit = 50000;
-        }
+        Sql,
+        DocumentDb,
+        DocumentDbSdk,
+        RedisCache,
+        Blob,
+        Memory
     }
 }

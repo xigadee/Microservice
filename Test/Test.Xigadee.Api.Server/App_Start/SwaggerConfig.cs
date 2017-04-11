@@ -19,16 +19,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Swashbuckle.Application;
+using Xigadee;
 
 namespace Test.Xigadee.Api.Server
 {
     public class SwaggerConfig
     {
 
-        public static void Register(PopulatorWebApi Service)
+        public static void Register(IPipelineWebApi Service)
         {
             // /swagger/ui/index
-            Service.ApiConfig.EnableSwagger(c =>
+            Service.HttpConfig.EnableSwagger(c =>
             {
                 c.IncludeXmlComments("docs.XML");
                 c.Schemes(new[] { "http", "https" });

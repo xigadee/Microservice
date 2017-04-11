@@ -108,6 +108,7 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="Test.Xigadee.Shared.licenseheader" />
+    <None Include="_docs\ReadMe.md" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

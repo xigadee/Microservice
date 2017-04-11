@@ -35,14 +35,15 @@ namespace Test.Xigadee
         {
             try
             {
-                sContext.Server.OnRegister += Server_OnRegister;
+                sContext.Server.Service.Events.OnRegister += Server_OnRegister;
 
-                sContext.Server.StatusChanged += StatusChanged;
+                sContext.Server.Service.StatusChanged += StatusChanged;
                 //sContext.Server.
 
                 sContext.Server.Service.Events.StartRequested += ServerStartRequested;
                 sContext.Server.Service.Events.StopRequested += ServerStopRequested;
                 sContext.Server.Service.Events.ComponentStatusChange += ServiceComponentStatusChange;
+
                 sContext.Server.Populate(ResolveServerSetting, true);
 
                 sContext.Server.Start();
@@ -58,7 +59,7 @@ namespace Test.Xigadee
         static void MicroserviceServerStop()
         {
             sContext.Server.Stop();
-            sContext.Server.StatusChanged -= StatusChanged;
+            sContext.Server.Service.StatusChanged -= StatusChanged;
             sContext.Server.Service.Events.ComponentStatusChange -= ServiceComponentStatusChange;
         }
 
@@ -74,7 +75,7 @@ namespace Test.Xigadee
         {
             ICacheManager<Guid, MondayMorningBlues> cacheManager = null;
 
-            if (sContext.ServerCacheEnabled)
+            if (sContext.Server.RedisCacheEnabled)
             {
                 cacheManager = RedisCacheHelper.Default<Guid, MondayMorningBlues>(e.Config.RedisCacheConnection());
             }

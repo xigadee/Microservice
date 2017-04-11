@@ -20,7 +20,7 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    public class PopulatorApiService: IPopulatorConsole
+    public class PopulatorApiService: IConsolePersistence
     {
         public Microservice Service
         {

@@ -163,7 +163,6 @@
     <Compile Include="Pipeline\ToUnityWebApiMicroservicePipeline.cs" />
     <Compile Include="Pipeline\ToUnityContainer.cs" />
     <Compile Include="Pipeline\UnityWebApiMicroservicePipeline.cs" />
-    <Compile Include="PopulatorWebApiUnity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

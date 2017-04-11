@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This calss holds the error information.
+    /// This class holds the error information.
     /// </summary>
     public class ErrorInfo
     {

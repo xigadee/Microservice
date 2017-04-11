@@ -38,6 +38,7 @@ namespace Test.Xigadee
         static void MicroserviceWebAPIStop()
         {
             sContext.ApiServer.Stop();
+            sContext.ApiServer.StatusChanged -= StatusChanged;
         }
 
     }

@@ -76,18 +76,18 @@ namespace Test.Xigadee
                 , new ConsoleOption("Client RedisCache enabled"
                     , (m, o) =>
                     {
-                        sContext.ClientCacheEnabled = !sContext.ClientCacheEnabled;
+                        sContext.Client.RedisCacheEnabled = !sContext.Client.RedisCacheEnabled;
                     }
                     , enabled: (m, o) => true
-                    , selected: (m, o) => sContext.ClientCacheEnabled
+                    , selected: (m, o) => sContext.Client.RedisCacheEnabled
                 )
                 , new ConsoleOption("Server RedisCache enabled"
                     , (m, o) =>
                     {
-                        sContext.ServerCacheEnabled = !sContext.ServerCacheEnabled;
+                        sContext.Server.RedisCacheEnabled = !sContext.Server.RedisCacheEnabled;
                     }
                     , enabled: (m, o) => true
-                    , selected: (m, o) => sContext.ServerCacheEnabled
+                    , selected: (m, o) => sContext.Server.RedisCacheEnabled
                 )
                 )
             );

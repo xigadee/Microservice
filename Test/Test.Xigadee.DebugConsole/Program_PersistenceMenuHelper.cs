@@ -32,46 +32,46 @@ namespace Test.Xigadee
                 , true, success ? EventLogEntryType.Information : EventLogEntryType.Error);
         }
 
-        static ConsoleOption Create(IPopulatorConsole repo)
+        static ConsoleOption Create(IConsolePersistence repo)
         {
             return new ConsoleOption("Create entity"
             , (m, o) =>
             {
-                sContext.EntityId = Guid.NewGuid();
+                sContext.EntityState.Id = Guid.NewGuid();
 
-                var result = repo.Persistence.Create(CreateEntity(sContext.EntityId, email: sContext.EntityReference)
+                var result = repo.Persistence.Create(CreateEntity(sContext.EntityState.Id, email: sContext.EntityState.Reference)
                     , new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5), Source = "Xigadee"}).Result;
 
                 if (result.IsSuccess)
-                    sContext.EntityVersionid = result.Entity.VersionId;
+                    sContext.EntityState.Versionid = result.Entity.VersionId;
 
                 PersistenceLog(m, "Create", result.IsSuccess);
             });
         }
 
-        static ConsoleOption Read(IPopulatorConsole repo)
+        static ConsoleOption Read(IConsolePersistence repo)
         {
             return new ConsoleOption("Read entity"
                , (m, o) =>
                {
-                   var result = repo.Persistence.Read(sContext.EntityId
+                   var result = repo.Persistence.Read(sContext.EntityState.Id
                        , new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
                    PersistenceLog(m, "Read", result.IsSuccess);
                });
         }
 
-        static ConsoleOption ReadByReference(IPopulatorConsole repo)
+        static ConsoleOption ReadByReference(IConsolePersistence repo)
         {
             return new ConsoleOption("Read entity by reference"
                , (m, o) =>
                {
-                   var result = repo.Persistence.ReadByRef("email", sContext.EntityReference
+                   var result = repo.Persistence.ReadByRef("email", sContext.EntityState.Reference
                        , new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
                    PersistenceLog(m, "Read By Reference", result.IsSuccess);
                });
         }
 
-        static ConsoleOption Update(IPopulatorConsole repo)
+        static ConsoleOption Update(IConsolePersistence repo)
         {
             return new ConsoleOption("Update entity"
                , (m, o) =>
@@ -79,13 +79,13 @@ namespace Test.Xigadee
                    var result = repo.Persistence.Update(
                        new MondayMorningBlues()
                        {
-                           Id = sContext.EntityId,
+                           Id = sContext.EntityState.Id,
                            ContentId = new Guid(),
-                           VersionId = sContext.EntityVersionid,
+                           VersionId = sContext.EntityState.Versionid,
                            Message = $"Hello mom2 -{DateTime.Now.ToString()}",
                            NotEnoughCoffee = false,
                            NotEnoughSleep = false,
-                           Email = sContext.EntityReference
+                           Email = sContext.EntityState.Reference
                        }
                        , new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) })
                        .Result;
@@ -94,73 +94,73 @@ namespace Test.Xigadee
 
                    if (result.IsSuccess)
                    {
-                       sContext.EntityVersionid = result.Entity.VersionId;
+                       sContext.EntityState.Versionid = result.Entity.VersionId;
                    }
                });
         }
 
-        static ConsoleOption Delete(IPopulatorConsole repo)
+        static ConsoleOption Delete(IConsolePersistence repo)
         {
             return new ConsoleOption("Delete entity"
                , (m, o) =>
                {
-                   var result = repo.Persistence.Delete(sContext.EntityId
+                   var result = repo.Persistence.Delete(sContext.EntityState.Id
                        , new RepositorySettings()
                        {
                            WaitTime = TimeSpan.FromMinutes(5)
-                            , VersionId = sContext.EntityVersionid.ToString()
+                            , VersionId = sContext.EntityState.Versionid.ToString()
                        }).Result;
                    PersistenceLog(m, "Delete", result.IsSuccess);
                });
         }
 
-        static ConsoleOption DeleteByReference(IPopulatorConsole repo)
+        static ConsoleOption DeleteByReference(IConsolePersistence repo)
         {
             return new ConsoleOption("Delete entity by reference"
                , (m, o) =>
                {
-                   var result = repo.Persistence.DeleteByRef("email", sContext.EntityReference,
+                   var result = repo.Persistence.DeleteByRef("email", sContext.EntityState.Reference,
                        new RepositorySettings()
                        {
                            WaitTime = TimeSpan.FromMinutes(5)
-                            , VersionId = sContext.EntityVersionid.ToString()
+                            , VersionId = sContext.EntityState.Versionid.ToString()
                        }).Result;
                    PersistenceLog(m, "Delete By Reference", result.IsSuccess);
                });
         }
 
-        static ConsoleOption Version(IPopulatorConsole repo)
+        static ConsoleOption Version(IConsolePersistence repo)
         {
             return new ConsoleOption("Version entity"
                , (m, o) =>
                {
-                   var result = repo.Persistence.Version(sContext.EntityId,
+                   var result = repo.Persistence.Version(sContext.EntityState.Id,
                        new RepositorySettings()
                        {
                            WaitTime = TimeSpan.FromMinutes(5)
-                            , VersionId = sContext.EntityVersionid.ToString()
+                            , VersionId = sContext.EntityState.Versionid.ToString()
                        }).Result;
                    PersistenceLog(m, "Version", result.IsSuccess);
                });
         }
 
-        static ConsoleOption VersionByReference(IPopulatorConsole repo)
+        static ConsoleOption VersionByReference(IConsolePersistence repo)
         {
             return new ConsoleOption("Version entity by reference"
                , (m, o) =>
                {
-                   var result = repo.Persistence.VersionByRef("EMAIL", sContext.EntityReference
+                   var result = repo.Persistence.VersionByRef("EMAIL", sContext.EntityState.Reference
                        , new RepositorySettings
                        {
                            WaitTime = TimeSpan.FromMinutes(5)
-                            , VersionId = sContext.EntityVersionid.ToString()
+                            , VersionId = sContext.EntityState.Versionid.ToString()
                        }).Result;
 
                    PersistenceLog(m, "Version By Reference", result.IsSuccess);
                });
         }
 
-        static ConsoleOption Search(IPopulatorConsole repo)
+        static ConsoleOption Search(IConsolePersistence repo)
         {
             return new ConsoleOption("Search entity"
                , (m, o) =>
@@ -177,7 +177,7 @@ namespace Test.Xigadee
                });
         }
 
-        static ConsoleOption StressTest(IPopulatorConsole repo)
+        static ConsoleOption StressTest(IConsolePersistence repo)
         {
             return new ConsoleOption("Create 100000 entities async"
                , (m, o) =>
@@ -208,7 +208,7 @@ namespace Test.Xigadee
                });
         }
 
-        static ConsoleOption StressCrudTest(IPopulatorConsole repo)
+        static ConsoleOption StressCrudTest(IConsolePersistence repo)
         {
             return new ConsoleOption("Create, Read, Update, Delete 1000 entities async"
                , (m, o) =>

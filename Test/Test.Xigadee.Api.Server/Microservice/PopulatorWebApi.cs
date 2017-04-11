@@ -37,85 +37,35 @@ namespace Test.Xigadee.Api.Server
         public const string Interservice = "interservice";
     }
 
-    public class PopulatorWebApi: PopulatorWebApiUnity<TestMicroserviceApi, TestConfigApi>
-    {
+    //public class PopulatorWebApi: PopulatorWebApiUnity<TestMicroserviceApi, TestConfigApi>
+    //{
 
-        public readonly ResourceProfile mResourceBlobStorage = new ResourceProfile("Blob");
+    //    public readonly ResourceProfile mResourceBlobStorage = new ResourceProfile("Blob");
 
-        public PopulatorWebApi(bool local = false)
-        {
-        }
+    //    public PopulatorWebApi(bool local = false)
+    //    {
+    //    }
 
-        protected override void RegisterCommands()
-        {
-            base.RegisterCommands();
+    //    protected override void RegisterCommands()
+    //    {
+    //        base.RegisterCommands();
 
-            //Batch Entities
-            RegisterCommand<IRepositoryAsync<Guid, Blah>, ProviderBlahAsyncLocal>(new ProviderBlahAsyncLocal());
-            RegisterCommand<IRepositoryAsync<Guid, MondayMorningBlues>, ProviderMondayMorningBluesAsyncLocal>(new ProviderMondayMorningBluesAsyncLocal());
-            RegisterCommand<IRepositoryAsync<ComplexKey, ComplexEntity>, ProviderComplexEntityAsyncLocal>(new ProviderComplexEntityAsyncLocal());
+    //        //Batch Entities
+    //        RegisterCommand<IRepositoryAsync<Guid, Blah>, ProviderBlahAsyncLocal>(new ProviderBlahAsyncLocal());
+    //        RegisterCommand<IRepositoryAsync<Guid, MondayMorningBlues>, ProviderMondayMorningBluesAsyncLocal>(new ProviderMondayMorningBluesAsyncLocal());
+    //        RegisterCommand<IRepositoryAsync<ComplexKey, ComplexEntity>, ProviderComplexEntityAsyncLocal>(new ProviderComplexEntityAsyncLocal());
 
-            Service.Commands.Register(new PersistenceBlahMemory()
-            { ChannelId = CoreChannels.Internal, StartupPriority = 99 });
+    //        Service.Commands.Register(new PersistenceBlahMemory()
+    //        { ChannelId = CoreChannels.Internal, StartupPriority = 99 });
 
-            Service.Commands.Register(new PersistenceComplexEntityMemory()
-            { ChannelId = CoreChannels.Internal, StartupPriority = 99 });
+    //        Service.Commands.Register(new PersistenceComplexEntityMemory()
+    //        { ChannelId = CoreChannels.Internal, StartupPriority = 99 });
 
-            Service.Commands.Register(new PersistenceMondayMorningBluesMemory()
-            { ChannelId = CoreChannels.Internal, StartupPriority = 99 });
+    //        Service.Commands.Register(new PersistenceMondayMorningBluesMemory()
+    //        { ChannelId = CoreChannels.Internal, StartupPriority = 99 });
 
-        }
+    //    }
 
-        protected override void RegisterEventSources()
-        {
-            base.RegisterEventSources();
 
-            //Service.DataCollection.RegisterEventSource(new AzureStorageEventSource(
-            //    Config.LogStorageCredentials()
-            //    , Service.Id.Name
-            //    , resourceProfile: mResourceBlobStorage));
-        }
-
-        protected override void RegisterLogging()
-        {
-            base.RegisterLogging();
-
-            //Service.DataCollection.RegisterLogger(new AzureStorageLogger(
-            //    Config.LogStorageCredentials()
-            //    , Service.Id.Name
-            //    , resourceProfile: mResourceBlobStorage));
-        }
-
-        protected override void RegisterCommunication()
-        {
-            base.RegisterCommunication();
-
-            //Service.RegisterListener(new AzureSBTopicListener(
-            //      CoreChannels.MasterJob
-            //    , Config.ServiceBusConnection()
-            //    , CoreChannels.MasterJob
-            //    , ListenerPartitionConfig.Init(2)));
-
-            //Service.RegisterSender(new AzureSBTopicSender(
-            //      CoreChannels.MasterJob
-            //    , Config.ServiceBusConnection()
-            //    , CoreChannels.MasterJob
-            //    , SenderPartitionConfig.Init(2)));
-
-            //Service.RegisterSender(new AzureSBQueueSender(
-            //      CoreChannels.RequestCore
-            //    , Config.ServiceBusConnection()
-            //    , CoreChannels.RequestCore
-            //    , SenderPartitionConfig.Init(0, 1)));
-
-            //Service.RegisterListener(new AzureSBTopicListener(
-            //      CoreChannels.ResponseBff
-            //    , Config.ServiceBusConnection()
-            //    , CoreChannels.ResponseBff
-            //    , new[] { new ListenerPartitionConfig(1, 2, false) }
-            //    , listenOnOriginatorId: true
-            //    ));
-        }
-
-    }
+    //}
 }

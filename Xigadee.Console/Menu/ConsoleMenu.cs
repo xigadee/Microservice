@@ -15,14 +15,9 @@
 #endregion
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Dynamic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -72,7 +67,6 @@ namespace Xigadee
         /// This property specifies whether the display should use the default context.
         /// </summary>
         public bool ContextInfoInherit { get; set; } = true;
-
         /// <summary>
         /// This is the menu context that holds the current state.
         /// </summary>
@@ -97,8 +91,9 @@ namespace Xigadee
         /// This method displays the menu on the console application.
         /// </summary>
         /// <param name="state">The optional state.</param>
-        /// <param name="pageLength"></param>
-        /// <param name="shortcut"></param>
+        /// <param name="pageLength">This is the number of menu items per page. The default is 9.</param>
+        /// <param name="shortcut">This property allows a supported shortcut to the executed automatically</param>
+        /// <param name="contextInfo">This method allows the menu context to be inherited by a child menu. If ContextInfoInherit is set to false, this is ignored.</param>
         public virtual void Show(object state = null, int pageLength = 9, string shortcut = null, ConsoleInfoContext contextInfo = null)
         {
             if (contextInfo != null && ContextInfoInherit)

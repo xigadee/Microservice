@@ -14,27 +14,27 @@
 // limitations under the License.
 #endregion
 
-using Xigadee;
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+
 namespace Test.Xigadee
 {
-    static partial class Program
+    /// <summary>
+    /// This helper class contains the test channels for the console application.
+    /// </summary>
+    internal static class Channels
     {
-        static Lazy<ConsoleMenu> sMenuClientPersistence = new Lazy<ConsoleMenu>(
-            () => new ConsoleMenu(
-               "Persistence"
-                    , Create(sContext.Client)
-                    , Read(sContext.Client)
-                    , ReadByReference(sContext.Client)
-                    , Update(sContext.Client)
-                    , Delete(sContext.Client)
-                    , DeleteByReference(sContext.Client)
-                    , Version(sContext.Client)
-                    , VersionByReference(sContext.Client)
-                    , StressTest(sContext.Client)
-                   )
-                );
+        public static readonly string TestA = "testa";
+        public static readonly string TestB = "testb";
+        public static readonly string TestC = "testc";
+
+        public static readonly string Interserve = "interserve";
+        public static readonly string MasterJob = "masterjob";
+
+        public static readonly string Internal = "internalpersistence";
+        public static readonly string InternalCallback = "internalcallback";
     }
 }

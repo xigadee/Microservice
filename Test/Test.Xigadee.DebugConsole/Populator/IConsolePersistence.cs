@@ -19,7 +19,7 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    internal interface IPopulatorConsole:IPopulator
+    internal interface IConsolePersistence
     {
         ServiceStatus Status { get; }
 

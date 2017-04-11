@@ -32,13 +32,13 @@ namespace Test.Xigadee.Api.Server
         {
             try
             {
-                var Service = new PopulatorWebApi();
+                var Service = new WebApiMicroservicePipeline();
 
                 RouteConfig.Register(Service);
 
                 SwaggerConfig.Register(Service);
 
-                Service.Start(app, AzureHelper.Resolver);
+                Service.Start();
 
             }
             catch (Exception ex)
@@ -58,13 +58,13 @@ namespace Test.Xigadee.Api.Server
         {
             try
             {
-                var Service = new PopulatorWebApi(true);
+                var Service = new WebApiMicroservicePipeline();
 
                 RouteConfig.Register(Service);
 
                 SwaggerConfig.Register(Service);
 
-                Service.Start(app, AzureHelper.Resolver);
+                Service.Start();
 
             }
             catch (Exception ex)

@@ -36,12 +36,12 @@ namespace Test.Xigadee
             sContext.Client.StatusChanged += StatusChanged;
 
             sContext.Client.Populate(ResolveClientSetting, true);
-            sContext.Client.Start();
+            sContext.Start();
         }
 
         static void MicroserviceClientStop()
         {
-            sContext.Client.Stop();
+            sContext.Stop();
             sContext.Client.StatusChanged -= StatusChanged;
         }
 

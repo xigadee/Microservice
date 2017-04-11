@@ -467,7 +467,6 @@
     <Compile Include="Pipeline\Extensions\Start.cs" />
     <Compile Include="Pipeline\Extensions\To.cs" />
     <Compile Include="Pipeline\MicroservicePipeline.cs" />
-    <Compile Include="Configuration\Populator\MicroservicePopulator.cs" />
     <Compile Include="CommandContainer\CommandContainerPolicy.cs" />
     <Compile Include="CommandContainer\SharedService\ServiceHolderStatistics.cs" />
     <Compile Include="Communication\ClientPriority\Algorithms\ListenerClientPollAlgorithmBase.cs" />
@@ -497,8 +496,6 @@
     <Compile Include="DataCollection\Logger\Implementations\Action\LoggerActionHolder.cs" />
     <Compile Include="Microservice\Microservice_Initialization.cs" />
     <Compile Include="Microservice\Microservice_Statistics.cs" />
-    <Compile Include="Configuration\Populator\IPopulator.cs" />
-    <Compile Include="Configuration\Populator\PopulatorBase.cs" />
     <Compile Include="ResourceTracker\CircuitBreaker\CircuitBreakerBase.cs" />
     <Compile Include="ResourceTracker\CircuitBreaker\CircuitBreakerState.cs" />
     <Compile Include="ResourceTracker\Interfaces\IResourceBase.cs" />
