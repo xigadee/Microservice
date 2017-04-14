@@ -19,6 +19,14 @@ using System.Collections.Generic;
 using Xigadee;
 namespace Test.Xigadee
 {
+    [Flags]
+    public enum RedisCacheMode
+    {
+        Off = 0,
+        Server = 1,
+        Client = 2,
+        ClientServer = 3
+    }
 
     /// <summary>
     /// This class is used to manage the state of the console application.
@@ -29,27 +37,8 @@ namespace Test.Xigadee
         {
             Switches = args?.CommandArgsParse() ?? new Dictionary<string, string>();
 
-            Client = new MicroserviceWrapper(Switches);
-            Server = new MicroserviceWrapper(Switches);
-
-            //ApiServer = new PopulatorApiService();
-
-            if (Switches.Count > 0)
-            {
-                if (Switches.ContainsKey("apiuri"))
-                    ApiServer.ApiUri = new Uri(Switches["apiuri"]);
-                else
-                    ApiServer.ApiUri = new Uri("http://localhost:29001");
-
-                if (Switches.ContainsKey("persistence"))
-                    SetServicePersistenceOption(Switches["persistence"]);
-
-                if (Switches.ContainsKey("persistencecache"))
-                    SetServicePersistenceCacheOption(Switches["persistencecache"]);
-
-                SlotCount = Switches.ContainsKey("processes") ?
-                    int.Parse(Switches["processes"]) : Environment.ProcessorCount * 4 * 4;
-            }
+            if (Switches.ContainsKey("persistence"))
+                SetServicePersistenceOption(Switches["persistence"]);
         }
 
         /// <summary>
@@ -62,24 +51,15 @@ namespace Test.Xigadee
         /// </summary>
         public Dictionary<string, string> Switches { get; set; }
 
-        /// <summary>
-        /// This is the client Microservice.
-        /// </summary>
-        public MicroserviceWrapper Client { get; private set; }
-        /// <summary>
-        /// This is the server Microservice.
-        /// </summary>
-        public MicroserviceWrapper Server { get; private set; }
-        /// <summary>
-        /// This is the Api instance.
-        /// </summary>
-        public PopulatorApiService ApiServer { get; private set; }
+        public Uri ApiUri => Switches.ContainsKey("apiuri")?new Uri(Switches["apiuri"]):new Uri("http://localhost:29001");
 
-        public int SlotCount { get; set; }
+        public int SlotCount => Switches.ContainsKey("processes")?int.Parse(Switches["processes"]) : Environment.ProcessorCount * 4 * 4;
 
         public PersistenceOptions PersistenceType { get; set; } = PersistenceOptions.DocumentDb;
 
         public EntityState EntityState { get; } = new EntityState();
+
+        public RedisCacheMode RedisCache => Switches.ContainsKey("persistencecache") ? SetServicePersistenceCacheOption(Switches["persistencecache"]): RedisCacheMode.Off;
 
         private void SetServicePersistenceOption(string value)
         {
@@ -109,20 +89,20 @@ namespace Test.Xigadee
             }
         }
 
-        private void SetServicePersistenceCacheOption(string value)
+        private static RedisCacheMode SetServicePersistenceCacheOption(string value)
         {
             switch (value.ToLowerInvariant())
             {
                 case "server":
-                    Server.RedisCacheEnabled = true;
-                    break;
+                    return RedisCacheMode.Server;
                 case "client":
-                    Client.RedisCacheEnabled = true;
-                    break;
+                    return RedisCacheMode.Client;
                 case "clientserver":
-                    Server.RedisCacheEnabled = Client.RedisCacheEnabled = true;
-                    break;
+                    return RedisCacheMode.ClientServer;
             }
+
+            return RedisCacheMode.Off;
+
         }
 
     }

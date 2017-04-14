@@ -7,20 +7,21 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    public class ApiWrapper : WrapperBase
+    public class ApiWrapper<K,E> : WrapperBase<K,E>
+        where K: IEquatable<K>
     {
-        public override ServiceStatus Status => throw new NotImplementedException();
+        public override ServiceStatus Status { get { return ServiceStatus.Created; } }
 
-        public override string Name => throw new NotImplementedException();
+        public override string Name { get; protected set; }
 
         public override void Start()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public override void Stop()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

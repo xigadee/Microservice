@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xigadee;
 
 namespace Test.Xigadee
@@ -10,17 +6,18 @@ namespace Test.Xigadee
     /// <summary>
     /// This wrapper is used to contain the Microservice within the console application.
     /// </summary>
-    public class MicroserviceWrapper : WrapperBase
+    public class MicroservicePersistenceWrapper<K,E> : WrapperBase<K,E>
+        where K: IEquatable<K>
     {
         private MicroservicePipeline mPipeline;
-        private Action<MicroservicePipeline, bool> mConfigure = null;
+        private Func<MicroservicePipeline, IRepositoryAsync<K, E>> mConfigure;
 
         /// <summary>
         /// The default constructor.
         /// </summary>
         /// <param name="name">The service name.</param>
         /// <param name="configure">This is the link to configuration pipeline for the Microservice</param>
-        public MicroserviceWrapper(string name = null, Action<MicroservicePipeline, bool> configure = null)
+        public MicroservicePersistenceWrapper(string name, Func<MicroservicePipeline, IRepositoryAsync<K, E>> configure)
         {
             Name = name;
             mConfigure = configure;
@@ -30,7 +27,7 @@ namespace Test.Xigadee
         /// </summary>
         public override ServiceStatus Status
         {
-            get { return mPipeline.Service.Status; }
+            get { return mPipeline?.Service?.Status ?? ServiceStatus.Created; }
         }
         /// <summary>
         /// The service name.
@@ -44,7 +41,7 @@ namespace Test.Xigadee
         {
             mPipeline = new MicroservicePipeline(Name);
 
-            mConfigure?.Invoke(mPipeline, RedisCacheEnabled);
+            Repository = mConfigure?.Invoke(mPipeline);
 
             mPipeline.Service.StatusChanged += OnStatusChanged;
             mPipeline.Start();
@@ -56,13 +53,13 @@ namespace Test.Xigadee
         {
             mPipeline.Stop();
             mPipeline.Service.StatusChanged -= OnStatusChanged;
+            Repository = null;
             mPipeline = null;
         }
 
         /// <summary>
-        /// This property specifies whether Redis Cache is enabled.
+        /// This is the link to the repository.
         /// </summary>
-        public bool RedisCacheEnabled { get; set; }
-
+        public IRepositoryAsync<K, E> Repository { get; set; }
     }
 }

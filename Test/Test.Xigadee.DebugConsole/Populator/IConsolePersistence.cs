@@ -19,11 +19,12 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    internal interface IConsolePersistence
+    internal interface IConsolePersistence<K,E>
+        where K: IEquatable<K>
     {
         ServiceStatus Status { get; }
 
-        IRepositoryAsync<Guid, MondayMorningBlues> Persistence { get; }
+        IRepositoryAsync<K, E> Persistence { get; }
 
         /// <summary>
         /// This event can be used to subscribe to status changes.

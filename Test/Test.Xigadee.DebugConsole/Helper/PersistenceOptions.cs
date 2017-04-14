@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 namespace Test.Xigadee
 {
     /// <summary>
-    /// This enum contains the persistence storage options.
+    /// This enum contains the persistence storage options for the service Microservice.
     /// </summary>
     enum PersistenceOptions
     {

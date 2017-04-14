@@ -28,47 +28,47 @@ namespace Test.Xigadee
         static Lazy<ConsoleMenu> sMenuServerPersistence = new Lazy<ConsoleMenu>(
             () => new ConsoleMenu(
                 "Persistence"
-                    , Create(sContext.ApiServer)
-                    , Read(sContext.ApiServer)
-                    , ReadByReference(sContext.ApiServer)
-                    , Update(sContext.ApiServer)
-                    , Delete(sContext.ApiServer)
-                    , DeleteByReference(sContext.ApiServer)
-                    , Version(sContext.ApiServer)
-                    , VersionByReference(sContext.ApiServer)
-                    , Search(sContext.ApiServer)
-                    , StressTest(sContext.ApiServer)
-                    , StressCrudTest(sContext.ApiServer)
+                    , Create(sServer)
+                    , Read(sServer)
+                    , ReadByReference(sServer)
+                    , Update(sServer)
+                    , Delete(sServer)
+                    , DeleteByReference(sServer)
+                    , Version(sServer)
+                    , VersionByReference(sServer)
+                    , Search(sServer)
+                    , StressTest(sServer)
+                    , StressCrudTest(sServer)
                )
             );
 
         static Lazy<ConsoleMenu> sMenuClientPersistence = new Lazy<ConsoleMenu>(
             () => new ConsoleMenu(
                "Persistence"
-                    , Create(sContext.Client)
-                    , Read(sContext.Client)
-                    , ReadByReference(sContext.Client)
-                    , Update(sContext.Client)
-                    , Delete(sContext.Client)
-                    , DeleteByReference(sContext.Client)
-                    , Version(sContext.Client)
-                    , VersionByReference(sContext.Client)
-                    , StressTest(sContext.Client)
+                    , Create(sClient)
+                    , Read(sClient)
+                    , ReadByReference(sClient)
+                    , Update(sClient)
+                    , Delete(sClient)
+                    , DeleteByReference(sClient)
+                    , Version(sClient)
+                    , VersionByReference(sClient)
+                    , StressTest(sClient)
                    )
                 );
 
         static Lazy<ConsoleMenu> sMenuApiPersistence = new Lazy<ConsoleMenu>(
             () => new ConsoleMenu(
                "Persistence"
-                    , Create(sContext.ApiServer)
-                    , Read(sContext.ApiServer)
-                    , ReadByReference(sContext.ApiServer)
-                    , Update(sContext.ApiServer)
-                    , Delete(sContext.ApiServer)
-                    , DeleteByReference(sContext.ApiServer)
-                    , Version(sContext.ApiServer)
-                    , VersionByReference(sContext.ApiServer)
-                    , StressTest(sContext.ApiServer)
+                    , Create(sApiServer)
+                    , Read(sApiServer)
+                    , ReadByReference(sApiServer)
+                    , Update(sApiServer)
+                    , Delete(sApiServer)
+                    , DeleteByReference(sApiServer)
+                    , Version(sApiServer)
+                    , VersionByReference(sApiServer)
+                    , StressTest(sApiServer)
 
                    )
                 );

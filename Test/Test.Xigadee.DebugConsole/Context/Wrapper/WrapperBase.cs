@@ -7,13 +7,14 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    public abstract class WrapperBase : IConsolePersistence
+    public abstract class WrapperBase<K,E> : IConsolePersistence<K,E>
+        where K : IEquatable<K>
     {
         public event EventHandler<StatusChangedEventArgs> StatusChanged;
 
         public abstract ServiceStatus Status { get; }
 
-        public IRepositoryAsync<Guid, MondayMorningBlues> Persistence { get; protected set; }
+        public IRepositoryAsync<K, E> Persistence { get; protected set; }
 
         public abstract string Name { get; protected set; }
 
@@ -24,7 +25,7 @@ namespace Test.Xigadee
 
         protected void OnStatusChanged(object sender, StatusChangedEventArgs e)
         {
-            var serv = sender as IConsolePersistence;
+            var serv = sender as IConsolePersistence<K,E>;
 
             StatusChanged?.Invoke(sender, e);
             //sMenuMain.Value.AddInfoMessage($"{serv.Name}={e.StatusNew.ToString()}{e.Message}", true);

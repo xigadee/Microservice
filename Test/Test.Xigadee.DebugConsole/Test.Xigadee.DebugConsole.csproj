@@ -196,16 +196,12 @@
     <Compile Include="Populator\PopulatorClient.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Program_Menu.cs" />
-    <Compile Include="Program_Microservice_Client.cs" />
     <Compile Include="Program_Microservice_Extension.cs" />
     <Compile Include="Program_Microservice_Server.cs" />
     <Compile Include="Program_PersistenceMenuHelper.cs" />
     <Compile Include="Program_Menu_Persistence.cs" />
     <Compile Include="Program_Menu_ServerPersistenceSettings.cs" />
     <Compile Include="Program_Menu_StressTest.cs" />
-    <Compile Include="Program_Microservice.cs" />
-    <Compile Include="Program_Status.cs" />
-    <Compile Include="Program_Microservice_WebApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Jobs\TestMasterJob.cs" />
     <Compile Include="Context\Wrapper\ApiWrapper.cs" />

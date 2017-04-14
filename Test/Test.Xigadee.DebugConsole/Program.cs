@@ -15,8 +15,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using Microsoft.WindowsAzure.Storage.Auth;
 using Xigadee;
 
 namespace Test.Xigadee
@@ -24,17 +22,43 @@ namespace Test.Xigadee
     static partial class Program
     {
         static ConsoleContext sContext;
-        static MicroserviceWrapper sClient;
-        static MicroserviceWrapper sServer;
-        static ApiWrapper sApi;
+
+        static MicroservicePersistenceWrapper<Guid, MondayMorningBlues> sClient;
+        static MicroservicePersistenceWrapper<Guid, MondayMorningBlues> sServer;
+
+        static ApiWrapper<Guid, MondayMorningBlues> sApiServer;
 
         static void Main(string[] args)
         {
             sContext = new ConsoleContext(args);
 
-            //sContext
+            sClient = new MicroservicePersistenceWrapper<Guid, MondayMorningBlues>("Test client", BuildClient);
+            sClient.StatusChanged += StatusChanged;
+
+            sServer = new MicroservicePersistenceWrapper<Guid, MondayMorningBlues>("Test server", BuildServer);
+            sServer.StatusChanged += StatusChanged;
+
+            sApiServer = new ApiWrapper<Guid, MondayMorningBlues>();
+            sApiServer.StatusChanged += StatusChanged;
 
             sMenuMain.Value.Show(args, shortcut:sContext.Shortcut);
+        }
+
+        static void StatusChanged(object sender, StatusChangedEventArgs e)
+        {
+            var serv = sender as IConsolePersistence<Guid, MondayMorningBlues>;
+
+            sMenuMain.Value.AddInfoMessage($"{serv.Name}={e.StatusNew.ToString()}{e.Message}", true);
+        }
+
+        static IRepositoryAsync<Guid, MondayMorningBlues> BuildClient(MicroservicePipeline pipeline)
+        {
+            return null;
+        }
+
+        static IRepositoryAsync<Guid, MondayMorningBlues> BuildServer(MicroservicePipeline pipeline)
+        {
+            return null;
         }
     }
 }

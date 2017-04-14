@@ -55,7 +55,7 @@ namespace Test.Xigadee
                 , true, success ? EventLogEntryType.Information : EventLogEntryType.Error);
         }
 
-        static ConsoleOption Create(IConsolePersistence repo)
+        static ConsoleOption Create(IConsolePersistence<Guid,MondayMorningBlues> repo)
         {
             return new ConsoleOption("Create entity"
             , (m, o) =>
@@ -72,7 +72,7 @@ namespace Test.Xigadee
             });
         }
 
-        static ConsoleOption Read(IConsolePersistence repo)
+        static ConsoleOption Read(IConsolePersistence<Guid, MondayMorningBlues> repo)
         {
             return new ConsoleOption("Read entity"
                , (m, o) =>
@@ -83,7 +83,7 @@ namespace Test.Xigadee
                });
         }
 
-        static ConsoleOption ReadByReference(IConsolePersistence repo)
+        static ConsoleOption ReadByReference(IConsolePersistence<Guid, MondayMorningBlues> repo)
         {
             return new ConsoleOption("Read entity by reference"
                , (m, o) =>
@@ -94,7 +94,7 @@ namespace Test.Xigadee
                });
         }
 
-        static ConsoleOption Update(IConsolePersistence repo)
+        static ConsoleOption Update(IConsolePersistence<Guid, MondayMorningBlues> repo)
         {
             return new ConsoleOption("Update entity"
                , (m, o) =>
@@ -122,7 +122,7 @@ namespace Test.Xigadee
                });
         }
 
-        static ConsoleOption Delete(IConsolePersistence repo)
+        static ConsoleOption Delete(IConsolePersistence<Guid, MondayMorningBlues> repo)
         {
             return new ConsoleOption("Delete entity"
                , (m, o) =>
@@ -137,7 +137,7 @@ namespace Test.Xigadee
                });
         }
 
-        static ConsoleOption DeleteByReference(IConsolePersistence repo)
+        static ConsoleOption DeleteByReference(IConsolePersistence<Guid, MondayMorningBlues> repo)
         {
             return new ConsoleOption("Delete entity by reference"
                , (m, o) =>
@@ -152,7 +152,7 @@ namespace Test.Xigadee
                });
         }
 
-        static ConsoleOption Version(IConsolePersistence repo)
+        static ConsoleOption Version(IConsolePersistence<Guid, MondayMorningBlues> repo)
         {
             return new ConsoleOption("Version entity"
                , (m, o) =>
@@ -167,7 +167,7 @@ namespace Test.Xigadee
                });
         }
 
-        static ConsoleOption VersionByReference(IConsolePersistence repo)
+        static ConsoleOption VersionByReference(IConsolePersistence<Guid, MondayMorningBlues> repo)
         {
             return new ConsoleOption("Version entity by reference"
                , (m, o) =>
@@ -183,7 +183,7 @@ namespace Test.Xigadee
                });
         }
 
-        static ConsoleOption Search(IConsolePersistence repo)
+        static ConsoleOption Search(IConsolePersistence<Guid, MondayMorningBlues> repo)
         {
             return new ConsoleOption("Search entity"
                , (m, o) =>
@@ -200,7 +200,7 @@ namespace Test.Xigadee
                });
         }
 
-        static ConsoleOption StressTest(IConsolePersistence repo)
+        static ConsoleOption StressTest(IConsolePersistence<Guid, MondayMorningBlues> repo)
         {
             return new ConsoleOption("Create 100000 entities async"
                , (m, o) =>
@@ -231,7 +231,7 @@ namespace Test.Xigadee
                });
         }
 
-        static ConsoleOption StressCrudTest(IConsolePersistence repo)
+        static ConsoleOption StressCrudTest(IConsolePersistence<Guid, MondayMorningBlues>  repo)
         {
             return new ConsoleOption("Create, Read, Update, Delete 1000 entities async"
                , (m, o) =>

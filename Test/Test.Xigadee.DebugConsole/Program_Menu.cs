@@ -25,44 +25,31 @@ namespace Test.Xigadee
         static Lazy<ConsoleMenu> sMenuMain = new Lazy<ConsoleMenu>(
             () => new ConsoleMenu(
                 "Xigadee Microservice Scratchpad Test Console"
-                , new ConsoleOption(
-                    "Load Settings"
-                    , (m, o) =>
-                    {
-                        MicroserviceLoadSettings();
-                    }
-                    , enabled: (m, o) => sContext.Client.Status == ServiceStatus.Created && sContext.Server.Status == ServiceStatus.Created
-                )
+                //, new ConsoleOption(
+                //    "Load Settings"
+                //    , (m, o) =>
+                //    {
+                //        MicroserviceLoadSettings();
+                //    }
+                //    , enabled: (m, o) => sClient.Status == ServiceStatus.Created && sServer.Status == ServiceStatus.Created
+                //)
                 , new ConsoleOption(
                     "Set Persistence storage options"
                     , (m, o) =>
                     {
                     }
-                    , enabled: (m, o) => sContext.Server.Status == ServiceStatus.Created
+                    , enabled: (m, o) => sServer.Status == ServiceStatus.Created
                     , childMenu: sMenuServerPersistenceSettings.Value
-                )
-                , new ConsoleSwitchOption(
-                    "Start Extension Service Test", (m, o) =>
-                    {
-                        Task.Run(() => ExtensionMicroserviceStart());
-                        return true;
-                    }
-                    , "Stop Extension Service Test", (m, o) =>
-                    {
-                        Task.Run(() => ExtensionMicroserviceStop());
-                        return true;
-                    }
-                    , shortcut: "startclient"
                 )
                 , new ConsoleSwitchOption(
                     "Start Client", (m, o) =>
                     {
-                        Task.Run(() => MicroserviceClientStart());
+                        Task.Run(() => sClient.Start());
                         return true;
                     }
                     , "Stop Client", (m, o) =>
                     {
-                        Task.Run(() => MicroserviceClientStop());
+                        Task.Run(() => sClient.Stop());
                         return true;
                     }
                     , shortcut: "startclient"
@@ -70,12 +57,12 @@ namespace Test.Xigadee
                 , new ConsoleSwitchOption(
                     "Start WebAPI client", (m, o) =>
                     {
-                        Task.Run(() => MicroserviceWebAPIStart());
+                        Task.Run(() => sApiServer.Start());
                         return true;
                     }
                     , "Stop WebAPI client", (m, o) =>
                     {
-                        MicroserviceWebAPIStop();
+                        sApiServer.Stop();
                         return true;
                     }
                     , shortcut: "startapi"
@@ -83,12 +70,12 @@ namespace Test.Xigadee
                 , new ConsoleSwitchOption(
                     "Start Server", (m, o) =>
                     {
-                        Task.Run(() => MicroserviceServerStart());
+                        Task.Run(() => sServer.Start());
                         return true;
                     }
                     ,"Stop Server", (m, o) =>
                     {
-                        Task.Run(() => MicroserviceServerStop());
+                        Task.Run(() => sServer.Stop());
                         return true;
                     }
                     , shortcut: "startserver"
@@ -99,7 +86,7 @@ namespace Test.Xigadee
                         //sContext.ClientPersistence = () => sContext.Client.Status;
                     }
                     , childMenu: sMenuClientPersistence.Value
-                    , enabled: (m, o) => sContext.Client.Status == ServiceStatus.Running
+                    , enabled: (m, o) => sClient.Status == ServiceStatus.Running
                 )
                 , new ConsoleOption("API Client Persistence methods"
                     , (m, o) =>
@@ -107,7 +94,7 @@ namespace Test.Xigadee
                         //sContext.ApiPersistenceStatus = () => 2;
                     }
                     , childMenu: sMenuApiPersistence.Value
-                    , enabled: (m, o) => sContext.ApiServer.Status == ServiceStatus.Running
+                    , enabled: (m, o) => sApiServer.Status == ServiceStatus.Running
                 )
                 , new ConsoleOption("Server Shared Service Persistence methods"
                     , (m, o) =>
@@ -115,22 +102,22 @@ namespace Test.Xigadee
                         //sContext.PersistenceStatus = () => sContext.Server.Status;
                     }
                     , childMenu: sMenuServerPersistence.Value
-                    , enabled: (m, o) => sContext.Server.Status == ServiceStatus.Running
+                    , enabled: (m, o) => sServer.Status == ServiceStatus.Running
                 )
-                , new ConsoleOption("Client Stress Tests"
-                    , (m, o) =>
-                    {
-                    }
-                    , childMenu: sMenuClientStressTests.Value
-                    , enabled: (m, o) => sContext.Client.Status == ServiceStatus.Running
-                )
-                , new ConsoleOption("Server Stress Tests"
-                    , (m, o) =>
-                    {
-                    }
-                    , childMenu: sMenuClientStressTests.Value
-                    , enabled: (m, o) => sContext.Server.Status == ServiceStatus.Running
-                )
+                //, new ConsoleOption("Client Stress Tests"
+                //    , (m, o) =>
+                //    {
+                //    }
+                //    , childMenu: sMenuClientStressTests.Value
+                //    , enabled: (m, o) => sClient.Status == ServiceStatus.Running
+                //)
+                //, new ConsoleOption("Server Stress Tests"
+                //    , (m, o) =>
+                //    {
+                //    }
+                //    , childMenu: sMenuClientStressTests.Value
+                //    , enabled: (m, o) => sServer.Status == ServiceStatus.Running
+                //)
             ));
     }
 }
