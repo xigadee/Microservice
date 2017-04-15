@@ -31,12 +31,12 @@ namespace Xigadee
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="Args"></param>
-        /// <param name="strStart"></param>
-        /// <param name="strDelim"></param>
-        /// <param name="throwErrors"></param>
+        /// <param name="args">The console arguments.</param>
+        /// <param name="strStart">The switch start character.</param>
+        /// <param name="strDelim">The delimiter character.</param>
+        /// <param name="throwErrors">Throws an error if duplicate keys are found or the values are in an incorrect format.</param>
         /// <returns>Returns a dictionary containing the collection of parameters and values.</returns>
-        public static Dictionary<string, string> CommandArgsParse(this string[] Args, string strStart= @"/", string strDelim= @":", bool throwErrors = false)
+        public static Dictionary<string, string> CommandArgsParse(this string[] args, string strStart= @"/", string strDelim= @":", bool throwErrors = false)
         {
             //	This function parses the command line arguments to find the correct type
             //	based on the syntax /strOption:[strReturnData]
@@ -46,12 +46,12 @@ namespace Xigadee
 
             Dictionary<string, string> data = new Dictionary<string, string>();
 
-            if (Args == null)
+            if (args == null)
                 return data;
 
             string strKey, strValue;
 
-            foreach (string strData in Args)
+            foreach (string strData in args)
             {
                 try
                 {

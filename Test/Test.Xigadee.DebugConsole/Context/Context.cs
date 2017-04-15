@@ -33,7 +33,11 @@ namespace Test.Xigadee
     /// </summary>
     class ConsoleContext
     {
-        public ConsoleContext(string[] args = null)
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="args">The console arguments.</param>
+        public ConsoleContext(string[] args)
         {
             Switches = args?.CommandArgsParse() ?? new Dictionary<string, string>();
 
@@ -49,13 +53,13 @@ namespace Test.Xigadee
         /// <summary>
         /// This is a list of the console setting switches for the application.
         /// </summary>
-        public Dictionary<string, string> Switches { get; set; }
+        public Dictionary<string, string> Switches { get; protected set; }
 
         public Uri ApiUri => Switches.ContainsKey("apiuri")?new Uri(Switches["apiuri"]):new Uri("http://localhost:29001");
 
         public int SlotCount => Switches.ContainsKey("processes")?int.Parse(Switches["processes"]) : Environment.ProcessorCount * 4 * 4;
 
-        public PersistenceOptions PersistenceType { get; set; } = PersistenceOptions.DocumentDb;
+        public PersistenceOptions PersistenceType { get; set; } = PersistenceOptions.Memory;
 
         public EntityState EntityState { get; } = new EntityState();
 
@@ -104,6 +108,5 @@ namespace Test.Xigadee
             return RedisCacheMode.Off;
 
         }
-
     }
 }

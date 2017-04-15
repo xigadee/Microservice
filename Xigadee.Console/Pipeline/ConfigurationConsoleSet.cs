@@ -25,12 +25,16 @@ namespace Xigadee
     public static partial class ConsolePipelineExtensions
     {
         /// <summary>
-        /// This method adds an override setting and clears the cache.
+        /// This method adds an override setting from the console arguments and clears the cache.
         /// </summary>
         /// <typeparam name="P">The pipeline type.</typeparam>
-        /// <param name="pipeline">The pipeline.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="value"></param>
+        /// <param name="pipeline">The Microservice pipeline.</param>
+        /// <param name="args">The console arguments.</param>
+        /// <param name="strStart">The switch start character.</param>
+        /// <param name="strDelim">The delimiter character.</param>
+        /// <param name="throwErrors">Throws an error if duplicate keys are found or the values are in an incorrect format.</param>
+        /// <param name="fnInclude">This function can be used to filter specific keys.</param>
+        /// <param name="priority">This is the default priority for the arguments, which is 1000.</param>
         /// <returns>Returns the pipeline.</returns>
         public static P ConfigurationSetFromConsoleArgs<P>(this P pipeline, string[] args, string strStart = @"/", string strDelim = @":", bool throwErrors = false
             , Func<string,string,bool> fnInclude = null, int priority = 1000)
@@ -38,6 +42,21 @@ namespace Xigadee
         {
             var settings = args.CommandArgsParse(strStart, strDelim, throwErrors);
 
+            return pipeline.ConfigurationSetFromConsoleArgs(settings, fnInclude, priority);
+        }
+        /// <summary>
+        /// This method adds an override setting and clears the cache.
+        /// </summary>
+        /// <typeparam name="P"></typeparam>
+        /// <param name="pipeline">The Microservice pipeline.</param>
+        /// <param name="settings">The settings key value pair.</param>
+        /// <param name="fnInclude">This function can be used to filter specific keys.</param>
+        /// <param name="priority">This is the default priority for the arguments, which is 1000.</param>
+        /// <returns>Returns the pipeline.</returns>
+        public static P ConfigurationSetFromConsoleArgs<P>(this P pipeline, Dictionary<string,string> settings
+            , Func<string, string, bool> fnInclude = null, int priority = 1000)
+            where P : IPipeline
+        {
             if (settings.Count > 0)
             {
                 if (fnInclude == null)

@@ -51,14 +51,6 @@ namespace Test.Xigadee
             sMenuMain.Value.AddInfoMessage($"{serv.Name}={e.StatusNew.ToString()}{e.Message}", true);
         }
 
-        static IRepositoryAsync<Guid, MondayMorningBlues> BuildClient(MicroservicePipeline pipeline)
-        {
-            return null;
-        }
 
-        static IRepositoryAsync<Guid, MondayMorningBlues> BuildServer(MicroservicePipeline pipeline)
-        {
-            return null;
-        }
     }
 }

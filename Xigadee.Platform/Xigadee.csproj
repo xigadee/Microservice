@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="CommandContainer\SharedService\SharedServiceContainer.cs" />
     <Compile Include="CommandContainer\SharedService\SharedServiceStatistics.cs" />
+    <Compile Include="CommandPersistence\Pipeline\Attach\AttachPersistenceInternalService.cs" />
     <Compile Include="CommandPersistence\Pipeline\Attach\AttachPersistenceMessageInitiator.cs" />
     <Compile Include="Command\Attributes\CommandMethodSignature.cs" />
     <Compile Include="Command\Attributes\CommandMethodSignatureException.cs" />

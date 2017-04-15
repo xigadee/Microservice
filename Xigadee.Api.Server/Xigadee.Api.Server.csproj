@@ -165,6 +165,7 @@
     <Compile Include="DataCollection\Events\HttpRequestBoundaryEvent.cs" />
     <Compile Include="DataCollection\Events\HttpResponseBoundaryEvent.cs" />
     <Compile Include="Filters\WebApiBoundaryLoggingFilter.cs" />
+    <Compile Include="Filters\WebApiCircuitBreakerFilter.cs" />
     <Compile Include="Helper\MicroserviceDependencyResolver.cs" />
     <Compile Include="Owin\ClientCertificateAuthorizationFilter.cs" />
     <Compile Include="Owin\RequireHttpsFilter.cs" />
