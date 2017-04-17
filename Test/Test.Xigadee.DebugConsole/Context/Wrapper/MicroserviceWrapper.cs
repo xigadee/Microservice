@@ -9,7 +9,8 @@ namespace Test.Xigadee
     public class MicroservicePersistenceWrapper<K,E> : WrapperBase<K,E>
         where K: IEquatable<K>
     {
-       private Action<MicroservicePersistenceWrapper<K, E>> mConfigure;
+        private Action<MicroservicePersistenceWrapper<K, E>> mConfigure;
+        private Action<MicroservicePersistenceWrapper<K, E>> mInit;
 
         /// <summary>
         /// The default constructor.
@@ -23,7 +24,9 @@ namespace Test.Xigadee
             Name = name;
             Pipeline = new MicroservicePipeline(name);
             mConfigure = configure;
-            init?.Invoke(this);
+            mInit = init;
+
+            mInit?.Invoke(this);
         }
         /// <summary>
         /// The current Microservice status.
@@ -67,7 +70,9 @@ namespace Test.Xigadee
             Pipeline.Stop();
             Pipeline.Service.StatusChanged -= OnStatusChanged;
             Repository = null;
-            Pipeline = null;
+
+            Pipeline = new MicroservicePipeline(Name);
+            mInit?.Invoke(this);
         }
 
         /// <summary>

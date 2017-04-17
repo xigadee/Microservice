@@ -201,7 +201,6 @@
     <Compile Include="Program_PersistenceMenuHelper.cs" />
     <Compile Include="Program_Menu_Persistence.cs" />
     <Compile Include="Program_Menu_ServerPersistenceSettings.cs" />
-    <Compile Include="Program_Menu_StressTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Jobs\TestMasterJob.cs" />
     <Compile Include="Context\Wrapper\ApiWrapper.cs" />
