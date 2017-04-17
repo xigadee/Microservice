@@ -32,10 +32,10 @@ namespace Test.Xigadee
         {
             sContext = new ConsoleContext(args);
 
-            sClient = new MicroservicePersistenceWrapper<Guid, MondayMorningBlues>("TestClient", BuildClient);
+            sClient = new MicroservicePersistenceWrapper<Guid, MondayMorningBlues>("TestClient", ClientConfig);
             sClient.StatusChanged += StatusChanged;
 
-            sServer = new MicroservicePersistenceWrapper<Guid, MondayMorningBlues>("TestServer", BuildServer);
+            sServer = new MicroservicePersistenceWrapper<Guid, MondayMorningBlues>("TestServer", ServerConfig, ServerInit);
             sServer.StatusChanged += StatusChanged;
 
             sApiServer = new ApiWrapper<Guid, MondayMorningBlues>();

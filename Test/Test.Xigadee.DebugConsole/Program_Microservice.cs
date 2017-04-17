@@ -33,7 +33,15 @@ namespace Test.Xigadee
         static DebugMemoryDataCollector sCollectorServer = null;
         static DebugMemoryDataCollector sCollectorClient = null;
 
-        static void BuildServer(MicroservicePersistenceWrapper<Guid, MondayMorningBlues> wrapper)
+        static void ServerInit(MicroservicePersistenceWrapper<Guid, MondayMorningBlues> wrapper)
+        {
+
+            wrapper.Pipeline
+                .ConfigurationSetFromConsoleArgs(sContext.Switches);
+
+        }
+
+        static void ServerConfig(MicroservicePersistenceWrapper<Guid, MondayMorningBlues> wrapper)
         {
             IRepositoryAsync<Guid, MondayMorningBlues> persistence = null;
             DebugMemoryDataCollector collector = null;
@@ -44,7 +52,6 @@ namespace Test.Xigadee
             //}
 
             wrapper.Pipeline
-                .ConfigurationSetFromConsoleArgs(sContext.Switches)
                 .AddDebugMemoryDataCollector((c) => wrapper.Collector = c)
                 .AddChannelIncoming("internalIn", boundaryLoggingEnabled:true)
                     .CallOut(PersistenceCommandSet)
@@ -57,11 +64,10 @@ namespace Test.Xigadee
                     ////.AppendBoundaryLogger(bLogger)
                     //.CallOut((c) => cpipeOut = c)
                     .Revert();
-
         }
 
 
-        static void BuildClient(MicroservicePersistenceWrapper<Guid, MondayMorningBlues> wrapper)
+        static void ClientConfig(MicroservicePersistenceWrapper<Guid, MondayMorningBlues> wrapper)
         {
             PersistenceMessageInitiator<Guid, MondayMorningBlues> persistence = null;
 

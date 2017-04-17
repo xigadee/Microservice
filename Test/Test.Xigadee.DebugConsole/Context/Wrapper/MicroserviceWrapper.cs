@@ -16,10 +16,14 @@ namespace Test.Xigadee
         /// </summary>
         /// <param name="name">The service name.</param>
         /// <param name="configure">This is the link to configuration pipeline for the Microservice</param>
-        public MicroservicePersistenceWrapper(string name, Action<MicroservicePersistenceWrapper<K,E>> configure)
+        public MicroservicePersistenceWrapper(string name
+            , Action<MicroservicePersistenceWrapper<K,E>> configure
+            , Action<MicroservicePersistenceWrapper<K, E>> init = null)
         {
             Name = name;
+            Pipeline = new MicroservicePipeline(name);
             mConfigure = configure;
+            init?.Invoke(this);
         }
         /// <summary>
         /// The current Microservice status.
@@ -49,8 +53,6 @@ namespace Test.Xigadee
         /// </summary>
         public override void Start()
         {
-            Pipeline = new MicroservicePipeline(Name);
-
             mConfigure?.Invoke(this);
 
             Pipeline.Service.StatusChanged += OnStatusChanged;
