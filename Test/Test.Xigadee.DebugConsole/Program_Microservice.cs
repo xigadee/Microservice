@@ -93,13 +93,28 @@ namespace Test.Xigadee
                     cpipe.AttachCommand(new PersistenceMondayMorningBluesSql(config.SqlConnection(), MondayMorningBluesHelper.VersionPolicyHelper));
                     break;
                 case PersistenceOptions.Blob:
-                    cpipe.AttachCommand(new PersistenceMondayMorningBluesBlob(config.AzureStorageCredentials(), MondayMorningBluesHelper.VersionPolicyHelper));
+                    cpipe.AttachPersistenceManagerAzureBlobStorage(
+                        (MondayMorningBlues k) => k.Id
+                        , (s) => new Guid(s)
+                        , keySerializer: (g) => g.ToString("N").ToUpperInvariant()
+                        , versionPolicy: MondayMorningBluesHelper.VersionPolicyHelper
+                        , referenceMaker: MondayMorningBluesHelper.ToReferences
+                        );
                     break;
                 case PersistenceOptions.DocumentDb:
-                    cpipe.AttachCommand(new PersistenceMondayMorningBluesDocDb(config.DocDBConnection(), config.DocDBDatabaseName(), MondayMorningBluesHelper.VersionPolicyHelper));
-                    break;
+                    cpipe.AttachPersistenceManagerDocumentDb(
+                        (MondayMorningBlues k) => k.Id
+                        , (s) => new Guid(s)
+                        , versionPolicy: MondayMorningBluesHelper.VersionPolicyHelper
+                        , referenceMaker: MondayMorningBluesHelper.ToReferences
+                        ); break;
                 case PersistenceOptions.DocumentDbSdk:
-                    cpipe.AttachCommand(new PersistenceMondayMorningBluesDocDbSdk(config.DocDBConnection(), config.DocDBDatabaseName(), MondayMorningBluesHelper.VersionPolicyHelper));
+                    cpipe.AttachPersistenceManagerDocumentDbSdk(
+                        (MondayMorningBlues k) => k.Id
+                        , (s) => new Guid(s)
+                        , versionPolicy: MondayMorningBluesHelper.VersionPolicyHelper
+                        , referenceMaker: MondayMorningBluesHelper.ToReferences
+                        );
                     break;
                 case PersistenceOptions.Memory:
                     cpipe.AttachPersistenceManagerHandlerMemory(

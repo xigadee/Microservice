@@ -25,7 +25,8 @@ namespace Test.Xigadee
         public PersistenceMondayMorningBluesDocDbSdk(DocumentDbConnection connection, string name
             , VersionPolicy<MondayMorningBlues> versionPolicy = null
             , ICacheManager<Guid, MondayMorningBlues> cacheManager = null)
-            : base(connection, name, (k) => k.Id
+            : base(connection, name
+                  , (k) => k.Id
             , (s) => new Guid(s)
             , versionPolicy: versionPolicy
             , referenceMaker: MondayMorningBluesHelper.ToReferences
