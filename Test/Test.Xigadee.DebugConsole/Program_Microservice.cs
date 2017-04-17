@@ -37,6 +37,7 @@ namespace Test.Xigadee
         {
 
             wrapper.Pipeline
+                //.ConfigurationClear()
                 .ConfigurationSetFromConsoleArgs(sContext.Switches);
 
         }

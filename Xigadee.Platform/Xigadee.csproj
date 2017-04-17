@@ -168,6 +168,7 @@
     <Compile Include="Microservice\Wrapper\SecurityWrapper.cs" />
     <Compile Include="Microservice\Wrapper\SerializationWrapper.cs" />
     <Compile Include="Microservice\Wrapper\WrapperBase.cs" />
+    <Compile Include="Pipeline\Configuration\ConfigurationClear.cs" />
     <Compile Include="Security\AuthenticationHandler\AuthenticationHandlerBase.cs" />
     <Compile Include="Security\AuthenticationHandler\AuthenticationHandlerId.cs" />
     <Compile Include="Security\AuthenticationHandler\JwtTokenAuthenticationHandler.cs" />

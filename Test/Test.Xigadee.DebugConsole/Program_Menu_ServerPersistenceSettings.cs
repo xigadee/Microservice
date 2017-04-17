@@ -38,7 +38,7 @@ namespace Test.Xigadee
                     {
                         sContext.PersistenceType = PersistenceOptions.DocumentDb;
                     }
-                    , enabled: (m, o) => sServer.Config?.CanResolve("") ?? false
+                    , enabled: (m, o) => sServer.Config?.CanResolve(ConfigBaseHelperDocumentDb.KeyDocDBAccountName, ConfigBaseHelperDocumentDb.KeyDocDBAccountAccessKey) ?? false
                     , selected: (m, o) => sContext.PersistenceType == PersistenceOptions.DocumentDb
                 )
                 , new ConsoleOption("DocumentDb Sdk based Persistence"
@@ -46,7 +46,7 @@ namespace Test.Xigadee
                     {
                         sContext.PersistenceType = PersistenceOptions.DocumentDbSdk;
                     }
-                    , enabled: (m, o) => sServer.Config?.CanResolve("") ?? false
+                    , enabled: (m, o) => sServer.Config?.CanResolve(ConfigBaseHelperDocumentDb.KeyDocDBAccountName, ConfigBaseHelperDocumentDb.KeyDocDBAccountAccessKey) ?? false
                     , selected: (m, o) => sContext.PersistenceType == PersistenceOptions.DocumentDbSdk
                 )
                 , new ConsoleOption("Blob storage based Persistence"
