@@ -38,7 +38,7 @@ namespace Xigadee
         /// <param name="resourceProfile"></param>
         /// <param name="referenceMaker"></param>
         /// <param name="keySerializer"></param>
-        protected PersistenceMessageHandlerRedisCache(string redisConnection
+        public PersistenceMessageHandlerRedisCache(string redisConnection
             , Func<E, K> keyMaker
             , Func<string, K> keyDeserializer
             , string entityName = null

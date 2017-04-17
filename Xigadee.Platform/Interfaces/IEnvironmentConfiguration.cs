@@ -46,10 +46,11 @@ namespace Xigadee
 
         void CacheFlush();
 
-        /// This property returns true if the key can be resolved within the resolver hierarchy.
+        /// <summary>
+        /// This property returns true if all the keys can be resolved.
         /// </summary>
-        /// <param name="key">The key to resolve.</param>
-        /// <returns>Returns true if resolved.</returns>
-        bool CanResolve(string key);
+        /// <param name="keys">The collection of keys to resolve.</param>
+        /// <returns>Returns true if all keys are resolved.</returns>
+        bool CanResolve(params string[] keys);
     }
 }

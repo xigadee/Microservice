@@ -180,7 +180,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="key">The key to resolve.</param>
         /// <returns>Returns true if resolved.</returns>
-        public bool CanResolve(string key)
+        protected bool CanResolve(string key)
         {
             var resolver = mConfigResolvers
                 .Values
@@ -188,6 +188,17 @@ namespace Xigadee
 
             return resolver != null;
         }
+        #endregion
+        #region CanResolve(params string[] keys)
+        /// <summary>
+        /// This property returns true if all the key supplied can be resolved within the resolver hierarchy.
+        /// </summary>
+        /// <param name="keys">The keys to resolve.</param>
+        /// <returns>Returns true if all the keys can be resolved.</returns>
+        public bool CanResolve(params string[] keys)
+        {
+            return keys?.All((k) => CanResolve(k)) ?? false;
+        } 
         #endregion
 
         #region PlatformOrConfigCache(string key, string defaultValue = null, bool throwExceptionIfNotFound = false)
@@ -234,6 +245,8 @@ namespace Xigadee
         {
             return Convert.ToInt32(PlatformOrConfigCache(key, defaultValue?.ToString()));
         }
+
+
         #endregion
     }
 }

@@ -64,6 +64,8 @@
     <Compile Include="CommandContainer\SharedService\SharedServiceStatistics.cs" />
     <Compile Include="CommandPersistence\Pipeline\Attach\AttachPersistenceInternalService.cs" />
     <Compile Include="CommandPersistence\Pipeline\Attach\AttachPersistenceMessageInitiator.cs" />
+    <Compile Include="CommandPersistence\Server\Memory\Pipeline\AddPersistenceManagerHandlerMemory.cs" />
+    <Compile Include="CommandPersistence\Server\Memory\Pipeline\AttachPersistenceManagerHandlerMemory.cs" />
     <Compile Include="Command\Attributes\CommandMethodSignature.cs" />
     <Compile Include="Command\Attributes\CommandMethodSignatureException.cs" />
     <Compile Include="Command\Attributes\CommandMethodSignatureHelper.cs" />
@@ -133,6 +135,7 @@
     <Compile Include="DataCollection\ExtensionMethods\Security.cs" />
     <Compile Include="DataCollection\ExtensionMethods\Telemetry.cs" />
     <Compile Include="DataCollection\ExtensionMethods\Write.cs" />
+    <Compile Include="DataCollection\Pipeline\Add\AddDebugMemoryDataCollector.cs" />
     <Compile Include="Exceptions\MicroserviceIdNotValidException.cs" />
     <Compile Include="Interfaces\IDataCollection.cs" />
     <Compile Include="DataCollection\Interfaces\BoundaryEventType.cs" />
@@ -616,6 +619,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CommandPersistence\Pipeline\Add\" />
+    <Folder Include="CommandPersistence\Server\DocumentDb\Pipeline\" />
     <Folder Include="Command\Security\" />
     <Folder Include="Configuration\Exceptions\" />
     <Folder Include="DataCollection\Pipeline\Attach\" />

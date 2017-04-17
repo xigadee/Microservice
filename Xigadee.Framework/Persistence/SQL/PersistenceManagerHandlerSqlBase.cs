@@ -37,7 +37,6 @@ namespace Xigadee
         where K : IEquatable<K>
     {
         #region Constructor
-
         /// <summary>
         /// This is the default constructor with a manual connection string.
         /// </summary>
@@ -119,7 +118,6 @@ namespace Xigadee
         protected Func<XElement, Tuple<K, string>> mXmlVersionMaker;
         #endregion
         #region Constructor
-
         /// <summary>
         /// This is the default constructor with a manual connection string.
         /// </summary>

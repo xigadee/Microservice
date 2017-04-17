@@ -24,6 +24,16 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
+        /// <summary>
+        /// This method adds a command initiator to the Microservice.
+        /// </summary>
+        /// <typeparam name="P">The pipeline type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="command">The command initiator output.</param>
+        /// <param name="startupPriority">The start up priority. The default is 90.</param>
+        /// <param name="defaultRequestTimespan">The default request timespan.</param>
+        /// <param name="channelIncoming">The incoming channel to attach the command initiator to.</param>
+        /// <returns>The pipeline.</returns>
         public static P AddCommandInitiator<P>(this P pipeline
             , out CommandInitiator command
             , int startupPriority = 90

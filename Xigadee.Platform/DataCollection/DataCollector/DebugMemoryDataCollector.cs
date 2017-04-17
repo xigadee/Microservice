@@ -30,6 +30,14 @@ namespace Xigadee
     public class DebugMemoryDataCollector: DataCollectorBase
     {
         /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="supportMap">The support map can be used to filter the types of events that you wish to filter. Leave this null to support all types.</param>
+        public DebugMemoryDataCollector(DataCollectionSupport? supportMap = null):base(supportMap)
+        {
+
+        }
+        /// <summary>
         /// This maps the default support for the event types.
         /// </summary>
         protected override void SupportLoadDefault()

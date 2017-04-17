@@ -27,93 +27,86 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
+
     static partial class Program
     {
-        static IRepositoryAsync<Guid, MondayMorningBlues> BuildServer(MicroservicePipeline pipeline)
+        static DebugMemoryDataCollector sCollectorServer = null;
+        static DebugMemoryDataCollector sCollectorClient = null;
+
+        static void BuildServer(MicroservicePersistenceWrapper<Guid, MondayMorningBlues> wrapper)
         {
             IRepositoryAsync<Guid, MondayMorningBlues> persistence = null;
+            DebugMemoryDataCollector collector = null;
 
             //if ((sContext.RedisCache & RedisCacheMode.Server) > 0)
             //{
             //    cacheManager = RedisCacheHelper.Default<Guid, MondayMorningBlues>(e.Config.RedisCacheConnection());
             //}
 
-            pipeline
+            wrapper.Pipeline
                 .ConfigurationSetFromConsoleArgs(sContext.Switches)
-                .AddChannelIncoming("internalIn")
-                    .CallOut(PersistenceSet)
+                .AddDebugMemoryDataCollector((c) => wrapper.Collector = c)
+                .AddChannelIncoming("internalIn", boundaryLoggingEnabled:true)
+                    .CallOut(PersistenceCommandSet)
                     //.AttachResourceProfile(new ResourceProfile("TrackIt"))
-                    //.AppendBoundaryLogger(new MemoryBoundaryLogger(), (p,bl) => bLogger = bl)
                     //.AttachAzureServiceBusQueueListener("Myqueue")
                     //.AttachCommand(new PersistenceBlahMemory())
                     //.AttachCommand(new PersistenceInternalService<Guid, Blah>(), assign: (c) => persistence = c, channelResponse: cpipeOut)
-                    //.CallOut((c) => cpipeIn = c)
                     .Revert()
                 .AddChannelOutgoing("internalOut", internalOnly: true)
                     ////.AppendBoundaryLogger(bLogger)
                     //.CallOut((c) => cpipeOut = c)
                     .Revert();
 
-            return persistence;
         }
 
 
-        static IRepositoryAsync<Guid, MondayMorningBlues> BuildClient(MicroservicePipeline pipeline)
+        static void BuildClient(MicroservicePersistenceWrapper<Guid, MondayMorningBlues> wrapper)
         {
             PersistenceMessageInitiator<Guid, MondayMorningBlues> persistence = null;
 
-
-            pipeline
+            wrapper.Pipeline
                 .ConfigurationSetFromConsoleArgs(sContext.Switches)
+                .AddDebugMemoryDataCollector((c) => wrapper.Collector = c)
                 .AddChannelIncoming("internalOut")
                     .AttachPersistenceMessageInitiator(out persistence, "internalIn")
                     .Revert()
                 .AddChannelOutgoing("internalIn", internalOnly: true)
                     .Revert();
 
-
-            return persistence;
         }
 
-        static void PersistenceSet(IPipelineChannelIncoming<MicroservicePipeline> cpipe)
+        static void PersistenceCommandSet(IPipelineChannelIncoming<MicroservicePipeline> cpipe)
         {
+            var config = cpipe.ToConfiguration();
+
             switch (sContext.PersistenceType)
-            {
+            {        
                 case PersistenceOptions.Sql:
-                    //sContext.Server.Service.Commands.Register(
-                    //    new PersistenceMondayMorningBluesSql(e.Config.SqlConnection()
-                    //    , MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
-                    //    { ChannelId = Channels.TestB });
+                    cpipe.AttachCommand(new PersistenceMondayMorningBluesSql(config.SqlConnection(), MondayMorningBluesHelper.VersionPolicyHelper));
                     break;
                 case PersistenceOptions.Blob:
-                    //e.Service.Commands.Register(
-                    //    new PersistenceMondayMorningBluesBlob(e.Config.StorageCredentials()
-                    //    , MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
-                    //    { ChannelId = Channels.TestB });
+                    cpipe.AttachCommand(new PersistenceMondayMorningBluesBlob(config.AzureStorageCredentials(), MondayMorningBluesHelper.VersionPolicyHelper));
                     break;
                 case PersistenceOptions.DocumentDb:
-                    //e.Service.Commands.Register(
-                    //    new PersistenceMondayMorningBluesDocDb(e.Config.DocDBConnection(), e.Config.DocDBDatabaseName()
-                    //    , MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
-                    //    { ChannelId = Channels.TestB });
+                    cpipe.AttachCommand(new PersistenceMondayMorningBluesDocDb(config.DocDBConnection(), config.DocDBDatabaseName(), MondayMorningBluesHelper.VersionPolicyHelper));
                     break;
                 case PersistenceOptions.DocumentDbSdk:
-                    //e.Service.Commands.Register(
-                    //    new PersistenceMondayMorningBluesDocDbSdk(e.Config.DocDBConnection(), e.Config.DocDBDatabaseName()
-                    //    , MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
-                    //    { ChannelId = Channels.TestB });
+                    cpipe.AttachCommand(new PersistenceMondayMorningBluesDocDbSdk(config.DocDBConnection(), config.DocDBDatabaseName(), MondayMorningBluesHelper.VersionPolicyHelper));
                     break;
                 case PersistenceOptions.Memory:
-                    //e.Service.Commands.Register(
-                    //    new PersistenceMondayMorningBluesMemory(
-                    //      MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
-                    //    { ChannelId = Channels.TestB });
+                    cpipe.AttachPersistenceManagerHandlerMemory(
+                          (MondayMorningBlues k) => k.Id
+                        , (s) => new Guid(s)
+                        , versionPolicy: MondayMorningBluesHelper.VersionPolicyHelper
+                        , referenceMaker: MondayMorningBluesHelper.ToReferences);
                     break;
                 case PersistenceOptions.RedisCache:
-                    //e.Service.Commands.Register(
-                    //    new PersistenceMondayMorningBluesRedis(e.Config.RedisCacheConnection()
-                    //    , MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
-                    //    { ChannelId = Channels.TestB });
+                    cpipe.AttachPersistenceManagerRedisCache(
+                          (MondayMorningBlues k) => k.Id
+                        , (s) => new Guid(s)
+                        , versionPolicy: MondayMorningBluesHelper.VersionPolicyHelper
+                        , referenceMaker: MondayMorningBluesHelper.ToReferences);
                     break;
             }
         }

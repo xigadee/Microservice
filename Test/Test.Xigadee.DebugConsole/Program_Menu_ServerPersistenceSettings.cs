@@ -30,7 +30,7 @@ namespace Test.Xigadee
                     {
                         sContext.PersistenceType = PersistenceOptions.Sql;
                     }
-                    , enabled: (m, o) => true
+                    , enabled: (m, o) => sServer.Config?.CanResolve(ConfigBaseHelperSql.KeySqlConnection)??false
                     , selected: (m, o) => sContext.PersistenceType == PersistenceOptions.Sql
                 )
                 , new ConsoleOption("DocumentDb based Persistence"
@@ -38,7 +38,7 @@ namespace Test.Xigadee
                     {
                         sContext.PersistenceType = PersistenceOptions.DocumentDb;
                     }
-                    , enabled: (m, o) => true
+                    , enabled: (m, o) => sServer.Config?.CanResolve("") ?? false
                     , selected: (m, o) => sContext.PersistenceType == PersistenceOptions.DocumentDb
                 )
                 , new ConsoleOption("DocumentDb Sdk based Persistence"
@@ -46,7 +46,7 @@ namespace Test.Xigadee
                     {
                         sContext.PersistenceType = PersistenceOptions.DocumentDbSdk;
                     }
-                    , enabled: (m, o) => true
+                    , enabled: (m, o) => sServer.Config?.CanResolve("") ?? false
                     , selected: (m, o) => sContext.PersistenceType == PersistenceOptions.DocumentDbSdk
                 )
                 , new ConsoleOption("Blob storage based Persistence"
@@ -54,7 +54,7 @@ namespace Test.Xigadee
                     {
                         sContext.PersistenceType = PersistenceOptions.Blob;
                     }
-                    , enabled: (m, o) => true
+                    , enabled: (m, o) => sServer.Config?.CanResolve(AzureExtensionMethods.KeyAzureStorageAccountName, AzureExtensionMethods.KeyAzureStorageAccountAccessKey) ?? false
                     , selected: (m, o) => sContext.PersistenceType == PersistenceOptions.Blob
                 )
                 , new ConsoleOption("Redis Cache based Persistence"
@@ -62,7 +62,7 @@ namespace Test.Xigadee
                     {
                         sContext.PersistenceType = PersistenceOptions.RedisCache;
                     }
-                    , enabled: (m, o) => true
+                    , enabled: (m, o) => sServer.Config?.CanResolve(AzureExtensionMethods.KeyRedisCacheConnection) ?? false
                     , selected: (m, o) => sContext.PersistenceType == PersistenceOptions.RedisCache
                 )
                 , new ConsoleOption("Memory based Persistence"

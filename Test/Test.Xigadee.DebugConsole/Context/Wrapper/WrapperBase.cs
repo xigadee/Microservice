@@ -25,10 +25,7 @@ namespace Test.Xigadee
 
         protected void OnStatusChanged(object sender, StatusChangedEventArgs e)
         {
-            var serv = sender as IConsolePersistence<K,E>;
-
             StatusChanged?.Invoke(sender, e);
-            //sMenuMain.Value.AddInfoMessage($"{serv.Name}={e.StatusNew.ToString()}{e.Message}", true);
         }
     }
 }

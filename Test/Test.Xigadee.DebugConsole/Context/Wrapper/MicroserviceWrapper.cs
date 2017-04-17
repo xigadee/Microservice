@@ -9,15 +9,14 @@ namespace Test.Xigadee
     public class MicroservicePersistenceWrapper<K,E> : WrapperBase<K,E>
         where K: IEquatable<K>
     {
-        private MicroservicePipeline mPipeline;
-        private Func<MicroservicePipeline, IRepositoryAsync<K, E>> mConfigure;
+       private Action<MicroservicePersistenceWrapper<K, E>> mConfigure;
 
         /// <summary>
         /// The default constructor.
         /// </summary>
         /// <param name="name">The service name.</param>
         /// <param name="configure">This is the link to configuration pipeline for the Microservice</param>
-        public MicroservicePersistenceWrapper(string name, Func<MicroservicePipeline, IRepositoryAsync<K, E>> configure)
+        public MicroservicePersistenceWrapper(string name, Action<MicroservicePersistenceWrapper<K,E>> configure)
         {
             Name = name;
             mConfigure = configure;
@@ -27,34 +26,46 @@ namespace Test.Xigadee
         /// </summary>
         public override ServiceStatus Status
         {
-            get { return mPipeline?.Service?.Status ?? ServiceStatus.Created; }
+            get { return Pipeline?.Service?.Status ?? ServiceStatus.Created; }
         }
         /// <summary>
         /// The service name.
         /// </summary>
         public override string Name { get; protected set; }
 
+
+        public DebugMemoryDataCollector Collector { get; set; }
+        /// <summary>
+        /// This is the pipeline used to configure the Microservice.
+        /// </summary>
+        public MicroservicePipeline Pipeline { get; protected set; }
+
+        /// <summary>
+        /// This is the Microservice configuration, or null if the pipeline is not set.
+        /// </summary>
+        public IEnvironmentConfiguration Config { get { return Pipeline?.ToConfiguration(); } }
         /// <summary>
         /// This method starts the service.
         /// </summary>
         public override void Start()
         {
-            mPipeline = new MicroservicePipeline(Name);
+            Pipeline = new MicroservicePipeline(Name);
 
-            Repository = mConfigure?.Invoke(mPipeline);
+            mConfigure?.Invoke(this);
 
-            mPipeline.Service.StatusChanged += OnStatusChanged;
-            mPipeline.Start();
+            Pipeline.Service.StatusChanged += OnStatusChanged;
+
+            Pipeline.Start();
         }
         /// <summary>
         /// This method stops the service.
         /// </summary>
         public override void Stop()
         {
-            mPipeline.Stop();
-            mPipeline.Service.StatusChanged -= OnStatusChanged;
+            Pipeline.Stop();
+            Pipeline.Service.StatusChanged -= OnStatusChanged;
             Repository = null;
-            mPipeline = null;
+            Pipeline = null;
         }
 
         /// <summary>
