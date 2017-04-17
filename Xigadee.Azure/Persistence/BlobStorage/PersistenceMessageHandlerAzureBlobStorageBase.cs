@@ -46,7 +46,6 @@ namespace Xigadee
 
         #endregion
         #region Constructor
-
         /// <summary>
         /// This is the default constructor.
         /// </summary>

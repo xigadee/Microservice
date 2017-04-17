@@ -219,6 +219,10 @@
     <Compile Include="DataCollection\Storage\Connector\Table.cs" />
     <Compile Include="DataCollection\Storage\Pipeline\AddAzureStorageDataCollector.cs" />
     <Compile Include="DataCollection\Storage\Pipeline\Config\AzureStorage.cs" />
+    <Compile Include="Persistence\BlobStorage\Pipeline\AddPersistenceManagerAzureBlobStorage.cs" />
+    <Compile Include="Persistence\BlobStorage\Pipeline\AttachPersistenceManagerAzureBlobStorage.cs" />
+    <Compile Include="Persistence\DocumentDbSDK\Pipeline\AddPersistenceManagerDocumentDbSdk.cs" />
+    <Compile Include="Persistence\DocumentDbSDK\Pipeline\AttachPersistenceManagerDocumentDbSdk.cs" />
     <Compile Include="Persistence\RedisCache\Pipeline\AddPersistenceManagerRedisCache.cs" />
     <Compile Include="Persistence\RedisCache\Pipeline\AttachPersistenceManagerRedisCache.cs" />
     <Compile Include="Pipeline\Config\Encryption.cs" />

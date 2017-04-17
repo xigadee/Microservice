@@ -34,18 +34,18 @@ namespace Xigadee
         public const string KeyAzureStorageAccountAccessKey = "AzureStorageAccountAccessKey";
 
         [ConfigSetting(AzureStorageGroupName)]
-        public static string AzureStorageAccountName(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyAzureStorageAccountName);
+        public static string AzureStorageAccountName(this IEnvironmentConfiguration config, bool throwExceptionIfNotFound = true) 
+            => config.PlatformOrConfigCache(KeyAzureStorageAccountName, throwExceptionIfNotFound: throwExceptionIfNotFound);
 
         [ConfigSetting(AzureStorageGroupName)]
-        public static string AzureStorageAccountAccessKey(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyAzureStorageAccountAccessKey);
+        public static string AzureStorageAccountAccessKey(this IEnvironmentConfiguration config, bool throwExceptionIfNotFound = true) 
+            => config.PlatformOrConfigCache(KeyAzureStorageAccountAccessKey, throwExceptionIfNotFound: throwExceptionIfNotFound);
 
         [ConfigSetting(AzureStorageGroupName)]
-        public static StorageCredentials AzureStorageCredentials(this IEnvironmentConfiguration config, bool throwExceptionIfMissing = true)
+        public static StorageCredentials AzureStorageCredentials(this IEnvironmentConfiguration config, bool throwExceptionIfNotFound = true)
         {
-            if (string.IsNullOrEmpty(config.AzureStorageAccountName()) || string.IsNullOrEmpty(config.AzureStorageAccountAccessKey()))
-                if (throwExceptionIfMissing)
-                    throw new Exception();
-                else
+            if (string.IsNullOrEmpty(config.AzureStorageAccountName(throwExceptionIfNotFound)) 
+                || string.IsNullOrEmpty(config.AzureStorageAccountAccessKey(throwExceptionIfNotFound)))
                     return null;
 
             return new StorageCredentials(config.AzureStorageAccountName(), config.AzureStorageAccountAccessKey());

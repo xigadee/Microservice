@@ -39,18 +39,23 @@ namespace Xigadee
 
 
         [ConfigSetting("DocumentDb")]
-        public static DocumentDbConnection DocDBConnection(this IEnvironmentConfiguration config) => DocumentDbConnection.ToConnection(config.DocDBAccountName(), config.DocDBAccountAccessKey());
+        public static DocumentDbConnection DocDBConnection(this IEnvironmentConfiguration config, bool throwExceptionIfNotFound = false) 
+            => DocumentDbConnection.ToConnection(config.DocDBAccountName(throwExceptionIfNotFound), config.DocDBAccountAccessKey(throwExceptionIfNotFound));
 
         [ConfigSetting("DocumentDb")]
-        public static string DocDBAccountName(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyDocDBAccountName);
+        public static string DocDBAccountName(this IEnvironmentConfiguration config, bool throwExceptionIfNotFound = false) 
+            => config.PlatformOrConfigCache(KeyDocDBAccountName, throwExceptionIfNotFound: throwExceptionIfNotFound);
 
         [ConfigSetting("DocumentDb")]
-        public static string DocDBAccountAccessKey(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyDocDBAccountAccessKey);
+        public static string DocDBAccountAccessKey(this IEnvironmentConfiguration config, bool throwExceptionIfNotFound = false) 
+            => config.PlatformOrConfigCache(KeyDocDBAccountAccessKey, throwExceptionIfNotFound: throwExceptionIfNotFound);
 
         [ConfigSetting("DocumentDb")]
-        public static string DocDBDatabaseName(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyDocDBDatabaseName);
+        public static string DocDBDatabaseName(this IEnvironmentConfiguration config, bool throwExceptionIfNotFound = false) 
+            => config.PlatformOrConfigCache(KeyDocDBDatabaseName, throwExceptionIfNotFound: throwExceptionIfNotFound);
 
         [ConfigSetting("DocumentDb")]
-        public static string DocDBCollectionName(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyDocDBCollectionName);
+        public static string DocDBCollectionName(this IEnvironmentConfiguration config, bool throwExceptionIfNotFound = false) 
+            => config.PlatformOrConfigCache(KeyDocDBCollectionName, throwExceptionIfNotFound: throwExceptionIfNotFound);
     }
 }
