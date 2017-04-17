@@ -217,6 +217,9 @@ namespace Xigadee
                 value = mConfigCache.GetOrAdd(key, PlatformOrConfig(key) ?? defaultValue);
             }
 
+            if (value == null && throwExceptionIfNotFound)
+                throw new ConfigResolverKeyNotFoundException(key);
+
             return value;
         }
         #endregion

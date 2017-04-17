@@ -114,6 +114,7 @@
     <Compile Include="Configuration\ConfigResolver\ConfigResolverAppSettings.cs" />
     <Compile Include="Configuration\ConfigResolver\ConfigResolverFunction.cs" />
     <Compile Include="Configuration\ConfigResolver\ConfigResolverMemory.cs" />
+    <Compile Include="Configuration\Exceptions\ConfigResolverKeyNotFoundException.cs" />
     <Compile Include="DataCollection\ActionQueue\ActionQueueCollectionBase.cs" />
     <Compile Include="DataCollection\ActionQueue\ActionQueuePolicy.cs" />
     <Compile Include="DataCollection\ActionQueue\ActionQueueStatistics.cs" />
@@ -622,7 +623,6 @@
     <Folder Include="CommandPersistence\Pipeline\Add\" />
     <Folder Include="CommandPersistence\Server\DocumentDb\Pipeline\" />
     <Folder Include="Command\Security\" />
-    <Folder Include="Configuration\Exceptions\" />
     <Folder Include="DataCollection\Pipeline\Attach\" />
     <Folder Include="Pipeline\Exceptions\" />
     <Folder Include="Pipeline\Extensions\Add\" />
