@@ -39,14 +39,14 @@ namespace Test.Xigadee
         /// The service name.
         /// </summary>
         public override string Name { get; protected set; }
-
-
+        /// <summary>
+        /// This is the data collector.
+        /// </summary>
         public DebugMemoryDataCollector Collector { get; set; }
         /// <summary>
         /// This is the pipeline used to configure the Microservice.
         /// </summary>
         public MicroservicePipeline Pipeline { get; protected set; }
-
         /// <summary>
         /// This is the Microservice configuration, or null if the pipeline is not set.
         /// </summary>
@@ -67,12 +67,18 @@ namespace Test.Xigadee
         /// </summary>
         public override void Stop()
         {
-            Pipeline.Stop();
-            Pipeline.Service.StatusChanged -= OnStatusChanged;
-            Repository = null;
+            StopInternal();
 
             Pipeline = new MicroservicePipeline(Name);
             mInit?.Invoke(this);
+        }
+
+        private void StopInternal()
+        {
+            Pipeline.Stop();
+            Pipeline.Service.StatusChanged -= OnStatusChanged;
+            Pipeline = null;
+            Repository = null;
         }
 
         /// <summary>

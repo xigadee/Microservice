@@ -33,15 +33,19 @@ namespace Test.Xigadee
             sContext = new ConsoleContext(args);
 
             sClient = new MicroservicePersistenceWrapper<Guid, MondayMorningBlues>("TestClient", ClientConfig);
-            sClient.StatusChanged += StatusChanged;
-
             sServer = new MicroservicePersistenceWrapper<Guid, MondayMorningBlues>("TestServer", ServerConfig, ServerInit);
-            sServer.StatusChanged += StatusChanged;
-
             sApiServer = new ApiWrapper<Guid, MondayMorningBlues>();
+            
+            sClient.StatusChanged += StatusChanged;
+            sServer.StatusChanged += StatusChanged;
             sApiServer.StatusChanged += StatusChanged;
 
-            sMenuMain.Value.Show(args, shortcut:sContext.Shortcut);
+            sMenuMain.Value.Show(args, shortcut: sContext.Shortcut);
+
+            sClient.StatusChanged -= StatusChanged;
+            sServer.StatusChanged -= StatusChanged;
+            sApiServer.StatusChanged -= StatusChanged;
+
         }
 
         static void StatusChanged(object sender, StatusChangedEventArgs e)
@@ -50,7 +54,5 @@ namespace Test.Xigadee
 
             sMenuMain.Value.AddInfoMessage($"{serv.Id.Name}={e.StatusNew.ToString()}{e.Message}", true);
         }
-
-
     }
 }

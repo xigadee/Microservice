@@ -10,6 +10,7 @@ namespace Test.Xigadee
     public abstract class WrapperBase<K,E> : IConsolePersistence<K,E>
         where K : IEquatable<K>
     {
+
         public event EventHandler<StatusChangedEventArgs> StatusChanged;
 
         public abstract ServiceStatus Status { get; }
@@ -27,5 +28,6 @@ namespace Test.Xigadee
         {
             StatusChanged?.Invoke(sender, e);
         }
+
     }
 }
