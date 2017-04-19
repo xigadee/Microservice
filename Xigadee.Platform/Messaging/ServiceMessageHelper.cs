@@ -55,7 +55,7 @@ namespace Xigadee
         /// <param name="messageType">The message type.</param>
         /// <param name="actionType">The action.</param>
         /// <param name="priority">The optional priority. The default is 1.</param>
-        [Obsolete("Use SetDestination instead")]
+        [Obsolete("Use SetDestination instead. This method changes the priority by default, which is not good practice")]
         public static void DestinationSet(this ServiceMessage message, string channelId, string messageType, string actionType, int priority = 1)
         {
             message.ChannelId = channelId;
@@ -69,7 +69,7 @@ namespace Xigadee
         /// <param name="message">The message.</param>
         /// <param name="header">The service message header.</param>
         /// <param name="priority">The optional message priority. The default is 1.</param>
-        [Obsolete("Use SetDestination instead")]
+        [Obsolete("Use SetDestination instead. This method changes the priority by default, which is not good practice")]
         public static void DestinationSet(this ServiceMessage message, ServiceMessageHeader header, int priority = 1)
         {
             message.ChannelId = header.ChannelId;
