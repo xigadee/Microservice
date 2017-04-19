@@ -31,6 +31,8 @@ namespace Xigadee
     /// </summary>
     public static class ServiceMessageHelper
     {
+        static JsonContractSerializer sSerializer = new JsonContractSerializer();
+
         #region StatusSet(this ServiceMessage message, string status, string statusDescription)
         /// <summary>
         /// This extension method sets the message status.
@@ -53,6 +55,7 @@ namespace Xigadee
         /// <param name="messageType">The message type.</param>
         /// <param name="actionType">The action.</param>
         /// <param name="priority">The optional priority. The default is 1.</param>
+        [Obsolete("Use SetDestination instead")]
         public static void DestinationSet(this ServiceMessage message, string channelId, string messageType, string actionType, int priority = 1)
         {
             message.ChannelId = channelId;
@@ -66,6 +69,7 @@ namespace Xigadee
         /// <param name="message">The message.</param>
         /// <param name="header">The service message header.</param>
         /// <param name="priority">The optional message priority. The default is 1.</param>
+        [Obsolete("Use SetDestination instead")]
         public static void DestinationSet(this ServiceMessage message, ServiceMessageHeader header, int priority = 1)
         {
             message.ChannelId = header.ChannelId;
@@ -123,23 +127,137 @@ namespace Xigadee
             return new ServiceMessageHeader(message.ResponseChannelId, message.ResponseMessageType, message.ResponseActionType);
         }
 
+        #region Clone(this ServiceMessage message)
+        /// <summary>
+        /// This method clones a Service Message using a JSON serializer.
+        /// </summary>
+        /// <param name="message">The message to clone.</param>
+        /// <returns>A clone of the original message.</returns>
+        public static ServiceMessage Clone(this ServiceMessage message)
+        {
+            //First clone the service message.
+            byte[] data = sSerializer.Serialize(message);
+
+            return sSerializer.Deserialize<ServiceMessage>(data);
+        }
+        #endregion
+
+
+        #region SetDestination...
+        /// <summary>
+        /// This method updates the destination and priority information for the message based on the contract and the optional priority flag.
+        /// </summary>
+        /// <typeparam name="C">The message contract.</typeparam>
+        /// <param name="message">The message.</param>
+        /// <param name="priority">This is the optional priority. If this is set to a value it will replace the original priority.</param>
+        public static ServiceMessage SetDestination<C>(this ServiceMessage message, int? priority = null)
+            where C : IMessageContract
+        {
+            string channelId, messageType, actionType;
+            ExtractContractInfo<C>(out channelId, out messageType, out actionType);
+            return message.SetDestination(channelId, messageType, actionType, priority);
+        }
+        /// <summary>
+        /// This method updates the destination and priority information for the message.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="channelId">The delivery channelId</param>
+        /// <param name="messageType">The message channelId</param>
+        /// <param name="actionType">The message action channelId</param>
+        /// <param name="priority">This is the optional priority. If this is set to a value it will replace the original priority.</param>
+        /// <returns>The cloned message with the alternative destination information.</returns>
+        public static ServiceMessage SetDestination(this ServiceMessage message, string channelId, string messageType, string actionType, int? priority = null)
+        {
+            message.ChannelId = channelId;
+            message.MessageType = messageType;
+            message.ActionType = actionType;
+
+            if (priority.HasValue)
+                message.ChannelPriority = priority.Value;
+
+            return message;
+        }
+        /// <summary>
+        /// This method updates the destination and priority information for the message.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="header">The service message header.</param>
+        /// <param name="priority">This is the optional priority. If this is set to a value it will replace the original priority.</param>
+        /// <returns>The cloned message with the alternative destination information.</returns>
+        public static ServiceMessage SetDestination(this ServiceMessage message, ServiceMessageHeader header, int? priority = null)
+        {
+            message.ChannelId = header.ChannelId;
+            message.MessageType = header.MessageType;
+            message.ActionType = header.ActionType;
+
+            if (priority.HasValue)
+                message.ChannelPriority = priority.Value;
+
+            return message;
+        }
+        #endregion
+
+        #region Forward<C>(this ServiceMessage message)
+        /// <summary>
+        /// This method clones a message and then changes its destination information to match the contract.
+        /// </summary>
+        /// <typeparam name="C">The contract type.</typeparam>
+        /// <param name="message">The message to forward.</param>
+        /// <param name="priority">This is the optional priority. If this is set to a value it will replace the original priority.</param>
+        /// <returns>The cloned message with the alternative destination information.</returns>
+        public static ServiceMessage Forward<C>(this ServiceMessage message, int? priority = null)
+            where C : IMessageContract
+        {
+            return message.Clone().SetDestination<C>(priority);
+        }
+        /// <summary>
+        /// This method clones a message and then changes its destination information to match the parameters passed.
+        /// </summary>
+        /// <param name="message">The original message.</param>
+        /// <param name="channelId">The delivery channelId</param>
+        /// <param name="messageType">The message channelId</param>
+        /// <param name="actionType">The message action channelId</param>
+        /// <param name="priority">This is the optional priority. If this is set to a value it will replace the original priority.</param>
+        /// <returns>The cloned message with the alternative destination information.</returns>
+        public static ServiceMessage Forward(this ServiceMessage message, string channelId, string messageType, string actionType, int? priority = null)
+        {
+            return message.Clone().SetDestination(channelId, messageType, actionType, priority);
+        }
+        #endregion
+
         #region ToResponse(this ServiceMessage message...
+        /// <summary>
+        /// This extension method turns a request message in to its corresponding response message by using the originator information as the new correlation information.
+        /// </summary>
+        /// <param name="message">The incoming message.</param>
+        /// <param name="blob">The outgoing payload.</param>
+        /// <returns>Returns a new message.</returns>
         public static ServiceMessage ToResponse(this ServiceMessage message, byte[] blob = null)
         {
             var baseMessage = CreateMessageBase();
 
-            baseMessage.CorrelationKey = message.OriginatorKey;
             baseMessage.CorrelationServiceId = message.OriginatorServiceId;
             baseMessage.CorrelationUTC = message.OriginatorUTC;
-
+            baseMessage.CorrelationKey = message.OriginatorKey;
             baseMessage.DispatcherTransitCount = message.DispatcherTransitCount;
-
             baseMessage.Blob = blob;
+
             return baseMessage;
         }
         #endregion
 
         #region ToResponse<C>(this ServiceMessage message...
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="C"></typeparam>
+        /// <param name="message"></param>
+        /// <param name="location"></param>
+        /// <param name="correlationId"></param>
+        /// <param name="messageId"></param>
+        /// <param name="serviceId"></param>
+        /// <param name="blob"></param>
+        /// <returns></returns>
         public static ServiceMessage ToResponse<C>(this ServiceMessage message
             , string location = null, string correlationId = null
             , string messageId = null, string serviceId = null
@@ -152,13 +270,17 @@ namespace Xigadee
             baseMessage.CorrelationUTC = message.CorrelationUTC;
             baseMessage.CorrelationKey = correlationId ?? message.OriginatorKey;
             baseMessage.DispatcherTransitCount = message.DispatcherTransitCount;
-
             baseMessage.Blob = blob;
+
             return baseMessage;
         }
         #endregion
 
         #region CreateMessageBase()
+        /// <summary>
+        /// This method creates a new service message base.
+        /// </summary>
+        /// <returns>The message.</returns>
         public static ServiceMessage CreateMessageBase()
         {
             return new ServiceMessage
@@ -169,6 +291,11 @@ namespace Xigadee
         } 
         #endregion
         #region CreateMessageBase<C>()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="C"></typeparam>
+        /// <returns></returns>
         public static ServiceMessage CreateMessageBase<C>()
             where C: IMessageContract
         {
@@ -183,6 +310,7 @@ namespace Xigadee
             return baseMessage;
         }
         #endregion
+
 
         #region ToServiceMessageHeader<I>()
         /// <summary>

@@ -218,7 +218,7 @@
     <Compile Include="Security\Interfaces\IEncryptionHandler.cs" />
     <Compile Include="Messaging\ProcessOptions.cs" />
     <Compile Include="Messaging\RateLimitSignal.cs" />
-    <Compile Include="Messaging\TransmissionPayloadHelper.cs" />
+    <Compile Include="Messaging\Helper\TransmissionPayloadHelper.cs" />
     <Compile Include="Microservice\Events\ProcessRequestErrorEventArgs.cs" />
     <Compile Include="Microservice\Events\ProcessRequestUnresolvedEventArgs.cs" />
     <Compile Include="Microservice\Events\StartEventArgs.cs" />

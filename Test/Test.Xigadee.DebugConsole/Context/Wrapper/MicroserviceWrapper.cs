@@ -21,6 +21,9 @@ namespace Test.Xigadee
             , Action<MicroservicePersistenceWrapper<K,E>> configure
             , Action<MicroservicePersistenceWrapper<K, E>> init = null)
         {
+            if (configure == null)
+                throw new ArgumentNullException("configure");
+
             Name = name;
             Pipeline = new MicroservicePipeline(name);
             mConfigure = configure;

@@ -116,12 +116,20 @@ namespace Xigadee
         #endregion
 
         #region Static Create helper methods
+        /// <summary>
+        /// This static method creates a new TransmissionPayload object with an empty ServiceMessage.
+        /// </summary>
+        /// <returns>Returns the payload.</returns>
         public static TransmissionPayload Create()
         {
             var message = new ServiceMessage();
             return new TransmissionPayload(message);
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static TransmissionPayload Create<T>() where T : IMessageContract
         {
             string channelId, messageType, actionType;
