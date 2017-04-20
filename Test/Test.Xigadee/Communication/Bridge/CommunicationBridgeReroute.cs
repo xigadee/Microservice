@@ -13,28 +13,26 @@ namespace Test.Xigadee
         [Contract("fredo", "Do", "Something1")]
         public interface IContractInitial : IMessageContract { }
 
-        [Contract("crequest", "Do", "Something1")]
+        [Contract("crequest", "Did", "SomethingElse")]
         public interface IContractFinal : IMessageContract { }
 
         /// <summary>
-        /// This test is used to check that a message can be rerouted to another channel using a command
+        /// This test is used to check that a message can be rerouted to another channel using a message Clone and SetDestination command.
         /// </summary>
         [TestMethod]
         public void TestReroute()
         {
             var bridgeOut = new CommunicationBridge(CommunicationBridgeMode.RoundRobin);
-            var bridgein = new CommunicationBridge(CommunicationBridgeMode.Broadcast);
             bool success = false;
             ManualResetEvent mre = new ManualResetEvent(false);
             DebugMemoryDataCollector memp1,memp2;
 
             var p1 = new MicroservicePipeline("Sender")
                 .AdjustPolicyCommunication((p) => p.BoundaryLoggingActiveDefault = true)
-                .AddDataCollector((c) => new DebugMemoryDataCollector(), (c) => memp1 = c)
+                .AddDebugMemoryDataCollector(out memp1)
                 .AddChannelIncoming("fredo")
                     .AttachCommand(typeof(IContractInitial), async (rq,rst,ps) =>
-                    {
-                        
+                    {                  
                         rst.Add(new TransmissionPayload(rq.Message.Clone().SetDestination<IContractFinal>()));
                     })
                     .Revert()
@@ -45,10 +43,10 @@ namespace Test.Xigadee
 
             var p2 = new MicroservicePipeline("Receiver")
                 .AdjustPolicyCommunication((p) => p.BoundaryLoggingActiveDefault = true)
-                .AddDataCollector((c) => new DebugMemoryDataCollector(), (c) => memp2 = c)
+                .AddDebugMemoryDataCollector(out memp2)
                 .AddChannelIncoming("crequest")
                     .AttachListener(bridgeOut.GetListener())
-                    .AttachCommand(typeof(IContractFinal), async (rq,rst, ps) =>
+                    .AttachCommand(typeof(IContractFinal), async (rq,rst,ps) =>
                     {
                         var value = ps.PayloadDeserialize<string>(rq);
                         success = value == "Hello";
@@ -73,12 +71,5 @@ namespace Test.Xigadee
             p2.Stop();
         }
 
-    }
-
-    public class BridgeMeReroute
-    {
-        public Guid Id { get; set; } = Guid.NewGuid();
-
-        public string Message { get; set; }
     }
 }
