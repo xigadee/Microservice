@@ -47,7 +47,7 @@ namespace Test.Xigadee
                 .AddDebugMemoryDataCollector(out memp2)
                 .AddChannelIncoming("crequest")
                     .AttachListener(bridgeOut.GetListener())
-                    .AttachCommand(typeof(IContractFinal), (rq,rst,ps) =>
+                    .AttachCommand(typeof(IContractFinal), (rq, rst, ps) =>
                     {
                         var value = ps.PayloadDeserialize<string>(rq);
                         success = value == "Hello";
@@ -60,9 +60,7 @@ namespace Test.Xigadee
             p1.Start();
             p2.Start();
 
-            int check1 = p1.ToMicroservice().Commands.Count();
-            int check2 = p2.ToMicroservice().Commands.Count();
-
+            //Send the message to the command asyncronously.
             p1.ToMicroservice().Dispatch.Process<IContractInitial>("Hello");
 
             mre.WaitOne();
