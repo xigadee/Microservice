@@ -27,7 +27,7 @@ namespace Test.Xigadee
             var pipeline = new MicroservicePipeline(GetType().Name);
 
             pipeline
-                .AddDataCollector((c) => mCollector = new DebugMemoryDataCollector())
+                .AddDebugMemoryDataCollector(out mCollector)
                 .AddPayloadSerializerDefaultJson()
                 .AddChannelIncoming("internalIn", internalOnly: true)
                     .AttachCommand(mCommand)

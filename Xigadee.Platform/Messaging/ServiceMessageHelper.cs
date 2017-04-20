@@ -46,7 +46,7 @@ namespace Xigadee
             message.StatusDescription = statusDescription;
         }
         #endregion
-        #region DestinationSet...
+        #region DestinationSet (Obsolete)...
         /// <summary>
         /// This extension method sets destination.
         /// </summary>
@@ -108,6 +108,7 @@ namespace Xigadee
             message.ResponseChannelPriority = priority;
         }
         #endregion
+        #region DestinationGet(this ServiceMessage message)
         /// <summary>
         /// This method gets the destination as a ServiceMessageHeader object.
         /// </summary>
@@ -117,6 +118,8 @@ namespace Xigadee
         {
             return new ServiceMessageHeader(message.ChannelId, message.MessageType, message.ActionType);
         }
+        #endregion
+        #region ResponseGet(this ServiceMessage message)
         /// <summary>
         /// This method gets the response destination as a ServiceMessageHeader object.
         /// </summary>
@@ -125,7 +128,8 @@ namespace Xigadee
         public static ServiceMessageHeader ResponseGet(this ServiceMessage message)
         {
             return new ServiceMessageHeader(message.ResponseChannelId, message.ResponseMessageType, message.ResponseActionType);
-        }
+        } 
+        #endregion
 
         #region Clone(this ServiceMessage message)
         /// <summary>
@@ -142,7 +146,6 @@ namespace Xigadee
         }
         #endregion
 
-
         #region SetDestination...
         /// <summary>
         /// This method updates the destination and priority information for the message based on the contract and the optional priority flag.
@@ -154,7 +157,8 @@ namespace Xigadee
             where C : IMessageContract
         {
             string channelId, messageType, actionType;
-            ExtractContractInfo<C>(out channelId, out messageType, out actionType);
+            if (!ExtractContractInfo<C>(out channelId, out messageType, out actionType))
+                throw new InvalidMessageContractException(typeof(C));
             return message.SetDestination(channelId, messageType, actionType, priority);
         }
         /// <summary>
@@ -197,7 +201,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region Forward<C>(this ServiceMessage message)
+        #region Forward...
         /// <summary>
         /// This method clones a message and then changes its destination information to match the contract.
         /// </summary>
@@ -245,7 +249,6 @@ namespace Xigadee
             return baseMessage;
         }
         #endregion
-
         #region ToResponse<C>(this ServiceMessage message...
         /// <summary>
         /// 
@@ -302,7 +305,8 @@ namespace Xigadee
             ServiceMessage baseMessage = CreateMessageBase();
 
             string channelId, messageType, actionType;
-            ExtractContractInfo<C>(out channelId, out messageType, out actionType);
+            if (!ExtractContractInfo<C>(out channelId, out messageType, out actionType))
+                throw new InvalidMessageContractException(typeof(C));
             baseMessage.ChannelId = channelId;
             baseMessage.MessageType = messageType;
             baseMessage.ActionType = actionType;
@@ -310,7 +314,6 @@ namespace Xigadee
             return baseMessage;
         }
         #endregion
-
 
         #region ToServiceMessageHeader<I>()
         /// <summary>
@@ -355,6 +358,9 @@ namespace Xigadee
         /// <param name="actionType">The message action channelId</param>
         public static bool ExtractContractInfo(Type objectType, out string channelId, out string messageType, out string actionType)
         {
+            if (objectType == null)
+                throw new ArgumentNullException("objectType");
+
             channelId = null;
             messageType = null;
             actionType = null;

@@ -62,6 +62,10 @@
   <ItemGroup>
     <Compile Include="CommandContainer\SharedService\SharedServiceContainer.cs" />
     <Compile Include="CommandContainer\SharedService\SharedServiceStatistics.cs" />
+    <Compile Include="CommandInline\CommandInline.cs" />
+    <Compile Include="CommandInline\Exceptions\ContractException.cs" />
+    <Compile Include="CommandInline\Pipeline\AddCommand.cs" />
+    <Compile Include="CommandInline\Pipeline\AttachCommand.cs" />
     <Compile Include="CommandPersistence\Pipeline\Attach\AttachPersistenceInternalService.cs" />
     <Compile Include="CommandPersistence\Pipeline\Attach\AttachPersistenceMessageInitiator.cs" />
     <Compile Include="CommandPersistence\Server\DocumentDb\Pipeline\AddPersistenceManagerDocumentDb.cs" />

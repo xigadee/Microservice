@@ -44,7 +44,7 @@ namespace Xigadee
             string channelId, messageType, actionType;
 
             if (!ServiceMessageHelper.ExtractContractInfo(interfaceType, out channelId, out messageType, out actionType))
-                throw new InvalidOperationException("Unable to locate contract attributes for " + interfaceType.Name);
+                throw new InvalidOperationException($"Unable to locate contract attributes for {interfaceType.Name}");
 
             Header = new ServiceMessageHeader(channelId, messageType, actionType);
         }

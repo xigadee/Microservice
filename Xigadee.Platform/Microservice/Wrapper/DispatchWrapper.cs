@@ -53,7 +53,8 @@ namespace Xigadee
             where C : IMessageContract
         {
             string channelId, messageType, actionType;
-            ServiceMessageHelper.ExtractContractInfo<C>(out channelId, out messageType, out actionType);
+            if (!ServiceMessageHelper.ExtractContractInfo<C>(out channelId, out messageType, out actionType))
+                throw new InvalidMessageContractException(typeof(C));
 
             Process(channelId, messageType, actionType, package, ChannelPriority, options, release, isDeadLetterMessage);
         }

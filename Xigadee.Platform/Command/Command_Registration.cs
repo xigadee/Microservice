@@ -70,7 +70,8 @@ namespace Xigadee
             where CM : IMessageContract
         {
             string channelId, messageType, actionType;
-            ServiceMessageHelper.ExtractContractInfo<CM>(out channelId, out messageType, out actionType);
+            if (!ServiceMessageHelper.ExtractContractInfo<CM>(out channelId, out messageType, out actionType))
+                throw new InvalidMessageContractException(typeof(CM));
 
             CommandRegister(channelId, messageType, actionType, action, exceptionAction, typeof(CM).Name);
         }
@@ -211,7 +212,8 @@ namespace Xigadee
         protected virtual void CommandUnregister<C>() where C : IMessageContract
         {
             string channelId, messageType, actionType;
-            ServiceMessageHelper.ExtractContractInfo<C>(out channelId, out messageType, out actionType);
+            if (!ServiceMessageHelper.ExtractContractInfo<C>(out channelId, out messageType, out actionType))
+                throw new InvalidMessageContractException(typeof(C));
             CommandUnregister(channelId, messageType, actionType);
         }
         #endregion
