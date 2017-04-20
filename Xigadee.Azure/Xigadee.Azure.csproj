@@ -242,7 +242,7 @@
     <Compile Include="Configuration\ConfigResolver\AzureHelper.cs" />
     <Compile Include="Pipeline\Config\RedisCache.cs" />
     <Compile Include="Pipeline\Config\KeyVault.cs" />
-    <Compile Include="Communication\ServiceBus\Pipeline\Config\ServiceBus.cs" />
+    <Compile Include="Pipeline\Config\ServiceBus.cs" />
     <Compile Include="Pipeline\Config\LogStorage.cs" />
     <Compile Include="Pipeline\Config\Storage.cs" />
     <Compile Include="DataCollection\Legacy\EventSource\AzureStorageEventSource.cs" />

@@ -44,5 +44,20 @@ namespace Xigadee
 
             return new StorageCredentials(config.StorageAccountName(), config.StorageAccountAccessKey());
         }
+
+        /// <summary>
+        /// This extension allows the Azure storage extensions to be manually set as override parameters.
+        /// </summary>
+        /// <param name="pipeline">The incoming pipeline.</param>
+        /// <param name="storageAccountName">The storage account name.</param>
+        /// <param name="storageAccountAccessKey">The storage account key.</param>
+        /// <returns>The passthrough of the pipeline.</returns>
+        public static P ConfigOverrideSetAzureStorage<P>(this P pipeline, string storageAccountName, string storageAccountAccessKey)
+            where P : IPipeline
+        {
+            pipeline.ConfigurationOverrideSet(KeyStorageAccountName, storageAccountName);
+            pipeline.ConfigurationOverrideSet(KeyStorageAccountAccessKey, storageAccountAccessKey);
+            return pipeline;
+        }
     }
 }

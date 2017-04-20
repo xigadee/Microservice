@@ -48,5 +48,19 @@ namespace Xigadee
             return conn;
         }
         #endregion
+
+
+        /// <summary>
+        /// This extension allows the Service Bus connection values to be manually set as override parameters.
+        /// </summary>
+        /// <param name="pipeline">The incoming pipeline.</param>
+        /// <param name="connection">The Service Bus connection.</param>
+        /// <returns>The passthrough of the pipeline.</returns>
+        public static P ConfigOverrideSetServiceBusConnection<P>(this P pipeline, string connection)
+            where P : IPipeline
+        {
+            pipeline.ConfigurationOverrideSet(KeyServiceBusConnection, connection);
+            return pipeline;
+        }
     }
 }

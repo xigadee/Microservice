@@ -52,5 +52,22 @@ namespace Xigadee
 
             return new ClientCredential(config.KeyVaultClientId(), config.KeyVaultClientSecret());
         }
+
+        /// <summary>
+        /// This extension allows the Key Vault connection values to be manually set as override parameters.
+        /// </summary>
+        /// <param name="pipeline">The incoming pipeline.</param>
+        /// <param name="keyVaultClientId">The Key Vault client Id.</param>
+        /// <param name="keyVaultClientSecret">The Key Vault client secret.</param>
+        /// <param name="keyVaultSecretBaseUri">The Key Vault secret base uri.</param>
+        /// <returns>The passthrough of the pipeline.</returns>
+        public static P ConfigOverrideSetRedisCacheConnection<P>(this P pipeline, string keyVaultClientId, string keyVaultClientSecret, string keyVaultSecretBaseUri)
+            where P : IPipeline
+        {
+            pipeline.ConfigurationOverrideSet(KeyKeyVaultClientId, keyVaultClientId);
+            pipeline.ConfigurationOverrideSet(KeyKeyVaultClientSecret, keyVaultClientSecret);
+            pipeline.ConfigurationOverrideSet(KeyKeyVaultSecretBaseUri, keyVaultSecretBaseUri);
+            return pipeline;
+        }
     }
 }

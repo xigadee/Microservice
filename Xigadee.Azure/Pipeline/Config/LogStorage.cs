@@ -45,5 +45,20 @@ namespace Xigadee
 
             return new StorageCredentials(config.LogStorageAccountName(), config.LogStorageAccountAccessKey());
         }
+
+        /// <summary>
+        /// This extension allows the Azure log storage values to be manually set as override parameters.
+        /// </summary>
+        /// <param name="pipeline">The incoming pipeline.</param>
+        /// <param name="storageAccountName">The log storage account name.</param>
+        /// <param name="storageAccountAccessKey">The log storage account key.</param>
+        /// <returns>The passthrough of the pipeline.</returns>
+        public static P ConfigOverrideSetAzureLogStorage<P>(this P pipeline, string storageAccountName, string storageAccountAccessKey)
+            where P : IPipeline
+        {
+            pipeline.ConfigurationOverrideSet(KeyLogStorageAccountName, storageAccountName);
+            pipeline.ConfigurationOverrideSet(KeyLogStorageAccountAccessKey, storageAccountAccessKey);
+            return pipeline;
+        }
     }
 }
