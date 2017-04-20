@@ -26,7 +26,7 @@ namespace Xigadee
     public static partial class CorePipelineExtensions
     {
         public static E AttachCommand<E>(this E cpipe
-            , Func<TransmissionPayload, List<TransmissionPayload>, Task> commandFunction
+            , Func<TransmissionPayload, List<TransmissionPayload>, IPayloadSerializationContainer, Task> commandFunction
             , MessageFilterWrapper message
             , string referenceId = null
             , int startupPriority = 100
@@ -42,7 +42,7 @@ namespace Xigadee
         }
 
         public static E AttachCommand<E>(this E cpipe
-            , Func<TransmissionPayload, List<TransmissionPayload>, Task> commandFunction
+            , Func<TransmissionPayload, List<TransmissionPayload>, IPayloadSerializationContainer, Task> commandFunction
             , ServiceMessageHeader header
             , string referenceId = null
             , int startupPriority = 100
@@ -58,7 +58,7 @@ namespace Xigadee
         }
 
         public static E AttachCommand<E>(this E cpipe
-            , Func<TransmissionPayload, List<TransmissionPayload>, Task> commandFunction
+            , Func<TransmissionPayload, List<TransmissionPayload>, IPayloadSerializationContainer, Task> commandFunction
             , string channelId
             , string messageType = null
             , string actionType = null
@@ -76,7 +76,7 @@ namespace Xigadee
         }
 
         public static E AttachCommand<E>(this E cpipe, Type contract
-            , Func<TransmissionPayload, List<TransmissionPayload>, Task> commandFunction
+            , Func<TransmissionPayload, List<TransmissionPayload>, IPayloadSerializationContainer, Task> commandFunction
             , string referenceId = null
             , int startupPriority = 100
             , IPipelineChannelOutgoing<IPipeline> channelResponse = null

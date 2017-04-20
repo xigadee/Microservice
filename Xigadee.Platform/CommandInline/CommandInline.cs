@@ -24,7 +24,7 @@ namespace Xigadee
         /// <param name="command">The command to process.</param>
         /// <param name="referenceId">The optional reference id for tracking.</param>
         public CommandInline(
-              Func<TransmissionPayload, List<TransmissionPayload>, Task> command
+              Func<TransmissionPayload, List<TransmissionPayload>, IPayloadSerializationContainer, Task> command
             , string channelId
             , string messageType = null
             , string actionType = null
@@ -37,7 +37,7 @@ namespace Xigadee
         /// <param name="command">The command to process.</param>
         /// <param name="referenceId">The optional reference id for tracking.</param>
         public CommandInline(ServiceMessageHeader header
-            , Func<TransmissionPayload, List<TransmissionPayload>, Task> command
+            , Func<TransmissionPayload, List<TransmissionPayload>, IPayloadSerializationContainer, Task> command
             , string referenceId = null) : this(new MessageFilterWrapper(header), command, referenceId){}
 
         /// <summary>
@@ -47,10 +47,10 @@ namespace Xigadee
         /// <param name="command">The command to process.</param>
         /// <param name="referenceId">The optional reference id for tracking.</param>
         public CommandInline(MessageFilterWrapper message
-            , Func<TransmissionPayload, List<TransmissionPayload>, Task> command
+            , Func<TransmissionPayload, List<TransmissionPayload>, IPayloadSerializationContainer, Task> command
             , string referenceId = null) : base(null)
         {
-            mCommandHolder = new CommandHolder(message, command, referenceId);
+            mCommandHolder = new CommandHolder(message, async (rq,rs) => await command(rq,rs, PayloadSerializer), referenceId);
         }
 
         /// <summary>

@@ -32,8 +32,9 @@ namespace Test.Xigadee
                 .AdjustPolicyCommunication((p) => p.BoundaryLoggingActiveDefault = true)
                 .AddDataCollector((c) => new DebugMemoryDataCollector(), (c) => memp1 = c)
                 .AddChannelIncoming("fredo")
-                    .AttachCommand(typeof(IContractInitial), async (rq,rst) =>
+                    .AttachCommand(typeof(IContractInitial), async (rq,rst,ps) =>
                     {
+                        
                         rst.Add(new TransmissionPayload(rq.Message.Clone().SetDestination<IContractFinal>()));
                     })
                     .Revert()
@@ -47,9 +48,10 @@ namespace Test.Xigadee
                 .AddDataCollector((c) => new DebugMemoryDataCollector(), (c) => memp2 = c)
                 .AddChannelIncoming("crequest")
                     .AttachListener(bridgeOut.GetListener())
-                    .AttachCommand(typeof(IContractFinal), async (rq,rst) =>
+                    .AttachCommand(typeof(IContractFinal), async (rq,rst, ps) =>
                     {
-                        success = true;
+                        var value = ps.PayloadDeserialize<string>(rq);
+                        success = value == "Hello";
                         mre.Set();
                     })
                     .Revert()
@@ -66,6 +68,9 @@ namespace Test.Xigadee
             mre.WaitOne();
 
             Assert.IsTrue(success);
+
+            p1.Stop();
+            p2.Stop();
         }
 
     }
