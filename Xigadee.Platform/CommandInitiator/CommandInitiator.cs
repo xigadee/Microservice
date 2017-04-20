@@ -29,7 +29,7 @@ namespace Xigadee
     /// <summary>
     /// This class can be used to handle requests to remote commands
     /// </summary>
-    public class CommandInitiator: CommandBase<CommandInitiatorStatistics, CommandInitiatorPolicy>
+    public class CommandInitiator : CommandBase<CommandInitiatorStatistics, CommandInitiatorPolicy>, ICommandInitiator
     {
         #region Declarations
         /// <summary>

@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="CommandContainer\SharedService\SharedServiceContainer.cs" />
     <Compile Include="CommandContainer\SharedService\SharedServiceStatistics.cs" />
+    <Compile Include="CommandInitiator\ICommandInitiator.cs" />
     <Compile Include="CommandInline\CommandInline.cs" />
     <Compile Include="CommandInline\Exceptions\ContractException.cs" />
     <Compile Include="CommandInline\Pipeline\AddCommand.cs" />
