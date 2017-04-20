@@ -46,5 +46,32 @@ namespace Xigadee
 
             return LoggingLevel.Warning;
         }
+
+
+        /// <summary>
+        /// This extension allows the Azure storage extensions to be manually set as override parameters.
+        /// </summary>
+        /// <param name="pipeline">The incoming pipeline.</param>
+        /// <param name="keyApplicationInsights">The Application Insights Key.</param>
+        /// <returns>The passthrough of the pipeline.</returns>
+        public static P ConfigOverrideSetApplicationInsightsKey<P>(this P pipeline, string keyApplicationInsights)
+            where P : IPipeline
+        {
+            pipeline.ConfigurationOverrideSet(KeyApplicationInsights, keyApplicationInsights);
+            return pipeline;
+        }
+
+        /// <summary>
+        /// This extension allows the Azure storage extensions to be manually set as override parameters.
+        /// </summary>
+        /// <param name="pipeline">The incoming pipeline.</param>
+        /// <param name="applicationInsightsLoggingLevel">The Application Insights Logging Level.</param>
+        /// <returns>The passthrough of the pipeline.</returns>
+        public static P ConfigOverrideSetApplicationInsightsLoggingLevel<P>(this P pipeline, LoggingLevel applicationInsightsLoggingLevel)
+            where P : IPipeline
+        {
+            pipeline.ConfigurationOverrideSet(KeyApplicationInsightsLoggingLevel, applicationInsightsLoggingLevel.ToString());
+            return pipeline;
+        }
     }
 }
