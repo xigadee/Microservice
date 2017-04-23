@@ -214,31 +214,31 @@
     <None Include="_docs\ReadMe.md" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Xigadee.Api.Client\Xigadee.Api.Client.csproj">
+    <ProjectReference Include="..\..\Src\Xigadee.Api.Client\Xigadee.Api.Client.csproj">
       <Project>{19f45b9b-5c21-4ec3-ae73-84001ebccc4b}</Project>
       <Name>Xigadee.Api.Client</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Xigadee.Api\Xigadee.Api.csproj">
+    <ProjectReference Include="..\..\Src\Xigadee.Api\Xigadee.Api.csproj">
       <Project>{9680b7a6-f4b7-4ecb-bbb4-d46941b9cfed}</Project>
       <Name>Xigadee.Api</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Xigadee.Azure\Xigadee.Azure.csproj">
+    <ProjectReference Include="..\..\Src\Xigadee.Azure\Xigadee.Azure.csproj">
       <Project>{069f5121-bc8e-4f1f-b08c-ba3f4806db78}</Project>
       <Name>Xigadee.Azure</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Xigadee.Console\Xigadee.Console.csproj">
+    <ProjectReference Include="..\..\Src\Xigadee.Console\Xigadee.Console.csproj">
       <Project>{af748540-d35c-409a-ad23-d990cf19ded9}</Project>
       <Name>Xigadee.Console</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Xigadee.Framework\Xigadee.Framework.csproj">
+    <ProjectReference Include="..\..\Src\Xigadee.Framework\Xigadee.Framework.csproj">
       <Project>{af9b61ba-6a9c-4bd3-a87a-fb513188f21f}</Project>
       <Name>Xigadee.Framework</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Xigadee.Platform\Xigadee.csproj">
+    <ProjectReference Include="..\..\Src\Xigadee.Platform\Xigadee.csproj">
       <Project>{4788fc0b-e692-4762-a4f4-aeab2a77da42}</Project>
       <Name>Xigadee</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Xigadee\Xigadee.Helper.csproj">
+    <ProjectReference Include="..\..\Src\Xigadee\Xigadee.Helper.csproj">
       <Project>{4f785b7b-1fdc-4dcc-9453-fe42447fded2}</Project>
       <Name>Xigadee.Helper</Name>
     </ProjectReference>

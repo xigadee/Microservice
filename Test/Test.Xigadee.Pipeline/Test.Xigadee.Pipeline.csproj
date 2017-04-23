@@ -233,27 +233,27 @@
     <Compile Include="Security\SecurityScaffoldTest1.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Xigadee.Api.Server.Unity\Xigadee.Api.Server.Unity.csproj">
+    <ProjectReference Include="..\..\Src\Xigadee.Api.Server.Unity\Xigadee.Api.Server.Unity.csproj">
       <Project>{636956f9-6cce-4f3e-be57-5a851c089243}</Project>
       <Name>Xigadee.Api.Server.Unity</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Xigadee.Api.Server\Xigadee.Api.Server.csproj">
+    <ProjectReference Include="..\..\Src\Xigadee.Api.Server\Xigadee.Api.Server.csproj">
       <Project>{c39cd117-3863-4e8c-9bd0-043e5f1fb67c}</Project>
       <Name>Xigadee.Api.Server</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Xigadee.Api\Xigadee.Api.csproj">
+    <ProjectReference Include="..\..\Src\Xigadee.Api\Xigadee.Api.csproj">
       <Project>{9680b7a6-f4b7-4ecb-bbb4-d46941b9cfed}</Project>
       <Name>Xigadee.Api</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Xigadee.AWS\Xigadee.AWS.csproj">
+    <ProjectReference Include="..\..\Src\Xigadee.AWS\Xigadee.AWS.csproj">
       <Project>{d246cedd-05e6-4f32-a6bb-628fa6e3ed4c}</Project>
       <Name>Xigadee.AWS</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Xigadee.Azure\Xigadee.Azure.csproj">
+    <ProjectReference Include="..\..\Src\Xigadee.Azure\Xigadee.Azure.csproj">
       <Project>{069f5121-bc8e-4f1f-b08c-ba3f4806db78}</Project>
       <Name>Xigadee.Azure</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Xigadee.Platform\Xigadee.csproj">
+    <ProjectReference Include="..\..\Src\Xigadee.Platform\Xigadee.csproj">
       <Project>{4788fc0b-e692-4762-a4f4-aeab2a77da42}</Project>
       <Name>Xigadee</Name>
     </ProjectReference>
