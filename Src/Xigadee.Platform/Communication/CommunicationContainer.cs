@@ -155,9 +155,10 @@ namespace Xigadee
             if (collection == null || collection.IsClosed || collection.Count == 0)
                 return;
 
+            //Do the past due scan to process the lower priority clients.
             if (mPolicy.ListenerClientPollAlgorithm.SupportPassDueScan)
                 ProcessClients(true);
-
+            //Process the standard client logic.
             ProcessClients(false);
         }
         #endregion

@@ -192,7 +192,6 @@
     <Compile Include="Populator\IConsolePersistence.cs" />
     <Compile Include="Populator\PopulatorApiService.cs" />
     <Compile Include="Populator\PopulatorConsoleBase.cs" />
-    <Compile Include="Populator\PopulatorServer.cs" />
     <Compile Include="Populator\PopulatorClient.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Program_Menu.cs" />

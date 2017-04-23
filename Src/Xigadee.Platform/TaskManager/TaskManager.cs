@@ -261,13 +261,13 @@ namespace Xigadee
             ProcessRegister<object>(name, ordinal, process);
         }
         /// <summary>
-        /// 
+        /// This method registers a process to be polled as part of the process loop.
         /// </summary>
-        /// <typeparam name="C"></typeparam>
-        /// <param name="name"></param>
-        /// <param name="ordinal"></param>
-        /// <param name="process"></param>
-        /// <param name="context"></param>
+        /// <typeparam name="C">The process context type.</typeparam>
+        /// <param name="name">The process name.</param>
+        /// <param name="ordinal">The process priority ordinal</param>
+        /// <param name="process">The task manager process.</param>
+        /// <param name="context">The context of type C. The default(C) if not set.</param>
         public void ProcessRegister<C>(string name, int ordinal, ITaskManagerProcess process, C context = default(C))
         {
             var holder = new TaskManagerProcessContext<C>(name) { Ordinal = ordinal, Process = process, Context = context };

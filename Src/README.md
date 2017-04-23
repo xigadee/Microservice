@@ -1,6 +1,6 @@
 ![Xigadee](../docs/X2a.png)
 
-This is the Src folder for the Xigadee project. The main code libraries are here, and there a number of experimental libraries still in development.
+This is the source folder for the Xigadee project. The main code libraries are here, and a number of experimental libraries still in development.
 
 ## Legal Stuff
 

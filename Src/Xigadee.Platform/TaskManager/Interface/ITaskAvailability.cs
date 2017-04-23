@@ -18,6 +18,9 @@ using System;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This interface is used to share the Microservice availability statistics.
+    /// </summary>
     public interface ITaskAvailability
     {
         int Level(int priority);

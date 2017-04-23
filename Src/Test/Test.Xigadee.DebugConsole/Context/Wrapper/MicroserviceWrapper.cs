@@ -62,9 +62,20 @@ namespace Test.Xigadee
             mConfigure?.Invoke(this);
 
             Pipeline.Service.StatusChanged += OnStatusChanged;
+            Pipeline.Service.Events.ProcessRequestError += Events_ProcessRequestError;
+            Pipeline.Service.Events.ProcessRequestUnresolved += Events_ProcessRequestUnresolved;
 
             Pipeline.Start();
         }
+
+        private void Events_ProcessRequestUnresolved(object sender, DispatcherRequestUnresolvedEventArgs e)
+        {
+        }
+
+        private void Events_ProcessRequestError(object sender, ProcessRequestErrorEventArgs e)
+        {
+        }
+
         /// <summary>
         /// This method stops the service.
         /// </summary>

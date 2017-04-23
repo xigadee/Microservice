@@ -44,7 +44,9 @@ namespace Test.Xigadee
 
         static void ServerConfig(MicroservicePersistenceWrapper<Guid, MondayMorningBlues> wrapper)
         {
-            IRepositoryAsync<Guid, MondayMorningBlues> persistence = null;
+            PersistenceMessageInitiator<Guid, MondayMorningBlues> persistence = null;
+            CommandInitiator command;
+
             DebugMemoryDataCollector collector = null;
 
             //if ((sContext.RedisCache & RedisCacheMode.Server) > 0)
@@ -59,12 +61,15 @@ namespace Test.Xigadee
                     //.AttachResourceProfile(new ResourceProfile("TrackIt"))
                     //.AttachAzureServiceBusQueueListener("Myqueue")
                     //.AttachCommand(new PersistenceBlahMemory())
-                    //.AttachCommand(new PersistenceInternalService<Guid, Blah>(), assign: (c) => persistence = c, channelResponse: cpipeOut)
+                    .AttachCommandInitiator(out command)
+                    .AttachPersistenceMessageInitiator(out persistence)
                     .Revert()
                 .AddChannelOutgoing("internalOut", internalOnly: true)
                     ////.AppendBoundaryLogger(bLogger)
                     //.CallOut((c) => cpipeOut = c)
                     .Revert();
+
+            wrapper.Persistence = persistence;
         }
 
 
@@ -132,65 +137,5 @@ namespace Test.Xigadee
                     break;
             }
         }
-        //        static Dictionary<string, string> sServerSettings = new Dictionary<string, string>();
-
-        //        static string ResolveServerSetting(string key, string value)
-        //        {
-        //            if (sServerSettings.ContainsKey(key))
-        //                return sServerSettings[key];
-
-        //            return null;
-        //        }
-
-        //        private static void Server_OnRegister(object sender, CommandRegisterEventArgs e)
-        //        {
-        //            ICacheManager<Guid, MondayMorningBlues> cacheManager = null;
-
-        //            if (sContext.Server.RedisCacheEnabled)
-        //            {
-        //                cacheManager = RedisCacheHelper.Default<Guid, MondayMorningBlues>(e.Config.RedisCacheConnection());
-        //            }
-
-        //            switch (sContext.PersistenceType)
-        //            {
-        //                case PersistenceOptions.Sql:
-        //                    sContext.Server.Service.Commands.Register(
-        //                        new PersistenceMondayMorningBluesSql(e.Config.SqlConnection()
-        //                        , MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
-        //                        { ChannelId = Channels.TestB });
-        //                    break;
-        //                case PersistenceOptions.Blob:
-        //                    e.Service.Commands.Register(
-        //                        new PersistenceMondayMorningBluesBlob(e.Config.StorageCredentials()
-        //                        , MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
-        //                        { ChannelId = Channels.TestB });
-        //                    break;
-        //                case PersistenceOptions.DocumentDb:
-        //                    e.Service.Commands.Register(
-        //                        new PersistenceMondayMorningBluesDocDb(e.Config.DocDBConnection(), e.Config.DocDBDatabaseName()
-        //                        , MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
-        //                        { ChannelId = Channels.TestB });
-        //                    break;
-        //                case PersistenceOptions.DocumentDbSdk:
-        //                    e.Service.Commands.Register(
-        //                        new PersistenceMondayMorningBluesDocDbSdk(e.Config.DocDBConnection(), e.Config.DocDBDatabaseName()
-        //                        , MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
-        //                        { ChannelId = Channels.TestB });
-        //                    break;
-        //                case PersistenceOptions.Memory:
-        //                    e.Service.Commands.Register(
-        //                        new PersistenceMondayMorningBluesMemory(
-        //                          MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
-        //                        { ChannelId = Channels.TestB });
-        //                    break;
-
-        //                case PersistenceOptions.RedisCache:
-        //                    e.Service.Commands.Register(
-        //                        new PersistenceMondayMorningBluesRedis(e.Config.RedisCacheConnection()
-        //                        , MondayMorningBluesHelper.VersionPolicyHelper, cacheManager)
-        //                        { ChannelId = Channels.TestB });
-        //                    break;
-        //            }
-        //        }
     }
 }

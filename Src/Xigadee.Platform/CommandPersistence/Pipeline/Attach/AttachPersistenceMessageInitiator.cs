@@ -26,20 +26,24 @@ namespace Xigadee
     {
         public static C AttachPersistenceMessageInitiator<C,K,E>(this C cpipe
             , out PersistenceMessageInitiator<K,E> command
-            , string outgoingChannel
+            , string responseChannel = null
             , int startupPriority = 90
             , ICacheManager<K,E> cacheManager = null
             , TimeSpan? defaultRequestTimespan = null
+            , ProcessOptions routing = ProcessOptions.RouteExternal | ProcessOptions.RouteInternal
             )
             where C : IPipelineChannelIncoming<IPipeline>
             where K : IEquatable<K>
         {
             var ms = cpipe.ToMicroservice();
-   
+            
+            responseChannel = responseChannel ?? $"AutoChannel{Guid.NewGuid().ToString("N").ToUpperInvariant()}";
+
             command = new PersistenceMessageInitiator<K, E>(cacheManager, defaultRequestTimespan)
             {
-                  ResponseChannelId = cpipe.Channel.Id
-                , ChannelId = outgoingChannel
+                  ResponseChannelId = responseChannel
+                , ChannelId = cpipe.Channel.Id
+                , RoutingDefault = routing
             };
 
             cpipe.Pipeline.AddCommand(command, startupPriority);

@@ -74,7 +74,7 @@ namespace Xigadee
         /// This is the default routing for outgoing messages. 
         /// By default messages will try external providers.
         /// </summary>
-        protected ProcessOptions? RoutingDefault { get; set; } 
+        public ProcessOptions? RoutingDefault { get; set; } 
         #endregion
 
         #region TransmitInternal<KT, ET>(string actionType, RepositoryHolder<KT, ET> rq)

@@ -61,14 +61,24 @@ namespace Test.Xigadee
             , (m, o) =>
             {
                 sContext.EntityState.Id = Guid.NewGuid();
+                bool success = false;
+                try
+                {
+                    var result = repo.Persistence.Create(CreateEntity(sContext.EntityState.Id, email: sContext.EntityState.Reference)
+                        , new RepositorySettings() { WaitTime = TimeSpan.FromSeconds(30), Source = "Xigadee" }).Result;
 
-                var result = repo.Persistence.Create(CreateEntity(sContext.EntityState.Id, email: sContext.EntityState.Reference)
-                    , new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5), Source = "Xigadee"}).Result;
+                    success = result?.IsSuccess ?? false;
+                    if (success)
+                        sContext.EntityState.Versionid = result.Entity.VersionId;
+                }
+                catch (Exception ex)
+                {
 
-                if (result.IsSuccess)
-                    sContext.EntityState.Versionid = result.Entity.VersionId;
-
-                PersistenceLog(m, "Create", result.IsSuccess);
+                }
+                finally
+                {
+                    PersistenceLog(m, "Create", success);
+                }
             });
         }
 

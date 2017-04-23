@@ -25,7 +25,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This is a transient class that shows the current task slot availability.
+    /// This is a transient class that shows the current task slot availability for a specific Task Manager priority level.
     /// </summary>
     public class TaskAvailability: StatisticsBase<TaskAvailabilityStatistics>, ITaskAvailability
     {
@@ -121,7 +121,7 @@ namespace Xigadee
         /// <param name="level"></param>
         /// <param name="slotCount"></param>
         /// <param name="overage"></param>
-        /// <returns></returns>
+        /// <returns>Returns true if the reservation was successful.</returns>
         public bool BulkheadReserve(int level, int slotCount, int overage)
         {
 
@@ -298,7 +298,6 @@ namespace Xigadee
             {
                 throw;
             }
-
         }
 
         #region Count
@@ -314,6 +313,10 @@ namespace Xigadee
         }
         #endregion
 
+        #region Class -> Reservation
+        /// <summary>
+        /// This class holds a temporary slot reservation.
+        /// </summary>
         [DebuggerDisplay("{Debug}")]
         private class Reservation
         {
@@ -334,6 +337,7 @@ namespace Xigadee
                     return $"Id={Id} Priority={Priority} Reserved={Taken} Extent={StatsCounter.LargeTime(extent)}";
                 }
             }
-        }
+        } 
+        #endregion
     }
 }
