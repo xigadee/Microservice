@@ -20,6 +20,9 @@ namespace Xigadee
 {
     public static partial class AzureExtensionMethods
     {
+        /// <summary>
+        /// This is the default encryption key settings key.
+        /// </summary>
         [ConfigSettingKey("EncryptionKey")]
         public const string KeyEncryptionKey = "EncryptionKey";
 
@@ -42,6 +45,22 @@ namespace Xigadee
         public static AesEncryptionHandler AesEncryptionWithCompression(this IEnvironmentConfiguration config)
         {
             return string.IsNullOrEmpty(config.EncryptionKey()) ? null : new AesEncryptionHandler(Convert.FromBase64String(config.EncryptionKey()), true, config.EncryptionKeySize());
+        }
+
+        /// <summary>
+        /// This config override sets the AES encryption key for the Microservice.
+        /// </summary>
+        /// <param name="pipeline">The incoming pipeline.</param>
+        /// <param name="EncryptionKey">The Base64 encoded encryption key..</param>
+        /// <param name="EncryptionKeySize">The AES encryption key size.</param>
+        /// <returns>The passthrough of the pipeline.</returns>
+        public static P ConfigOverrideSetEncryption<P>(this P pipeline, string EncryptionKey, int? EncryptionKeySize = null)
+            where P : IPipeline
+        {
+            pipeline.ConfigurationOverrideSet(KeyEncryptionKey, EncryptionKey);
+            if (EncryptionKeySize.HasValue)
+                pipeline.ConfigurationOverrideSet(KeyEncryptionKeySize, EncryptionKeySize?.ToString());
+            return pipeline;
         }
     }
 }
