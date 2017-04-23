@@ -23,8 +23,8 @@ IF(![string]::IsNullOrWhitespace($subversion)){$nugetversion=$version+"-"+$subve
 Write-Host "Nuget Version:" $nugetversion;
 
 #Set the Assembly versions for the DLLs.
-(Get-Content AssemblyInfo\SharedAssemblyInfo.cs).replace('AssemblyInformationalVersion("0.0.0.0")', 'AssemblyInformationalVersion("'+$nugetversion+'")') | Set-Content AssemblyInfo\SharedAssemblyInfo.cs
-(Get-Content AssemblyInfo\SharedAssemblyInfo.cs).replace('0.0.0.0', $version) | Set-Content AssemblyInfo\SharedAssemblyInfo.cs
+(Get-Content Src\AssemblyInfo\SharedAssemblyInfo.cs).replace('AssemblyInformationalVersion("0.0.0.0")', 'AssemblyInformationalVersion("'+$nugetversion+'")') | Set-Content Src\AssemblyInfo\SharedAssemblyInfo.cs
+(Get-Content Src\AssemblyInfo\SharedAssemblyInfo.cs).replace('0.0.0.0', $version) | Set-Content Src\AssemblyInfo\SharedAssemblyInfo.cs
 
 #List out the NuSpec files in the solutuon
 Get-ChildItem -Path "..\*\*.nuspec" -Recurse | ForEach-Object -Process {
