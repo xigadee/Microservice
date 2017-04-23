@@ -34,8 +34,8 @@ namespace Xigadee
         /// <param name="command">The output command.</param>
         /// <param name="responseChannel">The channel to send the response message on. If this is not set, a default response channel will be created.</param>
         /// <param name="startupPriority"></param>
-        /// <param name="cacheManager"></param>
-        /// <param name="defaultRequestTimespan"></param>
+        /// <param name="cacheManager">The cache manager to attach to the persistence agent</param>
+        /// <param name="defaultRequestTimespan">The default time out time. If not set, this defaults to </param>
         /// <param name="routing"></param>
         /// <returns>The passthrough for the channel.</returns>
         public static C AttachPersistenceMessageInitiator<C,K,E>(this C cpipe

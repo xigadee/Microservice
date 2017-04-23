@@ -36,12 +36,12 @@ namespace Test.Xigadee
                        , childMenu: sMenuServerPersistenceSettings.Value
                    )
                    , new ConsoleOption(
-                       "Set interservice communication options"
+                       "Set Client/Server communication options"
                        , (m, o) =>
                        {
                        }
                        , enabled: (m, o) => sServer.Status == ServiceStatus.Created
-                       , childMenu: sMenuServerPersistenceSettings.Value
+                       , childMenu: sMenuClientServerCommunication.Value
                    )
                    , new ConsoleSwitchOption(
                        "Start Client", (m, o) =>

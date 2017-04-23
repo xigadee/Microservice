@@ -25,7 +25,6 @@ namespace Test.Xigadee
 
         static MicroservicePersistenceWrapper<Guid, MondayMorningBlues> sClient;
         static MicroservicePersistenceWrapper<Guid, MondayMorningBlues> sServer;
-
         static ApiWrapper<Guid, MondayMorningBlues> sApiServer;
 
         static void Main(string[] args)

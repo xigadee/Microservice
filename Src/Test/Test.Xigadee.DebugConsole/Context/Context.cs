@@ -61,6 +61,8 @@ namespace Test.Xigadee
 
         public PersistenceOptions PersistenceType { get; set; } = PersistenceOptions.Memory;
 
+        public CommunicationOptions CommunicationType { get; set; } = CommunicationOptions.Local;
+
         public EntityState EntityState { get; } = new EntityState();
 
         public RedisCacheMode RedisCache => Switches.ContainsKey("persistencecache") ? SetServicePersistenceCacheOption(Switches["persistencecache"]): RedisCacheMode.Off;

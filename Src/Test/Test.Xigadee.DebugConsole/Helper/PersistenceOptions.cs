@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 namespace Test.Xigadee
 {
     /// <summary>
-    /// This enum contains the persistence storage options for the service Microservice.
+    /// This enum contains the persistence storage options for the Microservice service.
     /// </summary>
     enum PersistenceOptions
     {
@@ -33,5 +33,15 @@ namespace Test.Xigadee
         RedisCache,
         Blob,
         Memory
+    }
+
+    /// <summary>
+    /// This enum contains the communication options for the Microservices.
+    /// </summary>
+    enum CommunicationOptions
+    {
+        Local,
+        AzureServiceBus,
+        AzureBlobQueue,
     }
 }
