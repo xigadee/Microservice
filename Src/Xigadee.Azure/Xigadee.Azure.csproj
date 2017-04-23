@@ -240,6 +240,7 @@
     <Compile Include="Pipeline\ConfigResolver\ConfigResolverSetAzure.cs" />
     <Compile Include="Pipeline\Config\ApplicationInsight.cs" />
     <Compile Include="Configuration\ConfigResolver\AzureHelper.cs" />
+    <Compile Include="Pipeline\Config\EventHub.cs" />
     <Compile Include="Pipeline\Config\RedisCache.cs" />
     <Compile Include="Pipeline\Config\KeyVault.cs" />
     <Compile Include="Pipeline\Config\ServiceBus.cs" />

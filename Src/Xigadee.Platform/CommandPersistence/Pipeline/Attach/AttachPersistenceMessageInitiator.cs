@@ -35,7 +35,7 @@ namespace Xigadee
         /// <param name="responseChannel">The channel to send the response message on. If this is not set, a default response channel will be created.</param>
         /// <param name="startupPriority"></param>
         /// <param name="cacheManager">The cache manager to attach to the persistence agent</param>
-        /// <param name="defaultRequestTimespan">The default time out time. If not set, this defaults to </param>
+        /// <param name="defaultRequestTimespan">The default time out time. If not set, this defaults to 30s as set in the command initiator policy.</param>
         /// <param name="routing"></param>
         /// <returns>The passthrough for the channel.</returns>
         public static C AttachPersistenceMessageInitiator<C,K,E>(this C cpipe
@@ -69,5 +69,51 @@ namespace Xigadee
 
             return cpipe;
         }
+
+        ///// <summary>
+        ///// This pipeline command creates a Persistence Message Initiator.
+        ///// </summary>
+        ///// <typeparam name="C">The incoming channel type.</typeparam>
+        ///// <typeparam name="K">The key type.</typeparam>
+        ///// <typeparam name="E">The entity type.</typeparam>
+        ///// <param name="cpipe">The incoming channel.</param>
+        ///// <param name="command">The output command.</param>
+        ///// <param name="responseChannel">The channel to send the response message on. If this is not set, a default response channel will be created.</param>
+        ///// <param name="startupPriority"></param>
+        ///// <param name="cacheManager">The cache manager to attach to the persistence agent</param>
+        ///// <param name="defaultRequestTimespan">The default time out time. If not set, this defaults to 30s as set in the command initiator policy.</param>
+        ///// <param name="routing"></param>
+        ///// <returns>The passthrough for the channel.</returns>
+        //public static C AttachPersistenceMessageInitiator<C, K, E>(this C cpipe
+        //    , string responseChannel
+        //    , out PersistenceMessageInitiator<K, E> command
+        //    , int startupPriority = 90
+        //    , ICacheManager<K, E> cacheManager = null
+        //    , TimeSpan? defaultRequestTimespan = null
+        //    , ProcessOptions routing = ProcessOptions.RouteExternal
+        //    )
+        //    where C : IPipelineChannelOutgoing<IPipeline>
+        //    where K : IEquatable<K>
+        //{
+        //    var ms = cpipe.ToMicroservice();
+
+        //    command = new PersistenceMessageInitiator<K, E>(cacheManager, defaultRequestTimespan);
+
+        //    if (responseChannel == null)
+        //        throw new ArgumentNullException("responseChannel", "responseChannel cannot be null.")
+
+        //    var outPipe = cpipe.ToPipeline().AddChannelOutgoing($"PersistMI{command.ComponentId.ToString("N").ToUpperInvariant()}");
+        //    command.ResponseChannelId = outPipe.Channel.Id;
+
+        //    //If the response channel is not set, dynamically create a response channel.
+        //    command.ResponseChannelId = responseChannel;
+
+        //    command.ChannelId = cpipe.Channel.Id;
+        //    command.RoutingDefault = routing;
+
+        //    cpipe.Pipeline.AddCommand(command, startupPriority);
+
+        //    return cpipe;
+        //}
     }
 }
