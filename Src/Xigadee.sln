@@ -39,25 +39,25 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee", "..\Test\Test.Xigadee\Test.Xigadee.csproj", "{C523008A-BAF6-418D-8822-48E0820A427D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee", "Test\Test.Xigadee\Test.Xigadee.csproj", "{C523008A-BAF6-418D-8822-48E0820A427D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Api", "..\Test\Test.Xigadee.Api\Test.Xigadee.Api.csproj", "{D10589C2-5487-4860-A756-292946D5AE9B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Api", "Test\Test.Xigadee.Api\Test.Xigadee.Api.csproj", "{D10589C2-5487-4860-A756-292946D5AE9B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Api.Client", "..\Test\Test.Xigadee.Api.Client\Test.Xigadee.Api.Client.csproj", "{37A0A4FC-647E-4115-B72E-62B043B84D7A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Api.Client", "Test\Test.Xigadee.Api.Client\Test.Xigadee.Api.Client.csproj", "{37A0A4FC-647E-4115-B72E-62B043B84D7A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Api.Server", "..\Test\Test.Xigadee.Api.Server\Test.Xigadee.Api.Server.csproj", "{3C7D695D-4111-499E-9764-6B9E6EC93952}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Api.Server", "Test\Test.Xigadee.Api.Server\Test.Xigadee.Api.Server.csproj", "{3C7D695D-4111-499E-9764-6B9E6EC93952}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Api.Web", "..\Test\Test.Xigadee.Api.Web\Test.Xigadee.Api.Web.csproj", "{59F4237B-E9AE-4C2E-AE28-B4387692729B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Api.Web", "Test\Test.Xigadee.Api.Web\Test.Xigadee.Api.Web.csproj", "{59F4237B-E9AE-4C2E-AE28-B4387692729B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Azure", "..\Test\Test.Xigadee.Azure\Test.Xigadee.Azure.csproj", "{8913D4BB-4E86-40EE-95E1-C6634D41E0BC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Azure", "Test\Test.Xigadee.Azure\Test.Xigadee.Azure.csproj", "{8913D4BB-4E86-40EE-95E1-C6634D41E0BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Azure.Console", "..\Test\Test.Xigadee.Azure.Console\Test.Xigadee.Azure.Console.csproj", "{9CA85091-9308-44B5-A99E-EF6E579C286B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Azure.Console", "Test\Test.Xigadee.Azure.Console\Test.Xigadee.Azure.Console.csproj", "{9CA85091-9308-44B5-A99E-EF6E579C286B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.DebugConsole", "..\Test\Test.Xigadee.DebugConsole\Test.Xigadee.DebugConsole.csproj", "{F81F3402-897C-40AE-832C-7EF1000D2595}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.DebugConsole", "Test\Test.Xigadee.DebugConsole\Test.Xigadee.DebugConsole.csproj", "{F81F3402-897C-40AE-832C-7EF1000D2595}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Pipeline", "..\Test\Test.Xigadee.Pipeline\Test.Xigadee.Pipeline.csproj", "{24A970DC-3FB0-4541-9ADB-175F04D64B53}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Pipeline", "Test\Test.Xigadee.Pipeline\Test.Xigadee.Pipeline.csproj", "{24A970DC-3FB0-4541-9ADB-175F04D64B53}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Shared", "..\Test\Test.Xigadee.Shared\Test.Xigadee.Shared.csproj", "{6AA8F0E5-AB72-4DF5-BD02-A23FBD8FDB83}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Shared", "Test\Test.Xigadee.Shared\Test.Xigadee.Shared.csproj", "{6AA8F0E5-AB72-4DF5-BD02-A23FBD8FDB83}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.VisualStudio", "Xigadee.VisualStudio\Xigadee.VisualStudio.csproj", "{56C95EF0-627C-4C78-B516-B856A83FB4D4}"
 EndProject
