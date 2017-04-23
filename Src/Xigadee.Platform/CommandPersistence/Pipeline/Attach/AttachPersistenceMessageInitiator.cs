@@ -24,6 +24,20 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
+        /// <summary>
+        /// This pipeline command creates a Persistence Message Initiator.
+        /// </summary>
+        /// <typeparam name="C">The incoming channel type.</typeparam>
+        /// <typeparam name="K">The key type.</typeparam>
+        /// <typeparam name="E">The entity type.</typeparam>
+        /// <param name="cpipe">The incoming channel.</param>
+        /// <param name="command">The output command.</param>
+        /// <param name="responseChannel">The channel to send the response message on. If this is not set, a default response channel will be created.</param>
+        /// <param name="startupPriority"></param>
+        /// <param name="cacheManager"></param>
+        /// <param name="defaultRequestTimespan"></param>
+        /// <param name="routing"></param>
+        /// <returns>The passthrough for the channel.</returns>
         public static C AttachPersistenceMessageInitiator<C,K,E>(this C cpipe
             , out PersistenceMessageInitiator<K,E> command
             , string responseChannel = null
@@ -37,14 +51,19 @@ namespace Xigadee
         {
             var ms = cpipe.ToMicroservice();
             
-            responseChannel = responseChannel ?? $"AutoChannel{Guid.NewGuid().ToString("N").ToUpperInvariant()}";
+            command = new PersistenceMessageInitiator<K, E>(cacheManager, defaultRequestTimespan);
 
-            command = new PersistenceMessageInitiator<K, E>(cacheManager, defaultRequestTimespan)
+            if (responseChannel == null)
             {
-                  ResponseChannelId = responseChannel
-                , ChannelId = cpipe.Channel.Id
-                , RoutingDefault = routing
-            };
+                var outPipe = cpipe.ToPipeline().AddChannelOutgoing($"PersistMI{command.ComponentId.ToString("N").ToUpperInvariant()}");
+                command.ResponseChannelId = outPipe.Channel.Id;
+            }
+            else
+                //If the response channel is not set, dynamically create a response channel.
+                command.ResponseChannelId = responseChannel;
+
+            command.ChannelId = cpipe.Channel.Id;
+            command.RoutingDefault = routing;
 
             cpipe.Pipeline.AddCommand(command, startupPriority);
 

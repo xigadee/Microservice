@@ -30,24 +30,16 @@ namespace Test.Xigadee
 
     static partial class Program
     {
-        static DebugMemoryDataCollector sCollectorServer = null;
-        static DebugMemoryDataCollector sCollectorClient = null;
-
         static void ServerInit(MicroservicePersistenceWrapper<Guid, MondayMorningBlues> wrapper)
         {
-
             wrapper.Pipeline
                 //.ConfigurationClear()
                 .ConfigurationSetFromConsoleArgs(sContext.Switches);
-
         }
 
         static void ServerConfig(MicroservicePersistenceWrapper<Guid, MondayMorningBlues> wrapper)
         {
             PersistenceMessageInitiator<Guid, MondayMorningBlues> persistence = null;
-            CommandInitiator command;
-
-            DebugMemoryDataCollector collector = null;
 
             //if ((sContext.RedisCache & RedisCacheMode.Server) > 0)
             //{
@@ -61,7 +53,6 @@ namespace Test.Xigadee
                     //.AttachResourceProfile(new ResourceProfile("TrackIt"))
                     //.AttachAzureServiceBusQueueListener("Myqueue")
                     //.AttachCommand(new PersistenceBlahMemory())
-                    .AttachCommandInitiator(out command)
                     .AttachPersistenceMessageInitiator(out persistence)
                     .Revert()
                 .AddChannelOutgoing("internalOut", internalOnly: true)
@@ -71,7 +62,6 @@ namespace Test.Xigadee
 
             wrapper.Persistence = persistence;
         }
-
 
         static void ClientConfig(MicroservicePersistenceWrapper<Guid, MondayMorningBlues> wrapper)
         {

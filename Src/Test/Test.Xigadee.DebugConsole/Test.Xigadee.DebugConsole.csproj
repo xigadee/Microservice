@@ -195,7 +195,6 @@
     <Compile Include="Populator\PopulatorClient.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Program_Menu.cs" />
-    <Compile Include="Program_Microservice_Extension.cs" />
     <Compile Include="Program_Microservice.cs" />
     <Compile Include="Program_PersistenceMenuHelper.cs" />
     <Compile Include="Program_Menu_Persistence.cs" />

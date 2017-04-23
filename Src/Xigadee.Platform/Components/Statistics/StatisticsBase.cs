@@ -42,7 +42,6 @@ namespace Xigadee
         protected StatisticsBase(string name = null)
         {
             mName = name ?? GetType().Name;
-            ComponentId = Guid.NewGuid();
             StatisticsCreate();
         }
         #endregion

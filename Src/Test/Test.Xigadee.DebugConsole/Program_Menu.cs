@@ -35,6 +35,14 @@ namespace Test.Xigadee
                        , enabled: (m, o) => sServer.Status == ServiceStatus.Created
                        , childMenu: sMenuServerPersistenceSettings.Value
                    )
+                   , new ConsoleOption(
+                       "Set interservice communication options"
+                       , (m, o) =>
+                       {
+                       }
+                       , enabled: (m, o) => sServer.Status == ServiceStatus.Created
+                       , childMenu: sMenuServerPersistenceSettings.Value
+                   )
                    , new ConsoleSwitchOption(
                        "Start Client", (m, o) =>
                        {
@@ -77,7 +85,6 @@ namespace Test.Xigadee
                    , new ConsoleOption("Client Persistence methods"
                        , (m, o) =>
                        {
-                           //sContext.ClientPersistence = () => sContext.Client.Status;
                        }
                        , childMenu: sMenuClientPersistence.Value
                        , enabled: (m, o) => sClient.Status == ServiceStatus.Running
@@ -85,15 +92,13 @@ namespace Test.Xigadee
                    , new ConsoleOption("API Client Persistence methods"
                        , (m, o) =>
                        {
-                           //sContext.ApiPersistenceStatus = () => 2;
                        }
                        , childMenu: sMenuApiPersistence.Value
                        , enabled: (m, o) => sApiServer.Status == ServiceStatus.Running
                    )
-                   , new ConsoleOption("Server Shared Service Persistence methods"
+                   , new ConsoleOption("Server Persistence methods"
                        , (m, o) =>
                        {
-                           //sContext.PersistenceStatus = () => sContext.Server.Status;
                        }
                        , childMenu: sMenuServerPersistence.Value
                        , enabled: (m, o) => sServer.Status == ServiceStatus.Running
