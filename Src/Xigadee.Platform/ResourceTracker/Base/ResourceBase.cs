@@ -35,6 +35,5 @@ namespace Xigadee
         /// The name of the resource.
         /// </summary>
         public string Name { get; protected set;}
-
     }
 }

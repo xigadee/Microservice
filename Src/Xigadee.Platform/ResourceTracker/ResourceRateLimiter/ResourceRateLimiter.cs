@@ -25,13 +25,24 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// The Rate limiter class is used to track the error rate from a managed resource and 
+    /// The Rate limiter class is used to track the error rate from a managed resource 
     /// </summary>
     [DebuggerDisplay("ResourceRateLimiter: {Name}={RateLimitAdjustmentPercentage} [{Debug}]")]
     public class ResourceRateLimiter: ResourceBase, IResourceRequestRateLimiter
     {
         #region Declarations
-        List<ResourceStatistics> mProfiles;
+        /// <summary>
+        /// This is the list of registered profiles.
+        /// </summary>
+        protected readonly List<ResourceStatistics> mProfiles;
+        /// <summary>
+        /// This is the function used to calculate the rate.
+        /// </summary>
+        protected readonly Func<List<ResourceStatistics>, double> mFnCalculateRate;
+        /// <summary>
+        /// This is the function used to calculate the rate.
+        /// </summary>
+        protected readonly Func<List<ResourceStatistics>, CircuitBreakerState> mFnCalculateCircuitBreaker;
         #endregion
         #region Constructor
         /// <summary>
@@ -39,27 +50,52 @@ namespace Xigadee
         /// </summary>
         /// <param name="name">The name of the rate limiter.</param>
         /// <param name="profiles">The prfiles that are tracker by this limiter.</param>
-        public ResourceRateLimiter(string name, List<ResourceStatistics> profiles)
+        /// <param name="calculateRate">This is the optional function used to calculate the overall rate.</param>
+        public ResourceRateLimiter(string name, List<ResourceStatistics> profiles
+            , Func<List<ResourceStatistics>, double> calculateRate = null
+            , Func<List<ResourceStatistics>, CircuitBreakerState> calculateCircuitBreaker = null
+
+            )
         {
             Name = name;
             mProfiles = profiles;
-        } 
+
+            mFnCalculateRate = calculateRate ?? (
+                (p) =>
+                {
+                    if (p == null || p.Count == 0)
+                        return 1D;//No adjustment = 100%
+
+                    //Default to the minimum rate of all the registered resources.
+                    return p.Select((e) => e.RateLimitAdjustmentPercentage).Min();
+                }
+            );
+
+            mFnCalculateCircuitBreaker = calculateCircuitBreaker ?? (
+                (List<ResourceStatistics> r) =>
+                {
+                    if (r == null || r.Count == 0)
+                        return CircuitBreakerState.Closed;
+
+                    //Default to the minimum rate of all the registered resources.
+                    return r.FirstOrDefault((v) => v.RateLimitAdjustmentPercentage == 0) == null ? CircuitBreakerState.Closed : CircuitBreakerState.Open;
+                }
+            );
+
+        }
         #endregion
 
         #region RateLimitAdjustmentPercentage
         /// <summary>
-        /// This is the current rate limit summation across the active payload requests.
+        /// This is the calculated rate limit summation across the active payload requests.
         /// If rate limiting is not supported the value will be 1.
         /// Otherwise, the profiles are scanned and the lowest percentage is returned.
         /// </summary>
-        public double RateLimitAdjustmentPercentage
+        public virtual double RateLimitAdjustmentPercentage
         {
             get
             {
-                if (mProfiles == null || mProfiles.Count == 0)
-                    return 1;//No adjustment = 100%
-
-                return mProfiles.Select((e) => e.RateLimitAdjustmentPercentage).Min();
+                return mFnCalculateRate(mProfiles);
             }
         }
         #endregion
@@ -68,7 +104,7 @@ namespace Xigadee
         /// <summary>
         /// This property is used for debug purposes.
         /// </summary>
-        public string Debug
+        public virtual string Debug
         {
             get
             {

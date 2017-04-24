@@ -509,8 +509,7 @@
     <Compile Include="DataCollection\Logger\Implementations\Action\LoggerActionHolder.cs" />
     <Compile Include="Microservice\Microservice_Initialization.cs" />
     <Compile Include="Microservice\Microservice_Statistics.cs" />
-    <Compile Include="ResourceTracker\CircuitBreaker\CircuitBreakerBase.cs" />
-    <Compile Include="ResourceTracker\CircuitBreaker\CircuitBreakerState.cs" />
+    <Compile Include="ResourceTracker\ResourceRateLimiter\CircuitBreakerState.cs" />
     <Compile Include="ResourceTracker\Interfaces\IResourceBase.cs" />
     <Compile Include="ResourceTracker\Interfaces\IResourceConsumer.cs" />
     <Compile Include="ResourceTracker\Interfaces\IResourceRequestRateLimiter.cs" />

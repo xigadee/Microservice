@@ -26,7 +26,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This protected calss
+    /// This class holds the client priority metrics.
     /// </summary>
     public class ClientPriorityHolderMetrics: StatisticsBase<ClientPriorityHolderMetricsStatistics>
     {
@@ -101,7 +101,6 @@ namespace Xigadee
             stats.PriorityWeighting = PriorityWeighting;
             stats.SkipCount = SkipCount;
             stats.Status = Status;
-
         }
 
         #region Priority

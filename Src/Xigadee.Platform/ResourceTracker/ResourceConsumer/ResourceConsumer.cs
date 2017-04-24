@@ -29,8 +29,16 @@ namespace Xigadee
     [DebuggerDisplay("ResourceConsumer: {Name}={RateLimitAdjustmentPercentage}")]
     public class ResourceConsumer: ResourceBase, IResourceConsumer
     {
+        /// <summary>
+        /// This is the underlying resource.
+        /// </summary>
         protected readonly ResourceStatistics mResource;
 
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="resource">The resource.</param>
+        /// <param name="name">The reference name.</param>
         public ResourceConsumer(ResourceStatistics resource, string name)
         {
             Name = name;

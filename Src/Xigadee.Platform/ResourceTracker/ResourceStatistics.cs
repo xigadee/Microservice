@@ -54,7 +54,7 @@ namespace Xigadee
 
         #region RateLimitCutoutPercentage
         /// <summary>
-        /// This is the retry ratio at which point the incoming messahes will be stopped completely.
+        /// This is the retry ratio at which point the incoming messages will be stopped completely.
         /// </summary>
         public double RateLimitCutoutPercentage
         {
