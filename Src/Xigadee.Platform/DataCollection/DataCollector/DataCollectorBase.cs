@@ -28,11 +28,24 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="S">The statistics type.</typeparam>
     /// <typeparam name="P">The policy type.</typeparam>
-    public abstract class DataCollectorBase<S, P>: ServiceContainerBase<S, P>, IDataCollectorComponent, IRequireSecurityService
+    public abstract class DataCollectorBase<S, P>: ServiceContainerBase<S, P>, IDataCollectorComponent, IRequireSecurityService, IRequireSharedServices
         where S : DataCollectorStatistics, new()
         where P : DataCollectorPolicy, new()
     {
         #region Declarations
+        /// <summary>
+        /// This is the azure storage wrapper.
+        /// </summary>
+        protected readonly ResourceProfile mResourceProfile;
+        /// <summary>
+        /// This is the resource consumer for the collector.
+        /// </summary>
+        protected IResourceConsumer mResourceConsumer;
+        /// <summary>
+        /// This is the encryption handler id.
+        /// </summary>
+        protected readonly EncryptionHandlerId mEncryption;
+
         /// <summary>
         /// This dictionary object holds the action mapping for the logging type.
         /// </summary>
@@ -50,9 +63,14 @@ namespace Xigadee
         /// <summary>
         /// This constructor passes in the support types for the collector.
         /// </summary>
-        protected DataCollectorBase(DataCollectionSupport? supportMap = null, P policy = null) :base(policy)
+        protected DataCollectorBase(EncryptionHandlerId encryptionId = null
+            , ResourceProfile resourceProfile = null
+            , DataCollectionSupport? supportMap = null
+            , P policy = null) :base(policy)
         {
+            mResourceProfile = resourceProfile;
             mSupportMapSubmitted = supportMap;
+            mEncryption = encryptionId;
         }
         #endregion
 
@@ -62,6 +80,10 @@ namespace Xigadee
         /// </summary>
         protected override void StartInternal()
         {
+            var resourceTracker = SharedServices?.GetService<IResourceTracker>();
+            if (resourceTracker != null && mResourceProfile != null)
+                mResourceConsumer = resourceTracker.RegisterConsumer(GetType().Name, mResourceProfile);
+
             mSupported = new Dictionary<DataCollectionSupport, Action<EventHolder>>();
 
             SupportLoadDefault();
@@ -158,20 +180,61 @@ namespace Xigadee
         public ISecurityService Security
         {
             get; set;
-        } 
+        }
+        #endregion
+
+        #region SharedServices
+        /// <summary>
+        /// This is the shared service collection.
+        /// </summary>
+        public ISharedService SharedServices { get; set; } 
+        #endregion
+
+        #region Profiling ...
+        /// <summary>
+        /// This method starts the profile session and returns the profile trace id.
+        /// </summary>
+        /// <param name="id">The trace id.</param>
+        /// <returns>Returns a profile Guid.</returns>
+        protected Guid ProfileStart(string id)
+        {
+            return mResourceConsumer?.Start(id, Guid.NewGuid()) ?? Guid.NewGuid();
+        }
+        /// <summary>
+        /// This method ends the profile session
+        /// </summary>
+        /// <param name="profileId">The trace id.</param>
+        /// <param name="start">The start tick count.</param>
+        /// <param name="result">The session result.</param>
+        protected void ProfileEnd(Guid profileId, int start, ResourceRequestResult result)
+        {
+            mResourceConsumer?.End(profileId, start, result);
+        }
+        /// <summary>
+        /// This method is called if a session request needs to be retried.
+        /// </summary>
+        /// <param name="profileId">The trace id.</param>
+        /// <param name="retryStart">The retry tick count.</param>
+        /// <param name="reason">The retry reason.</param>
+        protected void ProfileRetry(Guid profileId, int retryStart, ResourceRetryReason reason)
+        {
+            mResourceConsumer?.Retry(profileId, retryStart, reason);
+        }
         #endregion
     }
 
+    #region DataCollectorBase ...
     /// <summary>
     /// This abstract class allows data collectors to be create without the need for a policy.
     /// </summary>
-    public abstract class DataCollectorBase: DataCollectorBase<DataCollectorStatistics, DataCollectorPolicy>
+    public abstract class DataCollectorBase : DataCollectorBase<DataCollectorStatistics, DataCollectorPolicy>
     {
         #region Constructor
         /// <summary>
         /// This constructor passes in the support types for the collector.
         /// </summary>
-        protected DataCollectorBase(DataCollectionSupport? supportMap = null, DataCollectorPolicy policy = null) : base(supportMap, policy)
+        protected DataCollectorBase(EncryptionHandlerId encryptionId = null, ResourceProfile resourceProfile = null, DataCollectionSupport? supportMap = null, DataCollectorPolicy policy = null)
+            : base(encryptionId, resourceProfile, supportMap, policy)
         {
         }
         #endregion
@@ -181,16 +244,18 @@ namespace Xigadee
     /// This abstract class allows data collectors to be create without the need for a policy.
     /// </summary>
     /// <typeparam name="S">The statistics type.</typeparam>
-    public abstract class DataCollectorBase<S>: DataCollectorBase<S, DataCollectorPolicy>
+    public abstract class DataCollectorBase<S> : DataCollectorBase<S, DataCollectorPolicy>
         where S : DataCollectorStatistics, new()
     {
         #region Constructor
         /// <summary>
         /// This constructor passes in the support types for the collector.
         /// </summary>
-        protected DataCollectorBase(DataCollectionSupport? supportMap = null, DataCollectorPolicy policy = null) : base(supportMap, policy)
+        protected DataCollectorBase(EncryptionHandlerId encryptionId = null, ResourceProfile resourceProfile = null, DataCollectionSupport? supportMap = null, DataCollectorPolicy policy = null)
+            : base(encryptionId, resourceProfile, supportMap, policy)
         {
         }
         #endregion
-    }
+    } 
+    #endregion
 }

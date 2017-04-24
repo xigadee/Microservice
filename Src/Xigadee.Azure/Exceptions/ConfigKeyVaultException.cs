@@ -2,6 +2,9 @@
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This exception is thrown when the resolver is unable to resolve a token.
+    /// </summary>
     public class ConfigKeyVaultException : Exception
     {
         /// <summary>

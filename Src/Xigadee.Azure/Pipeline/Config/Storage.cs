@@ -27,6 +27,7 @@ namespace Xigadee
     {
         [ConfigSettingKey("Storage")]
         public const string KeyStorageAccountName = "StorageAccountName";
+
         [ConfigSettingKey("Storage")]
         public const string KeyStorageAccountAccessKey = "StorageAccountAccessKey";
 

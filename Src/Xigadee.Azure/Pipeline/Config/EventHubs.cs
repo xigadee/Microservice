@@ -28,26 +28,26 @@ namespace Xigadee
         /// <summary>
         /// This is the Event Hub key type value.
         /// </summary>
-        [ConfigSettingKey("EventHub")]
-        public const string KeyEventHubConnection = "EventHubConnection";
+        [ConfigSettingKey("EventHubs")]
+        public const string KeyEventHubsConnection = "EventHubsConnection";
         /// <summary>
         /// This is the Event Hub connection
         /// </summary>
         /// <param name="config">The Microservice configuration.</param>
         /// <returns>Returns the connection string.</returns>
-        [ConfigSetting("EventHub")]
-        public static string EventHubConnection(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyEventHubConnection);
+        [ConfigSetting("EventHubs")]
+        public static string EventHubsConnection(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyEventHubsConnection);
 
         #region EventHubConnectionValidate(this IEnvironmentConfiguration Configuration, string serviceBusConnection)
         /// <summary>
         /// This method validates that the Event Hub connection is set.
         /// </summary>
         /// <param name="Configuration">The configuration.</param>
-        /// <param name="eventHubConnection">The alternate connection.</param>
+        /// <param name="eventHubsConnection">The alternate connection.</param>
         /// <returns>Returns the connection from either the parameter or from the settings.</returns>
-        private static string EventHubConnectionValidate(this IEnvironmentConfiguration Configuration, string eventHubConnection)
+        private static string EventHubsConnectionValidate(this IEnvironmentConfiguration Configuration, string eventHubsConnection)
         {
-            var conn = eventHubConnection ?? Configuration.EventHubConnection();
+            var conn = eventHubsConnection ?? Configuration.EventHubsConnection();
 
             if (string.IsNullOrEmpty(conn))
                 throw new AzureConnectionException();//"Service bus connection string cannot be resolved. Please check the config settings has been set.");
@@ -63,10 +63,10 @@ namespace Xigadee
         /// <param name="pipeline">The incoming pipeline.</param>
         /// <param name="connection">The Event Hub connection.</param>
         /// <returns>The passthrough of the pipeline.</returns>
-        public static P ConfigOverrideSetEventHubConnection<P>(this P pipeline, string connection)
+        public static P ConfigOverrideSetEventHubsConnection<P>(this P pipeline, string connection)
             where P : IPipeline
         {
-            pipeline.ConfigurationOverrideSet(KeyEventHubConnection, connection);
+            pipeline.ConfigurationOverrideSet(KeyEventHubsConnection, connection);
             return pipeline;
         }
     }

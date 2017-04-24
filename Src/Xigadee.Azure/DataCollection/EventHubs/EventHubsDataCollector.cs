@@ -14,42 +14,42 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.Azure.EventHubs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+
 
 namespace Xigadee
 {
     /// <summary>
-    /// This class sends data to the IoT stream for analysis.
+    /// This collector is used to connect Xigadee event logging to Azure EventHubs fabric.
     /// </summary>
-    public class AzureIoTLogger: ServiceBase<LoggingStatistics>, IRequireDataCollector, IRequireSharedServices
+    public class EventHubsDataCollector: DataCollectorBase<DataCollectorStatistics, EventHubsDataCollectorPolicy>
     {
-        public AzureIoTLogger()
-        {
+        protected EventHubClient mEventHubClient;
+        protected readonly string mConnection;
 
-        }
-
-        public IDataCollection Collector
+        public EventHubsDataCollector(string connection
+            , EventHubsDataCollectorPolicy policy = null
+            , ResourceProfile resourceProfile = null
+            , EncryptionHandlerId encryptionId = null
+            , DataCollectionSupport? supportMap = null) : base(encryptionId, resourceProfile, supportMap, policy)
         {
-            get;set;
-        }
-
-        public ISharedService SharedServices
-        {
-            get;set;
+            mConnection = connection;
         }
 
         protected override void StartInternal()
         {
-
+            base.StartInternal();
+            mEventHubClient = EventHubClient.CreateFromConnectionString(mConnection);
         }
 
         protected override void StopInternal()
         {
-
+            mEventHubClient.Close();
+            base.StopInternal();
         }
     }
 }

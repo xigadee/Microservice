@@ -25,23 +25,21 @@ namespace Xigadee
 {
     public static partial class AzureExtensionMethods
     {
-        public const string AzureStorageGroupName = "AzureStorage";
-
-        [ConfigSettingKey(AzureStorageGroupName)]
+        [ConfigSettingKey("AzureStorage")]
         public const string KeyAzureStorageAccountName = "AzureStorageAccountName";
 
-        [ConfigSettingKey(AzureStorageGroupName)]
+        [ConfigSettingKey("AzureStorage")]
         public const string KeyAzureStorageAccountAccessKey = "AzureStorageAccountAccessKey";
 
-        [ConfigSetting(AzureStorageGroupName)]
+        [ConfigSetting("AzureStorage")]
         public static string AzureStorageAccountName(this IEnvironmentConfiguration config, bool throwExceptionIfNotFound = true) 
             => config.PlatformOrConfigCache(KeyAzureStorageAccountName, throwExceptionIfNotFound: throwExceptionIfNotFound);
 
-        [ConfigSetting(AzureStorageGroupName)]
+        [ConfigSetting("AzureStorage")]
         public static string AzureStorageAccountAccessKey(this IEnvironmentConfiguration config, bool throwExceptionIfNotFound = true) 
             => config.PlatformOrConfigCache(KeyAzureStorageAccountAccessKey, throwExceptionIfNotFound: throwExceptionIfNotFound);
 
-        [ConfigSetting(AzureStorageGroupName)]
+        [ConfigSetting("AzureStorage")]
         public static StorageCredentials AzureStorageCredentials(this IEnvironmentConfiguration config, bool throwExceptionIfNotFound = true)
         {
             if (string.IsNullOrEmpty(config.AzureStorageAccountName(throwExceptionIfNotFound)) 

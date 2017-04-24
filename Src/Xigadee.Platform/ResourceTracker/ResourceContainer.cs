@@ -36,15 +36,20 @@ namespace Xigadee
         private Dictionary<Guid, ResourceRateLimiter> mResourceRateLimiters;
         private Dictionary<Guid, ResourceConsumer> mResourceResourceConsumer;
 
-        private ConcurrentDictionary<string, ResourceStatistics> mResources; ///
+        private ConcurrentDictionary<string, ResourceStatistics> mResources;
         #endregion
 
         #region Constructor
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="policy">The policy.</param>
         public ResourceContainer(ResourceContainerPolicy policy = null):base(policy)
         {
             mResources = new ConcurrentDictionary<string, ResourceStatistics>();
 
             mResourceRateLimiters = new Dictionary<Guid, ResourceRateLimiter>();
+
             mResourceResourceConsumer = new Dictionary<Guid, ResourceConsumer>();
         }
         #endregion
@@ -67,6 +72,9 @@ namespace Xigadee
         } 
         #endregion
         #region Start/Stop
+        /// <summary>
+        /// There are no actions for the start of this container.
+        /// </summary>
         protected override void StartInternal()
         {
 
@@ -84,56 +92,73 @@ namespace Xigadee
             {
 
             }
-        } 
+        }
         #endregion
 
+        #region StatisticsRecalculate(ResourceContainerStatistics stats)
+        /// <summary>
+        /// This method recalculates the statistics summaries.
+        /// </summary>
+        /// <param name="stats">The statistics.</param>
         protected override void StatisticsRecalculate(ResourceContainerStatistics stats)
         {
-            if (mResources!=null)
+            if (mResources != null)
                 stats.Resources = mResources.Values.ToArray();
 
             if (mResourceRateLimiters != null)
                 stats.RateLimiters = mResourceRateLimiters.Values.Select((v) => v.Debug).ToArray();
-        }
+        } 
+        #endregion
 
-        protected ResourceStatistics ResourceCreate(ResourceProfile profile)
+        #region ResourceCreate(ResourceProfile profile)
+        /// <summary>
+        /// This method adds a new resource statistic unless is already exists, in which case it returns the existing one.
+        /// </summary>
+        /// <param name="profile">The resource profile to return.</param>
+        /// <returns>Returns the associated Resource Statistic.</returns>
+        protected ResourceStatistics ResourceStatisticsCreateOrGet(ResourceProfile profile)
         {
             ResourceStatistics stats = mResources.GetOrAdd(profile.Id, new ResourceStatistics() { Name = profile.Id });
-       
-            return stats;
-        }
 
+            return stats;
+        } 
+        #endregion
+
+        #region RegisterConsumer(string name, ResourceProfile profile)
+        /// <summary>
+        /// This method registers a consumer which can be used to track resource contention.
+        /// </summary>
+        /// <param name="name">The registration friendly name.</param>
+        /// <param name="profile">The resource profile to connect to.</param>
+        /// <returns>Returns the consumer used to track the resource.</returns>
         public IResourceConsumer RegisterConsumer(string name, ResourceProfile profile)
         {
             if (profile == null)
                 return null;
 
-            var stats = ResourceCreate(profile);
+            var stats = ResourceStatisticsCreateOrGet(profile);
 
             var consumer = new ResourceConsumer(stats, name);
 
             mResourceResourceConsumer.Add(consumer.ResourceId, consumer);
 
             return consumer;
-        }
-
+        } 
+        #endregion
         #region RegisterRequestRateLimiter(string name, IEnumerable<ResourceProfile> profiles)
         /// <summary>
         /// This method registers a rate limiter and connects it to a set of resource profiles.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="profiles"></param>
-        /// <returns></returns>
+        /// <param name="name">The limiter friendly name.</param>
+        /// <param name="profiles">The set of resource profiles.</param>
+        /// <returns>Returns the resource limiter.</returns>
         public IResourceRequestRateLimiter RegisterRequestRateLimiter(string name, IEnumerable<ResourceProfile> profiles)
         {
-            if (profiles == null)
+            var list = profiles?.ToList();
+            if (list == null || list.Count == 0)
                 return null;
 
-            var list = profiles.ToList();
-            if (list.Count == 0)
-                return null;
-
-            var stats = list.Select((p) => ResourceCreate(p)).ToList();
+            var stats = list.Select((p) => ResourceStatisticsCreateOrGet(p)).ToList();
 
             var limiter = new ResourceRateLimiter(name, stats);
 
@@ -142,6 +167,5 @@ namespace Xigadee
             return limiter;
         } 
         #endregion
-
     }
 }

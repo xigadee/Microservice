@@ -30,12 +30,6 @@ namespace Xigadee
     public class AzureStorageDataCollector: DataCollectorBase<DataCollectorStatistics, AzureStorageDataCollectorPolicy>
     {
         #region Declarations
-        /// <summary>
-        /// This is the azure storage wrapper.
-        /// </summary>
-        protected readonly ResourceProfile mResourceProfile;
-        protected readonly IResourceConsumer mResourceConsumer;
-        
 
         protected StorageCredentials mCredentails;
         protected CloudStorageAccount mStorageAccount;
@@ -59,14 +53,14 @@ namespace Xigadee
         /// <param name="credentials"></param>
         /// <param name="context"></param>
         /// <param name="resourceProfile"></param>
-        /// <param name="encryption"></param>
+        /// <param name="encryptionId"></param>
         /// <param name="supportMap"></param>
         public AzureStorageDataCollector(StorageCredentials credentials
             , AzureStorageDataCollectorPolicy policy = null
             , OperationContext context = null
             , ResourceProfile resourceProfile = null
             , EncryptionHandlerId encryptionId = null
-            , DataCollectionSupport? supportMap = null):base(supportMap, policy)
+            , DataCollectionSupport? supportMap = null):base(encryptionId, resourceProfile, supportMap, policy)
         {
             if (credentials == null)
                 throw new ArgumentNullException($"{nameof(AzureStorageDataCollector)}: credentials cannot be null.");
@@ -74,10 +68,6 @@ namespace Xigadee
             mCredentails = credentials;
 
             mContext = context;
-
-            mEncryption = encryptionId;
-
-            mResourceProfile = resourceProfile;
         }
         #endregion
 
@@ -121,7 +111,7 @@ namespace Xigadee
                 v.MakeId = v.Options.BinaryMakeId;
                 ValidateEncryptionPolicy(v);
             });
-            //Create the queue client
+            //Create the file client
             mHoldersFile = Start<AzureStorageConnectorFile>((o) => o.SupportsFile()
             , (v) =>
             {
@@ -215,28 +205,13 @@ namespace Xigadee
         }
         #endregion
 
-        #region Profiling ...
-        private Guid ProfileStart(string id)
-        {
-            return mResourceConsumer?.Start(id, Guid.NewGuid()) ?? Guid.NewGuid();
-        }
 
-        private void ProfileEnd(Guid profileId, int start, ResourceRequestResult result)
-        {
-            mResourceConsumer?.End(profileId, start, result);
-        }
-
-        private void ProfileRetry(Guid profileId, int retryStart, ResourceRetryReason reason)
-        {
-            mResourceConsumer?.Retry(profileId, retryStart, reason);
-        }
-        #endregion
 
         #region WriteConnectors(DataCollectionSupport support, EventBase e)
         /// <summary>
         /// Output the data for the three option types.
         /// </summary>
-        /// <param name="option">The storage options</param>
+        /// <param name="support">The storage options</param>
         /// <param name="e">The event object.</param>
         protected void WriteConnectors(DataCollectionSupport support, EventHolder e)
         {

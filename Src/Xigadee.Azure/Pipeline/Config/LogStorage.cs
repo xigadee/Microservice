@@ -27,6 +27,7 @@ namespace Xigadee
     {
         [ConfigSettingKey("LogStorage")]
         public const string KeyLogStorageAccountName = "LogStorageAccountName";
+
         [ConfigSettingKey("LogStorage")]
         public const string KeyLogStorageAccountAccessKey = "LogStorageAccountAccessKey";
 

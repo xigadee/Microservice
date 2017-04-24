@@ -21,8 +21,15 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This class encapsulates the encryption handler id.
+    /// </summary>
     public class EncryptionHandlerId: SecurityHandlerIdBase
     {
+        /// <summary>
+        /// The default constructor.
+        /// </summary>
+        /// <param name="id">The id name.</param>
         public EncryptionHandlerId(string id):base(id)
         {
         }

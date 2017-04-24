@@ -29,6 +29,7 @@ namespace Xigadee
     /// This logger can be used for diagnotic purposes, and will hold a set of logger messages in memory, based on the 
     /// size parameter passed through in the constructor.
     /// </summary>
+    [Obsolete]
     public class MemoryLogger: ServiceBase<LoggingStatistics>, ILogger, IServiceOriginator
     {
         #region Declarations

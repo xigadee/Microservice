@@ -28,6 +28,7 @@ namespace Xigadee
     /// <summary>
     /// This is a basic logger based on documentdb
     /// </summary>
+    [Obsolete]
     public class DocumentDbLogger : ServiceBase<LoggingStatistics>, ILogger, IServiceOriginator
     {
         #region Declarations

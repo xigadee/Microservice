@@ -27,7 +27,7 @@ Azure contains a number of communciation services.
 
 ### Redis Cache
 
-### SQL Server
+### Event Hubs
 
 ## Data Collection and Monitoring
 
