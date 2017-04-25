@@ -165,7 +165,17 @@ namespace Xigadee
             mResourceRateLimiters.Add(limiter.ResourceId, limiter);
 
             return limiter;
-        } 
+        }
+        /// <summary>
+        /// This method registers a rate limiter and connects it to a set of resource profiles.
+        /// </summary>
+        /// <param name="name">The limiter friendly name.</param>
+        /// <param name="profiles">The set of resource profiles.</param>
+        /// <returns>Returns the resource limiter.</returns>
+        public IResourceRequestRateLimiter RegisterRequestRateLimiter(string name, params ResourceProfile[] profiles)
+        {
+            return RegisterRequestRateLimiter(name, (IEnumerable<ResourceProfile>) profiles);
+        }
         #endregion
     }
 }
