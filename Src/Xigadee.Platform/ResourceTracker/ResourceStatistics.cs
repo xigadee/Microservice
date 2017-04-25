@@ -33,23 +33,20 @@ namespace Xigadee
         /// This concurrent dictionary holds the current list of active messages and their ratelimit request count.
         /// </summary>
         protected readonly ConcurrentDictionary<Guid, ResourceRequestTrack> mActive;
-
+        /// <summary>
+        /// This is the percentage that the statistics will cut out.
+        /// </summary>
         protected readonly double mRateLimitCutoutPercentage; 
-
-        protected readonly string mName;
-
-        protected StatsCounter mJobs;
         #endregion
         #region Constructor
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        public ResourceStatistics()
+        public ResourceStatistics(double rateLimitCutoutPercentage = 1D)
         {
             mActive = new ConcurrentDictionary<Guid, ResourceRequestTrack>();
-            mRateLimitCutoutPercentage = 1D;
+            mRateLimitCutoutPercentage = rateLimitCutoutPercentage;
         } 
-
         #endregion
 
         #region RateLimitCutoutPercentage
@@ -188,6 +185,5 @@ namespace Xigadee
             outValue.RetrySignal(delta, reason);
         } 
         #endregion
-
     }
 }

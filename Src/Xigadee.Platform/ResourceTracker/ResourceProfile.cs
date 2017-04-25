@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This is the resource profile to use to signal resource restrictions.
+    /// This is the resource profile class to use to track resource restrictions.
     /// </summary>
     [DebuggerDisplay("ResourceProfile: {Id}")]
     public class ResourceProfile

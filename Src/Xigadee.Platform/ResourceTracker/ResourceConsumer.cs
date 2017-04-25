@@ -29,11 +29,14 @@ namespace Xigadee
     [DebuggerDisplay("ResourceConsumer: {Name}={RateLimitAdjustmentPercentage}")]
     public class ResourceConsumer: ResourceBase, IResourceConsumer
     {
+        #region Declarations
         /// <summary>
         /// This is the underlying resource.
         /// </summary>
-        protected readonly ResourceStatistics mResource;
+        protected readonly ResourceStatistics mResource; 
+        #endregion
 
+        #region Constructor
         /// <summary>
         /// This is the default constructor.
         /// </summary>
@@ -43,7 +46,8 @@ namespace Xigadee
         {
             Name = name;
             mResource = resource;
-        }
+        } 
+        #endregion
 
         #region RateLimitAdjustmentPercentage
         /// <summary>
@@ -60,6 +64,7 @@ namespace Xigadee
         }
         #endregion
 
+        #region  Start(string group, Guid requestId)
         /// <summary>
         /// This method tracks the start of a request and returns a profileid.
         /// </summary>
@@ -70,6 +75,8 @@ namespace Xigadee
         {
             return mResource.Start(Name, group, requestId);
         }
+        #endregion
+        #region End(Guid profileId, int start, ResourceRequestResult result)
         /// <summary>
         /// This method should be called when a request ends.
         /// </summary>
@@ -80,6 +87,8 @@ namespace Xigadee
         {
             mResource.End(Name, profileId, start, result);
         }
+        #endregion
+        #region Retry(Guid profileId, int retryStart, ResourceRetryReason reason)
         /// <summary>
         /// This method should be called when a request to a resource needs to be retried.
         /// </summary>
@@ -90,6 +99,8 @@ namespace Xigadee
         {
             mResource.Retry(Name, profileId, retryStart, reason);
         }
+        #endregion
+        #region Exception(Guid profileId, int retryStart)
         /// <summary>
         /// This method is called when an request cannot be completed due to an exception.
         /// </summary>
@@ -98,6 +109,7 @@ namespace Xigadee
         public void Exception(Guid profileId, int retryStart)
         {
             Retry(profileId, retryStart, ResourceRetryReason.Exception);
-        }
+        } 
+        #endregion
     }
 }

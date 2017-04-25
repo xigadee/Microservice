@@ -21,7 +21,7 @@ namespace Test.Xigadee
 
 
         [TestMethod]
-        public void StartProblems()
+        public void StartTraceSetup()
         {
             var resourceContainer = CreateResourceContainer();
 
@@ -43,7 +43,7 @@ namespace Test.Xigadee
 
             var tracker1 = tracker.RegisterRequestRateLimiter("freda", profile1, profile2 );
 
-
+            
         }
     }
 }
