@@ -26,7 +26,7 @@ namespace Xigadee
     /// <summary>
     /// This is the resource profile class to use to track resource restrictions.
     /// </summary>
-    [DebuggerDisplay("ResourceProfile: {Id}")]
+    [DebuggerDisplay("ResourceProfile: {Id} {ShouldSignal}")]
     public class ResourceProfile
     {
         /// <summary>
@@ -37,6 +37,7 @@ namespace Xigadee
         {
             if (id == null)
                 throw new ArgumentNullException("ResourceProfile: id cannot be null");
+
             Id = id;
         }
         /// <summary>
@@ -49,6 +50,7 @@ namespace Xigadee
         /// The default value is true.
         /// </summary>
         public bool ShouldSignal { get; set; } = true;
+
         /// <summary>
         /// Implicitly converts a string in to a resource profile.
         /// </summary>
@@ -56,6 +58,14 @@ namespace Xigadee
         public static implicit operator ResourceProfile(string id)
         {
             return new ResourceProfile(id);
+        }
+        /// <summary>
+        /// Implicitly converts a string in to a resource profile.
+        /// </summary>
+        /// <param name="id">The name of the resource profile.</param>
+        public static implicit operator ResourceProfile(ValueTuple<string,bool> id)
+        {
+            return new ResourceProfile(id.Item1) { ShouldSignal = id.Item2 };
         }
     }
 }

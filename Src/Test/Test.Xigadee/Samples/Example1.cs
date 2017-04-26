@@ -29,7 +29,7 @@ namespace Test.Xigadee.Samples
                         (Sample1 e) =>e.Id
                         , (s) => new Guid(s)
                         , versionPolicy: ((e) => e.Id.ToString("N"), (e) => e.VersionId = Guid.NewGuid(), true)
-                        , resourceProfile:"paul1"
+                        , resourceProfile:("paul1",true)
                         )
                     .AttachPersistenceMessageInitiator(out init)
                     .Revert()
