@@ -17,11 +17,8 @@
     <tags>Xigadee Microservice .NET Hitachi IMGROUP</tags>
     <dependencies>
       <dependency id="Xigadee" version="{UpdateVersion.ps1.replace}" />
-      <dependency id="Newtonsoft.Json" version="9.0.1" />
+      <dependency id="Newtonsoft.Json" version="10.0.2" />
+      <dependency id="System.ValueTuple" version="4.3.0" />
     </dependencies>
   </metadata>
-  <files>
-    <file src="bin\Release\Xigadee*.dll" target="lib\net46\" />
-    <file src="bin\Release\Xigadee*.pdb" target="lib\net46\" />
-  </files>
 </package>

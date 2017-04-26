@@ -36,17 +36,24 @@ namespace Xigadee
         /// <summary>
         /// This is the percentage that the statistics will cut out.
         /// </summary>
-        protected readonly double mRateLimitCutoutPercentage; 
+        protected readonly double mRateLimitCutoutPercentage;
+        /// <summary>
+        /// This is the action used to signal a status change event to the container.
+        /// </summary>
+        protected readonly Action<ResourceStatisticsEventType,ResourceStatistics> mSignal;
         #endregion
         #region Constructor
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        public ResourceStatistics(double rateLimitCutoutPercentage = 1D)
+        public ResourceStatistics(double rateLimitCutoutPercentage = 1D, Action<ResourceStatisticsEventType,ResourceStatistics> signal = null)
         {
             mActive = new ConcurrentDictionary<Guid, ResourceRequestTrack>();
             mRateLimitCutoutPercentage = rateLimitCutoutPercentage;
-        } 
+            mSignal = signal;
+
+            mSignal?.Invoke(ResourceStatisticsEventType.Created, this);
+        }
         #endregion
 
         #region RateLimitCutoutPercentage
@@ -185,5 +192,10 @@ namespace Xigadee
             outValue.RetrySignal(delta, reason);
         } 
         #endregion
+    }
+
+    public enum ResourceStatisticsEventType
+    {
+        Created
     }
 }

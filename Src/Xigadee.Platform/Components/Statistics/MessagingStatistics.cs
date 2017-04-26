@@ -42,8 +42,9 @@ namespace Xigadee
         }
         #endregion
 
+        #region Name
         /// <summary>
-        /// This is the statistics name.
+        /// This is the messaging statistics name.
         /// </summary>
         public override string Name
         {
@@ -56,7 +57,8 @@ namespace Xigadee
             {
                 base.Name = value;
             }
-        }
+        } 
+        #endregion
 
         #region ErrorIncrement()
         /// <summary>
@@ -76,21 +78,21 @@ namespace Xigadee
             return mStatsDefault.ActiveIncrement();
         }
         #endregion
-        #region ActiveDecrement(long delta)
+        #region ActiveDecrement(long start)
         /// <summary>
         /// This method is used to decrement the active count and submits the processing time.
         /// </summary>
-        /// <param name="delta">The processing time in milliseconds.</param>
+        /// <param name="start">The processing time in milliseconds.</param>
         public virtual int ActiveDecrement(int start)
         {
             return mStatsDefault.ActiveDecrement(start);
         }
         #endregion
-        #region ActiveDecrement(TimeSpan delta)
+        #region ActiveDecrement(TimeSpan extent)
         /// <summary>
         /// This method is used to decrement the active count and submits the processing time.
         /// </summary>
-        /// <param name="delta">The processing time in milliseconds.</param>
+        /// <param name="extent">The processing time in milliseconds.</param>
         public virtual int ActiveDecrement(TimeSpan extent)
         {
             return mStatsDefault.ActiveDecrement(extent);

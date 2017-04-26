@@ -24,13 +24,14 @@ namespace Test.Xigadee
     public class PersistenceBlahMemory: PersistenceManagerHandlerMemory<Guid, Blah>
     {
         public PersistenceBlahMemory(
-              ICacheManager<Guid, Blah> cacheManager = null)
+              ICacheManager<Guid, Blah> cacheManager = null, ResourceProfile profile = null)
             : base(
               (k) => k.ContentId
             , (s) => new Guid(s)
             , versionPolicy: new VersionPolicy<Blah>((e) => e.VersionId.ToString("N"), (e) => e.VersionId = Guid.NewGuid())
             //, referenceMaker: MondayMorningBluesHelper.ToReferences
-            , cacheManager: cacheManager)
+            , cacheManager: cacheManager
+            , resourceProfile: profile)
         {
 
         }

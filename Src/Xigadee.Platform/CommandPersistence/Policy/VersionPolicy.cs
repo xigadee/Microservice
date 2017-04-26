@@ -21,11 +21,14 @@ using System.Collections.Generic;
 #endregion
 namespace Xigadee
 {
+    public abstract class VersionPolicy : PolicyBase
+    {
+    }
     /// <summary>
     /// This class handles version support for the entity.
     /// </summary>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class VersionPolicy<E>:PolicyBase
+    public class VersionPolicy<E>: VersionPolicy
     {
         #region Declarations
         private readonly Func<E, string> mEntityVersionAsString;
@@ -90,5 +93,30 @@ namespace Xigadee
         /// This property specifies whether the persistence agent should implement archiving after an update or a delete.
         /// </summary>
         public bool SupportsArchiving { get; private set; }
+
+        /// <summary>
+        /// Implicitly converts a string in to a resource profile.
+        /// </summary>
+        /// <param name="t">The name of the resource profile.</param>
+        public static implicit operator VersionPolicy<E>(ValueTuple<Func<E, string>> t)
+        {
+            return new VersionPolicy<E>(t.Item1);
+        }
+        /// <summary>
+        /// Implicitly converts a string in to a resource profile.
+        /// </summary>
+        /// <param name="t">The name of the resource profile.</param>
+        public static implicit operator VersionPolicy<E>(ValueTuple<Func<E, string>, Action<E>> t)
+        {
+            return new VersionPolicy<E>(t.Item1, t.Item2);
+        }
+        /// <summary>
+        /// Implicitly converts a string in to a resource profile.
+        /// </summary>
+        /// <param name="t">The name of the resource profile.</param>
+        public static implicit operator VersionPolicy<E>(ValueTuple<Func<E, string>, Action<E>, bool> t)
+        {
+            return new VersionPolicy<E>(t.Item1, t.Item2, t.Item3);
+        }
     }
 }

@@ -45,6 +45,11 @@ namespace Xigadee
         public string Id { get; }
 
         /// <summary>
+        /// This property identifies to the underlying container whether to signal change events.
+        /// The default value is true.
+        /// </summary>
+        public bool ShouldSignal { get; set; } = true;
+        /// <summary>
         /// Implicitly converts a string in to a resource profile.
         /// </summary>
         /// <param name="id">The name of the resource profile.</param>

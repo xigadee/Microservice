@@ -27,7 +27,7 @@ namespace Xigadee
     /// Limiters are typically connected to listener clients and reduce the imcoming traffic when the resource becomes stressed.
     /// </summary>
     public class ResourceContainer: ServiceContainerBase<ResourceContainerStatistics, ResourceContainerPolicy>
-        , IRequireSharedServices, IResourceTracker
+        , IRequireSharedServices, IResourceTracker, IRequireDataCollector
     {
         //AKA Dependency Monitor
         #region Declarations
@@ -118,7 +118,7 @@ namespace Xigadee
         /// <returns>Returns the associated Resource Statistic.</returns>
         protected ResourceStatistics ResourceStatisticsCreateOrGet(ResourceProfile profile)
         {
-            ResourceStatistics stats = mResources.GetOrAdd(profile.Id, new ResourceStatistics() { Name = profile.Id });
+            ResourceStatistics stats = mResources.GetOrAdd(profile.Id, new ResourceStatistics(signal:ResourceStatisticsSignal) { Name = profile.Id });
 
             return stats;
         } 
@@ -177,5 +177,32 @@ namespace Xigadee
             return RegisterRequestRateLimiter(name, (IEnumerable<ResourceProfile>) profiles);
         }
         #endregion
+
+        #region Collector
+        /// <summary>
+        /// This is the data collector that is used to log ResourceEvents.
+        /// </summary>
+        public IDataCollection Collector
+        {
+            get;
+            set;
+        }
+        #endregion
+
+        /// <summary>
+        /// This method is used to signal a Resource state change.
+        /// </summary>
+        /// <param name="stats"></param>
+        private void ResourceStatisticsSignal(ResourceStatisticsEventType type, ResourceStatistics stats)
+        {
+            switch (type)
+            {
+                case ResourceStatisticsEventType.Created:
+                    Collector?.Write(new ResourceEvent());
+                    break;
+            }
+
+
+        }
     }
 }

@@ -66,9 +66,12 @@ namespace Test.Xigadee
                 IPipelineChannelOutgoing<MicroservicePipeline> cpipeOut = null;
                 PersistenceInternalService<Guid, Blah> persistence = null;
                 PersistenceBlahMemory persistBlah = null;
+                DebugMemoryDataCollector collector;
+
                 int signalChange = 0;
 
                 pipeline
+                    .AddDebugMemoryDataCollector(out collector)
                     .AdjustPolicyTaskManager((t) =>
                     {
                         t.ConcurrentRequestsMin = 1;
@@ -78,7 +81,7 @@ namespace Test.Xigadee
                     .CallOut(CallOutDefault)
                     .AddChannelIncoming("internalIn", internalOnly: true)
                         .CallOut(ChannelInConfigure, (c) => true)
-                        .AttachCommand(new PersistenceBlahMemory(), assign:(p) => persistBlah = p)
+                        .AttachCommand(new PersistenceBlahMemory(profile: "Blah"), assign:(p) => persistBlah = p)
                         .AttachCommand(new PersistenceInternalService<Guid, Blah>(), assign:(c) => persistence = c, channelResponse: cpipeOut)
                         .CallOut((c) => cpipeIn = c)
                         .Revert()

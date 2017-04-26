@@ -15,11 +15,12 @@
     <tags>Xigadee Microservice AWS .NET Hitachi IMGROUP</tags>
     <dependencies>
       <dependency id="Xigadee" version="{UpdateVersion.ps1.replace}" />
-      <dependency id="Newtonsoft.Json" version="9.0.1" />
+      <dependency id="Newtonsoft.Json" version="10.0.2" />
       <dependency id="AWSSDK.Core" version="3.3.5" />
       <dependency id="AWSSDK.DynamoDBv2" version="3.3.1" />
       <dependency id="AWSSDK.S3" version="3.3.3" />
       <dependency id="AWSSDK.SQS" version="3.3.3" />
+      <dependency id="System.ValueTuple" version="4.3.0" />
     </dependencies>
   </metadata>
   <files>

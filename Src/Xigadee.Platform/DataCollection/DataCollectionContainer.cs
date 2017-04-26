@@ -159,7 +159,7 @@ namespace Xigadee
         public ISecurityService Security
         {
             get; set;
-        } 
+        }
         #endregion
 
         #region Flush()
