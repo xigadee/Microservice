@@ -20,6 +20,7 @@ namespace Test.Xigadee
             /// [Sender] \i-|cresponse|-\o [Receiver]
             /// 
             /// </summary>
+            [Ignore]
             [TestMethod]
             public void TestMethod1()
             {

@@ -23,6 +23,7 @@ namespace Test.Xigadee
                 return Convert.ToBase64String(buff);
             }
 
+            [Ignore]
             [TestMethod]
             public void TestMethod1()
             {

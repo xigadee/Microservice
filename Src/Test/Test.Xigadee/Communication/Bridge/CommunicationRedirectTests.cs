@@ -8,6 +8,7 @@ namespace Test.Xigadee
     [TestClass]
     public class CommunicationRedirectTests
     {
+        [Ignore]
         [TestMethod]
         public void TestMethod1()
         {

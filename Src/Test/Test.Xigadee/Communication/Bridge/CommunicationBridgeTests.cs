@@ -8,6 +8,7 @@ namespace Test.Xigadee
     [TestClass]
     public class CommunicationBridgeTests
     {
+        [Ignore]
         [TestMethod]
         public void TestMethod1()
         {

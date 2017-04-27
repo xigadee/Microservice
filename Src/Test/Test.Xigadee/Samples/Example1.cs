@@ -1,8 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Xigadee;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Test.Xigadee.Samples
 {
