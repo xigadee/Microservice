@@ -53,9 +53,9 @@ namespace Xigadee
             
             command = new PersistenceClient<K, E>(cacheManager, defaultRequestTimespan);
 
-            if (responseChannel == null)
+            if (responseChannel == null || !cpipe.ToMicroservice().Communication.HasChannel(responseChannel, ChannelDirection.Incoming))
             {
-                var outPipe = cpipe.ToPipeline().AddChannelOutgoing($"PersistenceClient{command.ComponentId.ToString("N").ToUpperInvariant()}");
+                var outPipe = cpipe.ToPipeline().AddChannelIncoming($"PersistenceClient{command.ComponentId.ToString("N").ToUpperInvariant()}");
                 command.ResponseChannelId = outPipe.Channel.Id;
             }
             else

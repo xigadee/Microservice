@@ -36,13 +36,13 @@ namespace Test.Xigadee
                         .AdjustPolicyCommunication((p) => p.BoundaryLoggingActiveDefault = true)
                         .AddAuthenticationHandlerJwtToken("id1", JwtHashAlgorithm.HS256, Encoding.UTF8.GetBytes("My big secret"))
                         .AddDataCollector((c) => new DebugMemoryDataCollector(), (c) => memp1 = c)
+                        .AddChannelIncoming("cresponse", boundaryLoggingEnabled: true)
+                            .AttachListener(bridgein.GetListener())
+                            .Revert()
                         .AddChannelOutgoing("crequest", boundaryLoggingEnabled: true)
                             .AttachSender(bridgeOut.GetSender())
                             .AttachTransportPayloadSignature("id1")
-                            .Revert()
-                        .AddChannelIncoming("cresponse", boundaryLoggingEnabled: true)
-                            .AttachListener(bridgein.GetListener())
-                            .AttachPersistenceClient(out init, "crequest")
+                            .AttachPersistenceClient("cresponse", out init)
                             .Revert()
                             ;
 
@@ -59,9 +59,7 @@ namespace Test.Xigadee
                             .AttachSender(bridgein.GetSender())
                             ;
 
-                    p1.Start();
-
-                    
+                    p1.Start();      
                     p2.Start();
 
                     int check1 = p1.ToMicroservice().Commands.Count();
