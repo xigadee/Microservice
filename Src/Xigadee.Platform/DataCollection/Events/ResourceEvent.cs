@@ -15,5 +15,9 @@ namespace Xigadee
         /// This is the type of resource event raised.
         /// </summary>
         public ResourceStatisticsEventType Type { get; set; }
+        /// <summary>
+        /// This is the for the resource event.
+        /// </summary>
+        public string Name { get; set; }
     }
 }

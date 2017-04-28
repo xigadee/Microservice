@@ -202,6 +202,10 @@ namespace Xigadee
         /// <summary>
         /// The resource counter has been created.
         /// </summary>
-        Created
+        Created,
+        /// <summary>
+        /// This is a regular poll that records the current metrics
+        /// </summary>
+        KeepAlive
     }
 }

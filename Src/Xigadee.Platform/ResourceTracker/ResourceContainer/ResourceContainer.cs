@@ -189,6 +189,7 @@ namespace Xigadee
         }
         #endregion
 
+        #region ResourceStatisticsSignal(ResourceStatisticsEventType type, ResourceStatistics stats)
         /// <summary>
         /// This method is used to signal a Resource state change and publish this to the DataCollector..
         /// </summary>
@@ -199,11 +200,14 @@ namespace Xigadee
             switch (type)
             {
                 case ResourceStatisticsEventType.Created:
-                    Collector?.Write(new ResourceEvent() { Type = type });
+                    Collector?.Write(new ResourceEvent() { Type = type, Name = stats.Name });
+                    break;
+                case ResourceStatisticsEventType.KeepAlive:
+                    var re = new ResourceEvent() { Type = type, Name = stats.Name };
+                    Collector?.Write(re);
                     break;
             }
-
-
-        }
+        } 
+        #endregion
     }
 }
