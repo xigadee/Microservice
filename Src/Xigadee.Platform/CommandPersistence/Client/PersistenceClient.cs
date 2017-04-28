@@ -27,11 +27,11 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This class is used to call a remote persistence manager,
+    /// This class allows you to connect to a persistence server command using the default actions with remote server capability and timeout support.
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class PersistenceMessageInitiator<K, E> : PersistenceInitiatorBase<K, E, PersistenceMessageInitiatorPolicy>
+    public class PersistenceClient<K, E> : PersistenceInitiatorBase<K, E, PersistenceClientPolicy>
         , IPersistenceMessageInitiator 
         where K : IEquatable<K>
     {
@@ -39,7 +39,7 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor. This set the default routing to external only.
         /// </summary>
-        public PersistenceMessageInitiator(ICacheManager<K, E> cacheManager = null, TimeSpan? defaultRequestTimespan = null) 
+        public PersistenceClient(ICacheManager<K, E> cacheManager = null, TimeSpan? defaultRequestTimespan = null) 
             : base(cacheManager, defaultRequestTimespan)
         {
             RoutingDefault = ProcessOptions.RouteExternal;

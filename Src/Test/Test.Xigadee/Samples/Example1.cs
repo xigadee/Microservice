@@ -17,7 +17,7 @@ namespace Test.Xigadee.Samples
         public void MicroserviceExample1()
         {
             DebugMemoryDataCollector memp1;
-            PersistenceMessageInitiator<Guid, Sample1> init;
+            PersistenceClient<Guid, Sample1> init;
 
             var p1 = new MicroservicePipeline(nameof(MicroserviceExample1))
                 .AddDebugMemoryDataCollector(out memp1)
@@ -28,7 +28,7 @@ namespace Test.Xigadee.Samples
                         , versionPolicy: ((e) => e.VersionId.ToString("N").ToUpperInvariant(), (e) => e.VersionId = Guid.NewGuid(), true)
                         , resourceProfile: ("paul1", true)
                         )
-                    .AttachPersistenceMessageInitiator(out init)
+                    .AttachPersistenceClient(out init)
                     .Revert()
                     ;
 

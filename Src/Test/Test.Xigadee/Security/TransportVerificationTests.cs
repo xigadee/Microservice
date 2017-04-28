@@ -20,7 +20,7 @@ namespace Test.Xigadee
             /// [Sender] \i-|cresponse|-\o [Receiver]
             /// 
             /// </summary>
-            [Ignore]
+            //[Ignore]
             [TestMethod]
             public void TestMethod1()
             {
@@ -29,7 +29,7 @@ namespace Test.Xigadee
                     var bridgeOut = new CommunicationBridge(CommunicationBridgeMode.RoundRobin);
                     var bridgein = new CommunicationBridge(CommunicationBridgeMode.Broadcast);
 
-                    PersistenceMessageInitiator<Guid, SecureMe> init;
+                    PersistenceClient<Guid, SecureMe> init;
                     DebugMemoryDataCollector memp1, memp2;
 
                     var p1 = new MicroservicePipeline("Sender")
@@ -42,7 +42,7 @@ namespace Test.Xigadee
                             .Revert()
                         .AddChannelIncoming("cresponse", boundaryLoggingEnabled: true)
                             .AttachListener(bridgein.GetListener())
-                            .AttachPersistenceMessageInitiator(out init, "crequest")
+                            .AttachPersistenceClient(out init, "crequest")
                             .Revert()
                             ;
 
@@ -60,13 +60,15 @@ namespace Test.Xigadee
                             ;
 
                     p1.Start();
+
+                    
                     p2.Start();
 
                     int check1 = p1.ToMicroservice().Commands.Count();
                     int check2 = p2.ToMicroservice().Commands.Count();
 
                     var entity = new SecureMe() { Message = "Momma" };
-                    var rs = init.Create(entity, new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
+                    var rs = init.Create(entity, new RepositorySettings() { WaitTime = TimeSpan.FromSeconds(30) }).Result;
                     var rs2 = init.Read(entity.Id).Result;
 
                     Assert.IsTrue(rs2.IsSuccess);

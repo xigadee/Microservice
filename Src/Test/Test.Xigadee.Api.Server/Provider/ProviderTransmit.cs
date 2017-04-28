@@ -32,7 +32,7 @@ namespace Test.Xigadee.Api.Server
     {
     }
 
-    public class CorePersistenceMessageInitiator<K, E>: PersistenceMessageInitiator<K, E> where K : IEquatable<K>
+    public class CorePersistenceMessageInitiator<K, E>: PersistenceClient<K, E> where K : IEquatable<K>
     {
         public CorePersistenceMessageInitiator()
         {

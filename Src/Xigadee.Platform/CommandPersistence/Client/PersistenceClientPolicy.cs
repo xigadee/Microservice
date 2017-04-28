@@ -22,14 +22,10 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public abstract class ChannelPartitionConfigBaseException:Exception
+    /// <summary>
+    /// This class is used for persistence based shortcuts.
+    /// </summary>
+    public class PersistenceClientPolicy: CommandInitiatorPolicy
     {
-        public ChannelPartitionConfigBaseException(string channelId,string message = null):base(message)
-        {
-            ChannelId = channelId;
-        }
-
-        public string ChannelId { get; }
-
     }
 }

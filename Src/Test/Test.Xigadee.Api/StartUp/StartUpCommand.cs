@@ -28,7 +28,7 @@ namespace Test.Xigadee.Api
         public void Configuration(IAppBuilder app)
         {
             var webpipe = new UnityWebApiMicroservicePipeline();
-            PersistenceMessageInitiator<Guid, MyStuff> init;
+            PersistenceClient<Guid, MyStuff> init;
 
             webpipe
                 .ApiConfig((c) => c.Routes.MapHttpRoute("Default", "api/{controller}/{id}", new { id = RouteParameter.Optional }))

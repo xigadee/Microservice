@@ -39,7 +39,7 @@ namespace Test.Xigadee
 
         static void ServerConfig(MicroservicePersistenceWrapper<Guid, MondayMorningBlues> wrapper)
         {
-            PersistenceMessageInitiator<Guid, MondayMorningBlues> persistence = null;
+            PersistenceClient<Guid, MondayMorningBlues> persistence = null;
 
             //if ((sContext.RedisCache & RedisCacheMode.Server) > 0)
             //{
@@ -53,7 +53,7 @@ namespace Test.Xigadee
                     //.AttachResourceProfile(new ResourceProfile("TrackIt"))
                     //.AttachAzureServiceBusQueueListener("Myqueue")
                     //.AttachCommand(new PersistenceBlahMemory())
-                    .AttachPersistenceMessageInitiator(out persistence)
+                    .AttachPersistenceClient(out persistence)
                     .Revert()
                 .AddChannelOutgoing("internalOut", internalOnly: true)
                     ////.AppendBoundaryLogger(bLogger)
@@ -65,13 +65,13 @@ namespace Test.Xigadee
 
         static void ClientConfig(MicroservicePersistenceWrapper<Guid, MondayMorningBlues> wrapper)
         {
-            PersistenceMessageInitiator<Guid, MondayMorningBlues> persistence = null;
+            PersistenceClient<Guid, MondayMorningBlues> persistence = null;
 
             wrapper.Pipeline
                 .ConfigurationSetFromConsoleArgs(sContext.Switches)
                 .AddDebugMemoryDataCollector((c) => wrapper.Collector = c)
                 .AddChannelIncoming("internalOut")
-                    .AttachPersistenceMessageInitiator(out persistence, "internalIn")
+                    .AttachPersistenceClient(out persistence, "internalIn")
                     .Revert()
                 .AddChannelOutgoing("internalIn", internalOnly: true)
                     .Revert();

@@ -36,7 +36,7 @@ namespace Xigadee
         /// <param name="defaultRequestTimespan">The default timeout.</param>
         /// <returns>Returns the pipe.</returns>
         public static C AttachPersistenceMessageInitiatorUnity<C, K, E>(this C cpipe
-            , out PersistenceMessageInitiator<K, E> command
+            , out PersistenceClient<K, E> command
             , string outgoingChannel
             , int startupPriority = 90
             , ICacheManager<K, E> cacheManager = null
@@ -47,7 +47,7 @@ namespace Xigadee
         {
             var ms = cpipe.ToMicroservice();
 
-            command = new PersistenceMessageInitiator<K, E>(cacheManager, defaultRequestTimespan)
+            command = new PersistenceClient<K, E>(cacheManager, defaultRequestTimespan)
             {
                 ResponseChannelId = cpipe.Channel.Id
                 , ChannelId = outgoingChannel

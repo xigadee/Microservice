@@ -22,10 +22,17 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    /// <summary>
-    /// This class is used for persistence based shortcuts.
-    /// </summary>
-    public class PersistenceMessageInitiatorPolicy: CommandInitiatorPolicy
+    public class ChannelDoesNotExistException : ChannelPartitionConfigBaseException
     {
+        public ChannelDoesNotExistException(string channelId, ChannelDirection direction, string serviceName) 
+            : base(channelId, $"Channel: {channelId}:{direction} does not exist in service: {serviceName}")
+        {
+            Direction = direction;
+            ServiceName = serviceName;
+        }
+
+        public ChannelDirection Direction { get; }
+
+        public string ServiceName { get; }
     }
 }
