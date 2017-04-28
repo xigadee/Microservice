@@ -4,8 +4,7 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    [TestClass]
-    public class CommandUnitTestBase<C> 
+    public abstract class CommandUnitTestBase<C> 
         where C: ICommand, new()
     {
         protected C mCommand  = new C();

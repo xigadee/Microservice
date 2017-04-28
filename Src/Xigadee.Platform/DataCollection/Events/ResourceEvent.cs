@@ -11,6 +11,9 @@ namespace Xigadee
     /// </summary>
     public class ResourceEvent:EventBase
     {
-
+        /// <summary>
+        /// This is the type of resource event raised.
+        /// </summary>
+        public ResourceStatisticsEventType Type { get; set; }
     }
 }
