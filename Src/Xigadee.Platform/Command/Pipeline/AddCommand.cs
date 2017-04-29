@@ -24,6 +24,17 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
+        /// <summary>
+        /// This extension method is used to add a command to the Microservice.
+        /// </summary>
+        /// <typeparam name="P">The pipeline type.</typeparam>
+        /// <typeparam name="C">The command type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="startupPriority">The optional start up priority. The default is 100.</param>
+        /// <param name="assign">The command assignment action.</param>
+        /// <param name="channelIncoming">The optional request channel.</param>
+        /// <param name="channelResponse">The optional response channel.</param>
+        /// <returns>Returns the pipeline.</returns>
         public static P AddCommand<P,C>(this P pipeline
             , int startupPriority = 100
             , Action<C> assign = null
@@ -36,6 +47,18 @@ namespace Xigadee
             return pipeline.AddCommand(new C(), startupPriority, assign, channelIncoming, channelResponse);
         }
 
+        /// <summary>
+        /// This extension method is used to add a command to the Microservice.
+        /// </summary>
+        /// <typeparam name="P">The pipeline type.</typeparam>
+        /// <typeparam name="C">The command type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="creator">The command creator function.</param>
+        /// <param name="startupPriority">The optional start up priority. The default is 100.</param>
+        /// <param name="assign">The command assignment action.</param>
+        /// <param name="channelIncoming">The optional request channel.</param>
+        /// <param name="channelResponse">The optional response channel.</param>
+        /// <returns>Returns the pipeline.</returns>
         public static P AddCommand<P,C>(this P pipeline
             , Func<IEnvironmentConfiguration, C> creator
             , int startupPriority = 100
@@ -51,6 +74,18 @@ namespace Xigadee
             return pipeline.AddCommand(command, startupPriority, assign, channelIncoming, channelResponse);
         }
 
+        /// <summary>
+        /// This extension method is used to add a command to the Microservice.
+        /// </summary>
+        /// <typeparam name="P">The pipeline type.</typeparam>
+        /// <typeparam name="C">The command type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="command">The command to add.</param>
+        /// <param name="startupPriority">The optional start up priority. The default is 100.</param>
+        /// <param name="assign">The command assignment action.</param>
+        /// <param name="channelIncoming">The optional request channel.</param>
+        /// <param name="channelResponse">The optional response channel.</param>
+        /// <returns>Returns the pipeline.</returns>
         public static P AddCommand<P,C>(this P pipeline
             , C command
             , int startupPriority = 100
