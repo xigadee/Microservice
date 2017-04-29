@@ -93,7 +93,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Persistence\Microservice_Validate_Persistence.cs" />
     <Compile Include="ResourceTracker\UnitTest1.cs" />
-    <Compile Include="Samples\Example1.cs" />
+    <Compile Include="Samples\CommandLocal.cs" />
+    <Compile Include="Samples\PersistenceLocal.cs" />
     <Compile Include="Security\AesEncryptionTests.cs" />
     <Compile Include="Security\TransportEncryptionTests.cs" />
     <Compile Include="Security\TransportVerificationTests.cs" />

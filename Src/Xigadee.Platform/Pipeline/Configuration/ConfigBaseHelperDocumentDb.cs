@@ -25,35 +25,69 @@ namespace Xigadee
 
     public static class ConfigBaseHelperDocumentDb
     {
+        /// <summary>
+        /// A configuration key shortcut.
+        /// </summary>
         [ConfigSettingKey("DocumentDb")]
         public const string KeyDocDBAccountName = "DocDBAccountName";
-
+        /// <summary>
+        /// A configuration key shortcut.
+        /// </summary>
         [ConfigSettingKey("DocumentDb")]
         public const string KeyDocDBAccountAccessKey = "DocDBAccountAccessKey";
-
+        /// <summary>
+        /// A configuration key shortcut.
+        /// </summary>
         [ConfigSettingKey("DocumentDb")]
         public const string KeyDocDBDatabaseName = "DocDBDatabaseName";
-
+        /// <summary>
+        /// A configuration key shortcut.
+        /// </summary>
         [ConfigSettingKey("DocumentDb")]
         public const string KeyDocDBCollectionName = "DocDBCollectionName";
 
-
+        /// <summary>
+        /// This is the config reserved id for the DocumentDb Connection string
+        /// </summary>
+        /// <param name="config">The configuration.</param>
+        /// <param name="throwExceptionIfNotFound">Throw and exception if the key is not found. The default is false.</param>
+        /// <returns>Returns the config value.</returns>
         [ConfigSetting("DocumentDb")]
         public static DocumentDbConnection DocDBConnection(this IEnvironmentConfiguration config, bool throwExceptionIfNotFound = false) 
             => DocumentDbConnection.ToConnection(config.DocDBAccountName(throwExceptionIfNotFound), config.DocDBAccountAccessKey(throwExceptionIfNotFound));
-
+        /// <summary>
+        /// This is the config reserved id for the DocumentDb account name.
+        /// </summary>
+        /// <param name="config">The configuration.</param>
+        /// <param name="throwExceptionIfNotFound">Throw and exception if the key is not found. The default is false.</param>
+        /// <returns>Returns the config value.</returns>
         [ConfigSetting("DocumentDb")]
         public static string DocDBAccountName(this IEnvironmentConfiguration config, bool throwExceptionIfNotFound = false) 
             => config.PlatformOrConfigCache(KeyDocDBAccountName, throwExceptionIfNotFound: throwExceptionIfNotFound);
-
+        /// <summary>
+        /// This is the config reserved id for the DocumentDb account access key.
+        /// </summary>
+        /// <param name="config">The configuration.</param>
+        /// <param name="throwExceptionIfNotFound">Throw and exception if the key is not found. The default is false.</param>
+        /// <returns>Returns the config value.</returns>
         [ConfigSetting("DocumentDb")]
         public static string DocDBAccountAccessKey(this IEnvironmentConfiguration config, bool throwExceptionIfNotFound = false) 
             => config.PlatformOrConfigCache(KeyDocDBAccountAccessKey, throwExceptionIfNotFound: throwExceptionIfNotFound);
-
+        /// <summary>
+        /// This is the config reserved id for the DocumentDb default database name.
+        /// </summary>
+        /// <param name="config">The configuration.</param>
+        /// <param name="throwExceptionIfNotFound">Throw and exception if the key is not found. The default is false.</param>
+        /// <returns>Returns the config value.</returns>
         [ConfigSetting("DocumentDb")]
         public static string DocDBDatabaseName(this IEnvironmentConfiguration config, bool throwExceptionIfNotFound = false) 
             => config.PlatformOrConfigCache(KeyDocDBDatabaseName, throwExceptionIfNotFound: throwExceptionIfNotFound);
-
+        /// <summary>
+        /// This is the config reserved id for the DocumentDb default collection name.
+        /// </summary>
+        /// <param name="config">The configuration.</param>
+        /// <param name="throwExceptionIfNotFound">Throw and exception if the key is not found. The default is false.</param>
+        /// <returns>Returns the config value.</returns>
         [ConfigSetting("DocumentDb")]
         public static string DocDBCollectionName(this IEnvironmentConfiguration config, bool throwExceptionIfNotFound = false) 
             => config.PlatformOrConfigCache(KeyDocDBCollectionName, throwExceptionIfNotFound: throwExceptionIfNotFound);

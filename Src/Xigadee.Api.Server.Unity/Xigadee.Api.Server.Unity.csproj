@@ -156,7 +156,7 @@
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Pipeline\Actual.cs" />
+    <Compile Include="Pipeline\Ability.cs" />
     <Compile Include="Pipeline\Add\AddCommandUnity.cs" />
     <Compile Include="Pipeline\Attach\AttachCommandUnity.cs" />
     <Compile Include="Pipeline\Attach\AttachPersistenceMessageInitiatorUnity.cs" />

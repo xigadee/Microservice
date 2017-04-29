@@ -266,15 +266,23 @@ namespace Xigadee
         }
         #endregion
 
+        #region CompleteSet()
+        /// <summary>
+        /// This method signals the transmission as complete and is used to signal to comms technologies that can peek
+        /// a message while processing is being completed.
+        /// </summary>
         public void CompleteSet()
         {
             if (!ExecutionTime.HasValue)
                 ExecutionTime = ConversionHelper.DeltaAsTimeSpan(mTickCount);
         }
 
+        #endregion
+        #region ExecutionTime
         /// <summary>
         /// This is the overall execution time.
         /// </summary>
         public TimeSpan? ExecutionTime { get; private set; }
+        #endregion
     }
 }

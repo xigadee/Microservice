@@ -21,103 +21,10 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Xigadee;
 
 namespace Xigadee
 {
-    public class RequestSettings
-    {
-        /// <summary>
-        /// This is the time the request should wait for a response until signalling a time out.
-        /// </summary>
-        public TimeSpan? WaitTime { get; set; }
-
-        /// <summary>
-        /// http://tools.ietf.org/html/rfc7240
-        /// </summary>
-        public Dictionary<string, string> Prefer { get; set; } = new Dictionary<string, string>();
-
-        public Dictionary<string, string> Headers { get; set;  }= new Dictionary<string, string>();
-
-        #region Prefer methods
-        protected bool PreferGetBool(string key, string trueValue = "true", bool defaultValue = true)
-        {
-            if (Prefer == null || !Prefer.ContainsKey(key))
-                return defaultValue;
-
-            return Prefer[key].Equals(trueValue, StringComparison.InvariantCultureIgnoreCase);
-        }
-
-        protected string PreferGet(string key, string defaultValue = null)
-        {
-            if (Prefer == null || !Prefer.ContainsKey(key))
-                return defaultValue;
-
-            return Prefer[key];
-        }
-
-        protected void PreferSet(string key, string value)
-        {
-            if (Prefer == null)
-                Prefer = new Dictionary<string, string>();
-
-            if (!Prefer.ContainsKey(key))
-                Prefer.Add(key, value);
-            else
-                Prefer[key] = value;
-        } 
-        #endregion
-        #region Header methods
-        protected string HeadersGet(string key, string defaultValue = null)
-        {
-            if (Headers == null || !Headers.ContainsKey(key))
-                return defaultValue;
-
-            return Headers[key];
-        }
-
-        protected void HeadersSet(string key, string value)
-        {
-            if (Headers == null)
-                Headers = new Dictionary<string, string>();
-
-            if (!Headers.ContainsKey(key))
-                Headers.Add(key, value);
-            else
-                Headers[key] = value;
-        }
-        #endregion
-
-        /// <summary>
-        /// Shortcut to retrieve the correlation id
-        /// </summary>
-        public string CorrelationId
-        {
-            get
-            {
-                return HeadersGet("X-CorrelationId");
-            }
-            set
-            {
-                HeadersSet("X-CorrelationId", value);
-            }
-        }
-
-        /// <summary>
-        /// This shortcut method is used to inform the server to process the request asynchronously
-        /// </summary>
-        public bool ProcessAsync
-        {
-            get
-            {
-                return PreferGetBool("processasync", defaultValue: false);
-            }
-            set
-            {
-                PreferSet("processasync", value ? "true" : "false");
-            }
-        }
-    }
-
     /// <summary>
     /// Repository setting metadata which is passed to the back end fabric
     /// </summary>

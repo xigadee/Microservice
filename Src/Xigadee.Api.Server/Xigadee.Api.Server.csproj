@@ -177,7 +177,7 @@
     <Compile Include="Owin\Policy\JwtTokenVerificationPolicy.cs" />
     <Compile Include="Exceptions\WebApiJwtFilterValidationException.cs" />
     <Compile Include="Owin\StatusResult.cs" />
-    <Compile Include="Pipeline\Actual.cs" />
+    <Compile Include="Pipeline\Ability.cs" />
     <Compile Include="Pipeline\AddAuthorizationServer.cs" />
     <Compile Include="Pipeline\ApiAdd\ApiAddBoundaryLoggerFilter.cs" />
     <Compile Include="Pipeline\ApiAdd\ApiAddClientCertificateAuthorizationFilter.cs" />

@@ -27,15 +27,12 @@ namespace Xigadee
         /// <summary>
         /// This method reverts a pipeline extension to the underlying pipeline.
         /// </summary>
-        /// <typeparam name="C">The pipeline extension type.</typeparam>
+        /// <typeparam name="P">The pipeline extension type.</typeparam>
         /// <param name="cpipe">The pipeline extension.</param>
-        /// <param name="assign">An optional action to process the extension.</param>
         /// <returns>The underlying Microservice extension.</returns>
         public static P Revert<P>(this IPipelineExtension<P> cpipe)
             where P : class, IPipeline
         {
-            //assign?.Invoke(cpipe);
-
             return cpipe.Pipeline;
         }
     }

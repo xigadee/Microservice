@@ -73,6 +73,7 @@
     <Compile Include="RepositoryOptions.cs" />
     <Compile Include="RepositoryHolder.cs" />
     <Compile Include="RepositorySettings.cs" />
+    <Compile Include="RequestSettings.cs" />
     <Compile Include="ResponseHolder.cs" />
     <Compile Include="XmlSchemaValidation.cs" />
   </ItemGroup>

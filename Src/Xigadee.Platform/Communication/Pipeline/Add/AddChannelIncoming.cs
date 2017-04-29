@@ -27,6 +27,20 @@ namespace Xigadee
     /// </summary>
     public static partial class CorePipelineExtensions
     {
+        /// <summary>
+        /// Use this pipeline command to add a channel to a Microservice.
+        /// </summary>
+        /// <typeparam name="P"></typeparam>
+        /// <param name="pipeline"></param>
+        /// <param name="creatorId"></param>
+        /// <param name="description"></param>
+        /// <param name="partitions"></param>
+        /// <param name="bLoggerStatus"></param>
+        /// <param name="resourceProfiles"></param>
+        /// <param name="internalOnly"></param>
+        /// <param name="assign"></param>
+        /// <param name="autosetPartition01"></param>
+        /// <returns></returns>
         public static IPipelineChannelIncoming<P> AddChannelIncoming<P>(this P pipeline
             , Func<IEnvironmentConfiguration, string> creatorId
             , string description = null
@@ -49,15 +63,15 @@ namespace Xigadee
                 , autosetPartition01);
         }
         /// <summary>
-        /// use this command to add a channel to a Microservice.
+        /// Use this pipeline command to add a channel to a Microservice.
         /// </summary>
         /// <param name="pipeline">The pipeline.</param>
         /// <param name="channelId">The channel id.</param>
-        /// <param name="description"></param>
-        /// <param name="partitions"></param>
-        /// <param name="boundaryLoggingEnabled"></param>
-        /// <param name="resourceProfiles"></param>
-        /// <param name="internalOnly"></param>
+        /// <param name="description">A description of what the channel is used for.</param>
+        /// <param name="partitions">The supported partition levels for the channel. If null, this will be set to Priority 0 and 1.</param>
+        /// <param name="boundaryLoggingEnabled">Use this flag to override the default boundary logging settings for the Microservice.</param>
+        /// <param name="resourceProfiles">The resource profiles that should be used in the polling logic to reduce or stop incoming messages.</param>
+        /// <param name="internalOnly">Set this flag to true if you don't wish to attach any external listeners to this channel, i.e. internal only.</param>
         /// <param name="assign"></param>
         /// <param name="autosetPartition01">This method automatically sets the default priority 0 and 1 partitions for the channel.</param>
         /// <returns>The original pipeline.</returns>
@@ -90,6 +104,5 @@ namespace Xigadee
 
             return cpipe;
         }
-
     }
 }

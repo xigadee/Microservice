@@ -19,34 +19,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Http;
 
 namespace Xigadee
 {
-    public static partial class CorePipelineExtensions
+    public static partial class WebApiExtensionMethods
     {
         /// <summary>
         /// This is a helper method that identifies the current pipeline. It is useful for autocomplete identification. 
         /// This command does not do anything.
         /// </summary>
         /// <param name="pipe">The pipeline.</param>
-        /// <returns>The pipeline.</returns>
-        public static C Actual_ChannelPipelineIncoming<C,P>(this C pipe)
-            where P: IPipeline
-            where C: ChannelPipelineBase<P>, IPipelineChannelIncoming<P>
+        public static void Ability_Is_WebApiMicroservicePipeline(this WebApiMicroservicePipeline pipe)
         {
-            return pipe;
-        }
-        /// <summary>
-        /// This is a helper method that identifies the current pipeline. It is useful for autocomplete identification. 
-        /// This command does not do anything.
-        /// </summary>
-        /// <param name="pipe">The pipeline.</param>
-        /// <returns>The pipeline.</returns>
-        public static C Actual_ChannelPipelineOutgoing<C,P>(this C pipe)
-             where P : IPipeline
-             where C : ChannelPipelineBase<P>, IPipelineChannelOutgoing<P>
-        {
-            return pipe;
         }
     }
 }

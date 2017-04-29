@@ -30,11 +30,9 @@ namespace Xigadee
         /// </summary>
         /// <param name="pipe">The pipeline.</param>
         /// <returns>The pipeline.</returns>
-        public static C Actual_SecurityPipeline<C,P>(this C pipe)
-            where P: IPipeline
-            where C: SecurityPipelineExtension<P>, IPipelineSecurity<P>
+        public static void Actual_SecurityPipeline<C>(this C pipe)
+            where C: IPipelineSecurity
         {
-            return pipe;
         }
 
     }

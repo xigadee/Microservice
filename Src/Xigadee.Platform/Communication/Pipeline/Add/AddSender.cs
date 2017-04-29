@@ -32,6 +32,7 @@ namespace Xigadee
             return pipeline;
         }
 
+
         public static P AddSender<P,S>(this P pipeline
             , Func<IEnvironmentConfiguration, S> creator = null
             , Action<S> action = null)

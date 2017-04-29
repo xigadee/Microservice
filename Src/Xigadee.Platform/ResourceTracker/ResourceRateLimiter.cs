@@ -51,6 +51,7 @@ namespace Xigadee
         /// <param name="name">The name of the rate limiter.</param>
         /// <param name="profiles">The prfiles that are tracker by this limiter.</param>
         /// <param name="calculateRate">This is the optional function used to calculate the overall rate.</param>
+        /// <param name="calculateCircuitBreaker">This function is used to throw when the circuit breaker should be thrown.</param>
         public ResourceRateLimiter(string name, List<ResourceStatistics> profiles
             , Func<List<ResourceStatistics>, double> calculateRate = null
             , Func<List<ResourceStatistics>, CircuitBreakerState> calculateCircuitBreaker = null

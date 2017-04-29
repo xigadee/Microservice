@@ -26,10 +26,8 @@ namespace Xigadee
         /// This command does not do anything.
         /// </summary>
         /// <param name="pipe">The pipeline.</param>
-        /// <returns>The pipeline.</returns>
-        public static UnityWebApiMicroservicePipeline Actual_UnityWebApiMicroservicePipeline(this UnityWebApiMicroservicePipeline pipe)
+        public static void Ability_Is_UnityWebApiMicroservicePipeline(this UnityWebApiMicroservicePipeline pipe)
         {
-            return pipe;
         }
     }
 }

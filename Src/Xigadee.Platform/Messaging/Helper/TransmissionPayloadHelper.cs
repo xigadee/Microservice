@@ -43,14 +43,20 @@ namespace Xigadee
             return new TransmissionPayload(rsMessage);
         }
 
-        //public static void DestinationSet(this TransmissionPayload incoming, ServiceMessageHeader header)
-        //{
-        //    incoming.Message.
-        //}
+        public static void PayloadPack<O>(this TransmissionPayload incoming, IPayloadSerializationContainer c, O data)
+        {
+            incoming.Message.Blob = c.PayloadSerialize(data);
+        }
 
-        //public static void DestinationSet(this TransmissionPayload incoming, ServiceMessageHeader header)
-        //{
+        public static void PayloadPack(this TransmissionPayload incoming, IPayloadSerializationContainer c)
+        {
+            incoming.Message.Blob = c.PayloadSerialize(incoming.MessageObject);
+        }
 
-        //}
+        public static S PayloadUnpack<S>(this TransmissionPayload incoming, IPayloadSerializationContainer c)
+        {
+            return c.PayloadDeserialize<S>(incoming.Message.Blob);
+        }
+
     }
 }

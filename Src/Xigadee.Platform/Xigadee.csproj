@@ -284,7 +284,7 @@
     <Compile Include="CommandPersistence\Notification\EntityChangeNotificationCommand.cs" />
     <Compile Include="CommandPersistence\Notification\EntityChangeNotificationPolicy.cs" />
     <Compile Include="CommandPersistence\Notification\EntityChangeNotificationStatistics.cs" />
-    <Compile Include="Communication\Pipeline\Actual.cs" />
+    <Compile Include="Communication\Pipeline\Ability.cs" />
     <Compile Include="Communication\Pipeline\ChannelPipelineIncoming.cs" />
     <Compile Include="Communication\Pipeline\ChannelPipelineOutgoing.cs" />
     <Compile Include="Communication\Pipeline\Inspect.cs" />
@@ -321,7 +321,7 @@
     <Compile Include="DataCollection\DataCollector\DebugMemoryDataCollector.cs" />
     <Compile Include="DataCollection\Telemetry\TelemetryCounterHolder.cs" />
     <Compile Include="Messaging\MessageFilterWrapper.cs" />
-    <Compile Include="Pipeline\Configuration\ConfigureMessaging.cs" />
+    <Compile Include="Communication\Pipeline\ConfigureMessaging.cs" />
     <Compile Include="CommandInitiator\Pipeline\AddCommandInitiator.cs" />
     <Compile Include="DataCollection\Pipeline\Add\AddDataCollector.cs" />
     <Compile Include="Security\Pipeline\Add\AddEncryptionHandler.cs" />
@@ -337,7 +337,7 @@
     <Compile Include="Pipeline\Extensions\Configuration\ConfigResolversClear.cs" />
     <Compile Include="Pipeline\Extensions\Configuration\ConfigurationOverrideSet.cs" />
     <Compile Include="Pipeline\Extensions\Stop.cs" />
-    <Compile Include="Pipeline\Extensions\Actual.cs" />
+    <Compile Include="Pipeline\Extensions\Ability.cs" />
     <Compile Include="Pipeline\Interfaces\IPipelineBase.cs" />
     <Compile Include="Pipeline\Interfaces\IPipelineChannel.cs" />
     <Compile Include="Pipeline\Interfaces\IPipeline.cs" />
@@ -473,7 +473,7 @@
     <Compile Include="Security\MicroserviceSecurityPrincipal.cs" />
     <Compile Include="Serialization\Pipeline\AddPayloadSerializer.cs" />
     <Compile Include="CommandContainer\Pipeline\Add\AddSharedService.cs" />
-    <Compile Include="Pipeline\Extensions\Attach\AttachResourceProfile.cs" />
+    <Compile Include="Communication\Pipeline\Attach\AttachResourceProfile.cs" />
     <Compile Include="Communication\Pipeline\Attach\AttachPriorityPartition.cs" />
     <Compile Include="Communication\Pipeline\Attach\AttachListener.cs" />
     <Compile Include="Communication\Pipeline\Attach\AttachSender.cs" />
@@ -633,6 +633,7 @@
     <Folder Include="DataCollection\Pipeline\Attach\" />
     <Folder Include="Pipeline\Exceptions\" />
     <Folder Include="Pipeline\Extensions\Add\" />
+    <Folder Include="Pipeline\Extensions\Attach\" />
     <Folder Include="ResourceTracker\Events\" />
     <Folder Include="ResourceTracker\ExtensionMethods\" />
     <Folder Include="Security\Jwt\Interfaces\" />

@@ -54,7 +54,7 @@ namespace Test.Xigadee
                         mre.Set();
                         return Task.FromResult(0);
                     })
-                    .Revert()
+                    .Revert()                    
                     ;
 
             p1.Start();
