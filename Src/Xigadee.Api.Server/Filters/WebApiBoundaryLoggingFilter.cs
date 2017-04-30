@@ -81,8 +81,8 @@ namespace Xigadee
                 throw new ArgumentNullException("ms","The Microservice cannot be null.");
 
             mMs = ms;
-            mLevel = level;
 
+            mLevel = level;
         }
         #endregion
 

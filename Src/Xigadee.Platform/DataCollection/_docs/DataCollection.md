@@ -15,10 +15,13 @@ Xigadee has an extensible and extensive logging and monitoring capability. This 
 ## Events
 
 - Boundary
+   - Boundary events are generated when a message enters or leaves a Microservice. There are different type of message based on the technology or protocol being used.
 
 - Dispatcher
+  - Dispatcher Events are used to trace the processing of an incoming message within the Microservice.
 
 - Event Source
+  - EventSource Events record a change of state within the Microservice, this is of particular relevance to the Persistence Commands where they use this to record the Create, Update and Delete requests for an Entity.
 
 - Log
 

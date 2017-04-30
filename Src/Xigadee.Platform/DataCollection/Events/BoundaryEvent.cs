@@ -11,8 +11,16 @@ namespace Xigadee
     /// This is the event class for logging message boundary transitions.
     /// </summary>
     [DebuggerDisplay("{Type} ({ChannelId}|{ChannelPriority}) {Direction} [{Id}]")]
-    public class BoundaryEvent: BoundaryEventBase
-    {      
+    public class BoundaryEvent: EventBase
+    {
+        public BoundaryEventType Type { get; set; }
+
+        public ChannelDirection Direction { get; set; }
+
+        public Guid? Id { get; set; }
+
+        public Exception Ex { get; set; }
+
         public TransmissionPayload Payload { get; set; }
 
         public Guid? BatchId { get; set; }

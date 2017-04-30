@@ -31,12 +31,10 @@ namespace Xigadee
     /// </summary>
     public class CommunicationBridge
     {
-        List<IListener> mListeners = new List<IListener>();
-        List<ISender> mSenders = new List<ISender>();
-        long mSendCount = 0;
-        JsonContractSerializer mSerializer = new JsonContractSerializer();
+        #region Declarations
         CommunicationBridgeAgent mAgent;
-
+        #endregion
+        #region Constructor
         /// <summary>
         /// This is the default constructor that specifies the broadcast mode.
         /// </summary>
@@ -49,6 +47,8 @@ namespace Xigadee
             Mode = mode;
         }
 
+        #endregion
+
         /// <summary>
         /// This is the communication mode that the bridge is working under.
         /// </summary>
@@ -60,11 +60,8 @@ namespace Xigadee
         /// <returns>The listener.</returns>
         public IListener GetListener()
         {
-            var listener = new ManualChannelListener();
-
-            return AddListener(listener);
+            return mAgent.GetListener();
         }
-
 
         /// <summary>
         /// This method returns a new sender.
@@ -72,81 +69,8 @@ namespace Xigadee
         /// <returns>The sender.</returns>
         public ISender GetSender()
         {
-            var sender = new ManualChannelSender();
-
-            return AddSender(sender);
+            return mAgent.GetSender();
         }
 
-        /// <summary>
-        /// This method adds a listener to the bridge.
-        /// </summary>
-        /// <returns>The listener.</returns>
-        protected IListener AddListener(ManualChannelListener listener)
-        {
-            mListeners.Add(listener);
-
-            return listener;
-        }
-
-
-        /// <summary>
-        /// This method adds a sender to the bridge.
-        /// </summary>
-        /// <returns>The sender.</returns>
-        protected ISender AddSender(ManualChannelSender sender)
-        {
-            sender.OnProcess += Sender_OnProcess;
-            mSenders.Add(sender);
-
-            return sender;
-        }
-
-
-        private void Sender_OnProcess(object sender, TransmissionPayload e)
-        {
-            if (mListeners.Count == 0)
-                return;
-
-            long count = Interlocked.Increment(ref mSendCount);
-
-            switch (Mode)
-            {
-                case CommunicationBridgeMode.RoundRobin:
-                    Sender_TransmitRoundRobin(e, count);
-                    break;
-                case CommunicationBridgeMode.Broadcast:
-                    Sender_TransmitBroadcast(e, count);
-                    break;
-            }
-        }
-
-        private void Sender_TransmitRoundRobin(TransmissionPayload e, long count)
-        {
-            int position = (int)(count % mListeners.Count);
-
-            ((ManualChannelListener)mListeners[position]).Inject(PayloadCopy(e));
-        }
-
-        private void Sender_TransmitBroadcast(TransmissionPayload e, long count)
-        {
-            
-            for(int c = 0; c< mListeners.Count; c++)
-                ((ManualChannelListener)mListeners[c]).Inject(PayloadCopy(e));
-        }
-
-        /// <summary>
-        /// This method seperates the payloads so that they are different objects.
-        /// </summary>
-        /// <param name="inPayload">The incoming payload.</param>
-        /// <returns>Returns a new payload.</returns>
-        private TransmissionPayload PayloadCopy(TransmissionPayload inPayload)
-        {
-            //First clone the service message.
-            byte[] data = mSerializer.Serialize(inPayload.Message);
-
-            ServiceMessage clone = mSerializer.Deserialize<ServiceMessage>(data);
-
-            return new TransmissionPayload(clone);
-        }
     }
 }

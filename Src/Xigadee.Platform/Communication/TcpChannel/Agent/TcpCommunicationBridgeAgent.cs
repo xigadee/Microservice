@@ -23,18 +23,18 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This is the base event class for the Api Boundary Event logger.
+    /// This agent uses the Tcp communication to link Microservice applications.
     /// </summary>
-    public abstract class ApiBoundaryEvent: BoundaryEvent
+    public class TcpCommunicationBridgeAgent : CommunicationBridgeAgent
     {
-        /// <summary>
-        /// This is the base constructor.
-        /// </summary>
-        /// <param name="Direction">The event direction.</param>
-        public ApiBoundaryEvent(ChannelDirection Direction)
+        public override IListener GetListener()
         {
-            this.Direction = Direction;
-            Type = BoundaryEventType.Boundary;
+            throw new NotImplementedException();
+        }
+
+        public override ISender GetSender()
+        {
+            throw new NotImplementedException();
         }
     }
 }

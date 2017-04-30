@@ -19,16 +19,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage.Auth;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This static class contains config shortcuts for web api logging.
+    /// </summary>
     public static class ConfigWebApiHelperLogging
     {
+        /// <summary>
+        /// This is the shortcut key for WebLogFilterLevels.
+        /// </summary>
         [ConfigSettingKey("WebApiLogging")]
         public const string KeyWebLogFilterLevels = "WebLogFilterLevels";
         /// <summary>
-        /// Blob logging filter level
+        /// This is the shortcut key for WebApiLogging.
         /// </summary>
         [ConfigSetting("WebApiLogging")]
         public static IList<string> WebLogFilterLevels(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyWebLogFilterLevels, "All")?.Split(',').ToList() ?? new List<string>();

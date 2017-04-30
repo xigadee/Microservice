@@ -22,13 +22,36 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This is the base abstract class used to implement different communication technologies.
+    /// </summary>
     public abstract class CommunicationBridgeAgent
     {
-        CommunicationBridgeMode mMode = CommunicationBridgeMode.RoundRobin;
+        /// <summary>
+        /// This is the communiciation bridge mode.
+        /// </summary>
+        protected CommunicationBridgeMode mMode = CommunicationBridgeMode.RoundRobin;
 
+        /// <summary>
+        /// This method sets the operating mode. Override this if you wish to restict the modes that are supported.
+        /// </summary>
+        /// <param name="mode">The communication bridge mode.</param>
         public virtual void SetMode(CommunicationBridgeMode mode)
         {
             mMode = mode;
         }
+
+        /// <summary>
+        /// This method returns a new listener.
+        /// </summary>
+        /// <returns>The listener.</returns>
+        public abstract IListener GetListener();
+
+        /// <summary>
+        /// This method returns a new sender.
+        /// </summary>
+        /// <returns>The sender.</returns>
+        public abstract ISender GetSender();
+
     }
 }

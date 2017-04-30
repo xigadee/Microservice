@@ -106,6 +106,7 @@
     <Compile Include="Communication\Pipeline\Add\AddChannelBroadcast.cs" />
     <Compile Include="Communication\Pipeline\ChannelPipelineBroadcast.cs" />
     <Compile Include="Communication\Pipeline\Exceptions\ChannelDoesNotExistException.cs" />
+    <Compile Include="Communication\TcpChannel\Agent\TcpCommunicationBridgeAgent.cs" />
     <Compile Include="Communication\TcpChannel\Configuration\TcpTlsConfigurationHelper.cs" />
     <Compile Include="Communication\TcpChannel\Helper\DirectChannelCommunicator.cs" />
     <Compile Include="Communication\TcpChannel\Pipeline\AttachTcpTlsListener.cs" />
@@ -135,7 +136,6 @@
     <Compile Include="DataCollection\DataCollector\DataCollectorBase.cs" />
     <Compile Include="DataCollection\DataCollector\DataCollectorPolicy.cs" />
     <Compile Include="DataCollection\Events\Base\EventHolder.cs" />
-    <Compile Include="DataCollection\Events\BoundaryEventBase.cs" />
     <Compile Include="DataCollection\Events\ResourceEvent.cs" />
     <Compile Include="DataCollection\DataCollectionSupport.cs" />
     <Compile Include="DataCollection\DataCollector\DataCollectorStatistics.cs" />
