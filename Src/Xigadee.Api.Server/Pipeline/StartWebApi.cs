@@ -17,6 +17,7 @@
 using System;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Linq;
 using Owin;
 
 namespace Xigadee
@@ -37,6 +38,10 @@ namespace Xigadee
             app.UseWebApi(webpipe.HttpConfig);
 
             webpipe.HttpConfig.EnsureInitialized();
+
+            webpipe.HttpConfig.Filters
+                .Where((f) => f.Instance is IRequireMicroserviceConnection)
+                .ForEach((f) => ((IRequireMicroserviceConnection)f.Instance).Microservice = webpipe.ToMicroservice());            
 
             Task.Run(() => webpipe.Start());
         }  

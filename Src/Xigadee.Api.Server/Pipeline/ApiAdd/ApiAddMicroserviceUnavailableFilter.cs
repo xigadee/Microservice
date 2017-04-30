@@ -31,7 +31,6 @@ namespace Xigadee
             var filter = new WebApiServiceUnavailableFilter();
 
             webpipe.HttpConfig.Filters.Add(filter);
-            webpipe.Service.StatusChanged += (object sender, StatusChangedEventArgs e) => filter.StatusCurrent = e.StatusNew;
 
             return webpipe;
         }

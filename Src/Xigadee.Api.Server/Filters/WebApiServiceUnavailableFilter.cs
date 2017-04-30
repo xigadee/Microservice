@@ -30,7 +30,7 @@ namespace Xigadee
     /// <summary>
     /// This auth filter is used to stop requests from being processed when the system is not fully started.
     /// </summary>
-    public class WebApiServiceUnavailableFilter: IAuthorizationFilter
+    public class WebApiServiceUnavailableFilter: IAuthorizationFilter, IRequireMicroserviceConnection
     {
         /// <summary>
         /// This is the default constructor.
@@ -38,14 +38,9 @@ namespace Xigadee
         /// <param name="retryInSeconds">The default retry time in seconds.</param>
         public WebApiServiceUnavailableFilter(int retryInSeconds = 10)
         {
-            StatusCurrent = ServiceStatus.Stopped;
             RetryInSeconds = retryInSeconds;
         }
 
-        /// <summary>
-        /// The current server status.
-        /// </summary>
-        public ServiceStatus StatusCurrent { get; set; }
         /// <summary>
         /// The default retry time in seconds.
         /// </summary>
@@ -62,15 +57,31 @@ namespace Xigadee
             }
         }
 
+        /// <summary>
+        /// This is the filter Microservice link.
+        /// </summary>
+        public IMicroservice Microservice { get; set; }
+
+        /// <summary>
+        /// This method is called when the incoming request is executed.
+        /// </summary>
+        /// <param name="actionContext">The action context.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="continuation">The continuation function.</param>
+        /// <returns>Returns a response message based on the current Microservice status.</returns>
         public async Task<HttpResponseMessage> ExecuteAuthorizationFilterAsync(
             HttpActionContext actionContext, CancellationToken cancellationToken, Func<Task<HttpResponseMessage>> continuation)
         {
-            if (StatusCurrent == ServiceStatus.Running)
+            var status = Microservice?.Status ?? ServiceStatus.Faulted;
+
+            //Ok, the service is running, so keep going.
+            if (status == ServiceStatus.Running)
                 return await continuation();
 
+            //Service has not yet started, so returns a service unavailable response.
             var request = actionContext.Request;
             HttpResponseMessage response = request.CreateResponse(HttpStatusCode.ServiceUnavailable);
-            response.ReasonPhrase = $"Status: {StatusCurrent.ToString()}";
+            response.ReasonPhrase = $"Status: {status.ToString()}";
 
             if (RetryInSeconds.HasValue)
                 response.Headers.Add("Retry-After", RetryInSeconds.Value.ToString());

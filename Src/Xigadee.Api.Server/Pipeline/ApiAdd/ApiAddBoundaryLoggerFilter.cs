@@ -36,14 +36,14 @@ namespace Xigadee
         /// <param name="addToClaimsPrincipal">Specifies whether the correlation id should be added to the claims principal. The default is yes.</param>
         /// <returns></returns>
         public static P ApiAddBoundaryLoggerFilter<P>(this P webpipe
-            , WebApiBoundaryLoggingFilter.LoggingFilterLevel level = WebApiBoundaryLoggingFilter.LoggingFilterLevel.All
+            , ApiBoundaryLoggingFilterLevel level = ApiBoundaryLoggingFilterLevel.All
             , string correlationIdKey = "X-CorrelationId"
             , bool addToClaimsPrincipal = true)
             where P : IPipelineWebApi
         {
             var ms = webpipe.ToMicroservice();
 
-            var filter = new WebApiBoundaryLoggingFilter(ms, level, correlationIdKey, addToClaimsPrincipal);
+            var filter = new WebApiBoundaryLoggingFilter(level, correlationIdKey, addToClaimsPrincipal);
 
             webpipe.HttpConfig.Filters.Add(filter);
 

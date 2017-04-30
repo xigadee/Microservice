@@ -19,18 +19,18 @@ namespace Xigadee
 
         public Guid? Id { get; set; }
 
-        public Exception Ex { get; set; }
+        public virtual Exception Ex { get; set; }
 
         public TransmissionPayload Payload { get; set; }
 
-        public Guid? BatchId { get; set; }
+        public virtual Guid? BatchId { get; set; }
 
         public int Requested { get; set; }
 
         public int Actual { get; set; }
 
-        public string ChannelId { get; set; }
+        public virtual string ChannelId { get; set; }
 
-        public int ChannelPriority { get; set; }
+        public virtual int ChannelPriority { get; set; }
     }
 }

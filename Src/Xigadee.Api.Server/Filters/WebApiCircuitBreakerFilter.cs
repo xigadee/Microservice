@@ -39,7 +39,12 @@ namespace Xigadee
     /// with downstream resources.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
-    public class WebApiCircuitBreakerFilterAttribute: ActionFilterAttribute
+    public class WebApiCircuitBreakerFilterAttribute: ActionFilterAttribute,IRequireMicroserviceConnection
     {
+        public WebApiCircuitBreakerFilterAttribute()
+        {
+        }
+
+        public IMicroservice Microservice { get; set; }
     }
 }

@@ -36,34 +36,18 @@ namespace Xigadee
     /// <summary>
     /// This class logs the incoming API requests and subsequent responses to the Azure Storage container.
     /// </summary>
-    public class WebApiBoundaryLoggingFilter : WebApiCorrelationIdFilter
+    public class WebApiBoundaryLoggingFilter : WebApiCorrelationIdFilter, IRequireMicroserviceConnection
     {
-        #region LoggingFilterLevel
-        /// <summary>
-        /// This is the logging level.
-        /// </summary>
-        [Flags]
-        public enum LoggingFilterLevel
-        {
-            /// <summary>
-            /// No logging of any information.
-            /// </summary>
-            None = 0,
 
-            Exception = 1,
-            Request = 2,
-            Response = 4,
-            RequestContent = 8,
-            ResponseContent = 16,
-
-            All = 31
-        }
-        #endregion
         #region Declarations
-        private readonly LoggingFilterLevel mLevel;
-
-        private readonly IMicroservice mMs;
+        private readonly ApiBoundaryLoggingFilterLevel mLevel;
         #endregion
+
+        /// <summary>
+        /// This is the reference to the Microservice.
+        /// </summary>
+        public IMicroservice Microservice { get; set; }
+
         #region Constructor
         /// <summary>
         /// This filter can be used to log filtered incoming and outgoing Api messages and payloads to the Xigadee DataCollection infrastructure.
@@ -72,85 +56,43 @@ namespace Xigadee
         /// <param name="correlationIdKeyName">The keyname for the correlation id. By default this is X-CorrelationId</param>
         /// <param name="level">The logging level</param>
         /// <param name="addToClaimsPrincipal">Specifies whether the correlation Id should be added to the claims principal</param>
-        public WebApiBoundaryLoggingFilter(IMicroservice ms
-            , LoggingFilterLevel level = LoggingFilterLevel.All
+        public WebApiBoundaryLoggingFilter(ApiBoundaryLoggingFilterLevel level = ApiBoundaryLoggingFilterLevel.All
             , string correlationIdKeyName = "X-CorrelationId"
             , bool addToClaimsPrincipal = true) : base(correlationIdKeyName, addToClaimsPrincipal)
         {
-            if (ms == null)
-                throw new ArgumentNullException("ms","The Microservice cannot be null.");
-
-            mMs = ms;
-
             mLevel = level;
         }
         #endregion
 
+        /// <summary>
+        /// This override logs the incoming and outgoing transaction to the Microservice Data Collector.
+        /// </summary>
+        /// <param name="actionExecutedContext">The context.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Returns the pass through task.</returns>
         public override async Task OnActionExecutedAsync(HttpActionExecutedContext actionExecutedContext, CancellationToken cancellationToken)
         {
-            var tasks = new List<Task>
+            if (Microservice != null && mLevel > ApiBoundaryLoggingFilterLevel.None)
             {
-                base.OnActionExecutedAsync(actionExecutedContext, cancellationToken)
-            };
-
-            if (mLevel > LoggingFilterLevel.None)
-            {
-                var request = actionExecutedContext.Response.RequestMessage;
-                var response = actionExecutedContext.Response;
-                var exception = actionExecutedContext.Exception;
-                var principal = actionExecutedContext.ActionContext.RequestContext.Principal;
-                var folder = DateTime.UtcNow.ToString("yyyy-MM-dd/HH/mm");
+                var bEvent = new ApiBoundaryEvent(actionExecutedContext, ChannelDirection.Incoming, mLevel);
 
                 // Retrieve the correlation id from the request and add to the response
-                IEnumerable<string> correlationValues;
-                string correlationId = null;
-                if (request.Headers.TryGetValues(mCorrelationIdKeyName, out correlationValues))
-                    correlationId = correlationValues.FirstOrDefault();
+                IEnumerable<string> correlationValuesin;
+                if (actionExecutedContext.Request.Headers.TryGetValues(mCorrelationIdKeyName, out correlationValuesin))
+                    bEvent.CorrelationId = correlationValuesin.FirstOrDefault();
 
-                if (!string.IsNullOrEmpty(correlationId))
-                    response.Headers.Add(mCorrelationIdKeyName, correlationId);
+                if (!string.IsNullOrEmpty(bEvent.CorrelationId))
+                {
+                    IEnumerable<string> correlationValuesOut;
+                    if (actionExecutedContext.Response.Headers.TryGetValues(mCorrelationIdKeyName, out correlationValuesOut))
+                        bEvent.CorrelationId = correlationValuesOut.FirstOrDefault();
+                }
 
-                //var refDirectory = mEntityContainer.GetDirectoryReference(folder);
-                //var refEntityDirectory =
-                //    refDirectory.GetDirectoryReference(FormatDirectoryName(correlationId, principal, request.Method, response));
-
-                //if ((mLevel & LoggingFilterLevel.Exception) > 0 && exception != null)
-                //    tasks.Add(UploadBlob(refEntityDirectory, exception, $"{correlationId}.exception.json", cancellationToken));
-
-                //if ((mLevel & LoggingFilterLevel.Request) > 0)
-                //    tasks.Add(UploadBlob(refEntityDirectory, new HttpRequestWrapper(request, principal),
-                //        $"{correlationId}.request.json", cancellationToken));
-
-                //if ((mLevel & LoggingFilterLevel.Response) > 0)
-                //    tasks.Add(UploadBlob(refEntityDirectory, new HttpResponseWrapper(response),
-                //        $"{correlationId}.response.json", cancellationToken));
-
-                //if ((mLevel & LoggingFilterLevel.RequestContent) > 0)
-                //    tasks.Add(UploadContentBlob(refEntityDirectory, request.Content,
-                //        $"{correlationId}.request.content", cancellationToken));
-
-                //if ((mLevel & LoggingFilterLevel.ResponseContent) > 0)
-                //    tasks.Add(UploadContentBlob(refEntityDirectory, response.Content,
-                //        $"{correlationId}.response.content", cancellationToken));
+                Microservice.DataCollection.Write(bEvent);
             }
 
-            await Task.WhenAll(tasks);
+            await base.OnActionExecutedAsync(actionExecutedContext, cancellationToken);
         }
-
-
-        private static string FormatDirectoryName(string correlationId, IPrincipal principal, HttpMethod requestMethod, HttpResponseMessage responseMessage)
-        {
-            var directoryName = "UNKNOWN";
-            if (principal != null)
-            {
-                var apimIdentity = principal.Identity as ApimIdentity;
-                if (!string.IsNullOrEmpty(apimIdentity?.Source))
-                    directoryName = $"{apimIdentity.Source}.";
-            }
-
-            // CMS/GET.200.05.04785AB98F8843C7BC972F27CF1E5C68
-            return $"{directoryName}/{requestMethod}.{(responseMessage != null ? (int)responseMessage.StatusCode : 0)}.{DateTime.UtcNow.ToString("ss")}.{correlationId}";
-        }
-
     }
+
 }
