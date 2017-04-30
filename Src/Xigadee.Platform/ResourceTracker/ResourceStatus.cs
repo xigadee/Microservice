@@ -28,8 +28,11 @@ namespace Xigadee
     public class ResourceStatus
     {
         public string Name { get; set; }
-        public bool CircuitBreakerActive { get; set; }
+
+        public CircuitBreakerState State { get; set; } = CircuitBreakerState.Closed;
 
         public int? RetryInSeconds { get; set; }
+
+        public int FilterPercentage { get; set; } = 100;
     }
 }

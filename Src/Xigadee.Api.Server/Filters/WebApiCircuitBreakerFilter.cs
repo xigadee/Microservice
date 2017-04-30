@@ -41,6 +41,7 @@ namespace Xigadee
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
     public class WebApiCircuitBreakerFilterAttribute: ActionFilterAttribute
     {
+        protected readonly Random mRand = new Random(Environment.TickCount);
         /// <summary>
         /// This is the profile Id for the resource we wish to track.
         /// </summary>
@@ -69,30 +70,38 @@ namespace Xigadee
         {
             var ms = actionContext.ToMicroservice();
 
-            if (ms != null)
+            ResourceStatus status = ms?.ResourceMonitor.ResourceStatusGet(mResourceProfileId);
+
+            switch (status?.State ?? CircuitBreakerState.Closed)
             {
-                var status = ms.ResourceMonitor.ResourceStatusGet(mResourceProfileId);
-
-                if (status != null && status.CircuitBreakerActive)
-                {
-                    var request = actionContext.Request;
-                    HttpResponseMessage response = request.CreateResponse((HttpStatusCode)429);
-
-                    if (mDiscloseProfileId)
-                        response.ReasonPhrase = $"Too many requests. Circuit breaker thrown for {mResourceProfileId}";
-                    else
-                        response.ReasonPhrase = $"Too many requests.";
-
-                    if (status.RetryInSeconds.HasValue)
-                        response.Headers.Add("Retry-After", status.RetryInSeconds.Value.ToString());
-
-                    actionContext.Response = response;
-
+                case CircuitBreakerState.Closed: //Closed: so keep executing
+                    break;
+                case CircuitBreakerState.HalfOpen:// Check the probability function to randomly let some messages through, this is based on a 0-100% filter. 
+                    if (mRand.Next(0,100) <= status.FilterPercentage)
+                        break;
+                    actionContext.Response = GenerateRequest(status, actionContext.Request);
                     return;
-                }
-            }
-
+                case CircuitBreakerState.Open: //Return a 429 error
+                    actionContext.Response = GenerateRequest(status, actionContext.Request);
+                    return;
+            }      
+            
             await base.OnActionExecutingAsync(actionContext, cancellationToken);
+        }
+
+        private HttpResponseMessage GenerateRequest(ResourceStatus status, HttpRequestMessage request)
+        {
+            HttpResponseMessage response = request.CreateResponse((HttpStatusCode)429);
+
+            if (mDiscloseProfileId)
+                response.ReasonPhrase = $"Too many requests. Circuit breaker thrown for {mResourceProfileId}";
+            else
+                response.ReasonPhrase = $"Too many requests.";
+
+            if (status.RetryInSeconds.HasValue)
+                response.Headers.Add("Retry-After", status.RetryInSeconds.Value.ToString());
+
+            return response;
         }
     }
 }
