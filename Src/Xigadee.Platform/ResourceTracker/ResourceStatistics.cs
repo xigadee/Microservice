@@ -193,14 +193,25 @@ namespace Xigadee
         }
         #endregion
 
+        #region ToResourceStatus()
         /// <summary>
         /// This method converts the current statistics in to a status snapshot.
         /// </summary>
         /// <returns>The current status.</returns>
         public ResourceStatus ToResourceStatus()
         {
-            return new ResourceStatus() { Name = this.Name };
-        }
+            var rs = new ResourceStatus() { Name = Name, FilterPercentage = (int)(RateLimitAdjustmentPercentage*100) };
+
+            if (rs.FilterPercentage == 0)
+                rs.State = CircuitBreakerState.Open;
+            else if (rs.FilterPercentage < 100)
+                rs.State = CircuitBreakerState.HalfOpen;
+            else
+                rs.State = CircuitBreakerState.Closed;
+
+            return rs;
+        } 
+        #endregion
     }
 
     /// <summary>

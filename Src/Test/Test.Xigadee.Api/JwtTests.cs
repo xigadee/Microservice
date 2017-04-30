@@ -176,7 +176,7 @@ namespace Test.Xigadee.Api
             return new[] { "hello", "world" };
         }
 
-        [WebApiCircuitBreakerFilter("Jeremy")]
+        [WebApiCircuitBreakerFilter("Resource1")]
         public string Get(int id)
         {
             if (Thread.CurrentPrincipal.IsInRole(JwtTests.Role))

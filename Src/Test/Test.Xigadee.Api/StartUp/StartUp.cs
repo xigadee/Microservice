@@ -31,6 +31,8 @@ namespace Test.Xigadee.Api
                 .ApiAddMicroserviceUnavailableFilter()
                 .ApiAddJwtTokenAuthentication(JwtHashAlgorithm.HS256, mSecret, audience: JwtTests.Audience)
                 .ApiAddCorrelationIdFilter()
+                //.AddChannelIncoming("Incoming")
+                //    .AttachPersistenceManagerHandlerMemory((ResourceEvent ev) => ev.Name, (s) => s, resourceProfile: "Resource1")
                 ;
 
             webpipe.StartWebApi(app);
