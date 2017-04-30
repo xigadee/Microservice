@@ -27,6 +27,9 @@ namespace Xigadee
     /// </summary>
     public class ResourceStatus
     {
+        public string Name { get; set; }
         public bool CircuitBreakerActive { get; set; }
+
+        public int? RetryInSeconds { get; set; }
     }
 }

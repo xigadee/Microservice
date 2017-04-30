@@ -190,8 +190,17 @@ namespace Xigadee
                 return;
 
             outValue.RetrySignal(delta, reason);
-        } 
+        }
         #endregion
+
+        /// <summary>
+        /// This method converts the current statistics in to a status snapshot.
+        /// </summary>
+        /// <returns>The current status.</returns>
+        public ResourceStatus ToResourceStatus()
+        {
+            return new ResourceStatus() { Name = this.Name };
+        }
     }
 
     /// <summary>

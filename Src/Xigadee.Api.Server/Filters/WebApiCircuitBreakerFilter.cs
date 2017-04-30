@@ -46,12 +46,18 @@ namespace Xigadee
         /// </summary>
         protected readonly string mResourceProfileId;
         /// <summary>
+        /// This property specifies whether the profile id that has caused the error is disclosed in the HTTP response.
+        /// </summary>
+        protected readonly bool mDiscloseProfileId;
+        /// <summary>
         /// This is the default constructor.
         /// </summary>
         /// <param name="resourceProfileId">The resource id.</param>
-        public WebApiCircuitBreakerFilterAttribute(string resourceProfileId)
+        /// <param name="discloseProfileId">This property specifies whether the profile id that has caused the error is disclosed in the HTTP response.</param>
+        public WebApiCircuitBreakerFilterAttribute(string resourceProfileId, bool discloseProfileId = true)
         {
             mResourceProfileId = resourceProfileId;
+            mDiscloseProfileId = discloseProfileId;
         }
         /// <summary>
         /// This method is called before the method is executed to verify that the resource is available.
@@ -71,10 +77,14 @@ namespace Xigadee
                 {
                     var request = actionContext.Request;
                     HttpResponseMessage response = request.CreateResponse((HttpStatusCode)429);
-                    response.ReasonPhrase = $"Too many requests. Circuit breaker thrown.";
 
-                    //if (RetryInSeconds.HasValue)
-                    //    response.Headers.Add("Retry-After", RetryInSeconds.Value.ToString());
+                    if (mDiscloseProfileId)
+                        response.ReasonPhrase = $"Too many requests. Circuit breaker thrown for {mResourceProfileId}";
+                    else
+                        response.ReasonPhrase = $"Too many requests.";
+
+                    if (status.RetryInSeconds.HasValue)
+                        response.Headers.Add("Retry-After", status.RetryInSeconds.Value.ToString());
 
                     actionContext.Response = response;
 

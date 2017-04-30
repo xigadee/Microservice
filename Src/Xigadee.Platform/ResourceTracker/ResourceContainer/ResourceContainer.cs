@@ -209,10 +209,20 @@ namespace Xigadee
             }
         }
         #endregion
-
+        #region ResourceStatusGet(string name)
+        /// <summary>
+        /// This method returns the status for a specific resource.
+        /// </summary>
+        /// <param name="name">The resource name.</param>
+        /// <returns>Returns a ResourceStatus object, or null if the status is not found.</returns>
         public ResourceStatus ResourceStatusGet(string name)
         {
-            return null;
-        }
+            ResourceStatistics stats;
+            if (!mResources.TryGetValue(name, out stats))
+                return null;
+
+            return stats.ToResourceStatus();
+        } 
+        #endregion
     }
 }
