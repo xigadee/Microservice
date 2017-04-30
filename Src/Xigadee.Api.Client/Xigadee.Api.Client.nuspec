@@ -22,8 +22,11 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\Release\Xigadee*.dll" target="lib\net46\" />
-    <file src="bin\Release\Xigadee*.pdb" target="lib\net46\" />
-    <file src="bin\Release\Xigadee*.xml" target="lib\net46\" />
+    <file src="bin\Release\Xigadee.Api.dll" target="lib\net46\" />
+    <file src="bin\Release\Xigadee.Api.pdb" target="lib\net46\" />
+    <file src="bin\Release\Xigadee.Api.xml" target="lib\net46\" />
+    <file src="bin\Release\Xigadee.Api.Client.dll" target="lib\net46\" />
+    <file src="bin\Release\Xigadee.Api.Client.pdb" target="lib\net46\" />
+    <file src="bin\Release\Xigadee.Api.Client.xml" target="lib\net46\" />
   </files>
 </package>

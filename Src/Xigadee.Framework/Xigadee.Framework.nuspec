@@ -22,8 +22,8 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\Release\Xigadee*.dll" target="lib\net46\" />
-    <file src="bin\Release\Xigadee*.pdb" target="lib\net46\" />
-    <file src="bin\Release\Xigadee*.xml" target="lib\net46\" />
+    <file src="bin\Release\Xigadee.Framework.dll" target="lib\net46\" />
+    <file src="bin\Release\Xigadee.Framework.pdb" target="lib\net46\" />
+    <file src="bin\Release\Xigadee.Framework.xml" target="lib\net46\" />
   </files>
 </package>

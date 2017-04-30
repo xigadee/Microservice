@@ -34,8 +34,8 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\Release\Xigadee*.dll" target="lib\net46\" />
-    <file src="bin\Release\Xigadee*.pdb" target="lib\net46\" />
-    <file src="bin\Release\Xigadee*.xml" target="lib\net46\" />
+    <file src="bin\Release\Xigadee.Azure.dll" target="lib\net46\" />
+    <file src="bin\Release\Xigadee.Azure.pdb" target="lib\net46\" />
+    <file src="bin\Release\Xigadee.Azure.xml" target="lib\net46\" />
   </files>
 </package>
