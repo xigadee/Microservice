@@ -38,15 +38,16 @@ namespace Xigadee
     /// </summary>
     public class WebApiBoundaryLoggingFilter : WebApiCorrelationIdFilter, IRequireMicroserviceConnection
     {
-
         #region Declarations
         private readonly ApiBoundaryLoggingFilterLevel mLevel;
         #endregion
 
+        #region Microservice
         /// <summary>
         /// This is the reference to the Microservice.
         /// </summary>
-        public IMicroservice Microservice { get; set; }
+        public IMicroservice Microservice { get; set; } 
+        #endregion
 
         #region Constructor
         /// <summary>
@@ -77,15 +78,17 @@ namespace Xigadee
                 var bEvent = new ApiBoundaryEvent(actionExecutedContext, ChannelDirection.Incoming, mLevel);
 
                 // Retrieve the correlation id from the request and add to the response
-                IEnumerable<string> correlationValuesin;
-                if (actionExecutedContext.Request.Headers.TryGetValues(mCorrelationIdKeyName, out correlationValuesin))
-                    bEvent.CorrelationId = correlationValuesin.FirstOrDefault();
 
-                if (!string.IsNullOrEmpty(bEvent.CorrelationId))
+                IEnumerable<string> correlationValuesOut;
+                if (actionExecutedContext.Response.Headers.TryGetValues(mCorrelationIdKeyName, out correlationValuesOut))
+                    bEvent.CorrelationId = correlationValuesOut.FirstOrDefault();
+
+                //Ok, check the outbound response if the correlation id was not set on the outgoing request.
+                if (string.IsNullOrEmpty(bEvent.CorrelationId))
                 {
-                    IEnumerable<string> correlationValuesOut;
-                    if (actionExecutedContext.Response.Headers.TryGetValues(mCorrelationIdKeyName, out correlationValuesOut))
-                        bEvent.CorrelationId = correlationValuesOut.FirstOrDefault();
+                    IEnumerable<string> correlationValuesin;
+                    if (actionExecutedContext.Request.Headers.TryGetValues(mCorrelationIdKeyName, out correlationValuesin))
+                        bEvent.CorrelationId = correlationValuesin.FirstOrDefault();
                 }
 
                 Microservice.DataCollection.Write(bEvent);
@@ -94,5 +97,4 @@ namespace Xigadee
             await base.OnActionExecutedAsync(actionExecutedContext, cancellationToken);
         }
     }
-
 }

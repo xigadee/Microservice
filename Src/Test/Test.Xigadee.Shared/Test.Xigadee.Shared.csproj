@@ -80,6 +80,7 @@
     <Compile Include="Persistence\PersistenceBlahMemory.cs" />
     <Compile Include="Persistence\PersistenceComplexEntityMemory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tests\PersistenceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Xigadee.Api\Xigadee.Api.csproj">

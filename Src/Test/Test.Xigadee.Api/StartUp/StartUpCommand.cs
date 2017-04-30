@@ -34,6 +34,7 @@ namespace Test.Xigadee.Api
                 .ApiConfig((c) => c.Routes.MapHttpRoute("Default", "api/{controller}/{id}", new { id = RouteParameter.Optional }))
                 .ApiConfig((c) => c.Services.Replace(typeof(IHttpControllerSelector), new BypassCacheSelector(c)))
                 .ApiAddMicroserviceUnavailableFilter()
+                .ApiAddBoundaryLoggerFilter()
                 .ApiAddJwtTokenAuthentication(JwtHashAlgorithm.HS256, mSecret, audience: JwtTests.Audience)
                 .AddChannelIncoming("incoming", internalOnly: true)
                     .AttachCommand(new PersistenceManagerHandlerMemory<Guid, MyStuff>((e) => e.Id, (s) => new Guid(s)))

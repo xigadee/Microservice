@@ -25,11 +25,12 @@ namespace Test.Xigadee.Api
             var webpipe = new WebApiMicroservicePipeline();
 
             webpipe
+                .AddDebugMemoryDataCollector(out mDataCollector)
+                .ApiAddBoundaryLoggerFilter()
                 .ApiConfig((c) => c.Routes.MapHttpRoute("Default", "api/{controller}/{id}", new { id = RouteParameter.Optional }))
                 .ApiAddMicroserviceUnavailableFilter()
                 .ApiAddJwtTokenAuthentication(JwtHashAlgorithm.HS256, mSecret, audience: JwtTests.Audience)
-                .ApiAddBoundaryLoggerFilter()
-                .AddDataCollector((c) => mDataCollector = new DebugMemoryDataCollector())
+                .ApiAddCorrelationIdFilter()
                 ;
 
             webpipe.StartWebApi(app);

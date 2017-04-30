@@ -12,10 +12,8 @@ namespace Test.Xigadee
         {
             try
             {
-                var ms = new MicroservicePipeline();
                 CommandInitiator init;
-
-                ms
+                var ms = new MicroservicePipeline()
                     .AddChannelIncoming("deadletter").Revert()
                     .AddChannelIncoming("freddy")
                         .AttachCommand(new RewriteCommandVerifyFail())

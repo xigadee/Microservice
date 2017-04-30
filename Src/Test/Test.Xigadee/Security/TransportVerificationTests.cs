@@ -35,7 +35,7 @@ namespace Test.Xigadee
                     var p1 = new MicroservicePipeline("Sender")
                         .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
                         .AddAuthenticationHandlerJwtToken("id1", JwtHashAlgorithm.HS256, Encoding.UTF8.GetBytes("My big secret"))
-                        .AddDataCollector((c) => new DebugMemoryDataCollector(), (c) => memp1 = c)
+                        .AddDebugMemoryDataCollector(out memp1)
                         .AddChannelIncoming("cresponse", boundaryLoggingEnabled: true)
                             .AttachListener(bridgein.GetListener())
                             .Revert()
@@ -49,7 +49,7 @@ namespace Test.Xigadee
                     var p2 = new MicroservicePipeline("Receiver")
                         .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
                         .AddAuthenticationHandlerJwtToken("id1", JwtHashAlgorithm.HS256, Encoding.UTF8.GetBytes("My big secret"))
-                        .AddDataCollector((c) => new DebugMemoryDataCollector(), (c) => memp2 = c)
+                        .AddDebugMemoryDataCollector(out memp2)
                         .AddChannelIncoming("crequest", boundaryLoggingEnabled: true)
                             .AttachListener(bridgeOut.GetListener())
                             .AttachTransportPayloadVerification("id1")
@@ -57,6 +57,7 @@ namespace Test.Xigadee
                             .Revert()
                         .AddChannelOutgoing("cresponse", boundaryLoggingEnabled: true)
                             .AttachSender(bridgein.GetSender())
+                            .Revert()
                             ;
 
                     p1.Start();      

@@ -39,12 +39,38 @@ namespace Xigadee
     /// with downstream resources.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
-    public class WebApiCircuitBreakerFilterAttribute: ActionFilterAttribute,IRequireMicroserviceConnection
+    public class WebApiCircuitBreakerFilterAttribute: ActionFilterAttribute, IRequireMicroserviceConnection
     {
-        public WebApiCircuitBreakerFilterAttribute()
+        protected readonly string mResourceProfileId;
+
+        public WebApiCircuitBreakerFilterAttribute(string resourceProfileId)
         {
+            mResourceProfileId = resourceProfileId;
         }
 
+        /// <summary>
+        /// This is the Microservice.
+        /// </summary>
         public IMicroservice Microservice { get; set; }
+
+        public override async Task OnActionExecutingAsync(HttpActionContext actionContext, CancellationToken cancellationToken)
+        {
+            if (Microservice != null)
+            {
+                //Microservice.DataCollection.
+                var request = actionContext.Request;
+                HttpResponseMessage response = request.CreateResponse((HttpStatusCode)429);
+                response.ReasonPhrase = $"Too many requests. Circuit breaker thrown.";
+
+                //if (RetryInSeconds.HasValue)
+                //    response.Headers.Add("Retry-After", RetryInSeconds.Value.ToString());
+
+                actionContext.Response = response;
+
+                return;
+            }
+
+            await base.OnActionExecutingAsync(actionContext, cancellationToken);
+        }
     }
 }
