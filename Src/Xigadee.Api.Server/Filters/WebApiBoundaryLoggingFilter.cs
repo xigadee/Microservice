@@ -36,17 +36,10 @@ namespace Xigadee
     /// <summary>
     /// This class logs the incoming API requests and subsequent responses to the Azure Storage container.
     /// </summary>
-    public class WebApiBoundaryLoggingFilter : WebApiCorrelationIdFilter, IRequireMicroserviceConnection
+    public class WebApiBoundaryLoggingFilter : WebApiCorrelationIdFilter
     {
         #region Declarations
         private readonly ApiBoundaryLoggingFilterLevel mLevel;
-        #endregion
-
-        #region Microservice
-        /// <summary>
-        /// This is the reference to the Microservice.
-        /// </summary>
-        public IMicroservice Microservice { get; set; } 
         #endregion
 
         #region Constructor
@@ -73,7 +66,9 @@ namespace Xigadee
         /// <returns>Returns the pass through task.</returns>
         public override async Task OnActionExecutedAsync(HttpActionExecutedContext actionExecutedContext, CancellationToken cancellationToken)
         {
-            if (Microservice != null && mLevel > ApiBoundaryLoggingFilterLevel.None)
+            var ms = actionExecutedContext.ToMicroservice();
+
+            if (ms != null && mLevel > ApiBoundaryLoggingFilterLevel.None)
             {
                 var bEvent = new ApiBoundaryEvent(actionExecutedContext, ChannelDirection.Incoming, mLevel);
 
@@ -91,7 +86,7 @@ namespace Xigadee
                         bEvent.CorrelationId = correlationValuesin.FirstOrDefault();
                 }
 
-                Microservice.DataCollection.Write(bEvent);
+                ms.DataCollection.Write(bEvent);
             }
 
             await base.OnActionExecutedAsync(actionExecutedContext, cancellationToken);

@@ -19,11 +19,35 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Linq;
 using Owin;
+using System.Web.Http.Controllers;
+using System.Web.Http.Filters;
 
 namespace Xigadee
 {
     public static partial class WebApiExtensionMethods
     {
+        /// <summary>
+        /// This is the key used to reference the Microservice in the HttpConfig Properties.
+        /// </summary>
+        public const string MicroserviceKey = "XigadeeMicroservice";
+
+        /// <summary>
+        /// This extension method retrieves the Microservice from the HttpConfig Properties.
+        /// </summary>
+        public static IMicroservice ToMicroservice(this HttpActionContext actionContext)
+        {
+            object value;
+            actionContext.ControllerContext.Configuration.Properties.TryGetValue(WebApiExtensionMethods.MicroserviceKey, out value);
+            return value as IMicroservice;
+        }
+
+        public static IMicroservice ToMicroservice(this HttpActionExecutedContext actionExecutedContext)
+        {
+            object value;
+            actionExecutedContext.ActionContext.ControllerContext.Configuration.Properties.TryGetValue(WebApiExtensionMethods.MicroserviceKey, out value);
+            return value as IMicroservice;
+        }
+
         /// <summary>
         /// This method can be used to start the web api pipeline using the 
         /// HttpConfiguration embedded in the pipeline.
@@ -39,9 +63,7 @@ namespace Xigadee
 
             webpipe.HttpConfig.EnsureInitialized();
 
-            webpipe.HttpConfig.Filters
-                .Where((f) => f.Instance is IRequireMicroserviceConnection)
-                .ForEach((f) => ((IRequireMicroserviceConnection)f.Instance).Microservice = webpipe.ToMicroservice());            
+            webpipe.HttpConfig.Properties.GetOrAdd(MicroserviceKey, webpipe.ToMicroservice());
 
             Task.Run(() => webpipe.Start());
         }  

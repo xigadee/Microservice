@@ -48,5 +48,12 @@ namespace Xigadee
         /// <param name="profiles">The profiles that we wish to track and combine together.</param>
         /// <returns>Returns the rate limiter.</returns>
         IResourceRequestRateLimiter RegisterRequestRateLimiter(string name, params ResourceProfile[] profiles);
+        /// <summary>
+        /// This method retrieves the current status for the Resource profile.
+        /// </summary>
+        /// <param name="name">The name of the resource.</param>
+        /// <returns>The current status of the resource.</returns>
+        ResourceStatus ResourceStatusGet(string name);
+
     }
 }

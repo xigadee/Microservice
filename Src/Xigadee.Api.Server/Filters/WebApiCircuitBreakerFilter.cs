@@ -39,35 +39,47 @@ namespace Xigadee
     /// with downstream resources.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
-    public class WebApiCircuitBreakerFilterAttribute: ActionFilterAttribute, IRequireMicroserviceConnection
+    public class WebApiCircuitBreakerFilterAttribute: ActionFilterAttribute
     {
+        /// <summary>
+        /// This is the profile Id for the resource we wish to track.
+        /// </summary>
         protected readonly string mResourceProfileId;
-
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="resourceProfileId">The resource id.</param>
         public WebApiCircuitBreakerFilterAttribute(string resourceProfileId)
         {
             mResourceProfileId = resourceProfileId;
         }
-
         /// <summary>
-        /// This is the Microservice.
+        /// This method is called before the method is executed to verify that the resource is available.
         /// </summary>
-        public IMicroservice Microservice { get; set; }
-
+        /// <param name="actionContext">The action context.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Async method.</returns>
         public override async Task OnActionExecutingAsync(HttpActionContext actionContext, CancellationToken cancellationToken)
         {
-            if (Microservice != null)
+            var ms = actionContext.ToMicroservice();
+
+            if (ms != null)
             {
-                //Microservice.DataCollection.
-                var request = actionContext.Request;
-                HttpResponseMessage response = request.CreateResponse((HttpStatusCode)429);
-                response.ReasonPhrase = $"Too many requests. Circuit breaker thrown.";
+                var status = ms.ResourceMonitor.ResourceStatusGet(mResourceProfileId);
 
-                //if (RetryInSeconds.HasValue)
-                //    response.Headers.Add("Retry-After", RetryInSeconds.Value.ToString());
+                if (status != null && status.CircuitBreakerActive)
+                {
+                    var request = actionContext.Request;
+                    HttpResponseMessage response = request.CreateResponse((HttpStatusCode)429);
+                    response.ReasonPhrase = $"Too many requests. Circuit breaker thrown.";
 
-                actionContext.Response = response;
+                    //if (RetryInSeconds.HasValue)
+                    //    response.Headers.Add("Retry-After", RetryInSeconds.Value.ToString());
 
-                return;
+                    actionContext.Response = response;
+
+                    return;
+                }
             }
 
             await base.OnActionExecutingAsync(actionContext, cancellationToken);

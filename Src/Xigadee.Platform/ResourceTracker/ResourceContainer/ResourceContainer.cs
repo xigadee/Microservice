@@ -207,7 +207,12 @@ namespace Xigadee
                     Collector?.Write(re);
                     break;
             }
-        } 
+        }
         #endregion
+
+        public ResourceStatus ResourceStatusGet(string name)
+        {
+            return null;
+        }
     }
 }

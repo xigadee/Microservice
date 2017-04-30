@@ -30,7 +30,7 @@ namespace Xigadee
     /// <summary>
     /// This auth filter is used to stop requests from being processed when the system is not fully started.
     /// </summary>
-    public class WebApiServiceUnavailableFilter: IAuthorizationFilter, IRequireMicroserviceConnection
+    public class WebApiServiceUnavailableFilter: IAuthorizationFilter
     {
         /// <summary>
         /// This is the default constructor.
@@ -58,11 +58,6 @@ namespace Xigadee
         }
 
         /// <summary>
-        /// This is the filter Microservice link.
-        /// </summary>
-        public IMicroservice Microservice { get; set; }
-
-        /// <summary>
         /// This method is called when the incoming request is executed.
         /// </summary>
         /// <param name="actionContext">The action context.</param>
@@ -72,7 +67,9 @@ namespace Xigadee
         public async Task<HttpResponseMessage> ExecuteAuthorizationFilterAsync(
             HttpActionContext actionContext, CancellationToken cancellationToken, Func<Task<HttpResponseMessage>> continuation)
         {
-            var status = Microservice?.Status ?? ServiceStatus.Faulted;
+            var ms = actionContext.ToMicroservice();
+
+            var status = ms?.Status ?? ServiceStatus.Faulted;
 
             //Ok, the service is running, so keep going.
             if (status == ServiceStatus.Running)

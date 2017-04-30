@@ -15,15 +15,18 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
 
 namespace Xigadee
 {
     /// <summary>
-    /// This interface lists the policy options for the Microservice.
+    /// This class contains a brief summary the resource status
     /// </summary>
-    public interface IMicroserviceResourceMonitor: IResourceTracker
+    public class ResourceStatus
     {
-
+        public bool CircuitBreakerActive { get; set; }
     }
 }
