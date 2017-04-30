@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,10 +23,17 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// There is no connection information for the manual channel. This is a null place holder.
+    /// This enumeration specifies the mode used for the bridge.
     /// </summary>
-    public class ManualChannelConnection
+    public enum CommunicationBridgeMode
     {
-        //Not a lot going on here.
+        /// <summary>
+        /// In round robin mode a response message is only sent to a single recipient.
+        /// </summary>
+        RoundRobin,
+        /// <summary>
+        /// In broadcast mode a response message is sent to all recipients.
+        /// </summary>
+        Broadcast
     }
 }

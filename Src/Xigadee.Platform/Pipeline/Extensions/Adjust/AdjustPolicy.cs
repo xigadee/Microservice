@@ -24,67 +24,115 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
+        /// <summary>
+        /// This extension method changes the default Microservice policy.
+        /// </summary>
+        /// <typeparam name="P">The pipeline type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="msAssign">The assignment function.</param>
+        /// <returns>Returns the pipeline</returns>
         public static P AdjustPolicyMicroservice<P>(this P pipeline
-            , Action<MicroservicePolicy> msAssign = null) where P: IPipeline
-
+            , Action<MicroservicePolicy, IEnvironmentConfiguration> msAssign = null) where P: IPipeline
         {
-            msAssign?.Invoke(pipeline.Service.Policy.Microservice);
+            msAssign?.Invoke(pipeline.Service.Policy.Microservice, pipeline.Configuration);
 
             return pipeline;
         }
-
+        /// <summary>
+        /// This extension method changes the default Microservice task manager policy.
+        /// </summary>
+        /// <typeparam name="P">The pipeline type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="msAssign">The assignment function.</param>
+        /// <returns>Returns the pipeline</returns>
         public static P AdjustPolicyTaskManager<P>(this P pipeline
-            , Action<TaskManagerPolicy> msAssign = null) where P: IPipeline
+            , Action<TaskManagerPolicy, IEnvironmentConfiguration> msAssign = null) where P: IPipeline
         {
-            msAssign?.Invoke(pipeline.Service.Policy.TaskManager);
+            msAssign?.Invoke(pipeline.Service.Policy.TaskManager, pipeline.Configuration);
 
             return pipeline;
         }
-
+        /// <summary>
+        /// This extension method changes the default Microservice resource tracking policy.
+        /// </summary>
+        /// <typeparam name="P">The pipeline type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="msAssign">The assignment function.</param>
+        /// <returns>Returns the pipeline</returns>
         public static P AdjustPolicyResourceTracker<P>(this P pipeline
-            , Action<ResourceContainerPolicy> msAssign = null) where P : IPipeline
+            , Action<ResourceContainerPolicy, IEnvironmentConfiguration> msAssign = null) where P : IPipeline
         {
-            msAssign?.Invoke(pipeline.Service.Policy.ResourceTracker);
+            msAssign?.Invoke(pipeline.Service.Policy.ResourceTracker, pipeline.Configuration);
 
             return pipeline;
         }
-
+        /// <summary>
+        /// This extension method changes the default Microservice command container policy.
+        /// </summary>
+        /// <typeparam name="P">The pipeline type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="msAssign">The assignment function.</param>
+        /// <returns>Returns the pipeline</returns>
         public static P AdjustPolicyCommandContainer<P>(this P pipeline
-            , Action<CommandContainerPolicy> msAssign = null) where P : IPipeline
+            , Action<CommandContainerPolicy, IEnvironmentConfiguration> msAssign = null) where P : IPipeline
         {
-            msAssign?.Invoke(pipeline.Service.Policy.CommandContainer);
+            msAssign?.Invoke(pipeline.Service.Policy.CommandContainer, pipeline.Configuration);
 
             return pipeline;
         }
-
+        /// <summary>
+        /// This extension method changes the default Microservice communication policy.
+        /// </summary>
+        /// <typeparam name="P">The pipeline type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="msAssign">The assignment function.</param>
+        /// <returns>Returns the pipeline</returns>
         public static P AdjustPolicyCommunication<P>(this P pipeline
-            , Action<CommunicationPolicy> msAssign = null) where P : IPipeline
+            , Action<CommunicationPolicy, IEnvironmentConfiguration> msAssign = null) where P : IPipeline
         {
-            msAssign?.Invoke(pipeline.Service.Policy.Communication);
+            msAssign?.Invoke(pipeline.Service.Policy.Communication, pipeline.Configuration);
 
             return pipeline;
         }
-
+        /// <summary>
+        /// This extension method changes the default Microservice scheduler policy.
+        /// </summary>
+        /// <typeparam name="P">The pipeline type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="msAssign">The assignment function.</param>
+        /// <returns>Returns the pipeline</returns>
         public static P AdjustPolicyScheduler<P>(this P pipeline
-            , Action<SchedulerPolicy> msAssign = null) where P : IPipeline
+            , Action<SchedulerPolicy, IEnvironmentConfiguration> msAssign = null) where P : IPipeline
         {
-            msAssign?.Invoke(pipeline.Service.Policy.Scheduler);
+            msAssign?.Invoke(pipeline.Service.Policy.Scheduler, pipeline.Configuration);
 
             return pipeline;
         }
-
+        /// <summary>
+        /// This extension method changes the default Microservice security policy.
+        /// </summary>
+        /// <typeparam name="P">The pipeline type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="msAssign">The assignment function.</param>
+        /// <returns>Returns the pipeline</returns>
         public static P AdjustPolicySecurity<P>(this P pipeline
-            , Action<SecurityContainerPolicy> msAssign = null) where P : IPipeline
+            , Action<SecurityContainerPolicy, IEnvironmentConfiguration> msAssign = null) where P : IPipeline
         {
-            msAssign?.Invoke(pipeline.Service.Policy.Security);
+            msAssign?.Invoke(pipeline.Service.Policy.Security, pipeline.Configuration);
 
             return pipeline;
         }
-
+        /// <summary>
+        /// This extension method changes the default Microservice data collection policy.
+        /// </summary>
+        /// <typeparam name="P">The pipeline type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="msAssign">The assignment function.</param>
+        /// <returns>Returns the pipeline</returns>
         public static P AdjustPolicyDataCollection<P>(this P pipeline
-            , Action<DataCollectionPolicy> msAssign = null) where P : IPipeline
+            , Action<DataCollectionPolicy, IEnvironmentConfiguration> msAssign = null) where P : IPipeline
         {
-            msAssign?.Invoke(pipeline.Service.Policy.DataCollection);
+            msAssign?.Invoke(pipeline.Service.Policy.DataCollection, pipeline.Configuration);
 
             return pipeline;
         }

@@ -22,10 +22,9 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// There is no connection information for the manual channel. This is a null place holder.
+    /// This agent uses the manual channel agent for communication.
     /// </summary>
-    public class ManualChannelConnection
+    public class ManualCommunicationBridgeAgent:CommunicationBridgeAgent
     {
-        //Not a lot going on here.
     }
 }

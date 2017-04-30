@@ -20,7 +20,7 @@ namespace Test.Xigadee.Samples
 
                 var p1 = new MicroservicePipeline(nameof(CommandLocal1))
                     .AddDebugMemoryDataCollector(out memp1)
-                    .AdjustPolicyCommunication((p) => p.BoundaryLoggingActiveDefault = true)
+                    .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
                     .AddChannelIncoming("fredo")
                         .AttachCommand(typeof(ITestCommandLocal1), (rq,rsc,pl) =>
                         {

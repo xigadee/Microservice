@@ -33,7 +33,7 @@ namespace Test.Xigadee
                     DebugMemoryDataCollector memp1, memp2;
 
                     var p1 = new MicroservicePipeline("Sender")
-                        .AdjustPolicyCommunication((p) => p.BoundaryLoggingActiveDefault = true)
+                        .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
                         .AddAuthenticationHandlerJwtToken("id1", JwtHashAlgorithm.HS256, Encoding.UTF8.GetBytes("My big secret"))
                         .AddDataCollector((c) => new DebugMemoryDataCollector(), (c) => memp1 = c)
                         .AddChannelIncoming("cresponse", boundaryLoggingEnabled: true)
@@ -47,7 +47,7 @@ namespace Test.Xigadee
                             ;
 
                     var p2 = new MicroservicePipeline("Receiver")
-                        .AdjustPolicyCommunication((p) => p.BoundaryLoggingActiveDefault = true)
+                        .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
                         .AddAuthenticationHandlerJwtToken("id1", JwtHashAlgorithm.HS256, Encoding.UTF8.GetBytes("My big secret"))
                         .AddDataCollector((c) => new DebugMemoryDataCollector(), (c) => memp2 = c)
                         .AddChannelIncoming("crequest", boundaryLoggingEnabled: true)

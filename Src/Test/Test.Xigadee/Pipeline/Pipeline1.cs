@@ -72,7 +72,7 @@ namespace Test.Xigadee
 
                 pipeline
                     .AddDebugMemoryDataCollector(out collector)
-                    .AdjustPolicyTaskManager((t) =>
+                    .AdjustPolicyTaskManager((t, c) =>
                     {
                         t.ConcurrentRequestsMin = 1;
                         t.ConcurrentRequestsMax = 4;

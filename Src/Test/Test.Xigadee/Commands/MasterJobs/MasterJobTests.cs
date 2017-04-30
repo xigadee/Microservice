@@ -45,7 +45,7 @@ namespace Test.Xigadee
                 TestMasterJobCommand mast1 = null, mast2 = null, mast3 = null;
 
                 services.Add("Sender1", new MicroservicePipeline("Sender1")
-                    .AdjustPolicyCommunication((p) => p.BoundaryLoggingActiveDefault = true)
+                    .AdjustPolicyCommunication((p,c) => p.BoundaryLoggingActiveDefault = true)
                     .AddDebugMemoryDataCollector(out memp1)
                     .AddChannelIncoming("local", internalOnly: true)
                         .AttachCommand(mast1 = new TestMasterJobCommand(), assign: release)
@@ -65,7 +65,7 @@ namespace Test.Xigadee
                         );
 
                 services.Add("Sender3", new MicroservicePipeline("Sender3")
-                    .AdjustPolicyCommunication((p) => p.BoundaryLoggingActiveDefault = true)
+                    .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
                     .AddDebugMemoryDataCollector(out memp3)
                     .AddChannelIncoming("local", internalOnly: true)
                         .AttachCommand(mast3 = new TestMasterJobCommand(), assign: release)
@@ -85,7 +85,7 @@ namespace Test.Xigadee
                         );
 
                 services.Add("Receiver2", new MicroservicePipeline("Receiver2")
-                    .AdjustPolicyCommunication((p) => p.BoundaryLoggingActiveDefault = true)
+                    .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
                     .AddDebugMemoryDataCollector(out memp2)
                     .AddChannelIncoming("local", internalOnly: true)
                         .AttachCommand(mast2 = new TestMasterJobCommand(), assign: release)

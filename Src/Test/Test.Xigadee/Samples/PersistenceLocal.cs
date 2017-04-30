@@ -17,7 +17,7 @@ namespace Test.Xigadee.Samples
 
                 var p1 = new MicroservicePipeline(nameof(PersistenceLocal1))
                     .AddDebugMemoryDataCollector(out memp1)
-                    .AdjustPolicyCommunication((p) => p.BoundaryLoggingActiveDefault = true)
+                    .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
                     .AddChannelIncoming("fredo")
                         .AttachPersistenceManagerHandlerMemory(
                             (Sample1 e) => e.Id, (s) => new Guid(s)

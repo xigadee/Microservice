@@ -93,12 +93,14 @@
     <Compile Include="Command\Helper\CommandHolderException.cs" />
     <Compile Include="Command\Pipeline\AssignMasterJob.cs" />
     <Compile Include="Communication\Base\IMessagingService.cs" />
-    <Compile Include="Communication\Manual\Bridge\CommunicationBridge.cs" />
-    <Compile Include="Communication\Manual\Bridge\Interfaces\CommunicationBridgeMode.cs" />
+    <Compile Include="Communication\Bridge\CommunicationBridge.cs" />
+    <Compile Include="Communication\Bridge\CommunicationBridgeAgent.cs" />
+    <Compile Include="Communication\Bridge\CommunicationBridgeMode.cs" />
     <Compile Include="Communication\Channel\ChannelRewriteRule.cs" />
     <Compile Include="Communication\CommunicationContainer_Security.cs" />
     <Compile Include="Communication\Exceptions\MessagingException.cs" />
     <Compile Include="Communication\Exceptions\StartupMessagingException.cs" />
+    <Compile Include="Communication\Manual\Bridge\ManualCommunicationBridgeAgent.cs" />
     <Compile Include="Communication\Manual\Pipeline\AttachManualListener.cs" />
     <Compile Include="Communication\Manual\Pipeline\AttachManualSender.cs" />
     <Compile Include="Communication\Pipeline\Add\AddChannelBroadcast.cs" />

@@ -39,7 +39,7 @@ namespace Test.Xigadee.Azure
                 int signalChange = 0;
 
                 pipeline
-                    .AdjustPolicyTaskManager((t) =>
+                    .AdjustPolicyTaskManager((t, c) =>
                     {
                         t.ConcurrentRequestsMin = 1;
                         t.ConcurrentRequestsMax = 4;
