@@ -22,18 +22,23 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class TcpTlsClientHolder: ClientHolder<TcpConnection, TcpMessage>
+    /// <summary>
+    /// This class holds the TCP/TLS connectivity logic for a particular channel.
+    /// </summary>
+    public class TcpTlsClientHolder : ClientHolder<TcpTlsConnection, TcpTlsMessage>
     {
-
-
+        public TcpTlsClientHolder()
+        {
+                
+        }
         public override Task<List<TransmissionPayload>> MessagesPull(int? count, int? wait, string mappingChannel = null)
         {
             throw new NotImplementedException();
         }
 
-        public override Task Transmit(TransmissionPayload payload, int retry = 0)
+        public override async Task Transmit(TransmissionPayload payload, int retry = 0)
         {
-            throw new NotImplementedException();
+
         }
     }
 }

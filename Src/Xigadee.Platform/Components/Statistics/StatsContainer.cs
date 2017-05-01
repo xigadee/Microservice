@@ -82,7 +82,7 @@ namespace Xigadee
         /// <summary>
         /// This method is used to decrement the active count and submits the processing time.
         /// </summary>
-        /// <param name="delta">The processing time in milliseconds.</param>
+        /// <param name="start">The tick count when the process started.</param>
         public virtual int ActiveDecrement(int start)
         {
             int delta = ConversionHelper.CalculateDelta(Environment.TickCount, start);

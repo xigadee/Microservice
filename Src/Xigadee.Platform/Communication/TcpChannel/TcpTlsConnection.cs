@@ -15,29 +15,27 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections;
+using System.Net;
+using System.Net.Sockets;
+using System.Net.Security;
+using System.Security.Authentication;
 using System.Text;
-using System.Threading.Tasks;
+using System.Security.Cryptography.X509Certificates;
+using System.IO;
 
 namespace Xigadee
 {
-    public class TcpConnection
+    /// <summary>
+    /// This class holds an incoming or outgoing connection.
+    /// </summary>
+    public class TcpTlsConnection
     {
-        public bool IsSecure
+        public TcpTlsConnection()
         {
-            get
-            {
-                return false;
-            }
+
         }
 
-        public bool IsBroadcastMode
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public void Close() { }
     }
 }

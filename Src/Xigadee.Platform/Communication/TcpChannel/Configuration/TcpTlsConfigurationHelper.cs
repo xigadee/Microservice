@@ -11,6 +11,9 @@ namespace Xigadee
     /// </summary>
     public static class TcpTlsConfigurationHelper
     {
+        /// <summary>
+        /// This is teh shortcut key to set the remote Tls connection string.
+        /// </summary>
         [ConfigSettingKey("TcpTls")]
         public const string KeyTcpTlsConnection = "TcpTlsConnection";
 

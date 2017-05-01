@@ -23,26 +23,10 @@ using System.Security.Authentication;
 using System.Text;
 using System.Security.Cryptography.X509Certificates;
 using System.IO;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    public class TcpTlsChannelSender :MessagingSenderBase<TcpTlsConnection, TcpTlsMessage, TcpTlsClientHolder>
+    public class TcpTlsConnectionFactory
     {
-        TcpTlsConnectionFactory mConnectionFactory;
-
-        protected override TcpTlsClientHolder ClientCreate(SenderPartitionConfig partition)
-        {
-            var client = base.ClientCreate(partition);
-
-            client.Type = "TcpTls Sender";
-            client.Name = partition.Priority.ToString();
-
-            return client;
-        }
     }
 }

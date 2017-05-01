@@ -116,6 +116,7 @@
     <Compile Include="Communication\TcpChannel\TcpTlsChannelSender.cs" />
     <Compile Include="Communication\TcpChannel\TcpTlsClientHolder.cs" />
     <Compile Include="Communication\TcpChannel\TcpTlsConnection.cs" />
+    <Compile Include="Communication\TcpChannel\TcpTlsConnectionFactory.cs" />
     <Compile Include="Communication\TcpChannel\TcpTlsMessage.cs" />
     <Compile Include="Communication\TcpChannel\TcpTlsChannelListener.cs" />
     <Compile Include="Communication\Manual\ManualChannelClientHolder.cs" />
@@ -182,6 +183,7 @@
     <Compile Include="Microservice\Wrapper\SerializationWrapper.cs" />
     <Compile Include="Microservice\Wrapper\WrapperBase.cs" />
     <Compile Include="Pipeline\Configuration\ConfigurationClear.cs" />
+    <Compile Include="Pipeline\Extensions\Adjust\AdjustPolicyHelper.cs" />
     <Compile Include="ResourceTracker\ResourceStatus.cs" />
     <Compile Include="Security\AuthenticationHandler\AuthenticationHandlerBase.cs" />
     <Compile Include="Security\AuthenticationHandler\AuthenticationHandlerId.cs" />

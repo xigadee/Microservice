@@ -28,7 +28,7 @@ namespace Xigadee
     public class ManualCommunicationBridgeAgent:CommunicationBridgeAgent
     {
         List<ManualChannelListener> mListeners = new List<ManualChannelListener>();
-        List<ISender> mSenders = new List<ISender>();
+        List<ManualChannelSender> mSenders = new List<ManualChannelSender>();
         long mSendCount = 0;
         JsonContractSerializer mSerializer = new JsonContractSerializer();
 

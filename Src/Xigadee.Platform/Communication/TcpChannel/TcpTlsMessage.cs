@@ -22,10 +22,14 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class TcpMessage
+    /// <summary>
+    /// This class holds an incoming or outgoing message.
+    /// </summary>
+    public class TcpTlsMessage
     {
-        public Dictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
+        public TcpTlsMessage()
+        {
 
-        public byte[] Payload { get; set; }
+        }
     }
 }

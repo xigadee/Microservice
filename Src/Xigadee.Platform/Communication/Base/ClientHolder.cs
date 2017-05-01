@@ -52,21 +52,33 @@ namespace Xigadee
         #endregion
 
         #region Logging
+        /// <summary>
+        /// This method logs the last time a message was enqueued.
+        /// </summary>
+        /// <param name="EnqueuedTimeUTC">The current UTC time.</param>
         public void QueueTimeLog(DateTime? EnqueuedTimeUTC)
         {
             StatisticsInternal.QueueTimeLog(EnqueuedTimeUTC);
         }
 
+        /// <summary>
+        /// This method increments the active messages.
+        /// </summary>
         public void ActiveIncrement()
         {
             StatisticsInternal.ActiveIncrement();
         }
-
-        public void ActiveDecrement(int TickCount)
+        /// <summary>
+        /// This method decrements the active messages.
+        /// </summary>
+        /// <param name="start">The tick count when the process started.</param>
+        public void ActiveDecrement(int start)
         {
-            StatisticsInternal.ActiveDecrement(TickCount);
+            StatisticsInternal.ActiveDecrement(start);
         }
-
+        /// <summary>
+        /// This method increments the error count.
+        /// </summary>
         public void ErrorIncrement()
         {
             StatisticsInternal.ErrorIncrement();
@@ -82,6 +94,14 @@ namespace Xigadee
         /// to a new incoming channel on the same topic.</param>
         /// <returns>Returns a list of transmission for processing.</returns>
         public abstract Task<List<TransmissionPayload>> MessagesPull(int? count, int? wait, string mappingChannel = null);
+
+        /// <summary>
+        /// This method is used to Transmit the payload. You should override this method to insert your own tranmission logic.
+        /// </summary>
+        /// <param name="payload">The payload to transmit.</param>
+        /// <param name="retry">This parameter specifies the number of retries that should be attempted if transmission fails. By default this value is 0.</param>
+        /// <returns></returns>
+        public abstract Task Transmit(TransmissionPayload payload, int retry = 0);
 
         /// <summary>
         /// This boolean property idemtifies whether the client is active and should be polled
@@ -124,13 +144,7 @@ namespace Xigadee
         /// This action stops the client.
         /// </summary>
         public Action Stop { get; set; }
-        /// <summary>
-        /// This method is used to Transmit the payload. You should override this method to insert your own tranmission logic.
-        /// </summary>
-        /// <param name="payload">The payload to transmit.</param>
-        /// <param name="retry">This parameter specifies the number of retries that should be attempted if transmission fails. By default this value is 0.</param>
-        /// <returns></returns>
-        public abstract Task Transmit(TransmissionPayload payload, int retry = 0);
+
         /// <summary>
         /// This method is used to close the client.
         /// </summary>
@@ -140,7 +154,7 @@ namespace Xigadee
         /// </summary>
         public Action<Exception> ClientReset { get; set; }
         /// <summary>
-        /// This method is used to initialise or reinitialise the Azure fabric.
+        /// This method is used to initialise or reinitialise the underlying fabric.
         /// </summary>
         public Action FabricInitialize { get; set; }
         /// <summary>
@@ -201,10 +215,7 @@ namespace Xigadee
         /// <summary>
         /// This is the system wide data collector
         /// </summary>
-        public IDataCollection Collector
-        {
-            get; set;
-        }
+        public IDataCollection Collector{get; set;}
         #endregion
         #region BoundaryLoggingActive
         /// <summary>
@@ -226,7 +237,6 @@ namespace Xigadee
             stats.Filters = Filters;
             stats.IsActive = IsActive;
             stats.Id = this.Id;
-
         }
         #endregion
 
@@ -266,7 +276,7 @@ namespace Xigadee
         /// </summary>
         public Func<int?, int?, Task<IEnumerable<M>>> MessageReceive { get; set; }
         /// <summary>
-        /// This method transmits the message over the specific azure fabric
+        /// This method transmits the message over the specific fabric
         /// </summary>
         public Func<M, Task> MessageTransmit { get; set; }
         /// <summary>

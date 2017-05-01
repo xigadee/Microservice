@@ -15,33 +15,45 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections;
+using System.Net;
+using System.Net.Sockets;
+using System.Net.Security;
+using System.Security.Authentication;
 using System.Text;
-using System.Threading.Tasks;
+using System.Security.Cryptography.X509Certificates;
+using System.IO;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Net.Http;
 
 namespace Xigadee
 {
     /// <summary>
     /// This channel uses the TCP and TLS protocol to communicate between Microservices.
     /// </summary>
-    public class TcpTlsChannelListener: MessagingListenerBase<TcpConnection, TcpMessage, TcpTlsClientHolder>
+    public class TcpTlsChannelListener : MessagingListenerBase<TcpTlsConnection, TcpTlsMessage, TcpTlsClientHolder>
     {
-        public TcpTlsChannelListener()
+        TcpTlsConnectionFactory mConnectionFactory;
+
+        protected override TcpTlsClientHolder ClientCreate(ListenerPartitionConfig partition)
         {
+            var client = base.ClientCreate(partition);
 
-        }
+            client.Type = "TcpTls Listener";
+            client.Name = $"Channel{partition.Priority}";
 
-        public IEnumerable<Uri> Listeners { get; }
+            client.ClientCreate = () =>
+            {
+                return new TcpTlsConnection();
+            };
 
-        protected override void StartInternal()
-        {
-            base.StartInternal();
-        }
+            client.ClientClose = () =>
+            {
+                client.Client.Close();
+            };
 
-        protected override void SettingsValidate()
-        {
-            base.SettingsValidate();
+            return client;
         }
     }
 }

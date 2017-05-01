@@ -15,34 +15,25 @@
 #endregion
 
 using System;
-using System.Collections;
-using System.Net;
-using System.Net.Sockets;
-using System.Net.Security;
-using System.Security.Authentication;
-using System.Text;
-using System.Security.Cryptography.X509Certificates;
-using System.IO;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    public class TcpTlsChannelSender :MessagingSenderBase<TcpTlsConnection, TcpTlsMessage, TcpTlsClientHolder>
+    public static partial class CorePipelineExtensions
     {
-        TcpTlsConnectionFactory mConnectionFactory;
-
-        protected override TcpTlsClientHolder ClientCreate(SenderPartitionConfig partition)
+        /// <summary>
+        /// This extension method changes the default Microservice communication policy.
+        /// </summary>
+        /// <typeparam name="P">The pipeline type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <returns>Returns the pipeline</returns>
+        public static P AdjustPolicyCommunicationBoundaryLoggingActive<P>(this P pipeline) where P : IPipeline
         {
-            var client = base.ClientCreate(partition);
-
-            client.Type = "TcpTls Sender";
-            client.Name = partition.Priority.ToString();
-
-            return client;
+            return pipeline.AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true);
         }
+
     }
 }

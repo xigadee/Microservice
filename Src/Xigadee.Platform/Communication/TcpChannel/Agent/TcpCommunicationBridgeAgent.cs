@@ -27,14 +27,22 @@ namespace Xigadee
     /// </summary>
     public class TcpCommunicationBridgeAgent : CommunicationBridgeAgent
     {
+        List<TcpTlsChannelListener> mListeners = new List<TcpTlsChannelListener>();
+        List<TcpTlsChannelSender> mSenders = new List<TcpTlsChannelSender>();
+
+        public TcpCommunicationBridgeAgent()
+        {
+
+        }
+
         public override IListener GetListener()
         {
-            throw new NotImplementedException();
+            return new TcpTlsChannelListener();
         }
 
         public override ISender GetSender()
         {
-            throw new NotImplementedException();
+            return new TcpTlsChannelSender();
         }
     }
 }

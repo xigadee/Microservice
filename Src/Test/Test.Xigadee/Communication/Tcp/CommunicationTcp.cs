@@ -1,100 +1,79 @@
-﻿//#region Copyright
-//// Copyright Hitachi Consulting
-//// 
-//// Licensed under the Apache License, Version 2.0 (the "License");
-//// you may not use this file except in compliance with the License.
-//// You may obtain a copy of the License at
-//// 
-////    http://www.apache.org/licenses/LICENSE-2.0
-//// 
-//// Unless required by applicable law or agreed to in writing, software
-//// distributed under the License is distributed on an "AS IS" BASIS,
-//// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//// See the License for the specific language governing permissions and
-//// limitations under the License.
-//#endregion
+﻿using System;
+using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xigadee;
 
-//using System;
-//using Microsoft.VisualStudio.TestTools.UnitTesting;
-//using Xigadee;
+namespace Test.Xigadee
+{
+    [Ignore]
+    [TestClass]
+    public class CommunicationBridgeTcp
+    {
+        [TestMethod]
+        public void Tcp1()
+        {
+            try
+            {
+                var bridgeOut = new CommunicationBridge(CommunicationBridgeMode.RoundRobin, new TcpCommunicationBridgeAgent());
+                var bridgein = new CommunicationBridge(CommunicationBridgeMode.Broadcast, new TcpCommunicationBridgeAgent());
 
-//namespace Test.Xigadee
-//{
-//    /// <summary>
-//    /// This is the shared operation contract.
-//    /// </summary>
-//    [Contract(AzureQueue.ChannelIn, "Simple", "Command")]
-//    public interface ITcpSimpleCommand: IMessageContract { }
-//    /// <summary>
-//    /// This is a simple command that receives a string and returns a string.
-//    /// </summary>
-//    public class TcpSimpleCommand: CommandBase, IRequireDataCollector
-//    {
-//        public IDataCollection Collector { get; set; }
+                PersistenceClient<Guid, BridgeMe> init;
+                DebugMemoryDataCollector memp1, memp2;
 
-//        [CommandContract(typeof(ITcpSimpleCommand))]
-//        [return: PayloadOut]
-//        private string Method1([PayloadIn] string inData)
-//        {
-//            Collector.Write(new LogEvent("Hello"), true);
+                var p1 = new MicroservicePipeline("Sender")
+                    .AdjustPolicyCommunicationBoundaryLoggingActive()
+                    .AddDebugMemoryDataCollector(out memp1)
+                    .AddChannelIncoming("cresponse")
+                        .AttachListener(bridgein.GetListener())
+                        .Revert()
+                    .AddChannelOutgoing("crequest")
+                        .AttachSender(bridgeOut.GetSender())
+                        .AttachPersistenceClient("cresponse", out init)
+                        .Revert()
+                        ;
 
-//            return "mom";
-//        }
+                var p2 = new MicroservicePipeline("Receiver")
+                    .AdjustPolicyCommunicationBoundaryLoggingActive()
+                    .AddDebugMemoryDataCollector(out memp2)
+                    .AddChannelIncoming("crequest")
+                        .AttachListener(bridgeOut.GetListener())
+                        .AttachPersistenceManagerHandlerMemory((BridgeMe e) => e.Id, (s) => new Guid(s))
+                        .Revert()
+                    .AddChannelOutgoing("cresponse")
+                        .AttachSender(bridgein.GetSender())
+                        ;
 
-//    }
+                p2.ToMicroservice().Events.ExecuteBegin += CommunicationBridgeTests_OnExecuteBegin;
+                p1.Start();
+                p2.Start();
 
-//    [TestClass]
-//    public class AzureQueue
-//    {
-//        public const string ChannelIn = "remote";
+                int check1 = p1.ToMicroservice().Commands.Count();
+                int check2 = p2.ToMicroservice().Commands.Count();
 
-//        [TestMethod]
-//        public void TestMethod1()
-//        {
-//            CommandInitiator init;
+                var entity = new BridgeMe() { Message = "Momma" };
+                var rs = init.Create(entity, new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
+                var rs2 = init.Read(entity.Id).Result;
 
-//            try
-//            {
-//                var sender = new MicroservicePipeline("initiator")
-//                    //.ConfigurationOverrideSet(AzureExtensionMethods.KeyServiceBusConnection, SbConn)
-//                    .AddChannelOutgoing("remote")
-//                    .Revert()
-                    
-//                        //.AttachTcpTlsSender()
-//                    .AddChannelIncoming("response")
-//                        //.AttachTcpTlsBroadcastListener(listenOnOriginatorId: true)
-//                        .AttachCommandInitiator(out init)
-//                    ;
+                Assert.IsTrue(rs2.IsSuccess);
+                Assert.IsTrue(rs2.Entity.Message == "Momma");
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
 
-//                var listener = new MicroservicePipeline("responder")
-//                    //.ConfigurationOverrideSet(AzureExtensionMethods.KeyServiceBusConnection, SbConn)
-//                    .AddChannelIncoming("remote")
-//                        //.AttachTcpTlsListener()
-//                        .AttachCommand(new TcpSimpleCommand())
-//                        .Revert()
-//                    .AddChannelOutgoing("response")
-//                        //.AttachTcpTlsBroadcastSender()
-//                    ;
+        private void CommunicationBridgeTests_OnExecuteBegin(object sender, Microservice.TransmissionPayloadState e)
+        {
 
-//                listener.Start();
+        }
 
-//                sender.Start();
+        public class BridgeMe
+        {
+            public Guid Id { get; set; } = Guid.NewGuid();
 
-//                var rs = init.Process<ITcpSimpleCommand, string, string>("hello")?.Result;
+            public string Message { get; set; }
+        }
 
-//                Assert.IsTrue(rs?.Response == "mom");
-
-//                sender.Stop();
-//                listener.Stop();
-//            }
-//            catch (NotImplementedException)
-//            {
-//                //Yeah, alright.
-//            }
-//            catch (Exception ex)
-//            {
-//                Assert.Fail(ex.Message);
-//            }
-//        }
-//    }
-//}
+    }
+}

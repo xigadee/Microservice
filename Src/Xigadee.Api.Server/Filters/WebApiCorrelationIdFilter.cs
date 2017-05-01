@@ -31,6 +31,9 @@ namespace Xigadee
     /// </summary>
     public class WebApiCorrelationIdFilter: ActionFilterAttribute
     {
+        /// <summary>
+        /// This is the preferred HTTP key name for the correlation id.
+        /// </summary>
         protected readonly string mCorrelationIdKeyName;
         private readonly bool mAddToClaimsPrincipal;
 
@@ -47,7 +50,7 @@ namespace Xigadee
 
         #region CorrelationIdGet()
         /// <summary>
-        /// This method creates the correlation id.
+        /// This method creates a new correlation id.
         /// </summary>
         /// <returns>A unique string.</returns>
         protected virtual string CorrelationIdGet()
@@ -56,6 +59,10 @@ namespace Xigadee
         }
         #endregion
 
+        /// <summary>
+        /// This method adds the correlation id to the request if one is not already found in the request headers.
+        /// </summary>
+        /// <param name="actionContext">The incoming action.</param>
         public override void OnActionExecuting(HttpActionContext actionContext)
         {
             try
@@ -90,6 +97,12 @@ namespace Xigadee
             base.OnActionExecuting(actionContext);
         }
 
+        /// <summary>
+        /// This method adds the correlationid to the outgoing response if one is found in the request headers.
+        /// </summary>
+        /// <param name="actionExecutedContext">The request and response.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Async request.</returns>
         public override async Task OnActionExecutedAsync(HttpActionExecutedContext actionExecutedContext, CancellationToken cancellationToken)
         {
             var tasks = new List<Task>

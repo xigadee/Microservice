@@ -82,6 +82,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BoundaryLogger\Sql\" />
+    <Folder Include="Communication\NamedPipes\" />
     <Folder Include="EventSource\" />
     <Folder Include="Service\" />
   </ItemGroup>

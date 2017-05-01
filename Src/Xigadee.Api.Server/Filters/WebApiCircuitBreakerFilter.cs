@@ -41,6 +41,10 @@ namespace Xigadee
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
     public class WebApiCircuitBreakerFilterAttribute: ActionFilterAttribute
     {
+        /// <summary>
+        /// This random function is used to provide random support for the half open state that allow some messages to progress
+        /// when the service is validating connectivity to the resource.
+        /// </summary>
         protected readonly Random mRand = new Random(Environment.TickCount);
         /// <summary>
         /// This is the profile Id for the resource we wish to track.
@@ -49,16 +53,16 @@ namespace Xigadee
         /// <summary>
         /// This property specifies whether the profile id that has caused the error is disclosed in the HTTP response.
         /// </summary>
-        protected readonly bool mDiscloseProfileId;
+        protected readonly bool mDiscloseStatusinHTTPResponse;
         /// <summary>
         /// This is the default constructor.
         /// </summary>
         /// <param name="resourceProfileId">The resource id.</param>
-        /// <param name="discloseProfileId">This property specifies whether the profile id that has caused the error is disclosed in the HTTP response.</param>
-        public WebApiCircuitBreakerFilterAttribute(string resourceProfileId, bool discloseProfileId = true)
+        /// <param name="discloseStatusinHTTPResponse">This property specifies whether the profile id and status that has caused the error is disclosed in the HTTP response. The default it true.</param>
+        public WebApiCircuitBreakerFilterAttribute(string resourceProfileId, bool discloseStatusinHTTPResponse = true)
         {
             mResourceProfileId = resourceProfileId;
-            mDiscloseProfileId = discloseProfileId;
+            mDiscloseStatusinHTTPResponse = discloseStatusinHTTPResponse;
         }
         /// <summary>
         /// This method is called before the method is executed to verify that the resource is available.
@@ -93,8 +97,8 @@ namespace Xigadee
         {
             HttpResponseMessage response = request.CreateResponse((HttpStatusCode)429);
 
-            if (mDiscloseProfileId)
-                response.ReasonPhrase = $"Too many requests. Circuit breaker thrown for {mResourceProfileId}";
+            if (mDiscloseStatusinHTTPResponse)
+                response.ReasonPhrase = $"Too many requests. Circuit breaker thrown for {mResourceProfileId} at {status.State} for {status.FilterPercentage}%";
             else
                 response.ReasonPhrase = $"Too many requests.";
 

@@ -231,6 +231,7 @@
     <Compile Include="PipelineBasic.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PipelineUnityWebApi.cs" />
+    <Compile Include="Samples\APISample1.cs" />
     <Compile Include="Security\SecurityScaffoldBase.cs" />
     <Compile Include="Security\SecurityScaffoldTest1.cs" />
   </ItemGroup>
