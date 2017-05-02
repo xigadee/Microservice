@@ -62,6 +62,8 @@
     <Compile Include="Entities\Search\SearchOData4Base.cs" />
     <Compile Include="Entities\Search\SearchRequest.cs" />
     <Compile Include="Entities\Search\SearchResponse.cs" />
+    <Compile Include="Helper\Bit\BitHelper.cs" />
+    <Compile Include="Helper\Bit\BitMask.cs" />
     <Compile Include="Helper\Conversion_Xml.cs" />
     <Compile Include="Helper\Conversion.cs" />
     <Compile Include="Helper\Conversion_Delta.cs" />

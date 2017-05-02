@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -29,20 +30,25 @@ namespace Xigadee
     {
         List<TcpTlsChannelListener> mListeners = new List<TcpTlsChannelListener>();
         List<TcpTlsChannelSender> mSenders = new List<TcpTlsChannelSender>();
+        IPEndPoint mEndPoint;
 
-        public TcpCommunicationBridgeAgent()
+        public TcpCommunicationBridgeAgent(IPEndPoint EndPoint)
         {
-
+            mEndPoint = EndPoint;
         }
 
         public override IListener GetListener()
         {
-            return new TcpTlsChannelListener();
+            var listener = new TcpTlsChannelListener();
+            listener.EndPoint = mEndPoint;
+            return listener;
         }
 
         public override ISender GetSender()
         {
-            return new TcpTlsChannelSender();
+            var sender = new TcpTlsChannelSender();
+            sender.EndPoint = mEndPoint;
+            return sender;
         }
     }
 }

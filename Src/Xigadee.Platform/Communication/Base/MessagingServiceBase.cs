@@ -345,9 +345,11 @@ namespace Xigadee
         }
         #endregion
 
+        #region BoundaryLoggingActive
         /// <summary>
         /// This property specifies whether the boundary logger is active.
         /// </summary>
-        public bool? BoundaryLoggingActive { get; set; }
+        public bool? BoundaryLoggingActive { get; set; } 
+        #endregion
     }
 }

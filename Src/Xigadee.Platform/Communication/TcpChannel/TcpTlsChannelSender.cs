@@ -29,12 +29,40 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// 
+    /// This sender uses the TCP and TLS protocols to efficently transmit requests to a remote Microservices.
     /// </summary>
     public class TcpTlsChannelSender :MessagingSenderBase<TcpTlsConnection, TcpTlsMessage, TcpTlsClientHolder>
     {
-        TcpTlsConnectionFactory mConnectionFactory;
+        #region EndPoint
+        /// <summary>
+        /// This is the endpoint that the connection should listen on.
+        /// </summary>
+        public IPEndPoint EndPoint { get; set; }
+        #endregion
+        #region ProtocolLevel
+        /// <summary>
+        /// This is the SslProtocol level. By default it is Tls12.
+        /// </summary>
+        public SslProtocols ProtocolLevel { get; set; } = SslProtocols.Tls12;
+        #endregion
+        #region SettingsValidate()
+        /// <summary>
+        /// This method validates the settings necessary to start the sender.
+        /// </summary>
+        protected override void SettingsValidate()
+        {
+            base.SettingsValidate();
 
+            if (EndPoint == null)
+                throw new TcpTlsChannelConfigurationException($"{nameof(TcpTlsChannelSender)}: {ChannelId}");
+        }
+        #endregion
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="partition"></param>
+        /// <returns></returns>
         protected override TcpTlsClientHolder ClientCreate(SenderPartitionConfig partition)
         {
             var client = base.ClientCreate(partition);

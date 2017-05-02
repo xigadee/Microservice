@@ -108,6 +108,7 @@
     <Compile Include="Communication\Pipeline\Exceptions\ChannelDoesNotExistException.cs" />
     <Compile Include="Communication\TcpChannel\Agent\TcpCommunicationBridgeAgent.cs" />
     <Compile Include="Communication\TcpChannel\Configuration\TcpTlsConfigurationHelper.cs" />
+    <Compile Include="Communication\TcpChannel\Exception\TcpTlsChannelConfigurationException.cs" />
     <Compile Include="Communication\TcpChannel\Helper\DirectChannelCommunicator.cs" />
     <Compile Include="Communication\TcpChannel\Pipeline\AttachTcpTlsListener.cs" />
     <Compile Include="Communication\TcpChannel\Pipeline\AttachTcpTlsSender.cs" />
@@ -116,7 +117,6 @@
     <Compile Include="Communication\TcpChannel\TcpTlsChannelSender.cs" />
     <Compile Include="Communication\TcpChannel\TcpTlsClientHolder.cs" />
     <Compile Include="Communication\TcpChannel\TcpTlsConnection.cs" />
-    <Compile Include="Communication\TcpChannel\TcpTlsConnectionFactory.cs" />
     <Compile Include="Communication\TcpChannel\TcpTlsMessage.cs" />
     <Compile Include="Communication\TcpChannel\TcpTlsChannelListener.cs" />
     <Compile Include="Communication\Manual\ManualChannelClientHolder.cs" />

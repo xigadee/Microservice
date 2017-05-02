@@ -2,20 +2,22 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Xigadee;
+using System.Net;
 
 namespace Test.Xigadee
 {
-    [Ignore]
+    //[Ignore]
     [TestClass]
     public class CommunicationBridgeTcp
     {
+        [Ignore]
         [TestMethod]
         public void Tcp1()
         {
             try
             {
-                var bridgeOut = new CommunicationBridge(CommunicationBridgeMode.RoundRobin, new TcpCommunicationBridgeAgent());
-                var bridgein = new CommunicationBridge(CommunicationBridgeMode.Broadcast, new TcpCommunicationBridgeAgent());
+                var bridgeOut = new CommunicationBridge(CommunicationBridgeMode.RoundRobin, new TcpCommunicationBridgeAgent(new IPEndPoint(IPAddress.Loopback, 8088)));
+                var bridgein = new CommunicationBridge(CommunicationBridgeMode.Broadcast, new TcpCommunicationBridgeAgent(new IPEndPoint(IPAddress.Loopback, 8088)));
 
                 PersistenceClient<Guid, BridgeMe> init;
                 DebugMemoryDataCollector memp1, memp2;

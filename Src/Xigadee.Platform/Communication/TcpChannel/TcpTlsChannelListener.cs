@@ -34,8 +34,66 @@ namespace Xigadee
     /// </summary>
     public class TcpTlsChannelListener : MessagingListenerBase<TcpTlsConnection, TcpTlsMessage, TcpTlsClientHolder>
     {
-        TcpTlsConnectionFactory mConnectionFactory;
+        #region EndPoint
+        /// <summary>
+        /// This is the endpoint that the connection should listen on.
+        /// </summary>
+        public IPEndPoint EndPoint { get; set; }
+        #endregion
+        #region ProtocolLevel
+        /// <summary>
+        /// This is the SslProtocol level. By default it is Tls12.
+        /// </summary>
+        public SslProtocols ProtocolLevel { get; set; } = SslProtocols.Tls12;
+        #endregion
+        #region ServerCertificate
+        /// <summary>
+        /// This is the server certificate. This needs to be set if the ProtocolLevel is set to anything other than SslProtocols.None
+        /// </summary>
+        public X509Certificate ServerCertificate { get; set; } 
+        #endregion
+        #region SettingsValidate()
+        /// <summary>
+        /// This method validates the settings necessary to start the sender.
+        /// </summary>
+        protected override void SettingsValidate()
+        {
+            base.SettingsValidate();
 
+            if (EndPoint == null)
+                throw new TcpTlsChannelConfigurationException($"{nameof(TcpTlsChannelListener)}: {ChannelId} Listening endpoint not set");
+
+            if (ProtocolLevel != SslProtocols.None && ServerCertificate == null)
+                throw new TcpTlsChannelConfigurationException($"{nameof(TcpTlsChannelListener)}: {ChannelId} Certificate not set for {ProtocolLevel}");
+        }
+        #endregion
+
+        /// <summary>
+        /// This is the Protocol server.
+        /// </summary>
+        TcpTlsConnection mServer;
+
+        /// <summary>
+        /// This override is used to create the listening port.
+        /// </summary>
+        protected override void TearUp()
+        {
+            mServer = new TcpTlsConnection(EndPoint, ProtocolLevel, ServerCertificate);
+        }
+        /// <summary>
+        /// This override is used to close the listening connections.
+        /// </summary>
+        protected override void TearDown()
+        {
+            mServer.Close();
+            mServer = null;
+        }
+
+        /// <summary>
+        /// This override creates the client and registers/unregisters it with the protocol.
+        /// </summary>
+        /// <param name="partition">The partition to create the client for.</param>
+        /// <returns>Returns the client holder.</returns>
         protected override TcpTlsClientHolder ClientCreate(ListenerPartitionConfig partition)
         {
             var client = base.ClientCreate(partition);
@@ -43,15 +101,9 @@ namespace Xigadee
             client.Type = "TcpTls Listener";
             client.Name = $"Channel{partition.Priority}";
 
-            client.ClientCreate = () =>
-            {
-                return new TcpTlsConnection();
-            };
+            client.ClientCreate = () => mServer.Register(client);
 
-            client.ClientClose = () =>
-            {
-                client.Client.Close();
-            };
+            client.ClientClose = () => mServer.UnRegister(client);
 
             return client;
         }

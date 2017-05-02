@@ -45,6 +45,7 @@ namespace Xigadee
                 // Application blocks while waiting for an incoming connection.
                 // Type CNTL-C to terminate the server.
                 TcpClient client = listener.AcceptTcpClient();
+                
                 ProcessClient(client);
             }
         }
@@ -53,8 +54,7 @@ namespace Xigadee
         {
             // A client has connected. Create the 
             // SslStream using the client's network stream.
-            SslStream sslStream = new SslStream(
-                client.GetStream(), false);
+            SslStream sslStream = new SslStream(client.GetStream(), false);
             // Authenticate the server but don't require the client to authenticate.
             try
             {
