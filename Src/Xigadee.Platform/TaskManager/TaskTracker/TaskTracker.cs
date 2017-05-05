@@ -234,6 +234,7 @@ namespace Xigadee
                             id = schedule.Id.ToString("N");
                             break;
                         case TaskTrackerType.ListenerPoll:
+                        case TaskTrackerType.ListenerClientPoll:
                             id = Id.ToString("N");
                             break;
                         case TaskTrackerType.Overload:

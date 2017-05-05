@@ -33,45 +33,23 @@ namespace Xigadee
     /// <summary>
     /// This class holds an incoming or outgoing connection.
     /// </summary>
-    public class TcpTlsConnection
+    public class TcpTlsServerConnector:TcpTlsConnectorBase
     {
-        protected readonly ConcurrentQueue<TransmissionPayload> mQueue;
-
         /// <summary>
-        /// 
+        /// This is the default constructor for the endpoints.
         /// </summary>
-        /// <param name="EndPoint"></param>
-        /// <param name="protocolLevel"></param>
-        /// <param name="serverCertificate"></param>
-        public TcpTlsConnection(IPEndPoint EndPoint, SslProtocols protocolLevel = SslProtocols.Tls12, X509Certificate serverCertificate = null)
+        /// <param name="endPoint">The endpoint.</param>
+        /// <param name="protocolLevel">The protocol level. Please note that SslProtocols.None will result in unencrypted transmission.</param>
+        /// <param name="serverCertificate">The SSL certificate, if required.</param>
+        public TcpTlsServerConnector(IPEndPoint endPoint, SslProtocols protocolLevel = SslProtocols.Tls12, X509Certificate serverCertificate = null):base(endPoint, protocolLevel, serverCertificate)
         {
-            this.ProtocolLevel = ProtocolLevel;
-            this.ServerCertificate = serverCertificate;
-            this.EndPoint = EndPoint;
-            mQueue = new ConcurrentQueue<TransmissionPayload>();
-        }
-
-        public X509Certificate ServerCertificate { get; }
-
-        public IPEndPoint EndPoint { get; }
-        /// <summary>
-        /// This property specifies whether the connection should use Tls to secure the connection.
-        /// </summary>
-        public SslProtocols ProtocolLevel { get; }
-
-        public TcpTlsConnection Register(TcpTlsClientHolder client)
-        {
-            return this;
-        }
-
-        public TcpTlsConnection UnRegister(TcpTlsClientHolder client)
-        {
-            return this;
+            if (ProtocolLevel != SslProtocols.None && serverCertificate == null)
+                throw new ArgumentNullException("serverCertificate", "serverCertificate cannot be null when set to server and an encryption level.");
         }
 
         public void Close() { }
 
-        public void Send()
+        public void Send(TransmissionPayload payload)
         {
             HttpRequestMessage rq = new HttpRequestMessage(HttpMethod.Get, "https://hello.com");
 
@@ -114,6 +92,16 @@ namespace Xigadee
             //    Console.WriteLine(ex.Message);
             //}
 
+        }
+
+        protected override void StartInternal()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void StopInternal()
+        {
+            throw new NotImplementedException();
         }
     }
 

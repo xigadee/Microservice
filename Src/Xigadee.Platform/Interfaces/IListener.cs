@@ -15,6 +15,8 @@
 #endregion
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
+
 namespace Xigadee
 {
     /// <summary>
@@ -43,5 +45,22 @@ namespace Xigadee
         /// This contains the listener priority partitions.
         /// </summary>
         List<ListenerPartitionConfig> PriorityPartitions { get; set; }
+    }
+
+    /// <summary>
+    /// This interface is implemented by listeners that require frequent polling.
+    /// </summary>
+    public interface IListenerPoll:IListener
+    {
+        /// <summary>
+        /// This boolean property determines whether the listener requires a poll
+        /// </summary>
+        bool PollRequired { get; }
+
+        /// <summary>
+        /// This is the async poll.
+        /// </summary>
+        /// <returns>Async.</returns>
+        Task Poll();
     }
 }

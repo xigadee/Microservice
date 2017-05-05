@@ -31,6 +31,7 @@ namespace Xigadee
     {
         Notset,
         ListenerPoll,
+        ListenerClientPoll,
         Payload,
         Schedule,
         Overload

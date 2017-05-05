@@ -57,6 +57,8 @@ namespace Xigadee
 
             try
             {
+                mListenerPoll = mListener.Where((l) => l is IListenerPoll).Cast<IListenerPoll>().ToList();
+
                 mListener.ForEach(l => ServiceStart(l));
 
                 //Create the client priority collection.
@@ -100,10 +102,10 @@ namespace Xigadee
         /// does not become stale, and that the most active clients receive the most amount of attention.
         /// </summary>
         /// <param name="rebuild">This boolean property specifies whether the collection should be rebuilt or reordered. True rebuilds the collection.</param>
-        private async Task ListenersPriorityRecalculate(bool rebuild = true)
+        private Task ListenersPriorityRecalculate(bool rebuild = true)
         {
             if (Status != ServiceStatus.Running)
-                return;
+                return Task.FromResult(0);
 
             if (!rebuild && mClientCollection != null)
                 mClientCollection.Reprioritise();
@@ -128,8 +130,27 @@ namespace Xigadee
             {
                 Collector?.LogException("ListenersPriorityCalculate failed. Using the old collection.", ex);
             }
+
+            return Task.FromResult(0);
         }
         #endregion
+
+        /// <summary>
+        /// This method processes the listeners that require a frequent poll.
+        /// </summary>
+        protected void ProcessListeners()
+        {
+            try
+            {
+                mListenerPoll
+                    .Where((l) => l.PollRequired)
+                    .ForEach((l) => TrackerSubmitFromListener(l));
+            }
+            catch (Exception ex)
+            {
+                Collector?.LogException("CommunicationContainer/ProcessListeners", ex);
+            }
+        }
 
         #region ProcessClients(bool pastDue)
         /// <summary>
@@ -161,6 +182,39 @@ namespace Xigadee
         }
         #endregion
 
+        #region TrackerSubmitFromListener(Listener context)
+        /// <summary>
+        /// This method builds the task tracker for the listener poll.
+        /// </summary>
+        /// <param name="context">The client priority holder context.</param>
+        /// <returns>Returns a tracker of type listener poll.</returns>
+        private void TrackerSubmitFromListener(IListenerPoll context)
+        {
+            TaskTracker tracker = new TaskTracker(TaskTrackerType.ListenerPoll, TimeSpan.FromSeconds(30))
+            {
+                Priority = TaskTracker.PriorityInternal,
+                Context = context,
+                Name = context.ChannelId
+            };
+
+            tracker.Execute = async t =>
+            {
+                var currentContext = ((IListenerPoll)tracker.Context);
+
+                await currentContext.Poll();
+            };
+
+            tracker.ExecuteComplete = (tr, failed, ex) =>
+            {
+                var currentContext = ((ClientPriorityHolder)tr.Context);
+                TaskAvailability.ReservationRelease(currentContext.Id);
+                currentContext.Release(failed);
+            };
+
+            TaskSubmit(tracker);
+        }
+        #endregion
+
         #region TrackerSubmitFromClientPriorityHolder(ClientPriorityHolder context)
         /// <summary>
         /// This method builds the task tracker for the listener poll.
@@ -169,7 +223,7 @@ namespace Xigadee
         /// <returns>Returns a tracker of type listener poll.</returns>
         private void TrackerSubmitFromClientPriorityHolder(ClientPriorityHolder context)
         {
-            TaskTracker tracker = new TaskTracker(TaskTrackerType.ListenerPoll, TimeSpan.FromSeconds(30))
+            TaskTracker tracker = new TaskTracker(TaskTrackerType.ListenerClientPoll, TimeSpan.FromSeconds(30))
             {
                 Priority = TaskTracker.PriorityInternal,
                 Context = context,

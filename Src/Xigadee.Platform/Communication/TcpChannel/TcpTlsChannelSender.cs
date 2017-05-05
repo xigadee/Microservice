@@ -31,7 +31,7 @@ namespace Xigadee
     /// <summary>
     /// This sender uses the TCP and TLS protocols to efficently transmit requests to a remote Microservices.
     /// </summary>
-    public class TcpTlsChannelSender :MessagingSenderBase<TcpTlsConnection, TcpTlsMessage, TcpTlsClientHolder>
+    public class TcpTlsChannelSender :MessagingSenderBase<TcpTlsClientConnector, TcpTlsMessage, TcpTlsClientHolder>
     {
         #region EndPoint
         /// <summary>

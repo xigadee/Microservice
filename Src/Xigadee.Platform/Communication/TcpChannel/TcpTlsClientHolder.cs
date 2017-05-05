@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,20 +26,32 @@ namespace Xigadee
     /// <summary>
     /// This class holds the TCP/TLS connectivity logic for a particular channel.
     /// </summary>
-    public class TcpTlsClientHolder : ClientHolder<TcpTlsConnection, TcpTlsMessage>
+    public class TcpTlsClientHolder : ClientHolder<TcpTlsClientConnector, TcpTlsMessage>
     {
-        public TcpTlsClientHolder()
-        {
-                
-        }
         public override Task<List<TransmissionPayload>> MessagesPull(int? count, int? wait, string mappingChannel = null)
         {
             throw new NotImplementedException();
         }
 
-        public override async Task Transmit(TransmissionPayload payload, int retry = 0)
+        public override Task Transmit(TransmissionPayload payload, int retry = 0)
         {
+            throw new NotImplementedException();
+        }
+    }
 
+    /// <summary>
+    /// This class holds the TCP/TLS connectivity logic for a particular channel.
+    /// </summary>
+    public class TcpTlsServerHolder : ClientHolder<TcpTlsServerConnector, TcpTlsMessage>
+    {
+        public override Task<List<TransmissionPayload>> MessagesPull(int? count, int? wait, string mappingChannel = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task Transmit(TransmissionPayload payload, int retry = 0)
+        {
+            throw new NotImplementedException();
         }
     }
 }

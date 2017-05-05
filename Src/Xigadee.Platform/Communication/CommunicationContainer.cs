@@ -43,6 +43,10 @@ namespace Xigadee
         /// </summary>
         private List<IListener> mListener;
         /// <summary>
+        /// This is the list of listeners that require polling support.
+        /// </summary>
+        private List<IListenerPoll> mListenerPoll = null;
+        /// <summary>
         /// This is the list of communication senders.
         /// </summary>
         private List<ISender> mSenders;
@@ -154,6 +158,9 @@ namespace Xigadee
             //Check that we have something to do.
             if (collection == null || collection.IsClosed || collection.Count == 0)
                 return;
+
+            if ((mListenerPoll?.Count ?? 0) > 0)
+                ProcessListeners();
 
             //Do the past due scan to process the lower priority clients.
             if (mPolicy.ListenerClientPollAlgorithm.SupportPassDueScan)

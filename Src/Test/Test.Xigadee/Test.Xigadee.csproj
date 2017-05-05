@@ -81,6 +81,7 @@
     <Compile Include="Communication\Bridge\CommunicationBridgeTests.cs" />
     <Compile Include="Communication\Bridge\CommunicationRedirectTests.cs" />
     <Compile Include="Communication\Tcp\CommunicationTcp.cs" />
+    <Compile Include="Communication\Tcp\Connection.cs" />
     <Compile Include="Configuration\Config1.cs" />
     <Compile Include="Dispatcher\Commands\DispatcherCommand.cs" />
     <Compile Include="Dispatcher\DispatcherTestSecurity.cs" />
