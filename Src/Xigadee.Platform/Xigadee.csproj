@@ -132,6 +132,7 @@
     <Compile Include="Communication\Manual\ManualChannelMessage.cs" />
     <Compile Include="Components\Harness\ServiceHarnessDataCollection.cs" />
     <Compile Include="Components\Harness\ServiceHarness.cs" />
+    <Compile Include="Components\Harness\ServiceHarnessDependencies.cs" />
     <Compile Include="Components\Harness\ServiceHarnessResourceContainer.cs" />
     <Compile Include="Components\Harness\ServiceHarnessScheduler.cs" />
     <Compile Include="Components\Harness\ServiceHarnessSerializationContainer.cs" />

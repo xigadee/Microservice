@@ -29,25 +29,50 @@ namespace Xigadee
     /// This class is used to construct a test harness around a service to allow for unit testing.
     /// </summary>
     /// <typeparam name="S"></typeparam>
-    public abstract class ServiceHarness<S> : IDisposable
-        where S : class, IService
+    public abstract class ServiceHarness<S> : ServiceHarness<S, ServiceHarnessDependencies>
+            where S : class, IService
     {
-        public S Service { get; }
-
-        public ServiceHarness()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dependencies"></param>
+        public ServiceHarness(ServiceHarnessDependencies dependencies = null):base(dependencies)
         {
-            ((ServiceHarnessScheduler)Scheduler).Collector = Collector;
-            ((ServiceHarnessScheduler)Scheduler).Start();
 
-            ((ServiceHarnessResourceContainer)ResourceTracker).Collector = Collector;
-            ((ServiceHarnessResourceContainer)ResourceTracker).SharedServices = SharedService;
-            ((ServiceHarnessResourceContainer)ResourceTracker).Start();
+        }
+    }
+
+    /// <summary>
+    /// This class is used to construct a test harness around a service to allow for unit testing.
+    /// </summary>
+    /// <typeparam name="S">The service type.</typeparam>
+    /// <typeparam name="D">The dependency type.</typeparam>
+    public abstract class ServiceHarness<S, D> : IDisposable
+        where S : class, IService
+        where D : ServiceHarnessDependencies, new()
+    {
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="dependencies">The optional dependency parameter.</param>
+        public ServiceHarness(D dependencies = null)
+        {
+            Dependencies = dependencies?? new D();
 
             Service = Create();
             Service.StatusChanged += Service_StatusChanged;
             Configure(Service);
         }
 
+        /// <summary>
+        /// This internal service.
+        /// </summary>
+        public S Service { get; }
+
+        /// <summary>
+        /// This is the dependencies class. This class can be shared with another harness.
+        /// </summary>
+        public D Dependencies { get; }
         /// <summary>
         /// This method starts the service. Override to add additional steps.
         /// </summary>
@@ -62,54 +87,27 @@ namespace Xigadee
         {
             Service.Stop();
         }
-
+        /// <summary>
+        /// This base method should be used to create the service.
+        /// </summary>
+        /// <returns></returns>
         protected abstract S Create();
-
+        /// <summary>
+        /// This method should be used to provide additional configuration before starting the services.
+        /// </summary>
+        /// <param name="service">The service.</param>
         protected virtual void Configure(S service)
         {
-            if (service is IRequireDataCollector)
-                ((IRequireDataCollector)service).Collector = Collector;
-
-            if (service is IRequireScheduler)
-                ((IRequireScheduler)service).Scheduler = Scheduler;
-
-            if (service is IRequireSharedServices)
-                ((IRequireSharedServices)service).SharedServices = SharedService;
-
-            if (service is IRequireServiceOriginator)
-                ((IRequireServiceOriginator)service).OriginatorId = OriginatorId;
-
-            if (service is IRequirePayloadSerializer)
-                ((IRequirePayloadSerializer)service).PayloadSerializer = PayloadSerializer;
-
+            Dependencies.Configure(service);
         }
-
+        /// <summary>
+        /// This method can be used to monitor status changes.
+        /// </summary>
+        /// <param name="sender">The sender service.</param>
+        /// <param name="e">The change event.</param>
         protected virtual void Service_StatusChanged(object sender, StatusChangedEventArgs e)
         {
         }
-
-        /// <summary>
-        /// This is the stub Payload serializer.
-        /// </summary>
-        public virtual IPayloadSerializationContainer PayloadSerializer => new ServiceHarnessSerializationContainer();
-        /// <summary>
-        /// This is the example originator id.
-        /// </summary>
-        public virtual MicroserviceId OriginatorId => new MicroserviceId(GetType().Name, Guid.NewGuid().ToString("N").ToUpperInvariant());
-        /// <summary>
-        /// This is the stub data collector.
-        /// </summary>
-        public virtual IDataCollection Collector => new ServiceHarnessDataCollection();
-        /// <summary>
-        /// This is the stub scheduler
-        /// </summary>
-        public virtual IScheduler Scheduler => new ServiceHarnessScheduler();
-        /// <summary>
-        /// This is the stub shared service container.
-        /// </summary>
-        public virtual ISharedService SharedService => new ServiceHarnessSharedService();
-
-        public virtual IResourceTracker ResourceTracker => new ServiceHarnessResourceContainer();
 
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls
