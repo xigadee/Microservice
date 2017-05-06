@@ -28,7 +28,7 @@ namespace Xigadee
     /// and to ensure that incoming message requests have the correct permissions necessary to be processed.
     /// </summary>
     public partial class SecurityContainer: ServiceContainerBase<SecurityContainerStatistics, SecurityContainerPolicy>
-        , ISecurityService, IRequireDataCollector, IServiceOriginator
+        , ISecurityService, IRequireDataCollector, IRequireServiceOriginator
     {
         #region Declarations
         /// <summary>

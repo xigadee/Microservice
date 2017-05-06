@@ -42,11 +42,11 @@ namespace Xigadee
         /// </summary>
         public IPEndPoint EndPoint { get; set; }
         #endregion
-        #region ProtocolLevel
+        #region SslProtocolLevel
         /// <summary>
         /// This is the SslProtocol level. By default it is Tls12.
         /// </summary>
-        public SslProtocols ProtocolLevel { get; set; } = SslProtocols.Tls12;
+        public SslProtocols SslProtocolLevel { get; set; } = SslProtocols.Tls12;
         #endregion
         #region ServerCertificate
         /// <summary>
@@ -65,20 +65,20 @@ namespace Xigadee
             if (EndPoint == null)
                 throw new TcpTlsChannelConfigurationException($"{nameof(TcpTlsChannelListener)}: {ChannelId} Listening endpoint not set");
 
-            if (ProtocolLevel != SslProtocols.None && ServerCertificate == null)
-                throw new TcpTlsChannelConfigurationException($"{nameof(TcpTlsChannelListener)}: {ChannelId} Certificate not set for {ProtocolLevel}");
+            if (SslProtocolLevel != SslProtocols.None && ServerCertificate == null)
+                throw new TcpTlsChannelConfigurationException($"{nameof(TcpTlsChannelListener)}: {ChannelId} Certificate not set for {SslProtocolLevel}");
         }
         #endregion
 
         TcpListener mTcpListener = null;
-        ConcurrentBag<ClientWrapper> mTcpClients = null;
+        ConcurrentBag<TcpTlsClientWrapper> mTcpClients = null;
 
         /// <summary>
         /// This override is used to create the listening port.
         /// </summary>
         protected override void TearUp()
         {
-            mTcpClients = new ConcurrentBag<ClientWrapper>();
+            mTcpClients = new ConcurrentBag<TcpTlsClientWrapper>();
             mTcpListener = new TcpListener(EndPoint);
             mTcpListener.Start();
         }
@@ -87,6 +87,8 @@ namespace Xigadee
         /// </summary>
         protected override void TearDown()
         {
+            var activeClients = mTcpClients.ToList().Select((c) => ClientClose(c)).ToArray() ;
+            Task.WaitAll(activeClients);
 
         }
 
@@ -135,13 +137,19 @@ namespace Xigadee
         /// <returns>Async.</returns>
         public async Task Poll()
         {
-            //Firstly, do we have any clients to process.
-            if (mTcpListener?.Pending() ?? false)
+            //Firstly, do we have any awaiting clients to process.
+            if (Status == ServiceStatus.Running && (mTcpListener?.Pending() ?? false))
             {
                 var client = await mTcpListener.AcceptTcpClientAsync();
-
-                await ClientOpen(new ClientWrapper { Client = client });
+                await ClientOpen(new TcpTlsClientWrapper { Client = client });
             }
+
+            //Find the clients that are pending closure and cloe them.
+            var close = mTcpClients
+                .Where((c) => c.CanClose)
+                .Select((c) => ClientClose(c));
+
+            await Task.WhenAll(close);
 
             //Ok, do we have anything to read?
             var reads = mTcpClients
@@ -151,7 +159,7 @@ namespace Xigadee
             await Task.WhenAll(reads);
         }
 
-        private async Task ClientOpen(ClientWrapper client)
+        private async Task ClientOpen(TcpTlsClientWrapper client)
         {
             // A client has connected. Create the 
             // SslStream using the client's network stream.
@@ -159,7 +167,7 @@ namespace Xigadee
             // Authenticate the server but don't require the client to authenticate.
             try
             {
-                await client.SslStream.AuthenticateAsServerAsync(ServerCertificate, false, ProtocolLevel, true);
+                await client.SslStream.AuthenticateAsServerAsync(ServerCertificate, false, SslProtocolLevel, true);
                 // Set timeouts for the read and write to 5 seconds.
                 client.SslStream.ReadTimeout = 200;
                 client.SslStream.WriteTimeout = 200;
@@ -179,48 +187,18 @@ namespace Xigadee
             }
         }
 
-        private async Task ClientRead(ClientWrapper client)
+        private async Task ClientRead(TcpTlsClientWrapper client)
+        {
+            if (!client.SslStream.CanRead)
+                return;
+
+            //int length = await client.SslStream.ReadAsync();
+        }
+
+        private async Task ClientClose(TcpTlsClientWrapper client)
         {
 
         }
 
-        protected class ClientWrapper
-        {
-            public Guid Id => Guid.NewGuid();
-
-            public TcpClient Client { get; set; }
-
-            public SslStream SslStream { get; set; }
-
-            public bool CanClose
-            {
-                get
-                {
-                    try
-                    {
-                        return SslStream?.CanWrite ?? false;
-                    }
-                    catch (Exception)
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            public bool CanRead
-            {
-                get
-                {
-                    try
-                    {
-                        return SslStream?.CanRead ?? false;
-                    }
-                    catch (Exception)
-                    {
-                        return false;
-                    }
-                }
-            }
-        }
     }
 }

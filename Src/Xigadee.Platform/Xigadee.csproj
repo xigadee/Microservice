@@ -83,6 +83,7 @@
     <Compile Include="CommandInitiator\CommandInitiatorPolicy.cs" />
     <Compile Include="CommandInitiator\CommandInitiatorStatistics.cs" />
     <Compile Include="CommandInitiator\ResponseWrapper.cs" />
+    <Compile Include="Command\CommandHarness.cs" />
     <Compile Include="Command\Command_Request.cs" />
     <Compile Include="Command\Command_Reflection.cs" />
     <Compile Include="Command\Attributes\PayloadInAttribute.cs" />
@@ -93,11 +94,13 @@
     <Compile Include="Command\Helper\CommandHolderException.cs" />
     <Compile Include="Command\Pipeline\AssignMasterJob.cs" />
     <Compile Include="Communication\Base\IMessagingService.cs" />
+    <Compile Include="Communication\Base\MessagingHarness.cs" />
     <Compile Include="Communication\Bridge\CommunicationBridge.cs" />
     <Compile Include="Communication\Bridge\CommunicationBridgeAgent.cs" />
     <Compile Include="Communication\Bridge\CommunicationBridgeMode.cs" />
     <Compile Include="Communication\Channel\ChannelRewriteRule.cs" />
     <Compile Include="Communication\CommunicationContainer_Security.cs" />
+    <Compile Include="Communication\Listener\ListenerHarness.cs" />
     <Compile Include="Communication\Exceptions\MessagingException.cs" />
     <Compile Include="Communication\Exceptions\StartupMessagingException.cs" />
     <Compile Include="Communication\Manual\Bridge\ManualCommunicationBridgeAgent.cs" />
@@ -119,6 +122,7 @@
     <Compile Include="Communication\TcpChannel\TcpTlsChannelSender.cs" />
     <Compile Include="Communication\TcpChannel\TcpTlsClientHolder.cs" />
     <Compile Include="Communication\TcpChannel\Connector\TcpTlsConnectorBase.cs" />
+    <Compile Include="Communication\TcpChannel\TcpTlsClientWrapper.cs" />
     <Compile Include="Communication\TcpChannel\TcpTlsMessage.cs" />
     <Compile Include="Communication\TcpChannel\TcpTlsChannelListener.cs" />
     <Compile Include="Communication\Manual\ManualChannelClientHolder.cs" />
@@ -126,6 +130,12 @@
     <Compile Include="Communication\Manual\ManualChannelSender.cs" />
     <Compile Include="Communication\Manual\ManualChannelConnection.cs" />
     <Compile Include="Communication\Manual\ManualChannelMessage.cs" />
+    <Compile Include="Components\Harness\ServiceHarnessDataCollection.cs" />
+    <Compile Include="Components\Harness\ServiceHarness.cs" />
+    <Compile Include="Components\Harness\ServiceHarnessResourceContainer.cs" />
+    <Compile Include="Components\Harness\ServiceHarnessScheduler.cs" />
+    <Compile Include="Components\Harness\ServiceHarnessSerializationContainer.cs" />
+    <Compile Include="Components\Harness\ServiceHarnessSharedService.cs" />
     <Compile Include="Configuration\ConfigResolver\ConfigResolver.cs" />
     <Compile Include="Configuration\ConfigResolver\ConfigResolverAppSettings.cs" />
     <Compile Include="Configuration\ConfigResolver\ConfigResolverFunction.cs" />
@@ -164,6 +174,7 @@
     <Compile Include="Exceptions\ChannelTypeNotSupportedException.cs" />
     <Compile Include="Exceptions\TransmitRetryExceededException.cs" />
     <Compile Include="Interfaces\IRequireDataCollector.cs" />
+    <Compile Include="Interfaces\IRequirePayloadSerializer.cs" />
     <Compile Include="Interfaces\ISharedService.cs" />
     <Compile Include="Interfaces\Microservice\IMicroserviceCommand.cs" />
     <Compile Include="Interfaces\Microservice\IMicroserviceCommunication.cs" />
@@ -382,7 +393,7 @@
     <Compile Include="Interfaces\ISchedule.cs" />
     <Compile Include="Interfaces\IService.cs" />
     <Compile Include="Interfaces\IServiceEventSource.cs" />
-    <Compile Include="Interfaces\IServiceOriginator.cs" />
+    <Compile Include="Interfaces\IRequireServiceOriginator.cs" />
     <Compile Include="Interfaces\IStatisticsBase.cs" />
     <Compile Include="Interfaces\ISupportedMessageTypes.cs" />
     <Compile Include="Interfaces\ISupportsMessage.cs" />
@@ -637,6 +648,7 @@
   <ItemGroup>
     <Folder Include="CommandPersistence\Pipeline\Add\" />
     <Folder Include="Command\Security\" />
+    <Folder Include="Communication\Holder\" />
     <Folder Include="DataCollection\Pipeline\Attach\" />
     <Folder Include="Pipeline\Exceptions\" />
     <Folder Include="Pipeline\Extensions\Add\" />

@@ -339,11 +339,11 @@ namespace Xigadee
                 if (service is IRequireDataCollector)
                     ((IRequireDataCollector)service).Collector = mDataCollection;
 
-                if (service is IServiceOriginator)
-                    ((IServiceOriginator)service).OriginatorId = Id;
+                if (service is IRequireServiceOriginator)
+                    ((IRequireServiceOriginator)service).OriginatorId = Id;
 
-                if (service is IPayloadSerializerConsumer)
-                    ((IPayloadSerializerConsumer)service).PayloadSerializer = mSerializer;
+                if (service is IRequirePayloadSerializer)
+                    ((IRequirePayloadSerializer)service).PayloadSerializer = mSerializer;
 
                 if (service is IRequireScheduler)
                     ((IRequireScheduler)service).Scheduler = mScheduler;

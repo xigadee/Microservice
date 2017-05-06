@@ -15,26 +15,21 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
 namespace Xigadee
 {
     /// <summary>
-    /// This interface is used to expose the serialization container to applications 
-    /// that require access to it.
+    /// This interface is implemented by services that require information about the service they are running under.
     /// </summary>
-    public interface IPayloadSerializationContainer
+    public interface IRequireServiceOriginator
     {
-        object PayloadDeserialize(TransmissionPayload message);
-
-        object PayloadDeserialize(ServiceMessage message);
-
-        object PayloadDeserialize(byte[] blob);
-
-        P PayloadDeserialize<P>(TransmissionPayload payload);
-
-        P PayloadDeserialize<P>(ServiceMessage payload);
-
-        P PayloadDeserialize<P>(byte[] blob);
-
-        byte[] PayloadSerialize(object payload);
+        /// <summary>
+        /// The originator Id for the service.
+        /// </summary>
+        MicroserviceId OriginatorId { get; set; }
     }
 }

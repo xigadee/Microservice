@@ -106,30 +106,23 @@ namespace Xigadee
         {
             schedule.ShouldPoll = false;
             return base.Remove(schedule);
-        } 
+        }
 
         #endregion
 
+        #region StatisticsRecalculate(SchedulerStatistics stats)
+        /// <summary>
+        /// This method recalculates the stats for the scheduler.
+        /// </summary>
+        /// <param name="stats">The statistics.</param>
         protected override void StatisticsRecalculate(SchedulerStatistics stats)
         {
             base.StatisticsRecalculate(stats);
 
             stats.DefaultPollInMs = mPolicy.DefaultPollInMs;
             stats.Schedules = Items.ToList();
-        }
-
-        //#region SchedulerStop()
-        ///// <summary>
-        ///// This method stops all current schedule.
-        ///// </summary>
-        //public void SchedulerStop()
-        //{
-        //    foreach (var schedule in mScheduler.Items)
-        //    {
-        //        schedule.ShouldPoll = false;
-        //    }
-        //}
-        //#endregion
+        } 
+        #endregion
 
         #region Collector
         /// <summary>

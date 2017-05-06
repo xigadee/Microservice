@@ -15,26 +15,22 @@
 #endregion
 
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Xigadee;
+
 namespace Xigadee
 {
     /// <summary>
-    /// This interface is used to expose the serialization container to applications 
-    /// that require access to it.
+    /// This is the test harness for the scheduler.
     /// </summary>
-    public interface IPayloadSerializationContainer
+    public class ServiceHarnessScheduler : SchedulerContainer
     {
-        object PayloadDeserialize(TransmissionPayload message);
 
-        object PayloadDeserialize(ServiceMessage message);
-
-        object PayloadDeserialize(byte[] blob);
-
-        P PayloadDeserialize<P>(TransmissionPayload payload);
-
-        P PayloadDeserialize<P>(ServiceMessage payload);
-
-        P PayloadDeserialize<P>(byte[] blob);
-
-        byte[] PayloadSerialize(object payload);
     }
 }

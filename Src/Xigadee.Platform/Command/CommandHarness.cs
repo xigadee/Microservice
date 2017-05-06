@@ -15,26 +15,16 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
 namespace Xigadee
 {
-    /// <summary>
-    /// This interface is used to expose the serialization container to applications 
-    /// that require access to it.
-    /// </summary>
-    public interface IPayloadSerializationContainer
+    public abstract class CommandHarness<C>:ServiceHarness<C>
+        where C: class, ICommand
     {
-        object PayloadDeserialize(TransmissionPayload message);
 
-        object PayloadDeserialize(ServiceMessage message);
-
-        object PayloadDeserialize(byte[] blob);
-
-        P PayloadDeserialize<P>(TransmissionPayload payload);
-
-        P PayloadDeserialize<P>(ServiceMessage payload);
-
-        P PayloadDeserialize<P>(byte[] blob);
-
-        byte[] PayloadSerialize(object payload);
     }
 }

@@ -135,6 +135,7 @@ namespace Xigadee
         }
         #endregion
 
+        #region ProcessListeners()
         /// <summary>
         /// This method processes the listeners that require a frequent poll.
         /// </summary>
@@ -150,7 +151,8 @@ namespace Xigadee
             {
                 Collector?.LogException("CommunicationContainer/ProcessListeners", ex);
             }
-        }
+        } 
+        #endregion
 
         #region ProcessClients(bool pastDue)
         /// <summary>

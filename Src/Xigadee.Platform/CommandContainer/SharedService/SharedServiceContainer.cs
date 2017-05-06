@@ -29,7 +29,7 @@ namespace Xigadee
     /// </summary>
     public class SharedServiceContainer: StatisticsBase<SharedServiceStatistics>, ISharedService
     {
-        #region Declarations.
+        #region Declarations
         /// <summary>
         /// The internal container.
         /// </summary>

@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public interface IDataCollectorComponent: IServiceOriginator
+    public interface IDataCollectorComponent: IRequireServiceOriginator
     {
         bool IsSupported(DataCollectionSupport support);
 

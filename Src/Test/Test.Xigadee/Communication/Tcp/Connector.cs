@@ -6,15 +6,25 @@ using System.Net;
 
 namespace Test.Xigadee
 {
-    //[Ignore]
+    [Ignore]
     [TestClass]
     public class TcpTlsConnectionTests
     {
         [TestMethod]
-        public void Connection1()
+        public void Connector1()
         {
-            //var connListen = new TcpTlsConnector(new IPEndPoint(IPAddress.Loopback, 8088));
 
+            var harness = new TcpTlsChannelListenerHarness();
+
+            try
+            {
+                harness.Start();
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
 
 
             //connListen.s

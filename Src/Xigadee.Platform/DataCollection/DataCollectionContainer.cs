@@ -27,7 +27,7 @@ namespace Xigadee
     /// This class centrally holds all the logging, telemetry and event source support.
     /// </summary>
     public partial class DataCollectionContainer: ServiceContainerBase<DataCollectionStatistics, DataCollectionPolicy>
-        , IDataCollection, IServiceOriginator
+        , IDataCollection, IRequireServiceOriginator
         , ITaskManagerProcess, IRequireSharedServices, IRequireSecurityService
     {
         #region Declarations
@@ -112,8 +112,8 @@ namespace Xigadee
         {
             try
             {
-                if ((service as IServiceOriginator) != null)
-                    ((IServiceOriginator)service).OriginatorId = OriginatorId;
+                if ((service as IRequireServiceOriginator) != null)
+                    ((IRequireServiceOriginator)service).OriginatorId = OriginatorId;
 
                 if ((service as IRequireSharedServices) != null)
                     ((IRequireSharedServices)service).SharedServices = SharedServices;

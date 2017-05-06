@@ -27,9 +27,9 @@ using System.Threading;
 namespace Xigadee
 {
     /// <summary>
-    /// 
+    /// This is the base collection container.
     /// </summary>
-    /// <typeparam name="I"></typeparam>
+    /// <typeparam name="I">The collection type.</typeparam>
     public abstract class CollectionContainerBase<I>: CollectionContainerBase<I,CollectionStatistics>
     {
         protected CollectionContainerBase(IEnumerable<I> items):base(items)
@@ -38,10 +38,10 @@ namespace Xigadee
     }
 
     /// <summary>
-    /// 
+    /// This is the base collection container.
     /// </summary>
-    /// <typeparam name="I"></typeparam>
-    /// <typeparam name="S">The statistics.</typeparam>
+    /// <typeparam name="I">The collection type.</typeparam>
+    /// <typeparam name="S">The statistics type.</typeparam>
     public abstract class CollectionContainerBase<I,S>: ServiceBase<S>, IContainerService
         where S : StatusBase, ICollectionStatistics, new()
     {
