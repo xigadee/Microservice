@@ -9,18 +9,18 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    public class TcpTlsChannelListenerHarness : ListenerHarness<TcpTlsChannelListener>
+    public class TcpTlsChannelSenderHarness : SenderHarness<TcpTlsChannelSender>
     {
-        protected override TcpTlsChannelListener Create()
+        protected override TcpTlsChannelSender Create()
         {
-            return new TcpTlsChannelListener();
+            return new TcpTlsChannelSender();
         }
 
-        protected override void Configure(TcpTlsChannelListener service)
+        protected override void Configure(TcpTlsChannelSender service)
         {
             base.Configure(service);
             service.EndPoint = Endpoint;
-            service.SslProtocolLevel = SslProtocolLevel;
+            //service.SslProtocolLevel = SslProtocolLevel;
         }
 
         public virtual IPEndPoint Endpoint => new IPEndPoint(IPAddress.Loopback, 8088);
@@ -33,7 +33,7 @@ namespace Test.Xigadee
 
             var wrapper = new MessageFilterWrapper(new ServiceMessageHeader(Service.ChannelId, "one", "two"));
 
-            Service.Update(new[] { wrapper }.ToList());
+            //Service.Update(new[] { wrapper }.ToList());
 
         }
     }

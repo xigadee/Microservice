@@ -3,6 +3,9 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Xigadee;
 using System.Net;
+using System.Security.Authentication;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Test.Xigadee
 {
@@ -13,21 +16,31 @@ namespace Test.Xigadee
         [TestMethod]
         public void Connector1()
         {
+            bool stop = false;
+            var server = new TcpTlsServer(new IPEndPoint(IPAddress.Any, 9090), SslProtocols.None, null);
 
-            var harness = new TcpTlsChannelListenerHarness();
+            server.Start();
 
-            try
+            Thread toRun = new Thread(new ThreadStart(() => 
             {
-                harness.Start();
-            }
-            catch (Exception ex)
-            {
+                while (!stop)
+                {
+                    if (server.PollRequired)
+                        Task.Run(async () => await server.Poll());
+                    Thread.Sleep(10);
+                }
 
-                throw;
-            }
+            }));
 
+            toRun.Start();
 
-            //connListen.s
+            var client = new TcpTlsClient(new IPEndPoint(IPAddress.Loopback, 9090), SslProtocols.None, null);
+
+            client.Start();
+
+            server.Poll().Wait();
         }
+
+
     }
 }

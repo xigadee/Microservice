@@ -83,7 +83,7 @@
     <Compile Include="CommandInitiator\CommandInitiatorPolicy.cs" />
     <Compile Include="CommandInitiator\CommandInitiatorStatistics.cs" />
     <Compile Include="CommandInitiator\ResponseWrapper.cs" />
-    <Compile Include="Command\CommandHarness.cs" />
+    <Compile Include="Command\Harness\CommandHarness.cs" />
     <Compile Include="Command\Command_Request.cs" />
     <Compile Include="Command\Command_Reflection.cs" />
     <Compile Include="Command\Attributes\PayloadInAttribute.cs" />
@@ -109,22 +109,27 @@
     <Compile Include="Communication\Pipeline\Add\AddChannelBroadcast.cs" />
     <Compile Include="Communication\Pipeline\ChannelPipelineBroadcast.cs" />
     <Compile Include="Communication\Pipeline\Exceptions\ChannelDoesNotExistException.cs" />
-    <Compile Include="Communication\TcpChannel\Agent\TcpCommunicationBridgeAgent.cs" />
-    <Compile Include="Communication\TcpChannel\Configuration\TcpTlsConfigurationHelper.cs" />
-    <Compile Include="Communication\TcpChannel\Connector\TcpTlsServerConnector.cs" />
-    <Compile Include="Communication\TcpChannel\Connector\TcpTlsClientConnector.cs" />
-    <Compile Include="Communication\TcpChannel\Exception\TcpTlsChannelConfigurationException.cs" />
-    <Compile Include="Communication\TcpChannel\Exception\DirectChannelCommunicator.cs" />
-    <Compile Include="Communication\TcpChannel\Pipeline\AttachTcpTlsListener.cs" />
-    <Compile Include="Communication\TcpChannel\Pipeline\AttachTcpTlsSender.cs" />
-    <Compile Include="Communication\TcpChannel\Pipeline\AttachTcpTlsBroadcastListener.cs" />
-    <Compile Include="Communication\TcpChannel\Pipeline\AttachTcpTlsBroadcastSender.cs" />
-    <Compile Include="Communication\TcpChannel\TcpTlsChannelSender.cs" />
-    <Compile Include="Communication\TcpChannel\TcpTlsClientHolder.cs" />
-    <Compile Include="Communication\TcpChannel\Connector\TcpTlsConnectorBase.cs" />
-    <Compile Include="Communication\TcpChannel\TcpTlsClientWrapper.cs" />
-    <Compile Include="Communication\TcpChannel\TcpTlsMessage.cs" />
-    <Compile Include="Communication\TcpChannel\TcpTlsChannelListener.cs" />
+    <Compile Include="Communication\Sender\SenderHarness.cs" />
+    <Compile Include="Communication\TcpTlsChannel\Agent\TcpCommunicationBridgeAgent.cs" />
+    <Compile Include="Communication\TcpTlsChannel\Communication\TcpTlsBase.cs" />
+    <Compile Include="Communication\TcpTlsChannel\Configuration\TcpTlsConfigurationHelper.cs" />
+    <Compile Include="Communication\TcpTlsChannel\Connector\TcpTlsServerConnector.cs" />
+    <Compile Include="Communication\TcpTlsChannel\Connector\TcpTlsClientConnector.cs" />
+    <Compile Include="Communication\TcpTlsChannel\Exception\TcpTlsChannelConfigurationException.cs" />
+    <Compile Include="Communication\TcpTlsChannel\Helper\DirectChannelCommunicator.cs" />
+    <Compile Include="Communication\TcpTlsChannel\Harness\TcpTlsChannelSenderHarness.cs" />
+    <Compile Include="Communication\TcpTlsChannel\Harness\TcpTlsChannelListenerHarness.cs" />
+    <Compile Include="Communication\TcpTlsChannel\Pipeline\AttachTcpTlsListener.cs" />
+    <Compile Include="Communication\TcpTlsChannel\Pipeline\AttachTcpTlsSender.cs" />
+    <Compile Include="Communication\TcpTlsChannel\Pipeline\AttachTcpTlsBroadcastListener.cs" />
+    <Compile Include="Communication\TcpTlsChannel\Pipeline\AttachTcpTlsBroadcastSender.cs" />
+    <Compile Include="Communication\TcpTlsChannel\Communication\TcpTlsServer.cs" />
+    <Compile Include="Communication\TcpTlsChannel\TcpTlsChannelSender.cs" />
+    <Compile Include="Communication\TcpTlsChannel\Communication\TcpTlsClient.cs" />
+    <Compile Include="Communication\TcpTlsChannel\TcpTlsClientHolder.cs" />
+    <Compile Include="Communication\TcpTlsChannel\Connector\TcpTlsConnectorBase.cs" />
+    <Compile Include="Communication\TcpTlsChannel\Communication\TcpTlsConnection.cs" />
+    <Compile Include="Communication\TcpTlsChannel\TcpTlsChannelListener.cs" />
     <Compile Include="Communication\Manual\ManualChannelClientHolder.cs" />
     <Compile Include="Communication\Manual\ManualChannelListener.cs" />
     <Compile Include="Communication\Manual\ManualChannelSender.cs" />
@@ -393,7 +398,6 @@
     <Compile Include="Interfaces\IRequireSharedServices.cs" />
     <Compile Include="Interfaces\ISchedule.cs" />
     <Compile Include="Interfaces\IService.cs" />
-    <Compile Include="Interfaces\IServiceEventSource.cs" />
     <Compile Include="Interfaces\IRequireServiceOriginator.cs" />
     <Compile Include="Interfaces\IStatisticsBase.cs" />
     <Compile Include="Interfaces\ISupportedMessageTypes.cs" />
@@ -640,7 +644,7 @@
       <Link>Properties\ApacheLicense-2.0.txt</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Communication\TcpChannel\Helper\MakeCert.txt" />
+    <Content Include="Communication\TcpTlsChannel\Helper\MakeCert.txt" />
     <Content Include="_Docs\Images\MessageFlow.png" />
     <Content Include="_Docs\Images\MessageProcessing.png" />
     <Content Include="_Docs\Images\Microservice.png" />

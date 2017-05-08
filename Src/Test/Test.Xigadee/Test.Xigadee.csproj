@@ -82,7 +82,6 @@
     <Compile Include="Communication\Bridge\CommunicationRedirectTests.cs" />
     <Compile Include="Communication\Tcp\CommunicationTcp.cs" />
     <Compile Include="Communication\Tcp\Connector.cs" />
-    <Compile Include="Communication\Tcp\TcpTlsChannelListenerHarness.cs" />
     <Compile Include="Configuration\Config1.cs" />
     <Compile Include="Dispatcher\Commands\DispatcherCommand.cs" />
     <Compile Include="Dispatcher\DispatcherTestSecurity.cs" />

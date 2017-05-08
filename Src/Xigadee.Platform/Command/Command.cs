@@ -168,17 +168,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region EventSource
-        /// <summary>
-        /// This is the event source writer.
-        /// </summary>
-        public IEventSource EventSource
-        {
-            get;
-            set;
-        }
-        #endregion
-
         #region OriginatorId
         /// <summary>
         /// This is the service originator Id.

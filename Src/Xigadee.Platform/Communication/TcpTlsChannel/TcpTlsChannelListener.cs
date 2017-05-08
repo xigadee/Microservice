@@ -34,8 +34,15 @@ namespace Xigadee
     /// <summary>
     /// This channel uses the TCP and TLS protocol to communicate between Microservices.
     /// </summary>
-    public class TcpTlsChannelListener : MessagingListenerBase<TcpTlsServerConnector, TcpTlsMessage, TcpTlsServerHolder>, IListenerPoll
+    public class TcpTlsChannelListener : MessagingListenerBase<TcpTlsClient, ServiceMessage, TcpTlsClientHolder>, IListenerPoll
     {
+        /// <summary>
+        /// This is the listener.
+        /// </summary>
+        protected TcpListener mTcpListener = null;
+
+        protected ConcurrentBag<TcpTlsConnection> mTcpClients = null;
+
         #region EndPoint
         /// <summary>
         /// This is the endpoint that the connection should listen on.
@@ -54,6 +61,7 @@ namespace Xigadee
         /// </summary>
         public X509Certificate ServerCertificate { get; set; }
         #endregion
+
         #region SettingsValidate()
         /// <summary>
         /// This method validates the settings necessary to start the sender.
@@ -70,43 +78,49 @@ namespace Xigadee
         }
         #endregion
 
-        TcpListener mTcpListener = null;
-        ConcurrentBag<TcpTlsClientWrapper> mTcpClients = null;
-
+        #region TearUp()
         /// <summary>
         /// This override is used to create the listening port.
         /// </summary>
         protected override void TearUp()
         {
-            mTcpClients = new ConcurrentBag<TcpTlsClientWrapper>();
+            mTcpClients = new ConcurrentBag<TcpTlsConnection>();
             mTcpListener = new TcpListener(EndPoint);
             mTcpListener.Start();
         }
+        #endregion
+        #region TearDown()
         /// <summary>
         /// This override is used to close the listening connections.
         /// </summary>
         protected override void TearDown()
         {
-            var activeClients = mTcpClients.ToList().Select((c) => ClientClose(c)).ToArray() ;
+            mTcpListener.Stop();
+            var activeClients = mTcpClients.ToList().Select((c) => ClientClose(c)).ToArray();
             Task.WaitAll(activeClients);
-
         }
+        #endregion
 
+        #region ClientCreate(ListenerPartitionConfig partition)
         /// <summary>
         /// This override creates the client and registers/unregisters it with the protocol.
         /// </summary>
         /// <param name="partition">The partition to create the client for.</param>
         /// <returns>Returns the client holder.</returns>
-        protected override TcpTlsServerHolder ClientCreate(ListenerPartitionConfig partition)
+        protected override TcpTlsClientHolder ClientCreate(ListenerPartitionConfig partition)
         {
             var client = base.ClientCreate(partition);
 
             client.Type = "TcpTls Listener";
             client.Name = $"Channel{partition.Priority}";
 
+            //TODO: client.ClientCreate = () => new TcpTlsClient();
+
             return client;
         }
+        #endregion
 
+        #region PollRequired
         /// <summary>
         /// This property determines whether the listener requires a poll.
         /// </summary>
@@ -130,7 +144,8 @@ namespace Xigadee
                 }
             }
         }
-
+        #endregion
+        #region Poll()
         /// <summary>
         /// This method returns a job that can be used to monitor communication.
         /// </summary>
@@ -141,7 +156,7 @@ namespace Xigadee
             if (Status == ServiceStatus.Running && (mTcpListener?.Pending() ?? false))
             {
                 var client = await mTcpListener.AcceptTcpClientAsync();
-                await ClientOpen(new TcpTlsClientWrapper { Client = client });
+                await ClientOpen(new TcpTlsConnection { Client = client });
             }
 
             //Find the clients that are pending closure and cloe them.
@@ -157,9 +172,10 @@ namespace Xigadee
                 .Select((c) => ClientRead(c));
 
             await Task.WhenAll(reads);
-        }
+        } 
+        #endregion
 
-        private async Task ClientOpen(TcpTlsClientWrapper client)
+        private async Task ClientOpen(TcpTlsConnection client)
         {
             // A client has connected. Create the 
             // SslStream using the client's network stream.
@@ -187,7 +203,7 @@ namespace Xigadee
             }
         }
 
-        private async Task ClientRead(TcpTlsClientWrapper client)
+        private async Task ClientRead(TcpTlsConnection client)
         {
             if (!client.SslStream.CanRead)
                 return;
@@ -195,7 +211,7 @@ namespace Xigadee
             //int length = await client.SslStream.ReadAsync();
         }
 
-        private async Task ClientClose(TcpTlsClientWrapper client)
+        private async Task ClientClose(TcpTlsConnection client)
         {
 
         }

@@ -26,7 +26,7 @@ namespace Xigadee
     /// <summary>
     /// This class holds the TCP/TLS connectivity logic for a particular channel.
     /// </summary>
-    public class TcpTlsClientHolder : ClientHolder<TcpTlsClientConnector, TcpTlsMessage>
+    public class TcpTlsClientHolder : ClientHolder<TcpTlsClient, ServiceMessage>
     {
         public override Task<List<TransmissionPayload>> MessagesPull(int? count, int? wait, string mappingChannel = null)
         {
@@ -39,19 +39,4 @@ namespace Xigadee
         }
     }
 
-    /// <summary>
-    /// This class holds the TCP/TLS connectivity logic for a particular channel.
-    /// </summary>
-    public class TcpTlsServerHolder : ClientHolder<TcpTlsServerConnector, TcpTlsMessage>
-    {
-        public override Task<List<TransmissionPayload>> MessagesPull(int? count, int? wait, string mappingChannel = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task Transmit(TransmissionPayload payload, int retry = 0)
-        {
-            throw new NotImplementedException();
-        }
-    }
 }

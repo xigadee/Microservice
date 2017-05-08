@@ -14,11 +14,8 @@
 // limitations under the License.
 #endregion
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -26,8 +23,8 @@ namespace Xigadee
     /// This abstract harness holds a message listener and allows unit testing to be performed on it.
     /// </summary>
     /// <typeparam name="L">The listener type.</typeparam>
-    public abstract class ListenerHarness<L>: MessagingHarness<L>
-        where L:class, IListener, IService, IRequireSharedServices
+    public abstract class SenderHarness<L> : MessagingHarness<L>
+        where L : class, ISender, IService
     {
         /// <summary>
         /// This override sets the priority partitions.
@@ -39,29 +36,9 @@ namespace Xigadee
 
             service.PriorityPartitions = PriorityPartitions;
         }
-
-        /// <summary>
-        /// This method starts the listener and prioritises the clients.
-        /// </summary>
-        public override void Start()
-        {
-            base.Start();
-            Clients = new ClientPriorityCollection(new IListener[] { Service }.ToList(), null, PollAlgorithm,0);
-        }
-        /// <summary>
-        /// This is the poll algorithm.
-        /// </summary>
-        public virtual IListenerClientPollAlgorithm PollAlgorithm => new MultipleClientPollSlotAllocationAlgorithm();
-        /// <summary>
-        /// This is the client priority collection.
-        /// </summary>
-        public ClientPriorityCollection Clients { get; set; }
-
-        #region PriorityPartitions
         /// <summary>
         /// This is the set of default priority partitions. Override if you wish to change.
         /// </summary>
-        public virtual List<ListenerPartitionConfig> PriorityPartitions => ListenerPartitionConfig.Init(0, 1).ToList();
-        #endregion
+        public virtual List<SenderPartitionConfig> PriorityPartitions => SenderPartitionConfig.Init(0, 1).ToList();
     }
 }

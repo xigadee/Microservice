@@ -31,7 +31,7 @@ namespace Xigadee
     /// <summary>
     /// This sender uses the TCP and TLS protocols to efficently transmit requests to a remote Microservices.
     /// </summary>
-    public class TcpTlsChannelSender :MessagingSenderBase<TcpTlsClientConnector, TcpTlsMessage, TcpTlsClientHolder>
+    public class TcpTlsChannelSender :MessagingSenderBase<TcpTlsClient, ServiceMessage, TcpTlsClientHolder>
     {
         #region EndPoint
         /// <summary>
@@ -45,6 +45,13 @@ namespace Xigadee
         /// </summary>
         public SslProtocols ProtocolLevel { get; set; } = SslProtocols.Tls12;
         #endregion
+        #region ServerCertificate
+        /// <summary>
+        /// This is the server certificate. This needs to be set if the ProtocolLevel is set to anything other than SslProtocols.None
+        /// </summary>
+        public X509Certificate ServerCertificate { get; set; }
+        #endregion
+
         #region SettingsValidate()
         /// <summary>
         /// This method validates the settings necessary to start the sender.
@@ -58,11 +65,12 @@ namespace Xigadee
         }
         #endregion
 
+        #region ClientCreate(SenderPartitionConfig partition)
         /// <summary>
-        /// 
+        /// This method creates the client.
         /// </summary>
-        /// <param name="partition"></param>
-        /// <returns></returns>
+        /// <param name="partition">The sender partitions.</param>
+        /// <returns>Returns the client holder.</returns>
         protected override TcpTlsClientHolder ClientCreate(SenderPartitionConfig partition)
         {
             var client = base.ClientCreate(partition);
@@ -71,6 +79,7 @@ namespace Xigadee
             client.Name = partition.Priority.ToString();
 
             return client;
-        }
+        } 
+        #endregion
     }
 }

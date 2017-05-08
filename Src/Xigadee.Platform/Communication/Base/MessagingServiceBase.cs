@@ -31,8 +31,8 @@ namespace Xigadee
     /// <typeparam name="H">The client holder class type.</typeparam>
     /// <typeparam name="P">The partition configuration class type.</typeparam>
     public abstract class MessagingServiceBase<C, M, H, P>: ServiceBase<StatusBase>
-        , IMessaging, IRequirePayloadSerializer
-        , IRequireServiceOriginator, IRequireDataCollector, IMessagingService<P> 
+        , IRequirePayloadSerializer, IRequireServiceOriginator, IRequireDataCollector
+        , IMessaging, IMessagingService<P> 
         where H: ClientHolder<C, M>, new()
         where P: PartitionConfig
     {

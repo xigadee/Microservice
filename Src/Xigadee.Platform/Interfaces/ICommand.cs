@@ -52,8 +52,8 @@ namespace Xigadee
     /// <summary>
     /// This is the root interface implemented by the command class.
     /// </summary>
-    public interface ICommand: ICommandEvents, IService, IRequireScheduler, IRequirePayloadSerializer, 
-        IServiceEventSource, IRequireServiceOriginator, IRequireSharedServices, IRequireDataCollector
+    public interface ICommand: ICommandEvents, IService, IRequireScheduler, IRequirePayloadSerializer
+        , IRequireServiceOriginator, IRequireSharedServices, IRequireDataCollector
     {
         /// <summary>
         /// This is the default listening channel id for incoming requests.

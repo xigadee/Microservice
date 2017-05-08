@@ -263,7 +263,7 @@ namespace Xigadee
         /// <param name="rType"></param>
         /// <param name="payloadRs">The incoming response payload.</param>
         /// <param name="processAsync"></param>
-        /// <returns></returns>
+        /// <returns>Returns the response wrapper generic object.</returns>
         protected virtual ResponseWrapper<RS> ProcessOutgoingResponse<RS>(TaskStatus rType, TransmissionPayload payloadRs, bool processAsync)
         {
             StatisticsInternal.ActiveDecrement(payloadRs?.Extent ?? TimeSpan.Zero);
@@ -373,7 +373,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="payload">The incoming payload.</param>
         /// <param name="responses">The responses collection is not currently used.</param>
-        protected virtual async Task OutgoingRequestResponseIn(TransmissionPayload payload, List<TransmissionPayload> responses)
+        protected virtual Task OutgoingRequestResponseIn(TransmissionPayload payload, List<TransmissionPayload> responses)
         {
             try
             {
@@ -385,7 +385,7 @@ namespace Xigadee
                 {
                     //If there is not a match key then quit.
                     Collector?.LogMessage(LoggingLevel.Warning, $"OutgoingRequestResponseIn - id {id ?? "is null"} not matched.", "RqRsMismatch");
-                    return;
+                    return Task.FromResult(0);
                 }
 
                 holder.Tcs.SetResult(payload);
@@ -401,6 +401,8 @@ namespace Xigadee
                 //Signal to the listener to release the message.
                 payload?.SignalSuccess();
             }
+
+            return Task.FromResult(0);
         }
         #endregion
 
@@ -410,26 +412,29 @@ namespace Xigadee
         /// </summary>
         /// <param name="schedule">The timer schedule.</param>
         /// <param name="token">The cancellation token.</param>
-        protected virtual async Task TimeOutScheduler(Schedule schedule, CancellationToken token)
+        protected virtual Task TimeOutScheduler(Schedule schedule, CancellationToken token)
         {
-            if (mOutgoingRequests?.IsEmpty ?? true)
-                return;
-
-            var timeoutSchedule = schedule as CommandTimeoutSchedule;
-
-            var results = mOutgoingRequests.Values
-                .Where(i => i.HasExpired())
-                .Select((k) => k.Id)
-                .ToList();
-
-            if (results.Count > 0)
+            if (!(mOutgoingRequests?.IsEmpty ?? true))
             {
-                //Increment the record of time out requests.
-                timeoutSchedule?.TimeoutIncrement(results.Count);
 
-                //Loop through each time out and cancel it.
-                results.ForEach((id) => OutgoingRequestTimeout(id));
+                var timeoutSchedule = schedule as CommandTimeoutSchedule;
+
+                var results = mOutgoingRequests.Values
+                    .Where(i => i.HasExpired())
+                    .Select((k) => k.Id)
+                    .ToList();
+
+                if (results.Count > 0)
+                {
+                    //Increment the record of time out requests.
+                    timeoutSchedule?.TimeoutIncrement(results.Count);
+
+                    //Loop through each time out and cancel it.
+                    results.ForEach((id) => OutgoingRequestTimeout(id));
+                }
             }
+
+            return Task.FromResult(0);
         }
         #endregion
         #region --> TimeoutTaskManager(string originatorKey)
@@ -483,6 +488,12 @@ namespace Xigadee
         [DebuggerDisplay("{Debug}")]
         protected class OutgoingRequestTracker: OutgoingRequest
         {
+            /// <summary>
+            /// This holder class is used to track outgoing requests.
+            /// </summary>
+            /// <param name="payload">The payload.</param>
+            /// <param name="ttl">The time to live.</param>
+            /// <param name="start">The process start tickcount.</param>
             public OutgoingRequestTracker(TransmissionPayload payload, TimeSpan ttl, int? start = null):base(payload, ttl, start)
             {
                 Tcs = new TaskCompletionSource<TransmissionPayload>();

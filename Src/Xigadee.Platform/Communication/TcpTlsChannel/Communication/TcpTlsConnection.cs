@@ -34,7 +34,7 @@ namespace Xigadee
     /// <summary>
     /// This wrapper holds the connection.
     /// </summary>
-    public class TcpTlsClientWrapper
+    public class TcpTlsConnection
     {
         public byte[] Buffer => new byte[10240];
 
