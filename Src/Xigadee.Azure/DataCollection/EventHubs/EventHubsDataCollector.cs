@@ -91,7 +91,7 @@ namespace Xigadee
         protected EventHubClient CreateEventHubClient()
         {
             var client = EventHubClient.CreateFromConnectionString(mConnection);
-            client.RetryPolicy = new RetryExponential(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(30), 3);
+            client.RetryPolicy = new RetryExponential(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(30), 5);
             return client;
         }
 
@@ -126,7 +126,6 @@ namespace Xigadee
             {
                 result = ResourceRequestResult.Exception;
                 StatisticsInternal.ErrorIncrement(options.Support);
-                mEventHubClient = CreateEventHubClient();
                 throw;
             }
             finally
