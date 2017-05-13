@@ -42,6 +42,8 @@ namespace Xigadee
 
         public TcpClient Client { get; set; }
 
+        public Stream DataStream {get;set;}
+
         public SslStream SslStream { get; set; }
 
         public bool CanClose

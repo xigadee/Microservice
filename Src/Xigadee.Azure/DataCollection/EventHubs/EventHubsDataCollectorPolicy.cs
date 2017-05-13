@@ -107,7 +107,5 @@ namespace Xigadee
                 yield return Security;
             }
         }
-
-
     }
 }

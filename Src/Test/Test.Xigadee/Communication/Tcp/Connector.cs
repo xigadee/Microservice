@@ -9,15 +9,16 @@ using System.Threading.Tasks;
 
 namespace Test.Xigadee
 {
-    [Ignore]
     [TestClass]
     public class TcpTlsConnectionTests
     {
+        //[Ignore]
         [TestMethod]
         public void Connector1()
         {
             bool stop = false;
             var server = new TcpTlsServer(new IPEndPoint(IPAddress.Any, 9090), SslProtocols.None, null);
+            var client = new TcpTlsClient(new IPEndPoint(IPAddress.Loopback, 9090), SslProtocols.None, null);
 
             server.Start();
 
@@ -27,20 +28,19 @@ namespace Test.Xigadee
                 {
                     if (server.PollRequired)
                         Task.Run(async () => await server.Poll());
+                    if (client.PollRequired)
+                        Task.Run(async () => await client.Poll());
+
                     Thread.Sleep(10);
                 }
-
             }));
 
             toRun.Start();
 
-            var client = new TcpTlsClient(new IPEndPoint(IPAddress.Loopback, 9090), SslProtocols.None, null);
 
             client.Start();
 
             server.Poll().Wait();
         }
-
-
     }
 }

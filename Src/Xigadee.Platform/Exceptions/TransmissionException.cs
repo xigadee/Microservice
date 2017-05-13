@@ -28,16 +28,16 @@ namespace Xigadee
     public class TransmissionException : Exception
     {
         /// <summary>
-        /// Initializes a new instance of the XimuraException class.
+        /// Initializes a new instance of the TransmissionException class.
         /// </summary>
         public TransmissionException() : base() { }
         /// <summary>
-        /// Initializes a new instance of the XimuraException class.
+        /// Initializes a new instance of the TransmissionException class.
         /// </summary>
         /// <param name="message">The error message.</param>
         public TransmissionException(string message) : base(message) { }
         /// <summary>
-        /// Initializes a new instance of the XimuraException class.
+        /// Initializes a new instance of the TransmissionException class.
         /// </summary>
         /// <param name="message">The error message.</param>
         /// <param name="ex">The base exception.</param>
@@ -50,16 +50,16 @@ namespace Xigadee
     public class RetryExceededTransmissionException : TransmissionException
     {
         /// <summary>
-        /// Initializes a new instance of the XimuraException class.
+        /// Initializes a new instance of the RetryExceededTransmissionException class.
         /// </summary>
         public RetryExceededTransmissionException() : base() { }
         /// <summary>
-        /// Initializes a new instance of the XimuraException class.
+        /// Initializes a new instance of the RetryExceededTransmissionException class.
         /// </summary>
         /// <param name="message">The error message.</param>
         public RetryExceededTransmissionException(string message) : base(message) { }
         /// <summary>
-        /// Initializes a new instance of the XimuraException class.
+        /// Initializes a new instance of the RetryExceededTransmissionException class.
         /// </summary>
         /// <param name="message">The error message.</param>
         /// <param name="ex">The base exception.</param>

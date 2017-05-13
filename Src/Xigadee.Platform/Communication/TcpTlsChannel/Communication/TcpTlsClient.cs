@@ -47,19 +47,26 @@ namespace Xigadee
             mConnection.Client = new TcpClient();
             mConnection.Client.Connect(EndPoint);
             var stream = mConnection.Client.GetStream();
-            mConnection.SslStream = new SslStream(stream, false, ValidateServerCertificate);
 
-            // The server name must match the name on the server certificate.
-            try
+            if (SslProtocolLevel == SslProtocols.None)
+                mConnection.DataStream = stream;
+            else
             {
-                mConnection.SslStream.AuthenticateAsClient(EndPoint.Address.ToString());
-            }
-            catch (AuthenticationException e)
-            {
-                mConnection.Client.Close();
-                return;
-            }
+                mConnection.SslStream = new SslStream(stream, false, ValidateServerCertificate);
 
+                // The server name must match the name on the server certificate.
+                try
+                {
+                    mConnection.SslStream.AuthenticateAsClient(EndPoint.Address.ToString());
+                }
+                catch (AuthenticationException e)
+                {
+                    mConnection.Client.Close();
+                    return;
+                }
+
+                mConnection.DataStream = mConnection.SslStream;
+            }
         }
         #endregion
         #region Stop()
@@ -71,6 +78,28 @@ namespace Xigadee
 
         }
         #endregion
+
+        public virtual async Task Write(TransmissionPayload payload)
+        {
+            WriteStatus("POST", payload.Message.ToServiceMessageHeader().ToKey(), payload.Id);
+            //WriteHeader("POST", payload.Message.);
+            WriteMessage(payload.Message.Blob);
+        }
+
+        private async Task WriteStatus(string verb, string address, Guid Id)
+        {
+
+        }
+
+        private async Task WriteHeader(string key, string value)
+        {
+
+        }
+
+        private async Task WriteMessage(byte[] message)
+        {
+
+        }
 
         // The following method is invoked by the RemoteCertificateValidationDelegate.
         protected virtual bool ValidateServerCertificate(
@@ -86,6 +115,13 @@ namespace Xigadee
 
             // Do not allow this client to communicate with unauthenticated servers.
             return false;
+        }
+
+        public override bool PollRequired => (mConnection?.DataStream?.CanRead ?? false) || (mConnection?.DataStream?.CanWrite ?? false);
+
+        public override async Task Poll()
+        {
+
         }
     }
 }
