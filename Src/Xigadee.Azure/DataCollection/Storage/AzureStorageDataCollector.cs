@@ -51,6 +51,7 @@ namespace Xigadee
         /// 
         /// </summary>
         /// <param name="credentials"></param>
+        /// <param name="policy"></param>
         /// <param name="context"></param>
         /// <param name="resourceProfile"></param>
         /// <param name="encryptionId"></param>

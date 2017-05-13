@@ -495,8 +495,8 @@ namespace Xigadee
                 args.KeyType = typeof(K).Name;
                 args.EntityType = entityType;
                 args.TraceId = traceId;
-                args.Id = idVersion.Item1;
-                args.VersionId = idVersion.Item2;
+                args.Id = idVersion?.Item1;
+                args.VersionId = idVersion?.Item2;
 
                 args.ProcessCorrelationKey = processCorrelationKey;
                 args.OriginatorKey = originatorKey;

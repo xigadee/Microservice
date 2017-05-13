@@ -212,6 +212,7 @@
     <Compile Include="Configuration\ConfigResolver\ConfigResolverKeyVault.cs" />
     <Compile Include="Configuration\ConfigResolver\ConfigResolverAzure.cs" />
     <Compile Include="Configuration\ConfigResolver\ConfigResolverTableStorage.cs" />
+    <Compile Include="DataCollection\EventHubs\AddEventHubsDataCollector.cs" />
     <Compile Include="DataCollection\EventHubs\EventHubsDataCollectorPolicy.cs" />
     <Compile Include="DataCollection\EventHubs\EventHubsDataCollector.cs" />
     <Compile Include="DataCollection\EventHubs\EventHubsDataCollectorOptions.cs" />
