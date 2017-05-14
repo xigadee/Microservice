@@ -30,19 +30,6 @@ namespace Test.Xigadee.Communication.Tcp
             }
         }
 
-        [TestMethod]
-        public void HttpRequestContinuity()
-        {
-            try
-            {
-                var testHTTP =
-                    new MessageLoad<HTTPRequestMessage>("Test.Xigadee.Communication.Tcp.HttpSamples.http1_rq_cont.txt, TestXigadee");
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
 
         [TestMethod]
         public void HttpResponses()
@@ -66,31 +53,29 @@ namespace Test.Xigadee.Communication.Tcp
 
 
         [TestMethod]
-        public void HttpMime()
+        public void HttpRequestContinuity()
         {
             try
             {
-                using (Stream sResource = MessageLoad<HTTPResponseMessage>.ResourceLoadStream(
+                using (Stream sResource = MessageLoad<HTTPRequestMessage>.ResourceLoadStream(
                     "Test.Xigadee.Communication.Tcp.HttpSamples.http1_rq_cont.txt, TestXigadee"))
                 {
-                    var tempMessage = new HTTPResponseMessage();
+                    var tempMessage = new HTTPRequestMessage();
+                    var tempMessage2 = new HTTPRequestMessage();
 
                     tempMessage.Load();
+                    tempMessage2.Load();
 
                     var result = tempMessage.WriteFromStream(sResource);
 
                     if (result.overread.HasValue)
                     {
-                        var tempMessage2 = new HTTPResponseMessage();
-
-                        tempMessage2.Load();
-
                         var result2 = tempMessage2.WriteFromStream(sResource, result.overread);
-
                     }
+
+                    Assert.IsFalse(tempMessage.CanRead);
+                    Assert.IsFalse(tempMessage2.CanRead);
                 }
-
-
             }
             catch (Exception ex)
             {

@@ -25,6 +25,14 @@ namespace Xigadee
     /// </summary>
     public static class MessageHelper
     {
+        /// <summary>
+        /// This method is used to write a byte overread from the stream
+        /// </summary>
+        /// <param name="message">The message to write to.</param>
+        /// <param name="buffer">The byte arrary.</param>
+        /// <param name="offset">The offset.</param>
+        /// <param name="count">The byte count to write.</param>
+        /// <returns>Returns a tuple containing the number of bytes read, and the new array offset.</returns>
         public static (int read, (byte[] buffer, int offset, int count)? overread) WriteFromOverRead(
             this IMessage message, byte[] buffer, int offset, int count)
         {
@@ -49,7 +57,6 @@ namespace Xigadee
                 return (totalByte, null);
 
             return (totalByte, (buffer, offset, count));
-
         }
         /// <summary>
         /// This method reads from the stream and writes to the message.
@@ -57,7 +64,7 @@ namespace Xigadee
         /// <param name="message">The message to write to.</param>
         /// <param name="toRead">The stream to be read from.</param>
         /// <param name="overread">This tuple contains any overread of data from an earlier read to a stream.</param>
-        /// <returns></returns>
+        /// <returns>Returns a tuple containing the number of bytes read, and the new array offset.</returns>
         public static (int read, (byte[] buffer, int offset, int count)? overread) WriteFromStream(
             this IMessage message, Stream toRead
             , (byte[] buffer, int offset, int count)? overread = null)

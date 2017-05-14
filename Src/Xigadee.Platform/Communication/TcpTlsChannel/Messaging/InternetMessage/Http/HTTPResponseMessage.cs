@@ -33,8 +33,6 @@ namespace Xigadee
 {
     public class HTTPResponseMessage : InternetMessage
     {
-        #region Declarations
-        #endregion // Declarations
         #region Constructor
         /// <summary>
         /// The default constructor
@@ -55,6 +53,6 @@ namespace Xigadee
                 return typeof(HTTPResponseHeaderFragment);
             }
         }
-        #endregion // FragmentInitialType
+        #endregion
     }
 }

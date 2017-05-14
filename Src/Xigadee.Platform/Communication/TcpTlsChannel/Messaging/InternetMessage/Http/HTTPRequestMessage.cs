@@ -46,7 +46,7 @@ namespace Xigadee
                 return typeof(HTTPRequestHeaderFragment);
             }
         }
-        #endregion // FragmentInitialType
+        #endregion
 
 #if (DEBUG)
         public override int Write(byte[] buffer, int offset, int count)
