@@ -164,6 +164,7 @@
     <Compile Include="Communication\TcpTlsChannel\Messaging\MessageCRLFFragment.cs" />
     <Compile Include="Communication\TcpTlsChannel\Messaging\MessageDirection.cs" />
     <Compile Include="Communication\TcpTlsChannel\Messaging\MessageFragment.cs" />
+    <Compile Include="Communication\TcpTlsChannel\Messaging\MessageHelper.cs" />
     <Compile Include="Communication\TcpTlsChannel\Messaging\MessageStreamBase.cs" />
     <Compile Include="Communication\TcpTlsChannel\Messaging\Termination\CRLFMatchCollectionState.cs" />
     <Compile Include="Communication\TcpTlsChannel\Messaging\Termination\FragmentTerminationType.cs" />

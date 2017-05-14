@@ -62,7 +62,6 @@ namespace Xigadee﻿
         }
         #endregion
 
-
         #region FragmentHeaderType
         /// <summary>
         /// This method returns the generic fragment header type.
@@ -86,7 +85,7 @@ namespace Xigadee﻿
                 return typeof(HeaderFragment<MessageTerminatorCRLFFolding>);
             }
         }
-        #endregion // FragmentInitialType
+        #endregion
 
         #region FragmentBodyType
         /// <summary>
@@ -128,7 +127,6 @@ namespace Xigadee﻿
         /// <summary>
         /// This method extracts the header value for the particular key.
         /// </summary>
-        /// <param name="keyValue">The key to retrieve.</param>
         /// <returns>The collection of strings.</returns>
         public virtual IEnumerable<HeaderFragment> HeaderFragments()
         {
@@ -153,7 +151,7 @@ namespace Xigadee﻿
                 }
             }
         }
-        #endregion // Header(string keyValue)
+        #endregion
         #region Headers(string keyValue)
         /// <summary>
         /// This method extracts the header value for the particular key.
@@ -185,7 +183,7 @@ namespace Xigadee﻿
                 }
             }
         }
-        #endregion // Headers(string keyValue)
+        #endregion
 
         #region HeaderExists(string key)
         /// <summary>
@@ -226,7 +224,7 @@ namespace Xigadee﻿
 
             FragmentAddInternal(fragment);
         }
-        #endregion // HeaderAdd
+        #endregion
         #region HeaderCollectionBuild()
         /// <summary>
         /// This method builds the header collection based on the header field. 
@@ -305,6 +303,6 @@ namespace Xigadee﻿
                 return null;
             return frag.FieldData;
         }
-        #endregion // Host
+        #endregion
     }
 }

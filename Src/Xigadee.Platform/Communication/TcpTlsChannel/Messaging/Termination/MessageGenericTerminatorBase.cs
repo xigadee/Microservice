@@ -51,7 +51,6 @@ namespace Xigadee
         public MessageGenericTerminatorBase()
             : base()
         {
-            mState = null;
             Initialized = false;
         }
         #endregion

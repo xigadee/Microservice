@@ -144,6 +144,6 @@ namespace Xigadee
         {
             data = new DateTime(r.ReadInt64());
         }
-        #endregion // Serialization Helpers
+        #endregion 
     }
 }

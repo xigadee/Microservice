@@ -36,8 +36,6 @@ namespace Xigadee
     /// </summary>
     public class MessageTerminatorCRLFFolding : MessageGenericTerminatorBase<CRLFMatchCollectionState>
     {
-        #region Declarations
-        #endregion // Declarations
         #region Constructor
         /// <summary>
         /// The default constructor
