@@ -37,10 +37,13 @@ namespace Test.Xigadee
 
             toRun.Start();
 
-
             client.Start();
 
             server.Poll().Wait();
+
+            stop = true;
+            if (toRun.IsAlive)
+                toRun.Abort();
         }
     }
 }

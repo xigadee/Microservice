@@ -52,7 +52,6 @@ namespace Xigadee
                 totalByte += consumed;
             }
 
-
             if (count == 0)
                 return (totalByte, null);
 
