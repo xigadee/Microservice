@@ -7,6 +7,7 @@ using System.Linq;
 
 namespace Test.Xigadee.Communication.Tcp
 {
+    [Ignore]
     [TestClass]
     public class ValidateHttpMessaging
     {
