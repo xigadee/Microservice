@@ -12,16 +12,16 @@ namespace Xigadee
     public abstract class CommandException:Exception
     {
         /// <summary>
-        /// Initializes a new instance of the XimuraException class.
+        /// Initializes a new instance of the CommandException class.
         /// </summary>
         protected CommandException() : base() { }
         /// <summary>
-        /// Initializes a new instance of the XimuraException class.
+        /// Initializes a new instance of the CommandException class.
         /// </summary>
         /// <param name="message">The error message.</param>
         protected CommandException(string message) : base(message) { }
         /// <summary>
-        /// Initializes a new instance of the XimuraException class.
+        /// Initializes a new instance of the CommandException class.
         /// </summary>
         /// <param name="message">The error message.</param>
         /// <param name="ex">The base exception.</param>

@@ -28,16 +28,16 @@ namespace Xigadee
     public class CommandStartupException: CommandException
     {
         /// <summary>
-        /// Initializes a new instance of the XimuraException class.
+        /// Initializes a new instance of the CommandStartupException class.
         /// </summary>
         public CommandStartupException() : base() { }
         /// <summary>
-        /// Initializes a new instance of the XimuraException class.
+        /// Initializes a new instance of the CommandStartupException class.
         /// </summary>
         /// <param name="message">The error message.</param>
         public CommandStartupException(string message) : base(message) { }
         /// <summary>
-        /// Initializes a new instance of the XimuraException class.
+        /// Initializes a new instance of the CommandStartupException class.
         /// </summary>
         /// <param name="message">The error message.</param>
         /// <param name="ex">The base exception.</param>

@@ -1,0 +1,11 @@
+GET / HTTP/1.1
+Host: www.guardian.co.uk
+Connection: keep-alive
+User-Agent: Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.5 (KHTML, like Gecko) Chrome/4.0.249.89 Safari/532.5
+Cache-Control: max-age=0
+Accept: application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5
+Accept-Encoding: gzip,deflate,sdch
+Cookie: GU_MU=UzUtOU93cjZEQ1FBQUNJZldlUUFBQVA0fFRhR0hzblBQa0dXTCtDM3ZCMXBDRWc9PQ==; GU_LOCATION=Z2JyOjU6ZW5nOjQ6bG9uZG9uOjM6ODI2MDA1Onhkc2w6IDUxLjUwNjogLTAuMTI3QDUzMjkxMjgxODMyNzIxNDE2ODEyNjI0MTUyMjExOTEzMjA3MjIw; s_sess=%20s_cc%3Dtrue%3B%20s_sq%3D%3B; NGUserID=afb0c6f-16473-1268776253-3; s_vi=[CS]v1|25CFFE9E85012431-600001166002B00A[CE]; GU_ST=; rsi_segs=E05516_11504|E05516_12037; GU_revsci=%27E05516_11504%27%2C%27E05516_12037%27; s_pers=%20s_ev33_persist%3DDirect%2520Load%7C1269381022730%3B%20s_ev36_persist%3DDirect%2520Load%7C1269381022733%3B%20s_37_persist%3DDirect%2520Load-No%2520Referrer%7C1269381022735%3B%20s_visit%3D1%7C1268778051494%3B%20gpv_pageName%3Dguardian.co.uk%2520home%253ANetwork%2520Front%253A18244%7C1268778051499%3B%20s_nr%3D1268776251502-New%7C1300312251502%3B
+Accept-Language: en-GB,en-US;q=0.8,en;q=0.6
+Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.3
+

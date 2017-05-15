@@ -6,7 +6,7 @@ using System.Net;
 
 namespace Test.Xigadee
 {
-    //[Ignore]
+    [Ignore]
     [TestClass]
     public class CommunicationBridgeTcp
     {

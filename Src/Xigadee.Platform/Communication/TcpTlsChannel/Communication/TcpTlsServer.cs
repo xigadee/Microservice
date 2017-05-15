@@ -84,7 +84,7 @@ namespace Xigadee
         /// <summary>
         /// This property determines whether the listener requires a poll.
         /// </summary>
-        public bool PollRequired
+        public override bool PollRequired
         {
             get
             {
@@ -111,7 +111,7 @@ namespace Xigadee
         /// This method returns a job that can be used to monitor communication.
         /// </summary>
         /// <returns>Async.</returns>
-        public async Task Poll()
+        public override async Task Poll()
         {
             if (Interlocked.CompareExchange(ref mPollActive, 1, 0)==1)
                 return;
@@ -125,7 +125,7 @@ namespace Xigadee
                     await ClientOpen(new TcpTlsConnection { Client = client });
                 }
 
-                //Find the clients that are pending closure and cloe them.
+                //Find the clients that are pending closure and close them.
                 var close = mTcpClients
                     .Where((c) => c.CanClose)
                     .Select((c) => ClientClose(c));
@@ -153,30 +153,39 @@ namespace Xigadee
 
         private async Task ClientOpen(TcpTlsConnection client)
         {
-            // A client has connected. Create the 
-            // SslStream using the client's network stream.
-            client.SslStream = new SslStream(client.Client.GetStream());
-            // Authenticate the server but don't require the client to authenticate.
-            try
+            if (SslProtocolLevel == SslProtocols.None)
             {
-                await client.SslStream.AuthenticateAsServerAsync(ServerCertificate, false, SslProtocolLevel, true);
-                // Set timeouts for the read and write to 5 seconds.
-                client.SslStream.ReadTimeout = 200;
-                client.SslStream.WriteTimeout = 200;
-
-                // Write a message to the client.
-                byte[] message = Encoding.UTF8.GetBytes("Hello from the server.<EOF>");
-                Console.WriteLine("Sending hello message.");
-                client.SslStream.Write(message);
-
-                mTcpClients.Add(client);
+                client.DataStream = client.Client.GetStream();
             }
-            catch (AuthenticationException e)
+            else
             {
-                client.SslStream.Close();
-                client.Client.Close();
-                return;
+                // A client has connected. Create the 
+                // SslStream using the client's network stream.
+                client.SslStream = new SslStream(client.Client.GetStream());
+
+                // Authenticate the server but don't require the client to authenticate.
+                try
+                {
+                    await client.SslStream.AuthenticateAsServerAsync(ServerCertificate, false, SslProtocolLevel, true);
+                    // Set timeouts for the read and write to 5 seconds.
+                    client.SslStream.ReadTimeout = 200;
+                    client.SslStream.WriteTimeout = 200;
+                    client.DataStream = client.SslStream;
+                }
+                catch (AuthenticationException e)
+                {
+                    client.SslStream.Close();
+                    client.Client.Close();
+                    return;
+                }
             }
+
+            mTcpClients.Add(client);
+
+            // Write a message to the client.
+            byte[] message = Encoding.UTF8.GetBytes("Hello from the server.<EOF>");
+            client.DataStream.Write(message, 0, message.Length);
+            client.DataStream.Flush();
         }
 
         private async Task ClientRead(TcpTlsConnection client)
@@ -184,13 +193,13 @@ namespace Xigadee
             if (!client.SslStream.CanRead)
                 return;
 
-            //int length = await client.SslStream.ReadAsync();
+            int length = await client.DataStream.ReadAsync(client.Buffer,0, client.Buffer.Length);
         }
 
         private async Task ClientClose(TcpTlsConnection client)
         {
-            client.SslStream.Flush();
-            client.SslStream.Close();
+            client.DataStream.Flush();
+            client.DataStream.Close();
         }
 
     }

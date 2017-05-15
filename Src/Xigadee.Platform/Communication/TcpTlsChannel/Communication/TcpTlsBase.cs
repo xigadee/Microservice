@@ -46,6 +46,16 @@ namespace Xigadee
         }
         #endregion
 
+        /// <summary>
+        /// This property determines whether the client requires any attention.
+        /// </summary>
+        public virtual bool PollRequired { get { return false; } }
+
+        /// <summary>
+        /// This method implements the action poll logic.
+        /// </summary>
+        public abstract Task Poll();
+
         #region EndPoint
         /// <summary>
         /// This is the endpoint that the connection should listen on.

@@ -82,6 +82,7 @@
     <Compile Include="Communication\Bridge\CommunicationRedirectTests.cs" />
     <Compile Include="Communication\Tcp\CommunicationTcp.cs" />
     <Compile Include="Communication\Tcp\Connector.cs" />
+    <Compile Include="Communication\Tcp\ValidateHttpMessaging.cs" />
     <Compile Include="Configuration\Config1.cs" />
     <Compile Include="Dispatcher\Commands\DispatcherCommand.cs" />
     <Compile Include="Dispatcher\DispatcherTestSecurity.cs" />
@@ -139,6 +140,19 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Common\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Communication\Tcp\HttpSamples\http1_rq.txt" />
+    <EmbeddedResource Include="Communication\Tcp\HttpSamples\http1_rs.txt" />
+    <EmbeddedResource Include="Communication\Tcp\HttpSamples\http2_rq.txt" />
+    <EmbeddedResource Include="Communication\Tcp\HttpSamples\http2_rs.txt" />
+    <EmbeddedResource Include="Communication\Tcp\HttpSamples\http3_rq.txt" />
+    <EmbeddedResource Include="Communication\Tcp\HttpSamples\http3_rs.txt" />
+    <EmbeddedResource Include="Communication\Tcp\HttpSamples\HTTPChuckedTest1.txt" />
+    <EmbeddedResource Include="Communication\Tcp\HttpSamples\httpMime1.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Communication\Tcp\HttpSamples\http1_rq_cont.txt" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

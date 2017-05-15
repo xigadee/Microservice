@@ -28,16 +28,16 @@ namespace Xigadee
     public class PayloadSerializationException : Exception
     {
         /// <summary>
-        /// Initializes a new instance of the XimuraException class.
+        /// Initializes a new instance of the class.
         /// </summary>
         public PayloadSerializationException() : base() { }
         /// <summary>
-        /// Initializes a new instance of the XimuraException class.
+        /// Initializes a new instance of the class.
         /// </summary>
         /// <param name="message">The error message.</param>
         public PayloadSerializationException(string message) : base(message) { }
         /// <summary>
-        /// Initializes a new instance of the XimuraException class.
+        /// Initializes a new instance of the class.
         /// </summary>
         /// <param name="message">The error message.</param>
         /// <param name="ex">The base exception.</param>
