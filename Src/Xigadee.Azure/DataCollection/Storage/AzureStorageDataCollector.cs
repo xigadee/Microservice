@@ -44,7 +44,6 @@ namespace Xigadee
         protected Dictionary<DataCollectionSupport, AzureStorageConnectorQueue> mHoldersQueue;
         protected Dictionary<DataCollectionSupport, AzureStorageConnectorFile> mHoldersFile;
 
-        protected readonly EncryptionHandlerId mEncryption;
         #endregion
         #region Constructor
         /// <summary>
