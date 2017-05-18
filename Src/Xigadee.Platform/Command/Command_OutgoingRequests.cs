@@ -384,7 +384,7 @@ namespace Xigadee
                 if (id == null || !mOutgoingRequests.TryRemove(id, out holder))
                 {
                     //If there is not a match key then quit.
-                    Collector?.LogMessage(LoggingLevel.Warning, $"OutgoingRequestResponseIn - id {id ?? "is null"} not matched.", "RqRsMismatch");
+                    Collector?.LogMessage(LoggingLevel.Warning, $"OutgoingRequestResponseIn - id {id ?? "is null"} not matched for {payload?.Message?.ProcessCorrelationKey}", "RqRsMismatch");
                     return Task.FromResult(0);
                 }
 
@@ -465,7 +465,7 @@ namespace Xigadee
 
                 holder.Tcs.SetCanceled();
                 //If there is not a match key then quit.
-                Collector?.LogMessage(LoggingLevel.Warning, $"OutgoingRequestTimeout - id={id} has timeout.", "RqRsTimeout");
+                Collector?.LogMessage(LoggingLevel.Warning, $"OutgoingRequestTimeout - id={id} has timeout for {holder?.Payload?.Message?.ProcessCorrelationKey}", "RqRsTimeout");
 
                 //Raise the reference to the time out
                 OnOutgoingRequestTimeout?.Invoke(this, holder);
