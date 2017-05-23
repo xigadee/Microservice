@@ -7,7 +7,6 @@ using System.Linq;
 
 namespace Test.Xigadee.Communication.Tcp
 {
-    [Ignore]
     [TestClass]
     public class ValidateHttpMessaging
     {
@@ -17,13 +16,13 @@ namespace Test.Xigadee.Communication.Tcp
             try
             {
                 var testHTTP_RQ1 =
-                    new MessageLoad<HTTPRequestMessage>("Test.Xigadee.Communication.Tcp.HttpSamples.http1_rq.txt, TestXigadee");
+                    new MessageLoad<HttpProtocolRequestMessage>("Test.Xigadee.Communication.Tcp.HttpSamples.http1_rq.txt, TestXigadee");
 
                 var testHTTP_RQ2 =
-                    new MessageLoad<HTTPRequestMessage>("Test.Xigadee.Communication.Tcp.HttpSamples.http2_rq.txt, TestXigadee");
+                    new MessageLoad<HttpProtocolRequestMessage>("Test.Xigadee.Communication.Tcp.HttpSamples.http2_rq.txt, TestXigadee");
 
                 var testHTTP_RQ3 =
-                    new MessageLoad<HTTPRequestMessage>("Test.Xigadee.Communication.Tcp.HttpSamples.http3_rq.txt, TestXigadee");
+                    new MessageLoad<HttpProtocolRequestMessage>("Test.Xigadee.Communication.Tcp.HttpSamples.http3_rq.txt, TestXigadee");
             }
             catch (Exception ex)
             {
@@ -38,13 +37,13 @@ namespace Test.Xigadee.Communication.Tcp
             try
             {
                 var testHTTP_RS1 =
-                    new MessageLoad<HTTPResponseMessage>("Test.Xigadee.Communication.Tcp.HttpSamples.http1_rs.txt, TestXigadee");
+                    new MessageLoad<HttpProtocolResponseMessage>("Test.Xigadee.Communication.Tcp.HttpSamples.http1_rs.txt, TestXigadee");
 
                 var testHTTP_RS2 =
-                    new MessageLoad<HTTPResponseMessage>("Test.Xigadee.Communication.Tcp.HttpSamples.http2_rs.txt, TestXigadee");
+                    new MessageLoad<HttpProtocolResponseMessage>("Test.Xigadee.Communication.Tcp.HttpSamples.http2_rs.txt, TestXigadee");
 
                 var testHTTP_RS3 =
-                    new MessageLoad<HTTPResponseMessage>("Test.Xigadee.Communication.Tcp.HttpSamples.http3_rs.txt, TestXigadee");
+                    new MessageLoad<HttpProtocolResponseMessage>("Test.Xigadee.Communication.Tcp.HttpSamples.http3_rs.txt, TestXigadee");
             }
             catch (Exception ex)
             {
@@ -58,11 +57,11 @@ namespace Test.Xigadee.Communication.Tcp
         {
             try
             {
-                using (Stream sResource = MessageLoad<HTTPRequestMessage>.ResourceLoadStream(
+                using (Stream sResource = MessageLoad<HttpProtocolRequestMessage>.ResourceLoadStream(
                     "Test.Xigadee.Communication.Tcp.HttpSamples.http1_rq_cont.txt, TestXigadee"))
                 {
-                    var tempMessage = new HTTPRequestMessage();
-                    var tempMessage2 = new HTTPRequestMessage();
+                    var tempMessage = new HttpProtocolRequestMessage();
+                    var tempMessage2 = new HttpProtocolRequestMessage();
 
                     tempMessage.Load();
                     tempMessage2.Load();

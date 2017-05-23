@@ -21,7 +21,7 @@ namespace Xigadee
     /// <summary>
     /// This class encapsulates the read stream for a HTTP request message.
     /// </summary>
-    public class HTTPRequestMessage: InternetMessage
+    public class HttpProtocolRequestMessage: InternetMessage
     {
         #region Declarations
         #endregion // Declarations
@@ -29,7 +29,7 @@ namespace Xigadee
         /// <summary>
         /// The default constructor
         /// </summary>
-        public HTTPRequestMessage()
+        public HttpProtocolRequestMessage()
             : base()
         {
         }

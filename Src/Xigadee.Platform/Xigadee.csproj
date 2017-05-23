@@ -122,6 +122,7 @@
     <Compile Include="Communication\TcpTlsChannel\Messaging\Exceptions\MaxSizeMessageException.cs" />
     <Compile Include="Communication\TcpTlsChannel\Messaging\Exceptions\MessageException.cs" />
     <Compile Include="Communication\TcpTlsChannel\Messaging\Exceptions\MessageLoadException.cs" />
+    <Compile Include="Communication\TcpTlsChannel\Messaging\Extensions\MessagingProtocolExtensions.cs" />
     <Compile Include="Communication\TcpTlsChannel\Messaging\Fragments\BodyFragment.cs" />
     <Compile Include="Communication\TcpTlsChannel\Messaging\Fragments\InstructionFragmentBase.cs" />
     <Compile Include="Communication\TcpTlsChannel\Messaging\Fragments\InternetMessageFragmentBody.cs" />

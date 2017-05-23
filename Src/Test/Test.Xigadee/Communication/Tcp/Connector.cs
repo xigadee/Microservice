@@ -12,10 +12,13 @@ namespace Test.Xigadee
     [TestClass]
     public class TcpTlsConnectionTests
     {
-        [Ignore]
+        //[Ignore]
         [TestMethod]
         public void Connector1()
         {
+            var payload = TransmissionPayload.Create<CommunicationBridgeReroute.IContractFinal>();
+
+            //payload.Message.
             bool stop = false;
             var server = new TcpTlsServer(new IPEndPoint(IPAddress.Any, 9090), SslProtocols.None, null);
             var client = new TcpTlsClient(new IPEndPoint(IPAddress.Loopback, 9090), SslProtocols.None, null);
@@ -38,6 +41,9 @@ namespace Test.Xigadee
             toRun.Start();
 
             client.Start();
+
+            client.Write(payload);
+
 
             server.Poll().Wait();
 

@@ -15,6 +15,7 @@
 #endregion
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -24,13 +25,17 @@ using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Xigadee
 {
     public class TcpTlsClient : TcpTlsBase
     {
+        int mPollActive = 0;
+
         TcpTlsConnection mConnection;
+        ConcurrentQueue<HttpRequestMessage> mOutgoing => new ConcurrentQueue<HttpRequestMessage>();
 
         public TcpTlsClient(IPEndPoint endPoint, SslProtocols sslProtocolLevel, X509Certificate serverCertificate)
             : base(endPoint, sslProtocolLevel, serverCertificate)
@@ -81,25 +86,12 @@ namespace Xigadee
 
         public virtual async Task Write(TransmissionPayload payload)
         {
-            WriteStatus("POST", payload.Message.ToServiceMessageHeader().ToKey(), payload.Id);
-            //WriteHeader("POST", payload.Message.);
-            WriteMessage(payload.Message.Blob);
+            var message = new HttpRequestMessage(HttpMethod.Post, payload.Message.DestinationGet().ToKey());
+
+
+            mOutgoing.Enqueue(message);
         }
 
-        private async Task WriteStatus(string verb, string address, Guid Id)
-        {
-
-        }
-
-        private async Task WriteHeader(string key, string value)
-        {
-
-        }
-
-        private async Task WriteMessage(byte[] message)
-        {
-
-        }
 
         // The following method is invoked by the RemoteCertificateValidationDelegate.
         protected virtual bool ValidateServerCertificate(
@@ -117,11 +109,29 @@ namespace Xigadee
             return false;
         }
 
-        public override bool PollRequired => (mConnection?.DataStream?.CanRead ?? false) || (mConnection?.DataStream?.CanWrite ?? false);
+        /// <summary>
+        /// This method indicates whether the client requires attention.
+        /// </summary>
+        public override bool PollRequired => (mPollActive == 1) || (mConnection?.DataStream?.CanRead ?? false) || (mConnection?.DataStream?.CanWrite ?? false) || mOutgoing.Count>0;
 
         public override async Task Poll()
         {
+            if (Interlocked.CompareExchange(ref mPollActive, 1, 0) == 1)
+                return;
 
+            try
+            {
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            finally
+            {
+                mPollActive = 0;
+            }
         }
     }
 }
