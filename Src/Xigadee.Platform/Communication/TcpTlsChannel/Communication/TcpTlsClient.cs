@@ -27,15 +27,21 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This class is used to manage the TcpTls connection to the server.
+    /// </summary>
     public class TcpTlsClient : TcpTlsBase
     {
         int mPollActive = 0;
 
         TcpTlsConnection mConnection;
-        ConcurrentQueue<HttpRequestMessage> mOutgoing => new ConcurrentQueue<HttpRequestMessage>();
+
+        ConcurrentQueue<HttpProtocolRequestMessage> mOutgoing => new ConcurrentQueue<HttpProtocolRequestMessage>();
+        ConcurrentQueue<TransmissionPayload> mIncoming => new ConcurrentQueue<TransmissionPayload>();
 
         public TcpTlsClient(IPEndPoint endPoint, SslProtocols sslProtocolLevel, X509Certificate serverCertificate)
             : base(endPoint, sslProtocolLevel, serverCertificate)
@@ -84,12 +90,29 @@ namespace Xigadee
         }
         #endregion
 
-        public virtual async Task Write(TransmissionPayload payload)
+        /// <summary>
+        /// This method writes the incoming payload to a Http protocol message.
+        /// </summary>
+        /// <param name="payload">The incoming payload.</param>
+        /// <returns>This method is async.</returns>
+        public virtual Task Write(TransmissionPayload payload)
         {
-            var message = new HttpRequestMessage(HttpMethod.Post, payload.Message.DestinationGet().ToKey());
+            var message = new HttpProtocolRequestMessage();
 
+            message.BeginInit();
 
+            message.Instruction.Verb = "POST";
+            message.Instruction.Instruction = @"/" + payload.Message.ToServiceMessageHeader().ToKey();
+
+            message.HeaderAdd("HeaderId", payload.Id.ToString("N"));
+            message.HeaderAdd("ProcessCorrelationKey", payload.Message.ProcessCorrelationKey);
+
+            message.EndInit();
+
+            //Add the message to the outgoing queue.
             mOutgoing.Enqueue(message);
+
+            return Task.FromResult(0);
         }
 
 
@@ -121,7 +144,16 @@ namespace Xigadee
 
             try
             {
+                while (mOutgoing.Count > 0)
+                {
+                    HttpProtocolRequestMessage message;
+                    if (!mOutgoing.TryDequeue(out message))
+                        break;
 
+                    var buffer = message.ToArray();
+
+                    await mConnection.DataStream.WriteAsync(buffer, 0, buffer.Length);
+                }
             }
             catch (Exception)
             {

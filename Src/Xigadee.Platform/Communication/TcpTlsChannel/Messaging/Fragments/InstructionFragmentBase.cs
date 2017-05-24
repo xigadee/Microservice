@@ -157,7 +157,6 @@ namespace Xigadee
         /// <summary>
         /// This method splits the instruction header in to its constituent parts.
         /// </summary>
-        /// <param name="force">Set this parameter to true if you wish to force a rebuild.</param>
         protected virtual void MessagePartsBuild()
         {
             if (mVerb != null && mInstruction != null && mProtocol!=null)
@@ -210,7 +209,7 @@ namespace Xigadee
             else
                 version = null;
         }
-        #endregion // FragmentCollectionBuild(bool force)
+        #endregion
 
         #region EndInitCustom()
         /// <summary>
@@ -230,6 +229,6 @@ namespace Xigadee
 
             base.EndInitCustom();
         }
-        #endregion // FragmentCollectionComplete()
+        #endregion
     }
 }

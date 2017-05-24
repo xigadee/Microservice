@@ -18,8 +18,8 @@ namespace Test.Xigadee
         {
             var payload = TransmissionPayload.Create<CommunicationBridgeReroute.IContractFinal>();
 
-            //payload.Message.
             bool stop = false;
+
             var server = new TcpTlsServer(new IPEndPoint(IPAddress.Any, 9090), SslProtocols.None, null);
             var client = new TcpTlsClient(new IPEndPoint(IPAddress.Loopback, 9090), SslProtocols.None, null);
 
@@ -31,6 +31,7 @@ namespace Test.Xigadee
                 {
                     if (server.PollRequired)
                         Task.Run(async () => await server.Poll());
+
                     if (client.PollRequired)
                         Task.Run(async () => await client.Poll());
 
@@ -42,10 +43,12 @@ namespace Test.Xigadee
 
             client.Start();
 
-            client.Write(payload);
+            client.Write(payload).Wait();
 
 
             server.Poll().Wait();
+
+            
 
             stop = true;
             if (toRun.IsAlive)
