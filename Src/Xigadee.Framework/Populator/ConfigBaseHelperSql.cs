@@ -22,10 +22,20 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This helper class is used to provide shortcuts for Sql based services. 
+    /// </summary>
     public static class ConfigBaseHelperSql
     {
+        /// <summary>
+        /// This is the Sql connection string key.
+        /// </summary>
         public const string KeySqlConnection = "SqlConnection";
-
+        /// <summary>
+        /// This extension method returns the Sql connection string from the config settings.
+        /// </summary>
+        /// <param name="config">The config class.</param>
+        /// <returns>Returns the Sql connection string.</returns>
         public static string SqlConnection(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeySqlConnection);
 
     }
