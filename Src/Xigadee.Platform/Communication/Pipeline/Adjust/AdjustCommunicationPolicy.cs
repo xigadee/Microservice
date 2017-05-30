@@ -30,7 +30,7 @@ namespace Xigadee
         /// <typeparam name="P">The pipeline type.</typeparam>
         /// <param name="pipeline">The pipeline.</param>
         /// <returns>Returns the pipeline</returns>
-        public static P AdjustPolicyCommunicationForMultipleListenerClients<P>(this P pipeline) where P : IPipeline
+        public static P AdjustCommunicationPolicyForMultipleListenerClients<P>(this P pipeline) where P : IPipeline
         {
             return pipeline.AdjustPolicyCommunication((p, c) => p.ListenerClientPollAlgorithm = new MultipleClientPollSlotAllocationAlgorithm());
         }
@@ -41,7 +41,7 @@ namespace Xigadee
         /// <typeparam name="P">The pipeline type.</typeparam>
         /// <param name="pipeline">The pipeline.</param>
         /// <returns>Returns the pipeline</returns>
-        public static P AdjustPolicyCommunicationForSingleListenerClient<P>(this P pipeline) where P : IPipeline
+        public static P AdjustCommunicationPolicyForSingleListenerClient<P>(this P pipeline) where P : IPipeline
         {
             return pipeline.AdjustPolicyCommunication((p, c) => p.ListenerClientPollAlgorithm = new SingleClientPollSlotAllocationAlgorithm());
         }
