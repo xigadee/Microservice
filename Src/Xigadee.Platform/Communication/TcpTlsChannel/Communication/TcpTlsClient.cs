@@ -41,11 +41,19 @@ namespace Xigadee
         TcpTlsConnection mConnection;
 
         ConcurrentQueue<HttpProtocolRequestMessage> mOutgoing => new ConcurrentQueue<HttpProtocolRequestMessage>();
+
         ConcurrentQueue<TransmissionPayload> mIncoming => new ConcurrentQueue<TransmissionPayload>();
 
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="endPoint">The endpoint for the client to connect.</param>
+        /// <param name="sslProtocolLevel">The TLS protocol level. Set this to None if you do not wish the connection to be encrypted.</param>
+        /// <param name="serverCertificate">The server certificate to validate.</param>
         public TcpTlsClient(IPEndPoint endPoint, SslProtocols sslProtocolLevel, X509Certificate serverCertificate)
             : base(endPoint, sslProtocolLevel, serverCertificate)
         {
+
         }
 
         #region Start()

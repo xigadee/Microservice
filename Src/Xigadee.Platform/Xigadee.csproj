@@ -107,6 +107,7 @@
     <Compile Include="Communication\Manual\Pipeline\AttachManualListener.cs" />
     <Compile Include="Communication\Manual\Pipeline\AttachManualSender.cs" />
     <Compile Include="Communication\Pipeline\Add\AddChannelBroadcast.cs" />
+    <Compile Include="Communication\Pipeline\Adjust\AdjustCommunicationPolicy.cs" />
     <Compile Include="Communication\Pipeline\ChannelPipelineBroadcast.cs" />
     <Compile Include="Communication\Pipeline\Exceptions\ChannelDoesNotExistException.cs" />
     <Compile Include="Communication\Sender\SenderHarness.cs" />

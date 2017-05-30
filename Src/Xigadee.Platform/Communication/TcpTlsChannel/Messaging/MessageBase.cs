@@ -40,14 +40,6 @@ namespace Xigadee
         private bool mLoaded = false;
         private object syncLoad = new object();
         #endregion // Declarations
-        #region Constructors
-        /// <summary>
-        /// This is the default constructor.
-        /// </summary>
-        public MessageBase()
-        {
-        }
-        #endregion // Constructors
 
 
         #region Loaded/CanLoad
