@@ -10,14 +10,13 @@ namespace Test.Xigadee.Azure.Console
         {
             try
             {
-                var pipeline1 = new MicroservicePipeline("AzureStorageTest1");
+                var pipeline1 = new MicroservicePipeline("AzureStorageTest1", serviceReference: typeof(Program));
                 var pipeline2 = new MicroservicePipeline("AzureStorageTest2");
                 var mainMenu = new ConsoleMenu("Azure Storage DataCollector validation");
 
                 pipeline1
                     .ConfigurationSetFromConsoleArgs(args)
                     .AddEncryptionHandlerAes("myid", Convert.FromBase64String("hNCV1t5sA/xQgDkHeuXYhrSu8kF72p9H436nQoLDC28="), keySize:256)
-                    //.AddAzureStorageDataCollector(handler:"myid")
                     ;
 
                 
