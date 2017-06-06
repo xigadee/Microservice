@@ -33,8 +33,6 @@ namespace Xigadee
 {
     public class RequestHeaderFragment : InternetInstructionFragmentBase
     {
-        #region Declarations
-        #endregion // Declarations
         #region Constructor
         /// <summary>
         /// The default constructor

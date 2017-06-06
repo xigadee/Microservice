@@ -213,7 +213,7 @@ namespace Xigadee﻿
             HeaderFragment newFrag = Activator.CreateInstance(headerType) as HeaderFragment;
             newFrag.BeginInit();
             newFrag.Field = Header;
-            newFrag.FieldData = HeaderData;
+            newFrag.FieldData = HeaderData ?? "";
             HeaderAdd(newFrag);
         }
 

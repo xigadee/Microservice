@@ -107,6 +107,7 @@
     <Compile Include="Communication\Manual\Pipeline\AttachManualListener.cs" />
     <Compile Include="Communication\Manual\Pipeline\AttachManualSender.cs" />
     <Compile Include="Communication\Pipeline\Add\AddChannelBroadcast.cs" />
+    <Compile Include="Communication\Pipeline\Adjust\AdjustCommunicationPolicy.cs" />
     <Compile Include="Communication\Pipeline\ChannelPipelineBroadcast.cs" />
     <Compile Include="Communication\Pipeline\Exceptions\ChannelDoesNotExistException.cs" />
     <Compile Include="Communication\Sender\SenderHarness.cs" />
@@ -122,6 +123,7 @@
     <Compile Include="Communication\TcpTlsChannel\Messaging\Exceptions\MaxSizeMessageException.cs" />
     <Compile Include="Communication\TcpTlsChannel\Messaging\Exceptions\MessageException.cs" />
     <Compile Include="Communication\TcpTlsChannel\Messaging\Exceptions\MessageLoadException.cs" />
+    <Compile Include="Communication\TcpTlsChannel\Messaging\Extensions\MessagingProtocolExtensions.cs" />
     <Compile Include="Communication\TcpTlsChannel\Messaging\Fragments\BodyFragment.cs" />
     <Compile Include="Communication\TcpTlsChannel\Messaging\Fragments\InstructionFragmentBase.cs" />
     <Compile Include="Communication\TcpTlsChannel\Messaging\Fragments\InternetMessageFragmentBody.cs" />

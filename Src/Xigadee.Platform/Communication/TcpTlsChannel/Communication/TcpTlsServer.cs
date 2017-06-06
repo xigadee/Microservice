@@ -31,7 +31,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This is the server holder.
+    /// This is the server holder. It manages the connections from the remote clients.
     /// </summary>
     public class TcpTlsServer: TcpTlsBase
     {
@@ -184,13 +184,14 @@ namespace Xigadee
 
             // Write a message to the client.
             byte[] message = Encoding.UTF8.GetBytes("Hello from the server.<EOF>");
+
             client.DataStream.Write(message, 0, message.Length);
             client.DataStream.Flush();
         }
 
         private async Task ClientRead(TcpTlsConnection client)
         {
-            if (!client.SslStream.CanRead)
+            if (!client.DataStream.CanRead)
                 return;
 
             int length = await client.DataStream.ReadAsync(client.Buffer,0, client.Buffer.Length);

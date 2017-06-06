@@ -16,9 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -40,6 +37,8 @@ namespace Xigadee
         /// <param name="configAssign">This action can be used to adjust the config settings.</param>
         /// <param name="addDefaultJsonPayloadSerializer">This property specifies that the default Json 
         /// payload serializer should be added to the Microservice, set this to false to disable this.</param>
+        /// <param name="serviceVersionId">This is the version id of the calling assembly as a string.</param>
+        /// <param name="serviceReference">This is a reference type used to identify the version id of the root assembly.</param>
         public MicroservicePipeline(string name = null
             , string serviceId = null
             , string description = null
@@ -49,18 +48,22 @@ namespace Xigadee
             , Action<IMicroservice> assign = null
             , Action<IEnvironmentConfiguration> configAssign = null
             , bool addDefaultJsonPayloadSerializer = true
+            , string serviceVersionId = null
+            , Type serviceReference = null
             )
         {
             Configuration = config ?? new ConfigBase();
             configAssign?.Invoke(Configuration);
 
-            Service = new Microservice(name, serviceId, description, policy, properties);
+            serviceVersionId = serviceVersionId ?? serviceReference?.Assembly.GetName().Version.ToString();
+
+            Service = new Microservice(name, serviceId, description, policy, properties, serviceVersionId);
             assign?.Invoke(Service);
 
             if (addDefaultJsonPayloadSerializer)
                 this.AddPayloadSerializerDefaultJson();
-
         }
+
 
         /// <summary>
         /// This is the default pipeline.

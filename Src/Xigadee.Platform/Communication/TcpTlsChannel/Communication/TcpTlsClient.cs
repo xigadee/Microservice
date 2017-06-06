@@ -15,6 +15,7 @@
 #endregion
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -24,17 +25,35 @@ using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This class is used to manage the TcpTls connection to the server.
+    /// </summary>
     public class TcpTlsClient : TcpTlsBase
     {
+        int mPollActive = 0;
+
         TcpTlsConnection mConnection;
 
+        ConcurrentQueue<HttpProtocolRequestMessage> mOutgoing => new ConcurrentQueue<HttpProtocolRequestMessage>();
+
+        ConcurrentQueue<TransmissionPayload> mIncoming => new ConcurrentQueue<TransmissionPayload>();
+
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="endPoint">The endpoint for the client to connect.</param>
+        /// <param name="sslProtocolLevel">The TLS protocol level. Set this to None if you do not wish the connection to be encrypted.</param>
+        /// <param name="serverCertificate">The server certificate to validate.</param>
         public TcpTlsClient(IPEndPoint endPoint, SslProtocols sslProtocolLevel, X509Certificate serverCertificate)
             : base(endPoint, sslProtocolLevel, serverCertificate)
         {
+
         }
 
         #region Start()
@@ -79,27 +98,31 @@ namespace Xigadee
         }
         #endregion
 
-        public virtual async Task Write(TransmissionPayload payload)
+        /// <summary>
+        /// This method writes the incoming payload to a Http protocol message.
+        /// </summary>
+        /// <param name="payload">The incoming payload.</param>
+        /// <returns>This method is async.</returns>
+        public virtual Task Write(TransmissionPayload payload)
         {
-            WriteStatus("POST", payload.Message.ToServiceMessageHeader().ToKey(), payload.Id);
-            //WriteHeader("POST", payload.Message.);
-            WriteMessage(payload.Message.Blob);
+            var message = new HttpProtocolRequestMessage();
+
+            message.BeginInit();
+
+            message.Instruction.Verb = "POST";
+            message.Instruction.Instruction = @"/" + payload.Message.ToServiceMessageHeader().ToKey();
+
+            message.HeaderAdd("HeaderId", payload.Id.ToString("N"));
+            message.HeaderAdd("ProcessCorrelationKey", payload.Message.ProcessCorrelationKey);
+
+            message.EndInit();
+
+            //Add the message to the outgoing queue.
+            mOutgoing.Enqueue(message);
+
+            return Task.FromResult(0);
         }
 
-        private async Task WriteStatus(string verb, string address, Guid Id)
-        {
-
-        }
-
-        private async Task WriteHeader(string key, string value)
-        {
-
-        }
-
-        private async Task WriteMessage(byte[] message)
-        {
-
-        }
 
         // The following method is invoked by the RemoteCertificateValidationDelegate.
         protected virtual bool ValidateServerCertificate(
@@ -117,11 +140,38 @@ namespace Xigadee
             return false;
         }
 
-        public override bool PollRequired => (mConnection?.DataStream?.CanRead ?? false) || (mConnection?.DataStream?.CanWrite ?? false);
+        /// <summary>
+        /// This method indicates whether the client requires attention.
+        /// </summary>
+        public override bool PollRequired => (mPollActive == 1) || (mConnection?.DataStream?.CanRead ?? false) || (mConnection?.DataStream?.CanWrite ?? false) || mOutgoing.Count>0;
 
         public override async Task Poll()
         {
+            if (Interlocked.CompareExchange(ref mPollActive, 1, 0) == 1)
+                return;
 
+            try
+            {
+                while (mOutgoing.Count > 0)
+                {
+                    HttpProtocolRequestMessage message;
+                    if (!mOutgoing.TryDequeue(out message))
+                        break;
+
+                    var buffer = message.ToArray();
+
+                    await mConnection.DataStream.WriteAsync(buffer, 0, buffer.Length);
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            finally
+            {
+                mPollActive = 0;
+            }
         }
     }
 }

@@ -282,7 +282,7 @@ namespace Xigadee
                 return mFragmentReadPointer < mMessageParts.Count - 1;
             }
         }
-        #endregion // FragmentCanReadNext
+        #endregion
         #region FragmentReadNext()
         /// <summary>
         /// This method moves to the next fragment.
@@ -492,7 +492,7 @@ namespace Xigadee
                 }
             }
         }
-        #endregion // DebugString
+        #endregion
 
         #region EndInitCustom()
         /// <summary>

@@ -18,7 +18,7 @@ namespace Test.Xigadee.Samples
                 DebugMemoryDataCollector memp1;
                 ICommandInitiator init;
 
-                var p1 = new MicroservicePipeline(nameof(CommandLocal1))
+                var p1 = new MicroservicePipeline(nameof(CommandLocal1), serviceReference: typeof(CommandLocal))
                     .AddDebugMemoryDataCollector(out memp1)
                     .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
                     .AddChannelIncoming("fredo")

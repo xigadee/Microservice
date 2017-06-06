@@ -81,12 +81,15 @@ namespace Xigadee
         /// <param name="description">An optional description for the Microservice.</param>
         /// <param name="policySettings">The policy settings.</param>
         /// <param name="properties">Any additional property key.</param>
+        /// <param name="serviceVersionId">This is the version id of the calling assembly as a string.</param>
         public Microservice(
               string name = null
             , string serviceId = null
             , string description = null
             , IEnumerable<PolicyBase> policySettings = null
-            , IEnumerable<Tuple<string,string>> properties = null)
+            , IEnumerable<Tuple<string,string>> properties = null
+            , string serviceVersionId = null
+            )
             : base(name)
         {
             Policy = new PolicyWrapper(policySettings, () => Status);
@@ -97,8 +100,8 @@ namespace Xigadee
             Id = new MicroserviceId(name
                 , serviceId: serviceId
                 , description: description
-                , serviceVersionId: Assembly.GetCallingAssembly().GetName().Version.ToString()
-                , serviceEngineVersionId: Assembly.GetExecutingAssembly().GetName().Version.ToString()
+                , serviceVersionId: serviceVersionId ?? Assembly.GetCallingAssembly().GetName().Version.ToString()
+                , serviceEngineVersionId: GetType().Assembly.GetName().Version.ToString()
                 , properties: properties);
 
             mSecurity = InitialiseSecurityContainer();

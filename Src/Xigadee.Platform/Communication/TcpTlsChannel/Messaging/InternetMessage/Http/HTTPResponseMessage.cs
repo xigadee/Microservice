@@ -31,13 +31,13 @@ using System.Linq;
 
 namespace Xigadee
 {
-    public class HTTPResponseMessage : InternetMessage
+    public class HttpProtocolResponseMessage : InternetMessage
     {
         #region Constructor
         /// <summary>
         /// The default constructor
         /// </summary>
-        public HTTPResponseMessage()
+        public HttpProtocolResponseMessage()
             : base()
         {
         }
