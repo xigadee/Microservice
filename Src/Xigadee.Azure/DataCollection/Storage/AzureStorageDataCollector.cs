@@ -206,8 +206,6 @@ namespace Xigadee
         }
         #endregion
 
-
-
         #region WriteConnectors(DataCollectionSupport support, EventBase e)
         /// <summary>
         /// Output the data for the three option types.
@@ -216,18 +214,61 @@ namespace Xigadee
         /// <param name="e">The event object.</param>
         protected void WriteConnectors(DataCollectionSupport support, EventHolder e)
         {
+            List<Exception> exs = null;
+
+            Action<Exception> errFunc = (ex) =>
+                {
+                    if (exs == null)
+                        exs = new List<Exception>();
+                    exs.Add(ex);
+                };
+
             //Blob
-            if (mHoldersBlob.ContainsKey(support) && mHoldersBlob[support].ShouldWrite(e))
-                WriteConnector(mHoldersBlob[support], e).Wait();
+            try
+            {
+                if (mHoldersBlob.ContainsKey(support) && mHoldersBlob[support].ShouldWrite(e))
+                    WriteConnector(mHoldersBlob[support], e).Wait();
+            }
+            catch (Exception ex)
+            {
+                errFunc(ex);
+            }
+
             //Table
-            if (mHoldersTable.ContainsKey(support) && mHoldersTable[support].ShouldWrite(e))
-                WriteConnector(mHoldersTable[support], e).Wait();
+            try
+            {
+                if (mHoldersTable.ContainsKey(support) && mHoldersTable[support].ShouldWrite(e))
+                    WriteConnector(mHoldersTable[support], e).Wait();
+            }
+            catch (Exception ex)
+            {
+                errFunc(ex);
+            }
+
             //Queue
-            if (mHoldersQueue.ContainsKey(support) && mHoldersQueue[support].ShouldWrite(e))
-                WriteConnector(mHoldersQueue[support], e).Wait();
+            try
+            {
+                if (mHoldersQueue.ContainsKey(support) && mHoldersQueue[support].ShouldWrite(e))
+                    WriteConnector(mHoldersQueue[support], e).Wait();
+            }
+            catch (Exception ex)
+            {
+                errFunc(ex);
+            }
+
             //File
-            if (mHoldersFile.ContainsKey(support) && mHoldersFile[support].ShouldWrite(e))
-                WriteConnector(mHoldersFile[support], e).Wait();
+            try
+            {
+                if (mHoldersFile.ContainsKey(support) && mHoldersFile[support].ShouldWrite(e))
+                    WriteConnector(mHoldersFile[support], e).Wait();
+            }
+            catch (Exception ex)
+            {
+                errFunc(ex);
+            }
+
+            if (exs != null && exs.Count > 0)
+                throw new AggregateException("WriteConnectors failure.", exs);
         }
         #endregion
 

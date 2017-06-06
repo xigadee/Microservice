@@ -31,8 +31,13 @@ namespace Xigadee
 {
     public class AzureStorageConnectorQueue: AzureStorageConnectorBase<QueueRequestOptions, AzureStorageBinary>
     {
+        /// <summary>
+        /// This is the queue client.
+        /// </summary>
         public CloudQueueClient Client { get; set; }
-
+        /// <summary>
+        /// This is the queue.
+        /// </summary>
         public CloudQueue Queue { get; set; }
 
         public override async Task Write(EventHolder e, MicroserviceId id)

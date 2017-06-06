@@ -21,19 +21,34 @@ using Microsoft.WindowsAzure.Storage.RetryPolicies;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This is the blob storage connector.
+    /// </summary>
     public class AzureStorageConnectorBlob: AzureStorageConnectorBase<BlobRequestOptions, AzureStorageBinary>
     {
+        /// <summary>
+        /// This is the blob container.
+        /// </summary>
         public CloudBlobContainer Container { get; set; }
-
+        /// <summary>
+        /// This is the blob client.
+        /// </summary>
         public CloudBlobClient Client { get; set; }
-
+        /// <summary>
+        /// This is the default access type for storage.
+        /// </summary>
         public BlobContainerPublicAccessType BlobAccessType { get; set; } = BlobContainerPublicAccessType.Off;
 
         /// <summary>
         /// This function is used to create the folder for the entity;
         /// </summary>
         public Func<EventHolder, MicroserviceId, string> MakeFolder { get; set; }
-
+        /// <summary>
+        /// This method writes the event holder to table storage.
+        /// </summary>
+        /// <param name="e">The event holder.</param>
+        /// <param name="id">The service identifier class.</param>
+        /// <returns>The is an async task.</returns>
         public override async Task Write(EventHolder e, MicroserviceId id)
         {
             string storageId = MakeId(e, id);
@@ -84,7 +99,11 @@ namespace Xigadee
                                                                                                                                            
             Container.CreateIfNotExists(BlobAccessType, RequestOptionsDefault, Context);
         }
-
+        /// <summary>
+        /// Identifies whether the event should be output.
+        /// </summary>
+        /// <param name="e">The event holder to write.</param>
+        /// <returns>Returns true if this should be written.</returns>
         public override bool ShouldWrite(EventHolder e)
         {
             return Options.IsSupported?.Invoke(AzureStorageBehaviour.Blob, e)??false;
