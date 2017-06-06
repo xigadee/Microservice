@@ -67,7 +67,10 @@ namespace Xigadee
         /// <summary>
         /// The data is a security event.
         /// </summary>
-        Security = 256
-
+        Security = 256,
+        /// <summary>
+        /// The data is a api boundary event.
+        /// </summary>
+        ApiBoundary = 512
     }
 }

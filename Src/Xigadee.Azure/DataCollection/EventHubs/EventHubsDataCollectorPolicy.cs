@@ -75,6 +75,12 @@ namespace Xigadee
             = new EventHubDataCollectorOptions(DataCollectionSupport.Custom);
 
         /// <summary>
+        /// This is the api boundary
+        /// </summary>
+        public EventHubDataCollectorOptions ApiBoundary { get; set; }
+            = new EventHubDataCollectorOptions(DataCollectionSupport.ApiBoundary);
+
+        /// <summary>
         /// This is an enumeration of all the options.
         /// </summary>
         public virtual IEnumerable<EventHubDataCollectorOptions> Options
@@ -90,6 +96,7 @@ namespace Xigadee
                 yield return Resource;
                 yield return Custom;
                 yield return Security;
+                yield return ApiBoundary;
             }
         }
     }
