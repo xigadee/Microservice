@@ -216,6 +216,7 @@
     <Compile Include="DataCollection\EventHubs\EventHubsDataCollectorPolicy.cs" />
     <Compile Include="DataCollection\EventHubs\EventHubsDataCollector.cs" />
     <Compile Include="DataCollection\EventHubs\EventHubsDataCollectorOptions.cs" />
+    <Compile Include="DataCollection\Exceptions\AzureLoggingAggregrateException.cs" />
     <Compile Include="DataCollection\Exceptions\EncryptionPolicyException.cs" />
     <Compile Include="DataCollection\Storage\Helper\BinaryContainer.cs" />
     <Compile Include="DataCollection\Storage\Interfaces\IAzureStorageConnectorBase.cs" />

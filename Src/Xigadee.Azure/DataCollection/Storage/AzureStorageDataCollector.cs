@@ -268,7 +268,7 @@ namespace Xigadee
             }
 
             if (exs != null && exs.Count > 0)
-                throw new AggregateException("WriteConnectors failure.", exs);
+                throw new AzureLoggingAggregrateException("WriteConnectors failure.", exs);
         }
         #endregion
 
