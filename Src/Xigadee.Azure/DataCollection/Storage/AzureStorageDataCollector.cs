@@ -216,62 +216,56 @@ namespace Xigadee
         {
             List<Exception> exs = null;
 
-            Action<Exception> errFunc = (ex) =>
+            Action<Action> wrapper = (a) =>
+            {
+                try
+                {
+                    a();
+                }
+                catch (Exception ex)
                 {
                     if (exs == null)
                         exs = new List<Exception>();
                     exs.Add(ex);
-                };
+                }
+            };
 
             //Blob
-            try
+            wrapper(() =>
             {
                 if (mHoldersBlob.ContainsKey(support) && mHoldersBlob[support].ShouldWrite(e))
                     WriteConnector(mHoldersBlob[support], e).Wait();
-            }
-            catch (Exception ex)
-            {
-                errFunc(ex);
-            }
+            });
+
 
             //Table
-            try
+            wrapper(() =>
             {
                 if (mHoldersTable.ContainsKey(support) && mHoldersTable[support].ShouldWrite(e))
                     WriteConnector(mHoldersTable[support], e).Wait();
-            }
-            catch (Exception ex)
-            {
-                errFunc(ex);
-            }
+            });
+
 
             //Queue
-            try
+            wrapper(() =>
             {
                 if (mHoldersQueue.ContainsKey(support) && mHoldersQueue[support].ShouldWrite(e))
                     WriteConnector(mHoldersQueue[support], e).Wait();
-            }
-            catch (Exception ex)
-            {
-                errFunc(ex);
-            }
+            });
+
 
             //File
-            try
+            wrapper(() =>
             {
                 if (mHoldersFile.ContainsKey(support) && mHoldersFile[support].ShouldWrite(e))
                     WriteConnector(mHoldersFile[support], e).Wait();
-            }
-            catch (Exception ex)
-            {
-                errFunc(ex);
-            }
+            });
 
+            //If there were errors during execution, then throw an aggregrate exception.
             if (exs != null && exs.Count > 0)
-                throw new AzureLoggingAggregrateException("WriteConnectors failure.", exs);
+                throw new AzureDataCollectionAggregrateException("WriteConnectors failure.", exs);
         }
         #endregion
-
         #region WriteConnector(IAzureStorageConnectorBase connector, EventBase e)
         /// <summary>
         /// This method writes the event data to the underlying storage.

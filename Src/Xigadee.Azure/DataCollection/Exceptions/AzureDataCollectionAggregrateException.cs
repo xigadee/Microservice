@@ -9,14 +9,14 @@ namespace Xigadee
     /// <summary>
     /// This exception is used to contain multiple azure storage exceptions.
     /// </summary>
-    public class AzureLoggingAggregrateException: AggregateException
+    public class AzureDataCollectionAggregrateException: AggregateException
     {
         /// <summary>
         /// This is the default constructor.
         /// </summary>
         /// <param name="message">the message.</param>
         /// <param name="innerExceptions">The inner exceptions.</param>
-        public AzureLoggingAggregrateException(string message, IEnumerable<Exception> innerExceptions):base(message, innerExceptions)
+        public AzureDataCollectionAggregrateException(string message, IEnumerable<Exception> innerExceptions):base(message, innerExceptions)
         {
 
         }
