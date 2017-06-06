@@ -54,6 +54,8 @@ namespace Xigadee
             SupportAdd(DataCollectionSupport.Custom, (e) => EventsCustom.Add(e));
 
             SupportAdd(DataCollectionSupport.Security, (e) => EventsSecurity.Add(e));
+
+            SupportAdd(DataCollectionSupport.ApiBoundary, (e) => EventsBoundary.Add(e));
         }
 
         public ConcurrentBag<EventHolder> EventsEventSource { get; set; } = new ConcurrentBag<EventHolder>();

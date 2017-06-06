@@ -86,7 +86,7 @@ namespace Xigadee
                         bEvent.CorrelationId = correlationValuesin.FirstOrDefault();
                 }
 
-                ms.DataCollection.Write(bEvent);
+                ms.DataCollection.Write(bEvent, DataCollectionSupport.ApiBoundary, false);
             }
 
             await base.OnActionExecutedAsync(actionExecutedContext, cancellationToken);

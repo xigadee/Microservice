@@ -81,5 +81,30 @@ namespace Xigadee
             var e = ev.Data as EventSourceEvent;
             return $"{msId.Name}/{e.UtcTimeStamp:yyyy-MM-dd}/{e.Entry.EntityType}";
         }
+
+        /// <summary>
+        /// Make an Id for a boundary event
+        /// </summary>
+        /// <param name="ev"></param>
+        /// <param name="msId"></param>
+        /// <returns></returns>
+        public static string BoundaryMakeId(EventHolder ev, MicroserviceId msId)
+        {
+            var e = ev.Data as BoundaryEvent;
+            string id = $"{e.Payload?.Message?.ProcessCorrelationKey ?? "NoCorrId"}_{e.Id}";
+            return $"{string.Join("_", id.Split(Path.GetInvalidFileNameChars()))}.json";
+        }
+
+        /// <summary>
+        /// Makes a folder for a boundary event
+        /// </summary>
+        /// <param name="ev"></param>
+        /// <param name="msId"></param>
+        /// <returns></returns>
+        public static string BoundaryMakeFolder(EventHolder ev, MicroserviceId msId)
+        {
+            var e = ev.Data as BoundaryEvent;
+            return string.Format("{0}/{2:yyyy-MM-dd}/{2:HH}", msId.Name, DateTime.UtcNow);
+        }
     }
 }

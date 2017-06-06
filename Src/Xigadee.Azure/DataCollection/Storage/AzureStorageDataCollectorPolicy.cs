@@ -104,6 +104,17 @@ namespace Xigadee
             = new AzureStorageDataCollectorOptions(DataCollectionSupport.Custom);
 
         /// <summary>
+        /// This is the Boundary Table storage options.
+        /// </summary>
+        public AzureStorageDataCollectorOptions ApiBoundary { get; set; }
+            = new AzureStorageDataCollectorOptions(DataCollectionSupport.ApiBoundary
+                , AzureStorageBehaviour.BlobAndTable
+                , AzureStorageHelper.ToTableBoundaryEvent
+                , binaryMakeId: AzureStorageHelper.BoundaryMakeId
+                , binaryMakeFolder: AzureStorageHelper.BoundaryMakeFolder
+                );
+
+        /// <summary>
         /// This is an enumeration of all the options.
         /// </summary>
         public virtual IEnumerable<AzureStorageDataCollectorOptions> Options
@@ -119,9 +130,8 @@ namespace Xigadee
                 yield return Resource;
                 yield return Custom;
                 yield return Security;
+                yield return ApiBoundary;
             }
         }
-
-
     }
 }

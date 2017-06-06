@@ -202,6 +202,7 @@ namespace Xigadee
             SupportAdd(DataCollectionSupport.Resource, (e) => WriteConnectors(DataCollectionSupport.Resource, e));
             SupportAdd(DataCollectionSupport.Custom, (e) => WriteConnectors(DataCollectionSupport.Custom, e));
             SupportAdd(DataCollectionSupport.Security, (e) => WriteConnectors(DataCollectionSupport.Security, e));
+            SupportAdd(DataCollectionSupport.ApiBoundary, (e) => WriteConnectors(DataCollectionSupport.ApiBoundary, e));
         }
         #endregion
 
