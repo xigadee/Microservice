@@ -93,7 +93,7 @@ namespace Xigadee
             : base(name)
         {
             Policy = new PolicyWrapper(policySettings, () => Status);
-
+            //Id
             if (string.IsNullOrEmpty(name))
                 name = GetType().Name;
 
@@ -103,25 +103,25 @@ namespace Xigadee
                 , serviceVersionId: serviceVersionId ?? Assembly.GetCallingAssembly().GetName().Version.ToString()
                 , serviceEngineVersionId: GetType().Assembly.GetName().Version.ToString()
                 , properties: properties);
-
+            //Security
             mSecurity = InitialiseSecurityContainer();
             Security = new SecurityWrapper(mSecurity, () => Status);
-
+            //Communication
             mCommunication = InitialiseCommunicationContainer();
             Communication = new CommunicationWrapper(mCommunication, () => Status);
-
+            //Commands
             mCommands = InitialiseCommandContainer();
             Commands = new CommandWrapper(mCommands, () => Status);
-
+            //Resources
             mResourceMonitor = InitialiseResourceMonitor();
             ResourceMonitor = new ResourceWrapper(mResourceMonitor, () => Status);
-
+            //Data Collection
             mDataCollection = InitialiseDataCollectionContainer();
             DataCollection = new DataCollectionWrapper(mDataCollection, () => Status);
-
+            //Events
             mEventsWrapper = new EventsWrapper(this, mDataCollection, () => Status);
             Events = mEventsWrapper;
-
+            //Serializer
             mSerializer = InitialiseSerializationContainer();
             Serialization = new SerializationWrapper(mSerializer, () => Status);
         }

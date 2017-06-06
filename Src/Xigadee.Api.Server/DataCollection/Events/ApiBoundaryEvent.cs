@@ -13,25 +13,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-
 #region using
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Principal;
 using System.ServiceModel.Channels;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Web;
-using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
-using Newtonsoft.Json.Linq;
 #endregion
-
 namespace Xigadee
 {
     /// <summary>
@@ -45,24 +36,23 @@ namespace Xigadee
         /// This is the base constructor.
         /// </summary>
         /// <param name="context">This is the api context.</param>
-        /// <param name="direction">The event direction.</param>
         /// <param name="level">This enumeration determines which part of the data should be logged.</param>
-        public ApiBoundaryEvent(HttpActionExecutedContext context, ChannelDirection direction, ApiBoundaryLoggingFilterLevel level)
+        public ApiBoundaryEvent(HttpActionExecutedContext context, ApiBoundaryLoggingFilterLevel level)
         {
             Level = level;
             mContext = context;
-            Direction = direction;
-            Type = BoundaryEventType.Boundary;
+            Direction = ChannelDirection.Incoming;
+            Type = BoundaryEventType.Interface;
             Id = Guid.NewGuid();
 
             if ((level & ApiBoundaryLoggingFilterLevel.Exception) > 0)
                 Ex = context.Exception;
 
             if ((level & ApiBoundaryLoggingFilterLevel.Request) > 0)
-                Request = new HttpRequestWrapper(context);
+                Request = new ApiHttpRequestWrapper(context);
 
             if ((level & ApiBoundaryLoggingFilterLevel.Response) > 0)
-                Response = new HttpResponseWrapper(context);
+                Response = new ApiHttpResponseWrapper(context);
 
             if ((level & ApiBoundaryLoggingFilterLevel.RequestContent) > 0)
                 RequestBody = new ApiMimeContent(context.Request.Content);
@@ -84,7 +74,7 @@ namespace Xigadee
         /// <summary>
         /// This is the http request.
         /// </summary>
-        public HttpRequestWrapper Request { get; }
+        public ApiHttpRequestWrapper Request { get; }
         /// <summary>
         /// This is the request body.
         /// </summary>
@@ -92,7 +82,7 @@ namespace Xigadee
         /// <summary>
         /// This is the http response.
         /// </summary>
-        public HttpResponseWrapper Response { get; }
+        public ApiHttpResponseWrapper Response { get; }
         /// <summary>
         /// This is the response body.
         /// </summary>
@@ -101,46 +91,24 @@ namespace Xigadee
         /// This is the correlation id.
         /// </summary>
         public string CorrelationId { get; set; }
-
     }
 
-    #region LoggingFilterLevel
-    /// <summary>
-    /// This is the logging level.
-    /// </summary>
-    [Flags]
-    public enum ApiBoundaryLoggingFilterLevel
-    {
-        /// <summary>
-        /// No logging of any information.
-        /// </summary>
-        None = 0,
-
-        Exception = 1,
-        Request = 2,
-        Response = 4,
-        RequestContent = 8,
-        ResponseContent = 16,
-
-        All = 31
-    }
-    #endregion
 
     #region Request Wrapper
 
-    public class WrapperBase
+    public abstract class ApiBoundaryWrapperBase
     {
         protected HttpActionExecutedContext mContext;
 
-        public WrapperBase(HttpActionExecutedContext context)
+        protected ApiBoundaryWrapperBase(HttpActionExecutedContext context)
         {
             mContext = context;
         }
     }
 
-    public class HttpRequestWrapper: WrapperBase
+    public class ApiHttpRequestWrapper: ApiBoundaryWrapperBase
     {
-        public HttpRequestWrapper(HttpActionExecutedContext context):base(context){}
+        public ApiHttpRequestWrapper(HttpActionExecutedContext context):base(context){}
 
         public HttpRequestHeaders Headers => mContext.Request.Headers;
 
@@ -178,10 +146,12 @@ namespace Xigadee
     #endregion
 
     #region Response Wrapper
-
-    public class HttpResponseWrapper: WrapperBase
+    /// <summary>
+    /// This is the HttpResponse wrapper class.
+    /// </summary>
+    public class ApiHttpResponseWrapper: ApiBoundaryWrapperBase
     {
-        public HttpResponseWrapper(HttpActionExecutedContext context):base(context){}
+        public ApiHttpResponseWrapper(HttpActionExecutedContext context):base(context){}
 
         public HttpResponseHeaders Headers => mContext.Response.Headers;
 
@@ -192,40 +162,4 @@ namespace Xigadee
 
     #endregion
 
-    /// <summary>
-    /// This class holds the incoming and outgoing content.
-    /// </summary>
-    public class ApiMimeContent
-    {
-        /// <summary>
-        /// This is the default constructor.
-        /// </summary>
-        /// <param name="content">The http content.</param>
-        public ApiMimeContent(HttpContent content)
-        {
-            if (content == null || content.Headers.ContentLength == 0)
-                return;
-
-            IEnumerable<string> contentTypes;
-            if (content.Headers.TryGetValues("Content-Type", out contentTypes))
-                ContentType = contentTypes.FirstOrDefault();
-
-            try
-            {
-                Body = content.ReadAsByteArrayAsync().Result;
-            }
-            catch (Exception)
-            {
-                // Do not cause application to throw an exception due to logging failure
-            }
-        }
-        /// <summary>
-        /// This is the payload content type.
-        /// </summary>
-        public string ContentType { get; }
-        /// <summary>
-        /// This is the payload body.
-        /// </summary>
-        public byte[] Body { get; }
-    }
 }

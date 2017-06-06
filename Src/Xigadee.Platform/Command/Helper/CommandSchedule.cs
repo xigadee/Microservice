@@ -32,6 +32,7 @@ namespace Xigadee
         {
         }
 
+
         public long Timeouts
         {
             get { return mTimeouts; }
@@ -43,15 +44,25 @@ namespace Xigadee
         }
     }
 
+    /// <summary>
+    /// This is the command schedule generated for the specific command requirement.
+    /// </summary>
     public class CommandSchedule: Schedule
     {
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="execute">The execution function.</param>
+        /// <param name="timerConfig">The timer poll configuration.</param>
+        /// <param name="name">The name of the schedule.</param>
+        /// <param name="isLongRunning">A boolean flag that specifies whether the process is long running.</param>
         public CommandSchedule(Func<Schedule, CancellationToken, Task> execute, CommandTimerPoll timerConfig, string name = null, bool isLongRunning = false)
             : base(execute, name)
         {
             base.Frequency = timerConfig.Interval;
             base.InitialTime = timerConfig.InitialWaitUTCTime;
             base.InitialWait = timerConfig.InitialWait;
-            base.IsLongRunning = IsLongRunning;
+            base.IsLongRunning = isLongRunning;
         }
     }
 }

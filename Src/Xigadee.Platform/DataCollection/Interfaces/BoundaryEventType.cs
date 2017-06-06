@@ -18,6 +18,10 @@ namespace Xigadee
         /// <summary>
         /// This is a boundary transition.
         /// </summary>
-        Boundary
+        Boundary,
+        /// <summary>
+        /// This is for messages passing an interface transition such as a WebAPI.
+        /// </summary>
+        Interface
     }
 }

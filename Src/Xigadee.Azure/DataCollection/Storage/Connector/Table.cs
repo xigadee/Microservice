@@ -20,6 +20,9 @@ using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This is the default connector class for Azure Table Storage.
+    /// </summary>
     public class AzureStorageConnectorTable: AzureStorageConnectorBase<TableRequestOptions, ITableEntity>
     {
         public CloudTableClient Client { get; set; }

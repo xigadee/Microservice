@@ -162,6 +162,8 @@
     <Compile Include="Controllers\SecurityControllerAsyncBase.cs" />
     <Compile Include="Controllers\WebhookControllerAsyncBase.cs" />
     <Compile Include="DataCollection\Events\ApiBoundaryEvent.cs" />
+    <Compile Include="DataCollection\Events\ApiBoundaryLoggingFilterLevel.cs" />
+    <Compile Include="DataCollection\Events\ApiMimeContent.cs" />
     <Compile Include="Filters\WebApiBoundaryLoggingFilter.cs" />
     <Compile Include="Filters\WebApiCircuitBreakerFilter.cs" />
     <Compile Include="Helper\MicroserviceDependencyResolver.cs" />

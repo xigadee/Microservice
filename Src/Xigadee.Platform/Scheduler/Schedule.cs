@@ -57,7 +57,10 @@ namespace Xigadee
         }
         #endregion
 
-
+        #region Name
+        /// <summary>
+        /// This is the override for the name to bring it to the top .
+        /// </summary>
         public override string Name
         {
             get
@@ -68,7 +71,8 @@ namespace Xigadee
             {
                 base.Name = value;
             }
-        }
+        } 
+        #endregion
 
         public virtual string ScheduleType { get { return GetType().Name; } }
 

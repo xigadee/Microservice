@@ -70,7 +70,7 @@ namespace Xigadee
 
             if (ms != null && mLevel > ApiBoundaryLoggingFilterLevel.None)
             {
-                var bEvent = new ApiBoundaryEvent(actionExecutedContext, ChannelDirection.Incoming, mLevel);
+                var bEvent = new ApiBoundaryEvent(actionExecutedContext, mLevel);
 
                 // Retrieve the correlation id from the request and add to the response
 

@@ -15,6 +15,8 @@ namespace Xigadee
     {
         public BoundaryEventType Type { get; set; }
 
+        public string Subtype { get; set; }
+
         public ChannelDirection Direction { get; set; }
 
         public Guid? Id { get; set; }
