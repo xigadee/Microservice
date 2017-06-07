@@ -206,8 +206,6 @@ namespace Xigadee
         }
         #endregion
 
-
-
         #region WriteConnectors(DataCollectionSupport support, EventBase e)
         /// <summary>
         /// Output the data for the three option types.
@@ -216,21 +214,58 @@ namespace Xigadee
         /// <param name="e">The event object.</param>
         protected void WriteConnectors(DataCollectionSupport support, EventHolder e)
         {
+            List<Exception> exs = null;
+
+            Action<Action> wrapper = (a) =>
+            {
+                try
+                {
+                    a();
+                }
+                catch (Exception ex)
+                {
+                    if (exs == null)
+                        exs = new List<Exception>();
+                    exs.Add(ex);
+                }
+            };
+
             //Blob
-            if (mHoldersBlob.ContainsKey(support) && mHoldersBlob[support].ShouldWrite(e))
-                WriteConnector(mHoldersBlob[support], e).Wait();
+            wrapper(() =>
+            {
+                if (mHoldersBlob.ContainsKey(support) && mHoldersBlob[support].ShouldWrite(e))
+                    WriteConnector(mHoldersBlob[support], e).Wait();
+            });
+
+
             //Table
-            if (mHoldersTable.ContainsKey(support) && mHoldersTable[support].ShouldWrite(e))
-                WriteConnector(mHoldersTable[support], e).Wait();
+            wrapper(() =>
+            {
+                if (mHoldersTable.ContainsKey(support) && mHoldersTable[support].ShouldWrite(e))
+                    WriteConnector(mHoldersTable[support], e).Wait();
+            });
+
+
             //Queue
-            if (mHoldersQueue.ContainsKey(support) && mHoldersQueue[support].ShouldWrite(e))
-                WriteConnector(mHoldersQueue[support], e).Wait();
+            wrapper(() =>
+            {
+                if (mHoldersQueue.ContainsKey(support) && mHoldersQueue[support].ShouldWrite(e))
+                    WriteConnector(mHoldersQueue[support], e).Wait();
+            });
+
+
             //File
-            if (mHoldersFile.ContainsKey(support) && mHoldersFile[support].ShouldWrite(e))
-                WriteConnector(mHoldersFile[support], e).Wait();
+            wrapper(() =>
+            {
+                if (mHoldersFile.ContainsKey(support) && mHoldersFile[support].ShouldWrite(e))
+                    WriteConnector(mHoldersFile[support], e).Wait();
+            });
+
+            //If there were errors during execution, then throw an aggregrate exception.
+            if (exs != null && exs.Count > 0)
+                throw new AzureDataCollectionAggregrateException("WriteConnectors failure.", exs);
         }
         #endregion
-
         #region WriteConnector(IAzureStorageConnectorBase connector, EventBase e)
         /// <summary>
         /// This method writes the event data to the underlying storage.

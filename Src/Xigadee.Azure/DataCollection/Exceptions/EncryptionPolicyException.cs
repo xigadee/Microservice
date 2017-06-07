@@ -23,6 +23,10 @@ namespace Xigadee
     /// </summary>
     public class AzureStorageDataCollectorEncryptionPolicyException:Exception
     {
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="support">The support options.</param>
         public AzureStorageDataCollectorEncryptionPolicyException(DataCollectionSupport support)
         {
             Support = support;

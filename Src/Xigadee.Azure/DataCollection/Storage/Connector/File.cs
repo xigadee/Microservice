@@ -31,6 +31,9 @@ namespace Xigadee
 {
     public class AzureStorageConnectorFile: AzureStorageConnectorBase<FileRequestOptions, AzureStorageBinary>
     {
+        /// <summary>
+        /// This is the file client.
+        /// </summary>
         public CloudFileClient Client { get; set; }
 
         public override Task Write(EventHolder e, MicroserviceId id)
