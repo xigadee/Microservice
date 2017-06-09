@@ -110,17 +110,16 @@ namespace Xigadee
                 base.OnActionExecutedAsync(actionExecutedContext, cancellationToken)
             };
 
-            var request = actionExecutedContext.Response.RequestMessage;
-            var response = actionExecutedContext.Response;
+            var request = actionExecutedContext?.Response?.RequestMessage;
+            var response = actionExecutedContext?.Response;
 
             // Retrieve the correlation id from the request and add to the response
-            IEnumerable<string> correlationValues;
+            IEnumerable<string> correlationValues = null;
             string correlationId = null;
-            if (request.Headers.TryGetValues(mCorrelationIdKeyName, out correlationValues))
-                correlationId = correlationValues.FirstOrDefault();
+            if ((request?.Headers?.TryGetValues(mCorrelationIdKeyName, out correlationValues) ?? false))
+                correlationId = correlationValues?.FirstOrDefault();
 
-            if (!string.IsNullOrEmpty(correlationId) 
-                && !response.Headers.Contains(mCorrelationIdKeyName))
+            if (!string.IsNullOrEmpty(correlationId) && response != null && !response.Headers.Contains(mCorrelationIdKeyName))
                 response.Headers.Add(mCorrelationIdKeyName, correlationId);
 
             await Task.WhenAll(tasks);
