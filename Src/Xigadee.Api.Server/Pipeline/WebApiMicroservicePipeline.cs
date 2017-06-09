@@ -43,6 +43,8 @@ namespace Xigadee
         /// <param name="addDefaultJsonPayloadSerializer">This property specifies that the default Json 
         /// payload serializer should be added to the Microservice, set this to false to disable this.</param>
         /// <param name="httpConfig">The http configuration.</param>
+        /// <param name="serviceVersionId">This is the version id of the calling assembly as a string.</param>
+        /// <param name="serviceReference">This is a reference type used to identify the version id of the root assembly.</param>
         public WebApiMicroservicePipeline(string name = null
             , string serviceId = null
             , string description = null
@@ -53,7 +55,9 @@ namespace Xigadee
             , Action<IEnvironmentConfiguration> configAssign = null
             , bool addDefaultJsonPayloadSerializer = true
             , HttpConfiguration httpConfig = null
-            ) :base(name, serviceId, description, policy, properties, config, assign, configAssign, addDefaultJsonPayloadSerializer)
+            , string serviceVersionId = null
+            , Type serviceReference = null
+            ) :base(name, serviceId, description, policy, properties, config, assign, configAssign, addDefaultJsonPayloadSerializer, serviceVersionId, serviceReference)
         {
             HttpConfig = httpConfig ?? new HttpConfiguration();
         }

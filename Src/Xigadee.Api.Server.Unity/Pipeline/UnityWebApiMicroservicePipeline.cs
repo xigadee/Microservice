@@ -42,6 +42,9 @@ namespace Xigadee
         /// <param name="addDefaultJsonPayloadSerializer">This property specifies that the default Json 
         /// payload serializer should be added to the Microservice, set this to false to disable this.</param>
         /// <param name="httpConfig">The http configuration.</param>
+        /// <param name="registerConfig">The boolean property registers the Microservice configuration with Unity.</param>
+        /// <param name="serviceVersionId">This is the version id of the calling assembly as a string.</param>
+        /// <param name="serviceReference">This is a reference type used to identify the version id of the root assembly.</param>
         public UnityWebApiMicroservicePipeline(string name = null
             , string serviceId = null
             , string description = null
@@ -53,7 +56,10 @@ namespace Xigadee
             , bool addDefaultJsonPayloadSerializer = true
             , HttpConfiguration httpConfig = null
             , bool registerConfig = true
-            ) : base(name, serviceId, description, policy, properties, config, assign, configAssign, addDefaultJsonPayloadSerializer, httpConfig)
+            , string serviceVersionId = null
+            , Type serviceReference = null
+
+            ) : base(name, serviceId, description, policy, properties, config, assign, configAssign, addDefaultJsonPayloadSerializer, httpConfig, serviceVersionId, serviceReference)
         {
             //ApiConfig.
             Unity = new UnityContainer();
@@ -70,6 +76,7 @@ namespace Xigadee
         /// <param name="service">The microservice.</param>
         /// <param name="config">The microservice configuration.</param>
         /// <param name="httpConfig">The http configuration.</param>
+        /// <param name="registerConfig">The boolean property registers the Microservice configuration with Unity.</param>
         public UnityWebApiMicroservicePipeline(IMicroservice service
             , IEnvironmentConfiguration config
             , HttpConfiguration httpConfig = null
