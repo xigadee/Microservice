@@ -18,6 +18,7 @@ Write-Host "BUILD_BUILDNUMBER contents: $Env:BUILD_BUILDNUMBER"
 IF([string]::IsNullOrWhitespace($version)){$version=$Env:BUILD_BUILDNUMBER}
 Write-Host "Assembly Version:" $version;
 
+$nugetversion=$version;
 #Do we have a sub version for prerelease nuget packages?
 IF(![string]::IsNullOrWhitespace($subversion)){$nugetversion=$version+"-"+$subversion}
 Write-Host "Nuget Version:" $nugetversion;
