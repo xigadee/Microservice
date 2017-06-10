@@ -54,5 +54,15 @@ namespace Xigadee
 
             return new MessageFilterWrapper(header);
         }
+
+        #region JobSchedulesReflectionInitialise()
+        /// <summary>
+        /// This method can be overriden to enable additional schedules to be registered for the job.
+        /// </summary>
+        protected virtual void JobSchedulesReflectionInitialise()
+        {
+
+        }
+        #endregion
     }
 }

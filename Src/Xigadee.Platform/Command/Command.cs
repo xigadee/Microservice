@@ -112,6 +112,9 @@ namespace Xigadee
                 if (mPolicy.MasterJobEnabled)
                     MasterJobInitialise();
 
+                if (mPolicy.JobPollEnabled && mPolicy.CommandScheduleReflectionSupported)
+                    JobSchedulesReflectionInitialise();
+
                 if (mPolicy.JobPollEnabled)
                     JobSchedulesInitialise();
 

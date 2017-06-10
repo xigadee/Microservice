@@ -43,10 +43,10 @@ namespace Xigadee
         #endregion
         #region Constructor
         /// <summary>
-        /// 
+        /// This is the default constructor.
         /// </summary>
-        /// <param name="Execute"></param>
-        /// <param name="name"></param>
+        /// <param name="execute">The async schedule function.</param>
+        /// <param name="name">The schedule name.</param>
         public Schedule(Func<Schedule, CancellationToken, Task> execute, string name = null)
             : base()
         {

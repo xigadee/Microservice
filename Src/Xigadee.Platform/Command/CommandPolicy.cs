@@ -143,5 +143,9 @@ namespace Xigadee
         /// Specifies the commands are supported by reflection.
         /// </summary>
         public bool CommandReflectionSupported { get; set; } = true;
+        /// <summary>
+        /// Specifies that schedule reflection commands are supported.
+        /// </summary>
+        public bool CommandScheduleReflectionSupported { get; set; } = true;
     }
 }

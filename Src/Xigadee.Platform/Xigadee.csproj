@@ -75,10 +75,13 @@
     <Compile Include="CommandPersistence\Server\DocumentDb\Pipeline\AttachPersistenceManagerDocumentDb.cs" />
     <Compile Include="CommandPersistence\Server\Memory\Pipeline\AddPersistenceManagerHandlerMemory.cs" />
     <Compile Include="CommandPersistence\Server\Memory\Pipeline\AttachPersistenceManagerHandlerMemory.cs" />
-    <Compile Include="Command\Attributes\CommandMethodSignature.cs" />
-    <Compile Include="Command\Attributes\CommandMethodSignatureException.cs" />
-    <Compile Include="Command\Attributes\CommandMethodSignatureHelper.cs" />
-    <Compile Include="Command\Attributes\PayloadOutAttribute.cs" />
+    <Compile Include="Command\Attributes\CommandSchedule\CommandScheduleSignatureHelper.cs" />
+    <Compile Include="Command\Attributes\CommandSchedule\ScheduleMethodSignature.cs" />
+    <Compile Include="Command\Attributes\CommandMethod\CommandMethodSignature.cs" />
+    <Compile Include="Command\Attributes\CommandMethod\CommandMethodSignatureException.cs" />
+    <Compile Include="Command\Attributes\CommandMethod\CommandMethodSignatureHelper.cs" />
+    <Compile Include="Command\Attributes\CommandSchedule\CommandScheduleAttribute.cs" />
+    <Compile Include="Command\Attributes\CommandMethod\PayloadOutAttribute.cs" />
     <Compile Include="CommandInitiator\CommandInitiator.cs" />
     <Compile Include="CommandInitiator\CommandInitiatorPolicy.cs" />
     <Compile Include="CommandInitiator\CommandInitiatorStatistics.cs" />
@@ -86,7 +89,7 @@
     <Compile Include="Command\Harness\CommandHarness.cs" />
     <Compile Include="Command\Command_Request.cs" />
     <Compile Include="Command\Command_Reflection.cs" />
-    <Compile Include="Command\Attributes\PayloadInAttribute.cs" />
+    <Compile Include="Command\Attributes\CommandMethod\PayloadInAttribute.cs" />
     <Compile Include="Command\Exceptions\CommandException.cs" />
     <Compile Include="Command\Exceptions\CommandNotSupportedException.cs" />
     <Compile Include="Command\Exceptions\OutgoingRequestsNotEnabledException.cs" />
@@ -372,7 +375,7 @@
     <Compile Include="Pipeline\Configuration\ConfigBaseHelperService.cs" />
     <Compile Include="Configuration\Attributes\ConfigKeySettingNameAttribute.cs" />
     <Compile Include="Interfaces\IEnvironmentConfiguration.cs" />
-    <Compile Include="Command\Attributes\CommandContractAttribute.cs" />
+    <Compile Include="Command\Attributes\CommandMethod\CommandContractAttribute.cs" />
     <Compile Include="Command\Attributes\ContractAttribute.cs" />
     <Compile Include="Interfaces\IMessageContract.cs" />
     <Compile Include="Components\CollectionContainer.cs" />
