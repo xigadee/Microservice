@@ -80,8 +80,7 @@ namespace Xigadee
             State = MasterJobState.VerifyingComms;
 
             //Register the schedule used for poll requests.
-            var masterjobPoll = new Schedule(MasterJobStateNotificationOutgoing
-                , $"MasterJob: {mPolicy.MasterJobName ?? FriendlyName}");
+            var masterjobPoll = new Schedule(MasterJobStateNotificationOutgoing, $"MasterJob: {mPolicy.MasterJobName ?? FriendlyName}");
 
             masterjobPoll.Frequency = mPolicy.MasterJobPollFrequency ?? TimeSpan.FromSeconds(20);
             masterjobPoll.InitialWait = mPolicy.MasterJobPollInitialWait ?? TimeSpan.FromSeconds(5);
@@ -98,7 +97,7 @@ namespace Xigadee
         /// the comms are active.
         /// </summary>
         /// <param name="action">The action to transmit.</param>
-        protected virtual async Task NegotiationTransmit(string action)
+        protected virtual Task NegotiationTransmit(string action)
         {
             var payload = TransmissionPayload.Create();
             payload.Options = ProcessOptions.RouteExternal;
@@ -115,6 +114,8 @@ namespace Xigadee
             //Go straight to the dispatcher as we don't want to use the tracker for this job
             //as it is transmit only.
             TaskManager(this, null, payload);
+
+            return Task.FromResult(0);
         }
         #endregion
 
@@ -406,6 +407,5 @@ namespace Xigadee
             mMasterJobs.Add(schedule.Id, new MasterJobHolder(schedule.Name, schedule, action, initialise, cleanup));
         }
         #endregion
-
     }
 }

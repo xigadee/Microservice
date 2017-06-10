@@ -22,9 +22,47 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public abstract class CommandHarness<C>:ServiceHarness<C>
+    /// <summary>
+    /// This harness is used to test command functionality manually.
+    /// </summary>
+    /// <typeparam name="C"></typeparam>
+    public class CommandHarness<C>:ServiceHarness<C>
         where C: class, ICommand
     {
+        Func<C> mCreator;
 
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="creator">This is the creator function to create the command. If the command supports a parameterless constructor, then you can leave this blank.</param>
+        public CommandHarness(Func<C> creator = null)
+        {
+            if (creator == null)
+                mCreator = DefaultConstructor();
+
+            mCreator = creator;
+        }
+
+        /// <summary>
+        /// This override creates the command.
+        /// </summary>
+        /// <returns>Returns the command.</returns>
+        protected override C Create()
+        {
+            return mCreator();
+        }
+
+        /// <summary>
+        /// This method checks whether the command supports a parameterless constructor.
+        /// </summary>
+        /// <returns>Returns the command.</returns>
+        private Func<C> DefaultConstructor()
+        {
+            if (typeof(C).GetConstructor(Type.EmptyTypes) == null)
+                throw new ArgumentOutOfRangeException($"The command {typeof(C).Name} does not support a parameterless constructor. Please supply a creator function.");
+
+            return () => Activator.CreateInstance<C>();
+        }
     }
+    
 }

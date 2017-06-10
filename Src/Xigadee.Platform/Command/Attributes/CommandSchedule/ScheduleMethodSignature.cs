@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This class is used to marshall the method signature
+    /// This class is used to marshall the method signature for a inline schedule command.
     /// </summary>
     [DebuggerDisplay("{Method.Name}")]
     public class ScheduleMethodSignature
@@ -191,21 +191,49 @@ namespace Xigadee
             }
         }
 
+        /// <summary>
+        /// This is the StandardIn parameter
+        /// </summary>
         public ParameterInfo StandardIn { get; private set; }
+        /// <summary>
+        /// This is the parameter position.
+        /// </summary>
         public int? StandardInPos { get; private set; }
-
+        /// <summary>
+        /// This is the StandardOut parameter.
+        /// </summary>
         public ParameterInfo StandardOut { get; private set; }
+        /// <summary>
+        /// This is the parameter position.
+        /// </summary>
         public int? StandardOutPos { get; private set; }
-
+        /// <summary>
+        /// This is the ParamIn parameter.
+        /// </summary>
         public ParameterInfo ParamIn { get; private set; }
+        /// <summary>
+        /// This is the parameter position.
+        /// </summary>
         public int? ParamInPos { get; private set; }
 
+        /// <summary>
+        /// This is the parameter type in
+        /// </summary>
         public Type TypeIn { get; set; }
+        /// <summary>
+        /// This is the parameter type out
+        /// </summary>
+        public Type TypeOut { get; set; }
 
+        /// <summary>
+        /// This is the ParamOut parameter.
+        /// </summary>
         public ParameterInfo ParamOut { get; private set; }
+        /// <summary>
+        /// This is the parameter position.
+        /// </summary>
         public int? ParamOutPos { get; private set; }
 
-        public Type TypeOut { get; set; }
 
         #region Reference(CommandContractAttribute attr)
         /// <summary>

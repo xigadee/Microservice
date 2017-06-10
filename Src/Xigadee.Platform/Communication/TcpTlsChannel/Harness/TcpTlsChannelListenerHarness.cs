@@ -9,6 +9,9 @@ using Xigadee;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This harness is used to test the TcpTls channel listener.
+    /// </summary>
     public class TcpTlsChannelListenerHarness : ListenerHarness<TcpTlsChannelListener>
     {
         protected override TcpTlsChannelListener Create()
