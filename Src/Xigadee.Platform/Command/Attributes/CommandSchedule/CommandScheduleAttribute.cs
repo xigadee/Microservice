@@ -23,10 +23,11 @@ namespace Xigadee
     /// This attribute can be set against a command method to register it for a schedule job poll call.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-    [DebuggerDisplay("{mInitialWait}/{mFrequency}/{mName}")]
+    [DebuggerDisplay("{mInitialWait}/{mFrequency} [{mName}]")]
     public class CommandScheduleAttribute: Attribute
     {
         private string mInitialWait, mFrequency, mName;
+
         /// <summary>
         /// This is the default constructor. 
         /// </summary>
@@ -80,6 +81,4 @@ namespace Xigadee
         public string Name { get { return mName; } }
 
     }
-
-
 }

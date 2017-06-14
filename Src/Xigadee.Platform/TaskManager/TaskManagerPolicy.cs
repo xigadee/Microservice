@@ -27,6 +27,9 @@ namespace Xigadee
     /// </summary>
     public class TaskManagerPolicy:PolicyBase
     {
+        /// <summary>
+        /// This is the internal array containing the priority levels.
+        /// </summary>
         protected PriorityLevelReservation[] mPriorityLevels = null;
 
         private object syncLock = new object();
@@ -43,6 +46,12 @@ namespace Xigadee
             BulkheadReserve(3, 1, 2);
         }
 
+        /// <summary>
+        /// This method can be called to set a bulkhead reservation.
+        /// </summary>
+        /// <param name="level">The bulkhead level.</param>
+        /// <param name="slotCount">The number of slots reserved.</param>
+        /// <param name="overage">The permitted overage.</param>
         public void BulkheadReserve(int level, int slotCount, int overage =0)
         {
             if (level<0)
@@ -74,6 +83,9 @@ namespace Xigadee
         /// </summary>
         public int PriorityLevels { get { return (mPriorityLevels?.Length ?? 0) - 1;} }
 
+        /// <summary>
+        /// This is the list of priority level reservations.
+        /// </summary>
         public IEnumerable<PriorityLevelReservation> PriorityLevelReservations
         {
             get

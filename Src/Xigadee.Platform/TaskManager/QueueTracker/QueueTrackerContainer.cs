@@ -23,6 +23,10 @@ using System.Text;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This is a priority based queue. That contains multiple levels.
+    /// </summary>
+    /// <typeparam name="Q">The queue type.</typeparam>
 
     [DebuggerDisplay("QueueTracker - Levels: {mLevels} Capacity: {DebugCapacity}")]
     public class QueueTrackerContainer<Q>: ServiceBase<QueueTrackerStatistics>
@@ -62,6 +66,10 @@ namespace Xigadee
             stats.Queues = mTasksQueue.Values.Select((q) => q.Statistics).ToList();
         }
 
+        #region IsEmpty
+        /// <summary>
+        /// This property returns false if all the queues are empty.
+        /// </summary>
         public bool IsEmpty
         {
             get
@@ -77,7 +85,11 @@ namespace Xigadee
                 return true;
             }
         }
-
+        #endregion
+        #region Count
+        /// <summary>
+        /// This is the sum of all the messages in the queues.
+        /// </summary>
         public int Count
         {
             get
@@ -85,13 +97,20 @@ namespace Xigadee
                 return mTasksQueue.Values.Sum((q) => q.Count);
             }
         }
+        #endregion
 
+        #region Enqueue(TaskTracker tracker)
+        /// <summary>
+        /// This method enqueues a message on to the relevant queue.
+        /// If the priority is higher than the permitted levels, the priority is set to the maximum permitted level.
+        /// </summary>
+        /// <param name="tracker">The task tracker.</param>
         public void Enqueue(TaskTracker tracker)
         {
 
             var payload = tracker.Context as TransmissionPayload;
 
-            int priority = tracker.Priority??mLevels - 1;
+            int priority = tracker.Priority ?? mLevels - 1;
             if (payload != null)
                 priority = payload.Message.ChannelPriority;
 
@@ -102,7 +121,14 @@ namespace Xigadee
 
             mTasksQueue[priority].Enqueue(tracker);
         }
+        #endregion
 
+        #region Dequeue(int itemCount = 1)
+        /// <summary>
+        /// This method dequeues a set of TaskTracker objects from the highest priority queue first.
+        /// </summary>
+        /// <param name="itemCount">The number of items to return. The default is 1</param>
+        /// <returns>Returns a list of tasktrackers.</returns>
         public IEnumerable<TaskTracker> Dequeue(int itemCount = 1)
         {
             int priority = mLevels;
@@ -115,12 +141,17 @@ namespace Xigadee
                 TaskTracker tracker;
                 while (itemCount > 0 && mTasksQueue[priority].TryDequeue(out tracker))
                 {
-                    itemCount --;
+                    itemCount--;
                     yield return tracker;
                 }
             }
         }
+        #endregion
 
+        #region DebugCapacity
+        /// <summary>
+        /// This property returns a debug string that contains a decription of the current capacity.
+        /// </summary>
         private string DebugCapacity
         {
             get
@@ -133,20 +164,28 @@ namespace Xigadee
                     priority--;
                     sb.Append(mTasksQueue[priority].Count);
 
-                    if (priority>0)
+                    if (priority > 0)
                         sb.Append("/");
                 }
 
                 return sb.ToString();
             }
         }
+        #endregion
 
+        #region Stop/Start
+        /// <summary>
+        /// This is the start override. It does not do anything.
+        /// </summary>
         protected override void StartInternal()
         {
         }
-
+        /// <summary>
+        /// This is the stop override. It does not do anything.
+        /// </summary>
         protected override void StopInternal()
         {
-        }
+        } 
+        #endregion
     }
 }
