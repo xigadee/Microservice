@@ -262,6 +262,7 @@
     <Compile Include="Microservice\Wrapper\WrapperBase.cs" />
     <Compile Include="Pipeline\Configuration\ConfigurationClear.cs" />
     <Compile Include="Pipeline\Extensions\Adjust\AdjustPolicyHelper.cs" />
+    <Compile Include="Pipeline\Extensions\Adjust\AdjustPolicyTaskManager.cs" />
     <Compile Include="ResourceTracker\ResourceStatus.cs" />
     <Compile Include="Security\AuthenticationHandler\AuthenticationHandlerBase.cs" />
     <Compile Include="Security\AuthenticationHandler\AuthenticationHandlerId.cs" />

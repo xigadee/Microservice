@@ -106,6 +106,8 @@
     <Compile Include="Security\SignatureHelper.cs" />
     <Compile Include="Pipeline\Pipeline1.cs" />
     <Compile Include="PopulatorExtensions.cs" />
+    <Compile Include="Setup\UnitTest1.cs" />
+    <Compile Include="TaskManager\PolicyTaskManagerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Test.Xigadee.Shared\Test.Xigadee.Shared.csproj">

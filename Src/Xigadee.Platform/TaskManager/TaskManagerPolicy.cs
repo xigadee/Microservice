@@ -34,34 +34,36 @@ namespace Xigadee
 
         private object syncLock = new object();
 
+        #region Constructor
         /// <summary>
         /// This constructor sets the default bulkhead configuration.
         /// </summary>
         public TaskManagerPolicy()
         {
             //Set the default bulk head level
-            BulkheadReserve(0, 0);
+            BulkheadReserve(0, 0, 0);
             BulkheadReserve(1, 8, 8);
             BulkheadReserve(2, 2, 2);
             BulkheadReserve(3, 1, 2);
-        }
-
+        } 
+        #endregion
+        #region BulkheadReserve(int level, int slotCount, int overage =0)
         /// <summary>
         /// This method can be called to set a bulkhead reservation.
         /// </summary>
         /// <param name="level">The bulkhead level.</param>
         /// <param name="slotCount">The number of slots reserved.</param>
         /// <param name="overage">The permitted overage.</param>
-        public void BulkheadReserve(int level, int slotCount, int overage =0)
+        public void BulkheadReserve(int level, int slotCount, int overage = 0)
         {
-            if (level<0)
+            if (level < 0)
                 throw new ArgumentOutOfRangeException("level must be a positive integer");
 
             var res = new PriorityLevelReservation { Level = level, SlotCount = slotCount, Overage = overage };
 
             lock (syncLock)
             {
-                if (mPriorityLevels != null && level <= PriorityLevels)
+                if (mPriorityLevels != null && level <= (PriorityLevels -1))
                 {
                     mPriorityLevels[level] = res;
                     return;
@@ -70,18 +72,19 @@ namespace Xigadee
                 var pLevel = new PriorityLevelReservation[level + 1];
 
                 if (mPriorityLevels != null)
-                    Array.Copy(mPriorityLevels,pLevel, mPriorityLevels.Length);
+                    Array.Copy(mPriorityLevels, pLevel, mPriorityLevels.Length);
 
                 pLevel[level] = res;
 
                 mPriorityLevels = pLevel;
             }
         }
+        #endregion
 
         /// <summary>
         /// This is the number of priorty levels supported in the Task Manager.
         /// </summary>
-        public int PriorityLevels { get { return (mPriorityLevels?.Length ?? 0) - 1;} }
+        public int PriorityLevels { get { return (mPriorityLevels?.Length ?? 0);} }
 
         /// <summary>
         /// This is the list of priority level reservations.
@@ -133,11 +136,9 @@ namespace Xigadee
         /// </summary>
         public int LoopPauseTimeInMs { get; set; } = 50;
         /// <summary>
-        /// 
+        /// This override specifies that internal jobs do not get added to the internal queue, but get executed directly.
         /// </summary>
         public bool ExecuteInternalDirect { get; set; } = true;
-
-
     }
 
     /// <summary>

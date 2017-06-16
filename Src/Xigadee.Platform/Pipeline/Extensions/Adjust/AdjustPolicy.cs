@@ -38,20 +38,7 @@ namespace Xigadee
 
             return pipeline;
         }
-        /// <summary>
-        /// This extension method changes the default Microservice task manager policy.
-        /// </summary>
-        /// <typeparam name="P">The pipeline type.</typeparam>
-        /// <param name="pipeline">The pipeline.</param>
-        /// <param name="msAssign">The assignment function.</param>
-        /// <returns>Returns the pipeline</returns>
-        public static P AdjustPolicyTaskManager<P>(this P pipeline
-            , Action<TaskManagerPolicy, IEnvironmentConfiguration> msAssign = null) where P: IPipeline
-        {
-            msAssign?.Invoke(pipeline.Service.Policy.TaskManager, pipeline.Configuration);
 
-            return pipeline;
-        }
         /// <summary>
         /// This extension method changes the default Microservice resource tracking policy.
         /// </summary>

@@ -56,15 +56,21 @@ namespace Xigadee
                 queue.Statistics.Name = string.Format("Queue {0}", i);
                 mTasksQueue.Add(i, queue);
             });
-        } 
+        }
         #endregion
 
+        #region StatisticsRecalculate(QueueTrackerStatistics stats)
+        /// <summary>
+        /// This method recalculates the statistics for the queue tracker container.
+        /// </summary>
+        /// <param name="stats">The incoming statistics.</param>
         protected override void StatisticsRecalculate(QueueTrackerStatistics stats)
         {
             base.StatisticsRecalculate(stats);
 
             stats.Queues = mTasksQueue.Values.Select((q) => q.Statistics).ToList();
-        }
+        } 
+        #endregion
 
         #region IsEmpty
         /// <summary>

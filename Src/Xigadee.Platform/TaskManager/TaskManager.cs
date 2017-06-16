@@ -174,6 +174,8 @@ namespace Xigadee
 
             stats.Cpu = mCpuStats;
 
+            stats.InternalQueueActive = !mPolicy.ExecuteInternalDirect;
+
             stats.InternalQueueLength = mProcessInternalQueue?.Count;
 
             stats.AutotuneActive = mPolicy.AutotuneEnabled;
