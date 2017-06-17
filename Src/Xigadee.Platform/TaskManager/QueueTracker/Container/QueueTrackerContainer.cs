@@ -29,7 +29,7 @@ namespace Xigadee
     /// <typeparam name="Q">The queue type.</typeparam>
 
     [DebuggerDisplay("QueueTracker - Levels: {mLevels} Capacity: {DebugCapacity}")]
-    public class QueueTrackerContainer<Q>: ServiceBase<QueueTrackerStatistics>
+    public class QueueTrackerContainer<Q>: ServiceBase<QueueTrackerContainerStatistics>
         where Q : IQueueTracker, new()
     {
         #region Declarations
@@ -64,7 +64,7 @@ namespace Xigadee
         /// This method recalculates the statistics for the queue tracker container.
         /// </summary>
         /// <param name="stats">The incoming statistics.</param>
-        protected override void StatisticsRecalculate(QueueTrackerStatistics stats)
+        protected override void StatisticsRecalculate(QueueTrackerContainerStatistics stats)
         {
             base.StatisticsRecalculate(stats);
 

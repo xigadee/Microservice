@@ -72,6 +72,7 @@ namespace Xigadee
         #region ActiveIncrement()
         /// <summary>
         /// This method is used to increment the active and total record count.
+        /// It returns the current tick count.
         /// </summary>
         public virtual int ActiveIncrement()
         {

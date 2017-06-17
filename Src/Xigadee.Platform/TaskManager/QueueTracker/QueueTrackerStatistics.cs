@@ -14,16 +14,55 @@
 // limitations under the License.
 #endregion
 
+#region using
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
+#endregion
 namespace Xigadee
 {
-    public class QueueTrackerStatistics: StatusBase
+    /// <summary>
+    /// This class holds the specific statistics for the Queue Tracker.
+    /// </summary>
+    public class QueueTrackerStatistics: MessagingStatistics
     {
-        public List<MessagingStatistics> Queues { get; set; }
+        /// <summary>
+        /// This is the high water mark for the queue.
+        /// </summary>
+        public int MaxWaiting { get; protected set; } = -1;
+
+        /// <summary>
+        /// This is the time stamp when the high water mark was reached for the queue.
+        /// </summary>
+        public DateTime? MaxWaitingTime { get; protected set; }
+
+        #region Current
+        /// <summary>
+        /// This is the number of messages currently in the queue.
+        /// </summary>
+        public int Waiting
+        {
+            get;set;
+        }
+        #endregion
+
+        /// <summary>
+        /// This method sets the high water mark for the queue statistics.
+        /// </summary>
+        /// <param name="count">The current count.</param>
+        public void WaitingSet(int count)
+        {
+            if (count == 0 || count <= MaxWaiting)
+                return;
+
+            MaxWaiting = count;
+            MaxWaitingTime = DateTime.UtcNow;
+        }
     }
 }

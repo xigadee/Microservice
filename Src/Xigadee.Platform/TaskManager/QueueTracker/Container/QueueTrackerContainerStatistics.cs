@@ -18,37 +18,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class TaskManagerStatistics: MessagingStatistics
+    /// <summary>
+    /// This class holds the queue tracker container statistics.
+    /// </summary>
+    public class QueueTrackerContainerStatistics: StatusBase
     {
-        public TaskManagerStatistics()
-        {
-        }
-
-        private long mTimeouts;
-
-        public void TimeoutRegister(long count)
-        {
-            Interlocked.Add(ref mTimeouts, count);
-        }
-
-        public ICpuStats Cpu { get; set; }
-
-        public TaskAvailabilityStatistics Availability { get; set; }
-
-        public string[] Running { get; set; }
-
-        public bool AutotuneActive { get; set; }
-
-        public int TaskCount { get; set; }
-
-        public bool InternalQueueActive { get; set; }
-        public int? InternalQueueLength { get; set; }
-
-        public QueueTrackerContainerStatistics Queues { get; set; }
+        /// <summary>
+        /// This is the list of queues and their statistics.
+        /// </summary>
+        public List<MessagingStatistics> Queues { get; set; }
     }
 }

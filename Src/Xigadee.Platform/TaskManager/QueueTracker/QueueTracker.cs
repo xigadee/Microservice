@@ -31,49 +31,85 @@ namespace Xigadee
     /// This class tracks any jobs that are enqueued and records how long they are held in the queue.
     /// </summary>
     [DebuggerDisplay("Queue: {mQueue.Count}")]
-    public class QueueTracker: StatisticsBase<MessagingStatistics>, IQueueTracker
+    public class QueueTracker: StatisticsBase<QueueTrackerStatistics>, IQueueTracker
     {
-        ConcurrentQueue<KeyValuePair<TaskTracker, int>> mQueue;
-
+        #region Declarations
+        /// <summary>
+        /// This is the internal queue holder.
+        /// </summary>
+        ConcurrentQueue<QueueTrackerHolder> mQueue; 
+        #endregion
+        #region Constructor
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
         public QueueTracker()
         {
-            mQueue = new ConcurrentQueue<KeyValuePair<TaskTracker, int>>();
-        }
+            mQueue = new ConcurrentQueue<QueueTrackerHolder>();
+        } 
+        #endregion
 
+        #region Enqueue(TaskTracker item)
+        /// <summary>
+        /// This method enqueues the message.
+        /// </summary>
+        /// <param name="item">The task tracker to enqueue.</param>
         public void Enqueue(TaskTracker item)
         {
-            var wrapper = new KeyValuePair<TaskTracker, int>(item, StatisticsInternal.ActiveIncrement());
+            var wrapper = new QueueTrackerHolder { Item = item, Ingress = StatisticsInternal.ActiveIncrement() };
             mQueue.Enqueue(wrapper);
-        }
+            StatisticsInternal.WaitingSet(Count);
+        } 
+        #endregion
+        #region TryDequeue(out TaskTracker item)
+        /// <summary>
+        /// This method attemps to dequeue a message.
+        /// </summary>
+        /// <param name="item">The item dequeued or null</param>
+        /// <returns>Returns true if a message was dequeued successfully.</returns>
+        public bool TryDequeue(out TaskTracker item)
+        {
+            item = null;
+            QueueTrackerHolder wrapper;
+            if (mQueue.TryDequeue(out wrapper))
+            {
+                item = wrapper.Item;
+                StatisticsInternal.ActiveDecrement(wrapper.Ingress);
+                return true;
+            }
+            return false;
+        } 
+        #endregion
 
+        #region IsEmpty
+        /// <summary>
+        /// This property returns true if the queue
+        /// </summary>
         public bool IsEmpty
         {
             get { return mQueue.IsEmpty; }
-        }
-
+        } 
+        #endregion
+        #region Count
+        /// <summary>
+        /// This is the number of messages currently in the queue.
+        /// </summary>
         public int Count
         {
             get
             {
                 return mQueue.Count;
             }
-        }
+        } 
+        #endregion
 
-        public bool TryDequeue(out TaskTracker item)
+        /// <summary>
+        /// This method is used to set the statistics for the queue.
+        /// </summary>
+        /// <param name="stats">The incoming statistics.</param>
+        protected override void StatisticsRecalculate(QueueTrackerStatistics stats)
         {
-            item = null;
-            KeyValuePair<TaskTracker, int> wrapper;
-            if (mQueue.TryDequeue(out wrapper))
-            {
-                item = wrapper.Key;
-                StatisticsInternal.ActiveDecrement(wrapper.Value);
-                return true;
-            }
-            return false;
-        }
-
-        protected override void StatisticsRecalculate(MessagingStatistics stats)
-        {
+            stats.Waiting = Count;
         }
     }
 }

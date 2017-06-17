@@ -69,13 +69,15 @@ namespace Xigadee
         /// <summary>
         /// This is the time the service was created.
         /// </summary>
-        public DateTime Created { get; set; } 
+        public DateTime Created { get; set; }
         #endregion
 
+        #region Ex
         /// <summary>
         /// This is the last exception recorded.
         /// </summary>
-        public Exception Ex { get; set; }
+        public Exception Ex { get; set; } 
+        #endregion
 
         #region Message
         /// <summary>

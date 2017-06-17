@@ -14,41 +14,31 @@
 // limitations under the License.
 #endregion
 
+#region using
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+#endregion
 namespace Xigadee
 {
-    public class TaskManagerStatistics: MessagingStatistics
+    /// <summary>
+    /// This items holds the instance while it is in the queue.
+    /// </summary>
+    public class QueueTrackerHolder
     {
-        public TaskManagerStatistics()
-        {
-        }
-
-        private long mTimeouts;
-
-        public void TimeoutRegister(long count)
-        {
-            Interlocked.Add(ref mTimeouts, count);
-        }
-
-        public ICpuStats Cpu { get; set; }
-
-        public TaskAvailabilityStatistics Availability { get; set; }
-
-        public string[] Running { get; set; }
-
-        public bool AutotuneActive { get; set; }
-
-        public int TaskCount { get; set; }
-
-        public bool InternalQueueActive { get; set; }
-        public int? InternalQueueLength { get; set; }
-
-        public QueueTrackerContainerStatistics Queues { get; set; }
+        /// <summary>
+        /// The timestamp when the item was added to the queue.
+        /// </summary>
+        public int Ingress { get; set; }
+        /// <summary>
+        /// The item queued.
+        /// </summary>
+        public TaskTracker Item { get; set; }
     }
 }

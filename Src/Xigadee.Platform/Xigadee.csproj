@@ -641,7 +641,9 @@
     <Compile Include="TaskManager\Interface\ITaskAvailability.cs" />
     <Compile Include="TaskManager\Interface\ITaskManagerProcess.cs" />
     <Compile Include="TaskManager\QueueTracker\QueueTracker.cs" />
-    <Compile Include="TaskManager\QueueTracker\QueueTrackerContainer.cs" />
+    <Compile Include="TaskManager\QueueTracker\Container\QueueTrackerContainer.cs" />
+    <Compile Include="TaskManager\QueueTracker\QueueTrackerHolder.cs" />
+    <Compile Include="TaskManager\QueueTracker\Container\QueueTrackerContainerStatistics.cs" />
     <Compile Include="TaskManager\QueueTracker\QueueTrackerStatistics.cs" />
     <Compile Include="TaskManager\TaskAvailability\TaskAvailability.cs" />
     <Compile Include="TaskManager\TaskAvailability\TaskAvailabilityStatistics.cs" />
