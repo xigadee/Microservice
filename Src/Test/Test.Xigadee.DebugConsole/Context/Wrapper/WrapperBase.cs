@@ -15,7 +15,9 @@ namespace Test.Xigadee
 
         public abstract ServiceStatus Status { get; }
 
-        public IRepositoryAsync<K, E> Persistence { get; set; }
+        public IRepositoryAsync<K, E> Persistence { get {return PersistenceClient ?? PersistenceServer; } }
+        public IRepositoryAsync<K, E> PersistenceClient { get; set; }
+        public IRepositoryAsync<K, E> PersistenceServer { get; set; }
 
         public abstract string Name { get; protected set; }
 

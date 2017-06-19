@@ -60,7 +60,7 @@ namespace Test.Xigadee
                     //.CallOut((c) => cpipeOut = c)
                     .Revert();
 
-            wrapper.Persistence = persistence;
+            wrapper.PersistenceServer = persistence;
         }
 
         static void ClientConfig(MicroservicePersistenceWrapper<Guid, MondayMorningBlues> wrapper)
@@ -76,6 +76,7 @@ namespace Test.Xigadee
                 .AddChannelOutgoing("internalIn", internalOnly: true)
                     .Revert();
 
+            wrapper.PersistenceClient = persistence;
         }
 
         static void PersistenceCommandSet(IPipelineChannelIncoming<MicroservicePipeline> cpipe)

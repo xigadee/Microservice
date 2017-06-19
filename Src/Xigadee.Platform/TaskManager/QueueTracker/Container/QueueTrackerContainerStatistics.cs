@@ -30,6 +30,6 @@ namespace Xigadee
         /// <summary>
         /// This is the list of queues and their statistics.
         /// </summary>
-        public List<MessagingStatistics> Queues { get; set; }
+        public List<QueueTrackerStatistics> Queues { get; set; }
     }
 }

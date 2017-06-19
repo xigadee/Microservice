@@ -54,6 +54,22 @@ namespace Test.Xigadee
                 , enabled: (m, o) => sServer.Config?.CanResolve(AzureExtensionMethods.KeyAzureStorageAccountName, AzureExtensionMethods.KeyAzureStorageAccountAccessKey) ?? false
                 , selected: (m, o) => sContext.CommunicationType == CommunicationOptions.AzureBlobQueue
             )
+            , new ConsoleOption("TCP"
+                , (m, o) =>
+                {
+                    sContext.CommunicationType = CommunicationOptions.Tcp;
+                }
+                , enabled: (m, o) => true
+                , selected: (m, o) => sContext.CommunicationType == CommunicationOptions.Tcp
+            )
+            , new ConsoleOption("TLS"
+                , (m, o) =>
+                {
+                    sContext.CommunicationType = CommunicationOptions.Tls;
+                }
+                , enabled: (m, o) => sServer.Config?.CanResolve(AzureExtensionMethods.KeyAzureStorageAccountName, AzureExtensionMethods.KeyAzureStorageAccountAccessKey) ?? false
+                , selected: (m, o) => sContext.CommunicationType == CommunicationOptions.Tls
+            )
             );
 
         menu.ContextInfoInherit = false;

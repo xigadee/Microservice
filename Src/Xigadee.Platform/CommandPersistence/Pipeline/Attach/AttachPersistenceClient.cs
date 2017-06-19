@@ -24,6 +24,7 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
+
         /// <summary>
         /// This pipeline command creates a Persistence Message Initiator.
         /// </summary>

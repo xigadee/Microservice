@@ -43,5 +43,7 @@ namespace Test.Xigadee
         Local,
         AzureServiceBus,
         AzureBlobQueue,
+        Tcp,
+        Tls,
     }
 }
