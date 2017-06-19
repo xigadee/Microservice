@@ -73,7 +73,7 @@ namespace Test.Xigadee
             );
 
         menu.ContextInfoInherit = false;
-        menu.AddInfoMessage("Note: Communication options are disabled if config settings are not present.");
+        menu.AddInfoMessage("Note: Communication options are disabled if the required config settings are not present.");
 
         return menu;
 
