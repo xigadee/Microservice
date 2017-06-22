@@ -24,11 +24,13 @@ namespace Xigadee
         /// </summary>
         /// <typeparam name="P">The pipeline type.</typeparam>
         /// <param name="webpipe">The pipe.</param>
+        /// <param name="retrySeconds">The number of seconds returned to the client to indicate when they should retry the request</param>
+        /// <param name="waitToStartSeconds">The number of seconds to wait for the service to come up before returning 503</param>
         /// <returns>Returns the pipeline.</returns>
-        public static P ApiAddMicroserviceUnavailableFilter<P>(this P webpipe)
+        public static P ApiAddMicroserviceUnavailableFilter<P>(this P webpipe, int retrySeconds = 10, int waitToStartSeconds = 0)
             where P : IPipelineWebApi
         {
-            var filter = new WebApiServiceUnavailableFilter();
+            var filter = new WebApiServiceUnavailableFilter(retrySeconds, waitToStartSeconds);
 
             webpipe.HttpConfig.Filters.Add(filter);
 

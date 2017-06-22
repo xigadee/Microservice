@@ -15,11 +15,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http.Controllers;
@@ -32,19 +29,26 @@ namespace Xigadee
     /// </summary>
     public class WebApiServiceUnavailableFilter: IAuthorizationFilter
     {
-        /// <summary>
-        /// This is the default constructor.
-        /// </summary>
-        /// <param name="retryInSeconds">The default retry time in seconds.</param>
-        public WebApiServiceUnavailableFilter(int retryInSeconds = 10)
-        {
-            RetryInSeconds = retryInSeconds;
-        }
+        /// <summary>Synchronisation Lock</summary>
+        protected object mSyncLock = new object();
 
         /// <summary>
-        /// The default retry time in seconds.
+        /// Reset event to signal that the microservice's reset event has been
         /// </summary>
+        protected ManualResetEvent mStatusChangeResetEvent = new ManualResetEvent(false);
+
+        /// <summary>
+        /// Indicates whether this filter has subscribed already to the microservice status changed event
+        /// </summary>
+        protected bool mIsSubscribedToStatusEvent;
+
+        /// <summary>The default retry time in seconds.</summary>
         public int? RetryInSeconds { get; set; }
+
+        /// <summary>
+        /// The number of seconds to wait for the microservice to start before returning 503.
+        /// </summary>
+        public int? WaitToStartSeconds { get; set; }
 
         /// <summary>
         /// This is an override from the auth interface definition. We do not allow multiple.
@@ -55,6 +59,15 @@ namespace Xigadee
             {
                 return false;
             }
+        }
+
+        /// <summary>This is the default constructor.</summary>
+        /// <param name="retryInSeconds">The default retry time in seconds.</param>
+        /// <param name="waitToStartSeconds">The number of seconds to wait prior to returning 503 starting</param>
+        public WebApiServiceUnavailableFilter(int retryInSeconds = 10, int waitToStartSeconds = 0)
+        {
+            RetryInSeconds = retryInSeconds;
+            WaitToStartSeconds = waitToStartSeconds;
         }
 
         /// <summary>
@@ -71,9 +84,13 @@ namespace Xigadee
 
             var status = ms?.Status ?? ServiceStatus.Faulted;
 
-            //Ok, the service is running, so keep going.
-            if (status == ServiceStatus.Running)
+            //Ok, the service is running or is running after the defined wait period, so keep going.
+            if (status == ServiceStatus.Running ||
+                ((WaitToStartSeconds ?? 0) > 0 && 
+                    await IsMicroserviceRunning(ms, TimeSpan.FromSeconds(WaitToStartSeconds.Value))))
+            {
                 return await continuation();
+            }
 
             //Service has not yet started, so returns a service unavailable response.
             var request = actionContext.Request;
@@ -87,6 +104,62 @@ namespace Xigadee
 
             return response;
         }
-    }
 
+        /// <summary>
+        /// Indicates whether the microservice is running. Will wait for the supplied duration for
+        /// the service to come up if a duration has been supplied
+        /// </summary>
+        /// <param name="microservice"></param>
+        /// <param name="waitToStartDuration"></param>
+        /// <returns></returns>
+        private async Task<bool> IsMicroserviceRunning(IMicroservice microservice, TimeSpan waitToStartDuration)
+        {
+            if (microservice == null)
+                return false;
+
+            lock (mSyncLock)
+            {
+                if (microservice.Status == ServiceStatus.Running)
+                    return true;
+
+                if (!mIsSubscribedToStatusEvent)
+                {
+                    microservice.StatusChanged += new EventHandler<StatusChangedEventArgs>(Microservice_StatusChanged);
+                    mIsSubscribedToStatusEvent = true;
+                }
+            }
+
+            if (microservice.Status == ServiceStatus.Running)
+                return true;
+
+            await Task.Factory.StartNew(() => mStatusChangeResetEvent.WaitOne(waitToStartDuration));
+            return microservice.Status == ServiceStatus.Running;
+        }
+
+        /// <summary>
+        /// Event handler that indicates the microservice has changed status
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Microservice_StatusChanged(object sender, StatusChangedEventArgs e)
+        {
+            if (e == null || e.StatusNew != ServiceStatus.Running)
+                return;
+
+            IMicroservice microservice = sender as IMicroservice;
+            if (microservice != null && mIsSubscribedToStatusEvent)
+            {
+                lock (mSyncLock)
+                {
+                    if (mIsSubscribedToStatusEvent)
+                    {
+                        microservice.StatusChanged -= new EventHandler<StatusChangedEventArgs>(Microservice_StatusChanged);
+                        mIsSubscribedToStatusEvent = false;
+                    }
+                }
+            }
+
+            mStatusChangeResetEvent.Set();
+        }
+    }
 }
