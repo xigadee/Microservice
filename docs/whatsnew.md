@@ -4,7 +4,7 @@
 
 This section will outline the Xigadee release versions with the features added since the initial release.
 
-### Initial Release - 1.0.17160.7
+### Initial Release - 1.0.17160.7 (June 9, 2017)
 
 This is the current supported release. It contains all the core functionality for the Xigadee framework, and has been used in a number of internal and commercial client projects.
 
