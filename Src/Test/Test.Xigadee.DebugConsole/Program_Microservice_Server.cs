@@ -49,7 +49,7 @@ namespace Test.Xigadee
             wrapper.Pipeline
                 .AddDebugMemoryDataCollector((c) => wrapper.Collector = c)
                 .AddChannelIncoming("internalIn", boundaryLoggingEnabled:true)
-                    .CallOut(PersistenceCommandSet)
+                    .CallOut(ServerPersistenceCommandSet)
                     //.AttachResourceProfile(new ResourceProfile("TrackIt"))
                     //.AttachAzureServiceBusQueueListener("Myqueue")
                     //.AttachCommand(new PersistenceBlahMemory())
@@ -60,26 +60,11 @@ namespace Test.Xigadee
                     //.CallOut((c) => cpipeOut = c)
                     .Revert();
 
-            wrapper.PersistenceServer = persistence;
+            wrapper.Persistence = persistence;
         }
 
-        static void ClientConfig(MicroservicePersistenceWrapper<Guid, MondayMorningBlues> wrapper)
-        {
-            PersistenceClient<Guid, MondayMorningBlues> persistence = null;
 
-            wrapper.Pipeline
-                .ConfigurationSetFromConsoleArgs(sContext.Switches)
-                .AddDebugMemoryDataCollector((c) => wrapper.Collector = c)
-                .AddChannelIncoming("internalOut")
-                    .AttachPersistenceClient(out persistence, "internalIn")
-                    .Revert()
-                .AddChannelOutgoing("internalIn", internalOnly: true)
-                    .Revert();
-
-            wrapper.PersistenceClient = persistence;
-        }
-
-        static void PersistenceCommandSet(IPipelineChannelIncoming<MicroservicePipeline> cpipe)
+        static void ServerPersistenceCommandSet(IPipelineChannelIncoming<MicroservicePipeline> cpipe)
         {
             var config = cpipe.ToConfiguration();
 

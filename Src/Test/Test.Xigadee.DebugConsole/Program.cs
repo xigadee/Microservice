@@ -33,7 +33,7 @@ namespace Test.Xigadee
 
             sClient = new MicroservicePersistenceWrapper<Guid, MondayMorningBlues>("TestClient", ClientConfig);
             sServer = new MicroservicePersistenceWrapper<Guid, MondayMorningBlues>("TestServer", ServerConfig, ServerInit);
-            sApiServer = new ApiWrapper<Guid, MondayMorningBlues>();
+            sApiServer = new ApiWrapper<Guid, MondayMorningBlues>(ApiConfig);
             
             //Attach the client events.
             sClient.StatusChanged += StatusChanged;

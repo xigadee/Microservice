@@ -15,22 +15,25 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web.Http;
+using Microsoft.Owin.Hosting;
+using Owin;
+using Unity.WebApi;
 using Xigadee;
 
 namespace Test.Xigadee
 {
-    internal interface IConsolePersistence<K,E>
-        where K: IEquatable<K>
+
+    static partial class Program
     {
-        ServiceStatus Status { get; }
+        static void ApiConfig(ApiWrapper<Guid, MondayMorningBlues> wrapper)
+        {
 
-        IRepositoryAsync<K, E> Persistence { get;set; }
+        }
 
-        /// <summary>
-        /// This event can be used to subscribe to status changes.
-        /// </summary>
-        event EventHandler<StatusChangedEventArgs> StatusChanged;
-
-        string Name { get; }
     }
 }
