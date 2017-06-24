@@ -35,12 +35,15 @@ namespace Test.Xigadee
             sServer = new MicroservicePersistenceWrapper<Guid, MondayMorningBlues>("TestServer", ServerConfig, ServerInit);
             sApiServer = new ApiWrapper<Guid, MondayMorningBlues>();
             
+            //Attach the client events.
             sClient.StatusChanged += StatusChanged;
             sServer.StatusChanged += StatusChanged;
             sApiServer.StatusChanged += StatusChanged;
 
+            //Show the main console menu.
             sMenuMain.Value.Show(args, shortcut: sContext.Shortcut);
 
+            //Detach the client events to allow the application to close.
             sClient.StatusChanged -= StatusChanged;
             sServer.StatusChanged -= StatusChanged;
             sApiServer.StatusChanged -= StatusChanged;

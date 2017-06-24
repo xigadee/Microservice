@@ -41,7 +41,7 @@ namespace Test.Xigadee
                        {
                        }
                        , enabled: (m, o) => sServer.Status == ServiceStatus.Created
-                       , childMenu: sMenuClientServerCommunication.Value
+                       , childMenu: sMenuClientServerCommunicationSettings.Value
                    )
                    , new ConsoleSwitchOption(
                        "Start Client", (m, o) =>

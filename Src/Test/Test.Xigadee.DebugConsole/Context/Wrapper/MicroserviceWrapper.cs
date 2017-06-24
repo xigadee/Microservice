@@ -17,19 +17,19 @@ namespace Test.Xigadee
         /// </summary>
         /// <param name="name">The service name.</param>
         /// <param name="configure">This is the link to configuration pipeline for the Microservice</param>
+        /// <param name="init"></param>
         public MicroservicePersistenceWrapper(string name
             , Action<MicroservicePersistenceWrapper<K,E>> configure
-            , Action<MicroservicePersistenceWrapper<K, E>> init = null)
+            , Action<MicroservicePersistenceWrapper<K,E>> init = null)
         {
             if (configure == null)
                 throw new ArgumentNullException("configure");
 
             Name = name;
-            Pipeline = new MicroservicePipeline(name);
             mConfigure = configure;
             mInit = init;
 
-            mInit?.Invoke(this);
+            PipelineInitialise();
         }
         /// <summary>
         /// The current Microservice status.
@@ -76,6 +76,12 @@ namespace Test.Xigadee
         {
         }
 
+
+        private void PipelineInitialise()
+        {
+            Pipeline = new MicroservicePipeline(Name);
+            mInit?.Invoke(this);
+        }
         /// <summary>
         /// This method stops the service.
         /// </summary>
@@ -83,8 +89,7 @@ namespace Test.Xigadee
         {
             StopInternal();
 
-            Pipeline = new MicroservicePipeline(Name);
-            mInit?.Invoke(this);
+            PipelineInitialise();
         }
 
         private void StopInternal()
@@ -99,5 +104,10 @@ namespace Test.Xigadee
         /// This is the link to the repository.
         /// </summary>
         public IRepositoryAsync<K, E> Repository { get; set; }
+
+        /// <summary>
+        /// This is the link to the repository.
+        /// </summary>
+        public bool RepositoryRedisCacheEnabled { get; set; }
     }
 }

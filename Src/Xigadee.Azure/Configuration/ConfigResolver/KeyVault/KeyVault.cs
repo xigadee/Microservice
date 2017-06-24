@@ -61,7 +61,7 @@ namespace Xigadee
         /// <param name="keyVaultClientSecret">The Key Vault client secret.</param>
         /// <param name="keyVaultSecretBaseUri">The Key Vault secret base uri.</param>
         /// <returns>The passthrough of the pipeline.</returns>
-        public static P ConfigOverrideSetRedisCacheConnection<P>(this P pipeline, string keyVaultClientId, string keyVaultClientSecret, string keyVaultSecretBaseUri)
+        public static P ConfigOverrideSetKeyVaultConnection<P>(this P pipeline, string keyVaultClientId, string keyVaultClientSecret, string keyVaultSecretBaseUri)
             where P : IPipeline
         {
             pipeline.ConfigurationOverrideSet(KeyKeyVaultClientId, keyVaultClientId);

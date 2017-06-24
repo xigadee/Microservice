@@ -33,6 +33,7 @@ namespace Xigadee
         public string Category { get; }
     }
 
+
     [AttributeUsage(AttributeTargets.Method)]
     public class ConfigSettingAttribute: Attribute
     {

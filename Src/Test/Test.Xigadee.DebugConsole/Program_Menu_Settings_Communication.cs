@@ -25,59 +25,59 @@ namespace Test.Xigadee
 {
     static partial class Program
     {
-        static Lazy<ConsoleMenu> sMenuClientServerCommunication = new Lazy<ConsoleMenu>(
-    () =>
-    {
-        var menu = new ConsoleMenu(
-            "Communication options"
-            , new ConsoleOption("Local connectivity"
-                , (m, o) =>
-                {
-                    sContext.CommunicationType = CommunicationOptions.Local;
-                }
-                , enabled: (m, o) => true
-                , selected: (m, o) => sContext.CommunicationType == CommunicationOptions.Local
-            )
-            , new ConsoleOption("Azure Service Bus"
-                , (m, o) =>
-                {
-                    sContext.CommunicationType = CommunicationOptions.AzureServiceBus;
-                }
-                , enabled: (m, o) => sServer.Config?.CanResolve(AzureExtensionMethods.KeyServiceBusConnection) ?? false
-                , selected: (m, o) => sContext.CommunicationType == CommunicationOptions.AzureServiceBus
-            )
-            , new ConsoleOption("Azure Storage Queue"
-                , (m, o) =>
-                {
-                    sContext.CommunicationType = CommunicationOptions.AzureBlobQueue;
-                }
-                , enabled: (m, o) => sServer.Config?.CanResolve(AzureExtensionMethods.KeyAzureStorageAccountName, AzureExtensionMethods.KeyAzureStorageAccountAccessKey) ?? false
-                , selected: (m, o) => sContext.CommunicationType == CommunicationOptions.AzureBlobQueue
-            )
-            , new ConsoleOption("TCP"
-                , (m, o) =>
-                {
-                    sContext.CommunicationType = CommunicationOptions.Tcp;
-                }
-                , enabled: (m, o) => true
-                , selected: (m, o) => sContext.CommunicationType == CommunicationOptions.Tcp
-            )
-            , new ConsoleOption("TLS"
-                , (m, o) =>
-                {
-                    sContext.CommunicationType = CommunicationOptions.Tls;
-                }
-                , enabled: (m, o) => sServer.Config?.CanResolve(AzureExtensionMethods.KeyAzureStorageAccountName, AzureExtensionMethods.KeyAzureStorageAccountAccessKey) ?? false
-                , selected: (m, o) => sContext.CommunicationType == CommunicationOptions.Tls
-            )
-            );
+        static Lazy<ConsoleMenu> sMenuClientServerCommunicationSettings = new Lazy<ConsoleMenu>(
+            () =>
+            {
+                var menu = new ConsoleMenu(
+                    "Communication options"
+                    , new ConsoleOption("Local connectivity"
+                        , (m, o) =>
+                        {
+                            sContext.CommunicationType = CommunicationOptions.Local;
+                        }
+                        , enabled: (m, o) => true
+                        , selected: (m, o) => sContext.CommunicationType == CommunicationOptions.Local
+                    )
+                    , new ConsoleOption("Azure Service Bus"
+                        , (m, o) =>
+                        {
+                            sContext.CommunicationType = CommunicationOptions.AzureServiceBus;
+                        }
+                        , enabled: (m, o) => sServer.Config?.CanResolve(AzureExtensionMethods.KeyServiceBusConnection) ?? false
+                        , selected: (m, o) => sContext.CommunicationType == CommunicationOptions.AzureServiceBus
+                    )
+                    , new ConsoleOption("Azure Storage Queue"
+                        , (m, o) =>
+                        {
+                            sContext.CommunicationType = CommunicationOptions.AzureBlobQueue;
+                        }
+                        , enabled: (m, o) => sServer.Config?.CanResolve(AzureExtensionMethods.KeyAzureStorageAccountName, AzureExtensionMethods.KeyAzureStorageAccountAccessKey) ?? false
+                        , selected: (m, o) => sContext.CommunicationType == CommunicationOptions.AzureBlobQueue
+                    )
+                    , new ConsoleOption("TCP"
+                        , (m, o) =>
+                        {
+                            sContext.CommunicationType = CommunicationOptions.Tcp;
+                        }
+                        , enabled: (m, o) => true
+                        , selected: (m, o) => sContext.CommunicationType == CommunicationOptions.Tcp
+                    )
+                    , new ConsoleOption("TLS"
+                        , (m, o) =>
+                        {
+                            sContext.CommunicationType = CommunicationOptions.Tls;
+                        }
+                        , enabled: (m, o) => sServer.Config?.CanResolve(AzureExtensionMethods.KeyAzureStorageAccountName, AzureExtensionMethods.KeyAzureStorageAccountAccessKey) ?? false
+                        , selected: (m, o) => sContext.CommunicationType == CommunicationOptions.Tls
+                    )
+                    );
 
-        menu.ContextInfoInherit = false;
-        menu.AddInfoMessage("Note: Communication options are disabled if the required config settings are not present.");
+                menu.ContextInfoInherit = false;
+                menu.AddInfoMessage("Note: Communication options are disabled if the required config settings are not present.");
 
-        return menu;
+                return menu;
 
-    });
+            });
 
     }
 }

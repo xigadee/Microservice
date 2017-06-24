@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26430.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Helper", "Xigadee\Xigadee.Helper.csproj", "{4F785B7B-1FDC-4DCC-9453-FE42447FDED2}"
 EndProject
@@ -37,6 +37,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{DCA58A2C-4AC0-4978-944C-DC8ABB50DC42}"
 	ProjectSection(SolutionItems) = preProject
 		..\README.md = ..\README.md
+		..\docs\whatsnew.md = ..\docs\whatsnew.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee", "Test\Test.Xigadee\Test.Xigadee.csproj", "{C523008A-BAF6-418D-8822-48E0820A427D}"
