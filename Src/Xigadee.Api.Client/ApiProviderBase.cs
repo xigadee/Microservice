@@ -25,6 +25,9 @@ using System.Net.Http.Headers;
 #endregion
 namespace Xigadee
 {
+    /// <summary>
+    /// This abstract base class is used for api client connectivity.
+    /// </summary>
     public abstract class ApiProviderBase
     {
         #region Declarations

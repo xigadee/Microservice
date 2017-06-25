@@ -8,13 +8,14 @@ namespace Xigadee
 {
     public static partial class TcpCommunicationPipelineExtensions
     {
-        public static IPipelineChannelOutgoing AttachTcpTlsSender(this IPipelineChannelOutgoing cpipe
+        public static C AttachTcpTlsSender<C>(this C cpipe
             , string connectionName = null
             , IEnumerable<SenderPartitionConfig> priorityPartitions = null
             , string serviceBusConnection = null
             , Action<TcpTlsChannelSender> onCreate = null)
+            where C : IPipelineChannelOutgoing<IPipeline>
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
             //var component = new AzureSBQueueSender();
 
             //component.ConfigureAzureMessaging(

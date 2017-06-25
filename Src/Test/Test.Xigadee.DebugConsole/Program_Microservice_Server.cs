@@ -34,7 +34,9 @@ namespace Test.Xigadee
         {
             wrapper.Pipeline
                 //.ConfigurationClear()
-                .ConfigurationSetFromConsoleArgs(sContext.Switches);
+                .ConfigurationSetFromConsoleArgs(sContext.Switches)
+                //.Condition((c) => c.AesTransportEncryptionUseCompression
+                ;
         }
 
         static void ServerConfig(MicroservicePersistenceWrapper<Guid, MondayMorningBlues> wrapper)
@@ -50,9 +52,9 @@ namespace Test.Xigadee
                 .AddDebugMemoryDataCollector((c) => wrapper.Collector = c)
                 .AddChannelIncoming("internalIn", boundaryLoggingEnabled:true)
                     .CallOut(ServerPersistenceCommandSet)
+                    .CallOut(ServerCommunicationSet)
                     //.AttachResourceProfile(new ResourceProfile("TrackIt"))
                     //.AttachAzureServiceBusQueueListener("Myqueue")
-                    //.AttachCommand(new PersistenceBlahMemory())
                     .AttachPersistenceClient(out persistence)
                     .Revert()
                 .AddChannelOutgoing("internalOut", internalOnly: true)
@@ -63,7 +65,36 @@ namespace Test.Xigadee
             wrapper.Persistence = persistence;
         }
 
+        /// <summary>
+        /// This method adds the appropriate persistence command.
+        /// </summary>
+        /// <param name="cpipe">The pipeline.</param>
+        static void ServerCommunicationSet(IPipelineChannelIncoming<MicroservicePipeline> cpipe)
+        {
+            var config = cpipe.ToConfiguration();
 
+            switch (sContext.CommunicationType)
+            {
+                case CommunicationOptions.Local:
+                    break;
+                case CommunicationOptions.Tcp:
+                    cpipe.AttachTcpTlsListener();
+                    break;
+                case CommunicationOptions.Tls:
+                    break;
+                case CommunicationOptions.AzureServiceBus:
+                    cpipe.AttachAzureServiceBusTopicListener();
+                    break;
+                case CommunicationOptions.AzureBlobQueue:
+                    break;
+                default:
+                    throw new NotSupportedException();
+            }
+        }
+        /// <summary>
+        /// This method adds the appropriate persistence command.
+        /// </summary>
+        /// <param name="cpipe">The pipeline.</param>
         static void ServerPersistenceCommandSet(IPipelineChannelIncoming<MicroservicePipeline> cpipe)
         {
             var config = cpipe.ToConfiguration();

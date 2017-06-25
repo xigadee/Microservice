@@ -57,19 +57,6 @@ namespace Test.Xigadee
                        , shortcut: "startclient"
                    )
                    , new ConsoleSwitchOption(
-                       "Start WebAPI client", (m, o) =>
-                       {
-                           Task.Run(() => sApiServer.Start());
-                           return true;
-                       }
-                       , "Stop WebAPI client", (m, o) =>
-                       {
-                           sApiServer.Stop();
-                           return true;
-                       }
-                       , shortcut: "startapi"
-                   )
-                   , new ConsoleSwitchOption(
                        "Start Server", (m, o) =>
                        {
                            Task.Run(() => sServer.Start());
@@ -81,6 +68,19 @@ namespace Test.Xigadee
                            return true;
                        }
                        , shortcut: "startserver"
+                   )                   
+                   , new ConsoleSwitchOption(
+                       "Start Api Persistence connector", (m, o) =>
+                       {
+                           Task.Run(() => sApiServer.Start());
+                           return true;
+                       }
+                       , "Stop Api Persistence connector", (m, o) =>
+                       {
+                           sApiServer.Stop();
+                           return true;
+                       }
+                       , shortcut: "startapi"
                    )
                    , new ConsoleOption("Client Persistence methods"
                        , (m, o) =>
@@ -89,13 +89,6 @@ namespace Test.Xigadee
                        , childMenu: sMenuClientPersistence.Value
                        , enabled: (m, o) => sClient.Status == ServiceStatus.Running
                    )
-                   , new ConsoleOption("API Client Persistence methods"
-                       , (m, o) =>
-                       {
-                       }
-                       , childMenu: sMenuApiPersistence.Value
-                       , enabled: (m, o) => sApiServer.Status == ServiceStatus.Running
-                   )
                    , new ConsoleOption("Server Persistence methods"
                        , (m, o) =>
                        {
@@ -103,6 +96,13 @@ namespace Test.Xigadee
                        , childMenu: sMenuServerPersistence.Value
                        , enabled: (m, o) => sServer.Status == ServiceStatus.Running
                    )
+                   , new ConsoleOption("Api Persistence connector methods"
+                       , (m, o) =>
+                       {
+                       }
+                       , childMenu: sMenuApiPersistence.Value
+                       , enabled: (m, o) => sApiServer.Status == ServiceStatus.Running
+                   )                
                 );
 
                 return menu;

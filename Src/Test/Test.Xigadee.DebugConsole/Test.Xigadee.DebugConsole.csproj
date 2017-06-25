@@ -181,7 +181,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Context\Context.cs" />
+    <Compile Include="Context\ConsoleContext.cs" />
     <Compile Include="Context\ContextPersistence.cs" />
     <Compile Include="Context\EntityState.cs" />
     <Compile Include="Jobs\DoNothingJob.cs" />
@@ -207,7 +207,7 @@
     <Compile Include="Program_Menu_Settings_Persistence.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Jobs\TestMasterJob.cs" />
-    <Compile Include="Context\Wrapper\ApiWrapper.cs" />
+    <Compile Include="Context\Wrapper\ApiPersistenceConnector.cs" />
     <Compile Include="Context\Wrapper\MicroserviceWrapper.cs" />
     <Compile Include="Context\Wrapper\WrapperBase.cs" />
   </ItemGroup>
