@@ -6,7 +6,7 @@ This section details the Xigadee release versions with the features added since 
 
 ### Current Release - 1.0.17160.7 (June 9, 2017)
 
-This is the current supported release. It contains all the core functionality for the Xigadee framework, and has been used in a number of internal and commercial projects. There are currently 9 NuGet packages in this release, which are detailed below:
+This is the current supported release. It contains all the core functionality for the Xigadee framework, and has been used in a number of internal and commercial projects. There are currently 7 NuGet packages in this release, which are detailed below:
 
 - [Xigadee](https://www.nuget.org/packages/Xigadee/1.0.17160.7)
 - [Xigadee.Api.Client](https://www.nuget.org/packages/Xigadee.Api.Client/1.0.17160.7)
