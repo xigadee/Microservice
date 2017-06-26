@@ -7,13 +7,14 @@
 
 # Test.Xigadee.DebugConsole
 
-This project is a console application that is used to spin up set of interlinked Microservice applications using the chosen communication protocol, such as Azure Service Bus.
+This test project is a console application that is used to spin up set of interlinked Microservice applications using the chosen communication protocol, such as Azure Service Bus or direct TCPIP communication.
 It serves as a test bed for more complex functionality that can't be easily replicated using standard Unit testing.
 
 To run this application, you will need to pass valid configuration credentials in the Command Line arguments to your own subscription.
 
 ## Getting started
 
+This application allows  complex applications to be quickly spun up in a number of different configurations and spread across multiple servers. It allows for the debugging and validations of the complex interactions between Microservices and can be xcopied to multiple machines to simulate client-server environments using different storage and communication options.
 
 ## Switches
 
@@ -21,15 +22,18 @@ You can pass all your required settings in the app.config file. However this may
 
 For this console application, you have the option to pass individual parameters in through the console switches, or pass in a SAS key to a table storage collection which can be shared across multiple developers.
 
--console.persistence
+- console.persistence
 
--console.shortcut
+- console.shortcut
+    - startclient
+    - startserver
+    - startapi
 
--console.apiuri
+- console.apiuri
 
--console.slotcount
+- console.slotcount
 
--console.persistencecache
+- console.persistencecache
 
 ## Settings
 
