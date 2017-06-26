@@ -32,8 +32,8 @@ namespace Test.Xigadee
             //The context holds the active data for the console application.
             sContext = new ConsoleContext(args);
 
-            sClient = new MicroservicePersistenceWrapper<Guid, MondayMorningBlues>("TestClient", ClientConfig);
-            sServer = new MicroservicePersistenceWrapper<Guid, MondayMorningBlues>("TestServer", ServerConfig, ServerInit);
+            sClient = new MicroservicePersistenceWrapper<Guid, MondayMorningBlues>("TestClient", sContext, ClientConfig);
+            sServer = new MicroservicePersistenceWrapper<Guid, MondayMorningBlues>("TestServer", sContext, ServerConfig, ServerInit);
             sApiServer = new ApiPersistenceConnector<Guid, MondayMorningBlues>(ApiConfig);
             
             //Attach the client events.

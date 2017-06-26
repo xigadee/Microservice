@@ -15,57 +15,82 @@
 #endregion
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using Xigadee;
 namespace Test.Xigadee
 {
-    [Flags]
-    public enum RedisCacheMode
-    {
-        Off = 0,
-        Server = 1,
-        Client = 2,
-        ClientServer = 3
-    }
-
     /// <summary>
     /// This class is used to manage the state of the console application.
     /// </summary>
-    class ConsoleContext
+    public class ConsoleContext
     {
+        public const string cnShortcut = "console.shortcut";
+        public const string cnPersistence = "console.persistence";
+        public const string cnApiUri = "console.apiuri";
+        public const string cnSlotCount = "console.slotcount";
+        public const string cnPersistenceCache = "console.persistencecache";
+        public const string cnDefaultUri = "http://localhost:29001";
+
         /// <summary>
         /// This is the default constructor.
         /// </summary>
         /// <param name="args">The console arguments.</param>
         public ConsoleContext(string[] args)
         {
-            Switches = args?.CommandArgsParse() ?? new Dictionary<string, string>();
+            Switches = args?.CommandArgsParse(include:(k,v) => k.StartsWith("console", StringComparison.InvariantCultureIgnoreCase)) ?? new Dictionary<string, string>();
+            Config = args?.CommandArgsParse(include: (k, v) => !k.StartsWith("console", StringComparison.InvariantCultureIgnoreCase)) ?? new Dictionary<string, string>();
 
-            if (Switches.ContainsKey("persistence"))
-                SetServicePersistenceOption(Switches["persistence"]);
+            if (Switches.ContainsKey(cnPersistence))
+                SetServicePersistenceOption(Switches[cnPersistence]);
+
+            if (Switches.ContainsKey(cnPersistenceCache))
+                SetServicePersistenceCacheOption(Switches[cnPersistenceCache]);
+
+            Uri api;
+            if (Switches.ContainsKey(cnApiUri) && Uri.TryCreate(Switches[cnApiUri], UriKind.Absolute, out api))
+                ApiUri = api;
+            else
+                ApiUri = new Uri(cnDefaultUri);
         }
 
         /// <summary>
         /// This is the shortcut setting passed in the console switches.
         /// </summary>
-        public string Shortcut { get { return Switches.ContainsKey("shortcut") ? Switches["shortcut"] : null; } }
+        public string Shortcut { get { return Switches.ContainsKey(cnShortcut) ? Switches[cnShortcut] : null; } }
 
         /// <summary>
         /// This is a list of the console setting switches for the application.
         /// </summary>
         public Dictionary<string, string> Switches { get; protected set; }
 
-        public Uri ApiUri => Switches.ContainsKey("apiuri")?new Uri(Switches["apiuri"]):new Uri("http://localhost:29001");
+        /// <summary>
+        /// This is a list of the console setting switches for the application.
+        /// </summary>
+        public Dictionary<string, string> Config { get; protected set; }
 
-        public int SlotCount => Switches.ContainsKey("processes")?int.Parse(Switches["processes"]) : Environment.ProcessorCount * 4 * 4;
-
+        /// <summary>
+        /// This is the listening Uri for the API. It is also used for the APIClient connection.
+        /// </summary>
+        public Uri ApiUri { get; } 
+        /// <summary>
+        /// This is the number of slots used in the Microservice.
+        /// </summary>
+        public int SlotCount => Switches.ContainsKey(cnSlotCount) ?int.Parse(Switches[cnSlotCount]) : Environment.ProcessorCount * 4 * 4;
+        /// <summary>
+        /// This is the persistence type used in the Server.
+        /// </summary>
         public PersistenceOptions PersistenceType { get; set; } = PersistenceOptions.Memory;
-
+        /// <summary>
+        /// This is the communication type.
+        /// </summary>
         public CommunicationOptions CommunicationType { get; set; } = CommunicationOptions.Local;
-
+        /// <summary>
+        /// This is the entity state.
+        /// </summary>
         public EntityState EntityState { get; } = new EntityState();
 
-        public RedisCacheMode RedisCache => Switches.ContainsKey("persistencecache") ? SetServicePersistenceCacheOption(Switches["persistencecache"]): RedisCacheMode.Off;
+        public RedisCacheModeOptions RedisCache => Switches.ContainsKey(cnPersistenceCache) ? SetServicePersistenceCacheOption(Switches[cnPersistenceCache]): RedisCacheModeOptions.Off;
 
         private void SetServicePersistenceOption(string value)
         {
@@ -90,25 +115,24 @@ namespace Test.Xigadee
                     PersistenceType = PersistenceOptions.Memory;
                     break;
                 default:
-                    PersistenceType = PersistenceOptions.DocumentDb;
+                    PersistenceType = PersistenceOptions.Memory;
                     break;
             }
         }
 
-        private static RedisCacheMode SetServicePersistenceCacheOption(string value)
+        private static RedisCacheModeOptions SetServicePersistenceCacheOption(string value)
         {
             switch (value.ToLowerInvariant())
             {
                 case "server":
-                    return RedisCacheMode.Server;
+                    return RedisCacheModeOptions.Server;
                 case "client":
-                    return RedisCacheMode.Client;
+                    return RedisCacheModeOptions.Client;
                 case "clientserver":
-                    return RedisCacheMode.ClientServer;
+                    return RedisCacheModeOptions.ClientServer;
             }
 
-            return RedisCacheMode.Off;
-
+            return RedisCacheModeOptions.Off;
         }
     }
 }

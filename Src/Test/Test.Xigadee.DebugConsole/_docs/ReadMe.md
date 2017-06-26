@@ -17,11 +17,23 @@ To run this application, you will need to pass valid configuration credentials i
 
 ## Switches
 
-You can pass all your required settings in the app.config file. However this may be persisted to your code repository and you may not wish such sensistive information to be stored where is can be seen by anyone with access to your source code.
+You can pass all your required settings in the app.config file. However this may be persisted to your source code repository, and you may not want such sensistive information to be stored where is can be seen by anyone with access to your repository.
 
-For this console application, you have the option to pass individual parameters in through the console switches, 
-or pass in a SAS key to a table storage collection which can be shared across multiple developers.
+For this console application, you have the option to pass individual parameters in through the console switches, or pass in a SAS key to a table storage collection which can be shared across multiple developers.
 
+-console.persistence
+
+-console.shortcut
+
+-console.apiuri
+
+-console.slotcount
+
+-console.persistencecache
+
+## Settings
+
+Console options provided without the console will be passed in as override settings to the Microservice application.
 
 <table><tr> 
 <td><a href="http://www.hitachiconsulting.com"><img src="../../../../docs/hitachi.png" alt="Hitachi Consulting" height="50"/></a></td> 

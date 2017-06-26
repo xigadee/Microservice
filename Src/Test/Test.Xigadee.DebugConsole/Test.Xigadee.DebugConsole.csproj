@@ -188,7 +188,7 @@
     <Compile Include="Jobs\DelayProcessingJob.cs" />
     <Compile Include="Jobs\TestMasterJob2.cs" />
     <Compile Include="Helper\Channels.cs" />
-    <Compile Include="Helper\PersistenceOptions.cs" />
+    <Compile Include="Helper\EnumOptions.cs" />
     <Compile Include="Populator\CommandRegisterEventArgs.cs" />
     <Compile Include="Populator\ConfigConsole.cs" />
     <Compile Include="Populator\IConsolePersistence.cs" />

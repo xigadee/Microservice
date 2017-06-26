@@ -70,7 +70,7 @@ namespace Test.Xigadee
                        , shortcut: "startserver"
                    )                   
                    , new ConsoleSwitchOption(
-                       "Start Api Persistence connector", (m, o) =>
+                       $"Start Api Persistence connector ({sContext.ApiUri})", (m, o) =>
                        {
                            Task.Run(() => sApiServer.Start());
                            return true;
@@ -81,6 +81,7 @@ namespace Test.Xigadee
                            return true;
                        }
                        , shortcut: "startapi"
+                       , enabled: (m,o) => sContext.ApiUri != null
                    )
                    , new ConsoleOption("Client Persistence methods"
                        , (m, o) =>

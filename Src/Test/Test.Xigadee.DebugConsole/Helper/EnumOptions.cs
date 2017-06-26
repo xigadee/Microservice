@@ -25,7 +25,7 @@ namespace Test.Xigadee
     /// <summary>
     /// This enum contains the persistence storage options for the Microservice service.
     /// </summary>
-    enum PersistenceOptions
+    public enum PersistenceOptions
     {
         Sql,
         DocumentDb,
@@ -38,12 +38,21 @@ namespace Test.Xigadee
     /// <summary>
     /// This enum contains the communication options for the Microservices.
     /// </summary>
-    enum CommunicationOptions
+    public enum CommunicationOptions
     {
         Local,
         AzureServiceBus,
         AzureBlobQueue,
         Tcp,
         Tls,
+    }
+
+    [Flags]
+    public enum RedisCacheModeOptions
+    {
+        Off = 0,
+        Server = 1,
+        Client = 2,
+        ClientServer = 3
     }
 }

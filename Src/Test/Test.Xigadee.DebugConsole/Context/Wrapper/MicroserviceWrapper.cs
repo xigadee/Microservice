@@ -16,21 +16,30 @@ namespace Test.Xigadee
         /// The default constructor.
         /// </summary>
         /// <param name="name">The service name.</param>
+        /// <param name="context">This is config context.</param>
         /// <param name="configure">This is the link to configuration pipeline for the Microservice</param>
         /// <param name="init"></param>
         public MicroservicePersistenceWrapper(string name
+            , ConsoleContext context
             , Action<MicroservicePersistenceWrapper<K,E>> configure
             , Action<MicroservicePersistenceWrapper<K,E>> init = null)
         {
             if (configure == null)
                 throw new ArgumentNullException("configure");
+            if (context == null)
+                throw new ArgumentNullException("context");
 
+            Context = context;
             Name = name;
             mConfigure = configure;
             mInit = init;
 
             PipelineInitialise();
         }
+        /// <summary>
+        /// This is the context that holds the console settings.
+        /// </summary>
+        public ConsoleContext Context { get; }
         /// <summary>
         /// The current Microservice status.
         /// </summary>
