@@ -16,21 +16,30 @@ namespace Test.Xigadee
         /// The default constructor.
         /// </summary>
         /// <param name="name">The service name.</param>
+        /// <param name="context">This is config context.</param>
         /// <param name="configure">This is the link to configuration pipeline for the Microservice</param>
+        /// <param name="init"></param>
         public MicroservicePersistenceWrapper(string name
+            , ConsoleContext context
             , Action<MicroservicePersistenceWrapper<K,E>> configure
-            , Action<MicroservicePersistenceWrapper<K, E>> init = null)
+            , Action<MicroservicePersistenceWrapper<K,E>> init = null)
         {
             if (configure == null)
                 throw new ArgumentNullException("configure");
+            if (context == null)
+                throw new ArgumentNullException("context");
 
+            Context = context;
             Name = name;
-            Pipeline = new MicroservicePipeline(name);
             mConfigure = configure;
             mInit = init;
 
-            mInit?.Invoke(this);
+            PipelineInitialise();
         }
+        /// <summary>
+        /// This is the context that holds the console settings.
+        /// </summary>
+        public ConsoleContext Context { get; }
         /// <summary>
         /// The current Microservice status.
         /// </summary>
@@ -76,6 +85,12 @@ namespace Test.Xigadee
         {
         }
 
+
+        private void PipelineInitialise()
+        {
+            Pipeline = new MicroservicePipeline(Name);
+            mInit?.Invoke(this);
+        }
         /// <summary>
         /// This method stops the service.
         /// </summary>
@@ -83,8 +98,7 @@ namespace Test.Xigadee
         {
             StopInternal();
 
-            Pipeline = new MicroservicePipeline(Name);
-            mInit?.Invoke(this);
+            PipelineInitialise();
         }
 
         private void StopInternal()
@@ -99,5 +113,10 @@ namespace Test.Xigadee
         /// This is the link to the repository.
         /// </summary>
         public IRepositoryAsync<K, E> Repository { get; set; }
+
+        /// <summary>
+        /// This is the link to the repository.
+        /// </summary>
+        public bool RepositoryRedisCacheEnabled { get; set; }
     }
 }

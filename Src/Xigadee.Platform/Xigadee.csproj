@@ -183,6 +183,7 @@
     <Compile Include="Communication\TcpTlsChannel\Pipeline\AttachTcpTlsBroadcastListener.cs" />
     <Compile Include="Communication\TcpTlsChannel\Pipeline\AttachTcpTlsBroadcastSender.cs" />
     <Compile Include="Communication\TcpTlsChannel\Communication\TcpTlsServer.cs" />
+    <Compile Include="Communication\TcpTlsChannel\Pipeline\ConfigureTcpTlsMessagingHelper.cs" />
     <Compile Include="Communication\TcpTlsChannel\TcpTlsChannelSender.cs" />
     <Compile Include="Communication\TcpTlsChannel\Communication\TcpTlsClient.cs" />
     <Compile Include="Communication\TcpTlsChannel\TcpTlsClientHolder.cs" />

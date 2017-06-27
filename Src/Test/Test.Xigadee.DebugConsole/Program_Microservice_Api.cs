@@ -19,31 +19,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Http;
+using Microsoft.Owin.Hosting;
+using Owin;
+using Unity.WebApi;
+using Xigadee;
 
 namespace Test.Xigadee
 {
-    /// <summary>
-    /// This enum contains the persistence storage options for the Microservice service.
-    /// </summary>
-    enum PersistenceOptions
-    {
-        Sql,
-        DocumentDb,
-        DocumentDbSdk,
-        RedisCache,
-        Blob,
-        Memory
-    }
 
-    /// <summary>
-    /// This enum contains the communication options for the Microservices.
-    /// </summary>
-    enum CommunicationOptions
+    static partial class Program
     {
-        Local,
-        AzureServiceBus,
-        AzureBlobQueue,
-        Tcp,
-        Tls,
+        static void ApiConfig(ApiPersistenceConnector<Guid, MondayMorningBlues> wrapper)
+        {
+
+        }
+
     }
 }

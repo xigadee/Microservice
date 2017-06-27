@@ -39,7 +39,7 @@ namespace Xigadee
 
         public CloudTable Table { get; set; }
 
-        public ConfigResolverTableStorage(string tableName)
+        public ConfigResolverTableStorage(string sasKey)
         {
 
         }

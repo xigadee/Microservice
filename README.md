@@ -10,6 +10,8 @@ specifically when targeting Platform-as-a-Service (PaaS) technologies in the Azu
 
 Xigadee is now open-source; released under the Apache 2 license. You are free to use it within your own commercial applications without restriction. 
 
+To read what's new in the latest NuGet release packages, please click [here](/docs/whatsnew.md).
+
 ## Quick guides
 
 If you are new to Microservice development, then the following links gives you an overview of Microservices and how to compose a Microservice based application.

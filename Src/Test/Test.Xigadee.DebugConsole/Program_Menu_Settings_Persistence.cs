@@ -75,22 +75,22 @@ namespace Test.Xigadee
                         , enabled: (m, o) => true
                         , selected: (m, o) => sContext.PersistenceType == PersistenceOptions.Memory
                     )
-                    //, new ConsoleOption("Client RedisCache enabled"
-                    //    , (m, o) =>
-                    //    {
-                    //        sContext.Client.RedisCacheEnabled = !sContext.Client.RedisCacheEnabled;
-                    //    }
-                    //    , enabled: (m, o) => true
-                    //    , selected: (m, o) => sContext.Client.RedisCacheEnabled
-                    //)
-                    //, new ConsoleOption("Server RedisCache enabled"
-                    //    , (m, o) =>
-                    //    {
-                    //        sContext.Server.RedisCacheEnabled = !sContext.Server.RedisCacheEnabled;
-                    //    }
-                    //    , enabled: (m, o) => true
-                    //    , selected: (m, o) => sContext.Server.RedisCacheEnabled
-                    //)
+                    , new ConsoleOption("Client RedisCache Persistence extension enabled"
+                        , (m, o) =>
+                        {
+                            sClient.RepositoryRedisCacheEnabled = !sClient.RepositoryRedisCacheEnabled;
+                        }
+                        , enabled: (m, o) => sClient?.Config?.CanResolve(AzureExtensionMethods.KeyRedisCacheConnection) ?? false
+                        , selected: (m, o) => sClient.RepositoryRedisCacheEnabled
+                    )
+                    , new ConsoleOption("Server RedisCache Persistence extension enabled"
+                        , (m, o) =>
+                        {
+                            sServer.RepositoryRedisCacheEnabled = !sServer.RepositoryRedisCacheEnabled;
+                        }
+                        , enabled: (m, o) => sServer?.Config?.CanResolve(AzureExtensionMethods.KeyRedisCacheConnection) ?? false
+                        , selected: (m, o) => sServer.RepositoryRedisCacheEnabled
+                    )
                     );
 
                 menu.ContextInfoInherit = false;

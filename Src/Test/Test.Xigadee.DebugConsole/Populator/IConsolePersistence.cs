@@ -24,9 +24,7 @@ namespace Test.Xigadee
     {
         ServiceStatus Status { get; }
 
-        IRepositoryAsync<K, E> Persistence { get; }
-        IRepositoryAsync<K, E> PersistenceClient { get; set; }
-        IRepositoryAsync<K, E> PersistenceServer { get; set; }
+        IRepositoryAsync<K, E> Persistence { get;set; }
 
         /// <summary>
         /// This event can be used to subscribe to status changes.

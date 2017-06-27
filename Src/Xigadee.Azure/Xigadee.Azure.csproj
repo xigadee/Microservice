@@ -209,9 +209,10 @@
     </Compile>
     <Compile Include="ApplicationInsights\ApplicationInsightsCollector.cs" />
     <Compile Include="ApplicationInsights\CommandCorrelationInitializer.cs" />
-    <Compile Include="Configuration\ConfigResolver\ConfigResolverKeyVault.cs" />
-    <Compile Include="Configuration\ConfigResolver\ConfigResolverAzure.cs" />
-    <Compile Include="Configuration\ConfigResolver\ConfigResolverTableStorage.cs" />
+    <Compile Include="Configuration\ConfigResolver\KeyVault\ConfigResolverKeyVault.cs" />
+    <Compile Include="Configuration\ConfigResolver\Azure\ConfigResolverAzure.cs" />
+    <Compile Include="Configuration\ConfigResolver\TableStorage\ConfigResolverTableStorage.cs" />
+    <Compile Include="Configuration\ConfigResolver\TableStorage\TableStorage.cs" />
     <Compile Include="DataCollection\EventHubs\AddEventHubsDataCollector.cs" />
     <Compile Include="DataCollection\EventHubs\EventHubsDataCollectorPolicy.cs" />
     <Compile Include="DataCollection\EventHubs\EventHubsDataCollector.cs" />
@@ -255,10 +256,10 @@
     <Compile Include="Pipeline\ConfigResolver\ConfigResolverSetKeyVault.cs" />
     <Compile Include="Pipeline\ConfigResolver\ConfigResolverSetAzure.cs" />
     <Compile Include="Pipeline\Config\ApplicationInsight.cs" />
-    <Compile Include="Configuration\ConfigResolver\AzureHelper.cs" />
+    <Compile Include="Configuration\ConfigResolver\Azure\AzureHelper.cs" />
     <Compile Include="Pipeline\Config\EventHubs.cs" />
     <Compile Include="Pipeline\Config\RedisCache.cs" />
-    <Compile Include="Pipeline\Config\KeyVault.cs" />
+    <Compile Include="Configuration\ConfigResolver\KeyVault\KeyVault.cs" />
     <Compile Include="Pipeline\Config\ServiceBus.cs" />
     <Compile Include="Pipeline\Config\LogStorage.cs" />
     <Compile Include="Pipeline\Config\Storage.cs" />

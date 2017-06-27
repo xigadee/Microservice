@@ -20,28 +20,39 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Xigadee
+namespace Test.Xigadee
 {
-    [AttributeUsage(AttributeTargets.Field)]
-    public class ConfigSettingKeyAttribute:Attribute
+    /// <summary>
+    /// This enum contains the persistence storage options for the Microservice service.
+    /// </summary>
+    public enum PersistenceOptions
     {
-        public ConfigSettingKeyAttribute(string category = null)
-        {
-            Category = category;
-        }
-
-        public string Category { get; }
+        Sql,
+        DocumentDb,
+        DocumentDbSdk,
+        RedisCache,
+        Blob,
+        Memory
     }
 
-
-    [AttributeUsage(AttributeTargets.Method)]
-    public class ConfigSettingAttribute: Attribute
+    /// <summary>
+    /// This enum contains the communication options for the Microservices.
+    /// </summary>
+    public enum CommunicationOptions
     {
-        public ConfigSettingAttribute(string category)
-        {
-            Category = category;
-        }
+        Local,
+        AzureServiceBus,
+        AzureBlobQueue,
+        Tcp,
+        Tls,
+    }
 
-        public string Category { get; }
+    [Flags]
+    public enum RedisCacheModeOptions
+    {
+        Off = 0,
+        Server = 1,
+        Client = 2,
+        ClientServer = 3
     }
 }

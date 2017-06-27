@@ -18,8 +18,7 @@ using System;
 using Xigadee;
 namespace Test.Xigadee
 {
-    class ContextPersistence<K, E>
-        where K : IEquatable<K>
+    class ContextPersistence<K, E> where K : IEquatable<K>
     {
         Lazy<IRepositoryAsync<Guid, MondayMorningBlues>> mPersistenceActivator;
 

@@ -181,14 +181,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Context\Context.cs" />
+    <Compile Include="Context\ConsoleContext.cs" />
     <Compile Include="Context\ContextPersistence.cs" />
     <Compile Include="Context\EntityState.cs" />
     <Compile Include="Jobs\DoNothingJob.cs" />
     <Compile Include="Jobs\DelayProcessingJob.cs" />
     <Compile Include="Jobs\TestMasterJob2.cs" />
     <Compile Include="Helper\Channels.cs" />
-    <Compile Include="Helper\PersistenceOptions.cs" />
+    <Compile Include="Helper\EnumOptions.cs" />
     <Compile Include="Populator\CommandRegisterEventArgs.cs" />
     <Compile Include="Populator\ConfigConsole.cs" />
     <Compile Include="Populator\IConsolePersistence.cs" />
@@ -199,13 +199,15 @@
     <Compile Include="Program_Menu.cs" />
     <Compile Include="Program_Menu_Settings_Configuration.cs" />
     <Compile Include="Program_Menu_Settings_Communication.cs" />
-    <Compile Include="Program_Microservice.cs" />
+    <Compile Include="Program_Microservice_Api.cs" />
+    <Compile Include="Program_Microservice_Server.cs" />
+    <Compile Include="Program_Microservice_Client.cs" />
     <Compile Include="Program_PersistenceMenuHelper.cs" />
     <Compile Include="Program_Menu_Persistence.cs" />
-    <Compile Include="Program_Menu_Settings_ServerPersistence.cs" />
+    <Compile Include="Program_Menu_Settings_Persistence.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Jobs\TestMasterJob.cs" />
-    <Compile Include="Context\Wrapper\ApiWrapper.cs" />
+    <Compile Include="Context\Wrapper\ApiPersistenceConnector.cs" />
     <Compile Include="Context\Wrapper\MicroserviceWrapper.cs" />
     <Compile Include="Context\Wrapper\WrapperBase.cs" />
   </ItemGroup>

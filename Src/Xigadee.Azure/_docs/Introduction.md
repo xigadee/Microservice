@@ -39,10 +39,12 @@ Azure contains a number of communciation services.
 
 ### Azure KeyVault
 
+### Table Storage
+
 
 ## What's new
 
-This is still pre-release software.
+All released now as core code for Release 1.0.17160.7
 
 <table><tr> 
 <td><a href="http://www.hitachiconsulting.com"><img src="../../../docs/hitachi.png" alt="Hitachi Consulting" height="50"/></a></td> 

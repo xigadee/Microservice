@@ -25,22 +25,26 @@ namespace Test.Xigadee
 
         static MicroservicePersistenceWrapper<Guid, MondayMorningBlues> sClient;
         static MicroservicePersistenceWrapper<Guid, MondayMorningBlues> sServer;
-        static ApiWrapper<Guid, MondayMorningBlues> sApiServer;
+        static ApiPersistenceConnector<Guid, MondayMorningBlues> sApiServer;
 
         static void Main(string[] args)
         {
+            //The context holds the active data for the console application.
             sContext = new ConsoleContext(args);
 
-            sClient = new MicroservicePersistenceWrapper<Guid, MondayMorningBlues>("TestClient", ClientConfig);
-            sServer = new MicroservicePersistenceWrapper<Guid, MondayMorningBlues>("TestServer", ServerConfig, ServerInit);
-            sApiServer = new ApiWrapper<Guid, MondayMorningBlues>();
+            sClient = new MicroservicePersistenceWrapper<Guid, MondayMorningBlues>("TestClient", sContext, ClientConfig);
+            sServer = new MicroservicePersistenceWrapper<Guid, MondayMorningBlues>("TestServer", sContext, ServerConfig, ServerInit);
+            sApiServer = new ApiPersistenceConnector<Guid, MondayMorningBlues>(ApiConfig);
             
+            //Attach the client events.
             sClient.StatusChanged += StatusChanged;
             sServer.StatusChanged += StatusChanged;
             sApiServer.StatusChanged += StatusChanged;
 
+            //Show the main console menu.
             sMenuMain.Value.Show(args, shortcut: sContext.Shortcut);
 
+            //Detach the client events to allow the application to close.
             sClient.StatusChanged -= StatusChanged;
             sServer.StatusChanged -= StatusChanged;
             sApiServer.StatusChanged -= StatusChanged;

@@ -34,6 +34,11 @@ namespace Xigadee
 
         public int NumberOfRetries { get; set; } = 5;
 
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="clientCredential">The client credentials</param>
+        /// <param name="secretBaseUri">The uri.</param>
         public ConfigResolverKeyVault(ClientCredential clientCredential, string secretBaseUri)
         {
             if (clientCredential == null)

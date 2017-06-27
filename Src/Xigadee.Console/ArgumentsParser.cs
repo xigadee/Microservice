@@ -27,7 +27,7 @@ namespace Xigadee
     /// </summary>
     public static class ArgumentsParser
     {
-        #region CommandArgsParse(this string[] Args, string strStart, string strDelim, bool throwErrors)
+        #region CommandArgsParse(this string[] Args, string strStart, string strDelim, bool throwErrors ...
         /// <summary>
         /// 
         /// </summary>
@@ -35,8 +35,9 @@ namespace Xigadee
         /// <param name="strStart">The switch start character.</param>
         /// <param name="strDelim">The delimiter character.</param>
         /// <param name="throwErrors">Throws an error if duplicate keys are found or the values are in an incorrect format.</param>
+        /// <param name="include">This is an optional function that can be used to filter out specific entries.</param>
         /// <returns>Returns a dictionary containing the collection of parameters and values.</returns>
-        public static Dictionary<string, string> CommandArgsParse(this string[] args, string strStart= @"/", string strDelim= @":", bool throwErrors = false)
+        public static Dictionary<string, string> CommandArgsParse(this string[] args, string strStart= @"/", string strDelim= @":", bool throwErrors = false, Func<string,string, bool> include = null)
         {
             //	This function parses the command line arguments to find the correct type
             //	based on the syntax /strOption:[strReturnData]
@@ -49,6 +50,9 @@ namespace Xigadee
             if (args == null)
                 return data;
 
+            if (include == null)
+                include = (k,v) => true;
+
             string strKey, strValue;
 
             foreach (string strData in args)
@@ -57,7 +61,7 @@ namespace Xigadee
                 {
                     ParseData(strData, out strKey, out strValue, strStart, strDelim);
 
-                    if (!data.ContainsKey(strKey))
+                    if (!data.ContainsKey(strKey) && include (strKey, strValue))
                     {
                         data.Add(strKey, strValue);
                     }
