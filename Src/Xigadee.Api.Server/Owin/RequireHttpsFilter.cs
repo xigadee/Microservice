@@ -15,6 +15,7 @@
 #endregion
 
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,6 +33,14 @@ namespace Xigadee
         public Task AuthenticateAsync(HttpAuthenticationContext context, CancellationToken cancellationToken)
         {
             if (context.Request.RequestUri.Scheme == Uri.UriSchemeHttps)
+                return Task.CompletedTask;
+
+            var allowHttpTraffic =
+                context.ActionContext.ActionDescriptor.GetCustomAttributes<AllowHttpTrafficAttribute>().FirstOrDefault() ??
+                context.ActionContext.ActionDescriptor.ControllerDescriptor.GetCustomAttributes<AllowHttpTrafficAttribute>().FirstOrDefault();
+            
+            // If we can allow http traffic then check whether it is local only and if this is local traffic 
+            if (allowHttpTraffic != null && (!allowHttpTraffic.LocalOnly || context.Request.RequestUri.IsLoopback))
                 return Task.CompletedTask;
 
             context.ErrorResult = new StatusResult(HttpStatusCode.Forbidden, context.Request, "Invalid Scheme");
