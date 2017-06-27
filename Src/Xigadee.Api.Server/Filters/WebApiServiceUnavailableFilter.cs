@@ -132,7 +132,7 @@ namespace Xigadee
             if (microservice.Status == ServiceStatus.Running)
                 return true;
 
-            await Task.Factory.StartNew(() => mStatusChangeResetEvent.WaitOne(waitToStartDuration));
+            await mStatusChangeResetEvent.WaitOneAsync(waitToStartDuration);
             return microservice.Status == ServiceStatus.Running;
         }
 
