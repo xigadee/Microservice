@@ -8,7 +8,7 @@
     <owners>Hitachi Consulting</owners>
     <iconUrl>https://raw.githubusercontent.com/xigadee/Microservice/master/docs/Logo.png</iconUrl>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
-    <projectUrl>https://github.com/xigadee/Microservice/blob/master/README.md</projectUrl>
+    <projectUrl>http://xigadee.org</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>The Xigadee library is used to create Microservice and Serverless based applications.</description>
     <summary>Xigadee Microservice Framework for .NET</summary>

@@ -8,7 +8,7 @@
     <owners>Hitachi Consulting</owners>
     <iconUrl>https://raw.githubusercontent.com/xigadee/Microservice/master/docs/Logo.png</iconUrl>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
-    <projectUrl>https://github.com/xigadee/Microservice/blob/master/README.md</projectUrl>
+    <projectUrl>http://xigadee.org</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Xigadee API client library is used to access Api gateways for client applications.</description>
     <releaseNotes>Initial push.</releaseNotes>
