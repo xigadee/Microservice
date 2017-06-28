@@ -36,7 +36,7 @@ namespace Test.Xigadee
             PersistenceClient<Guid, MondayMorningBlues> persistence = null;
 
             wrapper.Pipeline
-                .ConfigurationSetFromConsoleArgs(sContext.Switches)
+                .ConfigurationSetFromConsoleArgs(sSettings.Switches)
                 .AddDebugMemoryDataCollector((c) => wrapper.Collector = c)
                 .AddChannelIncoming("internalOut")
                     .AttachPersistenceClient(out persistence, "internalIn")

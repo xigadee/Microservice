@@ -23,7 +23,7 @@ namespace Test.Xigadee
     /// <summary>
     /// This class is used to manage the state of the console application.
     /// </summary>
-    public class ConsoleContext
+    public class ConsoleSettings
     {
         public const string cnShortcut = "console.shortcut";
         public const string cnPersistence = "console.persistence";
@@ -36,7 +36,7 @@ namespace Test.Xigadee
         /// This is the default constructor.
         /// </summary>
         /// <param name="args">The console arguments.</param>
-        public ConsoleContext(string[] args)
+        public ConsoleSettings(string[] args)
         {
             Switches = args?.CommandArgsParse(include:(k,v) => k.StartsWith("console", StringComparison.InvariantCultureIgnoreCase)) ?? new Dictionary<string, string>();
             Config = args?.CommandArgsParse(include: (k, v) => !k.StartsWith("console", StringComparison.InvariantCultureIgnoreCase)) ?? new Dictionary<string, string>();

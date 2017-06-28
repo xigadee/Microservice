@@ -181,7 +181,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Context\ConsoleContext.cs" />
+    <Compile Include="Context\ConsoleSettings.cs" />
     <Compile Include="Context\ContextPersistence.cs" />
     <Compile Include="Context\EntityState.cs" />
     <Compile Include="Jobs\DoNothingJob.cs" />

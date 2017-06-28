@@ -20,7 +20,7 @@ namespace Test.Xigadee
         /// <param name="configure">This is the link to configuration pipeline for the Microservice</param>
         /// <param name="init"></param>
         public MicroservicePersistenceWrapper(string name
-            , ConsoleContext context
+            , ConsoleSettings context
             , Action<MicroservicePersistenceWrapper<K,E>> configure
             , Action<MicroservicePersistenceWrapper<K,E>> init = null)
         {
@@ -39,7 +39,7 @@ namespace Test.Xigadee
         /// <summary>
         /// This is the context that holds the console settings.
         /// </summary>
-        public ConsoleContext Context { get; }
+        public ConsoleSettings Context { get; }
         /// <summary>
         /// The current Microservice status.
         /// </summary>

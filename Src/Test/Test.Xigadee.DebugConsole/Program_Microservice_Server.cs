@@ -34,7 +34,7 @@ namespace Test.Xigadee
         {
             wrapper.Pipeline
                 //.ConfigurationClear()
-                .ConfigurationSetFromConsoleArgs(sContext.Switches)
+                .ConfigurationSetFromConsoleArgs(sSettings.Switches)
                 //.Condition((c) => c.AesTransportEncryptionUseCompression
                 ;
         }
@@ -73,7 +73,7 @@ namespace Test.Xigadee
         {
             var config = cpipe.ToConfiguration();
 
-            switch (sContext.CommunicationType)
+            switch (sSettings.CommunicationType)
             {
                 case CommunicationOptions.Local:
                     break;
@@ -99,7 +99,7 @@ namespace Test.Xigadee
         {
             var config = cpipe.ToConfiguration();
 
-            switch (sContext.PersistenceType)
+            switch (sSettings.PersistenceType)
             {        
                 case PersistenceOptions.Sql:
                     cpipe.AttachCommand(new PersistenceMondayMorningBluesSql(config.SqlConnection(), MondayMorningBluesHelper.VersionPolicyHelper));

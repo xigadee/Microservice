@@ -33,42 +33,42 @@ namespace Test.Xigadee
                     , new ConsoleOption("Local connectivity"
                         , (m, o) =>
                         {
-                            sContext.CommunicationType = CommunicationOptions.Local;
+                            sSettings.CommunicationType = CommunicationOptions.Local;
                         }
                         , enabled: (m, o) => true
-                        , selected: (m, o) => sContext.CommunicationType == CommunicationOptions.Local
+                        , selected: (m, o) => sSettings.CommunicationType == CommunicationOptions.Local
                     )
                     , new ConsoleOption("Azure Service Bus"
                         , (m, o) =>
                         {
-                            sContext.CommunicationType = CommunicationOptions.AzureServiceBus;
+                            sSettings.CommunicationType = CommunicationOptions.AzureServiceBus;
                         }
                         , enabled: (m, o) => sServer.Config?.CanResolve(AzureExtensionMethods.KeyServiceBusConnection) ?? false
-                        , selected: (m, o) => sContext.CommunicationType == CommunicationOptions.AzureServiceBus
+                        , selected: (m, o) => sSettings.CommunicationType == CommunicationOptions.AzureServiceBus
                     )
                     , new ConsoleOption("Azure Storage Queue"
                         , (m, o) =>
                         {
-                            sContext.CommunicationType = CommunicationOptions.AzureBlobQueue;
+                            sSettings.CommunicationType = CommunicationOptions.AzureBlobQueue;
                         }
                         , enabled: (m, o) => sServer.Config?.CanResolve(AzureExtensionMethods.KeyAzureStorageAccountName, AzureExtensionMethods.KeyAzureStorageAccountAccessKey) ?? false
-                        , selected: (m, o) => sContext.CommunicationType == CommunicationOptions.AzureBlobQueue
+                        , selected: (m, o) => sSettings.CommunicationType == CommunicationOptions.AzureBlobQueue
                     )
                     , new ConsoleOption("TCP"
                         , (m, o) =>
                         {
-                            sContext.CommunicationType = CommunicationOptions.Tcp;
+                            sSettings.CommunicationType = CommunicationOptions.Tcp;
                         }
                         , enabled: (m, o) => true
-                        , selected: (m, o) => sContext.CommunicationType == CommunicationOptions.Tcp
+                        , selected: (m, o) => sSettings.CommunicationType == CommunicationOptions.Tcp
                     )
                     , new ConsoleOption("TLS"
                         , (m, o) =>
                         {
-                            sContext.CommunicationType = CommunicationOptions.Tls;
+                            sSettings.CommunicationType = CommunicationOptions.Tls;
                         }
                         , enabled: (m, o) => sServer.Config?.CanResolve(AzureExtensionMethods.KeyAzureStorageAccountName, AzureExtensionMethods.KeyAzureStorageAccountAccessKey) ?? false
-                        , selected: (m, o) => sContext.CommunicationType == CommunicationOptions.Tls
+                        , selected: (m, o) => sSettings.CommunicationType == CommunicationOptions.Tls
                     )
                     );
 
