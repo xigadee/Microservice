@@ -168,6 +168,8 @@
     <Compile Include="Filters\WebApiCircuitBreakerFilter.cs" />
     <Compile Include="Filters\WebApiMicroserviceStartupFilter.cs" />
     <Compile Include="Helper\MicroserviceDependencyResolver.cs" />
+    <Compile Include="Owin\AllowNoClientCertificateAttribute.cs" />
+    <Compile Include="Owin\AllowHttpTrafficAttribute.cs" />
     <Compile Include="Owin\ClientCertificateAuthorizationFilter.cs" />
     <Compile Include="Owin\RequireHttpsFilter.cs" />
     <Compile Include="Owin\Policy\IJwtTokenVerificationPolicy.cs" />

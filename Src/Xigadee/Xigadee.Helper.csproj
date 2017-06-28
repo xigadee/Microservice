@@ -80,6 +80,7 @@
     <Compile Include="Helper\ArrayHelper\MatchCollection\Terminators\MatchTerminatorResult.cs" />
     <Compile Include="Helper\ArrayHelper\MatchCollection\Terminators\MatchTerminatorStatus.cs" />
     <Compile Include="Helper\ArrayHelper\MatchSequence\MatchState.cs" />
+    <Compile Include="Helper\AsyncWaitHandle.cs" />
     <Compile Include="Helper\Bit\BitHelper.cs" />
     <Compile Include="Helper\Bit\BitMask.cs" />
     <Compile Include="Helper\Conversion_Xml.cs" />

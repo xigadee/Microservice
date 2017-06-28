@@ -7,6 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 
@@ -34,6 +35,12 @@ namespace Xigadee
 
             if (!context.Request.ClientCertificate.IsPresent)
             {
+                // If no certificate has been supplied but this controller/action allows no certificate
+                // access then let this call through
+                if (actionContext.ActionDescriptor.GetCustomAttributes<AllowNoClientCertificateAttribute>().Any() ||
+                    actionContext.ActionDescriptor.ControllerDescriptor.GetCustomAttributes<AllowNoClientCertificateAttribute>().Any())
+                    return continuation();
+
                 HttpResponseMessage response = request.CreateResponse(HttpStatusCode.Unauthorized);
                 response.Content = new StringContent("Client certificate missing");
                 return Task.FromResult(response);
@@ -65,7 +72,7 @@ namespace Xigadee
                     mClientCertificateThumbprints.FirstOrDefault(m => m.Equals(clientCert.Thumbprint?.Trim(), StringComparison.InvariantCultureIgnoreCase)) == null)
                 {
                     HttpResponseMessage response = request.CreateResponse(HttpStatusCode.Unauthorized);
-                    response.Content = new StringContent($"Client thumbprint does not match an expected value {clientCert.Thumbprint?.Trim()}");
+                    response.Content = new StringContent($"Client thumbprint ({clientCert.Thumbprint?.Trim()}) does not match an expected value ");
                     return Task.FromResult(response);
                 }
 
