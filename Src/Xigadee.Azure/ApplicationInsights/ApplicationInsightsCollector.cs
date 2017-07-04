@@ -59,7 +59,7 @@ namespace Xigadee
             mTelemetry = new TelemetryClient();
 
             mTelemetry.Context.Device.Id = OriginatorId.ServiceId;
-            mTelemetry.Context.Component.Version = (Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly()).GetName().Version.ToString();
+            mTelemetry.Context.Component.Version = OriginatorId.ServiceVersionId ?? (Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly()).GetName().Version.ToString();
             mTelemetry.Context.Properties["ExternalServiceId"] = OriginatorId.ExternalServiceId;
             mTelemetry.Context.Properties["MachineName"] = OriginatorId.MachineName;
             mTelemetry.Context.Properties["ServiceName"] = OriginatorId.Name;
