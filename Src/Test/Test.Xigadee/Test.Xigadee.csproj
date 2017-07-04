@@ -93,6 +93,7 @@
     <Compile Include="Pipeline\Pipeline2.cs" />
     <Compile Include="Commands\Microservice_Validate_CommandRequest.cs" />
     <Compile Include="Commands\Microservice_Validate_CommandOutgoingRequests.cs" />
+    <Compile Include="Pipeline\Pipeline3.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Persistence\Microservice_Validate_Persistence.cs" />
     <Compile Include="ResourceTracker\UnitTest1.cs" />

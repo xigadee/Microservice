@@ -7,8 +7,8 @@
 
 # The 15 minute Microservice
 
-Xigadee is designed to simplify much of the complexity of building a Microservice. 
-This example gives a brief outline of how you can quickly build a Microservice based application using the Xigadee framework.
+Xigadee is designed to simplify the process of constructing a Microservice. 
+This example gives a quick introduction to building a Microservice based application using the Xigadee framework.
 
 For this example, we'll host the API service within a console application. 
 Xigadee comes with a Nuget package (Xigadee.Console) which can be used to quickly spin up these type of applications.

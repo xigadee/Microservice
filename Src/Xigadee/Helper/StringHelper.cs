@@ -109,7 +109,7 @@ namespace Xigadee
         /// <param name="split2"></param>
         /// <returns></returns>
         public static List<KeyValuePair<T, U>> SplitOnChars<T, U>(string toSplit,
-            Converter<string, T> convertT, Converter<string, U> convertU,
+            Func<string, T> convertT, Func<string, U> convertU,
                 char[] split1, char[] split2)
         {
             if (toSplit == null)
@@ -147,7 +147,7 @@ namespace Xigadee
         /// <param name="split2"></param>
         /// <returns></returns>
         public static Dictionary<T, U> SplitOnCharsUnique<T, U>(string toSplit,
-            Converter<string, T> convertT, Converter<string, U> convertU, char[] split1, char[] split2)
+            Func<string, T> convertT, Func<string, U> convertU, char[] split1, char[] split2)
         {
             if (toSplit == null)
                 throw new ArgumentNullException("toSplit", "toSplit cannot be null.");
@@ -171,22 +171,20 @@ namespace Xigadee
         #endregion // SplitOnCharsUnique
 
         #region ConvPassthru
-        public static Converter<string, string> ConvPassthru =
-            delegate (string input)
-            {
-                return input;
-            };
+        public static Func<string, string> ConvPassthru =
+            (input) => input;
+
         #endregion // ConvPassthru
         #region ConvPassthruLowerCase
-        public static Converter<string, string> ConvPassthruLowerCase =
-            delegate (string input)
+        public static Func<string, string> ConvPassthruLowerCase =
+            (input) =>
             {
                 return input.Trim().ToLowerInvariant();
             };
         #endregion // ConvPassthruLowerCase
         #region ConvQParam
-        public static Converter<string, string> ConvQParam =
-            delegate (string input)
+        public static Func<string, string> ConvQParam =
+            (input) =>
             {
                 if (input == null)
                     return null;
@@ -197,8 +195,8 @@ namespace Xigadee
             };
         #endregion // ConvQParam
         #region ConvStripSpeechMarks
-        public static Converter<string, string> ConvStripSpeechMarks =
-            delegate (string input)
+        public static Func<string, string> ConvStripSpeechMarks =
+            (input) =>
             {
                 if (input == null)
                     return null;

@@ -32,10 +32,8 @@ namespace Test.Xigadee.Pipeline
 
             pipe
                 .AddChannelIncoming("freddyin", autosetPartition01:false)
-                    .AttachPriorityPartition(0,1,2)
-                                
-                .Revert()
-                
+                    .AttachPriorityPartition(0,1,2)                                
+                .Revert()                
                 .AddChannelOutgoing("freddyout", autosetPartition01: false)
                     .AttachPriorityPartition(1, 2)
                 ;
