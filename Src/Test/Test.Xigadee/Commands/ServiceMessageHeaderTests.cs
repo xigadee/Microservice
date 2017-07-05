@@ -38,10 +38,10 @@ namespace Test.Xigadee.Commands
             Assert.IsTrue(hi1.ActionType == null);
             Assert.IsTrue(hi1.IsPartialKey);
 
-            string str = "freddy";
-
+#pragma warning disable CS1718 // Comparison made to same variable
             Assert.IsTrue(hi1 == hi1);
             Assert.IsFalse(hi1 != hi1);
+#pragma warning restore CS1718 // Comparison made to same variable
 
             Assert.IsTrue((hi1 == hi2) && (hi2 == hi3) && (hi3 == hi4));
         }
@@ -75,7 +75,6 @@ namespace Test.Xigadee.Commands
             Assert.IsTrue(dict[("CHANNEL", "messagetype", "FREDDY")] == 1);
             Assert.IsTrue(dict[hi2] == 2);
         }
-
 
         [TestMethod]
         public void Match1()
