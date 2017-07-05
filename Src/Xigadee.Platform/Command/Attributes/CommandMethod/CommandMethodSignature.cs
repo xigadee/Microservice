@@ -215,7 +215,7 @@ namespace Xigadee
         /// <returns>The reference id.</returns>
         public string Reference(CommandContractAttribute attr)
         {
-            return $"{Method.Name}/{attr.Header.ToKey()}";
+            return $"{Method.Name}/{attr.Header.Key}";
         }
         #endregion
 

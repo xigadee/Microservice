@@ -30,7 +30,7 @@ namespace Xigadee
         {
             Ex = ex;
 
-            MessageHeader = payload.Message.ToServiceMessageHeader().ToKey();
+            MessageHeader = payload.Message.ToServiceMessageHeader().Key;
 
             CorrelationUTC = payload.Message.CorrelationUTC;
 

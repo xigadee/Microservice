@@ -69,7 +69,7 @@ namespace Xigadee
             Interlocked.Increment(ref mRetry);
         }
 
-        public string Debug { get { return $"{Prq?.Id.ToString("N")}={Prq?.Message?.ToServiceMessageHeader().ToKey()} Retries={mRetry} Extent={Extent.ToFriendlyString()}"; } }
+        public string Debug { get { return $"{Prq?.Id.ToString("N")}={Prq?.Message?.ToServiceMessageHeader().Key} Retries={mRetry} Extent={Extent.ToFriendlyString()}"; } }
 
         public TimeSpan? Extent
         {

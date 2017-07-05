@@ -19,7 +19,7 @@ namespace Test.Xigadee.Commands
             Assert.IsTrue(hi1.ActionType == "actiontype");
             Assert.IsFalse(hi1.IsPartialKey);
 
-            Assert.IsTrue(hi1.ToKey() == "channel/messagetype/actiontype");
+            Assert.IsTrue(hi1.Key == "channel/messagetype/actiontype");
 
             Assert.AreEqual(hi1,hi2);
         }
@@ -31,19 +31,20 @@ namespace Test.Xigadee.Commands
             ServiceMessageHeader hi2 = ("channel", "messagetype", null);
             ServiceMessageHeader hi3 = ("channel", "messagetype", "");
             ServiceMessageHeader hi4 = ("channel", "messagetype", " ");
+            ServiceMessageHeader himprobable = ("channel", "", "Howdy");
 
             Assert.IsTrue(hi1.ChannelId == "channel");
             Assert.IsTrue(hi1.MessageType == "messagetype");
             Assert.IsTrue(hi1.ActionType == null);
             Assert.IsTrue(hi1.IsPartialKey);
 
+            string str = "freddy";
+
             Assert.IsTrue(hi1 == hi1);
             Assert.IsFalse(hi1 != hi1);
 
             Assert.IsTrue((hi1 == hi2) && (hi2 == hi3) && (hi3 == hi4));
-
         }
-
 
         [TestMethod]
         public void Inequality()
@@ -54,7 +55,6 @@ namespace Test.Xigadee.Commands
             Assert.IsTrue(hi1 != hi2);
             Assert.IsFalse(hi1 == hi2);
         }
-
 
         [TestMethod]
         public void Dictionary()
@@ -74,6 +74,36 @@ namespace Test.Xigadee.Commands
             Assert.IsTrue(dict.ContainsKey(("channel", "messagetype", "Actiontype")));
             Assert.IsTrue(dict[("CHANNEL", "messagetype", "FREDDY")] == 1);
             Assert.IsTrue(dict[hi2] == 2);
+        }
+
+
+        [TestMethod]
+        public void Match1()
+        {
+            ServiceMessageHeader hi1 = ("channel", "messagetype", null);
+            ServiceMessageHeader hi2 = "channel/messagetype/freddy";
+
+            Assert.IsTrue(hi1.IsMatch(hi2));
+            Assert.IsFalse(hi2.IsMatch(hi1));
+        }
+
+        [TestMethod]
+        public void Match2()
+        {
+            ServiceMessageHeader hi1 = ("channel", null, null);
+            ServiceMessageHeader hi2 = ("channel", "messagetype", null);
+
+            Assert.IsTrue(hi1.IsMatch(hi2));
+            Assert.IsFalse(hi2.IsMatch(hi1));
+        }
+
+        [TestMethod]
+        public void Match3()
+        {
+            ServiceMessageHeader hi2 = ("channel", "messagetype", null);
+
+            Assert.IsTrue(ServiceMessageHeader.Any.IsMatch(hi2));
+            Assert.IsFalse(hi2.IsMatch(ServiceMessageHeader.Any));
         }
     }
 }

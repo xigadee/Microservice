@@ -271,14 +271,21 @@ namespace Xigadee
         /// <returns>Returns true if there is a match.</returns>
         protected virtual bool SupportedResolveActual(ServiceMessageHeader header, out H command)
         {
-            //Fixed for BUG 180 - ensuring that trailing slash is on each match for partial key.
+            //Fix for BUG 180 - ensuring that trailing slash is on each match for partial key. Moved match logic to struct.
+            command = mSupported
+                .Where((k) => k.Key.Message.Header.IsMatch(header))
+                .Select((k) => k.Value)
+                .FirstOrDefault();
+
+            return command != null;
+
             foreach (var item in mSupported)
             {
                 if (item.Key.Message.Header.IsPartialKey)
                 {
                     string partialkey = item.Key.Message.Header.ToPartialKey();
 
-                    if (header.ToKey().StartsWith(partialkey))
+                    if (header.Key.StartsWith(partialkey))
                     {
                         command = item.Value;
                         return true;

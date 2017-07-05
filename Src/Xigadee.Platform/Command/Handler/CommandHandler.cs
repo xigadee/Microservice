@@ -88,7 +88,7 @@ namespace Xigadee
         /// <param name="stats">The stats to recalculate.</param>
         protected override void StatisticsRecalculate(S stats)
         {
-            stats.Name = Key.Header.ToKey();
+            stats.Name = Key.Header.Key;
             stats.LastAccessed = mLastAccessed.HasValue ? ConversionHelper.DeltaAsFriendlyTime(mLastAccessed.Value, Environment.TickCount):"Not accessed";
         }
 

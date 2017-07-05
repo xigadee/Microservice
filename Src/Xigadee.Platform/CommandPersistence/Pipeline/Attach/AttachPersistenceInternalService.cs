@@ -33,9 +33,7 @@ namespace Xigadee
             )
             where C : IPipelineChannelIncoming<IPipeline>
             where K : IEquatable<K>
-        {
-            var ms = cpipe.ToMicroservice();
-   
+        { 
             command = new PersistenceInternalService<K, E>(cacheManager: cacheManager, defaultRequestTimespan: defaultRequestTimespan)
             {
                   ResponseChannelId = cpipe.Channel.Id

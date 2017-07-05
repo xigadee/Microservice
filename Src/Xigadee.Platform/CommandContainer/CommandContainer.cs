@@ -242,6 +242,7 @@ namespace Xigadee
         /// This message resolves the specific handler that can process the incoming message.
         /// </summary>
         /// <param name="message">The incoming message.</param>
+        /// <param name="matchedCommands">The output list of matched commands.</param>
         /// <returns>Returns the handler or null.</returns>
         protected virtual bool ResolveMessageHandlers(ServiceMessage message, out List<ICommand> matchedCommands)
         {
@@ -251,7 +252,7 @@ namespace Xigadee
             var newMap = Commands.Where(h => h.SupportsMessage(header)).ToList();
 
             //Make sure that the handler is queueAdded as a null value to stop further resolution attemps
-            mMessageMap.AddOrUpdate(header.ToKey(), newMap, (k, u) => newMap);
+            mMessageMap.AddOrUpdate(header.Key, newMap, (k, u) => newMap);
 
             matchedCommands = newMap;
 

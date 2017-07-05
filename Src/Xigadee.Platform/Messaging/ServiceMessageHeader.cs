@@ -26,9 +26,14 @@ namespace Xigadee
     /// <summary>
     /// This is the service message header identifier.
     /// </summary>
-    [DebuggerDisplay("Header={ChannelId}({MessageType}|{ActionType}) Key={ToKey()} PKey={ToPartialKey()} Partial={IsPartialKey}")]
+    [DebuggerDisplay("Header={ChannelId}({MessageType}|{ActionType}) Key={Key} PKey={ToPartialKey()} Partial={IsPartialKey}")]
     public struct ServiceMessageHeader:IEquatable<ServiceMessageHeader>
     {
+        /// <summary>
+        /// This is the default any header.
+        /// </summary>
+        public static ServiceMessageHeader Any => (null,null,null);
+
         /// <summary>
         /// This constructor is used to set the message from its component parts.
         /// </summary>
@@ -37,11 +42,15 @@ namespace Xigadee
         /// <param name="actionType">The action type.</param>
         public ServiceMessageHeader(string channelId, string messageType = null, string actionType = null)
         {
+
             ChannelId = NullCheck(channelId);
             MessageType = NullCheck(messageType);
             ActionType = NullCheck(actionType);
+            IsPartialKey = ActionType == null || MessageType == null || ChannelId == null;
+            Key = ToKey(ChannelId, MessageType, ActionType);
         }
 
+        #region NullCheck(string incoming)
         /// <summary>
         /// This method ensures that whitespace or an empty string passed as an incoming parameter is converted to null.
         /// </summary>
@@ -52,13 +61,10 @@ namespace Xigadee
             if (string.IsNullOrWhiteSpace(incoming))
                 return null;
 
-            return incoming;
+ 
+            return incoming.Trim();
         }
-
-        /// <summary>
-        /// This property returns true if part of the key is not set.
-        /// </summary>
-        public bool IsPartialKey => ActionType == null || MessageType == null || ChannelId == null;
+        #endregion
 
         /// <summary>
         /// The channel identifier.
@@ -76,6 +82,45 @@ namespace Xigadee
         public string ActionType { get; }
 
         /// <summary>
+        /// This property returns true if part of the key is not set.
+        /// </summary>
+        public bool IsPartialKey { get; }
+
+        /// <summary>
+        /// This is the key reference.
+        /// </summary>
+        public string Key { get; }
+
+        /// <summary>
+        /// This method matches two headers. It expands on equal and matches based on a partial key match.
+        /// </summary>
+        /// <param name="other">The other header to compare.</param>
+        /// <returns>Returns true if it is a match.</returns>
+        public bool IsMatch(ServiceMessageHeader other)
+        {
+            //If neither is partial then check on equality.
+            if (!IsPartialKey)
+                return Equals(other);
+
+            if (ChannelId == null)
+                return true;
+
+            if (!string.Equals(ChannelId, other.ChannelId, StringComparison.InvariantCultureIgnoreCase))
+                return false;
+
+            if (MessageType == null)
+                return true;
+
+            if (!string.Equals(MessageType, other.MessageType, StringComparison.InvariantCultureIgnoreCase))
+                return false;
+
+            if (ActionType == null)
+                return true;
+
+            return string.Equals(ActionType, other.ActionType, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        /// <summary>
         /// This method returns the partial key with the relevant parts in order by channelId / messageType / actionType
         /// if at any steps these are null, the key stops and returns.
         /// </summary>
@@ -84,36 +129,27 @@ namespace Xigadee
         {
             StringBuilder sb = new StringBuilder();
 
-            Action<string, string, string> action =
-                (channelId, messageType, actionType) =>
-            {
-                if (string.IsNullOrEmpty(channelId))
-                    return;
-                sb.Append(channelId.ToLowerInvariant());
+            bool cont = false;
+            PartialPart(ChannelId, ref cont, false);
+            PartialPart(MessageType, ref cont);
+            PartialPart(ActionType, ref cont);
 
-                if (string.IsNullOrEmpty(messageType))
-                    return;
-                sb.Append('/');
-                sb.Append(messageType.ToLowerInvariant());
-
-                if (string.IsNullOrEmpty(actionType))
-                    return;
-                sb.Append('/');
-                sb.Append(actionType.ToLowerInvariant());
-            };
-
-            action(ChannelId, MessageType, ActionType);
+            sb.Append('/');
 
             return sb.ToString();
-        }
 
-        /// <summary>
-        /// This returns the full key.
-        /// </summary>
-        /// <returns>A string containing the key.</returns>
-        public string ToKey()
-        {
-            return ToKey(ChannelId, MessageType, ActionType);
+            void PartialPart(string item, ref bool skip, bool append = true)
+            {
+                if (skip) return;
+
+                if (string.IsNullOrEmpty(item))
+                    skip = true;
+                else
+                {
+                    if (append) sb.Append('/');
+                    sb.Append(item.ToLowerInvariant());
+                }
+            }
         }
 
         #region ToKey...
@@ -144,29 +180,32 @@ namespace Xigadee
         }
         #endregion
 
+        #region MyRegion
         /// <summary>
-        /// This method parses the key in to its constituent parts 
+        /// This method parses the key in to its constituent parts and returns a new ServiceMessageHeader struct. 
         /// </summary>
-        /// <param name="key"></param>
+        /// <param name="key">The three part key as string.</param>
         /// <exception cref="System.FormatException">This exception is thrown if the key passed does not contain three forward slashes in the format of channelId/messageType/actionType</exception>
         /// <returns>A new ServiceMessageHeader object.</returns>
-        public static ServiceMessageHeader ToServiceMessageHeader(string key)
+        public static ServiceMessageHeader FromKey(string key)
         {
             string[] keys = key.Split('/');
             if (keys.Length != 3)
                 throw new FormatException($"The key '{key}' is not of the format channelId/messageType/actionType");
 
             return new ServiceMessageHeader(keys[0], keys[1], keys[2]);
-        }
+        } 
+        #endregion
 
+        #region Equals ...
         /// <summary>
         /// This is the equal override that matches other structs by use of their case insensitive keys.
         /// </summary>
-        /// <param name="other"></param>
-        /// <returns></returns>
+        /// <param name="other">The header to match.</param>
+        /// <returns>Returns true if the other struct matches this struct.</returns>
         public bool Equals(ServiceMessageHeader other)
         {
-            return ToKey() == other.ToKey();
+            return Key == other.Key;
         }
 
         /// <summary>
@@ -179,21 +218,21 @@ namespace Xigadee
             if (obj is ServiceMessageHeader)
                 return Equals((ServiceMessageHeader)obj);
             return false;
-        }
+        } 
+        #endregion
 
+        #region GetHashCode()
         /// <summary>
         /// This returns the hash code for the key.
         /// </summary>
         /// <returns>Returns the unsigned integer hashcode.</returns>
         public override int GetHashCode()
         {
-            unchecked
-            {
-                var result = ToKey().GetHashCode();
-                return result;
-            }
-        }
+            return Key.GetHashCode();
+        } 
+        #endregion
 
+        #region Implicit conversion from (string,string,string)
         /// <summary>
         /// Implicitly converts three strings in to a ServiceMessageHeader.
         /// </summary>
@@ -201,18 +240,21 @@ namespace Xigadee
         public static implicit operator ServiceMessageHeader(ValueTuple<string, string, string> t)
         {
             return new ServiceMessageHeader(t.Item1, t.Item2, t.Item3);
-        }
-
-
+        } 
+        #endregion
+        #region Implicit conversion from string
         /// <summary>
         /// Implicitly converts three strings in to a ServiceMessageHeader.
         /// </summary>
         /// <param name="t">The value tuple.</param>
         public static implicit operator ServiceMessageHeader(string t)
         {
-            return ServiceMessageHeader.ToServiceMessageHeader(t);
+            return FromKey(t);
         }
 
+        #endregion
+
+        #region == overload
         /// <summary>
         /// This is the equals operator override.
         /// </summary>
@@ -223,6 +265,8 @@ namespace Xigadee
         {
             return a.Equals(b);
         }
+        #endregion
+        #region != overload
         /// <summary>
         /// This is the not equals operator override.
         /// </summary>
@@ -232,6 +276,7 @@ namespace Xigadee
         public static bool operator !=(ServiceMessageHeader a, ServiceMessageHeader b)
         {
             return !(a == b);
-        }
+        } 
+        #endregion
     }
 }

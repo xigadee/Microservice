@@ -110,7 +110,7 @@ namespace Xigadee
             message.BeginInit();
 
             message.Instruction.Verb = "POST";
-            message.Instruction.Instruction = @"/" + payload.Message.ToServiceMessageHeader().ToKey();
+            message.Instruction.Instruction = @"/" + payload.Message.ToServiceMessageHeader().Key;
 
             message.HeaderAdd("HeaderId", payload.Id.ToString("N"));
             message.HeaderAdd("ProcessCorrelationKey", payload.Message.ProcessCorrelationKey);

@@ -45,7 +45,6 @@ namespace Xigadee
         /// </summary>
         public string ClientId { get; set; }
 
-
         #region GetHashCode()
         /// <summary>
         /// This is the Hashcode override.

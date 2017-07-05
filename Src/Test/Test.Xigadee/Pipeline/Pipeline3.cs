@@ -31,7 +31,7 @@ namespace Test.Xigadee
             try
             {
                 var pipeline = new MicroservicePipeline("TestPipeline");
-                var destination = ServiceMessageHeader.ToServiceMessageHeader("internalIn/frankie/benny");
+                var destination = ServiceMessageHeader.FromKey("internalIn/frankie/benny");
 
                 ICommandInitiator init;
                 DebugMemoryDataCollector collector;
