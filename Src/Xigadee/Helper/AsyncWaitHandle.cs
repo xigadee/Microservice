@@ -32,7 +32,8 @@ namespace Xigadee
         /// <param name="millisecondsTimeout">Timeout in milliseconds to wait</param>
         /// <param name="cancellationToken">Cancellation Token</param>
         /// <returns></returns>
-        public static async Task<bool> WaitOneAsync(this WaitHandle waitHandle, int millisecondsTimeout, CancellationToken cancellationToken)
+        public static async Task<bool> WaitOneAsync(this WaitHandle waitHandle, int millisecondsTimeout
+            , CancellationToken cancellationToken)
         {
             RegisteredWaitHandle registeredHandle = null;
             CancellationTokenRegistration tokenRegistration = default(CancellationTokenRegistration);

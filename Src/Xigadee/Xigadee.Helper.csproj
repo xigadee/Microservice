@@ -97,7 +97,6 @@
     <Compile Include="RepositorySettings.cs" />
     <Compile Include="RequestSettings.cs" />
     <Compile Include="ResponseHolder.cs" />
-    <Compile Include="XmlSchemaValidation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

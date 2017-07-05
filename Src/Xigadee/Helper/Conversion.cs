@@ -26,7 +26,7 @@ using System.Xml.Linq;
 
 namespace Xigadee
 {
-    public  static partial class ConversionHelper
+    public static partial class ConversionHelper
     {
         /// <summary>
         /// This static method is used for converting a date time string in to an object.

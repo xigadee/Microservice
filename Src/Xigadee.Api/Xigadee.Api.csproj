@@ -74,6 +74,7 @@
     <Compile Include="TransportUriMapper.cs" />
     <Compile Include="TransportSerializer.cs" />
     <Compile Include="Interfaces\ITransportSerializer.cs" />
+    <Compile Include="XmlSchemaValidation.cs" />
     <Compile Include="XmlTransportSerializerBase.cs" />
   </ItemGroup>
   <ItemGroup>
