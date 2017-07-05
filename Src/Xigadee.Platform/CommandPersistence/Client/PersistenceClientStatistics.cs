@@ -23,15 +23,15 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This is the statistics class used to record the status of the command.
+    /// This is the statistics class used to record the statistics of the persistence client commands.
     /// </summary>
-    public class PersistenceInitiatorStatistics: CommandStatistics
+    public class PersistenceClientStatistics: CommandStatistics
     {
         #region Constructor
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        public PersistenceInitiatorStatistics() : base()
+        public PersistenceClientStatistics() : base()
         {
         }
         #endregion

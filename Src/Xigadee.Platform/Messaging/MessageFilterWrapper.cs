@@ -16,11 +16,7 @@
 
 #region using
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 #endregion
 namespace Xigadee
 {
@@ -43,11 +39,11 @@ namespace Xigadee
         /// This is the message header.
         /// </summary>
         public ServiceMessageHeader Header { get; }
+
         /// <summary>
         /// This is the specific client id for the message.
         /// </summary>
         public string ClientId { get; set; }
-
 
 
         #region GetHashCode()

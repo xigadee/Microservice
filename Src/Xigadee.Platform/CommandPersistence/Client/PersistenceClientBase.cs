@@ -15,15 +15,18 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Principal;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public abstract class PersistenceInitiatorBase<K, E, P> : CommandBase<PersistenceInitiatorStatistics, P>
+    /// <summary>
+    /// This is the abstract base class for persisitence client/server communication functionality.
+    /// </summary>
+    /// <typeparam name="K">The key type.</typeparam>
+    /// <typeparam name="E">The entity type.</typeparam>
+    /// <typeparam name="P">The policy.</typeparam>
+    public abstract class PersistenceClientBase<K, E, P> : CommandBase<PersistenceClientStatistics, P>
         , IRepositoryAsyncServer<K, E>
         where K : IEquatable<K>
         where P : CommandPolicy, new()
@@ -42,8 +45,9 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor which sets the cache manager.
         /// </summary>
-        /// <param name="cacheManager">THe cache manager.</param>
-        protected PersistenceInitiatorBase(ICacheManager<K, E> cacheManager = null, TimeSpan? defaultRequestTimespan = null)
+        /// <param name="cacheManager">The cache manager.</param>
+        /// <param name="defaultRequestTimespan">This is the default wait time for a response to arrive. This can be set to override the value stored in the policy.</param>
+        protected PersistenceClientBase(ICacheManager<K, E> cacheManager = null, TimeSpan? defaultRequestTimespan = null)
         {
             mCacheManager = cacheManager ?? new NullCacheManager<K, E>();
             mDefaultRequestTimespan = defaultRequestTimespan;

@@ -24,6 +24,6 @@ namespace Xigadee
 {
     public interface IPersistenceSharedService: IStatisticsBase
     {
-        PersistenceInitiatorStatistics Statistics { get; }
+        PersistenceClientStatistics Statistics { get; }
     }
 }

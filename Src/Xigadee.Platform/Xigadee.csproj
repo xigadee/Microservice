@@ -500,9 +500,9 @@
     <Compile Include="CommandPersistence\Cache\EntityCacheStatistics.cs" />
     <Compile Include="CommandPersistence\Cache\EntityChangeReference.cs" />
     <Compile Include="CommandPersistence\Cache\IEntityCacheAsync.cs" />
-    <Compile Include="CommandPersistence\Client\PersistenceInitiatorBase.cs" />
+    <Compile Include="CommandPersistence\Client\PersistenceClientBase.cs" />
     <Compile Include="CommandPersistence\Client\PersistenceClientPolicy.cs" />
-    <Compile Include="CommandPersistence\Client\PersistenceInitiatorStatistics.cs" />
+    <Compile Include="CommandPersistence\Client\PersistenceClientStatistics.cs" />
     <Compile Include="CommandPersistence\Client\PersistenceClient.cs" />
     <Compile Include="CommandPersistence\Client\PersistenceInternalService.cs" />
     <Compile Include="CommandPersistence\EntityActions.cs" />

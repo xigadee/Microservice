@@ -101,12 +101,21 @@ namespace Xigadee
         /// <typeparam name="RQ">The request type.</typeparam>
         /// <typeparam name="RS">The response type.</typeparam>
         /// <param name="rq">The request object.</param>
-        /// <param name="routing"></param>
-        /// <param name="settings"></param>
+        /// <param name="rqSettings">The request settings. Use this to specifically set the timeout parameters.</param>
+        /// <param name="routingOptions">The routing options by default this will try internal and then external.</param>
+        /// <param name="processResponse"></param>
+        /// <param name="fallbackMaxProcessingTime">This is the fallback max processing time used if the timeout 
+        /// is not set in the request settings. 
+        /// If this is also null, the max time out will fall back to the policy settings.</param>
+        /// <param name="principal">This is the principal that you wish the command to be executed under. 
+        /// By default this is taken from the calling thread if not passed.</param>
+        /// <returns>Returns the async response wrapper.</returns>
         /// <returns>Returns a response object of the specified type in a response metadata wrapper.</returns>
         protected virtual async Task<ResponseWrapper<RS>> ProcessOutgoing<I, RQ, RS>(RQ rq
-            , RequestSettings settings = null
-            , ProcessOptions? routing = null
+            , RequestSettings rqSettings = null
+            , ProcessOptions? routingOptions = null
+            , Func<TaskStatus, TransmissionPayload, bool, ResponseWrapper<RS>> processResponse = null
+            , TimeSpan? fallbackMaxProcessingTime = null
             , IPrincipal principal = null)
             where I : IMessageContract
         {
@@ -115,8 +124,14 @@ namespace Xigadee
             if (!ServiceMessageHelper.ExtractContractInfo<I>(out channelId, out messageType, out actionType))
                 throw new InvalidOperationException("Unable to locate message contract attributes for " + typeof(I));
 
-            return await ProcessOutgoing<RQ, RS>(channelId, messageType, actionType, rq, settings, routing
-                , principal: principal ?? Thread.CurrentPrincipal);
+            return await ProcessOutgoing<RQ, RS>(channelId, messageType, actionType
+                , rq
+                , rqSettings
+                , routingOptions
+                , processResponse
+                , fallbackMaxProcessingTime
+                , principal ?? Thread.CurrentPrincipal
+                );
         }
         #endregion
         #region ProcessOutgoing<RQ, RS> ...

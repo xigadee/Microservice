@@ -25,6 +25,17 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
+        /// <summary>
+        /// This method attaches a command to a channel.
+        /// </summary>
+        /// <typeparam name="E">The channel type.</typeparam>
+        /// <param name="cpipe">The pipeline.</param>
+        /// <param name="commandFunction">The command function.</param>
+        /// <param name="message"></param>
+        /// <param name="referenceId"></param>
+        /// <param name="startupPriority"></param>
+        /// <param name="channelResponse"></param>
+        /// <returns></returns>
         public static E AttachCommand<E>(this E cpipe
             , Func<TransmissionPayload, List<TransmissionPayload>, IPayloadSerializationContainer, Task> commandFunction
             , MessageFilterWrapper message

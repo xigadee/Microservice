@@ -68,6 +68,7 @@
     <Compile Include="Channel\ChannelRedirect.cs" />
     <Compile Include="Channel\Channels.cs" />
     <Compile Include="CommandInitiator\CommandInitiatorTest1.cs" />
+    <Compile Include="Commands\CommandBug180Test.cs" />
     <Compile Include="Commands\InheritedCommand.cs" />
     <Compile Include="Commands\MasterJobs\MasterJobCommand.cs" />
     <Compile Include="Commands\MasterJobs\MasterJobTests.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="Commands\CommandReflectionUnitTest.cs" />
     <Compile Include="Commands\CommandUnitTestBase.cs" />
     <Compile Include="Commands\SimpleCommand3.cs" />
+    <Compile Include="Commands\ServiceMessageHeaderTests.cs" />
     <Compile Include="Communication\Bridge\CommunicationBridgeReroute.cs" />
     <Compile Include="Communication\Bridge\CommunicationBridgeTests.cs" />
     <Compile Include="Communication\Bridge\CommunicationRedirectTests.cs" />

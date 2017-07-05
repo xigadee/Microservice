@@ -267,10 +267,11 @@ namespace Xigadee
         /// This attemps to match the message header to the command registration collection.
         /// </summary>
         /// <param name="header">The message header.</param>
-        /// <param name="command">THe command handler as an output.</param>
+        /// <param name="command">The command handler as an output.</param>
         /// <returns>Returns true if there is a match.</returns>
         protected virtual bool SupportedResolveActual(ServiceMessageHeader header, out H command)
         {
+            //Fixed for BUG 180 - ensuring that trailing slash is on each match for partial key.
             foreach (var item in mSupported)
             {
                 if (item.Key.Message.Header.IsPartialKey)

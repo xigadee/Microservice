@@ -31,7 +31,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class PersistenceClient<K, E> : PersistenceInitiatorBase<K, E, PersistenceClientPolicy>
+    public class PersistenceClient<K, E> : PersistenceClientBase<K, E, PersistenceClientPolicy>
         , IPersistenceMessageInitiator 
         where K : IEquatable<K>
     {

@@ -27,10 +27,13 @@ namespace Xigadee
 {
     /// <summary>
     /// This class is used to connect the internal persistence handler with other internal commands through the use of Shared Services.
+    /// The primary difference between this class and PersistenceClient, is that this class is used by services to communicate directly with
+    /// other services, and the requests generated are executed immediately, and do not wait for a priority slot. This stops deadlocks forming
+    /// inside the Microservice.
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class PersistenceInternalService<K, E>: PersistenceInitiatorBase<K, E, PersistenceInternalServicePolicy>
+    public class PersistenceInternalService<K, E>: PersistenceClientBase<K, E, PersistenceInternalServicePolicy>
         , IPersistenceSharedService 
         where K : IEquatable<K>
     {

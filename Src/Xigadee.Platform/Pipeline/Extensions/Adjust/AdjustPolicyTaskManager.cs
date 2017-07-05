@@ -55,5 +55,23 @@ namespace Xigadee
 
             return pipeline;
         }
+
+        /// <summary>
+        /// This extension method changes the default Microservice task manager policy to support Aysnc IO.
+        /// </summary>
+        /// <typeparam name="P">The pipeline type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="maxPriorityLevel">The maximum priority level. The default is 3.</param>
+        /// <returns>Returns the pipeline</returns>
+        public static P AdjustPolicyTaskManagerForDebug<P>(this P pipeline, int maxPriorityLevel = 3) where P : IPipeline
+        {
+            pipeline.AdjustPolicyTaskManager((t, c) =>
+            {
+                t.ConcurrentRequestsMin = 1;
+                t.ConcurrentRequestsMax = 4;
+            });
+
+            return pipeline;
+        }
     }
 }

@@ -24,7 +24,6 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-
         /// <summary>
         /// This pipeline command creates a Persistence Message Initiator.
         /// </summary>
@@ -50,8 +49,7 @@ namespace Xigadee
             where C : IPipelineChannelIncoming<IPipeline>
             where K : IEquatable<K>
         {
-            var ms = cpipe.ToMicroservice();
-            
+          
             command = new PersistenceClient<K, E>(cacheManager, defaultRequestTimespan);
 
             if (responseChannel == null || !cpipe.ToMicroservice().Communication.HasChannel(responseChannel, ChannelDirection.Incoming))
@@ -65,7 +63,7 @@ namespace Xigadee
 
             //Check that the response channel exists
             if (!cpipe.ToMicroservice().Communication.HasChannel(command.ResponseChannelId, ChannelDirection.Incoming))
-                throw new ChannelDoesNotExistException(command.ResponseChannelId, ChannelDirection.Incoming, ms.Id.Name);
+                throw new ChannelDoesNotExistException(command.ResponseChannelId, ChannelDirection.Incoming, cpipe.ToMicroservice().Id.Name);
 
             command.ChannelId = cpipe.Channel.Id;
             command.RoutingDefault = routing;
