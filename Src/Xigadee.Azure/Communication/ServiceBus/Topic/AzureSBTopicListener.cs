@@ -139,7 +139,7 @@ namespace Xigadee
             {
                 list = new List<SqlFilter>();
                 var servMess = new ServiceMessageHeader(ChannelId);
-                list.Add(TopicHelper.SqlFilterQuery(new MessageFilterWrapper(servMess) { ClientId = OriginatorId.ExternalServiceId }));
+                list.Add(TopicHelper.SqlFilterQuery(new MessageFilterWrapper(servMess, OriginatorId.ExternalServiceId)));
             }
             else
                 list = TopicHelper.SqlFilter(mSupportedMessageTypes, ChannelId, MappingChannelId);

@@ -91,8 +91,7 @@ namespace Xigadee
             Func<Exception, TransmissionPayload, List<TransmissionPayload>, Task> exceptionAction = null,
             string referenceId = null)
         {
-            var key = new ServiceMessageHeader(channelId, messageType, actionType);
-            var wrapper = new MessageFilterWrapper(key);
+            var wrapper = new MessageFilterWrapper((channelId, messageType, actionType), null);
 
             CommandRegister(wrapper, action, exceptionAction, referenceId);
         }
@@ -226,7 +225,7 @@ namespace Xigadee
         /// <param name="actionType">The command action type</param>
         protected void CommandUnregister(string channelId, string messageType, string actionType)
         {
-            CommandUnregister(new MessageFilterWrapper(new ServiceMessageHeader(channelId, messageType, actionType)));
+            CommandUnregister(new MessageFilterWrapper((channelId, messageType, actionType), null));
         }
 
         /// <summary>
@@ -278,28 +277,6 @@ namespace Xigadee
                 .FirstOrDefault();
 
             return command != null;
-
-            foreach (var item in mSupported)
-            {
-                if (item.Key.Message.Header.IsPartialKey)
-                {
-                    string partialkey = item.Key.Message.Header.ToPartialKey();
-
-                    if (header.Key.StartsWith(partialkey))
-                    {
-                        command = item.Value;
-                        return true;
-                    }
-                }
-                else if (item.Key.Message.Header.Equals(header))
-                {
-                    command = item.Value;
-                    return true;
-                }
-            }
-
-            command = null;
-            return false;
         }
         #endregion
 

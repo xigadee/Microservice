@@ -98,8 +98,6 @@ namespace Xigadee
             where C : IPipelineChannelOutgoing<IPipeline>
             where K : IEquatable<K>
         {
-            var ms = cpipe.ToMicroservice();
-
             command = new PersistenceClient<K, E>(cacheManager, defaultRequestTimespan);
 
             if (responseChannel == null)
@@ -107,7 +105,7 @@ namespace Xigadee
 
             //Check that the response channel exists
             if (verifyChannel && !cpipe.ToMicroservice().Communication.HasChannel(responseChannel, ChannelDirection.Incoming))
-                throw new ChannelDoesNotExistException(responseChannel, ChannelDirection.Incoming, ms.Id.Name);
+                throw new ChannelDoesNotExistException(responseChannel, ChannelDirection.Incoming, cpipe.ToMicroservice().Id.Name);
 
             //If the response channel is not set, dynamically create a response channel.
             command.ResponseChannelId = responseChannel;

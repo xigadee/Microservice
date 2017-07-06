@@ -65,7 +65,7 @@ namespace Xigadee
         /// </summary>
         protected override MessageFilterWrapper ResponseId
         {
-            get { return new MessageFilterWrapper(new ServiceMessageHeader(ResponseChannelId, EntityType)) { ClientId = OriginatorId.ExternalServiceId }; }
+            get { return new MessageFilterWrapper(new ServiceMessageHeader(ResponseChannelId, EntityType),OriginatorId.ExternalServiceId ); }
         } 
         #endregion
 

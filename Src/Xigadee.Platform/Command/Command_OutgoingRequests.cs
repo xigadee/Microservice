@@ -76,7 +76,7 @@ namespace Xigadee
                     return null;
 
                 if (mResponseId == null)
-                    mResponseId = new MessageFilterWrapper(new ServiceMessageHeader(ResponseChannelId, FriendlyName, ComponentId.ToString("N").ToUpperInvariant() )) { ClientId = OriginatorId.ExternalServiceId };
+                    mResponseId = new MessageFilterWrapper((ResponseChannelId, FriendlyName, ComponentId.ToString("N").ToUpperInvariant()),OriginatorId.ExternalServiceId);
 
                 return mResponseId;
             }

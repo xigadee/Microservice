@@ -62,7 +62,7 @@ namespace Xigadee
             :base(cacheManager, defaultRequestTimespan)
         {
             mMessageType = typeof(E).Name;
-            mResponseId = new MessageFilterWrapper(new ServiceMessageHeader(responseChannel, mMessageType));
+            mResponseId = new MessageFilterWrapper(new ServiceMessageHeader(responseChannel, mMessageType),null);
             mResponseChannel = responseChannel;
             UseASPNETThreadModel = false;
         }
@@ -103,7 +103,7 @@ namespace Xigadee
         /// </summary>
         protected override MessageFilterWrapper ResponseId
         {
-            get { return new MessageFilterWrapper(new ServiceMessageHeader(mResponseChannel, mMessageType)); }
+            get { return new MessageFilterWrapper(new ServiceMessageHeader(mResponseChannel, mMessageType),null); }
         }
         #endregion
 

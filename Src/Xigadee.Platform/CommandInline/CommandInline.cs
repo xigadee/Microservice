@@ -38,7 +38,7 @@ namespace Xigadee
         /// <param name="referenceId">The optional reference id for tracking.</param>
         public CommandInline(ServiceMessageHeader header
             , Func<TransmissionPayload, List<TransmissionPayload>, IPayloadSerializationContainer, Task> command
-            , string referenceId = null) : this(new MessageFilterWrapper(header), command, referenceId){}
+            , string referenceId = null) : this(new MessageFilterWrapper(header,null), command, referenceId){}
 
         /// <summary>
         /// This is the constructor for registering a manual command.

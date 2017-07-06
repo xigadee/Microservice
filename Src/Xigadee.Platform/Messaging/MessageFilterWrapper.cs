@@ -23,16 +23,18 @@ namespace Xigadee
     /// <summary>
     /// The MessageFilterWrapper class allows for extended filter functionality for the messaging bus.
     /// </summary>
-    [DebuggerDisplay("{Header.ToKey()}|{ClientId}")]
+    [DebuggerDisplay("{Header.Key}|{ClientId}")]
     public class MessageFilterWrapper: IEquatable<MessageFilterWrapper>
     {
         /// <summary>
         /// This is the default constructor.
         /// </summary>
         /// <param name="header">THe actual service message header.</param>
-        public MessageFilterWrapper(ServiceMessageHeader header)
+        /// <param name="clientId">This is the optional client id.</param>
+        public MessageFilterWrapper(ServiceMessageHeader header, string clientId = null)
         {
             Header = header;
+            ClientId = clientId;
         }
 
         /// <summary>
@@ -43,7 +45,7 @@ namespace Xigadee
         /// <summary>
         /// This is the specific client id for the message.
         /// </summary>
-        public string ClientId { get; set; }
+        public string ClientId { get; }
 
         #region GetHashCode()
         /// <summary>
@@ -58,9 +60,7 @@ namespace Xigadee
 
                 result = (result * 397) ^ SafeHashCode(ClientId);
 
-                result = (result * 397) ^ SafeHashCode(Header.ChannelId);
-                result = (result * 397) ^ SafeHashCode(Header.MessageType);
-                result = (result * 397) ^ SafeHashCode(Header.ActionType);
+                result = (result * 397) ^ SafeHashCode(Header.Key);
 
                 return result;
             }
@@ -81,15 +81,25 @@ namespace Xigadee
         }
         #endregion
 
-
-        public override bool Equals(object obj)
+        #region Equals...
+        /// <summary>
+        /// This is the base Equals method.
+        /// </summary>
+        /// <param name="other">The other object to compare.</param>
+        /// <returns>Returns true if the object is a wrapper and the parameters match.</returns>
+        public override bool Equals(object other)
         {
-            if (obj == null || !(obj is MessageFilterWrapper))
+            if (other == null || !(other is MessageFilterWrapper))
                 return false;
 
-            return Equals((MessageFilterWrapper)obj);
+            return Equals((MessageFilterWrapper)other);
         }
 
+        /// <summary>
+        /// This method compares the two wrappers.
+        /// </summary>
+        /// <param name="other">The other wrapper to compare against this one.</param>
+        /// <returns>Returns true if there is equality.</returns>
         public bool Equals(MessageFilterWrapper other)
         {
             if (other == null)
@@ -97,7 +107,7 @@ namespace Xigadee
 
             return ClientId == other.ClientId
                 && Header.Equals(other.Header);
-        }
-
+        } 
+        #endregion
     }
 }

@@ -35,8 +35,6 @@ namespace Test.Xigadee
                 ICommandInitiator init;
                 DebugMemoryDataCollector collector;
 
-                int signalChange = 0;
-
                 var pipeline = new MicroservicePipeline("TestPipeline")
                     .AdjustPolicyTaskManagerForDebug()
                     .AddDebugMemoryDataCollector(out collector)
@@ -47,6 +45,11 @@ namespace Test.Xigadee
                             return Task.FromResult(0);
                         }
                         , destination)
+                        .AttachCommand((prq, prs, c) =>
+                        {
+                            return Task.FromResult(0);
+                        }
+                        , ("internalIn/frankie4fingers/benny"))
                         .Revert()
                     .AddChannelOutgoing("internalOut", internalOnly: true)
                         .Revert();

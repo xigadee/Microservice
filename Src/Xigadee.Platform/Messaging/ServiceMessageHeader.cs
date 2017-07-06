@@ -30,11 +30,6 @@ namespace Xigadee
     public struct ServiceMessageHeader:IEquatable<ServiceMessageHeader>
     {
         /// <summary>
-        /// This is the default any header.
-        /// </summary>
-        public static ServiceMessageHeader Any => (null,null,null);
-
-        /// <summary>
         /// This constructor is used to set the message from its component parts.
         /// </summary>
         /// <param name="channelId">The channel that the command is attached to.</param>
@@ -276,7 +271,13 @@ namespace Xigadee
         public static bool operator !=(ServiceMessageHeader a, ServiceMessageHeader b)
         {
             return !(a == b);
-        } 
+        }
         #endregion
+
+        /// <summary>
+        /// This is the default any header.
+        /// </summary>
+        public static ServiceMessageHeader Any => (null, null, null);
+
     }
 }
