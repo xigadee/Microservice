@@ -40,12 +40,12 @@ namespace Test.Xigadee
                     .AddDebugMemoryDataCollector(out collector)
                     .AddICommandInitiator(out init)
                     .AddChannelIncoming("internalIn", internalOnly: true)
-                        .AttachCommand((prq, prs, c) => 
+                        .AttachCommand((c) => 
                         {
                             return Task.FromResult(0);
                         }
                         , destination)
-                        .AttachCommand((prq, prs, c) =>
+                        .AttachCommand((c) =>
                         {
                             return Task.FromResult(0);
                         }

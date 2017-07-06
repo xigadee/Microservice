@@ -222,7 +222,6 @@ namespace Xigadee
             get; set;
         } 
         #endregion
-
         #region SharedServices
         /// <summary>
         /// This is the shared service collection for commands that wish to share direct access to internal data.

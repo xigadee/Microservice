@@ -42,17 +42,19 @@ namespace Test.Xigadee
                     .AddDebugMemoryDataCollector(out collector)
                     .AdjustPolicyTaskManagerForDebug()
                     .AddChannelIncoming("internalIn", internalOnly: true)
-                        .AttachCommand((prq,prs,c) => 
+                        .AttachCommand((ctx) => 
                         {
                             string entity;
 
-                            if ((prq, prs, c).RequestTryGet(out entity))
+                            if (ctx.DtoTryGet(out entity))
                             {
                                 Assert.AreEqual(entity, "Hello");
-                                (prq, prs, c).ResponseSet(200, entity + "Good good", "It's all good");
+                                ctx.ResponseSet(200, entity + "Good good", "It's all good");
                             }
                             else
-                                (prq, prs, c).ResponseSet(400, description: "It's all messed up.");
+                                ctx.ResponseSet(400, description: "It's all messed up.");
+
+                            ctx.Collector.LogMessage("It's all good.");
 
                             return Task.FromResult(0);
                         }
@@ -64,8 +66,8 @@ namespace Test.Xigadee
 
                 pipeline.Start();
 
-                var rs1 = init.Process<string, string>(destination, "Hello").Result;
-                var rs2 = init.Process<string, string>(destination, null).Result;
+                var rs1 = init.Process<string, string>(destination, "Hello", new RequestSettings() { CorrelationId = "freddy" }).Result;
+                var rs2 = init.Process<string, string>(destination, null, new RequestSettings() { CorrelationId = "johnny" }).Result;
 
                 Assert.IsTrue(rs1.ResponseCode.Value == 200);
                 Assert.IsTrue(rs1.Response == "HelloGood good");

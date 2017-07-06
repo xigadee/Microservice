@@ -1,0 +1,77 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Xigadee;
+
+namespace Xigadee
+{
+    /// <summary>
+    /// This context is used to hold the necessary data for an inline command request.
+    /// </summary>
+    [DebuggerDisplay("{Id}/{CorrellationId}")]
+    public class CommandInlineContext
+    {
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="rq">The incoming request.</param>
+        /// <param name="rsCol">The outgoing response collection.</param>
+        /// <param name="serializer">The serialization container.</param>
+        /// <param name="collector">The data collector.</param>
+        /// <param name="sharedServices">The shared service context.</param>
+        /// <param name="originatorId">This is the Microservice identifiers.</param>
+        public CommandInlineContext(TransmissionPayload rq, List<TransmissionPayload> rsCol
+            , IPayloadSerializationContainer serializer
+            , IDataCollection collector
+            , ISharedService sharedServices
+            , MicroserviceId originatorId)
+        {
+            Request = rq;
+            Responses = rsCol;
+            PayloadSerializer = serializer;
+            Collector = collector;
+            SharedServices = sharedServices;
+            OriginatorId = originatorId;
+        }
+        /// <summary>
+        /// The incomine request.
+        /// </summary>
+        public TransmissionPayload Request { get; }
+        /// <summary>
+        /// The outgoing responses.
+        /// </summary>
+        public List<TransmissionPayload> Responses { get; }
+        /// <summary>
+        /// The serialization container.
+        /// </summary>
+        public IPayloadSerializationContainer PayloadSerializer { get; }
+        /// <summary>
+        /// This is the data collector.
+        /// </summary>
+        public IDataCollection Collector { get; }
+        /// <summary>
+        /// This is the shared service collection.
+        /// </summary>
+        public ISharedService SharedServices { get; }
+        /// <summary>
+        /// This is the service originator.
+        /// </summary>
+        public MicroserviceId OriginatorId { get; }
+
+        /// <summary>
+        /// This is the request Id.
+        /// </summary>
+        public Guid Id => Request.Id;
+        /// <summary>
+        /// This is the internal message.
+        /// </summary>
+        public ServiceMessage Message => Request.Message;
+        /// <summary>
+        /// This is the request Id.
+        /// </summary>
+        public string CorrellationId => Request.Message.ProcessCorrelationKey;
+    }
+}

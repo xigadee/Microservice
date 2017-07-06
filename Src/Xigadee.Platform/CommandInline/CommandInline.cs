@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Xigadee;
 
 namespace Xigadee
 {
@@ -18,39 +15,16 @@ namespace Xigadee
         /// <summary>
         /// This is the constructor for registering a manual command.
         /// </summary>
-        /// <param name="channelId">The channel the command is attached to.</param>
-        /// <param name="messageType">The message type.</param>
-        /// <param name="actionType">The action type.</param>
-        /// <param name="command">The command to process.</param>
-        /// <param name="referenceId">The optional reference id for tracking.</param>
-        public CommandInline(
-              Func<TransmissionPayload, List<TransmissionPayload>, IPayloadSerializationContainer, Task> command
-            , string channelId
-            , string messageType = null
-            , string actionType = null
-            , string referenceId = null) : this(new ServiceMessageHeader(channelId, messageType, actionType), command, referenceId){}
-
-        /// <summary>
-        /// This is the constructor for registering a manual command.
-        /// </summary>
         /// <param name="header">The ServiceMessageHeader route for the command.</param>
         /// <param name="command">The command to process.</param>
         /// <param name="referenceId">The optional reference id for tracking.</param>
         public CommandInline(ServiceMessageHeader header
-            , Func<TransmissionPayload, List<TransmissionPayload>, IPayloadSerializationContainer, Task> command
-            , string referenceId = null) : this(new MessageFilterWrapper(header,null), command, referenceId){}
-
-        /// <summary>
-        /// This is the constructor for registering a manual command.
-        /// </summary>
-        /// <param name="message">The message filter wrapper route to identify the command.</param>
-        /// <param name="command">The command to process.</param>
-        /// <param name="referenceId">The optional reference id for tracking.</param>
-        public CommandInline(MessageFilterWrapper message
-            , Func<TransmissionPayload, List<TransmissionPayload>, IPayloadSerializationContainer, Task> command
-            , string referenceId = null) : base(null)
+            , Func<CommandInlineContext, Task> command
+            , string referenceId = null) 
         {
-            mCommandHolder = new CommandHolder(message, async (rq,rs) => await command(rq,rs, PayloadSerializer), referenceId);
+            var message = new MessageFilterWrapper(header, null);
+
+            mCommandHolder = new CommandHolder(message, async (rq,rs) => await command(new CommandInlineContext(rq, rs, PayloadSerializer, Collector, SharedServices, OriginatorId)), referenceId);
         }
 
         /// <summary>

@@ -20,27 +20,22 @@ namespace Test.Xigadee.Samples
 
                 var p1 = new MicroservicePipeline(nameof(CommandLocal1), serviceReference: typeof(CommandLocal))
                     .AddDebugMemoryDataCollector(out memp1)
-                    .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
+                    //.AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
                     .AddICommandInitiator(out init)
                     .AddChannelIncoming("fredo")
-                        .AttachCommand(typeof(ITestCommandLocal1), (rq,rsc,pl) =>
-                        {
-                            var payload = rq.PayloadUnpack<string>(pl);
+                        .AttachCommand(typeof(ITestCommandLocal1), (ctx) =>
+                            {
+                                var message = ctx.DtoGet<string>();
+                                ctx.ResponseSet(200, "howdy");
 
-                            var rs = rq.ToResponse();
-
-                            rs.PayloadPack<string>(pl, "howdy");
-                            
-                            rsc.Add(rs);
-                            return Task.FromResult(0);
-                        }
+                                return Task.FromResult(0);
+                            }
                         )
-                        .Revert()
-                        ;
+                        .Revert();
 
                 p1.Start();
 
-                //var ok = init.Process<ITestCommandLocal1, string, string>("Hello", new RequestSettings).Result;
+                var ok = init.Process<ITestCommandLocal1, string, string>("Hello").Result;
 
                 p1.Stop();
             }

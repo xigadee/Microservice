@@ -67,9 +67,9 @@
     <Compile Include="CommandInitiator\ICommandInitiator.cs" />
     <Compile Include="CommandInline\CommandInline.cs" />
     <Compile Include="CommandInline\CommandInlineExtensions.cs" />
+    <Compile Include="CommandInline\CommandInlineContext.cs" />
     <Compile Include="CommandInline\Exceptions\ContractException.cs" />
-    <Compile Include="CommandInline\Pipeline\AddCommand.cs" />
-    <Compile Include="CommandInline\Pipeline\AttachCommand.cs" />
+    <Compile Include="CommandInline\Pipeline\AddAttachCommand.cs" />
     <Compile Include="CommandPersistence\Pipeline\Attach\AttachPersistenceInternalService.cs" />
     <Compile Include="CommandPersistence\Pipeline\Attach\AttachPersistenceClient.cs" />
     <Compile Include="CommandPersistence\Server\DocumentDb\Pipeline\AddPersistenceManagerDocumentDb.cs" />

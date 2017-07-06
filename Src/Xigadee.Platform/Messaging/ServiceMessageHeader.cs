@@ -33,8 +33,8 @@ namespace Xigadee
         /// This constructor is used to set the message from its component parts.
         /// </summary>
         /// <param name="channelId">The channel that the command is attached to.</param>
-        /// <param name="messageType">The message type.</param>
-        /// <param name="actionType">The action type.</param>
+        /// <param name="messageType">The optional message type.</param>
+        /// <param name="actionType">The optional action type.</param>
         public ServiceMessageHeader(string channelId, string messageType = null, string actionType = null)
         {
             ChannelId = NullCheck(channelId);
@@ -85,6 +85,7 @@ namespace Xigadee
         /// </summary>
         public string Key { get; }
 
+        #region IsMatch(ServiceMessageHeader other)
         /// <summary>
         /// This method matches two headers. It expands on equal and matches based on a partial key match.
         /// </summary>
@@ -112,8 +113,10 @@ namespace Xigadee
                 return true;
 
             return string.Equals(ActionType, other.ActionType, StringComparison.InvariantCultureIgnoreCase);
-        }
+        } 
+        #endregion
 
+        #region ToPartialKey()
         /// <summary>
         /// This method returns the partial key with the relevant parts in order by channelId / messageType / actionType
         /// if at any steps these are null, the key stops and returns.
@@ -144,7 +147,8 @@ namespace Xigadee
                     sb.Append(item.ToLowerInvariant());
                 }
             }
-        }
+        } 
+        #endregion
 
         #region ToKey...
         /// <summary>
@@ -174,7 +178,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region MyRegion
+        #region FromKey(string key)
         /// <summary>
         /// This method parses the key in to its constituent parts and returns a new ServiceMessageHeader struct. 
         /// </summary>
@@ -277,6 +281,5 @@ namespace Xigadee
         /// This is the default any header.
         /// </summary>
         public static ServiceMessageHeader Any => (null, null, null);
-
     }
 }

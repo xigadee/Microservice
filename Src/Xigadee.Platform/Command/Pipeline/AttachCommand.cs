@@ -33,7 +33,7 @@ namespace Xigadee
             where E: IPipelineChannelIncoming<IPipeline>
             where C : ICommand
         {
-            cpipe.Pipeline.AddCommand(command, startupPriority, assign, cpipe, channelResponse);//, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
+            cpipe.Pipeline.AddCommand(command, startupPriority, assign, cpipe, channelResponse);
 
             return cpipe;
         }
@@ -48,7 +48,7 @@ namespace Xigadee
             //where P : IPipeline
             where C : ICommand
         {
-            cpipe.Pipeline.AddCommand(creator, startupPriority, assign, cpipe, channelResponse);//, channelMasterJobNegotiationIncoming, channelMasterJobNegotiationOutgoing);
+            cpipe.Pipeline.AddCommand(creator, startupPriority, assign, cpipe, channelResponse);
 
             return cpipe;
         }
