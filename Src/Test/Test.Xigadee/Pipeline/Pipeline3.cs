@@ -24,7 +24,9 @@ namespace Test.Xigadee
     [TestClass]
     public partial class PipelineTest3
     {
-
+        /// <summary>
+        /// This test does basic inline command tests.
+        /// </summary>
         [TestMethod]
         public void Pipeline3()
         {
@@ -36,27 +38,38 @@ namespace Test.Xigadee
                 ICommandInitiator init;
                 DebugMemoryDataCollector collector;
 
-                int signalChange = 0;
-
                 pipeline
                     .AddDebugMemoryDataCollector(out collector)
-                    .AdjustPolicyTaskManager((t, c) =>
-                    {
-                        t.ConcurrentRequestsMin = 1;
-                        t.ConcurrentRequestsMax = 4;
-                    })
+                    .AdjustPolicyTaskManagerForDebug()
                     .AddChannelIncoming("internalIn", internalOnly: true)
-                        .AttachCommand((rq,rs,c) => {
+                        .AttachCommand((prq,prs,c) => 
+                        {
+                            string entity;
+
+                            if ((prq, prs, c).RequestTryGet(out entity))
+                            {
+                                Assert.AreEqual(entity, "Hello");
+                                (prq, prs, c).ResponseSet(200, entity + "Good good", "It's all good");
+                            }
+                            else
+                                (prq, prs, c).ResponseSet(400, description: "It's all messed up.");
+
                             return Task.FromResult(0);
-                        }, destination)
-                        .AttachICommandInitiator(out init)
+                        }
+                        , destination)
                         .Revert()
                     .AddChannelOutgoing("internalOut", internalOnly: true)
+                        .AttachICommandInitiator(out init)
                         .Revert();
 
                 pipeline.Start();
 
-                //var rs = init.Process("internalIn", "frankie", "benny", "Hello").
+                var rs1 = init.Process<string, string>(destination, "Hello").Result;
+                var rs2 = init.Process<string, string>(destination, null).Result;
+
+                Assert.IsTrue(rs1.ResponseCode.Value == 200);
+                Assert.IsTrue(rs1.Response == "HelloGood good");
+                Assert.IsTrue(rs2.ResponseCode.Value == 400);
 
                 pipeline.Stop();
             }
@@ -64,7 +77,6 @@ namespace Test.Xigadee
             {
                 Assert.Fail(ex.Message);
             }
-
         }
     }
 }

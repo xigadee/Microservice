@@ -36,7 +36,7 @@ namespace Test.Xigadee
                     .AttachPriorityPartition(0, 1)
                     .CallOut((c) => cpipeOut = c)
                     .Revert()
-                .AddChannelIncoming("internalInit", internalOnly: true)
+                .AddChannelOutgoing("internalInit", internalOnly: true)
                     .AttachCommandInitiator(out mCommandInit);
 
             return pipeline;

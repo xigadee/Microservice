@@ -37,7 +37,6 @@ namespace Xigadee
         /// <param name="actionType">The action type.</param>
         public ServiceMessageHeader(string channelId, string messageType = null, string actionType = null)
         {
-
             ChannelId = NullCheck(channelId);
             MessageType = NullCheck(messageType);
             ActionType = NullCheck(actionType);

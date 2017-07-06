@@ -17,8 +17,8 @@ namespace Test.Xigadee
                 CommandInitiator init;
 
                 pipeOut
+                    .AddCommandInitiator(out init)
                     .AddChannelIncoming((c) => "return")
-                    .AttachCommandInitiator(out init)
                     .Start();
 
                 var rs = init.Process<string,string>("F1","F2","F3", "hello"

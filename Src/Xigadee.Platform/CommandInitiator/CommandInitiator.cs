@@ -71,7 +71,9 @@ namespace Xigadee
             return await ProcessOutgoing<I, RQ, RS>(rq
                 , settings
                 , routing
-                , principal: principal ?? Thread.CurrentPrincipal);
+                , fallbackMaxProcessingTime: mDefaultRequestTimespan
+                , principal: principal ?? Thread.CurrentPrincipal
+                );
         }
         #endregion
         #region Process<RQ, RS> ...
@@ -102,6 +104,7 @@ namespace Xigadee
                 , rq
                 , settings
                 , routing
+                , fallbackMaxProcessingTime: mDefaultRequestTimespan
                 , principal: principal ?? Thread.CurrentPrincipal);
         }
 
@@ -130,6 +133,7 @@ namespace Xigadee
                 , rq
                 , settings
                 , routing
+                , fallbackMaxProcessingTime: mDefaultRequestTimespan
                 , principal: principal ?? Thread.CurrentPrincipal);
         }
         #endregion

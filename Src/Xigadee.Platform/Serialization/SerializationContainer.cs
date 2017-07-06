@@ -73,17 +73,26 @@ namespace Xigadee
         }
         #endregion
 
+        #region Add/Clear
+        /// <summary>
+        /// This method adds the serializer to the collection.
+        /// </summary>
+        /// <param name="serializer">The serializer to add.</param>
         public void Add(IPayloadSerializer serializer)
         {
             mPayloadSerializers.Add(serializer.Identifier, serializer);
         }
-
+        /// <summary>
+        /// This method clears all the serliazers currently registered.
+        /// </summary>
         public void Clear()
         {
             mPayloadSerializers.Clear();
         }
+        #endregion
 
         #region PayloadDeserialize...
+        #region TransmissionPayload ...
         /// <summary>
         /// This method extracts the binary blob from the message and deserializes and returns the object.
         /// </summary>
@@ -103,6 +112,43 @@ namespace Xigadee
         {
             return PayloadDeserialize<P>(payload.Message);
         }
+        /// <summary>
+        /// This method tries to extract an entity from the message if present.
+        /// </summary>
+        /// <param name="payload">The transmission payload.</param>
+        /// <param name="entity">The deserialized entity</param>
+        /// <returns>Returns true if the message is present.</returns>
+        public bool PayloadTryDeserialize(TransmissionPayload payload, out object entity)
+        {
+            entity = null;
+            if (payload?.Message?.Blob == null)
+                return false;
+
+            entity = PayloadDeserialize(payload);
+
+            return true;
+        }
+        /// <summary>
+        /// This method tries to extract an entity from the message if present.
+        /// </summary>
+        /// <typeparam name="P">The payload message type.</typeparam>
+        /// <param name="payload">The transmission payload.</param>
+        /// <param name="entity">The deserialized entity</param>
+        /// <returns>Returns true if the message is present.</returns>
+        public bool PayloadTryDeserialize<P>(TransmissionPayload payload, out P entity)
+        {
+            entity = default(P);
+            if (payload?.Message?.Blob == null)
+                return false;
+
+            entity = PayloadDeserialize<P>(payload);
+
+            return true;
+        }
+
+        #endregion
+
+        #region ServiceMessage ...
         /// <summary>
         /// This method extracts the binary blob from the message and deserializes and returns the object.
         /// </summary>
@@ -147,6 +193,42 @@ namespace Xigadee
         }
 
         /// <summary>
+        /// This method tries to extract an entity from the message if present.
+        /// </summary>
+        /// <param name="message">The service message.</param>
+        /// <param name="entity">The deserialized entity</param>
+        /// <returns>Returns true if the message is present.</returns>
+        public bool PayloadTryDeserialize(ServiceMessage message, out object entity)
+        {
+            entity = null;
+            if (message?.Blob == null)
+                return false;
+
+            entity = PayloadDeserialize(message);
+
+            return true;
+        }
+        /// <summary>
+        /// This method tries to extract an entity from the message if present.
+        /// </summary>
+        /// <typeparam name="P">The payload message type.</typeparam>
+        /// <param name="message">The service message.</param>
+        /// <param name="entity">The deserialized entity</param>
+        /// <returns>Returns true if the message is present.</returns>
+        public bool PayloadTryDeserialize<P>(ServiceMessage message, out P entity)
+        {
+            entity = default(P);
+            if (message?.Blob == null)
+                return false;
+
+            entity = PayloadDeserialize<P>(message);
+
+            return true;
+        }
+        #endregion
+
+        #region byte[]...
+        /// <summary>
         /// This method deserializes the binary blob and returns the object.
         /// </summary>
         /// <typeparam name="P">The payload message type.</typeparam>
@@ -181,7 +263,8 @@ namespace Xigadee
                 return serializer.Deserialize(blob);
 
             return null;
-        }
+        } 
+        #endregion
         #endregion
 
         #region PayloadSerialize(object requestPayload)

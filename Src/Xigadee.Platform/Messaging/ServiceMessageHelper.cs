@@ -46,6 +46,19 @@ namespace Xigadee
             message.StatusDescription = statusDescription;
         }
         #endregion
+        #region StatusSet(this ServiceMessage message, string status, string statusDescription)
+        /// <summary>
+        /// This extension method sets the message status.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="status">The status.</param>
+        /// <param name="statusDescription">The status description.</param>
+        public static void StatusSet(this ServiceMessage message, int status, string statusDescription)
+        {
+            message.Status = status.ToString();
+            message.StatusDescription = statusDescription;
+        }
+        #endregion
         #region DestinationSet (Obsolete)...
         /// <summary>
         /// This extension method sets destination.

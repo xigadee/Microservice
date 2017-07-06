@@ -24,6 +24,22 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
+
+        static string ValidateOrCreateOutgoingChannel(IPipeline pipeline, string outgoingChannelId, Guid componentId, bool create)
+        {
+            if (pipeline.ToMicroservice().Communication.HasChannel(outgoingChannelId, ChannelDirection.Outgoing))
+                return outgoingChannelId;
+
+            if (!create)
+                throw new ChannelDoesNotExistException(outgoingChannelId, ChannelDirection.Outgoing, pipeline.ToMicroservice().Id.Name);
+
+            outgoingChannelId = string.IsNullOrEmpty(outgoingChannelId?.Trim()) ? $"CommandInitiator{componentId.ToString("N").ToUpperInvariant()}":outgoingChannelId;
+
+            var outPipe = pipeline.AddChannelOutgoing(outgoingChannelId, internalOnly:true);
+            
+            return outgoingChannelId;
+        }
+
         /// <summary>
         /// This method adds a command initiator to the Microservice.
         /// </summary>
@@ -38,14 +54,16 @@ namespace Xigadee
             , out CommandInitiator command
             , int startupPriority = 90
             , TimeSpan? defaultRequestTimespan = null
-            , IPipelineChannelIncoming<P> channelIncoming = null
+            , string responseChannel = null
+            , bool createChannel = true
             )
             where P:IPipeline
         {
-            command = new CommandInitiator(defaultRequestTimespan) { ResponseChannelId = channelIncoming.Channel.Id };
-
+            command = new CommandInitiator(defaultRequestTimespan);
+            command.ResponseChannelId = ValidateOrCreateOutgoingChannel(pipeline, responseChannel, command.ComponentId, createChannel);
             return pipeline.AddCommand(command, startupPriority);
         }
+
 
         /// <summary>
         /// This method adds a command initiator to the Microservice.
@@ -55,19 +73,22 @@ namespace Xigadee
         /// <param name="command">The command initiator output.</param>
         /// <param name="startupPriority">The start up priority. The default is 90.</param>
         /// <param name="defaultRequestTimespan">The default request timespan.</param>
-        /// <param name="channelIncoming">The incoming channel to attach the command initiator to.</param>
+        /// <param name="responseChannel">The incoming channel to attach the command initiator to.</param>
+        /// <param name="createChannel">This property specifies that the method should create a readonly channel just for the command initiator if the responseChannel is not found.</param>
         /// <returns>The pipeline.</returns>
         public static P AddICommandInitiator<P>(this P pipeline
             , out ICommandInitiator command
             , int startupPriority = 90
             , TimeSpan? defaultRequestTimespan = null
-            , IPipelineChannelIncoming<P> channelIncoming = null
+            , string responseChannel = null
+            , bool createChannel = true
             )
             where P : IPipeline
         {
-            var commandActual = new CommandInitiator(defaultRequestTimespan) { ResponseChannelId = channelIncoming.Channel.Id };
-            command = commandActual;
-            return pipeline.AddCommand(commandActual, startupPriority);
+            CommandInitiator interim;
+            pipeline.AddCommandInitiator(out interim, startupPriority, defaultRequestTimespan, responseChannel, createChannel);
+            command = interim;
+            return pipeline;
         }
     }
 }

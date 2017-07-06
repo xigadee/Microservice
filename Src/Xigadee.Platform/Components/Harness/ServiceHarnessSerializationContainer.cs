@@ -11,7 +11,9 @@ namespace Xigadee
     /// </summary>
     public class ServiceHarnessSerializationContainer: SerializationContainer
     {
-
+        /// <summary>
+        /// This override adds the Json serializer by default.
+        /// </summary>
         protected override void StartInternal()
         {
             Add(new JsonContractSerializer());
