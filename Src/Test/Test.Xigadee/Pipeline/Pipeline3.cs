@@ -60,7 +60,7 @@ namespace Test.Xigadee
                         }
                         , destination)
                         .Revert()
-                    .AddChannelOutgoing("internalOut", internalOnly: true)
+                    .AddChannelIncoming("internalRs", internalOnly: true)
                         .AttachICommandInitiator(out init)
                         .Revert();
 

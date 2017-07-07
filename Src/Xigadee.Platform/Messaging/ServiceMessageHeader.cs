@@ -24,46 +24,21 @@ using Xigadee;
 namespace Xigadee
 {
     /// <summary>
-    /// This is the service message header identifier.
+    /// This class holds information for a command destination when the channel is not known.
     /// </summary>
-    [DebuggerDisplay("Header={ChannelId}({MessageType}|{ActionType}) Key={Key} PKey={ToPartialKey()} Partial={IsPartialKey}")]
-    public struct ServiceMessageHeader:IEquatable<ServiceMessageHeader>
+    [DebuggerDisplay("({MessageType}|{ActionType})")]
+    public class ServiceMessageHeaderFragment
     {
         /// <summary>
-        /// This constructor is used to set the message from its component parts.
+        /// This constructor takes the message and action type paremeters.
         /// </summary>
-        /// <param name="channelId">The channel that the command is attached to.</param>
-        /// <param name="messageType">The optional message type.</param>
-        /// <param name="actionType">The optional action type.</param>
-        public ServiceMessageHeader(string channelId, string messageType = null, string actionType = null)
+        /// <param name="messageType">The message type.</param>
+        /// <param name="actionType">The action type.</param>
+        public ServiceMessageHeaderFragment(string messageType = null, string actionType = null)
         {
-            ChannelId = NullCheck(channelId);
             MessageType = NullCheck(messageType);
             ActionType = NullCheck(actionType);
-            IsPartialKey = ActionType == null || MessageType == null || ChannelId == null;
-            Key = ToKey(ChannelId, MessageType, ActionType);
         }
-
-        #region NullCheck(string incoming)
-        /// <summary>
-        /// This method ensures that whitespace or an empty string passed as an incoming parameter is converted to null.
-        /// </summary>
-        /// <param name="incoming">The incoming string.</param>
-        /// <returns>The outgoing string, or null if this string is just whitespace or is an empty string.</returns>
-        static string NullCheck(string incoming)
-        {
-            if (string.IsNullOrWhiteSpace(incoming))
-                return null;
-
- 
-            return incoming.Trim();
-        }
-        #endregion
-
-        /// <summary>
-        /// The channel identifier.
-        /// </summary>
-        public string ChannelId { get; }
 
         /// <summary>
         /// The message type.
@@ -74,6 +49,80 @@ namespace Xigadee
         /// The action type.
         /// </summary>
         public string ActionType { get; }
+
+        #region NullCheck(string incoming)
+        /// <summary>
+        /// This method ensures that whitespace or an empty string passed as an incoming parameter is converted to null.
+        /// </summary>
+        /// <param name="incoming">The incoming string.</param>
+        /// <returns>The outgoing string, or null if this string is just whitespace or is an empty string.</returns>
+        protected string NullCheck(string incoming)
+        {
+            if (string.IsNullOrWhiteSpace(incoming))
+                return null;
+
+            return incoming.Trim();
+        }
+        #endregion
+
+        #region IsMatch(ServiceMessageHeaderFragment other)
+        /// <summary>
+        /// This method matches two headers. It expands on equal and matches based on a partial key match.
+        /// </summary>
+        /// <param name="other">The other header to compare.</param>
+        /// <returns>Returns true if it is a match.</returns>
+        public bool IsMatch(ServiceMessageHeaderFragment other)
+        {
+            if (MessageType == null)
+                return true;
+
+            if (!string.Equals(MessageType, other.MessageType, StringComparison.InvariantCultureIgnoreCase))
+                return false;
+
+            if (ActionType == null)
+                return true;
+
+            return string.Equals(ActionType, other.ActionType, StringComparison.InvariantCultureIgnoreCase);
+        }
+        #endregion
+
+        #region Implicit conversion from (string,string)
+        /// <summary>
+        /// Implicitly converts three strings in to a ServiceMessageHeader.
+        /// </summary>
+        /// <param name="t">The value tuple.</param>
+        public static implicit operator ServiceMessageHeaderFragment(ValueTuple<string, string> t)
+        {
+            return new ServiceMessageHeaderFragment(t.Item1, t.Item2);
+        }
+        #endregion
+
+    }
+
+    /// <summary>
+    /// This is the service message header identifier.
+    /// </summary>
+    [DebuggerDisplay("Header={ChannelId}({MessageType}|{ActionType}) Key={Key} PKey={ToPartialKey()} Partial={IsPartialKey}")]
+    public class ServiceMessageHeader: ServiceMessageHeaderFragment, IEquatable<ServiceMessageHeader>
+    {
+        /// <summary>
+        /// This constructor is used to set the message from its component parts.
+        /// </summary>
+        /// <param name="channelId">The channel that the command is attached to.</param>
+        /// <param name="messageType">The optional message type.</param>
+        /// <param name="actionType">The optional action type.</param>
+        public ServiceMessageHeader(string channelId, string messageType = null, string actionType = null):base(messageType,actionType)
+        {
+            ChannelId = NullCheck(channelId);
+
+            IsPartialKey = ActionType == null || MessageType == null || ChannelId == null;
+            Key = ToKey(ChannelId, MessageType, ActionType);
+        }
+
+        /// <summary>
+        /// The channel identifier.
+        /// </summary>
+        public string ChannelId { get; }
 
         /// <summary>
         /// This property returns true if part of the key is not set.
@@ -238,7 +287,17 @@ namespace Xigadee
         public static implicit operator ServiceMessageHeader(ValueTuple<string, string, string> t)
         {
             return new ServiceMessageHeader(t.Item1, t.Item2, t.Item3);
-        } 
+        }
+        #endregion
+        #region Implicit conversion from (string,ServiceMessageHeaderFragmentg)
+        /// <summary>
+        /// Implicitly converts three strings in to a ServiceMessageHeader.
+        /// </summary>
+        /// <param name="t">The value tuple.</param>
+        public static implicit operator ServiceMessageHeader(ValueTuple<string, ServiceMessageHeaderFragment> t)
+        {
+            return new ServiceMessageHeader(t.Item1, t.Item2?.MessageType, t.Item2?.ActionType);
+        }
         #endregion
         #region Implicit conversion from string
         /// <summary>

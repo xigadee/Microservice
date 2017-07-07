@@ -27,15 +27,15 @@ namespace Xigadee
 
         static string ValidateOrCreateOutgoingChannel(IPipeline pipeline, string outgoingChannelId, Guid componentId, bool create)
         {
-            if (pipeline.ToMicroservice().Communication.HasChannel(outgoingChannelId, ChannelDirection.Outgoing))
+            outgoingChannelId = string.IsNullOrEmpty(outgoingChannelId?.Trim()) ? $"CommandInitiator{componentId.ToString("N").ToUpperInvariant()}":outgoingChannelId;
+
+            if (pipeline.ToMicroservice().Communication.HasChannel(outgoingChannelId, ChannelDirection.Incoming))
                 return outgoingChannelId;
 
             if (!create)
-                throw new ChannelDoesNotExistException(outgoingChannelId, ChannelDirection.Outgoing, pipeline.ToMicroservice().Id.Name);
+                throw new ChannelDoesNotExistException(outgoingChannelId, ChannelDirection.Incoming, pipeline.ToMicroservice().Id.Name);
 
-            outgoingChannelId = string.IsNullOrEmpty(outgoingChannelId?.Trim()) ? $"CommandInitiator{componentId.ToString("N").ToUpperInvariant()}":outgoingChannelId;
-
-            var outPipe = pipeline.AddChannelOutgoing(outgoingChannelId, internalOnly:true);
+            var outPipe = pipeline.AddChannelIncoming(outgoingChannelId, internalOnly:true);
             
             return outgoingChannelId;
         }
@@ -48,7 +48,8 @@ namespace Xigadee
         /// <param name="command">The command initiator output.</param>
         /// <param name="startupPriority">The start up priority. The default is 90.</param>
         /// <param name="defaultRequestTimespan">The default request timespan.</param>
-        /// <param name="channelIncoming">The incoming channel to attach the command initiator to.</param>
+        /// <param name="responseChannel">The incoming channel to attach the command initiator to.</param>
+        /// <param name="createChannel">This will create the channel.</param>
         /// <returns>The pipeline.</returns>
         public static P AddCommandInitiator<P>(this P pipeline
             , out CommandInitiator command

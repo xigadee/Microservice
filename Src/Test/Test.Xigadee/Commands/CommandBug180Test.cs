@@ -42,11 +42,13 @@ namespace Test.Xigadee
                     .AddChannelIncoming("internalIn", internalOnly: true)
                         .AttachCommand((c) => 
                         {
+                            c.ResponseSet(200);
                             return Task.FromResult(0);
                         }
                         , destination)
                         .AttachCommand((c) =>
                         {
+                            c.ResponseSet(200);
                             return Task.FromResult(0);
                         }
                         , ("internalIn/frankie4fingers/benny"))

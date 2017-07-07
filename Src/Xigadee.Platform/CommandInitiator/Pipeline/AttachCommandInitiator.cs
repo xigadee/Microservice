@@ -38,7 +38,7 @@ namespace Xigadee
             , int startupPriority = 90
             , TimeSpan? defaultRequestTimespan = null
             )
-            where C : IPipelineChannelOutgoing<IPipeline>
+            where C : IPipelineChannelIncoming<IPipeline>
         {
             cpipe.Pipeline.AddCommandInitiator(out command
                 , startupPriority, defaultRequestTimespan, cpipe.Channel.Id, false);
@@ -60,7 +60,7 @@ namespace Xigadee
             , int startupPriority = 90
             , TimeSpan? defaultRequestTimespan = null
             )
-            where C : IPipelineChannelOutgoing<IPipeline>
+            where C : IPipelineChannelIncoming<IPipeline>
         {
             cpipe.Pipeline.AddICommandInitiator(out command
                 , startupPriority, defaultRequestTimespan, cpipe.Channel.Id, false);

@@ -8,9 +8,9 @@ namespace Test.Xigadee.Commands.Schedule
     public class ScheduleAttribute
     {
         [TestMethod]
-        public void TestMethod1()
+        public void CommandHarnessTest1()
         {
-            var cont = new CommandHarness<CommandTest>();
+            var cont = new CommandHarness<CommandTest>(() => new CommandTest());
 
         }
 

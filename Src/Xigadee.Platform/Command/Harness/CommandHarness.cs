@@ -22,34 +22,17 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    /// <summary>
-    /// This harness is used to test command functionality manually.
-    /// </summary>
-    /// <typeparam name="C"></typeparam>
-    public class CommandHarness<C>:ServiceHarness<C>
-        where C: class, ICommand
+    public class CommandHarnessDependencies<C>: ServiceHarnessDependencies
     {
-        Func<C> mCreator;
+        public Func<C> Creator { get; }
 
-        /// <summary>
-        /// This is the default constructor.
-        /// </summary>
-        /// <param name="creator">This is the creator function to create the command. If the command supports a parameterless constructor, then you can leave this blank.</param>
-        public CommandHarness(Func<C> creator = null)
+        public CommandHarnessDependencies():this(null)
         {
-            if (creator == null)
-                mCreator = DefaultConstructor();
-
-            mCreator = creator;
         }
 
-        /// <summary>
-        /// This override creates the command.
-        /// </summary>
-        /// <returns>Returns the command.</returns>
-        protected override C Create()
+        public CommandHarnessDependencies(Func<C> creator)
         {
-            return mCreator();
+            Creator = creator ?? DefaultConstructor();
         }
 
         /// <summary>
@@ -63,6 +46,38 @@ namespace Xigadee
 
             return () => Activator.CreateInstance<C>();
         }
+
+        /// <summary>
+        /// This is the example originator id.
+        /// </summary>
+        public override MicroserviceId OriginatorId => new MicroserviceId("CommandHarness", Guid.NewGuid().ToString("N").ToUpperInvariant());
+    }
+    /// <summary>
+    /// This harness is used to test command functionality manually.
+    /// </summary>
+    /// <typeparam name="C"></typeparam>
+    public class CommandHarness<C>:ServiceHarness<C, CommandHarnessDependencies<C>>
+        where C: class, ICommand
+    {
+
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="creator">This is the creator function to create the command. If the command supports a parameterless constructor, then you can leave this blank.</param>
+        public CommandHarness(Func<C> creator = null):base(new CommandHarnessDependencies<C>(creator))
+        {
+        }
+
+        /// <summary>
+        /// This override creates the command.
+        /// </summary>
+        /// <returns>Returns the command.</returns>
+        protected override C Create()
+        {
+            return Dependencies.Creator();
+        }
+
+
     }
     
 }

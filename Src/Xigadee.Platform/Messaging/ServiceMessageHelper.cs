@@ -334,7 +334,7 @@ namespace Xigadee
         /// </summary>
         /// <typeparam name="I"></typeparam>
         /// <returns>A ServiceMessageHeader or null if the contract info cannot be matched.</returns>
-        public static ServiceMessageHeader? ToServiceMessageHeader<I>()
+        public static ServiceMessageHeader ToServiceMessageHeader<I>()
             where I: IMessageContract
         {
             string channelId, messageType, actionType;
