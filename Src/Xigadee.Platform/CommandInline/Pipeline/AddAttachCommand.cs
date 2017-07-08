@@ -24,21 +24,68 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
+        /// <summary>
+        /// This extension adds the inline command to the pipeline
+        /// </summary>
+        /// <typeparam name="P">The pipeline type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="commandFunction">The command function.</param>
+        /// <param name="header">The destination fragment</param>
+        /// <param name="referenceId">The optional command reference id</param>
+        /// <param name="startupPriority">The command startup priority.</param>
+        /// <param name="channelIncoming">The incoming channel. This is optional if you pass channel information in the header.</param>
+        /// <param name="autoCreateChannel">Set this to true if you want the incoiming channel created if it does not exist. The default is true.</param>
+        /// <returns>Returns the pipeline.</returns>
         public static P AddCommand<P>(this P pipeline
             , Func<CommandInlineContext, Task> commandFunction
-            , ServiceMessageHeader header
+            , ServiceMessageHeaderFragment header
             , string referenceId = null
             , int startupPriority = 100
             , IPipelineChannelIncoming<P> channelIncoming = null
+            , bool autoCreateChannel = true
             )
             where P : IPipeline
         {
-            var command = new CommandInline(header, commandFunction, referenceId);
+            ServiceMessageHeader location;
+
+            if (header is ServiceMessageHeader)
+                location = (ServiceMessageHeader)header;
+            else
+            {
+                if (channelIncoming == null)
+                    throw new ChannelIncomingMissingException();
+                location = (channelIncoming.Channel.Id, header);
+            }
+
+            var command = new CommandInline(location, commandFunction, referenceId);
 
             pipeline.AddCommand(command, startupPriority, null, channelIncoming);
 
             return pipeline;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="E"></typeparam>
+        /// <param name="cpipe"></param>
+        /// <param name="commandFunction"></param>
+        /// <param name="header"></param>
+        /// <param name="referenceId"></param>
+        /// <param name="startupPriority"></param>
+        /// <returns></returns>
+        public static E AttachCommand<E>(this E cpipe
+            , Func<CommandInlineContext, Task> commandFunction
+            , ServiceMessageHeaderFragment header
+            , string referenceId = null
+            , int startupPriority = 100
+            )
+            where E : IPipelineChannelIncoming<IPipeline>
+        {
+            cpipe.ToPipeline().AddCommand(commandFunction, header, referenceId, startupPriority, cpipe);
+
+            return cpipe;
+        }
+
 
         public static E AttachCommand<E>(this E cpipe
             , Func<CommandInlineContext, Task> commandFunction

@@ -44,14 +44,12 @@ namespace Test.Xigadee
                         {
                             c.ResponseSet(200);
                             return Task.FromResult(0);
-                        }
-                        , destination)
-                        .AttachCommand((c) =>
+                        }, ("frankie","benny"))
+                        .AttachCommand((ctx) =>
                         {
-                            c.ResponseSet(200);
+                            ctx.ResponseSet(200);
                             return Task.FromResult(0);
-                        }
-                        , ("internalIn/frankie4fingers/benny"))
+                        }, ("internalIn","frankie4fingers","benny"))
                         .Revert()
                     .AddChannelOutgoing("internalOut", internalOnly: true)
                         .Revert();

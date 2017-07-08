@@ -31,6 +31,20 @@ namespace Xigadee
     }
 
     /// <summary>
+    /// This exception occurs when the channel information is not passed to the AddCommand extension.
+    /// This can occur if you pass a ServiceMessageHeaderFragment, without passing the channel reference.
+    /// </summary>
+    public class ChannelIncomingMissingException: Exception
+    {
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        public ChannelIncomingMissingException() 
+        {
+        }
+    }
+
+    /// <summary>
     /// This exception occurs when the channel specified in the contract does not match the channel being attached to.
     /// </summary>
     public class InvalidPipelineChannelContractException : ContractException
