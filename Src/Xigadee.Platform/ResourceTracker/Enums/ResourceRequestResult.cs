@@ -17,25 +17,29 @@
 namespace Xigadee
 {
     /// <summary>
-    /// This class contains a brief summary the resource status
+    /// This enumeration is used to record the reason for the end of the resource track.
     /// </summary>
-    public class ResourceStatus
+    public enum ResourceRequestResult
     {
         /// <summary>
-        /// This is the name of the resource.
+        /// The track was successful.
         /// </summary>
-        public string Name { get; set; }
+        Success,
         /// <summary>
-        /// This is the current circuit breaker state.
+        /// The track resulted in an exception.
         /// </summary>
-        public CircuitBreakerState State { get; set; } = CircuitBreakerState.Closed;
+        Exception,
         /// <summary>
-        /// This is the time to the next pool retry if the circuit breaker is open.
+        /// The task was cancelled.
         /// </summary>
-        public int? RetryInSeconds { get; set; }
+        TaskCancelled,
         /// <summary>
-        /// This is the precentage of requests that should pass through, if the circuit breaker is in a half-open state.
+        /// The number of retry attempts was exceeded.
         /// </summary>
-        public int FilterPercentage { get; set; } = 100;
+        RetryExceeded,
+        /// <summary>
+        /// The reason for was not in the other values.
+        /// </summary>
+        Unknown
     }
 }

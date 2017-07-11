@@ -14,20 +14,20 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Xigadee
 {
-    public enum ResourceRequestResult
+    /// <summary>
+    /// This is the resource event action types.
+    /// </summary>
+    public enum ResourceStatisticsEventType
     {
-        Success,
-        Exception,
-        TaskCancelled,
-        RetryExceeded,
-        Unknown
+        /// <summary>
+        /// The resource counter has been created.
+        /// </summary>
+        Created,
+        /// <summary>
+        /// This is a regular poll that records the current metrics
+        /// </summary>
+        KeepAlive
     }
 }

@@ -266,6 +266,10 @@
     <Compile Include="Pipeline\Configuration\ConfigurationClear.cs" />
     <Compile Include="Pipeline\Extensions\Adjust\AdjustPolicyHelper.cs" />
     <Compile Include="Pipeline\Extensions\Adjust\AdjustPolicyTaskManager.cs" />
+    <Compile Include="ResourceTracker\ResourceSyncCommand\ResourceSyncCommand.cs" />
+    <Compile Include="ResourceTracker\ResourceSyncCommand\ResourceSyncCommandPolicy.cs" />
+    <Compile Include="ResourceTracker\ResourceSyncCommand\ResourceSyncCommandStatistics.cs" />
+    <Compile Include="ResourceTracker\ResourceStatisticsEventType.cs" />
     <Compile Include="ResourceTracker\ResourceStatus.cs" />
     <Compile Include="Security\AuthenticationHandler\AuthenticationHandlerBase.cs" />
     <Compile Include="Security\AuthenticationHandler\AuthenticationHandlerId.cs" />
@@ -598,17 +602,17 @@
     <Compile Include="DataCollection\Logger\Implementations\Action\LoggerActionHolder.cs" />
     <Compile Include="Microservice\Microservice_Initialization.cs" />
     <Compile Include="Microservice\Microservice_Statistics.cs" />
-    <Compile Include="ResourceTracker\Interfaces\CircuitBreakerState.cs" />
+    <Compile Include="ResourceTracker\Enums\CircuitBreakerState.cs" />
     <Compile Include="ResourceTracker\Interfaces\IResourceBase.cs" />
     <Compile Include="ResourceTracker\Interfaces\IResourceConsumer.cs" />
     <Compile Include="ResourceTracker\Interfaces\IResourceRequestRateLimiter.cs" />
     <Compile Include="ResourceTracker\Interfaces\IResourceTracker.cs" />
-    <Compile Include="ResourceTracker\Interfaces\ResourceRequestResult.cs" />
-    <Compile Include="ResourceTracker\Interfaces\ResourceRetryReason.cs" />
+    <Compile Include="ResourceTracker\Enums\ResourceRequestResult.cs" />
+    <Compile Include="ResourceTracker\Enums\ResourceRetryReason.cs" />
     <Compile Include="ResourceTracker\ResourceBase.cs" />
-    <Compile Include="ResourceTracker\ResourceConsumer.cs" />
+    <Compile Include="ResourceTracker\ResourceContainer\ResourceConsumer.cs" />
     <Compile Include="ResourceTracker\ResourceProfile.cs" />
-    <Compile Include="ResourceTracker\ResourceRateLimiter.cs" />
+    <Compile Include="ResourceTracker\ResourceContainer\ResourceRateLimiter.cs" />
     <Compile Include="ResourceTracker\ResourceRequestTrack.cs" />
     <Compile Include="ResourceTracker\ResourceStatistics.cs" />
     <Compile Include="ResourceTracker\ResourceContainer\ResourceContainer.cs" />
@@ -724,7 +728,7 @@
     <Folder Include="Pipeline\Extensions\Add\" />
     <Folder Include="Pipeline\Extensions\Attach\" />
     <Folder Include="ResourceTracker\Events\" />
-    <Folder Include="ResourceTracker\ExtensionMethods\" />
+    <Folder Include="ResourceTracker\Pipeline\" />
     <Folder Include="Security\Jwt\Interfaces\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

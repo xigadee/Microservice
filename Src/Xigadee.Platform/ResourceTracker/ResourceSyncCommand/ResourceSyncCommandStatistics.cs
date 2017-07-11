@@ -22,11 +22,10 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public enum ResourceRetryReason
+    /// <summary>
+    /// This is the default measurement statistics class for the ResourceSync command.
+    /// </summary>
+    public class ResourceSyncCommandStatistics:CommandStatistics
     {
-        Throttle,
-        Timeout,
-        Exception,
-        Other
     }
 }

@@ -22,8 +22,14 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This is the base interface for all resources.
+    /// </summary>
     public interface IResourceBase
     {
+        /// <summary>
+        /// This Id of the resource.
+        /// </summary>
         Guid ResourceId { get; }
     }
 }

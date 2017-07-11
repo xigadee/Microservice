@@ -32,6 +32,5 @@ namespace Xigadee
         /// 0 is when the circuit breaker is active.
         /// </summary>
         double RateLimitAdjustmentPercentage { get; }
-
     }
 }

@@ -23,17 +23,9 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This class measures the statistics for the resource container.
+    /// This is the default policy for the resource sysnc command.
     /// </summary>
-    public class ResourceContainerStatistics: StatusBase
+    public class ResourceSyncCommandPolicy: CommandPolicy
     {
-        /// <summary>
-        /// This is the resource collections.
-        /// </summary>
-        public ResourceStatistics[] Resources { get; set; }
-        /// <summary>
-        /// This is the collection of rate limiters
-        /// </summary>
-        public string[] RateLimiters { get; set; }
     }
 }

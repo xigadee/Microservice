@@ -23,17 +23,10 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This class measures the statistics for the resource container.
+    /// This command is used to syncronise and consolidate resource performance counters and signalling 
+    /// across multiple Microservices.
     /// </summary>
-    public class ResourceContainerStatistics: StatusBase
+    public class ResourceSyncCommand:CommandBase<ResourceSyncCommandStatistics, ResourceSyncCommandPolicy>
     {
-        /// <summary>
-        /// This is the resource collections.
-        /// </summary>
-        public ResourceStatistics[] Resources { get; set; }
-        /// <summary>
-        /// This is the collection of rate limiters
-        /// </summary>
-        public string[] RateLimiters { get; set; }
     }
 }

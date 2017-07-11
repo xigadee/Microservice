@@ -17,25 +17,25 @@
 namespace Xigadee
 {
     /// <summary>
-    /// This class contains a brief summary the resource status
+    /// This is the reason for a retry attempt on a resource
     /// </summary>
-    public class ResourceStatus
+    public enum ResourceRetryReason
     {
         /// <summary>
-        /// This is the name of the resource.
+        /// The underlying resource is throttling traffic.
         /// </summary>
-        public string Name { get; set; }
+        Throttle,
         /// <summary>
-        /// This is the current circuit breaker state.
+        /// These was a timeout when accessing the resource.
         /// </summary>
-        public CircuitBreakerState State { get; set; } = CircuitBreakerState.Closed;
+        Timeout,
         /// <summary>
-        /// This is the time to the next pool retry if the circuit breaker is open.
+        /// An exception occurred when accessing the resource.
         /// </summary>
-        public int? RetryInSeconds { get; set; }
+        Exception,
         /// <summary>
-        /// This is the precentage of requests that should pass through, if the circuit breaker is in a half-open state.
+        /// The retry reason was not specified.
         /// </summary>
-        public int FilterPercentage { get; set; } = 100;
+        Other
     }
 }

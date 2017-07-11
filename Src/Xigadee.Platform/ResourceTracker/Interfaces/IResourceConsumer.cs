@@ -22,14 +22,37 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This interface is used by a resource consumer.
+    /// </summary>
     public interface IResourceConsumer: IResourceBase
     {
+        /// <summary>
+        /// This method is used to start the tracking of a resource.
+        /// </summary>
+        /// <param name="group"></param>
+        /// <param name="requestId"></param>
+        /// <returns>Returns the tracking identifier.</returns>
         Guid Start(string group, Guid requestId);
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="profileId"></param>
+        /// <param name="start"></param>
+        /// <param name="result"></param>
         void End(Guid profileId, int start, ResourceRequestResult result);
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="profileId"></param>
+        /// <param name="retryStart"></param>
+        /// <param name="reason"></param>
         void Retry(Guid profileId, int retryStart, ResourceRetryReason reason);
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="profileId"></param>
+        /// <param name="retryStart"></param>
         void Exception(Guid profileId, int retryStart);
     }
 }

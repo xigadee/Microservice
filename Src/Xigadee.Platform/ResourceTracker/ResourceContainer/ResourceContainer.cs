@@ -161,7 +161,7 @@ namespace Xigadee
             var stats = list.Select((p) => ResourceStatisticsCreateOrGet(p)).ToList();
 
             var limiter = new ResourceRateLimiter(name, stats);
-
+            //BUG: 200 in VSTS
             mResourceRateLimiters.Add(limiter.ResourceId, limiter);
 
             return limiter;

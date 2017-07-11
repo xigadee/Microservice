@@ -18,8 +18,6 @@ namespace Test.Xigadee
             return resourceContainer;
         }
 
-
-
         [TestMethod]
         public void StartTraceSetup()
         {
@@ -31,19 +29,20 @@ namespace Test.Xigadee
 
             resourceContainer.Start();
 
+            //Create new profiles.
             var profile1 = new ResourceProfile("v1");
             var profile2 = (ResourceProfile)"v2";
 
             var consumer1 = tracker.RegisterConsumer("fredo1", profile1);
             var consumer2 = tracker.RegisterConsumer("fredo2", profile2);
 
+            
             var id = consumer1.Start("", Guid.NewGuid());
 
             consumer1.End(id, Environment.TickCount - 100, ResourceRequestResult.Success);
 
             var tracker1 = tracker.RegisterRequestRateLimiter("freda", profile1, profile2 );
-
-            
+   
         }
     }
 }

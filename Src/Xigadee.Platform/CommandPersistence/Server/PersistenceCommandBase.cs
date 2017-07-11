@@ -158,7 +158,6 @@ namespace Xigadee
         #endregion
 
         #region EntityTransformCreate...
-
         /// <summary>
         /// The transform holder manages the serialization and deserialization of the entity and key 
         /// for the entity and key, and identifies the references for the entity.
@@ -214,7 +213,9 @@ namespace Xigadee
         #endregion
 
         #region Start/Stop Internal
-
+        /// <summary>
+        /// This method starts the persistence command.
+        /// </summary>
         protected override void StartInternal()
         {
             var resourceTracker = SharedServices.GetService<IResourceTracker>();
@@ -223,7 +224,9 @@ namespace Xigadee
 
             base.StartInternal();
         }
-
+        /// <summary>
+        /// This method stops the persistence command.
+        /// </summary>
         protected override void StopInternal()
         {
             base.StopInternal();

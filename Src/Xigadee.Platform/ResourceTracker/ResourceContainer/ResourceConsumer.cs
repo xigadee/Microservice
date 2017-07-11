@@ -15,11 +15,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -64,7 +60,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region  Start(string group, Guid requestId)
+        #region Start(string group, Guid requestId)
         /// <summary>
         /// This method tracks the start of a request and returns a profileid.
         /// </summary>

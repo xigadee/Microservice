@@ -54,6 +54,5 @@ namespace Xigadee
         /// <param name="name">The name of the resource.</param>
         /// <returns>The current status of the resource.</returns>
         ResourceStatus ResourceStatusGet(string name);
-
     }
 }
