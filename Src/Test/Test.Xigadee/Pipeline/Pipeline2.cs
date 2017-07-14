@@ -15,6 +15,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Xigadee;
 using System.Threading.Tasks;
@@ -24,9 +25,15 @@ namespace Test.Xigadee
     [TestClass]
     public partial class PipelineTest2
     {
+        /// <summary>
+        /// This is the default message contract.
+        /// </summary>
         [Contract("internalIn", "franky", "johnny5")]
         public interface IPipelineTest2: IMessageContract { }
 
+        /// <summary>
+        /// This pipeline test specifically checks the AttachMessagePriorityOverrideForResponse functionality.
+        /// </summary>
         [TestMethod]
         public void Pipeline2()
         {
@@ -51,6 +58,14 @@ namespace Test.Xigadee
                     .AdjustPolicyTaskManagerForDebug()
                     .AddDebugMemoryDataCollector(out collector1)
                     .AddPayloadSerializerDefaultJson()
+                    .AddChannelIncoming("spooky", internalOnly:true)
+                        .AttachCommand((CommandInlineContext ctx) =>
+                        {
+                            var payload = ctx.DtoGet<Blah>();
+                            ctx.ResponseSet(200, payload.Message);
+                            return Task.FromResult(0);
+                        }, ("franky", "johnny5"))
+                        .Revert()
                     .AddChannelIncoming("return")
                         .AttachListener(bridgeReturn.GetListener())
                         //.AttachMessageProcessPriorityOverride()
@@ -80,6 +95,12 @@ namespace Test.Xigadee
                             ctx.ResponseSet(200, payload.Message);
                             return Task.FromResult(0);
                         }, ("franky", "johnny5"))
+                        .AttachCommand((CommandInlineContext ctx) =>
+                        {
+                            var payload = ctx.DtoGet<Blah>();
+                            ctx.ResponseSet(201, payload.Message);
+                            return Task.FromResult(0);
+                        }, ("franky", "johnny6"))
                         .Revert()
                     .AddChannelOutgoing("return")
                         .AttachSender(bridgeReturn.GetSender())
@@ -89,8 +110,17 @@ namespace Test.Xigadee
                 pClient.Start();
                 pServer.Start();
 
-                var result1 = init.Process<IPipelineTest2, Blah, string>(new Blah() { Message = "hello1" }).Result;
-                var result2 = init.Process<Blah, string>("internalIn", "franky", "johnny5", new Blah() { Message = "hello2" }).Result;
+                var list = new List<Task<ResponseWrapper<string>>>();
+
+                list.Add(init.Process<IPipelineTest2, Blah, string>(new Blah() { Message = "hello1" }));
+                list.Add(init.Process<Blah, string>("internalIn", "franky", "johnny5", new Blah() { Message = "hello2" }));
+                list.Add(init.Process<Blah, string>(("internalIn", "franky", "johnny5"), new Blah() { Message = "hello3" }));
+                list.Add(init.Process<Blah, string>(("internalIn", "franky", "johnny6"), new Blah() { Message = "hello3" }));
+                list.Add(init.Process<Blah, string>(("spooky", "franky", "johnny5"), new Blah() { Message = "hellospooky" }));
+
+
+                var result = Task.WhenAll(list).Result;
+
 
                 pClient.Stop();
                 pServer.Stop();
