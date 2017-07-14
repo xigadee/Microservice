@@ -15,27 +15,17 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Xigadee
 {
     /// <summary>
-    /// This is the abstract class used for channel partition exceptions.
+    /// This is the default policy for the resource sysnc command.
     /// </summary>
-    public abstract class ChannelPartitionConfigBaseException:Exception
+    public class ResourceSyncSenderCommandPolicy: CommandPolicy
     {
-        /// <summary>
-        /// This is the default contructor.
-        /// </summary>
-        /// <param name="channelId">The channel id.</param>
-        /// <param name="message">The message.</param>
-        protected ChannelPartitionConfigBaseException(string channelId,string message = null):base(message)
-        {
-            ChannelId = channelId;
-        }
-        /// <summary>
-        /// This is the channel id that the error occurred in.
-        /// </summary>
-        public string ChannelId { get; }
-
     }
 }

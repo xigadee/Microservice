@@ -24,6 +24,14 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
+        /// <summary>
+        /// This method attaches a sender to the outgoing channel.
+        /// </summary>
+        /// <typeparam name="C">The pipeline type.</typeparam>
+        /// <param name="cpipe">The pipeline.</param>
+        /// <param name="sender">The sender to attach.</param>
+        /// <param name="setFromChannelProperties">The default value is true. This sets the sender properties from the channel.</param>
+        /// <returns>Returns the pipeline</returns>
         public static C AttachSender<C>(this C cpipe
             , ISender sender
             , bool setFromChannelProperties = true)
@@ -36,6 +44,9 @@ namespace Xigadee
 
             if (setFromChannelProperties)
             {
+                if (channel.Partitions == null)
+                    throw new ChannelPartitionConfigNotSetException(channel.Id);
+
                 sender.ChannelId = channel.Id;
                 sender.PriorityPartitions = channel.Partitions.Cast<SenderPartitionConfig>().ToList();
                 sender.BoundaryLoggingActive = channel.BoundaryLoggingActive;

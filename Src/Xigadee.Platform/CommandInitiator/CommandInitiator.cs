@@ -47,6 +47,12 @@ namespace Xigadee
         }
         #endregion
 
+        private void ServiceStartedCheck()
+        {
+            if (Status != ServiceStatus.Running)
+                throw new ServiceNotStartedException();
+        }
+
         #region Process<I, RQ, RS>(RQ rq, RequestSettings settings = null, ProcessOptions? routing = null)
         /// <summary>
         /// This method is used to send requests to a remote command and wait for a response.
@@ -68,6 +74,8 @@ namespace Xigadee
             )
             where I : IMessageContract
         {
+            ServiceStartedCheck();
+
             return await ProcessOutgoing<I, RQ, RS>(rq
                 , settings
                 , routing
@@ -99,6 +107,8 @@ namespace Xigadee
             , IPrincipal principal = null
             )
         {
+            ServiceStartedCheck();
+
             return await ProcessOutgoing<RQ,RS>(
                   channelId, messageType, actionType
                 , rq
@@ -128,6 +138,8 @@ namespace Xigadee
             , IPrincipal principal = null
             )
         {
+            ServiceStartedCheck();
+
             return await ProcessOutgoing<RQ, RS>(
                   header.ChannelId, header.MessageType, header.ActionType
                 , rq

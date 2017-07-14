@@ -50,7 +50,7 @@ namespace Xigadee
         {
             pipeline.AdjustPolicyTaskManager((p,c) =>
             {
-
+                //p.
             });
 
             return pipeline;

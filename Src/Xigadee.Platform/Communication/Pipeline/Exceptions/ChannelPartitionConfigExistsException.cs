@@ -14,21 +14,27 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Xigadee
 {
+    /// <summary>
+    /// This exception is throw when you try and set the channel partitions and they are already set. 
+    /// Check that autosetPartition01 is set to false when creating the channel.
+    /// </summary>
     public class ChannelPartitionConfigExistsException: ChannelPartitionConfigBaseException
     {
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="channelId">The channel identifier.</param>
+        /// <param name="channelPriority">The priority the exception occurred.</param>
         public ChannelPartitionConfigExistsException(string channelId, int channelPriority) : base(channelId)
         {
             ChannelPriority = channelPriority;
         }
 
+        /// <summary>
+        /// THis is the first priority that caused the exception.
+        /// </summary>
         public int ChannelPriority { get; }
     }
 }

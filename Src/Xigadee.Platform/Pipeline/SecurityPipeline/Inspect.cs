@@ -24,18 +24,18 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static C Inspect<C,P>(this C pipeline
-            , Action<IMicroservice> msAssign = null
-            , Action<IEnvironmentConfiguration> cfAssign = null
-            )
-            where C:SecurityPipelineExtension<P>
-            where P:IPipeline
-        {
-            msAssign?.Invoke(pipeline.Pipeline.Service);
-            cfAssign?.Invoke(pipeline.Pipeline.Configuration);
+        //public static C Inspect<C,P>(this C pipeline
+        //    , Action<IMicroservice> msAssign = null
+        //    , Action<IEnvironmentConfiguration> cfAssign = null
+        //    )
+        //    where C:SecurityPipelineExtension<P>
+        //    where P:IPipeline
+        //{
+        //    msAssign?.Invoke(pipeline.Pipeline.Service);
+        //    cfAssign?.Invoke(pipeline.Pipeline.Configuration);
 
-            return pipeline;
-        }
+        //    return pipeline;
+        //}
 
 
     }

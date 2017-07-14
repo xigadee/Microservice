@@ -15,27 +15,21 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Xigadee
 {
     /// <summary>
-    /// This is the abstract class used for channel partition exceptions.
+    /// This command is used to syncronise and consolidate resource performance counters and signalling 
+    /// across multiple Microservices.
     /// </summary>
-    public abstract class ChannelPartitionConfigBaseException:Exception
+    public class ResourceSyncCommandBase<S, P>: CommandBase<S, P>
+        where S : CommandStatistics, new()
+        where P : CommandPolicy, new()
     {
-        /// <summary>
-        /// This is the default contructor.
-        /// </summary>
-        /// <param name="channelId">The channel id.</param>
-        /// <param name="message">The message.</param>
-        protected ChannelPartitionConfigBaseException(string channelId,string message = null):base(message)
-        {
-            ChannelId = channelId;
-        }
-        /// <summary>
-        /// This is the channel id that the error occurred in.
-        /// </summary>
-        public string ChannelId { get; }
 
     }
 }

@@ -23,9 +23,9 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This is the default policy for the resource sysnc command.
+    /// This is the default measurement statistics class for the ResourceSync command.
     /// </summary>
-    public class ResourceSyncCommandPolicy: CommandPolicy
+    public class ResourceSyncSenderCommandStatistics:CommandStatistics
     {
     }
 }

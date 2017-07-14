@@ -14,28 +14,26 @@
 // limitations under the License.
 #endregion
 
-using System;
-
 namespace Xigadee
 {
     /// <summary>
-    /// This is the abstract class used for channel partition exceptions.
+    /// This exception is throw when you try and set the channel partitions and they are already set. 
+    /// Check that autosetPartition01 is set to false when creating the channel.
     /// </summary>
-    public abstract class ChannelPartitionConfigBaseException:Exception
+    public class ChannelPartitionConfigNotSetException: ChannelPartitionConfigBaseException
     {
         /// <summary>
-        /// This is the default contructor.
+        /// This is the default constructor.
         /// </summary>
-        /// <param name="channelId">The channel id.</param>
-        /// <param name="message">The message.</param>
-        protected ChannelPartitionConfigBaseException(string channelId,string message = null):base(message)
+        /// <param name="channelId">The channel identifier.</param>
+        public ChannelPartitionConfigNotSetException(string channelId)
+            : base(channelId, $"Channel partitions have not been set for channel '{channelId}'. If autosetPartition01 is set to false, check that the AttachPriorityPartition is before adding the listener.")
         {
-            ChannelId = channelId;
         }
-        /// <summary>
-        /// This is the channel id that the error occurred in.
-        /// </summary>
-        public string ChannelId { get; }
 
+        /// <summary>
+        /// THis is the first priority that caused the exception.
+        /// </summary>
+        public int ChannelPriority { get; }
     }
 }

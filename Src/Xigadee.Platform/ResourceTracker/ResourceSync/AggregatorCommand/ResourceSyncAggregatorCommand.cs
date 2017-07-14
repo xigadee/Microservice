@@ -26,7 +26,8 @@ namespace Xigadee
     /// This command is used to syncronise and consolidate resource performance counters and signalling 
     /// across multiple Microservices.
     /// </summary>
-    public class ResourceSyncCommand:CommandBase<ResourceSyncCommandStatistics, ResourceSyncCommandPolicy>
+    public class ResourceSyncAggregatorCommand: ResourceSyncCommandBase<ResourceSyncAggregatorCommandStatistics, ResourceSyncAggregatorCommandPolicy>
     {
+
     }
 }

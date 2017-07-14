@@ -17,47 +17,88 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Xigadee;
+using System.Threading.Tasks;
+
 namespace Test.Xigadee
 {
     [TestClass]
     public partial class PipelineTest2
     {
-        //[TestMethod]
-        //public void Pipeline2()
-        //{
-        //    try
-        //    {
-        //        DebugMemoryDataCollector collector = null;
-        //        Microservice service;
-        //        CommandInitiator init = null;
-        //        var pipeline = Microservice.Create((s) => service = s, serviceName: "TestPipeline");
+        [Contract("internalIn", "franky", "johnny5")]
+        public interface IPipelineTest2: IMessageContract { }
 
-        //        ChannelPipelineIncoming cpipeIn = null;
-        //        ChannelPipelineOutgoing cpipeOut = null;
+        [TestMethod]
+        public void Pipeline2()
+        {
+            try
+            {
+                DebugMemoryDataCollector collector1, collector2;
+                ICommandInitiator init = null;
 
-        //        pipeline
-        //            .AddDataCollector<DebugMemoryDataCollector>((c) => collector = c)
-        //            .AddPayloadSerializerDefaultJson()
-        //            .AddChannelIncoming("internalIn", internalOnly: true)
-        //                .AssignPriorityPartition(0, 1)
-        //                .AddCommand(new SimpleCommand())
-        //                .Revert((c) => cpipeIn = c)
-        //            .AddChannelOutgoing("internalOut", internalOnly: true)
-        //                .AssignPriorityPartition(0, 1)
-        //                .Revert((c) => cpipeOut = c)
-        //            .AddCommand(new CommandInitiator(), (c) => init = c);
+                IPipelineChannelIncoming<MicroservicePipeline> cpipeIn = null;
+                IPipelineChannelOutgoing<MicroservicePipeline> cpipeOut = null;
 
-        //        pipeline.Start();
+                var bridgeOut = new CommunicationBridge(CommunicationBridgeMode.RoundRobin);
+                var bridgeReturn = new CommunicationBridge(CommunicationBridgeMode.Broadcast);
 
-        //        var result1 = init.Process<IDoSomething1, Blah, string>(new Blah() { Message = "hello" }).Result;
-        //        var result2 = init.Process<Blah,string>("internalIn", "franky", "johnny5", new Blah() { Message = "hello" }).Result;
+                //bridgeReturn.Agent.OnReceive += (o, e) => { if (e.Payload.Extent.Days == 42) init.ToString(); };
+                //bridgeReturn.Agent.OnException += (o, e) => { if (e.Payload.Extent.Days == 42) init.ToString(); };
 
-        //        pipeline.Stop();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Assert.Fail(ex.Message);
-        //    }
-        //}
+                var pClient = new MicroservicePipeline("Client");
+                var pServer = new MicroservicePipeline("Server");
+                    
+                pClient
+                    .AdjustPolicyTaskManagerForDebug()
+                    .AddDebugMemoryDataCollector(out collector1)
+                    .AddPayloadSerializerDefaultJson()
+                    .AddChannelIncoming("return")
+                        .AttachListener(bridgeReturn.GetListener())
+                        .AttachMessageRedirectRule((p) => true, (p) => p.Message.ChannelPriority = 3)
+                        .AttachICommandInitiator(out init)
+                        .Revert()
+                    .AddChannelOutgoing("internalIn", internalOnly: false
+                        , autosetPartition01: false
+                        , assign: (p,c) => cpipeOut = p)
+                        .AttachPriorityPartition(0, 1)
+                        .AttachSender(bridgeOut.GetSender())
+                        .Revert();
+
+                pServer
+                    .AdjustPolicyTaskManagerForDebug()
+                    .AddDebugMemoryDataCollector(out collector2)
+                    .AddPayloadSerializerDefaultJson()
+                    .AddChannelIncoming("internalIn", internalOnly: false
+                        , autosetPartition01: false
+                        , assign: (p, c) => cpipeIn = p)
+                        .AttachPriorityPartition(0, 1)
+                        .AttachListener(bridgeOut.GetListener())
+                        .AttachCommand((CommandInlineContext ctx) =>
+                        {
+                            var payload = ctx.DtoGet<Blah>();
+                            ctx.ResponseSet(200, payload.Message);
+                            return Task.FromResult(0);
+                        }, ("franky", "johnny5"))
+                        .Revert()
+                    .AddChannelOutgoing("return")
+                        .AttachSender(bridgeReturn.GetSender())
+                        .Revert();
+                    ;
+
+                pClient.Start();
+                pServer.Start();
+
+                var result1 = init.Process<IPipelineTest2, Blah, string>(
+                    new Blah() { Message = "hello1" }
+                    , settings: new RequestSettings() { WaitTime = TimeSpan.FromMinutes(10) }).Result;
+                var result2 = init.Process<Blah, string>("internalIn", "franky", "johnny5", new Blah() { Message = "hello2" }).Result;
+
+                pClient.Stop();
+                pServer.Stop();
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+        }
     }
 }

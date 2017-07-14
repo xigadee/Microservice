@@ -31,9 +31,6 @@ namespace Xigadee
     /// </summary>
     public class CommunicationBridge
     {
-        #region Declarations
-        CommunicationBridgeAgent mAgent;
-        #endregion
         #region Constructor
         /// <summary>
         /// This is the default constructor that specifies the broadcast mode.
@@ -42,17 +39,22 @@ namespace Xigadee
         /// <param name="agent">This is the communication agent. When not set this defaults to the manual agent.</param>
         public CommunicationBridge(CommunicationBridgeMode mode, CommunicationBridgeAgent agent = null)
         {
-            mAgent = agent ?? new ManualCommunicationBridgeAgent();
-            mAgent.SetMode(mode);
-            Mode = mode;
+            Agent = agent ?? new ManualCommunicationBridgeAgent(mode);
         }
 
+        #endregion
+
+        #region Agent
+        /// <summary>
+        /// This is the underlying Agent.
+        /// </summary>
+        public CommunicationBridgeAgent Agent { get; }
         #endregion
 
         /// <summary>
         /// This is the communication mode that the bridge is working under.
         /// </summary>
-        public CommunicationBridgeMode Mode { get; }
+        public CommunicationBridgeMode Mode { get { return Agent.Mode; } }
 
         /// <summary>
         /// This method returns a new listener.
@@ -60,7 +62,7 @@ namespace Xigadee
         /// <returns>The listener.</returns>
         public IListener GetListener()
         {
-            return mAgent.GetListener();
+            return Agent.GetListener();
         }
 
         /// <summary>
@@ -69,7 +71,7 @@ namespace Xigadee
         /// <returns>The sender.</returns>
         public ISender GetSender()
         {
-            return mAgent.GetSender();
+            return Agent.GetSender();
         }
 
     }

@@ -25,6 +25,14 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
+        /// <summary>
+        /// This pipeline method attaches a resource profile to an incoming channel.
+        /// </summary>
+        /// <typeparam name="C">The pipeline type.</typeparam>
+        /// <param name="cpipe">The pipeline.</param>
+        /// <param name="profile">The resource profile.</param>
+        /// <param name="action">An optional action.</param>
+        /// <returns></returns>
         public static C AttachResourceProfile<C>(this C cpipe
             , ResourceProfile profile
             , Action<ResourceProfile> action = null)

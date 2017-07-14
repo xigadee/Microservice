@@ -24,6 +24,13 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
+        /// <summary>
+        /// This helper 
+        /// </summary>
+        /// <param name="cpipe"></param>
+        /// <param name="direction"></param>
+        /// <param name="throwIfChannelIsNull"></param>
+        /// <returns></returns>
         public static Channel ChannelResolve(this IPipelineChannel cpipe, ChannelDirection direction, bool throwIfChannelIsNull = true)
         {
             Channel channel = null;
@@ -66,8 +73,12 @@ namespace Xigadee
             if (channel.InternalOnly)
                 throw new ChannelInternalOnlyException(channel.Id, channel.Direction);
 
+
             if (setFromChannelProperties)
             {
+                if (channel.Partitions == null)
+                    throw new ChannelPartitionConfigNotSetException(channel.Id);
+
                 listener.ChannelId = channel.Id;
                 listener.PriorityPartitions = channel.Partitions.Cast<ListenerPartitionConfig>().ToList();
                 listener.BoundaryLoggingActive = channel.BoundaryLoggingActive;

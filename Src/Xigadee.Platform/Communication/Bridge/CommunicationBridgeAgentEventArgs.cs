@@ -13,29 +13,37 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Xigadee
 {
     /// <summary>
-    /// This is the abstract class used for channel partition exceptions.
+    /// This class is used to hold temporary payload and exception information.
     /// </summary>
-    public abstract class ChannelPartitionConfigBaseException:Exception
+    public class CommunicationBridgeAgentEventArgs: EventArgs
     {
         /// <summary>
-        /// This is the default contructor.
+        /// This is the default constructor.
         /// </summary>
-        /// <param name="channelId">The channel id.</param>
-        /// <param name="message">The message.</param>
-        protected ChannelPartitionConfigBaseException(string channelId,string message = null):base(message)
+        /// <param name="Payload">The payload.</param>
+        /// <param name="Ex">The optional exception.</param>
+        public CommunicationBridgeAgentEventArgs(TransmissionPayload Payload, Exception Ex = null)
         {
-            ChannelId = channelId;
+            this.Payload = Payload;
+            this.Ex = Ex;
         }
         /// <summary>
-        /// This is the channel id that the error occurred in.
+        /// The payload passing through the agent.
         /// </summary>
-        public string ChannelId { get; }
-
+        public TransmissionPayload Payload { get; }
+        /// <summary>
+        /// The optional exception. 
+        /// </summary>
+        public Exception Ex { get; }
     }
 }

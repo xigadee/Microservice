@@ -294,6 +294,9 @@ namespace Xigadee
         /// <returns>The specific client holder.</returns>
         protected virtual H ClientResolve(int priority)
         {
+            if (mClients == null || mClients.Count == 0)
+                throw new ClientsUndefinedMessagingException($"Clients are undefined for {ChannelId}");
+
             if (mClients.ContainsKey(priority))
                 return mClients[priority];
 

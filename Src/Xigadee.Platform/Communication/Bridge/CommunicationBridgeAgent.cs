@@ -28,18 +28,49 @@ namespace Xigadee
     public abstract class CommunicationBridgeAgent
     {
         /// <summary>
-        /// This is the communiciation bridge mode.
+        /// This event is called if there is an exception during transmission.
         /// </summary>
-        protected CommunicationBridgeMode mMode = CommunicationBridgeMode.RoundRobin;
+        public event EventHandler<CommunicationBridgeAgentEventArgs> OnException;
+        /// <summary>
+        /// This event is fired before a cloned payload is sent to a remote listener
+        /// </summary>
+        public event EventHandler<CommunicationBridgeAgentEventArgs> OnTransmit;
+        /// <summary>
+        /// This event is fired when a message is received from a sender and before it is resolved.
+        /// </summary>
+        public event EventHandler<CommunicationBridgeAgentEventArgs> OnReceive;
 
         /// <summary>
-        /// This method sets the operating mode. Override this if you wish to restict the modes that are supported.
+        /// This is the default constructor. 
         /// </summary>
-        /// <param name="mode">The communication bridge mode.</param>
-        public virtual void SetMode(CommunicationBridgeMode mode)
+        /// <param name="mode">The operational mode.</param>
+        protected CommunicationBridgeAgent(CommunicationBridgeMode mode = CommunicationBridgeMode.NotUsed)
         {
-            mMode = mode;
+            Mode = mode;
         }
+
+        protected void OnExceptionInvoke(object sender, TransmissionPayload payload, Exception ex)
+        {
+            var e = new CommunicationBridgeAgentEventArgs(payload, ex);
+            OnException?.Invoke(sender, e);
+        }
+
+        protected void OnTransmitInvoke(object sender, TransmissionPayload payload)
+        {
+            var e = new CommunicationBridgeAgentEventArgs(payload);
+            OnTransmit?.Invoke(sender, e);
+        }
+
+        protected void OnReceiveInvoke(object sender, TransmissionPayload payload)
+        {
+            var e = new CommunicationBridgeAgentEventArgs(payload);
+            OnReceive?.Invoke(sender, e);
+        }
+
+        /// <summary>
+        /// This is the communication bridge mode.
+        /// </summary>
+        public CommunicationBridgeMode Mode { get; }
 
         /// <summary>
         /// This method returns a new listener.

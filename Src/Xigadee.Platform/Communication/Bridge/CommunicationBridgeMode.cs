@@ -34,6 +34,10 @@ namespace Xigadee
         /// <summary>
         /// In broadcast mode a response message is sent to all recipients.
         /// </summary>
-        Broadcast
+        Broadcast,
+        /// <summary>
+        /// The mode is not used by the agent.
+        /// </summary>
+        NotUsed
     }
 }

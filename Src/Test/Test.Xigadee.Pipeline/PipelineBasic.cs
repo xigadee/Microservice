@@ -7,6 +7,9 @@ namespace Test.Xigadee.Pipeline
     [TestClass]
     public class PipelineBasic
     {
+        /// <summary>
+        /// This checks the creation of the various pipeline type.s
+        /// </summary>
         [TestMethod]
         public void Pipeline()
         {
@@ -17,6 +20,9 @@ namespace Test.Xigadee.Pipeline
             pipe.Stop();
         }
 
+        /// <summary>
+        /// This WebApi Unity pipeline.
+        /// </summary>
         [TestMethod]
         public void PipelineUnityWebApi()
         {
@@ -27,7 +33,9 @@ namespace Test.Xigadee.Pipeline
 
             pipe.Stop();
         }
-
+        /// <summary>
+        /// The WebApi pipeline.
+        /// </summary>
         [TestMethod]
         public void PipelineWebApi()
         {

@@ -27,11 +27,24 @@ namespace Xigadee
     /// </summary>
     public class ManualCommunicationBridgeAgent:CommunicationBridgeAgent
     {
+        #region Declarations
         List<ManualChannelListener> mListeners = new List<ManualChannelListener>();
         List<ManualChannelSender> mSenders = new List<ManualChannelSender>();
         long mSendCount = 0;
         JsonContractSerializer mSerializer = new JsonContractSerializer();
+        #endregion
 
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="mode">The desirec communication mode.</param>
+        public ManualCommunicationBridgeAgent(CommunicationBridgeMode mode) :base(mode)
+        {
+
+        }
+
+
+        #region GetListener()
         /// <summary>
         /// This method returns a new listener.
         /// </summary>
@@ -42,7 +55,9 @@ namespace Xigadee
 
             return AddListener(listener);
         }
+        #endregion
 
+        #region GetSender()
         /// <summary>
         /// This method returns a new sender.
         /// </summary>
@@ -53,7 +68,9 @@ namespace Xigadee
 
             return AddSender(sender);
         }
+        #endregion
 
+        #region AddListener(ManualChannelListener listener)
         /// <summary>
         /// This method adds a listener to the bridge.
         /// </summary>
@@ -64,8 +81,8 @@ namespace Xigadee
 
             return listener;
         }
-
-
+        #endregion
+        #region AddSender(ManualChannelSender sender)
         /// <summary>
         /// This method adds a sender to the bridge.
         /// </summary>
@@ -76,44 +93,66 @@ namespace Xigadee
             mSenders.Add(sender);
 
             return sender;
-        }
+        } 
+        #endregion
 
 
         private void Sender_OnProcess(object sender, TransmissionPayload e)
         {
-            if (mListeners.Count == 0)
-                return;
-
-            long count = Interlocked.Increment(ref mSendCount);
-
-            switch (mMode)
+            try
             {
-                case CommunicationBridgeMode.RoundRobin:
-                    Sender_TransmitRoundRobin(e, count);
-                    break;
-                case CommunicationBridgeMode.Broadcast:
-                    Sender_TransmitBroadcast(e, count);
-                    break;
+                OnReceiveInvoke(sender, e);
+
+                if (mListeners.Count == 0)
+                    return;
+
+                long count = Interlocked.Increment(ref mSendCount);
+
+                switch (Mode)
+                {
+                    case CommunicationBridgeMode.RoundRobin:
+                        Sender_TransmitRoundRobin(e, count);
+                        break;
+                    case CommunicationBridgeMode.Broadcast:
+                        Sender_TransmitBroadcast(e, count);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                OnExceptionInvoke(sender, e, ex);
             }
         }
 
         private void Sender_TransmitRoundRobin(TransmissionPayload e, long count)
         {
             int position = (int)(count % mListeners.Count);
-            mListeners[position].Inject(PayloadCopy(e));
+            SenderTransmit(position, e);
         }
 
         private void Sender_TransmitBroadcast(TransmissionPayload e, long count)
         {
             for (int c = 0; c < mListeners.Count; c++)
-                mListeners[c].Inject(PayloadCopy(e));
+                SenderTransmit(c, e);
+        }
+
+        private void SenderTransmit(int pos, TransmissionPayload e)
+        {
+            var listener = mListeners[pos];
+
+            var payload = PayloadCopy(e);
+
+            OnTransmitInvoke(listener, payload);
+
+            listener.Inject(payload);
+
         }
 
         /// <summary>
         /// This method seperates the payloads so that they are different objects.
         /// </summary>
         /// <param name="inPayload">The incoming payload.</param>
-        /// <returns>Returns a new payload.</returns>
+        /// <returns>Returns a new cloned payload.</returns>
         private TransmissionPayload PayloadCopy(TransmissionPayload inPayload)
         {
             //First clone the service message.
