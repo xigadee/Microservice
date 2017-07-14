@@ -53,7 +53,7 @@ namespace Test.Xigadee
                     .AddPayloadSerializerDefaultJson()
                     .AddChannelIncoming("return")
                         .AttachListener(bridgeReturn.GetListener())
-                        .AttachMessageRedirectRule((p) => true, (p) => p.Message.ChannelPriority = 3)
+                        .AttachMessageProcessPriorityOverride()
                         .AttachICommandInitiator(out init)
                         .Revert()
                     .AddChannelOutgoing("internalIn", internalOnly: false
@@ -87,9 +87,7 @@ namespace Test.Xigadee
                 pClient.Start();
                 pServer.Start();
 
-                var result1 = init.Process<IPipelineTest2, Blah, string>(
-                    new Blah() { Message = "hello1" }
-                    , settings: new RequestSettings() { WaitTime = TimeSpan.FromMinutes(10) }).Result;
+                var result1 = init.Process<IPipelineTest2, Blah, string>(new Blah() { Message = "hello1" }).Result;
                 var result2 = init.Process<Blah, string>("internalIn", "franky", "johnny5", new Blah() { Message = "hello2" }).Result;
 
                 pClient.Stop();
