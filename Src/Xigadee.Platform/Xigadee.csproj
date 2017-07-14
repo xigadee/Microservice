@@ -116,7 +116,6 @@
     <Compile Include="Communication\Pipeline\Adjust\AdjustCommunicationPolicy.cs" />
     <Compile Include="Communication\Pipeline\Attach\AttachMessagePriorityOverride.cs" />
     <Compile Include="Communication\Pipeline\ChannelPipelineBroadcast.cs" />
-    <Compile Include="Communication\Pipeline\Debug\DebugIntercept.cs" />
     <Compile Include="Communication\Pipeline\Exceptions\ChannelDoesNotExistException.cs" />
     <Compile Include="Communication\Pipeline\Exceptions\ChannelPartitionConfigNotSetException.cs" />
     <Compile Include="Communication\Sender\SenderHarness.cs" />
@@ -731,6 +730,7 @@
     <Folder Include="CommandPersistence\Pipeline\Add\" />
     <Folder Include="Command\Security\" />
     <Folder Include="Communication\Holder\" />
+    <Folder Include="Communication\Pipeline\Debug\" />
     <Folder Include="DataCollection\Pipeline\Attach\" />
     <Folder Include="Pipeline\Exceptions\" />
     <Folder Include="Pipeline\Extensions\Add\" />
