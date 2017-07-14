@@ -53,7 +53,8 @@ namespace Test.Xigadee
                     .AddPayloadSerializerDefaultJson()
                     .AddChannelIncoming("return")
                         .AttachListener(bridgeReturn.GetListener())
-                        .AttachMessageProcessPriorityOverride()
+                        //.AttachMessageProcessPriorityOverride()
+                        .AttachMessagePriorityOverrideForResponse()
                         .AttachICommandInitiator(out init)
                         .Revert()
                     .AddChannelOutgoing("internalIn", internalOnly: false
@@ -72,6 +73,7 @@ namespace Test.Xigadee
                         , assign: (p, c) => cpipeIn = p)
                         .AttachPriorityPartition(0, 1)
                         .AttachListener(bridgeOut.GetListener())
+                        .AttachMessagePriorityOverrideForResponse()
                         .AttachCommand((CommandInlineContext ctx) =>
                         {
                             var payload = ctx.DtoGet<Blah>();

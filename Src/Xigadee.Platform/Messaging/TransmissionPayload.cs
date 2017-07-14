@@ -47,6 +47,7 @@ namespace Xigadee
         /// This is the UTC end time for the message.
         /// </summary>
         private DateTime? mEndTime = null;
+
         private readonly int mTickCount = Environment.TickCount;
         #endregion
         #region Constructor
