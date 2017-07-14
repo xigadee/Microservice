@@ -48,7 +48,11 @@ namespace Xigadee
                 // Verify that the action / controller isn't set to allow anonymous access
                 if (context.ActionContext.ActionDescriptor.GetCustomAttributes<AllowAnonymousAttribute>().Any() ||
                     context.ActionContext.ActionDescriptor.ControllerDescriptor.GetCustomAttributes<AllowAnonymousAttribute>().Any())
+                {
+                    // Set a default principal with no claims
+                    context.Principal = new MicroserviceSecurityPrincipal(new JwtToken());
                     return Task.CompletedTask;
+                }
 
                 // Look for credentials in the request.
                 AuthenticationHeaderValue auth = context.Request.Headers.Authorization;
