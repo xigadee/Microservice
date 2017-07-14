@@ -120,7 +120,7 @@ namespace Xigadee
 
         #region Reprioritise()
         /// <summary>
-        /// This method reprioritises the clients based on thier calculated priority.
+        /// This method reprioritises the client poll chain based on their calculated priority.
         /// </summary>
         public void Reprioritise()
         {

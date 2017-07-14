@@ -165,6 +165,7 @@ namespace Xigadee
             //Do the past due scan to process the lower priority clients.
             if (mPolicy.ListenerClientPollAlgorithm.SupportPassDueScan)
                 ProcessClients(true);
+
             //Process the standard client logic.
             ProcessClients(false);
         }

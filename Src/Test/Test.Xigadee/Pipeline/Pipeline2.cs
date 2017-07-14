@@ -57,7 +57,6 @@ namespace Test.Xigadee
                 pClient
                     .AdjustPolicyTaskManagerForDebug()
                     .AddDebugMemoryDataCollector(out collector1)
-                    .AddPayloadSerializerDefaultJson()
                     .AddChannelIncoming("spooky", internalOnly:true)
                         .AttachCommand((CommandInlineContext ctx) =>
                         {

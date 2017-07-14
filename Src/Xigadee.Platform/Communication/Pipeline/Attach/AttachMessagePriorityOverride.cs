@@ -49,6 +49,7 @@ namespace Xigadee
             where C : IPipelineChannelIncoming<IPipeline>
         {
             var ms = cpipe.ToMicroservice();
+
             int priority = overridePriority ?? (ms.Policy.TaskManager.PriorityLevels - 1);
             if (priority < 1)
                 priority = 1;
