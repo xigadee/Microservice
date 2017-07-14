@@ -30,27 +30,27 @@ namespace Xigadee
     /// </summary>
     public class SingleClientPollSlotAllocationAlgorithm: ListenerClientPollAlgorithmBase
     {
-        public override int CalculateSlots(int available, ClientPriorityHolderMetrics context)
+        public override int CalculateSlots(int available, IClientPriorityHolderMetrics context)
         {
             //We make sure that a small fraction rate limit adjust resolves to zero as we use ceiling to make even small fractional numbers go to one.
             return available;
         }
 
-        public override bool ShouldSkip(ClientPriorityHolderMetrics context)
+        public override bool ShouldSkip(IClientPriorityHolderMetrics context)
         {
             return false;
         }
 
-        public override void CapacityPercentageRecalculate(ClientPriorityHolderMetrics context)
+        public override void CapacityPercentageRecalculate(IClientPriorityHolderMetrics context)
         {
             context.CapacityPercentage = 1D;
         }
 
-        #region CapacityReset()
+        #region CapacityReset(IClientPriorityHolderMetrics context)
         /// <summary>
         /// This method is used to reset the capacity calculation.
         /// </summary>
-        public override void CapacityReset(ClientPriorityHolderMetrics context)
+        public override void CapacityReset(IClientPriorityHolderMetrics context)
         {
             context.PollAttemptedBatch = 0;
             context.PollAchievedBatch = 0;
@@ -64,24 +64,24 @@ namespace Xigadee
         /// It is used to ensure that clients with the overall same base priority are accessed 
         /// so the one polled last is then polled first the next time.
         /// </summary>
-        public override long PriorityRecalculate(long? queueLength, ClientPriorityHolderMetrics context, int? timeStamp = null)
+        public override long PriorityRecalculate(long? queueLength, IClientPriorityHolderMetrics context, int? timeStamp = null)
         {
             context.PriorityCalculated = 1;
             return 1;
         }
         #endregion
 
-        public override void PollMetricsRecalculate(bool success, bool hasErrored, ClientPriorityHolderMetrics context)
+        public override void PollMetricsRecalculate(bool success, bool hasErrored, IClientPriorityHolderMetrics context)
         {
             context.SkipCount = 0;
         }
 
-        public override void InitialiseMetrics(ClientPriorityHolderMetrics context)
+        public override void InitialiseMetrics(IClientPriorityHolderMetrics context)
         {
             context.FabricPollWaitTime = (int)FabricPollWaitMax.TotalMilliseconds;
         }
 
-        public override bool PastDueCalculate(ClientPriorityHolderMetrics context, int? timeStamp = default(int?))
+        public override bool PastDueCalculate(IClientPriorityHolderMetrics context, int? timeStamp = default(int?))
         {
             return false;
         }

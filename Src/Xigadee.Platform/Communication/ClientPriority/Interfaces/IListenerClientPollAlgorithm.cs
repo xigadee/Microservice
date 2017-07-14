@@ -57,21 +57,21 @@ namespace Xigadee
 
         double CapacityPercentage { get; set; }
 
-        int CalculateSlots(int available, ClientPriorityHolderMetrics context);
+        int CalculateSlots(int available, IClientPriorityHolderMetrics context);
 
-        bool ShouldSkip(ClientPriorityHolderMetrics context);
+        bool ShouldSkip(IClientPriorityHolderMetrics context);
 
-        void CapacityPercentageRecalculate(ClientPriorityHolderMetrics context);
+        void CapacityPercentageRecalculate(IClientPriorityHolderMetrics context);
 
-        void CapacityReset(ClientPriorityHolderMetrics context);
+        void CapacityReset(IClientPriorityHolderMetrics context);
 
-        long PriorityRecalculate(long? queueLength, ClientPriorityHolderMetrics context, int? timeStamp = null);
+        long PriorityRecalculate(long? queueLength, IClientPriorityHolderMetrics context, int? timeStamp = null);
 
-        void PollMetricsRecalculate(bool success, bool hasErrored, ClientPriorityHolderMetrics context);
+        void PollMetricsRecalculate(bool success, bool hasErrored, IClientPriorityHolderMetrics context);
 
-        void InitialiseMetrics(ClientPriorityHolderMetrics context);
+        void InitialiseMetrics(IClientPriorityHolderMetrics context);
 
-        bool PastDueCalculate(ClientPriorityHolderMetrics context, int? timeStamp = null);
+        bool PastDueCalculate(IClientPriorityHolderMetrics context, int? timeStamp = null);
     }
 
 

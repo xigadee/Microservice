@@ -104,6 +104,7 @@
     <Compile Include="Communication\Bridge\CommunicationBridgeAgent.cs" />
     <Compile Include="Communication\Bridge\CommunicationBridgeMode.cs" />
     <Compile Include="Communication\Channel\ChannelRewriteRule.cs" />
+    <Compile Include="Communication\ClientPriority\IClientPriorityHolderMetrics.cs" />
     <Compile Include="Communication\CommunicationContainer_Security.cs" />
     <Compile Include="Communication\Listener\ListenerHarness.cs" />
     <Compile Include="Communication\Exceptions\MessagingException.cs" />

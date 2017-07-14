@@ -31,20 +31,20 @@ namespace Xigadee
         /// <param name="available">The available slots.</param>
         /// <param name="context">The metrics.</param>
         /// <returns>Returns the number of slots to reserve from the amount available.</returns>
-        public override int CalculateSlots(int available, ClientPriorityHolderMetrics context)
+        public override int CalculateSlots(int available, IClientPriorityHolderMetrics context)
         {
             double ratelimitAdjustment = context.RateLimiter?.RateLimitAdjustmentPercentage ?? 1D;
 
             //We make sure that a small fraction rate limit adjust resolves to zero as we use ceiling to make even small fractional numbers go to one.
             return (int)Math.Ceiling((double)available * CapacityPercentage * Math.Round(ratelimitAdjustment, 2, MidpointRounding.AwayFromZero));
-        } 
+        }
         #endregion
 
-        #region CapacityReset()
+        #region CapacityReset(IClientPriorityHolderMetrics context)
         /// <summary>
         /// This method is used to reset the capacity calculation.
         /// </summary>
-        public override void CapacityReset(ClientPriorityHolderMetrics context)
+        public override void CapacityReset(IClientPriorityHolderMetrics context)
         {
             context.PollAttemptedBatch = 0;
             context.PollAchievedBatch = 0;
@@ -58,7 +58,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public override void CapacityPercentageRecalculate(ClientPriorityHolderMetrics context)
+        public override void CapacityPercentageRecalculate(IClientPriorityHolderMetrics context)
         {
             if (context.PollAttemptedBatch > 0)
             {
@@ -85,7 +85,7 @@ namespace Xigadee
         /// <param name="context">This is the metrics context.</param>
         /// <param name="timeStamp">This is an optional parameter that defaults to the current tick count. You can set this value for unit testing.</param>
         /// <returns>Returns the new priority.</returns>
-        public override long PriorityRecalculate(long? queueLength, ClientPriorityHolderMetrics context, int? timeStamp = null)
+        public override long PriorityRecalculate(long? queueLength, IClientPriorityHolderMetrics context, int? timeStamp = null)
         {
             if (!timeStamp.HasValue)
                 timeStamp = Environment.TickCount;
@@ -123,7 +123,7 @@ namespace Xigadee
         /// <param name="success">The flag indicating whether the last poll was successful.</param>
         /// <param name="hasErrored"></param>
         /// <param name="context">The metrics.</param>
-        public override void PollMetricsRecalculate(bool success, bool hasErrored, ClientPriorityHolderMetrics context)
+        public override void PollMetricsRecalculate(bool success, bool hasErrored, IClientPriorityHolderMetrics context)
         {
             
             int newwait = (context.FabricPollWaitTime ?? (int)FabricPollWaitMin.TotalMilliseconds);
@@ -155,7 +155,7 @@ namespace Xigadee
         /// This method returns true if the client should be skipped for this poll.
         /// </summary>
         /// <returns>Returns true if the poll should be skipped.</returns>
-        public override bool ShouldSkip(ClientPriorityHolderMetrics context)
+        public override bool ShouldSkip(IClientPriorityHolderMetrics context)
         {
             //Get the timespan since the last poll
             var lastPollTimeSpan = ConversionHelper.DeltaAsTimeSpan(context.LastPollTickCount);
@@ -176,7 +176,7 @@ namespace Xigadee
         /// This method is used to reduce the poll interval when the client reaches a certain success threshold
         /// for polling frequency, which is set of an increasing scale at 75%.
         /// </summary>
-        private TimeSpan RecalculateMaximumPollWait(ClientPriorityHolderMetrics context)
+        private TimeSpan RecalculateMaximumPollWait(IClientPriorityHolderMetrics context)
         {
             var rate = context.PollSuccessRate;
             //If we have a poll success rate under the threshold then return the maximum value.
@@ -198,12 +198,12 @@ namespace Xigadee
         }
         #endregion
 
-        public override void InitialiseMetrics(ClientPriorityHolderMetrics context)
+        public override void InitialiseMetrics(IClientPriorityHolderMetrics context)
         {
             context.FabricPollWaitTime = (int)FabricPollWaitMin.TotalMilliseconds;
         }
 
-        public override bool PastDueCalculate(ClientPriorityHolderMetrics context, int? timeStamp = null)
+        public override bool PastDueCalculate(IClientPriorityHolderMetrics context, int? timeStamp = null)
         {
             if (timeStamp == null)
                 timeStamp = Environment.TickCount;

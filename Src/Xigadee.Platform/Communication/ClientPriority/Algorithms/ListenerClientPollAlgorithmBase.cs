@@ -35,6 +35,7 @@ namespace Xigadee
         /// </summary>
         public int AllowedOverage { get; set; } = 5;
 
+        #region Name
         /// <summary>
         /// This is the algorithm name.
         /// </summary>
@@ -44,7 +45,8 @@ namespace Xigadee
             {
                 return GetType().Name;
             }
-        }
+        } 
+        #endregion
 
         /// <summary>
         /// This is the priority recalculate frequency. Leave this null if you do not wish it to recalculate.
@@ -63,21 +65,21 @@ namespace Xigadee
 
         public double CapacityPercentage { get; set; } = 0.75D;
 
-        public abstract int CalculateSlots(int available, ClientPriorityHolderMetrics context);
+        public abstract int CalculateSlots(int available, IClientPriorityHolderMetrics context);
 
-        public abstract bool ShouldSkip(ClientPriorityHolderMetrics context);
+        public abstract bool ShouldSkip(IClientPriorityHolderMetrics context);
 
-        public abstract void CapacityPercentageRecalculate(ClientPriorityHolderMetrics context);
+        public abstract void CapacityPercentageRecalculate(IClientPriorityHolderMetrics context);
 
-        public abstract void CapacityReset(ClientPriorityHolderMetrics context);
+        public abstract void CapacityReset(IClientPriorityHolderMetrics context);
 
-        public abstract long PriorityRecalculate(long? queueLength, ClientPriorityHolderMetrics context, int? timeStamp = null);
+        public abstract long PriorityRecalculate(long? queueLength, IClientPriorityHolderMetrics context, int? timeStamp = null);
 
-        public abstract void PollMetricsRecalculate(bool success, bool hasErrored, ClientPriorityHolderMetrics context);
+        public abstract void PollMetricsRecalculate(bool success, bool hasErrored, IClientPriorityHolderMetrics context);
 
-        public abstract void InitialiseMetrics(ClientPriorityHolderMetrics context);
+        public abstract void InitialiseMetrics(IClientPriorityHolderMetrics context);
 
-        public abstract bool PastDueCalculate(ClientPriorityHolderMetrics context, int? timeStamp = null);
+        public abstract bool PastDueCalculate(IClientPriorityHolderMetrics context, int? timeStamp = null);
         /// <summary>
         /// This method specifies that the algorithm supports a pass due client scan before the main scan.
         /// </summary>
