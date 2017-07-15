@@ -24,6 +24,14 @@ namespace Xigadee
     /// </summary>
     public class MultipleClientPollSlotAllocationAlgorithm: ListenerClientPollAlgorithmBase
     {
+        /// <summary>
+        /// This is the default constructor. It changes the supportPassDueScan to true.
+        /// </summary>
+        public MultipleClientPollSlotAllocationAlgorithm():base(supportPassDueScan:true)
+        {
+
+        }
+
         #region CalculateSlots(int available, ClientPriorityHolderMetrics context)
         /// <summary>
         /// This method calculates the number of slots to take from the amount available.
@@ -35,14 +43,15 @@ namespace Xigadee
         {
             double ratelimitAdjustment = context.RateLimiter?.RateLimitAdjustmentPercentage ?? 1D;
 
-            //We make sure that a small fraction rate limit adjust resolves to zero as we use ceiling to make even small fractional numbers go to one.
+            //We make sure that a small fraction rate limit adjust resolves to zero 
+            //as we use ceiling to make even small fractional numbers go to one.
             return (int)Math.Ceiling((double)available * CapacityPercentage * Math.Round(ratelimitAdjustment, 2, MidpointRounding.AwayFromZero));
         }
         #endregion
 
         #region CapacityReset(IClientPriorityHolderMetrics context)
         /// <summary>
-        /// This method is used to reset the capacity calculation.
+        /// This method is used to reset the capacity calculation to the defaults.
         /// </summary>
         public override void CapacityReset(IClientPriorityHolderMetrics context)
         {
@@ -121,12 +130,13 @@ namespace Xigadee
         /// This method recalculates the metrics after the poll has returned from the fabric.
         /// </summary>
         /// <param name="success">The flag indicating whether the last poll was successful.</param>
-        /// <param name="hasErrored"></param>
+        /// <param name="hasErrored">A boolean property that identifies whether the last request errored.</param>
         /// <param name="context">The metrics.</param>
         public override void PollMetricsRecalculate(bool success, bool hasErrored, IClientPriorityHolderMetrics context)
         {
             
             int newwait = (context.FabricPollWaitTime ?? (int)FabricPollWaitMin.TotalMilliseconds);
+
             if (!success && (context.LastReserved ?? 0) > 0 && (context.PriorityQueueLength ?? 0) > 0)
             {
                 newwait += 100;
@@ -198,23 +208,30 @@ namespace Xigadee
         }
         #endregion
 
+        #region InitialiseMetrics(IClientPriorityHolderMetrics context)
+        /// <summary>
+        /// This method sets the initial wait time to the FabricPollWaitMin
+        /// </summary>
+        /// <param name="context">The context.</param>
         public override void InitialiseMetrics(IClientPriorityHolderMetrics context)
         {
             context.FabricPollWaitTime = (int)FabricPollWaitMin.TotalMilliseconds;
         }
+        #endregion
 
+        #region PastDueCalculate(IClientPriorityHolderMetrics context, int? timeStamp = null)
+        /// <summary>
+        /// Identifies whether the context is overdue for a poll.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="timeStamp">The compare timestamp. If this is null then Environment.TickCount is used instead.</param>
+        /// <returns></returns>
         public override bool PastDueCalculate(IClientPriorityHolderMetrics context, int? timeStamp = null)
         {
-            if (timeStamp == null)
-                timeStamp = Environment.TickCount;
+            var timePassed = ConversionHelper.DeltaAsTimeSpan(context.LastPollTickCount, timeStamp ?? Environment.TickCount);
 
-            var timePassed = ConversionHelper.DeltaAsTimeSpan(context.LastPollTickCount, timeStamp);
             return timePassed.HasValue && timePassed.Value > context.MaxAllowedPollWait;
         }
-
-        /// <summary>
-        /// This method specifies that the algorithm supports a pass due client scan before the main scan.
-        /// </summary>
-        public override bool SupportPassDueScan { get { return true; } }
+        #endregion
     }
 }

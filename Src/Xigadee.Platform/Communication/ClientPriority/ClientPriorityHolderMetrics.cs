@@ -130,7 +130,6 @@ namespace Xigadee
         public IListenerClientPollAlgorithm Algorithm { get; }
         #endregion
 
-
         #region PollSuccessRate
         /// <summary>
         /// This is the ratio success of the poll hit rate.

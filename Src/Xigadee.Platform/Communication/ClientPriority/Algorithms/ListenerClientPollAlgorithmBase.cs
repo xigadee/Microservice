@@ -30,40 +30,85 @@ namespace Xigadee
     /// </summary>
     public abstract class ListenerClientPollAlgorithmBase: IListenerClientPollAlgorithm
     {
+
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="name">Defaults to the class name.</param>
+        /// <param name="allowedOverage">Defaults to 5.</param>
+        /// <param name="priorityRecalculateFrequency">Defaults to 10 minutes.</param>
+        /// <param name="maxAllowedWaitBetweenPolls">Defaults to 1 second.</param>
+        /// <param name="minExpectedWaitBetweenPolls">Defaults to 100ms.</param>
+        /// <param name="fabricPollWaitMin">Defaults to 100ms.</param>
+        /// <param name="fabricPollWaitMax">Defaults to 1s.</param>
+        /// <param name="pollTimeReduceRatio">Defaults to 75%/0.75</param>
+        /// <param name="capacityPercentage">Defaults to 75%/0.75</param>
+        /// <param name="supportPassDueScan">Default is false.</param>
+        public ListenerClientPollAlgorithmBase(
+            string name = null
+            , int? allowedOverage = null
+            , TimeSpan? priorityRecalculateFrequency = null
+            , TimeSpan? maxAllowedWaitBetweenPolls = null
+            , TimeSpan? minExpectedWaitBetweenPolls = null
+            , TimeSpan? fabricPollWaitMin = null
+            , TimeSpan? fabricPollWaitMax = null
+            , decimal? pollTimeReduceRatio = null
+            , double? capacityPercentage = null
+            , bool? supportPassDueScan = null
+            )
+        {
+            Name = name ?? GetType().Name;
+            AllowedOverage = allowedOverage ?? 5;
+            PriorityRecalculateFrequency = priorityRecalculateFrequency ?? TimeSpan.FromMinutes(10);
+            MaxAllowedWaitBetweenPolls = maxAllowedWaitBetweenPolls ?? TimeSpan.FromSeconds(1);
+            MinExpectedWaitBetweenPolls = minExpectedWaitBetweenPolls ?? TimeSpan.FromMilliseconds(100);
+            FabricPollWaitMin = fabricPollWaitMin ?? TimeSpan.FromMilliseconds(100);
+            FabricPollWaitMax = fabricPollWaitMax ?? TimeSpan.FromSeconds(1);
+            PollTimeReduceRatio = pollTimeReduceRatio ?? 0.75M;
+            CapacityPercentage = capacityPercentage ?? 0.75D;
+            SupportPassDueScan = supportPassDueScan ?? false;
+        }
+
         /// <summary>
         /// This property specifies the number of additional slots the clients can poll for on top of the maximum allowed.
         /// </summary>
-        public int AllowedOverage { get; set; } = 5;
-
-        #region Name
-        /// <summary>
-        /// This is the algorithm name.
-        /// </summary>
-        public virtual string Name
-        {
-            get
-            {
-                return GetType().Name;
-            }
-        } 
-        #endregion
+        public int AllowedOverage { get; }
 
         /// <summary>
         /// This is the priority recalculate frequency. Leave this null if you do not wish it to recalculate.
         /// </summary>
-        public TimeSpan? PriorityRecalculateFrequency { get; set; } = TimeSpan.FromMinutes(10);
+        public TimeSpan? PriorityRecalculateFrequency { get; } 
+        /// <summary>
+        /// This is the maximum time between polls for a client. The default is 1 second.
+        /// </summary>
+        public TimeSpan MaxAllowedWaitBetweenPolls { get; }
+        /// <summary>
+        /// This is the minimum time between polls. The default is 100ms. This ensures we do not constantly poll a conneection.
+        /// </summary>
+        public TimeSpan MinExpectedWaitBetweenPolls { get; }
+        /// <summary>
+        /// This is the minimum wait time before polling the fabric.
+        /// </summary>
+        public TimeSpan FabricPollWaitMin { get; } 
+        /// <summary>
+        /// This is the maximum 
+        /// </summary>
+        public TimeSpan FabricPollWaitMax { get; }
 
-        public TimeSpan MaxAllowedWaitBetweenPolls { get; set; } = TimeSpan.FromSeconds(1);
+        public decimal PollTimeReduceRatio { get; }
 
-        public TimeSpan MinExpectedWaitBetweenPolls { get; set; } = TimeSpan.FromMilliseconds(100);
+        public double CapacityPercentage { get; }
 
-        public TimeSpan FabricPollWaitMin { get; set; } = TimeSpan.FromMilliseconds(100);
+        /// <summary>
+        /// This is the algorithm name.
+        /// </summary>
+        public string Name { get; }
 
-        public TimeSpan FabricPollWaitMax { get; set; } = TimeSpan.FromSeconds(1);
+        /// <summary>
+        /// This method specifies that the algorithm supports a pass due client scan before the main scan.
+        /// </summary>
+        public bool SupportPassDueScan { get; }
 
-        public decimal PollTimeReduceRatio { get; set; } = 0.75M;
-
-        public double CapacityPercentage { get; set; } = 0.75D;
 
         public abstract int CalculateSlots(int available, IClientPriorityHolderMetrics context);
 
@@ -80,9 +125,7 @@ namespace Xigadee
         public abstract void InitialiseMetrics(IClientPriorityHolderMetrics context);
 
         public abstract bool PastDueCalculate(IClientPriorityHolderMetrics context, int? timeStamp = null);
-        /// <summary>
-        /// This method specifies that the algorithm supports a pass due client scan before the main scan.
-        /// </summary>
-        public virtual bool SupportPassDueScan { get { return false; } }
+
+
     }
 }

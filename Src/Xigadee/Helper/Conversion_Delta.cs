@@ -16,12 +16,6 @@
 
 #region using
 using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 #endregion
 namespace Xigadee
 {
@@ -33,9 +27,9 @@ namespace Xigadee
         /// This method calculates the delta and takes in to account that the
         /// tickcount recycles to negative every 49 days.
         /// </summary>
-        /// <param name="now"></param>
-        /// <param name="start"></param>
-        /// <returns></returns>
+        /// <param name="now">The current tick count.</param>
+        /// <param name="start">The start point.</param>
+        /// <returns>Returns the delta.</returns>
         public static int CalculateDelta(int now, int start)
         {
             int delta;
@@ -52,11 +46,22 @@ namespace Xigadee
         }
         #endregion
 
+        /// <summary>
+        /// This method calculates the tick count delta.
+        /// </summary>
+        /// <param name="tickStart">The start point.</param>
+        /// <param name="tickNow">The current tickcount. If this is null Environment.TickCount is used.</param>
+        /// <returns>The delta.</returns>
         public static int DeltaAsMs(int tickStart, int? tickNow = null)
         {
             return CalculateDelta(tickNow ?? Environment.TickCount, tickStart);
         }
-
+        /// <summary>
+        /// Returns the delta as a timespan.
+        /// </summary>
+        /// <param name="tickStart">The start point. If this is null, then the method returns null.</param>
+        /// <param name="tickNow">The current tickcount. If this is null Environment.TickCount is used.</param>
+        /// <returns>The delta as a timespan.</returns>
         public static TimeSpan? DeltaAsTimeSpan(int? tickStart, int? tickNow = null)
         {
             if (!tickStart.HasValue)
@@ -64,7 +69,12 @@ namespace Xigadee
 
             return TimeSpan.FromMilliseconds(DeltaAsMs(tickStart.Value, tickNow));
         }
-
+        /// <summary>
+        /// Returns the delta as a human readable string..
+        /// </summary>
+        /// <param name="tickStart">The start point.</param>
+        /// <param name="tickNow">The current tickcount. If this is null Environment.TickCount is used.</param>
+        /// <returns>A string containing the time span.</returns>
         public static string DeltaAsFriendlyTime(int tickStart, int? tickNow = null)
         {
             return ToFriendlyString(DeltaAsTimeSpan(tickStart, tickNow));
@@ -96,8 +106,8 @@ namespace Xigadee
         /// <summary>
         /// This helper converts a timespan in to a human readable time.
         /// </summary>
-        /// <param name="time">The TimeSpan object to convert.</param>
-        /// <param name="defaultText">The default text to display if the TimeSpan object is null. NA by default.</param>
+        /// <param name="timeIn">The TimeSpan object to convert.</param>
+        /// <param name="nullName">The default text to display if the TimeSpan object is null. NA by default.</param>
         /// <returns>Returns a string representation of the time.</returns>
         public static string ToFriendlyString(this TimeSpan? timeIn, string nullName = "NA")
         {
@@ -106,7 +116,7 @@ namespace Xigadee
         /// <summary>
         /// This helper converts a timespan in to a human readable time.
         /// </summary>
-        /// <param name="time">The TimeSpan object to convert.</param>
+        /// <param name="timeIn">The TimeSpan object to convert.</param>
         /// <returns>Returns a string representation of the time.</returns>
         public static string ToFriendlyString(this TimeSpan timeIn)
         {

@@ -37,25 +37,25 @@ namespace Xigadee
         /// <summary>
         /// This is the number of allowed additional slots over the available slots.
         /// </summary>
-        int AllowedOverage { get; set; }
+        int AllowedOverage { get; }
         /// <summary>
         /// This is the priority recalculate frequency. Leave this null if you do not wish it to recalculate.
         /// </summary>
-        TimeSpan? PriorityRecalculateFrequency { get; set; }
+        TimeSpan? PriorityRecalculateFrequency { get; }
 
         string Name { get; }
 
-        TimeSpan FabricPollWaitMin { get; set; }
+        TimeSpan FabricPollWaitMin { get; }
 
-        TimeSpan FabricPollWaitMax { get; set; }
+        TimeSpan FabricPollWaitMax { get; }
 
-        TimeSpan MaxAllowedWaitBetweenPolls { get; set; }
+        TimeSpan MaxAllowedWaitBetweenPolls { get; }
 
-        TimeSpan MinExpectedWaitBetweenPolls { get; set; }
+        TimeSpan MinExpectedWaitBetweenPolls { get; }
 
-        decimal PollTimeReduceRatio { get; set; }
+        decimal PollTimeReduceRatio { get; }
 
-        double CapacityPercentage { get; set; }
+        double CapacityPercentage { get; }
 
         int CalculateSlots(int available, IClientPriorityHolderMetrics context);
 
@@ -73,6 +73,4 @@ namespace Xigadee
 
         bool PastDueCalculate(IClientPriorityHolderMetrics context, int? timeStamp = null);
     }
-
-
 }

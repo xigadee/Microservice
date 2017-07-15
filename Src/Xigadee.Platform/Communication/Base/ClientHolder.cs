@@ -287,13 +287,24 @@ namespace Xigadee
         /// This function packs the message in to the correct format for transmission
         /// </summary>
         public Func<TransmissionPayload, M> MessagePack { get; set; }
-
+        /// <summary>
+        /// This method signals using the MessageSignal function if this is not null.
+        /// </summary>
+        /// <param name="message">The message to signal.</param>
+        /// <param name="signal">The signal flag.</param>
+        /// <param name="id">The optional id.</param>
         public virtual void MessageSignalInternal(M message, bool signal, Guid id)
         {
             if (MessageSignal != null)
                 MessageSignal(message, signal);
         }
 
+        /// <summary>
+        /// This method creates a wrapper around the message which links back through the TransmissionPayload
+        /// </summary>
+        /// <param name="message">The internal message.</param>
+        /// <param name="serviceMessage">The service message to process.</param>
+        /// <returns>Returns a Trasnmission payload, with the internal signalling pointing back to the message signal function.</returns>
         protected virtual TransmissionPayload PayloadRegisterAndCreate(M message, ServiceMessage serviceMessage)
         {
             var payload = new TransmissionPayload(serviceMessage

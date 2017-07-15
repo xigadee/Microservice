@@ -67,7 +67,6 @@ namespace Test.Xigadee
                         .Revert()
                     .AddChannelIncoming("return")
                         .AttachListener(bridgeReturn.GetListener())
-                        //.AttachMessageProcessPriorityOverride()
                         .AttachMessagePriorityOverrideForResponse()
                         .AttachICommandInitiator(out init)
                         .Revert()
@@ -117,9 +116,7 @@ namespace Test.Xigadee
                 list.Add(init.Process<Blah, string>(("internalIn", "franky", "johnny6"), new Blah() { Message = "hello3" }));
                 list.Add(init.Process<Blah, string>(("spooky", "franky", "johnny5"), new Blah() { Message = "hellospooky" }));
 
-
                 var result = Task.WhenAll(list).Result;
-
 
                 pClient.Stop();
                 pServer.Stop();
