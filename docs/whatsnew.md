@@ -4,6 +4,10 @@
 
 This section details the Xigadee release versions with the features added since the initial release.
 
+### Pre-release - 1.1.x.x (ongoing)
+
+This version is currently in development and contains additional support for rate limiting within the Xigadee core engine, for systems that experience heavy load. There are also a number of bug fixes around high-volume performance issues that are currently pending a full release.
+
 ### Current Release - 1.0.17160.7 (June 9, 2017)
 
 This is the current supported release. It contains all the core functionality for the Xigadee framework, and has been used in a number of internal and commercial projects. There are currently 7 NuGet packages in this release, which are detailed below:
@@ -16,9 +20,6 @@ This is the current supported release. It contains all the core functionality fo
 - [Xigadee.Framework](https://www.nuget.org/packages/Xigadee.Framework/1.0.17160.7)
 - [Xigadee.Console](https://www.nuget.org/packages/Xigadee.Console/1.0.17160.7)
 
-### Pre-release - 1.1.x.x (ongoing)
-
-This version is currently in development and contains additional support for rate limiting within the Xigadee core engine, for systems that experience heavy load.
 
 <table><tr> 
 <td><a href="http://www.hitachiconsulting.com"><img src="hitachi.png" alt="Hitachi Consulting" height="50"/></a></td> 
