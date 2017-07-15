@@ -26,7 +26,8 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This abstract class is the base class to allocate polling slots to the listener collection.
+    /// This immutable abstract class is the base to allocate polling slots to the listener collection based on the 
+    /// logic incorporated in here.
     /// </summary>
     public abstract class ListenerClientPollAlgorithmBase: IListenerClientPollAlgorithm
     {

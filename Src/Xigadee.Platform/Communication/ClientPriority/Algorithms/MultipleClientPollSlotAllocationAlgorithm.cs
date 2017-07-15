@@ -20,7 +20,8 @@ using System;
 namespace Xigadee
 {
     /// <summary>
-    /// This is the default slot allocation algorithm. It balances slot alloaction between multiple incoming queues.
+    /// This is the default multiple client slot allocation algorithm. It balances Microservice slot alloaction 
+    /// between multiple incoming queues.
     /// </summary>
     public class MultipleClientPollSlotAllocationAlgorithm: ListenerClientPollAlgorithmBase
     {
