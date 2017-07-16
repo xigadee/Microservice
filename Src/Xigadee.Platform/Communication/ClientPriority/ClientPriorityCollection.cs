@@ -26,7 +26,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This class holds the clients and their priority chain.
+    /// This class holds the clients and the polling priority chain.
     /// </summary>
     public class ClientPriorityCollection:StatisticsBase<ClientPriorityCollectionStatistics>
     {
@@ -115,7 +115,7 @@ namespace Xigadee
         /// <summary>
         /// This is the time that the collection was created. It is used for reporting a debug purposes.
         /// </summary>
-        public DateTime? Created { get; private set; }
+        public DateTime? Created { get;}
         #endregion
 
         #region Reprioritise()

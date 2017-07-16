@@ -31,7 +31,6 @@ namespace Xigadee
     /// </summary>
     public abstract class ListenerClientPollAlgorithmBase: IListenerClientPollAlgorithm
     {
-
         /// <summary>
         /// This is the default constructor.
         /// </summary>

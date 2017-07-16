@@ -55,18 +55,25 @@ namespace Xigadee
         {
             mSupportedMessages = mSupportedMessageTypes.SupportedMessages;
 
+            if (!mPolicy.ListenerRequestTimespan.HasValue)
+                mPolicy.ListenerRequestTimespan = TimeSpan.FromSeconds(30);
+
             try
             {
+                //Create a list of listeners that require a frequent poll.
                 mListenerPoll = mListener.Where((l) => l is IListenerPoll).Cast<IListenerPoll>().ToList();
 
+                //Start each of the listeners.
                 mListener.ForEach(l => ServiceStart(l));
 
-                //Create the client priority collection.
+                //Create the initial client priority collection.
                 ListenersPriorityRecalculate(true).Wait();
 
+                //Do we have a poll recalcualte frequency set in the algorithm.
                 if (mPolicy.ListenerClientPollAlgorithm.PriorityRecalculateFrequency.HasValue)
-                    //Set the reschedule priority.
-                    mClientRecalculateSchedule = Scheduler.Register(async (s, cancel) => await ListenersPriorityRecalculate(false)
+                    //If so, set the reschedule priority.
+                    mClientRecalculateSchedule = Scheduler.Register(
+                        async (s, cancel) => await ListenersPriorityRecalculate(false)
                         , mPolicy.ListenerClientPollAlgorithm.PriorityRecalculateFrequency.Value
                         , "Communication: Listeners Priority Recalculate"
                         , TimeSpan.FromMinutes(1)
@@ -192,7 +199,7 @@ namespace Xigadee
         /// <returns>Returns a tracker of type listener poll.</returns>
         private void TrackerSubmitFromListener(IListenerPoll context)
         {
-            TaskTracker tracker = new TaskTracker(TaskTrackerType.ListenerPoll, TimeSpan.FromSeconds(30))
+            TaskTracker tracker = new TaskTracker(TaskTrackerType.ListenerPoll, mPolicy.ListenerRequestTimespan)
             {
                 Priority = TaskTracker.PriorityInternal,
                 Context = context,
@@ -225,7 +232,8 @@ namespace Xigadee
         /// <returns>Returns a tracker of type listener poll.</returns>
         private void TrackerSubmitFromClientPriorityHolder(ClientPriorityHolder context)
         {
-            TaskTracker tracker = new TaskTracker(TaskTrackerType.ListenerClientPoll, TimeSpan.FromSeconds(30))
+            
+            TaskTracker tracker = new TaskTracker(TaskTrackerType.ListenerClientPoll, mPolicy.ListenerRequestTimespan)
             {
                 Priority = TaskTracker.PriorityInternal,
                 Context = context,

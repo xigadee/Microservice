@@ -29,6 +29,11 @@ namespace Xigadee
     public class CommunicationPolicy:PolicyBase
     {
         /// <summary>
+        /// This is the default time that a process submitted from a listener can execute for. The default value is 30 seconds.
+        /// </summary>
+        public TimeSpan? ListenerRequestTimespan { get; set; } = null;
+
+        /// <summary>
         /// This is the default boundary logging status. When the specific status is not set, then this value 
         /// will be used. The default value is false.
         /// </summary>

@@ -28,7 +28,8 @@ namespace Xigadee
     /// <summary>
     /// This class holds the client priority metrics.
     /// </summary>
-    public class ClientPriorityHolderMetrics: StatisticsBase<ClientPriorityHolderMetricsStatistics>, IClientPriorityHolderMetrics
+    public class ClientPriorityHolderMetrics: StatisticsBase<ClientPriorityHolderMetricsStatistics>
+        , IClientPriorityHolderMetrics
     {
         #region Declarations
         long mPollIn, mPollOut;

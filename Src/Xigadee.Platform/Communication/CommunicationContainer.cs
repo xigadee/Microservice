@@ -54,7 +54,9 @@ namespace Xigadee
         /// This is the shared service container.
         /// </summary>
         private ISharedService mSharedServices;
-
+        /// <summary>
+        /// This is the collection of supported message types.
+        /// </summary>
         private ISupportedMessageTypes mSupportedMessageTypes;
 
         /// <summary>
@@ -67,12 +69,18 @@ namespace Xigadee
         /// </summary>
         private long mListenersPriorityIteration = 0;
 
+        /// <summary>
+        /// This is a list of active clients ordered by their priority.
+        /// </summary>
         private ClientPriorityCollection mClientCollection = null;
 
+        /// <summary>
+        /// This is the resource tracker service.
+        /// </summary>
         private IResourceTracker mResourceTracker;
 
         /// <summary>
-        /// This is the schedule used to recalculate the client schedule.
+        /// This is the schedule used to call the clients that require polling support.
         /// </summary>
         protected Schedule mClientRecalculateSchedule = null;
         #endregion
@@ -117,6 +125,7 @@ namespace Xigadee
         /// </summary>
         protected override void StartInternal()
         {
+            //Get the resource tracker that will be used to reduce message in
             mResourceTracker = SharedServices.GetService<IResourceTracker>();
 
             if (mResourceTracker == null)
@@ -162,11 +171,11 @@ namespace Xigadee
             if ((mListenerPoll?.Count ?? 0) > 0)
                 ProcessListeners();
 
-            //Do the past due scan to process the lower priority clients.
+            //Do the past due scan to process the lower priority clients that have overdue polls first.
             if (mPolicy.ListenerClientPollAlgorithm.SupportPassDueScan)
                 ProcessClients(true);
 
-            //Process the standard client logic.
+            //Process the standard client logic poll.
             ProcessClients(false);
         }
         #endregion
@@ -206,7 +215,7 @@ namespace Xigadee
         //Helpers
         #region TaskSubmit
         /// <summary>
-        /// This is the action path back to the TaskManager.
+        /// This is the action path back to the TaskManager to submit a request..
         /// </summary>
         public Action<TaskTracker> TaskSubmit
         {
