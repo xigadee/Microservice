@@ -22,7 +22,6 @@ using System.Diagnostics;
 #endregion
 namespace Xigadee
 {
-    #region ClientHolder
     /// <summary>
     /// This is the generic base class that is used by the TaskManager to abstract fabric specific 
     /// implementations away from the task scheduler code.
@@ -174,7 +173,7 @@ namespace Xigadee
         /// </summary>
         public bool SupportsQueueLength { get; set; }
         /// <summary>
-        /// This property indicates whether the client will dynamically rate limit its request rate when signalled by the microservice.
+        /// This property indicates whether the client will dynamically rate limit its request rate when signalled by the microservice resource handlers.
         /// </summary>
         public bool SupportsRateLimiting { get; set; }
         /// <summary>
@@ -250,75 +249,4 @@ namespace Xigadee
         /// </summary>
         public string DebugStatus { get { return string.Format("{0}: {1} [{2}] ({3}) {4}", Type, Name, Priority, IsActive ? "Active" : "Inactive", Id); } }
     }
-    #endregion
-    #region ClientHolder<C,M>
-    /// <summary>
-    /// This is the base class used to hold a messaging client.
-    /// </summary>
-    /// <typeparam name="C">The client type.</typeparam>
-    /// <typeparam name="M">The client message type.</typeparam>
-    public abstract class ClientHolder<C, M>: ClientHolder
-    {
-        /// <summary>
-        /// This is the internal client
-        /// </summary>
-        public C Client { get; set; }
-        /// <summary>
-        /// This function creates the client when requested.
-        /// </summary>
-        public Func<C> ClientCreate { get; set; }
-        /// <summary>
-        /// This method is used to signal completion of a specific message.
-        /// </summary>
-        public Action<M, bool> MessageSignal { get; set; }
-        /// <summary>
-        /// This function receives message batches.
-        /// </summary>
-        public Func<int?, int?, Task<IEnumerable<M>>> MessageReceive { get; set; }
-        /// <summary>
-        /// This method transmits the message over the specific fabric
-        /// </summary>
-        public Func<M, Task> MessageTransmit { get; set; }
-        /// <summary>
-        /// This function unpacks the message from the specific fabric format to the generic ServiceMessage format for transmission.
-        /// </summary>
-        public Func<M, ServiceMessage> MessageUnpack { get; set; }
-        /// <summary>
-        /// This function packs the message in to the correct format for transmission
-        /// </summary>
-        public Func<TransmissionPayload, M> MessagePack { get; set; }
-        /// <summary>
-        /// This method signals using the MessageSignal function if this is not null.
-        /// </summary>
-        /// <param name="message">The message to signal.</param>
-        /// <param name="signal">The signal flag.</param>
-        /// <param name="id">The optional id.</param>
-        public virtual void MessageSignalInternal(M message, bool signal, Guid id)
-        {
-            if (MessageSignal != null)
-                MessageSignal(message, signal);
-        }
-
-        /// <summary>
-        /// This method creates a wrapper around the message which links back through the TransmissionPayload
-        /// </summary>
-        /// <param name="message">The internal message.</param>
-        /// <param name="serviceMessage">The service message to process.</param>
-        /// <returns>Returns a Trasnmission payload, with the internal signalling pointing back to the message signal function.</returns>
-        protected virtual TransmissionPayload PayloadRegisterAndCreate(M message, ServiceMessage serviceMessage)
-        {
-            var payload = new TransmissionPayload(serviceMessage
-                , release: (b,i) => MessageSignalInternal(message, b, i))
-            {
-                MaxProcessingTime = MessageMaxProcessingTime,
-                Options = ProcessOptions.RouteInternal,
-                Source = Name,
-                
-            };
-           
-            return payload;
-        }
-
-    }
-    #endregion
 }

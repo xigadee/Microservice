@@ -38,6 +38,24 @@ namespace Xigadee
             foreach(int p in priority)
                 yield return new ListenerPartitionConfig(p);
         }
+
+        /// <summary>
+        /// Implicitly converts a tuple in to a ListenerPartitionConfig.
+        /// </summary>
+        /// <param name="id">The ValueTuple to set the incoming partition.</param>
+        public static implicit operator ListenerPartitionConfig(ValueTuple<int, decimal> id)
+        {
+            return new ListenerPartitionConfig(id.Item1, id.Item2, true);
+        }
+
+        /// <summary>
+        /// Implicitly converts an int to a ListenerPartitionConfig.
+        /// </summary>
+        /// <param name="id">The priority.</param>
+        public static implicit operator ListenerPartitionConfig(int id)
+        {
+            return new ListenerPartitionConfig(id);
+        }
         #endregion
 
         /// <summary>

@@ -49,7 +49,15 @@ namespace Xigadee
             partitions.Add(config);
         }
 
-        //Incoming
+        //--> Incoming
+
+        /// <summary>
+        /// This extension method can be used to attach a priority partition collection to a listening channel.
+        /// </summary>
+        /// <typeparam name="C">The pipeline type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="config"></param>
+        /// <returns>The pipeline.</returns>
         public static C AttachPriorityPartition<C>(this C pipeline
             , ListenerPartitionConfig config)
             where C: IPipelineChannelIncoming<IPipeline>
@@ -58,6 +66,13 @@ namespace Xigadee
             return pipeline;
         }
 
+        /// <summary>
+        /// This extension method can be used to attach a priority partition to a listening channel.
+        /// </summary>
+        /// <typeparam name="C">The pipeline type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="init"></param>
+        /// <returns>The pipeline.</returns>
         public static C AttachPriorityPartition<C>(this C pipeline, params int[] init)
             where C : IPipelineChannel
         {
@@ -71,7 +86,13 @@ namespace Xigadee
             return pipeline;
         }
 
-
+        /// <summary>
+        /// This extension method can be used to attach a priority partition to a listening channel using a constructor function..
+        /// </summary>
+        /// <typeparam name="C">The pipeline type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="creator"></param>
+        /// <returns>The pipeline.</returns>
         public static C AttachPriorityPartition<C>(this C pipeline
             , Func<IEnvironmentConfiguration, Channel, ListenerPartitionConfig> creator)
             where C : IPipelineChannelIncoming<IPipeline>
@@ -81,8 +102,15 @@ namespace Xigadee
             return pipeline;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="C">The pipeline type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="config"></param>
+        /// <returns>The pipeline.</returns>
         public static C AttachPriorityPartition<C>(this C pipeline
-            , IEnumerable<ListenerPartitionConfig> config)
+            , params ListenerPartitionConfig[] config)
             where C : IPipelineChannelIncoming<IPipeline>
         {
             config?.ForEach((p) => pipeline.AttachPriorityPartition(p));
@@ -90,7 +118,15 @@ namespace Xigadee
             return pipeline;
         }
 
-        //Outgoing
+        //--> Outgoing
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="C">The pipeline type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="config"></param>
+        /// <returns>The pipeline.</returns>
         public static C AttachPriorityPartition<C>(this C pipeline
             , SenderPartitionConfig config)
             where C : IPipelineChannelOutgoing<IPipeline>
@@ -99,7 +135,13 @@ namespace Xigadee
 
             return pipeline;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="C">The pipeline type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="creator"></param>
+        /// <returns>The pipeline.</returns>
         public static C AttachPriorityPartition<C>(this C pipeline
             , Func<IEnvironmentConfiguration, Channel, SenderPartitionConfig> creator)
             where C : IPipelineChannelOutgoing<IPipeline>
@@ -108,9 +150,15 @@ namespace Xigadee
             AttachPriorityPartition<SenderPartitionConfig>(pipeline, config);
             return pipeline;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="C">The pipeline type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="config"></param>
+        /// <returns>The pipeline.</returns>
         public static C AttachPriorityPartition<C>(this C pipeline
-            , IEnumerable<SenderPartitionConfig> config)
+            , params SenderPartitionConfig[] config)
             where C : IPipelineChannelOutgoing<IPipeline>
         {
             config?.ForEach((p) => pipeline.AttachPriorityPartition(p));

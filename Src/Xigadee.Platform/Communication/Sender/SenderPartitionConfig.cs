@@ -32,6 +32,7 @@ namespace Xigadee
     /// </summary>
     public class SenderPartitionConfig: PartitionConfig
     {
+        #region Static methods
         /// <summary>
         /// This static method sets the priority channels for the integers passed at their default settings.
         /// </summary>
@@ -39,9 +40,19 @@ namespace Xigadee
         /// <returns>Returns a list of sender configs.</returns>
         public static IEnumerable<SenderPartitionConfig> Init(params int[] priority)
         {
-            foreach(int p in priority)
+            foreach (int p in priority)
                 yield return new SenderPartitionConfig(p);
         }
+
+        /// <summary>
+        /// Implicitly converts an int to a ListenerPartitionConfig.
+        /// </summary>
+        /// <param name="id">The priority.</param>
+        public static implicit operator SenderPartitionConfig(int id)
+        {
+            return new SenderPartitionConfig(id);
+        } 
+        #endregion
 
         /// <summary>
         /// This is the default constructor.

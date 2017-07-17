@@ -7,7 +7,16 @@
 
 # Communication
 
+Communication between Microservices is one of the most important aspects of the Xigadee Framework. 
+#### Policy
+
 ## Channels
+
+- Channel Direction
+
+- Channel Priority
+
+### Redirects
 
 ## Listeners
 

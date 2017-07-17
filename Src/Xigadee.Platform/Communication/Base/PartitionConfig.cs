@@ -25,6 +25,11 @@ namespace Xigadee
     /// </summary>
     public abstract class PartitionConfig
     {
+        /// <summary>
+        /// This is the default abstract constructor for the PartitionConfig class
+        /// </summary>
+        /// <param name="priority">The priority.</param>
+        /// <param name="fabricMaxMessageLock">The preferred fabric lock time. If this is not set, then the default of 4min30s is used.</param>
         protected internal PartitionConfig(int priority, TimeSpan? fabricMaxMessageLock = null)
         {
             Priority = priority;

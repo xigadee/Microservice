@@ -25,13 +25,15 @@ namespace Xigadee
     /// </summary>
     public class MultipleClientPollSlotAllocationAlgorithm: ListenerClientPollAlgorithmBase
     {
+        #region Constructor
         /// <summary>
         /// This is the default constructor. It changes the supportPassDueScan to true.
         /// </summary>
-        public MultipleClientPollSlotAllocationAlgorithm():base(supportPassDueScan:true)
+        public MultipleClientPollSlotAllocationAlgorithm() : base(supportPassDueScan: true)
         {
 
-        }
+        } 
+        #endregion
 
         #region CalculateSlots(int available, ClientPriorityHolderMetrics context)
         /// <summary>

@@ -33,6 +33,7 @@ namespace Xigadee
     /// This allows a common client for difference between a QueueClient and SubscriptionClient.
     /// </summary>
     /// <typeparam name="C">The client type.</typeparam>
+    /// <typeparam name="M">The message type.</typeparam>
     public class AzureClientHolder<C, M> : ClientHolder<C, M>
         where C : ClientEntity
     {

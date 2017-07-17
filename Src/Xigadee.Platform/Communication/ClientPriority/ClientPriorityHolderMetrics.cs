@@ -52,7 +52,6 @@ namespace Xigadee
         /// </summary>
         /// <param name="algorithm"></param>
         /// <param name="rateLimiter"></param>
-        /// <param name="isDeadletter"></param>
         /// <param name="priority"></param>
         /// <param name="weighting"></param>
         public ClientPriorityHolderMetrics(IListenerClientPollAlgorithm algorithm

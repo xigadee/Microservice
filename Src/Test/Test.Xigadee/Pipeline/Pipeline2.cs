@@ -15,6 +15,7 @@
 #endregion
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Xigadee;
@@ -84,7 +85,7 @@ namespace Test.Xigadee
                     .AddChannelIncoming("internalIn", internalOnly: false
                         , autosetPartition01: false
                         , assign: (p, c) => cpipeIn = p)
-                        .AttachPriorityPartition(0, 1)
+                        .AttachPriorityPartition((0,1.0M), (1,0.9M))
                         .AttachListener(bridgeOut.GetListener())
                         .AttachMessagePriorityOverrideForResponse()
                         .AttachCommand((CommandInlineContext ctx) =>
@@ -117,6 +118,8 @@ namespace Test.Xigadee
                 list.Add(init.Process<Blah, string>(("spooky", "franky", "johnny5"), new Blah() { Message = "hellospooky" }));
 
                 var result = Task.WhenAll(list).Result;
+
+                result.ForEach((r) => Assert.IsTrue(r.ResponseCode == 200 || r.ResponseCode == 201));
 
                 pClient.Stop();
                 pServer.Stop();
