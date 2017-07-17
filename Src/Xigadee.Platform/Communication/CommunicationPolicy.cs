@@ -32,7 +32,6 @@ namespace Xigadee
         /// This is the default time that a process submitted from a listener can execute for. The default value is 30 seconds.
         /// </summary>
         public TimeSpan? ListenerRequestTimespan { get; set; } = null;
-
         /// <summary>
         /// This is the default boundary logging status. When the specific status is not set, then this value 
         /// will be used. The default value is false.
@@ -45,7 +44,7 @@ namespace Xigadee
         /// </summary>
         public bool AutoCreateChannels { get; set; } = true;
         /// <summary>
-        /// This is the algorithm used to assign poll cycles to the various listeners.
+        /// This is the default algorithm used to assign poll cycles to the various listeners.
         /// </summary>
         public virtual IListenerClientPollAlgorithm ListenerClientPollAlgorithm { get; set; }  = new MultipleClientPollSlotAllocationAlgorithm();
     }

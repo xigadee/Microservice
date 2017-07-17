@@ -31,7 +31,7 @@ namespace Xigadee
     {
         #region Security
         /// <summary>
-        /// This interface contains a referece to the security container and is used to provide extensible
+        /// This interface contains a referece to the security container and provides extensible
         /// security support.
         /// </summary>
         public ISecurityService Security { get; set; } 

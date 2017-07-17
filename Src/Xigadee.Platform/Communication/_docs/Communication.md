@@ -7,6 +7,22 @@
 
 # Communication
 
+## Channels
+
+## Listeners
+
+### Clients and Client Priority
+
+### Polling algorithms
+
+## Senders
+
+## Security
+
+### Reading the Statistics
+
+### Using the Manual Bridge
+
 <table><tr> 
 <td><a href="http://www.hitachiconsulting.com"><img src="../../../docs/hitachi.png" alt="Hitachi Consulting" height="50"/></a></td> 
 <td>Created by: <a href="http://github.com/paulstancer">Paul Stancer</a></td>

@@ -16,12 +16,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This is the default messaging statistics.
+    /// </summary>
     public class MessagingServiceStatistics: MessagingStatistics
     {
         #region Declarations
@@ -30,6 +30,9 @@ namespace Xigadee
         private StatsContainer mStatsRateLimitHits;
         #endregion
 
+        /// <summary>
+        /// The default constructor.
+        /// </summary>
         public MessagingServiceStatistics()
         {
             mStatsEnqueueTime = new StatsContainer();
@@ -42,6 +45,9 @@ namespace Xigadee
         /// </summary>
         public Guid Id { get; set; }
 
+        /// <summary>
+        /// Name override so that it gets serialized at the top of the JSON data.
+        /// </summary>
         public override string Name
         {
             get

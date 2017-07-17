@@ -164,7 +164,7 @@ namespace Xigadee
             //This could change during execution of this process.
             var collection = mClientCollection;
 
-            //Check that we have something to do.
+            //Check that we have something to do. If this is null, closed, or without any clients, then we skip polling.
             if (collection == null || collection.IsClosed || collection.Count == 0)
                 return;
 

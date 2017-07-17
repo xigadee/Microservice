@@ -232,7 +232,7 @@ namespace Xigadee
         /// <returns>Returns a tracker of type listener poll.</returns>
         private void TrackerSubmitFromClientPriorityHolder(ClientPriorityHolder context)
         {
-            
+            //Create the task that will poll the client
             TaskTracker tracker = new TaskTracker(TaskTrackerType.ListenerClientPoll, mPolicy.ListenerRequestTimespan)
             {
                 Priority = TaskTracker.PriorityInternal,
@@ -240,6 +240,8 @@ namespace Xigadee
                 Name = context.Name
             };
 
+            //Set the execute function that polls the context and retrieves incoming payloads from the fabric 
+            //and submits them to be processed.
             tracker.Execute = async t =>
             {
                 var currentContext = ((ClientPriorityHolder)tracker.Context);
@@ -251,6 +253,7 @@ namespace Xigadee
                         PayloadSubmit(currentContext.ClientId, payload);
             };
 
+            //Set the completion function that releases the slot reservations back in to the pool.
             tracker.ExecuteComplete = (tr, failed, ex) =>
             {
                 var currentContext = ((ClientPriorityHolder)tr.Context);
@@ -258,6 +261,7 @@ namespace Xigadee
                 currentContext.Release(failed);
             };
 
+            //Submit the tracker for processing.
             TaskSubmit(tracker);
         }
         #endregion
@@ -272,6 +276,7 @@ namespace Xigadee
         {
             try
             {
+                //Ensure the priority cannot spoof the internal priority of -1
                 if (payload.Message.ChannelPriority < 0)
                     payload.Message.ChannelPriority = 0;
 
@@ -284,8 +289,10 @@ namespace Xigadee
                 //Do we need to redirect the payload based on the redirect/rewrite rules.
                 PayloadIncomingRedirectCheck(payload);
 
+                //Create the tracker to process the incoming 
                 TaskTracker tracker = TaskManager.TrackerCreateFromPayload(payload, payload.Source);
 
+                //Set the function that executes when the payload completes.
                 tracker.ExecuteComplete = (tr, failed, ex) =>
                 {
                     try
