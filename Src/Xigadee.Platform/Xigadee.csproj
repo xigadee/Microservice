@@ -375,7 +375,6 @@
     <Compile Include="Communication\Base\PartitionConfig.cs" />
     <Compile Include="Communication\Sender\SenderPartitionConfig.cs" />
     <Compile Include="Communication\Statistics\MessagingServiceStatistics.cs" />
-    <Compile Include="Communication\TransmissionPayloadTrack.cs" />
     <Compile Include="Configuration\ConfigBase.cs" />
     <Compile Include="Microservice\MicroserviceId.cs" />
     <Compile Include="Microservice\MicroservicePolicy.cs" />

@@ -48,19 +48,32 @@ namespace Xigadee
         {
             Mode = mode;
         }
-
+        /// <summary>
+        /// This method is used to fire the event when an exception occurs.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="payload">The payload.</param>
+        /// <param name="ex">The exception raised.</param>
         protected void OnExceptionInvoke(object sender, TransmissionPayload payload, Exception ex)
         {
             var e = new CommunicationBridgeAgentEventArgs(payload, ex);
             OnException?.Invoke(sender, e);
         }
-
+        /// <summary>
+        /// This event is thrown when a payload is transmitted.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="payload">The payload.</param>
         protected void OnTransmitInvoke(object sender, TransmissionPayload payload)
         {
             var e = new CommunicationBridgeAgentEventArgs(payload);
             OnTransmit?.Invoke(sender, e);
         }
-
+        /// <summary>
+        /// This event is raised when a payload is received by a listener.
+        /// </summary>
+        /// <param name="sender">The listener.</param>
+        /// <param name="payload">The payload.</param>
         protected void OnReceiveInvoke(object sender, TransmissionPayload payload)
         {
             var e = new CommunicationBridgeAgentEventArgs(payload);

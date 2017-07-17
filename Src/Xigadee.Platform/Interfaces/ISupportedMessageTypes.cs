@@ -16,26 +16,41 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This interface is registered by the CommandContainer and is used to notify subscribing parties of changes
+    /// to the active command collection. This typically can happen when master jobs start or stop during operation.
+    /// </summary>
     public interface ISupportedMessageTypes
     {
         /// <summary>
         /// This event is used to signal a change of registered commands.
         /// </summary>
-        event EventHandler<SupportedMessagesChange> OnCommandChange;
+        event EventHandler<SupportedMessagesChangeEventArgs> OnCommandChange;
         /// <summary>
         /// This is the supported message types for the listener.
         /// </summary>
         List<MessageFilterWrapper> SupportedMessages { get; }
     }
 
-    public class SupportedMessagesChange
+    /// <summary>
+    /// This class is used to wrap cammand message changes.
+    /// </summary>
+    public class SupportedMessagesChangeEventArgs:EventArgs
     {
-        public List<MessageFilterWrapper> Messages { get; set; }
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="messages">The message list.</param>
+        public SupportedMessagesChangeEventArgs(List<MessageFilterWrapper> messages)
+        {
+            Messages = messages;
+        }
+        /// <summary>
+        /// The current list of messages supported.
+        /// </summary>
+        public List<MessageFilterWrapper> Messages { get; }
     }
 }

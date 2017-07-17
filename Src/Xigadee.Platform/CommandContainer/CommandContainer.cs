@@ -29,7 +29,6 @@ namespace Xigadee
     public class CommandContainer:ServiceContainerBase<CommandContainerStatistics, CommandContainerPolicy>
     {
         #region Declarations
-        //public event EventHandler<> OnCommandStatusChange;
         /// <summary>
         /// This concurrent dictionary contains the map used to resolve handlers to messages.
         /// </summary>
@@ -105,7 +104,6 @@ namespace Xigadee
             });
         }
         #endregion
-
         #region Internal_OnCommandChange(object sender, CommandChange e)
         /// <summary>
         /// This event is fired when a dymanic command changes the supported commands.

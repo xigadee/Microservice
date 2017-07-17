@@ -34,15 +34,16 @@ namespace Xigadee
         JsonContractSerializer mSerializer = new JsonContractSerializer();
         #endregion
 
+        #region Constructor
         /// <summary>
         /// This is the default constructor.
         /// </summary>
         /// <param name="mode">The desirec communication mode.</param>
-        public ManualCommunicationBridgeAgent(CommunicationBridgeMode mode) :base(mode)
+        public ManualCommunicationBridgeAgent(CommunicationBridgeMode mode) : base(mode)
         {
 
-        }
-
+        } 
+        #endregion
 
         #region GetListener()
         /// <summary>
@@ -145,7 +146,6 @@ namespace Xigadee
             OnTransmitInvoke(listener, payload);
 
             listener.Inject(payload);
-
         }
 
         /// <summary>

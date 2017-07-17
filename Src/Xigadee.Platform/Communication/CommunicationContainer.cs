@@ -201,7 +201,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="sender">The sender that initiated the call.</param>
         /// <param name="e">The change parameter.</param>
-        private void SupportedMessageTypes_OnCommandChange(object sender, SupportedMessagesChange e)
+        private void SupportedMessageTypes_OnCommandChange(object sender, SupportedMessagesChangeEventArgs e)
         {
             mSupportedMessages = e.Messages;
 

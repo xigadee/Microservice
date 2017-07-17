@@ -34,7 +34,7 @@ namespace Xigadee
         /// <summary>
         /// The handler change event.
         /// </summary>
-        public event EventHandler<SupportedMessagesChange> OnCommandChange; 
+        public event EventHandler<SupportedMessagesChangeEventArgs> OnCommandChange; 
         #endregion
         #region Declarations
         /// <summary>
@@ -43,28 +43,30 @@ namespace Xigadee
         private Func<List<MessageFilterWrapper>> mSupportedMessageTypes;
         #endregion
 
+        #region Constructor
         /// <summary>
-        /// 
+        /// This is the default constructor.
         /// </summary>
-        /// <param name="supportedMessageTypes"></param>
+        /// <param name="supportedMessageTypes">The function pointer to the collection.</param>
         public HandlersCollection(Func<List<MessageFilterWrapper>> supportedMessageTypes)
         {
             mSupportedMessageTypes = supportedMessageTypes;
-        }
+        } 
+        #endregion
 
         /// <summary>
         /// This message is fired when a command status changes.
         /// </summary>
-        /// <param name="messages"></param>
+        /// <param name="messages">The message list to pass to the event.</param>
         public void NotifyChange(List<MessageFilterWrapper> messages)
         {
             try
             {
-                OnCommandChange?.Invoke(this, new SupportedMessagesChange() { Messages = mSupportedMessageTypes() });
+                OnCommandChange?.Invoke(this, new SupportedMessagesChangeEventArgs(mSupportedMessageTypes()));
             }
-            catch (Exception ex)
+            catch
             {
-                //Collector?.
+                //We don't throw errors here.
             }
         }
 
