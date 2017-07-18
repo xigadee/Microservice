@@ -42,18 +42,16 @@ namespace Xigadee
                 base.Name = value;
             }
         }
+
         public int Ordinal { get; set; }
 
         public string Algorithm { get; set; }
 
-
         public string MappingChannel { get; set; }
-
 
         public bool IsReserved { get; set; }
 
         public int? Reserved { get; set; }
-
 
         public ClientPriorityHolderMetricsStatistics Metrics { get; set; }
 

@@ -588,12 +588,12 @@
     <Compile Include="Communication\ClientPriority\Algorithms\SingleClientPollSlotAllocationAlgorithm.cs" />
     <Compile Include="Communication\ClientPriority\ClientPriorityHolderMetrics.cs" />
     <Compile Include="Communication\Interfaces\IListenerClientPollAlgorithm.cs" />
-    <Compile Include="Communication\ClientPriority\Statistics\ClientPriorityHolderMetricsStatistics.cs" />
+    <Compile Include="Communication\ClientPriority\ClientPriorityHolderMetricsStatistics.cs" />
     <Compile Include="Communication\CommunicationPolicy.cs" />
     <Compile Include="Communication\ClientPriority\ClientPriorityCollection.cs" />
     <Compile Include="Communication\ClientPriority\ClientPriorityHolder.cs" />
-    <Compile Include="Communication\ClientPriority\Statistics\ClientPriorityHolderStatistics.cs" />
-    <Compile Include="Communication\ClientPriority\Statistics\ClientPriorityCollectionStatistics.cs" />
+    <Compile Include="Communication\ClientPriority\ClientPriorityHolderStatistics.cs" />
+    <Compile Include="Communication\ClientPriority\ClientPriorityCollectionStatistics.cs" />
     <Compile Include="Communication\CommunicationContainer.cs" />
     <Compile Include="Communication\CommunicationStatistics.cs" />
     <Compile Include="CommandContainer\CommandContainer.cs" />

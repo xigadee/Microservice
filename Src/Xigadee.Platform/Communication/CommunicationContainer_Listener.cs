@@ -69,7 +69,7 @@ namespace Xigadee
                 //Create the initial client priority collection.
                 ListenersPriorityRecalculate(true).Wait();
 
-                //Do we have a poll recalcualte frequency set in the algorithm.
+                //Do we have a poll recalculate frequency set in the algorithm.
                 if (mPolicy.ListenerClientPollAlgorithm.PriorityRecalculateFrequency.HasValue)
                     //If so, set the reschedule priority.
                     mClientRecalculateSchedule = Scheduler.Register(
@@ -78,7 +78,6 @@ namespace Xigadee
                         , "Communication: Listeners Priority Recalculate"
                         , TimeSpan.FromMinutes(1)
                         , isInternal: true);
-
             }
             catch (Exception ex)
             {
@@ -116,27 +115,29 @@ namespace Xigadee
 
             if (!rebuild && mClientCollection != null)
                 mClientCollection.Reprioritise();
+            else
+                try
+                {
+                    //We do an atomic switch to add in a new priority list.
+                    var newColl = new ClientPriorityCollection(
+                          mListener
+                        , mResourceTracker
+                        , mPolicy.ListenerClientPollAlgorithm
+                        , Interlocked.Increment(ref mListenersPriorityIteration)
+                        );
 
-            try
-            {
-                //We do an atomic switch to add in a new priority list.
-                var newColl = new ClientPriorityCollection(mListener
-                    , mResourceTracker
-                    , mPolicy.ListenerClientPollAlgorithm
-                    , Interlocked.Increment(ref mListenersPriorityIteration));
+                    //Switch out the old collection for the new collection atomically
+                    var oldColl = Interlocked.Exchange(ref mClientCollection, newColl);
 
-                //Switch out the old collection for the new collection atomically
-                var oldColl = Interlocked.Exchange(ref mClientCollection, newColl);
+                    //Close the old collection, note that it will be null the first time.
+                    oldColl?.Close();
 
-                //Close the old collection, note that it will be null the first time.
-                oldColl?.Close();
-
-                Collector?.LogMessage(LoggingLevel.Trace, $"ListenersPriorityRecalculate completed {mListenersPriorityIteration}.");
-            }
-            catch (Exception ex)
-            {
-                Collector?.LogException("ListenersPriorityCalculate failed. Using the old collection.", ex);
-            }
+                    Collector?.LogMessage(LoggingLevel.Trace, $"ListenersPriorityRecalculate completed {mListenersPriorityIteration}.");
+                }
+                catch (Exception ex)
+                {
+                    Collector?.LogException("ListenersPriorityCalculate failed. Using the old collection.", ex);
+                }
 
             return Task.FromResult(0);
         }

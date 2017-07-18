@@ -30,7 +30,6 @@ namespace Xigadee
         /// <summary>
         /// Name override so that it gets serialized at the top of the JSON data.
         /// </summary>
-
         public override string Name
         {
             get
@@ -43,8 +42,6 @@ namespace Xigadee
                 base.Name = value;
             }
         }
-
-        //public int ActiveReservedSlots;
 
         /// <summary>
         /// This list of active clients and their poll statistics.

@@ -15,17 +15,18 @@
 #endregion
 
 #region using
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 #endregion
 namespace Xigadee
 {
+    /// <summary>
+    /// This is the statistics collection that holds the active clients.
+    /// </summary>
     public class ClientPriorityCollectionStatistics: StatusBase
     {
+        /// <summary>
+        /// The override name that ensures this is at the top of the JSON.
+        /// </summary>
         public override string Name
         {
             get
@@ -38,9 +39,13 @@ namespace Xigadee
                 base.Name = value;
             }
         }
-
+        /// <summary>
+        /// The current polling algorithm.
+        /// </summary>
         public string Algorithm { get; set; }
-
+        /// <summary>
+        /// The client priority list.
+        /// </summary>
         public List<ClientPriorityHolderStatistics> Clients { get; set; }
     }
 }
