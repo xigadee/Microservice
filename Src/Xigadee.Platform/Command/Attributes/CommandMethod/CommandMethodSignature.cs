@@ -172,7 +172,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                throw new CommandMethodSignatureException("PayloadIn or PayloadOut have not been set correctly.") { InnerException = ex };
+                throw new CommandMethodSignatureException("PayloadIn or PayloadOut have not been set correctly.", ex);
             }
         }
 

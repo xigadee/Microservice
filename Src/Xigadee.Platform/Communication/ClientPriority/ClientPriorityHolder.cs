@@ -49,7 +49,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="resourceTracker">The resource tracker.</param>
         /// <param name="client">The client to hold.</param>
-        /// <param name="mappingChannelId">The mapping channel.param>
+        /// <param name="mappingChannelId">The mapping channel.</param>
         /// <param name="maxAllowedPollWait">The maximum permitted poll length.</param>
         public ClientPriorityHolder(IResourceTracker resourceTracker
             , ClientHolder client

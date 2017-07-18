@@ -19,6 +19,9 @@ using System.Collections.Generic;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This interface is used to send messages directly to the Microservice for processing.
+    /// </summary>
     public interface IMicroserviceDispatch
     {
         void Process(TransmissionPayload payload);

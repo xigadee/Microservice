@@ -277,6 +277,7 @@ namespace Xigadee
 
         #region Write
         #region Write(byte[] buffer, int offset, int count)
+        /// <summary>
         /// This method reads from the incoming buffer and writes it to the fragment.
         /// </summary>
         /// <param name="buffer">The buffer.</param>

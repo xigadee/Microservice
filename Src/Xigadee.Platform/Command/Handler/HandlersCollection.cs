@@ -51,9 +51,10 @@ namespace Xigadee
         public HandlersCollection(Func<List<MessageFilterWrapper>> supportedMessageTypes)
         {
             mSupportedMessageTypes = supportedMessageTypes;
-        } 
+        }
         #endregion
 
+        #region NotifyChange(List<MessageFilterWrapper> messages)
         /// <summary>
         /// This message is fired when a command status changes.
         /// </summary>
@@ -69,7 +70,8 @@ namespace Xigadee
                 //We don't throw errors here.
             }
         }
-
+        #endregion
+        #region SupportedMessages
         /// <summary>
         /// This is a list of supported messages.
         /// </summary>
@@ -79,6 +81,7 @@ namespace Xigadee
             {
                 return mSupportedMessageTypes();
             }
-        }
+        } 
+        #endregion
     }
 }

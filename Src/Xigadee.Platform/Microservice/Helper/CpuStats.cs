@@ -25,11 +25,17 @@ using System.Threading.Tasks;
 #endregion
 namespace Xigadee
 {
+    /// <summary>
+    /// This interface is implemented by the CpuStats class and is used to share statistics information.
+    /// </summary>
     public interface ICpuStats
     {
         DateTime? CalculationTimeLast { get; }
+
         long CalculationMissCount { get; }
+
         string CalculationMissException { get; }
+
         float? ServicePercentage { get; }
 
         /// <summary>
@@ -68,7 +74,9 @@ namespace Xigadee
         public long CalculationMissCount { get { return mMissCount; } }
 
         public string CalculationMissException { get; private set; }
-
+        /// <summary>
+        /// This is the number of processors reported on the underlying infrastructure.
+        /// </summary>
         public int ProcessorCount { get; private set; }
 
         public string ProcessorType { get; private set; }

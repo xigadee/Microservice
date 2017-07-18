@@ -21,6 +21,9 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This class is used to wrap the dispatch functionality.
+    /// </summary>
     internal class DispatchWrapper: WrapperBase, IMicroserviceDispatch
     {
         private Action<TransmissionPayload, string> ExecuteOrEnqueue { get; }
@@ -99,7 +102,6 @@ namespace Xigadee
             , Action<bool, Guid> release = null
             , bool isDeadLetterMessage = false)
         {
-
             var message = new ServiceMessage(header);
             message.ChannelPriority = ChannelPriority;
             if (package != null)

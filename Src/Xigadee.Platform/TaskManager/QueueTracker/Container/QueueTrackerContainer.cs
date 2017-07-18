@@ -113,7 +113,6 @@ namespace Xigadee
         /// <param name="tracker">The task tracker.</param>
         public void Enqueue(TaskTracker tracker)
         {
-
             var payload = tracker.Context as TransmissionPayload;
 
             int priority = tracker.Priority ?? mLevels - 1;

@@ -206,6 +206,8 @@ namespace Xigadee
         {
             TaskTracker tracker = TrackerCreateFromPayload(payload, service.GetType().Name);
 
+            //Add delay in here.
+
             if (id != null)
             {
                 tracker.CallbackId = id;
@@ -222,6 +224,7 @@ namespace Xigadee
         public virtual void ExecuteOrEnqueue(TransmissionPayload payload, string callerName)
         {
             TaskTracker tracker = TrackerCreateFromPayload(payload, callerName);
+
             ExecuteOrEnqueue(tracker);
         }
         #endregion
@@ -406,8 +409,6 @@ namespace Xigadee
         /// <param name="tracker">The tracker.</param>
         public void ExecuteOrEnqueue(TaskTracker tracker)
         {
-            //This is where the security validation should be added.
-
             if (tracker.IsInternal)
             {
                 if (mPolicy.ExecuteInternalDirect)

@@ -36,6 +36,11 @@ namespace Xigadee
         /// </summary>
         public const int PriorityInternal = -1;
 
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="type">The tracker type.</param>
+        /// <param name="ttl">The allowed time to live.</param>
         public TaskTracker(TaskTrackerType type, TimeSpan? ttl)
         {
             Type = type;
@@ -103,7 +108,9 @@ namespace Xigadee
         /// </summary>
         public string Name { get; set; }
 
-
+        /// <summary>
+        /// The caller name.
+        /// </summary>
         public string Caller { get; set; }
 
 
@@ -122,7 +129,9 @@ namespace Xigadee
         /// This boolean property indicates whether the task has been flagged for cancellation.
         /// </summary>
         public bool IsCancelled { get; set; }
-
+        /// <summary>
+        /// Identifies whether the process has been cancelled.
+        /// </summary>
         public bool IsKilled { get; set; }
 
         /// <summary>

@@ -11,11 +11,9 @@ namespace Xigadee
     /// </summary>
     public class CommandMethodSignatureException:Exception
     {
-        public CommandMethodSignatureException(string message):base(message)
+        public CommandMethodSignatureException(string message, Exception ex = null):base(message, ex)
         {
 
         }
-
-        public Exception InnerException { get; set; }
     }
 }

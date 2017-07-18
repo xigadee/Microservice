@@ -100,9 +100,9 @@
     <Compile Include="Command\Pipeline\AssignMasterJob.cs" />
     <Compile Include="Communication\Interfaces\IMessagingService.cs" />
     <Compile Include="Communication\Base\MessagingHarness.cs" />
-    <Compile Include="Communication\Bridge\CommunicationBridge.cs" />
-    <Compile Include="Communication\Bridge\CommunicationBridgeAgent.cs" />
-    <Compile Include="Communication\Bridge\CommunicationBridgeMode.cs" />
+    <Compile Include="Communication\CommunicationBridge\CommunicationBridge.cs" />
+    <Compile Include="Communication\CommunicationBridge\CommunicationBridgeAgent.cs" />
+    <Compile Include="Communication\CommunicationBridge\CommunicationBridgeMode.cs" />
     <Compile Include="Communication\Channel\ChannelRewriteRule.cs" />
     <Compile Include="Communication\ClientHolder\ClientHolder_Generic.cs" />
     <Compile Include="Communication\Interfaces\IClientPriorityHolderMetrics.cs" />
@@ -111,7 +111,7 @@
     <Compile Include="Communication\Exceptions\MessagingException.cs" />
     <Compile Include="Communication\Exceptions\StartupMessagingException.cs" />
     <Compile Include="Communication\CommunicationBridge\Manual\Bridge\ManualCommunicationBridgeAgent.cs" />
-    <Compile Include="Communication\Bridge\CommunicationBridgeAgentEventArgs.cs" />
+    <Compile Include="Communication\CommunicationBridge\CommunicationBridgeAgentEventArgs.cs" />
     <Compile Include="Communication\CommunicationBridge\Manual\Pipeline\AttachManualListener.cs" />
     <Compile Include="Communication\CommunicationBridge\Manual\Pipeline\AttachManualSender.cs" />
     <Compile Include="Communication\Pipeline\Add\AddChannelBroadcast.cs" />
@@ -374,7 +374,7 @@
     <Compile Include="Communication\Listener\ListenerPartitionConfig.cs" />
     <Compile Include="Communication\Base\PartitionConfig.cs" />
     <Compile Include="Communication\Sender\SenderPartitionConfig.cs" />
-    <Compile Include="Communication\Statistics\MessagingServiceStatistics.cs" />
+    <Compile Include="Communication\Base\MessagingServiceStatistics.cs" />
     <Compile Include="Configuration\ConfigBase.cs" />
     <Compile Include="Microservice\MicroserviceId.cs" />
     <Compile Include="Microservice\MicroservicePolicy.cs" />
@@ -595,7 +595,7 @@
     <Compile Include="Communication\ClientPriority\Statistics\ClientPriorityHolderStatistics.cs" />
     <Compile Include="Communication\ClientPriority\Statistics\ClientPriorityCollectionStatistics.cs" />
     <Compile Include="Communication\CommunicationContainer.cs" />
-    <Compile Include="Communication\Statistics\CommunicationStatistics.cs" />
+    <Compile Include="Communication\CommunicationStatistics.cs" />
     <Compile Include="CommandContainer\CommandContainer.cs" />
     <Compile Include="CommandContainer\CommandContainerStatistics.cs" />
     <Compile Include="Command\Handler\HandlersCollection.cs" />
