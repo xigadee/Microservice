@@ -22,5 +22,6 @@ namespace Xigadee
     /// </summary>
     public class SecurityContainerPolicy: PolicyBase
     {
+
     }
 }

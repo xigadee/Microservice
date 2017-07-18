@@ -282,7 +282,6 @@ namespace Xigadee
                     payload.Message.ChannelPriority = 0;
 
                 mClientCollection.QueueTimeLog(clientId, payload.Message.EnqueuedTimeUTC);
-                mClientCollection.ActiveIncrement(clientId);
 
                 //Verify the incoming payload with the security container.
                 PayloadIncomingSecurity(payload);

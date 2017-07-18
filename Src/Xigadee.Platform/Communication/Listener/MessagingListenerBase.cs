@@ -173,7 +173,7 @@ namespace Xigadee
                 TearUp();
 
                 //Start the client in either listener or sender mode.
-                foreach (var partition in base.PriorityPartitions)
+                foreach (var partition in PriorityPartitions)
                 {
                     var client = ClientCreate(partition);
 

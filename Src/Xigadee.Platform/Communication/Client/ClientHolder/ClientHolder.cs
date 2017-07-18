@@ -58,15 +58,9 @@ namespace Xigadee
         public void QueueTimeLog(DateTime? EnqueuedTimeUTC)
         {
             StatisticsInternal.QueueTimeLog(EnqueuedTimeUTC);
-        }
-
-        /// <summary>
-        /// This method increments the active messages.
-        /// </summary>
-        public void ActiveIncrement()
-        {
             StatisticsInternal.ActiveIncrement();
         }
+
         /// <summary>
         /// This method decrements the active messages.
         /// </summary>

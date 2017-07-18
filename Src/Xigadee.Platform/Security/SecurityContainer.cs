@@ -62,6 +62,26 @@ namespace Xigadee
         }
         #endregion
 
+        /// <summary>
+        /// This method updates the security statistics.
+        /// </summary>
+        /// <param name="statistics">The statistics.</param>
+        protected override void StatisticsRecalculate(SecurityContainerStatistics statistics)
+        {
+            base.StatisticsRecalculate(statistics);
+
+            try
+            {
+                statistics.AuthenticationHandlers = mAuthenticationHandlers?.Select((h) => $"{h.Key}: {h.Value.Name}").ToArray();
+                statistics.EncryptionHandlers = mEncryptionHandlers?.Select((h) => $"{h.Key}: {h.Value.Name}").ToArray(); ;
+            }
+            catch (Exception)
+            {
+
+            }
+
+        }
+
         //Authentication
         #region HasAuthenticationHandler(string identifier)
         /// <summary>
@@ -151,9 +171,13 @@ namespace Xigadee
         public MicroserviceId OriginatorId
         {
             get; set;
-        } 
+        }
         #endregion
 
+        #region Start/Stop
+        /// <summary>
+        /// This method starts the service. It sets the authentication handlers config.
+        /// </summary>
         protected override void StartInternal()
         {
             //Set the originators
@@ -163,11 +187,14 @@ namespace Xigadee
                 a.Collector = Collector;
             });
         }
-
+        /// <summary>
+        /// This method stops the service.
+        /// </summary>
         protected override void StopInternal()
         {
 
-        }
+        } 
+        #endregion
 
 
         public byte[] Encrypt(EncryptionHandlerId handler, byte[] input)

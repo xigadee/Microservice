@@ -341,21 +341,25 @@ namespace Xigadee
         #endregion
 
         #region Logging
+        /// <summary>
+        /// This method is called when a poll starts.
+        /// </summary>
+        /// <param name="EnqueuedTimeUTC">The current UTC queue time.</param>
         public void QueueTimeLog(DateTime? EnqueuedTimeUTC)
         {
             Client.QueueTimeLog(EnqueuedTimeUTC);
         }
-
-        public void ActiveIncrement()
+        /// <summary>
+        /// This method is called after a poll has completed.
+        /// </summary>
+        /// <param name="start">The poll start tick count.</param>
+        public void ActiveDecrement(int start)
         {
-            Client.ActiveIncrement();
+            Client.ActiveDecrement(start);
         }
-
-        public void ActiveDecrement(int TickCount)
-        {
-            Client.ActiveDecrement(TickCount);
-        }
-
+        /// <summary>
+        /// This method increments the error count for a particular client.
+        /// </summary>
         public void ErrorIncrement()
         {
             Client.ErrorIncrement();

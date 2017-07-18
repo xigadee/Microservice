@@ -49,7 +49,7 @@ namespace Xigadee
         /// <param name="base64Secret">The secret byte array as a base64 string.</param>
         /// <param name="audience">The audience. This is compared when the token is received and validated. 
         /// By default it is set to 'comms'</param>
-        public JwtTokenAuthenticationHandler(JwtHashAlgorithm algo, string base64Secret, string audience = "comms")
+        public JwtTokenAuthenticationHandler(JwtHashAlgorithm algo, string base64Secret, string audience = "comms"):base(nameof(JwtTokenAuthenticationHandler))
         {
             mAlgorithm = algo;
             mSecret = Convert.FromBase64String(base64Secret);
@@ -62,7 +62,7 @@ namespace Xigadee
         /// <param name="secret">The secret byte array.</param>
         /// <param name="audience">The audience. This is compared when the token is received and validated. 
         /// By default it is set to 'comms'</param>
-        public JwtTokenAuthenticationHandler(JwtHashAlgorithm algo, byte[] secret, string audience = "comms")
+        public JwtTokenAuthenticationHandler(JwtHashAlgorithm algo, byte[] secret, string audience = "comms") : base(nameof(JwtTokenAuthenticationHandler))
         {
             mAlgorithm = algo;
             mSecret = secret;

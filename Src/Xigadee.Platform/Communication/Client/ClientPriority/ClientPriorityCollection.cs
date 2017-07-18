@@ -82,10 +82,12 @@ namespace Xigadee
                 .ToArray();
 
             mReprioritise = 0;
+
             //Finally create a poll chain for each individual priority level
             Reprioritise();
         }
         #endregion
+
         #region StatisticsRecalculate()
         /// <summary>
         /// This method recalculates the client proiority statistics.
@@ -250,28 +252,38 @@ namespace Xigadee
             {
                 return mListenerPollChain.Values.Sum((g) => g.Length);
             }
-        } 
+        }
         #endregion
 
         #region Logging
+        /// <summary>
+        /// This method is called when a poll starts.
+        /// </summary>
+        /// <param name="clientId">The client id.</param>
+        /// <param name="EnqueuedTimeUTC">The current UTC queue time.</param>
         public void QueueTimeLog(Guid clientId, DateTime? EnqueuedTimeUTC)
         {
             if (mListenerClients.ContainsKey(clientId))
+            {
                 mListenerClients[clientId].QueueTimeLog(EnqueuedTimeUTC);
+            }
         }
 
-        public void ActiveIncrement(Guid clientId)
+        /// <summary>
+        /// This method is called after a poll has completed.
+        /// </summary>
+        /// <param name="clientId">The client id.</param>
+        /// <param name="start">The poll start tick count.</param>
+        public void ActiveDecrement(Guid clientId, int start)
         {
             if (mListenerClients.ContainsKey(clientId))
-                mListenerClients[clientId].ActiveIncrement();
+                mListenerClients[clientId].ActiveDecrement(start);
         }
 
-        public void ActiveDecrement(Guid clientId, int TickCount)
-        {
-            if (mListenerClients.ContainsKey(clientId))
-                mListenerClients[clientId].ActiveDecrement(TickCount);
-        }
-
+        /// <summary>
+        /// This method increments the error count for a particular client.
+        /// </summary>
+        /// <param name="clientId">The client id.</param>
         public void ErrorIncrement(Guid clientId)
         {
             if (mListenerClients.ContainsKey(clientId))

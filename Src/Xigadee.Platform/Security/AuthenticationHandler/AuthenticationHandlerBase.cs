@@ -28,14 +28,28 @@ namespace Xigadee
     /// </summary>
     public abstract class AuthenticationHandlerBase: IAuthenticationHandler
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthenticationHandlerBase"/> class.
+        /// </summary>
+        /// <param name="name">The friendly name of the service.</param>
+        protected AuthenticationHandlerBase(string name)
+        {
+            Name = name;
+        }
 
         /// <summary>
         /// This property contains the Microservice identifiers used for claims source information.
         /// </summary>
         public MicroserviceId OriginatorId{get;set;}
-
+        /// <summary>
+        /// This method signs the outgoing payload.
+        /// </summary>
+        /// <param name="payload">The payload to sign.</param>
         public abstract void Sign(TransmissionPayload payload);
-
+        /// <summary>
+        /// This method verifies the incoming payload and sets the ClaimsPrincipal on the payload.
+        /// </summary>
+        /// <param name="payload">The payload to verify.</param>
         public abstract void Verify(TransmissionPayload payload);
 
         /// <summary>
@@ -45,5 +59,9 @@ namespace Xigadee
         {
             get; set;
         }
+        /// <summary>
+        /// This is the friendly name for the handler.
+        /// </summary>
+        public string Name { get; }
     }
 }

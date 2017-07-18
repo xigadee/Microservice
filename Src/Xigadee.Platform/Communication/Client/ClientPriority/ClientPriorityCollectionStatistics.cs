@@ -24,6 +24,7 @@ namespace Xigadee
     /// </summary>
     public class ClientPriorityCollectionStatistics: StatusBase
     {
+        #region Name
         /// <summary>
         /// The override name that ensures this is at the top of the JSON.
         /// </summary>
@@ -38,7 +39,9 @@ namespace Xigadee
             {
                 base.Name = value;
             }
-        }
+        } 
+        #endregion
+
         /// <summary>
         /// The current polling algorithm.
         /// </summary>

@@ -140,5 +140,10 @@ namespace Xigadee
                 }
             }
         }
+
+        /// <summary>
+        /// This is the friendly name for the handler.
+        /// </summary>
+        public string Name => nameof(AesEncryptionHandler);
     }
 }

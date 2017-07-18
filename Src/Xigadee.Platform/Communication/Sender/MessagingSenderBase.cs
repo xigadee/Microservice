@@ -31,7 +31,6 @@ namespace Xigadee
     public class MessagingSenderBase<C, M, H> : MessagingServiceBase<C, M, H, SenderPartitionConfig>, ISender
         where H : ClientHolder<C, M>, new()
     {
-
         #region ProcessMessage(TransmissionPayload payload)
         /// <summary>
         /// This method resolves the client and processes the message.

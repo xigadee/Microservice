@@ -33,8 +33,8 @@ namespace Xigadee
         /// </summary>
         public TimeSpan? ListenerRequestTimespan { get; set; } = null;
         /// <summary>
-        /// This is the default boundary logging status. When the specific status is not set, then this value 
-        /// will be used. The default value is false.
+        /// This is the default boundary logging status. When the specific status is not set, this value 
+        /// will be used. The default setting is false.
         /// </summary>
         public bool BoundaryLoggingActiveDefault { get; set; }
         /// <summary>

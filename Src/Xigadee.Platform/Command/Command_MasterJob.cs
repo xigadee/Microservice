@@ -52,6 +52,21 @@ namespace Xigadee
         public MasterJobState mMasterJobState;
     }
 
+    public class MasterJobNegotiationStrategy
+    {
+        public MasterJobNegotiationStrategy(string name)
+        {
+
+        }
+
+        public Schedule GetSchedule(Func<Schedule, CancellationToken, Task> execute)
+        {
+            return null;
+        }
+
+        public Schedule PollSchedule { get; }
+    }
+
 
     public abstract partial class CommandBase<S, P, H>
     {

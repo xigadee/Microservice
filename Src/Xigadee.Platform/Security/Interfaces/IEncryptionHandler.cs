@@ -19,7 +19,7 @@ namespace Xigadee
     /// <summary>
     /// Provide symmetric i.e. Encrypt / Decrypt Functionality
     /// </summary>
-    public interface IEncryptionHandler
+    public interface IEncryptionHandler: ISecurityHandlerBase
     {
         /// <summary>
         /// Encrypt a byte array

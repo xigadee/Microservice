@@ -9,7 +9,7 @@ namespace Xigadee
     /// <summary>
     /// This interface is used by classes that provide authentication for incoming and outgoing messages.
     /// </summary>
-    public interface IAuthenticationHandler: IRequireServiceOriginator, IRequireDataCollector
+    public interface IAuthenticationHandler: ISecurityHandlerBase, IRequireServiceOriginator, IRequireDataCollector
     {
         /// <summary>
         /// This method signs the outgoing payload.
