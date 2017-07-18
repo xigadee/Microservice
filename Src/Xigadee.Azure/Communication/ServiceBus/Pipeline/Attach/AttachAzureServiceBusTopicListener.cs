@@ -43,7 +43,7 @@ namespace Xigadee
             where C: IPipelineChannelIncoming<IPipeline>
         {
             var component = new AzureSBTopicListener();
-            Channel channel = cpipe.ChannelResolve(ChannelDirection.Incoming);
+            Channel channel = cpipe.ToChannel(ChannelDirection.Incoming);
 
             component.ConfigureAzureMessaging(
                   channel.Id

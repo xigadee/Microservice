@@ -38,7 +38,7 @@ namespace Test.Xigadee
         private void ChannelInConfigure(IPipelineChannelIncoming<MicroservicePipeline> inPipe)
         {
             inPipe
-                .AttachResourceProfile("TrackIt")
+                .AttachResourceProfile("TrackIt","Track2",("Track3",false))
                 //.AppendBoundaryLogger(new MemoryBoundaryLogger(), (p, bl) => bLogger = bl)
                 ;
 

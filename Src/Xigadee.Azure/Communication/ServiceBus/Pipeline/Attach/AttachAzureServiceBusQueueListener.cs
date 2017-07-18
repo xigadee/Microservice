@@ -39,7 +39,7 @@ namespace Xigadee
         {
 
             var component = new AzureSBQueueListener();
-            Channel channel = cpipe.ChannelResolve(ChannelDirection.Incoming);
+            Channel channel = cpipe.ToChannel(ChannelDirection.Incoming);
 
             component.ConfigureAzureMessaging(
                   channel.Id

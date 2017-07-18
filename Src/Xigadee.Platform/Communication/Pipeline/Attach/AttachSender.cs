@@ -15,10 +15,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -37,7 +34,7 @@ namespace Xigadee
             , bool setFromChannelProperties = true)
             where C: IPipelineChannelOutgoing<IPipeline>
         {
-            Channel channel = cpipe.ChannelResolve(ChannelDirection.Outgoing);
+            Channel channel = cpipe.ToChannel(ChannelDirection.Outgoing);
 
             if (channel.InternalOnly)
                 throw new ChannelInternalOnlyException(channel.Id, channel.Direction);
@@ -57,6 +54,16 @@ namespace Xigadee
             return cpipe;
         }
 
+        /// <summary>
+        /// This method attaches a sender to the outgoing channel.
+        /// </summary>
+        /// <typeparam name="C">The pipeline type.</typeparam>
+        /// <typeparam name="S">The sender type.</typeparam>
+        /// <param name="cpipe">The pipeline.</param>
+        /// <param name="creator">The sender creator function.</param>
+        /// <param name="action">The post-creation action.</param>
+        /// <param name="setFromChannelProperties">The default value is true. This sets the sender properties from the channel.</param>
+        /// <returns>Returns the pipeline</returns>
         public static C AttachSender<C,S>(this C cpipe
             , Func<IEnvironmentConfiguration, S> creator = null
             , Action<S> action = null

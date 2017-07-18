@@ -35,7 +35,7 @@ namespace Xigadee
         public static C AttachTransportPayloadEncryption<C>(this C cpipe, EncryptionHandlerId handler)
             where C : IPipelineChannelOutgoing<IPipeline>
         {
-            Channel channel = cpipe.ChannelResolve(ChannelDirection.Outgoing);
+            Channel channel = cpipe.ToChannel(ChannelDirection.Outgoing);
 
             if (!cpipe.Pipeline.Service.Security.HasEncryptionHandler(handler.Id))
                 throw new EncryptionHandlerNotResolvedException(channel.Id, handler.Id);

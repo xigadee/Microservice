@@ -37,8 +37,8 @@ namespace Xigadee
         {
             if (cpipe is IPipelineChannelBroadcast)
             {
-                cpipe.ChannelResolve(ChannelDirection.Incoming).RedirectAdd(rewriteRule);
-                cpipe.ChannelResolve(ChannelDirection.Outgoing).RedirectAdd(rewriteRule);
+                cpipe.ToChannel(ChannelDirection.Incoming).RedirectAdd(rewriteRule);
+                cpipe.ToChannel(ChannelDirection.Outgoing).RedirectAdd(rewriteRule);
             }
             else
                 cpipe.Channel.RedirectAdd(rewriteRule);

@@ -15,64 +15,29 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
         /// <summary>
-        /// This helper 
+        /// This extension method attaches a listener to an incoming pipeline.
         /// </summary>
-        /// <param name="cpipe"></param>
-        /// <param name="direction"></param>
-        /// <param name="throwIfChannelIsNull"></param>
-        /// <returns></returns>
-        public static Channel ChannelResolve(this IPipelineChannel cpipe, ChannelDirection direction, bool throwIfChannelIsNull = true)
-        {
-            Channel channel = null;
-
-            if (cpipe is IPipelineChannelBroadcast)
-                switch (direction)
-                {
-                    case ChannelDirection.Incoming:
-                        channel = ((IPipelineChannelBroadcast)cpipe).ChannelListener;
-                        break;
-                    case ChannelDirection.Outgoing:
-                        channel = ((IPipelineChannelBroadcast)cpipe).ChannelSender;
-                        break;
-                    default:
-                        throw new NotSupportedException($"ChannelDirection {direction} not supported in {nameof(CorePipelineExtensions)}/{nameof(ChannelResolve)}");
-                }
-            else
-                channel = cpipe.Channel;
-
-            if (channel == null)
-                throw new ArgumentNullException($"The pipe channel is null -> {direction}");
-
-            return channel;
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="cpipe"></param>
-        /// <param name="listener"></param>
-        /// <param name="setFromChannelProperties"></param>
-        /// <returns></returns>
+        /// <param name="cpipe">The pipeline.</param>
+        /// <param name="listener">The listener to attach.</param>
+        /// <param name="setFromChannelProperties">The default value is true. This sets the listener properties from the channel default settings.</param>
+        /// <returns>The pipeline.</returns>
         public static C AttachListener<C>(this C cpipe
             , IListener listener
             , bool setFromChannelProperties = true
             )
             where C: IPipelineChannelIncoming<IPipeline>
         {
-            Channel channel = cpipe.ChannelResolve(ChannelDirection.Incoming);
+            Channel channel = cpipe.ToChannel(ChannelDirection.Incoming);
 
             if (channel.InternalOnly)
                 throw new ChannelInternalOnlyException(channel.Id, channel.Direction);
-
 
             if (setFromChannelProperties)
             {
@@ -91,15 +56,15 @@ namespace Xigadee
         }
 
         /// <summary>
-        /// 
+        /// This extension method attaches a listener to an incoming pipeline.
         /// </summary>
         /// <typeparam name="C"></typeparam>
         /// <typeparam name="S"></typeparam>
-        /// <param name="cpipe"></param>
-        /// <param name="creator"></param>
-        /// <param name="action"></param>
-        /// <param name="setFromChannelProperties"></param>
-        /// <returns></returns>
+        /// <param name="cpipe">The pipeline.</param>
+        /// <param name="creator">The listener creation function.</param>
+        /// <param name="action">The post-creation action that can be used for further configuration or assignment of the listener to an external variable.</param>
+        /// <param name="setFromChannelProperties">The default value is true. This sets the listener properties from the channel default settings.</param>
+        /// <returns>The pipeline.</returns>
         public static C AttachListener<C,S>(this C cpipe
             , Func<IEnvironmentConfiguration, S> creator = null
             , Action<S> action = null
@@ -116,7 +81,5 @@ namespace Xigadee
 
             return cpipe;
         }
-
-
     }
 }

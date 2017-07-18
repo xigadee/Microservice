@@ -17,8 +17,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -49,45 +47,30 @@ namespace Xigadee
             partitions.Add(config);
         }
 
-        //--> Incoming
-
         /// <summary>
-        /// This extension method can be used to attach a priority partition collection to a listening channel.
+        /// This extension method can be used to attach a priority partition to a listener or sender channel using just the priority id.
         /// </summary>
         /// <typeparam name="C">The pipeline type.</typeparam>
         /// <param name="pipeline">The pipeline.</param>
-        /// <param name="config"></param>
+        /// <param name="partitionIDs">The collection of ids</param>
         /// <returns>The pipeline.</returns>
-        public static C AttachPriorityPartition<C>(this C pipeline
-            , ListenerPartitionConfig config)
-            where C: IPipelineChannelIncoming<IPipeline>
-        {
-            AttachPriorityPartition<ListenerPartitionConfig>(pipeline, config);
-            return pipeline;
-        }
-
-        /// <summary>
-        /// This extension method can be used to attach a priority partition to a listening channel.
-        /// </summary>
-        /// <typeparam name="C">The pipeline type.</typeparam>
-        /// <param name="pipeline">The pipeline.</param>
-        /// <param name="init"></param>
-        /// <returns>The pipeline.</returns>
-        public static C AttachPriorityPartition<C>(this C pipeline, params int[] init)
+        public static C AttachPriorityPartition<C>(this C pipeline, params int[] partitionIDs)
             where C : IPipelineChannel
         {
             if (pipeline is IPipelineChannelIncoming)
-                ListenerPartitionConfig.Init(init).ForEach((p) => AttachPriorityPartition<ListenerPartitionConfig>(pipeline, p));
+                partitionIDs.ForEach((p) => AttachPriorityPartition<ListenerPartitionConfig>(pipeline, p));
             else if (pipeline is IPipelineChannelOutgoing)
-                SenderPartitionConfig.Init(init).ForEach((p) => AttachPriorityPartition<SenderPartitionConfig>(pipeline, p));
+                partitionIDs.ForEach((p) => AttachPriorityPartition<SenderPartitionConfig>(pipeline, p));
             else
                 throw new ArgumentOutOfRangeException("AttachPriorityPartition unexpected partition type.");
 
             return pipeline;
         }
 
+        //--> Incoming
+
         /// <summary>
-        /// This extension method can be used to attach a priority partition to a listening channel using a constructor function..
+        /// This extension method can be used to attach a priority partition to a listening channel using a constructor function.
         /// </summary>
         /// <typeparam name="C">The pipeline type.</typeparam>
         /// <param name="pipeline">The pipeline.</param>
@@ -97,23 +80,23 @@ namespace Xigadee
             , Func<IEnvironmentConfiguration, Channel, ListenerPartitionConfig> creator)
             where C : IPipelineChannelIncoming<IPipeline>
         {
-            var config = creator(pipeline.Pipeline.Configuration, pipeline.Channel);
-            AttachPriorityPartition<ListenerPartitionConfig>(pipeline, config);
+            var partition = creator(pipeline.Pipeline.Configuration, pipeline.Channel);
+            AttachPriorityPartition<ListenerPartitionConfig>(pipeline, partition);
             return pipeline;
         }
 
         /// <summary>
-        /// 
+        /// This extension method can be used to attach a priority partition to a listening channel using a collection of ListenerPartitionConfig objects.
         /// </summary>
         /// <typeparam name="C">The pipeline type.</typeparam>
         /// <param name="pipeline">The pipeline.</param>
-        /// <param name="config"></param>
+        /// <param name="partitions"></param>
         /// <returns>The pipeline.</returns>
         public static C AttachPriorityPartition<C>(this C pipeline
-            , params ListenerPartitionConfig[] config)
+            , params ListenerPartitionConfig[] partitions)
             where C : IPipelineChannelIncoming<IPipeline>
         {
-            config?.ForEach((p) => pipeline.AttachPriorityPartition(p));
+            partitions?.ForEach((p) => AttachPriorityPartition<ListenerPartitionConfig>(pipeline, p));
 
             return pipeline;
         }
@@ -121,47 +104,33 @@ namespace Xigadee
         //--> Outgoing
 
         /// <summary>
-        /// 
+        /// This extension method can be used to attach a priority partition to a sender channel using a constructor function.
         /// </summary>
         /// <typeparam name="C">The pipeline type.</typeparam>
         /// <param name="pipeline">The pipeline.</param>
-        /// <param name="config"></param>
-        /// <returns>The pipeline.</returns>
-        public static C AttachPriorityPartition<C>(this C pipeline
-            , SenderPartitionConfig config)
-            where C : IPipelineChannelOutgoing<IPipeline>
-        {
-            AttachPriorityPartition<SenderPartitionConfig>(pipeline, config);
-
-            return pipeline;
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="C">The pipeline type.</typeparam>
-        /// <param name="pipeline">The pipeline.</param>
-        /// <param name="creator"></param>
+        /// <param name="creator">The creator function.</param>
         /// <returns>The pipeline.</returns>
         public static C AttachPriorityPartition<C>(this C pipeline
             , Func<IEnvironmentConfiguration, Channel, SenderPartitionConfig> creator)
             where C : IPipelineChannelOutgoing<IPipeline>
         {
-            var config = creator(pipeline.Pipeline.Configuration, pipeline.Channel);
-            AttachPriorityPartition<SenderPartitionConfig>(pipeline, config);
+            var partition = creator(pipeline.Pipeline.Configuration, pipeline.Channel);
+            AttachPriorityPartition<SenderPartitionConfig>(pipeline, partition);
             return pipeline;
         }
+
         /// <summary>
-        /// 
+        /// This extension method can be used to attach a priority partition to a listening channel using a collection of SenderPartitionConfig objects.
         /// </summary>
         /// <typeparam name="C">The pipeline type.</typeparam>
         /// <param name="pipeline">The pipeline.</param>
-        /// <param name="config"></param>
+        /// <param name="partitions">The SenderPartitionConfig collection.</param>
         /// <returns>The pipeline.</returns>
         public static C AttachPriorityPartition<C>(this C pipeline
-            , params SenderPartitionConfig[] config)
+            , params SenderPartitionConfig[] partitions)
             where C : IPipelineChannelOutgoing<IPipeline>
         {
-            config?.ForEach((p) => pipeline.AttachPriorityPartition(p));
+            partitions?.ForEach((p) => AttachPriorityPartition<SenderPartitionConfig>(pipeline, p));
             return pipeline;
         }
     }

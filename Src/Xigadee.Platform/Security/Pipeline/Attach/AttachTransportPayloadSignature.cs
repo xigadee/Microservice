@@ -35,7 +35,7 @@ namespace Xigadee
         public static C AttachTransportPayloadSignature<C>(this C cpipe, AuthenticationHandlerId handler)
             where C : IPipelineChannelOutgoing<IPipeline>
         {
-            Channel channel = cpipe.ChannelResolve(ChannelDirection.Outgoing);
+            Channel channel = cpipe.ToChannel(ChannelDirection.Outgoing);
 
             if (!cpipe.Pipeline.Service.Security.HasAuthenticationHandler(handler.Id))
                 throw new AuthenticationHandlerNotResolvedException(channel.Id, handler.Id);
