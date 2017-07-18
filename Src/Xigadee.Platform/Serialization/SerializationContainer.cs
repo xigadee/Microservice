@@ -67,6 +67,7 @@ namespace Xigadee
                 statistics.CacheCount = mLookUpCache?.Count ?? 0;
 
                 statistics.Serialization = mPayloadSerializers?.Select((c) => $"{BitConverter.ToString(c.Key)}: {c.Value.GetType().Name}").ToArray();
+                statistics.Cache = mLookUpCache?.Select((c) => $"{c.Key.Name}: {c.Value.GetType().Name}").ToArray();
             }
             catch (Exception)
             {
