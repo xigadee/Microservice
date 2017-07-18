@@ -1,12 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Xigadee
+﻿namespace Xigadee
 {
+    /// <summary>
+    /// This is the statistics collection for the serialization container.
+    /// </summary>
     public class SerializationStatistics: CollectionStatistics
     {
+        /// <summary>
+        /// The cache count.
+        /// </summary>
+        public virtual int CacheCount { get; set; }
+        /// <summary>
+        /// The supported serialization classes.
+        /// </summary>
+        public string[] Serialization { get; set; }
     }
 }

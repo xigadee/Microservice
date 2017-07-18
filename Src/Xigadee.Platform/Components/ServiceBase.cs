@@ -241,8 +241,9 @@ namespace Xigadee
 
         #region StatisticsRecalculate(S statistics)
         /// <summary>
-        /// This method restores the default service behaviour.
+        /// This method is used to update any calculated fields for the specific service statistics.
         /// </summary>
+        /// <param name="statistics">The current statistics.</param>
         protected override void StatisticsRecalculate(S statistics)
         {
         } 

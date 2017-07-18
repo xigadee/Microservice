@@ -35,7 +35,9 @@ namespace Xigadee
         /// This contains the supported serializers.
         /// </summary>
         protected Dictionary<byte[], IPayloadSerializer> mPayloadSerializers;
-
+        /// <summary>
+        /// This is the look up cache for the specific type.
+        /// </summary>
         protected ConcurrentDictionary<Type, IPayloadSerializer> mLookUpCache;
         #endregion
         #region Constructor
@@ -48,6 +50,28 @@ namespace Xigadee
         {
             mPayloadSerializers = new Dictionary<byte[], Xigadee.IPayloadSerializer>();
         }
+        #endregion
+
+        #region StatisticsRecalculate(SerializationStatistics statistics)
+        /// <summary>
+        /// This method is used to update any calculated fields for the specific service statistics.
+        /// </summary>
+        /// <param name="statistics">The current statistics.</param>
+        protected override void StatisticsRecalculate(SerializationStatistics statistics)
+        {
+            base.StatisticsRecalculate(statistics);
+
+            try
+            {
+                statistics.ItemCount = mPayloadSerializers?.Count ?? 0;
+                statistics.CacheCount = mLookUpCache?.Count ?? 0;
+
+                statistics.Serialization = mPayloadSerializers?.Select((c) => $"{BitConverter.ToString(c.Key)}: {c.Value.GetType().Name}").ToArray();
+            }
+            catch (Exception)
+            {
+            }
+        } 
         #endregion
 
         #region StartInternal()
