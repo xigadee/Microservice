@@ -24,6 +24,35 @@ using Xigadee;
 #endregion
 namespace Xigadee
 {
+    public class MasterJobContext
+    {
+        /// <summary>
+        /// This collection holds the list of master job standby partners.
+        /// </summary>
+        public ConcurrentDictionary<string, StandbyPartner> mStandbyPartner;
+        /// <summary>
+        /// The current status.
+        /// </summary>
+        public DateTime? mCurrentMasterReceiveTime;
+
+        public string mCurrentMasterServiceId;
+
+        public int mCurrentMasterPollAttempts;
+
+        public Random mRandom = new Random(Environment.TickCount);
+
+        public DateTime? mMasterJobLastPollTime;
+        /// <summary>
+        /// This holds the master job collection.
+        /// </summary>
+        public Dictionary<Guid, MasterJobHolder> mMasterJobs;
+        /// <summary>
+        /// This is the current state of the MasterJob
+        /// </summary>
+        public MasterJobState mMasterJobState;
+    }
+
+
     public abstract partial class CommandBase<S, P, H>
     {
         #region Declarations
@@ -194,7 +223,6 @@ namespace Xigadee
                 Collector?.LogMessage(LoggingLevel.Warning, $"{rq.Message.ActionType} is not a valid negotiating action type for master job {FriendlyName}", "MasterJob");
             }
         }
-
         #endregion
 
         #region State

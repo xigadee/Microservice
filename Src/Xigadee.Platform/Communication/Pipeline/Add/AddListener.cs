@@ -15,15 +15,18 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
+        /// <summary>
+        /// This extension method adds a listener to the collection.
+        /// </summary>
+        /// <typeparam name="P"></typeparam>
+        /// <param name="pipeline"></param>
+        /// <param name="listener"></param>
+        /// <returns></returns>
         public static P AddListener<P>(this P pipeline, IListener listener)
             where P : IPipeline
         {

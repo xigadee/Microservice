@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Xigadee
@@ -191,20 +187,49 @@ namespace Xigadee
             }
         }
 
+        /// <summary>
+        /// This is the standard TransmissionPayload parameter in information.
+        /// </summary>
         public ParameterInfo StandardIn { get; private set; }
+        /// <summary>
+        /// This is the standard in parameter position.
+        /// </summary>
         public int? StandardInPos { get; private set; }
 
+        /// <summary>
+        /// This is the standard out List/<TransmissionPayload/> parameter information.
+        /// </summary>
         public ParameterInfo StandardOut { get; private set; }
+        /// <summary>
+        /// This is the standard out parameter position.
+        /// </summary>
         public int? StandardOutPos { get; private set; }
 
+        /// <summary>
+        /// This is the in-parameter information.
+        /// </summary>
         public ParameterInfo ParamIn { get; private set; }
+        /// <summary>
+        /// This is the in-parameter position
+        /// </summary>
         public int? ParamInPos { get; private set; }
 
+        /// <summary>
+        /// This is the in-parameter type.
+        /// </summary>
         public Type TypeIn { get; set; }
 
+        /// <summary>
+        /// This is the out-parameter information.
+        /// </summary>
         public ParameterInfo ParamOut { get; private set; }
+        /// <summary>
+        /// This is the out-parameter position
+        /// </summary>
         public int? ParamOutPos { get; private set; }
-
+        /// <summary>
+        /// This is the out parameter type.
+        /// </summary>
         public Type TypeOut { get; set; }
 
         #region Reference(CommandContractAttribute attr)

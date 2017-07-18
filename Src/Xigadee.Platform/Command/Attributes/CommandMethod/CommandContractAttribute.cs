@@ -26,16 +26,29 @@ namespace Xigadee
     [DebuggerDisplay("{ChannelId}/{MessageType}/{ActionType}")]
     public class CommandContractAttribute:Attribute
     {
+        /// <summary>
+        /// This is the default constructor using a three part key.
+        /// </summary>
+        /// <param name="channelId">The channel id.</param>
+        /// <param name="messageType">The message type.</param>
+        /// <param name="actionType">The action type.</param>
         public CommandContractAttribute(string channelId = null, string messageType = null, string actionType = null)
         {
             Header = new ServiceMessageHeader(channelId, messageType, actionType);
         }
-
+        /// <summary>
+        /// This is the default constructor using a two part key where the channelId is derived from the channel that the command is attached to.
+        /// </summary>
+        /// <param name="messageType">The message type.</param>
+        /// <param name="actionType">The action type.</param>
         public CommandContractAttribute(string messageType, string actionType)
         {
             Header = new ServiceMessageHeader(null, messageType, actionType);
         }
-
+        /// <summary>
+        /// This the is the constructor when using a messaging contract.
+        /// </summary>
+        /// <param name="interfaceType">The interface type that inherits from IMessageContract</param>
         public CommandContractAttribute(Type interfaceType)
         {
             if (!interfaceType.IsInterface || interfaceType.IsSubclassOf(typeof(IMessageContract)))
@@ -50,7 +63,7 @@ namespace Xigadee
         }
 
         /// <summary>
-        /// The channelId
+        /// The channel identifier.
         /// </summary>
         public string ChannelId { get { return Header.ChannelId; } }
         /// <summary>

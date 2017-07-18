@@ -11,6 +11,11 @@ namespace Xigadee
     /// </summary>
     public class CommandMethodSignatureException:Exception
     {
+        /// <summary>
+        /// This is the default constructo.
+        /// </summary>
+        /// <param name="message">The error message.</param>
+        /// <param name="ex">The optional exception.</param>
         public CommandMethodSignatureException(string message, Exception ex = null):base(message, ex)
         {
 
