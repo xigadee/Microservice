@@ -30,7 +30,10 @@ namespace Xigadee
         , IRequireSharedServices, IResourceTracker, IRequireDataCollector
     {
         //AKA Dependency Monitor
-        #region Declarations
+        #region Declarations        
+        /// <summary>
+        /// The is the shared service container.
+        /// </summary>
         private ISharedService mSharedServices;
 
         //private Dictionary<Guid, ResourceRateLimiter> mResourceRateLimiters;

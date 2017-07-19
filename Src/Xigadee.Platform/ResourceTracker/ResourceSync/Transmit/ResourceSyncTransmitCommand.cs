@@ -26,8 +26,25 @@ namespace Xigadee
     /// This command is used to syncronise and consolidate resource performance counters and signalling 
     /// across multiple Microservices.
     /// </summary>
-    public class ResourceSyncAggregatorCommand: ResourceSyncCommandBase<ResourceSyncAggregatorCommandStatistics, ResourceSyncAggregatorCommandPolicy>
+    public class ResourceSyncTransmitCommand: ResourceSyncCommandBase<ResourceSyncTransmitCommandStatistics, ResourceSyncTransmitCommandPolicy>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResourceSyncTransmitCommand"/> class.
+        /// </summary>
+        /// <param name="policy">The optional command policy. If this is null, then the policy will be created.</param>
+        public ResourceSyncTransmitCommand(ResourceSyncTransmitCommandPolicy policy = null):base(policy)
+        {
 
+        }
+
+        protected override void StartInternal()
+        {
+            base.StartInternal();
+        }
+
+        protected override void StopInternal()
+        {
+            base.StopInternal();
+        }
     }
 }

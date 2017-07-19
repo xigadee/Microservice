@@ -23,9 +23,19 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This is the default policy for the resource sysnc command.
+    /// This command is used to syncronise and consolidate resource performance counters and signalling 
+    /// across multiple Microservices.
     /// </summary>
-    public class ResourceSyncAggregatorCommandPolicy: CommandPolicy
+    public class ResourceSyncReceiveCommand: ResourceSyncCommandBase<ResourceSyncReceiveCommandStatistics, ResourceSyncReceiveCommandPolicy>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResourceSyncReceiveCommand"/> class.
+        /// </summary>
+        /// <param name="policy">The optional command policy. If this is null, then the policy will be created.</param>
+        public ResourceSyncReceiveCommand(ResourceSyncReceiveCommandPolicy policy):base(policy)
+        {
+
+        }
+
     }
 }

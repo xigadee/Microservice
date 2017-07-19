@@ -15,15 +15,11 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
     /// <summary>
-    /// This interface is used by a resource consumer.
+    /// This interface is used by a resource consumer to track resource usage.
     /// </summary>
     public interface IResourceConsumer: IResourceBase
     {
@@ -32,27 +28,30 @@ namespace Xigadee
         /// </summary>
         /// <param name="group"></param>
         /// <param name="requestId"></param>
-        /// <returns>Returns the tracking identifier.</returns>
+        /// <returns>Returns the tracking identifier profileId.</returns>
         Guid Start(string group, Guid requestId);
         /// <summary>
-        /// 
+        /// This method is used to mark the end of a resource request.
         /// </summary>
-        /// <param name="profileId"></param>
-        /// <param name="start"></param>
+        /// <param name="profileId">The tracking profile id.</param>
+        /// <param name="start">The tick count start.</param>
         /// <param name="result"></param>
         void End(Guid profileId, int start, ResourceRequestResult result);
         /// <summary>
-        /// 
+        /// This method is used to mark a retry for a resource request.
         /// </summary>
-        /// <param name="profileId"></param>
+        /// <param name="profileId">The tracking profile id.</param>
         /// <param name="retryStart"></param>
         /// <param name="reason"></param>
         void Retry(Guid profileId, int retryStart, ResourceRetryReason reason);
         /// <summary>
-        /// 
+        /// This method is used to record an exception when making a resource request.
         /// </summary>
-        /// <param name="profileId"></param>
+        /// <param name="profileId">The tracking profile id.</param>
         /// <param name="retryStart"></param>
         void Exception(Guid profileId, int retryStart);
+
+        //void CircuitBreakerOpen(int openPeriod);
+        //void CircuitBreakerSet(CircuitBreakerState, int openPeriod);
     }
 }

@@ -15,10 +15,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -28,7 +24,7 @@ namespace Xigadee
     public interface IResourceBase
     {
         /// <summary>
-        /// This Id of the resource.
+        /// This is the internal id of the resource.
         /// </summary>
         Guid ResourceId { get; }
     }

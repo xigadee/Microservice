@@ -26,10 +26,17 @@ namespace Xigadee
     /// This command is used to syncronise and consolidate resource performance counters and signalling 
     /// across multiple Microservices.
     /// </summary>
-    public class ResourceSyncCommandBase<S, P>: CommandBase<S, P>
+    public abstract class ResourceSyncCommandBase<S, P>: CommandBase<S, P>
         where S : CommandStatistics, new()
         where P : CommandPolicy, new()
     {
+        /// <summary>
+        /// Initializes a new instance of the class.
+        /// </summary>
+        /// <param name="policy">The optional command policy. If this is null, then the policy will be created.</param>
+        protected ResourceSyncCommandBase(P policy):base(policy)
+        {
 
+        }
     }
 }

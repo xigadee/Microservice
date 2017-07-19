@@ -322,6 +322,7 @@ namespace Xigadee
 
                             do
                             {
+                                //Set the time stamp for the beginning of the resource request.
                                 int attempt = Environment.TickCount;
 
                                 //Create the payloadRs holder, and discard any previous version.
