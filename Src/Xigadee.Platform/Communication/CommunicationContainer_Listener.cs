@@ -78,6 +78,18 @@ namespace Xigadee
                         , "Communication: Listeners Priority Recalculate"
                         , TimeSpan.FromMinutes(1)
                         , isInternal: true);
+
+
+                //Do we have a poll recalculate frequency set in the algorithm.
+                if (mPolicy.ListenerClientPollAlgorithm.PriorityRebuildFrequency.HasValue)
+                    //If so, set the reschedule priority.
+                    mClientRecalculateSchedule = Scheduler.Register(
+                        async (s, cancel) => await ListenersPriorityRecalculate(true)
+                        , mPolicy.ListenerClientPollAlgorithm.PriorityRebuildFrequency.Value
+                        , "Communication: Listeners Priority Rebuild"
+                        , TimeSpan.FromMinutes(1)
+                        , isInternal: true);
+
             }
             catch (Exception ex)
             {
@@ -113,10 +125,14 @@ namespace Xigadee
             if (Status != ServiceStatus.Running)
                 return Task.FromResult(0);
 
-            if (!rebuild && mClientCollection != null)
-                mClientCollection.Reprioritise();
-            else
-                try
+            try
+            {
+                if (!rebuild && mClientCollection != null)
+                {
+                    mClientCollection.Reprioritise();
+                    Collector?.LogMessage(LoggingLevel.Trace, $"ListenersPriorityRecalculate completed {mListenersPriorityIteration}.");
+                }
+                else
                 {
                     //We do an atomic switch to add in a new priority list.
                     var newColl = new ClientPriorityCollection(
@@ -132,12 +148,13 @@ namespace Xigadee
                     //Close the old collection, note that it will be null the first time.
                     oldColl?.Close();
 
-                    Collector?.LogMessage(LoggingLevel.Trace, $"ListenersPriorityRecalculate completed {mListenersPriorityIteration}.");
+                    Collector?.LogMessage(LoggingLevel.Trace, $"ListenersPriorityRebuild completed {mListenersPriorityIteration}.");
                 }
-                catch (Exception ex)
-                {
-                    Collector?.LogException("ListenersPriorityCalculate failed. Using the old collection.", ex);
-                }
+            }
+            catch (Exception ex)
+            {
+                Collector?.LogException("ListenersPriorityCalculate failed.", ex);
+            }
 
             return Task.FromResult(0);
         }

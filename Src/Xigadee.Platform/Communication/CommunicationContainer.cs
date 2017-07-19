@@ -100,6 +100,7 @@ namespace Xigadee
             mContainerOutgoing = new Dictionary<string, Channel>();
         }
         #endregion
+
         #region StatisticsRecalculate()
         /// <summary>
         /// This method recalculates the statistics for the communication holder.

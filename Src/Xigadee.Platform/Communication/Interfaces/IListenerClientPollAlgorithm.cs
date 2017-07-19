@@ -42,7 +42,14 @@ namespace Xigadee
         /// This is the priority recalculate frequency. Leave this null if you do not wish it to recalculate.
         /// </summary>
         TimeSpan? PriorityRecalculateFrequency { get; }
+        /// <summary>
+        /// The is the frequency that the client collection should be occassionally rebuilt. The default is every 30 minutes.
+        /// </summary>
+        TimeSpan? PriorityRebuildFrequency { get; }
 
+        /// <summary>
+        /// Gets the name of the algorithm.
+        /// </summary>
         string Name { get; }
 
         TimeSpan FabricPollWaitMin { get; }

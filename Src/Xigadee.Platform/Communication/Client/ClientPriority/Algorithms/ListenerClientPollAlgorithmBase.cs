@@ -36,7 +36,8 @@ namespace Xigadee
         /// </summary>
         /// <param name="name">Defaults to the class name.</param>
         /// <param name="allowedOverage">Defaults to 5.</param>
-        /// <param name="priorityRecalculateFrequency">Defaults to 10 minutes.</param>
+        /// <param name="priorityRecalculateFrequency">Defaults to every 10 seconds.</param>
+        /// <param name="priorityRebuildFrequency">Defaults to 30 minutes.</param>
         /// <param name="maxAllowedWaitBetweenPolls">Defaults to 1 second.</param>
         /// <param name="minExpectedWaitBetweenPolls">Defaults to 100ms.</param>
         /// <param name="fabricPollWaitMin">Defaults to 100ms.</param>
@@ -48,6 +49,7 @@ namespace Xigadee
             string name = null
             , int? allowedOverage = null
             , TimeSpan? priorityRecalculateFrequency = null
+            , TimeSpan? priorityRebuildFrequency = null
             , TimeSpan? maxAllowedWaitBetweenPolls = null
             , TimeSpan? minExpectedWaitBetweenPolls = null
             , TimeSpan? fabricPollWaitMin = null
@@ -59,7 +61,10 @@ namespace Xigadee
         {
             Name = name ?? GetType().Name;
             AllowedOverage = allowedOverage ?? 5;
-            PriorityRecalculateFrequency = priorityRecalculateFrequency ?? TimeSpan.FromMinutes(10);
+
+            PriorityRecalculateFrequency = priorityRecalculateFrequency ?? TimeSpan.FromSeconds(10);
+            PriorityRebuildFrequency = priorityRebuildFrequency ?? TimeSpan.FromMinutes(30);
+
             MaxAllowedWaitBetweenPolls = maxAllowedWaitBetweenPolls ?? TimeSpan.FromSeconds(1);
             MinExpectedWaitBetweenPolls = minExpectedWaitBetweenPolls ?? TimeSpan.FromMilliseconds(100);
             FabricPollWaitMin = fabricPollWaitMin ?? TimeSpan.FromMilliseconds(100);
@@ -77,7 +82,10 @@ namespace Xigadee
         /// <summary>
         /// This is the priority recalculate frequency. Leave this null if you do not wish it to recalculate.
         /// </summary>
-        public TimeSpan? PriorityRecalculateFrequency { get; } 
+        public TimeSpan? PriorityRecalculateFrequency { get; }
+
+        public TimeSpan? PriorityRebuildFrequency { get; }
+
         /// <summary>
         /// This is the maximum time between polls for a client. The default is 1 second.
         /// </summary>
