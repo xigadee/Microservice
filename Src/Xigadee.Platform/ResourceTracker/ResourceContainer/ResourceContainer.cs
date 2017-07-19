@@ -33,7 +33,7 @@ namespace Xigadee
         #region Declarations
         private ISharedService mSharedServices;
 
-        private Dictionary<Guid, ResourceRateLimiter> mResourceRateLimiters;
+        //private Dictionary<Guid, ResourceRateLimiter> mResourceRateLimiters;
         private Dictionary<Guid, ResourceConsumer> mResourceResourceConsumer;
 
         private ConcurrentDictionary<string, ResourceStatistics> mResources;
@@ -48,7 +48,7 @@ namespace Xigadee
         {
             mResources = new ConcurrentDictionary<string, ResourceStatistics>();
 
-            mResourceRateLimiters = new Dictionary<Guid, ResourceRateLimiter>();
+            //mResourceRateLimiters = new Dictionary<Guid, ResourceRateLimiter>();
 
             mResourceResourceConsumer = new Dictionary<Guid, ResourceConsumer>();
         }
@@ -105,8 +105,8 @@ namespace Xigadee
             if (mResources != null)
                 stats.Resources = mResources.Values.ToArray();
 
-            if (mResourceRateLimiters != null)
-                stats.RateLimiters = mResourceRateLimiters.Values.Select((v) => v.Debug).ToArray();
+            //if (mResourceRateLimiters != null)
+            //    stats.RateLimiters = mResourceRateLimiters.Values.Select((v) => v.Debug).ToArray();
         } 
         #endregion
 
@@ -161,8 +161,9 @@ namespace Xigadee
             var stats = list.Select((p) => ResourceStatisticsCreateOrGet(p)).ToList();
 
             var limiter = new ResourceRateLimiter(name, stats);
+
             //BUG: 200 in VSTS
-            mResourceRateLimiters.Add(limiter.ResourceId, limiter);
+            //mResourceRateLimiters.Add(limiter.ResourceId, limiter);
 
             return limiter;
         }

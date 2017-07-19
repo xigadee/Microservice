@@ -130,7 +130,7 @@ namespace Xigadee
                 if (!rebuild && mClientCollection != null)
                 {
                     mClientCollection.Reprioritise();
-                    Collector?.LogMessage(LoggingLevel.Trace, $"ListenersPriorityRecalculate completed {mListenersPriorityIteration}.");
+                    Collector?.LogMessage(LoggingLevel.Info, $"ListenersPriorityRecalculate completed {mListenersPriorityIteration}.");
                 }
                 else
                 {
@@ -148,7 +148,7 @@ namespace Xigadee
                     //Close the old collection, note that it will be null the first time.
                     oldColl?.Close();
 
-                    Collector?.LogMessage(LoggingLevel.Trace, $"ListenersPriorityRebuild completed {mListenersPriorityIteration}.");
+                    Collector?.LogMessage(LoggingLevel.Info, $"ListenersPriorityRebuild completed {mListenersPriorityIteration}.");
                 }
             }
             catch (Exception ex)
