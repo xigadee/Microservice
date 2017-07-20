@@ -13,25 +13,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Xigadee
 {
     /// <summary>
-    /// This enumeration specifies the mode used for the bridge.
+    /// This class is a shortcut to create a simple client/server communication bridge.
     /// </summary>
-    public enum CommunicationBridgeMode
+    public class ClientServerManualCommunicationBridge
     {
-        /// <summary>
-        /// In round robin mode a response message is only sent to a single recipient.
-        /// </summary>
-        RoundRobin,
-        /// <summary>
-        /// In broadcast mode a response message is sent to all recipients.
-        /// </summary>
-        Broadcast,
-        /// <summary>
-        /// The mode is not used by the agent.
-        /// </summary>
-        NotUsed
+        CommunicationBridge bridgeOut = new CommunicationBridge(CommunicationBridgeMode.RoundRobin);
+        CommunicationBridge bridgeReturn = new CommunicationBridge(CommunicationBridgeMode.Broadcast);
+
+
+
     }
 }

@@ -41,7 +41,6 @@ namespace Xigadee
         {
             Agent = agent ?? new ManualCommunicationBridgeAgent(mode);
         }
-
         #endregion
 
         #region Agent
@@ -73,6 +72,5 @@ namespace Xigadee
         {
             return Agent.GetSender();
         }
-
     }
 }

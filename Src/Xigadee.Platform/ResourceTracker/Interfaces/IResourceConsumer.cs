@@ -52,6 +52,7 @@ namespace Xigadee
         void Exception(Guid profileId, int retryStart);
 
         //void CircuitBreakerOpen(int openPeriod);
+        //void CircuitBreakerClose();
         //void CircuitBreakerSet(CircuitBreakerState, int openPeriod);
     }
 }

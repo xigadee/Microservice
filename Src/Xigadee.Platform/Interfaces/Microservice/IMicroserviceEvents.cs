@@ -62,7 +62,7 @@ namespace Xigadee
         /// </summary>
         event EventHandler<StatisticsEventArgs> StatisticsIssued;
         /// <summary>
-        /// This event will be thrown if an incoming message cannot be resolved against a command.
+        /// This event will be thrown if an incoming message cannot be resolved against a command or an outgoing channel.
         /// </summary>
         event EventHandler<DispatcherRequestUnresolvedEventArgs> ProcessRequestUnresolved;
         /// <summary>

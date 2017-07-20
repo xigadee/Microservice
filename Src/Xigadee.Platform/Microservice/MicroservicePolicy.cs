@@ -38,26 +38,32 @@ namespace Xigadee
         /// <summary>
         /// This setting sets the dispatcher action if an incoming message cannnot be resolved.
         /// </summary>
-        public DispatcherUnhandledMessageAction DispatcherUnhandledMode { get; set; } = DispatcherUnhandledMessageAction.AttemptResponseFailMessage;
+        public DispatcherUnhandledAction DispatcherUnresolvedRequestMode { get; set; } = DispatcherUnhandledAction.AttemptResponseFailMessage;
+
+        /// <summary>
+        /// This setting sets the dispatcher action if an outgoing channel cannnot be resolved.
+        /// </summary>
+        public DispatcherUnhandledAction DispatcherInvalidChannelMode { get; set; } = DispatcherUnhandledAction.AttemptResponseFailMessage;
 
     }
 
     /// <summary>
     /// This enum specifies the behaviour to take when receiving an unhandled message.
     /// </summary>
-    public enum DispatcherUnhandledMessageAction
+    public enum DispatcherUnhandledAction
     {
         /// <summary>
         /// An exception will be raised and logged.
         /// </summary>
         Exception,
         /// <summary>
-        /// The message will be logged an ignored.
+        /// The message will be logged and ignored.
         /// </summary>
         Ignore,
         /// <summary>
-        /// The dispatcher will attempt to send a response to the sender.
+        /// The dispatcher will attempt to send a 500 error response to the originating sender.
         /// </summary>
         AttemptResponseFailMessage
     }
+
 }

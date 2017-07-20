@@ -125,7 +125,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                mDataCollection?.LogException("OnExecuteComplete / external exception thrown on event", ex);
+                mDataCollection?.LogException("ExecuteComplete event / external exception thrown on event", ex);
             }
         }
         #endregion
@@ -135,17 +135,16 @@ namespace Xigadee
         /// <summary>
         /// This method is called when an incoming request cannot be matched to a command within the Microservice.
         /// </summary>
-        /// <param name="payload">The request payload.</param>
-        /// <param name="reason">The reason the request was unsesolved</param>
-        internal virtual void OnProcessRequestUnresolved(TransmissionPayload payload, DispatcherRequestUnresolvedReason reason)
+        /// <param name="args">The error arguments.</param>
+        internal virtual void OnProcessRequestUnresolved(DispatcherRequestUnresolvedEventArgs args)
         {
             try
             {
-                ProcessRequestUnresolved?.Invoke(this, new DispatcherRequestUnresolvedEventArgs() { Payload = payload, Reason = reason });
+                ProcessRequestUnresolved?.Invoke(this, args);
             }
             catch (Exception ex)
             {
-                mDataCollection?.LogException("OnUnhandledRequest / external exception thrown on event", ex);
+                mDataCollection?.LogException("ProcessRequestUnresolved event / external exception thrown on event", ex);
             }
         }
         #endregion
@@ -159,11 +158,11 @@ namespace Xigadee
         {
             try
             {
-                ProcessRequestError?.Invoke(this, new ProcessRequestErrorEventArgs() { Payload = payload, Ex = pex });
+                ProcessRequestError?.Invoke(this, new ProcessRequestErrorEventArgs(payload, pex));
             }
             catch (Exception ex)
             {
-                mDataCollection?.LogException("OnUnhandledRequest / external exception thrown on event", ex);
+                mDataCollection?.LogException("ProcessRequestError event / external exception thrown on event", ex);
             }
         }
         #endregion
@@ -180,7 +179,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                mDataCollection?.LogException("OnStartRequested / external exception thrown on event", ex);
+                mDataCollection?.LogException("StartRequested event / external exception thrown on event", ex);
             }
         }
         #endregion
@@ -197,7 +196,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                mDataCollection?.LogException("OnStartCompleted / external exception thrown on event", ex);
+                mDataCollection?.LogException("StartCompleted event / external exception thrown on event", ex);
             }
         }
         #endregion
@@ -214,7 +213,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                mDataCollection?.LogException("OnStopRequested / external exception thrown on event", ex);
+                mDataCollection?.LogException("StopRequested event / external exception thrown on event", ex);
             }
         }
         #endregion
@@ -230,7 +229,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                mDataCollection?.LogException("OnStopCompleted / external exception thrown on event", ex);
+                mDataCollection?.LogException("StopCompleted event / external exception thrown on event", ex);
             }
         }
         #endregion
@@ -248,7 +247,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                mDataCollection?.LogException("Action_OnStatistics / external exception thrown on event", ex);
+                mDataCollection?.LogException("StatisticsIssued event / external exception thrown on event", ex);
             }
         }
         #endregion

@@ -98,6 +98,7 @@
     <Compile Include="Command\Helper\CommandHolderException.cs" />
     <Compile Include="Command\Helper\CommandTimeoutSchedule.cs" />
     <Compile Include="Command\Pipeline\AssignMasterJob.cs" />
+    <Compile Include="Communication\CommunicationBridge\Manual\Bridge\ClientServerManualCommunicationBridge.cs" />
     <Compile Include="Communication\Interfaces\IMessagingService.cs" />
     <Compile Include="Communication\Base\MessagingHarness.cs" />
     <Compile Include="Communication\CommunicationBridge\CommunicationBridge.cs" />

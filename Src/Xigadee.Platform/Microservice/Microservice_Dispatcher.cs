@@ -253,24 +253,9 @@ namespace Xigadee
                 return;
             }
 
-            //OK, we have an problem. We log this as an error and get out of here.
-            mDataCollection.DispatcherPayloadUnresolved(request.Payload, DispatcherRequestUnresolvedReason.MessageHandler);
-
-            //Raise an event for the unresolved wrapper
-            mEventsWrapper.OnProcessRequestUnresolved(request.Payload, DispatcherRequestUnresolvedReason.MessageHandler);
-
-            switch (Policy.Microservice.DispatcherUnhandledMode)
-            {
-                case DispatcherUnhandledMessageAction.Ignore:
-                    //request.IsSuccess = !request.IsFaulted;
-                    break;
-                case DispatcherUnhandledMessageAction.AttemptResponseFailMessage:
-                    //request.IsSuccess = true;
-                    break;
-                case DispatcherUnhandledMessageAction.Exception:
-                    //request.IsSuccess = true;
-                    break;
-            }
+            ProcessUnhandledPayload(Policy.Microservice.DispatcherUnresolvedRequestMode
+                , DispatcherRequestUnresolvedReason.MessageHandlerNotFound
+                , request.Payload);
         }
         #endregion
         #region TransmitResponses(TransmissionPayloadState request)
@@ -337,12 +322,51 @@ namespace Xigadee
             bool isSuccess = await mCommunication.Send(Payload);
             if (!isSuccess)
             {
-                mDataCollection.DispatcherPayloadUnresolved(Payload, DispatcherRequestUnresolvedReason.ChannelOutgoing);
-
-                mEventsWrapper.OnProcessRequestUnresolved(Payload, DispatcherRequestUnresolvedReason.ChannelOutgoing);
+                ProcessUnhandledPayload(Policy.Microservice.DispatcherInvalidChannelMode
+                    , DispatcherRequestUnresolvedReason.ChannelOutgoingNotFound
+                    , Payload);
             }
             return isSuccess;
-        } 
+        }
         #endregion
+
+        /// <summary>
+        /// This method processes an unhandled payload.
+        /// </summary>
+        /// <param name="policy">The action policy.</param>
+        /// <param name="reason">The unhandled reason.</param>
+        /// <param name="payload">The payload.</param>
+        protected virtual void ProcessUnhandledPayload(DispatcherUnhandledAction policy
+            , DispatcherRequestUnresolvedReason reason
+            , TransmissionPayload payload)
+        {
+            //OK, we have an problem. We log this as an error and get out of here.
+            mDataCollection.DispatcherPayloadUnresolved(payload, reason);
+
+            var args = new DispatcherRequestUnresolvedEventArgs(payload, reason, policy);
+
+            //Raise an event for the unresolved wrapper
+            mEventsWrapper.OnProcessRequestUnresolved(args);
+
+            //Process the policy. Note this can be changed in the response.
+            switch (args.Policy)
+            {
+                case DispatcherUnhandledAction.Ignore:
+                    break;
+                case DispatcherUnhandledAction.AttemptResponseFailMessage:
+                    if (!payload.CanRespond())
+                        break;
+
+                    var response = payload.ToResponse();
+                    response.Message.StatusSet(501,args.Reason.ToString());
+                    response.Message.ChannelPriority = -1;
+                    Dispatch.Process(response);
+                    //request.IsSuccess = true;
+                    break;
+                case DispatcherUnhandledAction.Exception:
+                    //request.IsSuccess = true;
+                    break;
+            }
+        }
     }
 }

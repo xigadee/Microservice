@@ -108,7 +108,5 @@ namespace Xigadee
             pipeline.Service.Commands.Register(command);
             return pipeline;
         }
-
-
     }
 }

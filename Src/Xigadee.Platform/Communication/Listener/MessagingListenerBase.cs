@@ -63,7 +63,7 @@ namespace Xigadee
         /// </summary>
         public virtual void Update(List<MessageFilterWrapper> supported)
         {
-            var newList = supported.Where((m) => m.Header.ChannelId == (MappingChannelId ?? ChannelId)).ToList();
+            var newList = supported.Where((m) => string.Equals(m.Header.ChannelId, (MappingChannelId ?? ChannelId), StringComparison.InvariantCultureIgnoreCase)).ToList();
             var oldList = mSupportedMessageTypes;
 
             ClientsValidate(oldList, newList);

@@ -110,6 +110,11 @@ namespace Xigadee
                 payload.Message.Blob = PayloadSerializer.PayloadSerialize(rq);
 
                 payload.Message.ResponseChannelId = ResponseChannelId;
+
+                payload.Message.ResponseChannelId = ResponseId.Header.ChannelId;
+                payload.Message.ResponseMessageType = ResponseId.Header.MessageType;
+                payload.Message.ResponseActionType = ResponseId.Header.ActionType;
+
                 payload.Message.ResponseChannelPriority = payload.Message.ChannelPriority;
 
                 payload.Message.ChannelId = ChannelId;

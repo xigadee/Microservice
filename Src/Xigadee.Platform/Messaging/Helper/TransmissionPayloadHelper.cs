@@ -42,5 +42,12 @@ namespace Xigadee
             
             return new TransmissionPayload(rsMessage);
         }
+
+        public static bool CanRespond(this TransmissionPayload incoming)
+        {
+            var m = incoming.Message;
+            
+            return !string.IsNullOrEmpty(m.ResponseChannelId);
+        }
     }
 }

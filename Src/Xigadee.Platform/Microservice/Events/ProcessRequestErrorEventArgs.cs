@@ -15,15 +15,32 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class ProcessRequestErrorEventArgs: DispatcherRequestUnresolvedEventArgs
+    /// <summary>
+    /// This event args class is used to signal a command processing exception.
+    /// </summary>
+    /// <seealso cref="Xigadee.MicroserviceEventArgs" />
+    public class ProcessRequestErrorEventArgs: MicroserviceEventArgs
     {
-        public Exception Ex { get; set; }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProcessRequestErrorEventArgs"/> class.
+        /// </summary>
+        /// <param name="payload">The payload.</param>
+        /// <param name="ex">The exception.</param>
+        public ProcessRequestErrorEventArgs(TransmissionPayload payload, Exception ex)
+        {
+            Payload = payload;
+            Ex = ex;
+        }
+        /// <summary>
+        /// The originating payload.
+        /// </summary>
+        public TransmissionPayload Payload { get; }
+        /// <summary>
+        /// The uncaught exception raised during command execution.
+        /// </summary>
+        public Exception Ex { get;  }
     }
 }

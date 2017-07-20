@@ -54,7 +54,35 @@ namespace Test.Xigadee
 
                 var pClient = new MicroservicePipeline("Client");
                 var pServer = new MicroservicePipeline("Server");
-                    
+
+                pServer
+                    .AdjustPolicyTaskManagerForDebug()
+                    .AddDebugMemoryDataCollector(out collector2)
+                    .AddPayloadSerializerDefaultJson()
+                    .AddChannelIncoming("internalIn", internalOnly: false
+                        , autosetPartition01: false
+                        , assign: (p, c) => cpipeIn = p)
+                        .AttachPriorityPartition((0, 1.0M), (1, 0.9M))
+                        .AttachListener(bridgeOut.GetListener())
+                        .AttachMessagePriorityOverrideForResponse()
+                        .AttachCommand((CommandInlineContext ctx) =>
+                        {
+                            var payload = ctx.DtoGet<Blah>();
+                            ctx.ResponseSet(200, payload.Message);
+                            return Task.FromResult(0);
+                        }, ("franky", "johnny5"))
+                        .AttachCommand((CommandInlineContext ctx) =>
+                        {
+                            var payload = ctx.DtoGet<Blah>();
+                            ctx.ResponseSet(201, payload.Message);
+                            return Task.FromResult(0);
+                        }, ("franky", "johnny6"))
+                        .Revert()
+                    .AddChannelOutgoing("return")
+                        .AttachSender(bridgeReturn.GetSender())
+                        .Revert();
+                        ;
+
                 pClient
                     .AdjustPolicyTaskManagerForDebug()
                     .AddDebugMemoryDataCollector(out collector1)
@@ -76,35 +104,8 @@ namespace Test.Xigadee
                         , assign: (p,c) => cpipeOut = p)
                         .AttachPriorityPartition(0, 1)
                         .AttachSender(bridgeOut.GetSender())
-                        .Revert();
-
-                pServer
-                    .AdjustPolicyTaskManagerForDebug()
-                    .AddDebugMemoryDataCollector(out collector2)
-                    .AddPayloadSerializerDefaultJson()
-                    .AddChannelIncoming("internalIn", internalOnly: false
-                        , autosetPartition01: false
-                        , assign: (p, c) => cpipeIn = p)
-                        .AttachPriorityPartition((0,1.0M), (1,0.9M))
-                        .AttachListener(bridgeOut.GetListener())
-                        .AttachMessagePriorityOverrideForResponse()
-                        .AttachCommand((CommandInlineContext ctx) =>
-                        {
-                            var payload = ctx.DtoGet<Blah>();
-                            ctx.ResponseSet(200, payload.Message);
-                            return Task.FromResult(0);
-                        }, ("franky", "johnny5"))
-                        .AttachCommand((CommandInlineContext ctx) =>
-                        {
-                            var payload = ctx.DtoGet<Blah>();
-                            ctx.ResponseSet(201, payload.Message);
-                            return Task.FromResult(0);
-                        }, ("franky", "johnny6"))
                         .Revert()
-                    .AddChannelOutgoing("return")
-                        .AttachSender(bridgeReturn.GetSender())
-                        .Revert();
-                    ;
+                        ;
 
                 pClient.Start();
                 pServer.Start();
