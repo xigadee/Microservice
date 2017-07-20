@@ -40,8 +40,9 @@ namespace Test.Xigadee
         {
             try
             {
-                DebugMemoryDataCollector collector1, collector2;
-                ICommandInitiator init = null;
+                DebugMemoryDataCollector collector1,collector1a, collector2;
+                CommandInitiator init = null;
+                CommandInitiator init2 = null;
 
                 IPipelineChannelIncoming<MicroservicePipeline> cpipeIn = null;
                 IPipelineChannelOutgoing<MicroservicePipeline> cpipeOut = null;
@@ -53,6 +54,7 @@ namespace Test.Xigadee
                 //bridgeReturn.Agent.OnException += (o, e) => { if (e.Payload.Extent.Days == 42) init.ToString(); };
 
                 var pClient = new MicroservicePipeline("Client");
+                var pClient2 = new MicroservicePipeline("Client2");
                 var pServer = new MicroservicePipeline("Server");
 
                 pServer
@@ -97,7 +99,7 @@ namespace Test.Xigadee
                     .AddChannelIncoming("return")
                         .AttachListener(bridgeReturn.GetListener())
                         .AttachMessagePriorityOverrideForResponse()
-                        .AttachICommandInitiator(out init)
+                        .AttachCommandInitiator(out init)
                         .Revert()
                     .AddChannelOutgoing("internalIn", internalOnly: false
                         , autosetPartition01: false
@@ -107,8 +109,36 @@ namespace Test.Xigadee
                         .Revert()
                         ;
 
+
+                pClient2
+                    .AdjustPolicyTaskManagerForDebug()
+                    .AddDebugMemoryDataCollector(out collector1a)
+                    .AddChannelIncoming("spooky", internalOnly: true)
+                        .AttachCommand((CommandInlineContext ctx) =>
+                        {
+                            var payload = ctx.DtoGet<Blah>();
+                            ctx.ResponseSet(200, payload.Message);
+                            return Task.FromResult(0);
+                        }, ("franky", "johnny5"))
+                        .Revert()
+                    .AddChannelIncoming("return")
+                        .AttachListener(bridgeReturn.GetListener())
+                        .AttachMessagePriorityOverrideForResponse()
+                        .AttachCommandInitiator(out init2)
+                        .Revert()
+                    .AddChannelOutgoing("internalIn", internalOnly: false
+                        , autosetPartition01: false)
+                        .AttachPriorityPartition(0, 1)
+                        .AttachSender(bridgeOut.GetSender())
+                        .Revert()
+                        ;
+
                 pClient.Start();
+                pClient2.Start();
                 pServer.Start();
+
+                init.OnRequestUnresolved += Init_OnRequestUnresolved;
+                init2.OnRequestUnresolved += Init_OnRequestUnresolved;
 
                 var list = new List<Task<ResponseWrapper<string>>>();
 
@@ -123,12 +153,18 @@ namespace Test.Xigadee
                 result.ForEach((r) => Assert.IsTrue(r.ResponseCode == 200 || r.ResponseCode == 201));
 
                 pClient.Stop();
+                pClient2.Stop();
                 pServer.Stop();
             }
             catch (Exception ex)
             {
                 Assert.Fail(ex.Message);
             }
+        }
+
+        private void Init_OnRequestUnresolved(object sender, TransmissionPayload e)
+        {
+
         }
     }
 }

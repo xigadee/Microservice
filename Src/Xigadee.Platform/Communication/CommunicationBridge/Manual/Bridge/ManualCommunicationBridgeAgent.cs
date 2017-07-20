@@ -97,7 +97,6 @@ namespace Xigadee
         } 
         #endregion
 
-
         private void Sender_OnProcess(object sender, TransmissionPayload e)
         {
             try
@@ -128,16 +127,17 @@ namespace Xigadee
         private void Sender_TransmitRoundRobin(TransmissionPayload e, long count)
         {
             int position = (int)(count % mListeners.Count);
-            SenderTransmit(position, e);
+            Sender_Transmit(position, e);
         }
 
         private void Sender_TransmitBroadcast(TransmissionPayload e, long count)
         {
-            for (int c = 0; c < mListeners.Count; c++)
-                SenderTransmit(c, e);
+            Enumerable.Range(0,mListeners.Count).AsParallel().ForEach((c) => Sender_Transmit(c, e));
+            //for (int c = 0; c < mListeners.Count; c++)
+            //    Sender_Transmit(c, e);
         }
 
-        private void SenderTransmit(int pos, TransmissionPayload e)
+        private void Sender_Transmit(int pos, TransmissionPayload e)
         {
             var listener = mListeners[pos];
 

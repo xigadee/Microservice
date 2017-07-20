@@ -27,10 +27,35 @@ namespace Xigadee
     /// </summary>
     public class ClientServerManualCommunicationBridge
     {
-        CommunicationBridge bridgeOut = new CommunicationBridge(CommunicationBridgeMode.RoundRobin);
-        CommunicationBridge bridgeReturn = new CommunicationBridge(CommunicationBridgeMode.Broadcast);
+        CommunicationBridge mToServer;
+        CommunicationBridge mToClient;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ClientServerManualCommunicationBridge"/> class.
+        /// </summary>
+        public ClientServerManualCommunicationBridge()
+        {
+            mToServer = new CommunicationBridge(CommunicationBridgeMode.RoundRobin);
+            mToClient = new CommunicationBridge(CommunicationBridgeMode.Broadcast);
+        }
 
+        ///// <summary>
+        ///// This method returns a new listener.
+        ///// </summary>
+        ///// <returns>The listener.</returns>
+        //public IListener ServerGetListener()
+        //{
+        //    return Agent.GetListener();
+        //}
+
+        ///// <summary>
+        ///// This method returns a new sender.
+        ///// </summary>
+        ///// <returns>The sender.</returns>
+        //public ISender GetSender()
+        //{
+        //    return Agent.GetSender();
+        //}
 
     }
 }
