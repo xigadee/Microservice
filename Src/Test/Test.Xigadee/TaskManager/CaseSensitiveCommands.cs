@@ -71,7 +71,6 @@ namespace Test.Xigadee.TaskManager
                         .Revert()
                         ;
 
-
                 pClient.Start();
                 pServer.Start();
 

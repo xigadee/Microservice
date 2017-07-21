@@ -273,6 +273,8 @@
     <Compile Include="Pipeline\Configuration\ConfigurationClear.cs" />
     <Compile Include="Pipeline\Extensions\Adjust\AdjustPolicyHelper.cs" />
     <Compile Include="Pipeline\Extensions\Adjust\AdjustPolicyTaskManager.cs" />
+    <Compile Include="ResourceTracker\Interfaces\IResourceMetric.cs" />
+    <Compile Include="ResourceTracker\ResourceContainer\Entities\ResourceCollection.cs" />
     <Compile Include="ResourceTracker\ResourceSync\Receive\ResourceSyncReceiveCommand.cs" />
     <Compile Include="ResourceTracker\ResourceSync\Receive\ResourceSyncReceiveCommandPolicy.cs" />
     <Compile Include="ResourceTracker\ResourceSync\Receive\ResourceSyncReceiveCommandStatistics.cs" />
@@ -280,8 +282,8 @@
     <Compile Include="ResourceTracker\ResourceSync\Transmit\ResourceSyncTransmitCommand.cs" />
     <Compile Include="ResourceTracker\ResourceSync\Transmit\ResourceSyncTransmitCommandPolicy.cs" />
     <Compile Include="ResourceTracker\ResourceSync\Transmit\ResourceSyncTransmitCommandStatistics.cs" />
-    <Compile Include="ResourceTracker\ResourceStatisticsEventType.cs" />
-    <Compile Include="ResourceTracker\ResourceStatus.cs" />
+    <Compile Include="ResourceTracker\Entities\ResourceStatisticsEventType.cs" />
+    <Compile Include="ResourceTracker\Entities\ResourceStatus.cs" />
     <Compile Include="Security\AuthenticationHandler\AuthenticationHandlerBase.cs" />
     <Compile Include="Security\AuthenticationHandler\AuthenticationHandlerId.cs" />
     <Compile Include="Security\AuthenticationHandler\JwtTokenAuthenticationHandler.cs" />
@@ -620,12 +622,12 @@
     <Compile Include="ResourceTracker\Interfaces\IResourceTracker.cs" />
     <Compile Include="ResourceTracker\Enums\ResourceRequestResult.cs" />
     <Compile Include="ResourceTracker\Enums\ResourceRetryReason.cs" />
-    <Compile Include="ResourceTracker\ResourceBase.cs" />
+    <Compile Include="ResourceTracker\Entities\ResourceBase.cs" />
     <Compile Include="ResourceTracker\ResourceContainer\Entities\ResourceConsumer.cs" />
-    <Compile Include="ResourceTracker\ResourceProfile.cs" />
+    <Compile Include="ResourceTracker\Entities\ResourceProfile.cs" />
     <Compile Include="ResourceTracker\ResourceContainer\Entities\ResourceRateLimiter.cs" />
-    <Compile Include="ResourceTracker\ResourceRequestTrack.cs" />
-    <Compile Include="ResourceTracker\ResourceStatistics.cs" />
+    <Compile Include="ResourceTracker\Entities\ResourceRequestTrack.cs" />
+    <Compile Include="ResourceTracker\Entities\ResourceStatistics.cs" />
     <Compile Include="ResourceTracker\ResourceContainer\ResourceContainer.cs" />
     <Compile Include="ResourceTracker\ResourceContainer\ResourceContainerStatistics.cs" />
     <Compile Include="Scheduler\SchedulerPolicy.cs" />

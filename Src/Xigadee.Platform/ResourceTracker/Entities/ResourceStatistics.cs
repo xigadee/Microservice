@@ -25,7 +25,7 @@ namespace Xigadee
     /// This is the holder for the resource statistics.
     /// </summary>
     [DebuggerDisplay("ResourceStatistics: {Name}={RateLimitAdjustmentPercentage}")]
-    public class ResourceStatistics: MessagingStatistics
+    public class ResourceStatistics: MessagingStatistics, IResourceMetric
     {
         #region Declarations
         /// <summary>

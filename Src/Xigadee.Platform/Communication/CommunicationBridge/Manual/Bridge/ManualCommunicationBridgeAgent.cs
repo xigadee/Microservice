@@ -132,9 +132,9 @@ namespace Xigadee
 
         private void Sender_TransmitBroadcast(TransmissionPayload e, long count)
         {
-            Enumerable.Range(0,mListeners.Count).AsParallel().ForEach((c) => Sender_Transmit(c, e));
-            //for (int c = 0; c < mListeners.Count; c++)
-            //    Sender_Transmit(c, e);
+            //Enumerable.Range(0,mListeners.Count).AsParallel().ForEach((c) => Sender_Transmit(c, e));
+            for (int c = 0; c < mListeners.Count; c++)
+                Sender_Transmit(c, e);
         }
 
         private void Sender_Transmit(int pos, TransmissionPayload e)

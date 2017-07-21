@@ -41,7 +41,6 @@ namespace Xigadee
 
         private ConcurrentDictionary<string, ResourceStatistics> mResources;
         #endregion
-
         #region Constructor
         /// <summary>
         /// This is the default constructor.

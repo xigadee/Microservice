@@ -38,5 +38,12 @@ namespace Xigadee
         {
 
         }
+
+        protected override void SharedServicesChange(ISharedService sharedServices)
+        {
+            base.SharedServicesChange(sharedServices);
+
+
+        }
     }
 }
