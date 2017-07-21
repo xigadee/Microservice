@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Xigadee;
 
@@ -8,55 +9,89 @@ namespace Test.Xigadee
     [TestClass]
     public class CommunicationRedirectTests
     {
-        [Ignore]
         [TestMethod]
-        public void TestMethod1()
+        public void Redirect1()
         {
             try
             {
                 var bridgeOut = new CommunicationBridge(CommunicationBridgeMode.RoundRobin);
                 var bridgein = new CommunicationBridge(CommunicationBridgeMode.Broadcast);
 
-                PersistenceClient<Guid, BridgeMe> init;
+                ICommandInitiator init;
                 DebugMemoryDataCollector memp1, memp2;
 
-                var p1 = new MicroservicePipeline("Sender")
+                var client = new MicroservicePipeline("Sender")
                     .AdjustPolicyCommunicationBoundaryLoggingActive()
                     .AddDebugMemoryDataCollector(out memp1)
                     .AddChannelIncoming("cresponse", autosetPartition01:false)
                         .AttachPriorityPartition((0,0.9M),(1,1.1M))
                         .AttachListener(bridgein.GetListener())
+                        .AttachICommandInitiator(out init)
                         .Revert()
                     .AddChannelOutgoing("crequest")
                         .AttachSender(bridgeOut.GetSender())
-                        .AttachPersistenceClient("cresponse", out init)
                         ;
 
-                var p2 = new MicroservicePipeline("Receiver")
+                var server = new MicroservicePipeline("Receiver")
                     .AdjustPolicyCommunicationBoundaryLoggingActive()
                     .AddDebugMemoryDataCollector(out memp2)
+                    .AddChannelIncoming("credirect")
+                        .AttachCommand((CommandInlineContext ctx) =>
+                        {
+                            ctx.ResponseSet(201, "Hi");
+                            return Task.FromResult(0);
+                        }, ("one", "two"))
+                        .Revert()
                     .AddChannelIncoming("crequest")
                         .AttachMessageRedirectRule(
                               canRedirect: (p) => p.Message.MessageType.Equals("bridgeme", StringComparison.InvariantCultureIgnoreCase)
-                            , redirect: (p) => p.Message.MessageType = "BridgeMe2"
+                            , redirect: (p) =>
+                            {
+                                p.Message.MessageType = "BridgeMe2";
+                                p.Message.ActionType = "Whatever";
+                            }
+                            )
+                        .AttachMessageRedirectRule(
+                              canRedirect: (p) => p.Message.MessageType.Equals("redirectme", StringComparison.InvariantCultureIgnoreCase)
+                            , redirect: (p) =>
+                            {
+                                p.Message.ChannelId = "credirect";
+                                p.Message.MessageType = "one";
+                                p.Message.ActionType = "two";
+                            }
                             )
                         .AttachListener(bridgeOut.GetListener())
-                        .AttachCommand(new PersistenceManagerHandlerMemory<Guid, BridgeMe2>((e) => e.Id, (s) => new Guid(s)))
+                        .AttachCommand((CommandInlineContext ctx) =>
+                        {
+                            ctx.ResponseSet(400,"Blah");
+                            return Task.FromResult(0);
+                        }, ("BridgeMe", "create"))
+                        .AttachCommand((CommandInlineContext ctx) =>
+                        {
+                            ctx.ResponseSet(200, "Yah!");
+                            return Task.FromResult(0);
+                        }, ("bridgeMe2", "whatever"))
                         .Revert()
                     .AddChannelOutgoing("cresponse")
                         .AttachSender(bridgein.GetSender())
                         ;
 
-                p1.Start();
-                p2.Start();
+                client.Start();
+                server.Start();
 
-                int check1 = p1.ToMicroservice().Commands.Count();
-                int check2 = p2.ToMicroservice().Commands.Count();
+                int check1 = client.ToMicroservice().Commands.Count();
+                int check2 = server.ToMicroservice().Commands.Count();
 
                 var entity = new BridgeMe() { Message = "Momma" };
-                var rs = init.Create(entity, new RepositorySettings() { WaitTime = TimeSpan.FromSeconds(20) }).Result;
 
-                Assert.IsTrue(!rs.IsSuccess && rs.ResponseCode == 422);
+                var rs = init.Process<BridgeMe, string>(("crequest", "BRIDGEME", "create"), entity).Result;
+                Assert.IsTrue(rs.ResponseCode == 200);
+
+                var rs2 = init.Process<BridgeMe, string>(("crequest", "redirectme", "hmm"), entity).Result;
+                Assert.IsTrue(rs2.ResponseCode == 201);
+
+                client.Stop();
+                server.Stop();
             }
             catch (Exception ex)
             {
