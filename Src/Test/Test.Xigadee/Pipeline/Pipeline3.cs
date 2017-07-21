@@ -34,6 +34,7 @@ namespace Test.Xigadee
             {
                 var pipeline = new MicroservicePipeline("TestPipeline");
                 var destination = ServiceMessageHeader.FromKey("internalIn/frankie/benny");
+                var fragment = ServiceMessageHeaderFragment.FromKey("frankie/benny");
 
                 ICommandInitiator init;
                 DebugMemoryDataCollector collector;
@@ -58,7 +59,7 @@ namespace Test.Xigadee
 
                             return Task.FromResult(0);
                         }
-                        , destination)
+                        , fragment)
                         .Revert()
                     .AddChannelIncoming("internalRs", internalOnly: true)
                         .AttachICommandInitiator(out init)

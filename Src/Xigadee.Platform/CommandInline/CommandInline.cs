@@ -24,7 +24,9 @@ namespace Xigadee
         {
             var message = new MessageFilterWrapper(header, null);
 
-            mCommandHolder = new CommandHolder(message, async (rq,rs) => await command(new CommandInlineContext(rq, rs, PayloadSerializer, Collector, SharedServices, OriginatorId)), referenceId);
+            mCommandHolder = new CommandHolder(message, async (rq,rs) => 
+                await command(new CommandInlineContext(rq, rs, PayloadSerializer, Collector, SharedServices, OriginatorId))
+                , referenceId);
         }
 
         /// <summary>
