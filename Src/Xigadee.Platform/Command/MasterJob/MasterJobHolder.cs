@@ -23,6 +23,9 @@ using System.Threading.Tasks;
 #endregion
 namespace Xigadee
 {
+    /// <summary>
+    /// This class holds the master job command.
+    /// </summary>
     public class MasterJobHolder
     {
         public MasterJobHolder(string name

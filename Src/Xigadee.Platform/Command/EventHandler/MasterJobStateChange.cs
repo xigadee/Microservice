@@ -14,12 +14,6 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Xigadee
 {
     /// <summary>
@@ -27,14 +21,23 @@ namespace Xigadee
     /// </summary>
     public class MasterJobStateChange
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MasterJobStateChange"/> class.
+        /// </summary>
+        /// <param name="oldState">The old state.</param>
+        /// <param name="newState">The new state.</param>
         public MasterJobStateChange(MasterJobState oldState, MasterJobState newState)
         {
             StateOld = oldState;
             StateNew = newState;
         }
-
+        /// <summary>
+        /// The previous state.
+        /// </summary>
         public MasterJobState StateOld { get; protected set; }
-
+        /// <summary>
+        /// The new master job state.
+        /// </summary>
         public MasterJobState StateNew { get; protected set; }
     }
 }

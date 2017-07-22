@@ -24,52 +24,14 @@ using Xigadee;
 #endregion
 namespace Xigadee
 {
-    public class MasterJobContext
-    {
-        /// <summary>
-        /// This collection holds the list of master job standby partners.
-        /// </summary>
-        public ConcurrentDictionary<string, StandbyPartner> mStandbyPartner;
-        /// <summary>
-        /// The current status.
-        /// </summary>
-        public DateTime? mCurrentMasterReceiveTime;
-
-        public string mCurrentMasterServiceId;
-
-        public int mCurrentMasterPollAttempts;
-
-        public Random mRandom = new Random(Environment.TickCount);
-
-        public DateTime? mMasterJobLastPollTime;
-        /// <summary>
-        /// This holds the master job collection.
-        /// </summary>
-        public Dictionary<Guid, MasterJobHolder> mMasterJobs;
-        /// <summary>
-        /// This is the current state of the MasterJob
-        /// </summary>
-        public MasterJobState mMasterJobState;
-    }
-
-    public class MasterJobNegotiationStrategy
-    {
-        public MasterJobNegotiationStrategy(string name)
-        {
-
-        }
-
-        public Schedule GetSchedule(Func<Schedule, CancellationToken, Task> execute)
-        {
-            return null;
-        }
-
-        public Schedule PollSchedule { get; }
-    }
-
-
     public abstract partial class CommandBase<S, P, H>
     {
+        #region Events
+        /// <summary>
+        /// This event can is fired when the state of the master job is changed.
+        /// </summary>
+        public event EventHandler<MasterJobStateChange> OnMasterJobStateChange; 
+        #endregion
         #region Declarations
         /// <summary>
         /// This collection holds the list of master job standby partners.
@@ -97,18 +59,11 @@ namespace Xigadee
         private MasterJobState mMasterJobState;
         #endregion
 
-        #region OnMasterJobStateChange
-        /// <summary>
-        /// This event can is fired when the state of the master job is changed.
-        /// </summary>
-        public event EventHandler<MasterJobStateChange> OnMasterJobStateChange; 
-        #endregion
-
-        #region MasterJobInitialise()
+        #region MasterJobNegotiationInitialise()
         /// <summary>
         /// This method initialises the master job.
         /// </summary>
-        protected virtual void MasterJobInitialise()
+        protected virtual void MasterJobNegotiationInitialise()
         {
             mMasterJobs = new Dictionary<Guid, MasterJobHolder>();
 
@@ -140,7 +95,7 @@ namespace Xigadee
         /// The message is specified to be processed externally so to ensure that we can determine whether 
         /// the comms are active.
         /// </summary>
-        /// <param name="action">The action to transmit.</param>
+        /// <param name="action">The master job action to transmit.</param>
         protected virtual Task NegotiationTransmit(string action)
         {
             var payload = TransmissionPayload.Create();
@@ -426,7 +381,7 @@ namespace Xigadee
         #region MasterJobRegister ...
         /// <summary>
         /// This method registers a master job that will be called at the schedule specified 
-        /// when the job is active.
+        /// when the job is active and the instance becomes active.
         /// </summary>
         /// <param name="frequency">Frequency that the job runs for</param>
         /// <param name="action">The action to call.</param>

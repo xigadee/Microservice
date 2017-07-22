@@ -110,7 +110,7 @@ namespace Xigadee
                     OutgoingRequestsInitialise();
 
                 if (mPolicy.MasterJobEnabled)
-                    MasterJobInitialise();
+                    MasterJobNegotiationInitialise();
 
                 if (mPolicy.JobPollEnabled && mPolicy.CommandScheduleReflectionSupported)
                     JobSchedulesReflectionInitialise();
