@@ -13,7 +13,6 @@ namespace Xigadee
     /// </summary>
     public static class CommandScheduleSignatureHelper
     {
-
         /// <summary>
         /// This static helper returns the list of attributes, methods and references. Not one method may have multiple attributes assigned to them.
         /// </summary>

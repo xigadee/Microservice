@@ -21,8 +21,14 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This class can be used to simulate the sender functionality in unit test projects.
+    /// </summary>
     public class ManualChannelSender:MessagingSenderBase<ManualChannelConnection, ManualChannelMessage, ManualChannelClientHolder>
     {
+        /// <summary>
+        /// Occurs when a message is sent to the sesnder. This event is caught and is used to map to corresponding listeners.
+        /// </summary>
         public event EventHandler<TransmissionPayload> OnProcess;
 
         private void ProcessInvoke(TransmissionPayload payload)
@@ -36,7 +42,13 @@ namespace Xigadee
                 Collector?.LogException("ManualChannelSender/ProcessInvoke", ex);
             }
         }
-
+        /// <summary>
+        /// This is the default client create logic for the manual sender.
+        /// </summary>
+        /// <param name="partition">The partition collection.</param>
+        /// <returns>
+        /// Returns the client.
+        /// </returns>
         protected override ManualChannelClientHolder ClientCreate(SenderPartitionConfig partition)
         {
             var client = base.ClientCreate(partition);
