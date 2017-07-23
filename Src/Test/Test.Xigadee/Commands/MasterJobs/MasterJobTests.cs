@@ -11,80 +11,64 @@ namespace Test.Xigadee
     [TestClass]
     public class MasterJobTests
     {
+        private MicroservicePipeline CreateServer(string id, Action<TestMasterJobCommand> release
+            , CommunicationBridge bridgeOut, CommunicationBridge bridgeIn, CommunicationBridge bridgeMaster
+            , out PersistenceClient<Guid, BridgeMe> init, out DebugMemoryDataCollector memp1, out TestMasterJobCommand mast1)
+        {
+            return new MicroservicePipeline(id)
+                .AdjustPolicyTaskManagerForDebug()
+                .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
+                .AddDebugMemoryDataCollector(out memp1)
+                .AddChannelIncoming("local", internalOnly: true)
+                    .AttachCommand(mast1 = new TestMasterJobCommand(), assign: release)
+                    .Revert()
+                .AddChannelIncoming("cresponse")
+                    .AttachListener(bridgeIn.GetListener())
+                    .Revert()
+                .AddChannelOutgoing("crequest")
+                    .AttachSender(bridgeOut.GetSender())
+                    .AttachPersistenceClient("cresponse", out init)
+                    .Revert()
+                .AddChannelBroadcast("negotiate")
+                    .AttachListener(bridgeMaster.GetListener())
+                    .AttachSender(bridgeMaster.GetSender())
+                    .AssignMasterJob(mast1)
+                    .Revert()
+                    ;
+        }
+
         [Ignore]
         [TestMethod]
         public void MasterJobNegotiation()
         {
-            ManualResetEvent mre = new ManualResetEvent(false);
             var services = new Dictionary<string, MicroservicePipeline>();
-
             string masterName = null;
 
-            Action<object, string> goingMaster = (o,s) =>
+            ManualResetEvent mre = new ManualResetEvent(false);
+            Action<TestMasterJobCommand> release = (c) => c.OnGoingMaster += (object o, string s) => 
             {
                 if (masterName != null)
                     Assert.Fail();
                 masterName = s;
-                
-                mre.Set();
-            };
 
-            Action < TestMasterJobCommand> release = (c) => 
-            {
-                c.OnGoingMaster += (object o, string s) => goingMaster(o,s);
+                mre.Set();
             };
 
             try
             {
                 var bridgeOut = new CommunicationBridge(CommunicationBridgeMode.RoundRobin);
-                var bridgein = new CommunicationBridge(CommunicationBridgeMode.Broadcast);
+                var bridgeIn = new CommunicationBridge(CommunicationBridgeMode.Broadcast);
                 var bridgeMaster = new CommunicationBridge(CommunicationBridgeMode.Broadcast);
 
-                PersistenceClient<Guid, BridgeMe> init, init3;
+                PersistenceClient<Guid, BridgeMe> init1, init3;
                 DebugMemoryDataCollector memp1, memp2, memp3;
                 TestMasterJobCommand mast1 = null, mast2 = null, mast3 = null;
 
-                services.Add("Sender1", new MicroservicePipeline("Sender1")
-                    .AdjustPolicyCommunication((p,c) => p.BoundaryLoggingActiveDefault = true)
-                    .AddDebugMemoryDataCollector(out memp1)
-                    .AddChannelIncoming("local", internalOnly: true)
-                        .AttachCommand(mast1 = new TestMasterJobCommand(), assign: release)
-                        .Revert()
-                    .AddChannelIncoming("cresponse")
-                        .AttachListener(bridgein.GetListener())
-                        .Revert()
-                    .AddChannelOutgoing("crequest")
-                        .AttachSender(bridgeOut.GetSender())
-                        .AttachPersistenceClient("cresponse", out init)
-                        .Revert()
-                    .AddChannelBroadcast("negotiate")
-                        .AttachListener(bridgeMaster.GetListener())
-                        .AttachSender(bridgeMaster.GetSender())
-                        .AssignMasterJob(mast1)
-                        .Revert()
-                        );
-
-                services.Add("Sender3", new MicroservicePipeline("Sender3")
-                    .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
-                    .AddDebugMemoryDataCollector(out memp3)
-                    .AddChannelIncoming("local", internalOnly: true)
-                        .AttachCommand(mast3 = new TestMasterJobCommand(), assign: release)
-                        .Revert()
-                    .AddChannelIncoming("cresponse")
-                        .AttachListener(bridgein.GetListener())
-                        .Revert()
-                    .AddChannelOutgoing("crequest")
-                        .AttachSender(bridgeOut.GetSender())
-                        .AttachPersistenceClient("cresponse", out init3)
-                        .Revert()
-                    .AddChannelBroadcast("negotiate")
-                        .AttachListener(bridgeMaster.GetListener())
-                        .AttachSender(bridgeMaster.GetSender())
-                        .AssignMasterJob(mast3)
-                        .Revert()
-                        );
+                services.Add("Sender1", CreateServer("Sender1", release, bridgeOut, bridgeIn, bridgeMaster, out init1, out memp1, out mast1));
+                services.Add("Sender3", CreateServer("Sender3", release, bridgeOut, bridgeIn, bridgeMaster, out init3, out memp3, out mast3));
 
                 services.Add("Receiver2", new MicroservicePipeline("Receiver2")
+                    .AdjustPolicyTaskManagerForDebug()
                     .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
                     .AddDebugMemoryDataCollector(out memp2)
                     .AddChannelIncoming("local", internalOnly: true)
@@ -95,7 +79,7 @@ namespace Test.Xigadee
                         .AttachCommand(new PersistenceManagerHandlerMemory<Guid, BridgeMe>((e) => e.Id, (s) => new Guid(s)))
                         .Revert()
                     .AddChannelOutgoing("cresponse")
-                        .AttachSender(bridgein.GetSender())
+                        .AttachSender(bridgeIn.GetSender())
                         .Revert()
                     .AddChannelBroadcast("negotiate")
                         .AttachListener(bridgeMaster.GetListener())
@@ -104,17 +88,16 @@ namespace Test.Xigadee
                         .Revert()
                         );
 
-
                 services.Values.ForEach((v) => v.Start());
 
                 int check1 = services["Sender1"].ToMicroservice().Commands.Count();
                 int check2 = services["Sender3"].ToMicroservice().Commands.Count();
 
+                //Check that the standard comms are working.
                 var entity = new BridgeMe() { Message = "Momma" };
-                var rs = init.Create(entity, new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
-                var rs2 = init.Read(entity.Id).Result;
-                var rs3 = init3.Read(entity.Id).Result;            
-
+                var rs = init1.Create(entity, new RepositorySettings() { WaitTime = TimeSpan.FromSeconds(30) }).Result;
+                var rs2 = init1.Read(entity.Id).Result;
+                var rs3 = init3.Read(entity.Id).Result;
                 Assert.IsTrue(rs2.IsSuccess);
                 Assert.IsTrue(rs3.IsSuccess);
                 Assert.IsTrue(rs2.Entity.Message == "Momma");

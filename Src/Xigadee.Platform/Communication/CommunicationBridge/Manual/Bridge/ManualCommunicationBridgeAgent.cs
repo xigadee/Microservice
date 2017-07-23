@@ -71,6 +71,14 @@ namespace Xigadee
         }
         #endregion
 
+
+        private void Listener_StatusChanged(object sender, StatusChangedEventArgs e)
+        {
+        }
+        private void Sender_StatusChanged(object sender, StatusChangedEventArgs e)
+        {
+        }
+
         #region AddListener(ManualChannelListener listener)
         /// <summary>
         /// This method adds a listener to the bridge.
@@ -78,6 +86,8 @@ namespace Xigadee
         /// <returns>The listener.</returns>
         protected IListener AddListener(ManualChannelListener listener)
         {
+            listener.StatusChanged += Listener_StatusChanged;
+
             mListeners.Add(listener);
 
             return listener;
@@ -91,10 +101,11 @@ namespace Xigadee
         protected ISender AddSender(ManualChannelSender sender)
         {
             sender.OnProcess += Sender_OnProcess;
+            sender.StatusChanged += Sender_StatusChanged;
             mSenders.Add(sender);
 
             return sender;
-        } 
+        }
         #endregion
 
         private void Sender_OnProcess(object sender, TransmissionPayload e)
