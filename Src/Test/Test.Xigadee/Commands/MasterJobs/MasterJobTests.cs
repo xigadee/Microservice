@@ -103,12 +103,12 @@ namespace Test.Xigadee
             var ctx = new EnqueueContext();
             Action<TestMasterJobCommand> release = (c) => c.OnGoingMaster += (object o, string s) => ctx.Record(o,s);
 
+            var bridgeOut = new CommunicationBridge(CommunicationBridgeMode.RoundRobin);
+            var bridgeIn = new CommunicationBridge(CommunicationBridgeMode.Broadcast);
+            var bridgeMaster = new CommunicationBridge(CommunicationBridgeMode.Broadcast);
+
             try
             {
-                var bridgeOut = new CommunicationBridge(CommunicationBridgeMode.RoundRobin);
-                var bridgeIn = new CommunicationBridge(CommunicationBridgeMode.Broadcast);
-                var bridgeMaster = new CommunicationBridge(CommunicationBridgeMode.Broadcast);
-
                 PersistenceClient<Guid, BridgeMe> init1, init3;
                 DebugMemoryDataCollector memp1, memp2, memp3;
                 TestMasterJobCommand mast1 = null, mast2 = null, mast3 = null;
@@ -150,26 +150,25 @@ namespace Test.Xigadee
 
                 //Wait for one of the services to go master.
                 ctx.Mre.WaitOne();
-                Assert.IsNotNull(ctx.MasterName);
-
                 //Ok, next service take over
+                Assert.IsNotNull(ctx.MasterName);
                 ctx.Mre.Reset();
                 var holdme1 = ctx.MasterName;
                 ctx.Stop(ctx.MasterName);
-
                 ctx.MasterName = null;
                 ctx.Services[holdme1].Stop();
-                ctx.Mre.WaitOne();
 
+                ctx.Mre.WaitOne();
                 //Ok, final service take over
+                Assert.IsNotNull(ctx.MasterName);
                 ctx.Mre.Reset();
                 var holdme2 = ctx.MasterName;
                 ctx.Stop(ctx.MasterName);
-
                 ctx.MasterName = null;
                 ctx.Services[holdme2].Stop();
 
                 ctx.Mre.WaitOne();
+
                 ctx.Stop(ctx.MasterName);
 
                 Assert.IsNotNull(ctx.MasterName);
