@@ -49,6 +49,7 @@ namespace Test.Xigadee
             {
                 if (masterName != null)
                     Assert.Fail();
+
                 masterName = s;
 
                 mre.Set();
@@ -106,14 +107,14 @@ namespace Test.Xigadee
                 mre.WaitOne();
                 Assert.IsNotNull(masterName);
 
-                //Ok, service 2 take over
+                //Ok, next service take over
                 mre.Reset();
                 var holdme1 = masterName;
                 masterName = null;
                 services[holdme1].Stop();
                 mre.WaitOne();
 
-                //Ok, service 3 take over
+                //Ok, final service take over
                 mre.Reset();
                 var holdme2 = masterName;
                 masterName = null;
