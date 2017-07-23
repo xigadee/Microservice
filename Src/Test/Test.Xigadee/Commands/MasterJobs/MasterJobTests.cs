@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -11,50 +12,96 @@ namespace Test.Xigadee
     [TestClass]
     public class MasterJobTests
     {
-        private void CreateServer(Dictionary<string, MicroservicePipeline> services
-            , string id, Action<TestMasterJobCommand> release
-            , CommunicationBridge bridgeOut, CommunicationBridge bridgeIn, CommunicationBridge bridgeMaster
-            , out PersistenceClient<Guid, BridgeMe> init, out DebugMemoryDataCollector memp1, out TestMasterJobCommand mast1)
+        private class EnqueueContext
         {
-            services.Add(id,new MicroservicePipeline(id)
-                .AdjustPolicyTaskManagerForDebug()
-                .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
-                .AddDebugMemoryDataCollector(out memp1)
-                .AddChannelIncoming("local", internalOnly: true)
-                    .AttachCommand(mast1 = new TestMasterJobCommand(), assign: release)
-                    .Revert()
-                .AddChannelIncoming("cresponse")
-                    .AttachListener(bridgeIn.GetListener())
-                    .Revert()
-                .AddChannelOutgoing("crequest")
-                    .AttachSender(bridgeOut.GetSender())
-                    .AttachPersistenceClient("cresponse", out init)
-                    .Revert()
-                .AddChannelBroadcast("negotiate")
-                    .AttachListener(bridgeMaster.GetListener())
-                    .AttachSender(bridgeMaster.GetSender())
-                    .AssignMasterJob(mast1)
-                    .Revert()
+            public void Record(object o, string s)
+            {
+                if (MasterName != null)
+                    Assert.Fail();
+
+                MasterName = s;
+                Start(MasterName);
+
+                Mre.Set();
+            }
+
+            public string MasterName { get; set; }
+            /// <summary>
+            /// Use this to thread signalling.
+            /// </summary>
+            public ManualResetEvent Mre { get; } = new ManualResetEvent(false);
+            /// <summary>
+            /// This is the start time.
+            /// </summary>
+            public DateTime Time { get; } = DateTime.UtcNow;
+            /// <summary>
+            /// This is the environment tick count.
+            /// </summary>
+            public int Checkpoint { get; }  = Environment.TickCount;
+            /// <summary>
+            /// This is the set of timestamps.
+            /// </summary>
+            public ConcurrentQueue<ValueTuple<TimeSpan, string>> Timestamps { get; } = new ConcurrentQueue<ValueTuple<TimeSpan, string>>();
+            /// <summary>
+            /// This is a set of services.
+            /// </summary>
+            public Dictionary<string, MicroservicePipeline> Services { get; }  = new Dictionary<string, MicroservicePipeline>();
+
+            private void Enqueue(string id)
+            {
+                Timestamps.Enqueue((DateTime.UtcNow - Time, id));
+            }
+
+            /// <summary>
+            /// Logs the start time.
+            /// </summary>
+            /// <param name="name">The service name.</param>
+            public void Start(string name)
+            {
+                Enqueue($"{name} start");
+            }
+            /// <summary>
+            /// Logs the stop time.
+            /// </summary>
+            /// <param name="name">The service name.</param>
+            public void Stop(string name)
+            {
+                Enqueue($"{name} stop");
+            }
+
+            public void CreateServer(string id, Action<TestMasterJobCommand> release
+                , CommunicationBridge bridgeOut, CommunicationBridge bridgeIn, CommunicationBridge bridgeMaster
+                , out PersistenceClient<Guid, BridgeMe> init, out DebugMemoryDataCollector memp1, out TestMasterJobCommand mast1)
+            {
+                Services.Add(id, new MicroservicePipeline(id)
+                    .AdjustPolicyTaskManagerForDebug()
+                    .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
+                    .AddDebugMemoryDataCollector(out memp1)
+                    .AddChannelIncoming("local", internalOnly: true)
+                        .AttachCommand(mast1 = new TestMasterJobCommand(), assign: release)
+                        .Revert()
+                    .AddChannelIncoming("cresponse")
+                        .AttachListener(bridgeIn.GetListener())
+                        .Revert()
+                    .AddChannelOutgoing("crequest")
+                        .AttachSender(bridgeOut.GetSender())
+                        .AttachPersistenceClient("cresponse", out init)
+                        .Revert()
+                    .AddChannelBroadcast("negotiate")
+                        .AttachListener(bridgeMaster.GetListener())
+                        .AttachSender(bridgeMaster.GetSender())
+                        .AssignMasterJob(mast1)
+                        .Revert()
                     );
+            }
         }
 
         [Ignore]
         [TestMethod]
         public void MasterJobNegotiation()
         {
-            var services = new Dictionary<string, MicroservicePipeline>();
-            string masterName = null;
-
-            ManualResetEvent mre = new ManualResetEvent(false);
-            Action<TestMasterJobCommand> release = (c) => c.OnGoingMaster += (object o, string s) => 
-            {
-                if (masterName != null)
-                    Assert.Fail();
-
-                masterName = s;
-
-                mre.Set();
-            };
+            var ctx = new EnqueueContext();
+            Action<TestMasterJobCommand> release = (c) => c.OnGoingMaster += (object o, string s) => ctx.Record(o,s);
 
             try
             {
@@ -66,10 +113,10 @@ namespace Test.Xigadee
                 DebugMemoryDataCollector memp1, memp2, memp3;
                 TestMasterJobCommand mast1 = null, mast2 = null, mast3 = null;
 
-                CreateServer(services, "Sender1", release, bridgeOut, bridgeIn, bridgeMaster, out init1, out memp1, out mast1);
-                CreateServer(services, "Sender3", release, bridgeOut, bridgeIn, bridgeMaster, out init3, out memp3, out mast3);
+                ctx.CreateServer("Sender1", release, bridgeOut, bridgeIn, bridgeMaster, out init1, out memp1, out mast1);
+                ctx.CreateServer("Sender3", release, bridgeOut, bridgeIn, bridgeMaster, out init3, out memp3, out mast3);
 
-                services.Add("Receiver2", new MicroservicePipeline("Receiver2")
+                ctx.Services.Add("Receiver1", new MicroservicePipeline("Receiver1")
                     .AdjustPolicyTaskManagerForDebug()
                     .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
                     .AddDebugMemoryDataCollector(out memp2)
@@ -90,7 +137,7 @@ namespace Test.Xigadee
                         .Revert()
                         );
 
-                services.Values.ForEach((v) => v.Start());
+                ctx.Services.Values.ForEach((v) => v.Start());
 
                 //Check that the standard comms are working.
                 var entity = new BridgeMe() { Message = "Momma" };
@@ -102,24 +149,30 @@ namespace Test.Xigadee
                 Assert.IsTrue(rs2.Entity.Message == "Momma");
 
                 //Wait for one of the services to go master.
-                mre.WaitOne();
-                Assert.IsNotNull(masterName);
+                ctx.Mre.WaitOne();
+                Assert.IsNotNull(ctx.MasterName);
 
                 //Ok, next service take over
-                mre.Reset();
-                var holdme1 = masterName;
-                masterName = null;
-                services[holdme1].Stop();
-                mre.WaitOne();
+                ctx.Mre.Reset();
+                var holdme1 = ctx.MasterName;
+                ctx.Stop(ctx.MasterName);
+
+                ctx.MasterName = null;
+                ctx.Services[holdme1].Stop();
+                ctx.Mre.WaitOne();
 
                 //Ok, final service take over
-                mre.Reset();
-                var holdme2 = masterName;
-                masterName = null;
-                services[holdme2].Stop();
+                ctx.Mre.Reset();
+                var holdme2 = ctx.MasterName;
+                ctx.Stop(ctx.MasterName);
 
-                mre.WaitOne();
-                Assert.IsNotNull(masterName);
+                ctx.MasterName = null;
+                ctx.Services[holdme2].Stop();
+
+                ctx.Mre.WaitOne();
+                ctx.Stop(ctx.MasterName);
+
+                Assert.IsNotNull(ctx.MasterName);
             }
             catch (Exception ex)
             {
