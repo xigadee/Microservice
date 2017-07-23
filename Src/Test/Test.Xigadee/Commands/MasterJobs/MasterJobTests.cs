@@ -11,11 +11,12 @@ namespace Test.Xigadee
     [TestClass]
     public class MasterJobTests
     {
-        private MicroservicePipeline CreateServer(string id, Action<TestMasterJobCommand> release
+        private void CreateServer(Dictionary<string, MicroservicePipeline> services
+            , string id, Action<TestMasterJobCommand> release
             , CommunicationBridge bridgeOut, CommunicationBridge bridgeIn, CommunicationBridge bridgeMaster
             , out PersistenceClient<Guid, BridgeMe> init, out DebugMemoryDataCollector memp1, out TestMasterJobCommand mast1)
         {
-            return new MicroservicePipeline(id)
+            services.Add(id,new MicroservicePipeline(id)
                 .AdjustPolicyTaskManagerForDebug()
                 .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
                 .AddDebugMemoryDataCollector(out memp1)
@@ -34,7 +35,7 @@ namespace Test.Xigadee
                     .AttachSender(bridgeMaster.GetSender())
                     .AssignMasterJob(mast1)
                     .Revert()
-                    ;
+                    );
         }
 
         [Ignore]
@@ -65,8 +66,8 @@ namespace Test.Xigadee
                 DebugMemoryDataCollector memp1, memp2, memp3;
                 TestMasterJobCommand mast1 = null, mast2 = null, mast3 = null;
 
-                services.Add("Sender1", CreateServer("Sender1", release, bridgeOut, bridgeIn, bridgeMaster, out init1, out memp1, out mast1));
-                services.Add("Sender3", CreateServer("Sender3", release, bridgeOut, bridgeIn, bridgeMaster, out init3, out memp3, out mast3));
+                CreateServer(services, "Sender1", release, bridgeOut, bridgeIn, bridgeMaster, out init1, out memp1, out mast1);
+                CreateServer(services, "Sender3", release, bridgeOut, bridgeIn, bridgeMaster, out init3, out memp3, out mast3);
 
                 services.Add("Receiver2", new MicroservicePipeline("Receiver2")
                     .AdjustPolicyTaskManagerForDebug()
@@ -90,9 +91,6 @@ namespace Test.Xigadee
                         );
 
                 services.Values.ForEach((v) => v.Start());
-
-                int check1 = services["Sender1"].ToMicroservice().Commands.Count();
-                int check2 = services["Sender3"].ToMicroservice().Commands.Count();
 
                 //Check that the standard comms are working.
                 var entity = new BridgeMe() { Message = "Momma" };
