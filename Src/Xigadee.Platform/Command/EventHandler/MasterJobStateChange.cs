@@ -14,19 +14,36 @@
 // limitations under the License.
 #endregion
 
+using System;
+using System.Diagnostics;
+
 namespace Xigadee
 {
+    public class MasterJobEventArgsBase: EventArgs
+    {
+        public MasterJobEventArgsBase(string name)
+        {
+            Name = name;
+        }
+        /// <summary>
+        /// This is the service name.
+        /// </summary>
+        public string Name { get; }
+
+        public DateTime TimeStamp { get; } = DateTime.UtcNow;
+    }
     /// <summary>
     /// This class contains the change information for the command.
     /// </summary>
-    public class MasterJobStateChange
+    [DebuggerDisplay("{Name}: {StateOld} > {StateNew} @ {TimeStamp}")]
+    public class MasterJobStateChangeEventArgs: MasterJobEventArgsBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MasterJobStateChange"/> class.
+        /// Initializes a new instance of the <see cref="MasterJobStateChangeEventArgs"/> class.
         /// </summary>
         /// <param name="oldState">The old state.</param>
         /// <param name="newState">The new state.</param>
-        public MasterJobStateChange(MasterJobState oldState, MasterJobState newState)
+        public MasterJobStateChangeEventArgs(string name, MasterJobState oldState, MasterJobState newState):base(name)
         {
             StateOld = oldState;
             StateNew = newState;
@@ -34,10 +51,35 @@ namespace Xigadee
         /// <summary>
         /// The previous state.
         /// </summary>
-        public MasterJobState StateOld { get; protected set; }
+        public MasterJobState StateOld { get; }
         /// <summary>
         /// The new master job state.
         /// </summary>
-        public MasterJobState StateNew { get; protected set; }
+        public MasterJobState StateNew { get; }
+    }
+
+    /// <summary>
+    /// This class contains the change information for the command.
+    /// </summary>
+    public class MasterJobCommunicationEventArgs: MasterJobEventArgsBase
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MasterJobStateChangeEventArgs"/> class.
+        /// </summary>
+        /// <param name="oldState">The old state.</param>
+        /// <param name="newState">The new state.</param>
+        public MasterJobCommunicationEventArgs(string name, MasterJobState oldState, MasterJobState newState):base(name)
+        {
+            StateOld = oldState;
+            StateNew = newState;
+        }
+        /// <summary>
+        /// The previous state.
+        /// </summary>
+        public MasterJobState StateOld { get; }
+        /// <summary>
+        /// The new master job state.
+        /// </summary>
+        public MasterJobState StateNew { get; }
     }
 }

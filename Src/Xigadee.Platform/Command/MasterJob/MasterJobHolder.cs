@@ -41,15 +41,25 @@ namespace Xigadee
             this.Initialise = Initialise;
             this.Cleanup = Cleanup;
         }
-
+        /// <summary>
+        /// This is the name for the master job schedule.
+        /// </summary>
         public string Name { get; }
-
+        /// <summary>
+        /// This is the poll schedule for the job.
+        /// </summary>
         public Schedule Schedule { get; set; }
-
+        /// <summary>
+        /// This is the schedule action.
+        /// </summary>
         public Func<Schedule, Task> Action { get; set; }
-
+        /// <summary>
+        /// Gets or sets the initialise.
+        /// </summary>
         public Action<Schedule> Initialise { get; set; }
-
+        /// <summary>
+        /// Gets or sets the cleanup.
+        /// </summary>
         public Action<Schedule> Cleanup { get; set; }
     }
 }

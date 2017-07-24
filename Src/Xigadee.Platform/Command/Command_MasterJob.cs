@@ -30,7 +30,11 @@ namespace Xigadee
         /// <summary>
         /// This event can is fired when the state of the master job is changed.
         /// </summary>
-        public event EventHandler<MasterJobStateChange> OnMasterJobStateChange; 
+        public event EventHandler<MasterJobStateChangeEventArgs> MasterJobStateChange;
+        /// <summary>
+        /// This event is fired when the masterjob receives or issues communication requests to other masterjobs.
+        /// </summary>
+        public event EventHandler<MasterJobCommunicationEventArgs> MasterJobNegotiation;
         #endregion
         #region Declarations
         /// <summary>
@@ -212,7 +216,7 @@ namespace Xigadee
                 mMasterJobState = value;
                 try
                 {
-                    OnMasterJobStateChange?.Invoke(this, new MasterJobStateChange(oldState, value));
+                    MasterJobStateChange?.Invoke(this, new MasterJobStateChangeEventArgs(this.OriginatorId.ServiceId, oldState, value));
                 }
                 catch { }
             }
