@@ -30,11 +30,11 @@ namespace Xigadee
         /// <summary>
         /// This event can is fired when the state of the master job is changed.
         /// </summary>
-        public event EventHandler<MasterJobStateChangeEventArgs> MasterJobStateChange;
+        public event EventHandler<MasterJobStateChangeEventArgs> OnMasterJobStateChange;
         /// <summary>
         /// This event is fired when the masterjob receives or issues communication requests to other masterjobs.
         /// </summary>
-        public event EventHandler<MasterJobCommunicationEventArgs> MasterJobNegotiation;
+        public event EventHandler<MasterJobCommunicationEventArgs> OnMasterJobNegotiation;
         #endregion
         #region Declarations
         /// <summary>
@@ -200,6 +200,8 @@ namespace Xigadee
         #endregion
 
         #region State
+        private object mLockState = new object();
+        private int mCounter = 0;
         /// <summary>
         /// This boolean property identifies whether this job is the master job for the particular 
         /// NegotiationMessageType.
@@ -212,11 +214,24 @@ namespace Xigadee
             }
             set
             {
-                var oldState = mMasterJobState;
-                mMasterJobState = value;
+                MasterJobState? oldState;
+
+                lock (mLockState)
+                {
+                    if (value != mMasterJobState)
+                    {
+                        oldState = mMasterJobState;
+                        mMasterJobState = value;
+                    }
+                    else
+                        oldState = null;
+                }
+
                 try
                 {
-                    MasterJobStateChange?.Invoke(this, new MasterJobStateChangeEventArgs(this.OriginatorId.ServiceId, oldState, value));
+                    if (oldState.HasValue)
+                        OnMasterJobStateChange?.Invoke(this, new MasterJobStateChangeEventArgs(
+                            OriginatorId.Name, GetType().Name, oldState.Value, value, Interlocked.Increment(ref mCounter)));
                 }
                 catch { }
             }

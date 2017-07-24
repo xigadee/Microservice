@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,12 +15,17 @@ namespace Test.Xigadee
     {
         private class EnqueueContext
         {
-            public void Record(object o, string s)
+            public void Record(object o, MasterJobStateChangeEventArgs s)
             {
-                if (MasterName != null)
+                Debug.Write(s);
+
+                if (s.StateNew != MasterJobState.Active)
+                    return;
+
+                if (MasterName != null || !(o is TestMasterJobCommand))
                     Assert.Fail();
 
-                MasterName = s;
+                MasterName = ((TestMasterJobCommand)o).OriginatorId.Name;//s;
                 Start(MasterName);
 
                 Mre.Set();
@@ -71,16 +77,17 @@ namespace Test.Xigadee
                 Enqueue($"{name} stop");
             }
 
-            public void CreateServer(string id, Action<TestMasterJobCommand> release
+            public void Create(string id
                 , CommunicationBridge bridgeOut, CommunicationBridge bridgeIn, CommunicationBridge bridgeMaster
-                , out PersistenceClient<Guid, BridgeMe> init, out DebugMemoryDataCollector memcollector, out TestMasterJobCommand masterjob)
+                , TestMasterJobCommand masterjob
+                , out PersistenceClient<Guid, BridgeMe> init, out DebugMemoryDataCollector memcollector)
             {
                 var pipeline = new MicroservicePipeline(id)
                     .AdjustPolicyTaskManagerForDebug()
                     .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
                     .AddDebugMemoryDataCollector(out memcollector)
                     .AddChannelIncoming("local", internalOnly: true)
-                        .AttachCommand(masterjob = new TestMasterJobCommand(), assign: release)
+                        .AttachCommand(masterjob)
                         .Revert()
                     .AddChannelIncoming("cresponse")
                         .AttachListener(bridgeIn.GetListener())
@@ -96,13 +103,14 @@ namespace Test.Xigadee
                         .Revert()
                     ;
 
-                AddServer(id, pipeline, masterjob);
+                Add(id, pipeline, masterjob);
             }
 
-            public void AddServer(string id, MicroservicePipeline pipeline, TestMasterJobCommand masterjob)
+            public void Add(string id, MicroservicePipeline pipeline, TestMasterJobCommand masterjob)
             {
                 Services.Add(id, pipeline);
-                masterjob.MasterJobStateChange += (o, e) =>
+
+                masterjob.OnMasterJobStateChange += (o, e) =>
                 {
                     try
                     {
@@ -121,7 +129,6 @@ namespace Test.Xigadee
         public void MasterJobNegotiation()
         {
             var ctx = new EnqueueContext();
-            Action<TestMasterJobCommand> release = (c) => c.OnGoingMaster += (object o, string s) => ctx.Record(o,s);
 
             var bridgeOut = new CommunicationBridge(CommunicationBridgeMode.RoundRobin);
             var bridgeIn = new CommunicationBridge(CommunicationBridgeMode.Broadcast);
@@ -131,19 +138,22 @@ namespace Test.Xigadee
             {
                 PersistenceClient<Guid, BridgeMe> init1, init3;
                 DebugMemoryDataCollector memp1, memp2, memp3;
-                TestMasterJobCommand mast1 = null, mast2 = null, mast3 = null;
 
-                ctx.CreateServer("Sender1", release, bridgeOut, bridgeIn, bridgeMaster, out init1, out memp1, out mast1);
+                var mast1 = new TestMasterJobCommand();
+                var mast2 = new TestMasterJobCommand();
+                var mast3 = new TestMasterJobCommand();
 
-                ctx.CreateServer("Sender3", release, bridgeOut, bridgeIn, bridgeMaster, out init3, out memp3, out mast3);
+                ctx.Create("Sender1", bridgeOut, bridgeIn, bridgeMaster, mast1, out init1, out memp1);
 
-                ctx.AddServer("Receiver1"
+                ctx.Create("Sender3", bridgeOut, bridgeIn, bridgeMaster, mast3, out init3, out memp3);
+
+                ctx.Add("Receiver1"
                     , new MicroservicePipeline("Receiver1")
                         .AdjustPolicyTaskManagerForDebug()
                         .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
                         .AddDebugMemoryDataCollector(out memp2)
                         .AddChannelIncoming("local", internalOnly: true)
-                            .AttachCommand(mast2 = new TestMasterJobCommand(), assign: release)
+                            .AttachCommand(mast2)
                             .Revert()
                         .AddChannelIncoming("crequest")
                             .AttachListener(bridgeOut.GetListener())
@@ -157,7 +167,7 @@ namespace Test.Xigadee
                             .AttachSender(bridgeMaster.GetSender())
                             .AssignMasterJob(mast2)
                             .Revert()
-                    , mast3);
+                    , mast2);
 
                 ctx.Services.Values.ForEach((v) => v.Start());
 

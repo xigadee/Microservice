@@ -21,21 +21,27 @@ namespace Xigadee
 {
     public class MasterJobEventArgsBase: EventArgs
     {
-        public MasterJobEventArgsBase(string name)
+        public MasterJobEventArgsBase(string serviceName, string commandName, int? iteration = null)
         {
-            Name = name;
+            ServiceName = serviceName;
+            CommandName = commandName;
+            Iteration = iteration;
         }
+
+        public int? Iteration { get; }
         /// <summary>
         /// This is the service name.
         /// </summary>
-        public string Name { get; }
+        public string ServiceName { get; }
+
+        public string CommandName { get; }
 
         public DateTime TimeStamp { get; } = DateTime.UtcNow;
     }
     /// <summary>
     /// This class contains the change information for the command.
     /// </summary>
-    [DebuggerDisplay("{Name}: {StateOld} > {StateNew} @ {TimeStamp}")]
+    [DebuggerDisplay("{ServiceName}/{CommandName}: {StateOld} > {StateNew} @ {TimeStamp} - {Iteration}")]
     public class MasterJobStateChangeEventArgs: MasterJobEventArgsBase
     {
         /// <summary>
@@ -43,7 +49,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="oldState">The old state.</param>
         /// <param name="newState">The new state.</param>
-        public MasterJobStateChangeEventArgs(string name, MasterJobState oldState, MasterJobState newState):base(name)
+        public MasterJobStateChangeEventArgs(string serviceName, string commandName, MasterJobState oldState, MasterJobState newState, int? iteration = null):base(serviceName, commandName, iteration)
         {
             StateOld = oldState;
             StateNew = newState;
@@ -68,7 +74,8 @@ namespace Xigadee
         /// </summary>
         /// <param name="oldState">The old state.</param>
         /// <param name="newState">The new state.</param>
-        public MasterJobCommunicationEventArgs(string name, MasterJobState oldState, MasterJobState newState):base(name)
+        public MasterJobCommunicationEventArgs(string serviceName, string commandName, MasterJobState oldState, MasterJobState newState)
+            :base(serviceName, commandName)
         {
             StateOld = oldState;
             StateNew = newState;

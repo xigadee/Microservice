@@ -9,8 +9,6 @@ namespace Test.Xigadee
 {
     public class TestMasterJobCommand:CommandBase
     {
-        public event EventHandler<string> OnGoingMaster;
-
         public TestMasterJobCommand() : base(
             new CommandPolicy
             {
@@ -21,10 +19,5 @@ namespace Test.Xigadee
             }
             ){}
 
-
-        protected override void MasterJobStart()
-        {
-            OnGoingMaster?.Invoke(this, this.OriginatorId.Name);
-        }
     }
 }

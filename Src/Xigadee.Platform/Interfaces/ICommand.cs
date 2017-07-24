@@ -129,7 +129,7 @@ namespace Xigadee
         /// <summary>
         /// This event is fired when the command's masterjob state is changed.
         /// </summary>
-        event EventHandler<MasterJobStateChangeEventArgs> MasterJobStateChange;
+        event EventHandler<MasterJobStateChangeEventArgs> OnMasterJobStateChange;
     }
 
 }
