@@ -134,6 +134,9 @@ namespace Xigadee
         {
             try
             {
+                if (mPolicy.MasterJobEnabled)
+                    MasterJobStop();
+
                 mSchedules.ForEach((s) => Scheduler.Unregister(s));
                 mSchedules.Clear();
 

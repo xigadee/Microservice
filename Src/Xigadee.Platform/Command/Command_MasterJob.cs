@@ -102,6 +102,9 @@ namespace Xigadee
         /// <param name="action">The master job action to transmit.</param>
         protected virtual Task NegotiationTransmit(string action)
         {
+            OnMasterJobNegotiation?.Invoke(this, new MasterJobCommunicationEventArgs(
+                OriginatorId.Name, GetType().Name, MasterJobCommunicationDirection.Outgoing, State, action, mCounter));
+
             var payload = TransmissionPayload.Create();
             payload.Options = ProcessOptions.RouteExternal;
             var message = payload.Message;
@@ -139,6 +142,11 @@ namespace Xigadee
 
                 return;
             }
+
+            OnMasterJobNegotiation?.Invoke(this, new MasterJobCommunicationEventArgs(
+                OriginatorId.Name, GetType().Name, MasterJobCommunicationDirection.Incoming, State, rq.Message.ActionType, mCounter
+                , rq.Message.OriginatorServiceId));
+
 
             if (MasterJobStates.IAmStandby.Equals(rq.Message.ActionType, StringComparison.InvariantCultureIgnoreCase))
             {
@@ -379,22 +387,29 @@ namespace Xigadee
         /// </summary>
         protected virtual void MasterJobStop()
         {
-            foreach (var job in mMasterJobs.Values)
+            if (State == MasterJobState.Active)
             {
-                try
+                State = MasterJobState.Inactive;
+
+                foreach (var job in mMasterJobs.Values)
                 {
-                    job.Cleanup?.Invoke(job.Schedule);
-                }
-                catch (Exception ex)
-                {
-                    Collector?.LogException($"MasterJob '{job.Name}' stop failed",ex);
+                    try
+                    {
+                        job.Cleanup?.Invoke(job.Schedule);
+                    }
+                    catch (Exception ex)
+                    {
+                        Collector?.LogException($"MasterJob '{job.Name}' stop failed", ex);
+                    }
+
+                    Scheduler.Unregister(job.Schedule);
+                    mStandbyPartner.Clear();
                 }
 
-                Scheduler.Unregister(job.Schedule);
-                mStandbyPartner.Clear();
+                MasterJobCommandsUnregister();
+
+                NegotiationTransmit(MasterJobStates.ResyncMaster);
             }
-
-            MasterJobCommandsUnregister();
         }
         #endregion
         #region MasterJobRegister ...

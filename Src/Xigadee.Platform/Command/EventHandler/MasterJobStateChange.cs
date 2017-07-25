@@ -41,7 +41,7 @@ namespace Xigadee
     /// <summary>
     /// This class contains the change information for the command.
     /// </summary>
-    [DebuggerDisplay("{ServiceName}/{CommandName}: {StateOld} > {StateNew} @ {TimeStamp} - {Iteration}")]
+    [DebuggerDisplay("{Debug()}")]
     public class MasterJobStateChangeEventArgs: MasterJobEventArgsBase
     {
         /// <summary>
@@ -62,31 +62,61 @@ namespace Xigadee
         /// The new master job state.
         /// </summary>
         public MasterJobState StateNew { get; }
+
+        /// <summary>
+        /// Shows a debug string for the event.
+        /// </summary>
+        public string Debug()
+        {
+            return $"{ServiceName}/{CommandName}: {StateOld} > {StateNew} @ {TimeStamp} - {Iteration}\r\n";
+        }
     }
 
+    public enum MasterJobCommunicationDirection
+    {
+        Incoming,
+        Outgoing
+    }
     /// <summary>
     /// This class contains the change information for the command.
     /// </summary>
+    [DebuggerDisplay("{Debug()}")]
     public class MasterJobCommunicationEventArgs: MasterJobEventArgsBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MasterJobStateChangeEventArgs"/> class.
         /// </summary>
-        /// <param name="oldState">The old state.</param>
+        /// <param name="state">The old state.</param>
         /// <param name="newState">The new state.</param>
-        public MasterJobCommunicationEventArgs(string serviceName, string commandName, MasterJobState oldState, MasterJobState newState)
-            :base(serviceName, commandName)
+        public MasterJobCommunicationEventArgs(string serviceName, string commandName
+            , MasterJobCommunicationDirection direction
+            , MasterJobState state, string action, int iteration, string originatorId = null)
+            :base(serviceName, commandName, iteration)
         {
-            StateOld = oldState;
-            StateNew = newState;
+            State = state;
+            Action = action;
+            Direction = direction;
+            OriginatorId = originatorId;
         }
+
+        public string OriginatorId { get; }
+
+        public MasterJobCommunicationDirection Direction { get; }
         /// <summary>
         /// The previous state.
         /// </summary>
-        public MasterJobState StateOld { get; }
+        public MasterJobState State { get; }
         /// <summary>
         /// The new master job state.
         /// </summary>
-        public MasterJobState StateNew { get; }
+        public string Action { get; }
+
+        /// <summary>
+        /// Shows a debug string for the event.
+        /// </summary>
+        public string Debug()
+        {
+            return $"{ServiceName}/{CommandName} - {Direction}: {State} --> {Action} @ {TimeStamp} - {Iteration} [{OriginatorId??ServiceName}]\r\n";
+        }
     }
 }

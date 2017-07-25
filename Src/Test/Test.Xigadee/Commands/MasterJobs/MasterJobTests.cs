@@ -17,7 +17,8 @@ namespace Test.Xigadee
         {
             public void Record(object o, MasterJobStateChangeEventArgs s)
             {
-                Debug.Write(s);
+                Debug.Write(s.Debug());
+                Log.Add(s);
 
                 if (s.StateNew != MasterJobState.Active)
                     return;
@@ -25,7 +26,7 @@ namespace Test.Xigadee
                 if (MasterName != null || !(o is TestMasterJobCommand))
                     Assert.Fail();
 
-                MasterName = ((TestMasterJobCommand)o).OriginatorId.Name;//s;
+                MasterName = ((TestMasterJobCommand)o).OriginatorId.Name;
                 Start(MasterName);
 
                 Mre.Set();
@@ -49,7 +50,7 @@ namespace Test.Xigadee
             /// <summary>
             /// This is the set of timestamps.
             /// </summary>
-            public ConcurrentQueue<ValueTuple<TimeSpan, string>> Timestamps { get; } = new ConcurrentQueue<ValueTuple<TimeSpan, string>>();
+            public ConcurrentQueue<ValueTuple<DateTime, string>> Timestamps { get; } = new ConcurrentQueue<ValueTuple<DateTime, string>>();
             /// <summary>
             /// This is a set of services.
             /// </summary>
@@ -57,7 +58,7 @@ namespace Test.Xigadee
 
             private void Enqueue(string id)
             {
-                Timestamps.Enqueue((DateTime.UtcNow - Time, id));
+                Timestamps.Enqueue((DateTime.UtcNow, id));
             }
 
             /// <summary>
@@ -67,6 +68,7 @@ namespace Test.Xigadee
             public void Start(string name)
             {
                 Enqueue($"{name} start");
+                MasterName = name;
             }
             /// <summary>
             /// Logs the stop time.
@@ -75,6 +77,8 @@ namespace Test.Xigadee
             public void Stop(string name)
             {
                 Enqueue($"{name} stop");
+                MasterName = null;
+                Services[name].Stop();
             }
 
             public void Create(string id
@@ -110,17 +114,8 @@ namespace Test.Xigadee
             {
                 Services.Add(id, pipeline);
 
-                masterjob.OnMasterJobStateChange += (o, e) =>
-                {
-                    try
-                    {
-                        Log.Add(e);
-                    }
-                    catch (Exception ex)
-                    {
-
-                    }
-                };
+                masterjob.OnMasterJobStateChange += (o, e) => Record(o, e);
+                masterjob.OnMasterJobNegotiation += (o, e) => Log.Add(e);
             }
         }
 
@@ -186,24 +181,19 @@ namespace Test.Xigadee
                 Assert.IsNotNull(ctx.MasterName);
                 ctx.Mre.Reset();
                 var holdme1 = ctx.MasterName;
-                ctx.Stop(ctx.MasterName);
-                ctx.MasterName = null;
-                ctx.Services[holdme1].Stop();
+                ctx.Stop(holdme1);
 
-                ctx.Mre.WaitOne();
                 //Ok, final service take over
+                ctx.Mre.WaitOne();
                 Assert.IsNotNull(ctx.MasterName);
                 ctx.Mre.Reset();
                 var holdme2 = ctx.MasterName;
-                ctx.Stop(ctx.MasterName);
-                ctx.MasterName = null;
-                ctx.Services[holdme2].Stop();
+                ctx.Stop(holdme2);
 
                 ctx.Mre.WaitOne();
-
+                var holdme3 = ctx.MasterName;
                 ctx.Stop(ctx.MasterName);
-
-                Assert.IsNotNull(ctx.MasterName);
+                Assert.IsNotNull(holdme3);
             }
             catch (Exception ex)
             {
