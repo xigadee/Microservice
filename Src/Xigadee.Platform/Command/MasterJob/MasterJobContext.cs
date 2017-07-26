@@ -29,15 +29,21 @@ namespace Xigadee
     /// </summary>
     public class MasterJobContext
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MasterJobContext"/> class.
+        /// </summary>
         public MasterJobContext()
         {
-            StandbyPartner = new ConcurrentDictionary<string, StandbyPartner>();
+            Partners = new ConcurrentDictionary<string, MasterJobPartner>();
+            JobSchedules = new Dictionary<Guid, MasterJobHolder>();
         }
 
         /// <summary>
         /// This collection holds the list of master job standby partners.
         /// </summary>
-        public ConcurrentDictionary<string, StandbyPartner> StandbyPartner { get; }
+        public ConcurrentDictionary<string, MasterJobPartner> Partners { get; }
+
+        public Dictionary<Guid, MasterJobHolder> JobSchedules { get; }
 
         /// <summary>
         /// The current status.
@@ -50,7 +56,15 @@ namespace Xigadee
 
         public Random mRandom = new Random(Environment.TickCount);
 
-        public DateTime? mMasterJobLastPollTime;
+        /// <summary>
+        /// The timestamp for the last negotiation message out.
+        /// </summary>
+        public DateTime? MessageLastOut { get; set; }
+        /// <summary>
+        /// The timestamp for the last negotiation message received.
+        /// </summary>
+        public DateTime? MessageLastIn { get; set; }
+
         /// <summary>
         /// This holds the master job collection.
         /// </summary>
@@ -60,5 +74,23 @@ namespace Xigadee
         /// This is the current state of the MasterJob
         /// </summary>
         public MasterJobState State { get; set; }
+
+        #region MasterJobPartnerAdd(string originatorServiceId, bool isStandby)
+        /// <summary>
+        /// The method add the MasterJob Partner.
+        /// </summary>
+        /// <param name="originatorServiceId">The originator service identifier.</param>
+        /// <param name="isStandby">if set to <c>true</c> [is standby].</param>
+        public void PartnerAdd(string originatorServiceId, bool isStandby)
+        {
+            var record = new MasterJobPartner(originatorServiceId, isStandby);
+            Partners.AddOrUpdate(record.ServiceId, s => record, (s, o) => record);
+        }
+        #endregion
+
+        public void Start()
+        {
+            Partners.Clear();
+        }
     }
 }

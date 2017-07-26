@@ -2,9 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Xigadee;
 
@@ -115,7 +113,7 @@ namespace Test.Xigadee
                 Services.Add(id, pipeline);
 
                 masterjob.OnMasterJobStateChange += (o, e) => Record(o, e);
-                masterjob.OnMasterJobNegotiation += (o, e) => Log.Add(e);
+                masterjob.OnMasterJobCommunication += (o, e) => Log.Add(e);
             }
         }
 
@@ -142,8 +140,8 @@ namespace Test.Xigadee
 
                 ctx.Create("Sender3", bridgeOut, bridgeIn, bridgeMaster, mast3, out init3, out memp3);
 
-                ctx.Add("Receiver1"
-                    , new MicroservicePipeline("Receiver1")
+                ctx.Add("Receiver2"
+                    , new MicroservicePipeline("Receiver2")
                         .AdjustPolicyTaskManagerForDebug()
                         .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
                         .AddDebugMemoryDataCollector(out memp2)
@@ -168,7 +166,7 @@ namespace Test.Xigadee
 
                 //Check that the standard comms are working.
                 var entity = new BridgeMe() { Message = "Momma" };
-                var rs = init1.Create(entity, new RepositorySettings() { WaitTime = TimeSpan.FromSeconds(30) }).Result;
+                var rs = init1.Create(entity, new RepositorySettings() { WaitTime = TimeSpan.FromSeconds(30)}).Result;
                 var rs2 = init1.Read(entity.Id).Result;
                 var rs3 = init3.Read(entity.Id).Result;
                 Assert.IsTrue(rs2.IsSuccess);

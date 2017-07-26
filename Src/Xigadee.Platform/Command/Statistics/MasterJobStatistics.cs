@@ -28,6 +28,6 @@ namespace Xigadee
         public string Status { get; set; }
         public string Server { get; set; }
 
-        public List<StandbyPartner> Standbys { get; set; }
+        public List<MasterJobPartner> Standbys { get; set; }
     }
 }

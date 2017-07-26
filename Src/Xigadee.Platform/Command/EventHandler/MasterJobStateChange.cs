@@ -68,7 +68,7 @@ namespace Xigadee
         /// </summary>
         public string Debug()
         {
-            return $"{ServiceName}/{CommandName}: {StateOld} > {StateNew} @ {TimeStamp} - {Iteration}\r\n";
+            return $"State Change - {ServiceName}/{CommandName}: {StateOld} > {StateNew} @ {TimeStamp} - {Iteration}\r\n";
         }
     }
 
@@ -116,7 +116,7 @@ namespace Xigadee
         /// </summary>
         public string Debug()
         {
-            return $"{ServiceName}/{CommandName} - {Direction}: {State} --> {Action} @ {TimeStamp} - {Iteration} [{OriginatorId??ServiceName}]\r\n";
+            return $"Message {Direction} - {ServiceName}/{CommandName}: {State} --> {Action} @ {TimeStamp} - {Iteration} [{OriginatorId??ServiceName}]\r\n";
         }
     }
 }

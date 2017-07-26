@@ -99,7 +99,7 @@
     <Compile Include="Command\Helper\CommandHolderException.cs" />
     <Compile Include="Command\Helper\CommandTimeoutSchedule.cs" />
     <Compile Include="Command\MasterJob\MasterJobContext.cs" />
-    <Compile Include="Command\MasterJob\MasterJobNegotiationStrategyBase.cs" />
+    <Compile Include="Command\MasterJob\Strategy\MasterJobNegotiationStrategyBase.cs" />
     <Compile Include="Command\Pipeline\AssignMasterJob.cs" />
     <Compile Include="Communication\CommunicationBridge\Manual\Bridge\ClientServerManualCommunicationBridge.cs" />
     <Compile Include="Communication\Interfaces\IMessagingService.cs" />
@@ -366,7 +366,7 @@
     <Compile Include="Interfaces\ICommand.cs" />
     <Compile Include="Command\MasterJob\MasterJobHolder.cs" />
     <Compile Include="Command\MasterJob\MasterJobState.cs" />
-    <Compile Include="Command\MasterJob\StandbyPartner.cs" />
+    <Compile Include="Command\MasterJob\MasterJobPartner.cs" />
     <Compile Include="Command\RequestTracker\RequestTracker.cs" />
     <Compile Include="Command\RequestTracker\RequestTrackerContainer.cs" />
     <Compile Include="Command\Statistics\CommandStatistics.cs" />

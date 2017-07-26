@@ -68,7 +68,6 @@ namespace Xigadee
         {
             mPolicy = PolicyCreateOrValidate(policy);
 
-            mCurrentMasterPollAttempts = 0;
             mSupported = new Dictionary<CommandHolder, H>();
             mSchedules = new List<Schedule>();
 
@@ -110,7 +109,7 @@ namespace Xigadee
                     OutgoingRequestsInitialise();
 
                 if (mPolicy.MasterJobEnabled)
-                    MasterJobNegotiationInitialise();
+                    MasterJobTearUp();
 
                 if (mPolicy.JobPollEnabled && mPolicy.CommandScheduleReflectionSupported)
                     JobSchedulesReflectionInitialise();
@@ -134,8 +133,9 @@ namespace Xigadee
         {
             try
             {
+                //If enabled, stop any master job processes.
                 if (mPolicy.MasterJobEnabled)
-                    MasterJobStop();
+                    MasterJobTearDown();
 
                 mSchedules.ForEach((s) => Scheduler.Unregister(s));
                 mSchedules.Clear();

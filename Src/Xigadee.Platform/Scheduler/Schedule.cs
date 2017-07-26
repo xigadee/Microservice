@@ -71,10 +71,15 @@ namespace Xigadee
             {
                 base.Name = value;
             }
-        } 
+        }
         #endregion
 
-        public virtual string ScheduleType { get { return GetType().Name; } }
+        #region ScheduleType
+        /// <summary>
+        /// Gets the type of the schedule. By default, this is based on the class name, but it can be overridden.
+        /// </summary>
+        public virtual string ScheduleType { get { return GetType().Name; } } 
+        #endregion
 
         #region Id
         /// <summary>

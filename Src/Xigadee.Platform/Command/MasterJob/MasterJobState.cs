@@ -44,6 +44,9 @@ namespace Xigadee
     /// </summary>
     public enum MasterJobState: int
     {
+        /// <summary>
+        /// The master job is disabled.
+        /// </summary>
         Disabled = -1,
 
         Inactive = 0,
