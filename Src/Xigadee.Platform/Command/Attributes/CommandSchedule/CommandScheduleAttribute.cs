@@ -26,7 +26,7 @@ namespace Xigadee
     [DebuggerDisplay("{mInitialWait}/{mFrequency} [{mName}]")]
     public class CommandScheduleAttribute: Attribute
     {
-        private string mInitialWait, mFrequency, mName;
+        private string mInitialWait, mFrequency;
 
         /// <summary>
         /// This is the default constructor. 
@@ -40,11 +40,12 @@ namespace Xigadee
         ///</param>
         /// <param name="name">The name for the schedule. This will be displayed in the Microservice statistics.</param>
         /// <see cref="https://msdn.microsoft.com/en-us/library/se73z7b9(v=vs.110).aspx"/>
-        public CommandScheduleAttribute(string initialWait, string frequency, string name = null)
+        public CommandScheduleAttribute(string initialWait, string frequency, bool isLongRunningProcess = false, string name = null)
         {
             mInitialWait = initialWait;
             mFrequency = frequency;
-            mName = name;
+            Name = name;
+            IsLongRunningProcess = isLongRunningProcess;
         }
         /// <summary>
         /// This is the Initial Wait as a timespan.
@@ -78,7 +79,8 @@ namespace Xigadee
         /// <summary>
         /// This is the schedule name.
         /// </summary>
-        public string Name { get { return mName; } }
+        public string Name { get; }
 
+        public bool IsLongRunningProcess { get; }
     }
 }

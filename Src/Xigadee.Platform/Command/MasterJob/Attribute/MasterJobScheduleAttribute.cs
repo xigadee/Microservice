@@ -38,7 +38,8 @@ namespace Xigadee
         ///</param>
         /// <param name="name">The name for the schedule. This will be displayed in the Microservice statistics.</param>
         /// <see cref="https://msdn.microsoft.com/en-us/library/se73z7b9(v=vs.110).aspx"/>
-        public MasterJobScheduleAttribute(string initialWait, string frequency, string name = null):base(initialWait, frequency, name)
+        public MasterJobScheduleAttribute(string initialWait, string frequency, bool longRunningProcess = false, string name = null)
+            :base(initialWait, frequency, longRunningProcess, name)
         {
         }
     }
