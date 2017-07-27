@@ -30,20 +30,28 @@ namespace Xigadee
     public class MasterJobContext
     {
         /// <summary>
+        /// This event can is fired when the state of the master job is changed.
+        /// </summary>
+        public event EventHandler<MasterJobStateChangeEventArgs> OnMasterJobStateChange;
+        /// <summary>
         /// Initializes a new instance of the <see cref="MasterJobContext"/> class.
         /// </summary>
-        public MasterJobContext()
+        public MasterJobContext(MasterJobNegotiationStrategyBase strategy = null)
         {
             Partners = new ConcurrentDictionary<string, MasterJobPartner>();
-            JobSchedules = new Dictionary<Guid, MasterJobHolder>();
+            Jobs = new Dictionary<Guid, MasterJobHolder>();
+
+            Strategy = strategy ?? new MasterJobNegotiationStrategy();
         }
 
         /// <summary>
         /// This collection holds the list of master job standby partners.
         /// </summary>
         public ConcurrentDictionary<string, MasterJobPartner> Partners { get; }
-
-        public Dictionary<Guid, MasterJobHolder> JobSchedules { get; }
+        /// <summary>
+        /// Gets the master jobs.
+        /// </summary>
+        public Dictionary<Guid, MasterJobHolder> Jobs { get; }
 
         /// <summary>
         /// The current status.
@@ -52,7 +60,24 @@ namespace Xigadee
 
         public string mCurrentMasterServiceId;
 
-        public int mCurrentMasterPollAttempts;
+        private int mCurrentMasterPollAttempts =0;
+
+        public int MasterPollAttempts { get { return mCurrentMasterPollAttempts; } }
+
+        public void MasterPollAttemptsReset()
+        {
+            mCurrentMasterPollAttempts= 0;
+        }
+
+        public void MasterPollAttemptsIncrement()
+        {
+            mCurrentMasterPollAttempts++;
+        }
+
+        public bool MasterPollAttemptsExceeded()
+        {
+            return mCurrentMasterPollAttempts>=3;
+        }
 
         public Random mRandom = new Random(Environment.TickCount);
 
@@ -66,14 +91,48 @@ namespace Xigadee
         public DateTime? MessageLastIn { get; set; }
 
         /// <summary>
-        /// This holds the master job collection.
+        /// The state change counter.
         /// </summary>
-        public Dictionary<Guid, MasterJobHolder> mMasterJobs;
+        public long StateChangeCounter { get { return mStateChangeCounter; } }
 
+        #region State
+        private MasterJobState mState;
+        private object mLockState = new object();
+        private long mStateChangeCounter = 0;
         /// <summary>
-        /// This is the current state of the MasterJob
+        /// This boolean property identifies whether this job is the master job for the particular 
+        /// NegotiationMessageType.
         /// </summary>
-        public MasterJobState State { get; set; }
+        public virtual MasterJobState State
+        {
+            get
+            {
+                return mState;
+            }
+            set
+            {
+                MasterJobState? oldState;
+
+                lock (mLockState)
+                {
+                    if (value != mState)
+                    {
+                        oldState = mState;
+                        mState = value;
+                    }
+                    else
+                        oldState = null;
+                }
+
+                try
+                {
+                    if (oldState.HasValue)
+                        OnMasterJobStateChange?.Invoke(this, new MasterJobStateChangeEventArgs(oldState.Value, value, Interlocked.Increment(ref mStateChangeCounter)));
+                }
+                catch { }
+            }
+        }
+        #endregion
 
         #region MasterJobPartnerAdd(string originatorServiceId, bool isStandby)
         /// <summary>
@@ -92,5 +151,7 @@ namespace Xigadee
         {
             Partners.Clear();
         }
+
+        public MasterJobNegotiationStrategyBase Strategy { get; }
     }
 }

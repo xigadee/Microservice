@@ -38,6 +38,9 @@ namespace Xigadee
         #endregion
         #region Declarations
 
+        /// <summary>
+        /// This is the context that 
+        /// </summary>
         protected MasterJobContext mMasterJobContext;
         /// <summary>
         /// The current status.
@@ -46,14 +49,7 @@ namespace Xigadee
 
         protected string mCurrentMasterServiceId;
 
-        protected int mCurrentMasterPollAttempts;
-
         protected Random mRandom = new Random(Environment.TickCount);
-
-        /// <summary>
-        /// This is the current state of the MasterJob
-        /// </summary>
-        private MasterJobState mMasterJobState;
         #endregion
 
         #region MasterJobTearUp()
@@ -69,11 +65,16 @@ namespace Xigadee
 
             mMasterJobContext = new MasterJobContext();
 
-            mCurrentMasterPollAttempts = 0;
+            mMasterJobContext.OnMasterJobStateChange += (object o, MasterJobStateChangeEventArgs s) =>
+            {
+                s.ServiceName = OriginatorId.Name;
+                s.CommandName = GetType().Name;
+                OnMasterJobStateChange?.Invoke(this, s);
+            };
 
             CommandRegister(MasterJobNegotiationChannelIdIncoming, mPolicy.MasterJobNegotiationChannelType, null, MasterJobStateNotificationIncoming);
 
-            State = MasterJobState.VerifyingComms;
+            mMasterJobContext.State = MasterJobState.VerifyingComms;
 
             //Register the schedule used for poll requests.
             var masterjobPoll = new Schedule(MasterJobStateNotificationOutgoing, $"MasterJob: {mPolicy.MasterJobName ?? FriendlyName}");
@@ -123,7 +124,7 @@ namespace Xigadee
             try
             {
                 OnMasterJobCommunication?.Invoke(this, new MasterJobCommunicationEventArgs(
-                    OriginatorId.Name, GetType().Name, MasterJobCommunicationDirection.Outgoing, State, action, mCounter));
+                    OriginatorId.Name, GetType().Name, MasterJobCommunicationDirection.Outgoing, mMasterJobContext.State, action, mMasterJobContext.StateChangeCounter));
             }
             catch (Exception ex)
             {
@@ -131,45 +132,6 @@ namespace Xigadee
             }
 
             return Task.FromResult(0);
-        }
-        #endregion
-
-        #region State
-        private object mLockState = new object();
-        private int mCounter = 0;
-        /// <summary>
-        /// This boolean property identifies whether this job is the master job for the particular 
-        /// NegotiationMessageType.
-        /// </summary>
-        public virtual MasterJobState State
-        {
-            get
-            {
-                return mMasterJobState;
-            }
-            set
-            {
-                MasterJobState? oldState;
-
-                lock (mLockState)
-                {
-                    if (value != mMasterJobState)
-                    {
-                        oldState = mMasterJobState;
-                        mMasterJobState = value;
-                    }
-                    else
-                        oldState = null;
-                }
-
-                try
-                {
-                    if (oldState.HasValue)
-                        OnMasterJobStateChange?.Invoke(this, new MasterJobStateChangeEventArgs(
-                            OriginatorId.Name, GetType().Name, oldState.Value, value, Interlocked.Increment(ref mCounter)));
-                }
-                catch { }
-            }
         }
         #endregion
 
@@ -184,22 +146,22 @@ namespace Xigadee
             mMasterJobContext.MessageLastIn = DateTime.UtcNow;
 
             ///If we are not active then do nothing.
-            if (State == MasterJobState.Disabled)
+            if (mMasterJobContext.State == MasterJobState.Disabled)
                 return;
 
             //Filter out any messages sent from this service.
             if (string.Equals(rq.Message.OriginatorServiceId, OriginatorId.ExternalServiceId, StringComparison.InvariantCultureIgnoreCase))
             {
                 //We can now say that the masterjob channel is working, so we can now enable the job for negotiation.
-                if (State == MasterJobState.VerifyingComms)
-                    State = MasterJobState.Starting;
+                if (mMasterJobContext.State == MasterJobState.VerifyingComms)
+                    mMasterJobContext.State = MasterJobState.Starting;
 
                 return;
             }
 
             //Raise an event for the incoming communication.
             OnMasterJobCommunication?.Invoke(this, new MasterJobCommunicationEventArgs(
-                OriginatorId.Name, GetType().Name, MasterJobCommunicationDirection.Incoming, State, rq.Message.ActionType, mCounter
+                OriginatorId.Name, GetType().Name, MasterJobCommunicationDirection.Incoming, mMasterJobContext.State, rq.Message.ActionType, mMasterJobContext.StateChangeCounter
                 , rq.Message.OriginatorServiceId));
 
 
@@ -209,48 +171,48 @@ namespace Xigadee
             }
             else if (MasterJobStates.IAmMaster.Equals(rq.Message.ActionType, StringComparison.InvariantCultureIgnoreCase))
             {
-                if (State == MasterJobState.Active)
+                if (mMasterJobContext.State == MasterJobState.Active)
                     MasterJobStop();
 
                 mMasterJobContext.PartnerAdd(rq.Message.OriginatorServiceId, false);
 
-                State = MasterJobState.Inactive;
+                mMasterJobContext.State = MasterJobState.Inactive;
                 mCurrentMasterServiceId = rq.Message.OriginatorServiceId;
-                mCurrentMasterPollAttempts = 0;
+                mMasterJobContext.MasterPollAttemptsReset();
                 mCurrentMasterReceiveTime = DateTime.UtcNow;
                 await NegotiationTransmit(MasterJobStates.IAmStandby);
             }
             else if (MasterJobStates.ResyncMaster.Equals(rq.Message.ActionType, StringComparison.InvariantCultureIgnoreCase))
             {
-                State = MasterJobState.Starting;
+                mMasterJobContext.State = MasterJobState.Starting;
                 mCurrentMasterServiceId = "";
                 mCurrentMasterReceiveTime = DateTime.UtcNow;
             }
             else if (MasterJobStates.WhoIsMaster.Equals(rq.Message.ActionType, StringComparison.InvariantCultureIgnoreCase))
             {
-                if (State == MasterJobState.Active)
+                if (mMasterJobContext.State == MasterJobState.Active)
                     await MasterJobSyncIAmMaster();
             }
             else if (MasterJobStates.RequestingControl1.Equals(rq.Message.ActionType, StringComparison.InvariantCultureIgnoreCase))
             {
-                if (State == MasterJobState.Active)
+                if (mMasterJobContext.State == MasterJobState.Active)
                     await MasterJobSyncIAmMaster();
-                else if (State <= MasterJobState.Requesting1)
-                    State = MasterJobState.Inactive;
+                else if (mMasterJobContext.State <= MasterJobState.Requesting1)
+                    mMasterJobContext.State = MasterJobState.Inactive;
             }
             else if (MasterJobStates.RequestingControl2.Equals(rq.Message.ActionType, StringComparison.InvariantCultureIgnoreCase))
             {
-                if (State == MasterJobState.Active)
+                if (mMasterJobContext.State == MasterJobState.Active)
                     await MasterJobSyncIAmMaster();
-                else if (State <= MasterJobState.Requesting2)
-                    State = MasterJobState.Inactive;
+                else if (mMasterJobContext.State <= MasterJobState.Requesting2)
+                    mMasterJobContext.State = MasterJobState.Inactive;
             }
             else if (MasterJobStates.TakingControl.Equals(rq.Message.ActionType, StringComparison.InvariantCultureIgnoreCase))
             {
-                if (State == MasterJobState.Active)
+                if (mMasterJobContext.State == MasterJobState.Active)
                     await MasterJobSyncIAmMaster();
-                else if (State <= MasterJobState.TakingControl)
-                    State = MasterJobState.Inactive;
+                else if (mMasterJobContext.State <= MasterJobState.TakingControl)
+                    mMasterJobContext.State = MasterJobState.Inactive;
             }
             else if (!string.IsNullOrEmpty(rq.Message.ActionType))
             {
@@ -258,7 +220,7 @@ namespace Xigadee
             }
         }
         #endregion
-        #region MasterJobStateNotificationOutgoing(Schedule state, CancellationToken token) -->
+        #region POLL: MasterJobStateNotificationOutgoing(Schedule state, CancellationToken token) -->
         /// <summary>
         /// This is the master job outgoing negotiation logic.
         /// </summary>
@@ -270,31 +232,31 @@ namespace Xigadee
             //and to make the negotiation messaging more efficient.
             schedule.Frequency = TimeSpan.FromSeconds(5 + mRandom.Next(10));
 
-            switch (State)
+            switch (mMasterJobContext.State)
             {
                 case MasterJobState.VerifyingComms:
                     await NegotiationTransmit(MasterJobStates.WhoIsMaster);
                     break;
                 case MasterJobState.Starting:
                     await NegotiationTransmit(MasterJobStates.WhoIsMaster);
-                    State = MasterJobState.Requesting1;
-                    mCurrentMasterPollAttempts++;
+                    mMasterJobContext.State = MasterJobState.Requesting1;
+                    mMasterJobContext.MasterPollAttemptsIncrement();
                     break;
                 case MasterJobState.Inactive:
                     await NegotiationTransmit(MasterJobStates.WhoIsMaster);
-                    if (mCurrentMasterPollAttempts >= 3)
-                        State = MasterJobState.Starting;
-                    else if (mCurrentMasterPollAttempts == 0)
+                    if (mMasterJobContext.MasterPollAttemptsExceeded())
+                        mMasterJobContext.State = MasterJobState.Starting;
+                    else if (mMasterJobContext.MasterPollAttempts == 0)
                         schedule.Frequency = TimeSpan.FromSeconds(10 + mRandom.Next(60));
-                    mCurrentMasterPollAttempts++;
+                    mMasterJobContext.MasterPollAttemptsIncrement();
                     break;
                 case MasterJobState.Requesting1:
                     await NegotiationTransmit(MasterJobStates.RequestingControl1);
-                    State = MasterJobState.Requesting2;
+                    mMasterJobContext.State = MasterJobState.Requesting2;
                     break;
                 case MasterJobState.Requesting2:
                     await NegotiationTransmit(MasterJobStates.RequestingControl2);
-                    State = MasterJobState.TakingControl;
+                    mMasterJobContext.State = MasterJobState.TakingControl;
                     break;
                 case MasterJobState.TakingControl:
                     await NegotiationTransmit(MasterJobStates.TakingControl);
@@ -305,6 +267,8 @@ namespace Xigadee
                     schedule.Frequency = TimeSpan.FromSeconds(5 + mRandom.Next(25));
                     mCurrentMasterServiceId = null;
                     break;
+                default:
+                    return;
             }
 
             mMasterJobContext.MessageLastOut = DateTime.UtcNow;
@@ -351,11 +315,11 @@ namespace Xigadee
         {
             mMasterJobContext.Start();
 
-            State = MasterJobState.Active;
+            mMasterJobContext.State = MasterJobState.Active;
 
             MasterJobCommandsRegister();
 
-            foreach (var job in mMasterJobContext.JobSchedules.Values)
+            foreach (var job in mMasterJobContext.Jobs.Values)
             {
                 try
                 {
@@ -379,14 +343,14 @@ namespace Xigadee
         /// </summary>
         protected virtual void MasterJobStop()
         {
-            var oldState = State;
-            State = MasterJobState.Disabled;
+            var oldState = mMasterJobContext.State;
+            mMasterJobContext.State = MasterJobState.Disabled;
 
             if (oldState == MasterJobState.Active)
             {
                 NegotiationTransmit(MasterJobStates.ResyncMaster);
 
-                foreach (var job in mMasterJobContext.JobSchedules.Values)
+                foreach (var job in mMasterJobContext.Jobs.Values)
                 {
                     try
                     {
@@ -404,7 +368,7 @@ namespace Xigadee
             }
 
             //Reset the state to inactive so that it could restart at some point.
-            State = MasterJobState.Inactive;
+            mMasterJobContext.State = MasterJobState.Inactive;
             //NegotiationTransmit(MasterJobStates.IAmStandby).Wait();
 
         }
@@ -420,14 +384,14 @@ namespace Xigadee
         protected virtual async Task MasterJobExecute(Schedule schedule, CancellationToken cancel)
         {
             var id = schedule.Id;
-            if (mMasterJobContext.JobSchedules.ContainsKey(id))
+            if (mMasterJobContext.Jobs.ContainsKey(id))
                 try
                 {
-                    await mMasterJobContext.JobSchedules[id].Action(schedule);
+                    await mMasterJobContext.Jobs[id].Action(schedule);
                 }
                 catch (Exception ex)
                 {
-                    Collector?.LogException($"MasterJob '{mMasterJobContext.JobSchedules[id].Name}' execute failed", ex);
+                    Collector?.LogException($"MasterJob '{mMasterJobContext.Jobs[id].Name}' execute failed", ex);
                     throw;
                 }
         }
@@ -457,7 +421,7 @@ namespace Xigadee
                 InitialTime = initialTime
             };
 
-            mMasterJobContext.JobSchedules.Add(schedule.Id, new MasterJobHolder(schedule.Name, schedule, action, initialise, cleanup));
+            mMasterJobContext.Jobs.Add(schedule.Id, new MasterJobHolder(schedule.Name, schedule, action, initialise, cleanup));
         }
         #endregion
     }

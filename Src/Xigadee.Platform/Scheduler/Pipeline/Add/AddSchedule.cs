@@ -24,14 +24,14 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-        public static P AddSchedule<P>(this P pipeline
-            , int startupPriority = 100
-            //, Action<C> assign = null
+        //public static P AddSchedule<P>(this P pipeline
+        //    , int startupPriority = 100
+        //    //, Action<C> assign = null
 
-            )
-            where P : IPipeline
-        {
-            return pipeline;
-        }
+        //    )
+        //    where P : IPipeline
+        //{
+        //    return pipeline;
+        //}
     }
 }

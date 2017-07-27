@@ -25,22 +25,30 @@ using Xigadee;
 namespace Xigadee
 {
     /// <summary>
-    /// The base functionality for the master job negotiation strategy.
+    /// This is the default negotiation strategy for a master job command.
     /// </summary>
-    public abstract class MasterJobNegotiationStrategyBase
+    /// <seealso cref="Xigadee.MasterJobNegotiationStrategyBase" />
+    public class MasterJobNegotiationStrategy: MasterJobNegotiationStrategyBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MasterJobNegotiationStrategyBase"/> class.
+        /// Initializes a new instance of the <see cref="MasterJobNegotiationStrategy"/> class.
         /// </summary>
-        /// <param name="name">The strategy name.</param>
-        protected MasterJobNegotiationStrategyBase(string name)
+        public MasterJobNegotiationStrategy() : base("Default")
         {
-            Name = name;
         }
+    }
 
+    /// <summary>
+    /// This is the default negotiation strategy for a master job command.
+    /// </summary>
+    /// <seealso cref="Xigadee.MasterJobNegotiationStrategyBase" />
+    public class MasterJobNegotiationStrategyDebug: MasterJobNegotiationStrategyBase
+    {
         /// <summary>
-        /// Gets the strategy name.
+        /// Initializes a new instance of the <see cref="MasterJobNegotiationStrategy"/> class.
         /// </summary>
-        public string Name { get; }
+        public MasterJobNegotiationStrategyDebug() : base("Debug")
+        {
+        }
     }
 }

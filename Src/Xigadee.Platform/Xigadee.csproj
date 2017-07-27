@@ -99,6 +99,7 @@
     <Compile Include="Command\Helper\CommandHolderException.cs" />
     <Compile Include="Command\Helper\CommandTimeoutSchedule.cs" />
     <Compile Include="Command\MasterJob\MasterJobContext.cs" />
+    <Compile Include="Command\MasterJob\Strategy\MasterJobNegotiationStrategy.cs" />
     <Compile Include="Command\MasterJob\Strategy\MasterJobNegotiationStrategyBase.cs" />
     <Compile Include="Command\Pipeline\AssignMasterJob.cs" />
     <Compile Include="Communication\CommunicationBridge\Manual\Bridge\ClientServerManualCommunicationBridge.cs" />

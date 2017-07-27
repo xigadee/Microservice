@@ -28,6 +28,14 @@ namespace Xigadee
     /// </summary>
     public class MasterJobHolder
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MasterJobHolder"/> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="Schedule">The poll schedule.</param>
+        /// <param name="Action">The action.</param>
+        /// <param name="Initialise">The initialise.</param>
+        /// <param name="Cleanup">The cleanup.</param>
         public MasterJobHolder(string name
             , Schedule Schedule
             , Func<Schedule, Task> Action

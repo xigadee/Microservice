@@ -53,13 +53,13 @@ namespace Xigadee
         /// <summary>
         /// This method registers a schedule.
         /// </summary>
-        /// <param name="action"></param>
-        /// <param name="frequency"></param>
-        /// <param name="name"></param>
-        /// <param name="initialWait"></param>
-        /// <param name="initialTime"></param>
-        /// <param name="shouldPoll"></param>
-        /// <param name="isInternal"></param>
+        /// <param name="action">The schedule action.</param>
+        /// <param name="frequency">The poll frequency.</param>
+        /// <param name="name">The optional poll name.</param>
+        /// <param name="initialWait">The optional initial wait until the poll begins.</param>
+        /// <param name="initialTime">The optional initial time to start the poll.</param>
+        /// <param name="shouldPoll">A flag that indicates whether the poll is active. The default is true.</param>
+        /// <param name="isInternal">Specifies whether the poll is internal. The default is false.</param>
         /// <returns>Returns the new schedule after it has been added to the collection.</returns>
         public Schedule Register(Func<Schedule, CancellationToken, Task> action
             , TimeSpan? frequency
@@ -222,6 +222,8 @@ namespace Xigadee
         /// recalculate the next schedule.
         /// </summary>
         /// <param name="tracker">The tracker object.</param>
+        /// <param name="failed">Indicates whether an exception was raised during execution.</param>
+        /// <param name="ex">The exception raised during execution. This will ne null under normal operation.</param>
         private void ScheduleComplete(TaskTracker tracker, bool failed, Exception ex)
         {
             var schedule = tracker.Context as Schedule;

@@ -24,6 +24,16 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
+        /// <summary>
+        /// Assigns a master job to the broadcast channel.
+        /// </summary>
+        /// <typeparam name="E"></typeparam>
+        /// <typeparam name="C"></typeparam>
+        /// <param name="cpipe">The cpipe.</param>
+        /// <param name="command">The command.</param>
+        /// <param name="assign">The assign.</param>
+        /// <param name="channelType">Type of the channel.</param>
+        /// <returns></returns>
         public static E AssignMasterJob<E, C>(this E cpipe
             , C command
             , Action<C> assign = null
@@ -43,7 +53,17 @@ namespace Xigadee
 
             return cpipe;
         }
-
+        /// <summary>
+        /// Assigns the master job.
+        /// </summary>
+        /// <typeparam name="E"></typeparam>
+        /// <typeparam name="P"></typeparam>
+        /// <typeparam name="C"></typeparam>
+        /// <param name="cpipe">The cpipe.</param>
+        /// <param name="creator">The creator.</param>
+        /// <param name="assign">The assign.</param>
+        /// <param name="channelType">Type of the channel.</param>
+        /// <returns></returns>
         public static E AssignMasterJob<E, P, C>(this E cpipe
             , Func<IEnvironmentConfiguration, C> creator
             , Action<C> assign = null

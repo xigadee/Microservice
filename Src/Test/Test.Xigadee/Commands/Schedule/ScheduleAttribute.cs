@@ -17,7 +17,7 @@ namespace Test.Xigadee.Commands.Schedule
 
         public class CommandTest: CommandBase
         {
-            [CommandSchedule("00:00:05","00:00:10","freddy")]
+            [CommandSchedule("00:00:05","00:00:10",name:"freddy")]
 
             public void Schedule1()
             {

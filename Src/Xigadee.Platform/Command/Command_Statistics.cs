@@ -43,7 +43,7 @@ namespace Xigadee
             {
                 stats.MasterJob.Server = string.Format("{0} @ {1:o}", mCurrentMasterServiceId, mCurrentMasterReceiveTime);
                 stats.MasterJob.Status = string.Format("Status={0} Channel={1}/{2} Type={3}"
-                    , State.ToString()
+                    , mMasterJobContext.State.ToString()
                     , mPolicy.MasterJobNegotiationChannelIdOutgoing
                     , mPolicy.MasterJobNegotiationChannelPriority
                     , mPolicy.MasterJobNegotiationChannelType

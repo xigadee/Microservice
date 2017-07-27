@@ -186,16 +186,29 @@ namespace Xigadee
         public TimeSpan? Frequency { get; set; }
         #endregion
 
+        #region ExecuteException
+        /// <summary>
+        /// Gets the last execution exception.
+        /// </summary>
         public ScheduleException ExecuteException { get; set; }
+        #endregion
 
+        #region Start()
+        /// <summary>
+        /// Resets the schedule for the start of execution.
+        /// </summary>
         public virtual void Start()
         {
             ExecuteException = null;
             Active = true;
-        }
+        } 
+        #endregion
 
-        public virtual void Complete(bool success, bool recalculate = true
-            , bool isException = false, Exception lastEx = null, DateTime? exceptionTime = null)
+        public virtual void Complete(bool success
+            , bool recalculate = true
+            , bool isException = false
+            , Exception lastEx = null
+            , DateTime? exceptionTime = null)
         {
             if (!success)
                 ErrorIncrement();

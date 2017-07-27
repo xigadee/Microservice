@@ -21,20 +21,18 @@ namespace Xigadee
 {
     public class MasterJobEventArgsBase: EventArgs
     {
-        public MasterJobEventArgsBase(string serviceName, string commandName, int? iteration = null)
+        public MasterJobEventArgsBase(long? iteration = null)
         {
-            ServiceName = serviceName;
-            CommandName = commandName;
             Iteration = iteration;
         }
 
-        public int? Iteration { get; }
+        public long? Iteration { get; }
         /// <summary>
         /// This is the service name.
         /// </summary>
-        public string ServiceName { get; }
+        public string ServiceName { get; set; }
 
-        public string CommandName { get; }
+        public string CommandName { get; set; }
 
         public DateTime TimeStamp { get; } = DateTime.UtcNow;
     }
@@ -49,7 +47,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="oldState">The old state.</param>
         /// <param name="newState">The new state.</param>
-        public MasterJobStateChangeEventArgs(string serviceName, string commandName, MasterJobState oldState, MasterJobState newState, int? iteration = null):base(serviceName, commandName, iteration)
+        public MasterJobStateChangeEventArgs(MasterJobState oldState, MasterJobState newState, long? iteration = null):base(iteration)
         {
             StateOld = oldState;
             StateNew = newState;
@@ -90,13 +88,16 @@ namespace Xigadee
         /// <param name="newState">The new state.</param>
         public MasterJobCommunicationEventArgs(string serviceName, string commandName
             , MasterJobCommunicationDirection direction
-            , MasterJobState state, string action, int iteration, string originatorId = null)
-            :base(serviceName, commandName, iteration)
+            , MasterJobState state, string action, long iteration, string originatorId = null)
+            :base(iteration)
         {
             State = state;
             Action = action;
             Direction = direction;
             OriginatorId = originatorId;
+            ServiceName = serviceName;
+            CommandName = commandName;
+
         }
 
         public string OriginatorId { get; }
