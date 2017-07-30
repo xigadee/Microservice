@@ -46,7 +46,7 @@ namespace Xigadee
         /// <param name="priority">The optional priority. The default is 1.</param>
         public void Inject(TransmissionPayload payload, int? priority = null)
         {
-            if (this.Status == ServiceStatus.Stopped)
+            if (this.Status != ServiceStatus.Running)
                 return;
 
             var client = ClientResolve(priority ?? mDefaultPriority ?? 1);

@@ -8,6 +8,9 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
+    /// <summary>
+    /// This test class is used to validate MasterJob negotiation.
+    /// </summary>
     [TestClass]
     public class MasterJobTests
     {
@@ -117,6 +120,10 @@ namespace Test.Xigadee
             }
         }
 
+        /// <summary>
+        /// This test checks that all three Microservices negotiate correctly and take control when one of the others
+        /// is stopped.
+        /// </summary>
         [Ignore]
         [TestMethod]
         public void MasterJobNegotiation()
@@ -137,7 +144,6 @@ namespace Test.Xigadee
                 var mast3 = new TestMasterJobCommand();
 
                 ctx.Create("Sender1", bridgeOut, bridgeIn, bridgeMaster, mast1, out init1, out memp1);
-
                 ctx.Create("Sender3", bridgeOut, bridgeIn, bridgeMaster, mast3, out init3, out memp3);
 
                 ctx.Add("Receiver2"
@@ -192,6 +198,11 @@ namespace Test.Xigadee
                 var holdme3 = ctx.MasterName;
                 ctx.Stop(ctx.MasterName);
                 Assert.IsNotNull(holdme3);
+
+                //Check that the payloads have been successfully signalled.
+                Assert.IsTrue(bridgeOut.Agent.PayloadsSignalled);
+                Assert.IsTrue(bridgeIn.Agent.PayloadsSignalled);
+                Assert.IsTrue(bridgeMaster.Agent.PayloadsSignalled);
             }
             catch (Exception ex)
             {

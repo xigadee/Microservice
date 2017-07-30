@@ -52,6 +52,6 @@ namespace Xigadee
         /// <summary>
         /// Specifies whether this partner is in standby.
         /// </summary>
-        public bool IsStandby{get;}
+        public bool IsStandby { get; }
     }
 }

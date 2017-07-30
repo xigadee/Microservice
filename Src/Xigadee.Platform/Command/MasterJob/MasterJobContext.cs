@@ -40,7 +40,6 @@ namespace Xigadee
         {
             Partners = new ConcurrentDictionary<string, MasterJobPartner>();
             Jobs = new Dictionary<Guid, MasterJobHolder>();
-
             Strategy = strategy ?? new MasterJobNegotiationStrategy();
         }
 
@@ -67,6 +66,18 @@ namespace Xigadee
         public void MasterPollAttemptsReset()
         {
             mCurrentMasterPollAttempts= 0;
+        }
+
+        public void MasterRecordSet(string remoteServiceId)
+        {
+            mCurrentMasterServiceId = remoteServiceId;
+            mCurrentMasterReceiveTime = DateTime.UtcNow;
+        }
+
+        public void MasterRecordClear(bool iAmMaster = true)
+        {
+            mCurrentMasterServiceId = iAmMaster?"ACTIVE":"";
+            mCurrentMasterReceiveTime = DateTime.UtcNow;
         }
 
         public void MasterPollAttemptsIncrement()

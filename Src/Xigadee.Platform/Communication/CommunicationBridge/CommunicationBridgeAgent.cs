@@ -97,5 +97,9 @@ namespace Xigadee
         /// <returns>The sender.</returns>
         public abstract ISender GetSender();
 
+        /// <summary>
+        /// A boolean property indicating that all transmitted payloads have been successfully signalled.
+        /// </summary>
+        public virtual bool PayloadsSignalled { get { throw new NotSupportedException(); } }
     }
 }

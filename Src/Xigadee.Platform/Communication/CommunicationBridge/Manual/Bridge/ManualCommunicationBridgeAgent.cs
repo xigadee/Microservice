@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,6 +33,13 @@ namespace Xigadee
         List<ManualChannelSender> mSenders = new List<ManualChannelSender>();
         long mSendCount = 0;
         JsonContractSerializer mSerializer = new JsonContractSerializer();
+
+        ConcurrentDictionary<Guid, TransmissionPayload> mSenderPayloads = new ConcurrentDictionary<Guid, TransmissionPayload>();
+
+        ManualChannelSender[] mActiveSenders = null;
+        ManualChannelListener[] mActiveListeners = null;
+
+
         #endregion
 
         #region Constructor
@@ -72,11 +80,16 @@ namespace Xigadee
         #endregion
 
 
-        private void Listener_StatusChanged(object sender, StatusChangedEventArgs e)
+        private void Listener_StatusChanged(object component, StatusChangedEventArgs e)
         {
+            var newListeners = mListeners.Where((l) => l.Status == ServiceStatus.Running).ToArray();
+            Interlocked.Exchange(ref mActiveListeners, newListeners);
         }
-        private void Sender_StatusChanged(object sender, StatusChangedEventArgs e)
+
+        private void Sender_StatusChanged(object component, StatusChangedEventArgs e)
         {
+            var newSenders = mSenders.Where((l) => l.Status == ServiceStatus.Running).ToArray();
+            Interlocked.Exchange(ref mActiveSenders, newSenders);
         }
 
         #region AddListener(ManualChannelListener listener)
@@ -112,10 +125,10 @@ namespace Xigadee
         {
             try
             {
-                OnReceiveInvoke(sender, e);
-
-                if (mListeners.Count == 0)
+                if (mActiveListeners.Length == 0)
                     return;
+
+                OnReceiveInvoke(sender, e);
 
                 long count = Interlocked.Increment(ref mSendCount);
 
@@ -137,22 +150,24 @@ namespace Xigadee
 
         private void Sender_TransmitRoundRobin(TransmissionPayload e, long count)
         {
-            int position = (int)(count % mListeners.Count);
-            Sender_Transmit(position, e);
+            var listeners = mActiveListeners;
+
+            int position = (int)(count % listeners.Length);        
+            Sender_Transmit(listeners[position], e);
         }
 
         private void Sender_TransmitBroadcast(TransmissionPayload e, long count)
         {
-            //Enumerable.Range(0,mListeners.Count).AsParallel().ForEach((c) => Sender_Transmit(c, e));
-            for (int c = 0; c < mListeners.Count; c++)
-                Sender_Transmit(c, e);
+            var listeners = mActiveListeners;
+
+            Enumerable.Range(0, listeners.Length).AsParallel().ForEach((c) => Sender_Transmit(listeners[c], e));
+            //foreach (var listener in listeners)
+            //    Sender_Transmit(listener, e);
         }
 
-        private void Sender_Transmit(int pos, TransmissionPayload e)
+        private void Sender_Transmit(ManualChannelListener listener, TransmissionPayload incoming)
         {
-            var listener = mListeners[pos];
-
-            var payload = PayloadCopy(e);
+            var payload = PayloadCopy(incoming);
 
             OnTransmitInvoke(listener, payload);
 
@@ -171,7 +186,22 @@ namespace Xigadee
 
             ServiceMessage clone = mSerializer.Deserialize<ServiceMessage>(data);
 
-            return new TransmissionPayload(clone);
+            var cloned = new TransmissionPayload(clone, release: SignalCompletion);
+
+            mSenderPayloads.AddOrUpdate(cloned.Id, cloned, (g,p)=>p);
+
+            return cloned;
         }
+
+        private void SignalCompletion(bool success, Guid id)
+        {
+            TransmissionPayload payload;
+            mSenderPayloads.TryRemove(id, out payload);
+        }
+
+        /// <summary>
+        /// A boolean property indicating that all transmitted payloads have been successfully signalled.
+        /// </summary>
+        public override bool PayloadsSignalled { get { return mSenderPayloads.Count == 0; } }
     }
 }

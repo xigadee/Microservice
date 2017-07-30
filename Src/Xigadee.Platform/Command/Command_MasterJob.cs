@@ -37,17 +37,10 @@ namespace Xigadee
         public event EventHandler<MasterJobCommunicationEventArgs> OnMasterJobCommunication;
         #endregion
         #region Declarations
-
         /// <summary>
         /// This is the context that 
         /// </summary>
         protected MasterJobContext mMasterJobContext;
-        /// <summary>
-        /// The current status.
-        /// </summary>
-        protected DateTime? mCurrentMasterReceiveTime;
-
-        protected string mCurrentMasterServiceId;
 
         protected Random mRandom = new Random(Environment.TickCount);
         #endregion
@@ -92,7 +85,8 @@ namespace Xigadee
         /// </summary>
         public virtual void MasterJobTearDown()
         {
-
+            if (mMasterJobContext.State == MasterJobState.Active)
+                MasterJobStop();
         } 
         #endregion
 
@@ -118,8 +112,14 @@ namespace Xigadee
             message.ChannelPriority = mPolicy.MasterJobNegotiationChannelPriority;
 
             //Go straight to the dispatcher as we don't want to use the tracker for this job
-            //as it is transmit only.
-            TaskManager(this, null, payload);
+            //as it is transmit only. Only send messages if the service is in a running state.
+            switch (Status)
+            {
+                case ServiceStatus.Running:
+                case ServiceStatus.Stopping:
+                    TaskManager(this, null, payload);
+                    break;
+            }
 
             try
             {
@@ -145,7 +145,7 @@ namespace Xigadee
         {
             mMasterJobContext.MessageLastIn = DateTime.UtcNow;
 
-            ///If we are not active then do nothing.
+            //If we are not active then do nothing.
             if (mMasterJobContext.State == MasterJobState.Disabled)
                 return;
 
@@ -177,16 +177,14 @@ namespace Xigadee
                 mMasterJobContext.PartnerAdd(rq.Message.OriginatorServiceId, false);
 
                 mMasterJobContext.State = MasterJobState.Inactive;
-                mCurrentMasterServiceId = rq.Message.OriginatorServiceId;
+                mMasterJobContext.MasterRecordSet(rq.Message.OriginatorServiceId);
                 mMasterJobContext.MasterPollAttemptsReset();
-                mCurrentMasterReceiveTime = DateTime.UtcNow;
                 await NegotiationTransmit(MasterJobStates.IAmStandby);
             }
             else if (MasterJobStates.ResyncMaster.Equals(rq.Message.ActionType, StringComparison.InvariantCultureIgnoreCase))
             {
                 mMasterJobContext.State = MasterJobState.Starting;
-                mCurrentMasterServiceId = "";
-                mCurrentMasterReceiveTime = DateTime.UtcNow;
+                mMasterJobContext.MasterRecordClear();
             }
             else if (MasterJobStates.WhoIsMaster.Equals(rq.Message.ActionType, StringComparison.InvariantCultureIgnoreCase))
             {
@@ -263,9 +261,8 @@ namespace Xigadee
                     MasterJobStart();
                     break;
                 case MasterJobState.Active:
-                    await NegotiationTransmit(MasterJobStates.IAmMaster);
+                    await MasterJobSyncIAmMaster();
                     schedule.Frequency = TimeSpan.FromSeconds(5 + mRandom.Next(25));
-                    mCurrentMasterServiceId = null;
                     break;
                 default:
                     return;
@@ -283,8 +280,7 @@ namespace Xigadee
         private async Task MasterJobSyncIAmMaster()
         {
             await NegotiationTransmit(MasterJobStates.IAmMaster);
-            mCurrentMasterServiceId = "ACTIVE";
-            mCurrentMasterReceiveTime = DateTime.UtcNow;
+            mMasterJobContext.MasterRecordClear(true);
         }
         #endregion
 
