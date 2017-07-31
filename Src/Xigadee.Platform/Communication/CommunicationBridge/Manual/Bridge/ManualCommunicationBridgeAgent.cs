@@ -39,7 +39,6 @@ namespace Xigadee
         ManualChannelSender[] mActiveSenders = null;
         ManualChannelListener[] mActiveListeners = null;
 
-
         #endregion
 
         #region Constructor
@@ -49,8 +48,7 @@ namespace Xigadee
         /// <param name="mode">The desirec communication mode.</param>
         public ManualCommunicationBridgeAgent(CommunicationBridgeMode mode) : base(mode)
         {
-
-        } 
+        }
         #endregion
 
         #region GetListener()
@@ -195,13 +193,21 @@ namespace Xigadee
 
         private void SignalCompletion(bool success, Guid id)
         {
+            if (success)
+                Interlocked.Increment(ref mSuccess);
+            else
+                Interlocked.Increment(ref mFailure);
+
             TransmissionPayload payload;
             mSenderPayloads.TryRemove(id, out payload);
         }
 
+        private int mSuccess = 0;
+        private int mFailure = 0;
+
         /// <summary>
         /// A boolean property indicating that all transmitted payloads have been successfully signalled.
         /// </summary>
-        public override bool PayloadsSignalled { get { return mSenderPayloads.Count == 0; } }
+        public override bool PayloadsAllSignalled { get { return mSenderPayloads.Count == 0; } }
     }
 }

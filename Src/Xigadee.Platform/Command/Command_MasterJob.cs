@@ -144,6 +144,7 @@ namespace Xigadee
         protected virtual async Task MasterJobStateNotificationIncoming(TransmissionPayload rq, List<TransmissionPayload> rs)
         {
             mMasterJobContext.MessageLastIn = DateTime.UtcNow;
+            rq.SignalSuccess();
 
             //If we are not active then do nothing.
             if (mMasterJobContext.State == MasterJobState.Disabled)

@@ -200,9 +200,9 @@ namespace Test.Xigadee
                 Assert.IsNotNull(holdme3);
 
                 //Check that the payloads have been successfully signalled.
-                Assert.IsTrue(bridgeOut.Agent.PayloadsSignalled);
-                Assert.IsTrue(bridgeIn.Agent.PayloadsSignalled);
-                Assert.IsTrue(bridgeMaster.Agent.PayloadsSignalled);
+                Assert.IsTrue(bridgeOut.Agent.PayloadsAllSignalled);
+                Assert.IsTrue(bridgeIn.Agent.PayloadsAllSignalled);
+                Assert.IsTrue(bridgeMaster.Agent.PayloadsAllSignalled);
             }
             catch (Exception ex)
             {

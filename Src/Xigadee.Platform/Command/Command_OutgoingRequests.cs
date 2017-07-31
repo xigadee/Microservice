@@ -400,6 +400,7 @@ namespace Xigadee
                 {
                     //If there is not a match key then quit.
                     Collector?.LogMessage(LoggingLevel.Warning, $"OutgoingRequestResponseIn - id {id ?? "is null"} not matched for {payload?.Message?.ProcessCorrelationKey}", "RqRsMismatch");
+                    payload.SignalSuccess();
                     return Task.FromResult(0);
                 }
 

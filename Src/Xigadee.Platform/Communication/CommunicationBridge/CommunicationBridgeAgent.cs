@@ -100,6 +100,6 @@ namespace Xigadee
         /// <summary>
         /// A boolean property indicating that all transmitted payloads have been successfully signalled.
         /// </summary>
-        public virtual bool PayloadsSignalled { get { throw new NotSupportedException(); } }
+        public virtual bool PayloadsAllSignalled { get { throw new NotSupportedException(); } }
     }
 }

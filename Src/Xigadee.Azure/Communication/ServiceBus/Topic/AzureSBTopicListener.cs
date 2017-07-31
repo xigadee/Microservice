@@ -46,9 +46,14 @@ namespace Xigadee
         /// This property indicates to delete the subscription when the listener stops./
         /// </summary>
         public bool DeleteOnStop { get; set; }
-
+        /// <summary>
+        /// Gets or sets a value indicating whether the topic listener should filter out messages intended for this
+        /// Microservice.
+        /// </summary>
         public bool ListenOnOriginatorId { get; set; }
-
+        /// <summary>
+        /// Gets or sets the DeleteOnIdleTime. Set this to null if you do not want the subscription to be removed.
+        /// </summary>
         public TimeSpan? DeleteOnIdleTime { get; set; }
         #endregion
         #region Constructor
@@ -78,12 +83,17 @@ namespace Xigadee
         //}
         #endregion
 
+        #region SettingsValidate()
+        /// <summary>
+        /// This override is used to validate the listener configuration settings on startup.
+        /// </summary>
         protected override void SettingsValidate()
         {
             base.SettingsValidate();
 
             DeleteOnIdleTime = DeleteOnIdleTime ?? (DeleteOnStop ? TimeSpan.FromHours(4) : default(TimeSpan?));
-        }
+        } 
+        #endregion
 
         #region OriginatorId
         /// <summary>

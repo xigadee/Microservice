@@ -26,7 +26,6 @@ namespace Xigadee
     /// </summary>
     public class ManualChannelListener: MessagingListenerBase<ManualChannelConnection, ManualChannelMessage, ManualChannelClientHolder>
     {
-
         protected override ManualChannelClientHolder ClientCreate(ListenerPartitionConfig partition)
         {
             var client = base.ClientCreate(partition);
@@ -47,7 +46,10 @@ namespace Xigadee
         public void Inject(TransmissionPayload payload, int? priority = null)
         {
             if (this.Status != ServiceStatus.Running)
+            {
+                payload.SignalSuccess();
                 return;
+            }
 
             var client = ClientResolve(priority ?? mDefaultPriority ?? 1);
 
