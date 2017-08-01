@@ -26,6 +26,10 @@ namespace Xigadee
     public class CommandPolicy:PolicyBase
     {
         /// <summary>
+        /// Gets or sets a value indicating whether the TransmissionPayload trace flag should be set to true.
+        /// </summary>
+        public bool TransmissionPayloadTraceEnabled { get; set; }
+        /// <summary>
         /// This is the default listening channel for incoming messages.
         /// </summary>
         public virtual string ChannelId { get; set; }

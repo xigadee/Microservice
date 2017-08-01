@@ -263,7 +263,8 @@
     <Compile Include="Interfaces\Microservice\IMicroserviceResourceMonitoring.cs" />
     <Compile Include="Interfaces\Microservice\IMicroserviceSecurity.cs" />
     <Compile Include="Interfaces\Microservice\IMicroserviceSerialization.cs" />
-    <Compile Include="Messaging\ServiceMessageHeaderFragment.cs" />
+    <Compile Include="Messaging\ServiceMessage\ServiceMessageHeaderFragment.cs" />
+    <Compile Include="Messaging\TransmissionPayload\TransmissionPayloadTraceEventArgs.cs" />
     <Compile Include="Microservice\Wrapper\CommandWrapper.cs" />
     <Compile Include="Microservice\Wrapper\CommunicationWrapper.cs" />
     <Compile Include="Microservice\Wrapper\DataCollectionWrapper.cs" />
@@ -335,7 +336,7 @@
     <Compile Include="Security\Interfaces\IEncryptionHandler.cs" />
     <Compile Include="Messaging\ProcessOptions.cs" />
     <Compile Include="Messaging\RateLimitSignal.cs" />
-    <Compile Include="Messaging\Helper\TransmissionPayloadHelper.cs" />
+    <Compile Include="Messaging\TransmissionPayload\TransmissionPayloadHelper.cs" />
     <Compile Include="Microservice\Events\ProcessRequestErrorEventArgs.cs" />
     <Compile Include="Microservice\Events\ProcessRequestUnresolvedEventArgs.cs" />
     <Compile Include="Microservice\Events\StartEventArgs.cs" />
@@ -459,9 +460,9 @@
     <Compile Include="Pipeline\SecurityPipeline\SecurityPipelineExtension.cs" />
     <Compile Include="ResourceTracker\ResourceContainer\ResourceContainerPolicy.cs" />
     <Compile Include="Scheduler\Schedule.cs" />
-    <Compile Include="Messaging\ServiceMessage.cs" />
-    <Compile Include="Messaging\ServiceMessageHeader.cs" />
-    <Compile Include="Messaging\TransmissionPayload.cs" />
+    <Compile Include="Messaging\ServiceMessage\ServiceMessage.cs" />
+    <Compile Include="Messaging\ServiceMessage\ServiceMessageHeader.cs" />
+    <Compile Include="Messaging\TransmissionPayload\TransmissionPayload.cs" />
     <Compile Include="Microservice\Events\MicroserviceEventArgs.cs" />
     <Compile Include="Exceptions\PayloadDeserializationException.cs" />
     <Compile Include="Exceptions\PayloadSerializationException.cs" />
@@ -472,7 +473,7 @@
     <Compile Include="Exceptions\StorageThrottlingException.cs" />
     <Compile Include="Components\PolicyBase.cs" />
     <Compile Include="Components\ServiceBase.cs" />
-    <Compile Include="Messaging\ServiceMessageHelper.cs" />
+    <Compile Include="Messaging\ServiceMessage\ServiceMessageHelper.cs" />
     <Compile Include="Components\ServiceStatus.cs" />
     <Compile Include="Components\Statistics\StatisticsBase.cs" />
     <Compile Include="Interfaces\Microservice\IMicroservice.cs" />

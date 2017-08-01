@@ -297,7 +297,7 @@ namespace Xigadee
                     rsMessage.MessageType = incoming.Message.MessageType;
                     rsMessage.ActionType = "";
 
-                    var rsPayload = new TransmissionPayload(rsMessage);
+                    var rsPayload = new TransmissionPayload(rsMessage, traceEnabled:mPolicy.TransmissionPayloadTraceEnabled);
                     
                     bool hasTimedOut = false;
 

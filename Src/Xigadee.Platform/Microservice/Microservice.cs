@@ -245,7 +245,8 @@ namespace Xigadee
                 EventStart(() => mCommands.CommandsStart(ServiceStart), "Commands");
 
                 //Ok start the commands in parallel at the same priority group.
-                EventStart(() => Dispatch = new DispatchWrapper(mSerializer, mTaskManager.ExecuteOrEnqueue, () => Status)
+                EventStart(() => Dispatch = new DispatchWrapper(mSerializer, mTaskManager.ExecuteOrEnqueue, () => Status
+                , Policy.TaskManager.TransmissionPayloadTraceEnabled)
                     , "Dispatch Wrapper");
 
                 //Signal that start has completed.

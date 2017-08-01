@@ -12,6 +12,11 @@ namespace Xigadee
     public class MicroservicePolicy:PolicyBase
     {
         /// <summary>
+        /// Gets or sets a value indicating whether the TransmissionPayload trace flag should be set to true.
+        /// </summary>
+        public bool TransmissionPayloadTraceEnabled { get; set; }
+
+        /// <summary>
         /// This is the frquency that the Microservice status is compiled and logged to the data collector.
         /// </summary>
         public TimeSpan FrequencyStatisticsGeneration { get; set; } = TimeSpan.FromSeconds(15);

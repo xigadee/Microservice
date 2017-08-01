@@ -30,11 +30,14 @@ namespace Xigadee
 
         private IPayloadSerializationContainer mSerializer;
 
+        private bool mTransmissionPayloadTraceEnabled;
+
         internal DispatchWrapper(IPayloadSerializationContainer serializer, Action<TransmissionPayload, string> executeOrEnqueue 
-            ,Func<ServiceStatus> getStatus) : base(getStatus)
+            ,Func<ServiceStatus> getStatus, bool trace) : base(getStatus)
         {
             ExecuteOrEnqueue = executeOrEnqueue;
             mSerializer = serializer;
+            mTransmissionPayloadTraceEnabled = trace;
         }
 
         #region --> Process ...
@@ -46,20 +49,18 @@ namespace Xigadee
         /// <param name="ChannelPriority">The prioirty that the message should be processed. The default is 1. If this message is not a valid value, it will be matched to the nearest valid value.</param>
         /// <param name="options">The process options.</param>
         /// <param name="release">The release action which is called when the payload has been executed.</param>
-        /// <param name="isDeadLetterMessage">A flag indicating whether the message is a deadletter replay. These messages may be treated differently
         /// by the receiving commands.</param>
         public void Process<C>(object package = null
             , int ChannelPriority = 1
             , ProcessOptions options = ProcessOptions.RouteExternal | ProcessOptions.RouteInternal
-            , Action<bool, Guid> release = null
-            , bool isDeadLetterMessage = false)
+            , Action<bool, Guid> release = null)
             where C : IMessageContract
         {
             string channelId, messageType, actionType;
             if (!ServiceMessageHelper.ExtractContractInfo<C>(out channelId, out messageType, out actionType))
                 throw new InvalidMessageContractException(typeof(C));
 
-            Process(channelId, messageType, actionType, package, ChannelPriority, options, release, isDeadLetterMessage);
+            Process(channelId, messageType, actionType, package, ChannelPriority, options, release);
         }
         /// <summary>
         /// This method creates a service message and injects it in to the execution path and bypasses the listener infrastructure.
@@ -71,18 +72,16 @@ namespace Xigadee
         /// <param name="ChannelPriority">The prioirty that the message should be processed. The default is 1. If this message is not a valid value, it will be matched to the nearest valid value.</param>
         /// <param name="options">The process options.</param>
         /// <param name="release">The release action which is called when the payload has been executed.</param>
-        /// <param name="isDeadLetterMessage">A flag indicating whether the message is a deadletter replay. These messages may be treated differently
         /// by the receiving commands.</param>
         public void Process(string ChannelId, string MessageType = null, string ActionType = null
             , object package = null
             , int ChannelPriority = 1
             , ProcessOptions options = ProcessOptions.RouteExternal | ProcessOptions.RouteInternal
-            , Action<bool, Guid> release = null
-            , bool isDeadLetterMessage = false)
+            , Action<bool, Guid> release = null)
         {
             var header = new ServiceMessageHeader(ChannelId, MessageType, ActionType);
 
-            Process(header, package, ChannelPriority, options, release, isDeadLetterMessage);
+            Process(header, package, ChannelPriority, options, release);
         }
 
         /// <summary>
@@ -93,21 +92,19 @@ namespace Xigadee
         /// <param name="ChannelPriority">The prioirty that the message should be processed. The default is 1. If this message is not a valid value, it will be matched to the nearest valid value.</param>
         /// <param name="options">The process options.</param>
         /// <param name="release">The release action which is called when the payload has been executed.</param>
-        /// <param name="isDeadLetterMessage">A flag indicating whether the message is a deadletter replay. These messages may be treated differently
         /// by the receiving commands.</param>
         public void Process(ServiceMessageHeader header
             , object package = null
             , int ChannelPriority = 1
             , ProcessOptions options = ProcessOptions.RouteExternal | ProcessOptions.RouteInternal
-            , Action<bool, Guid> release = null
-            , bool isDeadLetterMessage = false)
+            , Action<bool, Guid> release = null)
         {
             var message = new ServiceMessage(header);
             message.ChannelPriority = ChannelPriority;
             if (package != null)
                 message.Blob = mSerializer.PayloadSerialize(package);
 
-            Process(message, options, release, isDeadLetterMessage);
+            Process(message, options, release);
         }
 
         /// <summary>
@@ -116,14 +113,15 @@ namespace Xigadee
         /// <param name="message">The service message.</param>
         /// <param name="options">The process options.</param>
         /// <param name="release">The release action which is called when the payload has been executed.</param>
-        /// <param name="isDeadLetterMessage">A flag indicating whether the message is a deadletter replay. These messages may be treated differently
         /// by the receiving commands.</param>
         public void Process(ServiceMessage message
             , ProcessOptions options = ProcessOptions.RouteExternal | ProcessOptions.RouteInternal
-            , Action<bool, Guid> release = null
-            , bool isDeadLetterMessage = false)
+            , Action<bool, Guid> release = null)
         {
-            var payload = new TransmissionPayload(message, release: release, options: options, isDeadLetterMessage: isDeadLetterMessage);
+            var payload = new TransmissionPayload(message
+                , release: release
+                , options: options
+                , traceEnabled: mTransmissionPayloadTraceEnabled);
 
             Process(payload);
         }
@@ -135,6 +133,12 @@ namespace Xigadee
         public void Process(TransmissionPayload payload)
         {
             ValidateServiceStarted();
+
+            if (mTransmissionPayloadTraceEnabled)
+            {
+                payload.TraceEnabled = true;
+                payload.TraceSet("howdy");
+            }
 
             ExecuteOrEnqueue(payload, "Incoming Process method request");
         }

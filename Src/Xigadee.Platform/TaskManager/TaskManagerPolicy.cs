@@ -28,6 +28,11 @@ namespace Xigadee
     public class TaskManagerPolicy:PolicyBase
     {
         /// <summary>
+        /// Gets or sets a value indicating whether the TransmissionPayload trace flag should be set to true.
+        /// </summary>
+        public bool TransmissionPayloadTraceEnabled { get; set; }
+
+        /// <summary>
         /// This is the internal array containing the priority levels.
         /// </summary>
         protected PriorityLevelReservation[] mPriorityLevels = null;

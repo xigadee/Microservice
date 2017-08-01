@@ -15,6 +15,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
@@ -43,10 +44,6 @@ namespace Xigadee
         /// This is the time that the payload was created.
         /// </summary>
         private readonly DateTime mCreateTime = DateTime.UtcNow;
-        /// <summary>
-        /// This is the UTC end time for the message.
-        /// </summary>
-        private DateTime? mEndTime = null;
 
         private readonly int mTickCount = Environment.TickCount;
         #endregion
@@ -54,16 +51,17 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        /// <param name="message">The message.</param>
+        /// <param name="channelId">The channel Id.</param>
+        /// <param name="messageType">The message type.</param>
+        /// <param name="actionType">The action type.</param>
         /// <param name="release">The optional release method that can be used to signal to the underlying transport the message has completed.</param>
         /// <param name="options">The optional process options. By default this is internal or external</param>
-        /// <param name="isDeadLetterMessage">A boolean flag indicating whether this is a deadletter message. By default this is false.</param>
+        /// <param name="traceEnabled">Specifies whether the trace is enabled.</param>
         public TransmissionPayload(string channelId, string messageType, string actionType
             , Action<bool, Guid> release = null
-            , Action<RateLimitSignal, Guid> rateLimitNotification = null
             , ProcessOptions options = ProcessOptions.RouteInternal | ProcessOptions.RouteExternal
-            , bool isDeadLetterMessage = false)
-            : this (new ServiceMessage {ChannelId = channelId, MessageType = messageType, ActionType = actionType }, release, options, isDeadLetterMessage)
+            , bool traceEnabled = false)
+            : this(new ServiceMessage { ChannelId = channelId, MessageType = messageType, ActionType = actionType }, release, options, traceEnabled)
         {
         }
         /// <summary>
@@ -72,16 +70,17 @@ namespace Xigadee
         /// <param name="message">The message.</param>
         /// <param name="release">The optional release method that can be used to signal to the underlying transport the message has completed.</param>
         /// <param name="options">The optional process options. By default this is internal or external</param>
-        /// <param name="isDeadLetterMessage">A boolean flag indicating whether this is a deadletter message. By default this is false.</param>
+        /// <param name="traceEnabled">Specifies whether the trace is enabled.</param>
         public TransmissionPayload(ServiceMessage message
             , Action<bool, Guid> release = null
             , ProcessOptions options = ProcessOptions.RouteInternal | ProcessOptions.RouteExternal
-            , bool isDeadLetterMessage = false)
+            , bool traceEnabled = false)
         {
             Message = message;
             mListenerSignalRelease = release;
             Options = options;
             Id = Guid.NewGuid();
+            TraceEnabled = traceEnabled;
         }
         #endregion
 
@@ -121,17 +120,17 @@ namespace Xigadee
         /// This static method creates a new TransmissionPayload object with an empty ServiceMessage.
         /// </summary>
         /// <returns>Returns the payload.</returns>
-        public static TransmissionPayload Create()
+        public static TransmissionPayload Create(bool traceEnabled = false)
         {
             var message = new ServiceMessage();
-            return new TransmissionPayload(message);
+            return new TransmissionPayload(message, traceEnabled: traceEnabled);
         }
         /// <summary>
         /// 
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static TransmissionPayload Create<T>() where T : IMessageContract
+        public static TransmissionPayload Create<T>(bool traceEnabled = false) where T : IMessageContract
         {
             string channelId, messageType, actionType;
 
@@ -145,7 +144,7 @@ namespace Xigadee
                 ActionType = actionType
             };
 
-            return new TransmissionPayload(message);
+            return new TransmissionPayload(message, traceEnabled: traceEnabled);
         }
         #endregion
 
@@ -153,14 +152,14 @@ namespace Xigadee
         /// <summary>
         /// This is the cancellation for the payload and should be checked for long running tasks.
         /// </summary>
-        public CancellationToken Cancel { get; set; } 
+        public CancellationToken Cancel { get; set; }
         #endregion
 
         #region Message
         /// <summary>
         /// This is the incoming service message to be processed.
         /// </summary>
-        public ServiceMessage Message { get; private set; } 
+        public ServiceMessage Message { get; private set; }
         #endregion
 
         #region MessageObject
@@ -169,28 +168,28 @@ namespace Xigadee
         /// internal transmission without serializing and deserializing objects between
         /// internal commands.
         /// </summary>
-        public object MessageObject { get; set; } 
+        public object MessageObject { get; set; }
         #endregion
 
         #region Options
         /// <summary>
         /// This provides custom routing instructions to the dispatcher.
         /// </summary>
-        public ProcessOptions Options { get; set; } 
+        public ProcessOptions Options { get; set; }
         #endregion
 
         #region Source
         /// <summary>
         /// This is the name of the client or component that created the message.
         /// </summary>
-        public string Source { get; set; } 
+        public string Source { get; set; }
         #endregion
 
         #region MaxProcessingTime
         /// <summary>
         /// This is the expected processing time for the request. If this is not set the default will be used.
         /// </summary>
-        public TimeSpan? MaxProcessingTime { get; set; } 
+        public TimeSpan? MaxProcessingTime { get; set; }
         #endregion
 
         #region MessageCanSignal
@@ -216,7 +215,7 @@ namespace Xigadee
         public void SignalSuccess()
         {
             Signal(true);
-        } 
+        }
         #endregion
         #region SignalFail()
         /// <summary>
@@ -225,7 +224,7 @@ namespace Xigadee
         public void SignalFail()
         {
             Signal(false);
-        } 
+        }
         #endregion
         #region Signal(bool success)
         /// <summary>
@@ -285,5 +284,32 @@ namespace Xigadee
         /// </summary>
         public TimeSpan? ExecutionTime { get; private set; }
         #endregion
+
+        /// <summary>
+        /// Gets or sets a value indicating whether trace is enabled for the request.
+        /// </summary>
+        public bool TraceEnabled { get; set; }
+        /// <summary>
+        /// Gets the trace log collection.
+        /// </summary>
+        public List<TransmissionPayloadTraceEventArgs> TraceLog { get; private set; }
+
+        private object mTraceObj = new object();
+        /// <summary>
+        /// Adds a trace event to the log.
+        /// </summary>
+        /// <param name="eventArgs">The <see cref="TransmissionPayloadTraceEventArgs"/> instance containing the event data.</param>
+        public void TraceSet(TransmissionPayloadTraceEventArgs eventArgs)
+        {
+            if (!TraceEnabled)
+                return;
+
+            lock (mTraceObj)
+            {
+                if (TraceLog == null)
+                    TraceLog = new List<TransmissionPayloadTraceEventArgs>();
+                TraceLog.Add(eventArgs);
+            }
+        }
     }
 }

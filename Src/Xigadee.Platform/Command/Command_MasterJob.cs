@@ -99,7 +99,7 @@ namespace Xigadee
         /// <param name="action">The master job action to transmit.</param>
         protected virtual Task NegotiationTransmit(string action)
         {
-            var payload = TransmissionPayload.Create();
+            var payload = TransmissionPayload.Create(mPolicy.TransmissionPayloadTraceEnabled);
             payload.Options = ProcessOptions.RouteExternal;
 
             var message = payload.Message;

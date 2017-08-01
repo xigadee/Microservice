@@ -124,7 +124,10 @@ namespace Xigadee
             try
             {
                 if (mActiveListeners.Length == 0)
+                {
+                    e.SignalSuccess();
                     return;
+                }
 
                 OnReceiveInvoke(sender, e);
 

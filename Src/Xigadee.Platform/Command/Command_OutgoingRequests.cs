@@ -171,7 +171,7 @@ namespace Xigadee
             {
                 StatisticsInternal.ActiveIncrement();
 
-                payload = TransmissionPayload.Create();
+                payload = TransmissionPayload.Create(mPolicy.TransmissionPayloadTraceEnabled);
                 payload.SecurityPrincipal = TransmissionPayload.ConvertToClaimsPrincipal(principal ?? Thread.CurrentPrincipal);
 
                 // Set the process correlation key to the correlation id if passed through the rq settings

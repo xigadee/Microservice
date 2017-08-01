@@ -25,6 +25,7 @@ namespace Xigadee
     /// </summary>
     public static class TransmissionPayloadHelper
     {
+        #region ToResponse(this TransmissionPayload incoming)
         /// <summary>
         /// This helper method turns round an incoming payload request in to its corresponding response payload.
         /// </summary>
@@ -38,16 +39,36 @@ namespace Xigadee
             rsMessage.ChannelId = m.ResponseChannelId;
             rsMessage.ChannelPriority = m.ResponseChannelPriority;
             rsMessage.MessageType = m.ResponseMessageType;
-            rsMessage.ActionType = m.ResponseActionType; 
-            
-            return new TransmissionPayload(rsMessage);
-        }
+            rsMessage.ActionType = m.ResponseActionType;
 
+            var outgoing = new TransmissionPayload(rsMessage, traceEnabled: incoming.TraceEnabled);
+
+            if (incoming.TraceEnabled)
+                outgoing.TraceSet(new TransmissionPayloadTraceEventArgs());
+
+            return outgoing;
+        }
+        #endregion
+        #region CanRespond(this TransmissionPayload incoming)
+        /// <summary>
+        /// Determines whether the payload instance has a response channel set.
+        /// </summary>
         public static bool CanRespond(this TransmissionPayload incoming)
         {
             var m = incoming.Message;
-            
+
             return !string.IsNullOrEmpty(m.ResponseChannelId);
+        }
+        #endregion
+
+        /// <summary>
+        /// Traces the set.
+        /// </summary>
+        /// <param name="payload">The payload.</param>
+        /// <param name="hello">The hello.</param>
+        public static void TraceSet(this TransmissionPayload payload, string hello)
+        {
+
         }
     }
 }

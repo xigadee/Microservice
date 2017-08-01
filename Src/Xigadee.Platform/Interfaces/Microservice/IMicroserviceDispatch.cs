@@ -24,15 +24,64 @@ namespace Xigadee
     /// </summary>
     public interface IMicroserviceDispatch
     {
+        /// <summary>
+        /// This method injects a payload in to the execution path and bypasses the listener infrastructure.
+        /// </summary>
+        /// <param name="payload">The transmission payload to execute.</param>
         void Process(TransmissionPayload payload);
+        /// <summary>
+        /// This method injects a service message in to the execution path and bypasses the listener infrastructure.
+        /// </summary>
+        /// <param name="message">The service message.</param>
+        /// <param name="options">The process options.</param>
+        /// <param name="release">The release action which is called when the payload has been executed.</param>
+        /// by the receiving commands.</param>
+        void Process(ServiceMessage message
+            , ProcessOptions options = ProcessOptions.RouteInternal | ProcessOptions.RouteExternal
+            , Action<bool, Guid> release = null);
+        /// <summary>
+        /// This method creates a service message and injects it in to the execution path and bypasses the listener infrastructure.
+        /// </summary>
+        /// <param name="header">The message header to identify the recipient.</param>
+        /// <param name="package">The objet package to process.</param>
+        /// <param name="ChannelPriority">The prioirty that the message should be processed. The default is 1. If this message is not a valid value, it will be matched to the nearest valid value.</param>
+        /// <param name="options">The process options.</param>
+        /// <param name="release">The release action which is called when the payload has been executed.</param>
+        /// by the receiving commands.</param>
+        void Process(ServiceMessageHeader header
+            , object package = null
+            , int ChannelPriority = 1
+            , ProcessOptions options = ProcessOptions.RouteInternal | ProcessOptions.RouteExternal
+            , Action<bool, Guid> release = null);
+        /// <summary>
+        /// This method creates a service message and injects it in to the execution path and bypasses the listener infrastructure.
+        /// </summary>
+        /// <param name="ChannelId">The incoming channel. This must be supplied.</param>
+        /// <param name="MessageType">The message type. This may be null.</param>
+        /// <param name="ActionType">The message action. This may be null.</param>
+        /// <param name="package">The objet package to process.</param>
+        /// <param name="ChannelPriority">The prioirty that the message should be processed. The default is 1. If this message is not a valid value, it will be matched to the nearest valid value.</param>
+        /// <param name="options">The process options.</param>
+        /// <param name="release">The release action which is called when the payload has been executed.</param>
+        /// by the receiving commands.</param>
+        void Process(string ChannelId, string MessageType = null, string ActionType = null
+            , object package = null
+            , int ChannelPriority = 1
+            , ProcessOptions options = ProcessOptions.RouteInternal | ProcessOptions.RouteExternal
+            , Action<bool, Guid> release = null);
 
-        void Process(ServiceMessage message, ProcessOptions options = ProcessOptions.RouteInternal | ProcessOptions.RouteExternal, Action<bool, Guid> release = null, bool isDeadLetterMessage = false);
-
-        void Process(ServiceMessageHeader header, object package = null, int ChannelPriority = 1, ProcessOptions options = ProcessOptions.RouteInternal | ProcessOptions.RouteExternal, Action<bool, Guid> release = null, bool isDeadLetterMessage = false);
-
-        void Process(string ChannelId, string MessageType = null, string ActionType = null, object package = null, int ChannelPriority = 1, ProcessOptions options = ProcessOptions.RouteInternal | ProcessOptions.RouteExternal, Action<bool, Guid> release = null, bool isDeadLetterMessage = false);
-
-        void Process<C>(object package = null, int ChannelPriority = 1, ProcessOptions options = ProcessOptions.RouteInternal | ProcessOptions.RouteExternal, Action<bool, Guid> release = null, bool isDeadLetterMessage = false)
+        /// <summary>
+        /// This method creates a service message and injects it in to the execution path and bypasses the listener infrastructure.
+        /// </summary>
+        /// <typeparam name="C">The message contract.</typeparam>
+        /// <param name="package">The objet package to process.</param>
+        /// <param name="ChannelPriority">The prioirty that the message should be processed. The default is 1. If this message is not a valid value, it will be matched to the nearest valid value.</param>
+        /// <param name="options">The process options.</param>
+        /// <param name="release">The release action which is called when the payload has been executed.</param>
+        /// by the receiving commands.</param>
+        void Process<C>(object package = null, int ChannelPriority = 1
+            , ProcessOptions options = ProcessOptions.RouteInternal | ProcessOptions.RouteExternal
+            , Action<bool, Guid> release = null)
             where C : IMessageContract;
     }
 }

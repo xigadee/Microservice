@@ -93,7 +93,7 @@ namespace Xigadee
             {
                 StatisticsInternal.ActiveIncrement();
 
-                var payload = TransmissionPayload.Create();
+                var payload = TransmissionPayload.Create(mPolicy.TransmissionPayloadTraceEnabled);
 
                 payload.SecurityPrincipal = TransmissionPayload.ConvertToClaimsPrincipal(principal ?? Thread.CurrentPrincipal);
 
