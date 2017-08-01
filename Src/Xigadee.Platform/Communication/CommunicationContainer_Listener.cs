@@ -314,20 +314,22 @@ namespace Xigadee
                 //Set the function that executes when the payload completes.
                 tracker.ExecuteComplete = (tr, failed, ex) =>
                 {
+                    var contextPayload = tr.ToTransmissionPayload();
                     try
                     {
-                        var contextPayload = tr.Context as TransmissionPayload;
-
                         mClientCollection.ActiveDecrement(clientId, tr.TickCount);
 
                         if (failed)
                             mClientCollection.ErrorIncrement(clientId);
-
+                        
                         contextPayload.Signal(!failed);
+
+                        contextPayload.TraceWrite(failed?"Failed":"Success", "CommunicationContainer/PayloadSubmit -> ExecuteComplete");
                     }
                     catch (Exception exin)
                     {
                         Collector?.LogException($"Payload completion error-{payload} after {(tr.Context as TransmissionPayload)?.Message?.FabricDeliveryCount} delivery attempts", exin);
+                        contextPayload.TraceWrite($"Exception: {ex.Message}", "CommunicationContainer/PayloadSubmit -> ExecuteComplete");
                     }
                 };
 

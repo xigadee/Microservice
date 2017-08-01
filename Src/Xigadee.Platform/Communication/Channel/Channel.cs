@@ -178,7 +178,11 @@ namespace Xigadee
 
             //There is an entry, but this may be null if there isn't a match.
             if (id.HasValue)
+            {
                 mRedirectRules[id.Value].Redirect(payload);
+                payload.TraceWrite("Rule matched: {id.Value}", "Channel/Redirect");
+
+            }
 
             return;
         }

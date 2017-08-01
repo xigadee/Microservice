@@ -178,6 +178,7 @@ namespace Xigadee
                 if (channel.CouldRedirect)
                     channel.Redirect(payload);
             }
+            payload.TraceWrite("Complete", "CommunicationContainer/PayloadIncomingRedirectCheck");
         }
         #endregion
         #region PayloadOutgoingRedirectChecks(TransmissionPayload payload)

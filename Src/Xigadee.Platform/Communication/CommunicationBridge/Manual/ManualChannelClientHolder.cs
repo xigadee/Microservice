@@ -22,15 +22,30 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This is the manual channel client holder for receiving messages.
+    /// </summary>
     public class ManualChannelClientHolder: ClientHolder<ManualChannelConnection, ManualChannelMessage>
     {
         private ConcurrentQueue<TransmissionPayload> mPending = new ConcurrentQueue<TransmissionPayload>();
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ManualChannelClientHolder"/> class.
+        /// </summary>
         public ManualChannelClientHolder()
         {
 
         }
 
+        public void Purge()
+        {
+            TransmissionPayload payload = null;
+
+            while (mPending?.TryDequeue(out payload) ?? false)
+            {
+                payload.TraceWrite("Purged", "ManualChannelClientHolder/Purge");
+                payload.SignalFail();
+            }
+        }
         /// <summary>
         /// This action is used to "transmit" a message to the event.
         /// </summary>
@@ -42,10 +57,26 @@ namespace Xigadee
         /// <param name="payload">The payload to inject.</param>
         public void Inject(TransmissionPayload payload)
         {
-            mPending.Enqueue(payload);
-            payload.TraceWrite("Enqueued", "ManualChannelClientHolder");
+            try
+            {
+                mPending.Enqueue(payload);
+                payload.TraceWrite("Enqueued", "ManualChannelClientHolder/Inject");
+            }
+            catch (Exception ex)
+            {
+                payload.TraceWrite($"Failed: {ex.Message}", "ManualChannelClientHolder/Inject");
+            }
         }
-
+        /// <summary>
+        /// This method pulls fabric messages and converts them in to generic payload messages for the Microservice to process.
+        /// </summary>
+        /// <param name="count">The maximum number of messages to return.</param>
+        /// <param name="wait">The maximum wait in milliseconds</param>
+        /// <param name="mappingChannel">This is the incoming mapping channel for subscription based client where the subscription maps
+        /// to a new incoming channel on the same topic.</param>
+        /// <returns>
+        /// Returns a list of transmission for processing.
+        /// </returns>
         public override async Task<List<TransmissionPayload>> MessagesPull(int? count, int? wait, string mappingChannel = null)
         {
             var list = new List<TransmissionPayload>();
