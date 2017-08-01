@@ -69,6 +69,7 @@ namespace Xigadee
             {
                 t.ConcurrentRequestsMin = 1;
                 t.ConcurrentRequestsMax = 4;
+                t.TransmissionPayloadTraceEnabled = true;
             });
 
             return pipeline;
