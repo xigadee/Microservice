@@ -33,11 +33,11 @@ namespace Xigadee
         private bool mTransmissionPayloadTraceEnabled;
 
         internal DispatchWrapper(IPayloadSerializationContainer serializer, Action<TransmissionPayload, string> executeOrEnqueue 
-            ,Func<ServiceStatus> getStatus, bool trace) : base(getStatus)
+            ,Func<ServiceStatus> getStatus, bool traceEnabled) : base(getStatus)
         {
             ExecuteOrEnqueue = executeOrEnqueue;
             mSerializer = serializer;
-            mTransmissionPayloadTraceEnabled = trace;
+            mTransmissionPayloadTraceEnabled = traceEnabled;
         }
 
         #region --> Process ...
@@ -120,8 +120,7 @@ namespace Xigadee
         {
             var payload = new TransmissionPayload(message
                 , release: release
-                , options: options
-                , traceEnabled: mTransmissionPayloadTraceEnabled);
+                , options: options);
 
             Process(payload);
         }
