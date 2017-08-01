@@ -45,7 +45,11 @@ namespace Xigadee
         /// </summary>
         private readonly DateTime mCreateTime = DateTime.UtcNow;
 
-        private readonly int mTickCount = Environment.TickCount;
+        /// <summary>
+        /// Gets the tick count when the payload was created.
+        /// </summary>
+        public int TickCount { get; } = Environment.TickCount;
+
         #endregion
         #region Constructor
         /// <summary>
@@ -274,7 +278,7 @@ namespace Xigadee
         public void CompleteSet()
         {
             if (!ExecutionTime.HasValue)
-                ExecutionTime = ConversionHelper.DeltaAsTimeSpan(mTickCount);
+                ExecutionTime = ConversionHelper.DeltaAsTimeSpan(TickCount);
         }
 
         #endregion
@@ -299,7 +303,7 @@ namespace Xigadee
         /// Adds a trace event to the log.
         /// </summary>
         /// <param name="eventArgs">The <see cref="TransmissionPayloadTraceEventArgs"/> instance containing the event data.</param>
-        public void TraceSet(TransmissionPayloadTraceEventArgs eventArgs)
+        public void TraceWrite(TransmissionPayloadTraceEventArgs eventArgs)
         {
             if (!TraceEnabled)
                 return;
@@ -308,6 +312,7 @@ namespace Xigadee
             {
                 if (TraceLog == null)
                     TraceLog = new List<TransmissionPayloadTraceEventArgs>();
+
                 TraceLog.Add(eventArgs);
             }
         }

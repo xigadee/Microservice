@@ -15,12 +15,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Security.Claims;
-using System.Security.Principal;
-using System.Threading;
 
 namespace Xigadee
 {
@@ -28,8 +23,34 @@ namespace Xigadee
     /// This class holds the trace information for the payload.
     /// </summary>
     /// <seealso cref="System.EventArgs" />
+    [DebuggerDisplay("{Extent} @ {Source} - {Message}")]
     public class TransmissionPayloadTraceEventArgs: EventArgs
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TransmissionPayloadTraceEventArgs"/> class.
+        /// </summary>
+        /// <param name="start">The tickcount start.</param>
+        /// <param name="message">The message.</param>
+        /// <param name="source">The optional source parameter.</param>
+        public TransmissionPayloadTraceEventArgs(int start, string message = null, string source = null)
+        {
+            Extent = ConversionHelper.DeltaAsTimeSpan(start, Environment.TickCount);
+            Source = source;
+            Message = message;
+        }
+
+        /// <summary>
+        /// Gets the extent from when the TransmissionPayload was created.
+        /// </summary>
+        public TimeSpan? Extent { get; }
+        /// <summary>
+        /// Gets or sets the source.
+        /// </summary>
+        public string Source { get; set;}
+        /// <summary>
+        /// Gets or sets the message.
+        /// </summary>
+        public string Message { get; set;}
 
     }
 }

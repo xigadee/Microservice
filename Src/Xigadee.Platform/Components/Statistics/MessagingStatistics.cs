@@ -79,7 +79,7 @@ namespace Xigadee
             return mStatsDefault.ActiveIncrement();
         }
         #endregion
-        #region ActiveDecrement(long start)
+        #region ActiveDecrement(int start)
         /// <summary>
         /// This method is used to decrement the active count and submits the processing time.
         /// </summary>

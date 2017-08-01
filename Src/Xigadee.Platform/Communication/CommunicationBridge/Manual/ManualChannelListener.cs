@@ -48,12 +48,21 @@ namespace Xigadee
             if (this.Status != ServiceStatus.Running)
             {
                 payload.SignalSuccess();
+                payload.TraceWrite($"Failed: {Status}", "ManualChannelListener/Inject");
                 return;
             }
 
-            var client = ClientResolve(priority ?? mDefaultPriority ?? 1);
+            try
+            {
+                var client = ClientResolve(priority ?? mDefaultPriority ?? 1);
+                client.Inject(payload);
+                payload.TraceWrite($"Success: {client.Name}", "ManualChannelListener/Inject");
+            }
+            catch (Exception ex)
+            {
+                payload.TraceWrite($"Error: {ex.Message}", "ManualChannelListener/Inject");
+            }
 
-            client.Inject(payload);
         }
 
     }

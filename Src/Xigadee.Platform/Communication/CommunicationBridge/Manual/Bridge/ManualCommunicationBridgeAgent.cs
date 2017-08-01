@@ -187,7 +187,8 @@ namespace Xigadee
 
             ServiceMessage clone = mSerializer.Deserialize<ServiceMessage>(data);
 
-            var cloned = new TransmissionPayload(clone, release: SignalCompletion);
+            var cloned = new TransmissionPayload(clone, release: SignalCompletion, traceEnabled:true);
+            cloned.TraceWrite("PayloadCopy", "ManualCommunicationBridgeAgent");
 
             mSenderPayloads.AddOrUpdate(cloned.Id, cloned, (g,p)=>p);
 

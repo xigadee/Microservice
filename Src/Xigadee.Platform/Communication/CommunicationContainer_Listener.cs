@@ -294,6 +294,8 @@ namespace Xigadee
         {
             try
             {
+                payload.TraceWrite("Incoming", "CommunicationContainer/PayloadSubmit");
+
                 //Ensure the priority cannot spoof the internal priority of -1
                 if (payload.Message.ChannelPriority < 0)
                     payload.Message.ChannelPriority = 0;
@@ -330,11 +332,14 @@ namespace Xigadee
                 };
 
                 //Submit the tracker to the task manager.
+                payload.TraceWrite("Outgoing", "CommunicationContainer/PayloadSubmit");
+
                 TaskSubmit(tracker);
             }
             catch (Exception ex)
             {
                 Collector?.LogException($"ProcessClientPayload: unhandled error {payload.Source}/{payload.Message.CorrelationKey}-{payload} after {payload.Message?.FabricDeliveryCount} delivery attempts", ex);
+                payload.TraceWrite($"Exception: {ex.Message}", "CommunicationContainer/PayloadSubmit");
                 payload.SignalFail();
             }
         }

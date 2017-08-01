@@ -43,6 +43,7 @@ namespace Xigadee
         public void Inject(TransmissionPayload payload)
         {
             mPending.Enqueue(payload);
+            payload.TraceWrite("Enqueued", "ManualChannelClientHolder");
         }
 
         public override async Task<List<TransmissionPayload>> MessagesPull(int? count, int? wait, string mappingChannel = null)
@@ -67,6 +68,7 @@ namespace Xigadee
                     Collector?.BoundaryLog(ChannelDirection.Incoming, payload, ChannelId, Priority, batchId: batchId);
 
                 list.Add(payload);
+                payload.TraceWrite("MessagesPull", "ManualChannelClientHolder");
 
                 countDown--;
             }

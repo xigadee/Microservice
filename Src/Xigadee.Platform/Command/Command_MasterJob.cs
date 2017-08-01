@@ -100,6 +100,8 @@ namespace Xigadee
         protected virtual Task NegotiationTransmit(string action)
         {
             var payload = TransmissionPayload.Create(mPolicy.TransmissionPayloadTraceEnabled);
+            payload.TraceWrite("Create", "Command/NegotiationTransmit");
+
             payload.Options = ProcessOptions.RouteExternal;
 
             var message = payload.Message;
@@ -118,17 +120,17 @@ namespace Xigadee
                 case ServiceStatus.Running:
                 case ServiceStatus.Stopping:
                     TaskManager(this, null, payload);
+                    try
+                    {
+                        OnMasterJobCommunication?.Invoke(this, new MasterJobCommunicationEventArgs(
+                            OriginatorId.Name, GetType().Name, MasterJobCommunicationDirection.Outgoing, mMasterJobContext.State, action, mMasterJobContext.StateChangeCounter));
+                    }
+                    catch (Exception ex)
+                    {
+                        Collector?.LogException("OnMasterJobCommunication outgoing unexpected event error.", ex);
+                        payload.TraceWrite($"Error: {ex.Message}", "Command/NegotiationTransmit/OnMasterJobCommunication");
+                    }
                     break;
-            }
-
-            try
-            {
-                OnMasterJobCommunication?.Invoke(this, new MasterJobCommunicationEventArgs(
-                    OriginatorId.Name, GetType().Name, MasterJobCommunicationDirection.Outgoing, mMasterJobContext.State, action, mMasterJobContext.StateChangeCounter));
-            }
-            catch (Exception ex)
-            {
-                Collector?.LogException("OnMasterJobCommunication outgoing unexpected event error.", ex);
             }
 
             return Task.FromResult(0);

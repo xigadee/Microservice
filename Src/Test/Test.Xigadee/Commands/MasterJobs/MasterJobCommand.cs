@@ -16,6 +16,7 @@ namespace Test.Xigadee
                 , MasterJobName = "freddy"
                 , MasterJobPollFrequency = TimeSpan.FromSeconds(1)
                 , MasterJobPollInitialWait = TimeSpan.FromSeconds(1)
+                , TransmissionPayloadTraceEnabled = true
             }
             ){}
 

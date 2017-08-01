@@ -409,15 +409,24 @@ namespace Xigadee
         /// <param name="tracker">The tracker.</param>
         public void ExecuteOrEnqueue(TaskTracker tracker)
         {
+            var payload = tracker.ToTransmissionPayload();
+            payload?.TraceConfigure(mPolicy.TransmissionPayloadTraceEnabled);
+
             if (tracker.IsInternal)
             {
                 if (mPolicy.ExecuteInternalDirect)
                     ExecuteTask(tracker);
                 else
+                {
                     mProcessInternalQueue.Enqueue(tracker);
+                    payload?.TraceWrite("InternalQueue", "TaskManager");
+                }
             }
             else
+            {
                 mTasksQueue.Enqueue(tracker);
+                payload?.TraceWrite("TaskQueue", "TaskManager");
+            }
 
             LoopSet();
         }
@@ -462,6 +471,8 @@ namespace Xigadee
         /// <param name="tracker">The tracker to enqueue.</param>
         private void ExecuteTask(TaskTracker tracker)
         {
+            tracker.ToTransmissionPayload()?.TraceWrite("ExecuteTask", "TaskManager");
+
             TaskTrackerEvent(DiagnosticOnExecuteTaskBefore, tracker);
 
             try
@@ -550,6 +561,8 @@ namespace Xigadee
         {
             tracker.IsFailure = failed;
             tracker.FailureException = tex;
+
+            tracker.ToTransmissionPayload()?.TraceWrite("ExecuteTaskComplete", "TaskManager");
 
             try
             {

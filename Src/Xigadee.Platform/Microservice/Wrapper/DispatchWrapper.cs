@@ -136,7 +136,7 @@ namespace Xigadee
             if (mTransmissionPayloadTraceEnabled)
             {
                 payload.TraceEnabled = true;
-                payload.TraceSet("howdy");
+                payload.TraceWrite("howdy");
             }
 
             ExecuteOrEnqueue(payload, "Incoming Process method request");
