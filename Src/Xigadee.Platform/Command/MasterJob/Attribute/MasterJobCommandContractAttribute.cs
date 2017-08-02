@@ -24,7 +24,7 @@ namespace Xigadee
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = false)]
     [DebuggerDisplay("{ChannelId}/{MessageType}/{ActionType}")]
-    public class CommandContractAttribute: CommandContractAttributeBase
+    public class MasterJobCommandContractAttribute: CommandContractAttributeBase
     {
         /// <summary>
         /// This is the default constructor using a three part key.
@@ -32,7 +32,7 @@ namespace Xigadee
         /// <param name="channelId">The channel id.</param>
         /// <param name="messageType">The message type.</param>
         /// <param name="actionType">The action type.</param>
-        public CommandContractAttribute(string channelId = null, string messageType = null, string actionType = null)
+        public MasterJobCommandContractAttribute(string channelId = null, string messageType = null, string actionType = null)
             : base((channelId, messageType, actionType))
         {
         }
@@ -41,7 +41,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="messageType">The message type.</param>
         /// <param name="actionType">The action type.</param>
-        public CommandContractAttribute(string messageType, string actionType) 
+        public MasterJobCommandContractAttribute(string messageType, string actionType) 
             : base((null, messageType, actionType))
         {
         }
@@ -49,7 +49,7 @@ namespace Xigadee
         /// This the is the constructor when using a messaging contract.
         /// </summary>
         /// <param name="interfaceType">The interface type that inherits from IMessageContract</param>
-        public CommandContractAttribute(Type interfaceType) : base(interfaceType)
+        public MasterJobCommandContractAttribute(Type interfaceType) : base(interfaceType)
         {
         }
     }

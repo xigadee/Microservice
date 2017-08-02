@@ -16,22 +16,24 @@ namespace Xigadee
         /// <summary>
         /// This static helper returns the list of attributes, methods and references. Not one method may have multiple attributes assigned to them.
         /// </summary>
-        public static List<Tuple<CommandContractAttribute, CommandMethodSignature, string>> CommandMethodAttributeSignatures(
+        public static List<Tuple<A, CommandMethodSignature<A>, string>> CommandMethodAttributeSignatures<A>(
             this ICommand command, bool throwExceptions = false)
+            where A: CommandContractAttributeBase
         {
             return command
-                .CommandMethodSignatures(throwExceptions)
-                .SelectMany((s) => s.CommandAttributes.Select((a) => new Tuple<CommandContractAttribute, CommandMethodSignature, string>(a,s, s.Reference(a))))
+                .CommandMethodSignatures<A>(throwExceptions)
+                .SelectMany((s) => s.CommandAttributes.Select((a) => new Tuple<A, CommandMethodSignature<A>, string>(a,s, s.Reference(a))))
                 .ToList();
         }
 
         /// <summary>
         /// This static helper returns the 
         /// </summary>
-        public static List<CommandMethodSignature> CommandMethodSignatures(this ICommand command, bool throwExceptions)
+        public static List<CommandMethodSignature<A>> CommandMethodSignatures<A>(this ICommand command, bool throwExceptions)
+            where A : CommandContractAttributeBase
         {
-            var results = command.CommandMethods()
-                .Select((m) => new CommandMethodSignature(command, m, throwExceptions))
+            var results = command.CommandMethods<A>()
+                .Select((m) => new CommandMethodSignature<A>(command, m, throwExceptions))
                 .Where((t) => t.IsValid)
                 .ToList();
 
@@ -39,21 +41,23 @@ namespace Xigadee
         }
 
         /// <summary>
-        /// This static helper returns the list of methods that are decorated with a CommandContractAttribute attribute.
+        /// This static helper returns the list of methods that are decorated with the attribute type.
         /// </summary>
-        public static List<MethodInfo> CommandMethods(this ICommand command)
+        public static List<MethodInfo> CommandMethods<A>(this ICommand command)
+            where A : Attribute
         {
-            return command.GetType().CommandMethods();
+            return command.GetType().CommandMethods<A>();
         }
 
         /// <summary>
-        /// This static helper returns the list of methods that are decorated with CommandContractAttributes
+        /// This static helper returns the list of methods that are decorated with the attribute type.
         /// </summary>
-        public static List<MethodInfo> CommandMethods(this Type objectType)
+        public static List<MethodInfo> CommandMethods<A>(this Type objectType)
+            where A : Attribute
         {
             var results = objectType
                 .GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance)
-                .Where((m) => m.CustomAttributes.Count((a) => a.AttributeType == typeof(CommandContractAttribute)) > 0)
+                .Where((m) => m.CustomAttributes.Count((a) => a.AttributeType == typeof(A)) > 0)
                 .ToList();
 
             return results;

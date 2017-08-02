@@ -30,7 +30,7 @@ namespace Xigadee
         /// </summary>
         protected virtual void CommandsRegisterReflection()
         {
-            foreach (var signature in this.CommandMethodAttributeSignatures(true))
+            foreach (var signature in this.CommandMethodAttributeSignatures<CommandContractAttribute>(true))
             {
                 var handler = new CommandHolder(CommandChannelAdjust(signature.Item1)
                     , (rq,rs) => signature.Item2.Action(rq,rs,PayloadSerializer)

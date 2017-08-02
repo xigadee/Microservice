@@ -76,6 +76,8 @@
     <Compile Include="CommandPersistence\Server\DocumentDb\Pipeline\AttachPersistenceManagerDocumentDb.cs" />
     <Compile Include="CommandPersistence\Server\Memory\Pipeline\AddPersistenceManagerHandlerMemory.cs" />
     <Compile Include="CommandPersistence\Server\Memory\Pipeline\AttachPersistenceManagerHandlerMemory.cs" />
+    <Compile Include="Command\Attributes\CommandMethod\CommandContractAttributeBase.cs" />
+    <Compile Include="Command\MasterJob\Attribute\MasterJobCommandContractAttribute.cs" />
     <Compile Include="Command\MasterJob\Attribute\MasterJobScheduleAttribute.cs" />
     <Compile Include="Command\Attributes\CommandSchedule\CommandScheduleSignatureHelper.cs" />
     <Compile Include="Command\Attributes\CommandSchedule\ScheduleMethodSignature.cs" />

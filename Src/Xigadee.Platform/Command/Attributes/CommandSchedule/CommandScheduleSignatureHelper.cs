@@ -30,7 +30,7 @@ namespace Xigadee
         /// </summary>
         public static List<ScheduleMethodSignature> ScheduleMethodSignatures(this ICommand command, bool throwExceptions)
         {
-            var results = command.CommandMethods()
+            var results = command.CommandMethods<CommandScheduleAttribute>()
                 .Select((m) => new ScheduleMethodSignature(command, m, throwExceptions))
                 .Where((t) => t.IsValid)
                 .ToList();

@@ -11,7 +11,9 @@ namespace Xigadee
     /// This class is used to marshall the method signature
     /// </summary>
     [DebuggerDisplay("{Method.Name}")]
-    public class CommandMethodSignature
+    public class CommandMethodSignature<A>
+        where A : CommandContractAttributeBase
+
     {
         #region Constructor
         /// <summary>
@@ -63,7 +65,7 @@ namespace Xigadee
         /// <summary>
         /// These are the assigned command attributes.
         /// </summary>
-        public List<CommandContractAttribute> CommandAttributes { get; protected set; }
+        public List<A> CommandAttributes { get; protected set; }
         /// <summary>
         /// This is the list of the parameters for the method.
         /// </summary>
@@ -78,8 +80,8 @@ namespace Xigadee
             try
             {
                 CommandAttributes = Attribute.GetCustomAttributes(Method)
-                    .Where((a) => a is CommandContractAttribute)
-                    .Cast<CommandContractAttribute>()
+                    .Where((a) => a is A)
+                    .Cast<A>()
                     .ToList();
 
                 //This shouldn't happen, but check anyway.
@@ -172,12 +174,12 @@ namespace Xigadee
             }
         }
 
-        private bool ParamAttributes<A>(ParameterInfo info)
-            where A : Attribute
+        private bool ParamAttributes<T>(ParameterInfo info)
+            where T : Attribute
         {
             try
             {
-                var attr = Attribute.GetCustomAttribute(info, typeof(A), false);
+                var attr = Attribute.GetCustomAttribute(info, typeof(T), false);
 
                 return attr != null;
             }
@@ -238,7 +240,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="attr">The contract attribute.</param>
         /// <returns>The reference id.</returns>
-        public string Reference(CommandContractAttribute attr)
+        public string Reference(A attr)
         {
             return $"{Method.Name}/{attr.Header.Key}";
         }
