@@ -162,6 +162,8 @@ namespace Xigadee
             LoopSet();
 
             mMessagePump.Join();
+
+            DequeueTasksAndReject();
         }
         #endregion
         #region StatisticsRecalculate()
@@ -438,12 +440,25 @@ namespace Xigadee
         private void DequeueTasksAndExecute()
         {
             TaskTracker tracker;
-
             while (mProcessInternalQueue.TryDequeue(out tracker))
                 ExecuteTask(tracker);
 
             foreach (var dequeueTask in mTasksQueue.Dequeue(mAvailability.Count))
                 ExecuteTask(dequeueTask);
+        }
+        #endregion
+        #region --> DequeueTasksAndExecute()
+        /// <summary>
+        /// This method processes the tasks that resides in the queue, and rejects them to the underlying fabric so that they can be replayed.
+        /// </summary>
+        private void DequeueTasksAndReject()
+        {
+            TaskTracker tracker;
+            while (mProcessInternalQueue.TryDequeue(out tracker))
+                tracker.ToTransmissionPayload()?.SignalFail();
+
+            foreach (var dequeueTask in mTasksQueue.Dequeue())
+                dequeueTask.ToTransmissionPayload()?.SignalFail();
         }
         #endregion
 

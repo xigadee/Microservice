@@ -33,17 +33,22 @@ namespace Xigadee
         /// <param name="command">The command.</param>
         /// <param name="assign">The assign.</param>
         /// <param name="channelType">Type of the channel.</param>
+        /// <param name="autosetPartition2">Automatically sets the priority partition for master job negotiation to 2.</param>
         /// <returns></returns>
         public static E AssignMasterJob<E, C>(this E cpipe
             , C command
             , Action<C> assign = null
             , string channelType = null
+            , bool autosetPartition2 = true
             )
             where E : IPipelineChannelBroadcast<IPipeline>
             where C : ICommand
         {
 
             command.MasterJobNegotiationChannelType = channelType ?? command.GetType().Name.ToLowerInvariant();
+
+            if (autosetPartition2)
+                command.MasterJobNegotiationChannelPriority = 2;
 
             if (cpipe.ChannelListener != null && command.MasterJobNegotiationChannelIdAutoSet)
                 command.MasterJobNegotiationChannelIdIncoming = cpipe.ChannelListener.Id;

@@ -294,6 +294,7 @@ namespace Xigadee
         {
             try
             {
+                payload.TraceConfigure(mPolicy.TransmissionPayloadTraceEnabled);
                 payload.TraceWrite("Incoming", "CommunicationContainer/PayloadSubmit");
 
                 //Ensure the priority cannot spoof the internal priority of -1

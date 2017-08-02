@@ -16,11 +16,6 @@
 
 #region using
 using System;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
-using System.Threading;
-using Xigadee;
 #endregion
 namespace Xigadee
 {
@@ -36,6 +31,34 @@ namespace Xigadee
         public MasterJobNegotiationStrategy() : base("Default")
         {
         }
+
+        /// <summary>
+        /// Sets the next poll time for the poll schedule.
+        /// </summary>
+        /// <param name="schedule">The schedule.</param>
+        /// <param name="state">The current state</param>
+        /// <param name="pollAttempts">The current poll attempts.</param>
+        public override void SetNextPollTime(Schedule schedule, MasterJobState state, int pollAttempts)
+        {
+            switch (state)
+            {
+                case MasterJobState.Active:
+                    schedule.Frequency = TimeSpan.FromSeconds(5 + Generator.Next(10));
+                    break;
+                case MasterJobState.Inactive:
+                case MasterJobState.VerifyingComms:
+                    //schedule.Frequency = TimeSpan.FromMilliseconds(300);
+                    schedule.InitialTime = DateTime.UtcNow.AddSeconds(3);
+                    break;
+                default:
+                    if (this.PollAttemptsExceeded(state, pollAttempts))
+                        schedule.Frequency = TimeSpan.FromSeconds(5 + Generator.Next(25));
+                    else
+                        schedule.Frequency = TimeSpan.FromSeconds(10 + Generator.Next(20));
+                    break;
+            }
+
+        }
     }
 
     /// <summary>
@@ -49,6 +72,34 @@ namespace Xigadee
         /// </summary>
         public MasterJobNegotiationStrategyDebug() : base("Debug")
         {
+        }
+
+        /// <summary>
+        /// Sets the next poll time for the poll schedule.
+        /// </summary>
+        /// <param name="schedule">The schedule.</param>
+        /// <param name="state">The current state</param>
+        /// <param name="pollAttempts">The current poll attempts.</param>
+        public override void SetNextPollTime(Schedule schedule, MasterJobState state, int pollAttempts)
+        {
+            switch (state)
+            {
+                case MasterJobState.Active:
+                    schedule.Frequency = TimeSpan.FromMilliseconds(5 + Generator.Next(10));
+                    break;
+                case MasterJobState.Inactive:
+                case MasterJobState.VerifyingComms:
+                case MasterJobState.Starting:
+                    schedule.Frequency = TimeSpan.FromMilliseconds(300);
+                    schedule.InitialTime = DateTime.UtcNow.AddMilliseconds(300);
+                    break;
+                default:
+                    if (this.PollAttemptsExceeded(state,pollAttempts))
+                        schedule.Frequency = TimeSpan.FromMilliseconds(5 + Generator.Next(25));
+                    else
+                        schedule.Frequency = TimeSpan.FromMilliseconds(25 + Generator.Next(50));
+                    break;
+            }
         }
     }
 }

@@ -61,7 +61,7 @@ namespace Xigadee
         /// <param name="resourceProfiles"></param>
         /// <param name="internalOnly"></param>
         /// <param name="assign"></param>
-        /// <param name="autosetPartition01">This method automatically sets the default priority 0 and 1 partitions for the channel.</param>
+        /// <param name="autosetPartition2">This method automatically sets the default priority 0 and 1 partitions for the channel.</param>
         /// <returns>The original pipeline.</returns>
         public static IPipelineChannelBroadcast<P> AddChannelBroadcast<P>(this P pipeline
             , string channelId

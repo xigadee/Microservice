@@ -36,6 +36,9 @@ namespace Xigadee
 
         }
 
+        /// <summary>
+        /// Purges any remaining messages when the service shuts down.
+        /// </summary>
         public void Purge()
         {
             TransmissionPayload payload = null;
@@ -46,6 +49,7 @@ namespace Xigadee
                 payload.SignalFail();
             }
         }
+
         /// <summary>
         /// This action is used to "transmit" a message to the event.
         /// </summary>
@@ -77,7 +81,7 @@ namespace Xigadee
         /// <returns>
         /// Returns a list of transmission for processing.
         /// </returns>
-        public override async Task<List<TransmissionPayload>> MessagesPull(int? count, int? wait, string mappingChannel = null)
+        public override Task<List<TransmissionPayload>> MessagesPull(int? count, int? wait, string mappingChannel = null)
         {
             var list = new List<TransmissionPayload>();
 
@@ -104,7 +108,7 @@ namespace Xigadee
                 countDown--;
             }
 
-            return list;
+            return Task.FromResult(list);
         }
 
         /// <summary>

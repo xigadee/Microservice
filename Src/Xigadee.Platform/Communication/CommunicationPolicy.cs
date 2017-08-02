@@ -29,6 +29,10 @@ namespace Xigadee
     public class CommunicationPolicy:PolicyBase
     {
         /// <summary>
+        /// Gets or sets a value indicating whether the TransmissionPayload trace flag should be set to true.
+        /// </summary>
+        public bool TransmissionPayloadTraceEnabled { get; set; }
+        /// <summary>
         /// This is the default time that a process submitted from a listener can execute for. The default value is 30 seconds.
         /// </summary>
         public TimeSpan? ListenerRequestTimespan { get; set; } = null;

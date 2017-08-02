@@ -52,7 +52,7 @@ namespace Xigadee
     /// <summary>
     /// This is the root interface implemented by the command class.
     /// </summary>
-    public interface ICommand: ICommandEvents, IService, IRequireScheduler, IRequirePayloadSerializer
+    public interface ICommand: ICommandMasterJob, ICommandEvents, IService, IRequireScheduler, IRequirePayloadSerializer
         , IRequireServiceOriginator, IRequireSharedServices, IRequireDataCollector
     {
         /// <summary>
@@ -71,23 +71,6 @@ namespace Xigadee
         /// Specifies whether the response channel can be set during configuration.
         /// </summary>
         bool ResponseChannelIdAutoSet { get; }
-
-        /// <summary>
-        /// This is the channel type used to handle the messaging handshake.
-        /// </summary>
-        string MasterJobNegotiationChannelType { get; set; }
-        /// <summary>
-        /// This is the channel used to negotiate control for a master job.
-        /// </summary>
-        string MasterJobNegotiationChannelIdIncoming { get; set; }
-        /// <summary>
-        /// This is the channel used to negotiate control for a master job.
-        /// </summary>
-        string MasterJobNegotiationChannelIdOutgoing { get; set; }
-        /// <summary>
-        /// Specifies whether the master job negotiation channel can be set during configuration.
-        /// </summary>
-        bool MasterJobNegotiationChannelIdAutoSet { get; }
 
         /// <summary>
         /// This is the reference to the task manager that can be called to submit new jobs for processing.
@@ -132,4 +115,30 @@ namespace Xigadee
         event EventHandler<MasterJobStateChangeEventArgs> OnMasterJobStateChange;
     }
 
+    /// <summary>
+    /// This interface holds the masterjob configuration properties.
+    /// </summary>
+    public interface ICommandMasterJob
+    {
+        /// <summary>
+        /// Gets or sets the master job negotiation channel priority.
+        /// </summary>
+        int MasterJobNegotiationChannelPriority { get; set; }
+        /// <summary>
+        /// This is the channel type used to handle the messaging handshake.
+        /// </summary>
+        string MasterJobNegotiationChannelType { get; set; }
+        /// <summary>
+        /// This is the channel used to negotiate control for a master job.
+        /// </summary>
+        string MasterJobNegotiationChannelIdIncoming { get; set; }
+        /// <summary>
+        /// This is the channel used to negotiate control for a master job.
+        /// </summary>
+        string MasterJobNegotiationChannelIdOutgoing { get; set; }
+        /// <summary>
+        /// Specifies whether the master job negotiation channel can be set during configuration.
+        /// </summary>
+        bool MasterJobNegotiationChannelIdAutoSet { get; }
+    }
 }

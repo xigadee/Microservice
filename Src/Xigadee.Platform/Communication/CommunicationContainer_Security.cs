@@ -50,7 +50,7 @@ namespace Xigadee
 
             //Decrypt and verify the incoming message.
             Security.Verify(channel, payload);
-            payload.TraceWrite("Security Verified", "CommunicationContainer/PayloadIncomingSecurity");
+            payload.TraceWrite("Verified", "CommunicationContainer/PayloadIncomingSecurity");
         }
         #endregion
         #region PayloadOutgoingSecurity(TransmissionPayload payload)
@@ -66,6 +66,7 @@ namespace Xigadee
 
             //Secure the outgoing payload.
             Security.Secure(channel, payload);
+            payload.TraceWrite("Secured", "CommunicationContainer/PayloadOutgoingSecurity");
         }
         #endregion
     }

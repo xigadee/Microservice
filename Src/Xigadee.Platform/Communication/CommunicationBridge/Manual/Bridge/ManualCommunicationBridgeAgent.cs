@@ -29,16 +29,17 @@ namespace Xigadee
     public class ManualCommunicationBridgeAgent:CommunicationBridgeAgent
     {
         #region Declarations
+        long mSendCount = 0;
+
         List<ManualChannelListener> mListeners = new List<ManualChannelListener>();
         List<ManualChannelSender> mSenders = new List<ManualChannelSender>();
-        long mSendCount = 0;
         JsonContractSerializer mSerializer = new JsonContractSerializer();
 
         ConcurrentDictionary<Guid, TransmissionPayload> mSenderPayloads = new ConcurrentDictionary<Guid, TransmissionPayload>();
+        ConcurrentDictionary<Guid, TransmissionPayload> mPayloadHistory = null;
 
         ManualChannelSender[] mActiveSenders = null;
         ManualChannelListener[] mActiveListeners = null;
-
         #endregion
 
         #region Constructor
@@ -46,8 +47,13 @@ namespace Xigadee
         /// This is the default constructor.
         /// </summary>
         /// <param name="mode">The desirec communication mode.</param>
-        public ManualCommunicationBridgeAgent(CommunicationBridgeMode mode) : base(mode)
+        public ManualCommunicationBridgeAgent(CommunicationBridgeMode mode, bool payloadHistoryEnabled = false) : base(mode)
         {
+            PayloadHistoryEnabled = payloadHistoryEnabled;
+            if (payloadHistoryEnabled)
+            {
+                mPayloadHistory = new ConcurrentDictionary<Guid, TransmissionPayload>();
+            }
         }
         #endregion
 
@@ -188,12 +194,15 @@ namespace Xigadee
             ServiceMessage clone = mSerializer.Deserialize<ServiceMessage>(data);
 
             var cloned = new TransmissionPayload(clone, release: SignalCompletion, traceEnabled:true);
-            cloned.TraceWrite("PayloadCopy", "ManualCommunicationBridgeAgent");
+
+            cloned.TraceWrite("Cloned", "ManualCommunicationBridgeAgent/PayloadCopy");
 
             mSenderPayloads.AddOrUpdate(cloned.Id, cloned, (g,p)=>p);
 
             return cloned;
         }
+
+        public bool PayloadHistoryEnabled {get;}
 
         private void SignalCompletion(bool success, Guid id)
         {
@@ -203,7 +212,8 @@ namespace Xigadee
                 Interlocked.Increment(ref mFailure);
 
             TransmissionPayload payload;
-            mSenderPayloads.TryRemove(id, out payload);
+            if (mSenderPayloads.TryRemove(id, out payload) && PayloadHistoryEnabled)
+                mPayloadHistory.AddOrUpdate(id, payload, (i,p) => p);
         }
 
         private int mSuccess = 0;

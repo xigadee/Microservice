@@ -45,11 +45,13 @@ namespace Xigadee
                 client = ClientResolve(payload.Message.ChannelPriority);
                 start = client.Statistics.ActiveIncrement();
                 await client.Transmit(payload);
+                payload.TraceWrite($"Sent: {client.Name}", "MessagingSenderBase/ProcessMessage");
             }
             catch (Exception ex)
             {
                 LogExceptionLocation("ProcessMessage (Unhandled)", ex);
                 //OK, not sure what happened here, so we need to throw the exception.
+                payload.TraceWrite($"Exception: {ex.Message}", "MessagingSenderBase/ProcessMessage");
                 if (client != null)
                     client.Statistics.ErrorIncrement();
                 throw;

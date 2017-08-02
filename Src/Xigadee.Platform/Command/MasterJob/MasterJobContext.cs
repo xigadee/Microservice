@@ -36,7 +36,7 @@ namespace Xigadee
         /// <summary>
         /// Initializes a new instance of the <see cref="MasterJobContext"/> class.
         /// </summary>
-        public MasterJobContext(MasterJobNegotiationStrategyBase strategy = null)
+        public MasterJobContext(MasterJobNegotiationStrategyBase strategy)
         {
             Partners = new ConcurrentDictionary<string, MasterJobPartner>();
             Jobs = new Dictionary<Guid, MasterJobHolder>();
@@ -63,10 +63,6 @@ namespace Xigadee
 
         public int MasterPollAttempts { get { return mCurrentMasterPollAttempts; } }
 
-        public void MasterPollAttemptsReset()
-        {
-            mCurrentMasterPollAttempts= 0;
-        }
 
         public void MasterRecordSet(string remoteServiceId)
         {
@@ -87,10 +83,8 @@ namespace Xigadee
 
         public bool MasterPollAttemptsExceeded()
         {
-            return mCurrentMasterPollAttempts>=3;
+            return Strategy.PollAttemptsExceeded(State, mCurrentMasterPollAttempts);
         }
-
-        public Random mRandom = new Random(Environment.TickCount);
 
         /// <summary>
         /// The timestamp for the last negotiation message out.
@@ -130,6 +124,7 @@ namespace Xigadee
                     {
                         oldState = mState;
                         mState = value;
+                        mCurrentMasterPollAttempts = 0;
                     }
                     else
                         oldState = null;
@@ -138,7 +133,9 @@ namespace Xigadee
                 try
                 {
                     if (oldState.HasValue)
+                    {
                         OnMasterJobStateChange?.Invoke(this, new MasterJobStateChangeEventArgs(oldState.Value, value, Interlocked.Increment(ref mStateChangeCounter)));
+                    }
                 }
                 catch { }
             }
@@ -164,5 +161,14 @@ namespace Xigadee
         }
 
         public MasterJobNegotiationStrategyBase Strategy { get; }
+
+        /// <summary>
+        /// This method sets the next poll time based on the current state and the number of poll attempts.
+        /// </summary>
+        /// <param name="schedule">The schedule.</param>
+        public void SetNextPollTime(Schedule schedule)
+        {
+            Strategy.SetNextPollTime(schedule, State, mCurrentMasterPollAttempts);
+        }
     }
 }

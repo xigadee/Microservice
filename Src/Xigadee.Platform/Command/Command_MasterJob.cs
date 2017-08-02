@@ -41,8 +41,80 @@ namespace Xigadee
         /// This is the context that 
         /// </summary>
         protected MasterJobContext mMasterJobContext;
+        #endregion
 
-        protected Random mRandom = new Random(Environment.TickCount);
+        #region MasterJobNegotiationChannelPriority
+        /// <summary>
+        /// This is the default channel priority, which is 2 unless otherwise set
+        /// </summary>
+        public virtual int MasterJobNegotiationChannelPriority
+        {
+            get
+            {
+                return mPolicy.MasterJobNegotiationChannelPriority;
+            }
+            set
+            {
+                mPolicy.MasterJobNegotiationChannelPriority = value;
+            }
+        }
+        #endregion
+        #region MasterJobNegotiationChannelType
+        /// <summary>
+        /// This command is used to negotiate the channel type.
+        /// </summary>
+        public virtual string MasterJobNegotiationChannelType
+        {
+            get
+            {
+                return mPolicy.MasterJobNegotiationChannelType;
+            }
+            set
+            {
+                mPolicy.MasterJobNegotiationChannelType = value;
+            }
+        }
+        #endregion
+        #region MasterJobNegotiationChannelIdOutgoing
+        /// <summary>
+        /// This is the channel used to negotiate control for a master job.
+        /// </summary>
+        public virtual string MasterJobNegotiationChannelIdOutgoing
+        {
+            get
+            {
+                return mPolicy.MasterJobNegotiationChannelIdOutgoing;
+            }
+            set
+            {
+                mPolicy.MasterJobNegotiationChannelIdOutgoing = value;
+            }
+        }
+        #endregion
+        #region MasterJobNegotiationChannelIdIncoming
+        /// <summary>
+        /// This is the channel used to negotiate control for a master job.
+        /// </summary>
+        public virtual string MasterJobNegotiationChannelIdIncoming
+        {
+            get
+            {
+                return mPolicy.MasterJobNegotiationChannelIdIncoming;
+            }
+            set
+            {
+                mPolicy.MasterJobNegotiationChannelIdIncoming = value;
+            }
+        }
+        #endregion
+        #region MasterJobNegotiationChannelIdAutoSet
+        /// <summary>
+        /// Specifies whether the master job negotiation channel can be set during configuration.
+        /// </summary>
+        public virtual bool MasterJobNegotiationChannelIdAutoSet
+        {
+            get { return mPolicy.MasterJobNegotiationChannelIdAutoSet; }
+        } 
         #endregion
 
         #region MasterJobTearUp()
@@ -56,7 +128,7 @@ namespace Xigadee
             if (mPolicy.MasterJobNegotiationChannelType == null)
                 throw new CommandStartupException("Masterjobs are enabled, but the NegotiationChannelType has not been set");
 
-            mMasterJobContext = new MasterJobContext();
+            mMasterJobContext = new MasterJobContext(mPolicy.MasterJobNegotiationStrategy);
 
             mMasterJobContext.OnMasterJobStateChange += (object o, MasterJobStateChangeEventArgs s) =>
             {
@@ -137,6 +209,73 @@ namespace Xigadee
         }
         #endregion
 
+        #region ProcessRequestIfSelfGenerated(TransmissionPayload rq)
+        /// <summary>
+        /// Processes the request if self generated. This is used to accommodate state change.
+        /// </summary>
+        /// <param name="rq">The incoming request.</param>
+        /// <returns>Returns true if the request is from this command.</returns>
+        protected virtual bool ProcessRequestIfSelfGenerated(TransmissionPayload rq)
+        {
+            if (!string.Equals(rq.Message.OriginatorServiceId, OriginatorId.ExternalServiceId, StringComparison.InvariantCultureIgnoreCase))
+                return false;
+
+            rq.TraceWrite("Processing", "Command/ProcessSelfSentMessage");
+            switch (mMasterJobContext.State)
+            {
+                case MasterJobState.VerifyingComms:
+                    //We can now say that the masterjob channel is working, so we can now enable the job for negotiation.
+                    mMasterJobContext.State = MasterJobState.Starting;
+                    break;
+                case MasterJobState.Inactive:
+                    if (mMasterJobContext.MasterPollAttemptsExceeded())
+                        mMasterJobContext.State = MasterJobState.Starting;
+                    break;
+                case MasterJobState.Starting:
+                    if (IsMatch(rq, MasterJobStates.WhoIsMaster) && mMasterJobContext.MasterPollAttemptsExceeded())
+                        mMasterJobContext.State = MasterJobState.Requesting1;
+                    break;
+                case MasterJobState.Requesting1:
+                    if (IsMatch(rq, MasterJobStates.RequestingControl1) && mMasterJobContext.MasterPollAttemptsExceeded())
+                        mMasterJobContext.State = MasterJobState.Requesting2;
+                    break;
+                case MasterJobState.Requesting2:
+                    if (IsMatch(rq, MasterJobStates.RequestingControl2) && mMasterJobContext.MasterPollAttemptsExceeded())
+                        mMasterJobContext.State = MasterJobState.TakingControl;
+                    break;
+                case MasterJobState.TakingControl:
+                    if (IsMatch(rq, MasterJobStates.TakingControl))
+                        MasterJobStart();
+                    break;
+            }
+
+            return true;
+        } 
+        #endregion
+
+        private bool IsMatch(TransmissionPayload rq, string state)
+        {
+            return state.Equals(rq.Message.ActionType, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        private async Task InformOrResetState(MasterJobState state)
+        {
+            if (mMasterJobContext.State == MasterJobState.Active)
+                await MasterJobSyncIAmMaster();
+            else if (mMasterJobContext.State <= state)
+            {
+                mMasterJobContext.State = MasterJobState.Inactive;
+            }
+        }
+
+        private async Task Negotiation(string message, Schedule schedule, bool increment = true)
+        {
+            await NegotiationTransmit(message);
+            mMasterJobContext.SetNextPollTime(schedule);
+            if (increment)
+                mMasterJobContext.MasterPollAttemptsIncrement();
+        }
+
         #region --> MasterJobStateNotificationIncoming(TransmissionPayload rq, List<TransmissionPayload> rs)
         /// <summary>
         /// This method processes state notifications from other instances of the MasterJob.
@@ -146,33 +285,30 @@ namespace Xigadee
         protected virtual async Task MasterJobStateNotificationIncoming(TransmissionPayload rq, List<TransmissionPayload> rs)
         {
             mMasterJobContext.MessageLastIn = DateTime.UtcNow;
-            rq.SignalSuccess();
+            rq.TraceWrite("Received", "Command/MasterJobStateNotificationIncoming");
 
             //If we are not active then do nothing.
             if (mMasterJobContext.State == MasterJobState.Disabled)
                 return;
 
-            //Filter out any messages sent from this service.
-            if (string.Equals(rq.Message.OriginatorServiceId, OriginatorId.ExternalServiceId, StringComparison.InvariantCultureIgnoreCase))
-            {
-                //We can now say that the masterjob channel is working, so we can now enable the job for negotiation.
-                if (mMasterJobContext.State == MasterJobState.VerifyingComms)
-                    mMasterJobContext.State = MasterJobState.Starting;
-
+            //Filter out the messages sent from this service. 
+            //We will use these messages to signal a transition to the next state.
+            if (ProcessRequestIfSelfGenerated(rq))
                 return;
-            }
+
+            rq.TraceWrite("Processing", "Command/MasterJobStateNotificationIncoming");
 
             //Raise an event for the incoming communication.
             OnMasterJobCommunication?.Invoke(this, new MasterJobCommunicationEventArgs(
-                OriginatorId.Name, GetType().Name, MasterJobCommunicationDirection.Incoming, mMasterJobContext.State, rq.Message.ActionType, mMasterJobContext.StateChangeCounter
+                OriginatorId.Name, GetType().Name, MasterJobCommunicationDirection.Incoming, mMasterJobContext.State
+                , rq.Message.ActionType, mMasterJobContext.StateChangeCounter
                 , rq.Message.OriginatorServiceId));
 
-
-            if (MasterJobStates.IAmStandby.Equals(rq.Message.ActionType, StringComparison.InvariantCultureIgnoreCase))
+            if (IsMatch(rq,MasterJobStates.IAmStandby))
             {
                 mMasterJobContext.PartnerAdd(rq.Message.OriginatorServiceId, true);
             }
-            else if (MasterJobStates.IAmMaster.Equals(rq.Message.ActionType, StringComparison.InvariantCultureIgnoreCase))
+            else if (IsMatch(rq, MasterJobStates.IAmMaster))
             {
                 if (mMasterJobContext.State == MasterJobState.Active)
                     MasterJobStop();
@@ -181,44 +317,42 @@ namespace Xigadee
 
                 mMasterJobContext.State = MasterJobState.Inactive;
                 mMasterJobContext.MasterRecordSet(rq.Message.OriginatorServiceId);
-                mMasterJobContext.MasterPollAttemptsReset();
+
                 await NegotiationTransmit(MasterJobStates.IAmStandby);
             }
-            else if (MasterJobStates.ResyncMaster.Equals(rq.Message.ActionType, StringComparison.InvariantCultureIgnoreCase))
+            else if (IsMatch(rq, MasterJobStates.ResyncMaster))
             {
-                mMasterJobContext.State = MasterJobState.Starting;
                 mMasterJobContext.MasterRecordClear();
+
+                if (mMasterJobContext.State == MasterJobState.Inactive)
+                    mMasterJobContext.State = MasterJobState.Starting;
             }
-            else if (MasterJobStates.WhoIsMaster.Equals(rq.Message.ActionType, StringComparison.InvariantCultureIgnoreCase))
+            else if (IsMatch(rq, MasterJobStates.WhoIsMaster))
             {
+                mMasterJobContext.PartnerAdd(rq.Message.OriginatorServiceId, true);
                 if (mMasterJobContext.State == MasterJobState.Active)
                     await MasterJobSyncIAmMaster();
             }
-            else if (MasterJobStates.RequestingControl1.Equals(rq.Message.ActionType, StringComparison.InvariantCultureIgnoreCase))
+            else if (IsMatch(rq, MasterJobStates.RequestingControl1))
             {
-                if (mMasterJobContext.State == MasterJobState.Active)
-                    await MasterJobSyncIAmMaster();
-                else if (mMasterJobContext.State <= MasterJobState.Requesting1)
-                    mMasterJobContext.State = MasterJobState.Inactive;
+                await InformOrResetState(MasterJobState.Requesting1);
             }
-            else if (MasterJobStates.RequestingControl2.Equals(rq.Message.ActionType, StringComparison.InvariantCultureIgnoreCase))
+            else if (IsMatch(rq, MasterJobStates.RequestingControl2))
             {
-                if (mMasterJobContext.State == MasterJobState.Active)
-                    await MasterJobSyncIAmMaster();
-                else if (mMasterJobContext.State <= MasterJobState.Requesting2)
-                    mMasterJobContext.State = MasterJobState.Inactive;
+                await InformOrResetState(MasterJobState.Requesting2);
             }
-            else if (MasterJobStates.TakingControl.Equals(rq.Message.ActionType, StringComparison.InvariantCultureIgnoreCase))
+            else if (IsMatch(rq, MasterJobStates.TakingControl))
             {
-                if (mMasterJobContext.State == MasterJobState.Active)
-                    await MasterJobSyncIAmMaster();
-                else if (mMasterJobContext.State <= MasterJobState.TakingControl)
-                    mMasterJobContext.State = MasterJobState.Inactive;
+                await InformOrResetState(MasterJobState.TakingControl);
             }
-            else if (!string.IsNullOrEmpty(rq.Message.ActionType))
+            else
             {
-                Collector?.LogMessage(LoggingLevel.Warning, $"{rq.Message.ActionType} is not a valid negotiating action type for master job {FriendlyName}", "MasterJob");
+                Collector?.LogMessage(LoggingLevel.Warning, $"{rq?.Message?.ActionType??"NULL"} is not a valid negotiating action type for master job {FriendlyName}", "MasterJob");
+                rq.TraceWrite("Unhandled", "Command/MasterJobStateNotificationIncoming");
+                return;
             }
+            rq.TraceWrite("Complete", "Command/MasterJobStateNotificationIncoming");
+
         }
         #endregion
         #region POLL: MasterJobStateNotificationOutgoing(Schedule state, CancellationToken token) -->
@@ -231,43 +365,32 @@ namespace Xigadee
         {
             //We set a random poll time to reduce the potential for deadlocking
             //and to make the negotiation messaging more efficient.
-            schedule.Frequency = TimeSpan.FromSeconds(5 + mRandom.Next(10));
-
             switch (mMasterJobContext.State)
             {
                 case MasterJobState.VerifyingComms:
-                    await NegotiationTransmit(MasterJobStates.WhoIsMaster);
-                    break;
-                case MasterJobState.Starting:
-                    await NegotiationTransmit(MasterJobStates.WhoIsMaster);
-                    mMasterJobContext.State = MasterJobState.Requesting1;
-                    mMasterJobContext.MasterPollAttemptsIncrement();
+                    await Negotiation(MasterJobStates.WhoIsMaster, schedule, false);
                     break;
                 case MasterJobState.Inactive:
-                    await NegotiationTransmit(MasterJobStates.WhoIsMaster);
-                    if (mMasterJobContext.MasterPollAttemptsExceeded())
-                        mMasterJobContext.State = MasterJobState.Starting;
-                    else if (mMasterJobContext.MasterPollAttempts == 0)
-                        schedule.Frequency = TimeSpan.FromSeconds(10 + mRandom.Next(60));
-                    mMasterJobContext.MasterPollAttemptsIncrement();
+                    await Negotiation(MasterJobStates.WhoIsMaster, schedule);
+                    break;
+                case MasterJobState.Starting:
+                    await Negotiation(MasterJobStates.WhoIsMaster, schedule);
                     break;
                 case MasterJobState.Requesting1:
-                    await NegotiationTransmit(MasterJobStates.RequestingControl1);
-                    mMasterJobContext.State = MasterJobState.Requesting2;
+                    await Negotiation(MasterJobStates.RequestingControl1, schedule);
                     break;
                 case MasterJobState.Requesting2:
-                    await NegotiationTransmit(MasterJobStates.RequestingControl2);
-                    mMasterJobContext.State = MasterJobState.TakingControl;
+                    await Negotiation(MasterJobStates.RequestingControl2, schedule);
                     break;
                 case MasterJobState.TakingControl:
-                    await NegotiationTransmit(MasterJobStates.TakingControl);
-                    MasterJobStart();
+                    await Negotiation(MasterJobStates.TakingControl, schedule);
                     break;
                 case MasterJobState.Active:
                     await MasterJobSyncIAmMaster();
-                    schedule.Frequency = TimeSpan.FromSeconds(5 + mRandom.Next(25));
+                    mMasterJobContext.SetNextPollTime(schedule);
                     break;
                 default:
+                    mMasterJobContext.SetNextPollTime(schedule);
                     return;
             }
 
@@ -312,9 +435,13 @@ namespace Xigadee
         /// </summary>
         protected virtual void MasterJobStart()
         {
-            mMasterJobContext.Start();
+            if (mMasterJobContext.State == MasterJobState.Active)
+                return;
 
             mMasterJobContext.State = MasterJobState.Active;
+            MasterJobSyncIAmMaster().Wait();
+
+            mMasterJobContext.Start();
 
             MasterJobCommandsRegister();
 
@@ -332,8 +459,6 @@ namespace Xigadee
 
                 SchedulerRegister(job.Schedule);
             }
-
-            //MasterJobSyncMaster().Wait();
         }
         #endregion
         #region MasterJobStop()
@@ -342,34 +467,31 @@ namespace Xigadee
         /// </summary>
         protected virtual void MasterJobStop()
         {
-            var oldState = mMasterJobContext.State;
+            if (mMasterJobContext.State != MasterJobState.Active)
+                return;
+
             mMasterJobContext.State = MasterJobState.Disabled;
 
-            if (oldState == MasterJobState.Active)
+            NegotiationTransmit(MasterJobStates.ResyncMaster);
+
+            foreach (var job in mMasterJobContext.Jobs.Values)
             {
-                NegotiationTransmit(MasterJobStates.ResyncMaster);
-
-                foreach (var job in mMasterJobContext.Jobs.Values)
+                try
                 {
-                    try
-                    {
-                        job.Cleanup?.Invoke(job.Schedule);
-                    }
-                    catch (Exception ex)
-                    {
-                        Collector?.LogException($"MasterJob '{job.Name}' stop failed", ex);
-                    }
-
-                    Scheduler.Unregister(job.Schedule);
+                    job.Cleanup?.Invoke(job.Schedule);
+                }
+                catch (Exception ex)
+                {
+                    Collector?.LogException($"MasterJob '{job.Name}' stop failed", ex);
                 }
 
-                MasterJobCommandsUnregister();
+                Scheduler.Unregister(job.Schedule);
             }
+
+            MasterJobCommandsUnregister();
 
             //Reset the state to inactive so that it could restart at some point.
             mMasterJobContext.State = MasterJobState.Inactive;
-            //NegotiationTransmit(MasterJobStates.IAmStandby).Wait();
-
         }
         #endregion
 

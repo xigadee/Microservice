@@ -15,8 +15,6 @@
 #endregion
 
 using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -25,6 +23,10 @@ namespace Xigadee
     /// </summary>
     public class CommandPolicy:PolicyBase
     {
+        /// <summary>
+        /// Gets or sets the master job negotiation strategy.
+        /// </summary>
+        public MasterJobNegotiationStrategyBase MasterJobNegotiationStrategy { get; set; }
         /// <summary>
         /// Gets or sets a value indicating whether the TransmissionPayload trace flag should be set to true.
         /// </summary>
@@ -101,11 +103,12 @@ namespace Xigadee
         //Master Job
         public virtual bool MasterJobEnabled { get; set; }
 
-        public virtual int MasterJobNegotiationChannelPriority { get; set; }
+        public virtual int MasterJobNegotiationChannelPriority { get; set; } = 2;
 
         public virtual string MasterJobNegotiationChannelType { get; set; }
 
         public virtual string MasterJobName { get; set; }
+
 
         public static CommandPolicy ToJob(TimeSpan? interval, TimeSpan? initialWait, DateTime? initialTime, bool isLongRunningJob = false)
         {

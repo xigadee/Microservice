@@ -176,9 +176,11 @@ namespace Xigadee
             if (TryGet(channelId, ChannelDirection.Incoming, out channel))
             {
                 if (channel.CouldRedirect)
+                {
                     channel.Redirect(payload);
+                    payload.TraceWrite("Redirected", "CommunicationContainer/PayloadIncomingRedirectCheck");
+                }
             }
-            payload.TraceWrite("Complete", "CommunicationContainer/PayloadIncomingRedirectCheck");
         }
         #endregion
         #region PayloadOutgoingRedirectChecks(TransmissionPayload payload)
@@ -197,6 +199,8 @@ namespace Xigadee
                 if (channel.CouldRedirect)
                 {
                     channel.Redirect(payload);
+                    payload.TraceWrite("Redirected", "CommunicationContainer/PayloadOutgoingRedirectChecks");
+
                     //Get the new outgoing channel.
                     TryGet(payload.Message.ChannelId, ChannelDirection.Outgoing, out channel);
                 }

@@ -16,7 +16,7 @@ namespace Test.Xigadee
     {
         private class EnqueueContext
         {
-            public void Record(object o, MasterJobStateChangeEventArgs s)
+            public void MasterJobStateChange(object o, MasterJobStateChangeEventArgs s)
             {
                 Debug.Write(s.Debug());
                 Log.Add(s);
@@ -30,16 +30,16 @@ namespace Test.Xigadee
                 MasterName = ((TestMasterJobCommand)o).OriginatorId.Name;
                 Start(MasterName);
 
-                Mre.Set();
+                MasterJobSignal.Set();
             }
 
             public List<MasterJobEventArgsBase> Log { get; } = new List<MasterJobEventArgsBase>();
 
-            public string MasterName { get; set; }
+            public string MasterName { get; private set; }
             /// <summary>
             /// Use this to thread signalling.
             /// </summary>
-            public ManualResetEvent Mre { get; } = new ManualResetEvent(false);
+            public ManualResetEvent MasterJobSignal { get; } = new ManualResetEvent(false);
             /// <summary>
             /// This is the start time.
             /// </summary>
@@ -68,7 +68,7 @@ namespace Test.Xigadee
             /// <param name="name">The service name.</param>
             public void Start(string name)
             {
-                Enqueue($"{name} start");
+                Enqueue($"{name} master job started");
                 MasterName = name;
             }
             /// <summary>
@@ -77,9 +77,10 @@ namespace Test.Xigadee
             /// <param name="name">The service name.</param>
             public void Stop(string name)
             {
-                Enqueue($"{name} stop");
-                MasterName = null;
+                Enqueue($"{name} stopping");
                 Services[name].Stop();
+                MasterName = null;
+                Enqueue($"{name} stopped");
             }
 
             public void Create(string id
@@ -115,7 +116,7 @@ namespace Test.Xigadee
             {
                 Services.Add(id, pipeline);
 
-                masterjob.OnMasterJobStateChange += (o, e) => Record(o, e);
+                masterjob.OnMasterJobStateChange += (o, e) => MasterJobStateChange(o, e);
                 masterjob.OnMasterJobCommunication += (o, e) => Log.Add(e);
             }
         }
@@ -124,7 +125,6 @@ namespace Test.Xigadee
         /// This test checks that all three Microservices negotiate correctly and take control when one of the others
         /// is stopped.
         /// </summary>
-        [Ignore]
         [TestMethod]
         public void MasterJobNegotiation()
         {
@@ -180,21 +180,21 @@ namespace Test.Xigadee
                 Assert.IsTrue(rs2.Entity.Message == "Momma");
 
                 //Wait for one of the services to go master.
-                ctx.Mre.WaitOne();
+                ctx.MasterJobSignal.WaitOne();
                 //Ok, next service take over
                 Assert.IsNotNull(ctx.MasterName);
-                ctx.Mre.Reset();
+                ctx.MasterJobSignal.Reset();
                 var holdme1 = ctx.MasterName;
                 ctx.Stop(holdme1);
 
                 //Ok, final service take over
-                ctx.Mre.WaitOne();
+                ctx.MasterJobSignal.WaitOne();
                 Assert.IsNotNull(ctx.MasterName);
-                ctx.Mre.Reset();
+                ctx.MasterJobSignal.Reset();
                 var holdme2 = ctx.MasterName;
                 ctx.Stop(holdme2);
 
-                ctx.Mre.WaitOne();
+                ctx.MasterJobSignal.WaitOne();
                 var holdme3 = ctx.MasterName;
                 ctx.Stop(ctx.MasterName);
                 Assert.IsNotNull(holdme3);
@@ -209,6 +209,5 @@ namespace Test.Xigadee
                 throw;
             }
         }
-
     }
 }

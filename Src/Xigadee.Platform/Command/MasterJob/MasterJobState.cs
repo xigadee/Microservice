@@ -50,11 +50,11 @@ namespace Xigadee
         Disabled = -1,
 
         Inactive = 0,
-        VerifyingComms = 6,
-        Starting = 1,
-        Requesting1 = 2,
-        Requesting2 = 3,
-        TakingControl = 4,
-        Active = 5
+        VerifyingComms = 1,
+        Starting = 2,
+        Requesting1 = 3,
+        Requesting2 = 4,
+        TakingControl = 5,
+        Active = 10
     }
 }

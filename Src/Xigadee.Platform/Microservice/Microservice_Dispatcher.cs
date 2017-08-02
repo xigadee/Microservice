@@ -62,7 +62,7 @@ namespace Xigadee
             /// <returns></returns>
             public bool IsSuccess()
             {
-                return TransmitSuccess && ExecuteSuccess;
+                return TransmitSuccess || ExecuteSuccess;
             }
             /// <summary>
             /// This signals the payload as complete.
@@ -70,8 +70,7 @@ namespace Xigadee
             public void Signal()
             {
                 //Signal to the underlying listener that the message can be released.
-                if (Payload.ServiceCanSignalToFabric)
-                    Payload.Signal(TransmitSuccess && ExecuteSuccess);
+                Payload.Signal(IsSuccess());
             }
 
             /// <summary>

@@ -82,6 +82,9 @@ namespace Xigadee
         /// <param name="payload">The payload messages to externalOnly</param>
         public virtual async Task<bool> Send(TransmissionPayload payload)
         {
+            payload.TraceConfigure(mPolicy.TransmissionPayloadTraceEnabled);
+            payload.TraceWrite("Outgoing", "CommunicationContainer/Send");
+
             try
             {
                 Channel channel = PayloadOutgoingRedirectChecks(payload);
@@ -98,6 +101,7 @@ namespace Xigadee
                 if (messageSenders == null || messageSenders.Count == 0)
                 {
                     Collector?.LogMessage(LoggingLevel.Info, string.Format("Unable to resolve sender for message {0}", payload != null ? payload.Message : null), "Communication");
+                    payload.TraceWrite("Senders Unresolved", "CommunicationContainer/Send");
                     return false;
                 }
 
@@ -111,6 +115,7 @@ namespace Xigadee
             catch (Exception ex)
             {
                 Collector?.LogException(string.Format("Unable to send message {0}", payload != null ? payload.Message : null), ex);
+                payload.TraceWrite($"Exception: {ex.Message}", "CommunicationContainer/Send");
                 return false;
             }
 

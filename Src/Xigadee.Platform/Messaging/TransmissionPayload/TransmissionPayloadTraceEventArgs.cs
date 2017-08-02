@@ -34,15 +34,15 @@ namespace Xigadee
         /// <param name="source">The optional source parameter.</param>
         public TransmissionPayloadTraceEventArgs(int start, string message = null, string source = null)
         {
-            Extent = ConversionHelper.DeltaAsTimeSpan(start, Environment.TickCount);
+            Extent = ConversionHelper.CalculateDelta(Environment.TickCount, start);
             Source = source;
             Message = message;
         }
 
         /// <summary>
-        /// Gets the extent from when the TransmissionPayload was created.
+        /// Gets the tick count delta from when the payload was created.
         /// </summary>
-        public TimeSpan? Extent { get; }
+        public int Extent { get; }
         /// <summary>
         /// Gets or sets the source.
         /// </summary>

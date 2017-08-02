@@ -32,7 +32,7 @@ namespace Xigadee
         /// <param name="agent">This is the communication agent. When not set this defaults to the manual agent.</param>
         public CommunicationBridge(CommunicationBridgeMode mode, CommunicationBridgeAgent agent = null)
         {
-            Agent = agent ?? new ManualCommunicationBridgeAgent(mode);
+            Agent = agent ?? new ManualCommunicationBridgeAgent(mode,true);
         }
         #endregion
 

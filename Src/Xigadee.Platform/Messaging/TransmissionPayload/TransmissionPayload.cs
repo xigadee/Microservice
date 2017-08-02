@@ -203,15 +203,6 @@ namespace Xigadee
         public bool MessageCanSignal { get { return mListenerSignalRelease != null; } }
         #endregion
 
-        #region ServiceCanSignalToFabric
-        /// <summary>
-        /// This property signals to the Dispatcher that it can signal to the underlying listener the message
-        /// has completed. You may want to turn off this default action in specific scenarios. The default action
-        /// is to signal (true).
-        /// </summary>
-        public bool ServiceCanSignalToFabric { get; set; } = true;
-        #endregion
-
         #region SignalSuccess()
         /// <summary>
         /// This method signal success for the message.
@@ -238,16 +229,19 @@ namespace Xigadee
         /// <param name="success">A boolean parameter to signal if the message was successful.</param>
         public void Signal(bool success)
         {
+            //We only want to do this once.
             var release = Interlocked.Exchange<Action<bool, Guid>>(ref mListenerSignalRelease, null);
 
-            if (release != null && ServiceCanSignalToFabric)
+            if (release != null)
                 try
                 {
                     release(success, Id);
+                    TraceWrite(success?"Success":"Failure", "TransmissionPayload/Signal");
                 }
                 catch (Exception ex)
                 {
                     //We are not interested in exceptions from here.
+                    TraceWrite($"Exception: {ex.Message}", "TransmissionPayload/Signal");
                 }
         }
         #endregion
@@ -293,6 +287,16 @@ namespace Xigadee
         /// Gets or sets a value indicating whether trace is enabled for the request.
         /// </summary>
         public bool TraceEnabled { get; set; }
+
+        /// <summary>
+        /// Sets the trace configuration using a OR operator.
+        /// </summary>
+        /// <param name="enable">if set to true, trace is enable. If set to false, then will be enabled is already set.</param>
+        public void TraceConfigure(bool enable)
+        {
+            TraceEnabled |= enable;
+        }
+
         /// <summary>
         /// Gets the trace log collection.
         /// </summary>
@@ -315,6 +319,19 @@ namespace Xigadee
 
                 TraceLog.Add(eventArgs);
             }
+        }
+
+        /// <summary>
+        /// Traces the set.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="source">The optional source parameter.</param>
+        public void TraceWrite(string message, string source = null)
+        {
+            if (!TraceEnabled)
+                return;
+
+            TraceWrite(new TransmissionPayloadTraceEventArgs(TickCount, message, source));
         }
     }
 }

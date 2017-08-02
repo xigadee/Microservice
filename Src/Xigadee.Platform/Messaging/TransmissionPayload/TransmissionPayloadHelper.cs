@@ -62,30 +62,6 @@ namespace Xigadee
         #endregion
 
         /// <summary>
-        /// Sets the trace configuration using a OR operator.
-        /// </summary>
-        /// <param name="payload">The payload.</param>
-        /// <param name="enable">if set to true, trace is enable. If set to false, then will be enabled is already set.</param>
-        public static void TraceConfigure(this TransmissionPayload payload, bool enable)
-        {
-            payload.TraceEnabled |= enable;
-        }
-
-        /// <summary>
-        /// Traces the set.
-        /// </summary>
-        /// <param name="payload">The payload.</param>
-        /// <param name="message">The message.</param>
-        /// <param name="source">The optional source parameter.</param>
-        public static void TraceWrite(this TransmissionPayload payload, string message, string source = null)
-        {
-            if (!payload.TraceEnabled)
-                return;
-
-            payload.TraceWrite(new TransmissionPayloadTraceEventArgs(payload.TickCount, message, source));
-        }
-
-        /// <summary>
         /// Transmissions the payload trace set.
         /// </summary>
         /// <param name="tracker">The tracker.</param>
