@@ -300,6 +300,9 @@ namespace Xigadee
             if (mClients.ContainsKey(priority))
                 return mClients[priority];
 
+            if (!mDefaultPriority.HasValue)
+                throw new ClientsUndefinedMessagingException($"Channel {priority} cannot be found and clients default priority not set for {ChannelId}");
+
             return mClients[mDefaultPriority.Value];
         }
         #endregion

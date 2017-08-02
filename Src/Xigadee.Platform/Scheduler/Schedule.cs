@@ -29,11 +29,10 @@ namespace Xigadee
     /// <summary>
     /// This class is used to define a schedule for the SchedulerContainer.
     /// </summary>
-    [DebuggerDisplay("Name={Name} Active={Active} {Message}")]
+    [DebuggerDisplay("Type={ScheduleType} Name={Name} Active={Active} {Message}")]
     public class Schedule: MessagingStatistics
     {
         #region Declarations
-        private Guid mId;
         private DateTime? mNextPoll;
         private DateTime? mLastPoll;
         private bool mShouldPoll;
@@ -50,10 +49,9 @@ namespace Xigadee
         public Schedule(Func<Schedule, CancellationToken, Task> execute, string name = null)
             : base()
         {
-            mId = Guid.NewGuid();
             mExecute = execute;
             mShouldPoll = true;
-            Name = string.Format("Schedule: {0}", name ?? GetType().Name);
+            Name = name;
         }
         #endregion
 
@@ -84,7 +82,7 @@ namespace Xigadee
         /// <summary>
         /// This is the time Id.
         /// </summary>
-        public Guid Id { get { return mId; } }
+        public Guid Id { get; } = Guid.NewGuid();
         #endregion
 
         #region Active
@@ -200,9 +198,17 @@ namespace Xigadee
         {
             ExecuteException = null;
             Active = true;
-        } 
+        }
         #endregion
 
+        /// <summary>
+        /// Completes the specified poll.
+        /// </summary>
+        /// <param name="success">Specifies whether the poll was a success.</param>
+        /// <param name="recalculate">Specifies whether to recalcualte the next poll.</param>
+        /// <param name="isException">Specifices whether the poll failed..</param>
+        /// <param name="lastEx">The last exception.</param>
+        /// <param name="exceptionTime">The exception time.</param>
         public virtual void Complete(bool success
             , bool recalculate = true
             , bool isException = false
@@ -325,16 +331,14 @@ namespace Xigadee
         public bool IsLongRunning { get; set; }
         #endregion
 
-
+        /// <summary>
+        /// This is the debug message.
+        /// </summary>
         public override string Message
         {
             get
             {
-                return string.Format("{0} [ShouldPoll={1}] @ {2} Hits = {3}"
-                    , Name == null ? Id.ToString("N").ToUpperInvariant() : Name
-                    , mShouldPoll
-                    , NextPollTime
-                    , mPollCount);
+                return $"{ScheduleType}:{Name?? Id.ToString("N").ToUpperInvariant()} [ShouldPoll={mShouldPoll}] @ {NextPollTime} Hits = {mPollCount}";
             }
             set
             {

@@ -16,19 +16,41 @@
 
 #region using
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 #endregion
 namespace Xigadee
 {
+    /// <summary>
+    /// This schedule is used by the master job poller.
+    /// </summary>
+    /// <seealso cref="Xigadee.Schedule" />
     public class MasterJobPollSchedule: Schedule
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MasterJobPollSchedule"/> class.
+        /// </summary>
+        /// <param name="execute">The async schedule function.</param>
+        /// <param name="name">The masterjob name.</param>
         public MasterJobPollSchedule(Func<Schedule, CancellationToken, Task> execute, string name = null) : base(execute, name)
+        {
+        }
+
+    }
+
+    /// <summary>
+    /// This schedule is used by the master job schedules.
+    /// </summary>
+    /// <seealso cref="Xigadee.Schedule" />
+    public class MasterJobSchedule: Schedule
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MasterJobPollSchedule"/> class.
+        /// </summary>
+        /// <param name="execute">The async schedule function.</param>
+        /// <param name="name">The schedule name.</param>
+        public MasterJobSchedule(Func<Schedule, CancellationToken, Task> execute, string name = null) : base(execute, name)
         {
         }
 
