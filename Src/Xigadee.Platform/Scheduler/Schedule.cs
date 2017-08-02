@@ -57,6 +57,12 @@ namespace Xigadee
         }
         #endregion
 
+        #region ScheduleType
+        /// <summary>
+        /// Gets the type of the schedule. By default, this is based on the class name, but it can be overridden.
+        /// </summary>
+        public virtual string ScheduleType { get { return GetType().Name; } } 
+        #endregion
         #region Name
         /// <summary>
         /// This is the override for the name to bring it to the top .
@@ -72,13 +78,6 @@ namespace Xigadee
                 base.Name = value;
             }
         }
-        #endregion
-
-        #region ScheduleType
-        /// <summary>
-        /// Gets the type of the schedule. By default, this is based on the class name, but it can be overridden.
-        /// </summary>
-        public virtual string ScheduleType { get { return GetType().Name; } } 
         #endregion
 
         #region Id

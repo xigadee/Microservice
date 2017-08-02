@@ -36,13 +36,17 @@ namespace Xigadee
         /// <summary>
         /// Initializes a new instance of the <see cref="MasterJobContext"/> class.
         /// </summary>
-        public MasterJobContext(MasterJobNegotiationStrategyBase strategy)
+        public MasterJobContext(string name, MasterJobNegotiationStrategyBase strategy)
         {
+            Name = name;
             Partners = new ConcurrentDictionary<string, MasterJobPartner>();
             Jobs = new Dictionary<Guid, MasterJobHolder>();
             Strategy = strategy ?? new MasterJobNegotiationStrategy();
         }
-
+        /// <summary>
+        /// Gets the name or the master job.
+        /// </summary>
+        public string Name { get; }
         /// <summary>
         /// This collection holds the list of master job standby partners.
         /// </summary>
@@ -155,11 +159,33 @@ namespace Xigadee
         }
         #endregion
 
+        public Schedule MasterJobSchedule { get; private set; }
+
+        /// <summary>
+        /// Initialises the poll schedule.
+        /// </summary>
+        /// <param name="execute">The execute function.</param>
+        /// <returns>Returns the schedule.</returns>
+        public Schedule InitialiseSchedule(Func<Schedule, CancellationToken, Task> execute)
+        {
+            //Register the schedule used for poll requests.
+            var schedule = new MasterJobPollSchedule(execute, Name);
+
+            schedule.Frequency = Strategy.InitialPollFrequency;
+            schedule.InitialWait = Strategy.InitialPollWait;
+            schedule.IsLongRunning = false;
+
+            MasterJobSchedule = schedule;
+            return schedule;
+        }
+
         public void Start()
         {
             Partners.Clear();
         }
-
+        /// <summary>
+        /// Gets the negotiation strategy.
+        /// </summary>
         public MasterJobNegotiationStrategyBase Strategy { get; }
 
         /// <summary>

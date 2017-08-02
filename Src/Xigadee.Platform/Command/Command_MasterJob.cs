@@ -128,27 +128,27 @@ namespace Xigadee
             if (mPolicy.MasterJobNegotiationChannelType == null)
                 throw new CommandStartupException("Masterjobs are enabled, but the NegotiationChannelType has not been set");
 
-            mMasterJobContext = new MasterJobContext(mPolicy.MasterJobNegotiationStrategy);
+            mMasterJobContext = new MasterJobContext(mPolicy.MasterJobName ?? FriendlyName, mPolicy.MasterJobNegotiationStrategy);
 
             mMasterJobContext.OnMasterJobStateChange += (object o, MasterJobStateChangeEventArgs s) =>
             {
                 s.ServiceName = OriginatorId.Name;
                 s.CommandName = GetType().Name;
-                OnMasterJobStateChange?.Invoke(this, s);
+                try
+                {
+                    OnMasterJobStateChange?.Invoke(this, s);
+                }
+                catch (Exception ex)
+                {
+                    Collector?.LogException("Command/OnMasterJobStateChange invoke", ex);
+                }
             };
 
             CommandRegister(MasterJobNegotiationChannelIdIncoming, mPolicy.MasterJobNegotiationChannelType, null, MasterJobStateNotificationIncoming);
 
             mMasterJobContext.State = MasterJobState.VerifyingComms;
 
-            //Register the schedule used for poll requests.
-            var masterjobPoll = new Schedule(MasterJobStateNotificationOutgoing, $"MasterJob: {mPolicy.MasterJobName ?? FriendlyName}");
-
-            masterjobPoll.Frequency = mPolicy.MasterJobNegotiationStrategy.InitialPollFrequency ?? TimeSpan.FromSeconds(20);
-            masterjobPoll.InitialWait = mPolicy.MasterJobNegotiationStrategy.InitialPollWait ?? TimeSpan.FromSeconds(5);
-            masterjobPoll.IsLongRunning = false;
-
-            SchedulerRegister(masterjobPoll);
+            Scheduler.Register(mMasterJobContext.InitialiseSchedule(MasterJobStateNotificationOutgoing));
         }
         #endregion
         #region MasterJobTearDown()
@@ -159,7 +159,9 @@ namespace Xigadee
         {
             if (mMasterJobContext.State == MasterJobState.Active)
                 MasterJobStop();
-        } 
+
+            Scheduler.Unregister(mMasterJobContext.MasterJobSchedule);
+        }
         #endregion
 
         #region NegotiationTransmit(string action)
