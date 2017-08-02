@@ -50,6 +50,15 @@ namespace Xigadee
         public string Name { get; }
 
         /// <summary>
+        /// This is the frequency that jobs wait between polling for status. The default is 20s.
+        /// </summary>
+        public TimeSpan? InitialPollFrequency { get; set; } = TimeSpan.FromSeconds(20);
+        /// <summary>
+        /// This is the initial wait after a master job starts that it waits to begin polling. The default is 5s.
+        /// </summary>
+        public TimeSpan? InitialPollWait { get; set; } = TimeSpan.FromSeconds(5);
+
+        /// <summary>
         /// Returns true if the maximum poll attempts have been exceeded. The default is 3.
         /// </summary>
         /// <param name="state">The current state.</param>

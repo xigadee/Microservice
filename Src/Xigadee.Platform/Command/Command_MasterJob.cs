@@ -144,8 +144,8 @@ namespace Xigadee
             //Register the schedule used for poll requests.
             var masterjobPoll = new Schedule(MasterJobStateNotificationOutgoing, $"MasterJob: {mPolicy.MasterJobName ?? FriendlyName}");
 
-            masterjobPoll.Frequency = mPolicy.MasterJobPollFrequency ?? TimeSpan.FromSeconds(20);
-            masterjobPoll.InitialWait = mPolicy.MasterJobPollInitialWait ?? TimeSpan.FromSeconds(5);
+            masterjobPoll.Frequency = mPolicy.MasterJobNegotiationStrategy.InitialPollFrequency ?? TimeSpan.FromSeconds(20);
+            masterjobPoll.InitialWait = mPolicy.MasterJobNegotiationStrategy.InitialPollWait ?? TimeSpan.FromSeconds(5);
             masterjobPoll.IsLongRunning = false;
 
             SchedulerRegister(masterjobPoll);

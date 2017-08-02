@@ -72,6 +72,8 @@ namespace Xigadee
         /// </summary>
         public MasterJobNegotiationStrategyDebug() : base("Debug")
         {
+            InitialPollFrequency = TimeSpan.FromMilliseconds(100);
+            InitialPollWait = TimeSpan.FromMilliseconds(100);
         }
 
         /// <summary>
