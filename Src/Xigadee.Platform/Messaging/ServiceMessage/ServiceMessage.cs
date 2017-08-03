@@ -223,7 +223,7 @@ namespace Xigadee
 
         #region FabricDeliveryCount
         /// <summary>
-        /// Gets or sets the time stamp.
+        /// Gets or sets the number of times the message has been sent from the fabric.
         /// </summary>
         public int FabricDeliveryCount { get; set; }
         #endregion        

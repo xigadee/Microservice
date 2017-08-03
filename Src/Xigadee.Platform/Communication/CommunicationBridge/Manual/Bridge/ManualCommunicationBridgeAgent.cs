@@ -17,9 +17,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -29,30 +27,39 @@ namespace Xigadee
     public class ManualCommunicationBridgeAgent:CommunicationBridgeAgent
     {
         #region Declarations
-        long mSendCount = 0;
+        private long mSendCount = 0;
+        private long mSuccess = 0;
+        private long mFailure = 0;
 
         List<ManualChannelListener> mListeners = new List<ManualChannelListener>();
         List<ManualChannelSender> mSenders = new List<ManualChannelSender>();
         JsonContractSerializer mSerializer = new JsonContractSerializer();
 
-        ConcurrentDictionary<Guid, TransmissionPayload> mSenderPayloads = new ConcurrentDictionary<Guid, TransmissionPayload>();
-        ConcurrentDictionary<Guid, TransmissionPayload> mPayloadHistory = null;
+        ConcurrentDictionary<Guid, TransmissionPayloadHolder> mPayloadsActive = new ConcurrentDictionary<Guid, TransmissionPayloadHolder>();
+        ConcurrentDictionary<Guid, TransmissionPayload> mPayloadsHistory = null;
 
         ManualChannelSender[] mActiveSenders = null;
         ManualChannelListener[] mActiveListeners = null;
-        #endregion
 
+        private readonly int? mRetryAttempts;
+        #endregion
         #region Constructor
         /// <summary>
         /// This is the default constructor.
         /// </summary>
         /// <param name="mode">The desirec communication mode.</param>
-        public ManualCommunicationBridgeAgent(CommunicationBridgeMode mode, bool payloadHistoryEnabled = false) : base(mode)
+        /// <param name="payloadHistoryEnabled">This property specifies whether the message history should be maintained.</param>
+        /// <param name="retryAttempts">This is the number of retry delivery attemps that should be attempted. Leave this null if not required.</param>
+        public ManualCommunicationBridgeAgent(CommunicationBridgeMode mode
+            , bool payloadHistoryEnabled = false, int? retryAttempts = null
+            ) : base(mode)
         {
+            mRetryAttempts = retryAttempts;
+
             PayloadHistoryEnabled = payloadHistoryEnabled;
             if (payloadHistoryEnabled)
             {
-                mPayloadHistory = new ConcurrentDictionary<Guid, TransmissionPayload>();
+                mPayloadsHistory = new ConcurrentDictionary<Guid, TransmissionPayload>();
             }
         }
         #endregion
@@ -166,19 +173,26 @@ namespace Xigadee
         private void Sender_TransmitBroadcast(TransmissionPayload e, long count)
         {
             var listeners = mActiveListeners;
-
+            //Send as parallel requests to all the subscribers.
             Enumerable.Range(0, listeners.Length).AsParallel().ForEach((c) => Sender_Transmit(listeners[c], e));
-            //foreach (var listener in listeners)
-            //    Sender_Transmit(listener, e);
         }
 
         private void Sender_Transmit(ManualChannelListener listener, TransmissionPayload incoming)
         {
             var payload = PayloadCopy(incoming);
 
+            mPayloadsActive.AddOrUpdate(payload.Id, new TransmissionPayloadHolder(payload,listener), (g, p) => p);
+
             OnTransmitInvoke(listener, payload);
 
-            listener.Inject(payload);
+            try
+            {
+                listener.Inject(payload);
+            }
+            catch (Exception ex)
+            {
+                listener.Collector?.LogException("Unhandled exception in the BridgeAgent", ex);
+            }
         }
 
         /// <summary>
@@ -197,11 +211,12 @@ namespace Xigadee
 
             cloned.TraceWrite("Cloned", "ManualCommunicationBridgeAgent/PayloadCopy");
 
-            mSenderPayloads.AddOrUpdate(cloned.Id, cloned, (g,p)=>p);
-
             return cloned;
         }
 
+        /// <summary>
+        /// Gets a value indicating whether payload history is enabled.
+        /// </summary>
         public bool PayloadHistoryEnabled {get;}
 
         private void SignalCompletion(bool success, Guid id)
@@ -211,17 +226,19 @@ namespace Xigadee
             else
                 Interlocked.Increment(ref mFailure);
 
-            TransmissionPayload payload;
-            if (mSenderPayloads.TryRemove(id, out payload) && PayloadHistoryEnabled)
-                mPayloadHistory.AddOrUpdate(id, payload, (i,p) => p);
-        }
+            TransmissionPayloadHolder holder;
+            if (mPayloadsActive.TryRemove(id, out holder) && PayloadHistoryEnabled)
+                mPayloadsHistory.AddOrUpdate(id, holder.Payload, (i,p) => p);
 
-        private int mSuccess = 0;
-        private int mFailure = 0;
+            if (!success && mRetryAttempts.HasValue)
+            {
+                //holder.Listener.
+            }
+        }
 
         /// <summary>
         /// A boolean property indicating that all transmitted payloads have been successfully signalled.
         /// </summary>
-        public override bool PayloadsAllSignalled { get { return mSenderPayloads.Count == 0; } }
+        public override bool PayloadsAllSignalled { get { return mPayloadsActive.Count == 0; } }
     }
 }

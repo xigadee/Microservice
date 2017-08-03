@@ -101,5 +101,30 @@ namespace Xigadee
         /// A boolean property indicating that all transmitted payloads have been successfully signalled.
         /// </summary>
         public virtual bool PayloadsAllSignalled { get { throw new NotSupportedException(); } }
+
+        /// <summary>
+        /// This class holds a payload while it is being transmitted.
+        /// </summary>
+        protected class TransmissionPayloadHolder
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="TransmissionPayloadHolder"/> class.
+            /// </summary>
+            /// <param name="payload">The payload.</param>
+            /// <param name="listener">The listener.</param>
+            public TransmissionPayloadHolder(TransmissionPayload payload, IListener listener)
+            {
+                Payload = payload;
+                Listener = listener;
+            }
+            /// <summary>
+            /// Gets the payload.
+            /// </summary>
+            public TransmissionPayload Payload { get; }
+            /// <summary>
+            /// Gets the listener.
+            /// </summary>
+            public IListener Listener { get; }
+        }
     }
 }
