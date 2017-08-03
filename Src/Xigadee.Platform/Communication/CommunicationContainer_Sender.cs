@@ -100,7 +100,7 @@ namespace Xigadee
                 //If there are no supported senders for the particular channelId then throw an exception
                 if (messageSenders == null || messageSenders.Count == 0)
                 {
-                    Collector?.LogMessage(LoggingLevel.Info, string.Format("Unable to resolve sender for message {0}", payload != null ? payload.Message : null), "Communication");
+                    Collector?.LogMessage(LoggingLevel.Warning, string.Format("Unable to resolve sender for message {0}", payload != null ? payload.Message : null), "Communication");
                     payload.TraceWrite("Senders Unresolved", "CommunicationContainer/Send");
                     return false;
                 }
