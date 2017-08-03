@@ -24,7 +24,7 @@ namespace Xigadee
     /// <summary>
     /// This agent uses the manual channel agent for communication.
     /// </summary>
-    public class ManualCommunicationBridgeAgent:CommunicationBridgeAgent
+    public class ManualCommunicationBridgeAgent: CommunicationBridgeAgent
     {
         #region Declarations
         private long mSendCount = 0;
@@ -213,11 +213,6 @@ namespace Xigadee
 
             return cloned;
         }
-
-        /// <summary>
-        /// Gets a value indicating whether payload history is enabled.
-        /// </summary>
-        public bool PayloadHistoryEnabled {get;}
 
         private void SignalCompletion(bool success, Guid id)
         {

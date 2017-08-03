@@ -26,8 +26,8 @@ namespace Test.Xigadee
             {
                 try
                 {
-                    var bridgeOut = new CommunicationBridge(CommunicationBridgeMode.RoundRobin);
-                    var bridgein = new CommunicationBridge(CommunicationBridgeMode.Broadcast);
+                    var bridgeOut = new ManualCommunicationBridgeAgent(CommunicationBridgeMode.RoundRobin);
+                    var bridgein = new ManualCommunicationBridgeAgent(CommunicationBridgeMode.Broadcast);
 
                     PersistenceClient<Guid, SecureMe> init;
                     DebugMemoryDataCollector memp1, memp2;

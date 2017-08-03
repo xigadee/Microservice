@@ -23,8 +23,8 @@ namespace Test.Xigadee.TaskManager
                 DebugMemoryDataCollector collector1, collector2;
                 CommandInitiator init = null;
 
-                var bridgeOut = new CommunicationBridge(CommunicationBridgeMode.RoundRobin);
-                var bridgeReturn = new CommunicationBridge(CommunicationBridgeMode.Broadcast);
+                var bridgeOut = new ManualCommunicationBridgeAgent(CommunicationBridgeMode.RoundRobin);
+                var bridgeReturn = new ManualCommunicationBridgeAgent(CommunicationBridgeMode.Broadcast);
 
                 var pClient = new MicroservicePipeline("Client");
                 var pServer = new MicroservicePipeline("Server");

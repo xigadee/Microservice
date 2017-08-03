@@ -47,8 +47,8 @@ namespace Test.Xigadee
                 IPipelineChannelIncoming<MicroservicePipeline> cpipeIn = null;
                 IPipelineChannelOutgoing<MicroservicePipeline> cpipeOut = null;
 
-                var bridgeOut = new CommunicationBridge(CommunicationBridgeMode.RoundRobin);
-                var bridgeReturn = new CommunicationBridge(CommunicationBridgeMode.Broadcast);
+                var bridgeOut = new ManualCommunicationBridgeAgent(CommunicationBridgeMode.RoundRobin);
+                var bridgeReturn = new ManualCommunicationBridgeAgent(CommunicationBridgeMode.Broadcast);
 
                 //bridgeReturn.Agent.OnReceive += (o, e) => { if (e.Payload.Extent.Days == 42) init.ToString(); };
                 //bridgeReturn.Agent.OnException += (o, e) => { if (e.Payload.Extent.Days == 42) init.ToString(); };

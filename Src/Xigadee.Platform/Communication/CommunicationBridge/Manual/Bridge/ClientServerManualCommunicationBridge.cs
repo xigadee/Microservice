@@ -27,16 +27,16 @@ namespace Xigadee
     /// </summary>
     public class ClientServerManualCommunicationBridge
     {
-        CommunicationBridge mToServer;
-        CommunicationBridge mToClient;
+        ICommunicationBridge mToServer;
+        ICommunicationBridge mToClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientServerManualCommunicationBridge"/> class.
         /// </summary>
         public ClientServerManualCommunicationBridge()
         {
-            mToServer = new CommunicationBridge(CommunicationBridgeMode.RoundRobin);
-            mToClient = new CommunicationBridge(CommunicationBridgeMode.Broadcast);
+            mToServer = new ManualCommunicationBridgeAgent(CommunicationBridgeMode.RoundRobin);
+            mToClient = new ManualCommunicationBridgeAgent(CommunicationBridgeMode.Broadcast);
         }
 
         ///// <summary>

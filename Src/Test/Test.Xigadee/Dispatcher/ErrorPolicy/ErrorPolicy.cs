@@ -74,8 +74,8 @@ namespace Test.Xigadee.Dispatcher.ErrorPolicy
             CommandInitiator init;
             DebugMemoryDataCollector collectorS, collectorC;
 
-            var bridgeOut = new CommunicationBridge(CommunicationBridgeMode.RoundRobin);
-            var bridgeReturn = new CommunicationBridge(CommunicationBridgeMode.Broadcast);
+            var bridgeOut = new ManualCommunicationBridgeAgent(CommunicationBridgeMode.RoundRobin);
+            var bridgeReturn = new ManualCommunicationBridgeAgent(CommunicationBridgeMode.Broadcast);
 
             var server = new MicroservicePipeline($"{nameof(RPipeExternal)}server");
             var client = new MicroservicePipeline($"{nameof(RPipeExternal)}client");

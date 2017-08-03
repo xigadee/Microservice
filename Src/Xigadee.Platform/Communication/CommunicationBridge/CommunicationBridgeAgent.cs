@@ -25,7 +25,7 @@ namespace Xigadee
     /// <summary>
     /// This is the base abstract class used to implement different communication technologies.
     /// </summary>
-    public abstract class CommunicationBridgeAgent
+    public abstract class CommunicationBridgeAgent: ICommunicationBridge
     {
         /// <summary>
         /// This event is called if there is an exception during transmission.
@@ -101,6 +101,12 @@ namespace Xigadee
         /// A boolean property indicating that all transmitted payloads have been successfully signalled.
         /// </summary>
         public virtual bool PayloadsAllSignalled { get { throw new NotSupportedException(); } }
+
+        /// <summary>
+        /// Gets a value indicating whether payload history is enabled.
+        /// </summary>
+
+        public virtual bool PayloadHistoryEnabled { get; protected set; } 
 
         /// <summary>
         /// This class holds a payload while it is being transmitted.

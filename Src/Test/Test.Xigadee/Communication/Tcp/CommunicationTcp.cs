@@ -16,8 +16,8 @@ namespace Test.Xigadee
         {
             try
             {
-                var bridgeOut = new CommunicationBridge(CommunicationBridgeMode.RoundRobin, new TcpCommunicationBridgeAgent(new IPEndPoint(IPAddress.Loopback, 8088)));
-                var bridgein = new CommunicationBridge(CommunicationBridgeMode.Broadcast, new TcpCommunicationBridgeAgent(new IPEndPoint(IPAddress.Loopback, 8088)));
+                var bridgeOut = new TcpCommunicationBridgeAgent(new IPEndPoint(IPAddress.Loopback, 8088));
+                var bridgein = new TcpCommunicationBridgeAgent(new IPEndPoint(IPAddress.Loopback, 8088));
 
                 PersistenceClient<Guid, BridgeMe> init;
                 DebugMemoryDataCollector memp1, memp2;

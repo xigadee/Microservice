@@ -84,7 +84,7 @@ namespace Test.Xigadee
             }
 
             public void Create(string id
-                , CommunicationBridge bridgeOut, CommunicationBridge bridgeIn, CommunicationBridge bridgeMaster
+                , ICommunicationBridge bridgeOut, ICommunicationBridge bridgeIn, ICommunicationBridge bridgeMaster
                 , TestMasterJobCommand masterjob
                 , out PersistenceClient<Guid, BridgeMe> init, out DebugMemoryDataCollector memcollector)
             {
@@ -130,9 +130,9 @@ namespace Test.Xigadee
         {
             var ctx = new EnqueueContext();
 
-            var bridgeOut = new CommunicationBridge(CommunicationBridgeMode.RoundRobin);
-            var bridgeIn = new CommunicationBridge(CommunicationBridgeMode.Broadcast);
-            var bridgeMaster = new CommunicationBridge(CommunicationBridgeMode.Broadcast);
+            var bridgeOut = new ManualCommunicationBridgeAgent(CommunicationBridgeMode.RoundRobin);
+            var bridgeIn = new ManualCommunicationBridgeAgent(CommunicationBridgeMode.Broadcast);
+            var bridgeMaster = new ManualCommunicationBridgeAgent(CommunicationBridgeMode.Broadcast);
 
             try
             {
@@ -200,9 +200,9 @@ namespace Test.Xigadee
                 Assert.IsNotNull(holdme3);
 
                 //Check that the payloads have been successfully signalled.
-                Assert.IsTrue(bridgeOut.Agent.PayloadsAllSignalled);
-                Assert.IsTrue(bridgeIn.Agent.PayloadsAllSignalled);
-                Assert.IsTrue(bridgeMaster.Agent.PayloadsAllSignalled);
+                Assert.IsTrue(bridgeOut.PayloadsAllSignalled);
+                Assert.IsTrue(bridgeIn.PayloadsAllSignalled);
+                Assert.IsTrue(bridgeMaster.PayloadsAllSignalled);
             }
             catch (Exception ex)
             {

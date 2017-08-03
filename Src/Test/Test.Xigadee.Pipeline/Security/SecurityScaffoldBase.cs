@@ -20,13 +20,13 @@ namespace Test.Xigadee
         protected UnityWebApiMicroservicePipeline mWebApi;
         protected MicroservicePipeline mService1;
 
-        protected CommunicationBridge mBridgeRequest;
-        protected CommunicationBridge mBridgeResponse;
+        protected ICommunicationBridge mBridgeRequest;
+        protected ICommunicationBridge mBridgeResponse;
 
         protected virtual void Init()
         {
-            mBridgeRequest = new CommunicationBridge(CommunicationBridgeMode.RoundRobin);
-            mBridgeResponse = new CommunicationBridge(CommunicationBridgeMode.Broadcast);
+            mBridgeRequest = new ManualCommunicationBridgeAgent(CommunicationBridgeMode.RoundRobin);
+            mBridgeResponse = new ManualCommunicationBridgeAgent(CommunicationBridgeMode.Broadcast);
 
             mWebApi = new UnityWebApiMicroservicePipeline("Web")
                 .CallOut(WebApiConfigure)
