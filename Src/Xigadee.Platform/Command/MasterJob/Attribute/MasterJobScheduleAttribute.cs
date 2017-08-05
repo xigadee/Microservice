@@ -32,9 +32,11 @@ namespace Xigadee
         /// <param name="initialWait">The initial wait before the job first polls. 
         /// Leave this as null if you do not want an initial wait, but wish the job to poll after the frequency.
         /// The string should be in the format of a [ws][-]{ d | [d.]hh:mm[:ss[.ff]] }[ws] as defined in the Timespan.Parse method.
+        /// For example, 10 seconds is 00:00:06, or 1 day is 1.00:00:00.
         /// </param>
         /// <param name="frequency">The frequency of the poll after the initial wait.
         /// The string should be in the format of a [ws][-]{ d | [d.]hh:mm[:ss[.ff]] }[ws] as defined in the Timespan.Parse method.
+        /// For example, 10 seconds is 00:00:06, or 1 day is 1.00:00:00.
         ///</param>
         /// <param name="name">The name for the schedule. This will be displayed in the Microservice statistics.</param>
         /// <see cref="https://msdn.microsoft.com/en-us/library/se73z7b9(v=vs.110).aspx"/>

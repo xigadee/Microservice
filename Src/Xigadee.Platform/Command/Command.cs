@@ -111,11 +111,8 @@ namespace Xigadee
                 if (mPolicy.MasterJobEnabled)
                     MasterJobTearUp();
 
-                if (mPolicy.JobPollEnabled && mPolicy.ScheduleReflectionSupported)
-                    JobSchedulesReflectionInitialise();
-
                 if (mPolicy.JobPollEnabled)
-                    JobSchedulesInitialise();
+                    JobsStart();
 
                 if (mPolicy.CommandNotify == CommandNotificationBehaviour.OnStartUp)
                     CommandsNotify();
@@ -137,8 +134,8 @@ namespace Xigadee
                 if (mPolicy.MasterJobEnabled)
                     MasterJobTearDown();
 
-                mSchedules.ForEach((s) => Scheduler.Unregister(s));
-                mSchedules.Clear();
+                if (mPolicy.JobPollEnabled)
+                    JobsStop();
 
                 if (mPolicy.OutgoingRequestsEnabled)
                     OutgoingRequestsStop();
@@ -152,6 +149,21 @@ namespace Xigadee
             }
         }
         #endregion
+
+        protected virtual void JobsStart()
+        {
+            JobSchedulesInitialise();
+
+            if (mPolicy.ScheduleReflectionSupported)
+                JobSchedulesReflectionInitialise();
+        }
+
+        protected virtual void JobsStop()
+        {
+            mSchedules.ForEach((s) => Scheduler.Unregister(s));
+            mSchedules.Clear();
+
+        }
 
         #region PayloadSerializer
         /// <summary>
