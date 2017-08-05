@@ -29,6 +29,11 @@ namespace Xigadee
     public class CommunicationPolicy:PolicyBase
     {
         /// <summary>
+        /// Set outgoing routing information to lowercase. This is important as messaging protocols such as
+        /// Service Bus can be case sensitive when running subscription filters.
+        /// </summary>
+        public bool ServiceMessageHeaderConvertToLowercase { get; set; } = true;
+        /// <summary>
         /// Gets or sets a value indicating whether the TransmissionPayload trace flag should be set to true.
         /// </summary>
         public bool TransmissionPayloadTraceEnabled { get; set; }
