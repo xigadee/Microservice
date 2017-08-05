@@ -180,10 +180,10 @@ namespace Xigadee
 
             var message = payload.Message;
             //Note: historically there was only one channel, so we use the incoming channel if the outgoing has
-            //not been specified.
-            message.ChannelId = mPolicy.MasterJobNegotiationChannelIdOutgoing ?? mPolicy.MasterJobNegotiationChannelIdIncoming;
-            message.MessageType = mPolicy.MasterJobNegotiationChannelType;
-            message.ActionType = action;
+            //not been specified. These should all be lower case so that Service Bus can match accurately.
+            message.ChannelId = (mPolicy.MasterJobNegotiationChannelIdOutgoing ?? mPolicy.MasterJobNegotiationChannelIdIncoming).ToLowerInvariant();
+            message.MessageType = mPolicy.MasterJobNegotiationChannelType.ToLowerInvariant();
+            message.ActionType = action.ToLowerInvariant();
 
             message.ChannelPriority = mPolicy.MasterJobNegotiationChannelPriority;
 
@@ -445,22 +445,9 @@ namespace Xigadee
 
             mMasterJobContext.Start();
 
-            MasterJobCommandsRegister();
+            MasterJobCommandsStart();
 
-            foreach (var job in mMasterJobContext.Jobs.Values)
-            {
-                try
-                {
-                    job.Initialise?.Invoke(job.Schedule);
-                }
-                catch (Exception ex)
-                {
-                    StatisticsInternal.Ex = ex;
-                    Collector?.LogException($"MasterJob '{job.Name} could not be initialised.'",ex);
-                }
-
-                SchedulerRegister(job.Schedule);
-            }
+            MasterJobSchedulesStart();
         }
         #endregion
         #region MasterJobStop()
@@ -476,6 +463,47 @@ namespace Xigadee
 
             NegotiationTransmit(MasterJobStates.ResyncMaster);
 
+            MasterJobSchedulesStop();
+
+            MasterJobCommandsStop();
+
+            //Reset the state to inactive so that it could restart at some point.
+            mMasterJobContext.State = MasterJobState.Inactive;
+        }
+        #endregion
+
+        protected virtual void MasterJobCommandsStart()
+        {
+            MasterJobCommandsRegister();
+
+        }
+        protected virtual void MasterJobCommandsStop()
+        {
+            MasterJobCommandsUnregister();
+        }
+
+        protected virtual void MasterJobSchedulesStart()
+        {
+            //if (mPolicy.MasterJobCommandReflectionSupported)
+
+            foreach (var job in mMasterJobContext.Jobs.Values)
+            {
+                try
+                {
+                    job.Initialise?.Invoke(job.Schedule);
+                }
+                catch (Exception ex)
+                {
+                    StatisticsInternal.Ex = ex;
+                    Collector?.LogException($"MasterJob '{job.Name} could not be initialised.'", ex);
+                }
+
+                SchedulerRegister(job.Schedule);
+            }
+        }
+
+        protected virtual void MasterJobSchedulesStop()
+        {
             foreach (var job in mMasterJobContext.Jobs.Values)
             {
                 try
@@ -489,13 +517,7 @@ namespace Xigadee
 
                 Scheduler.Unregister(job.Schedule);
             }
-
-            MasterJobCommandsUnregister();
-
-            //Reset the state to inactive so that it could restart at some point.
-            mMasterJobContext.State = MasterJobState.Inactive;
         }
-        #endregion
 
         #region MasterJobExecute(Schedule schedule)
         /// <summary>

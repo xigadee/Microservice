@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This helper returns the appropriate helpers for the commands that use attributes to map a command method.
+    /// This helper returns the appropriate reflection helpers for the commands that use attributes to map to a command method.
     /// </summary>
     public static class CommandMethodSignatureHelper
     {
@@ -62,6 +62,5 @@ namespace Xigadee
 
             return results;
         }
-
     }
 }

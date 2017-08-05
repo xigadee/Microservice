@@ -24,7 +24,20 @@ namespace Xigadee
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
     [DebuggerDisplay("{mInitialWait}/{mFrequency} [{mName}]")]
-    public class CommandScheduleAttribute: Attribute
+    public class JobScheduleAttribute: JobScheduleAttributeBase
+    {
+        public JobScheduleAttribute(string initialWait, string frequency, bool isLongRunningProcess = false, string name = null) 
+            : base(initialWait, frequency, isLongRunningProcess, name)
+        {
+        }
+    }
+
+    /// <summary>
+    /// This attribute can be set against a command method to register it for a schedule job poll call.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+    [DebuggerDisplay("{mInitialWait}/{mFrequency} [{mName}]")]
+    public abstract class JobScheduleAttributeBase: Attribute
     {
         private string mInitialWait, mFrequency;
 
@@ -40,7 +53,7 @@ namespace Xigadee
         ///</param>
         /// <param name="name">The name for the schedule. This will be displayed in the Microservice statistics.</param>
         /// <see cref="https://msdn.microsoft.com/en-us/library/se73z7b9(v=vs.110).aspx"/>
-        public CommandScheduleAttribute(string initialWait, string frequency, bool isLongRunningProcess = false, string name = null)
+        protected JobScheduleAttributeBase(string initialWait, string frequency, bool isLongRunningProcess = false, string name = null)
         {
             mInitialWait = initialWait;
             mFrequency = frequency;
@@ -80,7 +93,9 @@ namespace Xigadee
         /// This is the schedule name.
         /// </summary>
         public string Name { get; }
-
+        /// <summary>
+        /// Indicates whether this schedule is long running process.
+        /// </summary>
         public bool IsLongRunningProcess { get; }
     }
 }

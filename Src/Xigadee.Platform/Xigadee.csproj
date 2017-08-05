@@ -79,12 +79,12 @@
     <Compile Include="Command\Attributes\CommandMethod\CommandContractAttributeBase.cs" />
     <Compile Include="Command\MasterJob\Attribute\MasterJobCommandContractAttribute.cs" />
     <Compile Include="Command\MasterJob\Attribute\MasterJobScheduleAttribute.cs" />
-    <Compile Include="Command\Attributes\CommandSchedule\CommandScheduleSignatureHelper.cs" />
-    <Compile Include="Command\Attributes\CommandSchedule\ScheduleMethodSignature.cs" />
+    <Compile Include="Command\Attributes\JobSchedule\JobScheduleSignatureHelper.cs" />
+    <Compile Include="Command\Attributes\JobSchedule\JobScheduleMethodSignature.cs" />
     <Compile Include="Command\Attributes\CommandMethod\CommandMethodSignature.cs" />
     <Compile Include="Command\Attributes\CommandMethod\CommandMethodSignatureException.cs" />
     <Compile Include="Command\Attributes\CommandMethod\CommandMethodSignatureHelper.cs" />
-    <Compile Include="Command\Attributes\CommandSchedule\CommandScheduleAttribute.cs" />
+    <Compile Include="Command\Attributes\JobSchedule\JobScheduleAttribute.cs" />
     <Compile Include="Command\Attributes\CommandMethod\PayloadOutAttribute.cs" />
     <Compile Include="CommandInitiator\CommandInitiator.cs" />
     <Compile Include="CommandInitiator\CommandInitiatorPolicy.cs" />
@@ -350,8 +350,8 @@
     <Compile Include="Communication\Channel\Channel.cs" />
     <Compile Include="Communication\Channel\ChannelDirection.cs" />
     <Compile Include="Command\Command.cs" />
-    <Compile Include="Command\CommandPolicy.cs" />
-    <Compile Include="Command\CommandTimerPoll.cs" />
+    <Compile Include="Command\Policy\CommandPolicy.cs" />
+    <Compile Include="Command\Helper\CommandTimerPoll.cs" />
     <Compile Include="Command\Command_Channel.cs" />
     <Compile Include="Command\Command_Registration.cs" />
     <Compile Include="Command\Command_MasterJob.cs" />

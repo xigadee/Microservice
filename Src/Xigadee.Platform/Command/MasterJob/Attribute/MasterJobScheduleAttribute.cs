@@ -24,7 +24,7 @@ namespace Xigadee
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
     [DebuggerDisplay("{mInitialWait}/{mFrequency} [{mName}]")]
-    public class MasterJobScheduleAttribute: CommandScheduleAttribute
+    public class MasterJobScheduleAttribute: JobScheduleAttributeBase
     {
         /// <summary>
         /// This is the default constructor. 

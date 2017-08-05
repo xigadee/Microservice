@@ -15,7 +15,7 @@ namespace Xigadee
     /// This class is used to marshall the method signature for a inline schedule command.
     /// </summary>
     [DebuggerDisplay("{Method.Name}")]
-    public class ScheduleMethodSignature
+    public class JobScheduleMethodSignature
     {
         #region Constructor
         /// <summary>
@@ -24,7 +24,7 @@ namespace Xigadee
         /// <param name="command">The command to process.</param>
         /// <param name="method">The method for the signature.</param>
         /// <param name="throwSignatureException">This property specifies whether the system should throw exceptions if a signature is invalid.</param>
-        public ScheduleMethodSignature(ICommand command, MethodInfo method, bool throwSignatureException = false)
+        public JobScheduleMethodSignature(ICommand command, MethodInfo method, bool throwSignatureException = false)
         {
             if (method == null)
                 throw new CommandMethodSignatureException($"Constructor error - info cannot be null.");
@@ -67,7 +67,7 @@ namespace Xigadee
         /// <summary>
         /// These are the assigned command attributes.
         /// </summary>
-        public List<CommandScheduleAttribute> CommandAttributes { get; protected set; }
+        public List<JobScheduleAttribute> CommandAttributes { get; protected set; }
         /// <summary>
         /// This is the list of the parameters for the method.
         /// </summary>
@@ -82,8 +82,8 @@ namespace Xigadee
             try
             {
                 CommandAttributes = Attribute.GetCustomAttributes(Method)
-                    .Where((a) => a is CommandScheduleAttribute)
-                    .Cast<CommandScheduleAttribute>()
+                    .Where((a) => a is JobScheduleAttribute)
+                    .Cast<JobScheduleAttribute>()
                     .ToList();
 
                 //This shouldn't happen, but check anyway.
@@ -241,7 +241,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="attr">The contract attribute.</param>
         /// <returns>The reference id.</returns>
-        public string Reference(CommandScheduleAttribute attr)
+        public string Reference(JobScheduleAttribute attr)
         {
             return $"{Method.Name}/{attr.Name??""}";
         }

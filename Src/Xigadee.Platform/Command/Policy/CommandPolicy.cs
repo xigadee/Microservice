@@ -138,18 +138,23 @@ namespace Xigadee
         }
 
         /// <summary>
-        /// Specifies that the commands are supported by reflection.
+        /// Specifies that the commands are supported by reflection, i.e. those commands that use the CommandContractAttribute.
         /// </summary>
         public bool CommandReflectionSupported { get; set; } = true;
 
         /// <summary>
-        /// Specifies that the master job commands are supported by reflection.
+        /// Specifies that the master job commands are supported by reflection, i.e. those that use the MasterJobCommandContractAttribute.
         /// </summary>
-        public bool CommandMasterJobReflectionSupported { get; set; } = true;
+        public bool MasterJobCommandReflectionSupported { get; set; } = true;
 
         /// <summary>
-        /// Specifies that schedule reflection commands are supported.
+        /// Specifies that schedule reflection commands are supported, i.e. those that use the CommandScheduleAttribute.
         /// </summary>
-        public bool CommandScheduleReflectionSupported { get; set; } = true;
+        public bool ScheduleReflectionSupported { get; set; } = true;
+
+        /// <summary>
+        /// Specifies that schedule reflection commands are supported for master jobs, i.e. those that use the MasterJobScheduleAttribute.
+        /// </summary>
+        public bool MasterJobScheduleReflectionSupported { get; set; } = true;
     }
 }
