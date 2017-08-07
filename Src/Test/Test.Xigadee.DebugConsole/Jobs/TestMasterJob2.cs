@@ -31,6 +31,7 @@ namespace Test.Xigadee
 
 
         [MasterJobSchedule("00:05:00","00:00:10")]
+        //[MasterJobSchedule()]
         private async Task CallMeAsWell(Schedule schedule)
         {
             //try
