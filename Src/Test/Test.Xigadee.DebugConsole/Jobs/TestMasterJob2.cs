@@ -29,16 +29,8 @@ namespace Test.Xigadee
 
         }
 
-        protected override void StartInternal()
-        {
-            base.StartInternal();
 
-            //var schedule = new Schedule(
-            MasterJobRegister(TimeSpan.FromMinutes(5),
-                initialWait: TimeSpan.FromSeconds(10),
-                action: CallMeAsWell);
-        }
-
+        [MasterJobSchedule("00:05:00","00:00:10")]
         private async Task CallMeAsWell(Schedule schedule)
         {
             //try

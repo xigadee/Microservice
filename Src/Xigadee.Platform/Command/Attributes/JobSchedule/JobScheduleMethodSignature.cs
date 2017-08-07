@@ -15,7 +15,8 @@ namespace Xigadee
     /// This class is used to marshall the method signature for a inline schedule command.
     /// </summary>
     [DebuggerDisplay("{Method.Name}")]
-    public class JobScheduleMethodSignature
+    public class JobScheduleMethodSignature<A>
+        where A: JobScheduleAttributeBase
     {
         #region Constructor
         /// <summary>
@@ -67,7 +68,7 @@ namespace Xigadee
         /// <summary>
         /// These are the assigned command attributes.
         /// </summary>
-        public List<JobScheduleAttribute> CommandAttributes { get; protected set; }
+        public List<A> CommandAttributes { get; protected set; }
         /// <summary>
         /// This is the list of the parameters for the method.
         /// </summary>
@@ -82,8 +83,8 @@ namespace Xigadee
             try
             {
                 CommandAttributes = Attribute.GetCustomAttributes(Method)
-                    .Where((a) => a is JobScheduleAttribute)
-                    .Cast<JobScheduleAttribute>()
+                    .Where((a) => a is A)
+                    .Cast<A>()
                     .ToList();
 
                 //This shouldn't happen, but check anyway.
@@ -176,12 +177,17 @@ namespace Xigadee
             }
         }
 
-        private bool ParamAttributes<A>(ParameterInfo info)
-            where A : Attribute
+        public IEnumerable<Schedule> ToSchedules()
+        {
+            yield break;
+        }
+
+        private bool ParamAttributes<AT>(ParameterInfo info)
+            where AT : Attribute
         {
             try
             {
-                var attr = Attribute.GetCustomAttribute(info, typeof(A), false);
+                var attr = Attribute.GetCustomAttribute(info, typeof(AT), false);
 
                 return attr != null;
             }
@@ -241,7 +247,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="attr">The contract attribute.</param>
         /// <returns>The reference id.</returns>
-        public string Reference(JobScheduleAttribute attr)
+        public string Reference(A attr)
         {
             return $"{Method.Name}/{attr.Name??""}";
         }

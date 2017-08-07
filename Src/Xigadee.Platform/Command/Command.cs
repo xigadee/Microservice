@@ -112,7 +112,7 @@ namespace Xigadee
                     MasterJobTearUp();
 
                 if (mPolicy.JobPollEnabled)
-                    JobsStart();
+                    JobsTearUp();
 
                 if (mPolicy.CommandNotify == CommandNotificationBehaviour.OnStartUp)
                     CommandsNotify();
@@ -135,7 +135,7 @@ namespace Xigadee
                     MasterJobTearDown();
 
                 if (mPolicy.JobPollEnabled)
-                    JobsStop();
+                    JobsTearDown();
 
                 if (mPolicy.OutgoingRequestsEnabled)
                     OutgoingRequestsStop();
@@ -150,20 +150,26 @@ namespace Xigadee
         }
         #endregion
 
-        protected virtual void JobsStart()
+        #region JobsTearUp/JobsTearDown
+        /// <summary>
+        /// This method extracts any job schedules from the command and registers each command.
+        /// </summary>
+        protected virtual void JobsTearUp()
         {
-            JobSchedulesInitialise();
-
             if (mPolicy.ScheduleReflectionSupported)
                 JobSchedulesReflectionInitialise();
-        }
 
-        protected virtual void JobsStop()
+            JobSchedulesInitialise();
+        }
+        /// <summary>
+        /// This method stops and registered job schedules.
+        /// </summary>
+        protected virtual void JobsTearDown()
         {
             mSchedules.ForEach((s) => Scheduler.Unregister(s));
             mSchedules.Clear();
-
-        }
+        } 
+        #endregion
 
         #region PayloadSerializer
         /// <summary>

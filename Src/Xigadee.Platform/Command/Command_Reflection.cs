@@ -45,7 +45,8 @@ namespace Xigadee
         /// </summary>
         /// <param name="attr">The incoming attribute whose header channel should be checked.</param>
         /// <returns>Returns a message filter wrapper for the header.</returns>
-        protected MessageFilterWrapper CommandChannelAdjust(CommandContractAttribute attr)
+        protected MessageFilterWrapper CommandChannelAdjust<A>(A attr)
+            where A: CommandContractAttributeBase
         {
             ServiceMessageHeader header = attr.Header;
 
@@ -61,7 +62,9 @@ namespace Xigadee
         /// </summary>
         protected virtual void JobSchedulesReflectionInitialise()
         {
-
+            this.ScheduleMethodAttributeSignatures<JobScheduleAttribute>()
+                .SelectMany((s) => s.Item2.ToSchedules())
+                .ForEach((r) => Scheduler.Register(r));
         }
         #endregion
     }

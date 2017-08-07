@@ -88,7 +88,7 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets a value indicating whether jobs are enabled on the command. The default setting is true.
         /// </summary>
-        public virtual bool JobPollEnabled { get; set; } = false;
+        public virtual bool JobPollEnabled { get; set; } = true;
 
         public virtual CommandTimerPoll JobPollSchedule { get; set; } = new CommandTimerPoll();
 

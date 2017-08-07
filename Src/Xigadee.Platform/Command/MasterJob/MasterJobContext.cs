@@ -29,10 +29,13 @@ namespace Xigadee
     /// </summary>
     public class MasterJobContext
     {
+        #region Events
         /// <summary>
         /// This event can is fired when the state of the master job is changed.
         /// </summary>
         public event EventHandler<MasterJobStateChangeEventArgs> OnMasterJobStateChange;
+        #endregion
+        #region Constructor
         /// <summary>
         /// Initializes a new instance of the <see cref="MasterJobContext"/> class.
         /// </summary>
@@ -41,69 +44,96 @@ namespace Xigadee
             Name = name;
             Partners = new ConcurrentDictionary<string, MasterJobPartner>();
             Jobs = new Dictionary<Guid, MasterJobHolder>();
-            Strategy = strategy ?? new MasterJobNegotiationStrategy();
+            NegotiationStrategy = strategy ?? new MasterJobNegotiationStrategy();
         }
+        #endregion
+
+        #region Name
         /// <summary>
         /// Gets the name or the master job.
         /// </summary>
         public string Name { get; }
+        #endregion
+
+        #region Partners
         /// <summary>
         /// This collection holds the list of master job standby partners.
         /// </summary>
         public ConcurrentDictionary<string, MasterJobPartner> Partners { get; }
+        #endregion
+        #region PartnerSet(string originatorServiceId, bool isStandby)
         /// <summary>
-        /// Gets the master jobs.
+        /// The method add the MasterJob Partner.
         /// </summary>
-        public Dictionary<Guid, MasterJobHolder> Jobs { get; }
+        /// <param name="originatorServiceId">The originator service identifier.</param>
+        /// <param name="isStandby">if set to <c>true</c> [is standby].</param>
+        public void PartnerSet(string originatorServiceId, bool isStandby)
+        {
+            var record = new MasterJobPartner(originatorServiceId, isStandby);
 
+            if (isStandby)
+            {
+                Partners.AddOrUpdate(record.ServiceId, s => record, (s, o) => record);
+            }
+            else
+            {
+                MasterJobPartner dontCare;
+                Partners.TryRemove(record.ServiceId, out dontCare);
+                PartnerMaster = record;
+            }
+        }
+        #endregion
+        #region PartnerMaster
         /// <summary>
-        /// The current status.
+        /// Gets the current master.
         /// </summary>
-        public DateTime? mCurrentMasterReceiveTime;
-
-        public string mCurrentMasterServiceId;
-
-        private int mCurrentMasterPollAttempts =0;
-
-        public int MasterPollAttempts { get { return mCurrentMasterPollAttempts; } }
-
-
-        public void MasterRecordSet(string remoteServiceId)
+        public MasterJobPartner PartnerMaster { get; private set; }
+        #endregion
+        #region PartnerMasterClear()
+        /// <summary>
+        /// Clears the masters record.
+        /// </summary>
+        public void PartnerMasterClear()
         {
-            mCurrentMasterServiceId = remoteServiceId;
-            mCurrentMasterReceiveTime = DateTime.UtcNow;
-        }
+            PartnerMaster = null;
+        } 
+        #endregion
 
-        public void MasterRecordClear(bool iAmMaster = true)
-        {
-            mCurrentMasterServiceId = iAmMaster?"ACTIVE":"";
-            mCurrentMasterReceiveTime = DateTime.UtcNow;
-        }
-
+        //Master Poll
+        #region MasterPollAttemptsIncrement()
+        /// <summary>
+        /// Increments the poll attempts to the currently active server.
+        /// </summary>
         public void MasterPollAttemptsIncrement()
         {
             mCurrentMasterPollAttempts++;
-        }
-
+        } 
+        #endregion
+        #region MasterPollAttemptsExceeded()
+        /// <summary>
+        /// Checks whether the poll attempts have been exceeded.
+        /// </summary>
+        /// <returns>Returns true if the poll limit has been exceeeded.</returns>
         public bool MasterPollAttemptsExceeded()
         {
-            return Strategy.PollAttemptsExceeded(State, mCurrentMasterPollAttempts);
+            return NegotiationStrategy.PollAttemptsExceeded(State, mCurrentMasterPollAttempts);
         }
-
+        #endregion
+        #region MasterPollAttempts
+        private int mCurrentMasterPollAttempts =0;
         /// <summary>
-        /// The timestamp for the last negotiation message out.
+        /// Gets the master poll attempts.
         /// </summary>
-        public DateTime? MessageLastOut { get; set; }
-        /// <summary>
-        /// The timestamp for the last negotiation message received.
-        /// </summary>
-        public DateTime? MessageLastIn { get; set; }
+        public int MasterPollAttempts { get { return mCurrentMasterPollAttempts; } }
+        #endregion
 
+        //State
+        #region StateChangeCounter
         /// <summary>
         /// The state change counter.
         /// </summary>
-        public long StateChangeCounter { get { return mStateChangeCounter; } }
-
+        public long StateChangeCounter { get { return mStateChangeCounter; } } 
+        #endregion
         #region State
         private MasterJobState mState;
         private object mLockState = new object();
@@ -146,55 +176,80 @@ namespace Xigadee
         }
         #endregion
 
-        #region MasterJobPartnerAdd(string originatorServiceId, bool isStandby)
+        //Negotiation
+        #region NegotiationStrategy
         /// <summary>
-        /// The method add the MasterJob Partner.
+        /// Gets the negotiation strategy.
         /// </summary>
-        /// <param name="originatorServiceId">The originator service identifier.</param>
-        /// <param name="isStandby">if set to <c>true</c> [is standby].</param>
-        public void PartnerAdd(string originatorServiceId, bool isStandby)
-        {
-            var record = new MasterJobPartner(originatorServiceId, isStandby);
-            Partners.AddOrUpdate(record.ServiceId, s => record, (s, o) => record);
-        }
+        public MasterJobNegotiationStrategyBase NegotiationStrategy { get; }
         #endregion
 
-        public Schedule MasterJobSchedule { get; private set; }
-
+        #region NegotiationPollSchedule
+        /// <summary>
+        /// Gets the negotiation poll schedule.
+        /// </summary>
+        public MasterJobNegotiationPollSchedule NegotiationPollSchedule { get; protected set; }
+        #endregion
+        #region NegotiationPollScheduleInitialise(Func<Schedule, CancellationToken, Task> execute)
         /// <summary>
         /// Initialises the poll schedule.
         /// </summary>
         /// <param name="execute">The execute function.</param>
-        /// <returns>Returns the schedule.</returns>
-        public Schedule InitialiseSchedule(Func<Schedule, CancellationToken, Task> execute)
+        /// <returns>Returns the new schedule.</returns>
+        public virtual MasterJobNegotiationPollSchedule NegotiationPollScheduleInitialise(Func<Schedule, CancellationToken, Task> execute)
         {
-            //Register the schedule used for poll requests.
-            var schedule = new MasterJobPollSchedule(execute, Name);
+            if (execute == null)
+                throw new ArgumentNullException("execute", $"execute is null - {nameof(MasterJobContext)}/{nameof(NegotiationPollScheduleInitialise)}");
 
-            schedule.Frequency = Strategy.InitialPollFrequency;
-            schedule.InitialWait = Strategy.InitialPollWait;
+            //Register the schedule used for poll requests.
+            var schedule = new MasterJobNegotiationPollSchedule(execute, Name);
+
+            schedule.Frequency = NegotiationStrategy.InitialPollFrequency;
+            schedule.InitialWait = NegotiationStrategy.InitialPollWait;
             schedule.IsLongRunning = false;
 
-            MasterJobSchedule = schedule;
+            NegotiationPollSchedule = schedule;
+
             return schedule;
         }
-
-        public void Start()
-        {
-            Partners.Clear();
-        }
-        /// <summary>
-        /// Gets the negotiation strategy.
-        /// </summary>
-        public MasterJobNegotiationStrategyBase Strategy { get; }
-
+        #endregion
+        #region NegotiationPollSetNextTime()
         /// <summary>
         /// This method sets the next poll time based on the current state and the number of poll attempts.
         /// </summary>
-        /// <param name="schedule">The schedule.</param>
-        public void SetNextPollTime(Schedule schedule)
+        public void NegotiationPollSetNextTime()
         {
-            Strategy.SetNextPollTime(schedule, State, mCurrentMasterPollAttempts);
+            NegotiationStrategy.SetNextPollTime(NegotiationPollSchedule, State, mCurrentMasterPollAttempts);
+        } 
+        #endregion
+        #region NegotiationPollLastOut
+        /// <summary>
+        /// The timestamp for the last negotiation message out.
+        /// </summary>
+        public DateTime? NegotiationPollLastOut { get; set; }
+        #endregion
+        #region NegotiationPollLastIn
+        /// <summary>
+        /// The timestamp for the last negotiation message received.
+        /// </summary>
+        public DateTime? NegotiationPollLastIn { get; set; }
+        #endregion
+
+
+        /// <summary>
+        /// Gets the master jobs.
+        /// </summary>
+        public Dictionary<Guid, MasterJobHolder> Jobs { get; }
+
+        public virtual void Start()
+        {
+            Partners.Clear();
+            State = MasterJobState.VerifyingComms;
+        }
+
+        public virtual void Stop()
+        {
+            State = MasterJobState.Disabled;
         }
     }
 }

@@ -238,11 +238,11 @@ namespace Xigadee
                 //Finally register the housekeeping schedules.
                 EventStart(() => SchedulesRegister(), "Scheduler");
 
-                //Now start the listeners and deadletter listeners
-                EventStart(() => mCommunication.ListenersStart(), "Communication Listeners");
-
                 //Ok start the commands in parallel at the same priority group.
                 EventStart(() => mCommands.CommandsStart(ServiceStart), "Commands");
+
+                //Now start the listeners and deadletter listeners
+                EventStart(() => mCommunication.ListenersStart(), "Communication Listeners");
 
                 //Ok start the commands in parallel at the same priority group.
                 EventStart(() => Dispatch = new DispatchWrapper(mSerializer, mTaskManager.ExecuteOrEnqueue, () => Status

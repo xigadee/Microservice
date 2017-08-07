@@ -22,9 +22,9 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    public class TestMasterJob : CommandBase
+    public class TestMasterJob: CommandBase
     {
-        public TestMasterJob(string channel):base()//JobConfiguration.ToMasterJob(channel)
+        public TestMasterJob(string channel) : base()//JobConfiguration.ToMasterJob(channel)
         {
 
         }
@@ -39,15 +39,7 @@ namespace Test.Xigadee
             return pol;
         }
 
-        protected override void StartInternal()
-        {
-            base.StartInternal();
 
-            //var schedule = new Schedule(
-            MasterJobRegister(TimeSpan.FromSeconds(1), 
-                initialWait: TimeSpan.FromSeconds(10),
-                action: CallMe);
-        }
 
         protected override void MasterJobCommandsRegister()
         {
@@ -65,6 +57,7 @@ namespace Test.Xigadee
 
         }
 
+        [MasterJobSchedule("00:10:00", "00:00:01")]
         private async Task CallMe(Schedule schedule)
         {
             try

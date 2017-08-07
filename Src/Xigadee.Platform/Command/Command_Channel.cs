@@ -72,6 +72,5 @@ namespace Xigadee
             get { return mPolicy.ResponseChannelIdAutoSet; }
         }
         #endregion
-
     }
 }

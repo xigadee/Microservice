@@ -26,14 +26,14 @@ namespace Xigadee
     /// This schedule is used by the master job poller.
     /// </summary>
     /// <seealso cref="Xigadee.Schedule" />
-    public class MasterJobPollSchedule: Schedule
+    public class MasterJobNegotiationPollSchedule: Schedule
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MasterJobPollSchedule"/> class.
+        /// Initializes a new instance of the <see cref="MasterJobNegotiationPollSchedule"/> class.
         /// </summary>
         /// <param name="execute">The async schedule function.</param>
         /// <param name="name">The masterjob name.</param>
-        public MasterJobPollSchedule(Func<Schedule, CancellationToken, Task> execute, string name = null) : base(execute, name)
+        public MasterJobNegotiationPollSchedule(Func<Schedule, CancellationToken, Task> execute, string name = null) : base(execute, name)
         {
         }
 
@@ -46,7 +46,7 @@ namespace Xigadee
     public class MasterJobSchedule: Schedule
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MasterJobPollSchedule"/> class.
+        /// Initializes a new instance of the <see cref="MasterJobNegotiationPollSchedule"/> class.
         /// </summary>
         /// <param name="execute">The async schedule function.</param>
         /// <param name="name">The schedule name.</param>

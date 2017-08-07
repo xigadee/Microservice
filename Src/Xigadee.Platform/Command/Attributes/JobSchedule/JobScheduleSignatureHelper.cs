@@ -16,47 +16,29 @@ namespace Xigadee
         /// <summary>
         /// This static helper returns the list of attributes, methods and references. Not one method may have multiple attributes assigned to them.
         /// </summary>
-        public static List<Tuple<JobScheduleAttribute, JobScheduleMethodSignature, string>> ScheduleMethodAttributeSignatures(
-            this ICommand command, bool throwExceptions = false)
+        public static List<Tuple<A, JobScheduleMethodSignature<A>, string>> ScheduleMethodAttributeSignatures<A>(
+            this ICommand command, bool throwExceptions = false) 
+            where A: JobScheduleAttributeBase
         {
             return command
-                .ScheduleMethodSignatures(throwExceptions)
-                .SelectMany((s) => s.CommandAttributes.Select((a) => new Tuple<JobScheduleAttribute, JobScheduleMethodSignature, string>(a, s, s.Reference(a))))
+                .ScheduleMethodSignatures<A>(throwExceptions)
+                .SelectMany((s) => s.CommandAttributes.Select((a) => new Tuple<A, JobScheduleMethodSignature<A>, string>(a, s, s.Reference(a))))
                 .ToList();
         }
 
         /// <summary>
         /// This static helper returns the 
         /// </summary>
-        public static List<JobScheduleMethodSignature> ScheduleMethodSignatures(this ICommand command, bool throwExceptions)
+        public static List<JobScheduleMethodSignature<A>> ScheduleMethodSignatures<A>(this ICommand command, bool throwExceptions)
+            where A : JobScheduleAttributeBase
         {
-            var results = command.CommandMethods<JobScheduleAttribute>()
-                .Select((m) => new JobScheduleMethodSignature(command, m, throwExceptions))
+            var results = command.CommandMethods<A>()
+                .Select((m) => new JobScheduleMethodSignature<A>(command, m, throwExceptions))
                 .Where((t) => t.IsValid)
                 .ToList();
 
             return results;
         }
 
-        /// <summary>
-        /// This static helper returns the list of methods that are decorated with a CommandContractAttribute attribute.
-        /// </summary>
-        public static List<MethodInfo> ScheduleMethods(this ICommand command)
-        {
-            return command.GetType().ScheduleMethods();
-        }
-
-        /// <summary>
-        /// This static helper returns the list of methods that are decorated with CommandContractAttributes
-        /// </summary>
-        public static List<MethodInfo> ScheduleMethods(this Type objectType)
-        {
-            var results = objectType
-                .GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance)
-                .Where((m) => m.CustomAttributes.Count((a) => a.AttributeType == typeof(JobScheduleAttribute)) > 0)
-                .ToList();
-
-            return results;
-        }
     }
 }
