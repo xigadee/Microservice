@@ -27,6 +27,7 @@ namespace Xigadee
     /// </summary>
     public static partial class AzureExtensionMethods
     {
+
         public static C AttachAzureServiceBusTopicListener<C>(this C cpipe
             , string connectionName = null
             , string serviceBusConnection = null
@@ -74,7 +75,7 @@ namespace Xigadee
 
             onCreate?.Invoke(component);
 
-            cpipe.AttachListener(component, setFromChannelProperties);
+            cpipe.AttachListener(component, setFromChannelProperties:setFromChannelProperties);
 
             return cpipe;
         }

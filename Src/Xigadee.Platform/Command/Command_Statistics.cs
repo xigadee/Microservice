@@ -37,7 +37,7 @@ namespace Xigadee
             if (mPolicy.OutgoingRequestsEnabled)
                 stats.OutgoingRequests = mOutgoingRequests?.Select((h) => h.Value.Debug).ToList();
 
-            stats.MasterJob.Active = mPolicy.MasterJobEnabled;
+            stats.MasterJob.Enabled = mPolicy.MasterJobEnabled;
 
             if (mPolicy.MasterJobEnabled)
             {
@@ -48,6 +48,8 @@ namespace Xigadee
                     , mPolicy.MasterJobNegotiationChannelPriority
                     , mPolicy.MasterJobNegotiationChannelType
                     );
+
+                stats.MasterJob.Master = mMasterJobContext.PartnerMaster;
                 stats.MasterJob.Standbys = mMasterJobContext.Partners.Values.ToList();
             }
         }

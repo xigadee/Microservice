@@ -14,10 +14,6 @@
 // limitations under the License.
 #endregion
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -26,6 +22,13 @@ namespace Xigadee
     /// </summary>
     public class ManualChannelListener: MessagingListenerBase<ManualChannelConnection, ManualChannelMessage, ManualChannelClientHolder>
     {
+        /// <summary>
+        /// This override sets the default processing time to the client for incoming messages.
+        /// </summary>
+        /// <param name="partition">The listener partition.</param>
+        /// <returns>
+        /// Returns the new client.
+        /// </returns>
         protected override ManualChannelClientHolder ClientCreate(ListenerPartitionConfig partition)
         {
             var client = base.ClientCreate(partition);

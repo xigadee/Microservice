@@ -37,17 +37,12 @@ namespace Xigadee
             , Func<TransmissionPayload, List<TransmissionPayload>, Task> command
             , string referenceId = null)
         {
-            if (message == null)
-                throw new CommandHolderException("message cannot be null");
+            Message = message ?? throw new CommandHolderException("message cannot be null");           
+            Command = command ?? throw new CommandHolderException("command cannot be null");
 
-            if (command == null)
-                throw new CommandHolderException("command cannot be null");
-
-            if (message.Header.IsPartialKey && message.Header.ChannelId == null)
+            if (Message.Header.ChannelId == null && Message.Header.IsPartialKey)
                 throw new CommandHolderException("You must supply a channel when using a partial key.");
 
-            Message = message;
-            Command = command;
             ReferenceId = referenceId;
         }
 
@@ -56,7 +51,7 @@ namespace Xigadee
         /// </summary>
         public MessageFilterWrapper Message { get; protected set;}
         /// <summary>
-        /// This is the reference id used for aiding debugging.
+        /// This is the reference id used for debugging.
         /// </summary>
         public string ReferenceId { get; protected set; }
         /// <summary>

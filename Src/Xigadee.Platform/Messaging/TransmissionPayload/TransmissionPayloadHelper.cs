@@ -25,6 +25,26 @@ namespace Xigadee
     /// </summary>
     public static class TransmissionPayloadHelper
     {
+        #region Clone(this TransmissionPayload inPayload, Action<bool, Guid> signal, bool? traceEnabled = null)
+        /// <summary>
+        /// This method seperates the payloads so that they are different objects.
+        /// </summary>
+        /// <param name="inPayload">The incoming payload.</param>
+        /// <param name="signal">The optional signal action.</param>
+        /// <param name="traceEnabled">Specifies whether trace is enabled. If omitted or set to null, the value inherits from the incoming payload.</param>
+        /// <returns>Returns a new cloned payload.</returns>
+        public static TransmissionPayload Clone(this TransmissionPayload inPayload, Action<bool, Guid> signal, bool? traceEnabled = null)
+        {
+            traceEnabled = traceEnabled ?? inPayload.TraceEnabled;
+            //First clone the service message.
+            var cloned = new TransmissionPayload(inPayload.Message.Clone(), release: signal, traceEnabled: traceEnabled.Value);
+
+            cloned.TraceWrite("Cloned", "ManualCommunicationBridgeAgent/PayloadCopy");
+
+            return cloned;
+        } 
+        #endregion
+
         #region ToResponse(this TransmissionPayload incoming)
         /// <summary>
         /// This helper method turns round an incoming payload request in to its corresponding response payload.

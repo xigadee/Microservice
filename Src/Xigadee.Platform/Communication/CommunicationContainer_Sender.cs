@@ -90,15 +90,7 @@ namespace Xigadee
                 //Set outgoing routing information to lowercase. This is important as messaging protocols such as
                 //Service Bus can be case sensitive when running subscription filters.
                 if (mPolicy.ServiceMessageHeaderConvertToLowercase)
-                {
-                    payload.Message.ChannelId = payload.Message.ChannelId?.ToLowerInvariant();
-                    payload.Message.MessageType = payload.Message.MessageType?.ToLowerInvariant();
-                    payload.Message.ActionType = payload.Message.ActionType?.ToLowerInvariant();
-
-                    payload.Message.ResponseChannelId = payload.Message.ResponseChannelId?.ToLowerInvariant();
-                    payload.Message.ResponseMessageType = payload.Message.ResponseMessageType?.ToLowerInvariant();
-                    payload.Message.ResponseActionType = payload.Message.ResponseActionType?.ToLowerInvariant();
-                }
+                    payload.Message.ConvertMessageHeadersToLowercase();
 
                 Channel channel = PayloadOutgoingRedirectChecks(payload);
 

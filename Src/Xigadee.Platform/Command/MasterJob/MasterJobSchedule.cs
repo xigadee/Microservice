@@ -50,9 +50,25 @@ namespace Xigadee
         /// </summary>
         /// <param name="execute">The async schedule function.</param>
         /// <param name="name">The schedule name.</param>
-        public MasterJobSchedule(Func<Schedule, CancellationToken, Task> execute, string name = null) : base(execute, name)
+        /// <param name="initialise">The initialise action.</param>
+        /// <param name="cleanup">The cleanup action.</param>
+        public MasterJobSchedule(Func<Schedule, CancellationToken, Task> execute
+            , string name = null
+            , Action<Schedule> initialise = null
+            , Action<Schedule> cleanup = null
+            ) : base(execute, name)
         {
+            Initialise = initialise;
+            Cleanup = cleanup;
         }
 
+        /// <summary>
+        /// Gets the initialise action.
+        /// </summary>
+        public Action<Schedule> Initialise { get; }
+        /// <summary>
+        /// Gets the cleanup action.
+        /// </summary>
+        public Action<Schedule> Cleanup { get; }
     }
 }

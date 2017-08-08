@@ -53,7 +53,7 @@ namespace Xigadee
 
             onCreate?.Invoke(component);
 
-            cpipe.AttachListener(component, false);
+            cpipe.AttachListener(component, setFromChannelProperties: false);
 
             return cpipe;
         }

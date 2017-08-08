@@ -31,7 +31,38 @@ namespace Xigadee
     /// </summary>
     public static class ServiceMessageHelper
     {
+        #region Clone(this ServiceMessage message)
         static JsonContractSerializer sSerializer = new JsonContractSerializer();
+        /// <summary>
+        /// This method clones a Service Message using a JSON serializer.
+        /// </summary>
+        /// <param name="message">The message to clone.</param>
+        /// <returns>A clone of the original message.</returns>
+        public static ServiceMessage Clone(this ServiceMessage message)
+        {
+            //First clone the service message.
+            byte[] data = sSerializer.Serialize(message);
+
+            return sSerializer.Deserialize<ServiceMessage>(data);
+        }
+        #endregion
+
+        #region ConvertMessageHeadersToLowercase(this ServiceMessage message)
+        /// <summary>
+        /// Converts the message headers to lowercase.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        public static void ConvertMessageHeadersToLowercase(this ServiceMessage message)
+        {
+            message.ChannelId = message.ChannelId?.ToLowerInvariant();
+            message.MessageType = message.MessageType?.ToLowerInvariant();
+            message.ActionType = message.ActionType?.ToLowerInvariant();
+
+            message.ResponseChannelId = message.ResponseChannelId?.ToLowerInvariant();
+            message.ResponseMessageType = message.ResponseMessageType?.ToLowerInvariant();
+            message.ResponseActionType = message.ResponseActionType?.ToLowerInvariant();
+        } 
+        #endregion
 
         #region StatusSet(this ServiceMessage message, string status, string statusDescription)
         /// <summary>
@@ -46,7 +77,7 @@ namespace Xigadee
             message.StatusDescription = statusDescription;
         }
         #endregion
-        #region StatusSet(this ServiceMessage message, string status, string statusDescription)
+        #region StatusSet(this ServiceMessage message, int status, string statusDescription)
         /// <summary>
         /// This extension method sets the message status.
         /// </summary>
@@ -142,21 +173,6 @@ namespace Xigadee
         {
             return new ServiceMessageHeader(message.ResponseChannelId, message.ResponseMessageType, message.ResponseActionType);
         } 
-        #endregion
-
-        #region Clone(this ServiceMessage message)
-        /// <summary>
-        /// This method clones a Service Message using a JSON serializer.
-        /// </summary>
-        /// <param name="message">The message to clone.</param>
-        /// <returns>A clone of the original message.</returns>
-        public static ServiceMessage Clone(this ServiceMessage message)
-        {
-            //First clone the service message.
-            byte[] data = sSerializer.Serialize(message);
-
-            return sSerializer.Deserialize<ServiceMessage>(data);
-        }
         #endregion
 
         #region SetDestination...

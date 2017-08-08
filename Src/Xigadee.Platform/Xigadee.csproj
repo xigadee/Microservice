@@ -105,6 +105,7 @@
     <Compile Include="Command\MasterJob\Strategy\MasterJobNegotiationStrategy.cs" />
     <Compile Include="Command\MasterJob\Strategy\MasterJobNegotiationStrategyBase.cs" />
     <Compile Include="Command\Pipeline\AssignMasterJob.cs" />
+    <Compile Include="Communication\CommunicationBridge\CommunicationBridgeHelper.cs" />
     <Compile Include="Communication\CommunicationBridge\ICommunicationBridgeAgent.cs" />
     <Compile Include="Communication\CommunicationBridge\Manual\Bridge\ClientServerManualCommunicationBridge.cs" />
     <Compile Include="Communication\Interfaces\IMessagingService.cs" />
@@ -370,7 +371,6 @@
     <Compile Include="Command\Helper\CommandSchedule.cs" />
     <Compile Include="Command\Helper\CommandNotificationBehaviour.cs" />
     <Compile Include="Interfaces\ICommand.cs" />
-    <Compile Include="Command\MasterJob\MasterJobHolder.cs" />
     <Compile Include="Command\MasterJob\MasterJobState.cs" />
     <Compile Include="Command\MasterJob\MasterJobPartner.cs" />
     <Compile Include="Command\RequestTracker\RequestTracker.cs" />

@@ -201,6 +201,14 @@ namespace Xigadee
         }
         #endregion
 
+        #region Context
+        /// <summary>
+        /// Gets or sets the context which can be used to store data between scheduled calls.
+        /// </summary>
+        public object Context { get; set; }
+        #endregion
+
+        #region Complete...
         /// <summary>
         /// Completes the specified poll.
         /// </summary>
@@ -225,7 +233,8 @@ namespace Xigadee
                 Recalculate();
 
             Active = false;
-        }
+        } 
+        #endregion
 
         #region Recalculate(bool force = false)
         /// <summary>
@@ -331,6 +340,7 @@ namespace Xigadee
         public bool IsLongRunning { get; set; }
         #endregion
 
+        #region Message
         /// <summary>
         /// This is the debug message.
         /// </summary>
@@ -338,16 +348,23 @@ namespace Xigadee
         {
             get
             {
-                return $"{ScheduleType}:{Name?? Id.ToString("N").ToUpperInvariant()} [ShouldPoll={mShouldPoll}] @ {NextPollTime} Hits = {mPollCount}";
+                return $"{ScheduleType}:{Name ?? Id.ToString("N").ToUpperInvariant()} [ShouldPoll={mShouldPoll}] @ {NextPollTime} Hits = {mPollCount}";
             }
             set
             {
                 base.Message = value;
             }
         }
+        #endregion
 
+        /// <summary>
+        /// This internal exception is used to store exception information.
+        /// </summary>
         public class ScheduleException
         {
+            /// <summary>
+            /// The thrown exception.
+            /// </summary>
             public virtual Exception Ex { get; set; }
 
             #region IsLastException
@@ -360,7 +377,7 @@ namespace Xigadee
             /// <summary>
             /// This is the last exception time.
             /// </summary>
-            public DateTime? LastTime { get; set; }
+            public DateTime? LastTime { get; set; } = DateTime.UtcNow;
             #endregion
         }
     }

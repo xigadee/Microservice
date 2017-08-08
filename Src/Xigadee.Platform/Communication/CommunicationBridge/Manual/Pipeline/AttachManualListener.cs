@@ -39,7 +39,7 @@ namespace Xigadee
         {
             listener = new ManualChannelListener();
 
-            return cpipe.AttachListener(listener, setFromChannelProperties);
+            return cpipe.AttachListener(listener, setFromChannelProperties:setFromChannelProperties);
         }
     }
 }

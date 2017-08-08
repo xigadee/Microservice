@@ -179,7 +179,9 @@ namespace Xigadee
 
         private void Sender_Transmit(ManualChannelListener listener, TransmissionPayload incoming)
         {
-            var payload = PayloadCopy(incoming);
+            var payload = incoming.Clone(SignalCompletion, true);
+
+            payload.TraceWrite("Cloned", "ManualCommunicationBridgeAgent/PayloadCopy");
 
             mPayloadsActive.AddOrUpdate(payload.Id, new TransmissionPayloadHolder(payload,listener), (g, p) => p);
 
@@ -193,25 +195,6 @@ namespace Xigadee
             {
                 listener.Collector?.LogException("Unhandled exception in the BridgeAgent", ex);
             }
-        }
-
-        /// <summary>
-        /// This method seperates the payloads so that they are different objects.
-        /// </summary>
-        /// <param name="inPayload">The incoming payload.</param>
-        /// <returns>Returns a new cloned payload.</returns>
-        private TransmissionPayload PayloadCopy(TransmissionPayload inPayload)
-        {
-            //First clone the service message.
-            byte[] data = mSerializer.Serialize(inPayload.Message);
-
-            ServiceMessage clone = mSerializer.Deserialize<ServiceMessage>(data);
-
-            var cloned = new TransmissionPayload(clone, release: SignalCompletion, traceEnabled:true);
-
-            cloned.TraceWrite("Cloned", "ManualCommunicationBridgeAgent/PayloadCopy");
-
-            return cloned;
         }
 
         private void SignalCompletion(bool success, Guid id)

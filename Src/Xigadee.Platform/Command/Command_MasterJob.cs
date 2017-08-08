@@ -523,22 +523,21 @@ namespace Xigadee
         /// </summary>
         protected virtual void MasterJobSchedulesStart()
         {
-            foreach (var job in mMasterJobContext.Jobs.Values)
+            foreach (var schedule in mMasterJobContext.Jobs.Values)
             {
                 try
                 {
-                    job.Initialise?.Invoke(job.Schedule);
+                    schedule.Initialise?.Invoke(schedule);
                 }
                 catch (Exception ex)
                 {
                     StatisticsInternal.Ex = ex;
-                    Collector?.LogException($"MasterJob '{job.Name} could not be initialised.'", ex);
+                    Collector?.LogException($"MasterJob '{schedule.Name} could not be initialised.'", ex);
                 }
 
-                SchedulerRegister(job.Schedule);
+                SchedulerRegister(schedule);
             }
         }
-
         #endregion
         #region MasterJobSchedulesStop()
         /// <summary>
@@ -546,18 +545,18 @@ namespace Xigadee
         /// </summary>
         protected virtual void MasterJobSchedulesStop()
         {
-            foreach (var job in mMasterJobContext.Jobs.Values)
+            foreach (var schedule in mMasterJobContext.Jobs.Values)
             {
                 try
                 {
-                    job.Cleanup?.Invoke(job.Schedule);
+                    schedule.Cleanup?.Invoke(schedule);
                 }
                 catch (Exception ex)
                 {
-                    Collector?.LogException($"MasterJob '{job.Name}' stop failed", ex);
+                    Collector?.LogException($"MasterJob '{schedule.Name}' stop failed", ex);
                 }
 
-                Scheduler.Unregister(job.Schedule);
+                Scheduler.Unregister(schedule);
             }
         }
         #endregion

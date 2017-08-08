@@ -42,8 +42,6 @@ namespace Xigadee
         public MasterJobContext(string name, MasterJobNegotiationStrategyBase strategy)
         {
             Name = name;
-            Partners = new ConcurrentDictionary<string, MasterJobPartner>();
-            Jobs = new Dictionary<Guid, MasterJobHolder>();
             NegotiationStrategy = strategy ?? new MasterJobNegotiationStrategy();
         }
         #endregion
@@ -59,7 +57,7 @@ namespace Xigadee
         /// <summary>
         /// This collection holds the list of master job standby partners.
         /// </summary>
-        public ConcurrentDictionary<string, MasterJobPartner> Partners { get; }
+        public ConcurrentDictionary<string, MasterJobPartner> Partners { get; } = new ConcurrentDictionary<string, MasterJobPartner>();
         #endregion
         #region PartnerSet(string originatorServiceId, bool isStandby)
         /// <summary>
@@ -237,9 +235,14 @@ namespace Xigadee
 
 
         /// <summary>
-        /// Gets the master jobs.
+        /// The Master Jobs.
         /// </summary>
-        public Dictionary<Guid, MasterJobHolder> Jobs { get; }
+        public Dictionary<Guid, MasterJobSchedule> Jobs { get; } = new Dictionary<Guid, MasterJobSchedule>();
+        /// <summary>
+        /// The Master Job commands.
+        /// </summary>
+        public List<CommandHolder> Commands { get; } = new List<CommandHolder>();
+
 
         public virtual void Start()
         {

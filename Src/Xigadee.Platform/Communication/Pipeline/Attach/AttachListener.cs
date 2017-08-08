@@ -26,13 +26,16 @@ namespace Xigadee
         /// </summary>
         /// <param name="cpipe">The pipeline.</param>
         /// <param name="listener">The listener to attach.</param>
+        /// <param name="action">The action that can be used for further configuration or assignment of the listener to an external variable.</param>
         /// <param name="setFromChannelProperties">The default value is true. This sets the listener properties from the channel default settings.</param>
         /// <returns>The pipeline.</returns>
-        public static C AttachListener<C>(this C cpipe
-            , IListener listener
+        public static C AttachListener<C,S>(this C cpipe
+            , S listener
+            , Action<S> action = null
             , bool setFromChannelProperties = true
             )
             where C: IPipelineChannelIncoming<IPipeline>
+            where S : IListener
         {
             Channel channel = cpipe.ToChannel(ChannelDirection.Incoming);
 
@@ -50,6 +53,8 @@ namespace Xigadee
                 listener.ResourceProfiles = channel.ResourceProfiles;
             }
 
+            action?.Invoke(listener);
+
             cpipe.Pipeline.Service.Communication.RegisterListener(listener);
 
             return cpipe;
@@ -62,7 +67,7 @@ namespace Xigadee
         /// <typeparam name="S"></typeparam>
         /// <param name="cpipe">The pipeline.</param>
         /// <param name="creator">The listener creation function.</param>
-        /// <param name="action">The post-creation action that can be used for further configuration or assignment of the listener to an external variable.</param>
+        /// <param name="action">The pre-creation action that can be used for further configuration or assignment of the listener to an external variable.</param>
         /// <param name="setFromChannelProperties">The default value is true. This sets the listener properties from the channel default settings.</param>
         /// <returns>The pipeline.</returns>
         public static C AttachListener<C,S>(this C cpipe
@@ -77,7 +82,7 @@ namespace Xigadee
 
             action?.Invoke(listener);
 
-            cpipe.AttachListener(listener, setFromChannelProperties);
+            cpipe.AttachListener(listener, setFromChannelProperties:setFromChannelProperties);
 
             return cpipe;
         }
