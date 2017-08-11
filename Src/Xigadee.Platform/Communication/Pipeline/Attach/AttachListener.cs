@@ -24,18 +24,20 @@ namespace Xigadee
         /// <summary>
         /// This extension method attaches a listener to an incoming pipeline.
         /// </summary>
+        /// <typeparam name="C">The pipeline type.</typeparam>
+        /// <typeparam name="L">The listener type.</typeparam>
         /// <param name="cpipe">The pipeline.</param>
         /// <param name="listener">The listener to attach.</param>
         /// <param name="action">The action that can be used for further configuration or assignment of the listener to an external variable.</param>
         /// <param name="setFromChannelProperties">The default value is true. This sets the listener properties from the channel default settings.</param>
         /// <returns>The pipeline.</returns>
-        public static C AttachListener<C,S>(this C cpipe
-            , S listener
-            , Action<S> action = null
+        public static C AttachListener<C,L>(this C cpipe
+            , L listener
+            , Action<L> action = null
             , bool setFromChannelProperties = true
             )
             where C: IPipelineChannelIncoming<IPipeline>
-            where S : IListener
+            where L : IListener
         {
             Channel channel = cpipe.ToChannel(ChannelDirection.Incoming);
 
@@ -63,22 +65,22 @@ namespace Xigadee
         /// <summary>
         /// This extension method attaches a listener to an incoming pipeline.
         /// </summary>
-        /// <typeparam name="C"></typeparam>
-        /// <typeparam name="S"></typeparam>
+        /// <typeparam name="C">The pipeline type.</typeparam>
+        /// <typeparam name="L">The listener type.</typeparam>
         /// <param name="cpipe">The pipeline.</param>
         /// <param name="creator">The listener creation function.</param>
         /// <param name="action">The pre-creation action that can be used for further configuration or assignment of the listener to an external variable.</param>
         /// <param name="setFromChannelProperties">The default value is true. This sets the listener properties from the channel default settings.</param>
         /// <returns>The pipeline.</returns>
-        public static C AttachListener<C,S>(this C cpipe
-            , Func<IEnvironmentConfiguration, S> creator = null
-            , Action<S> action = null
+        public static C AttachListener<C,L>(this C cpipe
+            , Func<IEnvironmentConfiguration, L> creator = null
+            , Action<L> action = null
             , bool setFromChannelProperties = true
             )
             where C : IPipelineChannelIncoming<IPipeline>
-            where S : IListener, new()
+            where L : IListener, new()
         {
-            var listener = creator!=null?(creator(cpipe.Pipeline.Configuration)):new S();
+            var listener = creator!=null?(creator(cpipe.Pipeline.Configuration)):new L();
 
             action?.Invoke(listener);
 

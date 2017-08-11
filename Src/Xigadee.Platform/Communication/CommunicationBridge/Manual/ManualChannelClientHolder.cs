@@ -28,6 +28,7 @@ namespace Xigadee
     public class ManualChannelClientHolder: ClientHolder<ManualChannelConnection, ManualChannelMessage>
     {
         private ConcurrentQueue<TransmissionPayload> mPending = new ConcurrentQueue<TransmissionPayload>();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ManualChannelClientHolder"/> class.
         /// </summary>

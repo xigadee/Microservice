@@ -25,14 +25,18 @@ namespace Xigadee
         /// This method attaches a sender to the outgoing channel.
         /// </summary>
         /// <typeparam name="C">The pipeline type.</typeparam>
+        /// <typeparam name="S">The sender type.</typeparam>
         /// <param name="cpipe">The pipeline.</param>
         /// <param name="sender">The sender to attach.</param>
+        /// <param name="action">The action that can be used for further configuration or assignment of the sender to an external variable.</param>
         /// <param name="setFromChannelProperties">The default value is true. This sets the sender properties from the channel.</param>
         /// <returns>Returns the pipeline</returns>
-        public static C AttachSender<C>(this C cpipe
-            , ISender sender
+        public static C AttachSender<C,S>(this C cpipe
+            , S sender
+            , Action<S> action = null
             , bool setFromChannelProperties = true)
             where C: IPipelineChannelOutgoing<IPipeline>
+            where S: ISender
         {
             Channel channel = cpipe.ToChannel(ChannelDirection.Outgoing);
 
@@ -48,6 +52,8 @@ namespace Xigadee
                 sender.PriorityPartitions = channel.Partitions.Cast<SenderPartitionConfig>().ToList();
                 sender.BoundaryLoggingActive = channel.BoundaryLoggingActive;
             }
+
+            action?.Invoke(sender);
 
             cpipe.Pipeline.Service.Communication.RegisterSender(sender);
 
@@ -75,7 +81,7 @@ namespace Xigadee
 
             action?.Invoke(sender);
 
-            cpipe.AttachSender(sender, setFromChannelProperties);
+            cpipe.AttachSender(sender, setFromChannelProperties:setFromChannelProperties);
 
             return cpipe;
         }

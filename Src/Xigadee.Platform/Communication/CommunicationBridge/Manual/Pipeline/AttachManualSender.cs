@@ -31,7 +31,7 @@ namespace Xigadee
         {
             sender = new ManualChannelSender();
 
-            return cpipe.AttachSender(sender, setFromChannelProperties);
+            return cpipe.AttachSender(sender, setFromChannelProperties: setFromChannelProperties);
         }
     }
 }

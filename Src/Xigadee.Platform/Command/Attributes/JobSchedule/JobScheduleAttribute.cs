@@ -29,7 +29,7 @@ namespace Xigadee
         /// <summary>
         /// Initializes a new instance of the <see cref="JobScheduleAttribute"/> class.
         /// </summary>
-        /// <param name="initialWait">The initial wait before the job first polls.
+        /// <param name="initialWait">The initial wait before the job first polls. If this is null the job will be polled immediately and you can set the schedule manually.
         /// Leave this as null if you do not want an initial wait, but wish the job to poll after the frequency.
         /// The string should be in the format of a [ws][-]{ d | [d.]hh:mm[:ss[.ff]] }[ws] as defined in the Timespan.Parse method.</param>
         /// <param name="frequency">The frequency of the poll after the initial wait.
@@ -37,7 +37,7 @@ namespace Xigadee
         /// <param name="isLongRunningProcess">Specifies whether the schedule is a long running process.</param>
         /// <param name="name">The optional name for the schedule. This will be displayed in the Microservice statistics.</param>
         /// <see cref="https://msdn.microsoft.com/en-us/library/se73z7b9(v=vs.110).aspx" />
-        public JobScheduleAttribute(string initialWait, string frequency, bool isLongRunningProcess = false, string name = null) 
+        public JobScheduleAttribute(string initialWait = null, string frequency = null, bool isLongRunningProcess = false, string name = null) 
             : base(initialWait, frequency, isLongRunningProcess, name)
         {
         }
@@ -55,7 +55,7 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor. 
         /// </summary>
-        /// <param name="initialWait">The initial wait before the job first polls. 
+        /// <param name="initialWait">The initial wait before the job first polls. If this is null the job will be polled immediately and you can set the schedule manually.
         /// Leave this as null if you do not want an initial wait, but wish the job to poll after the frequency.
         /// The string should be in the format of a [ws][-]{ d | [d.]hh:mm[:ss[.ff]] }[ws] as defined in the Timespan.Parse method.
         /// </param>
@@ -65,7 +65,7 @@ namespace Xigadee
         /// <param name="isLongRunningProcess">Specifies whether the schedule is a long running process.</param>
         /// <param name="name">The optional name for the schedule. This will be displayed in the Microservice statistics.</param>
         /// <see cref="https://msdn.microsoft.com/en-us/library/se73z7b9(v=vs.110).aspx"/>
-        protected JobScheduleAttributeBase(string initialWait, string frequency, bool isLongRunningProcess = false, string name = null)
+        protected JobScheduleAttributeBase(string initialWait = null, string frequency = null, bool isLongRunningProcess = false, string name = null)
         {
             mInitialWait = initialWait;
             mFrequency = frequency;

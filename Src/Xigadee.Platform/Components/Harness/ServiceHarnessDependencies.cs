@@ -54,8 +54,8 @@ namespace Xigadee
             if (service is IRequireServiceOriginator)
                 ((IRequireServiceOriginator)service).OriginatorId = OriginatorId;
 
-            if (service is IRequirePayloadSerializer)
-                ((IRequirePayloadSerializer)service).PayloadSerializer = PayloadSerializer;
+            if (service is IRequirePayloadManagement)
+                ((IRequirePayloadManagement)service).PayloadSerializer = PayloadSerializer;
         }
 
         /// <summary>

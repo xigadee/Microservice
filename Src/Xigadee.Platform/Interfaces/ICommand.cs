@@ -52,7 +52,7 @@ namespace Xigadee
     /// <summary>
     /// This is the root interface implemented by the command class.
     /// </summary>
-    public interface ICommand: ICommandMasterJob, ICommandEvents, IService, IRequireScheduler, IRequirePayloadSerializer
+    public interface ICommand: ICommandMasterJob, ICommandEvents, IService, IRequireScheduler, IRequirePayloadManagement
         , IRequireServiceOriginator, IRequireSharedServices, IRequireDataCollector
     {
         /// <summary>

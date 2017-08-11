@@ -84,7 +84,7 @@ namespace Xigadee
             if (mPayloadSerializers.Count == 0)
                 throw new PayloadSerializerCollectionIsEmptyException();
 
-            mLookUpCache = new ConcurrentDictionary<Type, Xigadee.IPayloadSerializer>();
+            mLookUpCache = new ConcurrentDictionary<Type, IPayloadSerializer>();
         }
         #endregion
         #region StopInternal()
@@ -311,6 +311,5 @@ namespace Xigadee
             throw new PayloadTypeSerializationNotSupportedException(payload.GetType().AssemblyQualifiedName);
         }
         #endregion
-
     }
 }

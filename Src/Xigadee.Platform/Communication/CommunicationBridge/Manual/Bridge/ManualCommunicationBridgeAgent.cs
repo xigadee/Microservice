@@ -76,7 +76,6 @@ namespace Xigadee
             return AddListener(listener);
         }
         #endregion
-
         #region GetSender()
         /// <summary>
         /// This method returns a new sender.
@@ -90,19 +89,6 @@ namespace Xigadee
         }
         #endregion
 
-
-        private void Listener_StatusChanged(object component, StatusChangedEventArgs e)
-        {
-            var newListeners = mListeners.Where((l) => l.Status == ServiceStatus.Running).ToArray();
-            Interlocked.Exchange(ref mActiveListeners, newListeners);
-        }
-
-        private void Sender_StatusChanged(object component, StatusChangedEventArgs e)
-        {
-            var newSenders = mSenders.Where((l) => l.Status == ServiceStatus.Running).ToArray();
-            Interlocked.Exchange(ref mActiveSenders, newSenders);
-        }
-
         #region AddListener(ManualChannelListener listener)
         /// <summary>
         /// This method adds a listener to the bridge.
@@ -111,7 +97,6 @@ namespace Xigadee
         protected IListener AddListener(ManualChannelListener listener)
         {
             listener.StatusChanged += Listener_StatusChanged;
-
             mListeners.Add(listener);
 
             return listener;
@@ -131,6 +116,18 @@ namespace Xigadee
             return sender;
         }
         #endregion
+
+        private void Listener_StatusChanged(object component, StatusChangedEventArgs e)
+        {
+            var newListeners = mListeners.Where((l) => l.Status == ServiceStatus.Running).ToArray();
+            Interlocked.Exchange(ref mActiveListeners, newListeners);
+        }
+
+        private void Sender_StatusChanged(object component, StatusChangedEventArgs e)
+        {
+            var newSenders = mSenders.Where((l) => l.Status == ServiceStatus.Running).ToArray();
+            Interlocked.Exchange(ref mActiveSenders, newSenders);
+        }
 
         private void Sender_OnProcess(object sender, TransmissionPayload e)
         {

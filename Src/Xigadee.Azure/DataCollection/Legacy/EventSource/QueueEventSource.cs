@@ -39,6 +39,9 @@ namespace Xigadee
         private readonly ResourceProfile mResourceProfile;
         #endregion
 
+        /// <summary>
+        /// This is the name of the component.
+        /// </summary>
         public string Name
         {
             get

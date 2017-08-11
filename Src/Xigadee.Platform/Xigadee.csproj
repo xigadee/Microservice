@@ -257,7 +257,7 @@
     <Compile Include="Exceptions\ChannelTypeNotSupportedException.cs" />
     <Compile Include="Exceptions\TransmitRetryExceededException.cs" />
     <Compile Include="Interfaces\IRequireDataCollector.cs" />
-    <Compile Include="Interfaces\IRequirePayloadSerializer.cs" />
+    <Compile Include="Interfaces\IRequirePayloadManagement.cs" />
     <Compile Include="Interfaces\ISharedService.cs" />
     <Compile Include="Interfaces\Microservice\IMicroserviceCommand.cs" />
     <Compile Include="Interfaces\Microservice\IMicroserviceCommunication.cs" />

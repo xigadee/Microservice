@@ -50,7 +50,7 @@ namespace Xigadee
 
             onCreate?.Invoke(component);
 
-            cpipe.AttachSender(component, setFromChannelProperties);
+            cpipe.AttachSender(component, setFromChannelProperties: setFromChannelProperties);
 
             return cpipe;
         }

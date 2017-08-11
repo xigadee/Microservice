@@ -10,11 +10,14 @@ namespace Xigadee
         /// <summary>
         /// Gets the dead letter listener from the incoming manual listener.
         /// </summary>
-        /// <param name="mListener">The m listener.</param>
+        /// <param name="sender">The m listener.</param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public static IListener GetDeadLetterListener(this ManualChannelListener mListener)
+        public static IListener GetDeadLetterListener(this ManualChannelSender sender)
         {
+            var listener = new ManualChannelListener();
+
+            
             throw new NotImplementedException();
         }
     }

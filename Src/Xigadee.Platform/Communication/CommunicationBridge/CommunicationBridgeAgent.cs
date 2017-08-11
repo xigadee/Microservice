@@ -15,10 +15,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -118,11 +114,18 @@ namespace Xigadee
             /// </summary>
             /// <param name="payload">The payload.</param>
             /// <param name="listener">The listener.</param>
-            public TransmissionPayloadHolder(TransmissionPayload payload, IListener listener)
+            /// <param name="retryCount">This is the permitted number of failure retries.</param>
+            public TransmissionPayloadHolder(TransmissionPayload payload, IListener listener, int? retryCount = null)
             {
                 Payload = payload;
                 Listener = listener;
+                RetryCount = retryCount;
             }
+
+            /// <summary>
+            /// This is the permitted number of retries for the payload if the message is signalled as failed.
+            /// </summary>
+            public int? RetryCount { get; }
             /// <summary>
             /// Gets the payload.
             /// </summary>
@@ -131,6 +134,11 @@ namespace Xigadee
             /// Gets the listener.
             /// </summary>
             public IListener Listener { get; }
+
+            /// <summary>
+            /// Gets the payload identifier.
+            /// </summary>
+            public Guid Id { get { return Payload.Id; } }
         }
     }
 }

@@ -30,7 +30,7 @@ namespace Xigadee
     /// This container holds all the communication components (sender/listener/bidirectional) for the Microservice.
     /// </summary>
     public partial class CommunicationContainer: ServiceContainerBase<CommunicationStatistics, CommunicationPolicy>
-        , IRequireServiceOriginator, IRequireDataCollector, IRequirePayloadSerializer, IRequireSharedServices
+        , IRequireServiceOriginator, IRequireDataCollector, IRequirePayloadManagement, IRequireSharedServices
         , IRequireScheduler, ITaskManagerProcess, IRequireSecurityService
     {
         #region Declarations
@@ -313,8 +313,8 @@ namespace Xigadee
                 if (service is IRequireServiceOriginator)
                     ((IRequireServiceOriginator)service).OriginatorId = OriginatorId;
 
-                if (service is IRequirePayloadSerializer)
-                    ((IRequirePayloadSerializer)service).PayloadSerializer = PayloadSerializer;
+                if (service is IRequirePayloadManagement)
+                    ((IRequirePayloadManagement)service).PayloadSerializer = PayloadSerializer;
 
                 if (service is IContainerService)
                     ((IContainerService)service).Services.ForEach(s => ServiceStart(s));
