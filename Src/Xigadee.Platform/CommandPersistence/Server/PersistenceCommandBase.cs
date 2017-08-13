@@ -468,11 +468,7 @@ namespace Xigadee
             if (entityType == null)
                 entityType = EntityType;
 
-            CommandRegister(
-                  channelId.ToLowerInvariant()
-                , entityType.ToLowerInvariant()
-                , actionType.ToLowerInvariant()
-                , actionPayload);
+            CommandRegister((channelId.ToLowerInvariant(), entityType.ToLowerInvariant(), actionType.ToLowerInvariant()), actionPayload);
         }
         #endregion
 

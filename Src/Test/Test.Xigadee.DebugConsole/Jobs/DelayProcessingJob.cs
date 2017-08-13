@@ -31,7 +31,7 @@ namespace Test.Xigadee
         {
         }
 
-        protected override void JobSchedulesInitialise()
+        protected override void JobSchedulesManualRegister()
         {
             var job = mPolicy.ToCommandSchedule(ExecuteJob, $"DelayedProcessingJob: {GetType().Name}");
             

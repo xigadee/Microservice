@@ -137,7 +137,7 @@ namespace Xigadee
 
             Scheduler.Register(mMasterJobContext.NegotiationPollScheduleInitialise(MasterJobStateNotificationOutgoing));
 
-            CommandRegister(MasterJobNegotiationChannelIdIncoming, mPolicy.MasterJobNegotiationChannelType, null, MasterJobStateNotificationIncoming);
+            CommandRegister((MasterJobNegotiationChannelIdIncoming, mPolicy.MasterJobNegotiationChannelType, null), MasterJobStateNotificationIncoming);
         }
         #endregion
         #region MasterJobTearDown()
@@ -151,7 +151,7 @@ namespace Xigadee
 
             Scheduler.Unregister(mMasterJobContext.NegotiationPollSchedule);
 
-            CommandUnregister(MasterJobNegotiationChannelIdIncoming, mPolicy.MasterJobNegotiationChannelType, null);
+            CommandUnregister((MasterJobNegotiationChannelIdIncoming, mPolicy.MasterJobNegotiationChannelType, null));
 
             mMasterJobContext.Stop();
         }
@@ -310,7 +310,8 @@ namespace Xigadee
             rq.TraceWrite("Processing", "Command/MasterJobStateNotificationIncoming");
 
             //Raise an event for the incoming communication.
-            FireAndDecorateEventArgs(OnMasterJobCommunication, () => new MasterJobCommunicationEventArgs(MasterJobCommunicationDirection.Incoming
+            FireAndDecorateEventArgs(OnMasterJobCommunication, () => new MasterJobCommunicationEventArgs(
+                  MasterJobCommunicationDirection.Incoming
                 , mMasterJobContext.State
                 , rq.Message.ActionType
                 , mMasterJobContext.StateChangeCounter
@@ -425,7 +426,7 @@ namespace Xigadee
         /// <summary>
         /// You should override this command to register incoming requests when the master job becomes active.
         /// </summary>
-        protected virtual void MasterJobCommandsRegister()
+        protected virtual void MasterJobCommandsManualRegister()
         {
 
         }
@@ -434,7 +435,7 @@ namespace Xigadee
         /// <summary>
         /// You should override this method to unregister active commands when the job is shutting down or moves to an inactive state.
         /// </summary>
-        protected virtual void MasterJobCommandsUnregister()
+        protected virtual void MasterJobCommandsManualUnregister()
         {
 
         }
@@ -484,7 +485,7 @@ namespace Xigadee
         /// </summary>
         protected virtual void MasterJobCommandsStart()
         {
-            MasterJobCommandsRegister();
+            MasterJobCommandsManualRegister();
 
             foreach (var signature in this.CommandMethodAttributeSignatures<MasterJobCommandContractAttribute>(true))
             {
@@ -499,7 +500,9 @@ namespace Xigadee
         /// </summary>
         protected virtual void MasterJobCommandsStop()
         {
-            MasterJobCommandsUnregister();
+            MasterJobCommandsManualUnregister();
+
+            
         }
 
         #region MasterJobSchedulesStart()

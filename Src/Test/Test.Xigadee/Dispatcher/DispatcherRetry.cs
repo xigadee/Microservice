@@ -40,6 +40,7 @@ namespace Test.Xigadee.Dispatcher
 
             var rs = init.Process<string,string>(("freddy", "one","two"), "hello").Result;
 
+            Assert.IsTrue(rs.ResponseCode == 500);
         }
     }
 }

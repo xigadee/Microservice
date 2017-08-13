@@ -109,7 +109,7 @@ namespace Xigadee
         /// This method register the job expiry task.
         /// </summary>
         /// <param name="config">The job configuration</param>
-        protected override void JobSchedulesInitialise()
+        protected override void JobSchedulesManualRegister()
         {
             var job = new CommandJobSchedule(ScheduleExpireEntities
                 , mPolicy.JobPollSchedule
@@ -209,9 +209,9 @@ namespace Xigadee
             if (string.IsNullOrWhiteSpace(mPolicy.EntityChangeEventsChannel))
                 throw new NotSupportedException("EntityChangeTrackEvents is set as active, but the EntityChangeEventsChannel is not defined.");
 
-            CommandRegister(mPolicy.EntityChangeEventsChannel, typeof(E).Name, EntityActions.Create, EntityChangeNotification);
-            CommandRegister(mPolicy.EntityChangeEventsChannel, typeof(E).Name, EntityActions.Update, EntityChangeNotification);
-            CommandRegister(mPolicy.EntityChangeEventsChannel, typeof(E).Name, EntityActions.Delete, EntityChangeNotification);
+            CommandRegister((mPolicy.EntityChangeEventsChannel, typeof(E).Name, EntityActions.Create), EntityChangeNotification);
+            CommandRegister((mPolicy.EntityChangeEventsChannel, typeof(E).Name, EntityActions.Update), EntityChangeNotification);
+            CommandRegister((mPolicy.EntityChangeEventsChannel, typeof(E).Name, EntityActions.Delete), EntityChangeNotification);
         } 
         #endregion
 

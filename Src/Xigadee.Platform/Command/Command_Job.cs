@@ -41,7 +41,7 @@ namespace Xigadee
             if (mPolicy.ScheduleReflectionSupported)
                 JobSchedulesReflectionInitialise();
 
-            JobSchedulesInitialise();
+            JobSchedulesManualRegister();
         }
         /// <summary>
         /// This method stops and registered job schedules.
@@ -57,11 +57,14 @@ namespace Xigadee
         /// <summary>
         /// This method can be overriden to enable additional schedules to be registered for the job.
         /// </summary>
-        protected virtual void JobSchedulesInitialise()
+        protected virtual void JobSchedulesManualRegister()
         {
-
         }
         #endregion
 
+        protected virtual CommandJobSchedule JobScheduleRegister()
+        {
+            return null;
+        }
     }
 }

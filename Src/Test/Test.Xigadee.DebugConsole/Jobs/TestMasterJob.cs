@@ -41,9 +41,9 @@ namespace Test.Xigadee
 
 
 
-        protected override void MasterJobCommandsRegister()
+        protected override void MasterJobCommandsManualRegister()
         {
-            CommandRegister("mychannel", "do", "something", DoSomething);
+            CommandRegister(("mychannel", "do", "something"), DoSomething);
         }
 
         private async Task DoSomething(TransmissionPayload rq, List<TransmissionPayload> rs)
@@ -51,9 +51,9 @@ namespace Test.Xigadee
             Collector?.LogMessage("all done");
         }
 
-        protected override void MasterJobCommandsUnregister()
+        protected override void MasterJobCommandsManualUnregister()
         {
-            CommandUnregister("mychannel", "do", "something");
+            CommandUnregister(("mychannel", "do", "something"));
 
         }
 

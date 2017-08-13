@@ -74,27 +74,25 @@ namespace Xigadee
             if (!ServiceMessageHelper.ExtractContractInfo<CM>(out channelId, out messageType, out actionType))
                 throw new InvalidMessageContractException(typeof(CM));
 
-            CommandRegister(channelId, messageType, actionType, action, exceptionAction, typeof(CM).Name);
+            CommandRegister((channelId, messageType, actionType), action, exceptionAction, typeof(CM).Name);
         }
         #endregion
         #region CommandRegister...
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="channelId"></param>
-        /// <param name="messageType"></param>
-        /// <param name="actionType"></param>
-        /// <param name="action"></param>
-        /// <param name="exceptionAction"></param>
+        /// <param name="header">The service message header</param>
+        /// <param name="action">The command method action.</param>
+        /// <param name="exceptionAction">An option exception action.</param>
         /// <param name="referenceId">This is the referenceId of the command</param>
-        /// <param name="isMasterJob">Specifies whether the command is a master job.</param>
-        protected void CommandRegister(string channelId, string messageType, string actionType
+        /// <param name="isMasterJob">Specifies whether the command is related to a master job.</param>
+        protected void CommandRegister(ServiceMessageHeader header
             , Func<TransmissionPayload, List<TransmissionPayload>, Task> action
             , Func<Exception, TransmissionPayload, List<TransmissionPayload>, Task> exceptionAction = null
             , string referenceId = null
             , bool isMasterJob = false)
         {
-            var wrapper = new MessageFilterWrapper((channelId, messageType, actionType), null);
+            var wrapper = new MessageFilterWrapper(header, null);
 
             CommandRegister(wrapper, action, exceptionAction, referenceId);
         }
@@ -163,25 +161,25 @@ namespace Xigadee
             string channelId, messageType, actionType;
             if (!ServiceMessageHelper.ExtractContractInfo<C>(out channelId, out messageType, out actionType))
                 throw new InvalidMessageContractException(typeof(C));
-            CommandUnregister(channelId, messageType, actionType, isMasterJob);
+            CommandUnregister((channelId, messageType, actionType), isMasterJob);
         }
         #endregion
         #region CommandUnregister...
         /// <summary>
         /// This method unregisters a particular command.
         /// </summary>
-        /// <param name="channelId"></param>
-        /// <param name="messageType">The command message type</param>
-        /// <param name="actionType">The command action type</param>
-        protected void CommandUnregister(string channelId, string messageType, string actionType, bool isMasterJob = false)
+        /// <param name="header"></param>
+        /// <param name="isMasterJob">Specifies whether the command is linked to a master job.</param>
+        protected void CommandUnregister(ServiceMessageHeader header, bool isMasterJob = false)
         {
-            CommandUnregister(new MessageFilterWrapper((channelId, messageType, actionType), null), isMasterJob);
+            CommandUnregister(new MessageFilterWrapper(header, null), isMasterJob);
         }
 
         /// <summary>
         /// This method unregisters a particular command.
         /// </summary>
         /// <param name="key">Message filter wrapper key</param>
+        /// <param name="isMasterJob">Specifies whether the command is linked to a master job.</param>
         protected void CommandUnregister(MessageFilterWrapper key, bool isMasterJob)
         {
             var item = mSupported.Keys.FirstOrDefault((d) => d == key);
