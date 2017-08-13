@@ -49,7 +49,7 @@ namespace Xigadee
         /// This event is used by the component container to discover when a command is registered or deregistered.
         /// Implement IMessageHandlerDynamic to enable this feature.
         /// </summary>
-        public event EventHandler<CommandChange> OnCommandChange;
+        public event EventHandler<CommandChangeEventArgs> OnCommandChange;
         /// <summary>
         /// This is the shared service collection.
         /// </summary>
@@ -233,6 +233,37 @@ namespace Xigadee
         {
             mSharedServices = sharedServices;
         }
+        #endregion
+
+        #region FireAndDecorateEventArgs<E>(EventHandler<E> handler, Func<E> creator)
+        /// <summary>
+        /// Fires and decorates eventarg with command properties.
+        /// </summary>
+        /// <typeparam name="E">The eventarg type.</typeparam>
+        /// <param name="handler">The handler.</param>
+        /// <param name="creator">The creator that is fired if there are subscribers to the event.</param>
+        protected virtual E FireAndDecorateEventArgs<E>(EventHandler<E> handler, Func<E> creator)
+            where E : CommandEventArgsBase
+        {
+            if (handler == null)
+                return null;
+
+            var args = creator();
+
+            args.ServiceId = OriginatorId.ServiceId;
+            args.CommandName = FriendlyName;
+
+            try
+            {
+                handler(this, args);
+            }
+            catch (Exception ex)
+            {
+                Collector?.LogException($"{GetType().Name}/FireAndDecorateEventArgs/{handler.GetType().Name}/{typeof(E).Name}", ex);
+            }
+
+            return args;
+        } 
         #endregion
     }
 

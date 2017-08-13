@@ -237,11 +237,7 @@ namespace Xigadee
         /// <summary>
         /// The Master Jobs.
         /// </summary>
-        public Dictionary<Guid, MasterJobSchedule> Jobs { get; } = new Dictionary<Guid, MasterJobSchedule>();
-        /// <summary>
-        /// The Master Job commands.
-        /// </summary>
-        public List<CommandHolder> Commands { get; } = new List<CommandHolder>();
+        public Dictionary<Guid, CommandMasterJobSchedule> Jobs { get; } = new Dictionary<Guid, CommandMasterJobSchedule>();
 
 
         public virtual void Start()

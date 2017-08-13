@@ -15,26 +15,25 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
     /// <summary>
     /// This class contains the change information for the command.
     /// </summary>
-    public class CommandChange
+    public class OutgoingRequestEventArgs: CommandEventArgsBase
     {
-        public CommandChange(bool isRemoval, MessageFilterWrapper key)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OutgoingRequestEventArgs"/> class.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        public OutgoingRequestEventArgs(OutgoingRequest request)
         {
-            IsRemoval = isRemoval;
-            Key = key;
+            Request = request;
         }
-
-        public bool IsRemoval { get; protected set; }
-
-        public MessageFilterWrapper Key { get; protected set; }
+        /// <summary>
+        /// Gets the outgoing request.
+        /// </summary>
+        public OutgoingRequest Request { get; }
     }
 }

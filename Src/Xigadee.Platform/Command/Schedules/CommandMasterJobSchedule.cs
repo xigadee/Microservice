@@ -43,7 +43,7 @@ namespace Xigadee
     /// This schedule is used by the master job schedules.
     /// </summary>
     /// <seealso cref="Xigadee.Schedule" />
-    public class MasterJobSchedule: Schedule
+    public class CommandMasterJobSchedule: Schedule
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MasterJobNegotiationPollSchedule"/> class.
@@ -52,7 +52,7 @@ namespace Xigadee
         /// <param name="name">The schedule name.</param>
         /// <param name="initialise">The initialise action.</param>
         /// <param name="cleanup">The cleanup action.</param>
-        public MasterJobSchedule(Func<Schedule, CancellationToken, Task> execute
+        public CommandMasterJobSchedule(Func<Schedule, CancellationToken, Task> execute
             , string name = null
             , Action<Schedule> initialise = null
             , Action<Schedule> cleanup = null

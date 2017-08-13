@@ -43,15 +43,15 @@ namespace Xigadee
         /// <summary>
         /// This event is fired when an outgoing request is initiated.
         /// </summary>
-        public event EventHandler<OutgoingRequest> OnOutgoingRequest;
+        public event EventHandler<OutgoingRequestEventArgs> OnOutgoingRequest;
         /// <summary>
         /// This event is fired when an outgoing request times out.
         /// </summary>
-        public event EventHandler<OutgoingRequest> OnOutgoingRequestTimeout;
+        public event EventHandler<OutgoingRequestEventArgs> OnOutgoingRequestTimeout;
         /// <summary>
         /// This event is fired when an outgoing request completes
         /// </summary>
-        public event EventHandler<OutgoingRequest> OnOutgoingRequestComplete;
+        public event EventHandler<OutgoingRequestEventArgs> OnOutgoingRequestComplete;
         #endregion
         #region UseASPNETThreadModel
         /// <summary>
@@ -247,7 +247,7 @@ namespace Xigadee
             }
 
             //Raise the event.
-            OnOutgoingRequest?.Invoke(this, tracker);
+            FireAndDecorateEventArgs(OnOutgoingRequest, () => new OutgoingRequestEventArgs(tracker));
 
             //Submit the payload for processing to the task manager
             TaskManager(this, tracker.Id, tracker.Payload);
@@ -406,7 +406,7 @@ namespace Xigadee
 
                 holder.Tcs.SetResult(payload);
 
-                OnOutgoingRequestComplete?.Invoke(this, holder);
+                FireAndDecorateEventArgs(OnOutgoingRequestComplete, () => new OutgoingRequestEventArgs(holder));
             }
             catch (Exception ex)
             {
@@ -483,7 +483,7 @@ namespace Xigadee
                 Collector?.LogMessage(LoggingLevel.Warning, $"OutgoingRequestTimeout - id={id} has timeout for {holder?.Payload?.Message?.ProcessCorrelationKey}", "RqRsTimeout");
 
                 //Raise the reference to the time out
-                OnOutgoingRequestTimeout?.Invoke(this, holder);
+                FireAndDecorateEventArgs(OnOutgoingRequestTimeout, () => new OutgoingRequestEventArgs(holder));
             }
             catch (Exception ex)
             {

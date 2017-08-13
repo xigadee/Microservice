@@ -132,7 +132,7 @@ namespace Xigadee
 
             mMasterJobContext.OnMasterJobStateChange += (object o, MasterJobStateChangeEventArgs s) =>
             {
-                s.ServiceName = OriginatorId.Name;
+                s.ServiceId = OriginatorId.Name;
                 s.CommandName = GetType().Name;
                 try
                 {

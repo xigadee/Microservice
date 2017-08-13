@@ -78,6 +78,12 @@
     <Compile Include="CommandPersistence\Server\Memory\Pipeline\AttachPersistenceManagerHandlerMemory.cs" />
     <Compile Include="Command\Attributes\CommandMethod\CommandContractAttributeBase.cs" />
     <Compile Include="Command\Command_Job.cs" />
+    <Compile Include="Command\EventArgs\Base\CommandEventArgsBase.cs" />
+    <Compile Include="Command\EventArgs\Base\MasterJobEventArgsBase.cs" />
+    <Compile Include="Command\EventArgs\MasterJobStateChangeEventArgs.cs" />
+    <Compile Include="Command\EventArgs\OutgoingRequestEventArgs.cs" />
+    <Compile Include="Command\EventArgs\ProcessRequestEventArgs.cs" />
+    <Compile Include="Command\Helper\MasterJobCommunicationDirection.cs" />
     <Compile Include="Command\MasterJob\Attribute\MasterJobCommandContractAttribute.cs" />
     <Compile Include="Command\MasterJob\Attribute\MasterJobScheduleAttribute.cs" />
     <Compile Include="Command\Attributes\JobSchedule\JobScheduleSignatureHelper.cs" />
@@ -98,11 +104,9 @@
     <Compile Include="Command\Exceptions\CommandException.cs" />
     <Compile Include="Command\Exceptions\CommandNotSupportedException.cs" />
     <Compile Include="Command\Exceptions\OutgoingRequestsNotEnabledException.cs" />
-    <Compile Include="Command\Helper\CommandContext.cs" />
-    <Compile Include="Command\Helper\CommandHolderException.cs" />
-    <Compile Include="Command\Helper\CommandTimeoutSchedule.cs" />
+    <Compile Include="Command\Schedules\CommandTimeoutSchedule.cs" />
     <Compile Include="Command\MasterJob\MasterJobContext.cs" />
-    <Compile Include="Command\MasterJob\MasterJobSchedule.cs" />
+    <Compile Include="Command\Schedules\CommandMasterJobSchedule.cs" />
     <Compile Include="Command\MasterJob\Strategy\MasterJobNegotiationStrategy.cs" />
     <Compile Include="Command\MasterJob\Strategy\MasterJobNegotiationStrategyBase.cs" />
     <Compile Include="Command\Pipeline\AssignMasterJob.cs" />
@@ -353,23 +357,22 @@
     <Compile Include="Communication\Channel\ChannelDirection.cs" />
     <Compile Include="Command\Command.cs" />
     <Compile Include="Command\Policy\CommandPolicy.cs" />
-    <Compile Include="Command\Helper\CommandTimerPoll.cs" />
+    <Compile Include="Command\Policy\CommandTimerPoll.cs" />
     <Compile Include="Command\Command_Channel.cs" />
     <Compile Include="Command\Command_Registration.cs" />
     <Compile Include="Command\Command_MasterJob.cs" />
     <Compile Include="Command\Command_OutgoingRequests.cs" />
     <Compile Include="Command\Command_Statistics.cs" />
-    <Compile Include="Command\EventHandler\CommandChange.cs" />
-    <Compile Include="Command\EventHandler\MasterJobStateChange.cs" />
+    <Compile Include="Command\EventArgs\CommandChangeEventArgs.cs" />
+    <Compile Include="Command\EventArgs\MasterJobCommunicationEventArgs.cs" />
     <Compile Include="Command\Exceptions\CommandStartupException.cs" />
     <Compile Include="Command\Exceptions\OutgoingRequestTransmitException.cs" />
     <Compile Include="Command\Handler\CommandHandler.cs" />
     <Compile Include="Command\Handler\CommandHandlerStatistics.cs" />
     <Compile Include="Command\Handler\ICommandHandler.cs" />
     <Compile Include="Command\Handler\ICommandHandlerStatistics.cs" />
-    <Compile Include="Command\Helper\CommandHolder.cs" />
-    <Compile Include="Command\Helper\CommandPolicyHelper.cs" />
-    <Compile Include="Command\Helper\CommandSchedule.cs" />
+    <Compile Include="Command\Policy\CommandPolicyHelper.cs" />
+    <Compile Include="Command\Schedules\CommandJobSchedule.cs" />
     <Compile Include="Command\Helper\CommandNotificationBehaviour.cs" />
     <Compile Include="Interfaces\ICommand.cs" />
     <Compile Include="Command\MasterJob\MasterJobState.cs" />
@@ -744,7 +747,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CommandPersistence\Pipeline\Add\" />
-    <Folder Include="Command\Security\" />
     <Folder Include="Communication\Pipeline\Debug\" />
     <Folder Include="DataCollection\Pipeline\Attach\" />
     <Folder Include="Pipeline\Exceptions\" />

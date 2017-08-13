@@ -111,7 +111,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="sender">The command which changes.</param>
         /// <param name="e">The change parameters.</param>
-        private void Internal_OnCommandChange(object sender, CommandChange e)
+        private void Internal_OnCommandChange(object sender, CommandChangeEventArgs e)
         {
             //Clear the message map cache as the cache is no longer valid due to removal.
             if (e.IsRemoval)

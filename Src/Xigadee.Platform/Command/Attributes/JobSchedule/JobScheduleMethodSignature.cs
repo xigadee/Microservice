@@ -177,7 +177,11 @@ namespace Xigadee
             }
         }
 
-        public IEnumerable<Schedule> ToSchedules()
+        /// <summary>
+        /// Converts the attributes in to CommandJobSchedules.
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<CommandJobSchedule> ToSchedules()
         {
             yield break;
         }

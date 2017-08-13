@@ -25,7 +25,7 @@ namespace Xigadee
         public CommandInline(ServiceMessageHeader header
             , Func<CommandInlineContext, Task> command
             , string referenceId = null
-            , CommandPolicy policy = null) :base(policy ?? new CommandPolicy() { OnExceptionCallProcessRequestException = true })
+            , CommandPolicy policy = null) :base(policy ?? new CommandPolicy() { OnProcessRequestException = ProcessRequestExceptionBehaviour.SignalSuccessAndSend500ErrorResponse })
         {
             mKey = new MessageFilterWrapper(header, null);
             mCommand = command;

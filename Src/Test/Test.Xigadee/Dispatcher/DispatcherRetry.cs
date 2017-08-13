@@ -24,7 +24,6 @@ namespace Test.Xigadee.Dispatcher
                     .AttachSender(response.GetSender())
                     .Revert();
 
-
             var ms2 = new MicroservicePipeline("client")
                 .AdjustPolicyTaskManagerForDebug()
                 .AddChannelOutgoing("freddy")

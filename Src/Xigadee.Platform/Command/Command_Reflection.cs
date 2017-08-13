@@ -25,6 +25,7 @@ namespace Xigadee
 {
     public abstract partial class CommandBase<S, P, H>
     {
+        #region CommandsRegisterReflection()
         /// <summary>
         /// This method scans through the command and registers commands that are defined using the metadata tags.
         /// </summary>
@@ -36,15 +37,16 @@ namespace Xigadee
                     , (rq, rs) => signature.Item2.Action(rq, rs, PayloadSerializer)
                     , referenceId: signature.Item3);
             }
-        }
-
+        } 
+        #endregion
+        #region CommandChannelAdjust<A>(A attr)
         /// <summary>
         /// This method replaces the channel with the command default if the value specified in the attribute is null.
         /// </summary>
         /// <param name="attr">The incoming attribute whose header channel should be checked.</param>
         /// <returns>Returns a message filter wrapper for the header.</returns>
         protected MessageFilterWrapper CommandChannelAdjust<A>(A attr)
-            where A: CommandContractAttributeBase
+            where A : CommandContractAttributeBase
         {
             ServiceMessageHeader header = attr.Header;
 
@@ -52,7 +54,8 @@ namespace Xigadee
                 header = new ServiceMessageHeader(ChannelId, header.MessageType, header.ActionType);
 
             return new MessageFilterWrapper(header);
-        }
+        } 
+        #endregion
 
         #region JobSchedulesReflectionInitialise()
         /// <summary>

@@ -113,50 +113,20 @@ namespace Xigadee
             , string referenceId = null
             , bool isMasterJob = false)
         {
-            if (exceptionAction == null && mPolicy.OnExceptionCallProcessRequestException)
-                exceptionAction = ProcessRequestException;
-
-            Func<TransmissionPayload, List<TransmissionPayload>, Task> command = async (rq, rs) =>
-            {
-                bool error = false;
-                Exception actionEx = null;
-                try
-                {
-                    await action(rq, rs);
-                }
-                catch (Exception ex)
-                {
-                    if (exceptionAction == null)
-                        throw;
-                    error = true;
-                    actionEx = ex;
-                }
-
-                try
-                {
-                    if (error)
-                        await exceptionAction(actionEx, rq, rs);
-                }
-                catch (Exception ex)
-                {
-                    throw;
-                }
-            };
-
             var handler = new H();
 
-            handler.Initialise(key, command, exceptionAction, referenceId, isMasterJob);
+            handler.Initialise(key, action, exceptionAction, referenceId, isMasterJob);
 
             mSupported.Add(key, handler);
 
             switch (mPolicy.CommandNotify)
             {
                 case CommandNotificationBehaviour.OnRegistration:
-                    CommandNotify(key, false);
+                    CommandNotify(key, false, isMasterJob);
                     break;
                 case CommandNotificationBehaviour.OnRegistrationIfStarted:
                     if (Status == ServiceStatus.Running)
-                        CommandNotify(key, false);
+                        CommandNotify(key, false, isMasterJob);
                     break;
             }
         } 
@@ -168,19 +138,20 @@ namespace Xigadee
         /// </summary>
         protected virtual void CommandsNotify(bool remove = false)
         {
-            foreach (var key in mSupported.Keys)
-                CommandNotify(key, remove);
+            foreach (var item in mSupported)
+                CommandNotify(item.Key, remove, item.Value.IsMasterJob);
         }
         /// <summary>
         /// This method will notify the command container when a commands is added or removed.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="remove">Set this to true to remove the command mapping, false is default.</param>
-        protected virtual void CommandNotify(MessageFilterWrapper key, bool remove = false)
+        /// <param name="isMasterJob">Specifies whether it is a master job.</param>
+        protected virtual void CommandNotify(MessageFilterWrapper key, bool remove, bool isMasterJob)
         {
             try
             {
-                OnCommandChange?.Invoke(this, new CommandChange(remove, key));
+                OnCommandChange?.Invoke(this, new CommandChangeEventArgs(remove, key, isMasterJob));
             }
             catch (Exception ex)
             {
@@ -194,12 +165,12 @@ namespace Xigadee
         /// This method unregisters a command.
         /// </summary>
         /// <typeparam name="C">The message contract type</typeparam>
-        protected virtual void CommandUnregister<C>() where C : IMessageContract
+        protected virtual void CommandUnregister<C>(bool isMasterJob = false) where C : IMessageContract
         {
             string channelId, messageType, actionType;
             if (!ServiceMessageHelper.ExtractContractInfo<C>(out channelId, out messageType, out actionType))
                 throw new InvalidMessageContractException(typeof(C));
-            CommandUnregister(channelId, messageType, actionType);
+            CommandUnregister(channelId, messageType, actionType, isMasterJob);
         }
         #endregion
         #region CommandUnregister...
@@ -209,23 +180,23 @@ namespace Xigadee
         /// <param name="channelId"></param>
         /// <param name="messageType">The command message type</param>
         /// <param name="actionType">The command action type</param>
-        protected void CommandUnregister(string channelId, string messageType, string actionType)
+        protected void CommandUnregister(string channelId, string messageType, string actionType, bool isMasterJob = false)
         {
-            CommandUnregister(new MessageFilterWrapper((channelId, messageType, actionType), null));
+            CommandUnregister(new MessageFilterWrapper((channelId, messageType, actionType), null), isMasterJob);
         }
 
         /// <summary>
         /// This method unregisters a particular command.
         /// </summary>
         /// <param name="key">Message filter wrapper key</param>
-        protected void CommandUnregister(MessageFilterWrapper key)
+        protected void CommandUnregister(MessageFilterWrapper key, bool isMasterJob)
         {
             var item = mSupported.Keys.FirstOrDefault((d) => d == key);
             if (item != null)
             {
                 mSupported.Remove(item);
 
-                CommandNotify(item, true);
+                CommandNotify(item, true, isMasterJob);
             }
         }
         #endregion

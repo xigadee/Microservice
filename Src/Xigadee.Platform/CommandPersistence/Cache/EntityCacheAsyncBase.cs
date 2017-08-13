@@ -111,7 +111,7 @@ namespace Xigadee
         /// <param name="config">The job configuration</param>
         protected override void JobSchedulesInitialise()
         {
-            var job = new CommandSchedule(ScheduleExpireEntities
+            var job = new CommandJobSchedule(ScheduleExpireEntities
                 , mPolicy.JobPollSchedule
                 , $"EntityCacheHandlerBase: {typeof(E).Name} Expire Entities"
                 , mPolicy.JobPollIsLongRunning);

@@ -23,7 +23,7 @@ namespace Xigadee
     /// <summary>
     /// This schedule class is used to record the timeout count statistics.
     /// </summary>
-    public class CommandTimeoutSchedule: CommandSchedule
+    public class CommandTimeoutSchedule: CommandJobSchedule
     {
         private long mTimeouts;
         /// <summary>

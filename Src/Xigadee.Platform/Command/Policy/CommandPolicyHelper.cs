@@ -25,10 +25,10 @@ namespace Xigadee
 {
     public static class CommandPolicyHelper
     {
-        public static CommandSchedule ToCommandSchedule(this CommandPolicy policy, Func<Schedule
+        public static CommandJobSchedule ToCommandSchedule(this CommandPolicy policy, Func<Schedule
             , CancellationToken, Task> execute, string name)
         {
-            return new CommandSchedule(execute
+            return new CommandJobSchedule(execute
                 , policy.JobPollSchedule
                 , name
                 , policy.JobPollIsLongRunning);

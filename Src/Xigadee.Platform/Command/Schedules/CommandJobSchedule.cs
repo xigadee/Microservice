@@ -23,7 +23,7 @@ namespace Xigadee
     /// <summary>
     /// This is the command schedule generated for the specific command requirement.
     /// </summary>
-    public class CommandSchedule: Schedule
+    public class CommandJobSchedule: Schedule
     {
         /// <summary>
         /// This is the default constructor.
@@ -32,7 +32,7 @@ namespace Xigadee
         /// <param name="timerConfig">The timer poll configuration.</param>
         /// <param name="name">The name of the schedule.</param>
         /// <param name="isLongRunning">A boolean flag that specifies whether the process is long running.</param>
-        public CommandSchedule(Func<Schedule, CancellationToken, Task> execute, CommandTimerPoll timerConfig, string name = null, bool isLongRunning = false)
+        public CommandJobSchedule(Func<Schedule, CancellationToken, Task> execute, CommandTimerPoll timerConfig, string name = null, bool isLongRunning = false)
             : base(execute, name)
         {
             Frequency = timerConfig.Interval;

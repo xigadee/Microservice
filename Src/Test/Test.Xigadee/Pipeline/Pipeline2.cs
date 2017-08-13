@@ -162,7 +162,7 @@ namespace Test.Xigadee
             }
         }
 
-        private void Init_OnRequestUnresolved(object sender, TransmissionPayload e)
+        private void Init_OnRequestUnresolved(object sender, ProcessRequestEventArgs e)
         {
 
         }

@@ -134,20 +134,28 @@ namespace Xigadee
         {
             int timerStart = StatisticsInternal.ActiveIncrement();
             mLastAccessed = timerStart;
+            bool error = false;
+            Exception actionEx = null;
 
             try
             {
-                await Action(rq, rs);
-            }
-            catch (Exception ex)
-            {
-                StatisticsInternal.ErrorIncrement();
-                StatisticsInternal.Ex = ex;
+                try
+                {
+                    await Action(rq, rs);
+                }
+                catch (Exception ex)
+                {
+                    StatisticsInternal.ErrorIncrement();
+                    StatisticsInternal.Ex = ex;
+                    error = true;
+                    actionEx = ex;
 
-                if (ExceptionAction != null)
-                    await ExceptionAction(ex, rq, rs);
-                else
-                    throw;
+                    if (ExceptionAction == null)
+                        throw;
+                }
+
+                if (error)
+                    await ExceptionAction(actionEx, rq, rs);
             }
             finally
             {

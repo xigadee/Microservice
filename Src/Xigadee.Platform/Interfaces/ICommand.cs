@@ -31,23 +31,28 @@ namespace Xigadee
         /// <summary>
         /// This event is fired when an request is received and resolved.
         /// </summary>
-        event EventHandler<TransmissionPayload> OnRequest;
+        event EventHandler<ProcessRequestEventArgs> OnRequest;
         /// <summary>
         /// This event is fired when a request is received but not resolved.
         /// </summary>
-        event EventHandler<TransmissionPayload> OnRequestUnresolved;
+        event EventHandler<ProcessRequestEventArgs> OnRequestUnresolved;
+        /// <summary>
+        /// This event is fired when a request is received but not resolved.
+        /// </summary>
+        event EventHandler<ProcessRequestEventArgs> OnRequestUnhandledException;
+
         /// <summary>
         /// This event is fired when an outgoing request is initiated.
         /// </summary>
-        event EventHandler<OutgoingRequest> OnOutgoingRequest;
+        event EventHandler<OutgoingRequestEventArgs> OnOutgoingRequest;
         /// <summary>
         /// This event is fired when an outgoing request times out.
         /// </summary>
-        event EventHandler<OutgoingRequest> OnOutgoingRequestTimeout;
+        event EventHandler<OutgoingRequestEventArgs> OnOutgoingRequestTimeout;
         /// <summary>
         /// This event is fired when an outgoing request completes
         /// </summary>
-        event EventHandler<OutgoingRequest> OnOutgoingRequestComplete;
+        event EventHandler<OutgoingRequestEventArgs> OnOutgoingRequestComplete;
     }
     /// <summary>
     /// This is the root interface implemented by the command class.
@@ -108,7 +113,7 @@ namespace Xigadee
         /// <summary>
         /// This event is used to signal a change of registered message types for the command.
         /// </summary>
-        event EventHandler<CommandChange> OnCommandChange;
+        event EventHandler<CommandChangeEventArgs> OnCommandChange;
         /// <summary>
         /// This event is fired when the command's masterjob state is changed.
         /// </summary>
