@@ -95,22 +95,19 @@ namespace Xigadee
                 if (mPolicy == null)
                     throw new CommandStartupException("Command policy cannot be null");
 
-                CommandsRegister();
-
-                if (mPolicy.CommandReflectionSupported)
-                    CommandsRegisterReflection();
+                CommandsTearUp();
 
                 if (mPolicy.OutgoingRequestsEnabled)
                     OutgoingRequestsTearUp();
 
-                if (mPolicy.MasterJobEnabled)
-                    MasterJobTearUp();
-
                 if (mPolicy.JobsEnabled)
                     JobsTearUp();
 
+                if (mPolicy.MasterJobEnabled)
+                    MasterJobTearUp();
+
                 if (mPolicy.CommandNotify == CommandNotificationBehaviour.OnStartUp)
-                    CommandsNotify();
+                    CommandsNotify(false);
             }
             catch (Exception ex)
             {
@@ -135,26 +132,12 @@ namespace Xigadee
                 if (mPolicy.OutgoingRequestsEnabled)
                     OutgoingRequestsTearDown();
 
-                CommandsNotify(true);
+                CommandsTearDown();
             }
             catch (Exception ex)
             {
                 Collector?.LogException($"Command '{GetType().Name}' stop exception", ex);
                 throw;
-            }
-        }
-        #endregion
-        #region CommandsRegisterReflection()
-        /// <summary>
-        /// This method scans through the command and registers commands that are defined using the metadata tags.
-        /// </summary>
-        protected virtual void CommandsRegisterReflection()
-        {
-            foreach (var signature in this.CommandMethodAttributeSignatures<CommandContractAttribute>(true))
-            {
-                CommandRegister(CommandChannelAdjust(signature.Item1)
-                    , (rq, rs) => signature.Item2.Action(rq, rs, PayloadSerializer)
-                    , referenceId: signature.Item3);
             }
         }
         #endregion

@@ -26,6 +26,18 @@ namespace Xigadee
 {
     public abstract partial class CommandBase<S, P, H>
     {
+        #region *--> CommandsTearUp()
+        /// <summary>
+        /// This method sets up the command collection.
+        /// </summary>
+        protected virtual void CommandsTearUp()
+        {
+            CommandsRegister();
+
+            if (mPolicy.CommandReflectionSupported)
+                CommandsRegisterReflection();
+        }
+        #endregion
         #region CommandsRegister()
         /// <summary>
         /// This method should be overridden to populate supported commands.
@@ -36,9 +48,32 @@ namespace Xigadee
 
         }
         #endregion
+        #region CommandsRegisterReflection()
+        /// <summary>
+        /// This method scans through the command and registers commands that are defined using the metadata tags.
+        /// </summary>
+        protected virtual void CommandsRegisterReflection()
+        {
+            foreach (var signature in this.CommandMethodAttributeSignatures<CommandContractAttribute>(true))
+            {
+                CommandRegister(CommandChannelAdjust(signature.Item1)
+                    , (rq, rs) => signature.Item2.Action(rq, rs, PayloadSerializer)
+                    , referenceId: signature.Item3);
+            }
+        }
+        #endregion
+
+        #region *--> CommandsTearDown()
+        /// <summary>
+        /// This method tears down the command collection.
+        /// </summary>
+        protected virtual void CommandsTearDown()
+        {
+            CommandsNotify(true);
+        } 
+        #endregion
 
         #region CommandRegister<C>...
-
         /// <summary>
         /// 
         /// </summary>
@@ -127,28 +162,30 @@ namespace Xigadee
                         CommandNotify(key, false, isMasterJob);
                     break;
             }
-        } 
+        }
         #endregion
 
-        #region CommandsNotify..
+        #region CommandsNotify(bool isRemoval)
         /// <summary>
         /// This method can be used to nofity the command container of all the current keys currently supported.
         /// </summary>
-        protected virtual void CommandsNotify(bool remove = false)
+        protected virtual void CommandsNotify(bool isRemoval)
         {
             foreach (var item in mSupported)
-                CommandNotify(item.Key, remove, item.Value.IsMasterJob);
+                CommandNotify(item.Key, isRemoval, item.Value.IsMasterJob);
         }
+        #endregion
+        #region CommandNotify(MessageFilterWrapper key, bool remove, bool isMasterJob)
         /// <summary>
         /// This method will notify the command container when a commands is added or removed.
         /// </summary>
         /// <param name="key">The key.</param>
-        /// <param name="remove">Set this to true to remove the command mapping, false is default.</param>
+        /// <param name="isRemoval">Set this to true to remove the command mapping, false is default.</param>
         /// <param name="isMasterJob">Specifies whether it is a master job.</param>
-        protected virtual void CommandNotify(MessageFilterWrapper key, bool remove, bool isMasterJob)
+        protected virtual void CommandNotify(MessageFilterWrapper key, bool isRemoval, bool isMasterJob)
         {
-            FireAndDecorateEventArgs(OnCommandChange, () => new CommandChangeEventArgs(remove, key, isMasterJob));
-        }
+            FireAndDecorateEventArgs(OnCommandChange, () => new CommandChangeEventArgs(isRemoval, key, isMasterJob));
+        } 
         #endregion
 
         #region CommandUnregister<C>...
@@ -161,6 +198,7 @@ namespace Xigadee
             string channelId, messageType, actionType;
             if (!ServiceMessageHelper.ExtractContractInfo<C>(out channelId, out messageType, out actionType))
                 throw new InvalidMessageContractException(typeof(C));
+
             CommandUnregister((channelId, messageType, actionType), isMasterJob);
         }
         #endregion
