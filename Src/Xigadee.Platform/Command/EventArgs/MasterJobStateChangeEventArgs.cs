@@ -33,7 +33,7 @@ namespace Xigadee
         /// </summary>
         public string Debug()
         {
-            return $"State Change - {ServiceId}/{CommandName}: {StateOld} > {StateNew} @ {TimeStamp} - {Iteration}\r\n";
+            return $"State Change - {ServiceName}/{CommandName}: {StateOld} > {StateNew} @ {TimeStamp} - {Iteration}\r\n";
         }
     }
 }

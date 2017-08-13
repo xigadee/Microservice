@@ -130,19 +130,7 @@ namespace Xigadee
 
             mMasterJobContext = new MasterJobContext(mPolicy.MasterJobName ?? FriendlyName, mPolicy.MasterJobNegotiationStrategy);
 
-            mMasterJobContext.OnMasterJobStateChange += (object o, MasterJobStateChangeEventArgs s) =>
-            {
-                s.ServiceId = OriginatorId.Name;
-                s.CommandName = GetType().Name;
-                try
-                {
-                    OnMasterJobStateChange?.Invoke(this, s);
-                }
-                catch (Exception ex)
-                {
-                    Collector?.LogException("Command/OnMasterJobStateChange invoke", ex);
-                }
-            };
+            mMasterJobContext.OnMasterJobStateChange += (object o, MasterJobStateChangeEventArgs s) => FireAndDecorateEventArgs(OnMasterJobStateChange, () => s);
 
             //Initialise the context.
             mMasterJobContext.Start();
@@ -199,16 +187,13 @@ namespace Xigadee
                 case ServiceStatus.Running:
                 case ServiceStatus.Stopping:
                     TaskManager(this, null, payload);
-                    try
-                    {
-                        OnMasterJobCommunication?.Invoke(this, new MasterJobCommunicationEventArgs(
-                            OriginatorId.Name, GetType().Name, MasterJobCommunicationDirection.Outgoing, mMasterJobContext.State, action, mMasterJobContext.StateChangeCounter));
-                    }
-                    catch (Exception ex)
-                    {
-                        Collector?.LogException("OnMasterJobCommunication outgoing unexpected event error.", ex);
-                        payload.TraceWrite($"Error: {ex.Message}", "Command/NegotiationTransmit/OnMasterJobCommunication");
-                    }
+                    FireAndDecorateEventArgs(OnMasterJobCommunication
+                        , () => new MasterJobCommunicationEventArgs(
+                              MasterJobCommunicationDirection.Outgoing
+                            , mMasterJobContext.State
+                            , action
+                            , mMasterJobContext.StateChangeCounter)
+                        , (args,ex) => payload.TraceWrite($"Error: {ex.Message}", "Command/NegotiationTransmit/OnMasterJobCommunication"));
                     break;
             }
 
@@ -325,9 +310,10 @@ namespace Xigadee
             rq.TraceWrite("Processing", "Command/MasterJobStateNotificationIncoming");
 
             //Raise an event for the incoming communication.
-            OnMasterJobCommunication?.Invoke(this, new MasterJobCommunicationEventArgs(
-                OriginatorId.Name, GetType().Name, MasterJobCommunicationDirection.Incoming, mMasterJobContext.State
-                , rq.Message.ActionType, mMasterJobContext.StateChangeCounter
+            FireAndDecorateEventArgs(OnMasterJobCommunication, () => new MasterJobCommunicationEventArgs(MasterJobCommunicationDirection.Incoming
+                , mMasterJobContext.State
+                , rq.Message.ActionType
+                , mMasterJobContext.StateChangeCounter
                 , rq.Message.OriginatorServiceId));
 
             if (IsMatch(rq,MasterJobStates.IAmStandby))

@@ -53,6 +53,11 @@ namespace Xigadee
         /// This event is fired when an outgoing request completes
         /// </summary>
         event EventHandler<OutgoingRequestEventArgs> OnOutgoingRequestComplete;
+
+        /// <summary>
+        /// This event is used to signal a change of registered message types for the command.
+        /// </summary>
+        event EventHandler<CommandChangeEventArgs> OnCommandChange;
     }
     /// <summary>
     /// This is the root interface implemented by the command class.
@@ -110,14 +115,7 @@ namespace Xigadee
         /// The higher the value, the sooner the command will be started relative to the other commands with lower priorities.
         /// </summary>
         int StartupPriority { get; set; }
-        /// <summary>
-        /// This event is used to signal a change of registered message types for the command.
-        /// </summary>
-        event EventHandler<CommandChangeEventArgs> OnCommandChange;
-        /// <summary>
-        /// This event is fired when the command's masterjob state is changed.
-        /// </summary>
-        event EventHandler<MasterJobStateChangeEventArgs> OnMasterJobStateChange;
+
     }
 
     /// <summary>
@@ -125,6 +123,10 @@ namespace Xigadee
     /// </summary>
     public interface ICommandMasterJob
     {
+        /// <summary>
+        /// This event is fired when the command's masterjob state is changed.
+        /// </summary>
+        event EventHandler<MasterJobStateChangeEventArgs> OnMasterJobStateChange;
         /// <summary>
         /// Gets or sets the master job negotiation channel priority.
         /// </summary>

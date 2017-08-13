@@ -17,6 +17,10 @@ namespace Xigadee
         /// </summary>
         public string ServiceId { get; set; }
         /// <summary>
+        /// This is the service name.
+        /// </summary>
+        public string ServiceName { get; set; }
+        /// <summary>
         /// Gets or sets the name of the command.
         /// </summary>
         public string CommandName { get; set; }

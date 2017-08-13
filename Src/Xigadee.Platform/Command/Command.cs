@@ -242,7 +242,8 @@ namespace Xigadee
         /// <typeparam name="E">The eventarg type.</typeparam>
         /// <param name="handler">The handler.</param>
         /// <param name="creator">The creator that is fired if there are subscribers to the event.</param>
-        protected virtual E FireAndDecorateEventArgs<E>(EventHandler<E> handler, Func<E> creator)
+        /// <param name="onError">This is an optional function that can be called on an error</param>
+        protected virtual E FireAndDecorateEventArgs<E>(EventHandler<E> handler, Func<E> creator, Action<E,Exception> onError = null)
             where E : CommandEventArgsBase
         {
             if (handler == null)
@@ -251,6 +252,7 @@ namespace Xigadee
             var args = creator();
 
             args.ServiceId = OriginatorId.ServiceId;
+            args.ServiceName = OriginatorId.Name;
             args.CommandName = FriendlyName;
 
             try
@@ -260,6 +262,11 @@ namespace Xigadee
             catch (Exception ex)
             {
                 Collector?.LogException($"{GetType().Name}/FireAndDecorateEventArgs/{handler.GetType().Name}/{typeof(E).Name}", ex);
+                try
+                {
+                    onError?.Invoke(args, ex);
+                }
+                catch {}//Don't care.
             }
 
             return args;

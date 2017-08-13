@@ -27,15 +27,12 @@ namespace Xigadee
         /// <summary>
         /// Initializes a new instance of the <see cref="MasterJobCommunicationEventArgs"/> class.
         /// </summary>
-        /// <param name="serviceName">Name of the service.</param>
-        /// <param name="commandName">Name of the command.</param>
         /// <param name="direction">The direction.</param>
         /// <param name="state">The state.</param>
         /// <param name="action">The action.</param>
         /// <param name="iteration">The current iteration.</param>
         /// <param name="originatorId">The originator identifier.</param>
-        public MasterJobCommunicationEventArgs(string serviceName, string commandName
-            , MasterJobCommunicationDirection direction
+        public MasterJobCommunicationEventArgs(MasterJobCommunicationDirection direction
             , MasterJobState state, string action, long iteration, string originatorId = null)
             :base(iteration)
         {
@@ -43,9 +40,6 @@ namespace Xigadee
             Action = action;
             Direction = direction;
             OriginatorId = originatorId;
-            ServiceId = serviceName;
-            CommandName = commandName;
-
         }
         /// <summary>
         /// Gets the message originator identifier.
@@ -69,7 +63,7 @@ namespace Xigadee
         /// </summary>
         public string Debug()
         {
-            return $"Message {Direction} - {ServiceId}/{CommandName}: {State} --> {Action} @ {TimeStamp} - {Iteration} [{OriginatorId??ServiceId}]\r\n";
+            return $"Message {Direction} - {ServiceName}/{CommandName}: {State} --> {Action} @ {TimeStamp} - {Iteration} [{OriginatorId??ServiceName}]\r\n";
         }
     }
 }

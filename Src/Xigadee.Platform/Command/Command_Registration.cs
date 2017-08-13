@@ -149,14 +149,7 @@ namespace Xigadee
         /// <param name="isMasterJob">Specifies whether it is a master job.</param>
         protected virtual void CommandNotify(MessageFilterWrapper key, bool remove, bool isMasterJob)
         {
-            try
-            {
-                OnCommandChange?.Invoke(this, new CommandChangeEventArgs(remove, key, isMasterJob));
-            }
-            catch (Exception ex)
-            {
-                Collector?.LogException($"Command {GetType().Name} Change Notification failed", ex);
-            }
+            FireAndDecorateEventArgs(OnCommandChange, () => new CommandChangeEventArgs(remove, key, isMasterJob));
         }
         #endregion
 
