@@ -182,12 +182,17 @@ namespace Xigadee
         /// <param name="isMasterJob">Specifies whether the command is linked to a master job.</param>
         protected void CommandUnregister(MessageFilterWrapper key, bool isMasterJob)
         {
-            var item = mSupported.Keys.FirstOrDefault((d) => d == key);
-            if (item != null)
+            if (mSupported.ContainsKey(key))
             {
-                mSupported.Remove(item);
+                var handler = mSupported[key];
 
-                CommandNotify(item, true, isMasterJob);
+                if (handler.IsMasterJob == isMasterJob)
+                {
+                    mSupported.Remove(key);
+                    mCommandCache.Clear();
+
+                    CommandNotify(key, true, handler.IsMasterJob);
+                }
             }
         }
         #endregion

@@ -101,7 +101,7 @@ namespace Xigadee
                     CommandsRegisterReflection();
 
                 if (mPolicy.OutgoingRequestsEnabled)
-                    OutgoingRequestsInitialise();
+                    OutgoingRequestsTearUp();
 
                 if (mPolicy.MasterJobEnabled)
                     MasterJobTearUp();
@@ -133,7 +133,7 @@ namespace Xigadee
                     JobsTearDown();
 
                 if (mPolicy.OutgoingRequestsEnabled)
-                    OutgoingRequestsStop();
+                    OutgoingRequestsTearDown();
 
                 CommandsNotify(true);
             }

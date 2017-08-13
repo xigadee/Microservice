@@ -76,7 +76,8 @@ namespace Xigadee
                     return null;
 
                 if (mResponseId == null)
-                    mResponseId = new MessageFilterWrapper((ResponseChannelId, FriendlyName, ComponentId.ToString("N").ToUpperInvariant()),OriginatorId.ExternalServiceId);
+                    mResponseId = new MessageFilterWrapper((ResponseChannelId, FriendlyName, ComponentId.ToString("N").ToUpperInvariant())
+                        , OriginatorId.ExternalServiceId);
 
                 return mResponseId;
             }
@@ -329,11 +330,11 @@ namespace Xigadee
         }
         #endregion
 
-        #region OutgoingRequestsInitialise()
+        #region *--> OutgoingRequestsTearUp()
         /// <summary>
         /// This method starts the outgoing request support.
         /// </summary>
-        protected virtual void OutgoingRequestsInitialise()
+        protected virtual void OutgoingRequestsTearUp()
         {
             mOutgoingRequests = new ConcurrentDictionary<string, OutgoingRequestTracker>();
 
@@ -353,12 +354,15 @@ namespace Xigadee
             CommandRegister(ResponseId, OutgoingRequestResponseIn);
         }
         #endregion
-        #region OutgoingRequestsStop()
+        #region *--> OutgoingRequestsTearDown()
         /// <summary>
         /// This method stops the outgoing request supports and marks any pending jobs as cancelled.
         /// </summary>
-        protected virtual void OutgoingRequestsStop()
+        protected virtual void OutgoingRequestsTearDown()
         {
+            //Remove the filter for the message.
+            CommandUnregister(ResponseId, false);
+
             //Unregister the time out schedule.
             if (mScheduleTimeout != null)
             {
@@ -378,7 +382,6 @@ namespace Xigadee
             {
                 Collector?.LogException("OutgoingRequestsStop error", ex);
             }
-
         }
         #endregion
 

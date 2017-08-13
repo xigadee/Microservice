@@ -16,6 +16,7 @@
 
 #region using
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
@@ -134,9 +135,9 @@ namespace Xigadee
 
             //Initialise the context.
             mMasterJobContext.Start();
-
+            //Add the schedule to generate poll negotiation requests.
             Scheduler.Register(mMasterJobContext.NegotiationPollScheduleInitialise(MasterJobStateNotificationOutgoing));
-
+            //Add the incoming poll channel.
             CommandRegister((MasterJobNegotiationChannelIdIncoming, mPolicy.MasterJobNegotiationChannelType, null), MasterJobStateNotificationIncoming);
         }
         #endregion
@@ -149,8 +150,9 @@ namespace Xigadee
             if (mMasterJobContext.State == MasterJobState.Active)
                 MasterJobStop();
 
+            //Remove the negotiation poll schedule
             Scheduler.Unregister(mMasterJobContext.NegotiationPollSchedule);
-
+            //Remove the incoming poll command.
             CommandUnregister((MasterJobNegotiationChannelIdIncoming, mPolicy.MasterJobNegotiationChannelType, null));
 
             mMasterJobContext.Stop();
@@ -422,25 +424,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region MasterJobCommandsRegister()
-        /// <summary>
-        /// You should override this command to register incoming requests when the master job becomes active.
-        /// </summary>
-        protected virtual void MasterJobCommandsManualRegister()
-        {
-
-        }
-        #endregion
-        #region MasterJobCommandsUnregister()
-        /// <summary>
-        /// You should override this method to unregister active commands when the job is shutting down or moves to an inactive state.
-        /// </summary>
-        protected virtual void MasterJobCommandsManualUnregister()
-        {
-
-        }
-        #endregion
-
+        //MasterJob Start
         #region MasterJobStart()
         /// <summary>
         /// This method registers each job with the scheduler.
@@ -458,6 +442,56 @@ namespace Xigadee
             MasterJobSchedulesStart();
         }
         #endregion
+        #region MasterJobCommandsStart()
+        /// <summary>
+        /// Controls the master job commands start.
+        /// </summary>
+        protected virtual void MasterJobCommandsStart()
+        {
+            MasterJobCommandsManualRegister();
+
+            foreach (var signature in this.CommandMethodAttributeSignatures<MasterJobCommandContractAttribute>(true))
+            {
+                CommandRegister(CommandChannelAdjust(signature.Item1)
+                    , (rq, rs) => signature.Item2.Action(rq, rs, PayloadSerializer)
+                    , referenceId: signature.Item3
+                    , isMasterJob: true);
+            }
+        } 
+        #endregion
+        #region MasterJobCommandsManualRegister()
+        /// <summary>
+        /// You should override this command to register incoming requests when the master job becomes active.
+        /// </summary>
+        protected virtual void MasterJobCommandsManualRegister()
+        {
+
+        }
+        #endregion
+        #region MasterJobSchedulesStart()
+        /// <summary>
+        /// This method starts the master job schedules.
+        /// </summary>
+        protected virtual void MasterJobSchedulesStart()
+        {
+            foreach (var schedule in mMasterJobContext.Jobs.Values)
+            {
+                try
+                {
+                    schedule.Initialise?.Invoke(schedule);
+                }
+                catch (Exception ex)
+                {
+                    StatisticsInternal.Ex = ex;
+                    Collector?.LogException($"MasterJob '{schedule.Name} could not be initialised.'", ex);
+                }
+
+                SchedulerRegister(schedule);
+            }
+        }
+        #endregion
+
+        //MasterJob Stop
         #region MasterJobStop()
         /// <summary>
         /// This method removes each job from the scheduler.
@@ -479,22 +513,7 @@ namespace Xigadee
             mMasterJobContext.State = MasterJobState.Inactive;
         }
         #endregion
-
-        /// <summary>
-        /// Controls the master job commands start.
-        /// </summary>
-        protected virtual void MasterJobCommandsStart()
-        {
-            MasterJobCommandsManualRegister();
-
-            foreach (var signature in this.CommandMethodAttributeSignatures<MasterJobCommandContractAttribute>(true))
-            {
-                CommandRegister(CommandChannelAdjust(signature.Item1)
-                    , (rq, rs) => signature.Item2.Action(rq, rs, PayloadSerializer)
-                    , referenceId: signature.Item3
-                    , isMasterJob:true);
-            }
-        }
+        #region MasterJobCommandsStop()
         /// <summary>
         /// Controls the master job commands stop.
         /// </summary>
@@ -502,29 +521,18 @@ namespace Xigadee
         {
             MasterJobCommandsManualUnregister();
 
-            
-        }
+            var list = mSupported.Where((s) => s.Value.IsMasterJob).ToList();
 
-        #region MasterJobSchedulesStart()
+            list.ForEach((s) => CommandUnregister(s.Key, true));
+        } 
+        #endregion
+        #region MasterJobCommandsManualUnregister()
         /// <summary>
-        /// This method starts the master job schedules.
+        /// You should override this method to unregister active commands when the job is shutting down or moves to an inactive state.
         /// </summary>
-        protected virtual void MasterJobSchedulesStart()
+        protected virtual void MasterJobCommandsManualUnregister()
         {
-            foreach (var schedule in mMasterJobContext.Jobs.Values)
-            {
-                try
-                {
-                    schedule.Initialise?.Invoke(schedule);
-                }
-                catch (Exception ex)
-                {
-                    StatisticsInternal.Ex = ex;
-                    Collector?.LogException($"MasterJob '{schedule.Name} could not be initialised.'", ex);
-                }
 
-                SchedulerRegister(schedule);
-            }
         }
         #endregion
         #region MasterJobSchedulesStop()
