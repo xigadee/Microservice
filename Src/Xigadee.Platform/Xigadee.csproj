@@ -104,6 +104,7 @@
     <Compile Include="Command\Exceptions\CommandException.cs" />
     <Compile Include="Command\Exceptions\CommandNotSupportedException.cs" />
     <Compile Include="Command\Exceptions\OutgoingRequestsNotEnabledException.cs" />
+    <Compile Include="Command\Policy\ProcessRequestExceptionBehaviour.cs" />
     <Compile Include="Command\Schedules\CommandTimeoutSchedule.cs" />
     <Compile Include="Command\MasterJob\MasterJobContext.cs" />
     <Compile Include="Command\Schedules\CommandMasterJobSchedule.cs" />

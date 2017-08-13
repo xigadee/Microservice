@@ -18,13 +18,6 @@ using System;
 
 namespace Xigadee
 {
-    public enum ProcessRequestExceptionBehaviour
-    {
-        DoNothing,
-        ThrowException,
-        SignalSuccessAndSend500ErrorResponse,
-        SignalFailAndDoNothing
-    }
     /// <summary>
     /// The command policy sets or enables various settings for the command.
     /// </summary>
@@ -34,6 +27,10 @@ namespace Xigadee
         /// The behaviour to follow for an uncaught exception.
         /// </summary>
         public ProcessRequestExceptionBehaviour OnProcessRequestException { get; set; } = ProcessRequestExceptionBehaviour.ThrowException;
+        /// <summary>
+        /// Gets or sets a value indicating whether unhandled exceptions should be logged. The default value is true.
+        /// </summary>
+        public bool OnProcessRequestExceptionLog { get; set; } = true;
         /// <summary>
         /// Gets or sets the master job negotiation strategy.
         /// </summary>

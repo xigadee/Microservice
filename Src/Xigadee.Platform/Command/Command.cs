@@ -261,10 +261,12 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                Collector?.LogException($"{GetType().Name}/FireAndDecorateEventArgs/{handler.GetType().Name}/{typeof(E).Name}", ex);
                 try
                 {
-                    onError?.Invoke(args, ex);
+                    if (onError == null)
+                        Collector?.LogException($"{GetType().Name}/FireAndDecorateEventArgs/{handler.GetType().Name}/{typeof(E).Name}", ex);
+                    else
+                        onError(args, ex);
                 }
                 catch {}//Don't care.
             }
