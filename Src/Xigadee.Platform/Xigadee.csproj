@@ -99,7 +99,6 @@
     <Compile Include="CommandInitiator\ResponseWrapper.cs" />
     <Compile Include="Command\Harness\CommandHarness.cs" />
     <Compile Include="Command\Command_Request.cs" />
-    <Compile Include="Command\Command_Reflection.cs" />
     <Compile Include="Command\Attributes\CommandMethod\PayloadInAttribute.cs" />
     <Compile Include="Command\Exceptions\CommandException.cs" />
     <Compile Include="Command\Exceptions\CommandNotSupportedException.cs" />

@@ -62,6 +62,23 @@ namespace Xigadee
             }
         }
         #endregion
+        #region CommandChannelAdjust<A>(A attr)
+        /// <summary>
+        /// This method replaces the channel with the command default if the value specified in the attribute is null.
+        /// </summary>
+        /// <param name="attr">The incoming attribute whose header channel should be checked.</param>
+        /// <returns>Returns a message filter wrapper for the header.</returns>
+        protected MessageFilterWrapper CommandChannelAdjust<A>(A attr)
+            where A : CommandContractAttributeBase
+        {
+            ServiceMessageHeader header = attr.Header;
+
+            if (header.ChannelId == null)
+                header = new ServiceMessageHeader(ChannelId, header.MessageType, header.ActionType);
+
+            return new MessageFilterWrapper(header);
+        }
+        #endregion
 
         #region *--> CommandsTearDown()
         /// <summary>
@@ -235,7 +252,33 @@ namespace Xigadee
         }
         #endregion
 
-        #region SupportedResolve...
+        #region --> SupportedMessageTypes()
+        /// <summary>
+        /// This method retrieves the supported messages enclosed in the MessageHandler.
+        /// </summary>
+        /// <returns>Returns a list of MessageFilterWrappers</returns>
+        public virtual List<MessageFilterWrapper> SupportedMessageTypes()
+        {
+            return mSupported.Keys.ToList();
+        }
+        #endregion
+        #region --> SupportsMessage(ServiceMessageHeader header)
+        /// <summary>
+        /// This commands returns true is the command channelId and action are supported.
+        /// </summary>
+        /// <param name="header">The message header.</param>
+        /// <returns>Returns true if the message is supported.</returns>
+        public virtual bool SupportsMessage(ServiceMessageHeader header)
+        {
+            H command;
+
+            bool supported = SupportedResolve(header, out command);
+
+            return supported;
+        }
+        #endregion
+
+        #region SupportedResolve(ServiceMessageHeader header, out H handler)
         /// <summary>
         /// This attemps to match the message header to the command registration collection.
         /// </summary>
@@ -252,7 +295,8 @@ namespace Xigadee
 
             return handler != null;
         }
-
+        #endregion
+        #region SupportedResolveActual(ServiceMessageHeader header, out H command)
         /// <summary>
         /// This attemps to match the message header to the command registration collection.
         /// </summary>
@@ -268,33 +312,7 @@ namespace Xigadee
                 .FirstOrDefault();
 
             return command != null;
-        }
-        #endregion
-
-        #region --> SupportsMessage(ServiceMessageHeader header)
-        /// <summary>
-        /// This commands returns true is the command channelId and action are supported.
-        /// </summary>
-        /// <param name="header">The message header.</param>
-        /// <returns>Returns true if the message is supported.</returns>
-        public virtual bool SupportsMessage(ServiceMessageHeader header)
-        {
-            H command;
-
-            bool supported = SupportedResolve(header, out command);
-
-            return supported;
-        }
-        #endregion
-        #region SupportedMessageTypes()
-        /// <summary>
-        /// This method retrieves the supported messages enclosed in the MessageHandler.
-        /// </summary>
-        /// <returns>Returns a list of MessageFilterWrappers</returns>
-        public virtual List<MessageFilterWrapper> SupportedMessageTypes()
-        {
-            return mSupported.Keys.ToList();
-        }
+        } 
         #endregion
     }
 }
