@@ -108,7 +108,6 @@ namespace Xigadee
         /// <summary>
         /// This method register the job expiry task.
         /// </summary>
-        /// <param name="config">The job configuration</param>
         protected override void JobSchedulesManualRegister()
         {
             var job = new CommandJobSchedule(ScheduleExpireEntities

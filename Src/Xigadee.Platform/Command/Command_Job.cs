@@ -15,11 +15,7 @@
 #endregion
 
 #region using
-using System;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
-using System.Threading;
 using System.Linq;
 #endregion
 namespace Xigadee
@@ -30,14 +26,17 @@ namespace Xigadee
         /// <summary>
         /// This is the job timer
         /// </summary>
-        private List<Schedule> mSchedules;
+        private List<CommandJobSchedule> mSchedules;
         #endregion
-        #region JobsTearUp
+
+        #region *--> JobsTearUp
         /// <summary>
         /// This method extracts any job schedules from the command and registers each command.
         /// </summary>
         protected virtual void JobsTearUp()
         {
+            mSchedules = new List<CommandJobSchedule>();
+
             if (mPolicy.ScheduleReflectionSupported)
                 JobSchedulesReflectionInitialise();
 
@@ -64,7 +63,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region JobsTearDown()
+        #region *--> JobsTearDown()
         /// <summary>
         /// This method stops and registered job schedules.
         /// </summary>

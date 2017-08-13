@@ -62,12 +62,9 @@ namespace Xigadee
         protected CommandBase(P policy = null)
         {
             mPolicy = PolicyCreateOrValidate(policy);
-
-            mSupported = new Dictionary<MessageFilterWrapper, H>();
-            mSchedules = new List<Schedule>();
-
             StartupPriority = mPolicy.StartupPriority ?? 0;
 
+            mSupported = new Dictionary<MessageFilterWrapper, H>();
             mCommandCache = new ConcurrentDictionary<ServiceMessageHeader, H>();
         }
         #endregion
@@ -178,9 +175,10 @@ namespace Xigadee
         /// deregistered later when the command stops.
         /// </summary>
         /// <param name="schedule">The schedule to register.</param>
-        protected virtual void SchedulerRegister(Schedule schedule)
+        protected virtual void SchedulerRegister(CommandJobSchedule schedule)
         {
-            mSchedules.Add(Scheduler.Register(schedule));
+            Scheduler.Register(schedule);
+            mSchedules.Add(schedule);
         } 
         #endregion
 
