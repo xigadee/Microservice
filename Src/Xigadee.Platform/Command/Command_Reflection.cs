@@ -25,20 +25,7 @@ namespace Xigadee
 {
     public abstract partial class CommandBase<S, P, H>
     {
-        #region CommandsRegisterReflection()
-        /// <summary>
-        /// This method scans through the command and registers commands that are defined using the metadata tags.
-        /// </summary>
-        protected virtual void CommandsRegisterReflection()
-        {
-            foreach (var signature in this.CommandMethodAttributeSignatures<CommandContractAttribute>(true))
-            {
-                CommandRegister(CommandChannelAdjust(signature.Item1)
-                    , (rq, rs) => signature.Item2.Action(rq, rs, PayloadSerializer)
-                    , referenceId: signature.Item3);
-            }
-        } 
-        #endregion
+
         #region CommandChannelAdjust<A>(A attr)
         /// <summary>
         /// This method replaces the channel with the command default if the value specified in the attribute is null.
@@ -57,16 +44,5 @@ namespace Xigadee
         } 
         #endregion
 
-        #region JobSchedulesReflectionInitialise()
-        /// <summary>
-        /// This method can be overriden to enable additional schedules to be registered for the job.
-        /// </summary>
-        protected virtual void JobSchedulesReflectionInitialise()
-        {
-            this.ScheduleMethodAttributeSignatures<JobScheduleAttribute>()
-                .SelectMany((s) => s.Item2.ToSchedules())
-                .ForEach((r) => Scheduler.Register(r));
-        }
-        #endregion
     }
 }

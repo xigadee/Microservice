@@ -96,7 +96,7 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets a value indicating whether jobs are enabled on the command. The default setting is true.
         /// </summary>
-        public virtual bool JobPollEnabled { get; set; } = true;
+        public virtual bool JobsEnabled { get; set; } = true;
 
         public virtual CommandTimerPoll JobPollSchedule { get; set; } = new CommandTimerPoll();
 
@@ -122,7 +122,7 @@ namespace Xigadee
         {
             return new P
             {
-                  JobPollEnabled = true
+                  JobsEnabled = true
                 , JobPollIsLongRunning = isLongRunningJob
                 , MasterJobEnabled = false
                 , JobPollSchedule = new CommandTimerPoll(interval, initialWait, initialTime)
@@ -139,7 +139,7 @@ namespace Xigadee
         {
             return new P()
             {
-                  JobPollEnabled = true
+                  JobsEnabled = true
                 , MasterJobEnabled = true
                 , MasterJobNegotiationChannelIdOutgoing = negotiationChannelId
                 , MasterJobNegotiationChannelType = negotiationChannelType

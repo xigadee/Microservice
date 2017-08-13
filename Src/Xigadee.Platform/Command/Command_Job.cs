@@ -32,7 +32,7 @@ namespace Xigadee
         /// </summary>
         private List<Schedule> mSchedules;
         #endregion
-        #region JobsTearUp/JobsTearDown
+        #region JobsTearUp
         /// <summary>
         /// This method extracts any job schedules from the command and registers each command.
         /// </summary>
@@ -43,17 +43,19 @@ namespace Xigadee
 
             JobSchedulesManualRegister();
         }
+        #endregion
+        #region JobSchedulesReflectionInitialise()
         /// <summary>
-        /// This method stops and registered job schedules.
+        /// This method can be overriden to enable additional schedules to be registered for the job.
         /// </summary>
-        protected virtual void JobsTearDown()
+        protected virtual void JobSchedulesReflectionInitialise()
         {
-            mSchedules.ForEach((s) => Scheduler.Unregister(s));
-            mSchedules.Clear();
+            this.ScheduleMethodAttributeSignatures<JobScheduleAttribute>()
+                .SelectMany((s) => s.Item2.ToSchedules())
+                .ForEach((r) => Scheduler.Register(r));
         }
         #endregion
-
-        #region JobSchedulesInitialise()
+        #region JobSchedulesManualRegister()
         /// <summary>
         /// This method can be overriden to enable additional schedules to be registered for the job.
         /// </summary>
@@ -62,9 +64,24 @@ namespace Xigadee
         }
         #endregion
 
+        #region JobsTearDown()
+        /// <summary>
+        /// This method stops and registered job schedules.
+        /// </summary>
+        protected virtual void JobsTearDown()
+        {
+            mSchedules.ForEach((s) => Scheduler.Unregister(s));
+            mSchedules.Clear();
+        } 
+        #endregion
+
+
+
         protected virtual CommandJobSchedule JobScheduleRegister()
         {
             return null;
         }
+
+
     }
 }

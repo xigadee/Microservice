@@ -106,7 +106,7 @@ namespace Xigadee
                 if (mPolicy.MasterJobEnabled)
                     MasterJobTearUp();
 
-                if (mPolicy.JobPollEnabled)
+                if (mPolicy.JobsEnabled)
                     JobsTearUp();
 
                 if (mPolicy.CommandNotify == CommandNotificationBehaviour.OnStartUp)
@@ -129,7 +129,7 @@ namespace Xigadee
                 if (mPolicy.MasterJobEnabled)
                     MasterJobTearDown();
 
-                if (mPolicy.JobPollEnabled)
+                if (mPolicy.JobsEnabled)
                     JobsTearDown();
 
                 if (mPolicy.OutgoingRequestsEnabled)
@@ -144,7 +144,20 @@ namespace Xigadee
             }
         }
         #endregion
-
+        #region CommandsRegisterReflection()
+        /// <summary>
+        /// This method scans through the command and registers commands that are defined using the metadata tags.
+        /// </summary>
+        protected virtual void CommandsRegisterReflection()
+        {
+            foreach (var signature in this.CommandMethodAttributeSignatures<CommandContractAttribute>(true))
+            {
+                CommandRegister(CommandChannelAdjust(signature.Item1)
+                    , (rq, rs) => signature.Item2.Action(rq, rs, PayloadSerializer)
+                    , referenceId: signature.Item3);
+            }
+        }
+        #endregion
         #region PayloadSerializer
         /// <summary>
         /// This is the requestPayload serializer used across the system.

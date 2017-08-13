@@ -53,6 +53,62 @@ namespace Xigadee
         /// </summary>
         public event EventHandler<OutgoingRequestEventArgs> OnOutgoingRequestComplete;
         #endregion
+
+        #region *--> OutgoingRequestsTearUp()
+        /// <summary>
+        /// This method starts the outgoing request support.
+        /// </summary>
+        protected virtual void OutgoingRequestsTearUp()
+        {
+            mOutgoingRequests = new ConcurrentDictionary<string, OutgoingRequestTracker>();
+
+            //Set a timer to signal timeout requests
+            mScheduleTimeout = new CommandTimeoutSchedule(TimeOutScheduler
+                , mPolicy.OutgoingRequestsTimeoutPoll
+                , string.Format("{0} Command OutgoingRequests Timeout Poll", FriendlyName));
+
+            Scheduler.Register(mScheduleTimeout);
+
+            //Check whether the ResponseId has been set, and if not then raise an error 
+            //as outgoing messages will not work without a return path.
+            if (ResponseId == null)
+                throw new CommandStartupException($"Command={GetType().Name}: Outgoing requests are enabled, but the ResponseId parameter has not been set");
+            
+            //This is the return message handler
+            CommandRegister(ResponseId, OutgoingRequestResponseIn);
+        }
+        #endregion
+        #region *--> OutgoingRequestsTearDown()
+        /// <summary>
+        /// This method stops the outgoing request supports and marks any pending jobs as cancelled.
+        /// </summary>
+        protected virtual void OutgoingRequestsTearDown()
+        {
+            //Remove the filter for the message.
+            CommandUnregister(ResponseId, false);
+
+            //Unregister the time out schedule.
+            if (mScheduleTimeout != null)
+            {
+                Scheduler.Unregister(mScheduleTimeout);
+                mScheduleTimeout = null;
+            }
+
+            try
+            {
+                foreach (var key in mOutgoingRequests.Keys.ToList())
+                    OutgoingRequestTimeout(key);
+
+                mOutgoingRequests.Clear();
+                mOutgoingRequests = null;
+            }
+            catch (Exception ex)
+            {
+                Collector?.LogException("OutgoingRequestsStop error", ex);
+            }
+        }
+        #endregion
+
         #region UseASPNETThreadModel
         /// <summary>
         /// This property should be set when hosted in an ASP.NET container.
@@ -326,61 +382,6 @@ namespace Xigadee
             {
                 Collector?.LogException("Error processing response for task status " + rType, ex);
                 throw;
-            }
-        }
-        #endregion
-
-        #region *--> OutgoingRequestsTearUp()
-        /// <summary>
-        /// This method starts the outgoing request support.
-        /// </summary>
-        protected virtual void OutgoingRequestsTearUp()
-        {
-            mOutgoingRequests = new ConcurrentDictionary<string, OutgoingRequestTracker>();
-
-            //Set a timer to signal timeout requests
-            mScheduleTimeout = new CommandTimeoutSchedule(TimeOutScheduler
-                , mPolicy.OutgoingRequestsTimeoutPoll
-                , string.Format("{0} Command OutgoingRequests Timeout Poll", FriendlyName));
-
-            Scheduler.Register(mScheduleTimeout);
-
-            //Check whether the ResponseId has been set, and if not then raise an error 
-            //as outgoing messages will not work without a return path.
-            if (ResponseId == null)
-                throw new CommandStartupException($"Command={GetType().Name}: Outgoing requests are enabled, but the ResponseId parameter has not been set");
-            
-            //This is the return message handler
-            CommandRegister(ResponseId, OutgoingRequestResponseIn);
-        }
-        #endregion
-        #region *--> OutgoingRequestsTearDown()
-        /// <summary>
-        /// This method stops the outgoing request supports and marks any pending jobs as cancelled.
-        /// </summary>
-        protected virtual void OutgoingRequestsTearDown()
-        {
-            //Remove the filter for the message.
-            CommandUnregister(ResponseId, false);
-
-            //Unregister the time out schedule.
-            if (mScheduleTimeout != null)
-            {
-                Scheduler.Unregister(mScheduleTimeout);
-                mScheduleTimeout = null;
-            }
-
-            try
-            {
-                foreach (var key in mOutgoingRequests.Keys.ToList())
-                    OutgoingRequestTimeout(key);
-
-                mOutgoingRequests.Clear();
-                mOutgoingRequests = null;
-            }
-            catch (Exception ex)
-            {
-                Collector?.LogException("OutgoingRequestsStop error", ex);
             }
         }
         #endregion
