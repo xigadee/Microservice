@@ -29,6 +29,7 @@ namespace Xigadee
         #region CommandsRegister()
         /// <summary>
         /// This method should be overridden to populate supported commands.
+        /// You should use the CommandRegister method to do this.
         /// </summary>
         protected virtual void CommandsRegister()
         {
@@ -86,10 +87,12 @@ namespace Xigadee
         /// <param name="action"></param>
         /// <param name="exceptionAction"></param>
         /// <param name="referenceId">This is the referenceId of the command</param>
-        protected void CommandRegister(string channelId, string messageType, string actionType,
-            Func<TransmissionPayload, List<TransmissionPayload>, Task> action,
-            Func<Exception, TransmissionPayload, List<TransmissionPayload>, Task> exceptionAction = null,
-            string referenceId = null)
+        /// <param name="isMasterJob">Specifies whether the command is a master job.</param>
+        protected void CommandRegister(string channelId, string messageType, string actionType
+            , Func<TransmissionPayload, List<TransmissionPayload>, Task> action
+            , Func<Exception, TransmissionPayload, List<TransmissionPayload>, Task> exceptionAction = null
+            , string referenceId = null
+            , bool isMasterJob = false)
         {
             var wrapper = new MessageFilterWrapper((channelId, messageType, actionType), null);
 
@@ -103,11 +106,16 @@ namespace Xigadee
         /// <param name="action"></param>
         /// <param name="exceptionAction"></param>
         /// <param name="referenceId">This is the referenceId of the command</param>
-        protected void CommandRegister(MessageFilterWrapper key,
-            Func<TransmissionPayload, List<TransmissionPayload>, Task> action,
-            Func<Exception, TransmissionPayload, List<TransmissionPayload>, Task> exceptionAction = null, 
-            string referenceId = null)
+        /// <param name="isMasterJob">Specifies whether the command is a master job.</param>
+        protected void CommandRegister(MessageFilterWrapper key
+            , Func<TransmissionPayload, List<TransmissionPayload>, Task> action
+            , Func<Exception, TransmissionPayload, List<TransmissionPayload>, Task> exceptionAction = null
+            , string referenceId = null
+            , bool isMasterJob = false)
         {
+            if (exceptionAction == null && mPolicy.OnExceptionCallProcessRequestException)
+                exceptionAction = ProcessRequestException;
+
             Func<TransmissionPayload, List<TransmissionPayload>, Task> command = async (rq, rs) =>
             {
                 bool error = false;
@@ -135,29 +143,23 @@ namespace Xigadee
                 }
             };
 
+            var handler = new H();
 
-            CommandRegister(new CommandHolder(key, command, referenceId));
-        }
+            handler.Initialise(key, command, exceptionAction, referenceId, isMasterJob);
 
-        /// <summary>
-        /// This method is used to register a command holder for a particular method.
-        /// </summary>
-        /// <param name="cHolder">The holder.</param>
-        protected void CommandRegister(CommandHolder cHolder)
-        {           
-            mSupported.Add(cHolder, CommandHandlerCreate(cHolder));
+            mSupported.Add(key, handler);
 
             switch (mPolicy.CommandNotify)
             {
                 case CommandNotificationBehaviour.OnRegistration:
-                    CommandNotify(cHolder, false);
+                    CommandNotify(key, false);
                     break;
                 case CommandNotificationBehaviour.OnRegistrationIfStarted:
                     if (Status == ServiceStatus.Running)
-                        CommandNotify(cHolder, false);
+                        CommandNotify(key, false);
                     break;
             }
-        }
+        } 
         #endregion
 
         #region CommandsNotify..
@@ -174,33 +176,17 @@ namespace Xigadee
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="remove">Set this to true to remove the command mapping, false is default.</param>
-        protected virtual void CommandNotify(CommandHolder key, bool remove = false)
+        protected virtual void CommandNotify(MessageFilterWrapper key, bool remove = false)
         {
             try
             {
-                OnCommandChange?.Invoke(this, new CommandChange(remove, key.Message));
+                OnCommandChange?.Invoke(this, new CommandChange(remove, key));
             }
             catch (Exception ex)
             {
                 Collector?.LogException($"Command {GetType().Name} Change Notification failed", ex);
             }
         }
-        #endregion
-
-        #region CommandHandlerCreate(MessageFilterWrapper key, Func<TransmissionPayload, List<TransmissionPayload>, Task> action)
-        /// <summary>
-        /// This method creates the command handler. You can override this method to set additional properties.
-        /// </summary>
-        /// <param name="holder">The command holder</param>
-        /// <returns>Returns the handler.</returns>
-        protected virtual H CommandHandlerCreate(CommandHolder holder)
-        {
-            var handler = new H();
-
-            handler.Initialise(holder);
-
-            return handler;
-        } 
         #endregion
 
         #region CommandUnregister<C>...
@@ -234,7 +220,7 @@ namespace Xigadee
         /// <param name="key">Message filter wrapper key</param>
         protected void CommandUnregister(MessageFilterWrapper key)
         {
-            var item = mSupported.Keys.FirstOrDefault((d) => d.Message == key);
+            var item = mSupported.Keys.FirstOrDefault((d) => d == key);
             if (item != null)
             {
                 mSupported.Remove(item);
@@ -272,7 +258,7 @@ namespace Xigadee
         {
             //Fix for BUG 180 - ensuring that trailing slash is on each match for partial key. Moved match logic to struct.
             command = mSupported
-                .Where((k) => k.Key.Message.Header.IsMatch(header))
+                .Where((k) => k.Key.Header.IsMatch(header))
                 .Select((k) => k.Value)
                 .FirstOrDefault();
 
@@ -302,7 +288,7 @@ namespace Xigadee
         /// <returns>Returns a list of MessageFilterWrappers</returns>
         public virtual List<MessageFilterWrapper> SupportedMessageTypes()
         {
-            return mSupported.Keys.Select((h) => h.Message).ToList();
+            return mSupported.Keys.ToList();
         }
         #endregion
     }

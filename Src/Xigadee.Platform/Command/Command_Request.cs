@@ -64,7 +64,6 @@ namespace Xigadee
             catch (Exception)
             {
                 StatisticsInternal.ErrorIncrement();
-                //throw any errors back out to the dispatcher.
                 throw;
             }
             finally
@@ -73,5 +72,24 @@ namespace Xigadee
             }
         }
         #endregion
+
+        /// <summary>
+        /// Processes the exception.
+        /// </summary>
+        /// <param name="ex">The exception raised..</param>
+        /// <param name="rq">The incoming request.</param>
+        /// <param name="responses">The responses.</param>
+        protected virtual Task ProcessRequestException(Exception ex, TransmissionPayload rq, List<TransmissionPayload> responses)
+        {
+            rq.SignalSuccess();
+
+            var rs = rq.ToResponse();
+            rs.Message.Status = "500";
+            rs.Message.StatusDescription = ex.Message;
+
+            responses.Add(rs);
+
+            return Task.FromResult(0);
+        }
     }
 }

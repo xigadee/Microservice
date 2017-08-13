@@ -18,8 +18,8 @@ namespace Test.Xigadee
             new CommandPolicy
             {
                   MasterJobEnabled = true
-                //, MasterJobNegotiationStrategy = new MasterJobNegotiationStrategyDebug()
-                , MasterJobNegotiationStrategy = new MasterJobNegotiationStrategy()
+                , MasterJobNegotiationStrategy = new MasterJobNegotiationStrategyDebug()
+                //, MasterJobNegotiationStrategy = new MasterJobNegotiationStrategy()
                 , MasterJobName = "freddy"
                 , TransmissionPayloadTraceEnabled = true
             }

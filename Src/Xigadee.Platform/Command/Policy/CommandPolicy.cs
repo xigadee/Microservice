@@ -24,6 +24,10 @@ namespace Xigadee
     public class CommandPolicy:PolicyBase
     {
         /// <summary>
+        /// Specifies whether the command should return a 500 response message to the calling party.
+        /// </summary>
+        public bool OnExceptionCallProcessRequestException { get; set; } = false;
+        /// <summary>
         /// Gets or sets the master job negotiation strategy.
         /// </summary>
         public MasterJobNegotiationStrategyBase MasterJobNegotiationStrategy { get; set; }

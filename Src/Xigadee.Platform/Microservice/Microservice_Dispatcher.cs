@@ -329,6 +329,7 @@ namespace Xigadee
         }
         #endregion
 
+        #region ProcessUnhandledPayload ...
         /// <summary>
         /// This method processes an unhandled payload.
         /// </summary>
@@ -357,7 +358,7 @@ namespace Xigadee
                         break;
 
                     var response = payload.ToResponse();
-                    response.Message.StatusSet(501,args.Reason.ToString());
+                    response.Message.StatusSet(501, args.Reason.ToString());
                     response.Message.ChannelPriority = -1;
                     Dispatch.Process(response);
                     //request.IsSuccess = true;
@@ -366,6 +367,7 @@ namespace Xigadee
                     //request.IsSuccess = true;
                     break;
             }
-        }
+        } 
+        #endregion
     }
 }

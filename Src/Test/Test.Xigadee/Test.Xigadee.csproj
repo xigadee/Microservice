@@ -94,6 +94,7 @@
     <Compile Include="Dispatcher\DispatcherTestRouting.cs" />
     <Compile Include="Dispatcher\ErrorPolicy\ErrorPolicy.cs" />
     <Compile Include="Dispatcher\ErrorPolicy\UnitTest1.cs" />
+    <Compile Include="Dispatcher\DispatcherRetry.cs" />
     <Compile Include="EventTestCommand.cs" />
     <Compile Include="Microservice\ServiceIdentifierValidation.cs" />
     <Compile Include="Pipeline\Pipeline2.cs" />

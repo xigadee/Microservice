@@ -494,7 +494,7 @@ namespace Xigadee
         #endregion
 
         /// <summary>
-        /// Masters the job commands start.
+        /// Controls the master job commands start.
         /// </summary>
         protected virtual void MasterJobCommandsStart()
         {
@@ -502,15 +502,14 @@ namespace Xigadee
 
             foreach (var signature in this.CommandMethodAttributeSignatures<MasterJobCommandContractAttribute>(true))
             {
-                var handler = new CommandHolder(CommandChannelAdjust(signature.Item1)
+                CommandRegister(CommandChannelAdjust(signature.Item1)
                     , (rq, rs) => signature.Item2.Action(rq, rs, PayloadSerializer)
-                    , referenceId: signature.Item3);
-
-                CommandRegister(handler);
+                    , referenceId: signature.Item3
+                    , isMasterJob:true);
             }
         }
         /// <summary>
-        /// Masters the job commands stop.
+        /// Controls the master job commands stop.
         /// </summary>
         protected virtual void MasterJobCommandsStop()
         {

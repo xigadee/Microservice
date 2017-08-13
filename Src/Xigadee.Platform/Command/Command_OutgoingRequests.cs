@@ -432,7 +432,6 @@ namespace Xigadee
         {
             if (!(mOutgoingRequests?.IsEmpty ?? true))
             {
-
                 var timeoutSchedule = schedule as CommandTimeoutSchedule;
 
                 var results = mOutgoingRequests.Values

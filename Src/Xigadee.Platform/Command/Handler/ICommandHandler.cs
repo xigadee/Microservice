@@ -25,14 +25,49 @@ namespace Xigadee
     /// </summary>
     public interface ICommandHandler
     {
-        void Initialise(CommandHolder holder);
-
+        /// <summary>
+        /// Initialises the specified handler.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="action">The action.</param>
+        /// <param name="exceptionAction">The exception action.</param>
+        /// <param name="referenceId">The reference identifier.</param>
+        /// <param name="isMasterJob">Specifies whether the command is owned by a master job.</param>
+        void Initialise(MessageFilterWrapper key
+            , Func<TransmissionPayload, List<TransmissionPayload>, Task> action
+            , Func<Exception, TransmissionPayload, List<TransmissionPayload>, Task> exceptionAction = null
+            , string referenceId = null
+            , bool isMasterJob = false
+            );
+        /// <summary>
+        /// Gets the key used to match the request to the appropriate command.
+        /// </summary>
         MessageFilterWrapper Key { get; }
-
+        /// <summary>
+        /// Gets the action used for executing the command.
+        /// </summary>
         Func<TransmissionPayload, List<TransmissionPayload>, Task> Action { get; }
-
+        /// <summary>
+        /// Gets the exception action used if an uncaught exception in thrown during execution of the command.
+        /// </summary>
+        Func<Exception, TransmissionPayload, List<TransmissionPayload>, Task> ExceptionAction { get; }
+        /// <summary>
+        /// Executes the specified request.
+        /// </summary>
+        /// <param name="rq">The incoming request.</param>
+        /// <param name="rs">The outgoing response collection.</param>
         Task Execute(TransmissionPayload rq, List<TransmissionPayload> rs);
-
+        /// <summary>
+        /// Gets the handler statistics.
+        /// </summary>
         ICommandHandlerStatistics HandlerStatistics { get; }
+        /// <summary>
+        /// Gets the reference identifier.
+        /// </summary>
+        string ReferenceId { get; }
+        /// <summary>
+        /// Specifies whether this command is a master job command.
+        /// </summary>
+        bool IsMasterJob { get; }
     }
 }

@@ -10,23 +10,26 @@ namespace Xigadee
     /// </summary>
     public class CommandInline : CommandBase
     {
-        CommandHolder mCommandHolder;
-
+        #region Declarations
+        MessageFilterWrapper mKey;
+        Func<CommandInlineContext, Task> mCommand;
+        string mReferenceId;
+        #endregion
         /// <summary>
         /// This is the constructor for registering a manual command.
         /// </summary>
         /// <param name="header">The ServiceMessageHeader route for the command.</param>
         /// <param name="command">The command to process.</param>
         /// <param name="referenceId">The optional reference id for tracking.</param>
+        /// <param name="policy">The command policy.</param>
         public CommandInline(ServiceMessageHeader header
             , Func<CommandInlineContext, Task> command
-            , string referenceId = null) 
+            , string referenceId = null
+            , CommandPolicy policy = null) :base(policy ?? new CommandPolicy() { OnExceptionCallProcessRequestException = true })
         {
-            var message = new MessageFilterWrapper(header, null);
-
-            mCommandHolder = new CommandHolder(message, async (rq,rs) => 
-                await command(new CommandInlineContext(rq, rs, PayloadSerializer, Collector, SharedServices, OriginatorId))
-                , referenceId);
+            mKey = new MessageFilterWrapper(header, null);
+            mCommand = command;
+            mReferenceId = referenceId;
         }
 
         /// <summary>
@@ -34,7 +37,10 @@ namespace Xigadee
         /// </summary>
         protected override void CommandsRegister()
         {
-            CommandRegister(mCommandHolder);
+            CommandRegister(mKey,
+                async (rq, rs) => await mCommand(new CommandInlineContext(rq, rs, PayloadSerializer, Collector, SharedServices, OriginatorId))
+                , null
+                , mReferenceId);
         }
     }
 }

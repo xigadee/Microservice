@@ -40,7 +40,7 @@ namespace Xigadee
         /// <summary>
         /// This is the concurrent dictionary that contains the supported commands.
         /// </summary>
-        protected Dictionary<CommandHolder, H> mSupported;
+        protected Dictionary<MessageFilterWrapper, H> mSupported;
         /// <summary>
         /// This is the fast lookup collection for a command.
         /// </summary>
@@ -50,11 +50,6 @@ namespace Xigadee
         /// Implement IMessageHandlerDynamic to enable this feature.
         /// </summary>
         public event EventHandler<CommandChange> OnCommandChange;
-
-        /// <summary>
-        /// This is the job timer
-        /// </summary>
-        private List<Schedule> mSchedules;
         /// <summary>
         /// This is the shared service collection.
         /// </summary>
@@ -68,7 +63,7 @@ namespace Xigadee
         {
             mPolicy = PolicyCreateOrValidate(policy);
 
-            mSupported = new Dictionary<CommandHolder, H>();
+            mSupported = new Dictionary<MessageFilterWrapper, H>();
             mSchedules = new List<Schedule>();
 
             StartupPriority = mPolicy.StartupPriority ?? 0;
@@ -150,27 +145,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region JobsTearUp/JobsTearDown
-        /// <summary>
-        /// This method extracts any job schedules from the command and registers each command.
-        /// </summary>
-        protected virtual void JobsTearUp()
-        {
-            if (mPolicy.ScheduleReflectionSupported)
-                JobSchedulesReflectionInitialise();
-
-            JobSchedulesInitialise();
-        }
-        /// <summary>
-        /// This method stops and registered job schedules.
-        /// </summary>
-        protected virtual void JobsTearDown()
-        {
-            mSchedules.ForEach((s) => Scheduler.Unregister(s));
-            mSchedules.Clear();
-        } 
-        #endregion
-
         #region PayloadSerializer
         /// <summary>
         /// This is the requestPayload serializer used across the system.
@@ -179,16 +153,6 @@ namespace Xigadee
         {
             get;
             set;
-        }
-        #endregion
-
-        #region JobSchedulesInitialise()
-        /// <summary>
-        /// This method can be overriden to enable additional schedules to be registered for the job.
-        /// </summary>
-        protected virtual void JobSchedulesInitialise()
-        {
-
         }
         #endregion
 

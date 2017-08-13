@@ -32,11 +32,9 @@ namespace Xigadee
         {
             foreach (var signature in this.CommandMethodAttributeSignatures<CommandContractAttribute>(true))
             {
-                var handler = new CommandHolder(CommandChannelAdjust(signature.Item1)
-                    , (rq,rs) => signature.Item2.Action(rq,rs,PayloadSerializer)
+                CommandRegister(CommandChannelAdjust(signature.Item1)
+                    , (rq, rs) => signature.Item2.Action(rq, rs, PayloadSerializer)
                     , referenceId: signature.Item3);
-
-                CommandRegister(handler);
             }
         }
 

@@ -167,9 +167,9 @@ namespace Test.Xigadee
                             .AttachSender(bridgeMaster.GetSender())
                             .AssignMasterJob(mast2)
                             .Revert()
-                        .AddChannelIncoming("Deadletter")
-                            .AttachListener(incoming.GetDeadLetterListener())
-                            .Revert()
+                        //.AddChannelIncoming("Deadletter")
+                        //    .AttachListener(incoming.GetDeadLetterListener())
+                        //    .Revert()
                     , mast2);
 
                 ctx.Services.Values.ForEach((v) => v.Start());
