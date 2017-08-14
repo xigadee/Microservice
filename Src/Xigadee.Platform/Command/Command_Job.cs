@@ -15,6 +15,7 @@
 #endregion
 
 #region using
+using System;
 using System.Collections.Generic;
 using System.Linq;
 #endregion
@@ -22,6 +23,12 @@ namespace Xigadee
 {
     public abstract partial class CommandBase<S, P, H>
     {
+        #region Events
+        /// <summary>
+        /// This event is used to signal a change of registered message types for the command.
+        /// </summary>
+        public event EventHandler<ScheduleChangeEventArgs> OnScheduleChange; 
+        #endregion
         #region Declarations
         /// <summary>
         /// This is the job timer
@@ -51,7 +58,7 @@ namespace Xigadee
         {
             this.ScheduleMethodAttributeSignatures<JobScheduleAttribute>()
                 .SelectMany((s) => s.Item2.ToSchedules())
-                .ForEach((r) => Scheduler.Register(r));
+                .ForEach((r) => JobScheduleRegister(r));
         }
         #endregion
         #region JobSchedulesManualRegister()
@@ -76,11 +83,23 @@ namespace Xigadee
 
 
 
-        protected virtual CommandJobSchedule JobScheduleRegister()
+        protected virtual C JobScheduleRegister<C>(C schedule) where C: CommandJobSchedule
         {
-            return null;
+            Scheduler.Register(schedule);
+            mSchedules.Add(schedule);
+            FireAndDecorateEventArgs(OnScheduleChange, () => new ScheduleChangeEventArgs(false, schedule));
+            return schedule;
         }
 
+        protected virtual bool JobScheduleUnregister<C>(C schedule) where C : CommandJobSchedule
+        {
+            var success = Scheduler.Unregister(schedule);
+
+            if (success)
+                FireAndDecorateEventArgs(OnScheduleChange, () => new ScheduleChangeEventArgs(true, schedule));
+
+            return success;
+        }
 
     }
 }

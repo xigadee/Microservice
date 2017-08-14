@@ -15,43 +15,9 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class CommandHarnessDependencies<C>: ServiceHarnessDependencies
-    {
-        public Func<C> Creator { get; }
-
-        public CommandHarnessDependencies():this(null)
-        {
-        }
-
-        public CommandHarnessDependencies(Func<C> creator)
-        {
-            Creator = creator ?? DefaultConstructor();
-        }
-
-        /// <summary>
-        /// This method checks whether the command supports a parameterless constructor.
-        /// </summary>
-        /// <returns>Returns the command.</returns>
-        private Func<C> DefaultConstructor()
-        {
-            if (typeof(C).GetConstructor(Type.EmptyTypes) == null)
-                throw new ArgumentOutOfRangeException($"The command {typeof(C).Name} does not support a parameterless constructor. Please supply a creator function.");
-
-            return () => Activator.CreateInstance<C>();
-        }
-
-        /// <summary>
-        /// This is the example originator id.
-        /// </summary>
-        public override MicroserviceId OriginatorId => new MicroserviceId("CommandHarness", Guid.NewGuid().ToString("N").ToUpperInvariant());
-    }
     /// <summary>
     /// This harness is used to test command functionality manually.
     /// </summary>
@@ -74,10 +40,15 @@ namespace Xigadee
         /// <returns>Returns the command.</returns>
         protected override C Create()
         {
-            return Dependencies.Creator();
+            var command =  Dependencies.Creator();
+
+            command.OnCommandChange += Command_OnCommandChange;
+
+            return command;
         }
 
-
+        private void Command_OnCommandChange(object sender, CommandChangeEventArgs e)
+        {
+        }
     }
-    
 }

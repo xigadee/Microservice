@@ -22,19 +22,19 @@ namespace Xigadee
     public enum ProcessRequestExceptionBehaviour
     {
         /// <summary>
-        /// Do Nothing.
+        /// Do Nothing, suppress the exception and don't return any messages to the Dispatcher.
         /// </summary>
         DoNothing,
         /// <summary>
-        /// The throw the exception to underlying dispatcher.
+        /// The throw the exception to underlying Dispatcher.
         /// </summary>
         ThrowException,
         /// <summary>
-        /// The signal the payload as successful and send a 500 error response
+        /// The signal the payload as successful and send a 500 error response in the response.
         /// </summary>
         SignalSuccessAndSend500ErrorResponse,
         /// <summary>
-        /// The signal the payload as failed so it will be retried by the underlying architecture and do nothing.
+        /// The signal the payload as failed so it will be retried by the underlying architecture and supress the exception.
         /// </summary>
         SignalFailAndDoNothing,
         /// <summary>

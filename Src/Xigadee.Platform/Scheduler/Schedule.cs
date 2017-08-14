@@ -30,7 +30,7 @@ namespace Xigadee
     /// This class is used to define a schedule for the SchedulerContainer.
     /// </summary>
     [DebuggerDisplay("Type={ScheduleType} Name={Name} Active={Active} {Message}")]
-    public class Schedule: MessagingStatistics
+    public class Schedule: MessagingStatistics, ISchedule
     {
         #region Declarations
         private DateTime? mNextPoll;

@@ -6,7 +6,11 @@ This section details the Xigadee release versions with the features added since 
 
 ### Pre-release - 1.1.x.x (ongoing)
 
-This version is currently in development and contains additional support for rate limiting within the Xigadee core engine, for systems that experience heavy load. There are also a number of bug fixes around high-volume performance issues that are currently pending a full release.
+This version is currently in development and contains additional support for rate limiting within the Xigadee core engine, for systems that experience heavy load. 
+
+There are also a number of bug fixes around high-volume performance issues that are currently pending a full release. 
+
+There are also changes around the Command object, specifically the introduction of schedule attributes to simplify the setting up of timed poll jobs. Command method and schedule attributes have also been extended to master job to simplify configuration. There are also some small breaking changes for Command event arguments, but these should not affect normal operation.
 
 ### Current Release - 1.0.17160.7 (June 9, 2017)
 

@@ -44,6 +44,47 @@ namespace Xigadee
         protected MasterJobContext mMasterJobContext;
         #endregion
 
+        #region *--> MasterJobTearUp()
+        /// <summary>
+        /// This method sets up the master job.
+        /// </summary>
+        protected virtual void MasterJobTearUp()
+        {
+            if (mPolicy.MasterJobNegotiationChannelIdIncoming == null)
+                throw new CommandStartupException("Masterjobs are enabled, but the NegotiationChannelIdIncoming has not been set");
+            if (mPolicy.MasterJobNegotiationChannelType == null)
+                throw new CommandStartupException("Masterjobs are enabled, but the NegotiationChannelType has not been set");
+
+            mMasterJobContext = new MasterJobContext(mPolicy.MasterJobName ?? FriendlyName, mPolicy.MasterJobNegotiationStrategy);
+
+            mMasterJobContext.OnMasterJobStateChange += (object o, MasterJobStateChangeEventArgs s) => FireAndDecorateEventArgs(OnMasterJobStateChange, () => s);
+
+            //Initialise the context.
+            mMasterJobContext.Start();
+            //Add the schedule to generate poll negotiation requests.
+            Scheduler.Register(mMasterJobContext.NegotiationPollScheduleInitialise(MasterJobStateNotificationOutgoing));
+            //Add the incoming poll channel.
+            CommandRegister((MasterJobNegotiationChannelIdIncoming, mPolicy.MasterJobNegotiationChannelType, null), MasterJobStateNotificationIncoming);
+        }
+        #endregion
+        #region *--> MasterJobTearDown()
+        /// <summary>
+        /// This method stops and running master job processes.
+        /// </summary>
+        public virtual void MasterJobTearDown()
+        {
+            if (mMasterJobContext.State == MasterJobState.Active)
+                MasterJobStop();
+
+            //Remove the negotiation poll schedule
+            Scheduler.Unregister(mMasterJobContext.NegotiationPollSchedule);
+            //Remove the incoming poll command.
+            CommandUnregister((MasterJobNegotiationChannelIdIncoming, mPolicy.MasterJobNegotiationChannelType, null));
+
+            mMasterJobContext.Stop();
+        }
+        #endregion
+
         #region MasterJobNegotiationChannelPriority
         /// <summary>
         /// This is the default channel priority, which is 2 unless otherwise set
@@ -116,47 +157,6 @@ namespace Xigadee
         {
             get { return mPolicy.MasterJobNegotiationChannelIdAutoSet; }
         } 
-        #endregion
-
-        #region MasterJobTearUp()
-        /// <summary>
-        /// This method sets up the master job.
-        /// </summary>
-        protected virtual void MasterJobTearUp()
-        {
-            if (mPolicy.MasterJobNegotiationChannelIdIncoming == null)
-                throw new CommandStartupException("Masterjobs are enabled, but the NegotiationChannelIdIncoming has not been set");
-            if (mPolicy.MasterJobNegotiationChannelType == null)
-                throw new CommandStartupException("Masterjobs are enabled, but the NegotiationChannelType has not been set");
-
-            mMasterJobContext = new MasterJobContext(mPolicy.MasterJobName ?? FriendlyName, mPolicy.MasterJobNegotiationStrategy);
-
-            mMasterJobContext.OnMasterJobStateChange += (object o, MasterJobStateChangeEventArgs s) => FireAndDecorateEventArgs(OnMasterJobStateChange, () => s);
-
-            //Initialise the context.
-            mMasterJobContext.Start();
-            //Add the schedule to generate poll negotiation requests.
-            Scheduler.Register(mMasterJobContext.NegotiationPollScheduleInitialise(MasterJobStateNotificationOutgoing));
-            //Add the incoming poll channel.
-            CommandRegister((MasterJobNegotiationChannelIdIncoming, mPolicy.MasterJobNegotiationChannelType, null), MasterJobStateNotificationIncoming);
-        }
-        #endregion
-        #region MasterJobTearDown()
-        /// <summary>
-        /// This method stops and running master job processes.
-        /// </summary>
-        public virtual void MasterJobTearDown()
-        {
-            if (mMasterJobContext.State == MasterJobState.Active)
-                MasterJobStop();
-
-            //Remove the negotiation poll schedule
-            Scheduler.Unregister(mMasterJobContext.NegotiationPollSchedule);
-            //Remove the incoming poll command.
-            CommandUnregister((MasterJobNegotiationChannelIdIncoming, mPolicy.MasterJobNegotiationChannelType, null));
-
-            mMasterJobContext.Stop();
-        }
         #endregion
 
         #region NegotiationTransmit(string action)
@@ -474,22 +474,48 @@ namespace Xigadee
         /// </summary>
         protected virtual void MasterJobSchedulesStart()
         {
-            foreach (var schedule in mMasterJobContext.Jobs.Values)
-            {
-                try
-                {
-                    schedule.Initialise?.Invoke(schedule);
-                }
-                catch (Exception ex)
-                {
-                    StatisticsInternal.Ex = ex;
-                    Collector?.LogException($"MasterJob '{schedule.Name} could not be initialised.'", ex);
-                }
 
-                SchedulerRegister(schedule);
-            }
+            this.ScheduleMethodAttributeSignatures<MasterJobScheduleAttribute>()
+                .SelectMany((s) => s.Item2.ToSchedules())
+                .ForEach((r) => JobScheduleRegister(r));
+
+            //foreach (var schedule in mMasterJobContext.Jobs.Values)
+            //{
+            //    try
+            //    {
+            //        schedule.Initialise?.Invoke(schedule);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        StatisticsInternal.Ex = ex;
+            //        Collector?.LogException($"MasterJob '{schedule.Name} could not be initialised.'", ex);
+            //    }
+
+            //    ScheduleRegister(schedule);
+            //}
         }
         #endregion
+
+
+        protected virtual CommandMasterJobSchedule MasterJobScheduleRegister(CommandMasterJobSchedule schedule)
+        {
+            try
+            {
+                schedule.Initialise?.Invoke(schedule);
+            }
+            catch (Exception ex)
+            {
+                StatisticsInternal.Ex = ex;
+                Collector?.LogException($"MasterJob '{schedule.Name} could not be initialised.'", ex);
+            }
+
+            return JobScheduleRegister(schedule);
+        }
+
+        protected virtual CommandMasterJobSchedule MasterJobScheduleUnregister(CommandMasterJobSchedule schedule)
+        {
+            return null;
+        }
 
         //MasterJob Stop
         #region MasterJobStop()
@@ -541,19 +567,19 @@ namespace Xigadee
         /// </summary>
         protected virtual void MasterJobSchedulesStop()
         {
-            foreach (var schedule in mMasterJobContext.Jobs.Values)
-            {
-                try
-                {
-                    schedule.Cleanup?.Invoke(schedule);
-                }
-                catch (Exception ex)
-                {
-                    Collector?.LogException($"MasterJob '{schedule.Name}' stop failed", ex);
-                }
+            //foreach (var schedule in mMasterJobContext.Jobs.Values)
+            //{
+            //    try
+            //    {
+            //        schedule.Cleanup?.Invoke(schedule);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Collector?.LogException($"MasterJob '{schedule.Name}' stop failed", ex);
+            //    }
 
-                Scheduler.Unregister(schedule);
-            }
+            //    Scheduler.Unregister(schedule);
+            //}
         }
         #endregion
 

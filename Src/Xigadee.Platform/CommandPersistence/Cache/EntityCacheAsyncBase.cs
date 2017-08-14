@@ -115,7 +115,7 @@ namespace Xigadee
                 , $"EntityCacheHandlerBase: {typeof(E).Name} Expire Entities"
                 , mPolicy.JobPollIsLongRunning);
 
-            SchedulerRegister(job);
+            Scheduler.Register(job);
         }
         #endregion
 

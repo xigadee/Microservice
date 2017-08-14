@@ -83,6 +83,9 @@
     <Compile Include="Command\EventArgs\MasterJobStateChangeEventArgs.cs" />
     <Compile Include="Command\EventArgs\OutgoingRequestEventArgs.cs" />
     <Compile Include="Command\EventArgs\ProcessRequestEventArgs.cs" />
+    <Compile Include="Command\EventArgs\ScheduleChangeEventArgs.cs" />
+    <Compile Include="Command\Harness\CommandHarnessDependencies.cs" />
+    <Compile Include="Command\Harness\CommandHarnessHelper.cs" />
     <Compile Include="Command\Helper\MasterJobCommunicationDirection.cs" />
     <Compile Include="Command\MasterJob\Attribute\MasterJobCommandContractAttribute.cs" />
     <Compile Include="Command\MasterJob\Attribute\MasterJobScheduleAttribute.cs" />
@@ -299,6 +302,7 @@
     <Compile Include="ResourceTracker\ResourceSync\Transmit\ResourceSyncTransmitCommandStatistics.cs" />
     <Compile Include="ResourceTracker\Entities\ResourceStatisticsEventType.cs" />
     <Compile Include="ResourceTracker\Entities\ResourceStatus.cs" />
+    <Compile Include="Scheduler\ISchedule.cs" />
     <Compile Include="Security\AuthenticationHandler\AuthenticationHandlerBase.cs" />
     <Compile Include="Security\AuthenticationHandler\AuthenticationHandlerId.cs" />
     <Compile Include="Security\AuthenticationHandler\JwtTokenAuthenticationHandler.cs" />
@@ -710,6 +714,7 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Pipeline\_docs\UsingThePipeline.md" />
     <None Include="ResourceTracker\_docs\Introduction.md" />
     <None Include="Scheduler\_docs\Scheduler.md" />
     <None Include="Security\Jwt\_Documents\rfc7515 - JSON Web Signature.pdf" />

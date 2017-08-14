@@ -58,6 +58,11 @@ namespace Xigadee
         /// This event is used to signal a change of registered message types for the command.
         /// </summary>
         event EventHandler<CommandChangeEventArgs> OnCommandChange;
+
+        /// <summary>
+        /// This event is used to signal a change of registered message types for the command.
+        /// </summary>
+        event EventHandler<ScheduleChangeEventArgs> OnScheduleChange;
     }
     /// <summary>
     /// This is the root interface implemented by the command class.

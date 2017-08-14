@@ -7,7 +7,7 @@
 
 # Configuration
 
-Xigadee configuration is built to be flexible and to support multiple layers from different mechanisms.
+Xigadee configuration is built to be flexible and to support multiple configuration layers from different mechanisms, and to prioitise them by setting a prioirty to the specific configuration level.
 
 At the root of the Xiagdee configuration stack is the usual app.config or web.config file. 
 This is what most apps will use by default, but this can be extended to support mechanisms such as Azure KeyVault, 
@@ -16,6 +16,17 @@ Table storage, SQL databases.
 When multiple keys are resolved from multiple storage repositories, the priority of the mechanisms can be set to ensure only one key is returned.
 
 You can also pass keys as console parameters which can be useful when creating simple container applications.
+
+- Config file (app.config / web.config)
+
+- Manual Settings 
+
+- Azure Table Storage
+
+- Azure Key Vault
+
+- Custom container
+
 
 
 <table><tr> 

@@ -169,18 +169,6 @@ namespace Xigadee
             get; set;
         }
         #endregion
-        #region SchedulerRegister(Schedule schedule)
-        /// <summary>
-        /// This method registers a schedule and adds it to the collection so that it can be 
-        /// deregistered later when the command stops.
-        /// </summary>
-        /// <param name="schedule">The schedule to register.</param>
-        protected virtual void SchedulerRegister(CommandJobSchedule schedule)
-        {
-            Scheduler.Register(schedule);
-            mSchedules.Add(schedule);
-        } 
-        #endregion
 
         #region StartupPriority
         /// <summary>
@@ -237,10 +225,12 @@ namespace Xigadee
         /// <param name="handler">The handler.</param>
         /// <param name="creator">The creator that is fired if there are subscribers to the event.</param>
         /// <param name="onError">This is an optional function that can be called on an error</param>
-        protected virtual E FireAndDecorateEventArgs<E>(EventHandler<E> handler, Func<E> creator, Action<E,Exception> onError = null)
+        /// <param name="disabled">This property can be used to disable the event being fired. The default value is false.</param>
+        protected virtual E FireAndDecorateEventArgs<E>(EventHandler<E> handler, Func<E> creator, Action<E,Exception> onError = null, bool disabled = false)
             where E : CommandEventArgsBase
         {
-            if (handler == null)
+            //Skip out
+            if (!disabled || handler == null)
                 return null;
 
             var args = creator();

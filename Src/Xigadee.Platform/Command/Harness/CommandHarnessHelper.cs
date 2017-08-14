@@ -15,23 +15,14 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public static class CommandPolicyHelper
+    /// <summary>
+    /// This class is used to provide helper methods to the harness.
+    /// </summary>
+    public static class CommandHarnessHelper
     {
-        public static CommandJobSchedule ToCommandSchedule(this CommandPolicy policy
-            , Func<Schedule, CancellationToken, Task> execute, string name)
-        {
-            return new CommandJobSchedule(execute
-                , policy.JobPollSchedule
-                , name
-                , policy.JobPollIsLongRunning);
-        }
+
     }
 }

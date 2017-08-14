@@ -69,6 +69,7 @@
     <Compile Include="Channel\Channels.cs" />
     <Compile Include="CommandInitiator\CommandInitiatorTest1.cs" />
     <Compile Include="Commands\CommandBug180Test.cs" />
+    <Compile Include="Commands\Harness\Harness1.cs" />
     <Compile Include="Commands\InheritedCommand.cs" />
     <Compile Include="Commands\MasterJobs\MasterJobCommand.cs" />
     <Compile Include="Commands\MasterJobs\MasterJobTests.cs" />

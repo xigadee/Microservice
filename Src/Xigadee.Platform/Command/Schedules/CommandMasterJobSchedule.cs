@@ -43,20 +43,22 @@ namespace Xigadee
     /// This schedule is used by the master job schedules.
     /// </summary>
     /// <seealso cref="Xigadee.Schedule" />
-    public class CommandMasterJobSchedule: Schedule
+    public class CommandMasterJobSchedule: CommandJobSchedule
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MasterJobNegotiationPollSchedule"/> class.
         /// </summary>
         /// <param name="execute">The async schedule function.</param>
+        /// <param name="timerConfig">This is the timer configuration.</param>
         /// <param name="name">The schedule name.</param>
         /// <param name="initialise">The initialise action.</param>
         /// <param name="cleanup">The cleanup action.</param>
         public CommandMasterJobSchedule(Func<Schedule, CancellationToken, Task> execute
+            , CommandTimerPoll timerConfig
             , string name = null
             , Action<Schedule> initialise = null
             , Action<Schedule> cleanup = null
-            ) : base(execute, name)
+            ) : base(execute, timerConfig, name)
         {
             Initialise = initialise;
             Cleanup = cleanup;

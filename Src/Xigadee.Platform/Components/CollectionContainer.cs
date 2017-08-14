@@ -26,16 +26,22 @@ using System.Threading;
 #endregion
 namespace Xigadee
 {
+    #region CollectionContainerBase<I>
     /// <summary>
     /// This is the base collection container.
     /// </summary>
     /// <typeparam name="I">The collection type.</typeparam>
-    public abstract class CollectionContainerBase<I>: CollectionContainerBase<I,CollectionStatistics>
+    public abstract class CollectionContainerBase<I>: CollectionContainerBase<I, CollectionStatistics>
     {
-        protected CollectionContainerBase(IEnumerable<I> items):base(items)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CollectionContainerBase{I}"/> class.
+        /// </summary>
+        /// <param name="items">The items to preload in to the collection.</param>
+        protected CollectionContainerBase(IEnumerable<I> items) : base(items)
         {
         }
-    }
+    } 
+    #endregion
 
     /// <summary>
     /// This is the base collection container.
@@ -45,8 +51,14 @@ namespace Xigadee
     public abstract class CollectionContainerBase<I,S>: ServiceBase<S>, IContainerService
         where S : StatusBase, ICollectionStatistics, new()
     {
-        #region Events
+        #region Events        
+        /// <summary>
+        /// Occurs when [an item is added to the collection.
+        /// </summary>
         public event EventHandler<I> OnAdd;
+        /// <summary>
+        /// Occurs when an item is removed from the collection.
+        /// </summary>
         public event EventHandler<I> OnRemove; 
         #endregion
         #region Declarations
@@ -64,14 +76,21 @@ namespace Xigadee
                 mContainer = new ConcurrentBag<I>();
             else
                 mContainer = new ConcurrentBag<I>(items);
-        } 
+        }
         #endregion
 
+        /// <summary>
+        /// Gets the internal container.
+        /// </summary>
         protected ICollection ContainerInternal
         {
             get{ return mContainer; }
         }
 
+        /// <summary>
+        /// Recalculates the statistics.
+        /// </summary>
+        /// <param name="stats">The stats.</param>
         protected override void StatisticsRecalculate(S stats)
         {
             base.StatisticsRecalculate(stats);
@@ -79,11 +98,16 @@ namespace Xigadee
             stats.ItemCount = Count;
         }
 
+        /// <summary>
+        /// Clears the collection.
+        /// </summary>
         public virtual void Clear()
         {
             Interlocked.Exchange(ref mContainer, new ConcurrentBag<I>());
         }
-
+        /// <summary>
+        /// Gets the items in the collection.
+        /// </summary>
         public IEnumerable<I> Items
         {
             get
@@ -91,12 +115,16 @@ namespace Xigadee
                 return mContainer;
             }
         }
-
+        /// <summary>
+        /// Gets the count for the collection.
+        /// </summary>
         public int Count
         {
             get { return mContainer.Count; }
         }
-
+        /// <summary>
+        /// Gets any registered services in the collection.
+        /// </summary>
         public IEnumerable<IService> Services
         {
             get 
@@ -104,20 +132,26 @@ namespace Xigadee
                 return Items.Where((i) => i is IService).Cast<IService>();
             }
         }
-
+        /// <summary>
+        /// Adds the specified item to the collection.
+        /// </summary>
+        /// <param name="item">The item to add.</param>
         protected virtual void Add(I item)
         {
             mContainer.Add(item);
-            if (OnAdd != null)
-                try
-                {
-                    OnAdd(this, item);
-                }
-                catch (Exception)
-                {
-                }
+            try
+            {
+                OnAdd?.Invoke(this, item);
+            }
+            catch (Exception)
+            {
+            }
         }
-
+        /// <summary>
+        /// Removes the specified item from the collection.
+        /// </summary>
+        /// <param name="item">The item to remove.</param>
+        /// <returns>Returns true if the item is removed successfully.</returns>
         protected virtual bool Remove(I item)
         {
             var list = mContainer.ToList();
@@ -128,15 +162,30 @@ namespace Xigadee
 
             Interlocked.Exchange(ref mContainer, newBag);
 
+            try
+            {
+                OnRemove?.Invoke(this, item);
+            }
+            catch (Exception)
+            {
+            }
+
             return true;
         }
 
+        #region StartInternal/StopInternal
+        /// <summary>
+        /// This method starts the service. You should override this method for your own logic and implement your specific startup implementation.
+        /// </summary>
         protected override void StartInternal()
         {
         }
-
+        /// <summary>
+        /// This method stops the service. You should override this method for your own logic.
+        /// </summary>
         protected override void StopInternal()
         {
-        }
+        } 
+        #endregion
     }
 }

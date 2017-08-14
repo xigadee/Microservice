@@ -234,12 +234,6 @@ namespace Xigadee
         #endregion
 
 
-        /// <summary>
-        /// The Master Jobs.
-        /// </summary>
-        public Dictionary<Guid, CommandMasterJobSchedule> Jobs { get; } = new Dictionary<Guid, CommandMasterJobSchedule>();
-
-
         public virtual void Start()
         {
             Partners.Clear();
