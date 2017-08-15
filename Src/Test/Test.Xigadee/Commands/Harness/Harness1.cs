@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Xigadee;
 
-namespace Test.Xigadee.Commands.Harness
+namespace Test.Xigadee
 {
     [TestClass]
     public class Harness1
@@ -20,12 +20,19 @@ namespace Test.Xigadee.Commands.Harness
             {
 
             }
+
+            //[JobSchedule()]
+            //public void Schedule1()
+            //{
+
+            //}
         }
 
         [TestMethod]
         public void TestMethod1()
         {
             var policy = new CommandPolicy();
+            //policy.ChannelId = "noobs";
 
             try
             {

@@ -84,6 +84,7 @@
     <Compile Include="Command\EventArgs\OutgoingRequestEventArgs.cs" />
     <Compile Include="Command\EventArgs\ProcessRequestEventArgs.cs" />
     <Compile Include="Command\EventArgs\ScheduleChangeEventArgs.cs" />
+    <Compile Include="Command\Exceptions\CommandChannelIdNullException.cs" />
     <Compile Include="Command\Harness\CommandHarnessDependencies.cs" />
     <Compile Include="Command\Harness\CommandHarnessHelper.cs" />
     <Compile Include="Command\Helper\MasterJobCommunicationDirection.cs" />

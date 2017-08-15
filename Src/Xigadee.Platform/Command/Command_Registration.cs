@@ -74,7 +74,12 @@ namespace Xigadee
             ServiceMessageHeader header = attr.Header;
 
             if (header.ChannelId == null)
+            {
+                if (ChannelId == null)
+                    throw new CommandChannelIdNullException($"Command '{FriendlyName}' uses CommandContracts without a Channel id set but its default ChannelId is null.");
+                
                 header = new ServiceMessageHeader(ChannelId, header.MessageType, header.ActionType);
+            }
 
             return new MessageFilterWrapper(header);
         }

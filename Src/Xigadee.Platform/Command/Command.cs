@@ -230,7 +230,7 @@ namespace Xigadee
             where E : CommandEventArgsBase
         {
             //Skip out
-            if (!disabled || handler == null)
+            if (disabled || handler == null)
                 return null;
 
             var args = creator();
