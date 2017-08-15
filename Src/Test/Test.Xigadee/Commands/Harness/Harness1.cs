@@ -29,22 +29,37 @@ namespace Test.Xigadee
         }
 
         [TestMethod]
-        public void TestMethod1()
+        public void PartialCommandContractWithNoChannelIdSet()
         {
             var policy = new CommandPolicy();
-            //policy.ChannelId = "noobs";
+            policy.ChannelId = null;
 
             try
             {
                 var harness = new CommandHarness<CommandHarnessTest1>(() => new CommandHarnessTest1(policy));
-
                 harness.Start();
-
-                harness.Stop();
             }
             catch (Exception ex)
             {
-                Assert.Fail(ex.Message);
+                Assert.IsTrue(ex is CommandChannelIdNullException);
+            }
+        }
+
+
+        [TestMethod]
+        public void PartialCommandContractWithChannelIdSet()
+        {
+            var policy = new CommandPolicy();
+            policy.ChannelId = "fredo";
+
+            try
+            {
+                var harness = new CommandHarness<CommandHarnessTest1>(() => new CommandHarnessTest1(policy));
+                harness.Start();
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(ex is CommandChannelIdNullException);
             }
         }
     }

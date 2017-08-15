@@ -26,6 +26,7 @@ namespace Xigadee
         where C: class, ICommand
     {
 
+        
         /// <summary>
         /// This is the default constructor.
         /// </summary>
