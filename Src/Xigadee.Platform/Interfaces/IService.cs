@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks; 
@@ -54,6 +55,7 @@ namespace Xigadee
     /// <summary>
     /// This class holds the status change.
     /// </summary>
+    [DebuggerDisplay("{StatusOld}->{StatusNew}|{Message}")]
     public class StatusChangedEventArgs: EventArgs
     {
         /// <summary>

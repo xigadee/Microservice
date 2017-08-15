@@ -25,6 +25,9 @@ namespace Xigadee
     /// <seealso cref="Xigadee.ServiceHarnessDependencies" />
     public class CommandHarnessDependencies<C>: ServiceHarnessDependencies
     {
+        /// <summary>
+        /// Gets the creator function for the harness service.
+        /// </summary>
         public Func<C> Creator { get; }
 
         public CommandHarnessDependencies() : this(null)

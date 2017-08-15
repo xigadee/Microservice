@@ -67,9 +67,19 @@ namespace Xigadee
     /// <summary>
     /// This is the root interface implemented by the command class.
     /// </summary>
-    public interface ICommand: ICommandMasterJob, ICommandEvents, IService, IRequireScheduler, IRequirePayloadManagement
-        , IRequireServiceOriginator, IRequireSharedServices, IRequireDataCollector
+    public interface ICommand: ICommandMasterJob, ICommandEvents
+        , IService
+        , IRequireScheduler
+        , IRequirePayloadManagement
+        , IRequireServiceOriginator
+        , IRequireSharedServices
+        , IRequireDataCollector
     {
+        /// <summary>
+        /// This is the handler priority used when starting and stopping services.
+        /// The higher the value, the sooner the command will be started relative to the other commands with lower priorities.
+        /// </summary>
+        int StartupPriority { get; set; }
         /// <summary>
         /// This is the default listening channel id for incoming requests.
         /// </summary>
@@ -99,28 +109,23 @@ namespace Xigadee
         void TimeoutTaskManager(string originatorKey);
 
         /// <summary>
+        /// This method processes the supported message.
+        /// </summary>
+        /// <param name="request">The request payload.</param>
+        /// <param name="responseMessages">The response collection.</param>
+        Task ProcessRequest(TransmissionPayload request, List<TransmissionPayload> responseMessages);
+
+        /// <summary>
         /// This method should return true if the handler support this specific message.
         /// </summary>
         /// <param name="messageHeader">The message header.</param>
         /// <returns>Returns true if the message channelId is supported.</returns>
         bool SupportsMessage(ServiceMessageHeader messageHeader);
         /// <summary>
-        /// This method processes the supported message.
-        /// </summary>
-        /// <param name="request">The request payload.</param>
-        /// <param name="responseMessages">The response collection.</param>
-        Task ProcessRequest(TransmissionPayload request, List<TransmissionPayload> responseMessages);
-        /// <summary>
         /// Returns a list of message header types.
         /// </summary>
         /// <returns>Returns ServiceMessageHeader definition.</returns>
         List<MessageFilterWrapper> SupportedMessageTypes();
-        /// <summary>
-        /// This is the handler priority used when starting and stopping services.
-        /// The higher the value, the sooner the command will be started relative to the other commands with lower priorities.
-        /// </summary>
-        int StartupPriority { get; set; }
-
     }
 
     /// <summary>

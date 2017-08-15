@@ -15,6 +15,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 
 namespace Xigadee
 {
@@ -25,8 +26,15 @@ namespace Xigadee
     public class CommandHarness<C>:ServiceHarness<C, CommandHarnessDependencies<C>>
         where C: class, ICommand
     {
+        /// <summary>
+        /// Contains the set of active registered commands.
+        /// </summary>
+        public Dictionary<MessageFilterWrapper, bool> RegisteredCommands { get; } = new Dictionary<MessageFilterWrapper, bool>();
+        /// <summary>
+        /// Contains the set of active registered schedules.
+        /// </summary>
+        public Dictionary<CommandJobSchedule, bool> RegisteredSchedules { get; } = new Dictionary<CommandJobSchedule, bool>();
 
-        
         /// <summary>
         /// This is the default constructor.
         /// </summary>
@@ -44,12 +52,34 @@ namespace Xigadee
             var command =  Dependencies.Creator();
 
             command.OnCommandChange += Command_OnCommandChange;
+            command.OnScheduleChange += Command_OnScheduleChange;
 
             return command;
         }
 
+
+
+        private void Command_OnScheduleChange(object sender, ScheduleChangeEventArgs e)
+        {
+            if (e.IsRemoval)
+            {
+                if (RegisteredSchedules.ContainsKey(e.Schedule))
+                    RegisteredSchedules.Remove(e.Schedule);
+            }
+            else
+                RegisteredSchedules.Add(e.Schedule, e.IsMasterJob);
+        }
+
         private void Command_OnCommandChange(object sender, CommandChangeEventArgs e)
         {
+            if (e.IsRemoval)
+            {
+                if (RegisteredCommands.ContainsKey(e.Key))
+                    RegisteredCommands.Remove(e.Key);
+            }
+            else
+                RegisteredCommands.Add(e.Key,e.IsMasterJob);
+                   
         }
     }
 }

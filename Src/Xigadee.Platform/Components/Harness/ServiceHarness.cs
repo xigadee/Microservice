@@ -100,6 +100,16 @@ namespace Xigadee
         {
             Dependencies.Configure(service);
         }
+
+        #region Service Status
+        /// <summary>
+        /// Gets the current command status.
+        /// </summary>
+        public ServiceStatus? CurrentStatus { get; protected set; }
+        /// <summary>
+        /// Gets the status history.
+        /// </summary>
+        public Queue<StatusChangedEventArgs> StatusHistory { get; } = new Queue<StatusChangedEventArgs>();
         /// <summary>
         /// This method can be used to monitor status changes.
         /// </summary>
@@ -107,7 +117,10 @@ namespace Xigadee
         /// <param name="e">The change event.</param>
         protected virtual void Service_StatusChanged(object sender, StatusChangedEventArgs e)
         {
-        }
+            CurrentStatus = e.StatusNew;
+            StatusHistory.Enqueue(e);
+        } 
+        #endregion
 
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls        

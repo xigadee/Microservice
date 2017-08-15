@@ -33,10 +33,11 @@ namespace Test.Xigadee
         {
             var policy = new CommandPolicy();
             policy.ChannelId = null;
+            CommandHarness<CommandHarnessTest1> harness;
 
             try
             {
-                var harness = new CommandHarness<CommandHarnessTest1>(() => new CommandHarnessTest1(policy));
+                harness = new CommandHarness<CommandHarnessTest1>(() => new CommandHarnessTest1(policy));
                 harness.Start();
             }
             catch (Exception ex)
@@ -51,16 +52,11 @@ namespace Test.Xigadee
         {
             var policy = new CommandPolicy();
             policy.ChannelId = "fredo";
+            CommandHarness<CommandHarnessTest1> harness;
 
-            try
-            {
-                var harness = new CommandHarness<CommandHarnessTest1>(() => new CommandHarnessTest1(policy));
-                harness.Start();
-            }
-            catch (Exception ex)
-            {
-                Assert.IsTrue(ex is CommandChannelIdNullException);
-            }
+            harness = new CommandHarness<CommandHarnessTest1>(() => new CommandHarnessTest1(policy));
+            harness.Start();
+            Assert.IsTrue(harness.RegisteredCommands.Count == 1);
         }
     }
 }
