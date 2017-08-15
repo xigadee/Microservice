@@ -12,6 +12,9 @@ namespace Xigadee
         long ExecutionCount { get; }
         TimeSpan? Frequency { get; set; }
         Guid Id { get; }
+        /// <summary>
+        /// Gets or sets the initial time.
+        /// </summary>
         DateTime? InitialTime { get; set; }
         TimeSpan? InitialWait { get; set; }
         bool IsInternal { get; set; }

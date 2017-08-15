@@ -26,39 +26,39 @@ namespace Test.Xigadee
             )
         { }
 
-        /// <summary>
-        /// Test schedule 1.
-        /// </summary>
-        /// <param name="incoming">The incoming schedule.</param>
-        [JobSchedule("00:00:00", "00:00:05")]
-        public Task JobSchedule1(Schedule incoming, CancellationToken cancel)
-        {
-            //Hello
-            return Task.FromResult(0);
-        }
+        ///// <summary>
+        ///// Test schedule 1.
+        ///// </summary>
+        ///// <param name="incoming">The incoming schedule.</param>
+        //[JobSchedule("00:00:00", "00:00:05")]
+        //public Task JobSchedule1(Schedule incoming, CancellationToken cancel)
+        //{
+        //    //Hello
+        //    return Task.FromResult(0);
+        //}
 
 
-        /// <summary>
-        /// Test schedule 1.
-        /// </summary>
-        /// <param name="incoming">The incoming schedule.</param>
-        [JobSchedule("00:00:00", "00:00:05")]
-        public async Task JobSchedule2(Schedule incoming, CancellationToken cancel)
-        {
-            //Hello
+        ///// <summary>
+        ///// Test schedule 1.
+        ///// </summary>
+        ///// <param name="incoming">The incoming schedule.</param>
+        //[JobSchedule("00:00:00", "00:00:05")]
+        //public async Task JobSchedule2(Schedule incoming, CancellationToken cancel)
+        //{
+        //    //Hello
 
-        }
+        //}
 
-        /// <summary>
-        /// Masterjob test schedule 1
-        /// </summary>
-        /// <param name="incoming">The incoming schedule.</param>
-        [MasterJobSchedule("00:00:00","00:00:05",name:"Coolio")]
-        public Task MasterjobSchedule1(Schedule incoming)
-        {
-            //Hello
+        ///// <summary>
+        ///// Masterjob test schedule 1
+        ///// </summary>
+        ///// <param name="incoming">The incoming schedule.</param>
+        //[MasterJobSchedule("00:00:00","00:00:05",name:"Coolio")]
+        //public Task MasterjobSchedule1(Schedule incoming)
+        //{
+        //    //Hello
 
-            return Task.FromResult(0);
-        }
+        //    return Task.FromResult(0);
+        //}
     }
 }
