@@ -24,7 +24,7 @@ namespace Test.Xigadee
 {
     public class TestMasterJob2: CommandBase
     {
-        public TestMasterJob2(string channel) : base(CommandPolicy.ToMasterJob(channel))
+        public TestMasterJob2()
         {
         }
 

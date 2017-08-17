@@ -27,13 +27,17 @@ namespace Test.Xigadee
         //private Logger mLogger = LogManager.GetCurrentClassLogger();
         private int mCurrentExecutionId;
 
-        public DelayedProcessingJob() : base(CommandPolicy.ToJob(TimeSpan.FromSeconds(15), TimeSpan.FromSeconds(1), null, isLongRunningJob: false))
+        public DelayedProcessingJob()
         {
         }
 
         protected override void JobSchedulesManualRegister()
         {           
-            JobScheduleRegister(ExecuteJob, name: $"DelayedProcessingJob: {GetType().Name}");
+            JobScheduleRegister(ExecuteJob
+                , initialWait:TimeSpan.FromSeconds(1)
+                , interval:TimeSpan.FromSeconds(15)
+                , name: $"DelayedProcessingJob: {GetType().Name}"
+                , isLongRunning: false);
         }
 
         protected async Task ExecuteJob(Schedule state, CancellationToken token)

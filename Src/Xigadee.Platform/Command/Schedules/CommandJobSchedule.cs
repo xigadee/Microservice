@@ -106,5 +106,16 @@ namespace Xigadee
         /// </summary>
         public string CommandName { get; set; }
 
+        /// <summary>
+        /// This is the debug message used for the statistics.
+        /// </summary>
+        public override string Debug
+        {
+            get
+            {
+                return $"{(IsMasterJob?"MasterJob":"Job")}:'{Name ?? Id.ToString("N").ToUpperInvariant()}' Active={Active} [ShouldExecute={ShouldExecute}] @ {NextExecuteTime} Run={ExecutionCount}";
+            }
+        }
+
     }
 }

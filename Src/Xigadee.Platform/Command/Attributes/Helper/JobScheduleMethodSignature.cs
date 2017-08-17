@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -31,6 +27,7 @@ namespace Xigadee
         /// This is the list of the parameters for the method.
         /// </summary>
         public List<ParameterInfo> Parameters { get; protected set; }
+
         /// <summary>
         /// This method validates the method.
         /// </summary>
@@ -47,68 +44,20 @@ namespace Xigadee
                 var paramInfo = Method.GetParameters().ToList();
 
                 //OK, see if the standard parameters exist and aren't decorated as In or Out.
-                StandardIn = paramInfo
-                    .Where((p) => !ParamAttributes<PayloadInAttribute>(p))
-                    .Where((p) => !ParamAttributes<PayloadOutAttribute>(p))
-                    .FirstOrDefault((p) => p.ParameterType == typeof(TransmissionPayload));
-                bool isStandardIn = (StandardIn != null) && paramInfo.Remove(StandardIn);
-                if (StandardIn != null)
-                    StandardInPos = Parameters.IndexOf(StandardIn);
+                InSchedule = GetParamPos(Parameters, paramInfo, typeof(Schedule));
+                InCancellationToken = GetParamPos(Parameters, paramInfo, typeof(CancellationToken));
 
-                StandardOut = paramInfo
-                    .Where((p) => !ParamAttributes<PayloadInAttribute>(p))
-                    .Where((p) => !ParamAttributes<PayloadOutAttribute>(p))
-                    .FirstOrDefault((p) => p.ParameterType == typeof(List<TransmissionPayload>));
-                bool isStandardOut = (StandardOut != null) && paramInfo.Remove(StandardOut);
-                if (StandardOut != null)
-                    StandardOutPos = Parameters.IndexOf(StandardOut);
-
-                IsStandardCall = (isStandardIn || isStandardOut) && paramInfo.Count == 0;
-
-                if (IsStandardCall)
-                    return true;
-
-                //Get the In parameter
-                ParamIn = Parameters.Where((p) => ParamAttributes<PayloadInAttribute>(p)).FirstOrDefault();
-                if (ParamIn != null && paramInfo.Remove(ParamIn))
+                //Now check the out parameter is acceptable
+                if (IsAsync)
                 {
-                    TypeIn = ParamIn?.ParameterType;
-                    ParamInPos = Parameters.IndexOf(ParamIn);
+                    if (Method.ReturnParameter.ParameterType != typeof(Task))
+                        throw new CommandContractSignatureException($"Generic Task response parameter can only have one parameter.");
                 }
-
-                //Now get the out parameter
-                ParamOut = Parameters.Where((p) => ParamAttributes<PayloadOutAttribute>(p)).FirstOrDefault();
-
-                //if (ParamOut == null && ParamAttributes<PayloadOutAttribute>(Method.ReturnParameter))
-                //{
-                //    ParamOut = Method.ReturnParameter;
-                //    IsReturnValue = true;
-                //}
-                //else if (ParamOut != null && paramInfo.Remove(ParamOut))
-                //{
-                //    ParamOutPos = Parameters.IndexOf(ParamOut);
-                //}
-
-                //if (ParamOut != null && !IsReturnValue && !ParamOut.IsOut)
-                //    if (throwException)
-                //        throw new CommandContractSignatureException($"Parameter {ParamOut.Name} is not marked as an out parameter.");
-                //    else
-                //        return false;
-
-                //if (IsAsync && IsReturnValue && ParamOut.ParameterType.IsGenericType)
-                //{
-                //    if (ParamOut.ParameterType.GenericTypeArguments.Length != 1)
-                //        if (throwException)
-                //            throw new CommandContractSignatureException($"Generic Task response parameter can only have one parameter.");
-                //        else
-                //            return false;
-
-                //    TypeOut = ParamOut.ParameterType.GenericTypeArguments[0];
-                //}
-                //else if (!IsAsync)
-                //{
-                //    TypeOut = ParamOut.ParameterType;
-                //}
+                else
+                {
+                    if (Method.ReturnParameter.ParameterType != typeof(void))
+                        throw new CommandContractSignatureException($"Generic Task response parameter can only have one parameter.");
+                }
 
                 //Finally check that we have used all the parameters.
                 if (paramInfo.Count != 0 && throwException)
@@ -119,68 +68,18 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                throw new CommandContractSignatureException("PayloadIn or PayloadOut have not been set correctly.", ex);
-            }
-        }
-
-        private bool ParamAttributes<AT>(ParameterInfo info)
-            where AT : Attribute
-        {
-            try
-            {
-                var attr = Attribute.GetCustomAttribute(info, typeof(AT), false);
-
-                return attr != null;
-            }
-            catch (Exception ex)
-            {
-                throw;
+                throw new CommandContractSignatureException("Incorrect method declaration.", ex);
             }
         }
 
         /// <summary>
         /// This is the StandardIn parameter
         /// </summary>
-        public ParameterInfo StandardIn { get; private set; }
+        public (bool success, ParameterInfo param, int? pos) InSchedule { get; private set; }
         /// <summary>
-        /// This is the parameter position.
+        /// This is the StandardIn parameter
         /// </summary>
-        public int? StandardInPos { get; private set; }
-        /// <summary>
-        /// This is the StandardOut parameter.
-        /// </summary>
-        public ParameterInfo StandardOut { get; private set; }
-        /// <summary>
-        /// This is the parameter position.
-        /// </summary>
-        public int? StandardOutPos { get; private set; }
-        /// <summary>
-        /// This is the ParamIn parameter.
-        /// </summary>
-        public ParameterInfo ParamIn { get; private set; }
-        /// <summary>
-        /// This is the parameter position.
-        /// </summary>
-        public int? ParamInPos { get; private set; }
-
-        /// <summary>
-        /// This is the parameter type in
-        /// </summary>
-        public Type TypeIn { get; set; }
-        /// <summary>
-        /// This is the parameter type out
-        /// </summary>
-        public Type TypeOut { get; set; }
-
-        /// <summary>
-        /// This is the ParamOut parameter.
-        /// </summary>
-        public ParameterInfo ParamOut { get; private set; }
-        /// <summary>
-        /// This is the parameter position.
-        /// </summary>
-        public int? ParamOutPos { get; private set; }
-
+        public (bool success, ParameterInfo param, int? pos) InCancellationToken { get; private set; }
 
         /// <summary>
         /// This is the command action that is executed.
@@ -189,58 +88,25 @@ namespace Xigadee
         {
             get
             {
-                return (sch,tok) => { return Task.FromResult(0); };
+                return async (schedule, token) =>
+                {
+                    var collection = new object[Parameters.Count];
 
-                //return async (pIn, pOut, ser) =>
-                //{
-                //    try
-                //    {
-                //        var collection = new object[Parameters.Count];
+                    if (InSchedule.success)
+                        collection[InSchedule.pos.Value] = schedule;
 
-                //        if (ParamInPos.HasValue)
-                //            collection[ParamInPos.Value] = ser.PayloadDeserialize(pIn.Message);
+                    if (InCancellationToken.success)
+                        collection[InCancellationToken.pos.Value] = token;
 
-                //        if (StandardInPos.HasValue)
-                //            collection[StandardInPos.Value] = pIn;
-
-                //        if (StandardOutPos.HasValue)
-                //            collection[StandardOutPos.Value] = pOut;
-
-                //        object output = null;
-
-                //        if (IsAsync)
-                //        {
-                //            if (TypeOut == null)
-                //                await (Task)Method.Invoke(Command, collection);
-                //            else
-                //                output = await (dynamic)Method.Invoke(Command, collection);
-                //        }
-                //        else
-                //        {
-                //            if (!IsReturnValue)
-                //            {
-                //                Method.Invoke(Command, collection);
-                //                if (ParamOutPos.HasValue)
-                //                    output = collection[ParamOutPos.Value];
-                //            }
-                //            else
-                //                output = (dynamic)Method.Invoke(Command, collection);
-                //        }
-
-                //        if (TypeOut != null)
-                //        {
-                //            var response = pIn.ToResponse();
-                //            response.Message.Blob = ser.PayloadSerialize(output);
-                //            response.Message.Status = "200";
-
-                //            pOut.Add(response);
-                //        }
-                //    }
-                //    catch (Exception ex)
-                //    {
-                //        throw;
-                //    }
-                //};
+                    if (IsAsync)
+                    {
+                        await (Task)Method.Invoke(Command, collection);
+                    }
+                    else
+                    {
+                        Method.Invoke(Command, collection);
+                    }
+                };
             }
         }
     }

@@ -1,4 +1,7 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace Xigadee
 {
@@ -27,6 +30,26 @@ namespace Xigadee
             Method = method;
 
             IsValid = Validate(throwSignatureException);
+        }
+
+
+        /// <summary>
+        /// Gets the parameter and its position.
+        /// </summary>
+        /// <param name="fullParam">The full parameter list.</param>
+        /// <param name="remainParam">The remain parameter list.</param>
+        /// <param name="type">The type to check.</param>
+        /// <returns>The output tuple.</returns>
+        protected (bool success, ParameterInfo info, int? pos) GetParamPos(List<ParameterInfo> fullParam, List<ParameterInfo> remainParam, Type type)
+        {
+            //OK, see if the standard parameters exist and aren't decorated as In or Out.
+            var inParam = remainParam.FirstOrDefault((p) => p.ParameterType == type);
+
+            bool isOK = (inParam != null) && remainParam.Remove(inParam);
+
+            var inParamPos = isOK ? fullParam.IndexOf(inParam) : (int?)null;
+
+            return (isOK, inParam, inParamPos);
         }
 
         /// <summary>

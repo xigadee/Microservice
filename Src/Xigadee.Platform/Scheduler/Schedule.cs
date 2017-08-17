@@ -36,7 +36,7 @@ namespace Xigadee
         private bool mShouldExecute;
         private Func<Schedule, CancellationToken, Task> mExecute;
         private long mExecutionCount = 0;
-        private long mExecuteActiveSkip = 0;
+        private long mExecuteActiveSkipCount = 0;
         #endregion
         #region Constructor        
         /// <summary>
@@ -101,7 +101,7 @@ namespace Xigadee
         {
             get
             {
-                return $"{ScheduleType}:{Name ?? Id.ToString("N").ToUpperInvariant()} Active={Active} [ShouldExecute={mShouldExecute}] @ {NextExecuteTime} Run={mExecutionCount}";
+                return $"{ScheduleType}:'{Name ?? Id.ToString("N").ToUpperInvariant()}' Active={Active} [ShouldExecute={ShouldExecute}] @ {NextExecuteTime} Run={ExecutionCount}";
             }
         }
         #endregion
@@ -167,6 +167,7 @@ namespace Xigadee
                 return false;
             }
 
+            Interlocked.Increment(ref mExecutionCount);
             ExecuteException = null;
             Active = true;
 
@@ -185,7 +186,6 @@ namespace Xigadee
             try
             {
                 LastExecuteTime = DateTime.UtcNow;
-                Interlocked.Increment(ref mExecutionCount);
                 await mExecute(this, token);
             }
             finally
@@ -270,17 +270,16 @@ namespace Xigadee
         /// </summary>
         public void ExecutingSoSkip()
         {
-            Interlocked.Increment(ref mExecuteActiveSkip);
+            Interlocked.Increment(ref mExecuteActiveSkipCount);
         }
         #endregion
-        #region ExecuteActiveSkip
+        #region ExecuteActiveSkipCount
         /// <summary>
         /// This is the count of the number of time the schedule was meant to run but 
         /// was still active so was skipped
         /// </summary>
-        public long ExecuteActiveSkip { get { return mExecuteActiveSkip; } }
+        public long ExecuteActiveSkipCount { get { return mExecuteActiveSkipCount; } }
         #endregion
-
 
         #region ExecuteException
         /// <summary>
@@ -341,6 +340,10 @@ namespace Xigadee
         {
             get
             {
+                //One time hit for the first execution.
+                if (mExecutionCount == 0 && !InitialWait.HasValue && !InitialTime.HasValue && !Frequency.HasValue)
+                    return true;
+
                 var compareTime = DateTime.UtcNow;
 
                 bool result = !Active

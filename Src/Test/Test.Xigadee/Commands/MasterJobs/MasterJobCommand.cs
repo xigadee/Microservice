@@ -26,28 +26,28 @@ namespace Test.Xigadee
             )
         { }
 
-        ///// <summary>
-        ///// Test schedule 1.
-        ///// </summary>
-        ///// <param name="incoming">The incoming schedule.</param>
-        //[JobSchedule("00:00:00", "00:00:05")]
-        //public Task JobSchedule1(Schedule incoming, CancellationToken cancel)
-        //{
-        //    //Hello
-        //    return Task.FromResult(0);
-        //}
+        /// <summary>
+        /// Test schedule 1.
+        /// </summary>
+        /// <param name="incoming">The incoming schedule.</param>
+        [MasterJobSchedule("Freedy Fingered")]
+        public Task JobSchedule1(CancellationToken cancel, Schedule incoming)//, CancellationToken cancel)
+        {
+            //Hello
+            return Task.FromResult(0);
+        }
 
 
-        ///// <summary>
-        ///// Test schedule 1.
-        ///// </summary>
-        ///// <param name="incoming">The incoming schedule.</param>
-        //[JobSchedule("00:00:00", "00:00:05")]
-        //public async Task JobSchedule2(Schedule incoming, CancellationToken cancel)
-        //{
-        //    //Hello
+        /// <summary>
+        /// Test schedule 1.
+        /// </summary>
+        /// <param name="incoming">The incoming schedule.</param>
+        [JobSchedule("Mikey", "00:00:00", "00:00:05")]
+        public async void JobSchedule2(Schedule incoming, CancellationToken cancel)
+        {
+            //Hello
 
-        //}
+        }
 
         ///// <summary>
         ///// Masterjob test schedule 1

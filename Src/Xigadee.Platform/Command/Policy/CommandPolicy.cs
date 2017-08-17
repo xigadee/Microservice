@@ -23,6 +23,17 @@ namespace Xigadee
     /// </summary>
     public class CommandPolicy:PolicyBase
     {
+
+
+        /// <summary>
+        /// Specifies that the commands are supported by reflection, i.e. those commands that use the CommandContractAttribute.
+        /// </summary>
+        public bool CommandReflectionSupported { get; set; } = true;
+
+        /// <summary>
+        /// Specifies that schedule reflection commands are supported, i.e. those that use the CommandScheduleAttribute.
+        /// </summary>
+        public bool ScheduleReflectionSupported { get; set; } = true;
         /// <summary>
         /// The behaviour to follow for an uncaught exception.
         /// </summary>
@@ -31,10 +42,7 @@ namespace Xigadee
         /// Gets or sets a value indicating whether unhandled exceptions should be logged. The default value is true.
         /// </summary>
         public bool OnProcessRequestExceptionLog { get; set; } = true;
-        /// <summary>
-        /// Gets or sets the master job negotiation strategy.
-        /// </summary>
-        public MasterJobNegotiationStrategyBase MasterJobNegotiationStrategy { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether the TransmissionPayload trace flag should be set to true.
         /// </summary>
@@ -103,6 +111,11 @@ namespace Xigadee
         public virtual bool JobPollIsLongRunning { get; set; } = false;
 
         //Master Job
+        /// <summary>
+        /// Gets or sets the master job negotiation strategy.
+        /// </summary>
+        public MasterJobNegotiationStrategyBase MasterJobNegotiationStrategy { get; set; }
+
         public virtual bool MasterJobEnabled { get; set; }
 
         public virtual int MasterJobNegotiationChannelPriority { get; set; } = 2;
@@ -111,58 +124,10 @@ namespace Xigadee
 
         public virtual string MasterJobName { get; set; }
 
-
-        public static CommandPolicy ToJob(TimeSpan? interval, TimeSpan? initialWait, DateTime? initialTime, bool isLongRunningJob = false)
-        {
-            return ToJob<CommandPolicy>(interval, initialWait, initialTime, isLongRunningJob);
-        }
-
-        public static P ToJob<P>(TimeSpan? interval, TimeSpan? initialWait, DateTime? initialTime, bool isLongRunningJob = false)
-            where P : CommandPolicy, new()
-        {
-            return new P
-            {
-                  JobsEnabled = true
-                , JobPollIsLongRunning = isLongRunningJob
-                , MasterJobEnabled = false
-                , JobPollSchedule = new ScheduleTimerConfig(interval, initialWait, initialTime)
-            };
-        }
-
-        public static CommandPolicy ToMasterJob(string negotiationChannelId, string negotiationChannelType = null, int negotiationChannelPriority = 1, string name = null)
-        {
-            return ToMasterJob<CommandPolicy>(negotiationChannelId, negotiationChannelType, negotiationChannelPriority, name);
-        }
-
-        public static P ToMasterJob<P>(string negotiationChannelId, string negotiationChannelType = null, int negotiationChannelPriority = 1, string name = null)
-            where P: CommandPolicy, new()
-        {
-            return new P()
-            {
-                  JobsEnabled = true
-                , MasterJobEnabled = true
-                , MasterJobNegotiationChannelIdOutgoing = negotiationChannelId
-                , MasterJobNegotiationChannelType = negotiationChannelType
-                , MasterJobNegotiationChannelPriority = negotiationChannelPriority
-                , MasterJobName = name
-            };
-        }
-
-        /// <summary>
-        /// Specifies that the commands are supported by reflection, i.e. those commands that use the CommandContractAttribute.
-        /// </summary>
-        public bool CommandReflectionSupported { get; set; } = true;
-
         /// <summary>
         /// Specifies that the master job commands are supported by reflection, i.e. those that use the MasterJobCommandContractAttribute.
         /// </summary>
         public bool MasterJobCommandReflectionSupported { get; set; } = true;
-
-        /// <summary>
-        /// Specifies that schedule reflection commands are supported, i.e. those that use the CommandScheduleAttribute.
-        /// </summary>
-        public bool ScheduleReflectionSupported { get; set; } = true;
-
         /// <summary>
         /// Specifies that schedule reflection commands are supported for master jobs, i.e. those that use the MasterJobScheduleAttribute.
         /// </summary>

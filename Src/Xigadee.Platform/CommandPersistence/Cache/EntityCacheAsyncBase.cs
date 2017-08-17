@@ -57,7 +57,7 @@ namespace Xigadee
         /// 
         /// </summary>
         /// <param name="policy">This is the default configuration policy.</param>
-        /// <param name="resourceProfile">This is the optional resource profile that can be used to teack and limit resources.</param>
+        /// <param name="resourceProfile">This is the optional resource profile that can be used to track and limit resources.</param>
         public EntityCacheAsyncBase(EntityCacheAsyncPolicy policy, ResourceProfile resourceProfile = null) :base(policy)
         {
             if (policy == null)

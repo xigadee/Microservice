@@ -97,8 +97,8 @@ namespace Xigadee
         {
             return objectType
                 .GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance)
-                .Where((m) => m.CustomAttributes.Count((a) => a.AttributeType == typeof(A)) > 0)
-                .SelectMany((m) => m.GetCustomAttributes(), (m,a) => ((A)a,m));
+                //.Where((m) => m.CustomAttributes.Count((a) => a.AttributeType == typeof(A)) > 0)
+                .SelectMany((m) => m.GetCustomAttributes<A>(), (m,a) => ((A)a,m));
         }
     }
 }

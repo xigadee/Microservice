@@ -89,7 +89,38 @@ namespace Xigadee
         }
         #endregion
 
-        #region JobScheduleRegister(...)        
+        #region JobScheduleRegister(...)   
+        /// <summary>
+        /// Creates and registers a schedule.
+        /// </summary>
+        /// <param name="execute">The execution function.</param>
+        /// <param name="interval">The poll interval.</param>
+        /// <param name="initialWait">The initial wait.</param>
+        /// <param name="initialWaitUTCTime">The optional initial UTC wait time that the polling will begin if the initialWait is set to null.</param>
+        /// <param name="context">The optional schedule context</param>
+        /// <param name="name">The name of the schedule.</param>
+        /// <param name="isLongRunning">A boolean flag that specifies whether the process is long running.</param>
+        /// <param name="tearUp">The set up action.</param>
+        /// <param name="tearDown">The clear down action.</param>
+        /// <param name="isMasterJob">Indicates whether this schedule is associated to a master job.</param>
+        /// <returns>Returns the new schedule.</returns>
+        protected virtual CommandJobSchedule JobScheduleRegister(Func<Schedule, CancellationToken, Task> execute
+            , TimeSpan? interval = null
+            , TimeSpan? initialWait = null
+            , DateTime? initialWaitUTCTime = null
+            , object context = null
+            , string name = null
+            , bool isLongRunning = false
+            , Action<Schedule> tearUp = null
+            , Action<Schedule> tearDown = null
+            , bool isMasterJob = false)
+        {
+            var schedule = new CommandJobSchedule();
+
+            schedule.Initialise(execute, new ScheduleTimerConfig(interval, initialWait, initialWaitUTCTime, false), context, name, isLongRunning, tearUp, tearDown, isMasterJob);
+
+            return JobScheduleRegister(schedule);
+        }
         /// <summary>
         /// Creates and registers a schedule.
         /// </summary>
