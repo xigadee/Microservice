@@ -25,7 +25,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This container holds the current tasks being processed on the system and calculates the availabile slots for the supported priority levels.
+    /// This container holds the current tasks being processed on the system and calculates the available slots for the supported priority levels.
     /// </summary>
     public class TaskManager: ServiceContainerBase<TaskManagerStatistics, TaskManagerPolicy>, IRequireDataCollector
     {
@@ -550,7 +550,7 @@ namespace Xigadee
         /// <returns>Returns a task for the job.</returns>
         private Task ExecuteTaskCreate(TaskTracker tracker)
         {
-            //Internal tasks should not block other incoming tasks and they are passthrough requests from another task.
+            //Internal tasks should not block other incoming tasks and they are pass-through requests from another task.
             tracker.ExecuteTickCount = StatisticsInternal.ActiveIncrement();
 
             var payload = tracker.Context as TransmissionPayload;

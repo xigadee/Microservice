@@ -174,12 +174,12 @@ namespace Xigadee
         {
             //Set the status log frequency.
             mScheduler.Register(async (s, cancel) => await LogStatistics()
-                , Policy.Microservice.FrequencyStatisticsGeneration, "Status Poll", TimeSpan.FromSeconds(0), isInternal:true);
+                , Policy.Microservice.FrequencyStatisticsGeneration, "Statistics: Output", TimeSpan.FromSeconds(0), isInternal:true);
 
             //Set the status log frequency.
             if (Policy.Microservice.FrequencyAutotune.HasValue)
                 mScheduler.Register(async (s, cancel) => await mTaskManager.Autotune()
-                    , Policy.Microservice.FrequencyAutotune.Value, "Autotune", TimeSpan.FromSeconds(10), isInternal: true);
+                    , Policy.Microservice.FrequencyAutotune.Value, "TaskManager: Autotune", TimeSpan.FromSeconds(10), isInternal: true);
 
             // Flush the accumulated telemetry 
             mScheduler.Register(async (s, cancel) => await mDataCollection.Flush()
@@ -187,7 +187,7 @@ namespace Xigadee
 
             // Kills any overrunning tasks
             mScheduler.Register(async (s, cancel) => await mTaskManager.TaskTimedoutKill()
-                , Policy.Microservice.FrequencyTasksTimeout, "Tasks timed-out: kill", TimeSpan.FromSeconds(1), isInternal: true);
+                , Policy.Microservice.FrequencyTasksTimeout, "TaskManager: Tasks timed-out kill", TimeSpan.FromSeconds(1), isInternal: true);
         }
         #endregion
 
@@ -238,13 +238,13 @@ namespace Xigadee
                 //Finally register the housekeeping schedules.
                 EventStart(() => SchedulesRegister(), "Scheduler");
 
-                //Ok start the commands in parallel at the same priority group.
+                //OK start the commands in parallel at the same priority group.
                 EventStart(() => mCommands.CommandsStart(ServiceStart), "Commands");
 
                 //Now start the listeners and deadletter listeners
                 EventStart(() => mCommunication.ListenersStart(), "Communication Listeners");
 
-                //Ok start the commands in parallel at the same priority group.
+                //OK start the commands in parallel at the same priority group.
                 EventStart(() => Dispatch = new DispatchWrapper(mSerializer, mTaskManager.ExecuteOrEnqueue, () => Status
                 , Policy.TaskManager.TransmissionPayloadTraceEnabled)
                     , "Dispatch Wrapper");

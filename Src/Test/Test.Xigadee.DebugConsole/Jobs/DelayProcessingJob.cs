@@ -32,17 +32,15 @@ namespace Test.Xigadee
         }
 
         protected override void JobSchedulesManualRegister()
-        {
-            var job = mPolicy.ToCommandSchedule(ExecuteJob, $"DelayedProcessingJob: {GetType().Name}");
-            
-            JobScheduleRegister(job);
+        {           
+            JobScheduleRegister(ExecuteJob, name: $"DelayedProcessingJob: {GetType().Name}");
         }
 
         protected async Task ExecuteJob(Schedule state, CancellationToken token)
         {
             int currentJob = mCurrentExecutionId++;
             //mCollector?.Log(LogLevel.Info, "DelayedProcessingJob - Executing schedule " + currentJob);
-            state.State = currentJob;
+            state.Context = currentJob;
             var payload = new TransmissionPayload("interserv", "do", "something", options:ProcessOptions.RouteExternal);
             TaskManager(this, null, payload);
 

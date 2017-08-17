@@ -204,7 +204,6 @@ namespace Xigadee
 
             schedule.Frequency = NegotiationStrategy.InitialPollFrequency;
             schedule.InitialWait = NegotiationStrategy.InitialPollWait;
-            schedule.IsLongRunning = false;
 
             NegotiationPollSchedule = schedule;
 

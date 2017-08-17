@@ -450,13 +450,12 @@ namespace Xigadee
         {
             MasterJobCommandsManualRegister();
 
-            foreach (var signature in this.CommandMethodAttributeSignatures<MasterJobCommandContractAttribute>(true))
-            {
-                CommandRegister(CommandChannelAdjust(signature.Item1)
-                    , (rq, rs) => signature.Item2.Action(rq, rs, PayloadSerializer)
-                    , referenceId: signature.Item3
-                    , isMasterJob: true);
-            }
+            foreach (var holder in this.CommandMethodSignatures<MasterJobCommandContractAttribute, CommandMethodSignature>(true))
+                CommandRegister(CommandChannelIdAdjust(holder.Attribute)
+                    , (rq, rs) => holder.Signature.Action(rq, rs, PayloadSerializer)
+                    , referenceId: holder.Reference
+                    , isMasterJob: true
+                    );
         } 
         #endregion
         #region MasterJobCommandsManualRegister()
@@ -474,48 +473,49 @@ namespace Xigadee
         /// </summary>
         protected virtual void MasterJobSchedulesStart()
         {
+            MasterJobSchedulesManualRegister();
 
-            this.ScheduleMethodAttributeSignatures<MasterJobScheduleAttribute>()
-                .SelectMany((s) => s.Item2.ToSchedules())
-                .ForEach((r) => JobScheduleRegister(r));
+            if (mPolicy.MasterJobScheduleReflectionSupported)
+                JobSchedulesReflectionInitialise<MasterJobScheduleAttribute>();
+        }
+        #endregion
+        #region MasterJobSchedulesManualRegister()
+        /// <summary>
+        /// Override this method to set your schedule registration code.
+        /// </summary>
+        protected virtual void MasterJobSchedulesManualRegister()
+        {
 
-            //foreach (var schedule in mMasterJobContext.Jobs.Values)
-            //{
-            //    try
-            //    {
-            //        schedule.Initialise?.Invoke(schedule);
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        StatisticsInternal.Ex = ex;
-            //        Collector?.LogException($"MasterJob '{schedule.Name} could not be initialised.'", ex);
-            //    }
-
-            //    ScheduleRegister(schedule);
-            //}
         }
         #endregion
 
-
-        protected virtual CommandMasterJobSchedule MasterJobScheduleRegister(CommandMasterJobSchedule schedule)
+        #region MasterJobScheduleRegister(...)        
+        /// <summary>
+        /// Creates and registers a schedule.
+        /// </summary>
+        /// <param name="execute">The execution function.</param>
+        /// <param name="timerConfig">The timer poll configuration. If this is set to null, the schedule will fire immediately after it is registered.</param>
+        /// <param name="context">The optional schedule context</param>
+        /// <param name="name">The name of the schedule.</param>
+        /// <param name="isLongRunning">A boolean flag that specifies whether the process is long running.</param>
+        /// <param name="tearUp">The set up action.</param>
+        /// <param name="tearDown">The clear down action.</param>
+        /// <returns>Returns the new master job schedule.</returns>
+        protected virtual CommandJobSchedule MasterJobScheduleRegister(Func<Schedule, CancellationToken, Task> execute
+            , ScheduleTimerConfig timerConfig = null
+            , object context = null
+            , string name = null
+            , bool isLongRunning = false
+            , Action<Schedule> tearUp = null
+            , Action<Schedule> tearDown = null)
         {
-            try
-            {
-                schedule.Initialise?.Invoke(schedule);
-            }
-            catch (Exception ex)
-            {
-                StatisticsInternal.Ex = ex;
-                Collector?.LogException($"MasterJob '{schedule.Name} could not be initialised.'", ex);
-            }
+            var schedule = new CommandJobSchedule();
+
+            schedule.Initialise(execute, timerConfig, context, name, isLongRunning, tearUp, tearDown, true);
 
             return JobScheduleRegister(schedule);
         }
-
-        protected virtual CommandMasterJobSchedule MasterJobScheduleUnregister(CommandMasterJobSchedule schedule)
-        {
-            return null;
-        }
+        #endregion
 
         //MasterJob Stop
         #region MasterJobStop()
@@ -567,19 +567,10 @@ namespace Xigadee
         /// </summary>
         protected virtual void MasterJobSchedulesStop()
         {
-            //foreach (var schedule in mMasterJobContext.Jobs.Values)
-            //{
-            //    try
-            //    {
-            //        schedule.Cleanup?.Invoke(schedule);
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        Collector?.LogException($"MasterJob '{schedule.Name}' stop failed", ex);
-            //    }
+            var schedule = mSchedules.Where((s) => s.IsMasterJob).ToArray();
 
-            //    Scheduler.Unregister(schedule);
-            //}
+            schedule.ForEach((s) => JobScheduleUnregister(s));
+
         }
         #endregion
 

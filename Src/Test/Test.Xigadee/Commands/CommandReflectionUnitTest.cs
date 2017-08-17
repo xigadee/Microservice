@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Xigadee;
 namespace Test.Xigadee.Commands
@@ -23,17 +24,11 @@ namespace Test.Xigadee.Commands
         [TestMethod]
         public void CommandSignatureTest()
         {
-            var info1 = mSimples.CommandMethodSignatures<CommandContractAttribute>(false);
+            var info1 = mSimples.CommandMethodSignatures<CommandContractAttribute, CommandMethodSignature>(false).ToList();
             Assert.IsTrue(info1.Count == 2);
 
-            var info2 = mSimples.CommandMethodAttributeSignatures<CommandContractAttribute>();
-            Assert.IsTrue(info2.Count == 2);
-
-            var minfo1 = mSimples.CommandMethodSignatures<MasterJobCommandContractAttribute>(false);
+            var minfo1 = mSimples.CommandMethodSignatures<MasterJobCommandContractAttribute, CommandMethodSignature>(false).ToList();
             Assert.IsTrue(minfo1.Count == 2);
-
-            var minfo2 = mSimples.CommandMethodAttributeSignatures<MasterJobCommandContractAttribute>();
-            Assert.IsTrue(minfo2.Count == 2);
         }
     }
 }

@@ -126,6 +126,10 @@ namespace Xigadee
         /// </summary>
         /// <returns>Returns ServiceMessageHeader definition.</returns>
         List<MessageFilterWrapper> SupportedMessageTypes();
+        /// <summary>
+        /// Gets the friendly name of the command.
+        /// </summary>
+        string FriendlyName { get; }
     }
 
     /// <summary>

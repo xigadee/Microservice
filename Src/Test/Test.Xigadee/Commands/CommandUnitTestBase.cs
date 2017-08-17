@@ -17,8 +17,7 @@ namespace Test.Xigadee
 
         protected void DefaultTest()
         {
-            var info1 = mCommand.CommandMethodSignatures<CommandContractAttribute>(true);
-            var info2 = mCommand.CommandMethodAttributeSignatures<CommandContractAttribute>(true);
+            var info1 = mCommand.CommandMethodSignatures<CommandContractAttribute,CommandMethodSignature>(true);
         }
 
         protected virtual IPipeline Pipeline()

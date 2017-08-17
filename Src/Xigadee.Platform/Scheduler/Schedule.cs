@@ -29,29 +29,80 @@ namespace Xigadee
     /// <summary>
     /// This class is used to define a schedule for the SchedulerContainer.
     /// </summary>
-    [DebuggerDisplay("Type={ScheduleType} Name={Name} Active={Active} {Message}")]
-    public class Schedule: MessagingStatistics, ISchedule
+    [DebuggerDisplay("{Debug}")]
+    public class Schedule:IEquatable<Schedule>
     {
         #region Declarations
-        private DateTime? mNextPoll;
-        private DateTime? mLastPoll;
-        private bool mShouldPoll;
+        private bool mShouldExecute;
         private Func<Schedule, CancellationToken, Task> mExecute;
-        private long mPollCount = 0;
-        private long mPollActiveSkip = 0;
+        private long mExecutionCount = 0;
+        private long mExecuteActiveSkip = 0;
         #endregion
-        #region Constructor
+        #region Constructor        
         /// <summary>
-        /// This is the default constructor.
+        /// Initializes a new instance of the <see cref="Schedule"/> class.
+        /// The schedule is disabled until the initialise function is called.
+        /// </summary>
+        public Schedule()
+        {
+            mShouldExecute = false;
+            Statistics = new MessagingStatistics();
+            Statistics.ComponentId = Id;
+        }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Schedule"/> class.
         /// </summary>
         /// <param name="execute">The async schedule function.</param>
         /// <param name="name">The schedule name.</param>
-        public Schedule(Func<Schedule, CancellationToken, Task> execute, string name = null)
-            : base()
+        /// <param name="context">The context.</param>
+        /// <param name="timerConfig">The optional timer configuration.</param>
+        /// <param name="isLongRunning">Specifies whether the schedule is a long running process.</param>
+        public Schedule(Func<Schedule, CancellationToken, Task> execute, string name = null, object context = null, ScheduleTimerConfig timerConfig = null, bool isLongRunning = false) :this()
         {
-            mExecute = execute;
-            mShouldPoll = true;
+            Initialise(execute, name, context);
+            Statistics.Name = name;
+        }
+        #endregion
+
+        #region Initialise(Func<Schedule, CancellationToken, Task> execute, string name = null, object context = null, ScheduleTimerConfig timerConfig = null, bool isLongRunning = false)
+        /// <summary>
+        /// Initialises the schedule.
+        /// </summary>
+        /// <param name="execute">The execute.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="context">The context.</param>
+        /// <param name="timerConfig">The optional timer configuration.</param>
+        /// <param name="isLongRunning">Specifies whether the schedule is a long running process.</param>
+        public virtual void Initialise(Func<Schedule, CancellationToken, Task> execute, string name = null, object context = null, ScheduleTimerConfig timerConfig = null, bool isLongRunning = false)
+        {
+            mExecute = execute ?? throw new ArgumentNullException("execute", $"{GetType().Name}/{nameof(Initialise)}");
+
+            mShouldExecute = true;
+
             Name = name;
+            Context = context;
+
+            if (timerConfig != null)
+            {
+                Frequency = timerConfig.Interval;
+                InitialTime = timerConfig.InitialWaitUTCTime;
+                InitialWait = timerConfig.InitialWait;
+            }
+
+            IsLongRunning = isLongRunning;
+        }
+        #endregion
+
+        #region Debug
+        /// <summary>
+        /// This is the debug message used for the statistics.
+        /// </summary>
+        public virtual string Debug
+        {
+            get
+            {
+                return $"{ScheduleType}:{Name ?? Id.ToString("N").ToUpperInvariant()} Active={Active} [ShouldExecute={mShouldExecute}] @ {NextExecuteTime} Run={mExecutionCount}";
+            }
         }
         #endregion
 
@@ -65,19 +116,8 @@ namespace Xigadee
         /// <summary>
         /// This is the override for the name to bring it to the top .
         /// </summary>
-        public override string Name
-        {
-            get
-            {
-                return base.Name;
-            }
-            set
-            {
-                base.Name = value;
-            }
-        }
+        public string Name { get; protected set; }
         #endregion
-
         #region Id
         /// <summary>
         /// This is the time Id.
@@ -85,26 +125,19 @@ namespace Xigadee
         public Guid Id { get; } = Guid.NewGuid();
         #endregion
 
+        #region Context
+        /// <summary>
+        /// Gets or sets the context which can be used to store data between scheduled calls.
+        /// </summary>
+        public object Context { get; set; }
+        #endregion
+
         #region Active
         /// <summary>
         /// Indicates whether the schedule is currently executing.
         /// </summary>
-        public bool Active { get; set; }
+        public bool Active { get; protected set; }
         #endregion
-
-        #region ExecutionCount
-        /// <summary>
-        /// This is the number of times the schedule has been executed.
-        /// </summary>
-        public long ExecutionCount
-        {
-            get
-            {
-                return mPollCount;
-            }
-        }
-        #endregion
-
         #region WillRunIn
         /// <summary>
         /// This is a debug property to identify when the schedule will next run.
@@ -113,55 +146,90 @@ namespace Xigadee
         {
             get
             {
-                if (Active || !NextPollTime.HasValue)
+                if (Active || !NextExecuteTime.HasValue)
                     return null;
-                var span = NextPollTime.Value - DateTime.UtcNow;
+                var span = NextExecuteTime.Value - DateTime.UtcNow;
 
                 return StatsCounter.LargeTime(span);
             }
         }
         #endregion
 
-        #region PollSkip()
+        #region Start()
         /// <summary>
-        /// This method is called when the job is active but the ShouldPoll condition has been met.
+        /// Resets the schedule for the start of execution.
         /// </summary>
-        public void PollSkip()
+        public virtual bool Start()
         {
-            Interlocked.Increment(ref mPollActiveSkip);
+            if (Active)
+            {
+                ExecutingSoSkip();
+                return false;
+            }
+
+            ExecuteException = null;
+            Active = true;
+
+            return true;
         }
-        #endregion
-        #region PollActiveSkip
-        /// <summary>
-        /// This is the count of the number of time the schedule was meant to be polled but 
-        /// was still active.
-        /// </summary>
-        public long PollActiveSkip { get { return mPollActiveSkip; } }
         #endregion
 
-        #region NextPollTime
+        #region Execute()
         /// <summary>
-        /// This is the next poll time in UTC.
+        /// This method executes the schedule.
         /// </summary>
-        public DateTime? NextPollTime
+        public async Task Execute(CancellationToken token)
         {
-            get
+            int start = Statistics.ActiveIncrement();
+
+            try
             {
-                return mNextPoll;
+                LastExecuteTime = DateTime.UtcNow;
+                Interlocked.Increment(ref mExecutionCount);
+                await mExecute(this, token);
+            }
+            finally
+            {
+                Statistics.ActiveDecrement(start);
             }
         }
         #endregion
-        #region LastPollTime
+        #region LastExecuteTime
         /// <summary>
-        /// This is the next poll time in UTC.
+        /// This is the next execute time in UTC.
         /// </summary>
-        public DateTime? LastPollTime
+        public DateTime? LastExecuteTime{get;protected set;}
+        #endregion
+
+        #region Stop(...)
+        /// <summary>
+        /// Completes the specified poll.
+        /// </summary>
+        /// <param name="success">Specifies whether the poll was a success.</param>
+        /// <param name="recalculate">Specifies whether to recalculate the next poll.</param>
+        /// <param name="isException">Specifies whether the poll failed..</param>
+        /// <param name="lastEx">The last exception.</param>
+        /// <param name="exceptionTime">The exception time.</param>
+        public virtual void Stop(bool success
+            , bool recalculate = true
+            , bool isException = false
+            , Exception lastEx = null
+            , DateTime? exceptionTime = null)
         {
-            get
-            {
-                return mLastPoll;
-            }
-        }
+            if (!Active)
+                return;
+
+            if (!success)
+                Statistics.ErrorIncrement();
+
+            if (isException)
+                ExecuteException = new ExceptionHolder(lastEx, exceptionTime);
+
+            if (recalculate)
+                Recalculate();
+
+            Active = false;
+        } 
         #endregion
 
         #region InitialWait
@@ -172,7 +240,7 @@ namespace Xigadee
         #endregion
         #region InitialTime
         /// <summary>
-        /// This is the specific time that the event should initially fire.
+        /// This is the specific date-time that the schedule should use for it's first execution.
         /// </summary>
         public DateTime? InitialTime { get; set; }
         #endregion
@@ -183,57 +251,42 @@ namespace Xigadee
         public TimeSpan? Frequency { get; set; }
         #endregion
 
+        #region ExecutionCount
+        /// <summary>
+        /// This is the number of times the schedule has been executed.
+        /// </summary>
+        public long ExecutionCount
+        {
+            get
+            {
+                return mExecutionCount;
+            }
+        }
+        #endregion
+
+        #region ExecutingSoSkip()
+        /// <summary>
+        /// This method is called when the job is active but the ShouldPoll condition has been met.
+        /// </summary>
+        public void ExecutingSoSkip()
+        {
+            Interlocked.Increment(ref mExecuteActiveSkip);
+        }
+        #endregion
+        #region ExecuteActiveSkip
+        /// <summary>
+        /// This is the count of the number of time the schedule was meant to run but 
+        /// was still active so was skipped
+        /// </summary>
+        public long ExecuteActiveSkip { get { return mExecuteActiveSkip; } }
+        #endregion
+
+
         #region ExecuteException
         /// <summary>
         /// Gets the last execution exception.
         /// </summary>
-        public ScheduleException ExecuteException { get; set; }
-        #endregion
-
-        #region Start()
-        /// <summary>
-        /// Resets the schedule for the start of execution.
-        /// </summary>
-        public virtual void Start()
-        {
-            ExecuteException = null;
-            Active = true;
-        }
-        #endregion
-
-        #region Context
-        /// <summary>
-        /// Gets or sets the context which can be used to store data between scheduled calls.
-        /// </summary>
-        public object Context { get; set; }
-        #endregion
-
-        #region Complete...
-        /// <summary>
-        /// Completes the specified poll.
-        /// </summary>
-        /// <param name="success">Specifies whether the poll was a success.</param>
-        /// <param name="recalculate">Specifies whether to recalcualte the next poll.</param>
-        /// <param name="isException">Specifices whether the poll failed..</param>
-        /// <param name="lastEx">The last exception.</param>
-        /// <param name="exceptionTime">The exception time.</param>
-        public virtual void Complete(bool success
-            , bool recalculate = true
-            , bool isException = false
-            , Exception lastEx = null
-            , DateTime? exceptionTime = null)
-        {
-            if (!success)
-                ErrorIncrement();
-
-            if (isException)
-                ExecuteException = new ScheduleException() { Ex = lastEx, LastTime = exceptionTime };
-
-            if (recalculate)
-                Recalculate();
-
-            Active = false;
-        } 
+        public ExceptionHolder ExecuteException { get; set; }
         #endregion
 
         #region Recalculate(bool force = false)
@@ -244,12 +297,12 @@ namespace Xigadee
         public virtual void Recalculate(bool force = false)
         {
             //Check whether we have a time set already, if so quit.
-            if (!force && NextPollTime.HasValue && NextPollTime.Value > DateTime.UtcNow)
+            if (!force && NextExecuteTime.HasValue && NextExecuteTime.Value > DateTime.UtcNow)
                 return;
 
             if (InitialTime.HasValue)
             {
-                mNextPoll = InitialTime.Value;
+                NextExecuteTime = InitialTime.Value;
                 InitialWait = null;
                 InitialTime = null;
                 return;
@@ -257,7 +310,7 @@ namespace Xigadee
 
             if (InitialWait.HasValue)
             {
-                mNextPoll = DateTime.UtcNow.Add(InitialWait.Value);
+                NextExecuteTime = DateTime.UtcNow.Add(InitialWait.Value);
                 InitialWait = null;
                 InitialTime = null;
                 return;
@@ -265,66 +318,45 @@ namespace Xigadee
 
             if (Frequency.HasValue)
             {
-                mNextPoll = DateTime.UtcNow.Add(Frequency.Value);
+                NextExecuteTime = DateTime.UtcNow.Add(Frequency.Value);
                 return;
             }
 
-            mNextPoll = null;
+            NextExecuteTime = null;
         }
         #endregion
-        #region ShouldPoll
+        #region NextExecuteTime
         /// <summary>
-        /// This boolean property calculates whether the scheduler should fire.
+        /// This is the next execute time in UTC.
+        /// </summary>
+        public DateTime? NextExecuteTime { get; protected set; }
+        #endregion
+
+        #region ShouldExecute
+        /// <summary>
+        /// This boolean property calculates whether the schedule should execute.
         /// You can set this to false to disable the timer event.
         /// </summary>
-        public bool ShouldPoll
+        public bool ShouldExecute
         {
             get
             {
                 var compareTime = DateTime.UtcNow;
 
                 bool result = !Active
-                    && mShouldPoll
-                    && mNextPoll.HasValue
-                    && (mNextPoll.Value <= compareTime);
+                    && mShouldExecute
+                    && NextExecuteTime.HasValue
+                    && (NextExecuteTime.Value <= compareTime);
 
                 return result;
             }
             set
             {
-                mShouldPoll = value;
+                mShouldExecute = value;
                 if (value)
                     Recalculate();
             }
         }
-        #endregion
-
-        #region Execute()
-        /// <summary>
-        /// This method executes the schedule.
-        /// </summary>
-        public async Task Execute(CancellationToken token)
-        {
-            int start = ActiveIncrement();
-
-            try
-            {
-                mLastPoll = DateTime.UtcNow;
-                Interlocked.Increment(ref mPollCount);
-                await mExecute(this, token);
-            }
-            finally
-            {
-                ActiveDecrement(start);
-            }
-        }
-        #endregion
-
-        #region State
-        /// <summary>
-        /// This generic object can be used to hold state.
-        /// </summary>
-        public object State { get; set; }
         #endregion
 
         #region IsInternal
@@ -333,6 +365,12 @@ namespace Xigadee
         /// </summary>
         public bool IsInternal { get; set; }
         #endregion
+        #region ExecutionPriority
+        /// <summary>
+        /// Gets or sets the task execution priority. If this is null, then the default set in the scheduler priority will be used instead. If IsInternal=true then this property is ignored.
+        /// </summary>
+        public int? ExecutionPriority { get; set; } = null; 
+        #endregion
         #region IsLongRunning
         /// <summary>
         /// A helper method that lets the task scheduler that the process might be long running.
@@ -340,46 +378,25 @@ namespace Xigadee
         public bool IsLongRunning { get; set; }
         #endregion
 
-        #region Message
+        #region Statistics
         /// <summary>
-        /// This is the debug message.
+        /// Gets the statistics.
         /// </summary>
-        public override string Message
-        {
-            get
-            {
-                return $"{ScheduleType}:{Name ?? Id.ToString("N").ToUpperInvariant()} [ShouldPoll={mShouldPoll}] @ {NextPollTime} Hits = {mPollCount}";
-            }
-            set
-            {
-                base.Message = value;
-            }
-        }
+        public MessagingStatistics Statistics { get; }
         #endregion
 
+        #region Equals(Schedule other)
         /// <summary>
-        /// This internal exception is used to store exception information.
+        /// Indicates whether the current object is equal to another object of the same type.
         /// </summary>
-        public class ScheduleException
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other" /> Id parameter; otherwise, false.
+        /// </returns>
+        public bool Equals(Schedule other)
         {
-            /// <summary>
-            /// The thrown exception.
-            /// </summary>
-            public virtual Exception Ex { get; set; }
-
-            #region IsLastException
-            /// <summary>
-            /// Identifies whether the last execute caused an unhandled exception.
-            /// </summary>
-            public bool IsLastException { get; set; }
-            #endregion
-            #region LastTime
-            /// <summary>
-            /// This is the last exception time.
-            /// </summary>
-            public DateTime? LastTime { get; set; } = DateTime.UtcNow;
-            #endregion
-        }
+            return other != null && other.Id == Id;
+        } 
+        #endregion
     }
-
 }

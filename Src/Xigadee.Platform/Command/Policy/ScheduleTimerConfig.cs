@@ -21,13 +21,13 @@ namespace Xigadee
     /// <summary>
     /// This is the timer poll configuration used by several components in the command policy.
     /// </summary>
-    public class CommandTimerPoll
+    public class ScheduleTimerConfig
     {
         #region Constructor
         /// <summary>
         /// This is the default constructor with an initial wait time of 10 seconds and a poll frequency of 5 seconds.
         /// </summary>
-        public CommandTimerPoll()
+        public ScheduleTimerConfig()
         {
             Interval = TimeSpan.FromSeconds(5);
             InitialWait = TimeSpan.FromSeconds(10);
@@ -39,13 +39,14 @@ namespace Xigadee
         /// <param name="interval">The poll interval.</param>
         /// <param name="initialWait">The initial wait.</param>
         /// <param name="initialWaitUTCTime">The optional initial UTC wait time that the polling will begin if the initialWait is set to null.</param>
-        public CommandTimerPoll(TimeSpan? interval, TimeSpan? initialWait, DateTime? initialWaitUTCTime = null)
+        /// <param name="enforceSetting">If true, throws an exception if all time settings are null. The default is true.</param>
+        public ScheduleTimerConfig(TimeSpan? interval, TimeSpan? initialWait, DateTime? initialWaitUTCTime = null, bool enforceSetting = true)
         {
             Interval = interval;
             InitialWait = initialWait;
             InitialWaitUTCTime = initialWaitUTCTime;
 
-            if (! interval.HasValue && !InitialWait.HasValue && !initialWaitUTCTime.HasValue)
+            if (enforceSetting && (!interval.HasValue && !InitialWait.HasValue && !initialWaitUTCTime.HasValue))
                 throw new ArgumentNullException("At least one parameter must be set when using this constructor.");
         }
         #endregion

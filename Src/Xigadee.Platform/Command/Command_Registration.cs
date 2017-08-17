@@ -54,21 +54,20 @@ namespace Xigadee
         /// </summary>
         protected virtual void CommandsRegisterReflection()
         {
-            foreach (var signature in this.CommandMethodAttributeSignatures<CommandContractAttribute>(true))
-            {
-                CommandRegister(CommandChannelAdjust(signature.Item1)
-                    , (rq, rs) => signature.Item2.Action(rq, rs, PayloadSerializer)
-                    , referenceId: signature.Item3);
-            }
+            foreach (var holder in this.CommandMethodSignatures<CommandContractAttribute,CommandMethodSignature>(true))
+                CommandRegister(CommandChannelIdAdjust(holder.Attribute)
+                    , (rq, rs) => holder.Signature.Action(rq, rs, PayloadSerializer)
+                    , referenceId: holder.Reference
+                    );
         }
         #endregion
-        #region CommandChannelAdjust<A>(A attr)
+        #region CommandChannelIdAdjust<A>(A attr)
         /// <summary>
         /// This method replaces the channel with the command default if the value specified in the attribute is null.
         /// </summary>
         /// <param name="attr">The incoming attribute whose header channel should be checked.</param>
         /// <returns>Returns a message filter wrapper for the header.</returns>
-        protected MessageFilterWrapper CommandChannelAdjust<A>(A attr)
+        protected MessageFilterWrapper CommandChannelIdAdjust<A>(A attr)
             where A : CommandContractAttributeBase
         {
             ServiceMessageHeader header = attr.Header;

@@ -28,12 +28,12 @@ using System.Threading.Tasks;
 #endregion
 namespace Xigadee
 {
-    //Initialise
+    //Initialize
     public partial class Microservice
     {
         #region CoreEngineInitialize()
         /// <summary>
-        /// This method initialises the process loop components.
+        /// This method initializes the process loop components.
         /// </summary>
         protected virtual void CoreEngineInitialize()
         {

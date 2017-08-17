@@ -65,7 +65,8 @@ namespace Xigadee
             //Set a timer to signal timeout requests
             mScheduleTimeout = new CommandTimeoutSchedule(TimeOutScheduler
                 , mPolicy.OutgoingRequestsTimeoutPoll
-                , string.Format("{0} Command OutgoingRequests Timeout Poll", FriendlyName));
+                , $"{FriendlyName} Command OutgoingRequests Timeout Poll"
+                );
 
             Scheduler.Register(mScheduleTimeout);
 

@@ -15,23 +15,18 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class SchedulerPolicy:PolicyBase
+    /// <summary>
+    /// This is the root abstract attribute for command method decoration.
+    /// </summary>
+    /// <seealso cref="System.Attribute" />
+    public abstract class CommandMethodAttributeBase:Attribute
     {
         /// <summary>
-        /// Gets or sets the default poll in milliseconds.
+        /// Gets the reference for the attribute.
         /// </summary>
-        public virtual int DefaultPollInMs { get; set; } = 100;
-
-        /// <summary>
-        /// Gets or sets the default task priority that schedules are set for the Task Manager,.
-        /// </summary>
-        public int DefaultTaskPriority { get; set; } = 2;
+        public abstract string Reference { get; }
     }
 }

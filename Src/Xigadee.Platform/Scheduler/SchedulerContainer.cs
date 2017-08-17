@@ -28,10 +28,13 @@ namespace Xigadee
     /// <summary>
     /// This class holds the schedule jobs within the Microservice.
     /// </summary>
-    public class SchedulerContainer : CollectionContainerBase<Schedule, SchedulerStatistics>, IScheduler, ITaskManagerProcess
-        , IRequireDataCollector
+    public class SchedulerContainer : CollectionContainerBase<Schedule, SchedulerStatistics>
+        , IScheduler, ITaskManagerProcess, IRequireDataCollector
     {
         #region Declarations
+
+        private object syncLock = new object();
+
         /// <summary>
         /// This is the policy for the scheduler.
         /// </summary>
@@ -58,7 +61,7 @@ namespace Xigadee
         /// <param name="name">The optional poll name.</param>
         /// <param name="initialWait">The optional initial wait until the poll begins.</param>
         /// <param name="initialTime">The optional initial time to start the poll.</param>
-        /// <param name="shouldPoll">A flag that indicates whether the poll is active. The default is true.</param>
+        /// <param name="shouldExecute">A flag that indicates whether the poll is active. The default is true.</param>
         /// <param name="isInternal">Specifies whether the poll is internal. The default is false.</param>
         /// <returns>Returns the new schedule after it has been added to the collection.</returns>
         public Schedule Register(Func<Schedule, CancellationToken, Task> action
@@ -66,7 +69,7 @@ namespace Xigadee
             , string name = null
             , TimeSpan? initialWait = null
             , DateTime? initialTime = null
-            , bool shouldPoll = true
+            , bool shouldExecute = true
             , bool isInternal = false
             )
         {
@@ -75,12 +78,14 @@ namespace Xigadee
                 Frequency = frequency,
                 InitialWait = initialWait,
                 InitialTime = initialTime,
-                ShouldPoll = shouldPoll,
+                ShouldExecute = shouldExecute,
                 IsInternal = isInternal
             };
 
             return Register(schedule);
         }
+        #endregion
+        #region Register(Schedule schedule)
         /// <summary>
         /// This method registers a schedule.
         /// </summary>
@@ -90,22 +95,31 @@ namespace Xigadee
         {
             schedule.Recalculate();
 
-            Add(schedule);
+            lock (syncLock)
+            {
+                Add(schedule);
+            }
 
             return schedule;
-        } 
+        }
         #endregion
-
         #region Unregister(Schedule schedule)
         /// <summary>
         /// This removes a schedule from the collection.
         /// </summary>
         /// <param name="schedule">The schedule to remove.</param>
-        /// <returns>Returnes true if the schedule is removed successfully.</returns>
+        /// <returns>Returns true if the schedule is removed successfully.</returns>
         public bool Unregister(Schedule schedule)
         {
-            schedule.ShouldPoll = false;
-            return base.Remove(schedule);
+            schedule.ShouldExecute = false;
+            bool result = false;
+
+            lock (syncLock)
+            {
+                result = base.Remove(schedule);
+            }
+
+            return result;
         }
 
         #endregion
@@ -162,38 +176,32 @@ namespace Xigadee
         /// </summary>
         public void Process()
         {
-            foreach (Schedule schedule in Items.Where((c) => c.ShouldPoll))
+            Schedule[] schedules = null;
+            lock (syncLock)
             {
-                if (schedule.Active)
+                schedules = Items.Where((c) => c.ShouldExecute).ToArray();
+            }
+
+            foreach (Schedule schedule in schedules)
+            {
+                try
                 {
-                    schedule.PollSkip();
-                    continue;
+                    if (!schedule.Start())
+                        continue;
+
+                    TaskTracker tracker = TaskTrackerCreate(schedule);
+
+                    //Submit the task to be executed.
+                    TaskSubmit(tracker);
                 }
-
-                schedule.Start();
-
-                TaskTracker tracker = TaskTrackerCreate(schedule);
-
-                tracker.Execute = async (token) =>
+                catch (Exception ex)
                 {
-                    try
-                    {
-                        await schedule.Execute(token);
-                    }
-                    catch (Exception ex)
-                    {
-                        schedule.Ex = ex;
-                        Collector?.LogException(string.Format("Schedule failed: {0}", schedule.Name), ex);
-                    }
-                };
-
-                tracker.ExecuteComplete = ScheduleComplete;
-
-                TaskSubmit(tracker);
+                    Collector?.LogException($"{nameof(SchedulerContainer)}/{nameof(Process)} execute error for schedule: {schedule.Id}/{schedule.Name}", ex);
+                    schedule.Stop(false, true, true, ex);
+                }
             }
         }
         #endregion
-
         #region TaskTrackerCreate(Schedule schedule)
         /// <summary>
         /// This private method builds the payload consistently for the incoming payload.
@@ -205,32 +213,45 @@ namespace Xigadee
             TaskTracker tracker = new TaskTracker(TaskTrackerType.Schedule, null);
             tracker.IsLongRunning = schedule.IsLongRunning;
 
-            if (schedule.IsInternal)
-                tracker.Priority = TaskTracker.PriorityInternal;
-            else
-                tracker.Priority = 2;
+            tracker.Priority = schedule.IsInternal? TaskTracker.PriorityInternal: schedule.ExecutionPriority ?? mPolicy.DefaultTaskPriority;
 
             tracker.Context = schedule;
+
             tracker.Name = schedule.Name;
+
+            tracker.Execute = async (token) =>
+            {
+                try
+                {
+                    await schedule.Execute(token);
+                }
+                catch (Exception ex)
+                {
+                    Collector?.LogException($"Schedule execution failed: {schedule.Name}", ex);
+                    schedule.Stop(false, true, true, ex);
+                }
+            };
+
+            tracker.ExecuteComplete = ScheduleComplete;
 
             return tracker;
         }
         #endregion
+
         #region ScheduleComplete(Task task, TaskTracker tracker)
         /// <summary>
         /// This method is used to complete a schedule request and to 
         /// recalculate the next schedule.
         /// </summary>
         /// <param name="tracker">The tracker object.</param>
-        /// <param name="failed">Indicates whether an exception was raised during execution.</param>
-        /// <param name="ex">The exception raised during execution. This will ne null under normal operation.</param>
+        /// <param name="failed">Indicates whether an exception was raised during execution of the schedule.</param>
+        /// <param name="ex">The exception raised during execution. This will be null under normal operations.</param>
         private void ScheduleComplete(TaskTracker tracker, bool failed, Exception ex)
         {
             var schedule = tracker.Context as Schedule;
 
-            schedule.Complete(!failed, isException: failed, lastEx: ex, exceptionTime: DateTime.UtcNow);
+            schedule.Stop(!failed, isException: failed, lastEx: ex, exceptionTime: DateTime.UtcNow);
         }
         #endregion
-
     }
 }

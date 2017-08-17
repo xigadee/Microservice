@@ -9,7 +9,7 @@
 
 ## Introduction
 
-The Api Server library provides the functionality to integrate the Xigadee framework in to the API web pipeline.
+The API Server library provides the functionality to integrate the Xigadee framework in to the API web pipeline.
 
 
 ### Azure APIM Integration

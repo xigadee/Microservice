@@ -8,44 +8,12 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This class is used to marshall the method signature
+    /// This class is used to marshal the method signature
     /// </summary>
     [DebuggerDisplay("{Method.Name}")]
-    public class CommandMethodSignature<A>
-        where A : CommandContractAttributeBase
-
+    public class CommandMethodSignature: CommandSignatureBase
     {
-        #region Constructor
-        /// <summary>
-        /// This is the default constructor.
-        /// </summary>
-        /// <param name="command">The command to process.</param>
-        /// <param name="method">The method for the signature.</param>
-        /// <param name="throwSignatureException">This property specifies whether the system should throw exceptions if a signature is invalid.</param>
-        public CommandMethodSignature(ICommand command, MethodInfo method, bool throwSignatureException = false)
-        {
-            if (method == null)
-                throw new CommandMethodSignatureException($"Constructor error - info cannot be null.");
-
-            if (command == null)
-                throw new CommandMethodSignatureException($"Constructor error - command cannot be null.");
-
-            Command = command;
-
-            Method = method;
-
-            IsValid = Validate(throwSignatureException);
-        }
-        #endregion
-
-        /// <summary>
-        /// This is the command connected to the signature
-        /// </summary>
-        public ICommand Command { get; }
-        /// <summary>
-        /// This is the specific method.
-        /// </summary>
-        public MethodInfo Method { get; }
+       
         /// <summary>
         /// Specifies whether this is a generic signature.
         /// </summary>
@@ -58,39 +26,25 @@ namespace Xigadee
         /// this property specifies whether the return value is the response parameter.
         /// </summary>
         public bool IsReturnValue { get; private set; }
-        /// <summary>
-        /// This property specifies whether the signature is valid.
-        /// </summary>
-        public bool IsValid { get; }
-        /// <summary>
-        /// These are the assigned command attributes.
-        /// </summary>
-        public List<A> CommandAttributes { get; protected set; }
+
+        ///// <summary>
+        ///// These are the assigned command attributes.
+        ///// </summary>
+        //public List<A> CommandAttributes { get; protected set; }
         /// <summary>
         /// This is the list of the parameters for the method.
         /// </summary>
         public List<ParameterInfo> Parameters { get; protected set; }
+
         /// <summary>
         /// This method validates the method.
         /// </summary>
         /// <param name="throwException">Set this to true throw an exception if the signature does not match,</param>
         /// <returns>Returns true if the signature is validated.</returns>
-        protected virtual bool Validate(bool throwException = false)
+        protected override bool Validate(bool throwException = false)
         {
             try
             {
-                CommandAttributes = Attribute.GetCustomAttributes(Method)
-                    .Where((a) => a is A)
-                    .Cast<A>()
-                    .ToList();
-
-                //This shouldn't happen, but check anyway.
-                if (CommandAttributes.Count == 0)
-                    if (throwException)
-                        throw new CommandMethodSignatureException($"CommandAttributes are not defined for the method.");
-                    else
-                        return false;
-
                 //OK, check whether the return parameter is a Task or Task<> async construct
                 IsAsync = typeof(Task).IsAssignableFrom(Method.ReturnParameter.ParameterType);
 
@@ -142,7 +96,7 @@ namespace Xigadee
 
                 if (ParamOut != null && !IsReturnValue && !ParamOut.IsOut)
                     if (throwException)
-                        throw new CommandMethodSignatureException($"Parameter {ParamOut.Name} is not marked as an out parameter.");
+                        throw new CommandContractSignatureException($"Parameter {ParamOut.Name} is not marked as an out parameter.");
                     else
                         return false;
 
@@ -150,7 +104,7 @@ namespace Xigadee
                 {
                     if (ParamOut.ParameterType.GenericTypeArguments.Length != 1)
                         if (throwException)
-                            throw new CommandMethodSignatureException($"Generic Task response parameter can only have one parameter.");
+                            throw new CommandContractSignatureException($"Generic Task response parameter can only have one parameter.");
                         else
                             return false;
 
@@ -163,14 +117,14 @@ namespace Xigadee
 
                 //Finally check that we have used all the parameters.
                 if (paramInfo.Count != 0 && throwException)
-                    throw new CommandMethodSignatureException($"There are too many parameters in the method ({paramInfo[0].Name}).");
+                    throw new CommandContractSignatureException($"There are too many parameters in the method ({paramInfo[0].Name}).");
 
                 return paramInfo.Count == 0;
 
             }
             catch (Exception ex)
             {
-                throw new CommandMethodSignatureException("PayloadIn or PayloadOut have not been set correctly.", ex);
+                throw new CommandContractSignatureException("PayloadIn or PayloadOut have not been set correctly.", ex);
             }
         }
 
@@ -233,18 +187,6 @@ namespace Xigadee
         /// This is the out parameter type.
         /// </summary>
         public Type TypeOut { get; set; }
-
-        #region Reference(CommandContractAttribute attr)
-        /// <summary>
-        /// This is the command reference.
-        /// </summary>
-        /// <param name="attr">The contract attribute.</param>
-        /// <returns>The reference id.</returns>
-        public string Reference(A attr)
-        {
-            return $"{Method.Name}/{attr.Header.Key}";
-        }
-        #endregion
 
         /// <summary>
         /// This is the command action that is executed.

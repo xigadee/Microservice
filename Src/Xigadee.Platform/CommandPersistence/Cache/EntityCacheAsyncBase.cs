@@ -112,8 +112,8 @@ namespace Xigadee
         {
             var job = new CommandJobSchedule(ScheduleExpireEntities
                 , mPolicy.JobPollSchedule
-                , $"EntityCacheHandlerBase: {typeof(E).Name} Expire Entities"
-                , mPolicy.JobPollIsLongRunning);
+                , name: $"EntityCacheHandlerBase: {typeof(E).Name} Expire Entities"
+                , isLongRunning: mPolicy.JobPollIsLongRunning);
 
             Scheduler.Register(job);
         }

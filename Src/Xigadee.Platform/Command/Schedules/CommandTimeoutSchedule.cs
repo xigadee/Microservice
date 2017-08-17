@@ -25,14 +25,14 @@ namespace Xigadee
     /// </summary>
     public class CommandTimeoutSchedule: CommandJobSchedule
     {
-        private long mTimeouts;
+        private long mTimeouts = 0;
         /// <summary>
         /// This is the default constructor.
         /// </summary>
         /// <param name="execute">The function to execute.</param>
-        /// <param name="timerConfig">The timerconfig job.</param>
+        /// <param name="timerConfig">The timer configuration.</param>
         /// <param name="name">The name.</param>
-        public CommandTimeoutSchedule(Func<Schedule, CancellationToken, Task> execute, CommandTimerPoll timerConfig, string name = null)
+        public CommandTimeoutSchedule(Func<Schedule, CancellationToken, Task> execute, ScheduleTimerConfig timerConfig, string name)
             : base(execute, timerConfig, name)
         {
         }

@@ -70,7 +70,7 @@ namespace Xigadee
         public bool MasterJobNegotiationChannelIdAutoSet { get; set; } = true;
 
         /// <summary>
-        /// This is the command startup prioroty.
+        /// This is the command startup priority.
         /// </summary>
         public int? StartupPriority { get; set; }=0;
         /// <summary>
@@ -90,7 +90,7 @@ namespace Xigadee
         /// <summary>
         /// This is the default time out poll, which is set at an initial 10 second wait and then a repeated 5 seconds poll by default.
         /// </summary>
-        public virtual CommandTimerPoll OutgoingRequestsTimeoutPoll { get; set; } = new CommandTimerPoll() { Interval = TimeSpan.FromSeconds(1) };
+        public virtual ScheduleTimerConfig OutgoingRequestsTimeoutPoll { get; set; } = new ScheduleTimerConfig() { Interval = TimeSpan.FromSeconds(1) };
 
         //Job Poll        
         /// <summary>
@@ -98,7 +98,7 @@ namespace Xigadee
         /// </summary>
         public virtual bool JobsEnabled { get; set; } = true;
 
-        public virtual CommandTimerPoll JobPollSchedule { get; set; } = new CommandTimerPoll();
+        public virtual ScheduleTimerConfig JobPollSchedule { get; set; } = new ScheduleTimerConfig();
 
         public virtual bool JobPollIsLongRunning { get; set; } = false;
 
@@ -125,7 +125,7 @@ namespace Xigadee
                   JobsEnabled = true
                 , JobPollIsLongRunning = isLongRunningJob
                 , MasterJobEnabled = false
-                , JobPollSchedule = new CommandTimerPoll(interval, initialWait, initialTime)
+                , JobPollSchedule = new ScheduleTimerConfig(interval, initialWait, initialTime)
             };
         }
 

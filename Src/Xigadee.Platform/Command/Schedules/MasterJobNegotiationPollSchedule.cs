@@ -14,24 +14,28 @@
 // limitations under the License.
 #endregion
 
+#region using
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
+#endregion
 namespace Xigadee
 {
-    public class SchedulerPolicy:PolicyBase
+    /// <summary>
+    /// This schedule is used by the master job poller.
+    /// </summary>
+    /// <seealso cref="Xigadee.Schedule" />
+    public class MasterJobNegotiationPollSchedule: Schedule
     {
         /// <summary>
-        /// Gets or sets the default poll in milliseconds.
+        /// Initializes a new instance of the <see cref="MasterJobNegotiationPollSchedule"/> class.
         /// </summary>
-        public virtual int DefaultPollInMs { get; set; } = 100;
+        /// <param name="execute">The async schedule function.</param>
+        /// <param name="name">The masterjob name.</param>
+        public MasterJobNegotiationPollSchedule(Func<Schedule, CancellationToken, Task> execute, string name = null) : base(execute, name, isLongRunning:false)
+        {
+        }
 
-        /// <summary>
-        /// Gets or sets the default task priority that schedules are set for the Task Manager,.
-        /// </summary>
-        public int DefaultTaskPriority { get; set; } = 2;
     }
 }

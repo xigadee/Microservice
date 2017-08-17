@@ -15,15 +15,14 @@
 #endregion
 
 using System;
-using System.Diagnostics;
 
 namespace Xigadee
 {
     /// <summary>
     /// This is the base class.
     /// </summary>
-    /// <seealso cref="System.Attribute" />
-    public abstract class CommandContractAttributeBase: Attribute
+    /// <seealso cref="Xigadee.CommandMethodAttributeBase" />
+    public abstract class CommandContractAttributeBase: CommandMethodAttributeBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CommandContractAttributeBase"/> class.
@@ -66,5 +65,10 @@ namespace Xigadee
         /// The converted header.
         /// </summary>
         public ServiceMessageHeader Header { get; }
+
+        /// <summary>
+        /// Gets the reference for the attribute.
+        /// </summary>
+        public override string Reference => Header.Key;
     }
 }

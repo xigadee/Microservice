@@ -42,9 +42,5 @@ namespace Xigadee
         /// Gets the schedule.
         /// </summary>
         public CommandJobSchedule Schedule { get; }
-        /// <summary>
-        /// Gets a value indicating whether this instance is master job.
-        /// </summary>
-        public bool IsMasterJob { get { return Schedule is CommandMasterJobSchedule;} }
     }
 }

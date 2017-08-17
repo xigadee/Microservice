@@ -34,7 +34,6 @@ namespace Xigadee
         /// This is the default constructor.
         /// </summary>
         /// <param name="name">The name to display in the status message.</param>
-        /// <param name="batchSize">The batch size to recycle the statistics.</param>
         public StatusBase(string name)
         {
             Name = name??GetType().Name;
@@ -43,8 +42,6 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        /// <param name="name">The name to display in the status message.</param>
-        /// <param name="batchSize">The batch size to recycle the statistics.</param>
         public StatusBase()
         {
             Name = GetType().Name;

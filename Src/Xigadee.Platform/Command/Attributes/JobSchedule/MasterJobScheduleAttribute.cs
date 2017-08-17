@@ -23,7 +23,7 @@ namespace Xigadee
     /// This attribute can be set against a command method to register it for a master job schedule that will be activated once the master job becomes active.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-    [DebuggerDisplay("{mInitialWait}/{mFrequency} [{mName}]")]
+    [DebuggerDisplay("MasterJob {mName}: {mInitialWait}-{mFrequency} IsLongRunning={IsLongRunningProcess}")]
     public class MasterJobScheduleAttribute: JobScheduleAttributeBase
     {
         /// <summary>
@@ -39,8 +39,8 @@ namespace Xigadee
         /// <param name="isLongRunningProcess">Specifies whether the schedule is a long running process.</param>
         /// <param name="name">The optional name for the schedule. This will be displayed in the Microservice statistics.</param>
         /// <see cref="https://msdn.microsoft.com/en-us/library/se73z7b9(v=vs.110).aspx"/>
-        public MasterJobScheduleAttribute(string initialWait = null, string frequency = null, bool isLongRunningProcess = false, string name = null)
-            :base(initialWait, frequency, isLongRunningProcess, name)
+        public MasterJobScheduleAttribute(string name, string initialWait = null, string frequency = null, bool isLongRunningProcess = false)
+            :base(name, true, initialWait, frequency, isLongRunningProcess)
         {
         }
     }

@@ -29,7 +29,7 @@ namespace Test.Xigadee
         }
 
 
-        [MasterJobSchedule()]
+        [MasterJobSchedule("CallMe")]
         private async Task CallMeAsWell(Schedule schedule)
         {
             try

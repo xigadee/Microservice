@@ -67,7 +67,7 @@ namespace Xigadee
                     RegisteredSchedules.Remove(e.Schedule);
             }
             else
-                RegisteredSchedules.Add(e.Schedule, e.IsMasterJob);
+                RegisteredSchedules.Add(e.Schedule, e.Schedule.IsMasterJob);
         }
 
         private void Command_OnCommandChange(object sender, CommandChangeEventArgs e)

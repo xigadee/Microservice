@@ -185,7 +185,7 @@ namespace Test.Xigadee
 
                 //Wait for one of the services to go master.
                 ctx.MasterJobSignal.WaitOne();
-                //Ok, next service take over
+                //OK, next service take over
                 Assert.IsNotNull(ctx.MasterName);
                 ctx.MasterJobSignal.Reset();
                 var holdme1 = ctx.MasterName;

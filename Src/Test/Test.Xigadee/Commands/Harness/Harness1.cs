@@ -21,11 +21,11 @@ namespace Test.Xigadee
 
             }
 
-            //[JobSchedule()]
-            //public void Schedule1()
-            //{
+            [JobSchedule("1")]
+            public void Schedule1()
+            {
 
-            //}
+            }
         }
 
         [TestMethod]
