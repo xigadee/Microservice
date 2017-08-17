@@ -62,7 +62,7 @@ namespace Xigadee
             {
                 JobScheduleRegister(holder.Signature.Action
                     , holder.Attribute.ToTimerConfig()
-                    , name: holder.Attribute.Name
+                    , name: holder.Attribute.Name ?? holder.Reference()
                     , isLongRunning: holder.Attribute.IsLongRunningProcess
                     , isMasterJob: holder.Attribute.IsMasterJob
                     );
