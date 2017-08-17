@@ -12,12 +12,8 @@ namespace Xigadee
     /// This class is used to marshal the method signature for a in-line schedule command.
     /// </summary>
     [DebuggerDisplay("{Method.Name}")]
-    public class JobScheduleMethodSignature: CommandSignatureBase
+    public class CommandScheduleSignature: CommandSignatureBase
     {
-        /// <summary>
-        /// Specifies whether this is a generic signature.
-        /// </summary>
-        public bool IsStandardCall { get; private set; }
         /// <summary>
         /// This specifies whether the method call is async.
         /// </summary>

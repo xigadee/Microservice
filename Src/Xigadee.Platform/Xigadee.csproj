@@ -79,7 +79,7 @@
     <Compile Include="Command\Attributes\CommandContract\CommandContractAttributeBase.cs" />
     <Compile Include="Command\Attributes\CommandMethodAttributeBase.cs" />
     <Compile Include="Command\Attributes\Helper\CommandMethodHolder.cs" />
-    <Compile Include="Command\Attributes\Helper\CommandSignatureBase.cs" />
+    <Compile Include="Command\Attributes\CommandSignatureBase.cs" />
     <Compile Include="Command\Attributes\JobSchedule\JobScheduleAttributeBase.cs" />
     <Compile Include="Command\Command_Job.cs" />
     <Compile Include="Command\EventArgs\Base\CommandEventArgsBase.cs" />
@@ -94,8 +94,8 @@
     <Compile Include="Command\Helper\MasterJobCommunicationDirection.cs" />
     <Compile Include="Command\Attributes\CommandContract\MasterJobCommandContractAttribute.cs" />
     <Compile Include="Command\Attributes\JobSchedule\MasterJobScheduleAttribute.cs" />
-    <Compile Include="Command\Attributes\Helper\JobScheduleMethodSignature.cs" />
-    <Compile Include="Command\Attributes\Helper\CommandMethodSignature.cs" />
+    <Compile Include="Command\Attributes\CommandScheduleSignature.cs" />
+    <Compile Include="Command\Attributes\CommandMethodSignature.cs" />
     <Compile Include="Command\Exceptions\CommandContractSignatureException.cs" />
     <Compile Include="Command\Attributes\Helper\CommandMethodHelper.cs" />
     <Compile Include="Command\Attributes\JobSchedule\JobScheduleAttribute.cs" />

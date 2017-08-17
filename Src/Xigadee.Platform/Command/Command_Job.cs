@@ -58,7 +58,7 @@ namespace Xigadee
         /// </summary>
         protected virtual void JobSchedulesReflectionInitialise<A>() where A: JobScheduleAttributeBase
         {
-            foreach (var holder in this.CommandMethodSignatures<A, JobScheduleMethodSignature>(true))
+            foreach (var holder in this.CommandMethodSignatures<A, CommandScheduleSignature>(true))
             {
                 JobScheduleRegister(holder.Signature.Action
                     , holder.Attribute.ToTimerConfig()
