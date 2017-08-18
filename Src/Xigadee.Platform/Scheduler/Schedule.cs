@@ -37,6 +37,7 @@ namespace Xigadee
         private Func<Schedule, CancellationToken, Task> mExecute;
         private long mExecutionCount = 0;
         private long mExecuteActiveSkipCount = 0;
+        private ScheduleTimerConfig mTimerConfig = null;
         #endregion
         #region Constructor        
         /// <summary>
@@ -82,6 +83,7 @@ namespace Xigadee
             Name = name;
             Context = context;
 
+            mTimerConfig = timerConfig;
             if (timerConfig != null)
             {
                 Frequency = timerConfig.Interval;
@@ -91,6 +93,20 @@ namespace Xigadee
 
             IsLongRunning = isLongRunning;
         }
+        #endregion
+
+        #region StatusIsInitialPoll
+        /// <summary>
+        /// Indicates whether this instance is first scheduled poll.
+        /// </summary>
+        public bool StatusIsInitialPoll => mExecutionCount == 1;
+        #endregion
+        #region StatusRequiresTimerConfiguration
+        /// <summary>
+        /// This will be set to true when the schedule is first called and the timer config has not been set.
+        /// If the timer schedule is not changed before leaving the method, it will not be called again.
+        /// </summary>
+        public bool StatusRequiresTimerConfiguration => StatusIsInitialPoll && (mTimerConfig?.IsUnset??true); 
         #endregion
 
         #region Debug

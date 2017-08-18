@@ -346,7 +346,6 @@
     <Compile Include="Security\Pipeline\Attach\AttachTransportPayloadSignature.cs" />
     <Compile Include="Security\Pipeline\Attach\AttachTransportPayloadDecryption.cs" />
     <Compile Include="Pipeline\Extensions\Configuration\ConfigAssertKeyExists.cs" />
-    <Compile Include="Scheduler\Pipeline\Add\AddSchedule.cs" />
     <Compile Include="Pipeline\Extensions\Configuration\ConfigAssertKeyNotPresentException.cs" />
     <Compile Include="Security\Exceptions\AuthenticationHandler\AuthenticationHandlerAlreadyExistsException.cs" />
     <Compile Include="Security\Exceptions\Encryption\EncryptionHandlerAlreadyExistsException.cs" />

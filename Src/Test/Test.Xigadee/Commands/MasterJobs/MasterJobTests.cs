@@ -125,7 +125,6 @@ namespace Test.Xigadee
         /// This test checks that all three Microservices negotiate correctly and take control when one of the others
         /// is stopped.
         /// </summary>
-        [Ignore]
         [TestMethod]
         public void MasterJobNegotiation()
         {
@@ -192,7 +191,7 @@ namespace Test.Xigadee
                 var holdme1 = ctx.MasterName;
                 ctx.Stop(holdme1);
 
-                //Ok, final service take over
+                //OK, final service take over
                 ctx.MasterJobSignal.WaitOne();
                 Assert.IsNotNull(ctx.MasterName);
                 ctx.MasterJobSignal.Reset();

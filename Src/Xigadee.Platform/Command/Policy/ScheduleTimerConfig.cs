@@ -46,10 +46,15 @@ namespace Xigadee
             InitialWait = initialWait;
             InitialWaitUTCTime = initialWaitUTCTime;
 
-            if (enforceSetting && (!interval.HasValue && !InitialWait.HasValue && !initialWaitUTCTime.HasValue))
+            if (enforceSetting && IsUnset)
                 throw new ArgumentNullException("At least one parameter must be set when using this constructor.");
         }
         #endregion
+
+        /// <summary>
+        /// Gets a value indicating whether this instance does not have any time configuration settings.
+        /// </summary>
+        public bool IsUnset => (!Interval.HasValue && !InitialWait.HasValue && !InitialWaitUTCTime.HasValue);
 
         /// <summary>
         /// This is the poll interval. The default is 5 seconds.
