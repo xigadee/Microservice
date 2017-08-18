@@ -47,7 +47,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="rq">The message to process.</param>
         /// <param name="responses">The return path for the message.</param>
-        public async Task ProcessRequest(TransmissionPayload rq, List<TransmissionPayload> responses)
+        public virtual async Task ProcessRequest(TransmissionPayload rq, List<TransmissionPayload> responses)
         {
             var header = rq.Message.ToServiceMessageHeader();
             H handler;
