@@ -12,7 +12,7 @@ namespace Xigadee
     /// This context is used to hold the necessary data for an inline command request.
     /// </summary>
     [DebuggerDisplay("{Id}/{CorrellationId}")]
-    public class CommandInlineContext: CommandContextBase
+    public class CommandMethodInlineContext: CommandContextBase
     {
         /// <summary>
         /// This is the default constructor.
@@ -23,7 +23,7 @@ namespace Xigadee
         /// <param name="collector">The data collector.</param>
         /// <param name="sharedServices">The shared service context.</param>
         /// <param name="originatorId">This is the Microservice identifiers.</param>
-        public CommandInlineContext(TransmissionPayload rq, List<TransmissionPayload> rsCol
+        public CommandMethodInlineContext(TransmissionPayload rq, List<TransmissionPayload> rsCol
             , IPayloadSerializationContainer serializer
             , IDataCollection collector
             , ISharedService sharedServices
@@ -33,7 +33,7 @@ namespace Xigadee
             Responses = rsCol;
         }
         /// <summary>
-        /// The incomine request.
+        /// The incoming request.
         /// </summary>
         public TransmissionPayload Request { get; }
         /// <summary>

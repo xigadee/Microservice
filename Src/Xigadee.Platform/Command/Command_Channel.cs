@@ -42,7 +42,7 @@ namespace Xigadee
             }
         }
         /// <summary>
-        /// Specifies whether the channel can be autoset during configuration
+        /// Specifies whether the channel can be auto-set during configuration
         /// </summary>
         public virtual bool ChannelIdAutoSet
         {

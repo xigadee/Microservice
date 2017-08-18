@@ -15,9 +15,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Xigadee
@@ -34,10 +31,10 @@ namespace Xigadee
         /// <param name="referenceId">The optional command reference id</param>
         /// <param name="startupPriority">The command startup priority.</param>
         /// <param name="channelIncoming">The incoming channel. This is optional if you pass channel information in the header.</param>
-        /// <param name="autoCreateChannel">Set this to true if you want the incoiming channel created if it does not exist. The default is true.</param>
+        /// <param name="autoCreateChannel">Set this to true if you want the incoming channel created if it does not exist. The default is true.</param>
         /// <returns>Returns the pipeline.</returns>
         public static P AddCommand<P>(this P pipeline
-            , Func<CommandInlineContext, Task> commandFunction
+            , Func<CommandMethodInlineContext, Task> commandFunction
             , ServiceMessageHeaderFragment header
             , string referenceId = null
             , int startupPriority = 100
@@ -57,24 +54,25 @@ namespace Xigadee
                 location = (channelIncoming.Channel.Id, header);
             }
 
-            var command = new CommandInline(location, commandFunction, referenceId);
+            var command = new CommandMethodInline(location, commandFunction, referenceId);
 
             pipeline.AddCommand(command, startupPriority, null, channelIncoming);
 
             return pipeline;
         }
+
         /// <summary>
-        /// 
+        /// This extension adds the inline command to the pipeline
         /// </summary>
-        /// <typeparam name="E"></typeparam>
-        /// <param name="cpipe"></param>
-        /// <param name="commandFunction"></param>
-        /// <param name="header"></param>
-        /// <param name="referenceId"></param>
-        /// <param name="startupPriority"></param>
-        /// <returns></returns>
+        /// <typeparam name="E">The pipeline type.</typeparam>
+        /// <param name="cpipe">The pipeline.</param>
+        /// <param name="commandFunction">The command function.</param>
+        /// <param name="header">The header.</param>
+        /// <param name="referenceId">The reference identifier.</param>
+        /// <param name="startupPriority">The startup priority.</param>
+        /// <returns>Returns the pipeline.</returns>
         public static E AttachCommand<E>(this E cpipe
-            , Func<CommandInlineContext, Task> commandFunction
+            , Func<CommandMethodInlineContext, Task> commandFunction
             , ServiceMessageHeaderFragment header
             , string referenceId = null
             , int startupPriority = 100
@@ -86,9 +84,18 @@ namespace Xigadee
             return cpipe;
         }
 
-
+        /// <summary>
+        /// This extension adds the inline command to the pipeline
+        /// </summary>
+        /// <typeparam name="E">The pipeline type.</typeparam>
+        /// <param name="cpipe">The pipeline.</param>
+        /// <param name="commandFunction">The command function.</param>
+        /// <param name="header">The header.</param>
+        /// <param name="referenceId">The reference identifier.</param>
+        /// <param name="startupPriority">The startup priority.</param>
+        /// <returns>Returns the pipeline.</returns>
         public static E AttachCommand<E>(this E cpipe
-            , Func<CommandInlineContext, Task> commandFunction
+            , Func<CommandMethodInlineContext, Task> commandFunction
             , ServiceMessageHeader header
             , string referenceId = null
             , int startupPriority = 100
@@ -100,9 +107,21 @@ namespace Xigadee
             return cpipe;
         }
 
-
+        /// <summary>
+        /// This extension adds the inline command to the pipeline
+        /// </summary>
+        /// <typeparam name="E">The pipeline type.</typeparam>
+        /// <param name="cpipe">The pipeline.</param>
+        /// <param name="contract">The contract.</param>
+        /// <param name="commandFunction">The command function.</param>
+        /// <param name="referenceId">The reference identifier.</param>
+        /// <param name="startupPriority">The startup priority.</param>
+        /// <param name="channelResponse">The channel response.</param>
+        /// <returns>Returns the pipeline.</returns>
+        /// <exception cref="InvalidMessageContractException"></exception>
+        /// <exception cref="InvalidPipelineChannelContractException"></exception>
         public static E AttachCommand<E>(this E cpipe, Type contract
-            , Func<CommandInlineContext, Task> commandFunction
+            , Func<CommandMethodInlineContext, Task> commandFunction
             , string referenceId = null
             , int startupPriority = 100
             , IPipelineChannelOutgoing<IPipeline> channelResponse = null
@@ -116,7 +135,7 @@ namespace Xigadee
             if (channelId != cpipe.Channel.Id)
                 throw new InvalidPipelineChannelContractException(contract, channelId, cpipe.Channel.Id);
 
-            var command = new CommandInline((channelId, messageType, actionType), commandFunction, referenceId);
+            var command = new CommandMethodInline((channelId, messageType, actionType), commandFunction, referenceId);
 
             cpipe.Pipeline.AddCommand(command, startupPriority, null, cpipe, channelResponse);
 

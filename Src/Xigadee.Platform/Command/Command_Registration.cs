@@ -52,7 +52,7 @@ namespace Xigadee
         /// <summary>
         /// This method scans through the command and registers commands that are defined using the metadata tags.
         /// </summary>
-        protected virtual void CommandsRegisterReflection()
+        protected void CommandsRegisterReflection()
         {
             foreach (var holder in this.CommandMethodSignatures<CommandContractAttribute,CommandMethodSignature>(true))
                 CommandRegister(CommandChannelIdAdjust(holder.Attribute)
@@ -102,7 +102,7 @@ namespace Xigadee
         /// <typeparam name="PM"></typeparam>
         /// <param name="action"></param>
         /// <param name="exceptionAction"></param>
-        protected virtual void CommandRegister<CM, PM>(
+        protected void CommandRegister<CM, PM>(
             Func<PM, TransmissionPayload, List<TransmissionPayload>, Task> action,
             Func<Exception, TransmissionPayload, List<TransmissionPayload>, Task> exceptionAction = null)
             where CM : IMessageContract
@@ -188,9 +188,9 @@ namespace Xigadee
 
         #region CommandsNotify(bool isRemoval)
         /// <summary>
-        /// This method can be used to nofity the command container of all the current keys currently supported.
+        /// This method can be used to notify the command container of all the current keys currently supported.
         /// </summary>
-        protected virtual void CommandsNotify(bool isRemoval)
+        protected void CommandsNotify(bool isRemoval)
         {
             foreach (var item in mSupported)
                 CommandNotify(item.Key, isRemoval, item.Value.IsMasterJob);
@@ -203,7 +203,7 @@ namespace Xigadee
         /// <param name="key">The key.</param>
         /// <param name="isRemoval">Set this to true to remove the command mapping, false is default.</param>
         /// <param name="isMasterJob">Specifies whether it is a master job.</param>
-        protected virtual void CommandNotify(MessageFilterWrapper key, bool isRemoval, bool isMasterJob)
+        protected void CommandNotify(MessageFilterWrapper key, bool isRemoval, bool isMasterJob)
         {
             FireAndDecorateEventArgs(OnCommandChange, () => new CommandChangeEventArgs(isRemoval, key, isMasterJob));
         } 
@@ -214,7 +214,7 @@ namespace Xigadee
         /// This method unregisters a command.
         /// </summary>
         /// <typeparam name="C">The message contract type</typeparam>
-        protected virtual void CommandUnregister<C>(bool isMasterJob = false) where C : IMessageContract
+        protected void CommandUnregister<C>(bool isMasterJob = false) where C : IMessageContract
         {
             string channelId, messageType, actionType;
             if (!ServiceMessageHelper.ExtractContractInfo<C>(out channelId, out messageType, out actionType))
@@ -261,7 +261,7 @@ namespace Xigadee
         /// This method retrieves the supported messages enclosed in the MessageHandler.
         /// </summary>
         /// <returns>Returns a list of MessageFilterWrappers</returns>
-        public virtual List<MessageFilterWrapper> SupportedMessageTypes()
+        public List<MessageFilterWrapper> SupportedMessageTypes()
         {
             return mSupported.Keys.ToList();
         }
@@ -272,7 +272,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="header">The message header.</param>
         /// <returns>Returns true if the message is supported.</returns>
-        public virtual bool SupportsMessage(ServiceMessageHeader header)
+        public bool SupportsMessage(ServiceMessageHeader header)
         {
             H command;
 
@@ -284,12 +284,12 @@ namespace Xigadee
 
         #region SupportedResolve(ServiceMessageHeader header, out H handler)
         /// <summary>
-        /// This attemps to match the message header to the command registration collection.
+        /// This attempts to match the message header to the command registration collection.
         /// </summary>
         /// <param name="header">The message header.</param>
         /// <param name="handler">The command handler as an output.</param>
         /// <returns>Returns true if there is a match.</returns>
-        protected virtual bool SupportedResolve(ServiceMessageHeader header, out H handler)
+        protected bool SupportedResolve(ServiceMessageHeader header, out H handler)
         {
             if (!mCommandCache.TryGetValue(header, out handler))
             {
@@ -302,12 +302,12 @@ namespace Xigadee
         #endregion
         #region SupportedResolveActual(ServiceMessageHeader header, out H command)
         /// <summary>
-        /// This attemps to match the message header to the command registration collection.
+        /// This attempts to match the message header to the command registration collection.
         /// </summary>
         /// <param name="header">The message header.</param>
         /// <param name="command">The command handler as an output.</param>
         /// <returns>Returns true if there is a match.</returns>
-        protected virtual bool SupportedResolveActual(ServiceMessageHeader header, out H command)
+        protected bool SupportedResolveActual(ServiceMessageHeader header, out H command)
         {
             //Fix for BUG 180 - ensuring that trailing slash is on each match for partial key. Moved match logic to struct.
             command = mSupported

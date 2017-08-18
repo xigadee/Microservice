@@ -219,9 +219,9 @@ namespace Xigadee
 
         #region FireAndDecorateEventArgs<E>(EventHandler<E> handler, Func<E> creator)
         /// <summary>
-        /// Fires and decorates eventarg with command properties.
+        /// Fires and decorates the command eventargs object with command properties.
         /// </summary>
-        /// <typeparam name="E">The eventarg type.</typeparam>
+        /// <typeparam name="E">The command eventargs type.</typeparam>
         /// <param name="handler">The handler.</param>
         /// <param name="creator">The creator that is fired if there are subscribers to the event.</param>
         /// <param name="onError">This is an optional function that can be called on an error</param>

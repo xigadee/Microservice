@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This command is used to syncronise and consolidate resource performance counters and signalling 
+    /// This command is used to synchronise and consolidate resource performance counters and signalling 
     /// across multiple Microservices.
     /// </summary>
     public class ResourceSyncTransmitCommand: ResourceSyncCommandBase<ResourceSyncTransmitCommandStatistics, ResourceSyncTransmitCommandPolicy>

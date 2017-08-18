@@ -36,7 +36,7 @@ namespace Test.Xigadee
                     .AdjustPolicyCommunicationBoundaryLoggingActive()
                     .AddDebugMemoryDataCollector(out memp2)
                     .AddChannelIncoming("credirect")
-                        .AttachCommand((CommandInlineContext ctx) =>
+                        .AttachCommand((CommandMethodInlineContext ctx) =>
                         {
                             ctx.ResponseSet(201, "Hi");
                             return Task.FromResult(0);
@@ -61,12 +61,12 @@ namespace Test.Xigadee
                             }
                             )
                         .AttachListener(bridgeOut.GetListener())
-                        .AttachCommand((CommandInlineContext ctx) =>
+                        .AttachCommand((CommandMethodInlineContext ctx) =>
                         {
                             ctx.ResponseSet(400,"Blah");
                             return Task.FromResult(0);
                         }, ("BridgeMe", "create"))
-                        .AttachCommand((CommandInlineContext ctx) =>
+                        .AttachCommand((CommandMethodInlineContext ctx) =>
                         {
                             ctx.ResponseSet(200, "Yah!");
                             return Task.FromResult(0);
