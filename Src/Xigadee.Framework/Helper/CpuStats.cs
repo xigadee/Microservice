@@ -26,29 +26,6 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This interface is implemented by the CpuStats class and is used to share statistics information.
-    /// </summary>
-    public interface ICpuStats
-    {
-        DateTime? CalculationTimeLast { get; }
-
-        long CalculationMissCount { get; }
-
-        string CalculationMissException { get; }
-
-        float? ServicePercentage { get; }
-
-        /// <summary>
-        /// This is the unique client identifier.
-        /// </summary>
-        int ProcessorCount { get; }
-        /// <summary>
-        /// This string identifies a 64 or 32 processor.
-        /// </summary>
-        string ProcessorType { get; }
-    }
-
-    /// <summary>
     /// This class contains information about the underlying processor, including the current
     /// processor usage.
     /// </summary>

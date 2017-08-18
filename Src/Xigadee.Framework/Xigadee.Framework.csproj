@@ -53,6 +53,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="BoundaryLogger\BoundaryLoggerSql.cs" />
+    <Compile Include="Helper\CpuStats.cs" />
     <Compile Include="Logger\FileStorageLoggingBase.cs" />
     <Compile Include="Persistence\ExtensionMethods.cs" />
     <Compile Include="Persistence\FileSystem\PersistenceManagerHandlerFileSystem.cs" />

@@ -30,7 +30,6 @@ namespace Test.Xigadee
 
     static partial class Program
     {
-
         static void ClientConfig(MicroservicePersistenceWrapper<Guid, MondayMorningBlues> wrapper)
         {
             PersistenceClient<Guid, MondayMorningBlues> persistence = null;
@@ -46,6 +45,5 @@ namespace Test.Xigadee
 
             wrapper.Persistence = persistence;
         }
-
     }
 }

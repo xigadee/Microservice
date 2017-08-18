@@ -7,35 +7,23 @@
 
 # The 15 minute Microservice
 
-Xigadee is designed to simplify building a Microservice application. It does this my doing much of the heavy lifting regarding communication, task scheduling, etc, which allows you to concentrate on just the code and application logic which is needed for your application.
+Xigadee is designed to simplify the construction of a Microservice application. It does this my doing much of the heavy lifting regarding communication, task scheduling, etc, which allows you to concentrate on just the code and application logic which is needed for your application.
 
 This example gives a quick introduction to building a Microservice based application using the Xigadee framework.
 
 For this example, we'll host the API service within a console application. 
-Xigadee comes with a Nuget package (Xigadee.Console) which can be used to quickly spin up these types of application.
 We'll construct an API based Microservice that can persist an entity, 
 using Create, Read, Update and Delete (CRUD) operations in memory through a simple set of RESTful API call.
 
-First we are going to create a new console application.
+First we are going to create a new console application. This server will be our back end server that receives requests from a front-end API service.
 ```C#
 static void Main(string[] args)
 {
     try
     {
-        var pipeline1 = new MicroservicePipeline("AzureStorageTest1");
-        var pipeline2 = new MicroservicePipeline("AzureStorageTest2");
-        var mainMenu = new ConsoleMenu("Azure Storage DataCollector validation");
+        var pipeline1 = new MicroservicePipeline("Server");
 
-        pipeline1
-            .ConfigurationSetFromConsoleArgs(args)
-            .AddEncryptionHandlerAes("myid", Convert.FromBase64String("hNCV1t5sA/xQgDkHeuXYhrSu8kF72p9H436nQoLDC28="), keySize:256)
-            .AddAzureStorageDataCollector(handler:"myid")
-            ;
-              
-        mainMenu.AddMicroservicePipeline(pipeline1);
-        mainMenu.AddMicroservicePipeline(pipeline2);
-        mainMenu.AddOption("Aruba", (m,o) => pipeline1.Service.DataCollection.LogException(new Exception()));
-        mainMenu.Show();
+        pipeline1.Start();
     }
     catch (Exception ex)
     {

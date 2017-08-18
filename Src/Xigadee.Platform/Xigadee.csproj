@@ -634,7 +634,7 @@
     <Compile Include="Exceptions\SenderNotResolvedException.cs" />
     <Compile Include="Exceptions\TransitCountExceededException.cs" />
     <Compile Include="Exceptions\TransmissionPayloadException.cs" />
-    <Compile Include="Microservice\Helper\CpuStats.cs" />
+    <Compile Include="Microservice\Helper\ICpuStats.cs" />
     <Compile Include="Components\ServiceContainerBase.cs" />
     <Compile Include="DataCollection\Logger\Implementations\Action\LoggerActionHolder.cs" />
     <Compile Include="Microservice\Microservice_Initialization.cs" />

@@ -53,7 +53,7 @@ namespace Xigadee
         /// <summary>
         /// This is the CpuStats holder. It is used to report statistics and to hold trigger autotune events.
         /// </summary>
-        private CpuStats mCpuStats = new CpuStats();
+        private ICpuStats mCpuStats = null;
         /// <summary>
         /// This is the availability holder.
         /// </summary>
@@ -67,7 +67,7 @@ namespace Xigadee
         /// </summary>
         private ConcurrentDictionary<Guid, TaskTracker> mTaskRequests;
         /// <summary>
-        /// This function contains a reference to the Dispather which is used to process a task.
+        /// This function contains a reference to the Dispatcher which is used to process a task.
         /// </summary>
         private Func<TransmissionPayload, Task> Dispatcher;
 
@@ -748,7 +748,7 @@ namespace Xigadee
         {
             try
             {
-                float? current = await mCpuStats.SystemProcessorUsagePercentage(System.Diagnostics.Process.GetCurrentProcess().ProcessName);
+                //float? current = await mCpuStats.SystemProcessorUsagePercentage(System.Diagnostics.Process.GetCurrentProcess().ProcessName)??-1;
 
                 //if (!current.HasValue && mAutotuneStats.ProcessorCurrentMissCount < 5)
                 //{
