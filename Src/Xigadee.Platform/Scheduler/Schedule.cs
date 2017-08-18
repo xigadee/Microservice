@@ -85,11 +85,7 @@ namespace Xigadee
 
             mTimerConfig = timerConfig;
             if (timerConfig != null)
-            {
-                Frequency = timerConfig.Interval;
-                InitialTime = timerConfig.InitialWaitUTCTime;
-                InitialWait = timerConfig.InitialWait;
-            }
+                TimerSet(timerConfig);
 
             IsLongRunning = isLongRunning;
         }
@@ -245,9 +241,24 @@ namespace Xigadee
                 Recalculate();
 
             Active = false;
-        } 
+        }
         #endregion
 
+        #region TimerSet(ScheduleTimerConfig timerConfig)
+        /// <summary>
+        /// Sets the timer configuration from a ScheduleTimerConfig object.
+        /// </summary>
+        /// <param name="timerConfig">The timer configuration.</param>
+        public void TimerSet(ScheduleTimerConfig timerConfig)
+        {
+            if (timerConfig == null)
+                throw new ArgumentNullException("timerConfig");
+
+            Frequency = timerConfig.Interval;
+            InitialTime = timerConfig.InitialWaitUTCTime;
+            InitialWait = timerConfig.InitialWait;
+        } 
+        #endregion
         #region InitialWait
         /// <summary>
         /// This is the initial wait in a TimeSpan before the timer event fires.

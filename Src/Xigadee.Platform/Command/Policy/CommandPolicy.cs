@@ -27,7 +27,6 @@ namespace Xigadee
         /// Specifies that the commands are supported by reflection, i.e. those commands that use the CommandContractAttribute.
         /// </summary>
         public bool CommandReflectionSupported { get; set; } = true;
-
         /// <summary>
         /// Specifies that schedule reflection commands are supported, i.e. those that use the CommandScheduleAttribute.
         /// </summary>
@@ -40,7 +39,6 @@ namespace Xigadee
         /// Gets or sets a value indicating whether unhandled exceptions should be logged. The default value is true.
         /// </summary>
         public bool OnProcessRequestExceptionLog { get; set; } = true;
-
         /// <summary>
         /// Gets or sets a value indicating whether the TransmissionPayload trace flag should be set to true.
         /// </summary>
@@ -61,19 +59,6 @@ namespace Xigadee
         /// This property specifies whether the response channel can be automatically set by the pipeline.
         /// </summary>
         public bool ResponseChannelIdAutoSet { get; set; } = true;
-
-        /// <summary>
-        /// This is the channel for incoming masterjob negotiation messages.
-        /// </summary>
-        public virtual string MasterJobNegotiationChannelIdIncoming { get; set; }
-        /// <summary>
-        /// This is the channel for outgoing masterjob negotiation messages, if this is null then the incoming channel will be used.
-        /// </summary>
-        public virtual string MasterJobNegotiationChannelIdOutgoing { get; set; }
-        /// <summary>
-        /// This property specifies whether these channels can be set automatically from the configuration pipeline.
-        /// </summary>
-        public bool MasterJobNegotiationChannelIdAutoSet { get; set; } = true;
 
         /// <summary>
         /// This is the command startup priority.
@@ -130,5 +115,17 @@ namespace Xigadee
         /// Specifies that schedule reflection commands are supported for master jobs, i.e. those that use the MasterJobScheduleAttribute.
         /// </summary>
         public bool MasterJobScheduleReflectionSupported { get; set; } = true;
+        /// <summary>
+        /// This is the channel for incoming masterjob negotiation messages.
+        /// </summary>
+        public virtual string MasterJobNegotiationChannelIdIncoming { get; set; }
+        /// <summary>
+        /// This is the channel for outgoing masterjob negotiation messages, if this is null then the incoming channel will be used.
+        /// </summary>
+        public virtual string MasterJobNegotiationChannelIdOutgoing { get; set; }
+        /// <summary>
+        /// This property specifies whether these channels can be set automatically from the configuration pipeline.
+        /// </summary>
+        public bool MasterJobNegotiationChannelIdAutoSet { get; set; } = true;
     }
 }
