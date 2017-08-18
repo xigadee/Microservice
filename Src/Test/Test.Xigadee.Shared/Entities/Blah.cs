@@ -19,7 +19,7 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    public class Blah:IEquatable<Blah>
+    public class Blah: IEquatable<Blah>
     {
         public Blah()
         {
@@ -52,7 +52,7 @@ namespace Test.Xigadee
         }
     }
 
-    public class BlahXmlTransportSerializer : XmlTransportSerializerBase<Blah>
+    public class BlahXmlTransportSerializer: XmlTransportSerializerBase<Blah>
     {
         public override string XsdName
         {

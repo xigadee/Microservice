@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Xigadee</RootNamespace>
     <AssemblyName>Xigadee</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -733,7 +733,9 @@
     <None Include="Security\_docs\Security.md" />
     <None Include="Serialization\_docs\Serialization.md" />
     <None Include="TaskManager\_docs\TaskManager.md" />
-    <None Include="Xigadee.nuspec" />
+    <None Include="Xigadee.nuspec">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Xigadee.Platform.licenseheader" />
     <None Include="_Docs\WhatIsAMicroservice.md" />
     <None Include="_Docs\fifteenminuteMicroservice.md" />
