@@ -570,59 +570,6 @@ namespace Xigadee
             var schedule = mSchedules.Where((s) => s.IsMasterJob).ToArray();
 
             schedule.ForEach((s) => JobScheduleUnregister(s));
-
-        }
-        #endregion
-
-        #region MasterJobRegister ...
-        /// <summary>
-        /// This method registers a master job that will be called at the schedule specified 
-        /// when the job is active and the instance becomes active.
-        /// </summary>
-        /// <param name="frequency">Frequency that the job runs for</param>
-        /// <param name="action">The action to call.</param>
-        /// <param name="name">Name of the job</param>
-        /// <param name="initialWait">Initial wait time</param>
-        /// <param name="initialTime">Initial time to run</param>
-        /// <param name="initialise">Initialise schedule action</param>
-        /// <param name="cleanup">Cleanup schedule action</param>
-        protected void JobRegister(TimeSpan? frequency, Func<Schedule, Task> action
-            , string name = null
-            , TimeSpan? initialWait = null
-            , DateTime? initialTime = null
-            , Action<Schedule> initialise = null
-            , Action<Schedule> cleanup = null)
-        {
-            //var schedule = new MasterJobSchedule(JobExecute, name ?? $"MasterJob{GetType().Name}")
-            //{
-            //    InitialWait = initialWait,
-            //    Frequency = frequency,
-            //    InitialTime = initialTime
-            //};
-
-            //mMasterJobs.Add(schedule.Id, new MasterJobHolder(schedule.Name, schedule, action, initialise, cleanup));
-        }
-        #endregion
-        #region MasterJobExecute(Schedule schedule)
-        /// <summary>
-        /// This method retrieves the master job from the collection and calls the 
-        /// relevant action.
-        /// </summary>
-        /// <param name="schedule">The schedule to activate.</param>
-        /// <param name="cancel">The cancellation token</param>
-        protected virtual async Task JobExecute(Schedule schedule, CancellationToken cancel)
-        {
-            //var id = schedule.Id;
-            //if (mMasterJobs.ContainsKey(id))
-            //    try
-            //    {
-            //        await mMasterJobs[id].Action(schedule);
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        Collector?.LogException($"MasterJob '{mMasterJobContext.Jobs[id].Name}' execute failed", ex);
-            //        throw;
-            //    }
         }
         #endregion
     }

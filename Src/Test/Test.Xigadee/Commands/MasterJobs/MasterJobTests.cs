@@ -125,6 +125,7 @@ namespace Test.Xigadee
         /// This test checks that all three Microservices negotiate correctly and take control when one of the others
         /// is stopped.
         /// </summary>
+        //[Ignore]
         [TestMethod]
         public void MasterJobNegotiation()
         {

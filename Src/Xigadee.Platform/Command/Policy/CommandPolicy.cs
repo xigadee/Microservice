@@ -23,8 +23,6 @@ namespace Xigadee
     /// </summary>
     public class CommandPolicy:PolicyBase
     {
-
-
         /// <summary>
         /// Specifies that the commands are supported by reflection, i.e. those commands that use the CommandContractAttribute.
         /// </summary>
