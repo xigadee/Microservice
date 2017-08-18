@@ -22,7 +22,7 @@ namespace Xigadee
     /// <summary>
     /// This attribute can be set against a command method to register it for automatic registration as a remote command.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
     [DebuggerDisplay("{ChannelId}/{MessageType}/{ActionType}")]
     public class CommandContractAttribute: CommandContractAttributeBase
     {

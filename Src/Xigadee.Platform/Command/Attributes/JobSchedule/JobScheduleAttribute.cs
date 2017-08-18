@@ -22,7 +22,7 @@ namespace Xigadee
     /// <summary>
     /// This attribute can be set against a command method to register it for a schedule job poll call.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
     [DebuggerDisplay("{mName}: {mInitialWait}-{mFrequency} IsLongRunning={IsLongRunningProcess}")]
     public class JobScheduleAttribute: JobScheduleAttributeBase
     {

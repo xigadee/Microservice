@@ -22,7 +22,7 @@ namespace Xigadee
     /// <summary>
     /// This attribute can be set against a command method to register it for a master job schedule that will be activated once the master job becomes active.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
     [DebuggerDisplay("MasterJob {mName}: {mInitialWait}-{mFrequency} IsLongRunning={IsLongRunningProcess}")]
     public class MasterJobScheduleAttribute: JobScheduleAttributeBase
     {
