@@ -17,6 +17,7 @@
 #region using
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 #endregion
 namespace Xigadee
@@ -26,7 +27,8 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="C">The client type.</typeparam>
     /// <typeparam name="M">The client message type.</typeparam>
-    /// <typeparam name="H">The clientholder type.</typeparam>
+    /// <typeparam name="H">The client-holder type.</typeparam>
+    [DebuggerDisplay("{GetType().Name}: {ChannelId}|{MappingChannelId}@{Status} [{ComponentId}]")]
     public class MessagingListenerBase<C, M, H> : MessagingServiceBase<C, M, H, ListenerPartitionConfig>, IListener, IRequireSharedServices
         where H : ClientHolder<C, M>, new()
     {
@@ -142,7 +144,7 @@ namespace Xigadee
 
                 var deltaNew = newList.Except(oldList).ToList();
                 var deltaOld = oldList.Except(newList).ToList();
-                //Ok, there is a small change. Let the clients know there is additional messages to filter on
+                //OK, there is a small change. Let the clients know there is additional messages to filter on
                 //and let them work out how to do it themselves.
                 if (deltaNew.Count > 0 || deltaOld.Count > 0)
                 {
@@ -179,7 +181,7 @@ namespace Xigadee
 
                     client.ResourceProfiles = ResourceProfiles;
 
-                    mClients.Add(partition.Priority, client);
+                    mClients.AddOrUpdate(partition.Priority, client, (i,h) => h);
 
                     if (client.CanStart)
                         base.ClientStart(client);

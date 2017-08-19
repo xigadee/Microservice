@@ -70,11 +70,18 @@ namespace Xigadee
         /// </summary>
         public Dictionary<string, string> Prefer { get; set; } = new Dictionary<string, string>();
         /// <summary>
-        /// This collection is a link of keyvalue pairs that can be passed through to the calling party.
+        /// This collection is a link of key-value pairs that can be passed through to the calling party.
         /// </summary>
         public Dictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
 
-        #region Prefer methods
+        #region Prefer methods        
+        /// <summary>
+        /// Gets the prefer option as a boolean value.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="trueValue">The true value to compare against.</param>
+        /// <param name="defaultValue">The default value if the option cannot be found.</param>
+        /// <returns>Returns the boolean prefer option.</returns>
         protected bool PreferGetBool(string key, string trueValue = "true", bool defaultValue = true)
         {
             if (Prefer == null || !Prefer.ContainsKey(key))
@@ -82,7 +89,12 @@ namespace Xigadee
 
             return Prefer[key].Equals(trueValue, StringComparison.InvariantCultureIgnoreCase);
         }
-
+        /// <summary>
+        /// Gets a prefer option.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="defaultValue">The default value if the prefer option cannot be found.</param>
+        /// <returns>The prefer option value.</returns>
         protected string PreferGet(string key, string defaultValue = null)
         {
             if (Prefer == null || !Prefer.ContainsKey(key))
@@ -90,7 +102,11 @@ namespace Xigadee
 
             return Prefer[key];
         }
-
+        /// <summary>
+        /// Set a prefer option.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
         protected void PreferSet(string key, string value)
         {
             if (Prefer == null)
@@ -102,7 +118,13 @@ namespace Xigadee
                 Prefer[key] = value;
         }
         #endregion
-        #region Header methods
+        #region Header methods        
+        /// <summary>
+        /// Gets a header.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="defaultValue">The default value if the header cannot be found..</param>
+        /// <returns>The header value.</returns>
         protected string HeadersGet(string key, string defaultValue = null)
         {
             if (Headers == null || !Headers.ContainsKey(key))
@@ -110,7 +132,11 @@ namespace Xigadee
 
             return Headers[key];
         }
-
+        /// <summary>
+        /// Sets a header
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
         protected void HeadersSet(string key, string value)
         {
             if (Headers == null)

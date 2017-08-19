@@ -16,6 +16,7 @@
 
 #region using
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -40,7 +41,7 @@ namespace Xigadee
         /// <summary>
         /// This is the client collection.
         /// </summary>
-        protected Dictionary<int, H> mClients= new Dictionary<int, H>();
+        protected ConcurrentDictionary<int, H> mClients= new ConcurrentDictionary<int, H>();
         /// <summary>
         /// This is the default priority. 1 if present
         /// </summary>
@@ -49,6 +50,9 @@ namespace Xigadee
         /// This method is used to name the client based on the priority.
         /// </summary>
         protected Func<string, int, string> mPriorityClientNamer = (s, i) => string.Format("{0}{1}", s, i == 1 ? "" : i.ToString());
+
+        private int mClientCreate = 0;
+        private int mClientDestroy = 0;
         #endregion
 
         #region PriorityPartitions
@@ -76,7 +80,7 @@ namespace Xigadee
         {
             get
             {
-                return mClients == null ? null : mClients.Values;
+                return mClients?.Values;
             }
         } 
         #endregion
@@ -128,7 +132,7 @@ namespace Xigadee
                 {
                     var client = ClientCreate(priority);
 
-                    mClients.Add(priority.Priority, client);
+                    mClients.AddOrUpdate(priority.Priority, client, (i,h) => h);
 
                     if (client.CanStart)
                         ClientStart(client);
@@ -208,6 +212,7 @@ namespace Xigadee
         /// <returns>Returns the client.</returns>
         protected virtual H ClientCreate(P partition)
         {
+            Interlocked.Increment(ref mClientCreate);
             var client = new H();
 
             //Set the message Collector?.
@@ -246,6 +251,7 @@ namespace Xigadee
         /// </summary>
         protected virtual void ClientStop(H client)
         {
+            Interlocked.Increment(ref mClientDestroy);
             client.Stop?.Invoke();
         }
         #endregion
@@ -294,14 +300,14 @@ namespace Xigadee
         /// <returns>The specific client holder.</returns>
         protected virtual H ClientResolve(int priority)
         {
-            if (mClients == null || mClients.Count == 0)
+            if ((mClients?.Count??0) == 0)
                 throw new ClientsUndefinedMessagingException($"Clients are undefined for {ChannelId}");
 
             if (mClients.ContainsKey(priority))
                 return mClients[priority];
 
             if (!mDefaultPriority.HasValue)
-                throw new ClientsUndefinedMessagingException($"Channel {priority} cannot be found and clients default priority not set for {ChannelId}");
+                throw new ClientsUndefinedMessagingException($"Channel={ChannelId} Priority={priority} cannot be found and a default priority value has not been set.");
 
             return mClients[mDefaultPriority.Value];
         }

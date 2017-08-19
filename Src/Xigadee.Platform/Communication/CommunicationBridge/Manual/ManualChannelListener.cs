@@ -15,6 +15,7 @@
 #endregion
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 
 namespace Xigadee
 {
@@ -24,6 +25,7 @@ namespace Xigadee
     public class ManualChannelListener: MessagingListenerBase<ManualChannelConnection, ManualChannelMessage, ManualChannelClientHolder>
     {
         public ConcurrentQueue<TransmissionPayload> DeadLetterQueue { get; set; }
+        public ConcurrentQueue<TransmissionPayload> Queue { get; set; }
 
         /// <summary>
         /// This override sets the default processing time to the client for incoming messages.

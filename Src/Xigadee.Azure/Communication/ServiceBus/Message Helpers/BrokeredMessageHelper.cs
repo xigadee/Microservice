@@ -32,7 +32,7 @@ namespace Xigadee
     {
         #region AssignMessageHelpers<C>(this AzureClientHolder<C,BrokeredMessage> client)
         /// <summary>
-        /// This extension method set the Pack, Unpack and Signal fuctions for Azure Service Bus support.
+        /// This extension method set the Pack, Unpack and Signal functions for Azure Service Bus support.
         /// </summary>
         /// <typeparam name="C">The Client Entity type.</typeparam>
         /// <param name="client">The client to set.</param>
@@ -58,7 +58,7 @@ namespace Xigadee
                 return null;
 
             return value.ToLowerInvariant();
-        } 
+        }
         #endregion
 
         #region MessagePack(ServiceMessage sMessage)
@@ -66,8 +66,8 @@ namespace Xigadee
         /// This method packs the ServiceMessage in to the BrokeredMessage format
         /// for communication through the Azure Service Bus.
         /// </summary>
-        /// <param name="sMessage">The ServiceMessage object to convert.</param>
-        /// <returns>Returns a converted BrokeredMessage from transmission.</returns>
+        /// <param name="payload">The payload object to convert to a BrokeredMessage.</param>
+        /// <returns>Returns a BrokeredMessage object.</returns>
         public static BrokeredMessage Pack(TransmissionPayload payload)
         {
             ServiceMessage sMessage = payload.Message;
@@ -88,7 +88,7 @@ namespace Xigadee
             bMessage.Properties.Add("ResponseMessageType", ToSafeLower(sMessage.ResponseMessageType));
             bMessage.Properties.Add("ResponseActionType", ToSafeLower(sMessage.ResponseActionType));
 
-            //FIX: Case sensitive pattern matchin in ServiceBus.
+            //FIX: Case sensitive pattern match in ServiceBus.
             bMessage.Properties.Add("ChannelId", ToSafeLower(sMessage.ChannelId));
             bMessage.Properties.Add("MessageType", ToSafeLower(sMessage.MessageType));
             bMessage.Properties.Add("ActionType", ToSafeLower(sMessage.ActionType));
