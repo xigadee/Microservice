@@ -4,11 +4,12 @@ Xigadee is a Microservice framework, developed by [Paul Stancer](https://github.
 The framework is based on our experience, and the knowledge gained, 
 in building large-scale distributed cloud applications for our clients over the past four years. 
 
-We have found when constructing these types of application, that typically much of the time is spent on building and testing the application "plumbing" logic, i.e. messaging, monitoring, communication etc., instead of on the actual business logic of the application. Xigadee is our attempt to solve that problem. It provides a consistent approach and a set of tools that can be applied to any type of Microservice application.
+We found when constructing a Microservice based system, that typically much of the work is spent on building and testing the application "plumbing", i.e. messaging, monitoring, communication etc., instead of on the actual application logic. Xigadee's goal is to solve that problem. It provides a consistent approach, and a set of reusable tools, that can be applied to many types of Microservice application.
 
-The libraries are built using Microsoft .NET technologies, 
-and provide a simple and consistent approach when building a Microservice-based solution; 
-specifically when targeting Platform-as-a-Service (PaaS) technologies in the Azure technology stack, where we have created a number of accelerators to help set up an application quickly. 
+Xigadee provides a simple declarative programming model to speed up the construction of a Microservice (see the [15-minute Microservice](Src/Xigadee.Platform/_Docs/fifteenminuteMicroservice.md) for details). 
+ 
+The libraries are built using Microsoft .NET technologies, with specific accelerators for targeting Platform-as-a-Service (PaaS) technologies in the Azure stack, to help set up an application quickly. 
+
 
 Xigadee is now open-source; released under the Apache 2 license. You are free to use it within your own commercial applications without restriction. 
 
