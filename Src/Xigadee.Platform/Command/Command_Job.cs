@@ -47,7 +47,7 @@ namespace Xigadee
             mSchedules = new List<CommandJobSchedule>();
 
             if (mPolicy.ScheduleReflectionSupported)
-                JobSchedulesReflectionInitialise<JobScheduleAttribute>();
+                JobSchedulesReflectionInitialise<JobScheduleAttribute>(mPolicy.JobScheduleAttributeInherit);
 
             JobSchedulesManualRegister();
         }
@@ -56,9 +56,9 @@ namespace Xigadee
         /// <summary>
         /// This method can be overridden to enable additional schedules to be registered for the job.
         /// </summary>
-        protected virtual void JobSchedulesReflectionInitialise<A>() where A: JobScheduleAttributeBase
+        protected virtual void JobSchedulesReflectionInitialise<A>(bool inherit) where A: JobScheduleAttributeBase
         {
-            foreach (var holder in this.CommandMethodSignatures<A, CommandScheduleSignature>(true))
+            foreach (var holder in this.CommandMethodSignatures<A, CommandScheduleSignature>(true, inherit))
             {
                 JobScheduleRegister(holder.Signature.Action
                     , holder.Attribute.ToTimerConfig()

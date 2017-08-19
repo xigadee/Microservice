@@ -24,10 +24,10 @@ namespace Test.Xigadee.Commands
         [TestMethod]
         public void CommandSignatureTest()
         {
-            var info1 = mSimples.CommandMethodSignatures<CommandContractAttribute, CommandMethodSignature>(false).ToList();
+            var info1 = mSimples.CommandMethodSignatures<CommandContractAttribute, CommandMethodSignature>(false,true).ToList();
             Assert.IsTrue(info1.Count == 2);
 
-            var minfo1 = mSimples.CommandMethodSignatures<MasterJobCommandContractAttribute, CommandMethodSignature>(false).ToList();
+            var minfo1 = mSimples.CommandMethodSignatures<MasterJobCommandContractAttribute, CommandMethodSignature>(false, true).ToList();
             Assert.IsTrue(minfo1.Count == 2);
         }
     }

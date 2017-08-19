@@ -127,5 +127,24 @@ namespace Xigadee
         /// This property specifies whether these channels can be set automatically from the configuration pipeline.
         /// </summary>
         public bool MasterJobNegotiationChannelIdAutoSet { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the masterjob command contract attribute should include inherited methods.
+        /// </summary>
+        public bool MasterJobCommandContractAttributeInherit { get; set; } = true;
+        /// <summary>
+        /// Gets or sets a value indicating whether the command contract attribute should include inherited methods.
+        /// </summary>
+        public bool CommandContractAttributeInherit { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the job schedule attribute should include inherited methods.
+        /// </summary>
+        public bool JobScheduleAttributeInherit { get; set; } = true;
+        /// <summary>
+        /// Gets or sets a value indicating whether the masterjob schedule attribute should include inherited methods.
+        /// </summary>
+        public bool MasterJobScheduleAttributeInherit { get; set; } = true;
+
     }
 }

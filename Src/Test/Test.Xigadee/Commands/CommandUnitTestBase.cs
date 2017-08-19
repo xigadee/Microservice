@@ -14,10 +14,9 @@ namespace Test.Xigadee
         protected DebugMemoryDataCollector mCollector = null;
         protected Microservice service = null;
 
-
         protected void DefaultTest()
         {
-            var info1 = mCommand.CommandMethodSignatures<CommandContractAttribute,CommandMethodSignature>(true);
+            var info1 = mCommand.CommandMethodSignatures<CommandContractAttribute,CommandMethodSignature>(true, true);
         }
 
         protected virtual IPipeline Pipeline()

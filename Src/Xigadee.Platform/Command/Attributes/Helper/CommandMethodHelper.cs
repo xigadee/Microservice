@@ -71,11 +71,11 @@ namespace Xigadee
         /// <summary>
         /// This static helper returns the 
         /// </summary>
-        public static IEnumerable<CommandMethodHolder<A, S>> CommandMethodSignatures<A, S>(this ICommand command, bool throwExceptions)
+        public static IEnumerable<CommandMethodHolder<A, S>> CommandMethodSignatures<A, S>(this ICommand command, bool throwExceptions, bool inherit)
             where A : CommandMethodAttributeBase
             where S : CommandSignatureBase, new()
         {
-            return command.CommandMethods<A>()
+            return command.CommandMethods<A>(inherit)
                 .Select((m) => GetMethodHolder<A,S>(command, m, throwExceptions))
                 .Where((t) => t.Signature.IsValid);
         }
@@ -83,21 +83,23 @@ namespace Xigadee
         /// <summary>
         /// This static helper returns the list of methods that are decorated with the attribute type.
         /// </summary>
-        public static IEnumerable<(A,MethodInfo)> CommandMethods<A>(this ICommand command)
+        public static IEnumerable<(A,MethodInfo)> CommandMethods<A>(this ICommand command, bool inherit)
             where A : Attribute
         {
-            return command.GetType().CommandMethods<A>();
+            return command.GetType().CommandMethods<A>(inherit);
         }
 
         /// <summary>
         /// This static helper returns the list of methods that are decorated with the attribute type.
         /// </summary>
-        public static IEnumerable<(A,MethodInfo)> CommandMethods<A>(this Type objectType)
+        public static IEnumerable<(A attr,MethodInfo method)> CommandMethods<A>(this Type objectType, bool inherit)
             where A : Attribute
         {
             return objectType
                 .GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance)
-                .SelectMany((m) => m.GetCustomAttributes<A>(), (m,a) => ((A)a,m));
+                .SelectMany((m) => m.GetCustomAttributes<A>(), (m,a) => ((A)a,m))
+                .Where((o) => inherit || o.Item2.DeclaringType == objectType)
+                ;
         }
     }
 }

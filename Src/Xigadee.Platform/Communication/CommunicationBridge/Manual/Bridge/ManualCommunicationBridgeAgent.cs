@@ -47,9 +47,9 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        /// <param name="mode">The desirec communication mode.</param>
+        /// <param name="mode">The desired communication mode.</param>
         /// <param name="payloadHistoryEnabled">This property specifies whether the message history should be maintained.</param>
-        /// <param name="retryAttempts">This is the number of retry delivery attemps that should be attempted. Leave this null if not required.</param>
+        /// <param name="retryAttempts">This is the number of retry delivery attempts that should be attempted. Leave this null if not required.</param>
         public ManualCommunicationBridgeAgent(CommunicationBridgeMode mode
             , bool payloadHistoryEnabled = false, int? retryAttempts = null
             ) : base(mode)

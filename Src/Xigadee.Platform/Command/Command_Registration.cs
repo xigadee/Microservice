@@ -54,7 +54,7 @@ namespace Xigadee
         /// </summary>
         protected void CommandsRegisterReflection()
         {
-            foreach (var holder in this.CommandMethodSignatures<CommandContractAttribute,CommandMethodSignature>(true))
+            foreach (var holder in this.CommandMethodSignatures<CommandContractAttribute,CommandMethodSignature>(true, mPolicy.CommandContractAttributeInherit))
                 CommandRegister(CommandChannelIdAdjust(holder.Attribute)
                     , (rq, rs) => holder.Signature.Action(rq, rs, PayloadSerializer)
                     , referenceId: holder.Reference

@@ -450,7 +450,7 @@ namespace Xigadee
         {
             MasterJobCommandsManualRegister();
 
-            foreach (var holder in this.CommandMethodSignatures<MasterJobCommandContractAttribute, CommandMethodSignature>(true))
+            foreach (var holder in this.CommandMethodSignatures<MasterJobCommandContractAttribute, CommandMethodSignature>(true, mPolicy.MasterJobCommandContractAttributeInherit))
                 CommandRegister(CommandChannelIdAdjust(holder.Attribute)
                     , (rq, rs) => holder.Signature.Action(rq, rs, PayloadSerializer)
                     , referenceId: holder.Reference
@@ -476,7 +476,7 @@ namespace Xigadee
             MasterJobSchedulesManualRegister();
 
             if (mPolicy.MasterJobScheduleReflectionSupported)
-                JobSchedulesReflectionInitialise<MasterJobScheduleAttribute>();
+                JobSchedulesReflectionInitialise<MasterJobScheduleAttribute>(mPolicy.MasterJobScheduleAttributeInherit);
         }
         #endregion
         #region MasterJobSchedulesManualRegister()

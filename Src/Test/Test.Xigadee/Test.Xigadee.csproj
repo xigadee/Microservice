@@ -83,6 +83,7 @@
     <Compile Include="Commands\CommandUnitTestBase.cs" />
     <Compile Include="Commands\SimpleCommand3.cs" />
     <Compile Include="Commands\ServiceMessageHeaderTests.cs" />
+    <Compile Include="Commands\CommandReflectionInheritanceTest.cs" />
     <Compile Include="Communication\Algorithms\MultipleClientPollSlotAllocationAlgorithmTests.cs" />
     <Compile Include="Communication\Bridge\CommunicationBridgeReroute.cs" />
     <Compile Include="Communication\Bridge\CommunicationBridgeTests.cs" />
