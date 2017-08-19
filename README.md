@@ -8,8 +8,7 @@ We found when constructing a Microservice based system, that typically much of t
 
 Xigadee provides a simple declarative programming model to speed up the construction of a Microservice (see the [15-minute Microservice](Src/Xigadee.Platform/_Docs/fifteenminuteMicroservice.md) for details). 
  
-The libraries are built using Microsoft .NET technologies, with specific accelerators for targeting Platform-as-a-Service (PaaS) technologies in the Azure stack, to help set up an application quickly. 
-
+The libraries are built using Microsoft .NET technologies, and we have specific accelerators for targeting Platform-as-a-Service (PaaS) technologies in the Azure stack.
 
 Xigadee is now open-source; released under the Apache 2 license. You are free to use it within your own commercial applications without restriction. 
 
