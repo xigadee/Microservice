@@ -50,10 +50,13 @@ namespace Xigadee
         /// <param name="mode">The desired communication mode.</param>
         /// <param name="payloadHistoryEnabled">This property specifies whether the message history should be maintained.</param>
         /// <param name="retryAttempts">This is the number of retry delivery attempts that should be attempted. Leave this null if not required.</param>
-        public ManualCommunicationBridgeAgent(CommunicationBridgeMode mode
-            , bool payloadHistoryEnabled = false, int? retryAttempts = null
+        /// <param name="fabric">This is the connection fabric. If null, then a new fabric will be created.</param>
+        public ManualCommunicationBridgeAgent(ManualFabricBridge fabric, CommunicationBridgeMode mode            
+            , bool payloadHistoryEnabled = false
+            , int? retryAttempts = null
             ) : base(mode)
         {
+            Fabric = fabric?? throw new ArgumentNullException("fabric");
             mRetryAttempts = retryAttempts;
 
             PayloadHistoryEnabled = payloadHistoryEnabled;
@@ -61,8 +64,13 @@ namespace Xigadee
             {
                 mPayloadsHistory = new ConcurrentDictionary<Guid, TransmissionPayload>();
             }
+
         }
-        #endregion
+        #endregion        
+        /// <summary>
+        /// Gets the connection fabric.
+        /// </summary>
+        public ManualFabricBridge Fabric { get; }
 
         #region GetListener()
         /// <summary>
@@ -72,7 +80,6 @@ namespace Xigadee
         public override IListener GetListener()
         {
             var listener = new ManualChannelListener();
-
             return AddListener(listener);
         }
         #endregion
@@ -84,7 +91,6 @@ namespace Xigadee
         public override ISender GetSender()
         {
             var sender = new ManualChannelSender();
-
             return AddSender(sender);
         }
         #endregion
@@ -97,6 +103,8 @@ namespace Xigadee
         protected IListener AddListener(ManualChannelListener listener)
         {
             listener.StatusChanged += Listener_StatusChanged;
+            listener.Fabric = Fabric;
+
             mListeners.Add(listener);
 
             return listener;
@@ -111,6 +119,8 @@ namespace Xigadee
         {
             sender.OnProcess += Sender_OnProcess;
             sender.StatusChanged += Sender_StatusChanged;
+            sender.Fabric = Fabric;
+
             mSenders.Add(sender);
 
             return sender;

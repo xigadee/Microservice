@@ -12,7 +12,7 @@ using Xigadee;
 namespace Test.Xigadee
 {
     /// <summary>
-    /// This class provides the basic scaffolding to allow for simple security testing from a WebApi frontend
+    /// This class provides the basic scaffolding to allow for simple security testing from a WebApi front-end
     /// to a backend Microservice.
     /// </summary>
     public abstract class SecurityScaffoldBase
@@ -25,8 +25,9 @@ namespace Test.Xigadee
 
         protected virtual void Init()
         {
-            mBridgeRequest = new ManualCommunicationBridgeAgent(CommunicationBridgeMode.RoundRobin);
-            mBridgeResponse = new ManualCommunicationBridgeAgent(CommunicationBridgeMode.Broadcast);
+            var fabric = new ManualFabricBridge();
+            mBridgeRequest = new ManualCommunicationBridgeAgent(fabric, CommunicationBridgeMode.RoundRobin);
+            mBridgeResponse = new ManualCommunicationBridgeAgent(fabric, CommunicationBridgeMode.Broadcast);
 
             mWebApi = new UnityWebApiMicroservicePipeline("Web")
                 .CallOut(WebApiConfigure)

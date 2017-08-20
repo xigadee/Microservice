@@ -22,8 +22,15 @@ namespace Xigadee
     /// <summary>
     /// This is the manual tester, primarily used for testing.
     /// </summary>
-    public class ManualChannelListener: MessagingListenerBase<ManualChannelConnection, ManualChannelMessage, ManualChannelClientHolder>
+    public class ManualChannelListener: MessagingListenerBase<ManualFabricConnection, FabricMessage, ManualChannelClientHolder>
     {
+        #region AzureConn
+        /// <summary>
+        /// This is the Azure connection class.
+        /// </summary>
+        public ManualFabricBridge Fabric { get; set; }
+        #endregion
+
         /// <summary>
         /// This override sets the default processing time to the client for incoming messages.
         /// </summary>
@@ -37,7 +44,13 @@ namespace Xigadee
 
             client.Name = mPriorityClientNamer(ChannelId, partition.Priority);
 
-            client.ClientCreate = () => new ManualChannelConnection();
+            client.ClientCreate = () =>
+            {
+                var queue = Fabric.CreateQueueClient(client.Name);
+
+                return queue;
+            };
+
             client.ClientClose = () => client.Purge();
 
             return client;

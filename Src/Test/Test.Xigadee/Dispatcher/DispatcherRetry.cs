@@ -9,8 +9,9 @@ namespace Test.Xigadee.Dispatcher
         [TestMethod]
         public void TestMethod1()
         {
-            var incoming = new ManualCommunicationBridgeAgent(CommunicationBridgeMode.RoundRobin);
-            var response = new ManualCommunicationBridgeAgent(CommunicationBridgeMode.Broadcast);
+            var fabric = new ManualFabricBridge();
+            var incoming = new ManualCommunicationBridgeAgent(fabric, CommunicationBridgeMode.RoundRobin);
+            var response = new ManualCommunicationBridgeAgent(fabric, CommunicationBridgeMode.Broadcast);
 
             ICommandInitiator init;
 

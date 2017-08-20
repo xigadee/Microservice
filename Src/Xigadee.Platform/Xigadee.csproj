@@ -126,8 +126,10 @@
     <Compile Include="Communication\CommunicationBridge\Fabric\FabricConnectionBase.cs" />
     <Compile Include="Communication\CommunicationBridge\Fabric\FabricMessage.cs" />
     <Compile Include="Communication\CommunicationBridge\ICommunicationBridgeAgent.cs" />
-    <Compile Include="Communication\CommunicationBridge\Manual\Fabric\ManualFabric.cs" />
-    <Compile Include="Communication\CommunicationBridge\Manual\Fabric\ManualFabricClient.cs" />
+    <Compile Include="Communication\CommunicationBridge\Manual\Fabric\ManualFabricBridge.cs" />
+    <Compile Include="Communication\CommunicationBridge\Manual\Fabric\ManualFabricChannel.cs" />
+    <Compile Include="Communication\CommunicationBridge\Manual\Fabric\ManualFabricConnection.cs" />
+    <Compile Include="Communication\CommunicationBridge\Manual\Fabric\ManualFabricConnectionMode.cs" />
     <Compile Include="Communication\Interfaces\IMessagingService.cs" />
     <Compile Include="Communication\Base\MessagingHarness.cs" />
     <Compile Include="Communication\CommunicationBridge\CommunicationBridgeAgent.cs" />
@@ -229,8 +231,6 @@
     <Compile Include="Communication\CommunicationBridge\Manual\ManualChannelClientHolder.cs" />
     <Compile Include="Communication\CommunicationBridge\Manual\ManualChannelListener.cs" />
     <Compile Include="Communication\CommunicationBridge\Manual\ManualChannelSender.cs" />
-    <Compile Include="Communication\CommunicationBridge\Manual\ManualChannelConnection.cs" />
-    <Compile Include="Communication\CommunicationBridge\Manual\ManualChannelMessage.cs" />
     <Compile Include="Components\Harness\ServiceHarnessDataCollection.cs" />
     <Compile Include="Components\Harness\ServiceHarness.cs" />
     <Compile Include="Components\Harness\ServiceHarnessDependencies.cs" />

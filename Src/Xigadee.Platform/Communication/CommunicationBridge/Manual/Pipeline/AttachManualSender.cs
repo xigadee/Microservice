@@ -30,6 +30,7 @@ namespace Xigadee
             where C: IPipelineChannelOutgoing<IPipeline>
         {
             sender = new ManualChannelSender();
+            sender.Fabric = new ManualFabricBridge();
 
             return cpipe.AttachSender(sender, setFromChannelProperties: setFromChannelProperties);
         }

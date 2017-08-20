@@ -4,9 +4,9 @@ Xigadee is a Microservice framework, developed by [Paul Stancer](https://github.
 The framework is based on our experience, and the knowledge gained, 
 in building large-scale distributed cloud applications for our clients over the past four years. 
 
-We found when constructing a Microservice based system, that typically much of the work is spent on building and testing the application "plumbing", i.e. messaging, monitoring, communication etc., instead of on the actual application logic. Xigadee's goal is to solve that problem. It provides a consistent approach, and a set of reusable tools, that can be applied to many types of Microservice application.
+We found when constructing a Microservice based system, that typically much of the work is spent on building and testing the application "plumbing", i.e. messaging, monitoring, communication etc., instead of the actual application logic. Xigadee's goal is to solve that problem. It provides a consistent approach - and a set of reusable tools - that can be applied to any type of Microservice application.
 
-Xigadee provides a simple declarative programming model to speed up the construction of a Microservice (see the [15-minute Microservice](Src/Xigadee.Platform/_Docs/fifteenminuteMicroservice.md) for details). 
+Xigadee utilises a simple declarative programming model that optimises the construction of a Microservice (see the [15-minute Microservice](Src/Xigadee.Platform/_Docs/fifteenminuteMicroservice.md) for details). 
  
 The libraries are built using Microsoft .NET technologies, and we have specific accelerators for targeting Platform-as-a-Service (PaaS) technologies in the Azure stack.
 
@@ -23,12 +23,12 @@ If you are new to Microservice development, then the following links gives you a
 Or if you want a quick introduction on how to build a new Microservice application using the Xigadee libraries, then read the following:
 * [The 15-minute Microservice.](Src/Xigadee.Platform/_Docs/fifteenminuteMicroservice.md)
 
-### Packages
+### NuGet Packages
 
-Xigadee is made up of a number of distinct NuGet packages, which are listed below. They support different areas of Microservice functionality. These capabilities can be added to your project through the relevant [NuGet](https://www.nuget.org/packages?q=Tags%3A%22Xigadee%22) packages. Currently Xigadee is in a pre-release state, but we are working to complete the documentation, and improve the code test coverage, so that we can provide a base line set of releases.
+Xigadee is made up of a set of libraries, which are listed below. They support different areas of Microservice functionality. These capabilities can be added to your project through the relevant [NuGet](https://www.nuget.org/packages?q=Tags%3A%22Xigadee%22) packages. 
 
 * [Xigadee](Src/Xigadee.Platform/_Docs/Introduction.md) 
-	- This is the core library that is used to create Microservice and serverless based solutions.
+	- This is the core root library that is used to create Microservice and serverless based solutions. 
 * [Xigadee Azure](Src/Xigadee.Azure/_docs/Introduction.md) 
 	- This library allows for the seamless integration with many of the Azure platform PAAS services.
 * [Xigadee Api Server](Src/Xigadee.Api.Server/_docs/Introduction.md)
@@ -38,7 +38,7 @@ Xigadee is made up of a number of distinct NuGet packages, which are listed belo
 * [Xigadee Console](Src/Xigadee.Console/_docs/Introduction.md)
 	- This package is designed to help in building simple console based test harnesses, for your Microservice applications.
 * [Xigadee Framework](Src/Xigadee.Framework/_docs/Introduction.md)
-	- This package is used to provide deeper integration in to the Windows platform.
+	- This package is used to provide deeper integration in to the Windows platform, and supports features which are not part of the .NET Standard library set.
 
 ## Legal Stuff
 

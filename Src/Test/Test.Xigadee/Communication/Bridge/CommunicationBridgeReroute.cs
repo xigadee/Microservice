@@ -22,7 +22,7 @@ namespace Test.Xigadee
         [TestMethod]
         public void TestReroute()
         {
-            var bridgeOut = new ManualCommunicationBridgeAgent(CommunicationBridgeMode.RoundRobin);
+            var bridgeOut = new ManualCommunicationBridgeAgent(new ManualFabricBridge(), CommunicationBridgeMode.RoundRobin);
             bool success = false;
             ManualResetEvent mre = new ManualResetEvent(false);
             DebugMemoryDataCollector memp1,memp2;
@@ -61,7 +61,7 @@ namespace Test.Xigadee
             p1.Start();
             p2.Start();
 
-            //Send the message to the command asyncronously.
+            //Send the message to the command asynchronously.
             p1.ToMicroservice().Dispatch.Process<IContractInitial>("Hello");
 
             mre.WaitOne();

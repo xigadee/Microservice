@@ -24,8 +24,15 @@ namespace Xigadee
     /// <summary>
     /// This class can be used to simulate the sender functionality in unit test projects.
     /// </summary>
-    public class ManualChannelSender:MessagingSenderBase<ManualChannelConnection, ManualChannelMessage, ManualChannelClientHolder>
+    public class ManualChannelSender:MessagingSenderBase<ManualFabricConnection, FabricMessage, ManualChannelClientHolder>
     {
+        #region AzureConn
+        /// <summary>
+        /// This is the Azure connection class.
+        /// </summary>
+        public ManualFabricBridge Fabric { get; set; }
+        #endregion
+
         /// <summary>
         /// Occurs when a message is sent to the sender. This event is caught and is used to map to corresponding listeners.
         /// </summary>

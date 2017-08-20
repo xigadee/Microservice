@@ -38,6 +38,7 @@ namespace Xigadee
             where C: IPipelineChannelIncoming<IPipeline>
         {
             listener = new ManualChannelListener();
+            listener.Fabric = new ManualFabricBridge();
 
             return cpipe.AttachListener(listener, setFromChannelProperties:setFromChannelProperties);
         }

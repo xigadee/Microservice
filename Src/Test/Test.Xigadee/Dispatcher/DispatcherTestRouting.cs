@@ -18,9 +18,9 @@ namespace Test.Xigadee
         DispatcherCommand mDCommand = null;
 
         const string cnChannelIn = "internalIn";
-        const string cnChannelOut = "internalOut"; 
+        const string cnChannelOut = "internalOut";
         #endregion
-        #region Init/Cleanup
+        #region TearUp/TearDown
         [TestInitialize]
         public void TearUp()
         {

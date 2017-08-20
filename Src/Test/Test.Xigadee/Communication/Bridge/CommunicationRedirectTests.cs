@@ -14,8 +14,9 @@ namespace Test.Xigadee
         {
             try
             {
-                var bridgeOut = new ManualCommunicationBridgeAgent(CommunicationBridgeMode.RoundRobin);
-                var bridgein = new ManualCommunicationBridgeAgent(CommunicationBridgeMode.Broadcast);
+                var fabric = new ManualFabricBridge();
+                var bridgeOut = new ManualCommunicationBridgeAgent(fabric, CommunicationBridgeMode.RoundRobin);
+                var bridgein = new ManualCommunicationBridgeAgent(fabric, CommunicationBridgeMode.Broadcast);
 
                 ICommandInitiator init;
                 DebugMemoryDataCollector memp1, memp2;

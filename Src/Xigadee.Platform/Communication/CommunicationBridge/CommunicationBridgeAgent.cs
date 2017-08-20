@@ -40,7 +40,7 @@ namespace Xigadee
         /// This is the default constructor. 
         /// </summary>
         /// <param name="mode">The operational mode.</param>
-        protected CommunicationBridgeAgent(CommunicationBridgeMode mode = CommunicationBridgeMode.NotUsed)
+        protected CommunicationBridgeAgent(CommunicationBridgeMode mode = CommunicationBridgeMode.NotSet)
         {
             Mode = mode;
         }

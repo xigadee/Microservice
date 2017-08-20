@@ -14,13 +14,17 @@
 // limitations under the License.
 #endregion
 
-using System.Collections.Generic;
+using System;
 using System.Threading.Tasks;
 
 namespace Xigadee
 {
     public abstract class FabricConnectionBase<M>
     {
+        /// <summary>
+        /// Gets the identifier.
+        /// </summary>
+        public Guid Id { get; } = Guid.NewGuid();
 
         //public abstract bool Enqueue(M message);
 

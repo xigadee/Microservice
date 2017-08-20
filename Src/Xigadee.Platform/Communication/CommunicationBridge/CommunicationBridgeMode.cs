@@ -32,6 +32,6 @@ namespace Xigadee
         /// <summary>
         /// The mode is not used by the agent.
         /// </summary>
-        NotUsed
+        NotSet
     }
 }
