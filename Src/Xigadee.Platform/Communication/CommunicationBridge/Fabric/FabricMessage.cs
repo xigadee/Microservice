@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Xigadee
 {
@@ -23,8 +24,13 @@ namespace Xigadee
     /// This is the base fabric message. It closely mirrors the BrokeredMessage of Service Bus to allow for simulations of functionality without the need 
     /// for a work service bus to test.
     /// </summary>
-    public abstract class FabricMessage
+    public class FabricMessage
     {
+        /// <summary>
+        /// This action is used to signal that the message can be released back to the listener.
+        /// </summary>
+        private Action<bool, Guid> mSignalRelease = null;
+
         public FabricMessage()
         {
             Id = Guid.NewGuid();
@@ -44,7 +50,25 @@ namespace Xigadee
 
         public virtual int DeliveryAttempts { get; set; } = 0;
 
-        public abstract void Signal(bool success);
+        public virtual void Signal(bool success)
+        {
+            //We only want to do this once.
+            var release = Interlocked.Exchange<Action<bool, Guid>>(ref mSignalRelease, null);
+
+            if (release != null)
+                try
+                {
+                    release(success, Id);
+                }
+                catch (Exception ex)
+                {
+                }
+        }
+
+        internal void ReleaseSet(Action<bool, Guid> release)
+        {
+            mSignalRelease = release;
+        }
 
         public virtual void Complete()
         {

@@ -7,6 +7,55 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    public class QueueHolder
+    {
+        public QueueHolder()
+        {
+            Queue = new ConcurrentQueue<FabricMessage>();
+        }
+
+        public bool Enqueue(FabricMessage message)
+        {
+            if (!(Filter?.Invoke(message) ?? true))
+                return false;
+
+            Queue.Enqueue(message);
+            return true;
+        }
+
+        private object syncDeadletter = new object();
+
+        public void DeadletterEnqueue(FabricMessage message)
+        {
+            if (Deadletter == null)
+                lock (syncDeadletter)
+                {
+                    if (Deadletter == null)
+                        Deadletter = new ConcurrentQueue<FabricMessage>();
+                }
+
+            Deadletter.Enqueue(message);
+        }
+
+        public bool TryDequeue(out FabricMessage message)
+        {
+            return Queue.TryDequeue(out message);
+        }
+
+
+        public bool TryDeadletterDequeue(out FabricMessage message)
+        {
+            message = null;
+            return Deadletter?.TryDequeue(out message) ?? false;
+        }
+
+
+        public Func<FabricMessage, bool> Filter { get; set; }
+
+        public ConcurrentQueue<FabricMessage> Queue { get; }
+
+        public ConcurrentQueue<FabricMessage> Deadletter { get; private set;}
+    }
     /// <summary>
     /// This is the manual channel.
     /// </summary>
@@ -18,7 +67,10 @@ namespace Xigadee
         private ConcurrentBag<Guid> mConnectionsTransmit;
         private ConcurrentBag<Guid> mConnectionsListen;
 
-        private ConcurrentQueue<FabricMessage> mIncoming;
+        private ConcurrentDictionary<string, QueueHolder> mOutgoing;
+
+        private const string cnDefault = "DEFAULT";
+
         #endregion
         #region Constructor
         /// <summary>
@@ -27,19 +79,26 @@ namespace Xigadee
         /// <param name="id">The channel identifier.</param>
         /// <param name="mode">The optional communication mode. If this is not set, it will be inferred from the first listening client mode.</param>
         /// <exception cref="ArgumentNullException">id</exception>
-        public ManualFabricChannel(string id, CommunicationBridgeMode? mode = null)
+        public ManualFabricChannel(string id, CommunicationBridgeMode? mode = null, int retryAttempts = 10)
         {
+            RetryAttemptsMax = retryAttempts;
             Id = id?.ToLowerInvariant() ?? throw new ArgumentNullException("id");
 
             mConnections = new ConcurrentDictionary<Guid, ManualFabricConnection>();
             mConnectionsTransmit = new ConcurrentBag<Guid>();
             mConnectionsListen = new ConcurrentBag<Guid>();
-            mIncoming = new ConcurrentQueue<FabricMessage>();
+
+            mOutgoing = new ConcurrentDictionary<string, QueueHolder>();
 
             if (mode.HasValue)
                 Mode = mode;
         } 
         #endregion
+
+        /// <summary>
+        /// This is the number of supported retry attempts.
+        /// </summary>
+        private int RetryAttemptsMax { get; }
 
         #region Id
         /// <summary>
@@ -144,19 +203,52 @@ namespace Xigadee
         {
             if (!Mode.HasValue)
                 throw new ArgumentException("Mode is not configured.");
-
+            QueueHolder queue;
             switch (Mode.Value)
             {
                 case CommunicationBridgeMode.RoundRobin:
+                    if (mOutgoing.TryGetValue(cnDefault, out queue))
+                        queue.Enqueue(message);
                     break;
                 case CommunicationBridgeMode.Broadcast:
+                    mOutgoing.Values.AsParallel().ForEach((c) => c.Enqueue(message));
                     break;
             }
         }
 
         private IEnumerable<FabricMessage> Receive(ManualFabricConnection conn, int? count)
         {
+            string queueName = (Mode == CommunicationBridgeMode.RoundRobin)?cnDefault:conn.Subscription;
+            QueueHolder queue;
+            if (mOutgoing.TryGetValue(queueName, out queue))
+            {
+                count = count ??1;
+                FabricMessage message;
+                while (count.Value > 0 && queue.TryDequeue(out message))
+                {
+                    message.ReleaseSet((success,id) => Complete(queueName, message, success, id));
+
+                    yield return message;
+                    count--;
+                }
+            }
             yield break;
+        }
+
+        private void Complete(string queueName, FabricMessage message, bool success, Guid id)
+        {
+            if (success)
+                return;
+
+            message.DeliveryAttempts++;
+            QueueHolder queue;
+            if (!mOutgoing.TryGetValue(queueName, out queue))
+                return;
+
+            if (message.DeliveryAttempts < RetryAttemptsMax)
+                queue.Enqueue(message);
+            else
+                queue.DeadletterEnqueue(message);
         }
 
         #region ConnectionAdd(ManualFabricConnection conn, CommunicationBridgeMode? validateMode = null)
@@ -165,14 +257,27 @@ namespace Xigadee
         {
             lock (syncConnection)
             {
-                if (validateMode.HasValue && Mode.HasValue && Mode != validateMode)
-                    throw new ArgumentOutOfRangeException("validateMode", $"validateMode does not match {Mode}");
-
-                if (!mConnections.TryAdd(conn.Id, conn))
-                    throw new ArgumentOutOfRangeException("conn.Id", "The connection already exists");
-
                 if (validateMode.HasValue && !Mode.HasValue)
+                {
                     Mode = validateMode;
+                }
+                else if (validateMode.HasValue && Mode.HasValue && Mode != validateMode)
+                {
+                    throw new ArgumentOutOfRangeException("validateMode", $"validateMode does not match {Mode}");
+                }
+            }
+
+            if (!mConnections.TryAdd(conn.Id, conn))
+                throw new ArgumentOutOfRangeException("conn.Id", "The connection already exists");
+
+            switch (Mode)
+            {
+                case CommunicationBridgeMode.RoundRobin:
+                    mOutgoing.TryAdd(cnDefault, new QueueHolder());
+                    break;
+                case CommunicationBridgeMode.Broadcast:
+                    mOutgoing.TryAdd(conn.Subscription.ToLowerInvariant(), new QueueHolder());
+                    break;
             }
         } 
         #endregion

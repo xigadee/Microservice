@@ -189,7 +189,7 @@ namespace Xigadee
         {
             try
             {
-                //Process each priority level in decending priority. The Levels property is already ordered correctly.
+                //Process each priority level in descending priority. The Levels property is already ordered correctly.
                 var currentColl = mClientCollection;
                 //Get a holder in the priority needed.
                 foreach (ClientPriorityHolder context in currentColl.TakeNext(TaskAvailability, pastDue))
