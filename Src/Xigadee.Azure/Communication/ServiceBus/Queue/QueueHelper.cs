@@ -33,7 +33,7 @@ namespace Xigadee
         #region QueueDescriptionGet(string cName)
         /// <summary>
         /// This is the default queue description. You should override this if you need a different
-        /// defintion.
+        /// definition.
         /// </summary>
         /// <param name="cName">The queue name.</param>
         /// <returns>Returns a QueueDescription object with the default settings.</returns>

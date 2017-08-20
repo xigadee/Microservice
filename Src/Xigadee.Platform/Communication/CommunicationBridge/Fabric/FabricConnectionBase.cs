@@ -14,16 +14,18 @@
 // limitations under the License.
 #endregion
 
-using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    /// <summary>
-    /// The default class to contain details of an entity's history.
-    /// </summary>
-    /// <typeparam name="K">The key type.</typeparam>
-    public abstract class HistoryBase<K>
-        where K: IEquatable<K>
+    public abstract class FabricConnectionBase<M>
     {
+
+        //public abstract bool Enqueue(M message);
+
+        //public abstract Task<M> DequeueAsync(int? maxCount = null);
+        //public abstract Task<IEnumerable<M>> DequeueBatchAsync(int? maxCount = null);
+
     }
 }

@@ -27,7 +27,7 @@ namespace Xigadee
     {
         #region Clone(this TransmissionPayload inPayload, Action<bool, Guid> signal, bool? traceEnabled = null)
         /// <summary>
-        /// This method seperates the payloads so that they are different objects.
+        /// This method separates the payloads so that they are different objects.
         /// </summary>
         /// <param name="inPayload">The incoming payload.</param>
         /// <param name="signal">The optional signal action.</param>

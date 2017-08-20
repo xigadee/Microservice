@@ -30,12 +30,33 @@ namespace Xigadee
     [DebuggerDisplay("ResponseCode={ResponseCode} IsSuccess={IsSuccess} IsFaulted={IsFaulted}")]
     public class RepositoryOptions
     {
+        /// <summary>
+        /// HTTP 404 code
+        /// </summary>
         public const int ResponseNotFound = 404;
+        /// <summary>
+        /// HTTP 200 code
+        /// </summary>
         public const int ResponseOK = 200;
+        /// <summary>
+        /// HTTP 403 code
+        /// </summary>
         public const int ResponseForbidden = 403;
+        /// <summary>
+        /// HTTP 409 code
+        /// </summary>
         public const int ResponseConflict = 409;
+        /// <summary>
+        /// HTTP 422 code
+        /// </summary>
         public const int ResponseSignatureFailure = 422;
+        /// <summary>
+        /// HTTP 501 code
+        /// </summary>
         public const int ResponseNotImplemented = 501;
+        /// <summary>
+        /// HTTP 406 code
+        /// </summary>
         public const int ResponseNotAcceptable = 406;
 
         /// <summary>
@@ -58,7 +79,7 @@ namespace Xigadee
         /// </summary>
         public bool RequestTransientFaultsRetry { get; set; }
         /// <summary>
-        /// This is the number of retry attemps 
+        /// This is the number of retry attempts 
         /// </summary>
         public int RequestTransientFaultsRetryAttempts { get; set; }
 
@@ -100,7 +121,7 @@ namespace Xigadee
         }
 
         /// <summary>
-        /// This helper method sets the responsse to OK.
+        /// This helper method sets the response to OK.
         /// </summary>
         public void ResponseSetOK()
         {

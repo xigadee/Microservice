@@ -33,10 +33,17 @@ namespace Xigadee
     /// </summary>
     public class SerializerState
     {
+        /// <summary>
+        /// Gets or sets the magic numbers.
+        /// </summary>
         public virtual byte[] MagicNumbers { get; set; }
-
+        /// <summary>
+        /// Gets or sets the type of the entity.
+        /// </summary>
         public virtual Type EntityType { get; set; }
-
+        /// <summary>
+        /// Gets or sets the entity.
+        /// </summary>
         public object Entity { get; set; }
     } 
     #endregion
@@ -49,9 +56,14 @@ namespace Xigadee
         where A : class
         where S : SerializerState, new()
     {
-        #region Declarations
+        #region Declarations        
+        /// <summary>
+        /// Holds the disposed state.
+        /// </summary>
         protected bool mDisposed = false;
-
+        /// <summary>
+        /// The records the supported status of the known types.
+        /// </summary>
         ConcurrentDictionary<Type, bool> mSupported;
 
         /// <summary>
@@ -107,9 +119,14 @@ namespace Xigadee
         {
             A data;
             return ValidateType(entityType, out data);
-        } 
+        }
         #endregion
 
+        /// <summary>
+        /// Creates the serializer.
+        /// </summary>
+        /// <param name="entityType">Type of the entity.</param>
+        /// <returns>The serializer.</returns>
         protected abstract A CreateSerializer(Type entityType);
 
         #region ValidateType(ChannelId entityType, out A data)
@@ -142,7 +159,7 @@ namespace Xigadee
             return value;
         }
         #endregion
-
+        #region PayloadMagicNumbers()
         /// <summary>
         /// This is the collection of byte magic numbers the the byte array will index with,
         /// </summary>
@@ -150,7 +167,8 @@ namespace Xigadee
         public virtual IEnumerable<byte[]> PayloadMagicNumbers()
         {
             yield return Identifier;
-        }
+        } 
+        #endregion
 
         #region SupportsPayloadDeserialization ...
         /// <summary>
@@ -186,8 +204,8 @@ namespace Xigadee
         /// </summary>
         /// <param name="magic">The magic byte array</param>
         /// <param name="blob">The incoming byte array</param>
-        /// <param name="index">The index point in the incoming byte array.</param>
-        /// <param name="count">The count of the data in the byte array.</param>
+        /// <param name="start">The index point in the incoming byte array.</param>
+        /// <param name="length">The count of the data in the byte array.</param>
         /// <returns>Returns true if it is a match.</returns>
         protected bool MatchMagicBytes(byte[] magic, byte[] blob, int start, int length)
         {
@@ -201,24 +219,48 @@ namespace Xigadee
             }
 
             return true; ;
-        } 
+        }
         #endregion
 
-        #region Deserialize public
+        #region Deserialize public        
+        /// <summary>
+        /// Deserializes the specified binary blob.
+        /// </summary>
+        /// <typeparam name="E">The entity type.</typeparam>
+        /// <param name="blob">The binary blob.</param>
+        /// <returns>The deserialized entity.</returns>
         public virtual E Deserialize<E>(byte[] blob)
         {
             return Deserialize<E>(blob, 0, blob.Length);
         }
-
+        /// <summary>
+        /// Deserializes the specified binary blob.
+        /// </summary>
+        /// <typeparam name="E">The entity type.</typeparam>
+        /// <param name="blob">The binary blob.</param>
+        /// <param name="start">The array start.</param>
+        /// <param name="length">The array length.</param>
+        /// <returns>The deserialized entity.</returns>
         public virtual E Deserialize<E>(byte[] blob, int start, int length)
         {
             return (E)Deserialize(blob, start, length);
         }
-
+        /// <summary>
+        /// Deserializes the specified binary blob.
+        /// </summary>
+        /// <param name="blob">The binary blob.</param>
+        /// <returns>The deserialized entity.</returns>
         public virtual object Deserialize(byte[] blob)
         {
             return Deserialize(blob, 0, blob.Length);
         }
+        /// <summary>
+        /// Deserializes the specified binary blob.
+        /// </summary>
+        /// <param name="blob">The binary blob.</param>
+        /// <param name="start">The array start.</param>
+        /// <param name="length">The array length.</param>
+        /// <returns>The deserialized entity.</returns>
 
         public virtual object Deserialize(byte[] blob, int start, int length)
         {
@@ -227,18 +269,33 @@ namespace Xigadee
             return state.Entity;
         }
         #endregion
-        #region Serialize public
-
+        #region Serialize public        
+        /// <summary>
+        /// Serializes the specified entity.
+        /// </summary>
+        /// <typeparam name="E">The entity type.</typeparam>
+        /// <param name="entity">The entity.</param>
+        /// <returns>The binary blob.</returns>
         public virtual byte[] Serialize<E>(E entity)
         {
             return Serialize((object)entity);
         }
-
+        /// <summary>
+        /// Serializes the specified entity.
+        /// </summary>
+        /// <param name="entity">The entity.</param>
+        /// <returns>The binary blob.</returns>
         public abstract byte[] Serialize(object entity);
 
         #endregion
 
-
+        /// <summary>
+        /// Deserializes the entity in to the state object.
+        /// </summary>
+        /// <param name="state">The state.</param>
+        /// <param name="blob">The incoming binary blob.</param>
+        /// <param name="index">The byte array index.</param>
+        /// <param name="count">The byte count.</param>
         protected virtual void DeserializeInternal(S state, byte[] blob, int index, int count)
         {
             using (var stream = new MemoryStream(blob, index, count, false))
@@ -260,6 +317,11 @@ namespace Xigadee
             }
         }
 
+        /// <summary>
+        /// Serializes the entity from the state object.
+        /// </summary>
+        /// <param name="state">The state.</param>
+        /// <returns>Returns the byte array.</returns>
         public virtual byte[] SerializeInternal(S state)
         {
             byte[] outBlob;
@@ -284,21 +346,37 @@ namespace Xigadee
             }
         }
 
-
+        /// <summary>
+        /// Sets the state object type.
+        /// </summary>
+        /// <param name="sr">The reader.</param>
+        /// <param name="state">The state.</param>
         protected virtual void ObjectTypeRead(BinaryReader sr, S state)
         {
             string typeName = sr.ReadString();
             state.EntityType = Type.GetType(typeName);
         }
-
+        /// <summary>
+        /// Writes the object type to the binary writer.
+        /// </summary>
+        /// <param name="sw">The binary writer.</param>
+        /// <param name="state">The state.</param>
         protected virtual void ObjectTypeWrite(BinaryWriter sw, S state)
         {
             sw.Write(state.EntityType.AssemblyQualifiedName);
         }
-
+        /// <summary>
+        /// Reads the object from the binary reader and sets it in the state.
+        /// </summary>
+        /// <param name="sr">The binary reader.</param>
+        /// <param name="state">The state.</param>
         protected abstract void ObjectRead(BinaryReader sr, S state);
 
-
+        /// <summary>
+        /// Writes the object in the state to the binary writer.
+        /// </summary>
+        /// <param name="sw">The binary writer.</param>
+        /// <param name="state">The state.</param>
         protected abstract void ObjectWrite(BinaryWriter sw, S state);
 
 

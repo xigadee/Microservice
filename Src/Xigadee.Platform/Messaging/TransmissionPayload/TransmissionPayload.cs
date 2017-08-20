@@ -172,6 +172,7 @@ namespace Xigadee
         /// internal transmission without serializing and deserializing objects between
         /// internal commands.
         /// </summary>
+        [Obsolete("This property will be removed in the next version of Xigadee")]
         public object MessageObject { get; set; }
         #endregion
 

@@ -141,9 +141,4 @@ namespace Xigadee
             public Guid Id { get { return Payload.Id; } }
         }
     }
-
-    public class CommunicationBridgeRetryPolicy
-    {
-
-    }
 }

@@ -27,7 +27,7 @@ namespace Xigadee
     public class ManualChannelSender:MessagingSenderBase<ManualChannelConnection, ManualChannelMessage, ManualChannelClientHolder>
     {
         /// <summary>
-        /// Occurs when a message is sent to the sesnder. This event is caught and is used to map to corresponding listeners.
+        /// Occurs when a message is sent to the sender. This event is caught and is used to map to corresponding listeners.
         /// </summary>
         public event EventHandler<TransmissionPayload> OnProcess;
 
@@ -42,6 +42,7 @@ namespace Xigadee
                 Collector?.LogException("ManualChannelSender/ProcessInvoke", ex);
             }
         }
+        
         /// <summary>
         /// This is the default client create logic for the manual sender.
         /// </summary>

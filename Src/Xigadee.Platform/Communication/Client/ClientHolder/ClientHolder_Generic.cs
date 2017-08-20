@@ -74,7 +74,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="message">The internal message.</param>
         /// <param name="serviceMessage">The service message to process.</param>
-        /// <returns>Returns a Trasnmission payload, with the internal signalling pointing back to the message signal function.</returns>
+        /// <returns>Returns a Transmission payload, with the internal signalling pointing back to the message signal function.</returns>
         protected virtual TransmissionPayload PayloadRegisterAndCreate(M message, ServiceMessage serviceMessage)
         {
             var payload = new TransmissionPayload(serviceMessage

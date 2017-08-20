@@ -121,11 +121,15 @@
     <Compile Include="Command\Pipeline\AssignMasterJob.cs" />
     <Compile Include="Command\Schedules\MasterJobNegotiationPollSchedule.cs" />
     <Compile Include="Communication\CommunicationBridge\CommunicationBridgeHelper.cs" />
+    <Compile Include="Communication\CommunicationBridge\CommunicationBridgeRetryPolicy.cs" />
+    <Compile Include="Communication\CommunicationBridge\Fabric\FabricBase.cs" />
+    <Compile Include="Communication\CommunicationBridge\Fabric\FabricConnectionBase.cs" />
+    <Compile Include="Communication\CommunicationBridge\Fabric\FabricMessage.cs" />
     <Compile Include="Communication\CommunicationBridge\ICommunicationBridgeAgent.cs" />
-    <Compile Include="Communication\CommunicationBridge\Manual\Bridge\ClientServerManualCommunicationBridge.cs" />
+    <Compile Include="Communication\CommunicationBridge\Manual\Fabric\ManualFabric.cs" />
+    <Compile Include="Communication\CommunicationBridge\Manual\Fabric\ManualFabricClient.cs" />
     <Compile Include="Communication\Interfaces\IMessagingService.cs" />
     <Compile Include="Communication\Base\MessagingHarness.cs" />
-    <Compile Include="Communication\CommunicationBridge\CommunicationBridge.cs" />
     <Compile Include="Communication\CommunicationBridge\CommunicationBridgeAgent.cs" />
     <Compile Include="Communication\CommunicationBridge\CommunicationBridgeMode.cs" />
     <Compile Include="Communication\Channel\ChannelRewriteRule.cs" />

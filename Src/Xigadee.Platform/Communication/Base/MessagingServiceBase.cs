@@ -51,8 +51,8 @@ namespace Xigadee
         /// </summary>
         protected Func<string, int, string> mPriorityClientNamer = (s, i) => string.Format("{0}{1}", s, i == 1 ? "" : i.ToString());
 
-        private int mClientCreate = 0;
-        private int mClientDestroy = 0;
+        private int mClientStarted = 0;
+        private int mClientStopped = 0;
         #endregion
 
         #region PriorityPartitions
@@ -203,6 +203,7 @@ namespace Xigadee
         {
             client.FabricInitialize();
             client.Start();
+            Interlocked.Increment(ref mClientStarted);
         }
         #endregion
         #region ClientCreate()
@@ -212,7 +213,6 @@ namespace Xigadee
         /// <returns>Returns the client.</returns>
         protected virtual H ClientCreate(P partition)
         {
-            Interlocked.Increment(ref mClientCreate);
             var client = new H();
 
             //Set the message Collector?.
@@ -251,14 +251,15 @@ namespace Xigadee
         /// </summary>
         protected virtual void ClientStop(H client)
         {
-            Interlocked.Increment(ref mClientDestroy);
             client.Stop?.Invoke();
+            Interlocked.Increment(ref mClientStopped);
         }
         #endregion
         #region ClientReset(H client, TransmissionException mex)
         /// <summary>
         /// This method closes and reset the fabric and the client.
         /// </summary>
+        /// <param name="client">The client to reset.</param>
         /// <param name="mex">The messaging exception.</param>
         protected virtual void ClientReset(H client, Exception mex)
         {
@@ -284,7 +285,7 @@ namespace Xigadee
                 {
                     LogExceptionLocation("ClientReset (Create)", ex);
                     attemps++;
-                    //Stand off with each attemps
+                    //Stand off with each attempts
                     Thread.Sleep(100 * attemps.Value);
                 }
             }
@@ -301,7 +302,7 @@ namespace Xigadee
         protected virtual H ClientResolve(int priority)
         {
             if ((mClients?.Count??0) == 0)
-                throw new ClientsUndefinedMessagingException($"Clients are undefined for {ChannelId}");
+                throw new ClientsUndefinedMessagingException($"No Clients are defined for {ChannelId}");
 
             if (mClients.ContainsKey(priority))
                 return mClients[priority];
@@ -352,7 +353,7 @@ namespace Xigadee
         /// <returns>A combination string.</returns>
         protected void LogExceptionLocation(string method, Exception ex)
         {
-            Collector?.LogException(string.Format("{0}/{1}", GetType().Name, method), ex);
+            Collector?.LogException($"{GetType().Name}/{method}", ex);
         }
         #endregion
 

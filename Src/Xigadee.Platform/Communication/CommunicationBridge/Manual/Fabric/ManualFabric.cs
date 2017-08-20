@@ -13,17 +13,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-
 using System;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 
 namespace Xigadee
 {
-    /// <summary>
-    /// The default class to contain details of an entity's history.
-    /// </summary>
-    /// <typeparam name="K">The key type.</typeparam>
-    public abstract class HistoryBase<K>
-        where K: IEquatable<K>
+    public class ManualFabricBridge: FabricBase<FabricMessage, ManualFabricConnection>
     {
+
     }
 }

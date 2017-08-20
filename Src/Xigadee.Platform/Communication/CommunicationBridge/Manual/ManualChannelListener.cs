@@ -24,9 +24,6 @@ namespace Xigadee
     /// </summary>
     public class ManualChannelListener: MessagingListenerBase<ManualChannelConnection, ManualChannelMessage, ManualChannelClientHolder>
     {
-        public ConcurrentQueue<TransmissionPayload> DeadLetterQueue { get; set; }
-        public ConcurrentQueue<TransmissionPayload> Queue { get; set; }
-
         /// <summary>
         /// This override sets the default processing time to the client for incoming messages.
         /// </summary>
@@ -44,6 +41,19 @@ namespace Xigadee
             client.ClientClose = () => client.Purge();
 
             return client;
+        }
+
+        /// <summary>
+        /// Injects the specified message as a binary array.
+        /// </summary>
+        /// <param name="incoming">The incoming array.</param>
+        public void Inject(byte[] incoming)
+        {
+            var message = incoming.PayloadJsonDeserialize();
+
+            var payload = new TransmissionPayload(message);
+
+            Inject(payload);
         }
 
         /// <summary>

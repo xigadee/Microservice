@@ -31,8 +31,33 @@ namespace Xigadee
     /// </summary>
     public static class ServiceMessageHelper
     {
-        #region Clone(this ServiceMessage message)
         static JsonContractSerializer sSerializer = new JsonContractSerializer();
+
+        #region PayloadJsonDeserialize(this byte[] blob)
+        /// <summary>
+        /// This method deserializes a Service Message using the blob provided.
+        /// </summary>
+        /// <param name="data">The message to deserialize.</param>
+        /// <returns>A the original message.</returns>
+        public static ServiceMessage PayloadJsonDeserialize(this byte[] data)
+        {
+            return sSerializer.Deserialize<ServiceMessage>(data);
+        }
+        #endregion
+        #region PayloadJsonSerialize(this ServiceMessage message)
+        /// <summary>
+        /// This method serializes a Service Message using a JSON serializer.
+        /// </summary>
+        /// <param name="message">The message to clone.</param>
+        /// <returns>A byte array of the original message.</returns>
+        public static byte[] PayloadJsonSerialize(this ServiceMessage message)
+        {
+            //First clone the service message.
+            return sSerializer.Serialize(message);
+        } 
+        #endregion
+
+        #region Clone(this ServiceMessage message)
         /// <summary>
         /// This method clones a Service Message using a JSON serializer.
         /// </summary>
@@ -41,9 +66,9 @@ namespace Xigadee
         public static ServiceMessage Clone(this ServiceMessage message)
         {
             //First clone the service message.
-            byte[] data = sSerializer.Serialize(message);
+            byte[] data = message.PayloadJsonSerialize();
 
-            return sSerializer.Deserialize<ServiceMessage>(data);
+            return data.PayloadJsonDeserialize();
         }
         #endregion
 
@@ -90,38 +115,7 @@ namespace Xigadee
             message.StatusDescription = statusDescription;
         }
         #endregion
-        #region DestinationSet (Obsolete)...
-        /// <summary>
-        /// This extension method sets destination.
-        /// </summary>
-        /// <param name="message">The message.</param>
-        /// <param name="channelId">The channel id.</param>
-        /// <param name="messageType">The message type.</param>
-        /// <param name="actionType">The action.</param>
-        /// <param name="priority">The optional priority. The default is 1.</param>
-        [Obsolete("Use SetDestination instead. This method changes the priority by default, which is not good practice")]
-        public static void DestinationSet(this ServiceMessage message, string channelId, string messageType, string actionType, int priority = 1)
-        {
-            message.ChannelId = channelId;
-            message.MessageType = messageType;
-            message.ActionType = actionType;
-            message.ChannelPriority = priority;
-        }
-        /// <summary>
-        /// This extension method sets destination.
-        /// </summary>
-        /// <param name="message">The message.</param>
-        /// <param name="header">The service message header.</param>
-        /// <param name="priority">The optional message priority. The default is 1.</param>
-        [Obsolete("Use SetDestination instead. This method changes the priority by default, which is not good practice")]
-        public static void DestinationSet(this ServiceMessage message, ServiceMessageHeader header, int priority = 1)
-        {
-            message.ChannelId = header.ChannelId;
-            message.MessageType = header.MessageType;
-            message.ActionType = header.ActionType;
-            message.ChannelPriority = priority;
-        }
-        #endregion
+
         #region ResponseSet...
         /// <summary>
         /// This extension method sets response destination.

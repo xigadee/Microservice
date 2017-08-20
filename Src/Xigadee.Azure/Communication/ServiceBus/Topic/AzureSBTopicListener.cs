@@ -41,7 +41,6 @@ namespace Xigadee
         /// This is the name of the subscription.
         /// </summary>
         public string mSubscriptionId { get; set; }
-
         /// <summary>
         /// This property indicates to delete the subscription when the listener stops./
         /// </summary>
@@ -238,7 +237,13 @@ namespace Xigadee
             return client;
         }
         #endregion
-
+        #region SetFilters(SubscriptionClient client, string name, string subscriptionId)
+        /// <summary>
+        /// Adds and/or removes subscription filter rules based on the current status.
+        /// </summary>
+        /// <param name="client">The client.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="subscriptionId">The subscription identifier.</param>
         protected void SetFilters(SubscriptionClient client, string name, string subscriptionId)
         {
             try
@@ -268,9 +273,15 @@ namespace Xigadee
                 Collector?.LogException(string.Format("SetFilters failed for {0}/{1}", name, subscriptionId), ex);
                 throw;
             }
-
         }
-
+        #endregion
+        #region FilterToId(SqlFilter filter)
+        /// <summary>
+        /// Converts a SQL filter to an MD5 Hash. This is to enable easy deletion when filters change.
+        /// </summary>
+        /// <param name="filter">The filter.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">FilterToId - filter cannot be null.</exception>
         protected string FilterToId(SqlFilter filter)
         {
             if (filter == null)
@@ -289,7 +300,8 @@ namespace Xigadee
 
                 return string.Format("hash{0}", id.ToString("N").ToUpperInvariant());
             }
-        }
+        } 
+        #endregion
 
         #region TearDown()
         /// <summary>
@@ -309,10 +321,5 @@ namespace Xigadee
             }
         }
         #endregion
-
-        protected override void StartInternal()
-        {
-            base.StartInternal();
-        }
     }
 }

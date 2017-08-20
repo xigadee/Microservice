@@ -14,16 +14,18 @@
 // limitations under the License.
 #endregion
 
-using System;
+using System.Collections.Generic;
 
 namespace Xigadee
 {
     /// <summary>
-    /// The default class to contain details of an entity's history.
+    /// This class is used to form the fabric used to communicate between Microservices.
     /// </summary>
-    /// <typeparam name="K">The key type.</typeparam>
-    public abstract class HistoryBase<K>
-        where K: IEquatable<K>
+    public abstract class FabricBase<M,C> 
+        where C:FabricConnectionBase<M>
     {
+
+
+
     }
 }
