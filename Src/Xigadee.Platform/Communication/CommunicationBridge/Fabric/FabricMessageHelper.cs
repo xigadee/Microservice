@@ -1,0 +1,189 @@
+﻿#region Copyright
+// Copyright Hitachi Consulting
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//    http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+#region using
+using System;
+#endregion
+namespace Xigadee
+{
+    /// <summary>
+    /// This static class is used to set the key properties to enable messages to be transmitted
+    /// over the Azure Service Bus.
+    /// </summary>
+    public static class FabricMessageHelper
+    {
+        #region AssignMessageHelpers<C>(this AzureClientHolder<C,BrokeredMessage> client)
+        /// <summary>
+        /// This extension method set the Pack, Unpack and Signal functions for Azure Service Bus support.
+        /// </summary>
+        /// <typeparam name="C">The Client Entity type.</typeparam>
+        /// <param name="client">The client to set.</param>
+        public static void AssignMessageHelpers<C>(this ManualChannelClientHolder client)
+        {
+            client.MessagePack = Pack;
+            client.MessageUnpack = Unpack;
+            client.MessageSignal = MessageSignal;
+        }
+        #endregion
+
+        #region MessageSignal(BrokeredMessage message, bool success)
+        /// <summary>
+        /// This helper method signals to the underlying fabric that the message has succeeded or failed.
+        /// </summary>
+        /// <param name="message">The fabric message.</param>
+        /// <param name="success">The message success status.</param>
+        public static void MessageSignal(FabricMessage message, bool success)
+        {
+            if (success)
+                message.Complete();
+            else
+                message.Abandon();
+        }
+        #endregion
+
+        #region ToSafeLower(string value)
+        /// <summary>
+        /// This method is to fix an issue on service bus where filters are case sensitive
+        /// but our message types and action types are not.
+        /// </summary>
+        /// <param name="value">The incoming value.</param>
+        /// <returns>The outgoing lowercase value.</returns>
+        private static string ToSafeLower(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return null;
+
+            return value.ToLowerInvariant();
+        }
+        #endregion
+
+        #region MessagePack(ServiceMessage sMessage)
+        /// <summary>
+        /// This method packs the ServiceMessage in to the FabricMessage format
+        /// for communication through the manual bus. This is used to mimic similar operations in services such as Azure Service Bus.
+        /// </summary>
+        /// <param name="payload">The payload object to convert to a FabricMessage.</param>
+        /// <returns>Returns a FabricMessage object.</returns>
+        public static FabricMessage Pack(TransmissionPayload payload)
+        {
+            ServiceMessage sMessage = payload.Message;
+            FabricMessage bMessage;
+            if (sMessage.Blob == null)
+                bMessage = new FabricMessage();
+            else
+                bMessage = new FabricMessage(sMessage.Blob);
+
+            bMessage.Properties.Add("SecuritySignature", sMessage.SecuritySignature);
+
+            bMessage.Properties.Add("OriginatorKey", sMessage.OriginatorKey);
+            bMessage.Properties.Add("OriginatorServiceId", sMessage.OriginatorServiceId);
+            bMessage.Properties.Add("OriginatorUTC", sMessage.OriginatorUTC.ToString("s", System.Globalization.CultureInfo.InvariantCulture));
+
+            bMessage.Properties.Add("ResponseChannelId", ToSafeLower(sMessage.ResponseChannelId));
+            bMessage.Properties.Add("ResponseChannelPriority", sMessage.ResponseChannelPriority.ToString());
+            bMessage.Properties.Add("ResponseMessageType", ToSafeLower(sMessage.ResponseMessageType));
+            bMessage.Properties.Add("ResponseActionType", ToSafeLower(sMessage.ResponseActionType));
+
+            //FIX: Case sensitive pattern match in ServiceBus.
+            bMessage.Properties.Add("ChannelId", ToSafeLower(sMessage.ChannelId));
+            bMessage.Properties.Add("MessageType", ToSafeLower(sMessage.MessageType));
+            bMessage.Properties.Add("ActionType", ToSafeLower(sMessage.ActionType));
+
+            bMessage.Properties.Add("IsNoop", sMessage.IsNoop ? "1" : "0");
+            bMessage.Properties.Add("IsReplay", sMessage.IsReplay ? "1" : "0");
+
+            bMessage.CorrelationId = sMessage.CorrelationServiceId;
+
+            bMessage.Properties.Add("ProcessCorrelationKey", sMessage.ProcessCorrelationKey);
+
+            bMessage.Properties.Add("CorrelationKey", sMessage.CorrelationKey);
+            bMessage.Properties.Add("CorrelationServiceId", ToSafeLower(sMessage.CorrelationServiceId));
+            bMessage.Properties.Add("CorrelationUTC", sMessage.CorrelationUTC.HasValue ? sMessage.CorrelationUTC.Value.ToString("o") : null);
+
+            bMessage.Properties.Add("DispatcherTransitCount", sMessage.DispatcherTransitCount.ToString());
+
+            bMessage.Properties.Add("Status", sMessage.Status);
+            bMessage.Properties.Add("StatusDescription", sMessage.StatusDescription);
+
+            return bMessage;
+        }
+        #endregion
+        #region MessageUnpack(BrokeredMessage bMessage)
+        /// <summary>
+        /// This method unpacks the FabricMessage message in to a generic ServiceMessage object
+        /// which can be processed by the service..
+        /// /// </summary>
+        /// <param name="bMessage">The FabricMessage to convert.</param>
+        /// <returns>Returns a generic ServiceMessage class for processing.</returns>
+        public static ServiceMessage Unpack(FabricMessage bMessage)
+        {
+            var sMessage = new ServiceMessage();
+
+            if (bMessage.Properties.ContainsKey("SecuritySignature"))
+                sMessage.SecuritySignature = bMessage.Properties["SecuritySignature"] as string;
+
+            sMessage.EnqueuedTimeUTC = bMessage.EnqueuedTimeUtc;
+
+            sMessage.OriginatorKey = bMessage.Properties["OriginatorKey"] as string;
+            sMessage.OriginatorServiceId = bMessage.Properties["OriginatorServiceId"] as string;
+            sMessage.OriginatorUTC = DateTime.Parse(bMessage.Properties["OriginatorUTC"]);
+
+            sMessage.ResponseChannelId = bMessage.Properties["ResponseChannelId"] as string;
+            if (bMessage.Properties.ContainsKey("ResponseMessageType"))
+                sMessage.ResponseMessageType = bMessage.Properties["ResponseMessageType"] as string;
+            if (bMessage.Properties.ContainsKey("ResponseActionType"))
+                sMessage.ResponseActionType = bMessage.Properties["ResponseActionType"] as string;
+
+            if (bMessage.Properties.ContainsKey("ResponseChannelPriority"))
+            {
+                string value = bMessage.Properties["ResponseChannelPriority"] as string;
+                int responsePriority;
+                if (string.IsNullOrEmpty(value) || !int.TryParse(value, out responsePriority))
+                    responsePriority = 0;
+                sMessage.ResponseChannelPriority = responsePriority;
+            }
+
+            sMessage.ChannelId = bMessage.Properties["ChannelId"] as string;
+            sMessage.MessageType = bMessage.Properties["MessageType"] as string;
+            sMessage.ActionType = bMessage.Properties["ActionType"] as string;
+
+            sMessage.IsNoop = bMessage.Properties["IsNoop"] as string == "1";
+            sMessage.IsReplay = bMessage.Properties["IsReplay"] as string == "1";
+
+            if (bMessage.Properties.ContainsKey("ProcessCorrelationKey"))
+                sMessage.ProcessCorrelationKey = bMessage.Properties["ProcessCorrelationKey"] as string;
+
+            sMessage.CorrelationKey = bMessage.Properties["CorrelationKey"] as string;
+            sMessage.CorrelationServiceId = bMessage.Properties["CorrelationServiceId"] as string;
+            DateTime serviceUTC;
+            if (bMessage.Properties.ContainsKey("CorrelationUTC") &&
+                DateTime.TryParse(bMessage.Properties["CorrelationUTC"] as string, out serviceUTC))
+                sMessage.CorrelationUTC = serviceUTC;
+
+            sMessage.DispatcherTransitCount = int.Parse(bMessage.Properties["DispatcherTransitCount"]);
+
+            sMessage.Status = bMessage.Properties["Status"] as string;
+            sMessage.StatusDescription = bMessage.Properties["StatusDescription"] as string;
+
+            sMessage.Blob = bMessage.Message;
+
+            sMessage.FabricDeliveryCount = bMessage.DeliveryCount;
+
+            return sMessage;
+        }
+        #endregion
+    }
+}

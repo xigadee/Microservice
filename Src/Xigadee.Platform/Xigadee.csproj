@@ -125,6 +125,7 @@
     <Compile Include="Communication\CommunicationBridge\Fabric\FabricBase.cs" />
     <Compile Include="Communication\CommunicationBridge\Fabric\FabricConnectionBase.cs" />
     <Compile Include="Communication\CommunicationBridge\Fabric\FabricMessage.cs" />
+    <Compile Include="Communication\CommunicationBridge\Fabric\FabricMessageHelper.cs" />
     <Compile Include="Communication\CommunicationBridge\ICommunicationBridgeAgent.cs" />
     <Compile Include="Communication\CommunicationBridge\Manual\Fabric\ManualFabricBridge.cs" />
     <Compile Include="Communication\CommunicationBridge\Manual\Fabric\ManualFabricChannel.cs" />

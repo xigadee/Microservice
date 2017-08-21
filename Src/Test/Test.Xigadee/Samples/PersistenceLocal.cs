@@ -7,15 +7,27 @@ namespace Test.Xigadee.Samples
     [TestClass]
     public class PersistenceLocal
     {
+
+        /// <summary>
+        /// This is the local class used to test persistence.
+        /// </summary>
+        public class Sample1
+        {
+            public Guid Id { get; set; } = Guid.NewGuid();
+            public Guid VersionId { get; set; } = Guid.NewGuid();
+
+            public string Message { get; set; }
+        }
+
         [TestMethod]
-        public void PersistenceLocal1()
+        public void PersistenceSingle()
         {
             try
             {
                 DebugMemoryDataCollector memp1;
                 PersistenceClient<Guid, Sample1> init;
 
-                var p1 = new MicroservicePipeline(nameof(PersistenceLocal1))
+                var p1 = new MicroservicePipeline("Local")
                     .AddDebugMemoryDataCollector(out memp1)
                     .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
                     .AddChannelIncoming("fredo")
@@ -40,7 +52,7 @@ namespace Test.Xigadee.Samples
                 //Update success
                 var rs = init.Update(sample).Result;
                 Assert.IsTrue(rs.IsSuccess);
-                //We have enabled version policy and optimitic locking so the next command should fail.
+                //We have enabled version policy and optimistic locking so the next command should fail.
                 //Update fail as old version
                 Assert.IsFalse(init.Update(sample).Result.IsSuccess);
                 //But this one should pass.
@@ -59,15 +71,6 @@ namespace Test.Xigadee.Samples
             {
                 throw;
             }
-        }
-
-        /// <summary>
-        /// This is the local class used to test persistence.
-        /// </summary>
-        public class Sample1
-        {
-            public Guid Id { get; set; } = Guid.NewGuid();
-            public Guid VersionId { get; set; } = Guid.NewGuid();
         }
     }
 }

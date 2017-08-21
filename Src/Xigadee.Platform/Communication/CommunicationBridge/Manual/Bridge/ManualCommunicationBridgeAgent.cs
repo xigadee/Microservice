@@ -47,10 +47,10 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor.
         /// </summary>
+        /// <param name="fabric">This is the connection fabric. If null, then a new fabric will be created.</param>
         /// <param name="mode">The desired communication mode.</param>
         /// <param name="payloadHistoryEnabled">This property specifies whether the message history should be maintained.</param>
         /// <param name="retryAttempts">This is the number of retry delivery attempts that should be attempted. Leave this null if not required.</param>
-        /// <param name="fabric">This is the connection fabric. If null, then a new fabric will be created.</param>
         public ManualCommunicationBridgeAgent(ManualFabricBridge fabric, CommunicationBridgeMode mode            
             , bool payloadHistoryEnabled = false
             , int? retryAttempts = null
@@ -64,7 +64,19 @@ namespace Xigadee
             {
                 mPayloadsHistory = new ConcurrentDictionary<Guid, TransmissionPayload>();
             }
+        }
 
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="mode">The desired communication mode.</param>
+        /// <param name="payloadHistoryEnabled">This property specifies whether the message history should be maintained.</param>
+        /// <param name="retryAttempts">This is the number of retry delivery attempts that should be attempted. Leave this null if not required.</param>
+        public ManualCommunicationBridgeAgent(CommunicationBridgeMode mode
+            , bool payloadHistoryEnabled = false
+            , int? retryAttempts = null
+            ) : this(new ManualFabricBridge(), mode, payloadHistoryEnabled, retryAttempts)
+        {
         }
         #endregion        
         /// <summary>

@@ -37,18 +37,22 @@ namespace Xigadee
             Properties = new Dictionary<string, string>();
         }
 
-        public FabricMessage(Guid Id, IEnumerable<(string key,string value)> properties, byte[] payload, int deliveryAttempts = 0)
+        public FabricMessage(byte[] blob):this()
         {
-
+            Message = blob;
         }
 
+        public DateTime EnqueuedTimeUtc { get; } = DateTime.UtcNow;
+
         public Guid Id { get; }
+
+        public string CorrelationId { get; set; }
 
         public virtual Dictionary<string, string> Properties { get; }
 
         public virtual byte[] Message { get; set; }
 
-        public virtual int DeliveryAttempts { get; set; } = 0;
+        public virtual int DeliveryCount { get; set; } = 0;
 
         public virtual void Signal(bool success)
         {

@@ -24,7 +24,7 @@ namespace Xigadee
     /// </summary>
     public class ManualChannelListener: MessagingListenerBase<ManualFabricConnection, FabricMessage, ManualChannelClientHolder>
     {
-        #region AzureConn
+        #region Fabric
         /// <summary>
         /// This is the Azure connection class.
         /// </summary>
@@ -44,6 +44,7 @@ namespace Xigadee
 
             client.Name = mPriorityClientNamer(ChannelId, partition.Priority);
 
+
             client.ClientCreate = () =>
             {
                 var queue = Fabric.CreateQueueClient(client.Name);
@@ -51,22 +52,12 @@ namespace Xigadee
                 return queue;
             };
 
+            //client.SupportsQueueLength = true;
+            //client.QueueLength => return Fabric.
+
             client.ClientClose = () => client.Purge();
 
             return client;
-        }
-
-        /// <summary>
-        /// Injects the specified message as a binary array.
-        /// </summary>
-        /// <param name="incoming">The incoming array.</param>
-        public void Inject(byte[] incoming)
-        {
-            var message = incoming.PayloadJsonDeserialize();
-
-            var payload = new TransmissionPayload(message);
-
-            Inject(payload);
         }
 
         /// <summary>

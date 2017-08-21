@@ -31,6 +31,7 @@ namespace Xigadee
         /// <param name="listener"></param>
         /// <param name="setFromChannelProperties"></param>
         /// <returns></returns>
+        [Obsolete("This should not be used and will be removed shortly.")]
         public static C AttachManualListener<C>(this C cpipe
             , out ManualChannelListener listener
             , bool setFromChannelProperties = true

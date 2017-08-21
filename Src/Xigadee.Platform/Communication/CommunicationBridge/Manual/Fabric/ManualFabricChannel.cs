@@ -92,13 +92,15 @@ namespace Xigadee
 
             if (mode.HasValue)
                 Mode = mode;
-        } 
+        }
         #endregion
 
+        #region RetryAttemptsMax
         /// <summary>
         /// This is the number of supported retry attempts.
         /// </summary>
-        private int RetryAttemptsMax { get; }
+        private int RetryAttemptsMax { get; } 
+        #endregion
 
         #region Id
         /// <summary>
@@ -240,12 +242,12 @@ namespace Xigadee
             if (success)
                 return;
 
-            message.DeliveryAttempts++;
+            message.DeliveryCount++;
             QueueHolder queue;
             if (!mOutgoing.TryGetValue(queueName, out queue))
                 return;
 
-            if (message.DeliveryAttempts < RetryAttemptsMax)
+            if (message.DeliveryCount < RetryAttemptsMax)
                 queue.Enqueue(message);
             else
                 queue.DeadletterEnqueue(message);

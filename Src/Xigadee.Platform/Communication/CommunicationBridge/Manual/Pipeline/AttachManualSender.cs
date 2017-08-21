@@ -24,6 +24,7 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
+        [Obsolete("This should not be used and will be removed shortly.")]
         public static C AttachManualSender<C>(this C cpipe
             , out ManualChannelSender sender
             , bool setFromChannelProperties = true)
