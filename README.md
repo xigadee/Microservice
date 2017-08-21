@@ -8,7 +8,7 @@ We found that when constructing Microservices, we could spend as much time on bu
 
 So our goal with Xigadee is to solve that challenge. To provide a consistent development approach - and more importantly a set of reusable tools – that we can apply to any type of Microservice application, while removing the drudgery and overhead of "re-inventing the Microservice-wheel", each time we construct a new distributed application.
 
-Xigadee is still a work-in-progress, we are currently getting ready to release 1.1 of the Framework. We are still working on improving the code, improving the unit-test coverage, adding new features, and providing more detailed documentation.
+Xigadee is still a work-in-progress; we are currently getting ready to release 1.1 of the Framework. We are still working on improving the code, extending the unit-test coverage, adding new features, and providing more detailed documentation.
 
 ## A quick demonstration
 
@@ -16,7 +16,7 @@ The Xigadee libraries are built using Microsoft .NET technologies, and have spec
 
 All the libraries utilise a simple declarative programming model to aid in the construction of the Microservice (see the [15-minute Microservice](Src/Xigadee.Platform/_Docs/fifteenminuteMicroservice.md) for more details). 
 
-A quick sample of code from [this](Src/Test.Xigadee/Damples/PersistenceLocal.cs) unit-test shows how a Microservice can be quickly constructed within a few lines of code. 
+A quick sample of code from [this](Src/Test/Test.Xigadee/Samples/PersistenceLocal.cs) unit test shows how a Microservice can be quickly constructed within a few lines of code. 
 ```C#
     var p1 = new MicroservicePipeline("Local")
         .AddChannelIncoming("incoming")
