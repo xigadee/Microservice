@@ -8,13 +8,11 @@ We found that when constructing Microservices, we could spend as much time on bu
 
 So our goal with Xigadee is to solve that challenge. To provide a consistent development approach - and more importantly a set of reusable tools – that we can apply to any type of Microservice application, while removing the drudgery and overhead of "re-inventing the Microservice-wheel", each time we construct a new distributed application.
 
-Xigadee is still a work-in-progress; we are currently getting ready to release 1.1 of the Framework. We are still working on improving the code, extending the unit-test coverage, adding new features, and providing more detailed documentation.
-
 ## A quick demonstration
 
 The Xigadee libraries are built using Microsoft .NET technologies, and have specific accelerators for targeting Platform-as-a-Service (PaaS) technologies in the Azure stack.
 
-All the libraries utilise a simple declarative programming model to aid in the construction of the Microservice (see the [15-minute Microservice](Src/Xigadee.Platform/_Docs/fifteenminuteMicroservice.md) for more details). 
+All the libraries utilise a simple declarative programming model to aid in the construction of the Microservice. 
 
 A quick sample of code from [this](Src/Test/Test.Xigadee/Samples/PersistenceLocal.cs) unit test shows how a Microservice can be quickly constructed within a few lines of code. 
 ```C#
@@ -49,25 +47,30 @@ or this method to use a Azure Blob Storage collection instead:
  ```C#
 .AttachPersistenceManagerAzureBlobStorage(
 ```
-### Refectoring
+<!-- ### Refectoring
 As I mentioned earlier, Xigadee is designed to allow quick rapid application development, through easy refactoring of its pipeline based code.
 
 
 ### Communication
 
-.
+. -->
+
+## Feedback
+Xigadee is in active development across a number of development projects, and is still very much a work-in-progress. We are still working on improving the code, extending the unit-test coverage, adding new features, and providing more detailed documentation.
+
+We are currently getting ready to ship release 1.1 of the Framework, which has some key improvements in creating custom application logic. Our next version will be 2.0 which will be built under the .NET Standard 2.0, which will allow Xigadee applications to work with both traditional .NET Framework libraries, but also to use the new .NET Core multi-platform capabilities.
+
+ We welcome feedback and suggestions for future versions of the Framework. More importantly, if you are using the libraries and discover a [bug](https://github.com/xigadee/Microservice/issues/new), please let us know so we can fix it.
 
 ## Quick guides
+Or if you want a more detailed introduction on the Xigadee pipeline and on how to build a new Microservice application using the libraries, then read the following:
+* [The 15-minute Microservice.](Src/Xigadee.Platform/_Docs/fifteenminuteMicroservice.md)
 
-If you are new to Microservice development, then the following links gives you an overview of Microservices and how to compose a Microservice based application.
+If you are new to Microservice development, then the following links gives you an overview of the technology and how to compose a Microservice based application.
 * [What is a Microservice?](Src/Xigadee.Platform/_Docs/WhatIsAMicroservice.md)
 * [An introduction to Xigadee.](Src/Xigadee.Platform/_Docs/Introduction.md)
 
-Or if you want a quick introduction on how to build a new Microservice application using the Xigadee libraries, then read the following:
-* [The 15-minute Microservice.](Src/Xigadee.Platform/_Docs/fifteenminuteMicroservice.md)
-
-
-### NuGet Packages
+## NuGet Packages
 
 Xigadee is made up of a set of libraries, which are listed below. They support different areas of Microservice functionality. These capabilities can be added to your project through the relevant [NuGet](https://www.nuget.org/packages?q=Tags%3A%22Xigadee%22) packages. 
 
@@ -96,9 +99,6 @@ You may obtain a copy of the License at: http://www.apache.org/licenses/LICENSE-
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and limitations under the License.
 
-## Feedback
-
-Xigadee is in active development across a number of development projects. We welcome feedback and suggestions for future versions of the Framework. More importantly, if you are using the libraries and discover a [bug](https://github.com/xigadee/Microservice/issues/new), please let us know so we can fix it.
 
 <table><tr> 
 <td><a href="http://www.hitachiconsulting.com"><img src="docs/hitachi.png" alt="Hitachi Consulting" height="50"/></a></td>   
