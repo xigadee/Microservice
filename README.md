@@ -6,32 +6,40 @@ The framework is a result of our experience - and frustration - over the past fi
 
 We found that when constructing Microservices, we could spend as much time on building and testing the repeatable "plumbing" code (messaging, monitoring, communication, security etc.) as we did on the actual application business logic. 
 
-So our goal with Xigadee is to solve that challenge. To provide a consistent development approach - and more importantly a set of reusable tools – that we can apply to any type of Microservice application, while removing the drudgery and overhead of "re-inventing the Microservice-wheel", each time we construct a new distributed application.
+So our goal with Xigadee is to solve that challenge. To provide a consistent development approach - and more importantly a set of reusable tools – that we can apply to any type of Microservice application, while removing the drudgery and overhead of "re-inventing the Microservice-wheel" each time we construct a new distributed application.
 
 ## A quick demonstration
 
-The Xigadee libraries are built using Microsoft .NET technologies, and have specific accelerators for targeting Platform-as-a-Service (PaaS) technologies in the Azure stack.
+The Xigadee libraries are built using Microsoft's .NET technology, and have specific accelerators to target Platform-as-a-Service (PaaS) technologies in the Azure stack.
 
 All the libraries utilise a simple declarative programming model to aid in the construction of the Microservice. 
 
-A quick sample of code from [this](Src/Test/Test.Xigadee/Samples/PersistenceLocal.cs) unit test shows how a Microservice can be quickly constructed within a few lines of code. 
+A quick sample of code from [this](Src/Test/Test.Xigadee/Samples/PersistenceLocal.cs) unit test shows how a Microservice can be quickly constructed within a few lines of code. This code can be found in the '_PersistenceSingle_' method:
 ```C#
-    var p1 = new MicroservicePipeline("Local")
-        .AddChannelIncoming("incoming")
-            .AttachPersistenceManagerHandlerMemory(
-                (Sample1 e) => e.Id, (s) => new Guid(s)
-                , versionPolicy: ((e) => e.VersionId.ToString("N").ToUpperInvariant(), (e) => e.VersionId = Guid.NewGuid(), true)
-                )
-            .AttachPersistenceClient(out init);
+PersistenceClient<Guid, Sample1> repo;
 
-    p1.Start();
+var p1 = new MicroservicePipeline("Local")
+    .AddChannelIncoming("request")
+        .AttachPersistenceManagerHandlerMemory(
+              keyMaker: (Sample1 e) => e.Id
+            , keyDeserializer: (s) => new Guid(s)
+            , versionPolicy: ((e) => e.VersionId.ToString("N").ToUpperInvariant(), (e) => e.VersionId = Guid.NewGuid(), true)
+        )
+        .AttachPersistenceClient(out repo)
+    .Revert()
+    ;
 
-    var sample = new Sample1(){Message="Hello mum"};
+p1.Start();
 
-    //Create
-    Assert.IsTrue(init.Create(sample).Result.IsSuccess);
-    //Read
-    Assert.IsTrue(init.Read(sample.Id).Result.IsSuccess);
+var sample = new Sample1() { Message = "Hello mom" };
+var id = sample.Id;
+//Run a set of simple version entity tests.
+//Create
+Assert.IsTrue(repo.Create(sample).Result.IsSuccess);
+//Read
+var result = repo.Read(id).Result;
+Assert.IsTrue(result.IsSuccess);
+Assert.IsTrue(result.Entity.Message == "Hello mom");
 ```
 This service creates a quick memory-based entity store for the POCO class, Sample1, that supports CRUD (Create/Read/Update/Delete) functions for the entity, with optimistic locking, and additional versioning and search methods, based on a key field (Id) and optional version field (VersionId) defined in the entity. 
 
@@ -47,13 +55,45 @@ or this method to use a Azure Blob Storage collection instead:
  ```C#
 .AttachPersistenceManagerAzureBlobStorage(
 ```
-<!-- ### Refectoring
-As I mentioned earlier, Xigadee is designed to allow quick rapid application development, through easy refactoring of its pipeline based code.
+### Refactoring
+As mentioned earlier, Xigadee is designed to allow quick rapid application development, through easy refactoring of its pipeline based code. Below we have broken the initial Microservice in to two independent services, and connected them together using a Manual communication bridge. 
+ ```C#
+//Create an internal test communication bridge
+var fabric = new ManualFabricBridge();
+var bridgeRequest = new ManualCommunicationBridgeAgent(fabric, CommunicationBridgeMode.RoundRobin);
+var bridgeResponse = new ManualCommunicationBridgeAgent(fabric, CommunicationBridgeMode.Broadcast);
 
+PersistenceClient<Guid, Sample1> repo;
 
+var p1 = new MicroservicePipeline("Server")
+    .AddChannelIncoming("request")
+        .AttachPersistenceManagerHandlerMemory(
+                keyMaker: (Sample1 e) => e.Id
+            , keyDeserializer: (s) => new Guid(s)
+            , versionPolicy: ((e) => e.VersionId.ToString("N").ToUpperInvariant(), (e) => e.VersionId = Guid.NewGuid(), true)
+            )
+        .AttachListener(bridgeRequest.GetListener())
+        .Revert()
+    .AddChannelOutgoing("response")
+        .AttachSender(bridgeResponse.GetSender())
+        ;
+
+var p2 = new MicroservicePipeline("Client")
+    .AddChannelIncoming("response")
+        .AttachListener(bridgeResponse.GetListener())
+        .Revert()
+    .AddChannelOutgoing("request")
+        .AttachSender(bridgeRequest.GetSender())
+        .AttachPersistenceClient("response",out repo)
+        .Revert()
+        ;
+
+p1.Start();
+p2.Start();
+ ```
 ### Communication
 
-. -->
+.
 
 ## Feedback
 Xigadee is in active development across a number of development projects, and is still very much a work-in-progress. We are still working on improving the code, extending the unit-test coverage, adding new features, and providing more detailed documentation.

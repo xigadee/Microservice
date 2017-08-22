@@ -322,33 +322,41 @@ namespace Xigadee
         /// <param name="force">This parameter forces the schedule to recalculate even if the next poll time is in the future.</param>
         public virtual void Recalculate(bool force = false)
         {
-            //Check whether we have a time set already, if so quit.
-            if (!force && NextExecuteTime.HasValue && NextExecuteTime.Value > DateTime.UtcNow)
-                return;
-
-            if (InitialTime.HasValue)
+            try
             {
-                NextExecuteTime = InitialTime.Value;
-                InitialWait = null;
-                InitialTime = null;
-                return;
+                //Check whether we have a time set already, if so quit.
+                if (!force && NextExecuteTime.HasValue && NextExecuteTime.Value > DateTime.UtcNow)
+                    return;
+
+                if (InitialTime.HasValue)
+                {
+                    NextExecuteTime = InitialTime.Value;
+                    InitialWait = null;
+                    InitialTime = null;
+                    return;
+                }
+
+                if (InitialWait.HasValue)
+                {
+                    NextExecuteTime = DateTime.UtcNow.Add(InitialWait.Value);
+                    InitialWait = null;
+                    InitialTime = null;
+                    return;
+                }
+
+                if (Frequency.HasValue)
+                {
+                    NextExecuteTime = DateTime.UtcNow.Add(Frequency.Value);
+                    return;
+                }
+
+                NextExecuteTime = null;
+            }
+            catch (Exception ex)
+            {
+                throw new ScheduleRecalculateException($"Schedule recalculation failed for {ScheduleType}:'{Name ?? Id.ToString("N").ToUpperInvariant()}' Active={Active} -> InitialTime:'{InitialTime}' InitialWait:'{InitialWait}' Frequency:'{Frequency}'", ex);
             }
 
-            if (InitialWait.HasValue)
-            {
-                NextExecuteTime = DateTime.UtcNow.Add(InitialWait.Value);
-                InitialWait = null;
-                InitialTime = null;
-                return;
-            }
-
-            if (Frequency.HasValue)
-            {
-                NextExecuteTime = DateTime.UtcNow.Add(Frequency.Value);
-                return;
-            }
-
-            NextExecuteTime = null;
         }
         #endregion
         #region NextExecuteTime

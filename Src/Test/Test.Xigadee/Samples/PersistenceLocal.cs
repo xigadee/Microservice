@@ -29,31 +29,30 @@ namespace Test.Xigadee.Samples
         {
             try
             {
-                DebugMemoryDataCollector memp1;
                 PersistenceClient<Guid, Sample1> repo;
 
                 var p1 = new MicroservicePipeline("Local")
-                    .AddDebugMemoryDataCollector(out memp1)
-                    .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
-                    .AddChannelIncoming("fredo")
+                    .AddChannelIncoming("request")
                         .AttachPersistenceManagerHandlerMemory(
-                            (Sample1 e) => e.Id, (s) => new Guid(s)
+                              keyMaker: (Sample1 e) => e.Id
+                            , keyDeserializer: (s) => new Guid(s)
                             , versionPolicy: ((e) => e.VersionId.ToString("N").ToUpperInvariant(), (e) => e.VersionId = Guid.NewGuid(), true)
-                            , resourceProfile: ("paul1", true)
-                            )
+                        )
                         .AttachPersistenceClient(out repo)
-                        .Revert()
-                        ;
+                    .Revert()
+                    ;
 
                 p1.Start();
 
-                var sample = new Sample1();
-
+                var sample = new Sample1() { Message = "Hello mom" };
+                var id = sample.Id;
                 //Run a set of simple version entity tests.
                 //Create
                 Assert.IsTrue(repo.Create(sample).Result.IsSuccess);
                 //Read
-                Assert.IsTrue(repo.Read(sample.Id).Result.IsSuccess);
+                var result = repo.Read(id).Result;
+                Assert.IsTrue(result.IsSuccess);
+                Assert.IsTrue(result.Entity.Message == "Hello mom");
                 //Update success
                 var rs = repo.Update(sample).Result;
                 Assert.IsTrue(rs.IsSuccess);
@@ -86,46 +85,47 @@ namespace Test.Xigadee.Samples
         {
             try
             {
-                DebugMemoryDataCollector memp1;
+                var fabric = new ManualFabricBridge();
+                var bridgeRequest = new ManualCommunicationBridgeAgent(fabric, CommunicationBridgeMode.RoundRobin);
+                var bridgeResponse = new ManualCommunicationBridgeAgent(fabric, CommunicationBridgeMode.Broadcast);
+
                 PersistenceClient<Guid, Sample1> repo;
 
-                var p1 = new MicroservicePipeline("Local")
-                    .AddDebugMemoryDataCollector(out memp1)
-                    .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
-                    .AddChannelIncoming("fredo")
+                var p1 = new MicroservicePipeline("Server")
+                    .AddChannelIncoming("request")
                         .AttachPersistenceManagerHandlerMemory(
-                            (Sample1 e) => e.Id, (s) => new Guid(s)
+                              keyMaker: (Sample1 e) => e.Id
+                            , keyDeserializer: (s) => new Guid(s)
                             , versionPolicy: ((e) => e.VersionId.ToString("N").ToUpperInvariant(), (e) => e.VersionId = Guid.NewGuid(), true)
-                            , resourceProfile: ("paul1", true)
                             )
-                        .AttachPersistenceClient(out repo)
+                        .AttachListener(bridgeRequest.GetListener())
                         .Revert()
+                    .AddChannelOutgoing("response")
+                        .AttachSender(bridgeResponse.GetSender())
                         ;
 
-
-                var p2 = new MicroservicePipeline("Local")
-                    .AddDebugMemoryDataCollector(out memp1)
-                    .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
-                    .AddChannelIncoming("fredo")
-                        .AttachPersistenceManagerHandlerMemory(
-                            (Sample1 e) => e.Id, (s) => new Guid(s)
-                            , versionPolicy: ((e) => e.VersionId.ToString("N").ToUpperInvariant(), (e) => e.VersionId = Guid.NewGuid(), true)
-                            , resourceProfile: ("paul1", true)
-                            )
-                        .AttachPersistenceClient(out repo)
+                var p2 = new MicroservicePipeline("Client")
+                    .AddChannelIncoming("response")
+                        .AttachListener(bridgeResponse.GetListener())
+                        .Revert()
+                    .AddChannelOutgoing("request")
+                        .AttachSender(bridgeRequest.GetSender())
+                        .AttachPersistenceClient("response",out repo)
                         .Revert()
                         ;
 
                 p1.Start();
                 p2.Start();
 
-                var sample = new Sample1();
-
+                var sample = new Sample1() { Message = "Hello mom" };
+                var id = sample.Id;
                 //Run a set of simple version entity tests.
                 //Create
                 Assert.IsTrue(repo.Create(sample).Result.IsSuccess);
                 //Read
-                Assert.IsTrue(repo.Read(sample.Id).Result.IsSuccess);
+                var result = repo.Read(id).Result;
+                Assert.IsTrue(result.IsSuccess);
+                Assert.IsTrue(result.Entity.Message == "Hello mom");
                 //Update success
                 var rs = repo.Update(sample).Result;
                 Assert.IsTrue(rs.IsSuccess);
@@ -143,6 +143,7 @@ namespace Test.Xigadee.Samples
                 Assert.IsFalse(repo.Read(sample.Id).Result.IsSuccess);
 
                 p1.Stop();
+                p2.Stop();
             }
             catch (Exception ex)
             {

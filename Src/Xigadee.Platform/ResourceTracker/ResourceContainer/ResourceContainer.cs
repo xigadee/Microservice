@@ -36,10 +36,9 @@ namespace Xigadee
         /// </summary>
         private ISharedService mSharedServices;
 
-        //private Dictionary<Guid, ResourceRateLimiter> mResourceRateLimiters;
-        private Dictionary<Guid, ResourceConsumer> mResourceResourceConsumer;
+        private readonly ConcurrentDictionary<Guid, ResourceConsumer> mResourceResourceConsumer;
 
-        private ConcurrentDictionary<string, ResourceStatistics> mResources;
+        private readonly ConcurrentDictionary<string, ResourceStatistics> mResources;
         #endregion
         #region Constructor
         /// <summary>
@@ -50,9 +49,7 @@ namespace Xigadee
         {
             mResources = new ConcurrentDictionary<string, ResourceStatistics>();
 
-            //mResourceRateLimiters = new Dictionary<Guid, ResourceRateLimiter>();
-
-            mResourceResourceConsumer = new Dictionary<Guid, ResourceConsumer>();
+            mResourceResourceConsumer = new ConcurrentDictionary<Guid, ResourceConsumer>();
         }
         #endregion
 
@@ -109,10 +106,10 @@ namespace Xigadee
 
             //if (mResourceRateLimiters != null)
             //    stats.RateLimiters = mResourceRateLimiters.Values.Select((v) => v.Debug).ToArray();
-        } 
+        }
         #endregion
 
-        #region ResourceCreate(ResourceProfile profile)
+        #region ResourceStatisticsCreateOrGet(ResourceProfile profile)
         /// <summary>
         /// This method adds a new resource statistic unless is already exists, in which case it returns the existing one.
         /// </summary>
@@ -142,7 +139,7 @@ namespace Xigadee
 
             var consumer = new ResourceConsumer(stats, name);
 
-            mResourceResourceConsumer.Add(consumer.ResourceId, consumer);
+            mResourceResourceConsumer.TryAdd(consumer.ResourceId, consumer);
 
             return consumer;
         } 

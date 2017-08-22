@@ -315,6 +315,7 @@
     <Compile Include="ResourceTracker\ResourceSync\Transmit\ResourceSyncTransmitCommandStatistics.cs" />
     <Compile Include="ResourceTracker\Entities\ResourceStatisticsEventType.cs" />
     <Compile Include="ResourceTracker\Entities\ResourceStatus.cs" />
+    <Compile Include="Scheduler\Exceptions\ScheduleRecalculateException.cs" />
     <Compile Include="Security\AuthenticationHandler\AuthenticationHandlerBase.cs" />
     <Compile Include="Security\AuthenticationHandler\AuthenticationHandlerId.cs" />
     <Compile Include="Security\AuthenticationHandler\JwtTokenAuthenticationHandler.cs" />

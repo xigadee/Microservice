@@ -62,7 +62,7 @@ namespace Xigadee
 
         #region Start(string group, Guid requestId)
         /// <summary>
-        /// This method tracks the start of a request and returns a profileid.
+        /// This method tracks the start of a request and returns a profile id.
         /// </summary>
         /// <param name="group">The resource group.</param>
         /// <param name="requestId">The request id.</param>
