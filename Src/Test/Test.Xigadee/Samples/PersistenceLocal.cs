@@ -10,7 +10,6 @@ namespace Test.Xigadee.Samples
     [TestClass]
     public class PersistenceLocal
     {
-
         /// <summary>
         /// This is the POCO class used to test persistence.
         /// </summary>

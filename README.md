@@ -6,7 +6,7 @@ The framework is a result of our experience - and frustration - over the past fi
 
 We found that when constructing Microservices, we could spend as much time on building and testing the repeatable "plumbing" code (messaging, monitoring, communication, security etc.) as we did on the actual application business logic. 
 
-So our goal with Xigadee is to solve that challenge. To provide a consistent development approach - and more importantly a set of reusable tools – that we can apply to any type of Microservice application, while removing the drudgery and overhead of "re-inventing the Microservice-wheel" each time we construct a new distributed application.
+So our goal with Xigadee is to solve that challenge. To provide a consistent development approach - and more importantly, a set of reusable tools that we can apply to any type of Microservice application, while removing the drudgery and overhead of "re-inventing the Microservice-wheel", each time we construct a new distributed solution.
 
 ## A quick demonstration
 
@@ -56,7 +56,7 @@ or this method to use a Azure Blob Storage collection instead:
 .AttachPersistenceManagerAzureBlobStorage(
 ```
 ### Refactoring
-As mentioned earlier, Xigadee is designed to allow quick rapid application development, through easy refactoring of its pipeline based code. Below we have broken the initial Microservice in to two independent services, and connected them together using a Manual communication bridge. 
+As mentioned earlier, Xigadee is designed to allow quick rapid application development, through easy refactoring of its pipeline based code. Below we have broken the initial Microservice in to two independent services (_PersistenceClientServer_ method on the [same test class](Src/Test/Test.Xigadee/Samples/PersistenceLocal.cs)), and connected the services together using a manual communication bridge. 
  ```C#
 //Create an internal test communication bridge
 var fabric = new ManualFabricBridge();
@@ -68,7 +68,7 @@ PersistenceClient<Guid, Sample1> repo;
 var p1 = new MicroservicePipeline("Server")
     .AddChannelIncoming("request")
         .AttachPersistenceManagerHandlerMemory(
-                keyMaker: (Sample1 e) => e.Id
+              keyMaker: (Sample1 e) => e.Id
             , keyDeserializer: (s) => new Guid(s)
             , versionPolicy: ((e) => e.VersionId.ToString("N").ToUpperInvariant(), (e) => e.VersionId = Guid.NewGuid(), true)
             )
@@ -91,6 +91,7 @@ var p2 = new MicroservicePipeline("Client")
 p1.Start();
 p2.Start();
  ```
+ The same unit tests can be run, but the system is functioning as two independent services.
 ### Communication
 
 .
