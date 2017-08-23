@@ -4,7 +4,11 @@
 
 This section details the Xigadee release versions with the features added since the initial release.
 
-### Pre-release - 1.1.x.x (ongoing)
+### Pre-release - 2.0.x.x (ongoing)
+
+This version will be porting key components over to .NET Standard 2.0 to enable Xigadee to be used in .NET Core applications. We will also be supporting .NET Framework 4.6 and higher as well.
+
+### Current Release - 1.1.x.x (August 13, 2017)
 
 This version is currently in development and contains additional support for rate limiting within the Xigadee core engine, for systems that experience heavy load. 
 
@@ -12,7 +16,7 @@ There are also a number of bug fixes around high-volume performance issues that 
 
 There are also changes around the Command object, specifically the introduction of schedule attributes to simplify the setting up of timed poll jobs. Command method and schedule attributes have also been extended to master job to simplify configuration. There are also some small breaking changes for Command event arguments, but these should not affect normal operation.
 
-### Current Release - 1.0.17160.7 (June 9, 2017)
+### Previous Release - 1.0.17160.7 (June 9, 2017)
 
 This is the current supported release. It contains all the core functionality for the Xigadee framework, and has been used in a number of internal and commercial projects. There are currently 7 NuGet packages in this release, which are detailed below:
 

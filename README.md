@@ -99,7 +99,7 @@ The [Xigadee Azure](Src/Xigadee.Azure/_docs/Introduction.md) libraries contain s
 ## Feedback
 Xigadee is in active development across a number of development projects, and is still very much a work-in-progress. We are still working on improving the code, extending the unit-test coverage, adding new features, and providing more detailed documentation.
 
-We are currently getting ready to ship release 1.1 of the Framework, which has some key improvements in creating custom application logic. Our next version will be 2.0 which will be built under the .NET Standard 2.0, which will allow Xigadee applications to work with both traditional .NET Framework libraries, but also to use the new .NET Core multi-platform capabilities.
+We are currently getting ready to ship release 1.1 of the Framework, which has some key improvements in creating custom application logic. Our next version will be 2.0 which will be built under the .NET Standard 2.0, which will allow Xigadee applications to work with both traditional .NET Framework libraries, but also to use the new .NET Core multi-platform capabilities, such as Linux and ARM based systems.
 
  We welcome feedback and suggestions for future versions of the Framework. More importantly, if you are using the libraries and discover a [bug](https://github.com/xigadee/Microservice/issues/new), please let us know so we can fix it.
 
