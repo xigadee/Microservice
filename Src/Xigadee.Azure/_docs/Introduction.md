@@ -11,7 +11,7 @@ The Xigadee Azure library contains a set of components that integrate Azure's PA
 
 ## Communication
 
-Azure contains a number of communciation services.
+Azure contains a number of communication services.
 
 ### Azure Service Bus
 

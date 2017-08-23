@@ -6,7 +6,7 @@ The framework is a result of our experience - and frustration - over the past fi
 
 We found that when constructing Microservices, we could spend as much time on building and testing the repeatable "plumbing" code (messaging, monitoring, communication, security etc.) as we did on the actual application business logic. 
 
-So our goal with Xigadee is to solve that challenge. To provide a consistent development approach - and more importantly, a set of reusable tools that we can apply to any type of Microservice application, while removing the drudgery and overhead of "re-inventing the Microservice-wheel", each time we construct a new distributed solution.
+So our goal with Xigadee is to solve that challenge. To provide a consistent development approach, and more importantly - a set of reusable tools that we can apply to any type of Microservice application - while removing the drudgery and overhead of "re-inventing the Microservice-wheel" each time we construct a new distributed solution.
 
 ## A quick demonstration
 
@@ -91,10 +91,10 @@ var p2 = new MicroservicePipeline("Client")
 p1.Start();
 p2.Start();
  ```
- The same unit tests can be run, but the system is functioning as two independent services.
+ The same unit tests can be run, but the system is now functioning as two independent services. These can now be split in to separate executables and run independently. We now need a reliable form of communication between the two services to deliver the messages being sent between them.
 ### Communication
 
-.
+The [Xigadee Azure](Src/Xigadee.Azure/_docs/Introduction.md) libraries contain specific implementations for the Azure Service Bus that can be easily applied to a Microservice pipeline.
 
 ## Feedback
 Xigadee is in active development across a number of development projects, and is still very much a work-in-progress. We are still working on improving the code, extending the unit-test coverage, adding new features, and providing more detailed documentation.
