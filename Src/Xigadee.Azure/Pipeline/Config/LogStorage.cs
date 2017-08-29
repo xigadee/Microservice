@@ -25,9 +25,14 @@ namespace Xigadee
 {
     public static partial class AzureExtensionMethods
     {
+        /// <summary>
+        /// The logging Azure storage account name
+        /// </summary>
         [ConfigSettingKey("LogStorage")]
         public const string KeyLogStorageAccountName = "LogStorageAccountName";
-
+        /// <summary>
+        /// The logging Azure storage account access key
+        /// </summary>
         [ConfigSettingKey("LogStorage")]
         public const string KeyLogStorageAccountAccessKey = "LogStorageAccountAccessKey";
 

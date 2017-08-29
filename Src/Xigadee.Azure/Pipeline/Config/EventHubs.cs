@@ -14,13 +14,6 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage.Auth;
-
 namespace Xigadee
 {
     public static partial class AzureExtensionMethods
@@ -50,12 +43,11 @@ namespace Xigadee
             var conn = eventHubsConnection ?? Configuration.EventHubsConnection();
 
             if (string.IsNullOrEmpty(conn))
-                throw new AzureConnectionException();//"Service bus connection string cannot be resolved. Please check the config settings has been set.");
+                throw new AzureConnectionException(KeyEventHubsConnection);
 
             return conn;
         }
         #endregion
-
 
         /// <summary>
         /// This extension allows the Event Hub connection values to be manually set as override parameters.

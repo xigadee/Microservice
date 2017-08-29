@@ -14,29 +14,41 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage.Auth;
 
 namespace Xigadee
 {
     public static partial class AzureExtensionMethods
     {
+        /// <summary>
+        /// The storage account connection key
+        /// </summary>
         [ConfigSettingKey("Storage")]
         public const string KeyStorageAccountName = "StorageAccountName";
-
+        /// <summary>
+        /// The storage account access key
+        /// </summary>
         [ConfigSettingKey("Storage")]
         public const string KeyStorageAccountAccessKey = "StorageAccountAccessKey";
-
+        /// <summary>
+        /// The storage account connection value.
+        /// </summary>
+        /// <param name="config">The configuration.</param>
+        /// <returns></returns>
         [ConfigSetting("Storage")]
         public static string StorageAccountName(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyStorageAccountName);
-
+        /// <summary>
+        /// The storage account access key value
+        /// </summary>
+        /// <param name="config">The configuration.</param>
+        /// <returns></returns>
         [ConfigSetting("Storage")]
         public static string StorageAccountAccessKey(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyStorageAccountAccessKey);
-
+        /// <summary>
+        /// The storage credentials.
+        /// </summary>
+        /// <param name="config">The configuration.</param>
+        /// <returns>The credentials</returns>
         [ConfigSetting("Storage")]
         public static StorageCredentials StorageCredentials(this IEnvironmentConfiguration config)
         {

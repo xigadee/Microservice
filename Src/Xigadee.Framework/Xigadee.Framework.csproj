@@ -37,6 +37,7 @@
       <HintPath>..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
@@ -53,6 +54,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="BoundaryLogger\BoundaryLoggerSql.cs" />
+    <Compile Include="Configuration\ConfigResolver\ConfigResolverAppSettings.cs" />
     <Compile Include="Helper\CpuStats.cs" />
     <Compile Include="Logger\FileStorageLoggingBase.cs" />
     <Compile Include="Persistence\ExtensionMethods.cs" />

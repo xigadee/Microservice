@@ -22,7 +22,7 @@ namespace Xigadee
         /// This is the key definition for the table storage config holder.
         /// </summary>
         [ConfigSettingKey("TableStorage")]
-        public const string KeyTableStorageConfigSASKey = "TableStorageConfigSASKey";
+        public const string KeyAzureTableStorageConfigSASKey = "AzureTableStorageConfigSASKey";
 
         /// <summary>
         /// This shortcut setting can be used to resolve the SAS key.
@@ -30,7 +30,7 @@ namespace Xigadee
         /// <param name="config">The configuration.</param>
         /// <returns>Returns the string.</returns>
         [ConfigSetting("TableStorage")]
-        public static string TableStorageConfigSASKey(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyTableStorageConfigSASKey);
+        public static string AzureTableStorageConfigSASKey(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyAzureTableStorageConfigSASKey);
 
 
     }

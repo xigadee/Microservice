@@ -1,16 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class AzureConnectionException:Exception
+    /// <summary>
+    /// This exception is thrown if Azure components are specified, but the pipeline configuration connection string has not been set.
+    /// </summary>
+    /// <seealso cref="System.Exception" />
+    public class AzureConnectionException: ConfigurationMissingSettingException
     {
-        public AzureConnectionException():base("Azure connection string is null or empty.")
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AzureConnectionException"/> class.
+        /// </summary>
+        public AzureConnectionException(string key):base(key, $"A required Azure connection string '{key}' is null or empty. Please check the config settings has been set.")
         {
-
         }
     }
 }

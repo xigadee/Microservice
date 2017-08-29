@@ -14,20 +14,20 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage.Auth;
-
 namespace Xigadee
 {
     public static partial class AzureExtensionMethods
     {
+        /// <summary>
+        /// The service bus connection configuration key
+        /// </summary>
         [ConfigSettingKey("ServiceBus")]
         public const string KeyServiceBusConnection = "ServiceBusConnection";
-
+        /// <summary>
+        /// The service bus connection configuration value
+        /// </summary>
+        /// <param name="config">The configuration collection.</param>
+        /// <returns>The defined connection value.</returns>
         [ConfigSetting("ServiceBus")]
         public static string ServiceBusConnection(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyServiceBusConnection);
 
@@ -43,7 +43,7 @@ namespace Xigadee
             var conn = serviceBusConnection ?? Configuration.ServiceBusConnection();
 
             if (string.IsNullOrEmpty(conn))
-                throw new AzureConnectionException();//"Service bus connection string cannot be resolved. Please check the config settings has been set.");
+                throw new AzureConnectionException(KeyServiceBusConnection);
 
             return conn;
         }

@@ -15,27 +15,36 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage.Auth;
 
 namespace Xigadee
 {
     public static partial class AzureExtensionMethods
     {
-
+        /// <summary>
+        /// The Application Insights key
+        /// </summary>
         [ConfigSettingKey("ApplicationInsights")]
         public const string KeyApplicationInsights = "ApplicationInsightsKey";
-
+        /// <summary>
+        /// The Application Insights logging level key
+        /// </summary>
         [ConfigSettingKey("ApplicationInsights")]
         public const string KeyApplicationInsightsLoggingLevel = "ApplicationInsightsLoggingLevel";
-
+        /// <summary>
+        /// Retrieves the Applications Insights connection value.
+        /// </summary>
+        /// <param name="config">The configuration.</param>
+        /// <param name="throwException">if set to <c>true</c> [throw exception].</param>
+        /// <returns>The value.</returns>
         [ConfigSetting("ApplicationInsights")]
         public static string ApplicationInsightsKey(this IEnvironmentConfiguration config, bool throwException = false) 
             => config.PlatformOrConfigCache(KeyApplicationInsights);
-
+        /// <summary>
+        /// Retrieves the Applications Insights logging level value.
+        /// </summary>
+        /// <param name="config">The configuration.</param>
+        /// <param name="throwException">if set to <c>true</c> [throw exception].</param>
+        /// <returns>The logging level value.</returns>
         [ConfigSetting("ApplicationInsights")]
         public static LoggingLevel ApplicationInsightsLoggingLevel(this IEnvironmentConfiguration config, bool throwException = false)
         {

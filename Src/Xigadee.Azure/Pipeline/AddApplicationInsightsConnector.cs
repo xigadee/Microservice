@@ -66,8 +66,7 @@ namespace Xigadee
         public static P AddApplicationInsightsDataCollector<P>(this P pipeline
             , Action<ApplicationInsightsDataCollector> action = null)
              where P : IPipeline
-        {
-           
+        {         
             return pipeline.AddApplicationInsightsDataCollector(
                 ec => new ApplicationInsightsDataCollector(ec.ApplicationInsightsKey()
                 , ec.ApplicationInsightsLoggingLevel())

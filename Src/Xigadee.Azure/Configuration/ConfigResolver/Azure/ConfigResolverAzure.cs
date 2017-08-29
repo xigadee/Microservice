@@ -14,12 +14,6 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Azure;
 
 namespace Xigadee
@@ -29,11 +23,24 @@ namespace Xigadee
     /// </summary>
     public class ConfigResolverAzure: ConfigResolver
     {
+        /// <summary>
+        /// Use this method to identify whether the key exists.
+        /// </summary>
+        /// <param name="key">The key to resolve</param>
+        /// <returns>
+        /// Returns true if it can resolve.
+        /// </returns>
         public override bool CanResolve(string key)
         {
             return CloudConfigurationManager.GetSetting(key) != null;
         }
-
+        /// <summary>
+        /// Use this method to get the value.
+        /// </summary>
+        /// <param name="key">The key to resolve</param>
+        /// <returns>
+        /// This is the settings value, null if not set.
+        /// </returns>
         public override string Resolve(string key)
         {
             return CloudConfigurationManager.GetSetting(key);

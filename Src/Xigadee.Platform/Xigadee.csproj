@@ -44,7 +44,6 @@
       <HintPath>..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.IdentityModel" />
     <Reference Include="System.Net" />
@@ -240,7 +239,6 @@
     <Compile Include="Components\Harness\ServiceHarnessSerializationContainer.cs" />
     <Compile Include="Components\Harness\ServiceHarnessSharedService.cs" />
     <Compile Include="Configuration\ConfigResolver\ConfigResolver.cs" />
-    <Compile Include="Configuration\ConfigResolver\ConfigResolverAppSettings.cs" />
     <Compile Include="Configuration\ConfigResolver\ConfigResolverFunction.cs" />
     <Compile Include="Configuration\ConfigResolver\ConfigResolverMemory.cs" />
     <Compile Include="Configuration\Exceptions\ConfigResolverKeyNotFoundException.cs" />
@@ -302,6 +300,7 @@
     <Compile Include="Microservice\Wrapper\SerializationWrapper.cs" />
     <Compile Include="Microservice\Wrapper\WrapperBase.cs" />
     <Compile Include="Configuration\Pipeline\ConfigurationClear.cs" />
+    <Compile Include="Pipeline\Exceptions\ConfigurationMissingSettingException.cs" />
     <Compile Include="Security\Pipeline\Encryption.cs" />
     <Compile Include="Pipeline\Extensions\Adjust\AdjustPolicyHelper.cs" />
     <Compile Include="Pipeline\Extensions\Adjust\AdjustPolicyTaskManager.cs" />
@@ -769,7 +768,6 @@
     <Folder Include="CommandPersistence\Pipeline\Add\" />
     <Folder Include="Communication\Pipeline\Debug\" />
     <Folder Include="DataCollection\Pipeline\Attach\" />
-    <Folder Include="Pipeline\Exceptions\" />
     <Folder Include="Pipeline\Extensions\Add\" />
     <Folder Include="ResourceTracker\Events\" />
     <Folder Include="ResourceTracker\Pipeline\" />

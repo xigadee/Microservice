@@ -102,17 +102,17 @@ The Azure Service Bus can be used to connect the two Microservice, like this:
 
 
 ## Feedback
-Xigadee is in active development across a number of development projects, and is still very much a work-in-progress. We are still working on improving the code, extending the unit-test coverage, adding new features, and providing more detailed documentation.
+Xigadee is in active development across a number of development projects, and is still very much a work-in-progress. We are still working on improving the code, extending the unit-test coverage, adding new features, and providing more detailed documentation and code examples.
 
-We are currently getting ready to ship release 1.1 of the Framework, which has some key improvements in creating custom application logic. Our next version will be 2.0 which will be built under the .NET Standard 2.0, which will allow Xigadee applications to work with both traditional .NET Framework libraries, but also to use the new .NET Core multi-platform capabilities, such as Linux and ARM based systems.
+We have recently shipped release 1.1 of the Framework, which has some key improvements in creating custom application logic. Our next version will be 2.0 which will be built under the .NET Standard 2.0, which will allow Xigadee applications to work with both traditional .NET Framework libraries, but also to use the new .NET Core multi-platform capabilities, such as Linux and ARM based systems.
 
- We welcome feedback and suggestions for future versions of the Framework. More importantly, if you are using the libraries and discover a [bug](https://github.com/xigadee/Microservice/issues/new), please let us know so we can fix it.
+ We welcome feedback and suggestions for future features of the Framework. More importantly, if you are using the libraries and discover a bug, please report it [here](https://github.com/xigadee/Microservice/issues/new) so we can track and fix it.
 
 ## Quick guides
-Or if you want a more detailed introduction on the Xigadee pipeline and on how to build a new Microservice application using the libraries, then read the following:
+If you want a more detailed explanation of the Xigadee pipeline, and on how to build a new Microservice application using the libraries, then read the following:
 * [The 15-minute Microservice.](Src/Xigadee.Platform/_Docs/fifteenminuteMicroservice.md)
 
-If you are new to Microservice development, then the following links gives you an overview of the technology and how to compose a Microservice based application.
+If you are new to Microservice development, then the following links gives you an overview of the technology and how a Microservice based application is composed.
 * [What is a Microservice?](Src/Xigadee.Platform/_Docs/WhatIsAMicroservice.md)
 * [An introduction to Xigadee.](Src/Xigadee.Platform/_Docs/Introduction.md)
 

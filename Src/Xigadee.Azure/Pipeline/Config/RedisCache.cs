@@ -25,9 +25,17 @@ namespace Xigadee
 {
     public static partial class AzureExtensionMethods
     {
+        /// <summary>
+        /// The Redis cache connection key
+        /// </summary>
         [ConfigSettingKey("RedisCache")]
         public const string KeyRedisCacheConnection = "RedisCacheConnection";
-
+        /// <summary>
+        /// Retrieves the Redis cache connection value
+        /// </summary>
+        /// <param name="config">The configuration.</param>
+        /// <param name="throwExceptionIfNotFound">if set to <c>true</c> [throw exception if not found].</param>
+        /// <returns>The connection value.</returns>
         [ConfigSetting("RedisCache")]
         public static string RedisCacheConnection(this IEnvironmentConfiguration config, bool throwExceptionIfNotFound = false) 
             => config.PlatformOrConfigCache(KeyRedisCacheConnection, throwExceptionIfNotFound: throwExceptionIfNotFound);

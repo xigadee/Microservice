@@ -212,7 +212,7 @@
     <Compile Include="Configuration\ConfigResolver\KeyVault\ConfigResolverKeyVault.cs" />
     <Compile Include="Configuration\ConfigResolver\Azure\ConfigResolverAzure.cs" />
     <Compile Include="Configuration\ConfigResolver\TableStorage\ConfigResolverTableStorage.cs" />
-    <Compile Include="Configuration\ConfigResolver\TableStorage\TableStorage.cs" />
+    <Compile Include="Pipeline\Config\TableStorage.cs" />
     <Compile Include="DataCollection\EventHubs\AddEventHubsDataCollector.cs" />
     <Compile Include="DataCollection\EventHubs\EventHubsDataCollectorPolicy.cs" />
     <Compile Include="DataCollection\EventHubs\EventHubsDataCollector.cs" />
@@ -235,6 +235,7 @@
     <Compile Include="DataCollection\Storage\Connector\Queue.cs" />
     <Compile Include="DataCollection\Storage\Connector\Table.cs" />
     <Compile Include="DataCollection\Storage\Pipeline\AddAzureStorageDataCollector.cs" />
+    <Compile Include="Pipeline\Config\Override\AzureConfigShortcut.cs" />
     <Compile Include="Pipeline\Config\AzureStorage.cs" />
     <Compile Include="Persistence\BlobStorage\Pipeline\AddPersistenceManagerAzureBlobStorage.cs" />
     <Compile Include="Persistence\BlobStorage\Pipeline\AttachPersistenceManagerAzureBlobStorage.cs" />
@@ -242,7 +243,6 @@
     <Compile Include="Persistence\DocumentDbSDK\Pipeline\AttachPersistenceManagerDocumentDbSdk.cs" />
     <Compile Include="Persistence\RedisCache\Pipeline\AddPersistenceManagerRedisCache.cs" />
     <Compile Include="Persistence\RedisCache\Pipeline\AttachPersistenceManagerRedisCache.cs" />
-    <Compile Include="Pipeline\Config\Encryption.cs" />
     <Compile Include="Communication\ServiceBus\Pipeline\Attach\ConfigureAzureMessagingHelper.cs" />
     <Compile Include="Exceptions\ConfigKeyVaultException.cs" />
     <Compile Include="Pipeline\AddApplicationInsightsConnector.cs" />
@@ -256,8 +256,9 @@
     <Compile Include="Pipeline\Config\ApplicationInsight.cs" />
     <Compile Include="Configuration\ConfigResolver\Azure\AzureHelper.cs" />
     <Compile Include="Pipeline\Config\EventHubs.cs" />
+    <Compile Include="Pipeline\Config\Override\AzureConfigurationOverrideSet.cs" />
     <Compile Include="Pipeline\Config\RedisCache.cs" />
-    <Compile Include="Configuration\ConfigResolver\KeyVault\KeyVault.cs" />
+    <Compile Include="Pipeline\Config\KeyVault.cs" />
     <Compile Include="Pipeline\Config\ServiceBus.cs" />
     <Compile Include="Pipeline\Config\LogStorage.cs" />
     <Compile Include="Pipeline\Config\Storage.cs" />
@@ -322,7 +323,6 @@
   <ItemGroup>
     <Folder Include="Communication\EventHubs\" />
     <Folder Include="Communication\Queue\" />
-    <Folder Include="Pipeline\Persistence\Append\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

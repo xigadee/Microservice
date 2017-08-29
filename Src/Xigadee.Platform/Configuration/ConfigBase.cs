@@ -51,14 +51,14 @@ namespace Xigadee
         /// </summary>
         public ConfigBase(int? appSettingsPriority = null)
         {
-            //Set the resolver with the override collection.
+            //Clears the resolvers and sets int.MaxValue as the override collection as a memory backed collection..
             ResolversClear();
 
             PriorityAppSettings = appSettingsPriority;
 
             //Set the default app settings config resolver.
-            if (PriorityAppSettings.HasValue)
-                ResolverSet(PriorityAppSettings.Value, new ConfigResolverAppSettings());
+            //if (PriorityAppSettings.HasValue)
+            //    ResolverSet(PriorityAppSettings.Value, new ConfigResolverAppSettings());
         }
         #endregion
 
@@ -124,7 +124,7 @@ namespace Xigadee
         /// <summary>
         /// This method sets a new resolver in the config hierarchy.
         /// </summary>
-        /// <param name="priority">The priorty level, which should be below int max.</param>
+        /// <param name="priority">The priority level, which should be below int.MaxValue.</param>
         /// <param name="resolver">The resolver.</param>
         public void ResolverSet(int priority, ConfigResolver resolver)
         {

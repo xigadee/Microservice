@@ -25,7 +25,6 @@ namespace Xigadee
     /// <summary>
     /// This resolver pulls takes configuration from the configuration manager.
     /// </summary>
-    [Obsolete("Removing for .NET Standard compatibility")]
     public class ConfigResolverAppSettings: ConfigResolver
     {
         /// <summary>
@@ -33,7 +32,6 @@ namespace Xigadee
         /// </summary>
         /// <param name="key">The key setting.</param>
         /// <returns>True if set.</returns>
-        [Obsolete("Removing for .NET Standard compatibility")]
         public override bool CanResolve(string key)
         {
             return ConfigurationManager.AppSettings[key] != null;
@@ -44,7 +42,6 @@ namespace Xigadee
         /// </summary>
         /// <param name="key">The key setting.</param>
         /// <returns>The value of the key.</returns>
-        [Obsolete("Removing for .NET Standard compatibility")]
         public override string Resolve(string key)
         {
             return ConfigurationManager.AppSettings[key];
