@@ -15,16 +15,18 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage.Auth;
 
 namespace Xigadee
 {
     public static partial class AzureExtensionMethods
     {
+        /// <summary>
+        /// Adds the Application Insights data collector.
+        /// </summary>
+        /// <typeparam name="P">The pipeline type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="collector">The collector.</param>
+        /// <returns>The pipeline.</returns>
         public static P AddApplicationInsightsDataCollector<P>(this P pipeline, ApplicationInsightsDataCollector collector)
             where P: IPipeline
         {
@@ -32,7 +34,15 @@ namespace Xigadee
 
             return pipeline;
         }
-
+        /// <summary>
+        /// Adds the Application Insights data collector.
+        /// </summary>
+        /// <typeparam name="P">The pipeline type.</typeparam>
+        /// <typeparam name="L">The collector type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="creator">The creator function.</param>
+        /// <param name="action">The post-creation action.</param>
+        /// <returns>The pipeline.</returns>
         public static P AddApplicationInsightsDataCollector<P,L>(this P pipeline
             , Func<IEnvironmentConfiguration, L> creator, Action<L> action = null)
             where P : IPipeline
@@ -46,13 +56,18 @@ namespace Xigadee
 
             return pipeline;
         }
-
+        /// <summary>
+        /// Adds the Application Insights data collector.
+        /// </summary>
+        /// <typeparam name="P">The pipeline type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="action">The post-creation action.</param>
+        /// <returns>The pipeline.</returns>
         public static P AddApplicationInsightsDataCollector<P>(this P pipeline
             , Action<ApplicationInsightsDataCollector> action = null)
              where P : IPipeline
         {
-
-            
+           
             return pipeline.AddApplicationInsightsDataCollector(
                 ec => new ApplicationInsightsDataCollector(ec.ApplicationInsightsKey()
                 , ec.ApplicationInsightsLoggingLevel())

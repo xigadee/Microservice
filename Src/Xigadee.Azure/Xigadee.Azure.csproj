@@ -246,8 +246,6 @@
     <Compile Include="Communication\ServiceBus\Pipeline\Attach\ConfigureAzureMessagingHelper.cs" />
     <Compile Include="Exceptions\ConfigKeyVaultException.cs" />
     <Compile Include="Pipeline\AddApplicationInsightsConnector.cs" />
-    <Compile Include="Pipeline\AddAzureStorageEventSource.cs" />
-    <Compile Include="Pipeline\AddAzureStorageLogger.cs" />
     <Compile Include="Persistence\DocumentDbSDK\SDKHelper.cs" />
     <Compile Include="Communication\ServiceBus\Pipeline\Attach\AttachAzureServiceBusQueueListener.cs" />
     <Compile Include="Communication\ServiceBus\Pipeline\Attach\AttachAzureServiceBusQueueSender.cs" />

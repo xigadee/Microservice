@@ -6,7 +6,13 @@
 </table>
 
 # Security
+The Xigadee framework has been developed to ensure a highest degree of security when constructing a distributed application.
 
+This includes in-flight encryption of transmission messaging, and a detailed support to ensure encrypted logging and storage of sensitive information.
+
+The framework also uses JWT token based authentication as its default mechanism for authenticating not just web based clients, but for authenticating communication between Microservices.
+
+This is done through intuitive pipeline-based configuration commands.
 <table><tr> 
 <td><a href="http://www.hitachiconsulting.com"><img src="../../../docs/hitachi.png" alt="Hitachi Consulting" height="50"/></a></td> 
 <td>Created by: <a href="http://github.com/paulstancer">Paul Stancer</a></td>

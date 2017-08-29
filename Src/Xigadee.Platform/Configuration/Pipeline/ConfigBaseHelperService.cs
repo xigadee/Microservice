@@ -44,7 +44,7 @@ namespace Xigadee
         public const string KeyServiceDisabled = "ServiceDisabled";
 
         /// <summary>
-        /// This is the configuration shortcut that checks whether the service is marked as diabled.
+        /// This is the configuration shortcut that checks whether the service is marked as disabled.
         /// </summary>
         /// <param name="config">The configuration collection.</param>
         /// <returns>The setting value.</returns>
@@ -58,7 +58,7 @@ namespace Xigadee
         [ConfigSetting("Service")]
         public static string Client(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyClient);
         /// <summary>
-        /// This is the shortcut for the configuration setting for the the environment name.
+        /// This is the shortcut for the configuration setting for the environment name.
         /// </summary>
         /// <param name="config">The configuration collection.</param>
         /// <returns>The setting value.</returns>

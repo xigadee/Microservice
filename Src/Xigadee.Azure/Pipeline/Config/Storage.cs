@@ -52,7 +52,7 @@ namespace Xigadee
         /// <param name="pipeline">The incoming pipeline.</param>
         /// <param name="storageAccountName">The storage account name.</param>
         /// <param name="storageAccountAccessKey">The storage account key.</param>
-        /// <returns>The passthrough of the pipeline.</returns>
+        /// <returns>The pass-through of the pipeline.</returns>
         public static P ConfigOverrideSetAzureStorage<P>(this P pipeline, string storageAccountName, string storageAccountAccessKey)
             where P : IPipeline
         {

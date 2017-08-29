@@ -22,7 +22,9 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-
+    /// <summary>
+    /// This helper class is connected to the DocumentDb REST service settings.
+    /// </summary>
     public static class ConfigBaseHelperDocumentDb
     {
         /// <summary>

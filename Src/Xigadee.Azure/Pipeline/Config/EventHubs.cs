@@ -62,7 +62,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="pipeline">The incoming pipeline.</param>
         /// <param name="connection">The Event Hub connection.</param>
-        /// <returns>The passthrough of the pipeline.</returns>
+        /// <returns>The pass-through of the pipeline.</returns>
         public static P ConfigOverrideSetEventHubsConnection<P>(this P pipeline, string connection)
             where P : IPipeline
         {

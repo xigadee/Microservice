@@ -29,6 +29,8 @@ Azure contains a number of communication services.
 
 ### Event Hubs
 
+### SQL Server
+
 ## Data Collection and Monitoring
 
 ### Azure Application Insights
@@ -44,7 +46,7 @@ Azure contains a number of communication services.
 
 ## What's new
 
-All released now as core code for Release 1.0.17160.7
+All released now as core code for Release 1.1
 
 <table><tr> 
 <td><a href="http://www.hitachiconsulting.com"><img src="../../../docs/hitachi.png" alt="Hitachi Consulting" height="50"/></a></td> 

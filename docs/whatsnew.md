@@ -6,7 +6,7 @@ This section details the current Xigadee release versions with the features adde
 
 ### Pre-release - 2.0.x.x (ongoing)
 
-This version will be porting key components over to .NET Standard 2.0 to enable Xigadee to be used in .NET Core applications. We will also be supporting .NET Framework 4.6 and higher as well.
+This is the current development version, and we will be porting key components over to .NET Standard 2.0 to enable Xigadee to be used in .NET Core applications. We will also be supporting .NET Framework 4.6 and higher as well. There will be a number of breaking changes to the Manual Communication Bridge and to the Configuration settings as we will have to remove the reference to ConfigurationManager.
 
 ### Current Release - 1.1.17235.1 (August 23, 2017)
 

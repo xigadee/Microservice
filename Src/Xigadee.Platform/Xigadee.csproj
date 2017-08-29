@@ -301,7 +301,8 @@
     <Compile Include="Microservice\Wrapper\SecurityWrapper.cs" />
     <Compile Include="Microservice\Wrapper\SerializationWrapper.cs" />
     <Compile Include="Microservice\Wrapper\WrapperBase.cs" />
-    <Compile Include="Pipeline\Configuration\ConfigurationClear.cs" />
+    <Compile Include="Configuration\Pipeline\ConfigurationClear.cs" />
+    <Compile Include="Security\Pipeline\Encryption.cs" />
     <Compile Include="Pipeline\Extensions\Adjust\AdjustPolicyHelper.cs" />
     <Compile Include="Pipeline\Extensions\Adjust\AdjustPolicyTaskManager.cs" />
     <Compile Include="ResourceTracker\Interfaces\IResourceMetric.cs" />
@@ -351,8 +352,8 @@
     <Compile Include="Security\Pipeline\Attach\AttachTransportPayloadVerification.cs" />
     <Compile Include="Security\Pipeline\Attach\AttachTransportPayloadSignature.cs" />
     <Compile Include="Security\Pipeline\Attach\AttachTransportPayloadDecryption.cs" />
-    <Compile Include="Pipeline\Extensions\Configuration\ConfigAssertKeyExists.cs" />
-    <Compile Include="Pipeline\Extensions\Configuration\ConfigAssertKeyNotPresentException.cs" />
+    <Compile Include="Configuration\Pipeline\ConfigAssertKeyExists.cs" />
+    <Compile Include="Configuration\Pipeline\Exceptions\ConfigAssertKeyNotPresentException.cs" />
     <Compile Include="Security\Exceptions\AuthenticationHandler\AuthenticationHandlerAlreadyExistsException.cs" />
     <Compile Include="Security\Exceptions\Encryption\EncryptionHandlerAlreadyExistsException.cs" />
     <Compile Include="Security\Exceptions\Channel\ChannelEncryptionHandlerNotResolvedException.cs" />
@@ -421,8 +422,8 @@
     <Compile Include="Communication\Pipeline\ChannelPipelineIncoming.cs" />
     <Compile Include="Communication\Pipeline\ChannelPipelineOutgoing.cs" />
     <Compile Include="Communication\Pipeline\Inspect.cs" />
-    <Compile Include="Pipeline\Configuration\ConfigBaseHelperDocumentDb.cs" />
-    <Compile Include="Pipeline\Configuration\ConfigBaseHelperService.cs" />
+    <Compile Include="CommandPersistence\Server\DocumentDb\Pipeline\ConfigBaseHelperDocumentDb.cs" />
+    <Compile Include="Configuration\Pipeline\ConfigBaseHelperService.cs" />
     <Compile Include="Configuration\Attributes\ConfigKeySettingNameAttribute.cs" />
     <Compile Include="Interfaces\IEnvironmentConfiguration.cs" />
     <Compile Include="Command\Attributes\CommandContract\CommandContractAttribute.cs" />
@@ -466,9 +467,9 @@
     <Compile Include="Communication\Pipeline\Add\AddSender.cs" />
     <Compile Include="Pipeline\Extensions\Adjust\AdjustPolicy.cs" />
     <Compile Include="Pipeline\Extensions\Condition.cs" />
-    <Compile Include="Pipeline\Extensions\Configuration\ConfigResolverSet.cs" />
-    <Compile Include="Pipeline\Extensions\Configuration\ConfigResolversClear.cs" />
-    <Compile Include="Pipeline\Extensions\Configuration\ConfigurationOverrideSet.cs" />
+    <Compile Include="Configuration\Pipeline\ConfigResolverSet.cs" />
+    <Compile Include="Configuration\Pipeline\ConfigResolversClear.cs" />
+    <Compile Include="Configuration\Pipeline\ConfigurationOverrideSet.cs" />
     <Compile Include="Pipeline\Extensions\Stop.cs" />
     <Compile Include="Pipeline\Extensions\Ability.cs" />
     <Compile Include="Pipeline\Interfaces\IPipelineBase.cs" />
@@ -770,7 +771,6 @@
     <Folder Include="DataCollection\Pipeline\Attach\" />
     <Folder Include="Pipeline\Exceptions\" />
     <Folder Include="Pipeline\Extensions\Add\" />
-    <Folder Include="Pipeline\Extensions\Attach\" />
     <Folder Include="ResourceTracker\Events\" />
     <Folder Include="ResourceTracker\Pipeline\" />
     <Folder Include="Security\Jwt\Interfaces\" />

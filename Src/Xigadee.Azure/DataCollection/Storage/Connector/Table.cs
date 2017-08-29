@@ -54,7 +54,7 @@ namespace Xigadee
         }
 
         /// <summary>
-        /// This method initiialises the table storage connector.
+        /// This method initialises the table storage connector.
         /// </summary>
         public override void Initialize()
         {

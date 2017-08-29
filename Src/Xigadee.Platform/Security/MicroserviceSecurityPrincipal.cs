@@ -1,5 +1,4 @@
-﻿
-#region Copyright
+﻿#region Copyright
 // Copyright Hitachi Consulting
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,12 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using Xigadee;
-
 
 namespace Xigadee
 {
@@ -29,19 +24,33 @@ namespace Xigadee
     /// </summary>
     public class MicroserviceSecurityPrincipal:ClaimsPrincipal
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MicroserviceSecurityPrincipal"/> class.
+        /// </summary>
         public MicroserviceSecurityPrincipal()
         {
 
         }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MicroserviceSecurityPrincipal"/> class.
+        /// </summary>
+        /// <param name="incoming">The incoming token.</param>
         public MicroserviceSecurityPrincipal(JwtToken incoming):base(new MicroserviceIdentity(incoming))
         {
 
         }
     }
 
+    /// <summary>
+    /// This class holds the identity of the party specified in the token.
+    /// </summary>
+    /// <seealso cref="System.Security.Claims.ClaimsIdentity" />
     public class MicroserviceIdentity: ClaimsIdentity
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MicroserviceIdentity"/> class.
+        /// </summary>
+        /// <param name="incoming">The incoming token that holds the claims.</param>
         public MicroserviceIdentity(JwtToken incoming)
         {
             incoming.Claims

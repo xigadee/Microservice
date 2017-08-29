@@ -55,7 +55,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="pipeline">The incoming pipeline.</param>
         /// <param name="connection">The Service Bus connection.</param>
-        /// <returns>The passthrough of the pipeline.</returns>
+        /// <returns>The pass-through of the pipeline.</returns>
         public static P ConfigOverrideSetServiceBusConnection<P>(this P pipeline, string connection)
             where P : IPipeline
         {

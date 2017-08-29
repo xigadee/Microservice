@@ -94,7 +94,12 @@ p2.Start();
  The same unit tests can be run, but the system is now functioning as two independent services. These can now be split in to separate executables and run independently. We now need a reliable form of communication between the two services to deliver the messages being sent between them.
 ### Communication
 
-The [Xigadee Azure](Src/Xigadee.Azure/_docs/Introduction.md) libraries contain specific implementations for the Azure Service Bus that can be easily applied to a Microservice pipeline.
+The [Xigadee Azure](Src/Xigadee.Azure/_docs/Introduction.md) libraries contain specific accelerators for the Azure Service Bus that can be simply applied to a Microservice pipeline.
+
+The Azure Service Bus can be used to connect the two Microservice, like this:
+
+
+
 
 ## Feedback
 Xigadee is in active development across a number of development projects, and is still very much a work-in-progress. We are still working on improving the code, extending the unit-test coverage, adding new features, and providing more detailed documentation.

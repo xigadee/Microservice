@@ -7,9 +7,9 @@
 
 # Configuration
 
-Xigadee configuration is built to be flexible and to support multiple configuration layers from different mechanisms, and to prioitise them by setting a prioirty to the specific configuration level.
+Xigadee configuration is built to be flexible and to support multiple configuration layers from different mechanisms, and to prioritise them by setting a priority to the specific configuration level.
 
-At the root of the Xiagdee configuration stack is the usual app.config or web.config file. 
+At the root of the Xigadee configuration stack is the usual app.config or web.config file. 
 This is what most apps will use by default, but this can be extended to support mechanisms such as Azure KeyVault, 
 Table storage, SQL databases.
 

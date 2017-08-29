@@ -32,13 +32,11 @@ namespace Xigadee
         private readonly ClientCredential mclientCredential;
         private AuthenticationResult mAuthenticationResult;
 
-        public int NumberOfRetries { get; set; } = 5;
-
         /// <summary>
         /// This is the default constructor.
         /// </summary>
         /// <param name="clientCredential">The client credentials</param>
-        /// <param name="secretBaseUri">The uri.</param>
+        /// <param name="secretBaseUri">The Uri.</param>
         public ConfigResolverKeyVault(ClientCredential clientCredential, string secretBaseUri)
         {
             if (clientCredential == null)
@@ -51,16 +49,43 @@ namespace Xigadee
             mSecretBaseUri = new Uri(secretBaseUri);
         }
 
+
+        /// <summary>
+        /// Gets or sets the number of retry attempts when trying to retrieve a value token.
+        /// </summary>
+        public int NumberOfRetries { get; set; } = 5;
+
+        /// <summary>
+        /// Use this method to get the value from the specific resolver.
+        /// </summary>
+        /// <param name="key">The key to resolve</param>
+        /// <returns>
+        /// Returns true if it can resolve.
+        /// </returns>
         public override bool CanResolve(string key)
         {
             return GetValue(key, NumberOfRetries).Result != null;
         }
-
+        /// <summary>
+        /// Use this method to get the value from the specific resolver.
+        /// </summary>
+        /// <param name="key">The key to resolve</param>
+        /// <returns>
+        /// This is the settings value, null if not set.
+        /// </returns>
         public override string Resolve(string key)
         {
             return GetValue(key, NumberOfRetries).Result;
         }
-
+        /// <summary>
+        /// Gets the token from KeyVault.
+        /// </summary>
+        /// <param name="authority">The authority.</param>
+        /// <param name="resource">The resource.</param>
+        /// <param name="scope">The scope.</param>
+        /// <param name="remainingRetries">The remaining retries.</param>
+        /// <returns>Returns the value token as a string, as part of an async request</returns>
+        /// <exception cref="ConfigKeyVaultException"></exception>
         protected async Task<string> GetToken(string authority, string resource, string scope, int remainingRetries)
         {
             try
@@ -84,7 +109,13 @@ namespace Xigadee
                 return await GetToken(authority, resource, scope, --remainingRetries);
             }
         }
-
+        /// <summary>
+        /// Gets the value from the KeyVault client.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="remainingRetries">The remaining retries.</param>
+        /// <returns>Returns the value token as a string, as part of an async request</returns>
+        /// <exception cref="ConfigKeyVaultException"></exception>
         protected async Task<string> GetValue(string key, int remainingRetries)
         {
             Exception exception;
@@ -121,6 +152,7 @@ namespace Xigadee
 
             // Try again after waiting to give transient errors 
             await Task.Delay(TimeSpan.FromSeconds(NumberOfRetries - remainingRetries));
+
             return await GetValue(key, --remainingRetries);
         }
     }

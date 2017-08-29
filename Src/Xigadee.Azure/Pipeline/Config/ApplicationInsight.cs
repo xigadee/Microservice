@@ -53,7 +53,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="pipeline">The incoming pipeline.</param>
         /// <param name="keyApplicationInsights">The Application Insights Key.</param>
-        /// <returns>The passthrough of the pipeline.</returns>
+        /// <returns>The pass-through of the pipeline.</returns>
         public static P ConfigOverrideSetApplicationInsightsKey<P>(this P pipeline, string keyApplicationInsights)
             where P : IPipeline
         {
@@ -66,7 +66,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="pipeline">The incoming pipeline.</param>
         /// <param name="applicationInsightsLoggingLevel">The Application Insights Logging Level.</param>
-        /// <returns>The passthrough of the pipeline.</returns>
+        /// <returns>The pass-through of the pipeline.</returns>
         public static P ConfigOverrideSetApplicationInsightsLoggingLevel<P>(this P pipeline, LoggingLevel applicationInsightsLoggingLevel)
             where P : IPipeline
         {

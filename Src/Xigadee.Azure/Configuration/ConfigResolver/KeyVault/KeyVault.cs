@@ -14,36 +14,53 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using Microsoft.WindowsAzure.Storage.Auth;
 
 namespace Xigadee
 {
     public static partial class AzureExtensionMethods
     {
+        /// <summary>
+        /// The reserved keyword for the KeyVault client identifier
+        /// </summary>
         [ConfigSettingKey("KeyVault")]
         public const string KeyKeyVaultClientId = "KeyVaultClientId";
-
+        /// <summary>
+        /// The reserved keyword for the KeyVault client secret
+        /// </summary>
         [ConfigSettingKey("KeyVault")]
         public const string KeyKeyVaultClientSecret = "KeyVaultClientSecret";
-
+        /// <summary>
+        /// The reserved keyword for the KeyVault secret base URI
+        /// </summary>
         [ConfigSettingKey("KeyVault")]
         public const string KeyKeyVaultSecretBaseUri = "KeyVaultSecretBaseUri";
-
+        /// <summary>
+        /// Retrieves the KeyVault client identifier.
+        /// </summary>
+        /// <param name="config">The configuration.</param>
+        /// <returns>The client id value.</returns>
         [ConfigSetting("KeyVault")]
         public static string KeyVaultClientId(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyKeyVaultClientId);
-
+        /// <summary>
+        /// Retrieves the KeyVault client secret.
+        /// </summary>
+        /// <param name="config">The configuration.</param>
+        /// <returns>The client secret.</returns>
         [ConfigSetting("KeyVault")]
         public static string KeyVaultClientSecret(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyKeyVaultClientSecret);
-
+        /// <summary>
+        /// Retrieves the KeyVault secret base URI.
+        /// </summary>
+        /// <param name="config">The configuration.</param>
+        /// <returns>The Uri.</returns>
         [ConfigSetting("KeyVault")]
         public static string KeyVaultSecretBaseUri(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyKeyVaultSecretBaseUri);
-
+        /// <summary>
+        /// Retrieves the KeyVault client credential.
+        /// </summary>
+        /// <param name="config">The configuration.</param>
+        /// <returns>The client credentials.</returns>
         [ConfigSetting("KeyVault")]
         public static ClientCredential KeyVaultClientCredential(this IEnvironmentConfiguration config)
         {
@@ -59,8 +76,8 @@ namespace Xigadee
         /// <param name="pipeline">The incoming pipeline.</param>
         /// <param name="keyVaultClientId">The Key Vault client Id.</param>
         /// <param name="keyVaultClientSecret">The Key Vault client secret.</param>
-        /// <param name="keyVaultSecretBaseUri">The Key Vault secret base uri.</param>
-        /// <returns>The passthrough of the pipeline.</returns>
+        /// <param name="keyVaultSecretBaseUri">The Key Vault secret base Uri.</param>
+        /// <returns>The pass-through of the pipeline.</returns>
         public static P ConfigOverrideSetKeyVaultConnection<P>(this P pipeline, string keyVaultClientId, string keyVaultClientSecret, string keyVaultSecretBaseUri)
             where P : IPipeline
         {

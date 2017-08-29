@@ -37,7 +37,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="pipeline">The incoming pipeline.</param>
         /// <param name="redisCacheConnection">The Redis cache connection.</param>
-        /// <returns>The passthrough of the pipeline.</returns>
+        /// <returns>The pass-through of the pipeline.</returns>
         public static P ConfigOverrideSetRedisCacheConnection<P>(this P pipeline, string redisCacheConnection)
             where P : IPipeline
         {
