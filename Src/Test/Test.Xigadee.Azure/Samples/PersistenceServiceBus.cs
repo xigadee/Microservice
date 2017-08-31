@@ -36,6 +36,17 @@ namespace Test.Xigadee.AzureSamples
         }
 
         /// <summary>
+        /// All hail the Microsoft test magic man!
+        /// This class can be populated with values through Visual Studio menus -> [Test>Test Settings>Select Test Settings File] and then selecting a file with the extension .runsettings
+        /// See here for details: https://msdn.microsoft.com/en-us/library/jj635153.aspx
+        /// There is a default file default.runsettings that has a set of empty CI injection parameters specified for testing in this project.
+        /// </summary>
+        public TestContext TestContext
+        {
+            get;set;
+        }
+
+        /// <summary>
         /// A refactored client-server example using a manual communication bridge.
         /// </summary>
         [TestMethod]
@@ -43,10 +54,13 @@ namespace Test.Xigadee.AzureSamples
         {
             try
             {
+                //Either use a .runsettings file to set this value 'CI_ServiceBusConnection' or just manually set the value here if you want to run the test.
+                var sbConnection = TestContext.GetCISettingAsString(AzureConfigShortcut.ServiceBusConnection.ToSettingKey());
 
-                PersistenceClient<Guid, Sample1> repo;
+                PersistenceClient <Guid, Sample1> repo;
 
                 var p1 = new MicroservicePipeline("Server")
+                    .AzureConfigurationOverrideSet(AzureConfigShortcut.ServiceBusConnection, sbConnection)
                     .AddChannelIncoming("request")
                         .AttachPersistenceManagerHandlerMemory(
                               keyMaker: (Sample1 e) => e.Id
@@ -60,6 +74,7 @@ namespace Test.Xigadee.AzureSamples
                         ;
 
                 var p2 = new MicroservicePipeline("Client")
+                    .AzureConfigurationOverrideSet(AzureConfigShortcut.ServiceBusConnection, sbConnection)
                     .AddChannelIncoming("response")
                         .AttachAzureServiceBusTopicListener()
                         .Revert()

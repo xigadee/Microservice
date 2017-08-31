@@ -244,8 +244,8 @@
     <Compile Include="Persistence\RedisCache\Pipeline\AddPersistenceManagerRedisCache.cs" />
     <Compile Include="Persistence\RedisCache\Pipeline\AttachPersistenceManagerRedisCache.cs" />
     <Compile Include="Communication\ServiceBus\Pipeline\Attach\ConfigureAzureMessagingHelper.cs" />
-    <Compile Include="Exceptions\ConfigKeyVaultException.cs" />
-    <Compile Include="Pipeline\AddApplicationInsightsConnector.cs" />
+    <Compile Include="Configuration\ConfigResolver\KeyVault\ConfigKeyVaultException.cs" />
+    <Compile Include="ApplicationInsights\Pipeline\AddApplicationInsightsConnector.cs" />
     <Compile Include="Persistence\DocumentDbSDK\SDKHelper.cs" />
     <Compile Include="Communication\ServiceBus\Pipeline\Attach\AttachAzureServiceBusQueueListener.cs" />
     <Compile Include="Communication\ServiceBus\Pipeline\Attach\AttachAzureServiceBusQueueSender.cs" />

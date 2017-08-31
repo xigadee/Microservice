@@ -22,6 +22,31 @@ namespace Xigadee
         }
 
         /// <summary>
+        /// This method adds an override setting for the Azure settings and clears the cache.
+        /// </summary>
+        /// <typeparam name="P">The pipeline type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="keyEnum">The key shortcut.</param>
+        /// <param name="value">The value function.</param>
+        /// <returns>Returns the pipeline.</returns>
+        public static P AzureConfigurationOverrideSet<P>(this P pipeline, AzureConfigShortcut keyEnum, Func<IEnvironmentConfiguration, string> value)
+        where P : IPipeline
+        {
+            if (value == null)
+                throw new ArgumentNullException("value", $"{nameof(AzureConfigurationOverrideSet)}: the value function cannot be null");
+            return pipeline.AzureConfigurationOverrideSet(keyEnum, value(pipeline.Configuration));
+        }
+
+        /// <summary>
+        /// This extension method returns the string equivalent for the enumeration shortcut.
+        /// </summary>
+        /// <param name="keyEnum">The key enum.</param>
+        /// <returns>Returns the string equivalent used in the configuration settings.</returns>
+        public static string ToSettingKey(this AzureConfigShortcut keyEnum)
+        {
+            return AzureConfigShortcutConvert(keyEnum);
+        }
+        /// <summary>
         /// Azures the configuration shortcut convert.
         /// </summary>
         /// <param name="keyEnum">The key enum.</param>
@@ -80,7 +105,7 @@ namespace Xigadee
                     return KeyAzureTableStorageConfigSASKey;
 
                 default:
-                    throw new ArgumentOutOfRangeException($"Azure Configuration Shortcut key is not supported: {keyEnum.ToString()}");
+                    throw new ArgumentOutOfRangeException($"{nameof(AzureConfigShortcutConvert)} - Azure Configuration Shortcut key is not supported: {keyEnum.ToString()}");
             }
         }
     }

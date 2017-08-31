@@ -21,7 +21,7 @@ using System.Collections.Generic;
 namespace Xigadee
 {
     /// <summary>
-    /// This inteface is used by extension method that provide shortcuts for specific key/value pairs
+    /// This interface is used by extension method that provide shortcuts for specific key/value pairs
     /// from the environment configuration.
     /// </summary>
     public interface IEnvironmentConfiguration

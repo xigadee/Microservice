@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<RunSettings>   
+  <!-- Parameters used by tests at runtime. You can set these to your own values. These are null here as they are injected as part of our CI settings. This way they are not stored in source code. -->  
+  <TestRunParameters>
+    <Parameter name="CI_ApplicationInsightsKey" value="" />
+    <Parameter name="CI_ApplicationInsightsLoggingLevel" value="" />
+    
+    <Parameter name="CI_AzureStorageAccountName" value="" />
+    <Parameter name="CI_AzureStorageAccountAccessKey" value="" />
+    
+    <Parameter name="CI_EventHubsConnection" value="" />
+    
+    <Parameter name="CI_KeyVaultClientId" value="" />
+    <Parameter name="CI_KeyVaultClientSecret" value="" />
+    <Parameter name="CI_KeyVaultSecretBaseUri" value="" />
+    
+    <Parameter name="CI_LogStorageAccountName" value="" />
+    <Parameter name="CI_LogStorageAccountAccessKey" value="" />
+    
+    <Parameter name="CI_RedisCacheConnection" value="" />
+    
+    <Parameter name="CI_ServiceBusConnection" value="" />
+    
+    <Parameter name="CI_StorageAccountName" value="" />
+    <Parameter name="CI_StorageAccountAccessKey" value="" />
+    
+    <Parameter name="CI_AzureTableStorageConfigSASKey" value="" />
+  </TestRunParameters>  
+
+</RunSettings>  

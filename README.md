@@ -97,9 +97,43 @@ p2.Start();
 The [Xigadee Azure](Src/Xigadee.Azure/_docs/Introduction.md) libraries contain specific accelerators for the Azure Service Bus that can be simply applied to a Microservice pipeline.
 
 The Azure Service Bus can be used to connect the two Microservice, like this:
+ ```C#
+//Either use a .runsettings file to set this value 'CI_ServiceBusConnection' or just manually set the value 
+//here if you want to run the test.
+var sbConnection = TestContext.GetCISettingAsString(AzureConfigShortcut.ServiceBusConnection.ToSettingKey());
 
+PersistenceClient <Guid, Sample1> repo;
 
+var p1 = new MicroservicePipeline("Server")
+    .AzureConfigurationOverrideSet(AzureConfigShortcut.ServiceBusConnection, sbConnection)
+    .AddChannelIncoming("request")
+        .AttachPersistenceManagerHandlerMemory(
+              keyMaker: (Sample1 e) => e.Id
+            , keyDeserializer: (s) => new Guid(s)
+            , versionPolicy: ((e) => e.VersionId.ToString("N").ToUpperInvariant(), (e) => e.VersionId = Guid.NewGuid(), true)
+            )
+        .AttachAzureServiceBusQueueListener()
+        .Revert()
+    .AddChannelOutgoing("response")
+        .AttachAzureServiceBusTopicSender()
+        ;
 
+var p2 = new MicroservicePipeline("Client")
+    .AzureConfigurationOverrideSet(AzureConfigShortcut.ServiceBusConnection, sbConnection)
+    .AddChannelIncoming("response")
+        .AttachAzureServiceBusTopicListener()
+        .Revert()
+    .AddChannelOutgoing("request")
+        .AttachAzureServiceBusQueueSender()
+        .AttachPersistenceClient("response",out repo)
+        .Revert()
+        ;
+
+p1.Start();
+p2.Start();
+  ```
+
+Here we have replaced the manual communication bridge with a Service Bus communication.
 
 ## Feedback
 Xigadee is in active development across a number of development projects, and is still very much a work-in-progress. We are still working on improving the code, extending the unit-test coverage, adding new features, and providing more detailed documentation and code examples.
