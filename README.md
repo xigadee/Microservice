@@ -6,7 +6,7 @@ The framework is a result of our experience - and frustration - over the past fi
 
 We found that when constructing Microservices, we could spend as much time on building and testing the repeatable "plumbing" code (messaging, monitoring, communication, security etc.) as we did on the actual application business logic. 
 
-So our goal with Xigadee is to solve that challenge. To provide a consistent development approach, and more importantly - a set of reusable tools that we can apply to any type of Microservice application - while removing the drudgery and overhead of "re-inventing the Microservice-wheel" each time we construct a new distributed solution.
+So our goal with Xigadee is to solve that challenge. To provide a consistent development approach; and more importantly - a set of reusable tools that we can apply to any type of Microservice application - while removing the drudgery and overhead of "re-inventing the Microservice-wheel" each time we construct a new distributed solution.
 
 ## A quick demonstration
 
