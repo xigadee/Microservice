@@ -56,7 +56,7 @@ or this method to use a Azure Blob Storage collection instead:
 .AttachPersistenceManagerAzureBlobStorage(
 ```
 
-If you want a more in-depth explanation of how to build a new Microservice application using the libraries, then jump to the following article: [The 15-minute Microservice.](Src/Xigadee.Platform/_Docs/fifteenminuteMicroservice.md)
+If you want a more in-depth explanation of how to build a new Microservice application using the Xigadee libraries, then jump to the following article: [The 15-minute Microservice.](Src/Xigadee.Platform/_Docs/fifteenminuteMicroservice.md)
 
 ## Feedback
 Xigadee is in active development across a number of development projects, and is still very much a work-in-progress. We are still working on improving the code, extending the unit-test coverage, adding new features, and providing more detailed documentation and code examples.
