@@ -59,7 +59,7 @@ or this method to use a Azure Blob Storage collection instead:
 If you want a more in-depth explanation of how to build a new Microservice application using the Xigadee libraries, then jump to the following article: [The 15-minute Microservice.](Src/Xigadee.Platform/_Docs/fifteenminuteMicroservice.md)
 
 ## Feedback
-Xigadee is in active development across a number of development projects, and is still very much a work-in-progress. We are still working on improving the code, extending the unit-test coverage, adding new features, and providing more detailed documentation and code examples.
+Xigadee is in active development across a number of development projects, and is still very much a work-in-progress; we are still improving the code, extending the unit-test coverage, adding new features, and providing more detailed documentation and code examples.
 
 We have recently shipped release 1.1 of the Framework, which has some key improvements in creating custom application logic. Our next version will be 2.0 which will be built under the .NET Standard 2.0, which will allow Xigadee applications to work with both traditional .NET Framework libraries, but also to use the new .NET Core multi-platform capabilities, such as Linux and ARM based systems.
 
