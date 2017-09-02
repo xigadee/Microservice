@@ -1,13 +1,15 @@
 ﻿using System;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Xigadee;
 
 namespace Test.Xigadee.Azure
 {
     [TestClass]
-    public class TestAzureDataCollection
+    [Ignore] // Integration / debug testing only 
+    public class ConfigResolverTableStorageTests
     {
-        #region TestContext
+
         /// <summary>
         /// All hail the Microsoft test magic man!
         /// This class can be populated with values through Visual Studio menus -> [Test>Test Settings>Select Test Settings File] and then selecting a file with the extension .runsettings
@@ -18,16 +20,16 @@ namespace Test.Xigadee.Azure
         {
             get; set;
         }
-        #endregion
 
         [TestMethod]
-        public void TestMethod1()
+        public void TableStorageValidate()
         {
-            var pipeline = new MicroservicePipeline("AzureTest");
+            var ms1 = new MicroservicePipeline();
 
-            pipeline.Start();
-
-            pipeline.Stop();
+            ms1
+                .ConfigResolverSetTestContext(100,TestContext)
+                //.Con
+                ;
         }
     }
 }

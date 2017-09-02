@@ -2,9 +2,6 @@
 
 namespace Xigadee
 {
-    /// <summary>
-    /// These extension methods connect the service bus listeners in to the pipeline.
-    /// </summary>
     public static partial class AzureExtensionMethods
     {
         /// <summary>

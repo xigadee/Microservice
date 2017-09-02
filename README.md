@@ -26,7 +26,7 @@ var p1 = new MicroservicePipeline("Local")
             , versionPolicy: ((e) => e.VersionId.ToString("N").ToUpperInvariant(), (e) => e.VersionId = Guid.NewGuid(), true)
         )
         .AttachPersistenceClient(out repo)
-    .Revert()
+        .Revert()
     ;
 
 p1.Start();
@@ -41,7 +41,7 @@ var result = repo.Read(id).Result;
 Assert.IsTrue(result.IsSuccess);
 Assert.IsTrue(result.Entity.Message == "Hello mom");
 ```
-This service creates a quick memory-based entity store for the POCO class, Sample1, that supports CRUD (Create/Read/Update/Delete) functions for the entity, with optimistic locking, and additional versioning and search methods, based on a key field (Id) and optional version field (VersionId) defined in the entity. 
+This service creates a quick memory-based entity store for the POCO class, Sample1, that supports CRUD (Create/Read/Update/Delete) functions for the entity, with optimistic locking, and additional versioning and search methods, based on a key field (Id) and optional version field (VersionId) that are defined in the entity. 
 
 If we were to use the [Xigadee Azure](Src/Xigadee.Azure/_docs/Introduction.md) library, we could replace the following method:
 ```C#
@@ -55,85 +55,8 @@ or this method to use a Azure Blob Storage collection instead:
  ```C#
 .AttachPersistenceManagerAzureBlobStorage(
 ```
-### Refactoring
-As mentioned earlier, Xigadee is designed to allow quick rapid application development, through easy refactoring of its pipeline based code. Below we have broken the initial Microservice in to two independent services (_PersistenceClientServer_ method on the [same test class](Src/Test/Test.Xigadee/Samples/PersistenceLocal.cs)), and connected the services together using a manual communication bridge. 
- ```C#
-//Create an internal test communication bridge
-var fabric = new ManualFabricBridge();
-var bridgeRequest = new ManualCommunicationBridgeAgent(fabric, CommunicationBridgeMode.RoundRobin);
-var bridgeResponse = new ManualCommunicationBridgeAgent(fabric, CommunicationBridgeMode.Broadcast);
 
-PersistenceClient<Guid, Sample1> repo;
-
-var p1 = new MicroservicePipeline("Server")
-    .AddChannelIncoming("request")
-        .AttachPersistenceManagerHandlerMemory(
-              keyMaker: (Sample1 e) => e.Id
-            , keyDeserializer: (s) => new Guid(s)
-            , versionPolicy: ((e) => e.VersionId.ToString("N").ToUpperInvariant(), (e) => e.VersionId = Guid.NewGuid(), true)
-            )
-        .AttachListener(bridgeRequest.GetListener())
-        .Revert()
-    .AddChannelOutgoing("response")
-        .AttachSender(bridgeResponse.GetSender())
-        ;
-
-var p2 = new MicroservicePipeline("Client")
-    .AddChannelIncoming("response")
-        .AttachListener(bridgeResponse.GetListener())
-        .Revert()
-    .AddChannelOutgoing("request")
-        .AttachSender(bridgeRequest.GetSender())
-        .AttachPersistenceClient("response",out repo)
-        .Revert()
-        ;
-
-p1.Start();
-p2.Start();
- ```
- The same unit tests can be run, but the system is now functioning as two independent services. These can now be split in to separate executables and run independently. We now need a reliable form of communication between the two services to deliver the messages being sent between them.
-### Communication
-
-The [Xigadee Azure](Src/Xigadee.Azure/_docs/Introduction.md) libraries contain specific accelerators for the Azure Service Bus that can be simply applied to a Microservice pipeline.
-
-The Azure Service Bus can be used to connect the two Microservice, like this:
- ```C#
-//Either use a .runsettings file to set this value 'CI_ServiceBusConnection' or just manually set the value 
-//here if you want to run the test.
-var sbConnection = TestContext.GetCISettingAsString(AzureConfigShortcut.ServiceBusConnection.ToSettingKey());
-
-PersistenceClient <Guid, Sample1> repo;
-
-var p1 = new MicroservicePipeline("Server")
-    .AzureConfigurationOverrideSet(AzureConfigShortcut.ServiceBusConnection, sbConnection)
-    .AddChannelIncoming("request")
-        .AttachPersistenceManagerHandlerMemory(
-              keyMaker: (Sample1 e) => e.Id
-            , keyDeserializer: (s) => new Guid(s)
-            , versionPolicy: ((e) => e.VersionId.ToString("N").ToUpperInvariant(), (e) => e.VersionId = Guid.NewGuid(), true)
-            )
-        .AttachAzureServiceBusQueueListener()
-        .Revert()
-    .AddChannelOutgoing("response")
-        .AttachAzureServiceBusTopicSender()
-        ;
-
-var p2 = new MicroservicePipeline("Client")
-    .AzureConfigurationOverrideSet(AzureConfigShortcut.ServiceBusConnection, sbConnection)
-    .AddChannelIncoming("response")
-        .AttachAzureServiceBusTopicListener()
-        .Revert()
-    .AddChannelOutgoing("request")
-        .AttachAzureServiceBusQueueSender()
-        .AttachPersistenceClient("response",out repo)
-        .Revert()
-        ;
-
-p1.Start();
-p2.Start();
-  ```
-
-Here we have replaced the manual communication bridge with a Service Bus communication.
+If you want a more in-depth explanation of how to build a new Microservice application using the libraries, then jump to the following article: [The 15-minute Microservice.](Src/Xigadee.Platform/_Docs/fifteenminuteMicroservice.md)
 
 ## Feedback
 Xigadee is in active development across a number of development projects, and is still very much a work-in-progress. We are still working on improving the code, extending the unit-test coverage, adding new features, and providing more detailed documentation and code examples.
@@ -143,8 +66,6 @@ We have recently shipped release 1.1 of the Framework, which has some key improv
  We welcome feedback and suggestions for future features of the Framework. More importantly, if you are using the libraries and discover a bug, please report it [here](https://github.com/xigadee/Microservice/issues/new) so we can track and fix it.
 
 ## Quick guides
-If you want a more detailed explanation of the Xigadee pipeline, and on how to build a new Microservice application using the libraries, then read the following:
-* [The 15-minute Microservice.](Src/Xigadee.Platform/_Docs/fifteenminuteMicroservice.md)
 
 If you are new to Microservice development, then the following links gives you an overview of the technology and how a Microservice based application is composed.
 * [What is a Microservice?](Src/Xigadee.Platform/_Docs/WhatIsAMicroservice.md)

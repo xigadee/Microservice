@@ -7,7 +7,7 @@
 
 # Xigadee.VisualStudio integration
 
-This library is experimental. We are looking at VSTS integration to enable on-premise components to automatically update when a build completes. We also have a number of helper methods that require code integration with Visual Studio that we don't wish to include in the main libraries.
+This library is experimental. We are looking at VSTS integration to enable on-premise components to automatically update when a build completes. We also have a number of helper methods that require code integration with Visual Studio that we don't wish to include in the main libraries, specifically around TextContext integration for our Azure based unit testing.
 
 ## Introduction
 

@@ -17,24 +17,15 @@ using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Xigadee;
 
-namespace Test.Xigadee.AzureSamples
+namespace Test.Xigadee.Azure
 {
     /// <summary>
     /// Simple test to demonstrate Microservice refactoring.
     /// </summary>
     [TestClass]
-    public class PersistenceLocal
+    public class PersistenceServiceBus
     {
-        /// <summary>
-        /// This is the POCO class used to test persistence.
-        /// </summary>
-        public class Sample1
-        {
-            public Guid Id { get; set; } = Guid.NewGuid();
-            public Guid VersionId { get; set; } = Guid.NewGuid();
-            public string Message { get; set; }
-        }
-
+        #region TestContext
         /// <summary>
         /// All hail the Microsoft test magic man!
         /// This class can be populated with values through Visual Studio menus -> [Test>Test Settings>Select Test Settings File] and then selecting a file with the extension .runsettings
@@ -43,7 +34,18 @@ namespace Test.Xigadee.AzureSamples
         /// </summary>
         public TestContext TestContext
         {
-            get;set;
+            get; set;
+        }
+        #endregion
+
+        /// <summary>
+        /// This is the POCO class used to test persistence.
+        /// </summary>
+        public class Sample1
+        {
+            public Guid Id { get; set; } = Guid.NewGuid();
+            public Guid VersionId { get; set; } = Guid.NewGuid();
+            public string Message { get; set; }
         }
 
         /// <summary>

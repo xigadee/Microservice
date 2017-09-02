@@ -15,11 +15,6 @@
 #endregion
 
 using System;
-using System.Net;
-using System.Threading.Tasks;
-using Microsoft.Azure.KeyVault;
-using Microsoft.Azure.KeyVault.Models;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 
@@ -30,42 +25,88 @@ namespace Xigadee
     /// </summary>
     public class ConfigResolverTableStorage : ConfigResolver
     {
+        #region StorageAccount
         /// <summary>
         /// This is the cloud storage account used for all connectivity.
         /// </summary>
         protected CloudStorageAccount StorageAccount { get; set; }
+        #endregion
+        #region Client
         /// <summary>
         /// Gets or sets the client.
         /// </summary>
         protected CloudTableClient Client { get; set; }
+        #endregion
+        #region Table
         /// <summary>
         /// Gets or sets the table that contains the settings.
         /// </summary>
         protected CloudTable Table { get; set; }
+        #endregion
+        #region PartitionKey
+        /// <summary>
+        /// Gets the partition key.
+        /// </summary>
+        public string PartitionKey { get; }
+        #endregion
+        #region TableName
+        /// <summary>
+        /// Gets the name of the table that the configuration settings will be retrieved from.
+        /// </summary>
+        public string TableName { get; } 
+        #endregion
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigResolverTableStorage"/> class.
         /// </summary>
         /// <param name="sasKey">The SAS key to access the table storage repository.</param>
         /// <param name="tableName">The optional name of the table. If unset or null, the value 'config' will be used instead.</param>
-        public ConfigResolverTableStorage(string sasKey, string tableName = "config")
+        public ConfigResolverTableStorage(string sasKey, string tableName = "Configuration", string partitionKey = "config")
+            :this(CloudStorageAccount.Parse(sasKey), tableName, partitionKey)
         {
-            StorageAccount = CloudStorageAccount.Parse(sasKey);
-            Client = StorageAccount.CreateCloudTableClient();
-            Table = Client.GetTableReference(tableName);
+        }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigResolverTableStorage"/> class.
+        /// </summary>
+        /// <param name="storageAccount">The storage account.</param>
+        /// <param name="tableName">Name of the table.</param>
+        /// <param name="partitionKey">The table partition key for the configuration settings.</param>
+        public ConfigResolverTableStorage(CloudStorageAccount storageAccount, string tableName = "Configuration", string partitionKey = "config")
+        {
+            PartitionKey = partitionKey ?? "";
+            TableName = tableName ?? throw new ArgumentNullException("tableName", $"{nameof(ConfigResolverTableStorage)} tableName cannot be null");
 
-            //if (!Table.Exists())
-            //    return false;
+            StorageAccount = storageAccount ?? throw new ArgumentNullException("storageAccount", $"{nameof(ConfigResolverTableStorage)} storageAccount cannot be null"); 
+
+            Client = StorageAccount.CreateCloudTableClient();
+            Table = Client.GetTableReference(TableName);
+
 
         }
 
+        #region CanResolve(string key)
+        /// <summary>
+        /// Use this method to check that the key exists doe the specific resolver.
+        /// </summary>
+        /// <param name="key">The key to resolve</param>
+        /// <returns>
+        /// Returns true if it can be resolved.
+        /// </returns>
         public override bool CanResolve(string key)
         {
 
             //TableOperation insert = TableOperation.
             return false;
         }
+        #endregion
 
+        #region ResolveInternal(string key, out string value)
+        /// <summary>
+        /// Returns the key value from the resolver.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value as an out parameter.</param>
+        /// <returns>Returns true if the value is resolved.</returns>
         protected bool ResolveInternal(string key, out string value)
         {
             // Create a retrieve operation that takes a customer entity.
@@ -84,7 +125,16 @@ namespace Xigadee
 
             return true;
         }
+        #endregion
 
+        #region Resolve(string key)
+        /// <summary>
+        /// Use this method to get the value from the specific resolver.
+        /// </summary>
+        /// <param name="key">The key to resolve</param>
+        /// <returns>
+        /// This is the settings value, null if not set.
+        /// </returns>
         public override string Resolve(string key)
         {
             // Create a retrieve operation that takes a customer entity.
@@ -94,6 +144,7 @@ namespace Xigadee
             TableResult retrievedResult = Table.Execute(retrieveOperation);
 
             return null;
-        }
+        } 
+        #endregion
     }
 }

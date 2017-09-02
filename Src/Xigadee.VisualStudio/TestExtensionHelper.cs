@@ -6,7 +6,7 @@ namespace Xigadee
     /// <summary>
     /// This static class provides shortcuts when using the TestContext class.
     /// </summary>
-    public static class TestExtensionHelper
+    public static partial class VisualStudioPipelineExtensions
     {
         /// <summary>
         /// Gets the CI setting from the test context.
@@ -68,7 +68,7 @@ namespace Xigadee
 
         private static string CIKey(string key, string prefix)
         {
-            return $"{prefix}{key}";
+            return $"{prefix??""}{key}";
         }
     }
     /// <summary>
