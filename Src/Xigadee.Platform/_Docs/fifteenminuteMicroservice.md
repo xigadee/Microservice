@@ -24,7 +24,7 @@ The Xigadee libraries are built using Microsoft's .NET technology, and have spec
 
 All the libraries utilise a simple declarative programming model to aid in the construction of the Microservice. 
 
-A quick sample of code from [this](../Test/Test.Xigadee/Samples/PersistenceLocal.cs) unit test shows how a Microservice can be quickly constructed within a few lines of code. This code can be found in the '_PersistenceSingle_' method:
+A quick sample of code from [this](../../Test/Test.Xigadee/Samples/PersistenceLocal.cs) unit test shows how a Microservice can be quickly constructed within a few lines of code. This code can be found in the '_PersistenceSingle_' method:
 ```C#
 PersistenceClient<Guid, Sample1> repo;
 
@@ -53,7 +53,7 @@ Assert.IsTrue(result.Entity.Message == "Hello mom");
 ```
 This service creates a quick memory-based entity store for the POCO class, Sample1, that supports CRUD (Create/Read/Update/Delete) functions for the entity, with optimistic locking, and additional versioning and search methods, based on a key field (Id) and optional version field (VersionId) defined in the entity. 
 
-If we were to use the [Xigadee Azure](../Xigadee.Azure/_docs/Introduction.md) library, we could replace the following method:
+If we were to use the [Xigadee Azure](../../Xigadee.Azure/_docs/Introduction.md) library, we could replace the following method:
 ```C#
 .AttachPersistenceManagerHandlerMemory(
 ```
@@ -66,7 +66,7 @@ or this method to use a Azure Blob Storage collection instead:
 .AttachPersistenceManagerAzureBlobStorage(
 ```
 ### Refactoring
-As mentioned earlier, Xigadee is designed to allow quick rapid application development, through easy refactoring of its pipeline based code. Below we have broken the initial Microservice in to two independent services (_PersistenceClientServer_ method on the [same test class](../Test/Test.Xigadee/Samples/PersistenceLocal.cs)), and connected the services together using a manual communication bridge. 
+As mentioned earlier, Xigadee is designed to allow quick rapid application development, through easy refactoring of its pipeline based code. Below we have broken the initial Microservice in to two independent services (_PersistenceClientServer_ method on the [same test class](../../Test/Test.Xigadee/Samples/PersistenceLocal.cs)), and connected the services together using a manual communication bridge. 
  ```C#
 //Create an internal test communication bridge
 var fabric = new ManualFabricBridge();
@@ -104,7 +104,7 @@ p2.Start();
  The same unit tests can be run, but the system is now functioning as two independent services. These can now be split in to separate executables and run independently. We now need a reliable form of communication between the two services to deliver the messages being sent between them.
 ### Communication
 
-The [Xigadee Azure](../Xigadee.Azure/_docs/Introduction.md) libraries contain specific accelerators for the Azure Service Bus that can be simply applied to a Microservice pipeline.
+The [Xigadee Azure](../../Xigadee.Azure/_docs/Introduction.md) libraries contain specific accelerators for the Azure Service Bus that can be simply applied to a Microservice pipeline.
 
 The Azure Service Bus can be used to connect the two Microservice, like this:
 
