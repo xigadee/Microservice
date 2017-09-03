@@ -105,14 +105,24 @@ namespace Xigadee
 
             Client = StorageAccount.CreateCloudTableClient();
 
-            Client.DefaultRequestOptions = RequestOptionsDefault ??
-                new TableRequestOptions()
-                {
-                    RetryPolicy = new LinearRetry(TimeSpan.FromMilliseconds(200), 5)
-                    , ServerTimeout = TimeSpan.FromSeconds(1)
-                };
+            Client.DefaultRequestOptions = RequestOptionsDefault ?? DefaultTableRequestOptions();
 
             Table = Client.GetTableReference(TableName);
+        }
+        #endregion
+
+        #region DefaultTableRequestOptions()
+        /// <summary>
+        /// This method returns the default table request options.
+        /// </summary>
+        /// <returns>A TableRequestOptions object.</returns>
+        protected virtual TableRequestOptions DefaultTableRequestOptions()
+        {
+            return new TableRequestOptions()
+            {
+                  RetryPolicy = new LinearRetry(TimeSpan.FromMilliseconds(200), 5)
+                , ServerTimeout = TimeSpan.FromSeconds(1)
+            };
         } 
         #endregion
 
