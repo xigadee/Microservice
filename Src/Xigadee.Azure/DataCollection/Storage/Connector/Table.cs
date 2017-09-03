@@ -60,14 +60,12 @@ namespace Xigadee
         {
             Client = StorageAccount.CreateCloudTableClient();
 
-            if (RequestOptionsDefault != null)
-                Client.DefaultRequestOptions = RequestOptionsDefault ?? 
-                    new TableRequestOptions()
-                    {
-                        RetryPolicy = new LinearRetry(TimeSpan.FromMilliseconds(200), 5)
-                        , ServerTimeout = DefaultTimeout ?? TimeSpan.FromSeconds(1)
-                        //, ParallelOperationThreadCount = 64 
-                    };
+            Client.DefaultRequestOptions = RequestOptionsDefault ?? 
+                new TableRequestOptions()
+                {
+                    RetryPolicy = new LinearRetry(TimeSpan.FromMilliseconds(200), 5)
+                    , ServerTimeout = DefaultTimeout ?? TimeSpan.FromSeconds(1)
+                };
 
             if (ContainerId == null)
                 ContainerId = AzureStorageHelper.GetEnum<DataCollectionSupport>(Support).StringValue;

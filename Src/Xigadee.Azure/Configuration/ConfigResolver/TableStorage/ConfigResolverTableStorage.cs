@@ -16,6 +16,7 @@
 
 using System;
 using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.RetryPolicies;
 using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Xigadee
@@ -49,20 +50,36 @@ namespace Xigadee
         /// </summary>
         public string PartitionKey { get; }
         #endregion
+        #region PropertyKey
+        /// <summary>
+        /// Gets the property key for the Table Storage Value. The default value key is 'Value'.
+        /// </summary>
+        public string PropertyKey { get; } 
+        #endregion
+
         #region TableName
         /// <summary>
         /// Gets the name of the table that the configuration settings will be retrieved from.
         /// </summary>
-        public string TableName { get; } 
+        public string TableName { get; }
         #endregion
 
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigResolverTableStorage"/> class.
         /// </summary>
         /// <param name="sasKey">The SAS key to access the table storage repository.</param>
-        /// <param name="tableName">The optional name of the table. If unset or null, the value 'config' will be used instead.</param>
-        public ConfigResolverTableStorage(string sasKey, string tableName = "Configuration", string partitionKey = "config")
-            :this(CloudStorageAccount.Parse(sasKey), tableName, partitionKey)
+        /// <param name="tableName">Name of the table.</param>
+        /// <param name="partitionKey">The table partition key for the configuration settings.</param>
+        /// <param name="propertyKey">The Azure table storage configuration default property key, currently "Value"</param>
+        /// <param name="RequestOptionsDefault">You can set this to enable a more specific retry policy.</param>
+        public ConfigResolverTableStorage(string sasKey
+            , string tableName = AzureExtensionMethods.AzureTableStorageConfigDefaultTableName
+            , string partitionKey = AzureExtensionMethods.AzureTableStorageConfigDefaultPartitionKey
+            , string propertyKey = AzureExtensionMethods.AzureTableStorageConfigDefaultPropertyKey
+            , TableRequestOptions RequestOptionsDefault = null
+            )
+            : this(CloudStorageAccount.Parse(sasKey), tableName, partitionKey, propertyKey, RequestOptionsDefault)
         {
         }
         /// <summary>
@@ -71,18 +88,33 @@ namespace Xigadee
         /// <param name="storageAccount">The storage account.</param>
         /// <param name="tableName">Name of the table.</param>
         /// <param name="partitionKey">The table partition key for the configuration settings.</param>
-        public ConfigResolverTableStorage(CloudStorageAccount storageAccount, string tableName = "Configuration", string partitionKey = "config")
+        /// <param name="propertyKey">The Azure table storage configuration default property key, currently "Value"</param>
+        /// <param name="RequestOptionsDefault">You can set this to enable a more specific retry policy.</param>
+        public ConfigResolverTableStorage(CloudStorageAccount storageAccount
+            , string tableName = AzureExtensionMethods.AzureTableStorageConfigDefaultTableName
+            , string partitionKey = AzureExtensionMethods.AzureTableStorageConfigDefaultPartitionKey
+            , string propertyKey = AzureExtensionMethods.AzureTableStorageConfigDefaultPropertyKey
+            , TableRequestOptions RequestOptionsDefault = null
+            )
         {
             PartitionKey = partitionKey ?? "";
-            TableName = tableName ?? throw new ArgumentNullException("tableName", $"{nameof(ConfigResolverTableStorage)} tableName cannot be null");
 
-            StorageAccount = storageAccount ?? throw new ArgumentNullException("storageAccount", $"{nameof(ConfigResolverTableStorage)} storageAccount cannot be null"); 
+            PropertyKey = propertyKey ?? throw new ArgumentNullException("propertyKey", $"{nameof(ConfigResolverTableStorage)} propertyKey cannot be null");
+            TableName = tableName ?? throw new ArgumentNullException("tableName", $"{nameof(ConfigResolverTableStorage)} tableName cannot be null");
+            StorageAccount = storageAccount ?? throw new ArgumentNullException("storageAccount", $"{nameof(ConfigResolverTableStorage)} storageAccount cannot be null");
 
             Client = StorageAccount.CreateCloudTableClient();
+
+            Client.DefaultRequestOptions = RequestOptionsDefault ??
+                new TableRequestOptions()
+                {
+                    RetryPolicy = new LinearRetry(TimeSpan.FromMilliseconds(200), 5)
+                    , ServerTimeout = TimeSpan.FromSeconds(1)
+                };
+
             Table = Client.GetTableReference(TableName);
-
-
-        }
+        } 
+        #endregion
 
         #region CanResolve(string key)
         /// <summary>
@@ -94,9 +126,9 @@ namespace Xigadee
         /// </returns>
         public override bool CanResolve(string key)
         {
-
-            //TableOperation insert = TableOperation.
-            return false;
+            //Not the most efficient, but bear in mind these are cached after being read.
+            string value;
+            return ResolveInternal(key, out value);
         }
         #endregion
 
@@ -109,19 +141,20 @@ namespace Xigadee
         /// <returns>Returns true if the value is resolved.</returns>
         protected bool ResolveInternal(string key, out string value)
         {
+            value = null;
+
             // Create a retrieve operation that takes a customer entity.
-            TableOperation retrieveOperation = TableOperation.Retrieve("Settings", key);
+            TableOperation retrieveOperation = TableOperation.Retrieve(PartitionKey, key);
 
             // Execute the retrieve operation.
             TableResult retrievedResult = Table.Execute(retrieveOperation);
 
-            if (retrievedResult.Result == null)
-            {
-                value = null;
-                return false;
-            }
+            var result = retrievedResult?.Result as DynamicTableEntity;
 
-            value = (string)retrievedResult.Result;
+            if (result == null)
+                return false;
+
+            value = result.Properties[PropertyKey].StringValue;
 
             return true;
         }
@@ -137,13 +170,11 @@ namespace Xigadee
         /// </returns>
         public override string Resolve(string key)
         {
-            // Create a retrieve operation that takes a customer entity.
-            TableOperation retrieveOperation = TableOperation.Retrieve("Settings", key);
+            string value = null;
 
-            // Execute the retrieve operation.
-            TableResult retrievedResult = Table.Execute(retrieveOperation);
+            ResolveInternal(key, out value);
 
-            return null;
+            return value;
         } 
         #endregion
     }

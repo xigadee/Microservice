@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Xigadee;
 
 namespace Test.Xigadee.Azure
@@ -9,6 +7,12 @@ namespace Test.Xigadee.Azure
     [Ignore] // Integration / debug testing only 
     public class ConfigResolverTableStorageTests
     {
+        //File: Configuration.typed.csv
+        /*
+        PartitionKey,RowKey,Timestamp,Value,Value @type
+        config,my_key,2017-09-03T12:17:54.827Z,123456,Edm.String
+        otherconfig, my_key,2017-09-03T12:53:12.309Z,ABCDEF,Edm.String
+        */
 
         /// <summary>
         /// All hail the Microsoft test magic man!
@@ -22,14 +26,32 @@ namespace Test.Xigadee.Azure
         }
 
         [TestMethod]
-        public void TableStorageValidate()
+        public void TableStorageValidate1()
         {
             var ms1 = new MicroservicePipeline();
-
             ms1
-                .ConfigResolverSetTestContext(100,TestContext)
-                //.Con
+                .ConfigResolverSetTestContext(TestContext)
+                .ConfigResolverSetTableStorage()
+                .ConfigResolverSetTableStorage(AzureExtensionMethods.AzureTableStorageConfigDefaultPriority - 1, partitionKey:"otherconfig")
                 ;
+
+            Assert.IsTrue(ms1.Configuration.PlatformOrConfigCache("my_key") == "123456");
         }
+
+
+        [TestMethod]
+        public void TableStorageValidate2()
+        {
+            var ms1 = new MicroservicePipeline();
+            ms1
+                .ConfigResolverSetTestContext(TestContext)
+                .ConfigResolverSetTableStorage()
+                .ConfigResolverSetTableStorage(AzureExtensionMethods.AzureTableStorageConfigDefaultPriority + 1, partitionKey: "otherconfig")
+                ;
+
+            Assert.IsTrue(ms1.Configuration.PlatformOrConfigCache("my_key") == "ABCDEF");
+        }
+
+
     }
 }

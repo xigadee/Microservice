@@ -15,32 +15,38 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
-using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.File;
-using Microsoft.WindowsAzure.Storage.Queue;
-using Microsoft.WindowsAzure.Storage.RetryPolicies;
-using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This class is not currently supported.
+    /// </summary>
+    [Obsolete("This class is a placeholder and is not currently supported.")]
     public class AzureStorageConnectorFile: AzureStorageConnectorBase<FileRequestOptions, AzureStorageBinary>
     {
         /// <summary>
         /// This is the file client.
         /// </summary>
         public CloudFileClient Client { get; set; }
-
+        /// <summary>
+        /// This method writes to the incoming event to the underlying storage technology.
+        /// </summary>
+        /// <param name="e">The event.</param>
+        /// <param name="id">The microservice metadata.</param>
+        /// <returns>
+        /// This is an async task.
+        /// </returns>
+        /// <exception cref="NotImplementedException">Not currently supported.</exception>
         public override Task Write(EventHolder e, MicroserviceId id)
         {
             throw new NotImplementedException();
         }
-
+        /// <summary>
+        /// This method initializes the connector.
+        /// </summary>
+        /// <exception cref="NotImplementedException">Not currently supported.</exception>
         public override void Initialize()
         {
             if (ContainerId == null)
@@ -48,7 +54,13 @@ namespace Xigadee
 
             throw new NotImplementedException();
         }
-
+        /// <summary>
+        /// This method is used to check that the specific event should be written to the underlying storage.
+        /// </summary>
+        /// <param name="e">The event.</param>
+        /// <returns>
+        /// Returns true if the event should be written. Currently always returns false;
+        /// </returns>
         public override bool ShouldWrite(EventHolder e)
         {
             return false;

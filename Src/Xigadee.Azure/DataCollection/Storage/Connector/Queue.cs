@@ -29,6 +29,9 @@ using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This connector uses the Azure Queue for event writing.
+    /// </summary>
     public class AzureStorageConnectorQueue: AzureStorageConnectorBase<QueueRequestOptions, AzureStorageBinary>
     {
         /// <summary>
@@ -39,7 +42,14 @@ namespace Xigadee
         /// This is the queue.
         /// </summary>
         public CloudQueue Queue { get; set; }
-
+        /// <summary>
+        /// This method writes to the incoming event to the underlying storage technology.
+        /// </summary>
+        /// <param name="e">The event.</param>
+        /// <param name="id">The microservice metadata.</param>
+        /// <returns>
+        /// This is an async task.
+        /// </returns>
         public override async Task Write(EventHolder e, MicroserviceId id)
         {
             var output = Serializer(e, id);
@@ -57,7 +67,9 @@ namespace Xigadee
             // Async enqueue the message
             await Queue.AddMessageAsync(message);
         }
-
+        /// <summary>
+        /// This method initializes the connector.
+        /// </summary>
         public override void Initialize()
         {
             Client = StorageAccount.CreateCloudQueueClient();
@@ -72,7 +84,13 @@ namespace Xigadee
             Queue = Client.GetQueueReference(ContainerId);
             Queue.CreateIfNotExists();
         }
-
+        /// <summary>
+        /// This method is used to check that the specific event should be written to the underlying storage.
+        /// </summary>
+        /// <param name="e">The event.</param>
+        /// <returns>
+        /// Returns true if the event should be written.
+        /// </returns>
         public override bool ShouldWrite(EventHolder e)
         {
             return Options.IsSupported(AzureStorageBehaviour.Queue, e);

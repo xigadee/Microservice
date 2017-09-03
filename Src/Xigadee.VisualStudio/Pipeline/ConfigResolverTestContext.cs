@@ -14,7 +14,10 @@ namespace Xigadee
         /// <param name="context">The TestContext object.</param>
         /// <param name="prefix">The settings key prefix. 'CI_' if left blank.</param>
         /// <param name="throwExceptionOnNotFound">if set to <c>true</c> [throw exception on not found].</param>
-        public ConfigResolverTestContext(TestContext context, string prefix = "CI_", bool throwExceptionOnNotFound = false)
+        public ConfigResolverTestContext(TestContext context
+            , string prefix = VisualStudioPipelineExtensions.ConfigResolverTestContextDefault_Prefix
+            , bool throwExceptionOnNotFound = VisualStudioPipelineExtensions.ConfigResolverTestContextDefault_ThrowExceptionOnNotFound
+            )
         {
             Context = context ?? throw new ArgumentNullException("context", $"{nameof(ConfigResolverTestContext)}: context cannot be null");
             Prefix = prefix?? "";
