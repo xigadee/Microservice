@@ -759,10 +759,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Communication\CommunicationBridge\TcpTlsChannel\Helper\MakeCert.txt" />
-    <Content Include="_Docs\Images\ClientServer.png" />
+    <Content Include="_Docs\Images\15mins\ClientServer.png" />
+    <Content Include="_Docs\Images\15mins\ClientServerSB.png" />
     <Content Include="_Docs\Images\MessageFlow.png" />
     <Content Include="_Docs\Images\MessageProcessing.png" />
     <Content Include="_Docs\Images\Microservice.png" />
+    <Content Include="_Docs\Images\15mins\Server.png" />
     <Content Include="_Docs\Images\Xigadee.png" />
   </ItemGroup>
   <ItemGroup>

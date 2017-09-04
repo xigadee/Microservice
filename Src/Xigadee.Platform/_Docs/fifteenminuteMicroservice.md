@@ -1,30 +1,27 @@
-<table>
-<tr>
-<td width="80%"><a href="../../../README.md"><img src="../../../docs/X2a.png" alt="Xigadee"></a></td>
-<td width = "*" align="right"><img src="../../../docs/smallWIP.jpg" alt="Sorry, I'm still working here" height="100"></td>
-</tr>
-</table>
+![Xigadee](../../../docs/X2a.png)
 
 # The 15 minute Microservice
 
-Xigadee is designed to simplify the construction of a Microservice application. It does this by doing much of the heavy lifting regarding communication, task scheduling, logging etc, which allows you to concentrate on just the code and application logic that you need for your application.
+Xigadee is designed to simplify the construction of a Microservice application. It does this by providing much of the heavy lifting regarding the infrastructure code behind a Microservice, so that you can concentrate on just the code and application logic that you need for your application.
 
-This example gives a quick introduction to building a Microservice based application using the Xigadee framework.
-For this example, we'll host an API service within a console application. 
-We'll construct an API based Microservice that can persist an entity, 
-using Create, Read, Update and Delete (CRUD) operations in memory through a simple set of RESTful API call.
+### A Client-Server sample
+First, let's start with a quick introduction to building a Microservice application using the Xigadee framework as a single container. We'll create a Microservice that can persist a POCO entity in memory,
+using Create, Read, Update and Delete (CRUD) operations, through a set of simple operations.
+
 
 First we are going to create a new console application and to this application add the Xigadee [NuGet](https://packages.nuget.org/packages/Xigadee) library to you project and add the following line in the _using_ section.
 ```C#
 using Xigadee;
 ```
-This server will be our back end server that receives requests from a front-end API service.
-
-The Xigadee libraries are built using Microsoft's .NET technology, and have specific accelerators to target Platform-as-a-Service (PaaS) technologies in the Azure stack.
 
 All the libraries utilise a simple declarative programming model to aid in the construction of the Microservice. 
 
 A quick sample of code from [this](../../Test/Test.Xigadee/Samples/PersistenceLocal.cs) unit test shows how a Microservice can be quickly constructed within a few lines of code. This code can be found in the '_PersistenceSingle_' method:
+
+<img src="Images/15mins/Server.png" alt="Xigadee" width="500"/>
+
+And here is the corresponding code:
+
 ```C#
 PersistenceClient<Guid, Sample1> repo;
 
@@ -66,7 +63,12 @@ or this method to use a Azure Blob Storage collection instead:
 .AttachPersistenceManagerAzureBlobStorage(
 ```
 ### Refactoring
-As mentioned earlier, Xigadee is designed to allow quick rapid application development, through easy refactoring of its pipeline based code. Below we have broken the initial Microservice in to two independent services (_PersistenceClientServer_ method on the [same test class](../../Test/Test.Xigadee/Samples/PersistenceLocal.cs)), and connected the services together using a manual communication bridge. 
+As mentioned earlier, Xigadee is designed to allow quick rapid application development, through easy refactoring of its pipeline based code. 
+
+Below we have broken the initial Microservice in to two independent services (_PersistenceClientServer_ method on the [same test class](../../Test/Test.Xigadee/Samples/PersistenceLocal.cs)), and connected the services together using a manual communication bridge. 
+
+<img src="Images/15mins/ClientServer.png" alt="Xigadee" width="500"/>
+
  ```C#
 //Create an internal test communication bridge
 var fabric = new ManualFabricBridge();
@@ -108,7 +110,7 @@ The [Xigadee Azure](../../Xigadee.Azure/_docs/Introduction.md) libraries contain
 
 The Azure Service Bus can be used to connect the two Microservice, like this:
 
-<img src="Images/ClientServer.png" alt="Xigadee" width="400"/>
+<img src="Images/15mins/ClientServerSB.png" alt="Xigadee" width="500"/>
 
 There are a items that are worth noting in more detail. Firstly we use a Service Bus Queue for the request channel, and a Service Bus Topic for the response channel. 
  ```C#
