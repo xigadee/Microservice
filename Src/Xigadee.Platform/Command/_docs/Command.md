@@ -15,7 +15,7 @@ Commands can send messages between other commands in the same Microservice, or t
 Commands also allow functionality to be shared across services and other system when required.
 
 #### Serialization
-Implementers can choose to abstract the serialzation of incoming objects away from the implementation of the command by using method attributes.
+Implementers can choose to abstract the serialization of incoming objects away from the implementation of the command by using method attributes.
 
 ### Command Methods
 At its simplest, the command methods receive an incoming Payload object and return zero or many payload objects as a response.
@@ -42,6 +42,7 @@ Within the command, you can use attributes to register methods that can receive 
 
 ## Statistics
 
+## Using the Command Harness
 
 <table><tr> 
 <td><a href="http://www.hitachiconsulting.com"><img src="../../../docs/hitachi.png" alt="Hitachi Consulting" height="50"/></a></td> 

@@ -57,8 +57,6 @@ namespace Xigadee
             return command;
         }
 
-
-
         private void Command_OnScheduleChange(object sender, ScheduleChangeEventArgs e)
         {
             if (e.IsRemoval)
@@ -78,8 +76,7 @@ namespace Xigadee
                     RegisteredCommands.Remove(e.Key);
             }
             else
-                RegisteredCommands.Add(e.Key,e.IsMasterJob);
-                   
+                RegisteredCommands.Add(e.Key,e.IsMasterJob);             
         }
     }
 }
