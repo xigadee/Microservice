@@ -2,21 +2,17 @@
 
 # The 15 minute Microservice
 
-Xigadee is designed to simplify the construction of a Microservice application. It does this by providing much of the heavy lifting regarding the infrastructure code behind a Microservice, so that you can concentrate on just the code and application logic that you need for your application.
+Xigadee is designed to simplify the construction of a Microservice application. It does this by providing much of the heavy lifting regarding the infrastructure code behind a Microservice, so that you can concentrate on just the code and logic that you need for your application.
 
 ### A Client-Server sample
-First, let's start with a quick introduction to building a Microservice application using the Xigadee framework as a single container. We'll create a Microservice that can persist a POCO entity in memory,
+First, let's start with a quick introduction to building a Microservice application using the Xigadee framework in a single container. We'll create a Microservice that can persist a POCO entity in memory,
 using Create, Read, Update and Delete (CRUD) operations, through a set of simple operations.
-
-
-First we are going to create a new console application and to this application add the Xigadee [NuGet](https://packages.nuget.org/packages/Xigadee) library to you project and add the following line in the _using_ section.
-```C#
-using Xigadee;
-```
 
 All the libraries utilise a simple declarative programming model to aid in the construction of the Microservice. 
 
-A quick sample of code from [this](../../Test/Test.Xigadee/Samples/PersistenceLocal.cs) unit test shows how a Microservice can be quickly constructed within a few lines of code. This code can be found in the '_PersistenceSingle_' method:
+A quick sample of code from [this](../../Test/Test.Xigadee/Samples/PersistenceLocal.cs) unit test shows how a Microservice can be quickly constructed within a few lines of code. This code can be found in the '_PersistenceSingle_' method.
+
+Inside the Microservice we have two commands that communicate internally to make supported calls. The Persistence Client that  
 
 <img src="Images/15mins/Server.png" alt="Xigadee" width="500"/>
 

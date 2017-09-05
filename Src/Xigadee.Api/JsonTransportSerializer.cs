@@ -26,7 +26,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This the the base default Json serializer.
+    /// This the base default Json serializer.
     /// </summary>
     public class JsonTransportSerializer<E> : TransportSerializer<E>
     {

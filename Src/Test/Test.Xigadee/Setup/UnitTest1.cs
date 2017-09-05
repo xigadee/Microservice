@@ -12,6 +12,7 @@ namespace Test.Xigadee.Setup
         {
             var pipeline = new MicroservicePipeline(nameof(Setup1));
 
+            //var hello = SimpleTestClass.Doesthiswork();
             //pipeline
             //    .AdjustPolicyTaskManager((t,c) => t.
         }

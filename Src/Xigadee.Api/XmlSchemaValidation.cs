@@ -23,7 +23,7 @@ using System.Xml.Schema;
 namespace Xigadee
 {
     /// <summary>
-    /// This class provides Xml schema support
+    /// This class provides XML schema support
     /// </summary>
     public static class XmlSchemaValidation
     {
@@ -31,7 +31,7 @@ namespace Xigadee
         /// This method returns true if the schema validates successfully, otherwise it will return false and returns the errors.
         /// </summary>
         /// <param name="xmlSchema">The incoming schema.</param>
-        /// <param name="xml">The Xml to validate.</param>
+        /// <param name="xml">The XML to validate.</param>
         /// <param name="errors">The set of errors.</param>
         /// <returns>Returns true if successful.</returns>
         public static bool ValidateXmlToSchema(XmlSchema xmlSchema, XElement xml, out string errors)
