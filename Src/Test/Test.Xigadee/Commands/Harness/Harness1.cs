@@ -44,6 +44,7 @@ namespace Test.Xigadee
             {
                 Assert.IsTrue(ex is CommandChannelIdNullException);
             }
+
         }
 
 
@@ -57,6 +58,11 @@ namespace Test.Xigadee
             harness = new CommandHarness<CommandHarnessTest1>(() => new CommandHarnessTest1(policy));
             harness.Start();
             Assert.IsTrue(harness.RegisteredCommands.Count == 1);
+
+            harness.Dispatcher.Process(("fredo", "two", "three"), "Helloe");
+            harness.Dispatcher.Process(("fredo", "one", "two"), "Helloe");
+
+            harness.ScheduleExecute("1");
         }
     }
 }

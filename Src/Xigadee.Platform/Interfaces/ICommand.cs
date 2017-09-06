@@ -85,7 +85,7 @@ namespace Xigadee
         /// </summary>
         string ChannelId { get; set; }
         /// <summary>
-        /// Specifies whether the channel can be autoset during configuration
+        /// Specifies whether the channel can be auto-set during configuration
         /// </summary>
         bool ChannelIdAutoSet { get; }
         /// <summary>
@@ -130,6 +130,11 @@ namespace Xigadee
         /// Gets the friendly name of the command.
         /// </summary>
         string FriendlyName { get; }
+
+        /// <summary>
+        /// This is the current status of the command.
+        /// </summary>
+        ServiceStatus Status { get; }
     }
 
     /// <summary>

@@ -29,11 +29,16 @@ namespace Xigadee
         /// Gets the creator function for the harness service.
         /// </summary>
         public Func<C> Creator { get; }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommandHarnessDependencies{C}"/> class.
+        /// </summary>
         public CommandHarnessDependencies() : this(null)
         {
         }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommandHarnessDependencies{C}"/> class.
+        /// </summary>
+        /// <param name="creator">The creator function used to create a new container object..</param>
         public CommandHarnessDependencies(Func<C> creator)
         {
             Creator = creator ?? DefaultConstructor();

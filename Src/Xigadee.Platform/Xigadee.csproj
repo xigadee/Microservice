@@ -72,6 +72,7 @@
     <Compile Include="CommandInline\Exceptions\ContractException.cs" />
     <Compile Include="CommandInline\Pipeline\AddAttachCommand.cs" />
     <Compile Include="CommandInline\Pipeline\AddAttachSchedule.cs" />
+    <Compile Include="CommandPersistence\Harness\CommandPersistenceHarnessHelper.cs" />
     <Compile Include="CommandPersistence\Pipeline\Attach\AttachPersistenceInternalService.cs" />
     <Compile Include="CommandPersistence\Pipeline\Attach\AttachPersistenceClient.cs" />
     <Compile Include="CommandPersistence\Server\DocumentDb\Pipeline\AddPersistenceManagerDocumentDb.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="Command\Exceptions\CommandChannelIdNullException.cs" />
     <Compile Include="Command\Harness\CommandHarnessDependencies.cs" />
     <Compile Include="Command\Harness\CommandHarnessHelper.cs" />
+    <Compile Include="Command\Harness\CommandHarnessRequest.cs" />
     <Compile Include="Command\Helper\MasterJobCommunicationDirection.cs" />
     <Compile Include="Command\Attributes\CommandContract\MasterJobCommandContractAttribute.cs" />
     <Compile Include="Command\Attributes\JobSchedule\MasterJobScheduleAttribute.cs" />
@@ -412,7 +414,7 @@
     <Compile Include="Configuration\ConfigBase.cs" />
     <Compile Include="Microservice\MicroserviceId.cs" />
     <Compile Include="Microservice\MicroservicePolicy.cs" />
-    <Compile Include="CommandPersistence\Client\PersistenceInternalServicePolicy.cs" />
+    <Compile Include="CommandPersistence\Client\PersistenceInternalClientPolicy.cs" />
     <Compile Include="CommandPersistence\Events\EntityChangeEventArgs.cs" />
     <Compile Include="CommandPersistence\Notification\EntityChangeNotificationCommand.cs" />
     <Compile Include="CommandPersistence\Notification\EntityChangeNotificationPolicy.cs" />
@@ -552,7 +554,7 @@
     <Compile Include="CommandPersistence\Client\PersistenceClientPolicy.cs" />
     <Compile Include="CommandPersistence\Client\PersistenceClientStatistics.cs" />
     <Compile Include="CommandPersistence\Client\PersistenceClient.cs" />
-    <Compile Include="CommandPersistence\Client\PersistenceInternalService.cs" />
+    <Compile Include="CommandPersistence\Client\PersistenceInternalClient.cs" />
     <Compile Include="CommandPersistence\EntityActions.cs" />
     <Compile Include="Interfaces\IPersistenceMessageHandler.cs" />
     <Compile Include="Interfaces\IPersistenceMessageInitiator.cs" />

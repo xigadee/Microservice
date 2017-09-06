@@ -24,7 +24,7 @@ namespace Xigadee
 {
     /// <summary>
     /// This class is used to connect resource consumers with resource limiters.
-    /// Limiters are typically connected to listener clients and reduce the imcoming traffic when the resource becomes stressed.
+    /// Limiters are typically connected to listener clients and reduce the incoming traffic when the resource becomes stressed.
     /// </summary>
     public class ResourceContainer: ServiceContainerBase<ResourceContainerStatistics, ResourceContainerPolicy>
         , IRequireSharedServices, IResourceTracker, IRequireDataCollector

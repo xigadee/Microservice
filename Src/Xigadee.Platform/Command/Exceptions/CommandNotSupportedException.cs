@@ -14,9 +14,10 @@ namespace Xigadee
         /// <summary>
         /// This exception is thrown when a request is sent to a command that is not recognised.
         /// </summary>
+        /// <param name="id">The payload id.</param>
         /// <param name="header">The message header.</param>
         /// <param name="commandType">The command type.</param>
-        public CommandNotSupportedException(Guid id, ServiceMessageHeader header, Type commandType):base($"This command is not supported: '{header}' in {commandType.Name}")
+        public CommandNotSupportedException(Guid id, ServiceMessageHeader header, Type commandType):base($"The command '{header.Key}' is not supported in {commandType.Name}")
         {
             Id = id;
             Header = header;

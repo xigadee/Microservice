@@ -47,7 +47,7 @@ namespace Test.Xigadee.Azure
                 IPipelineChannelIncoming<MicroservicePipeline> cpipeIn = null;
                 IPipelineChannelOutgoing<MicroservicePipeline> cpipeOut = null;
 
-                PersistenceInternalService<Guid, Blah> persistence = null;
+                PersistenceInternalClient<Guid, Blah> persistence = null;
                 PersistenceBlahMemory persistBlah = null;
                 int signalChange = 0;
 
@@ -61,7 +61,7 @@ namespace Test.Xigadee.Azure
                     .AddChannelIncoming("internalIn", internalOnly: true)
                         .CallOut(ChannelInConfigure)
                         .AttachCommand(new PersistenceBlahMemory(), assign:(p) => persistBlah = p)
-                        .AttachCommand(new PersistenceInternalService<Guid, Blah>(), assign:(c) => persistence = c, channelResponse: cpipeOut)
+                        .AttachCommand(new PersistenceInternalClient<Guid, Blah>(), assign:(c) => persistence = c, channelResponse: cpipeOut)
                         .CallOut((c) => cpipeIn = c)
                         .Revert()
                     .AddChannelOutgoing("internalOut", internalOnly: true)

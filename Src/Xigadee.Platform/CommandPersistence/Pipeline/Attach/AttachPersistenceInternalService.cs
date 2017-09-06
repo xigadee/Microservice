@@ -25,7 +25,7 @@ namespace Xigadee
     public static partial class CorePipelineExtensions
     {
         public static C AttachPersistenceInternalService<C,K,E>(this C cpipe
-            , out PersistenceInternalService<K,E> command
+            , out PersistenceInternalClient<K,E> command
             , string outgoingChannel
             , int startupPriority = 90
             , ICacheManager<K,E> cacheManager = null
@@ -34,7 +34,7 @@ namespace Xigadee
             where C : IPipelineChannelIncoming<IPipeline>
             where K : IEquatable<K>
         { 
-            command = new PersistenceInternalService<K, E>(cacheManager: cacheManager, defaultRequestTimespan: defaultRequestTimespan)
+            command = new PersistenceInternalClient<K, E>(cacheManager: cacheManager, defaultRequestTimespan: defaultRequestTimespan)
             {
                   ResponseChannelId = cpipe.Channel.Id
                 , ChannelId = outgoingChannel

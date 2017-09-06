@@ -13,8 +13,8 @@ namespace Xigadee
         /// </summary>
         /// <param name="eventData">The event data.</param>
         /// <param name="support">The event type.</param>
-        /// <param name="sync">A boolean value that specifies whether the request should be process syncronously (true).</param>
-        /// <param name="claims">The optional claims of the calling party. If not set explicity, then this
+        /// <param name="sync">A boolean value that specifies whether the request should be process synchronously (true).</param>
+        /// <param name="claims">The optional claims of the calling party. If not set explicitly, then this
         /// will be populated from the current thread. If you don't want this then pass an empty claims object.</param>
         void Write(EventBase eventData, DataCollectionSupport support, bool sync = false, ClaimsPrincipal claims = null);
     }

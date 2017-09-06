@@ -25,7 +25,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This container holds the system serialization/deserialization components that are used when transmitting data outside of the system.
+    /// This container holds the system serialization/de-serialization components that are used when transmitting data outside of the system.
     /// </summary>
     public class SerializationContainer : ServiceContainerBase<SerializationStatistics, SerializationPolicy>
         , IPayloadSerializationContainer

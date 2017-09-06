@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This is the abstract base class for persisitence client/server communication functionality.
+    /// This is the abstract base class for persistence client/server communication functionality.
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>

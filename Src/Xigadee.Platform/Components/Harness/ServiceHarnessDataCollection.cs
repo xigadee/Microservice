@@ -39,7 +39,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="eventData">The event data.</param>
         /// <param name="support">The collection support type.</param>
-        /// <param name="sync">The sync flag. Ignored for this usuage.</param>
+        /// <param name="sync">The sync flag. Ignored for this usage.</param>
         /// <param name="claims">The current claims.</param>
         public void Write(EventBase eventData, DataCollectionSupport support, bool sync = false, ClaimsPrincipal claims = null)
         {

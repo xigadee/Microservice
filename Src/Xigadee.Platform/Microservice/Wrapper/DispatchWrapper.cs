@@ -45,8 +45,8 @@ namespace Xigadee
         /// This method creates a service message and injects it in to the execution path and bypasses the listener infrastructure.
         /// </summary>
         /// <typeparam name="C">The message contract.</typeparam>
-        /// <param name="package">The objet package to process.</param>
-        /// <param name="ChannelPriority">The prioirty that the message should be processed. The default is 1. If this message is not a valid value, it will be matched to the nearest valid value.</param>
+        /// <param name="package">The object package to process.</param>
+        /// <param name="ChannelPriority">The priority that the message should be processed. The default is 1. If this message is not a valid value, it will be matched to the nearest valid value.</param>
         /// <param name="options">The process options.</param>
         /// <param name="release">The release action which is called when the payload has been executed.</param>
         /// by the receiving commands.</param>
@@ -68,8 +68,8 @@ namespace Xigadee
         /// <param name="ChannelId">The incoming channel. This must be supplied.</param>
         /// <param name="MessageType">The message type. This may be null.</param>
         /// <param name="ActionType">The message action. This may be null.</param>
-        /// <param name="package">The objet package to process.</param>
-        /// <param name="ChannelPriority">The prioirty that the message should be processed. The default is 1. If this message is not a valid value, it will be matched to the nearest valid value.</param>
+        /// <param name="package">The object package to process.</param>
+        /// <param name="ChannelPriority">The priority that the message should be processed. The default is 1. If this message is not a valid value, it will be matched to the nearest valid value.</param>
         /// <param name="options">The process options.</param>
         /// <param name="release">The release action which is called when the payload has been executed.</param>
         /// by the receiving commands.</param>
@@ -88,8 +88,8 @@ namespace Xigadee
         /// This method creates a service message and injects it in to the execution path and bypasses the listener infrastructure.
         /// </summary>
         /// <param name="header">The message header to identify the recipient.</param>
-        /// <param name="package">The objet package to process.</param>
-        /// <param name="ChannelPriority">The prioirty that the message should be processed. The default is 1. If this message is not a valid value, it will be matched to the nearest valid value.</param>
+        /// <param name="package">The object package to process.</param>
+        /// <param name="ChannelPriority">The priority that the message should be processed. The default is 1. If this message is not a valid value, it will be matched to the nearest valid value.</param>
         /// <param name="options">The process options.</param>
         /// <param name="release">The release action which is called when the payload has been executed.</param>
         /// by the receiving commands.</param>

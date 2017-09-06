@@ -28,14 +28,26 @@ namespace Xigadee
         /// </summary>
         public ServiceHarnessDependencies()
         {
-            ((ServiceHarnessScheduler)Scheduler).Collector = Collector;
-            ((ServiceHarnessScheduler)Scheduler).Start();
-
-            ((ServiceHarnessResourceContainer)ResourceTracker).Collector = Collector;
-            ((ServiceHarnessResourceContainer)ResourceTracker).SharedServices = SharedService;
-            ((ServiceHarnessResourceContainer)ResourceTracker).Start();
+            Initialise();
         }
 
+        /// <summary>
+        /// Initialises the service relationships.
+        /// </summary>
+        protected virtual void Initialise()
+        {
+            PayloadSerializer.Start();
+            ResourceTracker.Start();
+
+            Scheduler.Collector = Collector;
+            Scheduler.Start();
+
+            ResourceTracker.Collector = Collector;
+            ResourceTracker.SharedServices = SharedService;
+            ResourceTracker.Start();
+        }
+
+        #region Configure(object service)
         /// <summary>
         /// This method sets the object required services.
         /// </summary>
@@ -56,12 +68,13 @@ namespace Xigadee
 
             if (service is IRequirePayloadManagement)
                 ((IRequirePayloadManagement)service).PayloadSerializer = PayloadSerializer;
-        }
+        } 
+        #endregion
 
         /// <summary>
         /// This is the stub Payload serializer.
         /// </summary>
-        public virtual IPayloadSerializationContainer PayloadSerializer => new ServiceHarnessSerializationContainer();
+        public virtual ServiceHarnessSerializationContainer PayloadSerializer { get; }  = new ServiceHarnessSerializationContainer();
         /// <summary>
         /// This is the example originator id.
         /// </summary>
@@ -69,18 +82,18 @@ namespace Xigadee
         /// <summary>
         /// This is the stub data collector.
         /// </summary>
-        public virtual IDataCollection Collector => new ServiceHarnessDataCollection();
+        public virtual ServiceHarnessDataCollection Collector { get; } = new ServiceHarnessDataCollection();
         /// <summary>
         /// This is the stub scheduler
         /// </summary>
-        public virtual IScheduler Scheduler => new ServiceHarnessScheduler();
+        public virtual ServiceHarnessScheduler Scheduler { get; } = new ServiceHarnessScheduler();
         /// <summary>
         /// This is the stub shared service container.
         /// </summary>
-        public virtual ISharedService SharedService => new ServiceHarnessSharedService();
+        public virtual ServiceHarnessSharedService SharedService { get; } = new ServiceHarnessSharedService();
         /// <summary>
         /// This is the resource tracker for the harness.
         /// </summary>
-        public virtual IResourceTracker ResourceTracker => new ServiceHarnessResourceContainer();
+        public virtual ServiceHarnessResourceContainer ResourceTracker { get; } = new ServiceHarnessResourceContainer();
     }
 }

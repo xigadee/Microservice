@@ -14,25 +14,16 @@
 // limitations under the License.
 #endregion
 
+using System;
+using System.Collections.Generic;
+
 namespace Xigadee
 {
     /// <summary>
-    /// This interface is used to consistently reference the persistence handler irrespective  
-    /// of the underlying implementation.
+    /// This static class contains a set of shortcuts that can be used to validate a command harness that contains
+    /// a persistence command server.
     /// </summary>
-    public interface IPersistenceMessageHandler: IStatisticsBase
+    public static class CommandPersistenceHarnessHelper
     {
-        /// <summary>
-        /// Gets or sets the channel identifier.
-        /// </summary>
-        string ChannelId { get; set; }
-        /// <summary>
-        /// Gets the type of the entity.
-        /// </summary>
-        /// <value>
-        /// The type of the entity.
-        /// </value>
-        string EntityType { get; }
-
     }
 }

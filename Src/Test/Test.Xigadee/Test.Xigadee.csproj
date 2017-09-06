@@ -100,6 +100,7 @@
     <Compile Include="Dispatcher\DispatcherRetry.cs" />
     <Compile Include="EventTestCommand.cs" />
     <Compile Include="Microservice\ServiceIdentifierValidation.cs" />
+    <Compile Include="Persistence\PersistenceHarness.cs" />
     <Compile Include="Pipeline\Pipeline2.cs" />
     <Compile Include="Commands\Microservice_Validate_CommandRequest.cs" />
     <Compile Include="Commands\Microservice_Validate_CommandOutgoingRequests.cs" />

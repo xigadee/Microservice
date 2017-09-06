@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This is the stub serializtion container.
+    /// This is the stub serialization container.
     /// </summary>
     public class ServiceHarnessSerializationContainer: SerializationContainer
     {

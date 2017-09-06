@@ -79,13 +79,15 @@ namespace Xigadee
         }
         #endregion
 
+        #region ContainerInternal
         /// <summary>
         /// Gets the internal container.
         /// </summary>
         protected ICollection ContainerInternal
         {
-            get{ return mContainer; }
-        }
+            get { return mContainer; }
+        } 
+        #endregion
 
         /// <summary>
         /// Recalculates the statistics.

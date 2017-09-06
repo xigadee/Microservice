@@ -30,6 +30,8 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
+    /// <typeparam name="S">The persistence statistics type.</typeparam>
+    /// <typeparam name="P">The persistence command policy type.</typeparam>
     public abstract class PersistenceCommandBase<K, E, S, P> : CommandBase<S, P, PersistenceHandler>, IPersistenceMessageHandler
         where K : IEquatable<K>
         where S : PersistenceStatistics, new()

@@ -35,7 +35,7 @@ namespace Test.Xigadee.Api.Server
     {
     }
 
-    public class CorePersistenceSharedService<K, E>: PersistenceInternalService<K, E>
+    public class CorePersistenceSharedService<K, E>: PersistenceInternalClient<K, E>
         where K : IEquatable<K>
     {
         public CorePersistenceSharedService():base(responseChannel: CoreChannels.Internal)

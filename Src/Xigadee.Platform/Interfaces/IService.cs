@@ -46,7 +46,7 @@ namespace Xigadee
         void Stop();
 
         /// <summary>
-        /// This method allows the statitics to be retrieved as a generic format.
+        /// This method allows the statistics to be retrieved as a generic format.
         /// </summary>
         /// <returns></returns>
         StatusBase StatisticsGet();

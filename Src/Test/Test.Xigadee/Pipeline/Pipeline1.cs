@@ -64,7 +64,7 @@ namespace Test.Xigadee
 
                 IPipelineChannelIncoming<MicroservicePipeline> cpipeIn = null;
                 IPipelineChannelOutgoing<MicroservicePipeline> cpipeOut = null;
-                PersistenceInternalService<Guid, Blah> persistence = null;
+                PersistenceInternalClient<Guid, Blah> persistence = null;
                 PersistenceBlahMemory persistBlah = null;
                 DebugMemoryDataCollector collector;
 
@@ -82,7 +82,7 @@ namespace Test.Xigadee
                     .AddChannelIncoming("internalIn", internalOnly: true)
                         .CallOut(ChannelInConfigure, (c) => true)
                         .AttachCommand(new PersistenceBlahMemory(profile: "Blah"), assign:(p) => persistBlah = p)
-                        .AttachCommand(new PersistenceInternalService<Guid, Blah>(), assign:(c) => persistence = c, channelResponse: cpipeOut)
+                        .AttachCommand(new PersistenceInternalClient<Guid, Blah>(), assign:(c) => persistence = c, channelResponse: cpipeOut)
                         .CallOut((c) => cpipeIn = c)
                         .Revert()
                     .AddChannelOutgoing("internalOut", internalOnly: true)

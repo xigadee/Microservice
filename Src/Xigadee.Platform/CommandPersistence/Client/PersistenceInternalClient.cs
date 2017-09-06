@@ -33,7 +33,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class PersistenceInternalService<K, E>: PersistenceClientBase<K, E, PersistenceInternalServicePolicy>
+    public class PersistenceInternalClient<K, E>: PersistenceClientBase<K, E, PersistenceInternalClientPolicy>
         , IPersistenceSharedService 
         where K : IEquatable<K>
     {
@@ -56,7 +56,7 @@ namespace Xigadee
         /// <param name="responseChannel">This is the internal response channel that the message will listen on.</param>
         /// <param name="cacheManager"></param>
         /// <param name="defaultRequestTimespan"></param>
-        public PersistenceInternalService(string responseChannel = "internalpersistence"
+        public PersistenceInternalClient(string responseChannel = "internalpersistence"
             , ICacheManager<K, E> cacheManager = null
             , TimeSpan? defaultRequestTimespan = null) 
             :base(cacheManager, defaultRequestTimespan)

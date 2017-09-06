@@ -182,26 +182,43 @@ namespace Xigadee
                 schedules = Items.Where((c) => c.ShouldExecute).ToArray();
             }
 
-            foreach (Schedule schedule in schedules)
-            {
-                try
-                {
-                    if (!schedule.Start())
-                        continue;
+            schedules.ForEach((schedule) => Execute(schedule));
+        }
+        #endregion
 
+        #region Execute(Schedule schedule, bool throwException = false)
+        /// <summary>
+        /// Executes the specific schedule when valid.
+        /// </summary>
+        /// <param name="schedule">The schedule.</param>
+        /// <param name="throwException">Set this to true if you wish to catch exceptions thrown during execution.</param>
+        /// <returns>Returns true if the schedule has executed without error.</returns>
+        protected bool Execute(Schedule schedule, bool throwException = false)
+        {
+            try
+            {
+                if (schedule.Start())
+                {
                     TaskTracker tracker = TaskTrackerCreate(schedule);
 
                     //Submit the task to be executed.
                     TaskSubmit(tracker);
-                }
-                catch (Exception ex)
-                {
-                    Collector?.LogException($"{nameof(SchedulerContainer)}/{nameof(Process)} execute error for schedule: {schedule.Id}/{schedule.Name}", ex);
-                    schedule.Stop(false, true, true, ex);
+
+                    return true;
                 }
             }
-        }
+            catch (Exception ex)
+            {
+                Collector?.LogException($"{nameof(SchedulerContainer)}/{nameof(Process)} execute error for schedule: {schedule.Id}/{schedule.Name}", ex);
+                schedule.Stop(false, true, true, ex);
+                if (throwException)
+                    throw;
+            }
+
+            return false;
+        } 
         #endregion
+
         #region TaskTrackerCreate(Schedule schedule)
         /// <summary>
         /// This private method builds the payload consistently for the incoming payload.
@@ -238,7 +255,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region ScheduleComplete(Task task, TaskTracker tracker)
+        #region ScheduleComplete(TaskTracker tracker, bool failed, Exception ex)
         /// <summary>
         /// This method is used to complete a schedule request and to 
         /// recalculate the next schedule.

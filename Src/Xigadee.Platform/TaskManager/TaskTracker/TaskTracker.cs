@@ -68,7 +68,7 @@ namespace Xigadee
         /// </summary>
         public int TickCount { get; } = Environment.TickCount;
         /// <summary>
-        /// This is the cancellation token used to signal tiemouts or shutdown.
+        /// This is the cancellation token used to signal timeouts or shutdown.
         /// </summary>
         public CancellationTokenSource Cts { get; } = new CancellationTokenSource();
 
@@ -80,9 +80,13 @@ namespace Xigadee
         /// This is the id that the command has registered the request under.
         /// </summary>
         public string CallbackId { get; set; }
-
+        /// <summary>
+        /// Gets or sets the execution time tick count.
+        /// </summary>
         public int? ExecuteTickCount { get; set; }
-
+        /// <summary>
+        /// Gets the time spent processing.
+        /// </summary>
         public TimeSpan? TimeProcessing
         {
             get
@@ -90,7 +94,9 @@ namespace Xigadee
                 return UTCExecute.HasValue ? DateTime.UtcNow - UTCExecute.Value : default(TimeSpan?);
             }
         }
-
+        /// <summary>
+        /// Gets the time remaining until the task will expire.
+        /// </summary>
         public TimeSpan? TimeToExpiry
         {
             get
@@ -98,9 +104,13 @@ namespace Xigadee
                 return ExpireTime.HasValue ? ExpireTime.Value - DateTime.UtcNow : default(TimeSpan?);
             }
         }
-
+        /// <summary>
+        /// Gets or sets the current process slot.
+        /// </summary>
         public long? ProcessSlot { get; set; }
-
+        /// <summary>
+        /// Gets or sets the priority.
+        /// </summary>
         public int? Priority { get; set; }
 
         /// <summary>
@@ -144,9 +154,13 @@ namespace Xigadee
         /// </summary>
         public Action<TaskTracker, bool, Exception> ExecuteComplete { get; set; }
 
-
+        /// <summary>
+        /// Gets or sets the UTC execute time.
+        /// </summary>
         public DateTime? UTCExecute { get; set; }
-
+        /// <summary>
+        /// Gets or sets the cancelled time.
+        /// </summary>
         public DateTime? CancelledTime { get; set; }
 
         #region HasExpired
@@ -160,9 +174,11 @@ namespace Xigadee
                 var time = ExpireTime;
                 return time.HasValue && (DateTime.UtcNow > time.Value);
             }
-        } 
+        }
         #endregion
-
+        /// <summary>
+        /// Gets the UTC time when the task will expire.
+        /// </summary>
         public DateTime? ExpireTime
         {
             get
@@ -201,15 +217,17 @@ namespace Xigadee
         /// This is the task used when the tracker is executed.
         /// </summary>
         public Task ExecuteTask { get; set; }
-
-
         /// <summary>
         /// This is the context object that can be used to hold additional data for the context/
         /// </summary>
         public object Context { get; set; }
-
+        /// <summary>
+        /// Gets or sets a value indicating whether this task has failed.
+        /// </summary>
         public bool IsFailure { get; set; }
-
+        /// <summary>
+        /// Gets or sets the failure exception.
+        /// </summary>
         public Exception FailureException { get; set; }
 
         #region Debug
