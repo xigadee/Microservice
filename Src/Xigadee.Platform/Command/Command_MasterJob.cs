@@ -187,7 +187,6 @@ namespace Xigadee
             switch (Status)
             {
                 case ServiceStatus.Running:
-                case ServiceStatus.Stopping:
                     Outgoing.Process(payload);
                     FireAndDecorateEventArgs(OnMasterJobCommunication
                         , () => new MasterJobCommunicationEventArgs(

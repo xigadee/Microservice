@@ -34,7 +34,7 @@ namespace Test.Xigadee
             msp.ConfigResolverSet(20, (ConfigResolverMemory r) => cr20 = r);
             msp.ConfigResolverSet(30, (ConfigResolverMemory r) => cr30 = r);
 
-            Assert.IsTrue(msp.Configuration.Resolvers.Count()==4);
+            Assert.IsTrue(msp.Configuration.Resolvers.Count()==3);
 
             cr20.Add("valueset20", "one");
             var value20 = msp.Configuration.PlatformOrConfigCache("valueset20");
@@ -62,7 +62,7 @@ namespace Test.Xigadee
             msp.ConfigResolverSet(20, (ConfigResolverMemory r) => cr20 = r);
             msp.ConfigResolverSet(30, (ConfigResolverMemory r) => cr30 = r);
 
-            Assert.IsTrue(msp.Configuration.Resolvers.Count() == 4);
+            Assert.IsTrue(msp.Configuration.Resolvers.Count() == 3);
 
             cr20.Add("valueset20", "one");
             cr30.Add("valueset20", "two");
