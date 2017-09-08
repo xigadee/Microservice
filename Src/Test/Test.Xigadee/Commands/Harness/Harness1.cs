@@ -24,7 +24,8 @@ namespace Test.Xigadee
             [JobSchedule("1")]
             public void Schedule1()
             {
-
+                //var back = OutgoingRequest.Process<string,string>(("one", "two", "three"),"Hello").Result;
+               
             }
         }
 
@@ -44,20 +45,19 @@ namespace Test.Xigadee
             {
                 Assert.IsTrue(ex is CommandChannelIdNullException);
             }
-
         }
 
 
         [TestMethod]
         public void PartialCommandContractWithChannelIdSet()
         {
-            var policy = new CommandPolicy();
+            var policy = new CommandPolicy() { OutgoingRequestsEnabled = true, ResponseChannelId = "getback" };
             policy.ChannelId = "fredo";
             CommandHarness<CommandHarnessTest1> harness;
 
             harness = new CommandHarness<CommandHarnessTest1>(() => new CommandHarnessTest1(policy));
             harness.Start();
-            Assert.IsTrue(harness.RegisteredCommands.Count == 1);
+            Assert.IsTrue(harness.RegisteredCommands.Count == 2);
 
             harness.Dispatcher.Process(("fredo", "two", "three"), "Helloe");
             harness.Dispatcher.Process(("fredo", "one", "two"), "Helloe");

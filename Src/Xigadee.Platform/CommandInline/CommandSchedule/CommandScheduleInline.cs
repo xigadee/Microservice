@@ -44,7 +44,9 @@ namespace Xigadee
             base.JobSchedulesManualRegister();
 
             JobScheduleRegister(
-                async (schedule, token) => await mCommand(new CommandScheduleInlineContext(schedule, token, PayloadSerializer, Collector, SharedServices, OriginatorId))
+                async (schedule, token) => await mCommand(
+                    new CommandScheduleInlineContext(schedule, token, PayloadSerializer, Collector, SharedServices, OriginatorId, OutgoingRequest)
+                    )
                 , mTimerConfig
                 , null
                 , mReferenceId

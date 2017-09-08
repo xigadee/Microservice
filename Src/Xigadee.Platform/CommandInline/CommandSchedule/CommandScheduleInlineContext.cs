@@ -19,11 +19,13 @@ namespace Xigadee
         /// <param name="collector">The data collector.</param>
         /// <param name="sharedServices">The shared service context.</param>
         /// <param name="originatorId">This is the Microservice identifiers.</param>
+        /// <param name="outgoingRequest">This is the outgoing request initiator.</param>
         public CommandScheduleInlineContext(Schedule schedule, CancellationToken token
             , IPayloadSerializationContainer serializer
             , IDataCollection collector
             , ISharedService sharedServices
-            , MicroserviceId originatorId):base(serializer, collector, sharedServices, originatorId)
+            , MicroserviceId originatorId
+            , ICommandInitiator outgoingRequest) :base(serializer, collector, sharedServices, originatorId, outgoingRequest)
         {
             Schedule = schedule;
             Token = token;

@@ -31,11 +31,11 @@ namespace Xigadee
     {
         #region Declarations
         /// <summary>
-        /// This is the collection of inplay messages.
+        /// This is the collection of in-play messages.
         /// </summary>
         protected ConcurrentDictionary<string, OutgoingRequestTracker> mOutgoingRequests;
         /// <summary>
-        /// This is the inititator timeout schedule.
+        /// This is the initiator timeout schedule.
         /// </summary>
         protected CommandTimeoutSchedule mScheduleTimeout;
         #endregion
@@ -74,7 +74,9 @@ namespace Xigadee
             //as outgoing messages will not work without a return path.
             if (ResponseId == null)
                 throw new CommandStartupException($"Command={GetType().Name}: Outgoing requests are enabled, but the ResponseId parameter has not been set");
-            
+
+            OutgoingRequest = new OutgoingRequestWrapper<S,P,H>(this, mPolicy.OutgoingRequestDefaultTimespan, () => this.Status);
+
             //This is the return message handler
             CommandRegister(ResponseId, OutgoingRequestResponseIn);
         }
@@ -85,6 +87,7 @@ namespace Xigadee
         /// </summary>
         protected virtual void OutgoingRequestsTearDown()
         {
+            OutgoingRequest = null;
             //Remove the filter for the message.
             CommandUnregister(ResponseId, false);
 
@@ -108,6 +111,13 @@ namespace Xigadee
                 Collector?.LogException("OutgoingRequestsStop error", ex);
             }
         }
+        #endregion
+
+        #region OutgoingRequest
+        /// <summary>
+        /// Gets or sets the outgoing dispatcher.
+        /// </summary>
+        protected ICommandInitiator OutgoingRequest { get; set; } 
         #endregion
 
         #region UseASPNETThreadModel
@@ -169,7 +179,7 @@ namespace Xigadee
         /// By default this is taken from the calling thread if not passed.</param>
         /// <returns>Returns the async response wrapper.</returns>
         /// <returns>Returns a response object of the specified type in a response metadata wrapper.</returns>
-        protected virtual async Task<ResponseWrapper<RS>> ProcessOutgoing<I, RQ, RS>(RQ rq
+        protected internal virtual async Task<ResponseWrapper<RS>> ProcessOutgoing<I, RQ, RS>(RQ rq
             , RequestSettings rqSettings = null
             , ProcessOptions? routingOptions = null
             , Func<TaskStatus, TransmissionPayload, bool, ResponseWrapper<RS>> processResponse = null
@@ -211,7 +221,7 @@ namespace Xigadee
         /// <param name="principal">This is the principal that you wish the command to be executed under. 
         /// By default this is taken from the calling thread if not passed.</param>
         /// <returns>Returns the async response wrapper.</returns>
-        protected virtual async Task<ResponseWrapper<RS>> ProcessOutgoing<RQ, RS>(
+        protected internal virtual async Task<ResponseWrapper<RS>> ProcessOutgoing<RQ, RS>(
               string channelId, string messageType, string actionType
             , RQ rq
             , RequestSettings rqSettings = null
@@ -310,7 +320,7 @@ namespace Xigadee
             //Submit the payload for processing to the task manager
             TaskManager(this, tracker.Id, tracker.Payload);
 
-            //Ok, this is a sync process, let's wait until it responsds or times out.
+            //OK, this is a sync process, let's wait until it responds or times out.
             TransmissionPayload payloadRs = null;
 
             //This has not been marked async so hold the current task until completion.
@@ -513,7 +523,7 @@ namespace Xigadee
             /// </summary>
             /// <param name="payload">The payload.</param>
             /// <param name="ttl">The time to live.</param>
-            /// <param name="start">The process start tickcount.</param>
+            /// <param name="start">The process start tick-count.</param>
             public OutgoingRequestTracker(TransmissionPayload payload, TimeSpan ttl, int? start = null):base(payload, ttl, start)
             {
                 Tcs = new TaskCompletionSource<TransmissionPayload>();
@@ -524,6 +534,131 @@ namespace Xigadee
             /// </summary>
             public TaskCompletionSource<TransmissionPayload> Tcs { get; set; }
         }
+        #endregion
+
+        #region Class -> OutgoingRequestWrapper<CS, CP, CH>
+        /// <summary>
+        /// This internal class is used to simplify how commands can communicate between one another.
+        /// </summary>
+        /// <typeparam name="CS">The statistics class type.</typeparam>
+        /// <typeparam name="CP">The customer command policy.</typeparam>
+        /// <typeparam name="CH">The command handler type.</typeparam>
+        /// <seealso cref="Xigadee.ICommand" />
+        protected class OutgoingRequestWrapper<CS, CP, CH>: ICommandInitiator
+            where CS : CommandStatistics, new()
+            where CP : CommandPolicy, new()
+            where CH : class, ICommandHandler, new()
+        {
+            TimeSpan? mDefaultRequestTimespan;
+            Func<ServiceStatus> mStatus;
+            CommandBase<CS, CP, CH> mCommand;
+
+            internal OutgoingRequestWrapper(CommandBase<CS, CP, CH> command, TimeSpan? defaultRequestTimespan, Func<ServiceStatus> status)
+            {
+                mStatus = status;
+                mDefaultRequestTimespan = defaultRequestTimespan;
+                mCommand = command;
+            }
+
+            private void ServiceStartedCheck()
+            {
+                if (mStatus() != ServiceStatus.Running)
+                    throw new ServiceNotStartedException();
+            }
+
+            /// <summary>
+            /// This method is used to send requests to a remote command and wait for a response.
+            /// </summary>
+            /// <typeparam name="I">The contract interface.</typeparam>
+            /// <typeparam name="RQ">The request object type.</typeparam>
+            /// <typeparam name="RS">The response object type.</typeparam>
+            /// <param name="rq">The request object.</param>
+            /// <param name="settings">The request settings. Use this to specifically set the timeout parameters, amongst other settings, or to pass meta data to the calling party.</param>
+            /// <param name="routing">The routing options by default this will try internal and then external endpoints.</param>
+            /// <param name="principal">This is the principal that you wish the command to be executed under. 
+            /// By default this is taken from the calling thread if not passed.</param>
+            /// <returns>Returns the async response wrapper.</returns>
+            public async Task<ResponseWrapper<RS>> Process<I, RQ, RS>(
+                  RQ rq
+                , RequestSettings settings = null
+                , ProcessOptions? routing = default(ProcessOptions?)
+                , IPrincipal principal = null
+                )
+                where I : IMessageContract
+            {
+                ServiceStartedCheck();
+
+                return await mCommand.ProcessOutgoing<I, RQ, RS>(rq
+                    , settings
+                    , routing
+                    , fallbackMaxProcessingTime: mDefaultRequestTimespan
+                    , principal: principal ?? Thread.CurrentPrincipal
+                    );
+            }
+            /// <summary>
+            /// This method is used to send requests to a remote command and wait for a response.
+            /// </summary>
+            /// <typeparam name="RQ">The request object type.</typeparam>
+            /// <typeparam name="RS">The response object type.</typeparam>
+            /// <param name="channelId"></param>
+            /// <param name="messageType"></param>
+            /// <param name="actionType"></param>
+            /// <param name="rq">The request object.</param>
+            /// <param name="settings">The request settings. Use this to specifically set the timeout parameters, amongst other settings, or to pass meta data to the calling party.</param>
+            /// <param name="routing">The routing options by default this will try internal and then external endpoints.</param>
+            /// <param name="principal">This is the principal that you wish the command to be executed under. 
+            /// By default this is taken from the calling thread if not passed.</param>
+            /// <returns>Returns the async response wrapper.</returns>
+            public async Task<ResponseWrapper<RS>> Process<RQ, RS>(
+                  string channelId, string messageType, string actionType
+                , RQ rq
+                , RequestSettings settings = null
+                , ProcessOptions? routing = default(ProcessOptions?)
+                , IPrincipal principal = null
+                )
+            {
+                ServiceStartedCheck();
+
+                return await mCommand.ProcessOutgoing<RQ, RS>(
+                      channelId, messageType, actionType
+                    , rq
+                    , settings
+                    , routing
+                    , fallbackMaxProcessingTime: mDefaultRequestTimespan
+                    , principal: principal ?? Thread.CurrentPrincipal);
+            }
+
+            /// <summary>
+            /// This method is used to send requests to a remote command and wait for a response.
+            /// </summary>
+            /// <typeparam name="RQ">The request object type.</typeparam>
+            /// <typeparam name="RS">The response object type.</typeparam>
+            /// <param name="header">The message header object that defines the remote endpoint.</param>
+            /// <param name="rq">The request object.</param>
+            /// <param name="settings">The request settings. Use this to specifically set the timeout parameters, amongst other settings, or to pass meta data to the calling party.</param>
+            /// <param name="routing">The routing options by default this will try internal and then external endpoints.</param>
+            /// <param name="principal">This is the principal that you wish the command to be executed under. 
+            /// By default this is taken from the calling thread if not passed.</param>
+            /// <returns>Returns the async response wrapper.</returns>
+            public async Task<ResponseWrapper<RS>> Process<RQ, RS>(
+                  ServiceMessageHeader header
+                , RQ rq
+                , RequestSettings settings = null
+                , ProcessOptions? routing = default(ProcessOptions?)
+                , IPrincipal principal = null
+                )
+            {
+                ServiceStartedCheck();
+
+                return await mCommand.ProcessOutgoing<RQ, RS>(
+                      header.ChannelId, header.MessageType, header.ActionType
+                    , rq
+                    , settings
+                    , routing
+                    , fallbackMaxProcessingTime: mDefaultRequestTimespan
+                    , principal: principal ?? Thread.CurrentPrincipal);
+            }
+        } 
         #endregion
     }
 

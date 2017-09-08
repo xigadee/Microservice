@@ -15,15 +15,10 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Security.Claims;
 using System.Security.Principal;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Xigadee;
+
 namespace Xigadee
 {
     /// <summary>
@@ -31,27 +26,15 @@ namespace Xigadee
     /// </summary>
     public class CommandInitiator : CommandBase<CommandInitiatorStatistics, CommandInitiatorPolicy>, ICommandInitiator
     {
-        #region Declarations
-        /// <summary>
-        /// This is the default timespan that a message will wait if not set.
-        /// </summary>
-        protected readonly TimeSpan? mDefaultRequestTimespan;
-        #endregion
         #region Constructor
         /// <summary>
         /// This is the default constructor which sets the cache manager.
         /// </summary>
         public CommandInitiator(TimeSpan? defaultRequestTimespan = null)
         {
-            mDefaultRequestTimespan = defaultRequestTimespan;
+            mPolicy.OutgoingRequestDefaultTimespan = defaultRequestTimespan;
         }
         #endregion
-
-        private void ServiceStartedCheck()
-        {
-            if (Status != ServiceStatus.Running)
-                throw new ServiceNotStartedException();
-        }
 
         #region Process<I, RQ, RS>(RQ rq, RequestSettings settings = null, ProcessOptions? routing = null)
         /// <summary>
@@ -74,12 +57,9 @@ namespace Xigadee
             )
             where I : IMessageContract
         {
-            ServiceStartedCheck();
-
-            return await ProcessOutgoing<I, RQ, RS>(rq
+            return await OutgoingRequest.Process<I, RQ, RS>(rq
                 , settings
                 , routing
-                , fallbackMaxProcessingTime: mDefaultRequestTimespan
                 , principal: principal ?? Thread.CurrentPrincipal
                 );
         }
@@ -107,14 +87,11 @@ namespace Xigadee
             , IPrincipal principal = null
             )
         {
-            ServiceStartedCheck();
-
-            return await ProcessOutgoing<RQ,RS>(
+            return await OutgoingRequest.Process<RQ,RS>(
                   channelId, messageType, actionType
                 , rq
                 , settings
                 , routing
-                , fallbackMaxProcessingTime: mDefaultRequestTimespan
                 , principal: principal ?? Thread.CurrentPrincipal);
         }
 
@@ -138,14 +115,11 @@ namespace Xigadee
             , IPrincipal principal = null
             )
         {
-            ServiceStartedCheck();
-
-            return await ProcessOutgoing<RQ, RS>(
-                  header.ChannelId, header.MessageType, header.ActionType
+            return await OutgoingRequest.Process<RQ, RS>(
+                  header
                 , rq
                 , settings
                 , routing
-                , fallbackMaxProcessingTime: mDefaultRequestTimespan
                 , principal: principal ?? Thread.CurrentPrincipal);
         }
         #endregion

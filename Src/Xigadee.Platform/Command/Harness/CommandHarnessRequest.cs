@@ -15,7 +15,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="request">The request.</param>
         /// <param name="referenceId">The reference identifier.</param>
-        public CommandHarnessRequest(TransmissionPayload request, string referenceId)
+        public CommandHarnessRequest(TaskTracker request, string referenceId)
         {
             Id = request?.Id ?? Guid.NewGuid();
             Request = request;
@@ -30,7 +30,7 @@ namespace Xigadee
         /// <summary>
         /// Gets the request.
         /// </summary>
-        public TransmissionPayload Request { get; }
+        public TaskTracker Request { get; }
         /// <summary>
         /// Gets any responses.
         /// </summary>

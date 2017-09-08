@@ -113,6 +113,16 @@ namespace Xigadee
         }
 
         /// <summary>
+        /// Identifies whether the tracker context is a schedule.
+        /// </summary>
+        /// <param name="tracker">The tracker.</param>
+        /// <returns>Return true if the context is a schedule.</returns>
+        public static bool IsSchedule(this TaskTracker tracker)
+        {
+            return tracker.Context is Schedule;
+        }
+
+        /// <summary>
         /// Converts the context to the transmission payload.
         /// </summary>
         /// <param name="tracker">The tracker.</param>
@@ -120,6 +130,17 @@ namespace Xigadee
         public static TransmissionPayload ToTransmissionPayload(this TaskTracker tracker)
         {
             return tracker.Context as TransmissionPayload;
+        }
+
+
+        /// <summary>
+        /// Converts the context to a schedule.
+        /// </summary>
+        /// <param name="tracker">The tracker.</param>
+        /// <returns>Returns the schedule or null.</returns>
+        public static Schedule ToSchedule(this TaskTracker tracker)
+        {
+            return tracker.Context as Schedule;
         }
     }
 }

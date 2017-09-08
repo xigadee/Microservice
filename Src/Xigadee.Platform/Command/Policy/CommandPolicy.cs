@@ -73,11 +73,15 @@ namespace Xigadee
         /// The default is 30s.
         /// </summary>
         public virtual TimeSpan OutgoingRequestMaxProcessingTimeDefault { get; set; } = TimeSpan.FromSeconds(30);
-
+        /// <summary>
+        /// Gets or sets the outgoing request default timespan, which by default is 5 seconds less than OutgoingRequestMaxProcessingTimeDefault.
+        /// </summary>
+        public virtual TimeSpan? OutgoingRequestDefaultTimespan { get; set; } = TimeSpan.FromSeconds(25);
         /// <summary>
         /// This boolean property specifies whether outgoing requests are enables.
         /// </summary>
         public virtual bool OutgoingRequestsEnabled { get; set; } = false;
+
         /// <summary>
         /// This is the default time out poll, which is set at an initial 10 second wait and then a repeated 5 seconds poll by default.
         /// </summary>

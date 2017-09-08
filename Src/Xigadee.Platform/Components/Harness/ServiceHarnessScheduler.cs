@@ -30,7 +30,7 @@ namespace Xigadee
         /// </summary>
         public ServiceHarnessScheduler()
         {
-            TaskSubmit = ProcessTracker;
+            TaskSubmit = ProcessScheduleTask;
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="tracker">The tracker.</param>
         /// <exception cref="System.ArgumentOutOfRangeException">tracker - The tracker object was not of type schedule.</exception>
-        protected virtual void ProcessTracker(TaskTracker tracker)
+        protected virtual void ProcessScheduleTask(TaskTracker tracker)
         {
             if (tracker.Type != TaskTrackerType.Schedule)
                 throw new ArgumentOutOfRangeException("tracker", "The tracker object was not of type schedule.");

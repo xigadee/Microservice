@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xigadee;
 
 namespace Xigadee
 {
@@ -23,11 +19,13 @@ namespace Xigadee
         /// <param name="collector">The data collector.</param>
         /// <param name="sharedServices">The shared service context.</param>
         /// <param name="originatorId">This is the Microservice identifiers.</param>
+        /// <param name="outgoingRequest">This is the outgoing request initiator.</param>
         public CommandMethodInlineContext(TransmissionPayload rq, List<TransmissionPayload> rsCol
             , IPayloadSerializationContainer serializer
             , IDataCollection collector
             , ISharedService sharedServices
-            , MicroserviceId originatorId):base(serializer, collector, sharedServices, originatorId)
+            , MicroserviceId originatorId
+            , ICommandInitiator outgoingRequest) :base(serializer, collector, sharedServices, originatorId, outgoingRequest)
         {
             Request = rq;
             Responses = rsCol;
@@ -67,16 +65,19 @@ namespace Xigadee
         /// <param name="collector">The data collector.</param>
         /// <param name="sharedServices">The shared service context.</param>
         /// <param name="originatorId">This is the Microservice identifiers.</param>
+        /// <param name="outgoingRequest">This is the outgoing request initiator.</param>
         public CommandContextBase(
               IPayloadSerializationContainer serializer
             , IDataCollection collector
             , ISharedService sharedServices
-            , MicroserviceId originatorId)
+            , MicroserviceId originatorId
+            , ICommandInitiator outgoingRequest)
         {
             PayloadSerializer = serializer;
             Collector = collector;
             SharedServices = sharedServices;
             OriginatorId = originatorId;
+            OutgoingRequest = outgoingRequest;
         }
         /// <summary>
         /// The serialization container.
@@ -94,6 +95,9 @@ namespace Xigadee
         /// This is the service originator.
         /// </summary>
         public MicroserviceId OriginatorId { get; }
-
+        /// <summary>
+        /// Gets the outgoing request initiator.
+        /// </summary>
+        public ICommandInitiator OutgoingRequest { get; }
     }
 }
