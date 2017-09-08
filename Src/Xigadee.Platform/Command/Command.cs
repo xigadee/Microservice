@@ -94,6 +94,7 @@ namespace Xigadee
 
                 CommandsTearUp();
 
+                Outgoing = new OutgoingWrapper<S, P, H>(this, mPolicy.OutgoingRequestDefaultTimespan, () => this.Status, mPolicy.TransmissionPayloadTraceEnabled);
                 if (mPolicy.OutgoingRequestsEnabled)
                     OutgoingRequestsTearUp();
 
@@ -126,6 +127,7 @@ namespace Xigadee
                 if (mPolicy.JobsEnabled)
                     JobsTearDown();
 
+                Outgoing = null;
                 if (mPolicy.OutgoingRequestsEnabled)
                     OutgoingRequestsTearDown();
 

@@ -17,10 +17,11 @@
 namespace Xigadee
 {
     /// <summary>
-    /// This command gives outgoing functionality.
+    /// This interface is used to present outgoing message functionality to command logic.
     /// </summary>
     /// <seealso cref="Xigadee.ICommandInitiator" />
-    public interface ICommandOutgoing:ICommandInitiator
+    /// <seealso cref="Xigadee.IMicroserviceDispatch" />
+    public interface ICommandOutgoing: ICommandInitiator, IMicroserviceDispatch
     {
     }
 }

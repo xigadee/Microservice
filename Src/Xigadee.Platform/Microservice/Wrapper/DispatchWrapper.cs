@@ -24,13 +24,16 @@ namespace Xigadee
     /// <summary>
     /// This class is used to wrap the dispatch functionality.
     /// </summary>
-    internal class DispatchWrapper: WrapperBase, IMicroserviceDispatch
+    public class DispatchWrapper: WrapperBase, IMicroserviceDispatch
     {
         private Action<TransmissionPayload, string> ExecuteOrEnqueue { get; }
 
-        private IPayloadSerializationContainer mSerializer;
+        private readonly IPayloadSerializationContainer mSerializer;
 
-        private bool mTransmissionPayloadTraceEnabled;
+        /// <summary>
+        /// Identifies whether the payload trace is enabled.
+        /// </summary>
+        protected readonly bool mTransmissionPayloadTraceEnabled;
 
         internal DispatchWrapper(IPayloadSerializationContainer serializer, Action<TransmissionPayload, string> executeOrEnqueue 
             ,Func<ServiceStatus> getStatus, bool traceEnabled) : base(getStatus)

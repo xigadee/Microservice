@@ -75,8 +75,6 @@ namespace Xigadee
             if (ResponseId == null)
                 throw new CommandStartupException($"Command={GetType().Name}: Outgoing requests are enabled, but the ResponseId parameter has not been set");
 
-            Outgoing = new OutgoingRequestWrapper<S,P,H>(this, mPolicy.OutgoingRequestDefaultTimespan, () => this.Status);
-
             //This is the return message handler
             CommandRegister(ResponseId, OutgoingRequestResponseIn);
         }
@@ -87,7 +85,6 @@ namespace Xigadee
         /// </summary>
         protected virtual void OutgoingRequestsTearDown()
         {
-            Outgoing = null;
             //Remove the filter for the message.
             CommandUnregister(ResponseId, false);
 
@@ -536,7 +533,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region Class -> OutgoingRequestWrapper<CS, CP, CH>
+        #region Class -> OutgoingWrapper<CS, CP, CH>
         /// <summary>
         /// This internal class is used to simplify how commands can communicate between one another.
         /// </summary>
@@ -544,7 +541,7 @@ namespace Xigadee
         /// <typeparam name="CP">The customer command policy.</typeparam>
         /// <typeparam name="CH">The command handler type.</typeparam>
         /// <seealso cref="Xigadee.ICommand" />
-        protected class OutgoingRequestWrapper<CS, CP, CH>: ICommandOutgoing
+        protected class OutgoingWrapper<CS, CP, CH>: DispatchWrapper, ICommandOutgoing
             where CS : CommandStatistics, new()
             where CP : CommandPolicy, new()
             where CH : class, ICommandHandler, new()
@@ -553,17 +550,15 @@ namespace Xigadee
             Func<ServiceStatus> mStatus;
             CommandBase<CS, CP, CH> mCommand;
 
-            internal OutgoingRequestWrapper(CommandBase<CS, CP, CH> command, TimeSpan? defaultRequestTimespan, Func<ServiceStatus> status)
+            internal OutgoingWrapper(CommandBase<CS, CP, CH> command
+                , TimeSpan? defaultRequestTimespan
+                , Func<ServiceStatus> status
+                , bool traceEnabled)
+                :base(command.PayloadSerializer, (p,s) => command.TaskManager(command, s, p), status, traceEnabled)
             {
                 mStatus = status;
                 mDefaultRequestTimespan = defaultRequestTimespan;
                 mCommand = command;
-            }
-
-            private void ServiceStartedCheck()
-            {
-                if (mStatus() != ServiceStatus.Running)
-                    throw new ServiceNotStartedException();
             }
 
             /// <summary>
@@ -586,7 +581,7 @@ namespace Xigadee
                 )
                 where I : IMessageContract
             {
-                ServiceStartedCheck();
+                ValidateServiceStarted();
 
                 return await mCommand.ProcessOutgoing<I, RQ, RS>(rq
                     , settings
@@ -617,7 +612,7 @@ namespace Xigadee
                 , IPrincipal principal = null
                 )
             {
-                ServiceStartedCheck();
+                ValidateServiceStarted();
 
                 return await mCommand.ProcessOutgoing<RQ, RS>(
                       channelId, messageType, actionType
@@ -648,7 +643,7 @@ namespace Xigadee
                 , IPrincipal principal = null
                 )
             {
-                ServiceStartedCheck();
+                ValidateServiceStarted();
 
                 return await mCommand.ProcessOutgoing<RQ, RS>(
                       header.ChannelId, header.MessageType, header.ActionType

@@ -24,8 +24,8 @@ namespace Test.Xigadee
             [JobSchedule("1")]
             public void Schedule1()
             {
-                //var back = OutgoingRequest.Process<string,string>(("one", "two", "three"),"Hello").Result;
-               
+                //var back = Outgoing.Process<string,string>(("one", "two", "three"),"Hello").Result;
+                Outgoing.Process(("one", "two", "three"), "Hello");
             }
         }
 
@@ -63,6 +63,8 @@ namespace Test.Xigadee
             harness.Dispatcher.Process(("fredo", "one", "two"), "Helloe");
 
             harness.ScheduleExecute("1");
+
+            Assert.IsTrue(harness.Outgoing.Count == 1);
         }
     }
 }

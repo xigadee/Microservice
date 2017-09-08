@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    internal abstract class WrapperBase
+    public abstract class WrapperBase
     {
         private Func<ServiceStatus> Status;
 
