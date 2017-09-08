@@ -46,7 +46,7 @@ namespace Test.Xigadee
             //mCollector?.Log(LogLevel.Info, "DelayedProcessingJob - Executing schedule " + currentJob);
             state.Context = currentJob;
             var payload = new TransmissionPayload("interserv", "do", "something", options:ProcessOptions.RouteExternal);
-            TaskManager(this, null, payload);
+            Outgoing.Process(payload);
 
             //await Task.Delay(TimeSpan.FromSeconds(40), token);
             //mCollector?.Log(LogLevel.Info, "DelayedProcessingJob - Finished executing schedule " + currentJob);
