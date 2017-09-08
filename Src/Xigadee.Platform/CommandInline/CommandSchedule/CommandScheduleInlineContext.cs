@@ -25,7 +25,7 @@ namespace Xigadee
             , IDataCollection collector
             , ISharedService sharedServices
             , MicroserviceId originatorId
-            , ICommandInitiator outgoingRequest) :base(serializer, collector, sharedServices, originatorId, outgoingRequest)
+            , ICommandOutgoing outgoingRequest) :base(serializer, collector, sharedServices, originatorId, outgoingRequest)
         {
             Schedule = schedule;
             Token = token;

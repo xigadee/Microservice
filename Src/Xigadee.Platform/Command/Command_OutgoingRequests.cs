@@ -75,7 +75,7 @@ namespace Xigadee
             if (ResponseId == null)
                 throw new CommandStartupException($"Command={GetType().Name}: Outgoing requests are enabled, but the ResponseId parameter has not been set");
 
-            OutgoingRequest = new OutgoingRequestWrapper<S,P,H>(this, mPolicy.OutgoingRequestDefaultTimespan, () => this.Status);
+            Outgoing = new OutgoingRequestWrapper<S,P,H>(this, mPolicy.OutgoingRequestDefaultTimespan, () => this.Status);
 
             //This is the return message handler
             CommandRegister(ResponseId, OutgoingRequestResponseIn);
@@ -87,7 +87,7 @@ namespace Xigadee
         /// </summary>
         protected virtual void OutgoingRequestsTearDown()
         {
-            OutgoingRequest = null;
+            Outgoing = null;
             //Remove the filter for the message.
             CommandUnregister(ResponseId, false);
 
@@ -113,11 +113,11 @@ namespace Xigadee
         }
         #endregion
 
-        #region OutgoingRequest
+        #region Outgoing
         /// <summary>
         /// Gets or sets the outgoing dispatcher.
         /// </summary>
-        protected ICommandInitiator OutgoingRequest { get; set; } 
+        protected ICommandOutgoing Outgoing { get; set; } 
         #endregion
 
         #region UseASPNETThreadModel
@@ -544,7 +544,7 @@ namespace Xigadee
         /// <typeparam name="CP">The customer command policy.</typeparam>
         /// <typeparam name="CH">The command handler type.</typeparam>
         /// <seealso cref="Xigadee.ICommand" />
-        protected class OutgoingRequestWrapper<CS, CP, CH>: ICommandInitiator
+        protected class OutgoingRequestWrapper<CS, CP, CH>: ICommandOutgoing
             where CS : CommandStatistics, new()
             where CP : CommandPolicy, new()
             where CH : class, ICommandHandler, new()

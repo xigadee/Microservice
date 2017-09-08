@@ -57,7 +57,7 @@ namespace Xigadee
             )
             where I : IMessageContract
         {
-            return await OutgoingRequest.Process<I, RQ, RS>(rq
+            return await Outgoing.Process<I, RQ, RS>(rq
                 , settings
                 , routing
                 , principal: principal ?? Thread.CurrentPrincipal
@@ -87,7 +87,7 @@ namespace Xigadee
             , IPrincipal principal = null
             )
         {
-            return await OutgoingRequest.Process<RQ,RS>(
+            return await Outgoing.Process<RQ,RS>(
                   channelId, messageType, actionType
                 , rq
                 , settings
@@ -115,7 +115,7 @@ namespace Xigadee
             , IPrincipal principal = null
             )
         {
-            return await OutgoingRequest.Process<RQ, RS>(
+            return await Outgoing.Process<RQ, RS>(
                   header
                 , rq
                 , settings

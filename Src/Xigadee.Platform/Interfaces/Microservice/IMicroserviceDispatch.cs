@@ -79,7 +79,8 @@ namespace Xigadee
         /// <param name="options">The process options.</param>
         /// <param name="release">The release action which is called when the payload has been executed.</param>
         /// by the receiving commands.</param>
-        void Process<C>(object package = null, int ChannelPriority = 1
+        void Process<C>(object package = null
+            , int ChannelPriority = 1
             , ProcessOptions options = ProcessOptions.RouteInternal | ProcessOptions.RouteExternal
             , Action<bool, Guid> release = null)
             where C : IMessageContract;

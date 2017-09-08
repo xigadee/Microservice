@@ -25,7 +25,7 @@ namespace Xigadee
             , IDataCollection collector
             , ISharedService sharedServices
             , MicroserviceId originatorId
-            , ICommandInitiator outgoingRequest) :base(serializer, collector, sharedServices, originatorId, outgoingRequest)
+            , ICommandOutgoing outgoingRequest) :base(serializer, collector, sharedServices, originatorId, outgoingRequest)
         {
             Request = rq;
             Responses = rsCol;
@@ -71,13 +71,13 @@ namespace Xigadee
             , IDataCollection collector
             , ISharedService sharedServices
             , MicroserviceId originatorId
-            , ICommandInitiator outgoingRequest)
+            , ICommandOutgoing outgoingRequest)
         {
             PayloadSerializer = serializer;
             Collector = collector;
             SharedServices = sharedServices;
             OriginatorId = originatorId;
-            OutgoingRequest = outgoingRequest;
+            Outgoing = outgoingRequest;
         }
         /// <summary>
         /// The serialization container.
@@ -98,6 +98,6 @@ namespace Xigadee
         /// <summary>
         /// Gets the outgoing request initiator.
         /// </summary>
-        public ICommandInitiator OutgoingRequest { get; }
+        public ICommandOutgoing Outgoing { get; }
     }
 }
