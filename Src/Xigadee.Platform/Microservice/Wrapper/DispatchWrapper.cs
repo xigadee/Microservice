@@ -94,18 +94,25 @@ namespace Xigadee
         /// <param name="package">The object package to process.</param>
         /// <param name="ChannelPriority">The priority that the message should be processed. The default is 1. If this message is not a valid value, it will be matched to the nearest valid value.</param>
         /// <param name="options">The process options.</param>
-        /// <param name="release">The release action which is called when the payload has been executed.</param>
-        /// by the receiving commands.</param>
+        /// <param name="release">The release action which is called when the payload has been executed by the receiving commands.</param>
+        /// <param name="responseHeader">This is the optional response header</param>
+        /// <param name="ResponseChannelPriority">This is the response channel priority. This will be set if the response header is not null. The default priority is 1.</param>
         public void Process(ServiceMessageHeader header
             , object package = null
             , int ChannelPriority = 1
             , ProcessOptions options = ProcessOptions.RouteExternal | ProcessOptions.RouteInternal
-            , Action<bool, Guid> release = null)
+            , Action<bool, Guid> release = null
+            , ServiceMessageHeader responseHeader = null
+            , int ResponseChannelPriority = 1
+            )
         {
-            var message = new ServiceMessage(header);
+            var message = new ServiceMessage(header, responseHeader);
             message.ChannelPriority = ChannelPriority;
             if (package != null)
                 message.Blob = mSerializer.PayloadSerialize(package);
+
+            if (responseHeader != null)
+                message.ResponseChannelPriority = ResponseChannelPriority;
 
             Process(message, options, release);
         }

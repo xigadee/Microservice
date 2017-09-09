@@ -168,17 +168,20 @@ namespace Xigadee
 
         #region Equals ...
         /// <summary>
-        /// This is the equal override that matches other structs by use of their case insensitive keys.
+        /// This is the equal override that matches other classes by use of their case insensitive keys.
         /// </summary>
         /// <param name="other">The header to match.</param>
-        /// <returns>Returns true if the other struct matches this struct.</returns>
+        /// <returns>Returns true if the other class matches this class.</returns>
         public bool Equals(ServiceMessageHeader other)
         {
+            if (other == null)
+                return false;
+
             return Key == other.Key;
         }
 
         /// <summary>
-        /// This is the equals overside.
+        /// This is the equals override.
         /// </summary>
         /// <param name="obj">The incoming object.</param>
         /// <returns></returns>
@@ -242,6 +245,15 @@ namespace Xigadee
         /// <returns>Returns true if they match.</returns>
         public static bool operator ==(ServiceMessageHeader a, ServiceMessageHeader b)
         {
+            bool nullEither = object.ReferenceEquals(a, null) ^ object.ReferenceEquals(b, null);
+
+            if (nullEither)
+                return false;
+
+            //This checks if both are null, then should be set to true.
+            if (!nullEither && object.ReferenceEquals(a, null))
+                return true;
+
             return a.Equals(b);
         }
         #endregion

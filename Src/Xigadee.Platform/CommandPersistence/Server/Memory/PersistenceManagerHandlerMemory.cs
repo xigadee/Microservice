@@ -93,7 +93,7 @@ namespace Xigadee
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
     /// <typeparam name="S">An extended statistics class.</typeparam>
-    public abstract class PersistenceManagerHandlerMemory<K, E, S> : PersistenceManagerHandlerJsonBase<K, E, S, PersistenceCommandPolicy>
+    public abstract class PersistenceManagerHandlerMemory<K, E, S> : PersistenceManagerHandlerJsonBase<K, E, S, PersistenceManagerHandlerMemoryPolicy>
         where K : IEquatable<K>
         where S : PersistenceStatistics, new()
     {
@@ -135,7 +135,8 @@ namespace Xigadee
             , ICacheManager<K, E> cacheManager = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             , Func<Tuple<string, string>, string> referenceHashMaker = null
-            , Func<K, string> keySerializer = null)
+            , Func<K, string> keySerializer = null
+            , PersistenceManagerHandlerMemoryPolicy policy = null)
             : base(keyMaker, keyDeserializer, entityName, versionPolicy, defaultTimeout, persistenceRetryPolicy, resourceProfile, cacheManager, referenceMaker, referenceHashMaker, keySerializer)
         {
         }

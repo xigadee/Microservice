@@ -119,6 +119,7 @@
     <Compile Include="Security\SignatureHelper.cs" />
     <Compile Include="Pipeline\Pipeline1.cs" />
     <Compile Include="PopulatorExtensions.cs" />
+    <Compile Include="ServiceMessageHelper\Test_ServiceMessageHeader.cs" />
     <Compile Include="Setup\UnitTest1.cs" />
     <Compile Include="TaskManager\PolicyTaskManagerTests.cs" />
     <Compile Include="TaskManager\CaseSensitiveCommands.cs" />

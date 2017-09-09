@@ -107,7 +107,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="tracker">The tracker.</param>
         /// <returns>Return true if the context is a payload.</returns>
-        public static bool IsTransmissionPayload(this TaskTracker tracker)
+        public static bool HasTransmissionPayload(this TaskTracker tracker)
         {
             return tracker.Context is TransmissionPayload;
         }
@@ -117,7 +117,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="tracker">The tracker.</param>
         /// <returns>Return true if the context is a schedule.</returns>
-        public static bool IsSchedule(this TaskTracker tracker)
+        public static bool HasSchedule(this TaskTracker tracker)
         {
             return tracker.Context is Schedule;
         }

@@ -14,15 +14,13 @@
 // limitations under the License.
 #endregion
 
-using System;
-
 namespace Xigadee
 {
     /// <summary>
-    /// This class is used to provide helper methods to the harness.
+    /// This policy class is used to configure the test conditions that can be set up for this persistence agent.
     /// </summary>
-    public static class CommandHarnessHelper
+    /// <seealso cref="Xigadee.PersistenceCommandPolicy" />
+    public class PersistenceManagerHandlerMemoryPolicy: PersistenceCommandPolicy
     {
-
     }
 }

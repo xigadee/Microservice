@@ -47,12 +47,15 @@ namespace Xigadee
         /// <param name="ChannelPriority">The priority that the message should be processed. The default is 1. If this message is not a valid value, it will be matched to the nearest valid value.</param>
         /// <param name="options">The process options.</param>
         /// <param name="release">The release action which is called when the payload has been executed.</param>
-        /// by the receiving commands.</param>
+        /// <param name="responseHeader">This is the optional response header</param>
+        /// <param name="responseChannelPriority">This is the response channel priority. This will be set if the response header is not null. The default priority is 1.</param>
         void Process(ServiceMessageHeader header
             , object package = null
             , int ChannelPriority = 1
             , ProcessOptions options = ProcessOptions.RouteInternal | ProcessOptions.RouteExternal
-            , Action<bool, Guid> release = null);
+            , Action<bool, Guid> release = null
+            , ServiceMessageHeader responseHeader = null
+            , int responseChannelPriority = 1);
         /// <summary>
         /// This method creates a service message and injects it in to the execution path and bypasses the listener infrastructure.
         /// </summary>

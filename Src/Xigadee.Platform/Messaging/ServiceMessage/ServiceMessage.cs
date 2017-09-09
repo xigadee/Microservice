@@ -42,11 +42,19 @@ namespace Xigadee
         /// This constructor sets the header parameters.
         /// </summary>
         /// <param name="header">The header</param>
-        public ServiceMessage(ServiceMessageHeader header):this()
+        /// <param name="responseHeader">This is the optional response header</param>
+        public ServiceMessage(ServiceMessageHeader header, ServiceMessageHeader responseHeader = null):this()
         {
             ChannelId = header.ChannelId;
             MessageType = header.MessageType;
             ActionType = header.ActionType;
+
+            if (responseHeader != null)
+            {
+                ResponseChannelId = responseHeader.ChannelId;
+                ResponseMessageType = responseHeader.MessageType;
+                ResponseActionType = responseHeader.ActionType;
+            }
         }
         #endregion
 

@@ -239,7 +239,7 @@ namespace Xigadee
                 payload = TransmissionPayload.Create(mPolicy.TransmissionPayloadTraceEnabled);
                 payload.SecurityPrincipal = TransmissionPayload.ConvertToClaimsPrincipal(principal ?? Thread.CurrentPrincipal);
 
-                // Set the process correlation key to the correlation id if passed through the rq settings
+                // Set the process correlation key to the correlation id, if passed through the rq settings
                 if (!string.IsNullOrEmpty(rqSettings?.CorrelationId))
                     payload.Message.ProcessCorrelationKey = rqSettings.CorrelationId;
 

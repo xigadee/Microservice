@@ -350,7 +350,7 @@ namespace Xigadee
                                 ProfileRetry(profileHolder, attempt);
 
                                 if (profileHolder.Rs.IsTimeout)
-                                    Collector?.LogMessage(LoggingLevel.Warning, $"Timeout occured for {EntityType} {actionType} for request:{profileHolder.Rq} with response:{profileHolder.Rs}", "DBTimeout");
+                                    Collector?.LogMessage(LoggingLevel.Warning, $"Timeout occurred for {EntityType} {actionType} for request:{profileHolder.Rq} with response:{profileHolder.Rs}", "DBTimeout");
 
                                 profileHolder.Rq.IsRetry = true;
                                 //These should not be counted against the limit.
@@ -425,7 +425,7 @@ namespace Xigadee
                     catch (PayloadSerializationException payex)
                     {
                         incoming.SignalSuccess(); //It's a success as there isn't anything that we can do with it except send an error.
-                        rsPayload.Message.Status = "422"; //Unprocessable Entity (WebDAV) - we use this to show there is an error with the payload.
+                        rsPayload.Message.Status = "422"; //Un-processable Entity (WebDAV) - we use this to show there is an error with the payload.
                         rsPayload.Message.StatusDescription = $"Invalid payload: {payex.Message}/{payex.InnerException?.Message}";
                         Collector?.LogException($"Error processing message (was cancelled({incoming.Cancel.IsCancellationRequested}))-{EntityType}-{actionType}-{profileHolder.Rq}", payex);
                         profileHolder.result = ResourceRequestResult.Exception;

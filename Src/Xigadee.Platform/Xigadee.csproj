@@ -77,6 +77,7 @@
     <Compile Include="CommandPersistence\Pipeline\Attach\AttachPersistenceClient.cs" />
     <Compile Include="CommandPersistence\Server\DocumentDb\Pipeline\AddPersistenceManagerDocumentDb.cs" />
     <Compile Include="CommandPersistence\Server\DocumentDb\Pipeline\AttachPersistenceManagerDocumentDb.cs" />
+    <Compile Include="CommandPersistence\Server\Memory\PersistenceManagerHandlerMemoryPolicy.cs" />
     <Compile Include="CommandPersistence\Server\Memory\Pipeline\AddPersistenceManagerHandlerMemory.cs" />
     <Compile Include="CommandPersistence\Server\Memory\Pipeline\AttachPersistenceManagerHandlerMemory.cs" />
     <Compile Include="Command\Attributes\CommandContract\CommandContractAttributeBase.cs" />
@@ -93,8 +94,12 @@
     <Compile Include="Command\EventArgs\ScheduleChangeEventArgs.cs" />
     <Compile Include="Command\Exceptions\CommandChannelIdNullException.cs" />
     <Compile Include="Command\Harness\CommandHarnessDependencies.cs" />
-    <Compile Include="Command\Harness\CommandHarnessHelper.cs" />
-    <Compile Include="Command\Harness\CommandHarnessRequest.cs" />
+    <Compile Include="Command\Harness\CommandHarnessEventArgs.cs" />
+    <Compile Include="Command\Harness\CommandHarnessTrafficDirection.cs" />
+    <Compile Include="Command\Harness\Helper\MasterJobNegotiate.cs" />
+    <Compile Include="Command\Harness\Helper\Intercept.cs" />
+    <Compile Include="Command\Harness\CommandHarnessTraffic.cs" />
+    <Compile Include="Command\Harness\ICommandHarness.cs" />
     <Compile Include="Command\Helper\MasterJobCommunicationDirection.cs" />
     <Compile Include="Command\Attributes\CommandContract\MasterJobCommandContractAttribute.cs" />
     <Compile Include="Command\Attributes\JobSchedule\MasterJobScheduleAttribute.cs" />
