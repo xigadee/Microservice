@@ -34,10 +34,6 @@ namespace Xigadee
     {
         #region Declarations
         /// <summary>
-        /// This is the command policy.
-        /// </summary>
-        protected readonly P mPolicy;
-        /// <summary>
         /// This is the concurrent dictionary that contains the supported commands.
         /// </summary>
         protected Dictionary<MessageFilterWrapper, H> mSupported;
@@ -46,7 +42,7 @@ namespace Xigadee
         /// </summary>
         protected ConcurrentDictionary<ServiceMessageHeader, H> mCommandCache;
         /// <summary>
-        /// This event is used by the component container to discover when a command is registered or deregistered.
+        /// This event is used by the component container to discover when a command is registered or de-registered.
         /// Implement IMessageHandlerDynamic to enable this feature.
         /// </summary>
         public event EventHandler<CommandChangeEventArgs> OnCommandChange;
@@ -61,14 +57,20 @@ namespace Xigadee
         /// </summary>
         protected CommandBase(P policy = null)
         {
-            mPolicy = PolicyCreateOrValidate(policy);
-            StartupPriority = mPolicy.StartupPriority ?? 0;
+            Policy = PolicyCreateOrValidate(policy);
+            StartupPriority = Policy.StartupPriority ?? 0;
 
             mSupported = new Dictionary<MessageFilterWrapper, H>();
             mCommandCache = new ConcurrentDictionary<ServiceMessageHeader, H>();
         }
         #endregion
 
+        #region Policy
+        /// <summary>
+        /// This is the command policy.
+        /// </summary>
+        public P Policy { get; } 
+        #endregion
         #region PolicyCreateOrValidate(P incomingPolicy)
         /// <summary>
         /// This method ensures that a policy object exists for the command. You should override this method to set any
@@ -89,22 +91,22 @@ namespace Xigadee
         {
             try
             {
-                if (mPolicy == null)
+                if (Policy == null)
                     throw new CommandStartupException("Command policy cannot be null");
 
                 CommandsTearUp();
 
-                Outgoing = new OutgoingWrapper<S, P, H>(this, mPolicy.OutgoingRequestDefaultTimespan, () => this.Status, mPolicy.TransmissionPayloadTraceEnabled);
-                if (mPolicy.OutgoingRequestsEnabled)
+                Outgoing = new OutgoingWrapper<S, P, H>(this, Policy.OutgoingRequestDefaultTimespan, () => this.Status, Policy.TransmissionPayloadTraceEnabled);
+                if (Policy.OutgoingRequestsEnabled)
                     OutgoingRequestsTearUp();
 
-                if (mPolicy.JobsEnabled)
+                if (Policy.JobsEnabled)
                     JobsTearUp();
 
-                if (mPolicy.MasterJobEnabled)
+                if (Policy.MasterJobEnabled)
                     MasterJobTearUp();
 
-                if (mPolicy.CommandNotify == CommandNotificationBehaviour.OnStartUp)
+                if (Policy.CommandNotify == CommandNotificationBehaviour.OnStartUp)
                     CommandsNotify(false);
             }
             catch (Exception ex)
@@ -121,14 +123,14 @@ namespace Xigadee
             try
             {
                 //If enabled, stop any master job processes.
-                if (mPolicy.MasterJobEnabled)
+                if (Policy.MasterJobEnabled)
                     MasterJobTearDown();
 
-                if (mPolicy.JobsEnabled)
+                if (Policy.JobsEnabled)
                     JobsTearDown();
 
                 Outgoing = null;
-                if (mPolicy.OutgoingRequestsEnabled)
+                if (Policy.OutgoingRequestsEnabled)
                     OutgoingRequestsTearDown();
 
                 CommandsTearDown();

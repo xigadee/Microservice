@@ -25,10 +25,11 @@ namespace Xigadee
     /// </summary>
     public class CommandJobSchedule: Schedule
     {
+        #region Constructor
         /// <summary>
         /// Initializes a new instance of the <see cref="CommandJobSchedule"/> class.
         /// </summary>
-        public CommandJobSchedule():base()
+        public CommandJobSchedule() : base()
         {
 
         }
@@ -51,10 +52,11 @@ namespace Xigadee
             , Action<Schedule> tearUp = null
             , Action<Schedule> tearDown = null
             , bool isMasterJob = false
-            ): base(execute, name, context, timerConfig, isLongRunning)
+            ) : base(execute, name, context, timerConfig, isLongRunning)
         {
             Initialise(execute, timerConfig, context, name, isLongRunning, tearUp, tearDown, isMasterJob);
-        }
+        } 
+        #endregion
 
         #region Initialise(...)
         /// <summary>
@@ -113,7 +115,7 @@ namespace Xigadee
         {
             get
             {
-                return $"{(IsMasterJob?"MasterJob":"Job")}:'{Name ?? Id.ToString("N").ToUpperInvariant()}' Active={Active} [ShouldExecute={ShouldExecute}] @ {NextExecuteTime} Run={ExecutionCount}";
+                return $"Command=[{CommandId.ToString("N")}] {(IsMasterJob?"MasterJob":"Job")}:'{Name ?? Id.ToString("N").ToUpperInvariant()}' Active={Active} [ShouldExecute={ShouldExecute}] @ {NextExecuteTime} Run={ExecutionCount}";
             }
         }
 

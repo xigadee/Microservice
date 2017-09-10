@@ -50,12 +50,12 @@ namespace Xigadee
         /// </summary>
         protected virtual void MasterJobTearUp()
         {
-            if (mPolicy.MasterJobNegotiationChannelIdIncoming == null)
+            if (Policy.MasterJobNegotiationChannelIdIncoming == null)
                 throw new CommandStartupException("Masterjobs are enabled, but the NegotiationChannelIdIncoming has not been set");
-            if (mPolicy.MasterJobNegotiationChannelType == null)
+            if (Policy.MasterJobNegotiationChannelType == null)
                 throw new CommandStartupException("Masterjobs are enabled, but the NegotiationChannelType has not been set");
 
-            mMasterJobContext = new MasterJobContext(mPolicy.MasterJobName ?? FriendlyName, mPolicy.MasterJobNegotiationStrategy);
+            mMasterJobContext = new MasterJobContext(Policy.MasterJobName ?? FriendlyName, Policy.MasterJobNegotiationStrategy);
 
             mMasterJobContext.OnMasterJobStateChange += (object o, MasterJobStateChangeEventArgs s) => FireAndDecorateEventArgs(OnMasterJobStateChange, () => s);
 
@@ -64,7 +64,7 @@ namespace Xigadee
             //Add the schedule to generate poll negotiation requests.
             Scheduler.Register(mMasterJobContext.NegotiationPollScheduleInitialise(MasterJobStateNotificationOutgoing));
             //Add the incoming poll channel.
-            CommandRegister((MasterJobNegotiationChannelIdIncoming, mPolicy.MasterJobNegotiationChannelType, null), MasterJobStateNotificationIncoming);
+            CommandRegister((MasterJobNegotiationChannelIdIncoming, Policy.MasterJobNegotiationChannelType, null), MasterJobStateNotificationIncoming);
         }
         #endregion
         #region *--> MasterJobTearDown()
@@ -79,7 +79,7 @@ namespace Xigadee
             //Remove the negotiation poll schedule
             Scheduler.Unregister(mMasterJobContext.NegotiationPollSchedule);
             //Remove the incoming poll command.
-            CommandUnregister((MasterJobNegotiationChannelIdIncoming, mPolicy.MasterJobNegotiationChannelType, null));
+            CommandUnregister((MasterJobNegotiationChannelIdIncoming, Policy.MasterJobNegotiationChannelType, null));
 
             mMasterJobContext.Stop();
         }
@@ -93,11 +93,11 @@ namespace Xigadee
         {
             get
             {
-                return mPolicy.MasterJobNegotiationChannelPriority;
+                return Policy.MasterJobNegotiationChannelPriority;
             }
             set
             {
-                mPolicy.MasterJobNegotiationChannelPriority = value;
+                Policy.MasterJobNegotiationChannelPriority = value;
             }
         }
         #endregion
@@ -109,11 +109,11 @@ namespace Xigadee
         {
             get
             {
-                return mPolicy.MasterJobNegotiationChannelType;
+                return Policy.MasterJobNegotiationChannelType;
             }
             set
             {
-                mPolicy.MasterJobNegotiationChannelType = value;
+                Policy.MasterJobNegotiationChannelType = value;
             }
         }
         #endregion
@@ -125,11 +125,11 @@ namespace Xigadee
         {
             get
             {
-                return mPolicy.MasterJobNegotiationChannelIdOutgoing;
+                return Policy.MasterJobNegotiationChannelIdOutgoing;
             }
             set
             {
-                mPolicy.MasterJobNegotiationChannelIdOutgoing = value;
+                Policy.MasterJobNegotiationChannelIdOutgoing = value;
             }
         }
         #endregion
@@ -141,11 +141,11 @@ namespace Xigadee
         {
             get
             {
-                return mPolicy.MasterJobNegotiationChannelIdIncoming;
+                return Policy.MasterJobNegotiationChannelIdIncoming;
             }
             set
             {
-                mPolicy.MasterJobNegotiationChannelIdIncoming = value;
+                Policy.MasterJobNegotiationChannelIdIncoming = value;
             }
         }
         #endregion
@@ -155,7 +155,7 @@ namespace Xigadee
         /// </summary>
         public virtual bool MasterJobNegotiationChannelIdAutoSet
         {
-            get { return mPolicy.MasterJobNegotiationChannelIdAutoSet; }
+            get { return Policy.MasterJobNegotiationChannelIdAutoSet; }
         } 
         #endregion
 
@@ -168,7 +168,7 @@ namespace Xigadee
         /// <param name="action">The master job action to transmit.</param>
         protected virtual Task NegotiationTransmit(string action)
         {
-            var payload = TransmissionPayload.Create(mPolicy.TransmissionPayloadTraceEnabled);
+            var payload = TransmissionPayload.Create(Policy.TransmissionPayloadTraceEnabled);
             payload.TraceWrite("Create", "Command/NegotiationTransmit");
 
             payload.Options = ProcessOptions.RouteExternal;
@@ -176,11 +176,11 @@ namespace Xigadee
             var message = payload.Message;
             //Note: historically there was only one channel, so we use the incoming channel if the outgoing has
             //not been specified. These should all be lower case so that Service Bus can match accurately.
-            message.ChannelId = (mPolicy.MasterJobNegotiationChannelIdOutgoing ?? mPolicy.MasterJobNegotiationChannelIdIncoming).ToLowerInvariant();
-            message.MessageType = mPolicy.MasterJobNegotiationChannelType.ToLowerInvariant();
+            message.ChannelId = (Policy.MasterJobNegotiationChannelIdOutgoing ?? Policy.MasterJobNegotiationChannelIdIncoming).ToLowerInvariant();
+            message.MessageType = Policy.MasterJobNegotiationChannelType.ToLowerInvariant();
             message.ActionType = action.ToLowerInvariant();
 
-            message.ChannelPriority = mPolicy.MasterJobNegotiationChannelPriority;
+            message.ChannelPriority = Policy.MasterJobNegotiationChannelPriority;
 
             //Go straight to the dispatcher as we don't want to use the tracker for this job
             //as it is transmit only. Only send messages if the service is in a running state.
@@ -449,7 +449,7 @@ namespace Xigadee
         {
             MasterJobCommandsManualRegister();
 
-            foreach (var holder in this.CommandMethodSignatures<MasterJobCommandContractAttribute, CommandMethodSignature>(true, mPolicy.MasterJobCommandContractAttributeInherit))
+            foreach (var holder in this.CommandMethodSignatures<MasterJobCommandContractAttribute, CommandMethodSignature>(true, Policy.MasterJobCommandContractAttributeInherit))
                 CommandRegister(CommandChannelIdAdjust(holder.Attribute)
                     , (rq, rs) => holder.Signature.Action(rq, rs, PayloadSerializer)
                     , referenceId: holder.Reference
@@ -474,8 +474,8 @@ namespace Xigadee
         {
             MasterJobSchedulesManualRegister();
 
-            if (mPolicy.MasterJobScheduleReflectionSupported)
-                JobSchedulesReflectionInitialise<MasterJobScheduleAttribute>(mPolicy.MasterJobScheduleAttributeInherit);
+            if (Policy.MasterJobScheduleReflectionSupported)
+                JobSchedulesReflectionInitialise<MasterJobScheduleAttribute>(Policy.MasterJobScheduleAttributeInherit);
         }
         #endregion
         #region MasterJobSchedulesManualRegister()

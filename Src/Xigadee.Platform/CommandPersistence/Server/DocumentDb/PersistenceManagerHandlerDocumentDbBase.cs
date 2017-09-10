@@ -101,10 +101,10 @@ namespace Xigadee
         {
             base.StartInternal();
 
-            if (mPolicy.AutoCreateDatabase)
+            if (Policy.AutoCreateDatabase)
                 CreateDatabase();
 
-            if (mPolicy.AutoCreateCollections)
+            if (Policy.AutoCreateCollections)
                 CreateCollections();
         }
 
@@ -186,7 +186,7 @@ namespace Xigadee
         {
             int numberOfRetries = 0;
 
-            int maximumRetries = mPolicy.PersistenceRetryPolicy.GetMaximumRetries(holder.Prq);
+            int maximumRetries = Policy.PersistenceRetryPolicy.GetMaximumRetries(holder.Prq);
 
             while (numberOfRetries < maximumRetries && !holder.Prq.Cancel.IsCancellationRequested)
             {
@@ -195,7 +195,7 @@ namespace Xigadee
                 if (holder.Rs.Entity != null || holder.Rs.ResponseCode == 404)
                     return holder.Rs.Entity != null;
 
-                await Task.Delay(mPolicy.PersistenceRetryPolicy.GetDelayBetweenRetries(holder.Prq, numberOfRetries));
+                await Task.Delay(Policy.PersistenceRetryPolicy.GetDelayBetweenRetries(holder.Prq, numberOfRetries));
 
                 numberOfRetries++;
             }

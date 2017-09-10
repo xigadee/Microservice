@@ -34,11 +34,11 @@ namespace Xigadee
         {
             get
             {
-                return mPolicy.ChannelId;
+                return Policy.ChannelId;
             }
             set
             {
-                mPolicy.ChannelId = value;
+                Policy.ChannelId = value;
             }
         }
         /// <summary>
@@ -46,7 +46,7 @@ namespace Xigadee
         /// </summary>
         public virtual bool ChannelIdAutoSet
         {
-            get { return mPolicy.ChannelIdAutoSet; }
+            get { return Policy.ChannelIdAutoSet; }
         }
         #endregion
         #region ResponseChannelId
@@ -57,11 +57,11 @@ namespace Xigadee
         {
             get
             {
-                return mPolicy.ResponseChannelId;
+                return Policy.ResponseChannelId;
             }
             set
             {
-                mPolicy.ResponseChannelId = value;
+                Policy.ResponseChannelId = value;
             }
         }
         /// <summary>
@@ -69,7 +69,7 @@ namespace Xigadee
         /// </summary>
         public virtual bool ResponseChannelIdAutoSet
         {
-            get { return mPolicy.ResponseChannelIdAutoSet; }
+            get { return Policy.ResponseChannelIdAutoSet; }
         }
         #endregion
     }

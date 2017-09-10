@@ -32,7 +32,7 @@ namespace Xigadee
         /// </summary>
         public CommandInitiator(TimeSpan? defaultRequestTimespan = null)
         {
-            mPolicy.OutgoingRequestDefaultTimespan = defaultRequestTimespan;
+            Policy.OutgoingRequestDefaultTimespan = defaultRequestTimespan;
         }
         #endregion
 

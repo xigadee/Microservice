@@ -166,7 +166,7 @@ namespace Xigadee
             mHolders = new Dictionary<string, CollectionHolder>();
             foreach (var collection in mShardingPolicy.Collections)
             {
-                mHolders.Add(collection, mConnection.ToCollectionHolder(mDatabaseName, collection, mPolicy.DefaultTimeout, true));
+                mHolders.Add(collection, mConnection.ToCollectionHolder(mDatabaseName, collection, Policy.DefaultTimeout, true));
             }
 
             base.StartInternal();
@@ -436,7 +436,7 @@ namespace Xigadee
         {
             int numberOfRetries = 0;
 
-            int maximumRetries = mPolicy.PersistenceRetryPolicy.GetMaximumRetries(holder.Prq);
+            int maximumRetries = Policy.PersistenceRetryPolicy.GetMaximumRetries(holder.Prq);
 
             while (numberOfRetries < maximumRetries && !holder.Prq.Cancel.IsCancellationRequested)
             {
@@ -445,7 +445,7 @@ namespace Xigadee
                 if (holder.Rs.Entity != null || holder.Rs.ResponseCode == 404)
                     return holder.Rs.Entity != null;
 
-                await Task.Delay(mPolicy.PersistenceRetryPolicy.GetDelayBetweenRetries(holder.Prq, numberOfRetries));
+                await Task.Delay(Policy.PersistenceRetryPolicy.GetDelayBetweenRetries(holder.Prq, numberOfRetries));
 
                 numberOfRetries++;
             }

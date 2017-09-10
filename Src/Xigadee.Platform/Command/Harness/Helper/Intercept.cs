@@ -32,7 +32,7 @@ namespace Xigadee
         /// <param name="direction">The optional direction filter.</param>
         /// <param name="header">The optional header.</param>
         /// <returns>The harness</returns>
-        public static H Intercept<H>(this H harness
+        public static H ConfigureIntercept<H>(this H harness
             , Action<ICommandHarness, CommandHarnessEventArgs> action
             , CommandHarnessTrafficDirection? direction = null
             , ServiceMessageHeader header = null)

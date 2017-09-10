@@ -89,10 +89,10 @@ namespace Xigadee
         /// <param name="responses">The responses.</param>
         protected virtual Task ProcessRequestException(Exception ex, TransmissionPayload rq, List<TransmissionPayload> responses)
         {
-            if (mPolicy.OnProcessRequestExceptionLog)
+            if (Policy.OnProcessRequestExceptionLog)
                 Collector?.LogException($"{FriendlyName}/ProcessRequest unhandled exception: {rq.Message.ToKey()}",ex);
 
-            switch (mPolicy.OnProcessRequestException)
+            switch (Policy.OnProcessRequestException)
             {
                 case ProcessRequestExceptionBehaviour.DoNothing:
                     break;

@@ -34,7 +34,7 @@ namespace Xigadee
         {
             CommandsRegister();
 
-            if (mPolicy.CommandReflectionSupported)
+            if (Policy.CommandReflectionSupported)
                 CommandsRegisterReflection();
         }
         #endregion
@@ -54,7 +54,7 @@ namespace Xigadee
         /// </summary>
         protected void CommandsRegisterReflection()
         {
-            foreach (var holder in this.CommandMethodSignatures<CommandContractAttribute,CommandMethodSignature>(true, mPolicy.CommandContractAttributeInherit))
+            foreach (var holder in this.CommandMethodSignatures<CommandContractAttribute,CommandMethodSignature>(true, Policy.CommandContractAttributeInherit))
                 CommandRegister(CommandChannelIdAdjust(holder.Attribute)
                     , (rq, rs) => holder.Signature.Action(rq, rs, PayloadSerializer)
                     , referenceId: holder.Reference
@@ -173,7 +173,7 @@ namespace Xigadee
 
             mSupported.Add(key, handler);
 
-            switch (mPolicy.CommandNotify)
+            switch (Policy.CommandNotify)
             {
                 case CommandNotificationBehaviour.OnRegistration:
                     CommandNotify(key, false, isMasterJob);

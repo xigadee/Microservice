@@ -92,8 +92,8 @@ namespace Xigadee
 
             stats.CurrentCached = mEntities.Count;
             stats.CurrentCachedEntities = mEntities.Values.Where((e) => e.Entity != null).LongCount();
-            stats.CurrentCacheLimit = mPolicy.EntityCacheLimit;
-            stats.TrackEvents = mPolicy.EntityChangeTrackEvents;
+            stats.CurrentCacheLimit = Policy.EntityCacheLimit;
+            stats.TrackEvents = Policy.EntityChangeTrackEvents;
             stats.WaitCycles = mWaitCycles;
             stats.Removed = mRemoved;
             stats.Added = mAdded;
@@ -111,9 +111,9 @@ namespace Xigadee
         protected override void JobSchedulesManualRegister()
         {
             var job = new CommandJobSchedule(ScheduleExpireEntities
-                , mPolicy.JobPollSchedule
+                , Policy.JobPollSchedule
                 , name: $"EntityCacheHandlerBase: {typeof(E).Name} Expire Entities"
-                , isLongRunning: mPolicy.JobPollIsLongRunning);
+                , isLongRunning: Policy.JobPollIsLongRunning);
 
             Scheduler.Register(job);
         }
@@ -133,7 +133,7 @@ namespace Xigadee
                 mLastScheduleTime = now;
                 var expired = mEntities.Values.Where(e => e.Expiry < now).ToList();
                 expired.ForEach(v => Remove(v.Key));
-                int reduce = mEntities.Count - mPolicy.EntityCacheLimit;
+                int reduce = mEntities.Count - Policy.EntityCacheLimit;
                 if (reduce > 0)
                 {
                     //We're still over capacity, so remove records based on their low hitcount and take the ones
@@ -195,7 +195,7 @@ namespace Xigadee
         /// </summary>
         protected override void CommandsRegister()
         {
-            if (mPolicy.EntityChangeTrackEvents)
+            if (Policy.EntityChangeTrackEvents)
                 EntityChangeEventCommandsRegister();
         }
         #endregion
@@ -205,12 +205,12 @@ namespace Xigadee
         /// </summary>
         public virtual void EntityChangeEventCommandsRegister()
         {
-            if (string.IsNullOrWhiteSpace(mPolicy.EntityChangeEventsChannel))
+            if (string.IsNullOrWhiteSpace(Policy.EntityChangeEventsChannel))
                 throw new NotSupportedException("EntityChangeTrackEvents is set as active, but the EntityChangeEventsChannel is not defined.");
 
-            CommandRegister((mPolicy.EntityChangeEventsChannel, typeof(E).Name, EntityActions.Create), EntityChangeNotification);
-            CommandRegister((mPolicy.EntityChangeEventsChannel, typeof(E).Name, EntityActions.Update), EntityChangeNotification);
-            CommandRegister((mPolicy.EntityChangeEventsChannel, typeof(E).Name, EntityActions.Delete), EntityChangeNotification);
+            CommandRegister((Policy.EntityChangeEventsChannel, typeof(E).Name, EntityActions.Create), EntityChangeNotification);
+            CommandRegister((Policy.EntityChangeEventsChannel, typeof(E).Name, EntityActions.Update), EntityChangeNotification);
+            CommandRegister((Policy.EntityChangeEventsChannel, typeof(E).Name, EntityActions.Delete), EntityChangeNotification);
         } 
         #endregion
 
@@ -341,7 +341,7 @@ namespace Xigadee
                     //Get the cache holder, and if it already exists, see if you need to wait.
                     if (!mEntities.TryGetValue(key, out cacheHolder))
                     {
-                        var temp = new EntityCacheHolder<K, E>(key, mPolicy.EntityDefaultTTL);
+                        var temp = new EntityCacheHolder<K, E>(key, Policy.EntityDefaultTTL);
                         if (mEntities.TryAdd(key, temp))
                         {
                             //Ok, the entity is not in the cache, so let's go and get the entity.

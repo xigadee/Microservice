@@ -101,9 +101,9 @@ namespace Xigadee
 
             mRequestsCurrent = new ConcurrentDictionary<Guid, IPersistenceRequestHolder>();
 
-            mPolicy.DefaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(10);
-            mPolicy.PersistenceRetryPolicy = persistenceRetryPolicy ?? new PersistenceRetryPolicy();
-            mPolicy.ResourceProfile = resourceProfile;
+            Policy.DefaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(10);
+            Policy.PersistenceRetryPolicy = persistenceRetryPolicy ?? new PersistenceRetryPolicy();
+            Policy.ResourceProfile = resourceProfile;
 
             mCacheManager = cacheManager ?? new NullCacheManager<K, E>();
         }
@@ -125,9 +125,9 @@ namespace Xigadee
 
             mTransform = entityTransform;
 
-            mPolicy.DefaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(10);
-            mPolicy.PersistenceRetryPolicy = persistenceRetryPolicy ?? new PersistenceRetryPolicy();
-            mPolicy.ResourceProfile = resourceProfile;
+            Policy.DefaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(10);
+            Policy.PersistenceRetryPolicy = persistenceRetryPolicy ?? new PersistenceRetryPolicy();
+            Policy.ResourceProfile = resourceProfile;
 
             mCacheManager = cacheManager ?? new NullCacheManager<K, E>();
         }
@@ -221,8 +221,8 @@ namespace Xigadee
         protected override void StartInternal()
         {
             var resourceTracker = SharedServices.GetService<IResourceTracker>();
-            if (resourceTracker != null && mPolicy.ResourceProfile != null)
-                mPolicy.ResourceConsumer = resourceTracker.RegisterConsumer(EntityType, mPolicy.ResourceProfile);
+            if (resourceTracker != null && Policy.ResourceProfile != null)
+                Policy.ResourceConsumer = resourceTracker.RegisterConsumer(EntityType, Policy.ResourceProfile);
 
             base.StartInternal();
         }
@@ -232,7 +232,7 @@ namespace Xigadee
         protected override void StopInternal()
         {
             base.StopInternal();
-            mPolicy.ResourceConsumer = null;
+            Policy.ResourceConsumer = null;
             mExpressionHelper = null;
         }
         #endregion
@@ -299,7 +299,7 @@ namespace Xigadee
                     rsMessage.MessageType = incoming.Message.MessageType;
                     rsMessage.ActionType = "";
 
-                    var rsPayload = new TransmissionPayload(rsMessage, traceEnabled:mPolicy.TransmissionPayloadTraceEnabled);
+                    var rsPayload = new TransmissionPayload(rsMessage, traceEnabled:Policy.TransmissionPayloadTraceEnabled);
                     
                     bool hasTimedOut = false;
 
@@ -360,7 +360,7 @@ namespace Xigadee
                                 profileHolder.Rq.IsTimeout = false;
 
                                 retryExceeded = incoming.Cancel.IsCancellationRequested
-                                    || profileHolder.Rq.Retry > mPolicy.PersistenceRetryPolicy.GetMaximumRetries(incoming);
+                                    || profileHolder.Rq.Retry > Policy.PersistenceRetryPolicy.GetMaximumRetries(incoming);
                             }
                             while (!retryExceeded);
 
@@ -680,10 +680,10 @@ namespace Xigadee
         protected virtual PersistenceRequestHolder<KT, ET> ProfileStart<KT, ET>(TransmissionPayload prq, List<TransmissionPayload> prs)
         {
             Guid profileId;
-            if (mPolicy.ResourceConsumer == null)
+            if (Policy.ResourceConsumer == null)
                 profileId = Guid.NewGuid();
             else
-                profileId = mPolicy.ResourceConsumer.Start(prq.Message.ToKey(), prq.Id);
+                profileId = Policy.ResourceConsumer.Start(prq.Message.ToKey(), prq.Id);
 
             var holder = new PersistenceRequestHolder<KT, ET>(profileId, prq, prs);
 
@@ -699,7 +699,7 @@ namespace Xigadee
         /// <param name="holder">The request holder.</param>
         protected virtual void ProfileEnd<KT, ET>(PersistenceRequestHolder<KT, ET> holder)
         {
-            mPolicy.ResourceConsumer?.End(holder.ProfileId, holder.Start, holder.result ?? ResourceRequestResult.Unknown);
+            Policy.ResourceConsumer?.End(holder.ProfileId, holder.Start, holder.result ?? ResourceRequestResult.Unknown);
 
             IPersistenceRequestHolder ok;
             mRequestsCurrent.TryRemove(holder.ProfileId, out ok);
@@ -718,7 +718,7 @@ namespace Xigadee
         /// <param name="retryStart">The tick count of the retry point.</param>
         protected virtual void ProfileRetry<KT, ET>(PersistenceRequestHolder<KT, ET> holder, int retryStart)
         {
-            mPolicy.ResourceConsumer?.Retry(holder.ProfileId, retryStart, holder.Rs.ShouldRetry ? ResourceRetryReason.Other : ResourceRetryReason.Timeout);
+            Policy.ResourceConsumer?.Retry(holder.ProfileId, retryStart, holder.Rs.ShouldRetry ? ResourceRetryReason.Other : ResourceRetryReason.Timeout);
 
             holder.Retry(retryStart);
 

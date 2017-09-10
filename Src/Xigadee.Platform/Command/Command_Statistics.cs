@@ -34,19 +34,19 @@ namespace Xigadee
 
             stats.SupportedHandlers = mSupported.Select((h) => h.Value.HandlerStatistics).ToList();
 
-            if (mPolicy.OutgoingRequestsEnabled)
+            if (Policy.OutgoingRequestsEnabled)
                 stats.OutgoingRequests = mOutgoingRequests?.Select((h) => h.Value.Debug).ToList();
 
-            stats.MasterJob.Enabled = mPolicy.MasterJobEnabled;
+            stats.MasterJob.Enabled = Policy.MasterJobEnabled;
 
-            if (mPolicy.MasterJobEnabled)
+            if (Policy.MasterJobEnabled)
             {
                 //stats.MasterJob.Server = string.Format("{0} @ {1:o}", mCurrentMasterServiceId, mCurrentMasterReceiveTime);
                 stats.MasterJob.Status = string.Format("Status={0} Channel={1}/{2} Type={3}"
                     , mMasterJobContext.State.ToString()
-                    , mPolicy.MasterJobNegotiationChannelIdOutgoing
-                    , mPolicy.MasterJobNegotiationChannelPriority
-                    , mPolicy.MasterJobNegotiationChannelType
+                    , Policy.MasterJobNegotiationChannelIdOutgoing
+                    , Policy.MasterJobNegotiationChannelPriority
+                    , Policy.MasterJobNegotiationChannelType
                     );
 
                 stats.MasterJob.Master = mMasterJobContext.PartnerMaster;

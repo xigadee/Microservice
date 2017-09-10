@@ -121,7 +121,7 @@ namespace Xigadee
         {
             StatisticsInternal.ActiveIncrement();
 
-            var payloadRq = TransmissionPayload.Create(mPolicy.TransmissionPayloadTraceEnabled);
+            var payloadRq = TransmissionPayload.Create(Policy.TransmissionPayloadTraceEnabled);
 
             // Set the originator key to the correlation id if passed through the rq settings
             if (!string.IsNullOrEmpty(rq.Settings?.CorrelationId))

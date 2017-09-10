@@ -64,9 +64,10 @@ namespace Xigadee
 
             //Set a timer to signal timeout requests
             mScheduleTimeout = new CommandTimeoutSchedule(TimeOutScheduler
-                , mPolicy.OutgoingRequestsTimeoutPoll
+                , Policy.OutgoingRequestsTimeoutPoll
                 , $"{FriendlyName} Command OutgoingRequests Timeout Poll"
                 );
+            mScheduleTimeout.CommandId = ComponentId;
 
             Scheduler.Register(mScheduleTimeout);
 
@@ -228,7 +229,7 @@ namespace Xigadee
             , IPrincipal principal = null
             )
         {
-            if (!mPolicy.OutgoingRequestsEnabled)
+            if (!Policy.OutgoingRequestsEnabled)
                 throw new OutgoingRequestsNotEnabledException();
 
             TransmissionPayload payload = null;
@@ -236,7 +237,7 @@ namespace Xigadee
             {
                 StatisticsInternal.ActiveIncrement();
 
-                payload = TransmissionPayload.Create(mPolicy.TransmissionPayloadTraceEnabled);
+                payload = TransmissionPayload.Create(Policy.TransmissionPayloadTraceEnabled);
                 payload.SecurityPrincipal = TransmissionPayload.ConvertToClaimsPrincipal(principal ?? Thread.CurrentPrincipal);
 
                 // Set the process correlation key to the correlation id, if passed through the rq settings
@@ -263,7 +264,7 @@ namespace Xigadee
                 payload.Message.Blob = PayloadSerializer.PayloadSerialize(rq);
 
                 //Set the processing time
-                payload.MaxProcessingTime = rqSettings?.WaitTime ?? fallbackMaxProcessingTime ?? mPolicy.OutgoingRequestMaxProcessingTimeDefault;
+                payload.MaxProcessingTime = rqSettings?.WaitTime ?? fallbackMaxProcessingTime ?? Policy.OutgoingRequestMaxProcessingTimeDefault;
 
                 //Transmit
                 return await OutgoingRequestOut(payload, processResponse ?? ProcessOutgoingResponse<RS>, processAsync);
@@ -299,7 +300,7 @@ namespace Xigadee
                 throw new ArgumentNullException("processPayload has not been set.");
 
             //Create and register the request holder.
-            var tracker = new OutgoingRequestTracker(payloadRq, payloadRq.MaxProcessingTime ?? mPolicy.OutgoingRequestMaxProcessingTimeDefault);
+            var tracker = new OutgoingRequestTracker(payloadRq, payloadRq.MaxProcessingTime ?? Policy.OutgoingRequestMaxProcessingTimeDefault);
 
             //Add the outgoing holder to the collection
             if (!mOutgoingRequests.TryAdd(tracker.Id, tracker))

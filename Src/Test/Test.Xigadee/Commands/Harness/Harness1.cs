@@ -67,15 +67,15 @@ namespace Test.Xigadee
 
             bool ok = false;
             harness
-                .Intercept((h, a) => ok = true, CommandHarnessTrafficDirection.Outgoing, ("one", "two", "three"))
-                .Intercept((h, a) => Interlocked.Increment(ref count))
+                .ConfigureIntercept((h, a) => ok = true, CommandHarnessTrafficDirection.Outgoing, ("one", "two", "three"))
+                .ConfigureIntercept((h, a) => Interlocked.Increment(ref count))
                 ;
 
             harness.Dispatcher.Process(("fredo", "two", "three"), "Helloe");
             harness.Dispatcher.Process(("fredo", "one", "two"), "Helloe", responseHeader:("1","2","3"));
 
             harness.ScheduleExecute("1");
-
+            
             Assert.IsTrue(harness.Outgoing.Count() == 1);
 
             Assert.IsTrue(ok);

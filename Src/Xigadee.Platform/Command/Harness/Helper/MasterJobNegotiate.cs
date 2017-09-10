@@ -23,7 +23,7 @@ namespace Xigadee
     /// </summary>
     public  static partial class CommandHarnessHelper
     {
-        public static H MasterJobNegotiate<H>(this H harness)
+        public static H MasterJobNegotiateOnStart<H>(this H harness)
             where H : ICommandHarness
         {
             return harness;

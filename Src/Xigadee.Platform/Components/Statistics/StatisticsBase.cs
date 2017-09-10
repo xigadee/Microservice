@@ -36,7 +36,7 @@ namespace Xigadee
         #endregion
         #region Constructor
         /// <summary>
-        /// This is the default constrcutor.
+        /// This is the default constructor.
         /// </summary>
         /// <param name="name">This sets the name in the statistics.</param>
         protected StatisticsBase(string name = null)
@@ -51,7 +51,7 @@ namespace Xigadee
         /// This is the internal statistics collection. Components should use this when referencing the collection directly.
         /// Use of Statistics will trigger a recursive StatisticsRecalculate calls each time.
         /// </summary>
-        protected S StatisticsInternal { get; private set; } 
+        protected internal S StatisticsInternal { get; private set; } 
         #endregion
 
         #region ComponentId
