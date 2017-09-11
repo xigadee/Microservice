@@ -86,6 +86,7 @@
     <Compile Include="Command\Attributes\CommandSignatureBase.cs" />
     <Compile Include="Command\Attributes\JobSchedule\JobScheduleAttributeBase.cs" />
     <Compile Include="Command\Command_Job.cs" />
+    <Compile Include="Command\Context\CommandContextBase.cs" />
     <Compile Include="Command\EventArgs\Base\CommandEventArgsBase.cs" />
     <Compile Include="Command\EventArgs\Base\MasterJobEventArgsBase.cs" />
     <Compile Include="Command\EventArgs\MasterJobStateChangeEventArgs.cs" />
