@@ -39,13 +39,13 @@ namespace Test.Xigadee.TaskManager
                         .AttachPriorityPartition((0, 1.0M), (1, 0.9M))
                         .AttachListener(bridgeOut.GetListener())
                         .AttachMessagePriorityOverrideForResponse()
-                        .AttachCommand((CommandMethodInlineContext ctx) =>
+                        .AttachCommand((CommandMethodRequestContext ctx) =>
                         {                    
                             var payload = ctx.DtoGet<Blah>();
                             ctx.ResponseSet(200, payload.Message);
                             return Task.FromResult(0);
                         }, ("FRANKY", "johnny5"))
-                        .AttachCommand((CommandMethodInlineContext ctx) =>
+                        .AttachCommand((CommandMethodRequestContext ctx) =>
                         {
                             var payload = ctx.DtoGet<Blah>();
                             ctx.ResponseSet(201, payload.Message);

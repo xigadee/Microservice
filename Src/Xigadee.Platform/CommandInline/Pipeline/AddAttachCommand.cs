@@ -34,7 +34,7 @@ namespace Xigadee
         /// <param name="autoCreateChannel">Set this to true if you want the incoming channel created if it does not exist. The default is true.</param>
         /// <returns>Returns the pipeline.</returns>
         public static P AddCommand<P>(this P pipeline
-            , Func<CommandMethodInlineContext, Task> commandFunction
+            , Func<CommandMethodRequestContext, Task> commandFunction
             , ServiceMessageHeaderFragment header
             , string referenceId = null
             , int startupPriority = 100
@@ -72,7 +72,7 @@ namespace Xigadee
         /// <param name="startupPriority">The startup priority.</param>
         /// <returns>Returns the pipeline.</returns>
         public static E AttachCommand<E>(this E cpipe
-            , Func<CommandMethodInlineContext, Task> commandFunction
+            , Func<CommandMethodRequestContext, Task> commandFunction
             , ServiceMessageHeaderFragment header
             , string referenceId = null
             , int startupPriority = 100
@@ -95,7 +95,7 @@ namespace Xigadee
         /// <param name="startupPriority">The startup priority.</param>
         /// <returns>Returns the pipeline.</returns>
         public static E AttachCommand<E>(this E cpipe
-            , Func<CommandMethodInlineContext, Task> commandFunction
+            , Func<CommandMethodRequestContext, Task> commandFunction
             , ServiceMessageHeader header
             , string referenceId = null
             , int startupPriority = 100
@@ -121,7 +121,7 @@ namespace Xigadee
         /// <exception cref="InvalidMessageContractException"></exception>
         /// <exception cref="InvalidPipelineChannelContractException"></exception>
         public static E AttachCommand<E>(this E cpipe, Type contract
-            , Func<CommandMethodInlineContext, Task> commandFunction
+            , Func<CommandMethodRequestContext, Task> commandFunction
             , string referenceId = null
             , int startupPriority = 100
             , IPipelineChannelOutgoing<IPipeline> channelResponse = null

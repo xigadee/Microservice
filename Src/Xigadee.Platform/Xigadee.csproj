@@ -65,8 +65,8 @@
     <Compile Include="CommandContainer\SharedService\SharedServiceStatistics.cs" />
     <Compile Include="CommandInitiator\ICommandInitiator.cs" />
     <Compile Include="CommandInline\CommandMethod\CommandMethodInline.cs" />
-    <Compile Include="CommandInline\CommandMethod\CommandMethodInlineExtensions.cs" />
-    <Compile Include="CommandInline\CommandMethod\CommandMethodInlineContext.cs" />
+    <Compile Include="Command\Context\CommandMethodRequestContextExtensions.cs" />
+    <Compile Include="Command\Context\CommandMethodRequestContext.cs" />
     <Compile Include="CommandInline\CommandSchedule\CommandScheduleInline.cs" />
     <Compile Include="CommandInline\CommandSchedule\CommandScheduleInlineContext.cs" />
     <Compile Include="CommandInline\Exceptions\ContractException.cs" />

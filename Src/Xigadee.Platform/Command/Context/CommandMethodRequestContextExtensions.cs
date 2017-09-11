@@ -9,7 +9,7 @@ namespace Xigadee
     /// <summary>
     /// This static class contains a number of extension methods to make using an inline command simpler.
     /// </summary>
-    public static class CommandMethodInlineExtensions
+    public static class CommandMethodRequestContextExtensions
     {
         /// <summary>
         /// This extension method is used to set the response for an inline message.
@@ -19,7 +19,7 @@ namespace Xigadee
         /// <param name="status">The response status.</param>
         /// <param name="response">The optional response object.</param>
         /// <param name="description">The optional response description</param>
-        public static void ResponseSet<C>(this CommandMethodInlineContext c, int status, C response = default(C), string description = null)
+        public static void ResponseSet<C>(this CommandMethodRequestContext c, int status, C response = default(C), string description = null)
         {
             TransmissionPayload ars = c.Request.ToResponse();
 
@@ -37,7 +37,7 @@ namespace Xigadee
         /// <param name="c">The incoming context.</param>
         /// <param name="status">The response status.</param>
         /// <param name="description">The optional response description</param>
-        public static void ResponseSet(this CommandMethodInlineContext c, int status, string description = null)
+        public static void ResponseSet(this CommandMethodRequestContext c, int status, string description = null)
         {
             TransmissionPayload ars = c.Request.ToResponse();
 
@@ -53,7 +53,7 @@ namespace Xigadee
         /// <param name="c">The context.</param>
         /// <param name="response">The outgoing DTO object.</param>
         /// <returns>Returns true if the DTO is present.</returns>
-        public static bool DtoTryGet<C>(this CommandMethodInlineContext c, out C response)
+        public static bool DtoTryGet<C>(this CommandMethodRequestContext c, out C response)
         {
             response = default(C);
 
@@ -66,7 +66,7 @@ namespace Xigadee
         /// <typeparam name="C">The DTO entity type.</typeparam>
         /// <param name="c">The context.</param>
         /// <returns>Returns the DTO object.</returns>
-        public static C DtoGet<C>(this CommandMethodInlineContext c)
+        public static C DtoGet<C>(this CommandMethodRequestContext c)
         {
             return c.PayloadSerializer.PayloadDeserialize<C>(c.Request);
         }

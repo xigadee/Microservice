@@ -20,7 +20,8 @@ namespace Test.Xigadee
 
             [CommandContract("one","two")]
             [return: PayloadOut]
-            public async Task<string> Command1([PayloadIn]string inParam, TransmissionPayload inPayload, List<TransmissionPayload> outPayload)
+            public async Task<string> Command1([PayloadIn]string inParam
+                , TransmissionPayload inPayload, List<TransmissionPayload> outPayload)
             {              
                 return "hello";
             }

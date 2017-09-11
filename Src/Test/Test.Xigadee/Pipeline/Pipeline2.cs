@@ -68,13 +68,13 @@ namespace Test.Xigadee
                         .AttachPriorityPartition((0, 1.0M), (1, 0.9M))
                         .AttachListener(bridgeOut.GetListener())
                         .AttachMessagePriorityOverrideForResponse()
-                        .AttachCommand((CommandMethodInlineContext ctx) =>
+                        .AttachCommand((CommandMethodRequestContext ctx) =>
                         {
                             var payload = ctx.DtoGet<Blah>();
                             ctx.ResponseSet(200, payload.Message);
                             return Task.FromResult(0);
                         }, ("franky", "johnny5"))
-                        .AttachCommand((CommandMethodInlineContext ctx) =>
+                        .AttachCommand((CommandMethodRequestContext ctx) =>
                         {
                             var payload = ctx.DtoGet<Blah>();
                             ctx.ResponseSet(201, payload.Message);
@@ -90,7 +90,7 @@ namespace Test.Xigadee
                     .AdjustPolicyTaskManagerForDebug()
                     .AddDebugMemoryDataCollector(out collector1)
                     .AddChannelIncoming("spooky", internalOnly:true)
-                        .AttachCommand((CommandMethodInlineContext ctx) =>
+                        .AttachCommand((CommandMethodRequestContext ctx) =>
                         {
                             var payload = ctx.DtoGet<Blah>();
                             ctx.ResponseSet(200, payload.Message);
@@ -115,7 +115,7 @@ namespace Test.Xigadee
                     .AdjustPolicyTaskManagerForDebug()
                     .AddDebugMemoryDataCollector(out collector1a)
                     .AddChannelIncoming("spooky", internalOnly: true)
-                        .AttachCommand((CommandMethodInlineContext ctx) =>
+                        .AttachCommand((CommandMethodRequestContext ctx) =>
                         {
                             var payload = ctx.DtoGet<Blah>();
                             ctx.ResponseSet(200, payload.Message);

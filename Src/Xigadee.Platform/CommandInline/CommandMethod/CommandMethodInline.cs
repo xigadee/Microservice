@@ -12,7 +12,7 @@ namespace Xigadee
     {
         #region Declarations
         MessageFilterWrapper mKey;
-        Func<CommandMethodInlineContext, Task> mCommand;
+        Func<CommandMethodRequestContext, Task> mCommand;
         string mReferenceId;
         #endregion
         /// <summary>
@@ -23,7 +23,7 @@ namespace Xigadee
         /// <param name="referenceId">The optional reference id for tracking.</param>
         /// <param name="policy">The command policy.</param>
         public CommandMethodInline(ServiceMessageHeader header
-            , Func<CommandMethodInlineContext, Task> command
+            , Func<CommandMethodRequestContext, Task> command
             , string referenceId = null
             , CommandPolicy policy = null) :base(policy ?? new CommandPolicy() { OnProcessRequestException = ProcessRequestExceptionBehaviour.SignalSuccessAndSend500ErrorResponse })
         {
@@ -38,7 +38,7 @@ namespace Xigadee
         protected override void CommandsRegister()
         {
             CommandRegister(mKey,
-                async (rq, rs) => await mCommand(new CommandMethodInlineContext(rq, rs, PayloadSerializer, Collector, SharedServices, OriginatorId, Outgoing))
+                async (rq, rs) => await mCommand(new CommandMethodRequestContext(rq, rs, PayloadSerializer, Collector, SharedServices, OriginatorId, Outgoing))
                 , null
                 , mReferenceId);
         }
