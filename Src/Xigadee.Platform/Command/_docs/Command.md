@@ -42,7 +42,13 @@ Within the command, you can use attributes to register methods that can receive 
 
 ## Statistics
 
-## Using the Command Harness
+## Command Initiator
+
+## Next
+
+- Persistence
+
+- Command Test Harness
 
 <table><tr> 
 <td><a href="http://www.hitachiconsulting.com"><img src="../../../docs/hitachi.png" alt="Hitachi Consulting" height="50"/></a></td> 

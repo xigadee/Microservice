@@ -728,6 +728,7 @@
   <ItemGroup>
     <None Include="Command\_docs\Command.md" />
     <None Include="Command\_docs\CommandHarness.md" />
+    <None Include="Command\_docs\CommandPersistence.md" />
     <None Include="Communication\_docs\Communication.md" />
     <None Include="Configuration\_docs\Configuration.md" />
     <None Include="DataCollection\_docs\DataCollection.md" />
