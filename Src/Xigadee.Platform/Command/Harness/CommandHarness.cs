@@ -47,7 +47,7 @@ namespace Xigadee
     /// <typeparam name="C">The command type.</typeparam>
     /// <typeparam name="S">The command statistics class type.</typeparam>
     /// <typeparam name="P">The command policy.</typeparam>
-    public class CommandHarness<C,S,P>: ServiceHarness<C, CommandHarnessDependencies<C>>, ICommandHarness 
+    public class CommandHarness<C,S,P>: ServiceHarness<C, CommandHarnessDependencies>, ICommandHarness 
         where C : CommandBase<S, P>, ICommand
         where S : CommandStatistics, new()
         where P : CommandPolicy, new()
@@ -72,14 +72,13 @@ namespace Xigadee
         /// Occurs when an outgoing CommandHarnessRequest object is created.
         /// </summary>
         public event EventHandler<CommandHarnessEventArgs> OnEventOutgoing;
-
         #endregion
         #region Constructors
         /// <summary>
         /// This is the default constructor.
         /// </summary>
         /// <param name="creator">This is the creator function to create the command. If the command supports a parameterless constructor, then you can leave this blank.</param>
-        public CommandHarness(Func<C> creator = null) : base(new CommandHarnessDependencies<C>(creator))
+        public CommandHarness(Func<C> creator = null) : base(new CommandHarnessDependencies(), creator)
         {
             Dispatcher = new DispatchWrapper(Dependencies.PayloadSerializer
                 , CommandExecute
@@ -91,14 +90,18 @@ namespace Xigadee
         }
         #endregion
 
+        #region Policy
         /// <summary>
         /// This is the command policy.
         /// </summary>
         public P Policy => Service.Policy;
+        #endregion
+        #region Statistics
         /// <summary>
         /// Gets the command statistics without generating a refresh.
         /// </summary>
-        public S Statistics => Service.StatisticsInternal;
+        public S Statistics => Service.StatisticsInternal; 
+        #endregion
 
         #region Traffic
         /// <summary>
@@ -140,7 +143,7 @@ namespace Xigadee
         /// <returns>Returns the command.</returns>
         protected override C Create()
         {
-            var command = Dependencies.Creator();
+            var command = mServiceCreator();
 
             return command;
         }

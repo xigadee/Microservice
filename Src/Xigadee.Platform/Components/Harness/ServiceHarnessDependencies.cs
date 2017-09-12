@@ -32,7 +32,7 @@ namespace Xigadee
         }
 
         /// <summary>
-        /// Initialises the service relationships.
+        /// Initializes the service relationships.
         /// </summary>
         protected virtual void Initialise()
         {

@@ -52,17 +52,38 @@ namespace Xigadee
         where D : ServiceHarnessDependencies, new()
     {
         /// <summary>
+        /// The optional service creator function.
+        /// </summary>
+        protected Func<S> mServiceCreator = null;
+
+        /// <summary>
         /// This is the default constructor.
         /// </summary>
         /// <param name="dependencies">The optional dependency parameter.</param>
-        public ServiceHarness(D dependencies = null)
+        /// <param name="serviceCreator">This is the optional function that can be passed to create the service.</param>
+        public ServiceHarness(D dependencies = null, Func<S> serviceCreator = null)
         {
+            mServiceCreator = serviceCreator;
             Dependencies = dependencies?? new D();
 
             Service = Create();
             Service.StatusChanged += Service_StatusChanged;
             Configure(Service);
         }
+
+        #region DefaultConstructor()
+        /// <summary>
+        /// This method checks whether the command supports a parameterless constructor.
+        /// </summary>
+        /// <returns>Returns the command.</returns>
+        protected virtual Func<S> DefaultServiceCreator()
+        {
+            if (typeof(S).GetConstructor(Type.EmptyTypes) == null)
+                throw new ArgumentOutOfRangeException($"The service {typeof(S).Name} does not support a parameterless constructor. Please supply a creator function.");
+
+            return () => Activator.CreateInstance<S>();
+        }
+        #endregion
 
         /// <summary>
         /// This internal service.
@@ -91,7 +112,10 @@ namespace Xigadee
         /// This base method should be used to create the service.
         /// </summary>
         /// <returns></returns>
-        protected abstract S Create();
+        protected virtual S Create()
+        {
+            return (mServiceCreator ?? DefaultServiceCreator())();
+        }
         /// <summary>
         /// This method should be used to provide additional configuration before starting the services.
         /// </summary>

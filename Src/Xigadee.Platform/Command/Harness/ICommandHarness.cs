@@ -10,6 +10,10 @@ namespace Xigadee
     public interface ICommandHarness
     {
         /// <summary>
+        /// This is the dependencies class. This class can be shared with another harness.
+        /// </summary>
+        CommandHarnessDependencies Dependencies { get; }
+        /// <summary>
         /// Occurs when a CommandHarnessRequest object is created.
         /// </summary>
         event EventHandler<CommandHarnessEventArgs> OnEvent;

@@ -70,6 +70,13 @@ namespace Test.Xigadee
             harness
                 .ConfigureIntercept((h, a) => ok = true, CommandHarnessTrafficDirection.Outgoing, ("one", "two", "three"))
                 .ConfigureIntercept((h, a) => Interlocked.Increment(ref count))
+                .OutgoingIntercept((c) =>
+                {
+                    string rString = null;
+                    c.DtoTryGet<string>(out rString);
+
+                    c.ResponseSet(200, "Hello mum");
+                })
                 ;
 
             harness.Dispatcher.Process(("fredo", "two", "three"), "Helloe");

@@ -3,7 +3,8 @@
     /// <summary>
     /// This is the context base for inline based commands.
     /// </summary>
-    public abstract class CommandContextBase
+    public abstract class CommandContextBase<O> : ICommandContext
+        where O: IMicroserviceDispatch
     {
         /// <summary>
         /// This is the default constructor.
@@ -18,7 +19,7 @@
             , IDataCollection collector
             , ISharedService sharedServices
             , MicroserviceId originatorId
-            , ICommandOutgoing outgoingRequest)
+            , O outgoingRequest)
         {
             PayloadSerializer = serializer;
             Collector = collector;
@@ -45,6 +46,6 @@
         /// <summary>
         /// Gets the outgoing request initiator.
         /// </summary>
-        public ICommandOutgoing Outgoing { get; }
+        public O Outgoing { get; }
     }
 }

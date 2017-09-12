@@ -8,7 +8,7 @@ namespace Xigadee
     /// This context is used to hold the necessary data for an inline command request.
     /// </summary>
     [DebuggerDisplay("{Id}/{CorrellationId}")]
-    public class CommandScheduleInlineContext: CommandContextBase
+    public class CommandScheduleInlineContext: CommandContextBase<ICommandOutgoing>
     {
         /// <summary>
         /// This is the default constructor.

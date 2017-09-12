@@ -15,6 +15,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 
 namespace Xigadee
 {
@@ -23,6 +24,36 @@ namespace Xigadee
     /// </summary>
     public static partial class CommandHarnessHelper
     {
+        /// <summary>
+        /// Outgoings the intercept.
+        /// </summary>
+        /// <typeparam name="H">The harness type.</typeparam>
+        /// <param name="harness">The harness.</param>
+        /// <param name="action">The action.</param>
+        /// <returns>Returns the harness to continue the pipeline.</returns>
+        /// <exception cref="ArgumentNullException">action - action cannot be null</exception>
+        public static H OutgoingIntercept<H>(this H harness, Action<CommandHarnessRequestContext> action)
+            where H : ICommandHarness
+        {
+            if (action == null)
+                throw new ArgumentNullException("action", "action cannot be null");
+
+            Action<ICommandHarness, CommandHarnessEventArgs> actionInternal = (h, args) => 
+            {
+                var payload = args.Event.Tracker.ToTransmissionPayload();
+
+                var context = new CommandHarnessRequestContext(h, args, payload);
+
+                action(context);
+
+                context.Responses.ForEach((r) => harness.Dispatcher.Process(r));
+            };
+
+            harness.ConfigureIntercept(actionInternal, CommandHarnessTrafficDirection.Outgoing);
+            harness.ConfigureIntercept(actionInternal, CommandHarnessTrafficDirection.Response);
+
+            return harness;
+        }
         /// <summary>
         /// Intercepts the specified event arguments.
         /// </summary>
@@ -43,6 +74,7 @@ namespace Xigadee
 
             harness.OnEvent += (object sender, CommandHarnessEventArgs e) =>
             {
+                //Is this a payload event, no then do not bubble up.
                 if (!e.Event.Tracker.HasTransmissionPayload())
                     return;
 
