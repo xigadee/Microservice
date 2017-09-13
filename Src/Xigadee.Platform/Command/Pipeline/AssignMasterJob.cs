@@ -25,7 +25,7 @@ namespace Xigadee
         /// </summary>
         /// <typeparam name="E"></typeparam>
         /// <typeparam name="C"></typeparam>
-        /// <param name="cpipe">The cpipe.</param>
+        /// <param name="cpipe">The pipeline.</param>
         /// <param name="command">The command.</param>
         /// <param name="assign">The assign.</param>
         /// <param name="channelType">Type of the channel.</param>
@@ -40,7 +40,6 @@ namespace Xigadee
             where E : IPipelineChannelBroadcast<IPipeline>
             where C : ICommand
         {
-
             command.MasterJobNegotiationChannelType = channelType ?? command.GetType().Name.ToLowerInvariant();
 
             if (autosetPartition2)
@@ -60,7 +59,7 @@ namespace Xigadee
         /// <typeparam name="E"></typeparam>
         /// <typeparam name="P"></typeparam>
         /// <typeparam name="C"></typeparam>
-        /// <param name="cpipe">The cpipe.</param>
+        /// <param name="cpipe">The pipeline.</param>
         /// <param name="creator">The creator.</param>
         /// <param name="assign">The assign.</param>
         /// <param name="channelType">Type of the channel.</param>

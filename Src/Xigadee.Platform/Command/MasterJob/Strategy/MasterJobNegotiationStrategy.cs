@@ -57,7 +57,6 @@ namespace Xigadee
                         schedule.Frequency = TimeSpan.FromSeconds(10 + Generator.Next(20));
                     break;
             }
-
         }
     }
 

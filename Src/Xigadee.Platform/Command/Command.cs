@@ -100,7 +100,7 @@ namespace Xigadee
                 if (Policy.OutgoingRequestsEnabled)
                     OutgoingRequestsTearUp();
 
-                if (Policy.JobsEnabled)
+                if (Policy.JobSchedulesEnabled)
                     JobsTearUp();
 
                 if (Policy.MasterJobEnabled)
@@ -126,7 +126,7 @@ namespace Xigadee
                 if (Policy.MasterJobEnabled)
                     MasterJobTearDown();
 
-                if (Policy.JobsEnabled)
+                if (Policy.JobSchedulesEnabled)
                     JobsTearDown();
 
                 Outgoing = null;

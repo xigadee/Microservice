@@ -46,7 +46,7 @@ namespace Xigadee
         {
             mSchedules = new List<CommandJobSchedule>();
 
-            if (Policy.ScheduleReflectionSupported)
+            if (Policy.JobScheduleReflectionSupported)
                 JobSchedulesReflectionInitialise<JobScheduleAttribute>(Policy.JobScheduleAttributeInherit);
 
             JobSchedulesManualRegister();

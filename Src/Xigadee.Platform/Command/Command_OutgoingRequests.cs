@@ -64,7 +64,7 @@ namespace Xigadee
 
             //Set a timer to signal timeout requests
             mScheduleTimeout = new CommandTimeoutSchedule(TimeOutScheduler
-                , Policy.OutgoingRequestsTimeoutPoll
+                , Policy.OutgoingRequestsTimeoutPollInterval
                 , $"{FriendlyName} Command OutgoingRequests Timeout Poll"
                 );
             mScheduleTimeout.CommandId = ComponentId;
@@ -126,7 +126,7 @@ namespace Xigadee
         #endregion
         #region ResponseId
         /// <summary>
-        /// This is the internal resonse id.
+        /// This is the internal response id.
         /// </summary>
         private MessageFilterWrapper mResponseId = null;
 

@@ -404,7 +404,6 @@
     <Compile Include="Command\Handler\CommandHandlerStatistics.cs" />
     <Compile Include="Command\Handler\ICommandHandler.cs" />
     <Compile Include="Command\Handler\ICommandHandlerStatistics.cs" />
-    <Compile Include="Command\Policy\CommandPolicyHelper.cs" />
     <Compile Include="Command\Schedules\CommandJobSchedule.cs" />
     <Compile Include="Command\Helper\CommandNotificationBehaviour.cs" />
     <Compile Include="Interfaces\ICommand.cs" />

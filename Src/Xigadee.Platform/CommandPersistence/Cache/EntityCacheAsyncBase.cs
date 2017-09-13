@@ -66,20 +66,6 @@ namespace Xigadee
             mResourceProfile = resourceProfile ?? new ResourceProfile(string.Format("Cache_{0}", typeof(E).Name));
             mEntities = new ConcurrentDictionary<K, EntityCacheHolder<K, E>>();
         }
-        ///// <summary>
-        ///// This is the default constructor for the cache handler.
-        ///// </summary>
-        ///// <param name="interval"></param>
-        ///// <param name="initialWait"></param>
-        ///// <param name="initialTime"></param>
-        ///// <param name="trackEvents"></param>
-        //protected EntityCacheAsyncBase(TimeSpan? interval = null, TimeSpan? initialWait = null, DateTime? initialTime = null
-        //    , bool trackEvents = false, int maxCount = 200000, ResourceProfile resourceProfile = null, TimeSpan? defaultTTL = null)
-        //    : base(JobConfiguration.ToJob(interval ?? TimeSpan.FromMinutes(5), initialWait ?? TimeSpan.FromSeconds(5), initialTime))
-        //{
-        //    mResourceProfile = resourceProfile ?? new ResourceProfile(string.Format("Cache_{0}", typeof(E).Name));
-        //    mEntities = new ConcurrentDictionary<K, EntityCacheHolder<K, E>>();
-        //}
         #endregion
 
         #region StatisticsRecalculate()
@@ -136,7 +122,7 @@ namespace Xigadee
                 int reduce = mEntities.Count - Policy.EntityCacheLimit;
                 if (reduce > 0)
                 {
-                    //We're still over capacity, so remove records based on their low hitcount and take the ones
+                    //We're still over capacity, so remove records based on their low hit-count and take the ones
                     //that will expire the soonest.
                     var toRemove = mEntities.Values
                         .OrderBy((e) => e.HitCount)
@@ -179,7 +165,7 @@ namespace Xigadee
 
         #region SharedServicesChange(ISharedService sharedServices)
         /// <summary>
-        /// This is the methdo that register the shared service reference.
+        /// This is the method that register the shared service reference.
         /// </summary>
         protected override void SharedServicesChange(ISharedService sharedServices)
         {
@@ -191,7 +177,7 @@ namespace Xigadee
 
         #region CommandsRegister()
         /// <summary>
-        /// This override connects the cache handler to the interservice message handling.
+        /// This override connects the cache handler to the inter-service message handling.
         /// </summary>
         protected override void CommandsRegister()
         {

@@ -52,7 +52,7 @@ namespace Xigadee
         {
             if (Policy.MasterJobNegotiationChannelIdIncoming == null)
                 throw new CommandStartupException("Masterjobs are enabled, but the NegotiationChannelIdIncoming has not been set");
-            if (Policy.MasterJobNegotiationChannelType == null)
+            if (Policy.MasterJobNegotiationChannelMessageType == null)
                 throw new CommandStartupException("Masterjobs are enabled, but the NegotiationChannelType has not been set");
 
             mMasterJobContext = new MasterJobContext(Policy.MasterJobName ?? FriendlyName, Policy.MasterJobNegotiationStrategy);
@@ -64,7 +64,7 @@ namespace Xigadee
             //Add the schedule to generate poll negotiation requests.
             Scheduler.Register(mMasterJobContext.NegotiationPollScheduleInitialise(MasterJobStateNotificationOutgoing));
             //Add the incoming poll channel.
-            CommandRegister((MasterJobNegotiationChannelIdIncoming, Policy.MasterJobNegotiationChannelType, null), MasterJobStateNotificationIncoming);
+            CommandRegister((MasterJobNegotiationChannelIdIncoming, Policy.MasterJobNegotiationChannelMessageType, null), MasterJobStateNotificationIncoming);
         }
         #endregion
         #region *--> MasterJobTearDown()
@@ -79,7 +79,7 @@ namespace Xigadee
             //Remove the negotiation poll schedule
             Scheduler.Unregister(mMasterJobContext.NegotiationPollSchedule);
             //Remove the incoming poll command.
-            CommandUnregister((MasterJobNegotiationChannelIdIncoming, Policy.MasterJobNegotiationChannelType, null));
+            CommandUnregister((MasterJobNegotiationChannelIdIncoming, Policy.MasterJobNegotiationChannelMessageType, null));
 
             mMasterJobContext.Stop();
         }
@@ -109,11 +109,11 @@ namespace Xigadee
         {
             get
             {
-                return Policy.MasterJobNegotiationChannelType;
+                return Policy.MasterJobNegotiationChannelMessageType;
             }
             set
             {
-                Policy.MasterJobNegotiationChannelType = value;
+                Policy.MasterJobNegotiationChannelMessageType = value;
             }
         }
         #endregion
@@ -159,48 +159,6 @@ namespace Xigadee
         } 
         #endregion
 
-        #region NegotiationTransmit(string action)
-        /// <summary>
-        /// This method transmits the notification message to the other instances.
-        /// The message is specified to be processed externally so to ensure that we can determine whether 
-        /// the comms are active.
-        /// </summary>
-        /// <param name="action">The master job action to transmit.</param>
-        protected virtual Task NegotiationTransmit(string action)
-        {
-            var payload = TransmissionPayload.Create(Policy.TransmissionPayloadTraceEnabled);
-            payload.TraceWrite("Create", "Command/NegotiationTransmit");
-
-            payload.Options = ProcessOptions.RouteExternal;
-
-            var message = payload.Message;
-            //Note: historically there was only one channel, so we use the incoming channel if the outgoing has
-            //not been specified. These should all be lower case so that Service Bus can match accurately.
-            message.ChannelId = (Policy.MasterJobNegotiationChannelIdOutgoing ?? Policy.MasterJobNegotiationChannelIdIncoming).ToLowerInvariant();
-            message.MessageType = Policy.MasterJobNegotiationChannelType.ToLowerInvariant();
-            message.ActionType = action.ToLowerInvariant();
-
-            message.ChannelPriority = Policy.MasterJobNegotiationChannelPriority;
-
-            //Go straight to the dispatcher as we don't want to use the tracker for this job
-            //as it is transmit only. Only send messages if the service is in a running state.
-            switch (Status)
-            {
-                case ServiceStatus.Running:
-                    Outgoing.Process(payload);
-                    FireAndDecorateEventArgs(OnMasterJobCommunication
-                        , () => new MasterJobCommunicationEventArgs(
-                              MasterJobCommunicationDirection.Outgoing
-                            , mMasterJobContext.State
-                            , action
-                            , mMasterJobContext.StateChangeCounter)
-                        , (args,ex) => payload.TraceWrite($"Error: {ex.Message}", "Command/NegotiationTransmit/OnMasterJobCommunication"));
-                    break;
-            }
-
-            return Task.FromResult(0);
-        }
-        #endregion
 
         #region ProcessRequestIfSelfGenerated(TransmissionPayload rq)
         /// <summary>
@@ -273,12 +231,13 @@ namespace Xigadee
             }
         } 
         #endregion
-        #region Negotiation(string message, Schedule schedule, bool increment = true)
+
+        #region >>> Negotiation(string message, Schedule schedule, bool increment = true)
         /// <summary>
         /// Transmits the negotiation messages, and then sets the next poll time using the context.
         /// </summary>
         /// <param name="message">The message.</param>
-        /// <param name="increment">If set to <c>true</c> increment the poll attemps counter.</param>
+        /// <param name="increment">If set to <c>true</c> increment the poll attempts counter.</param>
         protected async Task Negotiation(string message, bool increment = true)
         {
             await NegotiationTransmit(message);
@@ -286,6 +245,48 @@ namespace Xigadee
             if (increment)
                 mMasterJobContext.MasterPollAttemptsIncrement();
         } 
+        #endregion
+        #region >>> NegotiationTransmit(string action)
+        /// <summary>
+        /// This method transmits the notification message to the other instances.
+        /// The message is specified to be processed externally so to ensure that we can determine whether 
+        /// the comms are active.
+        /// </summary>
+        /// <param name="action">The master job action to transmit.</param>
+        protected virtual Task NegotiationTransmit(string action)
+        {
+            var payload = TransmissionPayload.Create(Policy.TransmissionPayloadTraceEnabled);
+            payload.TraceWrite("Create", $"{FriendlyName}/NegotiationTransmit");
+
+            payload.Options = ProcessOptions.RouteExternal;
+
+            var message = payload.Message;
+            //Note: historically there was only one channel, so we use the incoming channel if the outgoing has
+            //not been specified. These should all be lower case so that Service Bus can match accurately.
+            message.ChannelId = (Policy.MasterJobNegotiationChannelIdOutgoing ?? Policy.MasterJobNegotiationChannelIdIncoming).ToLowerInvariant();
+            message.MessageType = Policy.MasterJobNegotiationChannelMessageType.ToLowerInvariant();
+            message.ActionType = action.ToLowerInvariant();
+
+            message.ChannelPriority = Policy.MasterJobNegotiationChannelPriority;
+
+            //Go straight to the dispatcher as we don't want to use the tracker for this job
+            //as it is transmit only. Only send messages if the service is in a running state.
+            switch (Status)
+            {
+                case ServiceStatus.Running:
+                    Outgoing.Process(payload);
+                    FireAndDecorateEventArgs(OnMasterJobCommunication
+                        , () => new MasterJobCommunicationEventArgs(
+                              MasterJobCommunicationDirection.Outgoing
+                            , mMasterJobContext.State
+                            , action
+                            , mMasterJobContext.StateChangeCounter)
+                        , (args,ex) => payload.TraceWrite($"Error: {ex.Message}", $"{FriendlyName}/NegotiationTransmit/OnMasterJobCommunication"));
+                    break;
+            }
+
+            return Task.FromResult(0);
+        }
         #endregion
 
         #region --> MasterJobStateNotificationIncoming(TransmissionPayload rq, List<TransmissionPayload> rs)

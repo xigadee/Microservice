@@ -26,7 +26,7 @@ namespace Xigadee
 {
     public abstract partial class CommandBase<S, P, H>
     {
-        #region ChannelId
+        #region ChannelId/ChannelIdAutoSet
         /// <summary>
         /// This is the default listening channel id for incoming requests.
         /// </summary>
@@ -49,7 +49,7 @@ namespace Xigadee
             get { return Policy.ChannelIdAutoSet; }
         }
         #endregion
-        #region ResponseChannelId
+        #region ResponseChannelId/ResponseChannelIdAutoSet
         /// <summary>
         /// This is the channel used for the response to outgoing messages.
         /// </summary>

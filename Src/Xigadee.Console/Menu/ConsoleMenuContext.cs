@@ -108,7 +108,9 @@ namespace Xigadee
 
             return true;
         }
-
+        /// <summary>
+        /// Gets or sets the state.
+        /// </summary>
         public object State { get; set; }
 
         public int Indent1 { get; set; }

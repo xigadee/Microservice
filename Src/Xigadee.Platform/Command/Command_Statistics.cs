@@ -46,7 +46,7 @@ namespace Xigadee
                     , mMasterJobContext.State.ToString()
                     , Policy.MasterJobNegotiationChannelIdOutgoing
                     , Policy.MasterJobNegotiationChannelPriority
-                    , Policy.MasterJobNegotiationChannelType
+                    , Policy.MasterJobNegotiationChannelMessageType
                     );
 
                 stats.MasterJob.Master = mMasterJobContext.PartnerMaster;

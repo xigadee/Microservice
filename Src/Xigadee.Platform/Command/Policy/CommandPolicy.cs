@@ -28,9 +28,23 @@ namespace Xigadee
         /// </summary>
         public bool CommandReflectionSupported { get; set; } = true;
         /// <summary>
+        /// Gets or sets a value indicating whether the command contract attribute should include inherited methods.
+        /// </summary>
+        public bool CommandContractAttributeInherit { get; set; } = true;
+
+        //Job Poll        
+        /// <summary>
+        /// Gets or sets a value indicating whether job schedules are enabled on the command. The default setting is true.
+        /// </summary>
+        public virtual bool JobSchedulesEnabled { get; set; } = true;
+        /// <summary>
         /// Specifies that schedule reflection commands are supported, i.e. those that use the CommandScheduleAttribute.
         /// </summary>
-        public bool ScheduleReflectionSupported { get; set; } = true;
+        public bool JobScheduleReflectionSupported { get; set; } = true;
+        /// <summary>
+        /// Gets or sets a value indicating whether the job schedule attribute should include inherited methods.
+        /// </summary>
+        public bool JobScheduleAttributeInherit { get; set; } = true;
 
         /// <summary>
         /// The behaviour to follow for an uncaught exception.
@@ -66,11 +80,16 @@ namespace Xigadee
         /// <summary>
         /// This is the command start-up priority. The default is 0.
         /// </summary>
-        public int? StartupPriority { get; set; }=0;
+        public int? StartupPriority { get; set; } = 0;
         /// <summary>
         /// This property specifies how the command notifies the communication container when a new command is registered and becomes active.
         /// </summary>
         public CommandNotificationBehaviour CommandNotify { get; set; } = CommandNotificationBehaviour.OnRegistration;
+
+        /// <summary>
+        /// This boolean property specifies whether outgoing requests are enables.
+        /// </summary>
+        public virtual bool OutgoingRequestsEnabled { get; set; } = false;
         /// <summary>
         /// This is the default timeout for outgoing requests from the Command to other commands when not set in the settings.
         /// The default is 30s.
@@ -81,34 +100,16 @@ namespace Xigadee
         /// </summary>
         public virtual TimeSpan? OutgoingRequestDefaultTimespan { get; set; } = TimeSpan.FromSeconds(25);
         /// <summary>
-        /// This boolean property specifies whether outgoing requests are enables.
-        /// </summary>
-        public virtual bool OutgoingRequestsEnabled { get; set; } = false;
-
-        /// <summary>
         /// This is the default time out poll, which is set at an initial 10 second wait and then a repeated 5 seconds poll by default.
         /// </summary>
-        public virtual ScheduleTimerConfig OutgoingRequestsTimeoutPoll { get; set; } = new ScheduleTimerConfig() { Interval = TimeSpan.FromSeconds(1) };
-
-        //Job Poll        
-        /// <summary>
-        /// Gets or sets a value indicating whether jobs are enabled on the command. The default setting is true.
-        /// </summary>
-        public virtual bool JobsEnabled { get; set; } = true;
-        /// <summary>
-        /// Gets or sets the job poll schedule.
-        /// </summary>
-        public virtual ScheduleTimerConfig JobPollSchedule { get; set; } = new ScheduleTimerConfig();
-        /// <summary>
-        /// Gets or sets a value indicating whether job poll is long running.
-        /// </summary>
-        public virtual bool JobPollIsLongRunning { get; set; } = false;
+        public virtual ScheduleTimerConfig OutgoingRequestsTimeoutPollInterval { get; set; } = new ScheduleTimerConfig() { Interval = TimeSpan.FromSeconds(1) };
 
         //Master Job
         /// <summary>
-        /// Gets or sets the master job negotiation strategy.
+        /// Gets or sets the master job negotiation strategy. The default is MasterJobNegotiationStrategy. You can set this to the MasterJobNegotiationStrategyDebug class 
+        /// for a more aggressive approach to negotiating, which can be useful when debugging.
         /// </summary>
-        public MasterJobNegotiationStrategyBase MasterJobNegotiationStrategy { get; set; }
+        public MasterJobNegotiationStrategyBase MasterJobNegotiationStrategy { get; set; } = new MasterJobNegotiationStrategy();
         /// <summary>
         /// Gets or sets a value indicating whether the masterjob service is enabled.
         /// </summary>
@@ -118,9 +119,9 @@ namespace Xigadee
         /// </summary>
         public virtual int MasterJobNegotiationChannelPriority { get; set; } = 2;
         /// <summary>
-        /// Gets or sets the type of the masterjob negotiation channel.
+        /// Gets or sets the type of the masterjob negotiation channel message type..
         /// </summary>
-        public virtual string MasterJobNegotiationChannelType { get; set; }
+        public virtual string MasterJobNegotiationChannelMessageType { get; set; }
         /// <summary>
         /// Gets or sets the name of the master job.
         /// </summary>
@@ -152,18 +153,8 @@ namespace Xigadee
         /// </summary>
         public bool MasterJobCommandContractAttributeInherit { get; set; } = true;
         /// <summary>
-        /// Gets or sets a value indicating whether the command contract attribute should include inherited methods.
-        /// </summary>
-        public bool CommandContractAttributeInherit { get; set; } = true;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the job schedule attribute should include inherited methods.
-        /// </summary>
-        public bool JobScheduleAttributeInherit { get; set; } = true;
-        /// <summary>
         /// Gets or sets a value indicating whether the masterjob schedule attribute should include inherited methods.
         /// </summary>
         public bool MasterJobScheduleAttributeInherit { get; set; } = true;
-
     }
 }

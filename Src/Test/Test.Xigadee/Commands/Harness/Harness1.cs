@@ -28,7 +28,6 @@ namespace Test.Xigadee
             public async Task Schedule1()
             {
                 var back = Outgoing.Process<string,string>(("one", "two", "four"),"Hello").Result;
-                //Outgoing.Process(("one", "two", "three"), "Hello");
             }
         }
 
@@ -56,6 +55,7 @@ namespace Test.Xigadee
         {
             int countTotal = 0;
             int countOutgoing = 0;
+            int countResponse = 0;
 
             var policy = new CommandPolicy() { ChannelId = "fredo", OutgoingRequestsEnabled = true, ResponseChannelId = "getback" };
 
@@ -70,6 +70,7 @@ namespace Test.Xigadee
                 .Intercept((ctx) => ok = true, CommandHarnessTrafficDirection.Outgoing, ("one", null,null))
                 .Intercept((ctx) => Interlocked.Increment(ref countTotal))
                 .Intercept((ctx) => Interlocked.Increment(ref countOutgoing), header: ("one", null, null))
+                .Intercept((ctx) => Interlocked.Increment(ref countResponse), header: ("getback", null, null))
                 .InterceptOutgoing((c) =>
                 {
                     string rString = null;
