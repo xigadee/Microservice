@@ -15,10 +15,6 @@
 #endregion
 
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 
 namespace Xigadee
 {
@@ -29,15 +25,49 @@ namespace Xigadee
     /// <seealso cref="Xigadee.ICommandHarnessDispath" />
     public class CommandHarnessDispatchWrapper : DispatchWrapper, ICommandHarnessDispath
     {
-        internal CommandHarnessDispatchWrapper(IPayloadSerializationContainer serializer, Action<TransmissionPayload, string> executeOrEnqueue, Func<ServiceStatus> getStatus, bool traceEnabled) 
+        internal CommandHarnessDispatchWrapper(CommandPolicy policy, IPayloadSerializationContainer serializer, Action<TransmissionPayload, string> executeOrEnqueue, Func<ServiceStatus> getStatus, bool traceEnabled) 
             : base(serializer, executeOrEnqueue, getStatus, traceEnabled)
         {
+            Policy = policy;
+        }
+        /// <summary>
+        /// Gets the command policy.
+        /// </summary>
+        protected CommandPolicy Policy { get; }
+
+        /// <summary>
+        /// This method creates a service message and injects it in to the execution path and bypasses the listener infrastructure.
+        /// </summary>
+        /// <param name="header">The message header fragment to identify the recipient. The channel will be inserted by the command harness.</param>
+        /// <param name="package">The object package to process.</param>
+        /// <param name="ChannelPriority">The priority that the message should be processed. The default is 1. If this message is not a valid value, it will be matched to the nearest valid value.</param>
+        /// <param name="options">The process options.</param>
+        /// <param name="release">The release action which is called when the payload has been executed by the receiving commands.</param>
+        /// <param name="responseHeader">This is the optional response header fragment. The channel will be inserted by the harness</param>
+        /// <param name="ResponseChannelPriority">This is the response channel priority. This will be set if the response header is not null. The default priority is 1.</param>
+        public void Process(ServiceMessageHeaderFragment header
+            , object package = null
+            , int ChannelPriority = 1
+            , ProcessOptions options = ProcessOptions.RouteExternal | ProcessOptions.RouteInternal
+            , Action<bool, Guid> release = null
+            , ServiceMessageHeaderFragment responseHeader = null
+            , int ResponseChannelPriority = 1
+            )
+        {
+            Process((Policy.ChannelId, header)
+            , package
+            , ChannelPriority
+            , options
+            , release
+            , responseHeader == null? (ServiceMessageHeader)null: (Policy.ResponseChannelId, responseHeader)
+            , ResponseChannelPriority
+            );
         }
 
         /// <summary>
         /// This method creates a service message and injects it in to the execution path and bypasses the listener infrastructure.
         /// </summary>
-        /// <param name="header">The message header to identify the recipient.</param>
+        /// <param name="header">The message header fragment to identify the recipient. The channel will be inserted by the command harness.</param>
         /// <param name="package">The object package to process.</param>
         /// <param name="ChannelPriority">The priority that the message should be processed. The default is 1. If this message is not a valid value, it will be matched to the nearest valid value.</param>
         /// <param name="options">The process options.</param>
@@ -49,20 +79,18 @@ namespace Xigadee
             , int ChannelPriority = 1
             , ProcessOptions options = ProcessOptions.RouteExternal | ProcessOptions.RouteInternal
             , Action<bool, Guid> release = null
-            , ServiceMessageHeaderFragment responseHeader = null
+            , ServiceMessageHeader responseHeader = null
             , int ResponseChannelPriority = 1
             )
         {
-            throw new NotImplementedException();
-            //var message = new ServiceMessage(header, responseHeader);
-            //message.ChannelPriority = ChannelPriority;
-            //if (package != null)
-            //    message.Blob = mSerializer.PayloadSerialize(package);
-
-            //if (responseHeader != null)
-            //    message.ResponseChannelPriority = ResponseChannelPriority;
-
-            //Process(message, options, release);
+            Process((Policy.ChannelId, header)
+            , package
+            , ChannelPriority
+            , options
+            , release
+            , responseHeader
+            , ResponseChannelPriority
+            );
         }
     }
 }

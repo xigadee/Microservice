@@ -30,6 +30,7 @@ namespace Xigadee
 
         private readonly IPayloadSerializationContainer mSerializer;
 
+        private string Name { get; }
         /// <summary>
         /// Identifies whether the payload trace is enabled.
         /// </summary>
@@ -38,6 +39,8 @@ namespace Xigadee
         internal DispatchWrapper(IPayloadSerializationContainer serializer, Action<TransmissionPayload, string> executeOrEnqueue, Func<ServiceStatus> getStatus, bool traceEnabled) 
             : base(getStatus)
         {
+            Name = GetType().Name;
+
             ExecuteOrEnqueue = executeOrEnqueue;
             mSerializer = serializer;
             mTransmissionPayloadTraceEnabled = traceEnabled;
@@ -146,10 +149,10 @@ namespace Xigadee
             if (mTransmissionPayloadTraceEnabled)
             {
                 payload.TraceEnabled = true;
-                payload.TraceWrite("howdy");
+                payload.TraceWrite($"{Name} received.");
             }
 
-            ExecuteOrEnqueue(payload, "Incoming Process method request");
+            ExecuteOrEnqueue(payload, $"{Name} method request");
         }
         #endregion
     }

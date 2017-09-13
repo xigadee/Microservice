@@ -57,10 +57,9 @@ namespace Test.Xigadee
             int countTotal = 0;
             int countOutgoing = 0;
 
-            var policy = new CommandPolicy() { OutgoingRequestsEnabled = true, ResponseChannelId = "getback" };
-            policy.ChannelId = "fredo";
+            var policy = new CommandPolicy() { ChannelId = "fredo", OutgoingRequestsEnabled = true, ResponseChannelId = "getback" };
 
-            var harness = new CommandHarness<CommandHarness1>(policy: policy);
+            var harness = new CommandHarness<CommandHarness1>(policy);
 
             harness.Start();
 
@@ -83,7 +82,7 @@ namespace Test.Xigadee
             harness.ScheduleExecute("1");
 
             harness.Dispatcher.Process(("fredo", "two", "three"), "Helloe");
-            harness.Dispatcher.Process(("fredo", "one", "two"), "Helloe", responseHeader:("1","2","3"));
+            harness.Dispatcher.Process(("one", "two"), "Helloe", responseHeader:("2","3"));
             
             Assert.IsTrue(harness.TrafficPayloadOutgoing.Count == 2);
             Assert.IsTrue(ok);

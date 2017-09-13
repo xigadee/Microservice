@@ -104,7 +104,7 @@ namespace Xigadee
         public CommandHarness(P policy = null, Func<C> commandCreator = null) 
             : base(new CommandHarnessDependencies(), commandCreator ?? CommandHarnessHelper.DefaultCreator<C,P>(policy ?? new P()))
         {
-            Dispatcher = new CommandHarnessDispatchWrapper(Dependencies.PayloadSerializer, CommandExecute, () => Service?.Status ?? ServiceStatus.Stopped, true);
+            Dispatcher = new CommandHarnessDispatchWrapper(Policy, Dependencies.PayloadSerializer, CommandExecute, () => Service?.Status ?? ServiceStatus.Stopped, true);
 
             //Set the harness scheduler to send the schedule execute requests here so that they can be tracked.
             Dependencies.Scheduler.TaskSubmit = ScheduleExecute;
