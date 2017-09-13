@@ -44,25 +44,27 @@ namespace Xigadee
         /// Gets or sets a value indicating whether the TransmissionPayload trace flag should be set to true.
         /// </summary>
         public bool TransmissionPayloadTraceEnabled { get; set; }
+
         /// <summary>
         /// This is the default listening channel for incoming messages.
         /// </summary>
         public virtual string ChannelId { get; set; }
         /// <summary>
-        /// This property specifies that the listening channel id can be automatically set during configuration.
+        /// This property specifies that the listening channel id can be automatically set during configuration by the pipeline. The default is true.
         /// </summary>
         public bool ChannelIdAutoSet { get; set; } = true;
+
         /// <summary>
         /// This is the response channel set in outgoing request, and is used to route response messages back to the command.
         /// </summary>
         public virtual string ResponseChannelId { get; set; }
         /// <summary>
-        /// This property specifies whether the response channel can be automatically set by the pipeline.
+        /// This property specifies whether the response channel can be automatically set by the pipeline. The default is true.
         /// </summary>
         public bool ResponseChannelIdAutoSet { get; set; } = true;
 
         /// <summary>
-        /// This is the command start-up priority.
+        /// This is the command start-up priority. The default is 0.
         /// </summary>
         public int? StartupPriority { get; set; }=0;
         /// <summary>

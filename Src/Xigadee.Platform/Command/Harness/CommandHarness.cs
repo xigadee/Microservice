@@ -69,7 +69,7 @@ namespace Xigadee
     /// <typeparam name="C">The command type.</typeparam>
     /// <typeparam name="S">The command statistics class type.</typeparam>
     /// <typeparam name="P">The command policy.</typeparam>
-    public class CommandHarness<C,S,P>: ServiceHarness<C, CommandHarnessDependencies>, ICommandHarness 
+    public class CommandHarness<C,S,P> : ServiceHarness<C, CommandHarnessDependencies>, ICommandHarness
         where C : CommandBase<S, P>
         where S : CommandStatistics, new()
         where P : CommandPolicy, new()
@@ -133,7 +133,7 @@ namespace Xigadee
 
         #region TrafficFailed
         /// <summary>
-        /// A stack containing the last failed request.
+        /// A list containing the failed traffic.
         /// </summary>
         public List<KeyValuePair<long,CommandHarnessTraffic>> TrafficFailed => Traffic.Where((t) => !t.Value.IsSuccess).ToList();
         #endregion
