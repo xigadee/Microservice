@@ -41,7 +41,7 @@ namespace Test.Xigadee
 
             try
             {
-                harness = new CommandHarness<CommandHarness1>((p) => new CommandHarness1(p), policy);
+                harness = new CommandHarness<CommandHarness1>(policy:policy);
 
                 harness.Start();
             }
@@ -60,7 +60,7 @@ namespace Test.Xigadee
             var policy = new CommandPolicy() { OutgoingRequestsEnabled = true, ResponseChannelId = "getback" };
             policy.ChannelId = "fredo";
 
-            var harness = new CommandHarness<CommandHarness1>((p) => new CommandHarness1(p), policy);
+            var harness = new CommandHarness<CommandHarness1>(policy: policy);
 
             harness.Start();
 

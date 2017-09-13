@@ -26,11 +26,15 @@ namespace Xigadee
     /// This is the shortcut constructor for the command harness.
     /// </summary>
     /// <typeparam name="C">The command type.</typeparam>
-    /// <seealso cref="Xigadee.CommandHarness{C, Xigadee.CommandStatistics, Xigadee.CommandPolicy}" />
     public class CommandHarness<C>: CommandHarness<C, CommandStatistics, CommandPolicy>
         where C : CommandBase<CommandStatistics, CommandPolicy>
     {
-        public CommandHarness(Func<CommandPolicy,C> creator = null, CommandPolicy policy = null) : base(creator, policy)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommandHarness{C}"/> class.
+        /// </summary>
+        /// <param name="policy">The optional command policy.</param>
+        /// <param name="commandCreator">This is the optional creator function to create the command.</param>
+        public CommandHarness(CommandPolicy policy = null, Func<C> commandCreator = null) : base(policy, commandCreator)
         {
 
         }
@@ -41,12 +45,16 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="C">The command type.</typeparam>
     /// <typeparam name="P">The specific policy type.</typeparam>
-    /// <seealso cref="Xigadee.CommandHarness{C, Xigadee.CommandStatistics, Xigadee.CommandPolicy}" />
     public class CommandHarness<C, P>: CommandHarness<C, CommandStatistics, P>
         where C : CommandBase<CommandStatistics, P>
         where P : CommandPolicy, new()
     {
-        public CommandHarness(Func<P,C> creator = null, P policy = null) : base(creator, policy)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommandHarness{C, P}"/> class.
+        /// </summary>
+        /// <param name="policy">The optional command policy.</param>
+        /// <param name="commandCreator">This is the optional creator function to create the command.</param>
+        public CommandHarness(P policy = null, Func<C> commandCreator = null) : base(policy, commandCreator)
         {
 
         }
@@ -88,10 +96,10 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        /// <param name="commandCreator">This is the creator function to create the command. If the command supports a parameterless constructor, then you can leave this blank.</param>
         /// <param name="policy">The optional command policy.</param>
-        public CommandHarness(Func<P,C> commandCreator = null, P policy = null) 
-            : base(new CommandHarnessDependencies(), () => (commandCreator?.Invoke(policy??new P()))??ServiceHarnessHelper.DefaultCreator<C>()())
+        /// <param name="commandCreator">This is the optional creator function to create the command.</param>
+        public CommandHarness(P policy = null, Func<C> commandCreator = null) 
+            : base(new CommandHarnessDependencies(), commandCreator ?? CommandHarnessHelper.DefaultCreator<C,P>(policy ?? new P()))
         {
             Dispatcher = new DispatchWrapper(Dependencies.PayloadSerializer, CommandExecute,() => Service?.Status ?? ServiceStatus.Stopped, true);
 

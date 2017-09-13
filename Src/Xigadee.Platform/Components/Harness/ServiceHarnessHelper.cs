@@ -36,7 +36,9 @@ namespace Xigadee
                 throw new ArgumentOutOfRangeException($"The object {typeof(T).Name} does not support a parameterless constructor, or a constructor with optional parameters. Please supply a specific creator function.");
             
             //Create an array of all Type.Missing for each of the optional parameters.
-            var parameters = Enumerable.Range(0, constructor.GetParameters().Count()).Select((i) => Type.Missing).ToArray();
+            var parameters = Enumerable
+                .Range(0, constructor.GetParameters().Count())
+                .Select((i) => Type.Missing).ToArray();
 
             return () => (T)Activator.CreateInstance(typeof(T)
                     , BindingFlags.CreateInstance | BindingFlags.Public | BindingFlags.Instance | BindingFlags.OptionalParamBinding

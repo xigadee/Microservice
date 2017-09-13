@@ -101,6 +101,7 @@
     <Compile Include="Command\Harness\CommandHarnessDependencies.cs" />
     <Compile Include="Command\Harness\CommandHarnessEventArgs.cs" />
     <Compile Include="Command\Harness\CommandHarnessTrafficDirection.cs" />
+    <Compile Include="Command\Harness\Helper\DefaultCreator.cs" />
     <Compile Include="Command\Harness\Helper\MasterJobNegotiate.cs" />
     <Compile Include="Command\Harness\Helper\Intercept.cs" />
     <Compile Include="Command\Harness\CommandHarnessTraffic.cs" />

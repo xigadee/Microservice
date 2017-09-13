@@ -12,7 +12,7 @@ namespace Test.Xigadee.Commands
         [TestMethod]
         public void CommandHarnessTest1()
         {
-            var cont = new CommandHarness<CommandTest>((p) => new CommandTest());
+            var cont = new CommandHarness<CommandTest>();
             cont.Start();
 
             Assert.IsTrue(cont.RegisteredSchedules.Count == 10);
