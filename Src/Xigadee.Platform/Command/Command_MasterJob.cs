@@ -44,6 +44,7 @@ namespace Xigadee
         protected MasterJobContext mMasterJobContext;
         #endregion
 
+        //Configure
         #region *--> MasterJobTearUp()
         /// <summary>
         /// This method sets up the master job.
@@ -158,7 +159,6 @@ namespace Xigadee
             get { return Policy.MasterJobNegotiationChannelIdAutoSet; }
         } 
         #endregion
-
 
         #region ProcessRequestIfSelfGenerated(TransmissionPayload rq)
         /// <summary>

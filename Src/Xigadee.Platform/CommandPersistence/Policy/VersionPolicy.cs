@@ -21,9 +21,14 @@ using System.Collections.Generic;
 #endregion
 namespace Xigadee
 {
+    /// <summary>
+    /// The default empty version policy class.
+    /// </summary>
+    /// <seealso cref="Xigadee.PolicyBase" />
     public abstract class VersionPolicy : PolicyBase
     {
     }
+
     /// <summary>
     /// This class handles version support for the entity.
     /// </summary>
@@ -86,7 +91,7 @@ namespace Xigadee
         /// </summary>
         public bool SupportsVersioning { get; private set; }
         /// <summary>
-        /// This property specifies whether the persistence agent should implement optimisitic locking.
+        /// This property specifies whether the persistence agent should implement optimistic locking.
         /// </summary>
         public bool SupportsOptimisticLocking { get; private set; }
         /// <summary>

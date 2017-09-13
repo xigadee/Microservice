@@ -45,7 +45,7 @@ namespace Xigadee
         /// </summary>
         public PersistenceRetryPolicy PersistenceRetryPolicy { get; set; }
         /// <summary>
-        /// This is the resoure profile for the persistence manager.
+        /// This is the resource profile for the persistence manager.
         /// </summary>
         public ResourceProfile ResourceProfile { get; set; }
 

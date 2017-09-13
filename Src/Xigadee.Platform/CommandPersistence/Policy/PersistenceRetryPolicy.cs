@@ -19,7 +19,7 @@ using System;
 namespace Xigadee
 {
     /// <summary>
-    /// This policy decides the persistence retry behavior.
+    /// This policy decides the persistence retry behaviour.
     /// </summary>
     public class PersistenceRetryPolicy:PolicyBase
     {

@@ -15,15 +15,24 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
+        /// <summary>
+        /// This pipeline command creates an internal Persistence Message Initiator that does not queue requests.
+        /// </summary>
+        /// <typeparam name="C">The incoming channel type.</typeparam>
+        /// <typeparam name="K">The key type.</typeparam>
+        /// <typeparam name="E">The entity type.</typeparam>
+        /// <param name="cpipe">The pipeline.</param>
+        /// <param name="command">The command.</param>
+        /// <param name="outgoingChannel">The outgoing channel.</param>
+        /// <param name="startupPriority">The start-up priority.</param>
+        /// <param name="cacheManager">The cache manager.</param>
+        /// <param name="defaultRequestTimespan">The default request timespan.</param>
+        /// <returns>The pass through for the channel.</returns>
         public static C AttachPersistenceInternalService<C,K,E>(this C cpipe
             , out PersistenceInternalClient<K,E> command
             , string outgoingChannel

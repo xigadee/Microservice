@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -28,7 +24,7 @@ namespace Xigadee
         /// </summary>
         public string VersionId { get; set; }
         /// <summary>
-        /// This is teh key type, i.e. string, int, etc.
+        /// This is the key type, i.e. string, int, etc.
         /// </summary>
         public string KeyType { get; set; }
         /// <summary>

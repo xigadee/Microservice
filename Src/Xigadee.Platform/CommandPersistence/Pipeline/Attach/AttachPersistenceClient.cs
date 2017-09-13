@@ -37,7 +37,7 @@ namespace Xigadee
         /// <param name="cacheManager">The cache manager to attach to the persistence agent</param>
         /// <param name="defaultRequestTimespan">The default time out time. If not set, this defaults to 30s as set in the command initiator policy.</param>
         /// <param name="routing">The route map will attempt to first route the message internally and then try an external channel.</param>
-        /// <returns>The passthrough for the channel.</returns>
+        /// <returns>The pass through for the channel.</returns>
         public static C AttachPersistenceClient<C,K,E>(this C cpipe
             , out PersistenceClient<K,E> command
             , string responseChannel = null
@@ -86,7 +86,7 @@ namespace Xigadee
         /// <param name="startupPriority"></param>
         /// <param name="defaultRequestTimespan">The default time out time. If not set, this defaults to 30s as set in the command initiator policy.</param>
         /// <param name="verifyChannel">This boolean value by default is true. It ensure the channel names passed exists. Set this to false if you do not want this check to happen.</param>
-        /// <returns>The passthrough for the channel.</returns>
+        /// <returns>The pass through for the channel.</returns>
         public static C AttachPersistenceClient<C, K, E>(this C cpipe
             , string responseChannel
             , out PersistenceClient<K, E> command
