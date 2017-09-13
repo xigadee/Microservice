@@ -85,7 +85,7 @@ namespace Test.Xigadee
             harness.Dispatcher.Process(("fredo", "two", "three"), "Helloe");
             harness.Dispatcher.Process(("fredo", "one", "two"), "Helloe", responseHeader:("1","2","3"));
             
-            Assert.IsTrue(harness.Outgoing.Count == 2);
+            Assert.IsTrue(harness.TrafficPayloadOutgoing.Count == 2);
             Assert.IsTrue(ok);
             Assert.IsTrue(countTotal == 7);
             Assert.IsTrue(countOutgoing == 2);
