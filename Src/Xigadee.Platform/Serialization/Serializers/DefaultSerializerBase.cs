@@ -109,7 +109,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region SupportsObjectTypeSerialization(ChannelId entityType)
+        #region SupportsObjectTypeSerialization(Type entityType)
         /// <summary>
         /// Returns true of the serializer supports this object channelId.
         /// </summary>
@@ -161,7 +161,7 @@ namespace Xigadee
         #endregion
         #region PayloadMagicNumbers()
         /// <summary>
-        /// This is the collection of byte magic numbers the the byte array will index with,
+        /// This is the collection of byte magic numbers the byte array will index with,
         /// </summary>
         /// <returns>A collection of 2 byte arrays.</returns>
         public virtual IEnumerable<byte[]> PayloadMagicNumbers()
@@ -261,7 +261,6 @@ namespace Xigadee
         /// <param name="start">The array start.</param>
         /// <param name="length">The array length.</param>
         /// <returns>The deserialized entity.</returns>
-
         public virtual object Deserialize(byte[] blob, int start, int length)
         {
             S state = new S();
