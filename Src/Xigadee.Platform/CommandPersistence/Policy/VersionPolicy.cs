@@ -21,6 +21,7 @@ using System.Collections.Generic;
 #endregion
 namespace Xigadee
 {
+    #region VersionPolicy
     /// <summary>
     /// The default empty version policy class.
     /// </summary>
@@ -28,17 +29,18 @@ namespace Xigadee
     public abstract class VersionPolicy : PolicyBase
     {
     }
-
+    #endregion
+    #region VersionPolicy<E>
     /// <summary>
     /// This class handles version support for the entity.
     /// </summary>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class VersionPolicy<E>: VersionPolicy
+    public class VersionPolicy<E> : VersionPolicy
     {
         #region Declarations
         private readonly Func<E, string> mEntityVersionAsString;
 
-        private readonly Action<E> mEntityVersionUpdate; 
+        private readonly Action<E> mEntityVersionUpdate;
 
         /// <summary>
         /// This is the meta data key set for the entity version.
@@ -59,7 +61,7 @@ namespace Xigadee
             SupportsVersioning = entityVersionAsString != null;
             SupportsOptimisticLocking = SupportsVersioning && entityVersionUpdate != null;
             SupportsArchiving = supportsArchiving;
-        } 
+        }
         #endregion
 
         #region EntityVersionUpdate(E entity)
@@ -83,7 +85,7 @@ namespace Xigadee
         public virtual string EntityVersionAsString(E entity)
         {
             return mEntityVersionAsString(entity);
-        } 
+        }
         #endregion
 
         /// <summary>
@@ -123,5 +125,6 @@ namespace Xigadee
         {
             return new VersionPolicy<E>(t.Item1, t.Item2, t.Item3);
         }
-    }
+    } 
+    #endregion
 }

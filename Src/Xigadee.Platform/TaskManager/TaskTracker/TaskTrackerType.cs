@@ -29,11 +29,29 @@ namespace Xigadee
     /// </summary>
     public enum TaskTrackerType
     {
+        /// <summary>
+        /// The task has not been set.
+        /// </summary>
         Notset,
+        /// <summary>
+        /// The listener poll task.
+        /// </summary>
         ListenerPoll,
+        /// <summary>
+        /// The listener client poll task.
+        /// </summary>
         ListenerClientPoll,
+        /// <summary>
+        /// The standard payload request processing task.
+        /// </summary>
         Payload,
+        /// <summary>
+        /// The schedule execution task.
+        /// </summary>
         Schedule,
+        /// <summary>
+        /// The overload process task.
+        /// </summary>
         Overload
     }
 }

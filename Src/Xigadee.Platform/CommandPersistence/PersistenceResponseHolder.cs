@@ -19,13 +19,14 @@ using System.Collections.Generic;
 
 namespace Xigadee
 {
+    #region PersistenceResponseHolder<E>
     /// <summary>
     /// This is the generic class is used to return an entity and its status.
     /// </summary>
     /// <typeparam name="E"></typeparam>
     /// <seealso cref="Xigadee.PersistenceResponseHolder" />
     /// <seealso cref="Xigadee.IResponseHolder{E}" />
-    public class PersistenceResponseHolder<E>: PersistenceResponseHolder, IResponseHolder<E>
+    public class PersistenceResponseHolder<E> : PersistenceResponseHolder, IResponseHolder<E>
     {
         #region Constructor.
         /// <summary>
@@ -44,7 +45,7 @@ namespace Xigadee
         public PersistenceResponseHolder(PersistenceResponse? status = null, string content = null, E entity = default(E)) : base(status, content)
         {
             Entity = entity;
-        } 
+        }
         #endregion
 
         /// <summary>
@@ -55,12 +56,15 @@ namespace Xigadee
             get; set;
         }
     }
+    #endregion
+
+    #region PersistenceResponseHolder
     /// <summary>
     /// This class is used to hold a response to a request that does not return an entity to the calling client, i.e. Delete, Version etc.
     /// </summary>
     /// <seealso cref="Xigadee.PersistenceResponseHolder" />
     /// <seealso cref="Xigadee.IResponseHolder{E}" />
-    public class PersistenceResponseHolder: IResponseHolder
+    public class PersistenceResponseHolder : IResponseHolder
     {
         /// <summary>
         /// This is the default constructor.
@@ -74,12 +78,12 @@ namespace Xigadee
         /// </summary>
         /// <param name="status">The response status.</param>
         /// <param name="content">The context as a string.</param>
-        public PersistenceResponseHolder(PersistenceResponse? status = null, string content = null):this()
+        public PersistenceResponseHolder(PersistenceResponse? status = null, string content = null) : this()
         {
             if (status.HasValue)
             {
                 StatusCode = (int)status.Value;
-                IsSuccess = StatusCode>=200 && StatusCode <= 299;
+                IsSuccess = StatusCode >= 200 && StatusCode <= 299;
 
                 IsTimeout = !IsSuccess && StatusCode == 408;
             }
@@ -91,7 +95,7 @@ namespace Xigadee
         /// </summary>
         public string Content
         {
-            get;set;
+            get; set;
         }
 
         /// <summary>
@@ -99,57 +103,58 @@ namespace Xigadee
         /// </summary>
         public Exception Ex
         {
-            get;set;
+            get; set;
         }
         /// <summary>
         /// Gets or sets the metadata fields.
         /// </summary>
         public Dictionary<string, string> Fields
         {
-            get;set;
+            get; set;
         }
         /// <summary>
         /// Gets or sets the identifier.
         /// </summary>
         public string Id
         {
-            get;set;
+            get; set;
         }
         /// <summary>
         /// Gets or sets a value indicating whether this request is successful.
         /// </summary>
         public bool IsSuccess
         {
-            get;set;
+            get; set;
         }
         /// <summary>
         /// Gets or sets a value indicating whether this request has timed out.
         /// </summary>
         public bool IsTimeout
         {
-            get;set;
+            get; set;
         }
         /// <summary>
         /// Gets or sets a value indicating whether this request is a cache hit.
         /// </summary>
         public bool IsCacheHit
         {
-            get;set;
+            get; set;
         }
         /// <summary>
         /// Gets or sets the status code.
         /// </summary>
         public int StatusCode
         {
-            get;set;
+            get; set;
         }
         /// <summary>
         /// Gets or sets the version identifier of the entity.
         /// </summary>
         public string VersionId
         {
-            get;set;
+            get; set;
         }
 
-    }
+    } 
+    #endregion
 }
