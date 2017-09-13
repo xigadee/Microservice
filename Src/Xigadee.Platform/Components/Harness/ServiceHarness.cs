@@ -71,20 +71,6 @@ namespace Xigadee
             Configure(Service);
         }
 
-        #region DefaultConstructor()
-        /// <summary>
-        /// This method checks whether the command supports a parameterless constructor.
-        /// </summary>
-        /// <returns>Returns the command.</returns>
-        protected virtual Func<S> DefaultServiceCreator()
-        {
-            if (typeof(S).GetConstructor(Type.EmptyTypes) == null)
-                throw new ArgumentOutOfRangeException($"The service {typeof(S).Name} does not support a parameterless constructor. Please supply a creator function.");
-
-            return () => Activator.CreateInstance<S>();
-        }
-        #endregion
-
         /// <summary>
         /// This internal service.
         /// </summary>
@@ -114,7 +100,7 @@ namespace Xigadee
         /// <returns></returns>
         protected virtual S Create()
         {
-            return (mServiceCreator ?? DefaultServiceCreator())();
+            return (mServiceCreator ?? ServiceHarnessHelper.DefaultCreator<S>())();
         }
         /// <summary>
         /// This method should be used to provide additional configuration before starting the services.

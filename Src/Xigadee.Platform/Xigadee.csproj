@@ -247,6 +247,7 @@
     <Compile Include="Components\Harness\ServiceHarnessDataCollection.cs" />
     <Compile Include="Components\Harness\ServiceHarness.cs" />
     <Compile Include="Components\Harness\ServiceHarnessDependencies.cs" />
+    <Compile Include="Components\Harness\ServiceHarnessHelper.cs" />
     <Compile Include="Components\Harness\ServiceHarnessResourceContainer.cs" />
     <Compile Include="Components\Harness\ServiceHarnessScheduler.cs" />
     <Compile Include="Components\Harness\ServiceHarnessSerializationContainer.cs" />

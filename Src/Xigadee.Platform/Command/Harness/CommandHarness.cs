@@ -89,12 +89,11 @@ namespace Xigadee
         /// This is the default constructor.
         /// </summary>
         /// <param name="commandCreator">This is the creator function to create the command. If the command supports a parameterless constructor, then you can leave this blank.</param>
-        public CommandHarness(Func<P,C> commandCreator = null, P policy = null) : base(new CommandHarnessDependencies(), () => commandCreator(policy ?? new P()))
+        /// <param name="policy">The optional command policy.</param>
+        public CommandHarness(Func<P,C> commandCreator = null, P policy = null) 
+            : base(new CommandHarnessDependencies(), () => (commandCreator?.Invoke(policy??new P()))??ServiceHarnessHelper.DefaultCreator<C>()())
         {
-            Dispatcher = new DispatchWrapper(Dependencies.PayloadSerializer
-                , CommandExecute
-                ,() => Service?.Status ?? ServiceStatus.Stopped
-                , true);
+            Dispatcher = new DispatchWrapper(Dependencies.PayloadSerializer, CommandExecute,() => Service?.Status ?? ServiceStatus.Stopped, true);
 
             //Set the harness scheduler to send the schedule execute requests here so that they can be tracked.
             Dependencies.Scheduler.TaskSubmit = ScheduleExecute;
