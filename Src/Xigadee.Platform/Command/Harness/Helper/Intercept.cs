@@ -25,34 +25,18 @@ namespace Xigadee
     public static partial class CommandHarnessHelper
     {
         /// <summary>
-        /// Outgoings the intercept.
+        /// Intercepts just the outgoing messages, and then processes any responses returned in the context.
         /// </summary>
         /// <typeparam name="H">The harness type.</typeparam>
         /// <param name="harness">The harness.</param>
         /// <param name="action">The action.</param>
+        /// <param name="header">The optional message destination header filter. You can pass a partial header.</param>
         /// <returns>Returns the harness to continue the pipeline.</returns>
         /// <exception cref="ArgumentNullException">action - action cannot be null</exception>
-        public static H OutgoingIntercept<H>(this H harness, Action<CommandHarnessRequestContext> action)
+        public static H InterceptOutgoing<H>(this H harness, Action<CommandHarnessRequestContext> action, ServiceMessageHeader header = null)
             where H : ICommandHarness
         {
-            if (action == null)
-                throw new ArgumentNullException("action", "action cannot be null");
-
-            Action<ICommandHarness, CommandHarnessEventArgs> actionInternal = (h, args) => 
-            {
-                var payload = args.Event.Tracker.ToTransmissionPayload();
-
-                var context = new CommandHarnessRequestContext(h, args, payload);
-
-                action(context);
-
-                context.Responses.ForEach((r) => harness.Dispatcher.Process(r));
-            };
-
-            harness.ConfigureIntercept(actionInternal, CommandHarnessTrafficDirection.Outgoing);
-            harness.ConfigureIntercept(actionInternal, CommandHarnessTrafficDirection.Response);
-
-            return harness;
+            return harness.Intercept(action, CommandHarnessTrafficDirection.Outgoing, header, true);
         }
         /// <summary>
         /// Intercepts the specified event arguments.
@@ -62,11 +46,13 @@ namespace Xigadee
         /// <param name="action">The event arguments action.</param>
         /// <param name="direction">The optional direction filter.</param>
         /// <param name="header">The optional header.</param>
+        /// <param name="processResponses">Set this to true to send any responses passed back in the context to the harness dispatcher. The default is true.</param>
         /// <returns>The harness</returns>
-        public static H ConfigureIntercept<H>(this H harness
-            , Action<ICommandHarness, CommandHarnessEventArgs> action
+        public static H Intercept<H>(this H harness
+            , Action<CommandHarnessRequestContext> action
             , CommandHarnessTrafficDirection? direction = null
-            , ServiceMessageHeader header = null)
+            , ServiceMessageHeader header = null
+            , bool processResponses = true)
             where H : ICommandHarness
         {
             if (action == null)
@@ -84,8 +70,15 @@ namespace Xigadee
                 var payload = e.Event.Tracker.ToTransmissionPayload();
                 ServiceMessageHeader headerFind = payload.Message.ToServiceMessageHeader();
 
-                if (header == null || headerFind == header)
-                    action(harness, e);
+                if (header == null || header.IsMatch(headerFind))
+                {
+                    var context = new CommandHarnessRequestContext(harness, e, payload);
+
+                    action(context);
+
+                    if (processResponses)
+                        context.Responses.ForEach((r) => harness.Dispatcher.Process(r));
+                }
             };
 
             return harness;

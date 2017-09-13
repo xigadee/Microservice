@@ -7,7 +7,7 @@ namespace Xigadee
     /// <summary>
     /// This context is used to hold the necessary data for an in-line command request.
     /// </summary>
-    [DebuggerDisplay("{Id}/{CorrellationId}")]
+    [DebuggerDisplay("{Id}/{CorrelationId}")]
     public abstract class CommandRequestContextBase<O> : CommandContextBase<O>, ICommandRequestContext where O: IMicroserviceDispatch
     {
         /// <summary>

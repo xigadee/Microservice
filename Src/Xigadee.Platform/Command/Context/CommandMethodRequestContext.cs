@@ -7,7 +7,6 @@ namespace Xigadee
     /// <summary>
     /// This context is used to hold the necessary data for an in-line command request.
     /// </summary>
-    [DebuggerDisplay("{Id}/{CorrellationId}")]
     public class CommandMethodRequestContext: CommandRequestContextBase<ICommandOutgoing>
     {
         /// <summary>

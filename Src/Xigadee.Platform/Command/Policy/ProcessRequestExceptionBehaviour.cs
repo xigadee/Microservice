@@ -34,7 +34,7 @@ namespace Xigadee
         /// </summary>
         SignalSuccessAndSend500ErrorResponse,
         /// <summary>
-        /// The signal the payload as failed so it will be retried by the underlying architecture and supress the exception.
+        /// The signal the payload as failed so it will be retried by the underlying architecture and suppress the exception.
         /// </summary>
         SignalFailAndDoNothing,
         /// <summary>

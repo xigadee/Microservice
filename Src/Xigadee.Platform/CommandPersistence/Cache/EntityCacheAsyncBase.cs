@@ -104,7 +104,7 @@ namespace Xigadee
             //mStatistics.DefaultExpiry = mDefaultExpiry;
         }
         #endregion
-        #region TimerPollSchedulesRegister(JobConfiguration config)
+        #region JobSchedulesManualRegister()
         /// <summary>
         /// This method register the job expiry task.
         /// </summary>

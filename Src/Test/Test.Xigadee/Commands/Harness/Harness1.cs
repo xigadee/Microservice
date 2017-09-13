@@ -11,26 +11,24 @@ namespace Test.Xigadee
     [TestClass]
     public class Harness1
     {
-        public class CommandHarnessTest1: CommandBase
+        public class CommandHarness1: CommandBase
         {
-            public CommandHarnessTest1(CommandPolicy policy = null) :base(policy)
-            {
-
-            }
+            public CommandHarness1(CommandPolicy policy = null) :base(policy){}
 
             [CommandContract("one","two")]
             [return: PayloadOut]
             public async Task<string> Command1([PayloadIn]string inParam
                 , TransmissionPayload inPayload, List<TransmissionPayload> outPayload)
-            {              
-                return "hello";
+            {
+                var back = Outgoing.Process<string, string>(("one", "two", "three"), "Hello").Result;
+                return back.Response;
             }
 
             [JobSchedule("1")]
             public async Task Schedule1()
             {
-                //var back = Outgoing.Process<string,string>(("one", "two", "three"),"Hello").Result;
-                Outgoing.Process(("one", "two", "three"), "Hello");
+                var back = Outgoing.Process<string,string>(("one", "two", "four"),"Hello").Result;
+                //Outgoing.Process(("one", "two", "three"), "Hello");
             }
         }
 
@@ -39,11 +37,11 @@ namespace Test.Xigadee
         {
             var policy = new CommandPolicy();
             policy.ChannelId = null;
-            CommandHarness<CommandHarnessTest1> harness;
+            CommandHarness<CommandHarness1> harness;
 
             try
             {
-                harness = new CommandHarness<CommandHarnessTest1>(() => new CommandHarnessTest1(policy));
+                harness = new CommandHarness<CommandHarness1>((p) => new CommandHarness1(p), policy);
 
                 harness.Start();
             }
@@ -56,11 +54,13 @@ namespace Test.Xigadee
         [TestMethod]
         public void PartialCommandContractWithChannelIdSet()
         {
-            int count = 0;
+            int countTotal = 0;
+            int countOutgoing = 0;
+
             var policy = new CommandPolicy() { OutgoingRequestsEnabled = true, ResponseChannelId = "getback" };
             policy.ChannelId = "fredo";
 
-            var harness = new CommandHarness<CommandHarnessTest1>(() => new CommandHarnessTest1(policy));
+            var harness = new CommandHarness<CommandHarness1>((p) => new CommandHarness1(p), policy);
 
             harness.Start();
 
@@ -68,26 +68,27 @@ namespace Test.Xigadee
 
             bool ok = false;
             harness
-                .ConfigureIntercept((h, a) => ok = true, CommandHarnessTrafficDirection.Outgoing, ("one", "two", "three"))
-                .ConfigureIntercept((h, a) => Interlocked.Increment(ref count))
-                .OutgoingIntercept((c) =>
+                .Intercept((ctx) => ok = true, CommandHarnessTrafficDirection.Outgoing, ("one", null,null))
+                .Intercept((ctx) => Interlocked.Increment(ref countTotal))
+                .Intercept((ctx) => Interlocked.Increment(ref countOutgoing), header: ("one", null, null))
+                .InterceptOutgoing((c) =>
                 {
                     string rString = null;
                     c.DtoTryGet<string>(out rString);
 
-                    c.ResponseSet(200, "Hello mum");
+                    c.ResponseSet<string>(200, "over and out", "Hello mum");
                 })
                 ;
 
+            harness.ScheduleExecute("1");
+
             harness.Dispatcher.Process(("fredo", "two", "three"), "Helloe");
             harness.Dispatcher.Process(("fredo", "one", "two"), "Helloe", responseHeader:("1","2","3"));
-
-            harness.ScheduleExecute("1");
             
-            Assert.IsTrue(harness.Outgoing.Count() == 1);
-
+            Assert.IsTrue(harness.Outgoing.Count == 2);
             Assert.IsTrue(ok);
-            Assert.IsTrue(count == 4);
+            Assert.IsTrue(countTotal == 7);
+            Assert.IsTrue(countOutgoing == 2);
         }
     }
 }

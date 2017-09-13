@@ -22,20 +22,31 @@ using System.Threading;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This is the shortcut constructor for the command harness.
+    /// </summary>
+    /// <typeparam name="C">The command type.</typeparam>
+    /// <seealso cref="Xigadee.CommandHarness{C, Xigadee.CommandStatistics, Xigadee.CommandPolicy}" />
     public class CommandHarness<C>: CommandHarness<C, CommandStatistics, CommandPolicy>
         where C : CommandBase<CommandStatistics, CommandPolicy>
     {
-        public CommandHarness(Func<C> creator = null) : base(creator)
+        public CommandHarness(Func<CommandPolicy,C> creator = null, CommandPolicy policy = null) : base(creator, policy)
         {
 
         }
     }
 
-    public class CommandHarness<C, S>: CommandHarness<C, S, CommandPolicy>
-        where C : CommandBase<S, CommandPolicy>
-        where S : CommandStatistics, new()
+    /// <summary>
+    /// This is the shortcut constructor for the command harness.
+    /// </summary>
+    /// <typeparam name="C">The command type.</typeparam>
+    /// <typeparam name="P">The specific policy type.</typeparam>
+    /// <seealso cref="Xigadee.CommandHarness{C, Xigadee.CommandStatistics, Xigadee.CommandPolicy}" />
+    public class CommandHarness<C, P>: CommandHarness<C, CommandStatistics, P>
+        where C : CommandBase<CommandStatistics, P>
+        where P : CommandPolicy, new()
     {
-        public CommandHarness(Func<C> creator = null):base(creator)
+        public CommandHarness(Func<P,C> creator = null, P policy = null) : base(creator, policy)
         {
 
         }
@@ -77,8 +88,8 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        /// <param name="creator">This is the creator function to create the command. If the command supports a parameterless constructor, then you can leave this blank.</param>
-        public CommandHarness(Func<C> creator = null) : base(new CommandHarnessDependencies(), creator)
+        /// <param name="commandCreator">This is the creator function to create the command. If the command supports a parameterless constructor, then you can leave this blank.</param>
+        public CommandHarness(Func<P,C> commandCreator = null, P policy = null) : base(new CommandHarnessDependencies(), () => commandCreator(policy ?? new P()))
         {
             Dispatcher = new DispatchWrapper(Dependencies.PayloadSerializer
                 , CommandExecute
@@ -173,7 +184,7 @@ namespace Xigadee
         /// <param name="payload">The payload.</param>
         protected virtual void OutgoingCapture(ICommand command, string id, TransmissionPayload payload)
         {
-            var harness = CommandHarnessCreate(CommandHarnessTrafficDirection.Outgoing, payload, command.GetType().Name);
+            var harness = TrafficTrackerCreate(CommandHarnessTrafficDirection.Outgoing, payload, command.GetType().Name);
 
             //Add delay in here.
 
@@ -184,7 +195,7 @@ namespace Xigadee
             }
 
             long count;
-            CommandHarnessAdd(harness, out count);
+            TrafficTrackerLog(harness, out count);
         } 
         #endregion
 
@@ -212,7 +223,14 @@ namespace Xigadee
         }
         #endregion
 
-        private bool CommandHarnessAdd(CommandHarnessTraffic request, out long id)
+        #region TrafficTrackerLog(CommandHarnessTraffic request, out long id)
+        /// <summary>
+        /// This method logs the command traffic and raises the appropriate event to a request.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <param name="id">The identifier.</param>
+        /// <returns>Returns true if logged successfully.</returns>
+        private bool TrafficTrackerLog(CommandHarnessTraffic request, out long id)
         {
             id = Interlocked.Increment(ref mCounter);
             if (!Traffic.TryAdd(id, request))
@@ -235,15 +253,26 @@ namespace Xigadee
 
             return true;
         }
+        #endregion
+        #region TrafficTrackerCreate ...
 
-        private CommandHarnessTraffic CommandHarnessCreate(CommandHarnessTrafficDirection direction
+        /// <summary>
+        /// Traffics the tracker create.
+        /// </summary>
+        /// <param name="direction">The direction.</param>
+        /// <param name="payload">The payload.</param>
+        /// <param name="reference">The reference.</param>
+        /// <param name="originatorId">The originator identifier.</param>
+        /// <returns></returns>
+        private CommandHarnessTraffic TrafficTrackerCreate(CommandHarnessTrafficDirection direction
             , TransmissionPayload payload
             , string reference
             , long? originatorId = null)
         {
             TaskTracker tracker = TaskManager.TrackerCreateFromPayload(payload, reference);
             return new CommandHarnessTraffic(direction, tracker, reference, originatorId);
-        }
+        } 
+        #endregion
 
         #region -> CommandExecute(TransmissionPayload payload, string reference)
         /// <summary>
@@ -254,10 +283,10 @@ namespace Xigadee
         /// <exception cref="System.ArgumentOutOfRangeException">payload.Id - The payload has already been processed</exception>
         protected virtual void CommandExecute(TransmissionPayload payload, string reference)
         {
-            var harness = CommandHarnessCreate(CommandHarnessTrafficDirection.Request, payload, reference);
+            var harness = TrafficTrackerCreate(CommandHarnessTrafficDirection.Request, payload, reference);
 
             long id;
-            if (!CommandHarnessAdd(harness, out id))
+            if (!TrafficTrackerLog(harness, out id))
                 throw new ArgumentOutOfRangeException("payload.Id", $"The payload {harness.Id} has already been processed: {harness.ReferenceId}");
 
             try
@@ -272,8 +301,8 @@ namespace Xigadee
             harness.Responses.ForEach((p) =>
             {
                 long idIgnore;
-                var harnessOut = CommandHarnessCreate(CommandHarnessTrafficDirection.Response, p, reference, id);
-                CommandHarnessAdd(harnessOut, out idIgnore);
+                var harnessOut = TrafficTrackerCreate(CommandHarnessTrafficDirection.Response, p, reference, id);
+                TrafficTrackerLog(harnessOut, out idIgnore);
             });
         } 
         #endregion
@@ -290,7 +319,7 @@ namespace Xigadee
 
             var holder = new CommandHarnessTraffic(CommandHarnessTrafficDirection.Request, tracker, $"Schedule: {tracker.ToTransmissionPayload()}");
             long outId;
-            if (!CommandHarnessAdd(holder, out outId))
+            if (!TrafficTrackerLog(holder, out outId))
                 throw new ArgumentOutOfRangeException("payload.Id", $"The sch {holder.Id} has already been processed: {holder.ReferenceId}");
 
             Exception failedEx = null;

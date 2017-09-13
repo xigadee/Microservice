@@ -31,6 +31,7 @@ namespace Xigadee
         /// Specifies that schedule reflection commands are supported, i.e. those that use the CommandScheduleAttribute.
         /// </summary>
         public bool ScheduleReflectionSupported { get; set; } = true;
+
         /// <summary>
         /// The behaviour to follow for an uncaught exception.
         /// </summary>
@@ -61,7 +62,7 @@ namespace Xigadee
         public bool ResponseChannelIdAutoSet { get; set; } = true;
 
         /// <summary>
-        /// This is the command startup priority.
+        /// This is the command start-up priority.
         /// </summary>
         public int? StartupPriority { get; set; }=0;
         /// <summary>
@@ -92,9 +93,13 @@ namespace Xigadee
         /// Gets or sets a value indicating whether jobs are enabled on the command. The default setting is true.
         /// </summary>
         public virtual bool JobsEnabled { get; set; } = true;
-
+        /// <summary>
+        /// Gets or sets the job poll schedule.
+        /// </summary>
         public virtual ScheduleTimerConfig JobPollSchedule { get; set; } = new ScheduleTimerConfig();
-
+        /// <summary>
+        /// Gets or sets a value indicating whether job poll is long running.
+        /// </summary>
         public virtual bool JobPollIsLongRunning { get; set; } = false;
 
         //Master Job
@@ -102,13 +107,21 @@ namespace Xigadee
         /// Gets or sets the master job negotiation strategy.
         /// </summary>
         public MasterJobNegotiationStrategyBase MasterJobNegotiationStrategy { get; set; }
-
+        /// <summary>
+        /// Gets or sets a value indicating whether the masterjob service is enabled.
+        /// </summary>
         public virtual bool MasterJobEnabled { get; set; }
-
+        /// <summary>
+        /// Gets or sets the masterjob negotiation channel priority.
+        /// </summary>
         public virtual int MasterJobNegotiationChannelPriority { get; set; } = 2;
-
+        /// <summary>
+        /// Gets or sets the type of the masterjob negotiation channel.
+        /// </summary>
         public virtual string MasterJobNegotiationChannelType { get; set; }
-
+        /// <summary>
+        /// Gets or sets the name of the master job.
+        /// </summary>
         public virtual string MasterJobName { get; set; }
 
         /// <summary>
