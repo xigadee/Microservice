@@ -40,7 +40,7 @@ namespace Xigadee
             where E : IPipelineChannelBroadcast<IPipeline>
             where C : ICommand
         {
-            command.MasterJobNegotiationChannelType = channelType ?? command.GetType().Name.ToLowerInvariant();
+            command.MasterJobNegotiationChannelMessageType = channelType ?? command.GetType().Name.ToLowerInvariant();
 
             if (autosetPartition2)
                 command.MasterJobNegotiationChannelPriority = 2;

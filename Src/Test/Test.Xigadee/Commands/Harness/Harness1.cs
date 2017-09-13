@@ -9,7 +9,7 @@ using Xigadee;
 namespace Test.Xigadee
 {
     [TestClass]
-    public class Harness1
+    public class CommandHarness
     {
         public class CommandHarness1: CommandBase
         {
@@ -20,14 +20,14 @@ namespace Test.Xigadee
             public async Task<string> Command1([PayloadIn]string inParam
                 , TransmissionPayload inPayload, List<TransmissionPayload> outPayload)
             {
-                var back = Outgoing.Process<string, string>(("one", "two", "three"), "Hello").Result;
+                var back = await Outgoing.Process<string, string>(("one", "two", "three"), "Hello");
                 return back.Response;
             }
 
             [JobSchedule("1")]
             public async Task Schedule1()
             {
-                var back = Outgoing.Process<string,string>(("one", "two", "four"),"Hello").Result;
+                var back = await Outgoing.Process<string,string>(("one", "two", "four"),"Hello");
             }
         }
 

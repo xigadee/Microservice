@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This class holds the incoming Odata parameters.
+    /// This class holds the incoming OData parameters.
     /// </summary>
     [DebuggerDisplay("{ToString()}")]
     public class SearchRequest: SearchOData4Base, IEquatable<SearchRequest>

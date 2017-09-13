@@ -102,22 +102,6 @@ namespace Xigadee
             }
         }
         #endregion
-        #region MasterJobNegotiationChannelType
-        /// <summary>
-        /// This command is used to negotiate the channel type.
-        /// </summary>
-        public virtual string MasterJobNegotiationChannelType
-        {
-            get
-            {
-                return Policy.MasterJobNegotiationChannelMessageType;
-            }
-            set
-            {
-                Policy.MasterJobNegotiationChannelMessageType = value;
-            }
-        }
-        #endregion
         #region MasterJobNegotiationChannelIdOutgoing
         /// <summary>
         /// This is the channel used to negotiate control for a master job.
@@ -158,6 +142,22 @@ namespace Xigadee
         {
             get { return Policy.MasterJobNegotiationChannelIdAutoSet; }
         } 
+        #endregion
+        #region MasterJobNegotiationChannelMessageType
+        /// <summary>
+        /// This command is used to negotiate the channel type.
+        /// </summary>
+        public virtual string MasterJobNegotiationChannelMessageType
+        {
+            get
+            {
+                return Policy.MasterJobNegotiationChannelMessageType;
+            }
+            set
+            {
+                Policy.MasterJobNegotiationChannelMessageType = value;
+            }
+        }
         #endregion
 
         #region ProcessRequestIfSelfGenerated(TransmissionPayload rq)

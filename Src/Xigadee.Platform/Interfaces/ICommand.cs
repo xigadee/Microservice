@@ -153,7 +153,7 @@ namespace Xigadee
         /// <summary>
         /// This is the channel type used to handle the messaging handshake.
         /// </summary>
-        string MasterJobNegotiationChannelType { get; set; }
+        string MasterJobNegotiationChannelMessageType { get; set; }
         /// <summary>
         /// This is the channel used to negotiate control for a master job.
         /// </summary>

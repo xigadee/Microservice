@@ -26,6 +26,13 @@ namespace Xigadee
     /// </summary>
     public static partial class CommandHarnessHelper
     {
+        /// <summary>
+        /// This class is used to create the command using reflection to pass in the policy when provided.
+        /// </summary>
+        /// <typeparam name="C">The command type.</typeparam>
+        /// <typeparam name="P">The policy type.</typeparam>
+        /// <param name="policy">The policy.</param>
+        /// <returns>Returns a function that can be used to create the command with the policy specified.</returns>
         public static Func<C> DefaultCreator<C,P>(P policy = null)
             where C: class, ICommand
             where P : CommandPolicy, new()

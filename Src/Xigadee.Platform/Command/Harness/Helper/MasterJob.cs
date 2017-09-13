@@ -23,6 +23,28 @@ namespace Xigadee
     /// </summary>
     public  static partial class CommandHarnessHelper
     {
+
+        public static H MasterJobEnable<H>(this H harness
+            , string negotiationChannelIn = null, string negotiationChannelOut = null
+            , string negotiationMessageType = null
+            )
+            where H : ICommandHarness
+        {
+            var dCommand = harness.DefaultCommand();
+            var dPolicy = harness.DefaultPolicy();
+
+            dPolicy.MasterJobEnabled = true;
+            dPolicy.MasterJobNegotiationChannelIdAutoSet = true;
+
+            harness.Intercept((ctx) => 
+            {
+
+            }
+            ,header:(negotiationChannelIn, null, null));
+
+            return harness;
+        }
+
         public static H MasterJobNegotiateOnStart<H>(this H harness)
             where H : ICommandHarness
         {

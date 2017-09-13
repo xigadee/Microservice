@@ -13,6 +13,21 @@ namespace Xigadee
         /// This is the dependencies class. This class can be shared with another harness.
         /// </summary>
         CommandHarnessDependencies Dependencies { get; }
+
+        /// <summary>
+        /// Gets the command as its base interface..
+        /// </summary>
+        ICommand DefaultCommand();
+        /// <summary>
+        /// Gets the default command policy.
+        /// </summary>
+        /// <returns>Returns the command policy.</returns>
+        CommandPolicy DefaultPolicy();
+        /// <summary>
+        /// Gets the command root statistics.
+        /// </summary>
+        CommandStatistics DefaultStatistics();
+
         /// <summary>
         /// Occurs when a CommandHarnessRequest object is created.
         /// </summary>
@@ -57,10 +72,6 @@ namespace Xigadee
         ICommandHarnessDispath Dispatcher { get; }
 
         /// <summary>
-        /// Gets the registered command methods.
-        /// </summary>
-        Dictionary<MessageFilterWrapper, bool> RegisteredCommandMethods { get; }
-        /// <summary>
         /// Gets the registered schedules.
         /// </summary>
         Dictionary<CommandJobSchedule, bool> RegisteredSchedules { get; }
@@ -88,5 +99,29 @@ namespace Xigadee
         /// <param name="id">The identifier.</param>
         /// <returns>Returns true if the schedule exists</returns>
         bool HasSchedule(Guid id);
+
+        /// <summary>
+        /// Gets the registered command methods.
+        /// </summary>
+        Dictionary<MessageFilterWrapper, bool> RegisteredCommandMethods { get; }
+        /// <summary>
+        /// Determines whether a registered command exists based on a match to the service message header. 
+        /// </summary>
+        /// <param name="header">The header to compare.</param>
+        /// <param name="useMatch">if set to true us a match, otherwise compare exactly. The default is false.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified header has matched or is equal; otherwise, <c>false</c>.
+        /// </returns>
+        bool HasCommand(ServiceMessageHeader header, bool useMatch = false);
+        /// <summary>
+        /// Determines whether a registered command exists based on a match to the service message header fragment. 
+        /// The ChannelId will be set based on the ChannelId set in the command policy.
+        /// </summary>
+        /// <param name="fragment">The fragment.</param>
+        /// <param name="useMatch">if set to true us a match, otherwise compare exact. The default is false.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified fragment has matched or is equal; otherwise, <c>false</c>.
+        /// </returns>
+        bool HasCommand(ServiceMessageHeaderFragment fragment, bool useMatch = false);
     }
 }

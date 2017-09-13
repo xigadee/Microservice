@@ -111,17 +111,41 @@ namespace Xigadee
         }
         #endregion
 
+        #region DefaultCommand()
+        /// <summary>
+        /// Gets the command as its base interface..
+        /// </summary>
+        public ICommand DefaultCommand()
+        {
+            return Service;
+        } 
+        #endregion
+
         #region Policy
         /// <summary>
         /// This is the command policy.
         /// </summary>
         public P Policy => Service.Policy;
+        /// <summary>
+        /// Gets the command root policy.
+        /// </summary>
+        public CommandPolicy DefaultPolicy()
+        {
+            return Service.Policy;
+        }
         #endregion
         #region Statistics
         /// <summary>
         /// Gets the command statistics without generating a refresh.
         /// </summary>
-        public S Statistics => Service.StatisticsInternal; 
+        public S Statistics => Service.StatisticsInternal;
+        /// <summary>
+        /// Gets the command root statistics.
+        /// </summary>
+        public CommandStatistics DefaultStatistics()
+        {
+            return Service.StatisticsInternal;
+        }
         #endregion
 
         #region Traffic
@@ -130,7 +154,6 @@ namespace Xigadee
         /// </summary>
         public ConcurrentDictionary<long, CommandHarnessTraffic> Traffic { get; } = new ConcurrentDictionary<long, CommandHarnessTraffic>();
         #endregion
-
         #region TrafficFailed
         /// <summary>
         /// A list containing the failed traffic.
@@ -372,6 +395,38 @@ namespace Xigadee
         public ICommandHarnessDispath Dispatcher { get; }
         #endregion
 
+        #region HasCommand ...
+        /// <summary>
+        /// Determines whether a registered command exists based on a match to the service message header.
+        /// </summary>
+        /// <param name="header">The header to compare.</param>
+        /// <param name="useMatch">if set to true us a match, otherwise compare exactly. The default is false.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified header has matched or is equal; otherwise, <c>false</c>.
+        /// </returns>
+        public bool HasCommand(ServiceMessageHeader header, bool useMatch = false)
+        {
+            if (useMatch)
+                return RegisteredCommandMethods.Any((s) => s.Key.Header.IsMatch(header));
+            else
+                return RegisteredCommandMethods.Any((s) => s.Key.Header == header);
+        }
+
+        /// <summary>
+        /// Determines whether a registered command exists based on a match to the service message header fragment.
+        /// The ChannelId will be set based on the ChannelId set in the command policy.
+        /// </summary>
+        /// <param name="fragment">The fragment.</param>
+        /// <param name="useMatch">if set to true us a match, otherwise compare exact. The default is false.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified fragment has matched or is equal; otherwise, <c>false</c>.
+        /// </returns>
+        public bool HasCommand(ServiceMessageHeaderFragment fragment, bool useMatch = false)
+        {
+            return HasCommand((Policy.ChannelId, fragment), useMatch);
+        } 
+        #endregion
+
         #region HasSchedule...
         /// <summary>
         /// Determines whether the collection has the specified schedule.
@@ -380,9 +435,7 @@ namespace Xigadee
         /// <returns>Returns true if the schedule exists</returns>
         public bool HasSchedule(string name)
         {
-            var schedule = RegisteredSchedules.Keys.FirstOrDefault((s) => s.Name == name);
-
-            return schedule != null;
+            return RegisteredSchedules.Any((s) => s.Key.Name == name);
         }
         /// <summary>
         /// Determines whether the collection has the specified schedule.
@@ -391,9 +444,7 @@ namespace Xigadee
         /// <returns>Returns true if the schedule exists</returns>
         public bool HasSchedule(Guid id)
         {
-            var schedule = RegisteredSchedules.Keys.FirstOrDefault((s) => s.Id == id);
-
-            return schedule != null;
+            return RegisteredSchedules.Any((s) => s.Key.Id == id);
         } 
         #endregion
         #region ScheduleExecute...
