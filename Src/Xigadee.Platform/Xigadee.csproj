@@ -99,6 +99,7 @@
     <Compile Include="Command\EventArgs\ScheduleChangeEventArgs.cs" />
     <Compile Include="Command\Exceptions\CommandChannelIdNullException.cs" />
     <Compile Include="Command\Harness\CommandHarnessDependencies.cs" />
+    <Compile Include="Command\Harness\CommandHarnessDispatchWrapper.cs" />
     <Compile Include="Command\Harness\CommandHarnessEventArgs.cs" />
     <Compile Include="Command\Harness\CommandHarnessTrafficDirection.cs" />
     <Compile Include="Command\Harness\Helper\DefaultCreator.cs" />
@@ -106,6 +107,7 @@
     <Compile Include="Command\Harness\Helper\Intercept.cs" />
     <Compile Include="Command\Harness\CommandHarnessTraffic.cs" />
     <Compile Include="Command\Harness\ICommandHarness.cs" />
+    <Compile Include="Command\Harness\ICommandHarnessDispatch.cs" />
     <Compile Include="Command\Helper\MasterJobCommunicationDirection.cs" />
     <Compile Include="Command\Attributes\CommandContract\MasterJobCommandContractAttribute.cs" />
     <Compile Include="Command\Attributes\JobSchedule\MasterJobScheduleAttribute.cs" />

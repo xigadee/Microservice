@@ -35,8 +35,8 @@ namespace Xigadee
         /// </summary>
         protected readonly bool mTransmissionPayloadTraceEnabled;
 
-        internal DispatchWrapper(IPayloadSerializationContainer serializer, Action<TransmissionPayload, string> executeOrEnqueue 
-            ,Func<ServiceStatus> getStatus, bool traceEnabled) : base(getStatus)
+        internal DispatchWrapper(IPayloadSerializationContainer serializer, Action<TransmissionPayload, string> executeOrEnqueue, Func<ServiceStatus> getStatus, bool traceEnabled) 
+            : base(getStatus)
         {
             ExecuteOrEnqueue = executeOrEnqueue;
             mSerializer = serializer;

@@ -54,7 +54,7 @@ namespace Xigadee
         /// <summary>
         /// Gets the dispatcher, which can be used to send requests to the command.
         /// </summary>
-        IMicroserviceDispatch Dispatcher { get; }
+        ICommandHarnessDispath Dispatcher { get; }
 
         /// <summary>
         /// Gets the registered command methods.

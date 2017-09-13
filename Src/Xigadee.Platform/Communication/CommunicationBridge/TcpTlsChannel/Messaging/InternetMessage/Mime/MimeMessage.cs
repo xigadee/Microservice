@@ -117,7 +117,7 @@ namespace Xigadee
             FragmentAddInternal(fragment);
             mBody = fragment;
         }
-        #endregion // LoadFragment<FRAG>(ContentType cType)
+        #endregion
 
         #region ContentType
         /// <summary>
