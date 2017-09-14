@@ -20,6 +20,10 @@ namespace Test.Xigadee.Commands
 
         public class CommandTest: CommandBase
         {
+            public CommandTest()
+            {
+
+            }
             [JobSchedule(nameof(Schedule1), "01:00:00", "00:00:10")]
             public void Schedule1(Schedule schedule, CancellationToken token)
             {

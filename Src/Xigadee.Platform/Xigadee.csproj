@@ -102,6 +102,7 @@
     <Compile Include="Command\Harness\CommandHarnessDispatchWrapper.cs" />
     <Compile Include="Command\Harness\CommandHarnessEventArgs.cs" />
     <Compile Include="Command\Harness\CommandHarnessTrafficDirection.cs" />
+    <Compile Include="Command\Harness\Exceptions\CommandHarnessInvalidConstructorException.cs" />
     <Compile Include="Command\Harness\Helper\DefaultCreator.cs" />
     <Compile Include="Command\Harness\Helper\MasterJob.cs" />
     <Compile Include="Command\Harness\Helper\Intercept.cs" />

@@ -40,12 +40,25 @@ namespace Xigadee
             if (policy == null)
                 return ServiceHarnessHelper.DefaultCreator<C>();
 
+            var constructors = typeof(C).GetConstructors();
+
+            //OK, special case when a constructor is not actually set, but inherits from its parent.
+            if (constructors.Length == 1)
+            {
+                var cParams = constructors[0].GetParameters();
+
+                if (cParams.Length == 0)
+                    return ServiceHarnessHelper.DefaultCreator<C>();
+            }
+
             //Get the first constructor that supports all optional parameters (i.e. parameterless) with the least amount of parameters.
-            var constructor = typeof(C)
-                .GetConstructors()
+            var constructor = constructors
                 .Where((c) => c.GetParameters().All((p) => p.IsOptional))
                 .Where((c) => c.GetParameters().Any((p) => p.ParameterType == typeof(P)))
                 .FirstOrDefault();
+
+            if (constructor == null)
+                throw new CommandHarnessInvalidConstructorException($"{typeof(C)} Command does not have a supported constructor.");
 
             //Create an array of all Type.Missing for each of the optional parameters.
             var parameters = constructor.GetParameters()

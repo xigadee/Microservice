@@ -98,18 +98,18 @@ namespace Test.Xigadee
             //Default state.
             var harness = new CommandHarness<MasterJobCommandTop>(policy);
 
-            harness.MasterJobEnable();
+            //harness.MasterJobEnable();
 
             harness.Start();
 
-            Assert.IsTrue(harness.RegisteredSchedules.Count == 2);
-            Assert.IsTrue(harness.RegisteredCommandMethods.Count == 2);
+            Assert.IsTrue(harness.RegisteredSchedules.Count == 1);
+            Assert.IsTrue(harness.RegisteredCommandMethods.Count == 1);
 
             Assert.IsTrue(harness.HasCommand(("one", "top")));
             Assert.IsTrue(harness.HasSchedule("1top"));
 
-            Assert.IsTrue(harness.HasCommand(("one", "base")));
-            Assert.IsTrue(harness.HasSchedule("1base"));
+            Assert.IsFalse(harness.HasCommand(("one", "base")));
+            Assert.IsFalse(harness.HasSchedule("1base"));
         }
     }
 }
