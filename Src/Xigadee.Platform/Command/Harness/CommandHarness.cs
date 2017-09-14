@@ -424,7 +424,7 @@ namespace Xigadee
         public bool HasCommand(ServiceMessageHeaderFragment fragment, bool useMatch = false)
         {
             return HasCommand((Policy.ChannelId, fragment), useMatch);
-        } 
+        }
         #endregion
 
         #region HasSchedule...
@@ -432,57 +432,76 @@ namespace Xigadee
         /// Determines whether the collection has the specified schedule.
         /// </summary>
         /// <param name="name">The schedule name.</param>
+        /// <param name="allSchedules">This optional parameter can be used to match against just the registered schedules (false) or all schedules registered with the scheduler (true)</param>
+        /// <param name="scheduleType">This optional parameter can be used to match to a specific type of schedule, by matching a string on the Schedule.ScheduleType parameter.</param>
         /// <returns>Returns true if the schedule exists</returns>
-        public bool HasSchedule(string name)
+        public bool HasSchedule(string name, bool allSchedules = false, string scheduleType = null)
         {
-            return RegisteredSchedules.Any((s) => s.Key.Name == name);
+            return HasScheduleInternal(allSchedules, (s) => s.Name == name && fnMatchScheduleType(s, scheduleType));
         }
         /// <summary>
         /// Determines whether the collection has the specified schedule.
         /// </summary>
         /// <param name="id">The identifier.</param>
+        /// <param name="allSchedules">This optional parameter can be used to match against just the registered schedules (false) or all schedules registered with the scheduler (true)</param>
+        /// <param name="scheduleType">This optional parameter can be used to match to a specific type of schedule, by matching a string on the Schedule.ScheduleType parameter.</param>
         /// <returns>Returns true if the schedule exists</returns>
-        public bool HasSchedule(Guid id)
+        public bool HasSchedule(Guid id, bool allSchedules = false, string scheduleType = null)
         {
-            return RegisteredSchedules.Any((s) => s.Key.Id == id);
-        } 
+            return HasScheduleInternal(allSchedules, (s) => s.Id == id && fnMatchScheduleType(s, scheduleType));
+        }
         #endregion
         #region ScheduleExecute...
         /// <summary>
         /// Triggers execution of the schedule.
         /// </summary>
         /// <param name="name">The schedule name.</param>
+        /// <param name="allSchedules">This optional parameter can be used to match against just the registered schedules (false) or all schedules registered with the scheduler (true)</param>
+        /// <param name="scheduleType">This optional parameter can be used to match to a specific type of schedule, by matching a string on the Schedule.ScheduleType parameter.</param>
         /// <returns>Returns true if the schedule is resolved and submitted for executed.</returns>
-        public bool ScheduleExecute(string name)
+        public bool ScheduleExecute(string name, bool allSchedules = false, string scheduleType = null)
         {
-            var schedule = RegisteredSchedules.Keys.FirstOrDefault((s) => s.Name == name);
-
-            if (schedule != null)
-            {
-                ScheduleExecute(schedule.Id);
-                return true;
-            }
-
-            return false;
+            return ScheduleExecuteInternal(allSchedules, (s) => s.Name == name && fnMatchScheduleType(s, scheduleType));
         }
         /// <summary>
         /// Triggers execution of a schedule.
         /// </summary>
         /// <param name="id">The unique schedule id.</param>
+        /// <param name="allSchedules">This optional parameter can be used to match against just the registered schedules (false) or all schedules registered with the scheduler (true)</param>
+        /// <param name="scheduleType">This optional parameter can be used to match to a specific type of schedule, by matching a string on the Schedule.ScheduleType parameter.</param>
         /// <returns>Returns true if the schedule is resolved and submitted for executed.</returns>
-        public bool ScheduleExecute(Guid id)
+        public bool ScheduleExecute(Guid id, bool allSchedules = false, string scheduleType = null)
         {
-            return Dependencies.Scheduler.Execute(id);
+            return ScheduleExecuteInternal(allSchedules, (s) => s.Id == id && fnMatchScheduleType(s, scheduleType));
         }
-        ///// <summary>
-        ///// Triggers execution of a schedule.
-        ///// </summary>
-        ///// <param name="id">The unique schedule id.</param>
-        ///// <returns>Returns true if the schedule is resolved and submitted for executed.</returns>
-        //public bool ScheduleExecute(Guid id)
-        //{
-        //    return Dependencies.Scheduler.Execute(id);
-        //}
         #endregion
+        #region ScheduleInternal...
+        private Func<Schedule, string, bool> fnMatchScheduleType = (s, type) => type == null || s.ScheduleType == type;
+
+        private IEnumerable<Schedule> ScheduleCollection(bool allSchedules)
+        {
+            if (allSchedules)
+                return Dependencies.Scheduler.Items;
+            else
+                return RegisteredSchedules.Keys;
+        }
+
+        private bool HasScheduleInternal(bool allSchedules, Func<Schedule, bool> predicate)
+        {
+            return ScheduleCollection(allSchedules).Any((s) => predicate(s));
+        }
+
+        private bool ScheduleExecuteInternal(bool allSchedules, Func<Schedule, bool> predicate)
+        {
+            var schedule = ScheduleCollection(allSchedules).FirstOrDefault((s) => predicate(s));
+
+            if (schedule != null)
+                return Dependencies.Scheduler.Execute(schedule.Id);
+
+            return false;
+        } 
+        #endregion
+
+
     }
 }

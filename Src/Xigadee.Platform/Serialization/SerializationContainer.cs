@@ -42,7 +42,7 @@ namespace Xigadee
         #endregion
         #region Constructor
         /// <summary>
-        /// This default constrcutor takes the list of registered serializers.
+        /// This default constructor takes the list of registered serializers.
         /// </summary>
         /// <param name="policy">The collection of serializers</param>
         public SerializationContainer(SerializationPolicy policy = null)

@@ -90,20 +90,31 @@ namespace Test.Xigadee
         }
         #endregion
 
+        [Ignore]
         [TestMethod]
         public void TestMasterJob()
         {
-            var policy = new CommandPolicy()
-            { ChannelId = "default", JobSchedulesEnabled = true, CommandContractAttributeInherit = true, JobScheduleAttributeInherit = true };
+            //ManualResetEventSlim mre = new ManualResetEventSlim();
+
+            var policy = new CommandPolicy(){ ChannelId = "default", JobSchedulesEnabled = true, CommandContractAttributeInherit = true, JobScheduleAttributeInherit = true };
             //Default state.
             var harness = new CommandHarness<MasterJobCommandTop>(policy);
 
-            //harness.MasterJobEnable();
+            //harness.MasterJobNegotiationEnable();
+            //harness.Service.OnMasterJobStateChange += (object sender, MasterJobStateChangeEventArgs e) =>
+            //{
+            //    if (e.StateNew == MasterJobState.Active)
+            //        mre.Set();
+            //};
 
             harness.Start();
 
+            //Wait for the master job to go live.
+            //mre.Wait();
+
             Assert.IsTrue(harness.RegisteredSchedules.Count == 1);
-            Assert.IsTrue(harness.RegisteredCommandMethods.Count == 1);
+            Assert.IsTrue(harness.Dependencies.Scheduler.Count == 2);
+            Assert.IsTrue(harness.RegisteredCommandMethods.Count == 2);
 
             Assert.IsTrue(harness.HasCommand(("one", "top")));
             Assert.IsTrue(harness.HasSchedule("1top"));
@@ -111,5 +122,6 @@ namespace Test.Xigadee
             Assert.IsFalse(harness.HasCommand(("one", "base")));
             Assert.IsFalse(harness.HasSchedule("1base"));
         }
+
     }
 }

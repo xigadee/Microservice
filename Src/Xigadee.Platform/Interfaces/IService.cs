@@ -55,7 +55,7 @@ namespace Xigadee
     /// <summary>
     /// This class holds the status change.
     /// </summary>
-    [DebuggerDisplay("{StatusOld}->{StatusNew}|{Message}")]
+    [DebuggerDisplay("{StatusOld}->{StatusNew} {Message}")]
     public class StatusChangedEventArgs: EventArgs
     {
         /// <summary>

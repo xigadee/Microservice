@@ -24,8 +24,9 @@ namespace Xigadee
     public  static partial class CommandHarnessHelper
     {
 
-        public static H MasterJobEnable<H>(this H harness
-            , string negotiationChannelIn = null, string negotiationChannelOut = null
+        public static H MasterJobNegotiationEnable<H>(this H harness
+            , string negotiationChannelIn = null
+            , string negotiationChannelOut = null
             , string negotiationMessageType = null
             )
             where H : ICommandHarness
@@ -36,14 +37,32 @@ namespace Xigadee
             dPolicy.MasterJobEnabled = true;
             dPolicy.MasterJobNegotiationChannelIdAutoSet = true;
 
+            if (string.IsNullOrEmpty(dPolicy.MasterJobNegotiationChannelIdIncoming))
+                dPolicy.MasterJobNegotiationChannelIdIncoming = negotiationChannelIn ?? "masterjob";
+            if (string.IsNullOrEmpty(dPolicy.MasterJobNegotiationChannelIdOutgoing))
+                dPolicy.MasterJobNegotiationChannelIdOutgoing = negotiationChannelOut ?? "masterjob";
+            if (string.IsNullOrEmpty(dPolicy.MasterJobNegotiationChannelMessageType))
+                dPolicy.MasterJobNegotiationChannelMessageType = negotiationMessageType ?? dCommand.FriendlyName.ToLowerInvariant();
+
+            dCommand.StatusChanged += (object sender, StatusChangedEventArgs e) =>
+            {
+                if (e.StatusNew == ServiceStatus.Running)
+                {
+                    //Inject the master job message.
+                    harness.ScheduleExecute(dCommand.FriendlyName, true, "MasterJobNegotiationPollSchedule");
+                }
+            };
+
             harness.Intercept((ctx) => 
             {
-
+                if (!ctx.Message.ActionType.Equals(MasterJobStates.IAmMaster, StringComparison.OrdinalIgnoreCase))
+                    ctx.Outgoing.Process((dPolicy.MasterJobNegotiationChannelIdIncoming, dPolicy.MasterJobNegotiationChannelMessageType, MasterJobStates.IAmStandby));
             }
-            ,header:(negotiationChannelIn, null, null));
+            ,header:(dPolicy.MasterJobNegotiationChannelIdOutgoing, dPolicy.MasterJobNegotiationChannelMessageType, null));
 
             return harness;
         }
+
 
         public static H MasterJobNegotiateOnStart<H>(this H harness)
             where H : ICommandHarness

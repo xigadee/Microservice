@@ -208,7 +208,7 @@ namespace Xigadee
         /// <summary>
         /// Determines whether there is a case insensitive match with the comparison transmission message type.
         /// </summary>
-        /// <param name="rq">The rq.</param>
+        /// <param name="rq">The request.</param>
         /// <param name="state">The message type</param>
         /// <returns>Returns true if correct.</returns>
         protected bool IsMatch(TransmissionPayload rq, string state)

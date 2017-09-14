@@ -79,26 +79,34 @@ namespace Xigadee
         /// Executes the schedule with the unique identifier.
         /// </summary>
         /// <param name="id">The identifier.</param>
+        /// <param name="allSchedules">This optional parameter can be used to match against just the registered schedules (false) or all schedules registered with the scheduler (true)</param>
+        /// <param name="scheduleType">This optional parameter can be used to match to a specific type of schedule, by matching a string on the Schedule.ScheduleType parameter.</param>
         /// <returns>Returns true if the schedule was resolved and executed.</returns>
-        bool ScheduleExecute(Guid id);
+        bool ScheduleExecute(Guid id, bool allSchedules = false, string scheduleType = null);
         /// <summary>
         /// Executes the schedule with the name specified.
         /// </summary>
         /// <param name="name">The name of the schedule.</param>
+        /// <param name="allSchedules">This optional parameter can be used to match against just the registered schedules (false) or all schedules registered with the scheduler (true)</param>
+        /// <param name="scheduleType">This optional parameter can be used to match to a specific type of schedule, by matching a string on the Schedule.ScheduleType parameter.</param>
         /// <returns>Returns true if the schedule was resolved and executed.</returns>
-        bool ScheduleExecute(string name);
+        bool ScheduleExecute(string name, bool allSchedules = false, string scheduleType = null);
         /// <summary>
         /// Determines whether the collection has the specified schedule.
         /// </summary>
         /// <param name="name">The schedule name.</param>
+        /// <param name="allSchedules">This optional parameter can be used to match against just the registered schedules (false) or all schedules registered with the scheduler (true)</param>
+        /// <param name="scheduleType">This optional parameter can be used to match to a specific type of schedule, by matching a string on the Schedule.ScheduleType parameter.</param>
         /// <returns>Returns true if the schedule exists</returns>
-        bool HasSchedule(string name);
+        bool HasSchedule(string name, bool allSchedules = false, string scheduleType = null);
         /// <summary>
         /// Determines whether the collection has the specified schedule.
         /// </summary>
         /// <param name="id">The identifier.</param>
+        /// <param name="allSchedules">This optional parameter can be used to match against just the registered schedules (false) or all schedules registered with the scheduler (true)</param>
+        /// <param name="scheduleType">This optional parameter can be used to match to a specific type of schedule, by matching a string on the Schedule.ScheduleType parameter.</param>
         /// <returns>Returns true if the schedule exists</returns>
-        bool HasSchedule(Guid id);
+        bool HasSchedule(Guid id, bool allSchedules = false, string scheduleType = null);
 
         /// <summary>
         /// Gets the registered command methods.
