@@ -26,23 +26,23 @@ namespace Xigadee
     /// </summary>
     public class DispatchWrapper: WrapperBase, IMicroserviceDispatch
     {
-        /// <summary>
-        /// Gets the execute or enqueue action.
-        /// </summary>
-        protected Action<TransmissionPayload, string> ExecuteOrEnqueue { get; }
-
+        #region Declarations
         private readonly IPayloadSerializationContainer mSerializer;
-
-        /// <summary>
-        /// Gets the name.
-        /// </summary>
-        protected string Name { get; }
         /// <summary>
         /// Identifies whether the payload trace is enabled.
         /// </summary>
-        protected readonly bool mTransmissionPayloadTraceEnabled;
+        protected readonly bool mTransmissionPayloadTraceEnabled; 
+        #endregion
 
-        internal DispatchWrapper(IPayloadSerializationContainer serializer, Action<TransmissionPayload, string> executeOrEnqueue, Func<ServiceStatus> getStatus, bool traceEnabled) 
+        #region Constructor
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DispatchWrapper"/> class.
+        /// </summary>
+        /// <param name="serializer">The serializer.</param>
+        /// <param name="executeOrEnqueue">The execute or enqueue action.</param>
+        /// <param name="getStatus">The get status function.</param>
+        /// <param name="traceEnabled">if set to <c>true</c> trace is enabled for payloads.</param>
+        protected internal DispatchWrapper(IPayloadSerializationContainer serializer, Action<TransmissionPayload, string> executeOrEnqueue, Func<ServiceStatus> getStatus, bool traceEnabled)
             : base(getStatus)
         {
             Name = GetType().Name;
@@ -51,6 +51,16 @@ namespace Xigadee
             mSerializer = serializer;
             mTransmissionPayloadTraceEnabled = traceEnabled;
         }
+        #endregion
+
+        /// <summary>
+        /// Gets the execute or enqueue action.
+        /// </summary>
+        protected Action<TransmissionPayload, string> ExecuteOrEnqueue { get; }
+        /// <summary>
+        /// Gets the name.
+        /// </summary>
+        protected string Name { get; }
 
         #region --> Process ...
         /// <summary>

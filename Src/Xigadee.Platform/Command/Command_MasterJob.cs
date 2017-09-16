@@ -428,6 +428,11 @@ namespace Xigadee
         }
         #endregion
 
+        /// <summary>
+        /// Gets the state of the master job.
+        /// </summary>
+        public MasterJobState MasterJobState => mMasterJobContext.State;
+
         //MasterJob Start
         #region MasterJobStart()
         /// <summary>

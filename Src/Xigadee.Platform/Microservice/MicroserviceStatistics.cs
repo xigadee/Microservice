@@ -105,12 +105,12 @@ namespace Xigadee
         public ResourceContainerStatistics Resources { get; set; }
 
         /// <summary>
-        /// The security statictics.
+        /// The security statistics.
         /// </summary>
         public SecurityContainerStatistics Security { get; set; }
 
         /// <summary>
-        /// The security statictics.
+        /// The security statistics.
         /// </summary>
         public SerializationStatistics Serialization { get; set; }
         /// <summary>

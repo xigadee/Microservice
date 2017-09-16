@@ -106,7 +106,7 @@ namespace Xigadee
         /// This is the policy for the resource tracker.
         /// </summary>
         /// <returns></returns>
-        public virtual ResourceContainerPolicy ResourceTracker
+        public virtual ResourceContainerPolicy ResourceMonitor
         {
             get
             {

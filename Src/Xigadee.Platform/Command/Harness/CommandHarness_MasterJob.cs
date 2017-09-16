@@ -25,6 +25,15 @@ namespace Xigadee
 {
     public partial class CommandHarness<C, S, P>
     {
+        #region MasterJobNegotiationEnable ...
+        /// <summary>
+        /// This method is used to set the command ready to run the master job.
+        /// </summary>
+        /// <param name="negotiationChannelIn">The negotiation channel in.</param>
+        /// <param name="negotiationChannelOut">The negotiation channel out.</param>
+        /// <param name="negotiationMessageType">The Message Type for the negotiation message.</param>
+        /// <param name="strategy">The negotiation strategy. If this is not set, MasterJobNegotiationStrategyDebug will be used.</param>
+        /// <exception cref="CommandHarnessException">MasterJobEnable should be called before the command is started.</exception>
         public void MasterJobNegotiationEnable(string negotiationChannelIn = null
             , string negotiationChannelOut = null
             , string negotiationMessageType = null
@@ -54,9 +63,11 @@ namespace Xigadee
 
             //Intercept outgoing MasterJob Messages and loop back to pass the comms check.
             this.InterceptOutgoing(MasterJobLoopback, header: (Policy.MasterJobNegotiationChannelIdOutgoing, Policy.MasterJobNegotiationChannelMessageType, null));
+
             //Set the policy to enable the MasterJob
             Policy.MasterJobEnabled = true;
-        }
+        } 
+        #endregion
 
         protected virtual void MasterJobLoopback(CommandHarnessRequestContext ctx)
         {
@@ -66,11 +77,17 @@ namespace Xigadee
                 );
         }
 
+        #region MasterJobScheduleExecute()
+        /// <summary>
+        /// This job runs the MasterJob poll schedule.
+        /// </summary>
         public void MasterJobScheduleExecute()
         {
             ScheduleExecute(Service.FriendlyName, true, "MasterJobNegotiationPollSchedule");
         }
+        #endregion
 
+        #region MasterJobStart
         /// <summary>
         /// Starts the master job and waits for it to go active.
         /// </summary>
@@ -83,7 +100,16 @@ namespace Xigadee
             //Wait for it to complete.
             mre.Wait();
         }
-
+        /// <summary>
+        /// Starts the master job and waits for it to go active.
+        /// </summary>
+        /// <param name="mre">The master reset event used to hold the thread.</param>
+        /// <param name="cancelToken">The cancellation token.</param>
+        /// <exception cref="CommandHarnessException">
+        /// MasterJobs have not been enabled for this command.
+        /// or
+        /// MasterJobStart should be called after the command has started.
+        /// </exception>
         public void MasterJobStart(out ManualResetEventSlim mre, out CancellationToken cancelToken)
         {
             if (!Policy.MasterJobEnabled)
@@ -120,10 +146,37 @@ namespace Xigadee
 
                     Task.Delay(10);
                 }
-            }, cancelToken);             
+            }, cancelToken);
 
             MasterJobScheduleExecute();
         }
 
+        #endregion
+
+        /// <summary>
+        /// Stops the master job.
+        /// </summary>
+        public void MasterJobStop()
+        {
+            ManualResetEventSlim mre;
+            CancellationToken token;
+            MasterJobStop(out mre, out token);
+
+            //Wait for it to complete.
+            mre.Wait();
+        }
+
+
+        /// <summary>
+        /// Stops the master job.
+        /// </summary>
+        public void MasterJobStop(out ManualResetEventSlim mre, out CancellationToken cancelToken)
+        {
+            var signal = new ManualResetEventSlim();
+            cancelToken = new CancellationToken();
+            bool hasStopped = false;
+
+            mre = signal;
+        }
     }
 }

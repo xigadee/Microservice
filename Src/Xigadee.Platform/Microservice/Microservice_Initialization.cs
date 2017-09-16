@@ -57,7 +57,7 @@ namespace Xigadee
             return taskTracker;
         }
         #endregion
-        #region InitialiseResourceTracker()
+        #region InitialiseResourceMonitor()
         /// <summary>
         /// This method creates the default resource tracker for the Microservice.
         /// Resource trackers are used to limit incoming messages that use a particular resource
@@ -66,7 +66,7 @@ namespace Xigadee
         /// <returns>Returns the resource tracker.</returns>
         protected virtual ResourceContainer InitialiseResourceMonitor()
         {
-            var container = new ResourceContainer(Policy.ResourceTracker);
+            var container = new ResourceContainer(Policy.ResourceMonitor);
 
             return container;
         }
@@ -87,7 +87,7 @@ namespace Xigadee
         #endregion
         #region InitialiseCommunicationContainer()
         /// <summary>
-        /// This method creates the communication container. This container comtains all the 
+        /// This method creates the communication container. This container contains all the 
         /// listeners and senders registered on the service, and assigns priority when polling for 
         /// new incoming requests.
         /// </summary>
@@ -148,6 +148,5 @@ namespace Xigadee
             return container;
         }
         #endregion
-
     }
 }

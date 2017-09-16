@@ -90,7 +90,7 @@ namespace Test.Xigadee
         }
         #endregion
 
-        [Ignore]
+        //[Ignore]
         [TestMethod]
         public void TestMasterJob()
         {
@@ -105,15 +105,22 @@ namespace Test.Xigadee
             //Wait for the master job to go live.
             harness.MasterJobStart();
 
-            Assert.IsTrue(harness.RegisteredSchedules.Count == 1);
-            Assert.IsTrue(harness.Dependencies.Scheduler.Count == 2);
-            Assert.IsTrue(harness.RegisteredCommandMethods.Count == 2);
+            Assert.IsTrue(harness.RegisteredSchedules.Count == 2);
+            Assert.IsTrue(harness.Dependencies.Scheduler.Count == 3);
+            Assert.IsTrue(harness.RegisteredCommandMethods.Count == 3);
 
             Assert.IsTrue(harness.HasCommand(("one", "top")));
             Assert.IsTrue(harness.HasSchedule("1top"));
 
+            Assert.IsTrue(harness.HasCommand(("one", "base")));
+            Assert.IsTrue(harness.HasSchedule("1base"));
+
+            harness.MasterJobStop();
+
             Assert.IsFalse(harness.HasCommand(("one", "base")));
             Assert.IsFalse(harness.HasSchedule("1base"));
+
+
         }
 
     }

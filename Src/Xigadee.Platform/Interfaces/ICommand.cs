@@ -143,9 +143,17 @@ namespace Xigadee
     public interface ICommandMasterJob
     {
         /// <summary>
-        /// This event is fired when the command's masterjob state is changed.
+        /// Occurs when the master job starts.
+        /// </summary>
+        event EventHandler<MasterJobStatusChangeEventArgs> OnMasterJobChange;
+        /// <summary>
+        /// This event can is fired when the state of the master job is changed.
         /// </summary>
         event EventHandler<MasterJobStateChangeEventArgs> OnMasterJobStateChange;
+        /// <summary>
+        /// This event is fired when the masterjob receives or issues communication requests to other masterjobs.
+        /// </summary>
+        event EventHandler<MasterJobCommunicationEventArgs> OnMasterJobCommunication;
         /// <summary>
         /// Gets or sets the master job negotiation channel priority.
         /// </summary>
@@ -166,5 +174,9 @@ namespace Xigadee
         /// Specifies whether the master job negotiation channel can be set during configuration.
         /// </summary>
         bool MasterJobNegotiationChannelIdAutoSet { get; }
+        /// <summary>
+        /// Gets the state of the master job.
+        /// </summary>
+        MasterJobState MasterJobState { get; }
     }
 }
