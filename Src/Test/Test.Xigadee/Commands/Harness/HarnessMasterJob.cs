@@ -94,23 +94,16 @@ namespace Test.Xigadee
         [TestMethod]
         public void TestMasterJob()
         {
-            //ManualResetEventSlim mre = new ManualResetEventSlim();
-
             var policy = new CommandPolicy(){ ChannelId = "default", JobSchedulesEnabled = true, CommandContractAttributeInherit = true, JobScheduleAttributeInherit = true };
             //Default state.
             var harness = new CommandHarness<MasterJobCommandTop>(policy);
 
-            //harness.MasterJobNegotiationEnable();
-            //harness.Service.OnMasterJobStateChange += (object sender, MasterJobStateChangeEventArgs e) =>
-            //{
-            //    if (e.StateNew == MasterJobState.Active)
-            //        mre.Set();
-            //};
+            harness.MasterJobNegotiationEnable();
 
             harness.Start();
 
             //Wait for the master job to go live.
-            //mre.Wait();
+            harness.MasterJobStart();
 
             Assert.IsTrue(harness.RegisteredSchedules.Count == 1);
             Assert.IsTrue(harness.Dependencies.Scheduler.Count == 2);

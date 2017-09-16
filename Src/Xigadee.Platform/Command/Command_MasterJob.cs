@@ -27,7 +27,11 @@ namespace Xigadee
 {
     public abstract partial class CommandBase<S, P, H>
     {
-        #region Events
+        #region Events        
+        /// <summary>
+        /// Occurs when the master job starts.
+        /// </summary>
+        public event EventHandler<MasterJobStatusChangeEventArgs> OnMasterJobChange;
         /// <summary>
         /// This event can is fired when the state of the master job is changed.
         /// </summary>
@@ -440,6 +444,8 @@ namespace Xigadee
             MasterJobCommandsStart();
 
             MasterJobSchedulesStart();
+
+            FireAndDecorateEventArgs(OnMasterJobChange, () => new MasterJobStatusChangeEventArgs(MasterJobState.Active, 0));
         }
         #endregion
         #region MasterJobCommandsStart()
@@ -537,6 +543,8 @@ namespace Xigadee
 
             //Reset the state to inactive so that it could restart at some point.
             mMasterJobContext.State = MasterJobState.Inactive;
+
+            FireAndDecorateEventArgs(OnMasterJobChange, () => new MasterJobStatusChangeEventArgs(MasterJobState.Inactive, 0));
         }
         #endregion
         #region MasterJobCommandsStop()

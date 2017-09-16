@@ -94,7 +94,7 @@ namespace Xigadee
         /// </summary>
         public string ServiceVersionId { get; }
         /// <summary>
-        /// This is the Dll version is of Xigadee assembly
+        /// This is the Dll version is of the Xigadee assembly
         /// </summary>
         public string ServiceEngineVersionId { get; }
         /// <summary>

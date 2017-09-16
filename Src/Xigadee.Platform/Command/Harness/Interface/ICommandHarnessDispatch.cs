@@ -19,6 +19,7 @@ namespace Xigadee
         /// <param name="release">The release action which is called when the payload has been executed by the receiving commands.</param>
         /// <param name="responseHeader">This is the optional response header fragment. The channel will be inserted by the harness</param>
         /// <param name="ResponseChannelPriority">This is the response channel priority. This will be set if the response header is not null. The default priority is 1.</param>
+        /// <param name="originatorServiceId">This optional parameter allows you to set the originator serviceId</param>
         void Process(ServiceMessageHeaderFragment header
             , object package = null
             , int ChannelPriority = 1
@@ -26,6 +27,7 @@ namespace Xigadee
             , Action<bool, Guid> release = null
             , ServiceMessageHeaderFragment responseHeader = null
             , int ResponseChannelPriority = 1
+            , string originatorServiceId = null
             );
 
         /// <summary>
@@ -38,6 +40,7 @@ namespace Xigadee
         /// <param name="release">The release action which is called when the payload has been executed by the receiving commands.</param>
         /// <param name="responseHeader">This is the optional response header</param>
         /// <param name="ResponseChannelPriority">This is the response channel priority. This will be set if the response header is not null. The default priority is 1.</param>
+        /// <param name="originatorServiceId">This optional parameter allows you to set the originator serviceId</param>
         void Process(ServiceMessageHeaderFragment header
             , object package = null
             , int ChannelPriority = 1
@@ -45,6 +48,7 @@ namespace Xigadee
             , Action<bool, Guid> release = null
             , ServiceMessageHeader responseHeader = null
             , int ResponseChannelPriority = 1
+            , string originatorServiceId = null
             );
     }
 }

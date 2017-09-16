@@ -78,7 +78,7 @@ namespace Xigadee
         /// <summary>
         /// This is the example originator id.
         /// </summary>
-        public virtual MicroserviceId OriginatorId => new MicroserviceId(GetType().Name, Guid.NewGuid().ToString("N").ToUpperInvariant());
+        public virtual MicroserviceId OriginatorId { get; } =  new MicroserviceId(nameof(ServiceHarnessDependencies), Guid.NewGuid().ToString("N").ToUpperInvariant());
         /// <summary>
         /// This is the stub data collector.
         /// </summary>

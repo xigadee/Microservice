@@ -25,15 +25,21 @@ namespace Xigadee
     /// <seealso cref="Xigadee.ICommandHarnessDispath" />
     public class CommandHarnessDispatchWrapper : DispatchWrapper, ICommandHarnessDispath
     {
-        internal CommandHarnessDispatchWrapper(CommandPolicy policy, IPayloadSerializationContainer serializer, Action<TransmissionPayload, string> executeOrEnqueue, Func<ServiceStatus> getStatus, bool traceEnabled) 
+        internal CommandHarnessDispatchWrapper(CommandPolicy policy, IPayloadSerializationContainer serializer, Action<TransmissionPayload, string> executeOrEnqueue, Func<ServiceStatus> getStatus, bool traceEnabled, string originatorServiceId = null) 
             : base(serializer, executeOrEnqueue, getStatus, traceEnabled)
         {
+            DefaultOriginatorServiceId = originatorServiceId;
             Policy = policy;
         }
         /// <summary>
         /// Gets the command policy.
         /// </summary>
         protected CommandPolicy Policy { get; }
+
+        /// <summary>
+        /// Gets the default originator service identifier. If this is not null, it will be appended to generated service messages.
+        /// </summary>
+        public string DefaultOriginatorServiceId { get; }
 
         /// <summary>
         /// This method creates a service message and injects it in to the execution path and bypasses the listener infrastructure.
@@ -45,6 +51,7 @@ namespace Xigadee
         /// <param name="release">The release action which is called when the payload has been executed by the receiving commands.</param>
         /// <param name="responseHeader">This is the optional response header fragment. The channel will be inserted by the harness</param>
         /// <param name="ResponseChannelPriority">This is the response channel priority. This will be set if the response header is not null. The default priority is 1.</param>
+        /// <param name="originatorServiceId">This optional parameter allows you to set the originator serviceId</param>
         public void Process(ServiceMessageHeaderFragment header
             , object package = null
             , int ChannelPriority = 1
@@ -52,6 +59,7 @@ namespace Xigadee
             , Action<bool, Guid> release = null
             , ServiceMessageHeaderFragment responseHeader = null
             , int ResponseChannelPriority = 1
+            , string originatorServiceId = null
             )
         {
             Process((Policy.ChannelId, header)
@@ -61,6 +69,7 @@ namespace Xigadee
             , release
             , responseHeader == null? (ServiceMessageHeader)null: (Policy.ResponseChannelId, responseHeader)
             , ResponseChannelPriority
+            , originatorServiceId
             );
         }
 
@@ -74,6 +83,7 @@ namespace Xigadee
         /// <param name="release">The release action which is called when the payload has been executed by the receiving commands.</param>
         /// <param name="responseHeader">This is the optional response header</param>
         /// <param name="ResponseChannelPriority">This is the response channel priority. This will be set if the response header is not null. The default priority is 1.</param>
+        /// <param name="originatorServiceId">This optional parameter allows you to set the originator serviceId</param>
         public void Process(ServiceMessageHeaderFragment header
             , object package = null
             , int ChannelPriority = 1
@@ -81,6 +91,7 @@ namespace Xigadee
             , Action<bool, Guid> release = null
             , ServiceMessageHeader responseHeader = null
             , int ResponseChannelPriority = 1
+            , string originatorServiceId = null
             )
         {
             Process((Policy.ChannelId, header)
@@ -90,7 +101,28 @@ namespace Xigadee
             , release
             , responseHeader
             , ResponseChannelPriority
+            , originatorServiceId
             );
+        }
+
+        /// <summary>
+        /// This method injects a payload in to the execution path and bypasses the listener infrastructure.
+        /// </summary>
+        /// <param name="payload">The transmission payload to execute.</param>
+        public override void Process(TransmissionPayload payload)
+        {
+            ValidateServiceStarted();
+
+            if (payload.Message.OriginatorServiceId == null && DefaultOriginatorServiceId != null)
+                payload.Message.OriginatorServiceId = DefaultOriginatorServiceId;
+
+            if (mTransmissionPayloadTraceEnabled)
+            {
+                payload.TraceEnabled = true;
+                payload.TraceWrite($"{Name} received.");
+            }
+
+            ExecuteOrEnqueue(payload, $"{Name} method request");
         }
     }
 }

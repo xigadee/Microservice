@@ -111,7 +111,7 @@ namespace Xigadee
         /// <summary>
         /// Checks whether the poll attempts have been exceeded.
         /// </summary>
-        /// <returns>Returns true if the poll limit has been exceeeded.</returns>
+        /// <returns>Returns true if the poll limit has been exceeded.</returns>
         public bool MasterPollAttemptsExceeded()
         {
             return NegotiationStrategy.PollAttemptsExceeded(State, mCurrentMasterPollAttempts);
@@ -232,16 +232,24 @@ namespace Xigadee
         public DateTime? NegotiationPollLastIn { get; set; }
         #endregion
 
-
+        #region Start()
+        /// <summary>
+        /// Starts the context.
+        /// </summary>
         public virtual void Start()
         {
             Partners.Clear();
             State = MasterJobState.VerifyingComms;
         }
-
+        #endregion
+        #region Stop()
+        /// <summary>
+        /// Stops the context.
+        /// </summary>
         public virtual void Stop()
         {
             State = MasterJobState.Disabled;
-        }
+        } 
+        #endregion
     }
 }

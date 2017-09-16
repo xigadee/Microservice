@@ -21,14 +21,18 @@ namespace Xigadee
     /// <summary>
     /// This class sets the dependencies for the command,
     /// </summary>
-    /// <typeparam name="C">The command type.</typeparam>
     /// <seealso cref="Xigadee.ServiceHarnessDependencies" />
     public class CommandHarnessDependencies: ServiceHarnessDependencies
     {
-
         /// <summary>
         /// This is the example originator id.
         /// </summary>
-        public override MicroserviceId OriginatorId => new MicroserviceId("CommandHarness", Guid.NewGuid().ToString("N").ToUpperInvariant());
+        public override MicroserviceId OriginatorId { get; } 
+            = new MicroserviceId("CommandHarness", Guid.NewGuid().ToString("N").ToUpperInvariant());
+        /// <summary>
+        /// Gets the originator identifier external used to spoof an external service calling the command.
+        /// </summary>
+        public virtual MicroserviceId OriginatorIdExternal { get; } 
+            = new MicroserviceId("CommandHarnessExternal", Guid.NewGuid().ToString("N").ToUpperInvariant());
     }
 }

@@ -69,7 +69,7 @@ namespace Xigadee
     /// <typeparam name="C">The command type.</typeparam>
     /// <typeparam name="S">The command statistics class type.</typeparam>
     /// <typeparam name="P">The command policy.</typeparam>
-    public class CommandHarness<C,S,P> : ServiceHarness<C, CommandHarnessDependencies>, ICommandHarness
+    public partial class CommandHarness<C,S,P> : ServiceHarness<C, CommandHarnessDependencies>, ICommandHarness
         where C : CommandBase<S, P>
         where S : CommandStatistics, new()
         where P : CommandPolicy, new()
@@ -230,6 +230,7 @@ namespace Xigadee
         /// <param name="payload">The payload.</param>
         protected virtual void OutgoingCapture(ICommand command, string id, TransmissionPayload payload)
         {
+            payload.Message.OriginatorServiceId = Dependencies.OriginatorId.ExternalServiceId;
             var harness = TrafficTrackerCreate(CommandHarnessTrafficDirection.Outgoing, payload, command.GetType().Name);
 
             //Add delay in here.
@@ -437,7 +438,7 @@ namespace Xigadee
         /// <returns>Returns true if the schedule exists</returns>
         public bool HasSchedule(string name, bool allSchedules = false, string scheduleType = null)
         {
-            return HasScheduleInternal(allSchedules, (s) => s.Name == name && fnMatchScheduleType(s, scheduleType));
+            return HasSchedule(allSchedules, (s) => s.Name == name && fnMatchScheduleType(s, scheduleType));
         }
         /// <summary>
         /// Determines whether the collection has the specified schedule.
@@ -448,7 +449,17 @@ namespace Xigadee
         /// <returns>Returns true if the schedule exists</returns>
         public bool HasSchedule(Guid id, bool allSchedules = false, string scheduleType = null)
         {
-            return HasScheduleInternal(allSchedules, (s) => s.Id == id && fnMatchScheduleType(s, scheduleType));
+            return HasSchedule(allSchedules, (s) => s.Id == id && fnMatchScheduleType(s, scheduleType));
+        }
+        /// <summary>
+        /// Determines whether the collection has the specified schedule.
+        /// </summary>
+        /// <param name="allSchedules">if set to <c>true</c> [all schedules].</param>
+        /// <param name="predicate">The predicate to filter the schedule.</param>
+        /// <returns>Returns true if a schedule matched the predicate.</returns>
+        public bool HasSchedule(bool allSchedules, Func<Schedule, bool> predicate)
+        {
+            return ScheduleCollection(allSchedules).Any((s) => predicate(s));
         }
         #endregion
         #region ScheduleExecute...
@@ -461,7 +472,7 @@ namespace Xigadee
         /// <returns>Returns true if the schedule is resolved and submitted for executed.</returns>
         public bool ScheduleExecute(string name, bool allSchedules = false, string scheduleType = null)
         {
-            return ScheduleExecuteInternal(allSchedules, (s) => s.Name == name && fnMatchScheduleType(s, scheduleType));
+            return ScheduleExecute(allSchedules, (s) => s.Name == name && fnMatchScheduleType(s, scheduleType));
         }
         /// <summary>
         /// Triggers execution of a schedule.
@@ -472,26 +483,15 @@ namespace Xigadee
         /// <returns>Returns true if the schedule is resolved and submitted for executed.</returns>
         public bool ScheduleExecute(Guid id, bool allSchedules = false, string scheduleType = null)
         {
-            return ScheduleExecuteInternal(allSchedules, (s) => s.Id == id && fnMatchScheduleType(s, scheduleType));
+            return ScheduleExecute(allSchedules, (s) => s.Id == id && fnMatchScheduleType(s, scheduleType));
         }
-        #endregion
-        #region ScheduleInternal...
-        private Func<Schedule, string, bool> fnMatchScheduleType = (s, type) => type == null || s.ScheduleType == type;
-
-        private IEnumerable<Schedule> ScheduleCollection(bool allSchedules)
-        {
-            if (allSchedules)
-                return Dependencies.Scheduler.Items;
-            else
-                return RegisteredSchedules.Keys;
-        }
-
-        private bool HasScheduleInternal(bool allSchedules, Func<Schedule, bool> predicate)
-        {
-            return ScheduleCollection(allSchedules).Any((s) => predicate(s));
-        }
-
-        private bool ScheduleExecuteInternal(bool allSchedules, Func<Schedule, bool> predicate)
+        /// <summary>
+        /// Triggers execution of a schedule.
+        /// </summary>
+        /// <param name="allSchedules">if set to <c>true</c> [all schedules].</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns>Returns true if the schedule is matched to the predicate and submitted for executed.</returns>
+        public bool ScheduleExecute(bool allSchedules, Func<Schedule, bool> predicate)
         {
             var schedule = ScheduleCollection(allSchedules).FirstOrDefault((s) => predicate(s));
 
@@ -499,9 +499,22 @@ namespace Xigadee
                 return Dependencies.Scheduler.Execute(schedule.Id);
 
             return false;
-        } 
+        }
         #endregion
-
-
+        #region ScheduleCollection(bool allSchedules)
+        private Func<Schedule, string, bool> fnMatchScheduleType = (s, type) => type == null || s.ScheduleType == type;
+        /// <summary>
+        /// Returns the specified schedule collection.
+        /// </summary>
+        /// <param name="allSchedules">if set to <c>true</c> [all schedules].</param>
+        /// <returns>Returns the specific schedule collection</returns>
+        public IEnumerable<Schedule> ScheduleCollection(bool allSchedules)
+        {
+            if (allSchedules)
+                return Dependencies.Scheduler.Items;
+            else
+                return RegisteredSchedules.Keys;
+        }
+        #endregion
     }
 }

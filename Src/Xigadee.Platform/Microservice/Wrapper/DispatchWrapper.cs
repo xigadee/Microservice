@@ -26,11 +26,17 @@ namespace Xigadee
     /// </summary>
     public class DispatchWrapper: WrapperBase, IMicroserviceDispatch
     {
-        private Action<TransmissionPayload, string> ExecuteOrEnqueue { get; }
+        /// <summary>
+        /// Gets the execute or enqueue action.
+        /// </summary>
+        protected Action<TransmissionPayload, string> ExecuteOrEnqueue { get; }
 
         private readonly IPayloadSerializationContainer mSerializer;
 
-        private string Name { get; }
+        /// <summary>
+        /// Gets the name.
+        /// </summary>
+        protected string Name { get; }
         /// <summary>
         /// Identifies whether the payload trace is enabled.
         /// </summary>
@@ -54,19 +60,21 @@ namespace Xigadee
         /// <param name="package">The object package to process.</param>
         /// <param name="ChannelPriority">The priority that the message should be processed. The default is 1. If this message is not a valid value, it will be matched to the nearest valid value.</param>
         /// <param name="options">The process options.</param>
-        /// <param name="release">The release action which is called when the payload has been executed.</param>
-        /// by the receiving commands.</param>
+        /// <param name="release">The release action which is called when the payload has been executed by the receiving commands.</param>
+        /// <param name="originatorServiceId">This optional parameter allows you to set the originator serviceId</param>
         public void Process<C>(object package = null
             , int ChannelPriority = 1
             , ProcessOptions options = ProcessOptions.RouteExternal | ProcessOptions.RouteInternal
-            , Action<bool, Guid> release = null)
+            , Action<bool, Guid> release = null
+            , string originatorServiceId = null
+            )
             where C : IMessageContract
         {
             string channelId, messageType, actionType;
             if (!ServiceMessageHelper.ExtractContractInfo<C>(out channelId, out messageType, out actionType))
                 throw new InvalidMessageContractException(typeof(C));
 
-            Process(channelId, messageType, actionType, package, ChannelPriority, options, release);
+            Process(channelId, messageType, actionType, package, ChannelPriority, options, release, originatorServiceId);
         }
         /// <summary>
         /// This method creates a service message and injects it in to the execution path and bypasses the listener infrastructure.
@@ -77,17 +85,19 @@ namespace Xigadee
         /// <param name="package">The object package to process.</param>
         /// <param name="ChannelPriority">The priority that the message should be processed. The default is 1. If this message is not a valid value, it will be matched to the nearest valid value.</param>
         /// <param name="options">The process options.</param>
-        /// <param name="release">The release action which is called when the payload has been executed.</param>
-        /// by the receiving commands.</param>
+        /// <param name="release">The release action which is called when the payload has been executed by the receiving commands.</param>
+        /// <param name="originatorServiceId">This optional parameter allows you to set the originator serviceId</param>
         public void Process(string ChannelId, string MessageType = null, string ActionType = null
             , object package = null
             , int ChannelPriority = 1
             , ProcessOptions options = ProcessOptions.RouteExternal | ProcessOptions.RouteInternal
-            , Action<bool, Guid> release = null)
+            , Action<bool, Guid> release = null
+            , string originatorServiceId = null
+            )
         {
             var header = new ServiceMessageHeader(ChannelId, MessageType, ActionType);
 
-            Process(header, package, ChannelPriority, options, release);
+            Process(header, package, ChannelPriority, options, release, originatorServiceId: originatorServiceId);
         }
 
         /// <summary>
@@ -100,6 +110,7 @@ namespace Xigadee
         /// <param name="release">The release action which is called when the payload has been executed by the receiving commands.</param>
         /// <param name="responseHeader">This is the optional response header</param>
         /// <param name="ResponseChannelPriority">This is the response channel priority. This will be set if the response header is not null. The default priority is 1.</param>
+        /// <param name="originatorServiceId">This optional parameter allows you to set the originator serviceId</param>
         public void Process(ServiceMessageHeader header
             , object package = null
             , int ChannelPriority = 1
@@ -107,9 +118,14 @@ namespace Xigadee
             , Action<bool, Guid> release = null
             , ServiceMessageHeader responseHeader = null
             , int ResponseChannelPriority = 1
+            , string originatorServiceId = null
             )
         {
             var message = new ServiceMessage(header, responseHeader);
+
+            if (originatorServiceId != null)
+                message.OriginatorServiceId = originatorServiceId;
+
             message.ChannelPriority = ChannelPriority;
             if (package != null)
                 message.Blob = mSerializer.PayloadSerialize(package);
@@ -142,7 +158,7 @@ namespace Xigadee
         /// This method injects a payload in to the execution path and bypasses the listener infrastructure.
         /// </summary>
         /// <param name="payload">The transmission payload to execute.</param>
-        public void Process(TransmissionPayload payload)
+        public virtual void Process(TransmissionPayload payload)
         {
             ValidateServiceStarted();
 
