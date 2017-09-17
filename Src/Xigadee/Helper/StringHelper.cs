@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -23,77 +24,77 @@ namespace Xigadee
             return string.IsNullOrEmpty(source) ? source : source.Replace("&lt;", "<").Replace("&gt;", ">").Replace(@"\n", "\n");
         }
         #endregion
-#if (!SILVERLIGHT)
-        #region StringToTypedValue
-        /// <summary>
-        /// Turns a string into a typed value. Useful for auto-conversion routines
-        /// like form variable or XML parsers.
-        /// <seealso>Class wwUtils</seealso>
-        /// </summary>
-        /// <param name="SourceString">
-        /// The string to convert from
-        /// </param>
-        /// <param name="TargetType">
-        /// The type to convert to
-        /// </param>
-        /// <param name="Culture">
-        /// Culture used for numeric and datetime values.
-        /// </param>
-        /// <returns>object. Throws exception if it cannot be converted.</returns>
-        public static object StringToTypedValue(string SourceString, Type TargetType, CultureInfo Culture)
-        {
-            object Result = null;
+//#if (!SILVERLIGHT)
+//        #region StringToTypedValue
+//        /// <summary>
+//        /// Turns a string into a typed value. Useful for auto-conversion routines
+//        /// like form variable or XML parsers.
+//        /// <seealso>Class wwUtils</seealso>
+//        /// </summary>
+//        /// <param name="SourceString">
+//        /// The string to convert from
+//        /// </param>
+//        /// <param name="TargetType">
+//        /// The type to convert to
+//        /// </param>
+//        /// <param name="Culture">
+//        /// Culture used for numeric and date-time values.
+//        /// </param>
+//        /// <returns>object. Throws exception if it cannot be converted.</returns>
+//        public static object StringToTypedValue(string SourceString, Type TargetType, CultureInfo Culture)
+//        {
+//            object Result = null;
 
-            if (TargetType == typeof(string))
-                Result = SourceString;
-            else if (TargetType == typeof(int))
-                Result = int.Parse(SourceString, NumberStyles.Integer, Culture.NumberFormat);
-            else if (TargetType == typeof(byte))
-                Result = Convert.ToByte(SourceString);
-            else if (TargetType == typeof(decimal))
-                Result = Decimal.Parse(SourceString, NumberStyles.Any, Culture.NumberFormat);
-            else if (TargetType == typeof(double))
-                Result = Double.Parse(SourceString, NumberStyles.Any, Culture.NumberFormat);
-            else if (TargetType == typeof(bool))
-            {
-                if (SourceString.ToLower() == "true" || SourceString.ToLower() == "on" || SourceString == "1")
-                    Result = true;
-                else
-                    Result = false;
-            }
-            else if (TargetType == typeof(DateTime))
-                Result = Convert.ToDateTime(SourceString, Culture.DateTimeFormat);
-            else if (TargetType.IsEnum)
-                Result = Enum.Parse(TargetType, SourceString, true);
-            else
-            {
-                System.ComponentModel.TypeConverter converter = System.ComponentModel.TypeDescriptor.GetConverter(TargetType);
-                if (converter != null && converter.CanConvertFrom(typeof(string)))
-                    Result = converter.ConvertFromString(null, Culture, SourceString);
-                else
-                {
-                    System.Diagnostics.Debug.Assert(false, "Type Conversion not handled in StringToTypedValue for " +
-                                                    TargetType.Name + " " + SourceString);
-                    throw (new Exception("Type Conversion not handled in StringToTypedValue"));
-                }
-            }
+//            if (TargetType == typeof(string))
+//                Result = SourceString;
+//            else if (TargetType == typeof(int))
+//                Result = int.Parse(SourceString, NumberStyles.Integer, Culture.NumberFormat);
+//            else if (TargetType == typeof(byte))
+//                Result = Convert.ToByte(SourceString);
+//            else if (TargetType == typeof(decimal))
+//                Result = Decimal.Parse(SourceString, NumberStyles.Any, Culture.NumberFormat);
+//            else if (TargetType == typeof(double))
+//                Result = Double.Parse(SourceString, NumberStyles.Any, Culture.NumberFormat);
+//            else if (TargetType == typeof(bool))
+//            {
+//                if (SourceString.ToLower() == "true" || SourceString.ToLower() == "on" || SourceString == "1")
+//                    Result = true;
+//                else
+//                    Result = false;
+//            }
+//            else if (TargetType == typeof(DateTime))
+//                Result = Convert.ToDateTime(SourceString, Culture.DateTimeFormat);
+//            else if (TargetType.GetTypeInfo().IsEnum) //Suggested changes made for portability to .NET Core
+//                Result = Enum.Parse(TargetType, SourceString, true);
+//            else
+//            {
+//                System.ComponentModel.TypeConverter converter = System.ComponentModel.TypeDescriptor.GetConverter(TargetType);
+//                if (converter != null && converter.CanConvertFrom(typeof(string)))
+//                    Result = converter.ConvertFromString(null, Culture, SourceString);
+//                else
+//                {
+//                    System.Diagnostics.Debug.Assert(false, "Type Conversion not handled in StringToTypedValue for " +
+//                                                    TargetType.Name + " " + SourceString);
+//                    throw (new Exception("Type Conversion not handled in StringToTypedValue"));
+//                }
+//            }
 
-            return Result;
-        }
+//            return Result;
+//        }
 
-        /// <summary>
-        /// Turns a string into a typed value. Useful for auto-conversion routines
-        /// like form variable or XML parsers.
-        /// </summary>
-        /// <param name="SourceString">The input string to convert</param>
-        /// <param name="TargetType">The Type to convert it to</param>
-        /// <returns>object reference. Throws Exception if type can not be converted</returns>
-        public static object StringToTypedValue(string SourceString, Type TargetType)
-        {
-            return StringToTypedValue(SourceString, TargetType, CultureInfo.CurrentCulture);
-        }
-        #endregion
-#endif
+//        /// <summary>
+//        /// Turns a string into a typed value. Useful for auto-conversion routines
+//        /// like form variable or XML parsers.
+//        /// </summary>
+//        /// <param name="SourceString">The input string to convert</param>
+//        /// <param name="TargetType">The Type to convert it to</param>
+//        /// <returns>object reference. Throws Exception if type can not be converted</returns>
+//        public static object StringToTypedValue(string SourceString, Type TargetType)
+//        {
+//            return StringToTypedValue(SourceString, TargetType, CultureInfo.CurrentCulture);
+//        }
+//        #endregion
+//#endif
 
 
         #region SplitOnChars
