@@ -104,6 +104,7 @@
     <Compile Include="Command\Harness\CommandHarnessEventArgs.cs" />
     <Compile Include="Command\Harness\CommandHarnessTrafficDirection.cs" />
     <Compile Include="Command\Harness\CommandHarness_MasterJob.cs" />
+    <Compile Include="Command\Harness\CommandHarness_Outgoing.cs" />
     <Compile Include="Command\Harness\Exceptions\CommandHarnessException.cs" />
     <Compile Include="Command\Harness\Exceptions\CommandHarnessInvalidConstructorException.cs" />
     <Compile Include="Command\Harness\Helper\DefaultCreator.cs" />

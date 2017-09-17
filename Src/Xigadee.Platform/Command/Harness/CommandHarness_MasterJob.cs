@@ -14,10 +14,6 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -62,20 +58,27 @@ namespace Xigadee
             };
 
             //Intercept outgoing MasterJob Messages and loop back to pass the comms check.
-            this.InterceptOutgoing(MasterJobLoopback, header: (Policy.MasterJobNegotiationChannelIdOutgoing, Policy.MasterJobNegotiationChannelMessageType, null));
+            MasterJobOutgoingLoopbackEnable();
 
             //Set the policy to enable the MasterJob
             Policy.MasterJobEnabled = true;
+        }
+        #endregion
+        #region MasterJobOutgoingLoopbackEnable()
+        /// <summary>
+        /// This method loops a outgoing master job request back to the command to simulate how a service bus topic works.
+        /// </summary>
+        protected virtual void MasterJobOutgoingLoopbackEnable()
+        {
+            //Intercept outgoing MasterJob Messages and loop back to pass the comms check.
+            this.InterceptOutgoing((ctx) =>
+            {
+                ctx.Outgoing.Process((Policy.MasterJobNegotiationChannelIdIncoming, Policy.MasterJobNegotiationChannelMessageType, ctx.Message.ActionType)
+                    , originatorServiceId: Dependencies.OriginatorId.ExternalServiceId);
+            }
+            , header: (Policy.MasterJobNegotiationChannelIdOutgoing, Policy.MasterJobNegotiationChannelMessageType, null));
         } 
         #endregion
-
-        protected virtual void MasterJobLoopback(CommandHarnessRequestContext ctx)
-        {
-            ctx.Outgoing.Process(
-                (Policy.MasterJobNegotiationChannelIdIncoming, Policy.MasterJobNegotiationChannelMessageType, ctx.Message.ActionType)
-                , originatorServiceId: Dependencies.OriginatorId.ExternalServiceId
-                );
-        }
 
         #region MasterJobScheduleExecute()
         /// <summary>
