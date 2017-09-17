@@ -308,7 +308,7 @@
       <Name>Xigadee</Name>
     </ProjectReference>
     <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj">
-      <Project>{4f785b7b-1fdc-4dcc-9453-fe42447fded2}</Project>
+      <Project>{c7ac27ce-0bac-4fba-9238-9e45bc006752}</Project>
       <Name>Xigadee.Helper</Name>
     </ProjectReference>
   </ItemGroup>

@@ -21,11 +21,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Xigadee")]
-[assembly: AssemblyDescription("Xigadee shared assembly")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyProduct("Xigadee")]
-[assembly: AssemblyCulture("")]
+//[assembly: AssemblyTitle("Xigadee")]
+//[assembly: AssemblyDescription("Xigadee shared assembly")]
+//[assembly: AssemblyConfiguration("")]
+//[assembly: AssemblyProduct("Xigadee")]
+//[assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a channelId in this assembly from 

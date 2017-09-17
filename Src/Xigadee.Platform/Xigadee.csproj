@@ -769,12 +769,6 @@
     <None Include="_Docs\Xigadee.vsdx" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj">
-      <Project>{4f785b7b-1fdc-4dcc-9453-fe42447fded2}</Project>
-      <Name>Xigadee.Helper</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="..\AssemblyInfo\ApacheLicense-2.0.txt">
       <Link>Properties\ApacheLicense-2.0.txt</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -796,6 +790,12 @@
     <Folder Include="ResourceTracker\Events\" />
     <Folder Include="ResourceTracker\Pipeline\" />
     <Folder Include="Security\Jwt\Interfaces\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj">
+      <Project>{c7ac27ce-0bac-4fba-9238-9e45bc006752}</Project>
+      <Name>Xigadee.Helper</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

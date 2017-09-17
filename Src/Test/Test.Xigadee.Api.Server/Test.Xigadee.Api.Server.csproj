@@ -320,6 +320,10 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Xigadee\Xigadee.Helper.csproj">
+      <Project>{c7ac27ce-0bac-4fba-9238-9e45bc006752}</Project>
+      <Name>Xigadee.Helper</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Test.Xigadee.Shared\Test.Xigadee.Shared.csproj">
       <Project>{6aa8f0e5-ab72-4df5-bd02-a23fbd8fdb83}</Project>
       <Name>Test.Xigadee.Shared</Name>
@@ -351,10 +355,6 @@
     <ProjectReference Include="..\..\Xigadee.Platform\Xigadee.csproj">
       <Project>{4788fc0b-e692-4762-a4f4-aeab2a77da42}</Project>
       <Name>Xigadee</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Xigadee\Xigadee.Helper.csproj">
-      <Project>{4f785b7b-1fdc-4dcc-9453-fe42447fded2}</Project>
-      <Name>Xigadee.Helper</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

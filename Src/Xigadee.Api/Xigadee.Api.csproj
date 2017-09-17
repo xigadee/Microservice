@@ -75,12 +75,6 @@
     <Compile Include="XmlTransportSerializerBase.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj">
-      <Project>{4f785b7b-1fdc-4dcc-9453-fe42447fded2}</Project>
-      <Name>Xigadee.Helper</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
     <None Include="Xigadee.Api.licenseheader" />
     <None Include="_Docs\Introduction.md" />
