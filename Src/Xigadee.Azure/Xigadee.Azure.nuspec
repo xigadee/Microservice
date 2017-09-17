@@ -30,7 +30,6 @@
       <dependency id="Microsoft.IdentityModel.Clients.ActiveDirectory" version="2.28.1" />
       <dependency id="Microsoft.Azure.EventHubs" version="1.0.1" />
       <dependency id="Microsoft.Azure.EventHubs.Processor" version="1.0.1" />
-      <dependency id="System.ValueTuple" version="4.3.0" />
     </dependencies>
   </metadata>
   <files>
