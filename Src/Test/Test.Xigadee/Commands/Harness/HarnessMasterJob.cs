@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Xigadee;
@@ -102,9 +99,17 @@ namespace Test.Xigadee
 
             harness.Start();
 
+            Assert.IsTrue(harness.RegisteredSchedules.Count == 1);
+            Assert.IsTrue(harness.Dependencies.Scheduler.Count == 2);
+            Assert.IsTrue(harness.RegisteredCommandMethods.Count == 2);
+
+            Assert.IsFalse(harness.HasCommand(("one", "base")));
+            Assert.IsFalse(harness.HasSchedule("1base"));
+
             //Wait for the master job to go live.
             harness.MasterJobStart();
 
+            //Check that the MasterJob commands and schedules have been registered.
             Assert.IsTrue(harness.RegisteredSchedules.Count == 2);
             Assert.IsTrue(harness.Dependencies.Scheduler.Count == 3);
             Assert.IsTrue(harness.RegisteredCommandMethods.Count == 3);
@@ -115,11 +120,16 @@ namespace Test.Xigadee
             Assert.IsTrue(harness.HasCommand(("one", "base")));
             Assert.IsTrue(harness.HasSchedule("1base"));
 
+            //Stop the master job
             harness.MasterJobStop();
+
+            //Check that the master job commands have been removed.
+            Assert.IsTrue(harness.RegisteredSchedules.Count == 1);
+            Assert.IsTrue(harness.Dependencies.Scheduler.Count == 2);
+            Assert.IsTrue(harness.RegisteredCommandMethods.Count == 2);
 
             Assert.IsFalse(harness.HasCommand(("one", "base")));
             Assert.IsFalse(harness.HasSchedule("1base"));
-
 
         }
 

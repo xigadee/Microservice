@@ -152,7 +152,7 @@ namespace Xigadee
         }
 
         #endregion
-
+        #region MasterJobStop()
         /// <summary>
         /// Stops the master job.
         /// </summary>
@@ -165,8 +165,6 @@ namespace Xigadee
             //Wait for it to complete.
             mre.Wait();
         }
-
-
         /// <summary>
         /// Stops the master job.
         /// </summary>
@@ -175,8 +173,34 @@ namespace Xigadee
             var signal = new ManualResetEventSlim();
             cancelToken = new CancellationToken();
             bool hasStopped = false;
-
             mre = signal;
-        }
+
+            Service.OnMasterJobChange += (object sender, MasterJobStatusChangeEventArgs e) =>
+            {
+                if (e.State == MasterJobState.Inactive)
+                {
+                    hasStopped = true;
+                    signal.Set();
+                }
+            };
+
+            Task.Run(() =>
+            {
+                while (!hasStopped)
+                {
+                    MasterJobScheduleExecute();
+
+                    Dispatcher.Process(
+                        (Policy.MasterJobNegotiationChannelIdIncoming, Policy.MasterJobNegotiationChannelMessageType, MasterJobStates.IAmMaster)
+                        , originatorServiceId: Dependencies.OriginatorIdExternal.ExternalServiceId
+                        );
+
+                    Task.Delay(10);
+                }
+            }, cancelToken);
+
+            MasterJobScheduleExecute();
+        } 
+        #endregion
     }
 }
