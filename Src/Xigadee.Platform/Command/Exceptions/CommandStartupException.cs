@@ -42,7 +42,5 @@ namespace Xigadee
         /// <param name="message">The error message.</param>
         /// <param name="ex">The base exception.</param>
         public CommandStartupException(string message, Exception ex) : base(message, ex) { }
-
-
     }
 }

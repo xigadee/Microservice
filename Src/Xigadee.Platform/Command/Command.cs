@@ -92,7 +92,7 @@ namespace Xigadee
             try
             {
                 if (Policy == null)
-                    throw new CommandStartupException("Command policy cannot be null");
+                    throw new CommandStartupException($"Command={GetType().Name}: Command policy cannot be null");
 
                 CommandsTearUp();
 
@@ -316,5 +316,3 @@ namespace Xigadee
     }
     #endregion
 }
-
-

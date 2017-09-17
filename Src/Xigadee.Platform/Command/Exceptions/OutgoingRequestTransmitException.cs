@@ -14,16 +14,18 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Xigadee
 {
+    /// <summary>
+    /// This exception is throw during an unexpected exception when trying to send an outgoing message.
+    /// </summary>
+    /// <seealso cref="Xigadee.CommandException" />
     public class OutgoingRequestTransmitException: CommandException
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OutgoingRequestTransmitException"/> class.
+        /// </summary>
+        /// <param name="message">The error message.</param>
         public OutgoingRequestTransmitException(string message) : base(message)
         {
         }

@@ -73,6 +73,7 @@
     <Compile Include="Commands\Harness\Harness1.cs" />
     <Compile Include="Commands\Harness\HarnessMasterJob.cs" />
     <Compile Include="Commands\Harness\HarnessPolicyReflection.cs" />
+    <Compile Include="Commands\Harness\HarnessOutgoing.cs" />
     <Compile Include="Commands\InheritedCommand.cs" />
     <Compile Include="Commands\MasterJobs\MasterJobCommand.cs" />
     <Compile Include="Commands\MasterJobs\MasterJobTests.cs" />

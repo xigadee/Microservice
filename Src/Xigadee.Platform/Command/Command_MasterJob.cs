@@ -56,9 +56,9 @@ namespace Xigadee
         protected virtual void MasterJobTearUp()
         {
             if (Policy.MasterJobNegotiationChannelIdIncoming == null)
-                throw new CommandStartupException("Masterjobs are enabled, but the NegotiationChannelIdIncoming has not been set");
+                throw new CommandStartupException($"Command={GetType().Name}: Masterjobs are enabled, but the NegotiationChannelIdIncoming has not been set");
             if (Policy.MasterJobNegotiationChannelMessageType == null)
-                throw new CommandStartupException("Masterjobs are enabled, but the NegotiationChannelType has not been set");
+                throw new CommandStartupException($"Command={GetType().Name}: Masterjobs are enabled, but the NegotiationChannelType has not been set");
 
             mMasterJobContext = new MasterJobContext(Policy.MasterJobName ?? FriendlyName, Policy.MasterJobNegotiationStrategy);
 
