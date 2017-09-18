@@ -29,26 +29,46 @@ namespace Xigadee
     {
         private ConcurrentDictionary<string, ManualFabricChannel> mChannels;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ManualFabricBridge"/> class.
+        /// </summary>
         public ManualFabricBridge()
         {
             mChannels = new ConcurrentDictionary<string, ManualFabricChannel>();
         }
-
+        /// <summary>
+        /// Creates the queue client.
+        /// </summary>
+        /// <param name="channelId">The channel identifier.</param>
+        /// <returns>The manual fabric connection.</returns>
         public ManualFabricConnection CreateQueueClient(string channelId)
         {
             return GetChannel(channelId).CreateConnection(ManualFabricConnectionMode.Queue);
         }
-
+        /// <summary>
+        /// Creates the subscription client.
+        /// </summary>
+        /// <param name="channelId">The channel identifier.</param>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <returns>The manual fabric connection.</returns>
         public ManualFabricConnection CreateSubscriptionClient(string channelId, string subscriptionId)
         {
             return GetChannel(channelId).CreateConnection(ManualFabricConnectionMode.Subscription, subscriptionId);
         }
-
+        /// <summary>
+        /// Creates the transmit client.
+        /// </summary>
+        /// <param name="channelId">The channel identifier.</param>
+        /// <returns>The manual fabric connection.</returns>
         public ManualFabricConnection CreateTransmitClient(string channelId)
         {
             return GetChannel(channelId).CreateConnection(ManualFabricConnectionMode.Transmit);
         }
-
+        /// <summary>
+        /// Gets the channel.
+        /// </summary>
+        /// <param name="channelId">The channel identifier.</param>
+        /// <returns>The manual fabric connection.</returns>
         protected ManualFabricChannel GetChannel(string channelId)
         {
             ManualFabricChannel channel;
