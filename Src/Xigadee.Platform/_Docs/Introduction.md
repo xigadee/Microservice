@@ -15,7 +15,7 @@ It is made up of a number of key components. In this section, I will outline the
 
 ## The message flow
 
-Xigadee works as a message processing system. Messages are passed between the Microservices throough the channels. Once a message is received by a Microservice, it will be routed to the relevant command object through the path documented below.
+Xigadee works as a message processing system. Messages are passed between the Microservices through the channels. Once a message is received by a Microservice, it will be routed to the relevant command object through the path documented below.
 
 <img src="Images/MessageFlow.png" alt="Message Flow" width="800"/>
 
@@ -68,7 +68,7 @@ Channels are an important concept in Xigadee. They are used to route information
 
 ## The configuration pipeline
 
-Xigadee uses a declarative programming model which simplifies the setup of a Microservice within it's container.
+Xigadee uses a declarative programming model which simplifies the set-up of a Microservice within it's container.
 
 ## Next: [15 Minute Microservice](fifteenminuteMicroservice.md)
 
