@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Xigadee.Sample.HiC;
+using Xigadee.SpreadLedger;
 
 namespace Test.Xigadee.Sample
 {
