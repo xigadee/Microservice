@@ -5,11 +5,7 @@
     <RootNamespace>Xigadee</RootNamespace>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyName>Xigadee.Helper</AssemblyName>
-    <PackageId>Xigadee.Helper</PackageId>
-    <Authors>Xigadee.Helper</Authors>
-    <Company>Xigadee.Helper</Company>
-    <Product>Xigadee.Helper</Product>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
@@ -19,6 +15,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net47|AnyCPU'">
     <DocumentationFile>bin\Debug\net47\Xigadee.Helper2.xml</DocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
