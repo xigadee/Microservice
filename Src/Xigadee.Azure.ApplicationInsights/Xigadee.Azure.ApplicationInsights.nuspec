@@ -10,10 +10,10 @@
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <projectUrl>http://xigadee.org</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>Xigadee Azure library contains a set of communication and persistence components built on the Microsoft Azure libraries.</description>
-    <releaseNotes>Initial push.</releaseNotes>
+    <description>This library contains the Xigadee connectors for Azure ApplicationInsights.</description>
+    <releaseNotes>First update for 2.0.</releaseNotes>
     <copyright>Copyright © Hitachi Consulting 2012-2017</copyright>
-    <tags>Xigadee Microservice AzureApplicationInsights .NET Hitachi</tags>
+    <tags>Xigadee Microservice Azure ApplicationInsights .NET Hitachi</tags>
     <dependencies>
       <group targetFramework=".NETFramework4.7">
         <dependency id="Xigadee" version="{UpdateVersion.ps1.replace}" exclude="Build,Analyzers" />
