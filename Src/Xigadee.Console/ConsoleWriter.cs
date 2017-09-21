@@ -151,11 +151,11 @@ namespace Xigadee
         {
             switch (e.Type)
             {
-                case EventLogEntryType.Error:
-                case EventLogEntryType.FailureAudit:
+                case LoggingLevel.Error:
+                case LoggingLevel.Fatal:
                     System.Console.ForegroundColor = ConsoleColor.Red;
                     break;
-                case EventLogEntryType.Warning:
+                case LoggingLevel.Warning:
                     System.Console.ForegroundColor = ConsoleColor.Yellow;
                     break;
                 default:

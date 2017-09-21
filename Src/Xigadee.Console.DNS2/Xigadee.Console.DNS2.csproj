@@ -7,20 +7,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
-    <DocumentationFile>bin\Debug\netstandard2.0\Xigadee.Api.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\netstandard2.0\Xigadee.Console.DNS2.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net47|AnyCPU'">
-    <DocumentationFile>bin\Debug\net47\Xigadee.Api.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\net47\Xigadee.Console.DNS2.xml</DocumentationFile>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="System.Net.Http" Version="4.3.3" />
-  </ItemGroup>
 
 </Project>

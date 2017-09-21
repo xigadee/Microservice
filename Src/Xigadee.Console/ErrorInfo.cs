@@ -31,7 +31,7 @@ namespace Xigadee
         /// <summary>
         /// This is the error severity level.
         /// </summary>
-        public EventLogEntryType Type;
+        public LoggingLevel Type;
         /// <summary>
         /// This is the message to be displayed
         /// </summary>

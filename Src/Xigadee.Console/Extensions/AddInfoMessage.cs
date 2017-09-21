@@ -16,7 +16,7 @@ namespace Xigadee
         /// <param name="message">The info message</param>
         /// <param name="refresh">The refresh option flag.</param>
         /// <param name="type">The log type.</param>
-        public static ConsoleMenu AddInfoMessage(this ConsoleMenu menu, string message, bool refresh = false, EventLogEntryType type = EventLogEntryType.Information)
+        public static ConsoleMenu AddInfoMessage(this ConsoleMenu menu, string message, bool refresh = false, LoggingLevel type = LoggingLevel.Info)
         {
             menu.ContextInfo.Add(new ErrorInfo() { Type = type, Message = message });
 

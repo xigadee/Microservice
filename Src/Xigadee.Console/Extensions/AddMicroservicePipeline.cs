@@ -59,7 +59,7 @@ namespace Xigadee
                 }
                 catch (Exception ex)
                 {
-                    msMenu.AddInfoMessage($"{ms.Id.Name} start error: {ex.Message}", true, EventLogEntryType.Error);
+                    msMenu.AddInfoMessage($"{ms.Id.Name} start error: {ex.Message}", true, LoggingLevel.Error);
                 }
             }, enabled:(m,o) => ms.Status != ServiceStatus.Running);
 

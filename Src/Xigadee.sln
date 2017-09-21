@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Azure", "Xigadee.Az
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Console", "Xigadee.Console\Xigadee.Console.csproj", "{AF748540-D35C-409A-AD23-D990CF19DED9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Api", "Xigadee.Api\Xigadee.Api.csproj", "{9680B7A6-F4B7-4ECB-BBB4-D46941B9CFED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Api", "Xigadee.Api\Xigadee.Api.csproj", "{9680B7A6-F4B7-4ECB-BBB4-D46941B9CFED}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Api.Client", "Xigadee.Api.Client\Xigadee.Api.Client.csproj", "{19F45B9B-5C21-4EC3-AE73-84001EBCCC4B}"
 EndProject
@@ -197,7 +197,7 @@ Global
 		{0916DF44-F8DC-47B7-ABC7-A429DB2786FC} = {147BDD3C-B68D-4D13-912C-240F23DD1C91}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {8BF7561D-7A94-4B22-B0EB-D82D95B110DE}
 		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
+		SolutionGuid = {8BF7561D-7A94-4B22-B0EB-D82D95B110DE}
 	EndGlobalSection
 EndGlobal

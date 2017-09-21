@@ -52,7 +52,7 @@ namespace Test.Xigadee
         static void PersistenceLog(ConsoleMenu menu, string action, bool success)
         {
             menu.AddInfoMessage($"{action} {(success ? "OK" : "Fail")}"
-                , true, success ? EventLogEntryType.Information : EventLogEntryType.Error);
+                , true, success ? LoggingLevel.Info : LoggingLevel.Error);
         }
 
         static ConsoleOption Create(IConsolePersistence<Guid,MondayMorningBlues> repo)

@@ -33,10 +33,11 @@ namespace Xigadee
                 ConsoleColor infoColor;
                 switch (info.Type)
                 {
-                    case System.Diagnostics.EventLogEntryType.Error:
+                    case LoggingLevel.Error:
+                    case LoggingLevel.Fatal:
                         infoColor = ConsoleColor.Red;
                         break;
-                    case System.Diagnostics.EventLogEntryType.Warning:
+                    case LoggingLevel.Warning:
                         infoColor = ConsoleColor.Yellow;
                         break;
                     default:
