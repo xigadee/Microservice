@@ -73,6 +73,10 @@
     <Compile Include="TestAzureDataCollection.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Xigadee.Platform\Xigadee.csproj">
+      <Project>{862141c9-c3ef-4be4-b324-0943f8d6da53}</Project>
+      <Name>Xigadee</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Xigadee.VisualStudio\Xigadee.VisualStudio.csproj">
       <Project>{56c95ef0-627c-4c78-b516-b856a83fb4d4}</Project>
       <Name>Xigadee.VisualStudio</Name>
@@ -88,10 +92,6 @@
     <ProjectReference Include="..\..\Xigadee.Azure\Xigadee.Azure.csproj">
       <Project>{069f5121-bc8e-4f1f-b08c-ba3f4806db78}</Project>
       <Name>Xigadee.Azure</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Xigadee.Platform\Xigadee.csproj">
-      <Project>{4788fc0b-e692-4762-a4f4-aeab2a77da42}</Project>
-      <Name>Xigadee</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -130,7 +130,7 @@ namespace Xigadee
 
             string auth = string.Format("type=master&ver=1.0&sig={0}", signature);
 
-            return System.Web.HttpUtility.UrlEncode(auth);
+            return System.Net.WebUtility.UrlEncode(auth);
         }
 
         protected Uri BuildUri(string uriPart)

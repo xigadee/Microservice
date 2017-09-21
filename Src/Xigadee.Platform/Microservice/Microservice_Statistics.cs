@@ -17,13 +17,6 @@
 #region using
 
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Runtime.Caching;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 #endregion
 namespace Xigadee

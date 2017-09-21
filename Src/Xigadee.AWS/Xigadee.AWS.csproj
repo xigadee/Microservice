@@ -69,7 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xigadee.Platform\Xigadee.csproj">
-      <Project>{4788fc0b-e692-4762-a4f4-aeab2a77da42}</Project>
+      <Project>{862141c9-c3ef-4be4-b324-0943f8d6da53}</Project>
       <Name>Xigadee</Name>
     </ProjectReference>
     <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj">
