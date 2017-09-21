@@ -3,15 +3,11 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net47</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageId>Xigadee.Api.Client</PackageId>
     <RootNamespace>Xigadee</RootNamespace>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageReleaseNotes>Port to .NET Standard 2.0</PackageReleaseNotes>
-    <PackageProjectUrl>http://xigadee.org</PackageProjectUrl>
-    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageIconUrl>https://raw.githubusercontent.com/xigadee/Microservice/master/docs/Logo.png</PackageIconUrl>
-    <PackageTags>Xigadee Microservice Azure .NET Hitachi</PackageTags>
-    <Authors>Paul Stancer and Guy Steel at Hitachi Consulting (http://hitachiconsulting.com)</Authors>
+    <AssemblyName>Xigadee.Api.Client</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

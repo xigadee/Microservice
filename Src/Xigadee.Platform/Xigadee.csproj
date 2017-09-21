@@ -3,24 +3,14 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net47</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageId>Xigadee</PackageId>
     <RootNamespace>Xigadee</RootNamespace>
     <AssemblyName>Xigadee</AssemblyName>
-    <PackageIconUrl>https://raw.githubusercontent.com/xigadee/Microservice/master/docs/Logo.png</PackageIconUrl>
-    <PackageProjectUrl>http://xigadee.org</PackageProjectUrl>
-    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
-    <PackageTags>Xigadee Microservice .NET Hitachi serverless-architectures serverless serverless-framework</PackageTags>
-    <PackageReleaseNotes>Combined .NET Standard 2.0 and .NET Framework 4.7 build.</PackageReleaseNotes>
-    <Authors>Paul Stancer and Guy Steel at Hitachi Consulting (http://hitachiconsulting.com)</Authors>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
-    <DocumentationFile>bin\Debug\netstandard2.0\Xigadee.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net47|AnyCPU'">
-    <DocumentationFile>bin\Debug\net47\Xigadee.xml</DocumentationFile>
+  <PropertyGroup>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Xigadee.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

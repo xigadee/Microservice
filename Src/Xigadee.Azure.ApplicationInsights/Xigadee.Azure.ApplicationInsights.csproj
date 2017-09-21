@@ -3,29 +3,23 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net47</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageId>Xigadee.Azure.ApplicationInsights</PackageId>
     <RootNamespace>Xigadee</RootNamespace>
     <AssemblyName>Xigadee.Azure.ApplicationInsights</AssemblyName>
-    <PackageIconUrl>https://raw.githubusercontent.com/xigadee/Microservice/master/docs/Logo.png</PackageIconUrl>
-    <PackageProjectUrl>http://xigadee.org</PackageProjectUrl>
-    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
-    <PackageTags>Xigadee Microservice .NET Hitachi</PackageTags>
-    <PackageReleaseNotes>Combined .NET Standard 2.0 and .NET Framework 4.7 build.</PackageReleaseNotes>
-    <Authors>Paul Stancer and Guy Steel at Hitachi Consulting (http://hitachiconsulting.com)</Authors>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
-    <DocumentationFile>bin\Debug\netstandard2.0\Xigadee.Azure.ApplicationInsights.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net47|AnyCPU'">
-    <DocumentationFile>bin\Debug\net47\Xigadee.Azure.ApplicationInsights.xml</DocumentationFile>
+  <PropertyGroup>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Xigadee.Azure.ApplicationInsights.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Xigadee.Azure.ApplicationInsights.nuspec" />
   </ItemGroup>
 
   <ItemGroup>
