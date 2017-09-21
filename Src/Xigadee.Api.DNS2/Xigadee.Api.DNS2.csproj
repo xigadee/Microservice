@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net47</TargetFrameworks>
+    <RootNamespace>Xigadee</RootNamespace>
+    <AssemblyName>Xigadee.Api</AssemblyName>
+  </PropertyGroup>
+
+</Project>
