@@ -87,6 +87,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Azure.ApplicationIn
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Azure.KeyVault", "Xigadee.Azure.KeyVault\Xigadee.Azure.KeyVault.csproj", "{91F496D4-F6B1-4435-9855-E00AF751A150}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Azure.Redis", "Xigadee.Azure.Redis\Xigadee.Azure.Redis.csproj", "{B8BE19A1-3544-42F9-BFCD-906024B82C7D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -219,6 +221,10 @@ Global
 		{91F496D4-F6B1-4435-9855-E00AF751A150}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91F496D4-F6B1-4435-9855-E00AF751A150}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91F496D4-F6B1-4435-9855-E00AF751A150}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8BE19A1-3544-42F9-BFCD-906024B82C7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8BE19A1-3544-42F9-BFCD-906024B82C7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8BE19A1-3544-42F9-BFCD-906024B82C7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8BE19A1-3544-42F9-BFCD-906024B82C7D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

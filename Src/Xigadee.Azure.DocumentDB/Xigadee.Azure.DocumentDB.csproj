@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net47</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Xigadee.Azure.DocumentDB</PackageId>
     <RootNamespace>Xigadee</RootNamespace>
     <AssemblyName>Xigadee.Azure.DocumentDB</AssemblyName>
@@ -13,6 +13,7 @@
     <PackageTags>Xigadee Microservice .NET Hitachi</PackageTags>
     <PackageReleaseNotes>Combined .NET Standard 2.0 and .NET Framework 4.7 build.</PackageReleaseNotes>
     <Authors>Paul Stancer and Guy Steel at Hitachi Consulting (http://hitachiconsulting.com)</Authors>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">

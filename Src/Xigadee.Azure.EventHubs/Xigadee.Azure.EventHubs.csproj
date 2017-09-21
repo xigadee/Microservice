@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net47</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Xigadee.Azure.EventHubs</PackageId>
     <RootNamespace>Xigadee</RootNamespace>
     <AssemblyName>Xigadee.Azure.EventHubs</AssemblyName>
@@ -13,14 +13,15 @@
     <PackageTags>Xigadee Microservice .NET Hitachi</PackageTags>
     <PackageReleaseNotes>Combined .NET Standard 2.0 and .NET Framework 4.7 build.</PackageReleaseNotes>
     <Authors>Paul Stancer and Guy Steel at Hitachi Consulting (http://hitachiconsulting.com)</Authors>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
-    <DocumentationFile>bin\Debug\netstandard2.0\Xigadee.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\netstandard2.0\Xigadee.Azure.EventHubs.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net47|AnyCPU'">
-    <DocumentationFile>bin\Debug\net47\Xigadee.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\net47\Xigadee.Azure.EventHubs.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

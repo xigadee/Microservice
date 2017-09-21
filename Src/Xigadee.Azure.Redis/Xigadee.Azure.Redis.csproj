@@ -4,9 +4,9 @@
     <TargetFrameworks>netstandard2.0;net47</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageId>Xigadee.Azure.Storage</PackageId>
+    <PackageId>Xigadee.Azure.Redis</PackageId>
     <RootNamespace>Xigadee</RootNamespace>
-    <AssemblyName>Xigadee.Azure.Storage</AssemblyName>
+    <AssemblyName>Xigadee.Azure.Redis</AssemblyName>
     <PackageIconUrl>https://raw.githubusercontent.com/xigadee/Microservice/master/docs/Logo.png</PackageIconUrl>
     <PackageProjectUrl>http://xigadee.org</PackageProjectUrl>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
@@ -17,11 +17,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
-    <DocumentationFile>bin\Debug\netstandard2.0\Xigadee.Azure.Storage.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\netstandard2.0\Xigadee.Azure.Redis.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net47|AnyCPU'">
-    <DocumentationFile>bin\Debug\net47\Xigadee.Azure.Storage.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\net47\Xigadee.Azure.Redis.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -31,7 +31,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.4.0" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="WindowsAzure.Storage" Version="8.4.0" />
+    <PackageReference Include="StackExchange.Redis" Version="1.2.6" />
   </ItemGroup>
 
   <ItemGroup>
