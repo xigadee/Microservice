@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Console", "Xigadee.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Api", "Xigadee.Api\Xigadee.Api.csproj", "{9680B7A6-F4B7-4ECB-BBB4-D46941B9CFED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Api.Client", "Xigadee.Api.Client\Xigadee.Api.Client.csproj", "{19F45B9B-5C21-4EC3-AE73-84001EBCCC4B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Api.Client", "Xigadee.Api.Client\Xigadee.Api.Client.csproj", "{19F45B9B-5C21-4EC3-AE73-84001EBCCC4B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Api.Server", "Xigadee.Api.Server\Xigadee.Api.Server.csproj", "{C39CD117-3863-4E8C-9BD0-043E5F1FB67C}"
 EndProject
@@ -72,6 +72,20 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Sample.HiC", "Test.Xigadee.Sample.HiC\Test.Xigadee.Sample.HiC.csproj", "{91381A5F-26CB-4E03-9A76-938932649F4A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.SpreadLedger", "Xigadee.Sample.HiC\Xigadee.SpreadLedger.csproj", "{0916DF44-F8DC-47B7-ABC7-A429DB2786FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Azure.Storage", "Xigadee.Azure.Storage\Xigadee.Azure.Storage.csproj", "{8A7FDF26-E895-4E32-ABB4-34FBEEA820C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.AzureBase", "Xigadee.Azure.Base\Xigadee.AzureBase.csproj", "{4CA4FC6F-2C32-4B65-8F51-AA67391BD316}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Azure.ServiceBus", "Xigadee.Azure.ServiceBus\Xigadee.Azure.ServiceBus.csproj", "{8D441A60-9272-4707-984C-94BFC3A3567D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Azure.EventHubs", "Xigadee.Azure.EventHubs\Xigadee.Azure.EventHubs.csproj", "{ED2B90BD-2CA0-4721-ABCF-757C76ABDDAD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Azure.DocumentDB", "Xigadee.Azure.DocumentDB\Xigadee.Azure.DocumentDB.csproj", "{B9D32889-E123-4437-A6D4-4038619AFDDF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Azure.ApplicationInsights", "Xigadee.Azure.ApplicationInsights\Xigadee.Azure.ApplicationInsights.csproj", "{8DD223AE-7EB5-4815-87FA-35916500D8F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Azure.KeyVault", "Xigadee.Azure.KeyVault\Xigadee.Azure.KeyVault.csproj", "{91F496D4-F6B1-4435-9855-E00AF751A150}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -177,6 +191,34 @@ Global
 		{0916DF44-F8DC-47B7-ABC7-A429DB2786FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0916DF44-F8DC-47B7-ABC7-A429DB2786FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0916DF44-F8DC-47B7-ABC7-A429DB2786FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A7FDF26-E895-4E32-ABB4-34FBEEA820C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A7FDF26-E895-4E32-ABB4-34FBEEA820C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A7FDF26-E895-4E32-ABB4-34FBEEA820C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A7FDF26-E895-4E32-ABB4-34FBEEA820C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CA4FC6F-2C32-4B65-8F51-AA67391BD316}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CA4FC6F-2C32-4B65-8F51-AA67391BD316}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CA4FC6F-2C32-4B65-8F51-AA67391BD316}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CA4FC6F-2C32-4B65-8F51-AA67391BD316}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D441A60-9272-4707-984C-94BFC3A3567D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D441A60-9272-4707-984C-94BFC3A3567D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D441A60-9272-4707-984C-94BFC3A3567D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D441A60-9272-4707-984C-94BFC3A3567D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED2B90BD-2CA0-4721-ABCF-757C76ABDDAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED2B90BD-2CA0-4721-ABCF-757C76ABDDAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED2B90BD-2CA0-4721-ABCF-757C76ABDDAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED2B90BD-2CA0-4721-ABCF-757C76ABDDAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9D32889-E123-4437-A6D4-4038619AFDDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9D32889-E123-4437-A6D4-4038619AFDDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9D32889-E123-4437-A6D4-4038619AFDDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9D32889-E123-4437-A6D4-4038619AFDDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DD223AE-7EB5-4815-87FA-35916500D8F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DD223AE-7EB5-4815-87FA-35916500D8F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DD223AE-7EB5-4815-87FA-35916500D8F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DD223AE-7EB5-4815-87FA-35916500D8F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91F496D4-F6B1-4435-9855-E00AF751A150}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91F496D4-F6B1-4435-9855-E00AF751A150}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91F496D4-F6B1-4435-9855-E00AF751A150}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91F496D4-F6B1-4435-9855-E00AF751A150}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
