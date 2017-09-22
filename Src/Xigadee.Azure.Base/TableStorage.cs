@@ -18,10 +18,12 @@ namespace Xigadee
 {
     public static partial class AzureExtensionMethods
     {
+        public const string TableStorage = "TableStorage";
+
         /// <summary>
         /// This is the key definition for the table storage config holder.
         /// </summary>
-        [ConfigSettingKey("TableStorage")]
+        [ConfigSettingKey(TableStorage)]
         public const string KeyAzureTableStorageConfigSASKey = "AzureTableStorageConfigSASKey";
 
         /// <summary>
@@ -29,7 +31,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="config">The configuration.</param>
         /// <returns>Returns the string.</returns>
-        [ConfigSetting("TableStorage")]
+        [ConfigSetting(TableStorage)]
         public static string AzureTableStorageConfigSASKey(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyAzureTableStorageConfigSASKey);
         /// <summary>
         /// The Azure table storage configuration default partition key, currently "config"

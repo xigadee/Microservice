@@ -18,17 +18,19 @@ namespace Xigadee
 {
     public static partial class AzureExtensionMethods
     {
+        public const string ServiceBus = "ServiceBus";
+
         /// <summary>
         /// The service bus connection configuration key
         /// </summary>
-        [ConfigSettingKey("ServiceBus")]
+        [ConfigSettingKey(ServiceBus)]
         public const string KeyServiceBusConnection = "ServiceBusConnection";
         /// <summary>
         /// The service bus connection configuration value
         /// </summary>
         /// <param name="config">The configuration collection.</param>
         /// <returns>The defined connection value.</returns>
-        [ConfigSetting("ServiceBus")]
+        [ConfigSetting(ServiceBus)]
         public static string ServiceBusConnection(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyServiceBusConnection);
 
     }

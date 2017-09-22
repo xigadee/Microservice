@@ -18,29 +18,31 @@ namespace Xigadee
 {
     public static partial class AzureExtensionMethods
     {
+        public const string Storage = "Storage";
+
         /// <summary>
         /// The storage account connection key
         /// </summary>
-        [ConfigSettingKey("Storage")]
+        [ConfigSettingKey(Storage)]
         public const string KeyStorageAccountName = "StorageAccountName";
         /// <summary>
         /// The storage account access key
         /// </summary>
-        [ConfigSettingKey("Storage")]
+        [ConfigSettingKey(Storage)]
         public const string KeyStorageAccountAccessKey = "StorageAccountAccessKey";
         /// <summary>
         /// The storage account connection value.
         /// </summary>
         /// <param name="config">The configuration.</param>
         /// <returns></returns>
-        [ConfigSetting("Storage")]
+        [ConfigSetting(Storage)]
         public static string StorageAccountName(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyStorageAccountName);
         /// <summary>
         /// The storage account access key value
         /// </summary>
         /// <param name="config">The configuration.</param>
         /// <returns></returns>
-        [ConfigSetting("Storage")]
+        [ConfigSetting(Storage)]
         public static string StorageAccountAccessKey(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyStorageAccountAccessKey);
 
     }

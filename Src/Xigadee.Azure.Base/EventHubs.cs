@@ -18,17 +18,19 @@ namespace Xigadee
 {
     public static partial class AzureExtensionMethods
     {
+        public const string EventHubs = "EventHubs";
+
         /// <summary>
         /// This is the Event Hub key type value.
         /// </summary>
-        [ConfigSettingKey("EventHubs")]
+        [ConfigSettingKey(EventHubs)]
         public const string KeyEventHubsConnection = "EventHubsConnection";
         /// <summary>
         /// This is the Event Hub connection
         /// </summary>
         /// <param name="config">The Microservice configuration.</param>
         /// <returns>Returns the connection string.</returns>
-        [ConfigSetting("EventHubs")]
+        [ConfigSetting(EventHubs)]
         public static string EventHubsConnection(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyEventHubsConnection);
 
     }

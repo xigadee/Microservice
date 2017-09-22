@@ -18,41 +18,43 @@ namespace Xigadee
 {
     public static partial class AzureExtensionMethods
     {
+        public const string KeyVault = "KeyVault";
+
         /// <summary>
         /// The reserved keyword for the KeyVault client identifier
         /// </summary>
-        [ConfigSettingKey("KeyVault")]
+        [ConfigSettingKey(KeyVault)]
         public const string KeyKeyVaultClientId = "KeyVaultClientId";
         /// <summary>
         /// The reserved keyword for the KeyVault client secret
         /// </summary>
-        [ConfigSettingKey("KeyVault")]
+        [ConfigSettingKey(KeyVault)]
         public const string KeyKeyVaultClientSecret = "KeyVaultClientSecret";
         /// <summary>
         /// The reserved keyword for the KeyVault secret base URI
         /// </summary>
-        [ConfigSettingKey("KeyVault")]
+        [ConfigSettingKey(KeyVault)]
         public const string KeyKeyVaultSecretBaseUri = "KeyVaultSecretBaseUri";
         /// <summary>
         /// Retrieves the KeyVault client identifier.
         /// </summary>
         /// <param name="config">The configuration.</param>
         /// <returns>The client id value.</returns>
-        [ConfigSetting("KeyVault")]
+        [ConfigSetting(KeyVault)]
         public static string KeyVaultClientId(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyKeyVaultClientId);
         /// <summary>
         /// Retrieves the KeyVault client secret.
         /// </summary>
         /// <param name="config">The configuration.</param>
         /// <returns>The client secret.</returns>
-        [ConfigSetting("KeyVault")]
+        [ConfigSetting(KeyVault)]
         public static string KeyVaultClientSecret(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyKeyVaultClientSecret);
         /// <summary>
         /// Retrieves the KeyVault secret base URI.
         /// </summary>
         /// <param name="config">The configuration.</param>
         /// <returns>The Uri.</returns>
-        [ConfigSetting("KeyVault")]
+        [ConfigSetting(KeyVault)]
         public static string KeyVaultSecretBaseUri(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyKeyVaultSecretBaseUri);
 
     }

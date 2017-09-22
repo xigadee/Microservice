@@ -19,22 +19,24 @@ namespace Xigadee
 {
     public static partial class AzureExtensionMethods
     {
+        public const string LogStorage = "LogStorage";
+
         /// <summary>
         /// The logging Azure storage account name
         /// </summary>
-        [ConfigSettingKey("LogStorage")]
+        [ConfigSettingKey(LogStorage)]
         public const string KeyLogStorageAccountName = "LogStorageAccountName";
         /// <summary>
         /// The logging Azure storage account access key
         /// </summary>
-        [ConfigSettingKey("LogStorage")]
+        [ConfigSettingKey(LogStorage)]
         public const string KeyLogStorageAccountAccessKey = "LogStorageAccountAccessKey";
 
 
-        [ConfigSetting("LogStorage")]
+        [ConfigSetting(LogStorage)]
         public static string LogStorageAccountName(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyLogStorageAccountName, config.StorageAccountName());
 
-        [ConfigSetting("LogStorage")]
+        [ConfigSetting(LogStorage)]
         public static string LogStorageAccountAccessKey(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyLogStorageAccountAccessKey, config.StorageAccountAccessKey());
 
 

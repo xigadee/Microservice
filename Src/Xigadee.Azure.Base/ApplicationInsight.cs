@@ -20,15 +20,17 @@ namespace Xigadee
 {
     public static partial class AzureExtensionMethods
     {
+        public const string ApplicationInsights = "ApplicationInsights";
+
         /// <summary>
         /// The Application Insights key
         /// </summary>
-        [ConfigSettingKey("ApplicationInsights")]
+        [ConfigSettingKey(ApplicationInsights)]
         public const string KeyApplicationInsights = "ApplicationInsightsKey";
         /// <summary>
         /// The Application Insights logging level key
         /// </summary>
-        [ConfigSettingKey("ApplicationInsights")]
+        [ConfigSettingKey(ApplicationInsights)]
         public const string KeyApplicationInsightsLoggingLevel = "ApplicationInsightsLoggingLevel";
         /// <summary>
         /// Retrieves the Applications Insights connection value.
@@ -36,7 +38,7 @@ namespace Xigadee
         /// <param name="config">The configuration.</param>
         /// <param name="throwException">if set to <c>true</c> [throw exception].</param>
         /// <returns>The value.</returns>
-        [ConfigSetting("ApplicationInsights")]
+        [ConfigSetting(ApplicationInsights)]
         public static string ApplicationInsightsKey(this IEnvironmentConfiguration config, bool throwException = false) 
             => config.PlatformOrConfigCache(KeyApplicationInsights);
         /// <summary>
@@ -45,7 +47,7 @@ namespace Xigadee
         /// <param name="config">The configuration.</param>
         /// <param name="throwException">if set to <c>true</c> [throw exception].</param>
         /// <returns>The logging level value.</returns>
-        [ConfigSetting("ApplicationInsights")]
+        [ConfigSetting(ApplicationInsights)]
         public static LoggingLevel ApplicationInsightsLoggingLevel(this IEnvironmentConfiguration config, bool throwException = false)
         {
             LoggingLevel loggingLevel;

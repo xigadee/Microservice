@@ -26,7 +26,7 @@ namespace Xigadee
     public static partial class AzureStorageExtensionMethods
     {
 
-        [ConfigSetting("LogStorage")]
+        [ConfigSetting(AzureExtensionMethods.LogStorage)]
         public static StorageCredentials LogStorageCredentials(this IEnvironmentConfiguration config)
         {
             if (string.IsNullOrEmpty(config.LogStorageAccountName()) || string.IsNullOrEmpty(config.LogStorageAccountAccessKey()))

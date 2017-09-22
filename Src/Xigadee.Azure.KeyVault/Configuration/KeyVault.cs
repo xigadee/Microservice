@@ -25,7 +25,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="config">The configuration.</param>
         /// <returns>The client credentials.</returns>
-        [ConfigSetting("KeyVault")]
+        [ConfigSetting(AzureExtensionMethods.KeyVault)]
         public static ClientCredential KeyVaultClientCredential(this IEnvironmentConfiguration config)
         {
             if (string.IsNullOrEmpty(config.KeyVaultClientId()) || string.IsNullOrEmpty(config.KeyVaultClientSecret()))

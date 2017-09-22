@@ -25,7 +25,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="config">The configuration.</param>
         /// <returns>The credentials</returns>
-        [ConfigSetting("Storage")]
+        [ConfigSetting(AzureExtensionMethods.Storage)]
         public static StorageCredentials StorageCredentials(this IEnvironmentConfiguration config)
         {
             if (string.IsNullOrEmpty(config.StorageAccountName()) || string.IsNullOrEmpty(config.StorageAccountAccessKey()))
