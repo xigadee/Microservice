@@ -21,7 +21,6 @@ using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
-using Xigadee;
 
 namespace Xigadee
 {
@@ -52,6 +51,9 @@ namespace Xigadee
 
         #endregion
 
+        /// <summary>
+        /// Starts the collector.
+        /// </summary>
         protected override void StartInternal()
         {
             base.StartInternal();
@@ -66,7 +68,9 @@ namespace Xigadee
 
             mTelemetry.TrackEvent($"Startup:{OriginatorId.Name}");
         }
-
+        /// <summary>
+        /// Stops the collector.
+        /// </summary>
         protected override void StopInternal()
         {
             mTelemetry.TrackEvent($"Shutdown:{OriginatorId.Name}");
@@ -75,6 +79,9 @@ namespace Xigadee
             base.StopInternal();
         }
 
+        /// <summary>
+        /// Configures the event mappers.
+        /// </summary>
         protected override void SupportLoadDefault()
         {
             SupportAdd(DataCollectionSupport.Boundary, WriteBoundaryEvent);
