@@ -31,4 +31,9 @@
     <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Communication\" />
+    <Folder Include="DataCollection\" />
+  </ItemGroup>
+
 </Project>

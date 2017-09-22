@@ -16,9 +16,11 @@
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This is the extension class for Azure Event Hubs.
+    /// </summary>
     public static partial class AzureEventHubsExtensionMethods
     {
-
         #region EventHubConnectionValidate(this IEnvironmentConfiguration Configuration, string serviceBusConnection)
         /// <summary>
         /// This method validates that the Event Hub connection is set.
@@ -37,6 +39,7 @@ namespace Xigadee
         }
         #endregion
 
+        #region ConfigOverrideSetEventHubsConnection<P>(this P pipeline, string connection)
         /// <summary>
         /// This extension allows the Event Hub connection values to be manually set as override parameters.
         /// </summary>
@@ -48,6 +51,7 @@ namespace Xigadee
         {
             pipeline.ConfigurationOverrideSet(AzureExtensionMethods.KeyEventHubsConnection, connection);
             return pipeline;
-        }
+        } 
+        #endregion
     }
 }
