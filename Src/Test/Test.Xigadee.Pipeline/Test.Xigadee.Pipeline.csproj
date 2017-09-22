@@ -246,10 +246,6 @@
       <Project>{9680b7a6-f4b7-4ecb-bbb4-d46941b9cfed}</Project>
       <Name>Xigadee.Api</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Xigadee.AWS\Xigadee.AWS.csproj">
-      <Project>{d246cedd-05e6-4f32-a6bb-628fa6e3ed4c}</Project>
-      <Name>Xigadee.AWS</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Xigadee.Azure\Xigadee.Azure.csproj">
       <Project>{069f5121-bc8e-4f1f-b08c-ba3f4806db78}</Project>
       <Name>Xigadee.Azure</Name>

@@ -28,8 +28,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Datapump", "Datapump", "{8A
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Xigadee.Datapump.Sql", "Xigadee.Datapump.Sql\Xigadee.Datapump.Sql.sqlproj", "{C66F3869-118D-4962-A904-4359E396AEB7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.AWS", "Xigadee.AWS\Xigadee.AWS.csproj", "{D246CEDD-05E6-4F32-A6BB-628FA6E3ED4C}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{DCA58A2C-4AC0-4978-944C-DC8ABB50DC42}"
 	ProjectSection(SolutionItems) = preProject
 		..\README.md = ..\README.md
@@ -73,21 +71,21 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Sample.HiC", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.SpreadLedger", "Xigadee.Sample.HiC\Xigadee.SpreadLedger.csproj", "{0916DF44-F8DC-47B7-ABC7-A429DB2786FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Azure.Storage", "Xigadee.Azure.Storage\Xigadee.Azure.Storage.csproj", "{8A7FDF26-E895-4E32-ABB4-34FBEEA820C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Azure.Storage", "Xigadee.Azure.Storage\Xigadee.Azure.Storage.csproj", "{8A7FDF26-E895-4E32-ABB4-34FBEEA820C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.AzureBase", "Xigadee.Azure.Base\Xigadee.AzureBase.csproj", "{4CA4FC6F-2C32-4B65-8F51-AA67391BD316}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.AzureBase", "Xigadee.Azure.Base\Xigadee.AzureBase.csproj", "{4CA4FC6F-2C32-4B65-8F51-AA67391BD316}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Azure.ServiceBus", "Xigadee.Azure.ServiceBus\Xigadee.Azure.ServiceBus.csproj", "{8D441A60-9272-4707-984C-94BFC3A3567D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Azure.ServiceBus", "Xigadee.Azure.ServiceBus\Xigadee.Azure.ServiceBus.csproj", "{8D441A60-9272-4707-984C-94BFC3A3567D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Azure.EventHubs", "Xigadee.Azure.EventHubs\Xigadee.Azure.EventHubs.csproj", "{ED2B90BD-2CA0-4721-ABCF-757C76ABDDAD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Azure.EventHubs", "Xigadee.Azure.EventHubs\Xigadee.Azure.EventHubs.csproj", "{ED2B90BD-2CA0-4721-ABCF-757C76ABDDAD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Azure.DocumentDB", "Xigadee.Azure.DocumentDB\Xigadee.Azure.DocumentDB.csproj", "{B9D32889-E123-4437-A6D4-4038619AFDDF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Azure.DocumentDB", "Xigadee.Azure.DocumentDB\Xigadee.Azure.DocumentDB.csproj", "{B9D32889-E123-4437-A6D4-4038619AFDDF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Azure.ApplicationInsights", "Xigadee.Azure.ApplicationInsights\Xigadee.Azure.ApplicationInsights.csproj", "{8DD223AE-7EB5-4815-87FA-35916500D8F4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Azure.ApplicationInsights", "Xigadee.Azure.ApplicationInsights\Xigadee.Azure.ApplicationInsights.csproj", "{8DD223AE-7EB5-4815-87FA-35916500D8F4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Azure.KeyVault", "Xigadee.Azure.KeyVault\Xigadee.Azure.KeyVault.csproj", "{91F496D4-F6B1-4435-9855-E00AF751A150}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Azure.KeyVault", "Xigadee.Azure.KeyVault\Xigadee.Azure.KeyVault.csproj", "{91F496D4-F6B1-4435-9855-E00AF751A150}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Azure.Redis", "Xigadee.Azure.Redis\Xigadee.Azure.Redis.csproj", "{B8BE19A1-3544-42F9-BFCD-906024B82C7D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Azure.Redis", "Xigadee.Azure.Redis\Xigadee.Azure.Redis.csproj", "{B8BE19A1-3544-42F9-BFCD-906024B82C7D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -129,10 +127,6 @@ Global
 		{C66F3869-118D-4962-A904-4359E396AEB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C66F3869-118D-4962-A904-4359E396AEB7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C66F3869-118D-4962-A904-4359E396AEB7}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{D246CEDD-05E6-4F32-A6BB-628FA6E3ED4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D246CEDD-05E6-4F32-A6BB-628FA6E3ED4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D246CEDD-05E6-4F32-A6BB-628FA6E3ED4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D246CEDD-05E6-4F32-A6BB-628FA6E3ED4C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C523008A-BAF6-418D-8822-48E0820A427D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C523008A-BAF6-418D-8822-48E0820A427D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C523008A-BAF6-418D-8822-48E0820A427D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -245,7 +239,7 @@ Global
 		{0916DF44-F8DC-47B7-ABC7-A429DB2786FC} = {147BDD3C-B68D-4D13-912C-240F23DD1C91}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {8BF7561D-7A94-4B22-B0EB-D82D95B110DE}
 		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
+		SolutionGuid = {8BF7561D-7A94-4B22-B0EB-D82D95B110DE}
 	EndGlobalSection
 EndGlobal
