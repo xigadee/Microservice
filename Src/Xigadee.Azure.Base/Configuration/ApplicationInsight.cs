@@ -20,6 +20,9 @@ namespace Xigadee
 {
     public static partial class AzureExtensionMethods
     {
+        /// <summary>
+        /// The reserved keyword.
+        /// </summary>
         public const string ApplicationInsights = "ApplicationInsights";
 
         /// <summary>

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Xigadee
+﻿namespace Xigadee
 {
     /// <summary>
     /// This settings determines the specific encryption settings for the data type.
@@ -12,11 +6,11 @@ namespace Xigadee
     public enum AzureStorageEncryption
     {
         /// <summary>
-        /// There is no encryption on the blob
+        /// There is no encrpytion on the blob
         /// </summary>
         None,
         /// <summary>
-        /// The blob is encrpyted when an encryption handler is present.
+        /// The blob is encrpyted when an encrpytion handler is present.
         /// </summary>
         BlobWhenPresent,
         /// <summary>

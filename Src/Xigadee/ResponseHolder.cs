@@ -24,11 +24,12 @@ using System.Threading.Tasks;
 #endregion
 namespace Xigadee
 {
+    #region ResponseHolderBase
     /// <summary>
     /// This is root response class.
     /// </summary>
     /// <seealso cref="Xigadee.IResponseHolder" />
-    public class ResponseHolderBase: IResponseHolder
+    public class ResponseHolderBase : IResponseHolder
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ResponseHolderBase"/> class.
@@ -77,13 +78,14 @@ namespace Xigadee
         /// Gets or sets the fields.
         /// </summary>
         public Dictionary<string, string> Fields { get; set; }
-    }
-
+    } 
+    #endregion
+    #region ResponseHolder
     /// <summary>
     /// The root response holder.
     /// </summary>
     /// <seealso cref="Xigadee.ResponseHolderBase" />
-    public class ResponseHolder: ResponseHolderBase
+    public class ResponseHolder : ResponseHolderBase
     {
         /// <summary>
         /// Gets or sets a value indicating whether this instance is throttled.
@@ -108,7 +110,7 @@ namespace Xigadee
         /// <summary>
         /// Gets the status code.
         /// </summary>
-        public override int StatusCode { get { return (Response != null?(int)Response.StatusCode: base.StatusCode); } }
+        public override int StatusCode { get { return (Response != null ? (int)Response.StatusCode : base.StatusCode); } }
         /// <summary>
         /// Gets or sets the document identifier.
         /// </summary>
@@ -125,21 +127,21 @@ namespace Xigadee
         /// Gets or sets the session token.
         /// </summary>
         public string SessionToken { get; set; }
-    }
-
+    } 
+    #endregion
+    #region ResponseHolder<O>
     /// <summary>
     /// This is the generic response holder that contains the entity
     /// </summary>
-    /// <typeparam name="O"></typeparam>
+    /// <typeparam name="O">The entity type.</typeparam>
     /// <seealso cref="Xigadee.ResponseHolderBase" />
     public class ResponseHolder<O> : ResponseHolder, IResponseHolder<O>
-        where O:class
+        where O : class
     {
         /// <summary>
         /// Gets or sets the entity.
         /// </summary>
         public O Entity { get; set; }
-    }
-
-
+    } 
+    #endregion
 }

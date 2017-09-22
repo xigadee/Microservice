@@ -20,6 +20,7 @@ using System.Diagnostics;
 #endregion
 namespace Xigadee
 {
+    #region RepositoryHolder<K, E>
     /// <summary>
     /// This class holds the repository response metadata.
     /// </summary>
@@ -66,13 +67,14 @@ namespace Xigadee
             return string.Format("{0}|Entity={1}", base.ToString(), Entity);
         }
     }
-
+    #endregion
+    #region RepositoryHolder<K>
     /// <summary>
     /// The generic repository holder class.
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <seealso cref="Xigadee.RepositoryHolder{K}" />
-    public class RepositoryHolder<K>:RepositoryHolder
+    public class RepositoryHolder<K> : RepositoryHolder
     {
         /// <summary>
         /// Gets or sets the key.
@@ -86,6 +88,8 @@ namespace Xigadee
             return string.Format("{0}|Key={1}", base.ToString(), Key);
         }
     }
+    #endregion
+    #region RepositoryHolder
     /// <summary>
     /// The Repository holder class.
     /// </summary>
@@ -95,7 +99,7 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the key reference.
         /// </summary>
-        public virtual Tuple<string,string> KeyReference { get; set; }
+        public virtual Tuple<string, string> KeyReference { get; set; }
         /// <summary>
         /// Gets or sets the settings.
         /// </summary>
@@ -115,7 +119,7 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets a value indicating whether this instance is cached.
         /// </summary>
-        public virtual bool IsCached { get;set; }
+        public virtual bool IsCached { get; set; }
         /// <summary>
         /// Gets a value indicating whether this instance is faulted.
         /// </summary>
@@ -131,5 +135,6 @@ namespace Xigadee
         {
             return $"KeyReference={KeyReference}|ResponseCode={ResponseCode}|ResponseMessage={ResponseMessage}|TraceId={TraceId}|CorrelationId={Settings?.CorrelationId}";
         }
-    }
+    } 
+    #endregion
 }

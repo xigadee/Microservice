@@ -14,16 +14,16 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Xigadee
 {
+    /// <summary>
+    /// This interface is implemented by classes that provide repository options.
+    /// </summary>
     public interface IRequestOptions
     {
+        /// <summary>
+        /// The repository options.
+        /// </summary>
         RepositorySettings Options { get; set; }
     }
 }

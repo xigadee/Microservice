@@ -13,25 +13,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+using System;
 
 namespace Xigadee
 {
-    public static partial class AzureExtensionMethods
+    /// <summary>
+    /// This exception is thrown when a storage logger is set to throw an exception
+    /// when encryption is set as mandatory, but an encryption handler has not been set.
+    /// </summary>
+    public class AzureStorageDataCollectorEncryptionPolicyException:Exception
     {
-        public const string ServiceBus = "ServiceBus";
-
         /// <summary>
-        /// The service bus connection configuration key
+        /// This is the default constructor.
         /// </summary>
-        [ConfigSettingKey(ServiceBus)]
-        public const string KeyServiceBusConnection = "ServiceBusConnection";
+        /// <param name="support">The support options.</param>
+        public AzureStorageDataCollectorEncryptionPolicyException(DataCollectionSupport support)
+        {
+            Support = support;
+        }
         /// <summary>
-        /// The service bus connection configuration value
+        /// This is the type of logging.
         /// </summary>
-        /// <param name="config">The configuration collection.</param>
-        /// <returns>The defined connection value.</returns>
-        [ConfigSetting(ServiceBus)]
-        public static string ServiceBusConnection(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyServiceBusConnection);
-
+        public DataCollectionSupport Support { get; set; }
     }
 }

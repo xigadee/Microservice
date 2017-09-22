@@ -31,7 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DataCollection\" />
     <Folder Include="Communication\" />
   </ItemGroup>
 

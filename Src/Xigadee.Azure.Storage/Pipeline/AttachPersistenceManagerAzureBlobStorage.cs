@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public static partial class CorePipelineExtensions
+    public static partial class AzureStorageExtensionMethods
     {
         /// <summary>
         /// This extension method attaches a memory persistence command to the incoming pipeline.
