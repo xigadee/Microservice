@@ -17,8 +17,6 @@
 #region using
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
@@ -306,11 +304,11 @@ namespace Xigadee
         /// </summary>
         /// <param name="holder"></param>
         /// <returns></returns>
-        protected override async Task ProcessSearch(PersistenceRequestHolder<SearchRequest, SearchResponse> holder)
-        {
-           
+        protected override Task ProcessSearch(PersistenceRequestHolder<SearchRequest, SearchResponse> holder)
+        {          
             holder.Rs.ResponseCode = (int)PersistenceResponse.NotImplemented501;
             holder.Rs.ResponseMessage = "Search is not implemented.";
+            return Task.FromResult(0);
         }
 
         #region PersistenceResponseFormat(ResponseHolder result)
@@ -333,8 +331,16 @@ namespace Xigadee
         }
         #endregion
 
-        protected override void ProcessOutputKey(PersistenceRepositoryHolder<K, Tuple<K, string>> rq, PersistenceRepositoryHolder<K, Tuple<K, string>> rs,
-            IResponseHolder holderResponse)
+        #region ProcessOutputKey ...
+        /// <summary>
+        /// This override enables the key and version id to be returned from the JSON entity.
+        /// </summary>
+        /// <param name="rq">The request.</param>
+        /// <param name="rs">The response.</param>
+        /// <param name="holderResponse"></param>
+        protected override void ProcessOutputKey(PersistenceRepositoryHolder<K, Tuple<K, string>> rq
+            , PersistenceRepositoryHolder<K, Tuple<K, string>> rs
+            , IResponseHolder holderResponse)
         {
             if (holderResponse.IsSuccess)
             {
@@ -352,6 +358,7 @@ namespace Xigadee
 
             base.ProcessOutputKey(rq, rs, holderResponse);
         }
+        #endregion        
 
     }
 }

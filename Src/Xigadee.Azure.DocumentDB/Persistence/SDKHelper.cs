@@ -20,6 +20,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
+
 namespace Xigadee
 {
     /// <summary>
@@ -126,7 +127,6 @@ namespace Xigadee
             }
             );
         }
-
         private static RequestOptions ETagOptions(string eTag)
         {
             if (eTag == null)

@@ -118,7 +118,7 @@ namespace Xigadee
                 mStorageClient.DefaultRequestOptions = mOptions;
 
             mEntityContainer = mStorageClient.GetContainerReference(mContainerName);
-            mEntityContainer.CreateIfNotExists(mAccessType, mOptions, mContext);
+            mEntityContainer.CreateIfNotExistsAsync(mAccessType, mOptions, mContext).Wait();
         }
         #endregion
         #region StopInternal()
@@ -247,7 +247,7 @@ namespace Xigadee
                 var refEntityDirectory = mEntityContainer.GetDirectoryReference(rq.Directory);
                 rq.Blob = refEntityDirectory.GetBlockBlobReference(rq.SafeKey);
 
-                bool exists = await rq.Blob.ExistsAsync(rq.CancelSet);
+                bool exists = await rq.Blob.ExistsAsync();// TODO: Work out why we can't pass the cancellation token: rq.CancelSet);
                 if (exists)
                 {
                     MetadataGet(rq.Blob, rq);
@@ -454,7 +454,7 @@ namespace Xigadee
                     {
                         var sData = new MemoryStream();
 
-                        await rq.Blob.DownloadToStreamAsync(sData, rq.CancelSet);
+                        await rq.Blob.DownloadToStreamAsync(sData);//, rq.CancelSet); //TODO: work out why this is.
 
                         rs.Data = new byte[sData.Length];
                         sData.Position = 0;
