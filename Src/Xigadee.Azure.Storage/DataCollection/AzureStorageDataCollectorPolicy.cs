@@ -30,9 +30,9 @@ namespace Xigadee
             = new AzureStorageDataCollectorOptions(DataCollectionSupport.Logger
                 , AzureStorageBehaviour.BlobAndTable
                 , serializerTable: AzureStorageHelper.ToTableLogEvent
-                , binaryMakeId: AzureExtensionMethods.LoggerMakeId
-                , binaryMakeFolder: AzureExtensionMethods.LoggerMakeFolder
-                , isSupported: AzureBaseHelper.DefaultLogLevelSupport
+                , binaryMakeId: AzureBaseHelper.LoggerMakeId
+                , binaryMakeFolder: AzureBaseHelper.LoggerMakeFolder
+                , isSupported: AzureStorageHelper.DefaultLogLevelSupport
                 );
 
         /// <summary>
@@ -41,8 +41,8 @@ namespace Xigadee
         public AzureStorageDataCollectorOptions EventSource { get; set; } 
             = new AzureStorageDataCollectorOptions(DataCollectionSupport.EventSource
                 , AzureStorageBehaviour.Blob
-                , binaryMakeId: AzureExtensionMethods.EventSourceMakeId
-                , binaryMakeFolder: AzureExtensionMethods.EventSourceMakeFolder
+                , binaryMakeId: AzureBaseHelper.EventSourceMakeId
+                , binaryMakeFolder: AzureBaseHelper.EventSourceMakeFolder
                 );
         /// <summary>
         /// This is the Statistics options. By default encryption is not set for statistics.
@@ -50,9 +50,9 @@ namespace Xigadee
         public AzureStorageDataCollectorOptions Statistics { get; set; } 
             = new AzureStorageDataCollectorOptions(DataCollectionSupport.Statistics
                 , AzureStorageBehaviour.Blob
-                , makeId: AzureExtensionMethods.StatisticsMakeId
-                , binaryMakeId: AzureExtensionMethods.StatisticsMakeId
-                , binaryMakeFolder: AzureExtensionMethods.StatisticsMakeFolder
+                , makeId: AzureBaseHelper.StatisticsMakeId
+                , binaryMakeId: AzureBaseHelper.StatisticsMakeId
+                , binaryMakeFolder: AzureBaseHelper.StatisticsMakeFolder
                 )
             { EncryptionPolicy = AzureStorageEncryption.None};
         /// <summary>
@@ -110,8 +110,8 @@ namespace Xigadee
             = new AzureStorageDataCollectorOptions(DataCollectionSupport.ApiBoundary
                 , AzureStorageBehaviour.BlobAndTable
                 , AzureStorageHelper.ToTableBoundaryEvent
-                , binaryMakeId: AzureExtensionMethods.BoundaryMakeId
-                , binaryMakeFolder: AzureExtensionMethods.BoundaryMakeFolder
+                , binaryMakeId: AzureBaseHelper.BoundaryMakeId
+                , binaryMakeFolder: AzureBaseHelper.BoundaryMakeFolder
                 );
 
         /// <summary>

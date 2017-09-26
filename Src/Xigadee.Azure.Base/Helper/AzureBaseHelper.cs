@@ -24,7 +24,7 @@ namespace Xigadee
     /// <summary>
     /// This helper provides support for convering entities in to their binary representation.
     /// </summary>
-    public static partial class AzureExtensionMethods
+    public static partial class AzureBaseHelper
     {
 
         /// <summary>

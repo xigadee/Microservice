@@ -31,7 +31,7 @@ namespace Xigadee
             var conn = serviceBusConnection ?? Configuration.ServiceBusConnection();
 
             if (string.IsNullOrEmpty(conn))
-                throw new AzureConnectionException(AzureExtensionMethods.KeyServiceBusConnection);
+                throw new AzureConnectionException(AzureBaseHelper.KeyServiceBusConnection);
 
             return conn;
         }
@@ -47,7 +47,7 @@ namespace Xigadee
         public static P ConfigOverrideSetServiceBusConnection<P>(this P pipeline, string connection)
             where P : IPipeline
         {
-            pipeline.ConfigurationOverrideSet(AzureExtensionMethods.KeyServiceBusConnection, connection);
+            pipeline.ConfigurationOverrideSet(AzureBaseHelper.KeyServiceBusConnection, connection);
             return pipeline;
         }
     }

@@ -62,7 +62,7 @@ namespace Xigadee
             }
 
             // Create a message and add it to the queue.
-            CloudQueueMessage message = new CloudQueueMessage(output.Blob);
+            CloudQueueMessage message = new CloudQueueMessage(Convert.ToBase64String(output.Blob));
 
             // Async enqueue the message
             await Queue.AddMessageAsync(message);
@@ -82,7 +82,7 @@ namespace Xigadee
             ContainerId = StorageServiceBase.ValidateAzureContainerName(ContainerId);
 
             Queue = Client.GetQueueReference(ContainerId);
-            Queue.CreateIfNotExists();
+            Queue.CreateIfNotExistsAsync().Wait();
         }
         /// <summary>
         /// This method is used to check that the specific event should be written to the underlying storage.

@@ -76,7 +76,7 @@ namespace Xigadee
             Table = Client.GetTableReference(ContainerId);
 
             // Create the table if it doesn't exist.
-            Table.CreateIfNotExists();
+            Table.CreateIfNotExistsAsync().Wait();
         }
 
         /// <summary>

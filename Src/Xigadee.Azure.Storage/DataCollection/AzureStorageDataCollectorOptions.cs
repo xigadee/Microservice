@@ -30,7 +30,7 @@ namespace Xigadee
             Support = support;
             Behaviour = behavior;
             SerializerTable = serializerTable;
-            SerializerBinary = serializerBinary ?? AzureExtensionMethods.DefaultJsonBinarySerializer;
+            SerializerBinary = serializerBinary ?? AzureBaseHelper.DefaultJsonBinarySerializer;
 
             MakeId = makeId ?? ((EventHolder e, MicroserviceId i) => e.Data.TraceId);
             BinaryMakeId = binaryMakeId ?? MakeId;

@@ -25,7 +25,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="config">The configuration.</param>
         /// <returns>The credentials</returns>
-        [ConfigSetting(AzureExtensionMethods.Storage)]
+        [ConfigSetting(AzureBaseHelper.Storage)]
         public static StorageCredentials StorageCredentials(this IEnvironmentConfiguration config)
         {
             if (string.IsNullOrEmpty(config.StorageAccountName()) || string.IsNullOrEmpty(config.StorageAccountAccessKey()))
@@ -44,8 +44,8 @@ namespace Xigadee
         public static P ConfigOverrideSetAzureStorage<P>(this P pipeline, string storageAccountName, string storageAccountAccessKey)
             where P : IPipeline
         {
-            pipeline.ConfigurationOverrideSet(AzureExtensionMethods.KeyStorageAccountName, storageAccountName);
-            pipeline.ConfigurationOverrideSet(AzureExtensionMethods.KeyStorageAccountAccessKey, storageAccountAccessKey);
+            pipeline.ConfigurationOverrideSet(AzureBaseHelper.KeyStorageAccountName, storageAccountName);
+            pipeline.ConfigurationOverrideSet(AzureBaseHelper.KeyStorageAccountAccessKey, storageAccountAccessKey);
             return pipeline;
         }
     }

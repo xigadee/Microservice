@@ -33,7 +33,7 @@ namespace Xigadee
             var conn = eventHubsConnection ?? Configuration.EventHubsConnection();
 
             if (string.IsNullOrEmpty(conn))
-                throw new AzureConnectionException(AzureExtensionMethods.KeyEventHubsConnection);
+                throw new AzureConnectionException(AzureBaseHelper.KeyEventHubsConnection);
 
             return conn;
         }
@@ -49,7 +49,7 @@ namespace Xigadee
         public static P ConfigOverrideSetEventHubsConnection<P>(this P pipeline, string connection)
             where P : IPipeline
         {
-            pipeline.ConfigurationOverrideSet(AzureExtensionMethods.KeyEventHubsConnection, connection);
+            pipeline.ConfigurationOverrideSet(AzureBaseHelper.KeyEventHubsConnection, connection);
             return pipeline;
         } 
         #endregion

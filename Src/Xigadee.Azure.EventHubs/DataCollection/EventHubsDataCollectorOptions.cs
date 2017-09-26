@@ -21,7 +21,7 @@ namespace Xigadee
         {
             Support = support;
 
-            SerializerBinary = serializerBinary ?? AzureStorageHelper.DefaultJsonBinarySerializer;
+            SerializerBinary = serializerBinary ?? AzureBaseHelper.DefaultJsonBinarySerializer;
             EntityPath = entityPath ?? ((ev, ms) => $"{ms.Name}_{support.ToString()}");
 
             IsSupported = isSupported ?? (ev => true);

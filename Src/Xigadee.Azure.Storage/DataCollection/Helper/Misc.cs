@@ -20,7 +20,7 @@ using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Xigadee
 {
-    public static partial class AzureBaseHelper
+    public static partial class AzureStorageHelper
     {
         private static string DatePartition(DateTime? time = null)
         {
@@ -68,7 +68,7 @@ namespace Xigadee
         /// This method provides the default logging level support for the types of logs.
         /// </summary>
         /// <param name="behaviour">The storage type.</param>
-        /// <param name="e">The log event.</param>
+        /// <param name="ev">The log event.</param>
         /// <returns>Returns true if the message should be logged.</returns>
         public static bool DefaultLogLevelSupport(AzureStorageBehaviour behaviour, EventHolder ev)
         {

@@ -26,7 +26,7 @@ namespace Xigadee
         /// <param name="config">The configuration.</param>
         /// <param name="throwExceptionIfNotFound">if set to <c>true</c> [throw exception if not found].</param>
         /// <returns>The Azure Storage container credential.</returns>
-        [ConfigSetting(AzureExtensionMethods.AzureStorage)]
+        [ConfigSetting(AzureBaseHelper.AzureStorage)]
         public static StorageCredentials AzureStorageCredentials(this IEnvironmentConfiguration config, bool throwExceptionIfNotFound = true)
         {
             if (string.IsNullOrEmpty(config.AzureStorageAccountName(throwExceptionIfNotFound)) 

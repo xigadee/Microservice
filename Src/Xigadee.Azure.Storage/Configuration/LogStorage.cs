@@ -26,7 +26,7 @@ namespace Xigadee
     public static partial class AzureStorageExtensionMethods
     {
 
-        [ConfigSetting(AzureExtensionMethods.LogStorage)]
+        [ConfigSetting(AzureBaseHelper.LogStorage)]
         public static StorageCredentials LogStorageCredentials(this IEnvironmentConfiguration config)
         {
             if (string.IsNullOrEmpty(config.LogStorageAccountName()) || string.IsNullOrEmpty(config.LogStorageAccountAccessKey()))
@@ -45,8 +45,8 @@ namespace Xigadee
         public static P ConfigOverrideSetAzureLogStorage<P>(this P pipeline, string storageAccountName, string storageAccountAccessKey)
             where P : IPipeline
         {
-            pipeline.ConfigurationOverrideSet(AzureExtensionMethods.KeyLogStorageAccountName, storageAccountName);
-            pipeline.ConfigurationOverrideSet(AzureExtensionMethods.KeyLogStorageAccountAccessKey, storageAccountAccessKey);
+            pipeline.ConfigurationOverrideSet(AzureBaseHelper.KeyLogStorageAccountName, storageAccountName);
+            pipeline.ConfigurationOverrideSet(AzureBaseHelper.KeyLogStorageAccountAccessKey, storageAccountAccessKey);
             return pipeline;
         }
 

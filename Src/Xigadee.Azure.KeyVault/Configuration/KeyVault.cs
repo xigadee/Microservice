@@ -25,7 +25,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="config">The configuration.</param>
         /// <returns>The client credentials.</returns>
-        [ConfigSetting(AzureExtensionMethods.KeyVault)]
+        [ConfigSetting(AzureBaseHelper.KeyVault)]
         public static ClientCredential KeyVaultClientCredential(this IEnvironmentConfiguration config)
         {
             if (string.IsNullOrEmpty(config.KeyVaultClientId()) || string.IsNullOrEmpty(config.KeyVaultClientSecret()))
@@ -45,9 +45,9 @@ namespace Xigadee
         public static P ConfigOverrideSetKeyVaultConnection<P>(this P pipeline, string keyVaultClientId, string keyVaultClientSecret, string keyVaultSecretBaseUri)
             where P : IPipeline
         {
-            pipeline.ConfigurationOverrideSet(AzureExtensionMethods.KeyKeyVaultClientId, keyVaultClientId);
-            pipeline.ConfigurationOverrideSet(AzureExtensionMethods.KeyKeyVaultClientSecret, keyVaultClientSecret);
-            pipeline.ConfigurationOverrideSet(AzureExtensionMethods.KeyKeyVaultSecretBaseUri, keyVaultSecretBaseUri);
+            pipeline.ConfigurationOverrideSet(AzureBaseHelper.KeyKeyVaultClientId, keyVaultClientId);
+            pipeline.ConfigurationOverrideSet(AzureBaseHelper.KeyKeyVaultClientSecret, keyVaultClientSecret);
+            pipeline.ConfigurationOverrideSet(AzureBaseHelper.KeyKeyVaultSecretBaseUri, keyVaultSecretBaseUri);
             return pipeline;
         }
     }

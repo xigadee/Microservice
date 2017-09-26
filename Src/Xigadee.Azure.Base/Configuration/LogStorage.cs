@@ -17,7 +17,7 @@
 
 namespace Xigadee
 {
-    public static partial class AzureExtensionMethods
+    public static partial class AzureBaseHelper
     {
         /// <summary>
         /// The reserved keyword.

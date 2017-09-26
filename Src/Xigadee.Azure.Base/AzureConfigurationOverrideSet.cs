@@ -2,7 +2,7 @@
 
 namespace Xigadee
 {
-    public static partial class AzureExtensionMethods
+    public static partial class AzureBaseHelper
     {
         /// <summary>
         /// This method adds an override setting for the Azure settings and clears the cache.
