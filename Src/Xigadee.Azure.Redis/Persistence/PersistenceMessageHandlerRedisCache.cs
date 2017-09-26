@@ -20,11 +20,15 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This is the persistence manager class for Redis Cache.
+    /// </summary>
+    /// <typeparam name="K">Tke key type.</typeparam>
+    /// <typeparam name="E">The entity type.</typeparam>
     public class PersistenceMessageHandlerRedisCache<K,E>: PersistenceManagerHandlerJsonBase<K,E, PersistenceStatistics, PersistenceCommandPolicy>
         where K : IEquatable<K>
     {
         #region Constructor
-
         /// <summary>
         /// This is the default constructor.
         /// </summary>

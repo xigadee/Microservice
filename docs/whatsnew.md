@@ -6,7 +6,9 @@ This section details the current Xigadee release versions with the features adde
 
 ### Pre-release - 2.0.x.x (ongoing)
 
-This is the current development version, and we will be porting key components over to .NET Standard 2.0 to enable Xigadee to be used in .NET Core applications. We will also be supporting .NET Framework 4.6 and higher as well. There will be a number of breaking changes to the Manual Communication Bridge and to the Configuration settings as we will have to remove the reference to ConfigurationManager.
+This is the current development version. We are currently porting the libraries over to .NET Standard 2.0 to enable Xigadee to be used in .NET Core applications. We will also be supporting .NET Framework 4.7 and higher as well. 
+
+There are a number of breaking changes to the libraries, specifically with the Azure NuGet package which has been split in to seperate libraries tightly coupled to their NuGet equivalent. This is also due to how the DocumentDb and ServiceBus libraries have been rewritten for .NET Standard by Microsoft.
 
 ### Current Release - 1.1.17235.1 (August 23, 2017)
 

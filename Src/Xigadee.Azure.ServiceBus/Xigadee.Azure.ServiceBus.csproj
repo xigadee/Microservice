@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.Management.ServiceBus" Version="1.0.1" />
     <PackageReference Include="Microsoft.Azure.ServiceBus" Version="1.0.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.4.0" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
@@ -31,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Communication\" />
+    <Folder Include="Communication\Bridge\" />
   </ItemGroup>
 
 </Project>
