@@ -25,16 +25,17 @@ namespace Xigadee
     /// </summary>
     public static partial class AzureServiceBusExtensionMethods
     {
+
         /// <summary>
-        /// 
+        /// Attaches the azure service bus topic sender.
         /// </summary>
         /// <typeparam name="C"></typeparam>
-        /// <param name="cpipe"></param>
-        /// <param name="connectionName"></param>
-        /// <param name="serviceBusConnection"></param>
-        /// <param name="priorityPartitions"></param>
-        /// <param name="onCreate"></param>
-        /// <param name="setFromChannelProperties"></param>
+        /// <param name="cpipe">The cpipe.</param>
+        /// <param name="connectionName">Name of the connection.</param>
+        /// <param name="serviceBusConnection">The service bus connection.</param>
+        /// <param name="priorityPartitions">The priority partitions.</param>
+        /// <param name="onCreate">The on create.</param>
+        /// <param name="setFromChannelProperties">if set to <c>true</c> [set from channel properties].</param>
         /// <returns></returns>
         public static C AttachAzureServiceBusTopicSender<C>(this C cpipe
             , string connectionName = null

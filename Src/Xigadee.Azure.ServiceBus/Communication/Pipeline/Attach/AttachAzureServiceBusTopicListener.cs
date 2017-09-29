@@ -25,23 +25,24 @@ namespace Xigadee
     /// </summary>
     public static partial class AzureServiceBusExtensionMethods
     {
+
         /// <summary>
-        /// 
+        /// Attaches the azure service bus topic listener.
         /// </summary>
         /// <typeparam name="C"></typeparam>
-        /// <param name="cpipe"></param>
-        /// <param name="connectionName"></param>
-        /// <param name="serviceBusConnection"></param>
-        /// <param name="subscriptionId"></param>
-        /// <param name="isDeadLetterListener"></param>
-        /// <param name="deleteOnStop"></param>
-        /// <param name="listenOnOriginatorId"></param>
-        /// <param name="mappingChannelId"></param>
-        /// <param name="deleteOnIdleTime"></param>
-        /// <param name="priorityPartitions"></param>
-        /// <param name="resourceProfiles"></param>
-        /// <param name="onCreate"></param>
-        /// <param name="setFromChannelProperties"></param>
+        /// <param name="cpipe">The cpipe.</param>
+        /// <param name="connectionName">Name of the connection.</param>
+        /// <param name="serviceBusConnection">The service bus connection.</param>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <param name="isDeadLetterListener">if set to <c>true</c> [is dead letter listener].</param>
+        /// <param name="deleteOnStop">if set to <c>true</c> [delete on stop].</param>
+        /// <param name="listenOnOriginatorId">if set to <c>true</c> [listen on originator identifier].</param>
+        /// <param name="mappingChannelId">The mapping channel identifier.</param>
+        /// <param name="deleteOnIdleTime">The delete on idle time.</param>
+        /// <param name="priorityPartitions">The priority partitions.</param>
+        /// <param name="resourceProfiles">The resource profiles.</param>
+        /// <param name="onCreate">The on create.</param>
+        /// <param name="setFromChannelProperties">if set to <c>true</c> [set from channel properties].</param>
         /// <returns></returns>
         public static C AttachAzureServiceBusTopicListener<C>(this C cpipe
             , string connectionName = null

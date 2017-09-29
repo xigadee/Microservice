@@ -28,7 +28,7 @@ namespace Xigadee
     /// This static class is used to set the key properties to enable messages to be transmitted
     /// over the Azure Service Bus.
     /// </summary>
-    public static class BrokeredMessageHelper
+    public static class AzureServiceBusMessageHelper
     {
         #region AssignMessageHelpers<C>(this AzureClientHolder<C,BrokeredMessage> client)
         /// <summary>

@@ -25,19 +25,20 @@ namespace Xigadee
     /// </summary>
     public static partial class AzureServiceBusExtensionMethods
     {
+
         /// <summary>
-        /// 
+        /// Attaches the azure service bus queue listener.
         /// </summary>
-        /// <typeparam name="C">The pipeline type.</typeparam>
-        /// <param name="cpipe">The pipeline.</param>
-        /// <param name="connectionName"></param>
-        /// <param name="serviceBusConnection"></param>
-        /// <param name="isDeadLetterListener"></param>
-        /// <param name="mappingChannelId"></param>
-        /// <param name="priorityPartitions"></param>
-        /// <param name="resourceProfiles"></param>
-        /// <param name="onCreate"></param>
-        /// <returns>Returns the pipline.</returns>
+        /// <typeparam name="C"></typeparam>
+        /// <param name="cpipe">The cpipe.</param>
+        /// <param name="connectionName">Name of the connection.</param>
+        /// <param name="serviceBusConnection">The service bus connection.</param>
+        /// <param name="isDeadLetterListener">if set to <c>true</c> [is dead letter listener].</param>
+        /// <param name="mappingChannelId">The mapping channel identifier.</param>
+        /// <param name="priorityPartitions">The priority partitions.</param>
+        /// <param name="resourceProfiles">The resource profiles.</param>
+        /// <param name="onCreate">The on create.</param>
+        /// <returns></returns>
         public static C AttachAzureServiceBusQueueListener<C>(this C cpipe
             , string connectionName = null
             , string serviceBusConnection = null

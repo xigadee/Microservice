@@ -25,15 +25,16 @@ namespace Xigadee
     /// </summary>
     public static partial class AzureServiceBusExtensionMethods
     {
+
         /// <summary>
-        /// 
+        /// Attaches the azure service bus queue sender.
         /// </summary>
         /// <typeparam name="C"></typeparam>
-        /// <param name="cpipe"></param>
-        /// <param name="connectionName"></param>
-        /// <param name="priorityPartitions"></param>
-        /// <param name="serviceBusConnection"></param>
-        /// <param name="onCreate"></param>
+        /// <param name="cpipe">The cpipe.</param>
+        /// <param name="connectionName">Name of the connection.</param>
+        /// <param name="priorityPartitions">The priority partitions.</param>
+        /// <param name="serviceBusConnection">The service bus connection.</param>
+        /// <param name="onCreate">The on create.</param>
         /// <returns></returns>
         public static C AttachAzureServiceBusQueueSender<C>(this C cpipe
             , string connectionName = null
