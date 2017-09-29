@@ -21,6 +21,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.EventHubs" Version="1.0.3" />
     <PackageReference Include="Microsoft.Azure.EventHubs.Processor" Version="1.0.3" />
+    <PackageReference Include="Microsoft.Azure.Management.EventHub" Version="2.0.1" />
     <PackageReference Include="Microsoft.CSharp" Version="4.4.0" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
   </ItemGroup>
@@ -29,10 +30,6 @@
     <ProjectReference Include="..\Xigadee.Azure.Base\Xigadee.AzureBase.csproj" />
     <ProjectReference Include="..\Xigadee.Platform\Xigadee.csproj" />
     <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Communication\" />
   </ItemGroup>
 
 </Project>

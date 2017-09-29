@@ -31,7 +31,7 @@ namespace Xigadee
             var conn = serviceBusConnection ?? Configuration.ServiceBusConnection();
 
             if (string.IsNullOrEmpty(conn))
-                throw new AzureConnectionException(AzureBaseHelper.KeyServiceBusConnection);
+                throw new AzureServiceBusConnectionException(AzureBaseHelper.KeyServiceBusConnection);
 
             return conn;
         }

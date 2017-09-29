@@ -15,16 +15,14 @@
 #endregion
 
 using System;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public abstract class FabricConnectionBase<M>
+    /// <summary>
+    /// This is the root class for Azure Service Bus communication.
+    /// </summary>
+    /// <seealso cref="Xigadee.FabricBridgeBase" />
+    public class AzureServiceBusFabricBridge:FabricBridgeBase
     {
-        /// <summary>
-        /// Gets the identifier.
-        /// </summary>
-        public Guid Id { get; } = Guid.NewGuid();
-
     }
 }

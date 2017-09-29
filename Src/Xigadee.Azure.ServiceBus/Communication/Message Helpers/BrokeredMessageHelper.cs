@@ -45,22 +45,6 @@ namespace Xigadee
         } 
         #endregion
 
-        #region ToSafeLower(string value)
-        /// <summary>
-        /// This method is to fix an issue on service bus where filters are case sensitive
-        /// but our message types and action types are not.
-        /// </summary>
-        /// <param name="value">The incoming value.</param>
-        /// <returns>The outgoing lowercase value.</returns>
-        private static string ToSafeLower(string value)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                return null;
-
-            return value.ToLowerInvariant();
-        }
-        #endregion
-
         #region MessagePack(ServiceMessage sMessage)
         /// <summary>
         /// This method packs the ServiceMessage in to the BrokeredMessage format
@@ -83,15 +67,15 @@ namespace Xigadee
             bMessage.UserProperties.Add("OriginatorServiceId", sMessage.OriginatorServiceId);
             bMessage.UserProperties.Add("OriginatorUTC", sMessage.OriginatorUTC);
 
-            bMessage.UserProperties.Add("ResponseChannelId", ToSafeLower(sMessage.ResponseChannelId));
+            bMessage.UserProperties.Add("ResponseChannelId", MessagingHelper.ToSafeLower(sMessage.ResponseChannelId));
             bMessage.UserProperties.Add("ResponseChannelPriority", sMessage.ResponseChannelPriority.ToString());
-            bMessage.UserProperties.Add("ResponseMessageType", ToSafeLower(sMessage.ResponseMessageType));
-            bMessage.UserProperties.Add("ResponseActionType", ToSafeLower(sMessage.ResponseActionType));
+            bMessage.UserProperties.Add("ResponseMessageType", MessagingHelper.ToSafeLower(sMessage.ResponseMessageType));
+            bMessage.UserProperties.Add("ResponseActionType", MessagingHelper.ToSafeLower(sMessage.ResponseActionType));
 
             //FIX: Case sensitive pattern match in ServiceBus.
-            bMessage.UserProperties.Add("ChannelId", ToSafeLower(sMessage.ChannelId));
-            bMessage.UserProperties.Add("MessageType", ToSafeLower(sMessage.MessageType));
-            bMessage.UserProperties.Add("ActionType", ToSafeLower(sMessage.ActionType));
+            bMessage.UserProperties.Add("ChannelId", MessagingHelper.ToSafeLower(sMessage.ChannelId));
+            bMessage.UserProperties.Add("MessageType", MessagingHelper.ToSafeLower(sMessage.MessageType));
+            bMessage.UserProperties.Add("ActionType", MessagingHelper.ToSafeLower(sMessage.ActionType));
 
             bMessage.UserProperties.Add("IsNoop", sMessage.IsNoop ? "1" : "0");
             bMessage.UserProperties.Add("IsReplay", sMessage.IsReplay ? "1" : "0");
@@ -101,7 +85,7 @@ namespace Xigadee
             bMessage.UserProperties.Add("ProcessCorrelationKey", sMessage.ProcessCorrelationKey);
 
             bMessage.UserProperties.Add("CorrelationKey", sMessage.CorrelationKey);
-            bMessage.UserProperties.Add("CorrelationServiceId", ToSafeLower(sMessage.CorrelationServiceId));
+            bMessage.UserProperties.Add("CorrelationServiceId", MessagingHelper.ToSafeLower(sMessage.CorrelationServiceId));
             bMessage.UserProperties.Add("CorrelationUTC", sMessage.CorrelationUTC.HasValue ? sMessage.CorrelationUTC.Value.ToString("o") : null);
 
             bMessage.UserProperties.Add("DispatcherTransitCount", sMessage.DispatcherTransitCount);

@@ -14,18 +14,15 @@
 // limitations under the License.
 #endregion
 
-using System.Collections.Generic;
+using System;
 
 namespace Xigadee
 {
     /// <summary>
-    /// This class is used to form the fabric used to communicate between Microservices.
+    /// This is the base class for Azure Queue communication.
     /// </summary>
-    public abstract class FabricBase<M,C> 
-        where C:FabricConnectionBase<M>
+    /// <seealso cref="Xigadee.FabricBridgeBase" />
+    public class AzureQueueFabricBridge:FabricBridgeBase
     {
-
-
-
     }
 }

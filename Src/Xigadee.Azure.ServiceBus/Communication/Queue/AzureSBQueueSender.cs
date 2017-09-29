@@ -40,10 +40,10 @@ namespace Xigadee
 
             client.AssignMessageHelpers();
 
-            client.FabricInitialize = () => Connection.QueueFabricInitialize(client.Name);
+            //client.FabricInitialize = () => Connection.QueueFabricInitialize(client.Name);
 
             //Set the method that creates the client.
-            client.ClientCreate = () => QueueClient.CreateFromConnectionString(Connection.ConnectionString, client.Name);
+            //client.ClientCreate = () => QueueClient.CreateFromConnectionString(Connection.ConnectionString, client.Name);
 
             //We have to do this due to the stupid inheritance rules for Azure Service Bus.
             client.MessageTransmit = async (b) => await client.Client.SendAsync(b);

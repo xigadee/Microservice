@@ -15,16 +15,10 @@
 #endregion
 
 using System;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public abstract class FabricConnectionBase<M>
+    public class AzureEventHubsFabricBridge:FabricBridgeBase
     {
-        /// <summary>
-        /// Gets the identifier.
-        /// </summary>
-        public Guid Id { get; } = Guid.NewGuid();
-
     }
 }

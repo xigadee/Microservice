@@ -39,9 +39,9 @@ namespace Xigadee
 
             client.AssignMessageHelpers();
 
-            client.FabricInitialize = () => Connection.TopicFabricInitialize(client.Name);
+            //client.FabricInitialize = () => Connection.TopicFabricInitialize(client.Name);
 
-            client.ClientCreate = () => TopicClient.CreateFromConnectionString(Connection.ConnectionString, client.Name);
+            //client.ClientCreate = () => TopicClient.CreateFromConnectionString(Connection.ConnectionString, client.Name);
 
             client.MessageTransmit = async (b) => await client.Client.SendAsync(b);
 

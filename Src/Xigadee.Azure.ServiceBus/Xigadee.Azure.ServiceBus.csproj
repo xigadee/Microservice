@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Communication\Bridge\" />
+    <Folder Include="Communication\Exceptions\" />
   </ItemGroup>
 
 </Project>

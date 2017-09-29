@@ -14,17 +14,34 @@
 // limitations under the License.
 #endregion
 
+#region using
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-
+#endregion
 namespace Xigadee
 {
-    public abstract class FabricConnectionBase<M>
+    /// <summary>
+    /// This class is used to form the fabric used to communicate between Microservices.
+    /// </summary>
+    /// <seealso cref="Xigadee.FabricBridgeBase" />
+    public abstract class FabricBase<M, C> : FabricBridgeBase
+        where C : FabricConnectionBase<M>
     {
-        /// <summary>
-        /// Gets the identifier.
-        /// </summary>
-        public Guid Id { get; } = Guid.NewGuid();
 
+
+
+    }
+
+    /// <summary>
+    /// This class is used to form the fabric used to communicate between Microservices.
+    /// </summary>
+    /// <seealso cref="Xigadee.FabricBridgeBase" />
+    public abstract class FabricBridgeBase
+    {
     }
 }

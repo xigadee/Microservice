@@ -161,57 +161,57 @@ namespace Xigadee
 
             client.AssignMessageHelpers();
 
-            client.FabricInitialize = () =>
-            {
-                Connection.TopicFabricInitialize(client.Name);
-                var subDesc = Connection.SubscriptionFabricInitialize(client.Name, mSubscriptionId
-                    , autoDeleteSubscription: DeleteOnIdleTime
-                    , lockDuration: partition.FabricMaxMessageLock);
-            };
+            //client.FabricInitialize = () =>
+            //{
+            //    Connection.TopicFabricInitialize(client.Name);
+            //    var subDesc = Connection.SubscriptionFabricInitialize(client.Name, mSubscriptionId
+            //        , autoDeleteSubscription: DeleteOnIdleTime
+            //        , lockDuration: partition.FabricMaxMessageLock);
+            //};
 
             client.SupportsQueueLength = true;
 
-            client.QueueLength = () =>
-            {
-                try
-                {
-                    var desc = Connection.NamespaceManager.GetSubscription(client.Name, mSubscriptionId);
+            //client.QueueLength = () =>
+            //{
+            //    try
+            //    {
+            //        var desc = Connection.NamespaceManager.GetSubscription(client.Name, mSubscriptionId);
 
-                    client.QueueLengthLastPoll = DateTime.UtcNow;
+            //        client.QueueLengthLastPoll = DateTime.UtcNow;
 
-                    return desc.MessageCountDetails.ActiveMessageCount;
-                }
-                catch (Exception)
-                {
-                    return null;
-                }
-            };
+            //        return desc.MessageCountDetails.ActiveMessageCount;
+            //    }
+            //    catch (Exception)
+            //    {
+            //        return null;
+            //    }
+            //};
 
             client.CanStart = GetFilters().Count > 0;
 
-            client.ClientCreate = () =>
-            {
-                var messagingFactory = MessagingFactory.CreateFromConnectionString(Connection.ConnectionString);
-                var subClient = messagingFactory.CreateSubscriptionClient(client.Name, mSubscriptionId);
+            //client.ClientCreate = () =>
+            //{
+            //    var messagingFactory = MessagingFactory.CreateFromConnectionString(Connection.ConnectionString);
+            //    var subClient = messagingFactory.CreateSubscriptionClient(client.Name, mSubscriptionId);
 
-                subClient.PrefetchCount = 50;
+            //    subClient.PrefetchCount = 50;
 
-                subClient.RemoveRule("$default");
-                SetFilters(subClient, client.Name, mSubscriptionId);
+            //    subClient.RemoveRule("$default");
+            //    SetFilters(subClient, client.Name, mSubscriptionId);
 
-                return subClient;
-            };
+            //    return subClient;
+            //};
 
             client.ClientRefresh = () =>
             {
                 SetFilters(client.Client, client.Name, mSubscriptionId);
             };
 
-            client.MessageReceive = async (c,t) =>
-            {
-                var messages = await client.Client.ReceiveBatchAsync(c??10, TimeSpan.FromMilliseconds(t??500));
-                return messages;
-            };
+            //client.MessageReceive = async (c,t) =>
+            //{
+            //    var messages = await client.Client.ReceiveBatchAsync(c??10, TimeSpan.FromMilliseconds(t??500));
+            //    return messages;
+            //};
 
             return client;
         }
@@ -225,33 +225,34 @@ namespace Xigadee
         /// <param name="subscriptionId">The subscription identifier.</param>
         protected void SetFilters(SubscriptionClient client, string name, string subscriptionId)
         {
-            try
-            {
-                //Get the list of current rules.
-                var rules = Connection.NamespaceManager.GetRules(name, subscriptionId);
+            throw new NotImplementedException();
+            //try
+            //{
+            //    //Get the list of current rules.
+            //    var rules = Connection.NamespaceManager.GetRules(name, subscriptionId);
 
-                var newFilters = GetFilters()
-                    .ToDictionary((f) => FilterToId(f), (f) => f);
+            //    var newFilters = GetFilters()
+            //        .ToDictionary((f) => FilterToId(f), (f) => f);
 
-                var existingFilters = rules
-                    .Where((r) => r.Filter is SqlFilter)
-                    .Select((f) => f.Name);
+            //    var existingFilters = rules
+            //        .Where((r) => r.Filter is SqlFilter)
+            //        .Select((f) => f.Name);
 
 
-                var ruleToAdd = newFilters.Keys.Except(existingFilters);
-                var ruleToRemove = existingFilters.Except(newFilters.Keys);
+            //    var ruleToAdd = newFilters.Keys.Except(existingFilters);
+            //    var ruleToRemove = existingFilters.Except(newFilters.Keys);
 
-                //Add new rules
-                ruleToAdd.ForEach((f) => client.AddRule(f, newFilters[f]));
+            //    //Add new rules
+            //    ruleToAdd.ForEach((f) => client.AddRule(f, newFilters[f]));
 
-                //Remove unmatched rules.
-                ruleToRemove.ForEach((r) => client.RemoveRule(r));
-            }
-            catch (Exception ex)
-            {
-                Collector?.LogException(string.Format("SetFilters failed for {0}/{1}", name, subscriptionId), ex);
-                throw;
-            }
+            //    //Remove unmatched rules.
+            //    ruleToRemove.ForEach((r) => client.RemoveRule(r));
+            //}
+            //catch (Exception ex)
+            //{
+            //    Collector?.LogException(string.Format("SetFilters failed for {0}/{1}", name, subscriptionId), ex);
+            //    throw;
+            //}
         }
         #endregion
         #region FilterToId(SqlFilter filter)
@@ -288,16 +289,17 @@ namespace Xigadee
         /// </summary>
         protected override void TearDown()
         {
-            base.TearDown();
+            throw new NotImplementedException();
+            //base.TearDown();
 
-            if (DeleteOnStop && mSubscriptionId != null)
-            {
-                if (Connection.NamespaceManager.SubscriptionExists(Connection.ConnectionName, mSubscriptionId))
-                {
-                    //Listen just for the selected channels and message types
-                    Connection.NamespaceManager.DeleteSubscription(Connection.ConnectionName, mSubscriptionId);
-                }
-            }
+            //if (DeleteOnStop && mSubscriptionId != null)
+            //{
+            //    if (Connection.NamespaceManager.SubscriptionExists(Connection.ConnectionName, mSubscriptionId))
+            //    {
+            //        //Listen just for the selected channels and message types
+            //        Connection.NamespaceManager.DeleteSubscription(Connection.ConnectionName, mSubscriptionId);
+            //    }
+            //}
         }
         #endregion
     }
