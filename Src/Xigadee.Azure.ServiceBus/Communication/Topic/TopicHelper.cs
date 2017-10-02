@@ -30,7 +30,6 @@ namespace Xigadee
     /// </summary>
     public static class TopicHelper
     {
-
         /// <summary>
         /// Returns a list of SqlFilters for a Service Bus Subscription based on a list of supported message types.
         /// </summary>

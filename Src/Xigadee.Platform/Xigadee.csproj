@@ -26,4 +26,8 @@
     <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Communication\FabricBridge\Udp\" />
+  </ItemGroup>
+
 </Project>

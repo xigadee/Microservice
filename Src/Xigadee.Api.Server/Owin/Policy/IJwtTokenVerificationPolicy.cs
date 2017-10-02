@@ -11,7 +11,9 @@
         /// <param name="tokenParameter">The token string parameter.</param>
         /// <returns></returns>
         JwtToken Validate(string tokenParameter);
-
+        /// <summary>
+        /// This property specifies whether the filter should deny access by default.
+        /// </summary>
         bool DenyByDefault { get; set; } 
     }
 }

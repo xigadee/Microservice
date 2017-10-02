@@ -87,6 +87,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Azure.KeyVault", "X
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Azure.Redis", "Xigadee.Azure.Redis\Xigadee.Azure.Redis.csproj", "{B8BE19A1-3544-42F9-BFCD-906024B82C7D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Azure.ApiManagement", "Xigadee.Azure.ApiManagement\Xigadee.Azure.ApiManagement.csproj", "{A52DB3CB-DF02-44F2-A002-25A25ADB24BD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Azure.ServiceBus", "Test\Test.Xigadee.Azure.ServiceBus\Test.Xigadee.Azure.ServiceBus.csproj", "{6B12BD4C-B613-4D34-8417-96238F76A3B4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -219,6 +223,14 @@ Global
 		{B8BE19A1-3544-42F9-BFCD-906024B82C7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8BE19A1-3544-42F9-BFCD-906024B82C7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8BE19A1-3544-42F9-BFCD-906024B82C7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A52DB3CB-DF02-44F2-A002-25A25ADB24BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A52DB3CB-DF02-44F2-A002-25A25ADB24BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A52DB3CB-DF02-44F2-A002-25A25ADB24BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A52DB3CB-DF02-44F2-A002-25A25ADB24BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B12BD4C-B613-4D34-8417-96238F76A3B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B12BD4C-B613-4D34-8417-96238F76A3B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B12BD4C-B613-4D34-8417-96238F76A3B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B12BD4C-B613-4D34-8417-96238F76A3B4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -237,9 +249,10 @@ Global
 		{1ADF4FE0-B46C-4BBF-9C23-9CE6F4DF2DA3} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 		{91381A5F-26CB-4E03-9A76-938932649F4A} = {147BDD3C-B68D-4D13-912C-240F23DD1C91}
 		{0916DF44-F8DC-47B7-ABC7-A429DB2786FC} = {147BDD3C-B68D-4D13-912C-240F23DD1C91}
+		{6B12BD4C-B613-4D34-8417-96238F76A3B4} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
 		SolutionGuid = {8BF7561D-7A94-4B22-B0EB-D82D95B110DE}
+		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
 	EndGlobalSection
 EndGlobal
