@@ -18,7 +18,8 @@ using System;
 
 namespace Xigadee
 {
-    public class AzureEventHubsFabricBridge:FabricBridgeBase
+    public class AzureEventHubsFabricBridge : FabricBridgeBase
     {
+        public override ICommunicationBridge this[CommunicationBridgeMode mode] => throw new NotSupportedException();
     }
 }

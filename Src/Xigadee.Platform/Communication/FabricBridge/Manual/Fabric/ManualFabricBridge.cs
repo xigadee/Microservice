@@ -15,20 +15,39 @@
 #endregion
 
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace Xigadee
 {
     /// <summary>
     /// This is the communication bridge that simulates passing messages between Microservices and can be used for unit test based scenarios.
     /// </summary>
-    public class ManualFabricBridge: FabricBase<FabricMessage, ManualFabricConnection>
+    public class ManualFabricBridge: FabricBridgeBase
     {
         private ConcurrentDictionary<string, ManualFabricChannel> mChannels;
 
+        /// <summary>
+        /// Gets the <see cref="ICommunicationBridge"/> with the specified mode.
+        /// </summary>
+        /// <value>
+        /// The <see cref="ICommunicationBridge"/>.
+        /// </value>
+        /// <param name="mode">The mode.</param>
+        /// <returns></returns>
+        /// <exception cref="NotSupportedException">The communication bridge mode is not supported</exception>
+        public override ICommunicationBridge this[CommunicationBridgeMode mode]
+        {
+            get
+            {
+                switch (mode)
+                {
+                    case CommunicationBridgeMode.NotSet:
+                        throw new NotSupportedException("The communication bridge mode is not supported");
+                }
+
+                return new ManualCommunicationBridgeAgent(mode);
+            }
+        }
         /// <summary>
         /// Initializes a new instance of the <see cref="ManualFabricBridge"/> class.
         /// </summary>
@@ -64,6 +83,7 @@ namespace Xigadee
         {
             return GetChannel(channelId).CreateConnection(ManualFabricConnectionMode.Transmit);
         }
+
         /// <summary>
         /// Gets the channel.
         /// </summary>

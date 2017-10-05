@@ -15,13 +15,6 @@
 #endregion
 
 #region using
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 #endregion
 namespace Xigadee
 {
@@ -29,19 +22,17 @@ namespace Xigadee
     /// This class is used to form the fabric used to communicate between Microservices.
     /// </summary>
     /// <seealso cref="Xigadee.FabricBridgeBase" />
-    public abstract class FabricBase<M, C> : FabricBridgeBase
-        where C : FabricConnectionBase<M>
-    {
-
-
-
-    }
-
-    /// <summary>
-    /// This class is used to form the fabric used to communicate between Microservices.
-    /// </summary>
-    /// <seealso cref="Xigadee.FabricBridgeBase" />
     public abstract class FabricBridgeBase
     {
+        /// <summary>
+        /// Gets the <see cref="ICommunicationBridge"/> for the specified mode.
+        /// </summary>
+        /// <value>
+        /// The <see cref="ICommunicationBridge"/>.
+        /// </value>
+        /// <param name="mode">The communication mode.</param>
+        /// <returns>A bridge for the specific communication mode.</returns>
+        public abstract ICommunicationBridge this[CommunicationBridgeMode mode] { get; }
+
     }
 }

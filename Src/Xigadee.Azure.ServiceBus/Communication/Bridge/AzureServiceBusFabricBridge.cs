@@ -22,7 +22,8 @@ namespace Xigadee
     /// This is the root class for Azure Service Bus communication.
     /// </summary>
     /// <seealso cref="Xigadee.FabricBridgeBase" />
-    public class AzureServiceBusFabricBridge:FabricBridgeBase
+    public class AzureServiceBusFabricBridge : FabricBridgeBase
     {
+        public override ICommunicationBridge this[CommunicationBridgeMode mode] => throw new NotImplementedException();
     }
 }

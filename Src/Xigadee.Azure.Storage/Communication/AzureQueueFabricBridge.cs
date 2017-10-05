@@ -22,7 +22,20 @@ namespace Xigadee
     /// This is the base class for Azure Queue communication.
     /// </summary>
     /// <seealso cref="Xigadee.FabricBridgeBase" />
-    public class AzureQueueFabricBridge:FabricBridgeBase
+    public class AzureQueueFabricBridge : FabricBridgeBase
     {
+        public AzureQueueFabricBridge()
+        {
+
+        }
+
+
+        public override ICommunicationBridge this[CommunicationBridgeMode mode]
+        {
+            get
+            {
+                throw new NotSupportedException();
+            }
+        }
     }
 }
