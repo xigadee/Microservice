@@ -24,8 +24,8 @@ namespace Test.Xigadee.TaskManager
                 CommandInitiator init = null;
 
                 var fabric = new ManualFabricBridge();
-                var bridgeOut = new ManualCommunicationBridgeAgent(fabric, CommunicationBridgeMode.RoundRobin);
-                var bridgeReturn = new ManualCommunicationBridgeAgent(fabric, CommunicationBridgeMode.Broadcast);
+                var bridgeOut = fabric[CommunicationBridgeMode.RoundRobin];
+                var bridgeReturn = fabric[CommunicationBridgeMode.Broadcast];
 
                 var pClient = new MicroservicePipeline("Client");
                 var pServer = new MicroservicePipeline("Server");

@@ -22,7 +22,7 @@ namespace Test.Xigadee
         [TestMethod]
         public void TestReroute()
         {
-            var bridgeOut = new ManualCommunicationBridgeAgent(new ManualFabricBridge(), CommunicationBridgeMode.RoundRobin);
+            var bridgeOut = new ManualFabricBridge()[CommunicationBridgeMode.RoundRobin];
             bool success = false;
             ManualResetEvent mre = new ManualResetEvent(false);
             DebugMemoryDataCollector memp1,memp2;

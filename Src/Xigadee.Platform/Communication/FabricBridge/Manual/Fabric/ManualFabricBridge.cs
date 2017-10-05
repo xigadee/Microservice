@@ -27,6 +27,24 @@ namespace Xigadee
         private ConcurrentDictionary<string, ManualFabricChannel> mChannels;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="ManualFabricBridge"/> class.
+        /// </summary>
+        public ManualFabricBridge(bool payloadHistoryEnabled = false, int? retryAttempts = null)
+        {
+            mChannels = new ConcurrentDictionary<string, ManualFabricChannel>();
+            PayloadHistoryEnabled = payloadHistoryEnabled;
+            RetryAttempts = retryAttempts;
+        }
+        /// <summary>
+        /// Gets a value indicating whether the payload history will be stored.
+        /// </summary>
+        public bool PayloadHistoryEnabled { get; }
+        /// <summary>
+        /// Gets the retry attempts. Null if not specified.
+        /// </summary>
+        public int? RetryAttempts { get; }
+
+        /// <summary>
         /// Gets the <see cref="ICommunicationBridge"/> with the specified mode.
         /// </summary>
         /// <value>
@@ -45,16 +63,10 @@ namespace Xigadee
                         throw new NotSupportedException("The communication bridge mode is not supported");
                 }
 
-                return new ManualCommunicationBridgeAgent(mode);
+                return new ManualCommunicationBridgeAgent(mode, PayloadHistoryEnabled, RetryAttempts);
             }
         }
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ManualFabricBridge"/> class.
-        /// </summary>
-        public ManualFabricBridge()
-        {
-            mChannels = new ConcurrentDictionary<string, ManualFabricChannel>();
-        }
+
         /// <summary>
         /// Creates the queue client.
         /// </summary>

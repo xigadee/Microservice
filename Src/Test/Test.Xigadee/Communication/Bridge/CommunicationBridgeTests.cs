@@ -14,8 +14,8 @@ namespace Test.Xigadee
             try
             {
                 var fabric = new ManualFabricBridge();
-                var bridgeOut = new ManualCommunicationBridgeAgent(fabric, CommunicationBridgeMode.RoundRobin);
-                var bridgein = new ManualCommunicationBridgeAgent(fabric, CommunicationBridgeMode.Broadcast);
+                var bridgeOut = fabric[CommunicationBridgeMode.RoundRobin];
+                var bridgein = fabric[CommunicationBridgeMode.Broadcast];
 
                 PersistenceClient<Guid, BridgeMe> init;
                 DebugMemoryDataCollector memp1, memp2;

@@ -26,8 +26,8 @@ namespace Test.Xigadee
         protected virtual void Init()
         {
             var fabric = new ManualFabricBridge();
-            mBridgeRequest = new ManualCommunicationBridgeAgent(fabric, CommunicationBridgeMode.RoundRobin);
-            mBridgeResponse = new ManualCommunicationBridgeAgent(fabric, CommunicationBridgeMode.Broadcast);
+            var bridgeOut = fabric[CommunicationBridgeMode.RoundRobin];
+            var bridgein = fabric[CommunicationBridgeMode.Broadcast];
 
             mWebApi = new UnityWebApiMicroservicePipeline("Web")
                 .CallOut(WebApiConfigure)
