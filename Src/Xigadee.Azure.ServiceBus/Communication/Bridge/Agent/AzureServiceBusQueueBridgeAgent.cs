@@ -19,6 +19,10 @@ using System;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This is the Azure Service Bus Queue agent.
+    /// </summary>
+    /// <seealso cref="Xigadee.AzureServiceBusBridgeAgentBase" />
     public class AzureServiceBusQueueBridgeAgent : AzureServiceBusBridgeAgentBase
     {
         /// <summary>
@@ -27,7 +31,8 @@ namespace Xigadee
         /// <param name="connectionString">The service bus connection string.</param>
         /// <param name="receiveMode">The default receive mode.</param>
         /// <param name="retryPolicy">The default retry policy.</param>
-        public AzureServiceBusQueueBridgeAgent(ServiceBusConnectionStringBuilder connectionString, ReceiveMode receiveMode = ReceiveMode.PeekLock, RetryPolicy retryPolicy = null) : base(connectionString, receiveMode, retryPolicy)
+        public AzureServiceBusQueueBridgeAgent(ServiceBusConnectionStringBuilder connectionString, ReceiveMode receiveMode = ReceiveMode.PeekLock, RetryPolicy retryPolicy = null) 
+            : base(connectionString, receiveMode, retryPolicy)
         {
         }
 

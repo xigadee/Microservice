@@ -79,6 +79,7 @@ namespace Xigadee
         {
         }
         #endregion        
+
         /// <summary>
         /// Gets the connection fabric.
         /// </summary>
