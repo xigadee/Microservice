@@ -20,10 +20,10 @@ using System;
 namespace Xigadee
 {
     /// <summary>
-    /// This is the root class for Azure Service Bus communication.
+    /// This is the base abstract class for Service Bus Agents.
     /// </summary>
-    /// <seealso cref="Xigadee.FabricBridgeBase" />
-    public class AzureServiceBusFabricBridge : FabricBridgeBase
+    /// <seealso cref="Xigadee.CommunicationBridgeAgent" />
+    public abstract class AzureServiceBusBridgeAgentBase : CommunicationBridgeAgent
     {
         /// <summary>
         /// This is the default constructor.
@@ -31,7 +31,7 @@ namespace Xigadee
         /// <param name="connectionString">The service bus connection string.</param>
         /// <param name="receiveMode">The default receive mode.</param>
         /// <param name="retryPolicy">The default retry policy.</param>
-        public AzureServiceBusFabricBridge(ServiceBusConnectionStringBuilder connectionString
+        protected AzureServiceBusBridgeAgentBase(ServiceBusConnectionStringBuilder connectionString
             , ReceiveMode receiveMode = ReceiveMode.PeekLock
             , RetryPolicy retryPolicy = null)
         {
@@ -52,29 +52,5 @@ namespace Xigadee
         /// The default retry policy.
         /// </summary>
         public RetryPolicy DefaultRetryPolicy { get; }
-
-        /// <summary>
-        /// Returns a communication bridge of the required type.
-        /// </summary>
-        /// <param name="mode">The communication mode.</param>
-        /// <returns>The topic or queue bridge.</returns>
-        public override ICommunicationBridge this[CommunicationBridgeMode mode]
-        {
-            get
-            {
-                switch (mode)
-                {
-                    case CommunicationBridgeMode.RoundRobin:
-                        return new AzureServiceBusQueueBridgeAgent(ConnectionString, DefaultReceiveMode, DefaultRetryPolicy);
-                    case CommunicationBridgeMode.Broadcast:
-                        return new AzureServiceBusTopicBridgeAgent(ConnectionString, DefaultReceiveMode, DefaultRetryPolicy);
-                    case CommunicationBridgeMode.NotSet:
-                        throw new BridgeAgentModeNotSetException();
-                    default:
-                        throw new NotSupportedException($"{mode.ToString()} is not supported.");
-                }
-
-            }
-        }
     }
 }

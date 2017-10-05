@@ -29,7 +29,7 @@ namespace Xigadee
         /// <summary>
         /// Initializes a new instance of the <see cref="ManualFabricBridge"/> class.
         /// </summary>
-        public ManualFabricBridge(bool payloadHistoryEnabled = false, int? retryAttempts = null)
+        public ManualFabricBridge(bool payloadHistoryEnabled = true, int? retryAttempts = null)
         {
             mChannels = new ConcurrentDictionary<string, ManualFabricChannel>();
             PayloadHistoryEnabled = payloadHistoryEnabled;
@@ -57,11 +57,8 @@ namespace Xigadee
         {
             get
             {
-                switch (mode)
-                {
-                    case CommunicationBridgeMode.NotSet:
-                        throw new NotSupportedException("The communication bridge mode is not supported");
-                }
+                if (mode == CommunicationBridgeMode.NotSet)
+                    throw new NotSupportedException("The communication bridge mode is not supported");
 
                 return new ManualCommunicationBridgeAgent(mode, PayloadHistoryEnabled, RetryAttempts);
             }
