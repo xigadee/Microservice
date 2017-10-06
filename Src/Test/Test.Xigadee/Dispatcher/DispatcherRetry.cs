@@ -10,8 +10,8 @@ namespace Test.Xigadee.Dispatcher
         public void TestMethod1()
         {
             var fabric = new ManualFabricBridge();
-            var incoming = fabric[CommunicationBridgeMode.RoundRobin];
-            var response = fabric[CommunicationBridgeMode.Broadcast];
+            var incoming = fabric[FabricMode.Queue];
+            var response = fabric[FabricMode.Broadcast];
 
             ICommandInitiator init;
 

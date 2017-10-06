@@ -131,9 +131,9 @@ namespace Test.Xigadee
             var ctx = new EnqueueContext();
 
             var fabric = new ManualFabricBridge();
-            var bridgeOut = fabric[CommunicationBridgeMode.RoundRobin];
-            var bridgeIn = fabric[CommunicationBridgeMode.Broadcast];
-            var bridgeMaster = fabric[CommunicationBridgeMode.Broadcast];
+            var bridgeOut = fabric[FabricMode.Queue];
+            var bridgeIn = fabric[FabricMode.Broadcast];
+            var bridgeMaster = fabric[FabricMode.Broadcast];
 
             try
             {

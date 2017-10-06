@@ -22,7 +22,7 @@ namespace Xigadee
     public class CommandInitiatorPolicy: CommandPolicy
     {
         /// <summary>
-        /// By default outgoing requests are enabled.
+        /// By default, outgoing requests are enabled.
         /// </summary>
         public override bool OutgoingRequestsEnabled
         {

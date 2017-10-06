@@ -32,7 +32,15 @@ namespace Xigadee
         /// </value>
         /// <param name="mode">The communication mode.</param>
         /// <returns>A bridge for the specific communication mode.</returns>
-        public abstract ICommunicationBridge this[CommunicationBridgeMode mode] { get; }
+        public abstract ICommunicationBridge this[FabricMode mode] { get; }
 
+        /// <summary>
+        /// Gets the queue agent.
+        /// </summary>
+        public virtual ICommunicationBridge Queue => this[FabricMode.Queue];
+        /// <summary>
+        /// Gets the broadcast agent.
+        /// </summary>
+        public virtual ICommunicationBridge Broadcast => this[FabricMode.Broadcast];
     }
 }

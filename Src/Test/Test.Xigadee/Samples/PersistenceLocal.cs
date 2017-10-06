@@ -100,8 +100,8 @@ namespace Test.Xigadee.Samples
             try
             {
                 var fabric = new ManualFabricBridge();
-                var bridgeRequest = fabric[CommunicationBridgeMode.RoundRobin];
-                var bridgeResponse = fabric[CommunicationBridgeMode.Broadcast];
+                var bridgeRequest = fabric[FabricMode.Queue];
+                var bridgeResponse = fabric[FabricMode.Broadcast];
 
                 PersistenceClient<Guid, Sample1> repo;
 

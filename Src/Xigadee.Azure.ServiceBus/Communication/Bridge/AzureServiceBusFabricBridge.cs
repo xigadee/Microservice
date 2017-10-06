@@ -58,22 +58,21 @@ namespace Xigadee
         /// </summary>
         /// <param name="mode">The communication mode.</param>
         /// <returns>The topic or queue bridge.</returns>
-        public override ICommunicationBridge this[CommunicationBridgeMode mode]
+        public override ICommunicationBridge this[FabricMode mode]
         {
             get
             {
                 switch (mode)
                 {
-                    case CommunicationBridgeMode.RoundRobin:
+                    case FabricMode.Queue:
                         return new AzureServiceBusQueueBridgeAgent(ConnectionString, DefaultReceiveMode, DefaultRetryPolicy);
-                    case CommunicationBridgeMode.Broadcast:
+                    case FabricMode.Broadcast:
                         return new AzureServiceBusTopicBridgeAgent(ConnectionString, DefaultReceiveMode, DefaultRetryPolicy);
-                    case CommunicationBridgeMode.NotSet:
+                    case FabricMode.NotSet:
                         throw new BridgeAgentModeNotSetException();
                     default:
                         throw new NotSupportedException($"{mode.ToString()} is not supported.");
                 }
-
             }
         }
     }

@@ -29,8 +29,8 @@ namespace Test.Xigadee
                 try
                 {
                     var fabric = new ManualFabricBridge();
-                    var bridgeOut = fabric[CommunicationBridgeMode.RoundRobin];
-                    var bridgein = fabric[CommunicationBridgeMode.Broadcast];
+                    var bridgeOut = fabric[FabricMode.Queue];
+                    var bridgein = fabric[FabricMode.Broadcast];
 
                     var key = CreateSalt(128);
 

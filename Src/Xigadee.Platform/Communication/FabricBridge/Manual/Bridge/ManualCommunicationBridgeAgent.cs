@@ -51,7 +51,7 @@ namespace Xigadee
         /// <param name="mode">The desired communication mode.</param>
         /// <param name="payloadHistoryEnabled">This property specifies whether the message history should be maintained.</param>
         /// <param name="retryAttempts">This is the number of retry delivery attempts that should be attempted. Leave this null if not required.</param>
-        protected internal ManualCommunicationBridgeAgent(ManualFabricBridge fabric, CommunicationBridgeMode mode            
+        protected internal ManualCommunicationBridgeAgent(ManualFabricBridge fabric, FabricMode mode            
             , bool payloadHistoryEnabled = false
             , int? retryAttempts = null
             ) : base(mode)
@@ -72,7 +72,7 @@ namespace Xigadee
         /// <param name="mode">The desired communication mode.</param>
         /// <param name="payloadHistoryEnabled">This property specifies whether the message history should be maintained.</param>
         /// <param name="retryAttempts">This is the number of retry delivery attempts that should be attempted. Leave this null if not required.</param>
-        protected internal ManualCommunicationBridgeAgent(CommunicationBridgeMode mode
+        protected internal ManualCommunicationBridgeAgent(FabricMode mode
             , bool payloadHistoryEnabled = false
             , int? retryAttempts = null
             ) : this(new ManualFabricBridge(), mode, payloadHistoryEnabled, retryAttempts)
@@ -168,10 +168,10 @@ namespace Xigadee
 
                 switch (Mode)
                 {
-                    case CommunicationBridgeMode.RoundRobin:
+                    case FabricMode.Queue:
                         Sender_TransmitRoundRobin(e, count);
                         break;
-                    case CommunicationBridgeMode.Broadcast:
+                    case FabricMode.Broadcast:
                         Sender_TransmitBroadcast(e, count);
                         break;
                 }

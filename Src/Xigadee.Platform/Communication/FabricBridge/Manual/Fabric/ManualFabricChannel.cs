@@ -79,7 +79,7 @@ namespace Xigadee
         /// <param name="id">The channel identifier.</param>
         /// <param name="mode">The optional communication mode. If this is not set, it will be inferred from the first listening client mode.</param>
         /// <exception cref="ArgumentNullException">id</exception>
-        public ManualFabricChannel(string id, CommunicationBridgeMode? mode = null, int retryAttempts = 10)
+        public ManualFabricChannel(string id, FabricMode? mode = null, int retryAttempts = 10)
         {
             RetryAttemptsMax = retryAttempts;
             Id = id?.ToLowerInvariant() ?? throw new ArgumentNullException("id");
@@ -112,7 +112,7 @@ namespace Xigadee
         /// <summary>
         /// Gets the Communication mode being used by the channel.
         /// </summary>
-        public CommunicationBridgeMode? Mode { get; private set; } = null; 
+        public FabricMode? Mode { get; private set; } = null; 
         #endregion
 
         #region CreateConnection(ManualFabricConnectionMode mode, string subscription = null)
@@ -165,7 +165,7 @@ namespace Xigadee
         /// <param name="conn">The connection.</param>
         private void RegisterConnectionQueue(ManualFabricConnection conn)
         {
-            ConnectionAdd(conn, CommunicationBridgeMode.RoundRobin);
+            ConnectionAdd(conn, FabricMode.Queue);
             mConnectionsListen.Add(conn.Id);
 
             conn.Receive = Receive;
@@ -182,7 +182,7 @@ namespace Xigadee
             if (conn.Subscription == null)
                 throw new ArgumentNullException("conn.Subscription", "Subscription Id cannot be null.");
 
-            ConnectionAdd(conn, CommunicationBridgeMode.Broadcast);
+            ConnectionAdd(conn, FabricMode.Broadcast);
             mConnectionsListen.Add(conn.Id);
 
             conn.Receive = Receive;
@@ -208,11 +208,11 @@ namespace Xigadee
             QueueHolder queue;
             switch (Mode.Value)
             {
-                case CommunicationBridgeMode.RoundRobin:
+                case FabricMode.Queue:
                     if (mOutgoing.TryGetValue(cnDefault, out queue))
                         queue.Enqueue(message);
                     break;
-                case CommunicationBridgeMode.Broadcast:
+                case FabricMode.Broadcast:
                     mOutgoing.Values.AsParallel().ForEach((c) => c.Enqueue(message));
                     break;
             }
@@ -220,7 +220,7 @@ namespace Xigadee
 
         private IEnumerable<FabricMessage> Receive(ManualFabricConnection conn, int? count)
         {
-            string queueName = (Mode == CommunicationBridgeMode.RoundRobin)?cnDefault:conn.Subscription;
+            string queueName = (Mode == FabricMode.Queue)?cnDefault:conn.Subscription;
             QueueHolder queue;
             if (mOutgoing.TryGetValue(queueName, out queue))
             {
@@ -255,7 +255,7 @@ namespace Xigadee
 
         #region ConnectionAdd(ManualFabricConnection conn, CommunicationBridgeMode? validateMode = null)
         private object syncConnection = new object();
-        private void ConnectionAdd(ManualFabricConnection conn, CommunicationBridgeMode? validateMode = null)
+        private void ConnectionAdd(ManualFabricConnection conn, FabricMode? validateMode = null)
         {
             lock (syncConnection)
             {
@@ -274,10 +274,10 @@ namespace Xigadee
 
             switch (Mode)
             {
-                case CommunicationBridgeMode.RoundRobin:
+                case FabricMode.Queue:
                     mOutgoing.TryAdd(cnDefault, new QueueHolder());
                     break;
-                case CommunicationBridgeMode.Broadcast:
+                case FabricMode.Broadcast:
                     mOutgoing.TryAdd(conn.Subscription.ToLowerInvariant(), new QueueHolder());
                     break;
             }

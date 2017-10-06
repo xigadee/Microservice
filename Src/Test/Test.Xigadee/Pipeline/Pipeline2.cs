@@ -48,8 +48,8 @@ namespace Test.Xigadee
                 IPipelineChannelOutgoing<MicroservicePipeline> cpipeOut = null;
 
                 var fabric = new ManualFabricBridge();
-                var bridgeOut = fabric[CommunicationBridgeMode.RoundRobin];
-                var bridgeReturn = fabric[CommunicationBridgeMode.Broadcast];
+                var bridgeOut = fabric[FabricMode.Queue];
+                var bridgeReturn = fabric[FabricMode.Broadcast];
 
                 //bridgeReturn.Agent.OnReceive += (o, e) => { if (e.Payload.Extent.Days == 42) init.ToString(); };
                 //bridgeReturn.Agent.OnException += (o, e) => { if (e.Payload.Extent.Days == 42) init.ToString(); };

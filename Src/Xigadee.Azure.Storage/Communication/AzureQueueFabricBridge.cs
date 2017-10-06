@@ -48,7 +48,7 @@ namespace Xigadee
         /// <param name="mode">The mode.</param>
         /// <returns></returns>
         /// <exception cref="NotSupportedException">Only queue is supported. Broadcast is not available on Azure Storage.</exception>
-        public override ICommunicationBridge this[CommunicationBridgeMode mode]
+        public override ICommunicationBridge this[FabricMode mode]
         {
             get
             {
