@@ -38,6 +38,7 @@ namespace Test.Xigadee.Azure.ServiceBus
                     .AttachListener(fabric.Queue.GetListener())
                     .AttachCommand((ctx) => 
                     {
+                        var incoming = ctx.RequestPayloadGet<string>();
                         ctx.ResponseSet(200, "Howdy");
                         return Task.FromResult(0);
                     }

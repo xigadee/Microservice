@@ -47,13 +47,13 @@ namespace Xigadee
         }
 
         /// <summary>
-        /// This extension method is used to try and get the DTO object from the incoming payload.
+        /// This extension method is used to try and get the payload object from the incoming payload.
         /// </summary>
-        /// <typeparam name="C">The DTO entity type.</typeparam>
+        /// <typeparam name="C">The payload entity type.</typeparam>
         /// <param name="c">The context.</param>
-        /// <param name="response">The outgoing DTO object.</param>
-        /// <returns>Returns true if the DTO is present.</returns>
-        public static bool DtoTryGet<C>(this ICommandRequestContext c, out C response)
+        /// <param name="response">The outgoing payload object.</param>
+        /// <returns>Returns true if the payload is present.</returns>
+        public static bool RequestPayloadTryGet<C>(this ICommandRequestContext c, out C response)
         {
             response = default(C);
 
@@ -61,12 +61,12 @@ namespace Xigadee
         }
 
         /// <summary>
-        /// This extension method extracts and deserializes the data transfer object from the message binary blob.
+        /// This extension method extracts and deserializes the payload object from the message binary blob.
         /// </summary>
-        /// <typeparam name="C">The DTO entity type.</typeparam>
+        /// <typeparam name="C">The payload entity type.</typeparam>
         /// <param name="c">The context.</param>
-        /// <returns>Returns the DTO object.</returns>
-        public static C DtoGet<C>(this ICommandRequestContext c)
+        /// <returns>Returns the payload object.</returns>
+        public static C RequestPayloadGet<C>(this ICommandRequestContext c)
         {
             return c.PayloadSerializer.PayloadDeserialize<C>(c.Request);
         }

@@ -25,7 +25,7 @@ namespace Test.Xigadee.Samples
                     .AddChannelIncoming("fredo")
                         .AttachCommand(typeof(ITestCommandLocal1), (ctx) =>
                             {
-                                var message = ctx.DtoGet<string>();
+                                var message = ctx.RequestPayloadGet<string>();
                                 ctx.ResponseSet(200, "howdy");
 
                                 return Task.FromResult(0);

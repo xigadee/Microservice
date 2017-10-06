@@ -47,7 +47,7 @@ namespace Test.Xigadee
                         {
                             string entity;
 
-                            if (ctx.DtoTryGet(out entity))
+                            if (ctx.RequestPayloadTryGet(out entity))
                             {
                                 Assert.AreEqual(entity, "Hello");
                                 ctx.ResponseSet(200, entity + "Good good", "It's all good");

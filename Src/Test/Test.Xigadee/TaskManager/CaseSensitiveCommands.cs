@@ -41,13 +41,13 @@ namespace Test.Xigadee.TaskManager
                         .AttachMessagePriorityOverrideForResponse()
                         .AttachCommand((CommandMethodRequestContext ctx) =>
                         {                    
-                            var payload = ctx.DtoGet<Blah>();
+                            var payload = ctx.RequestPayloadGet<Blah>();
                             ctx.ResponseSet(200, payload.Message);
                             return Task.FromResult(0);
                         }, ("FRANKY", "johnny5"))
                         .AttachCommand((CommandMethodRequestContext ctx) =>
                         {
-                            var payload = ctx.DtoGet<Blah>();
+                            var payload = ctx.RequestPayloadGet<Blah>();
                             ctx.ResponseSet(201, payload.Message);
                             return Task.FromResult(0);
                         }, ("franky", "JoHnny6"))

@@ -74,7 +74,7 @@ namespace Test.Xigadee
                 .InterceptOutgoing((c) =>
                 {
                     string rString = null;
-                    c.DtoTryGet<string>(out rString);
+                    c.RequestPayloadTryGet<string>(out rString);
 
                     c.ResponseSet<string>(200, "over and out", "Hello mum");
                 })
