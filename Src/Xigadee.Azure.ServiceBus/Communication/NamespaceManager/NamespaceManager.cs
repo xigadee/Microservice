@@ -14,18 +14,30 @@
 // limitations under the License.
 #endregion
 
+#region using
+using System;
+#endregion
 namespace Xigadee
 {
     /// <summary>
-    /// This interface is used for Azure service bus messaging.
+    /// This class provides a temporary replacement for the missing functionality in the new .NET Standard libraries.
     /// </summary>
-    /// <typeparam name="P">The partition config type.</typeparam>
-    public interface IAzureServiceBusMessagingService<P>: IMessagingService<P>
-        where P : PartitionConfig
+    public class NamespaceManager
     {
         /// <summary>
-        /// This is the Azure Service Bus connection information.
+        /// Initializes a new instance of the <see cref="NamespaceManager"/> class.
         /// </summary>
-        AzureServiceBusConnection Connection { get; set; }
+        /// <param name="connection">The connection.</param>
+        public NamespaceManager(AzureServiceBusConnection connection)
+        {
+            Connection = connection;
+        }
+
+        #region Connection
+        /// <summary>
+        /// This is the Azure connection class.
+        /// </summary>
+        public AzureServiceBusConnection Connection { get; }
+        #endregion
     }
 }

@@ -22,27 +22,40 @@ namespace Xigadee
     /// <summary>
     /// This is the root class for Azure Service Bus communication.
     /// </summary>
-    /// <seealso cref="Xigadee.FabricBridgeBase" />
-    public class AzureServiceBusFabricBridge : FabricBridgeBase
+    public class AzureServiceBusFabricBridge : FabricBridgeBase<IAzureServiceBusFabricBridge>
     {
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        /// <param name="connectionString">The service bus connection string.</param>
+        /// <param name="sasToken">The service bus sas token based connection string.</param>
         /// <param name="receiveMode">The default receive mode.</param>
         /// <param name="retryPolicy">The default retry policy.</param>
-        public AzureServiceBusFabricBridge(ServiceBusConnectionStringBuilder connectionString
+        public AzureServiceBusFabricBridge(string sasToken
             , ReceiveMode receiveMode = ReceiveMode.PeekLock
             , RetryPolicy retryPolicy = null)
+            :this(new ServiceBusConnectionStringBuilder(sasToken), receiveMode, retryPolicy)
         {
-            ConnectionString = connectionString;
+        }
+
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="connection">The service bus connection.</param>
+        /// <param name="receiveMode">The default receive mode.</param>
+        /// <param name="retryPolicy">The default retry policy.</param>
+        public AzureServiceBusFabricBridge(ServiceBusConnectionStringBuilder connection
+            , ReceiveMode receiveMode = ReceiveMode.PeekLock
+            , RetryPolicy retryPolicy = null
+            )
+        {
+            Connection = connection;
             DefaultReceiveMode = receiveMode;
             DefaultRetryPolicy = retryPolicy;
         }
         /// <summary>
         /// This is the Service Bus connection.
         /// </summary>
-        public ServiceBusConnectionStringBuilder ConnectionString { get; }
+        public ServiceBusConnectionStringBuilder Connection { get; }
         /// <summary>
         /// The default receive mode.
         /// </summary>
@@ -58,16 +71,16 @@ namespace Xigadee
         /// </summary>
         /// <param name="mode">The communication mode.</param>
         /// <returns>The topic or queue bridge.</returns>
-        public override ICommunicationBridge this[FabricMode mode]
+        public override IAzureServiceBusFabricBridge this[FabricMode mode]
         {
             get
             {
                 switch (mode)
                 {
                     case FabricMode.Queue:
-                        return new AzureServiceBusQueueBridgeAgent(ConnectionString, DefaultReceiveMode, DefaultRetryPolicy);
+                        return new AzureServiceBusQueueBridgeAgent(Connection, DefaultReceiveMode, DefaultRetryPolicy);
                     case FabricMode.Broadcast:
-                        return new AzureServiceBusTopicBridgeAgent(ConnectionString, DefaultReceiveMode, DefaultRetryPolicy);
+                        return new AzureServiceBusTopicBridgeAgent(Connection, DefaultReceiveMode, DefaultRetryPolicy);
                     case FabricMode.NotSet:
                         throw new BridgeAgentModeNotSetException();
                     default:

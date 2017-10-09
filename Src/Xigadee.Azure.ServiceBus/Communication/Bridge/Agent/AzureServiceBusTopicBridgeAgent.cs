@@ -37,12 +37,42 @@ namespace Xigadee
         }
 
 
+        /// <summary>
+        /// This method returns a new listener.
+        /// </summary>
+        /// <returns>
+        /// The queue listener.
+        /// </returns>
         public override IListener GetListener()
+        {
+            var listener = new AzureServiceBusTopicListener();
+
+            listener.Connection = Connection;
+
+            return listener;
+        }
+
+        public override IListener GetListener(string entityName)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// This method returns a new sender.
+        /// </summary>
+        /// <returns>
+        /// The queue sender.
+        /// </returns>
         public override ISender GetSender()
+        {
+            var sender = new AzureServiceBusTopicSender();
+
+            sender.Connection = Connection;
+
+            return sender;
+        }
+
+        public override ISender GetSender(string entityName)
         {
             throw new NotImplementedException();
         }

@@ -18,6 +18,16 @@ using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Xigadee;
 using System.Threading.Tasks;
+using Microsoft.Azure.ServiceBus;
+using Microsoft.Azure.Management.ServiceBus;
+using Microsoft.Azure.Management.ServiceBus.Models;
+using System.Web;
+using System.Security.Cryptography;
+using System.Text;
+using System.Globalization;
+using Microsoft.Rest;
+using System.Net.Http;
+using System.Threading;
 
 namespace Test.Xigadee.Azure.ServiceBus
 {
@@ -25,13 +35,20 @@ namespace Test.Xigadee.Azure.ServiceBus
     /// These test validate the pipeline.
     /// </summary>
     [TestClass]
-    public partial class PipelineTest1
+    public class ServiceBusTest1
     {
+        ServiceBusConnectionStringBuilder connMgmt = new ServiceBusConnectionStringBuilder("Endpoint=sb://x2test.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=PSTVeTZ23D7A07vuFfR6lvHSFV2FZb6zyS5/GkiJO5Q=");
+        ServiceBusConnectionStringBuilder connRdWr = new ServiceBusConnectionStringBuilder("Endpoint=sb://x2test.servicebus.windows.net/;SharedAccessKeyName=ConnectionOnly;SharedAccessKey=gyM2OKVVnSuFWJcXObKBbhacbqb4G8AN1nu4uBURVBg=");
+        //sb://x2test.servicebus.windows.net/fredo123
+
+
         [TestMethod]
         public void Pipeline1()
         {
-            var fabric = new ManualFabricBridge();
+            //var fabric = new ManualFabricBridge();
 
+            var fabric = new AzureServiceBusFabricBridge(connMgmt);
+             
             var server = new MicroservicePipeline()
                 .AdjustPolicyTaskManagerForDebug()
                 .AddChannelIncoming("incoming")

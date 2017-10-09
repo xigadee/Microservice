@@ -23,7 +23,7 @@ namespace Xigadee
     /// This is the base abstract class for Service Bus Agents.
     /// </summary>
     /// <seealso cref="Xigadee.CommunicationBridgeAgent" />
-    public abstract class AzureServiceBusBridgeAgentBase : CommunicationBridgeAgent
+    public abstract class AzureServiceBusBridgeAgentBase : CommunicationBridgeAgent, IAzureServiceBusFabricBridge
     {
         /// <summary>
         /// This is the default constructor.
@@ -35,22 +35,17 @@ namespace Xigadee
             , ReceiveMode receiveMode = ReceiveMode.PeekLock
             , RetryPolicy retryPolicy = null)
         {
-            ConnectionString = connectionString;
-            DefaultReceiveMode = receiveMode;
-            DefaultRetryPolicy = retryPolicy;
+            Connection = new AzureServiceBusConnection("", connectionString, receiveMode, retryPolicy);
         }
-        /// <summary>
-        /// This is the Service Bus connection.
-        /// </summary>
-        public ServiceBusConnectionStringBuilder ConnectionString { get; }
-        /// <summary>
-        /// The default receive mode.
-        /// </summary>
-        public ReceiveMode DefaultReceiveMode { get; }
 
         /// <summary>
-        /// The default retry policy.
+        /// Gets the service bus connection.
         /// </summary>
-        public RetryPolicy DefaultRetryPolicy { get; }
+        protected AzureServiceBusConnection Connection { get; }
+
+        public abstract IListener GetListener(string entityName);
+
+        public abstract ISender GetSender(string entityName);
+
     }
 }

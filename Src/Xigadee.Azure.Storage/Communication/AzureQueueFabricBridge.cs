@@ -22,8 +22,7 @@ namespace Xigadee
     /// <summary>
     /// This is the base class for Azure Queue communication.
     /// </summary>
-    /// <seealso cref="Xigadee.FabricBridgeBase" />
-    public class AzureQueueFabricBridge : FabricBridgeBase
+    public class AzureQueueFabricBridge : FabricBridgeBase<ICommunicationBridge>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureQueueFabricBridge"/> class.

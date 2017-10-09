@@ -21,8 +21,8 @@ namespace Xigadee
     /// <summary>
     /// This class is used to form the fabric used to communicate between Microservices.
     /// </summary>
-    /// <seealso cref="Xigadee.FabricBridgeBase" />
-    public abstract class FabricBridgeBase
+    public abstract class FabricBridgeBase<B>
+        where B: ICommunicationBridge
     {
         /// <summary>
         /// Gets the <see cref="ICommunicationBridge"/> for the specified mode.
@@ -32,15 +32,15 @@ namespace Xigadee
         /// </value>
         /// <param name="mode">The communication mode.</param>
         /// <returns>A bridge for the specific communication mode.</returns>
-        public abstract ICommunicationBridge this[FabricMode mode] { get; }
+        public abstract B this[FabricMode mode] { get; }
 
         /// <summary>
         /// Gets the queue agent.
         /// </summary>
-        public virtual ICommunicationBridge Queue => this[FabricMode.Queue];
+        public virtual B Queue => this[FabricMode.Queue];
         /// <summary>
         /// Gets the broadcast agent.
         /// </summary>
-        public virtual ICommunicationBridge Broadcast => this[FabricMode.Broadcast];
+        public virtual B Broadcast => this[FabricMode.Broadcast];
     }
 }

@@ -25,7 +25,6 @@ namespace Xigadee
     /// </summary>
     public static partial class AzureServiceBusExtensionMethods
     {
-
         /// <summary>
         /// Attaches the azure service bus topic listener.
         /// </summary>
@@ -43,7 +42,7 @@ namespace Xigadee
         /// <param name="resourceProfiles">The resource profiles.</param>
         /// <param name="onCreate">The on create.</param>
         /// <param name="setFromChannelProperties">if set to <c>true</c> [set from channel properties].</param>
-        /// <returns></returns>
+        /// <returns>Returns the pipeline.</returns>
         public static C AttachAzureServiceBusTopicListener<C>(this C cpipe
             , string connectionName = null
             , string serviceBusConnection = null
@@ -75,6 +74,7 @@ namespace Xigadee
             component.DeleteOnIdleTime = deleteOnIdleTime;
             component.DeleteOnStop = deleteOnStop;
             component.ListenOnOriginatorId = listenOnOriginatorId;
+
             //component.SubscriptionId
             //var component = new AzureSBTopicListener(
             //      cpipe.Channel.Id

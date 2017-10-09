@@ -15,14 +15,7 @@
 #endregion
 
 #region using
-using Microsoft.Azure;
 using Microsoft.Azure.ServiceBus;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks; 
 #endregion
 namespace Xigadee
 {
@@ -68,16 +61,17 @@ namespace Xigadee
         }
         #endregion
 
+        #region SettingsValidate()
         /// <summary>
         /// This override is used to validate the listener configuration settings on startup.
         /// </summary>
         protected override void SettingsValidate()
         {
             if (Connection == null)
-                throw new StartupMessagingException("AzureConn", "AzureConn cannot be null");
+                throw new StartupMessagingException("Connection", "Connection cannot be null");
 
             base.SettingsValidate();
-        }
-
+        } 
+        #endregion
     }
 }

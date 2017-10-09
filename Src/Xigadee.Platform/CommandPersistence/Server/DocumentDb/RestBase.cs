@@ -130,7 +130,32 @@ namespace Xigadee
 
             string auth = string.Format("type=master&ver=1.0&sig={0}", signature);
 
-            return System.Net.WebUtility.UrlEncode(auth);
+            return WebUtility.UrlEncode(auth);
+        }
+
+        // Create a SAS token. SAS tokens are described in http://msdn.microsoft.com/en-us/library/windowsazure/dn170477.aspx.
+        public string GetSasToken(string uri, string keyName, string key, int lifetimeInS = 1200)
+        {
+            // Set token lifetime to 20 minutes.
+            DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            TimeSpan diff = DateTime.Now.ToUniversalTime() - origin;
+
+            uint tokenExpirationTime = Convert.ToUInt32(diff.TotalSeconds) + 20 * 60;
+
+            string stringToSign = WebUtility.UrlEncode(uri) + "\n" + tokenExpirationTime;
+
+            HMACSHA256 hmac = new HMACSHA256(Encoding.UTF8.GetBytes(key));
+
+            string signature = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(stringToSign)));
+
+            string token = String.Format(CultureInfo.InvariantCulture
+                , "SharedAccessSignature sr={0}&sig={1}&se={2}&skn={3}"
+                , WebUtility.UrlEncode(uri)
+                , WebUtility.UrlEncode(signature)
+                , tokenExpirationTime
+                , keyName);
+
+            return token;
         }
 
         protected Uri BuildUri(string uriPart)

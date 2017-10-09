@@ -22,7 +22,7 @@ namespace Xigadee
     /// <summary>
     /// This is the communication bridge that simulates passing messages between Microservices and can be used for unit test based scenarios.
     /// </summary>
-    public class ManualFabricBridge: FabricBridgeBase
+    public class ManualFabricBridge: FabricBridgeBase<ICommunicationBridge>
     {
         private ConcurrentDictionary<string, ManualFabricChannel> mChannels;
         private ConcurrentDictionary<FabricMode, ICommunicationBridge> mAgents;

@@ -22,7 +22,7 @@ namespace Xigadee
     /// This is the Farbric Bridge for the Azure Event Hubs.
     /// </summary>
     /// <seealso cref="Xigadee.FabricBridgeBase" />
-    public class AzureEventHubsFabricBridge : FabricBridgeBase
+    public class AzureEventHubsFabricBridge : FabricBridgeBase<ICommunicationBridge>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureEventHubsFabricBridge"/> class.

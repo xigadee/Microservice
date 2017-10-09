@@ -15,52 +15,60 @@
 #endregion
 
 #region using
+using Microsoft.Azure.ServiceBus;
 using System;
 #endregion
 namespace Xigadee
 {
     /// <summary>
-    /// This class holds the Azure connection information.
+    /// This class holds the Azure Service Bus connection information.
     /// </summary>
     public class AzureServiceBusConnection
     {
         /// <summary>
-        /// This is the default connection.
+        /// This is the Azure Service Bus connection information.
         /// </summary>
-        /// <param name="name">The connection name.</param>
-        /// <param name="connection">The azure connection string.</param>
-        public AzureServiceBusConnection(string name, string connection)
+        /// <param name="entityName">The Azure Service Bus entity name.</param>
+        /// <param name="connection">The Azure Service Bus connection string.</param>
+        /// <param name="defaultReceiveMode">The default receive mode.</param>
+        /// <param name="defaultRetryPolicy">The retry policy;</param>
+        public AzureServiceBusConnection(string entityName
+            , ServiceBusConnectionStringBuilder connection
+            , ReceiveMode defaultReceiveMode
+            , RetryPolicy defaultRetryPolicy
+            )
         {
-            if (name == null)
+            if (entityName == null)
                 throw new ArgumentNullException("name", "name cannot be empty for an Azure Service Bus Connection");
 
-            if (string.IsNullOrEmpty(connection))
+            if (connection == null)
                 throw new ArgumentNullException("connection", "connection cannot be null or empty for an Azure Service Bus Connection");
 
-            ConnectionName = name;
-            ConnectionString = connection;
+            EntityName = entityName;
+            Connection = connection;
+            DefaultReceiveMode = defaultReceiveMode;
+            DefaultRetryPolicy = defaultRetryPolicy;
         }
-        ///// <summary>
-        ///// This is the internal namespace manager.
-        ///// </summary>
-        //private NamespaceManager mNamespaceManager = null;
+
         /// <summary>
-        /// This is the Azure connection string.
+        /// This is the Azure Service Bus entity name. Usually this will map the Xigadee channel identifier, but can be overridden in specific circumstances.
         /// </summary>
-        public string ConnectionString { get; set; }
+        public string EntityName { get; set; }
+
         /// <summary>
-        /// This is the Azure connection name.
+        /// This is the Service Bus connection.
         /// </summary>
-        public string ConnectionName { get; set; }
-        ///// <summary>
-        ///// This is the Azure namespace manager.
-        ///// </summary>
-        //public NamespaceManager NamespaceManager
-        //{ 
-        //    get 
-        //    {
-        //        return mNamespaceManager ?? (mNamespaceManager = NamespaceManager.CreateFromConnectionString(ConnectionString));
-        //    }
-        //}
+        public ServiceBusConnectionStringBuilder Connection { get; }
+
+        /// <summary>
+        /// The default receive mode.
+        /// </summary>
+        public ReceiveMode DefaultReceiveMode { get; set; }
+
+        /// <summary>
+        /// The default retry policy.
+        /// </summary>
+        public RetryPolicy DefaultRetryPolicy { get; set; }
+
     }
 }
