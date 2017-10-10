@@ -57,12 +57,12 @@ namespace Test.Xigadee.Azure
             try
             {
                 //Either use a .runsettings file to set this value 'CI_ServiceBusConnection' or just manually set the value here if you want to run the test.
-                var sbConnection = TestContext.GetCISettingAsString(AzureConfigShortcut.ServiceBusConnection.ToSettingKey());
+                var sbConnection = TestContext.GetCISettingAsString(AzureServiceBusExtensionMethods.KeyServiceBusConnection);
 
                 PersistenceClient <Guid, Sample1> repo;
 
                 var p1 = new MicroservicePipeline("Server")
-                    .AzureConfigurationOverrideSet(AzureConfigShortcut.ServiceBusConnection, sbConnection)
+                    .ConfigurationOverrideSet(AzureServiceBusExtensionMethods.KeyServiceBusConnection, sbConnection)
                     .AddChannelIncoming("request")
                         .AttachPersistenceManagerHandlerMemory(
                               keyMaker: (Sample1 e) => e.Id
@@ -76,7 +76,7 @@ namespace Test.Xigadee.Azure
                         ;
 
                 var p2 = new MicroservicePipeline("Client")
-                    .AzureConfigurationOverrideSet(AzureConfigShortcut.ServiceBusConnection, sbConnection)
+                    .ConfigurationOverrideSet(AzureServiceBusExtensionMethods.KeyServiceBusConnection, sbConnection)
                     .AddChannelIncoming("response")
                         .AttachAzureServiceBusTopicListener()
                         .Revert()
