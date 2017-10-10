@@ -15,13 +15,13 @@ namespace Xigadee
         /// <param name="entityPath">Function to determine the entity path that will be used when sending messages to event hub</param>
         /// <param name="isSupported">Function to determine whether the event is supported</param>
         public EventHubDataCollectorOptions(DataCollectionSupport support
-            , Func<EventHolder, MicroserviceId, AzureStorageBinary> serializerBinary = null
+            , Func<EventHolder, MicroserviceId, BinaryContainer> serializerBinary = null
             , Func<EventHolder, MicroserviceId, string> entityPath = null
             , Func<EventHolder, bool> isSupported = null)
         {
             Support = support;
 
-            SerializerBinary = serializerBinary ?? AzureBaseHelper.DefaultJsonBinarySerializer;
+            SerializerBinary = serializerBinary ?? BinaryContainerHelper.DefaultJsonBinarySerializer;
             EntityPath = entityPath ?? ((ev, ms) => $"{ms.Name}_{support.ToString()}");
 
             IsSupported = isSupported ?? (ev => true);
@@ -35,7 +35,7 @@ namespace Xigadee
         /// <summary>
         /// This function can be set to provide specific binary serialization.
         /// </summary>
-        public Func<EventHolder, MicroserviceId, AzureStorageBinary> SerializerBinary { get; set; }
+        public Func<EventHolder, MicroserviceId, BinaryContainer> SerializerBinary { get; set; }
         
         /// <summary>
         /// This function can be used to filter out specific event from being written.

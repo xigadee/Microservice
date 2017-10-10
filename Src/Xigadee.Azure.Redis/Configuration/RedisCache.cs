@@ -17,7 +17,7 @@
 
 namespace Xigadee
 {
-    public static partial class AzureBaseHelper
+    public static partial class AzureRedisCacheHelper
     {
         /// <summary>
         /// The reserved keyword.

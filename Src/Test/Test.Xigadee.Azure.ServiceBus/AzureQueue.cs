@@ -67,7 +67,7 @@ namespace Test.Xigadee.Azure
             try
             {
                 var sender = new MicroservicePipeline("initiator")
-                    .ConfigurationOverrideSet(AzureExtensionMethods.KeyServiceBusConnection, SbConn)
+                    .ConfigurationOverrideSet(AzureServiceBusExtensionMethods.KeyServiceBusConnection, SbConn)
                     .AddChannelOutgoing("remote")
                         .AttachAzureServiceBusQueueSender()
                     .Revert()
@@ -77,7 +77,7 @@ namespace Test.Xigadee.Azure
                     ;
 
                 var listener = new MicroservicePipeline("responder")
-                    .ConfigurationOverrideSet(AzureExtensionMethods.KeyServiceBusConnection, SbConn)
+                    .ConfigurationOverrideSet(AzureServiceBusExtensionMethods.KeyServiceBusConnection, SbConn)
                     .AddChannelIncoming("remote")
                         .AttachAzureServiceBusQueueListener()
                         .AttachCommand(new SimpleCommand())

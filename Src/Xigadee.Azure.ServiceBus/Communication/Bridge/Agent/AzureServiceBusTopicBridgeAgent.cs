@@ -31,7 +31,10 @@ namespace Xigadee
         /// <param name="connectionString">The service bus connection string.</param>
         /// <param name="receiveMode">The default receive mode.</param>
         /// <param name="retryPolicy">The default retry policy.</param>
-        public AzureServiceBusTopicBridgeAgent(ServiceBusConnectionStringBuilder connectionString, ReceiveMode receiveMode = ReceiveMode.PeekLock, RetryPolicy retryPolicy = null) 
+        public AzureServiceBusTopicBridgeAgent(ServiceBusConnectionStringBuilder connectionString
+            , ReceiveMode receiveMode = ReceiveMode.PeekLock
+            , RetryPolicy retryPolicy = null
+            ) 
             : base(connectionString, receiveMode, retryPolicy)
         {
         }

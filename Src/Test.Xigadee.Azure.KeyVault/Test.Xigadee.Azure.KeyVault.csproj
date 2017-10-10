@@ -1,21 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0;net47</TargetFrameworks>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.KeyVault" Version="2.3.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0-preview-20170628-02" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.1.18" />
     <PackageReference Include="MSTest.TestFramework" Version="1.1.18" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Test.Xigadee.Helper\Test.Xigadee.Helper.csproj" />
+    <ProjectReference Include="..\Xigadee.Azure.KeyVault\Xigadee.Azure.KeyVault.csproj" />
     <ProjectReference Include="..\Xigadee.Platform\Xigadee.csproj" />
-    <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj" />
   </ItemGroup>
 
 </Project>

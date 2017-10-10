@@ -234,9 +234,6 @@
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Pipeline\ConfigResolverSetTestContext.cs" />
-    <Compile Include="Pipeline\ConfigResolverTestContext.cs" />
-    <Compile Include="TestExtensionHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

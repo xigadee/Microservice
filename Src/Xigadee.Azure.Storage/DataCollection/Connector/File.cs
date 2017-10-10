@@ -24,7 +24,7 @@ namespace Xigadee
     /// This class is not currently supported.
     /// </summary>
     [Obsolete("This class is a placeholder and is not currently supported.")]
-    public class AzureStorageConnectorFile: AzureStorageConnectorBase<FileRequestOptions, AzureStorageBinary>
+    public class AzureStorageConnectorFile: AzureStorageConnectorBase<FileRequestOptions, BinaryContainer>
     {
         /// <summary>
         /// This is the file client.

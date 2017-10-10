@@ -32,7 +32,7 @@ namespace Test.Xigadee.Azure
             ms1
                 .ConfigResolverSetTestContext(TestContext)
                 .ConfigResolverSetTableStorage()
-                .ConfigResolverSetTableStorage(AzureExtensionMethods.AzureTableStorageConfigDefaultPriority - 1, partitionKey:"otherconfig")
+                .ConfigResolverSetTableStorage(AzureStorageExtensionMethods.AzureTableStorageConfigDefaultPriority - 1, partitionKey:"otherconfig")
                 ;
 
             Assert.IsTrue(ms1.Configuration.PlatformOrConfigCache("my_key") == "123456");
@@ -46,7 +46,7 @@ namespace Test.Xigadee.Azure
             ms1
                 .ConfigResolverSetTestContext(TestContext)
                 .ConfigResolverSetTableStorage()
-                .ConfigResolverSetTableStorage(AzureExtensionMethods.AzureTableStorageConfigDefaultPriority + 1, partitionKey: "otherconfig")
+                .ConfigResolverSetTableStorage(AzureStorageExtensionMethods.AzureTableStorageConfigDefaultPriority + 1, partitionKey: "otherconfig")
                 ;
 
             Assert.IsTrue(ms1.Configuration.PlatformOrConfigCache("my_key") == "ABCDEF");

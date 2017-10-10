@@ -25,8 +25,32 @@ namespace Xigadee
 {
     public static partial class AzureStorageExtensionMethods
     {
+        /// <summary>
+        /// The reserved keyword.
+        /// </summary>
+        public const string LogStorage = "LogStorage";
 
-        [ConfigSetting(AzureBaseHelper.LogStorage)]
+        /// <summary>
+        /// The logging Azure storage account name
+        /// </summary>
+        [ConfigSettingKey(LogStorage)]
+        public const string KeyLogStorageAccountName = "LogStorageAccountName";
+        /// <summary>
+        /// The logging Azure storage account access key
+        /// </summary>
+        [ConfigSettingKey(LogStorage)]
+        public const string KeyLogStorageAccountAccessKey = "LogStorageAccountAccessKey";
+
+
+        [ConfigSetting(LogStorage)]
+        public static string LogStorageAccountName(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyLogStorageAccountName, config.StorageAccountName());
+
+        [ConfigSetting(LogStorage)]
+        public static string LogStorageAccountAccessKey(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyLogStorageAccountAccessKey, config.StorageAccountAccessKey());
+
+
+
+        [ConfigSetting(LogStorage)]
         public static StorageCredentials LogStorageCredentials(this IEnvironmentConfiguration config)
         {
             if (string.IsNullOrEmpty(config.LogStorageAccountName()) || string.IsNullOrEmpty(config.LogStorageAccountAccessKey()))
@@ -45,8 +69,8 @@ namespace Xigadee
         public static P ConfigOverrideSetAzureLogStorage<P>(this P pipeline, string storageAccountName, string storageAccountAccessKey)
             where P : IPipeline
         {
-            pipeline.ConfigurationOverrideSet(AzureBaseHelper.KeyLogStorageAccountName, storageAccountName);
-            pipeline.ConfigurationOverrideSet(AzureBaseHelper.KeyLogStorageAccountAccessKey, storageAccountAccessKey);
+            pipeline.ConfigurationOverrideSet(KeyLogStorageAccountName, storageAccountName);
+            pipeline.ConfigurationOverrideSet(KeyLogStorageAccountAccessKey, storageAccountAccessKey);
             return pipeline;
         }
 

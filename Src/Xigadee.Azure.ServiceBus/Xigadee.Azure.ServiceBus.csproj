@@ -26,7 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Xigadee.Azure.Base\Xigadee.AzureBase.csproj" />
     <ProjectReference Include="..\Xigadee.Platform\Xigadee.csproj" />
     <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj" />
   </ItemGroup>

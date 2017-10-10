@@ -3,7 +3,7 @@
     /// <summary>
     /// This class holds the binary container.
     /// </summary>
-    public class AzureStorageBinary
+    public class BinaryContainer
     {
         /// <summary>
         /// This is the binary blob.

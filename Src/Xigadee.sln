@@ -42,8 +42,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Api.Client", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Api.Server", "Test\Test.Xigadee.Api.Server\Test.Xigadee.Api.Server.csproj", "{3C7D695D-4111-499E-9764-6B9E6EC93952}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Azure", "Test\Test.Xigadee.Azure\Test.Xigadee.Azure.csproj", "{8913D4BB-4E86-40EE-95E1-C6634D41E0BC}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Azure.Console", "Test\Test.Xigadee.Azure.Console\Test.Xigadee.Azure.Console.csproj", "{9CA85091-9308-44B5-A99E-EF6E579C286B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.DebugConsole", "Test\Test.Xigadee.DebugConsole\Test.Xigadee.DebugConsole.csproj", "{F81F3402-897C-40AE-832C-7EF1000D2595}"
@@ -73,8 +71,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.SpreadLedger", "Xig
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Azure.Storage", "Xigadee.Azure.Storage\Xigadee.Azure.Storage.csproj", "{8A7FDF26-E895-4E32-ABB4-34FBEEA820C7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.AzureBase", "Xigadee.Azure.Base\Xigadee.AzureBase.csproj", "{4CA4FC6F-2C32-4B65-8F51-AA67391BD316}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Azure.ServiceBus", "Xigadee.Azure.ServiceBus\Xigadee.Azure.ServiceBus.csproj", "{8D441A60-9272-4707-984C-94BFC3A3567D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Azure.EventHubs", "Xigadee.Azure.EventHubs\Xigadee.Azure.EventHubs.csproj", "{ED2B90BD-2CA0-4721-ABCF-757C76ABDDAD}"
@@ -87,9 +83,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Azure.KeyVault", "X
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Azure.Redis", "Xigadee.Azure.Redis\Xigadee.Azure.Redis.csproj", "{B8BE19A1-3544-42F9-BFCD-906024B82C7D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Azure.ApiManagement", "Xigadee.Azure.ApiManagement\Xigadee.Azure.ApiManagement.csproj", "{A52DB3CB-DF02-44F2-A002-25A25ADB24BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Azure.ApiManagement", "Xigadee.Azure.ApiManagement\Xigadee.Azure.ApiManagement.csproj", "{A52DB3CB-DF02-44F2-A002-25A25ADB24BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Azure.ServiceBus", "Test\Test.Xigadee.Azure.ServiceBus\Test.Xigadee.Azure.ServiceBus.csproj", "{6B12BD4C-B613-4D34-8417-96238F76A3B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Xigadee.Azure.ServiceBus", "Test\Test.Xigadee.Azure.ServiceBus\Test.Xigadee.Azure.ServiceBus.csproj", "{6B12BD4C-B613-4D34-8417-96238F76A3B4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Xigadee.Azure.Storage", "Test.Xigadee.Azure.Storage\Test.Xigadee.Azure.Storage.csproj", "{9E97DE10-A94A-486C-9A05-4407975A1301}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Xigadee.Azure.KeyVault", "Test.Xigadee.Azure.KeyVault\Test.Xigadee.Azure.KeyVault.csproj", "{A3906C23-E5FB-43EA-B7EE-44E08322E336}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -147,10 +147,6 @@ Global
 		{3C7D695D-4111-499E-9764-6B9E6EC93952}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C7D695D-4111-499E-9764-6B9E6EC93952}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C7D695D-4111-499E-9764-6B9E6EC93952}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8913D4BB-4E86-40EE-95E1-C6634D41E0BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8913D4BB-4E86-40EE-95E1-C6634D41E0BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8913D4BB-4E86-40EE-95E1-C6634D41E0BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8913D4BB-4E86-40EE-95E1-C6634D41E0BC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9CA85091-9308-44B5-A99E-EF6E579C286B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9CA85091-9308-44B5-A99E-EF6E579C286B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9CA85091-9308-44B5-A99E-EF6E579C286B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -195,10 +191,6 @@ Global
 		{8A7FDF26-E895-4E32-ABB4-34FBEEA820C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A7FDF26-E895-4E32-ABB4-34FBEEA820C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A7FDF26-E895-4E32-ABB4-34FBEEA820C7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4CA4FC6F-2C32-4B65-8F51-AA67391BD316}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4CA4FC6F-2C32-4B65-8F51-AA67391BD316}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4CA4FC6F-2C32-4B65-8F51-AA67391BD316}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4CA4FC6F-2C32-4B65-8F51-AA67391BD316}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8D441A60-9272-4707-984C-94BFC3A3567D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8D441A60-9272-4707-984C-94BFC3A3567D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D441A60-9272-4707-984C-94BFC3A3567D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -231,6 +223,14 @@ Global
 		{6B12BD4C-B613-4D34-8417-96238F76A3B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B12BD4C-B613-4D34-8417-96238F76A3B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B12BD4C-B613-4D34-8417-96238F76A3B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E97DE10-A94A-486C-9A05-4407975A1301}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E97DE10-A94A-486C-9A05-4407975A1301}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E97DE10-A94A-486C-9A05-4407975A1301}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E97DE10-A94A-486C-9A05-4407975A1301}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3906C23-E5FB-43EA-B7EE-44E08322E336}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3906C23-E5FB-43EA-B7EE-44E08322E336}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3906C23-E5FB-43EA-B7EE-44E08322E336}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3906C23-E5FB-43EA-B7EE-44E08322E336}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -241,7 +241,6 @@ Global
 		{D10589C2-5487-4860-A756-292946D5AE9B} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 		{37A0A4FC-647E-4115-B72E-62B043B84D7A} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 		{3C7D695D-4111-499E-9764-6B9E6EC93952} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
-		{8913D4BB-4E86-40EE-95E1-C6634D41E0BC} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 		{9CA85091-9308-44B5-A99E-EF6E579C286B} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 		{F81F3402-897C-40AE-832C-7EF1000D2595} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 		{24A970DC-3FB0-4541-9ADB-175F04D64B53} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
@@ -250,6 +249,8 @@ Global
 		{91381A5F-26CB-4E03-9A76-938932649F4A} = {147BDD3C-B68D-4D13-912C-240F23DD1C91}
 		{0916DF44-F8DC-47B7-ABC7-A429DB2786FC} = {147BDD3C-B68D-4D13-912C-240F23DD1C91}
 		{6B12BD4C-B613-4D34-8417-96238F76A3B4} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
+		{9E97DE10-A94A-486C-9A05-4407975A1301} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
+		{A3906C23-E5FB-43EA-B7EE-44E08322E336} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8BF7561D-7A94-4B22-B0EB-D82D95B110DE}

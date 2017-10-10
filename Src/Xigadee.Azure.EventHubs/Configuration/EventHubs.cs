@@ -33,7 +33,7 @@ namespace Xigadee
             var conn = eventHubsConnection ?? Configuration.EventHubsConnection();
 
             if (string.IsNullOrEmpty(conn))
-                throw new AzureConnectionException(AzureBaseHelper.KeyEventHubsConnection);
+                throw new AzureEventHubsConnectionException(KeyEventHubsConnection);
 
             return conn;
         }
@@ -49,9 +49,29 @@ namespace Xigadee
         public static P ConfigOverrideSetEventHubsConnection<P>(this P pipeline, string connection)
             where P : IPipeline
         {
-            pipeline.ConfigurationOverrideSet(AzureBaseHelper.KeyEventHubsConnection, connection);
+            pipeline.ConfigurationOverrideSet(KeyEventHubsConnection, connection);
             return pipeline;
-        } 
+        }
         #endregion
+
+        /// <summary>
+        /// The reserved keyword.
+        /// </summary>
+        public const string EventHubs = "EventHubs";
+
+        /// <summary>
+        /// This is the Event Hub key type value.
+        /// </summary>
+        [ConfigSettingKey(EventHubs)]
+        public const string KeyEventHubsConnection = "EventHubsConnection";
+        /// <summary>
+        /// This is the Event Hub connection
+        /// </summary>
+        /// <param name="config">The Microservice configuration.</param>
+        /// <returns>Returns the connection string.</returns>
+        [ConfigSetting(EventHubs)]
+        public static string EventHubsConnection(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyEventHubsConnection);
+
+
     }
 }

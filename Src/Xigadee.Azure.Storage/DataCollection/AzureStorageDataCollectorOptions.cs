@@ -20,7 +20,7 @@ namespace Xigadee
         public AzureStorageDataCollectorOptions(DataCollectionSupport support
             , AzureStorageBehaviour behavior = AzureStorageBehaviour.None
             , Func<EventHolder, MicroserviceId, ITableEntity> serializerTable = null
-            , Func<EventHolder, MicroserviceId, AzureStorageBinary> serializerBinary = null
+            , Func<EventHolder, MicroserviceId, BinaryContainer> serializerBinary = null
             , Func<EventHolder, MicroserviceId, string> makeId = null
             , Func<EventHolder, MicroserviceId, string> binaryMakeId = null
             , Func<EventHolder, MicroserviceId, string> binaryMakeFolder = null
@@ -30,7 +30,7 @@ namespace Xigadee
             Support = support;
             Behaviour = behavior;
             SerializerTable = serializerTable;
-            SerializerBinary = serializerBinary ?? AzureBaseHelper.DefaultJsonBinarySerializer;
+            SerializerBinary = serializerBinary ?? BinaryContainerHelper.DefaultJsonBinarySerializer;
 
             MakeId = makeId ?? ((EventHolder e, MicroserviceId i) => e.Data.TraceId);
             BinaryMakeId = binaryMakeId ?? MakeId;
@@ -53,7 +53,7 @@ namespace Xigadee
         /// <summary>
         /// This function can be set to provide specific binary serialization.
         /// </summary>
-        public Func<EventHolder, MicroserviceId, AzureStorageBinary> SerializerBinary { get; set; }
+        public Func<EventHolder, MicroserviceId, BinaryContainer> SerializerBinary { get; set; }
         /// <summary>
         /// This function can be used to filter out specific event from writing for certain storage support.
         /// </summary>

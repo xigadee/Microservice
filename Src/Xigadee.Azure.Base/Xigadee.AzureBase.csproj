@@ -13,6 +13,10 @@
   <PropertyGroup>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Xigadee.AzureBase.xml</DocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Helper\AzureStorageEncryption.cs" />
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
   </ItemGroup>
@@ -25,10 +29,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Xigadee.Platform\Xigadee.csproj" />
     <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Pipeline\" />
   </ItemGroup>
 
 </Project>

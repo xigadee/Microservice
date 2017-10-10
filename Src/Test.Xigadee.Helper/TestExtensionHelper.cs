@@ -63,27 +63,16 @@ namespace Xigadee
         /// </returns>
         public static bool HasCISetting(this TestContext context, string key, string prefix = "CI_")
         {
+#if NET47
             return context.Properties.Contains(CIKey(key, prefix));
+#else
+            return context.Properties.ContainsKey(CIKey(key, prefix));
+#endif
         }
 
         private static string CIKey(string key, string prefix)
         {
             return $"{prefix??""}{key}";
-        }
-    }
-    /// <summary>
-    /// This exception is used when a TestContext setting cannot be found.
-    /// </summary>
-    /// <seealso cref="System.Exception" />
-    public class TestContextSettingException: Exception
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TestContextSettingException"/> class.
-        /// </summary>
-        /// <param name="message">The message that describes the error.</param>
-        public TestContextSettingException(string message):base(message)
-        {
-
         }
     }
 }

@@ -24,7 +24,7 @@ namespace Xigadee
     /// <summary>
     /// This is the blob storage connector.
     /// </summary>
-    public class AzureStorageConnectorBlob: AzureStorageConnectorBase<BlobRequestOptions, AzureStorageBinary>
+    public class AzureStorageConnectorBlob: AzureStorageConnectorBase<BlobRequestOptions, BinaryContainer>
     {
         /// <summary>
         /// This is the blob container.

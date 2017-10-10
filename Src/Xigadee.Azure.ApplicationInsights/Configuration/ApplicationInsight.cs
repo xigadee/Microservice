@@ -18,7 +18,7 @@ using System;
 
 namespace Xigadee
 {
-    public static partial class AzureBaseHelper
+    public static partial class AzureApplicationInsightsExtensionMethods
     {
         /// <summary>
         /// The reserved keyword.

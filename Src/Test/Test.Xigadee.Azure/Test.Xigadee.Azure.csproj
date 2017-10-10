@@ -64,15 +64,13 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Configuration\ConfigResolverTableStorageTests.cs" />
-    <Compile Include="PipelineAI1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AzureQueue.cs" />
-    <Compile Include="Configuration\ConfigResolverKeyVaultTest.cs" />
-    <Compile Include="Samples\PersistenceServiceBus.cs" />
-    <Compile Include="TestAzureDataCollection.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Test.Xigadee.Helper\Test.Xigadee.Helper.csproj">
+      <Project>{1adf4fe0-b46c-4bbf-9c23-9ce6f4df2da3}</Project>
+      <Name>Test.Xigadee.Helper</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Xigadee.Platform\Xigadee.csproj">
       <Project>{862141c9-c3ef-4be4-b324-0943f8d6da53}</Project>
       <Name>Xigadee</Name>
@@ -100,7 +98,10 @@
     <None Include="packages.config" />
     <None Include="_docs\ReadMe.md" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Configuration\" />
+    <Folder Include="Samples\" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Test.Xigadee.Helper\Test.Xigadee.Helper.csproj" />
     <ProjectReference Include="..\..\Xigadee.Azure.ServiceBus\Xigadee.Azure.ServiceBus.csproj" />
     <ProjectReference Include="..\..\Xigadee.Platform\Xigadee.csproj" />
     <ProjectReference Include="..\..\Xigadee\Xigadee.Helper.csproj" />

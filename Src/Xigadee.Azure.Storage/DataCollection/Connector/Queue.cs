@@ -32,7 +32,7 @@ namespace Xigadee
     /// <summary>
     /// This connector uses the Azure Queue for event writing.
     /// </summary>
-    public class AzureStorageConnectorQueue: AzureStorageConnectorBase<QueueRequestOptions, AzureStorageBinary>
+    public class AzureStorageConnectorQueue: AzureStorageConnectorBase<QueueRequestOptions, BinaryContainer>
     {
         /// <summary>
         /// This is the queue client.
