@@ -28,32 +28,21 @@ namespace Xigadee
         /// <summary>
         /// This is the Azure Service Bus connection information.
         /// </summary>
-        /// <param name="entityName">The Azure Service Bus entity name.</param>
         /// <param name="connection">The Azure Service Bus connection string.</param>
         /// <param name="defaultReceiveMode">The default receive mode.</param>
         /// <param name="defaultRetryPolicy">The retry policy;</param>
-        public AzureServiceBusConnection(string entityName
-            , ServiceBusConnectionStringBuilder connection
+        public AzureServiceBusConnection(ServiceBusConnectionStringBuilder connection
             , ReceiveMode defaultReceiveMode
             , RetryPolicy defaultRetryPolicy
             )
         {
-            if (entityName == null)
-                throw new ArgumentNullException("name", "name cannot be empty for an Azure Service Bus Connection");
-
             if (connection == null)
                 throw new ArgumentNullException("connection", "connection cannot be null or empty for an Azure Service Bus Connection");
 
-            EntityName = entityName;
             Connection = connection;
             DefaultReceiveMode = defaultReceiveMode;
             DefaultRetryPolicy = defaultRetryPolicy;
         }
-
-        /// <summary>
-        /// This is the Azure Service Bus entity name. Usually this will map the Xigadee channel identifier, but can be overridden in specific circumstances.
-        /// </summary>
-        public string EntityName { get; set; }
 
         /// <summary>
         /// This is the Service Bus connection.

@@ -32,7 +32,8 @@ namespace Xigadee
         /// <param name="receiveMode">The default receive mode.</param>
         /// <param name="retryPolicy">The default retry policy.</param>
         public AzureServiceBusQueueBridgeAgent(ServiceBusConnectionStringBuilder connectionString
-            , ReceiveMode receiveMode = ReceiveMode.PeekLock, RetryPolicy retryPolicy = null) 
+            , ReceiveMode receiveMode = ReceiveMode.PeekLock
+            , RetryPolicy retryPolicy = null) 
             : base(connectionString, receiveMode, retryPolicy)
         {
             

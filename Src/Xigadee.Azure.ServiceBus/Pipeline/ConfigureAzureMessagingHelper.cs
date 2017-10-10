@@ -8,7 +8,7 @@ namespace Xigadee
         /// <summary>
         /// Configures the azure messaging.
         /// </summary>
-        /// <typeparam name="P"></typeparam>
+        /// <typeparam name="P">The messaging component type.</typeparam>
         /// <param name="component">The component.</param>
         /// <param name="channelId">The channel identifier.</param>
         /// <param name="priorityPartitions">The priority partitions.</param>
@@ -33,7 +33,8 @@ namespace Xigadee
 
             var sbConn = new ServiceBusConnectionStringBuilder(serviceBusConnection);
 
-            component.Connection = new AzureServiceBusConnection(connectionName, sbConn, defaultReceiveMode, defaultRetryPolicy);
+            component.Connection = new AzureServiceBusConnection(sbConn, defaultReceiveMode, defaultRetryPolicy);
+            component.EntityName = connectionName;
         }
     }
 }

@@ -25,17 +25,27 @@ using System.Diagnostics;
 #endregion
 namespace Xigadee
 {
+    /// <summary>
+    /// This class is the Service Bus Topic Sender class.
+    /// </summary>
     [DebuggerDisplay("AzureSBTopicSender: {ChannelId}")]
     public class AzureServiceBusTopicSender : AzureSBSenderBase<TopicClient, Microsoft.Azure.ServiceBus.Message>
     {
 
+        /// <summary>
+        /// This is the default client create logic.
+        /// </summary>
+        /// <param name="partition">The specific partition to create the client.</param>
+        /// <returns>
+        /// Returns the client.
+        /// </returns>
         protected override AzureClientHolder<TopicClient, Microsoft.Azure.ServiceBus.Message> ClientCreate(SenderPartitionConfig partition)
         {
             var client =  base.ClientCreate(partition);
 
             client.Type = "Topic Sender";
 
-            client.Name = mPriorityClientNamer(Connection.EntityName, partition.Priority);
+            client.Name = mPriorityClientNamer(EntityName, partition.Priority);
 
             client.AssignMessageHelpers();
 

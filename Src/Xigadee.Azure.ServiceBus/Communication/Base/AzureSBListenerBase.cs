@@ -31,6 +31,13 @@ namespace Xigadee
         /// </summary>
         public AzureServiceBusConnection Connection { get; set; }
         #endregion
+        #region EntityName
+        /// <summary>
+        /// This is the Azure Service Bus entity name. Usually this will map the Xigadee channel identifier, but can be overridden in specific circumstances.
+        /// </summary>
+        public string EntityName { get; set; } 
+        #endregion
+
         #region IsDeadLetterListener
         /// <summary>
         /// This property identifies whether the listener is a deadletter listener.

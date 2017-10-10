@@ -50,6 +50,7 @@ namespace Test.Xigadee.Azure.ServiceBus
             var fabric = new AzureServiceBusFabricBridge(connMgmt);
              
             var server = new MicroservicePipeline()
+                .FabricConfigure(fabric)
                 .AdjustPolicyTaskManagerForDebug()
                 .AddChannelIncoming("incoming")
                     .AttachListener(fabric.Queue.GetListener())

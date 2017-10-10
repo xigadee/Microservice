@@ -40,6 +40,13 @@ namespace Xigadee
         public AzureServiceBusConnection Connection { get; set; }
         #endregion
 
+        #region EntityName
+        /// <summary>
+        /// This is the Azure Service Bus entity name. Usually this will map the Xigadee channel identifier, but can be overridden in specific circumstances.
+        /// </summary>
+        public string EntityName { get; set; } 
+        #endregion
+
         #region ClientCreate(SenderPartitionConfig partition)
         /// <summary>
         /// This is the default client create logic.

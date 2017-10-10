@@ -35,7 +35,7 @@ namespace Xigadee
             , ReceiveMode receiveMode = ReceiveMode.PeekLock
             , RetryPolicy retryPolicy = null)
         {
-            Connection = new AzureServiceBusConnection("", connectionString, receiveMode, retryPolicy);
+            Connection = new AzureServiceBusConnection(connectionString, receiveMode, retryPolicy);
         }
 
         /// <summary>
@@ -43,8 +43,15 @@ namespace Xigadee
         /// </summary>
         protected AzureServiceBusConnection Connection { get; }
 
+        /// <summary>
+        /// Gets a listener agent for the bridge.
+        /// </summary>
+        /// <param name="entityName">The Service Bus entity name.</param>
         public abstract IListener GetListener(string entityName);
-
+        /// <summary>
+        /// Gets a sender for the bridge.
+        /// </summary>
+        /// <param name="entityName">The Service Bus entity name.</param>
         public abstract ISender GetSender(string entityName);
 
     }

@@ -14,23 +14,24 @@
 // limitations under the License.
 #endregion
 
+using System;
+using System.Linq;
+
 namespace Xigadee
 {
-    /// <summary>
-    /// This interface is used for Azure service bus messaging.
-    /// </summary>
-    /// <typeparam name="P">The partition config type.</typeparam>
-    public interface IAzureServiceBusMessagingService<P>: IMessagingService<P>
-        where P : PartitionConfig
+    public static partial class CorePipelineExtensions
     {
-        /// <summary>
-        /// This is the Azure Service Bus connection information.
-        /// </summary>
-        AzureServiceBusConnection Connection { get; set; }
 
         /// <summary>
-        /// Gets or sets the Azure Service Bus entity name.
+        /// This extension method changes the default Microservice communication listener policy to balance load between multiple listener clients.
         /// </summary>
-        string EntityName { get; set; }
+        /// <typeparam name="P">The pipeline type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="fabric">The fabric to configure from the pipeline.</param>
+        /// <returns>Returns the pipeline</returns>
+        public static P FabricConfigure<P>(this P pipeline, ManualFabricBridge fabric) where P : IPipeline
+        {
+            return pipeline;
+        }
     }
 }
