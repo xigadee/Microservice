@@ -12,9 +12,9 @@ namespace Xigadee
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <returns></returns>
-        public static NamespaceManager GetNamespaceManager(this ServiceBusConnectionStringBuilder connection)
+        public static NamespaceManagerREST GetNamespaceManager(this ServiceBusConnectionStringBuilder connection)
         {
-            return new NamespaceManager(connection);
+            return new NamespaceManagerREST(connection);
         }
     }
 }

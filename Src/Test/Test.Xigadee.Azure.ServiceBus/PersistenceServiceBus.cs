@@ -38,6 +38,7 @@ namespace Test.Xigadee.Azure
         }
         #endregion
 
+        #region Class -> Sample1
         /// <summary>
         /// This is the POCO class used to test persistence.
         /// </summary>
@@ -46,7 +47,8 @@ namespace Test.Xigadee.Azure
             public Guid Id { get; set; } = Guid.NewGuid();
             public Guid VersionId { get; set; } = Guid.NewGuid();
             public string Message { get; set; }
-        }
+        } 
+        #endregion
 
         /// <summary>
         /// A refactored client-server example using a manual communication bridge.

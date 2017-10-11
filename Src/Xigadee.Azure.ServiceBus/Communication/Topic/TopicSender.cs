@@ -31,7 +31,6 @@ namespace Xigadee
     [DebuggerDisplay("AzureSBTopicSender: {ChannelId}")]
     public class AzureServiceBusTopicSender : AzureSBSenderBase<TopicClient, Microsoft.Azure.ServiceBus.Message>
     {
-
         /// <summary>
         /// This is the default client create logic.
         /// </summary>

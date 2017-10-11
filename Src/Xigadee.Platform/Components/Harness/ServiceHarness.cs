@@ -74,6 +74,7 @@ namespace Xigadee
         /// This is the dependencies class. This class can be shared with another harness.
         /// </summary>
         public D Dependencies { get; }
+
         /// <summary>
         /// This method starts the service. Override to add additional steps.
         /// </summary>
