@@ -39,7 +39,6 @@ namespace Xigadee
         {
         }
 
-
         /// <summary>
         /// This method returns a new listener.
         /// </summary>
@@ -55,9 +54,21 @@ namespace Xigadee
             return listener;
         }
 
-        public override IListener GetListener(string entityName)
+        /// <summary>
+        /// Gets a listener agent for the bridge.
+        /// </summary>
+        /// <param name="properties">The service bus extended properties.</param>
+        /// <returns>
+        /// Returns the listener agent.
+        /// </returns>
+        public override IListener GetListener(AzureServiceBusExtendedProperties properties)
         {
-            throw new NotImplementedException();
+            var listener = new AzureServiceBusTopicListener();
+
+            listener.Connection = Connection;
+            listener.EntityName = properties.EntityName;
+
+            return listener;
         }
 
         /// <summary>
@@ -75,9 +86,21 @@ namespace Xigadee
             return sender;
         }
 
-        public override ISender GetSender(string entityName)
+        /// <summary>
+        /// Gets a sender for the bridge.
+        /// </summary>
+        /// <param name="properties">The service bus extended properties.</param>
+        /// <returns>
+        /// Returns the sender agent.
+        /// </returns>
+        public override ISender GetSender(AzureServiceBusExtendedProperties properties)
         {
-            throw new NotImplementedException();
+            var sender = new AzureServiceBusTopicSender();
+
+            sender.Connection = Connection;
+            sender.EntityName = properties.EntityName;
+
+            return sender;
         }
     }
 }

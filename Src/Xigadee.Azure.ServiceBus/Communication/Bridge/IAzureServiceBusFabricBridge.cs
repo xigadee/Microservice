@@ -13,12 +13,14 @@ namespace Xigadee
         /// <summary>
         /// Gets a listener agent for the bridge.
         /// </summary>
+        /// <param name="properties">The service bus extended properties.</param>
         /// <returns>Returns the listener agent.</returns>
-        IListener GetListener(string entityName);
+        IListener GetListener(AzureServiceBusExtendedProperties properties);
         /// <summary>
         /// Gets a sender for the bridge.
         /// </summary>
+        /// <param name="properties">The service bus extended properties.</param>
         /// <returns>Returns the sender agent.</returns>
-        ISender GetSender(string entityName);
+        ISender GetSender(AzureServiceBusExtendedProperties properties);
     }
 }

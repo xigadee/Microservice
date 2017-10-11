@@ -41,6 +41,18 @@ namespace Test.Xigadee.Azure.ServiceBus
         ServiceBusConnectionStringBuilder connRdWr = new ServiceBusConnectionStringBuilder("Endpoint=sb://x2test.servicebus.windows.net/;SharedAccessKeyName=ConnectionOnly;SharedAccessKey=gyM2OKVVnSuFWJcXObKBbhacbqb4G8AN1nu4uBURVBg=");
         //sb://x2test.servicebus.windows.net/fredo123
 
+        #region TestContext
+        /// <summary>
+        /// All hail the Microsoft test magic man!
+        /// This class can be populated with values through Visual Studio menus -> [Test>Test Settings>Select Test Settings File] and then selecting a file with the extension .runsettings
+        /// See here for details: https://msdn.microsoft.com/en-us/library/jj635153.aspx
+        /// There is a default file default.runsettings that has a set of empty CI injection parameters specified for testing in this project.
+        /// </summary>
+        public TestContext TestContext
+        {
+            get; set;
+        }
+        #endregion
 
         [TestMethod]
         public void Pipeline1()
@@ -50,6 +62,7 @@ namespace Test.Xigadee.Azure.ServiceBus
             var fabric = new AzureServiceBusFabricBridge(connMgmt);
              
             var server = new MicroservicePipeline()
+                .ConfigResolverSetTestContext(TestContext)
                 .FabricConfigure(fabric)
                 .AdjustPolicyTaskManagerForDebug()
                 .AddChannelIncoming("incoming")
@@ -69,6 +82,7 @@ namespace Test.Xigadee.Azure.ServiceBus
 
             ICommandInitiator init;
             var client = new MicroservicePipeline()
+                .ConfigResolverSetTestContext(TestContext)
                 .AdjustPolicyTaskManagerForDebug()
                 .AddChannelOutgoing("incoming")
                     .AttachSender(fabric.Queue.GetSender())

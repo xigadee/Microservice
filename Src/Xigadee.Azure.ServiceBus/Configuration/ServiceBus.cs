@@ -14,6 +14,8 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.Azure.ServiceBus;
+
 namespace Xigadee
 {
     public static partial class AzureServiceBusExtensionMethods
@@ -28,6 +30,7 @@ namespace Xigadee
         /// </summary>
         [ConfigSettingKey(ServiceBus)]
         public const string KeyServiceBusConnection = "ServiceBusConnection";
+
         /// <summary>
         /// The service bus connection configuration value
         /// </summary>
@@ -36,10 +39,8 @@ namespace Xigadee
         [ConfigSetting(ServiceBus)]
         public static string ServiceBusConnection(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyServiceBusConnection);
 
-
-
         /// <summary>
-        /// This extension method changes the default Microservice communication listener policy to balance load between multiple listener clients.
+        /// This extension sets the fabric bridge Service Bus connection from the pipeline configuration.
         /// </summary>
         /// <typeparam name="P">The pipeline type.</typeparam>
         /// <param name="pipeline">The pipeline.</param>
@@ -47,6 +48,10 @@ namespace Xigadee
         /// <returns>Returns the pipeline</returns>
         public static P FabricConfigure<P>(this P pipeline, AzureServiceBusFabricBridge fabric) where P : IPipeline
         {
+            var conn = pipeline.Configuration.ServiceBusConnection();
+
+            fabric.Connection = new ServiceBusConnectionStringBuilder(conn);
+
             return pipeline;
         }
     }

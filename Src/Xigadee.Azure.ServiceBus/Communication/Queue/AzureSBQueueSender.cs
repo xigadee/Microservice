@@ -36,7 +36,7 @@ namespace Xigadee
             var client = base.ClientCreate(partition);
 
             client.Type = "Queue Sender";
-            client.Name = mPriorityClientNamer(EntityName, partition.Priority);
+            client.Name = mPriorityClientNamer(EntityName ?? ChannelId, partition.Priority);
 
             client.AssignMessageHelpers();
 

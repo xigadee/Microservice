@@ -157,7 +157,7 @@ namespace Xigadee
 
             client.Type = "Subscription Listener";
 
-            client.Name = mPriorityClientNamer(EntityName, partition.Priority);
+            client.Name = mPriorityClientNamer(EntityName ?? ChannelId, partition.Priority);
 
             client.AssignMessageHelpers();
 

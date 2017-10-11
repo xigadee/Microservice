@@ -24,6 +24,7 @@ namespace Xigadee
     /// </summary>
     public class AzureServiceBusFabricBridge : FabricBridgeBase<IAzureServiceBusFabricBridge>
     {
+        #region Constructors
         /// <summary>
         /// This is the default constructor.
         /// </summary>
@@ -33,7 +34,7 @@ namespace Xigadee
         public AzureServiceBusFabricBridge(string sasToken
             , ReceiveMode receiveMode = ReceiveMode.PeekLock
             , RetryPolicy retryPolicy = null)
-            :this(new ServiceBusConnectionStringBuilder(sasToken), receiveMode, retryPolicy)
+            : this(new ServiceBusConnectionStringBuilder(sasToken), receiveMode, retryPolicy)
         {
         }
 
@@ -51,20 +52,23 @@ namespace Xigadee
             Connection = connection;
             DefaultReceiveMode = receiveMode;
             DefaultRetryPolicy = retryPolicy;
-        }
+        } 
+        #endregion
+
         /// <summary>
         /// This is the Service Bus connection.
         /// </summary>
-        public ServiceBusConnectionStringBuilder Connection { get; }
+        public ServiceBusConnectionStringBuilder Connection { get; set; }
+
         /// <summary>
         /// The default receive mode.
         /// </summary>
-        public ReceiveMode DefaultReceiveMode { get; }
+        public ReceiveMode DefaultReceiveMode { get; set; }
 
         /// <summary>
         /// The default retry policy.
         /// </summary>
-        public RetryPolicy DefaultRetryPolicy { get; }
+        public RetryPolicy DefaultRetryPolicy { get; set; }
 
         /// <summary>
         /// Returns a communication bridge of the required type.

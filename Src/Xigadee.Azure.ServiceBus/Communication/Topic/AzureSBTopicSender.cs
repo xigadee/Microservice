@@ -45,7 +45,7 @@ namespace Xigadee
 
             client.Type = "Topic Sender";
 
-            client.Name = mPriorityClientNamer(EntityName, partition.Priority);
+            client.Name = mPriorityClientNamer(EntityName ?? ChannelId, partition.Priority);
 
             client.AssignMessageHelpers();
 

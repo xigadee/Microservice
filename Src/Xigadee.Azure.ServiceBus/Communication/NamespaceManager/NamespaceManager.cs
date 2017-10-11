@@ -15,6 +15,7 @@
 #endregion
 
 #region using
+using Microsoft.Azure.ServiceBus;
 using System;
 #endregion
 namespace Xigadee
@@ -28,7 +29,7 @@ namespace Xigadee
         /// Initializes a new instance of the <see cref="NamespaceManager"/> class.
         /// </summary>
         /// <param name="connection">The connection.</param>
-        public NamespaceManager(AzureServiceBusConnection connection)
+        public NamespaceManager(ServiceBusConnectionStringBuilder connection)
         {
             Connection = connection;
         }
@@ -37,7 +38,7 @@ namespace Xigadee
         /// <summary>
         /// This is the Azure connection class.
         /// </summary>
-        public AzureServiceBusConnection Connection { get; }
+        public ServiceBusConnectionStringBuilder Connection { get; }
         #endregion
     }
 }
