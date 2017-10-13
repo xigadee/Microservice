@@ -9,6 +9,20 @@ namespace Xigadee
     public static partial class VisualStudioPipelineExtensions
     {
         /// <summary>
+        /// This method creates a configuration container .
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <returns>Returns and environment configuration.</returns>
+        public static IEnvironmentConfiguration ToConfiguration(this TestContext context)
+        {
+            var config = new ConfigBase();
+
+            config.ResolverSet(20, new ConfigResolverTestContext(context));
+
+            return config;
+        }
+
+        /// <summary>
         /// Gets the CI setting from the test context.
         /// </summary>
         /// <param name="context">The context.</param>

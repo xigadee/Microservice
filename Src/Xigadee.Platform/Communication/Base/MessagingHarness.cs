@@ -49,6 +49,14 @@ namespace Xigadee
         /// </summary>
         public virtual bool BoundaryLoggingActive => true;
 
+        /// <summary>
+        /// Configures the messaging harness.
+        /// </summary>
+        /// <param name="configuration">The environment configuration.</param>
+        public virtual void Configure(IEnvironmentConfiguration configuration)
+        {
+
+        }
 
     }
 }

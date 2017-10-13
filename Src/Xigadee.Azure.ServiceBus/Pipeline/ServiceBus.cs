@@ -19,6 +19,16 @@ namespace Xigadee
     public static partial class AzureServiceBusExtensionMethods
     {
 
+        public static void AzureServiceBusPropertiesSet(this IAzureServiceBusMessagingService service
+            , IEnvironmentConfiguration config
+            , string channelId = null)
+        {
+            config.ServiceBusConnectionValidate(null);
+            var connection = config.ServiceBusConnection();
+            //service.Connection = new AzureServiceBusConnection()
+
+        }
+
         #region ServiceBusConnectionValidate(this IEnvironmentConfiguration Configuration, string serviceBusConnection)
         /// <summary>
         /// This method validates that the service bus connection is set.

@@ -53,33 +53,45 @@ namespace Test.Xigadee.Azure.ServiceBus
         [TestMethod]
         public void HarnessSenderQueueTest()
         {
-            var sender = new AzureServiceBusQueueSenderHarness();
+            var harness = new AzureServiceBusQueueSenderHarness();
 
-            sender.Start();
+            var config = TestContext.ToConfiguration();
+            harness.Configure(config, "queuetest");
+
+            harness.Start();
         }
 
         [TestMethod]
         public void HarnessListenerQueueTest()
         {
-            var sender = new AzureServiceBusQueueListenerHarness();
+            var harness = new AzureServiceBusQueueListenerHarness();
 
-            sender.Start();
+            var config = TestContext.ToConfiguration();
+            harness.Configure(config, "queuetest");
+
+            harness.Start();
         }
 
         [TestMethod]
         public void HarnessSenderTopicTest()
         {
-            var sender = new AzureServiceBusTopicSenderHarness();
+            var harness = new AzureServiceBusTopicSenderHarness();
 
-            sender.Start();
+            var config = TestContext.ToConfiguration();
+            harness.Configure(config, "topictest");
+
+            harness.Start();
         }
 
         [TestMethod]
         public void HarnessListenerTopicTest()
         {
-            var sender = new AzureServiceBusTopicListenerHarness();
+            var harness = new AzureServiceBusTopicListenerHarness();
 
-            sender.Start();
+            var config = TestContext.ToConfiguration();
+            harness.Configure(config, "topictest");
+
+            harness.Start();
         }
     }
 }
