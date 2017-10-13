@@ -34,6 +34,7 @@ namespace Xigadee
             base.Configure(configuration);
             Service.AzureServiceBusPropertiesSet(configuration, channelId);
         }
+
     }
     /// <summary>
     /// This is the Service Bus Topic sender harness.

@@ -13,21 +13,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+using Microsoft.Azure.ServiceBus;
 using Xigadee;
 namespace Xigadee
 {
     public static partial class AzureServiceBusExtensionMethods
     {
-
+        #region AzureServiceBusPropertiesSet ...
+        /// <summary>
+        /// Sets the Azure Service Bus connnection properties.
+        /// </summary>
+        /// <param name="service">The service.</param>
+        /// <param name="config">The configuration.</param>
+        /// <param name="channelId">The channel identifier.</param>
         public static void AzureServiceBusPropertiesSet(this IAzureServiceBusMessagingService service
             , IEnvironmentConfiguration config
             , string channelId = null)
         {
             config.ServiceBusConnectionValidate(null);
             var connection = config.ServiceBusConnection();
-            //service.Connection = new AzureServiceBusConnection()
-
-        }
+            service.Connection = new AzureServiceBusConnection(
+                new ServiceBusConnectionStringBuilder(connection)
+                , ReceiveMode.PeekLock
+                , null);
+        } 
+        #endregion
 
         #region ServiceBusConnectionValidate(this IEnvironmentConfiguration Configuration, string serviceBusConnection)
         /// <summary>
@@ -47,7 +57,7 @@ namespace Xigadee
         }
         #endregion
 
-
+        #region ConfigOverrideSetServiceBusConnection<P> ...
         /// <summary>
         /// This extension allows the Service Bus connection values to be manually set as override parameters.
         /// </summary>
@@ -59,6 +69,7 @@ namespace Xigadee
         {
             pipeline.ConfigurationOverrideSet(KeyServiceBusConnection, connection);
             return pipeline;
-        }
+        } 
+        #endregion
     }
 }

@@ -48,7 +48,7 @@ namespace Xigadee
             //    var queuedesc = Connection.QueueFabricInitialize(client.Name, lockDuration: partition.FabricMaxMessageLock);
             //};
 
-            client.SupportsQueueLength = true;
+            client.SupportsQueueLength = false;
 
             //client.QueueLength = () =>
             //{
@@ -68,6 +68,13 @@ namespace Xigadee
             //        return null;
             //    }
             //};
+
+            client.ClientCreate = () =>
+            {            
+                string queueName = IsDeadLetterListener ? EntityNameHelper.FormatDeadLetterPath(client.Name) : client.Name;
+
+                return new QueueClient(Connection.Connection.ToString(), queueName, Connection.DefaultReceiveMode, Connection.DefaultRetryPolicy);
+            };
 
             //client.ClientCreate = () =>
             //{

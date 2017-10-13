@@ -36,6 +36,16 @@ namespace Xigadee
             base.Configure(configuration);
             Service.AzureServiceBusPropertiesSet(configuration, channelId);
         }
+
+
+        /// <summary>
+        /// This method starts the service. We then set specific channels to listen on.
+        /// </summary>
+        public override void Start()
+        {
+            base.Start();
+
+        }
     }
     /// <summary>
     /// This is the Service Bus Topic Listener harness
