@@ -30,22 +30,17 @@ namespace Xigadee
         /// </summary>
         /// <param name="configuration">The configuration.</param>
         /// <param name="channelId">The channel identifier.</param>
-
-        public virtual void Configure(IEnvironmentConfiguration configuration, string channelId = null)
+        /// <param name="mappingChannelId">The actual channel id for the Azure Service Bus queue.</param>
+        public virtual void Configure(IEnvironmentConfiguration configuration
+            , string channelId = null
+            , string mappingChannelId = null)
         {
             base.Configure(configuration);
-            Service.AzureServiceBusPropertiesSet(configuration, channelId);
+            Service.AzureServiceBusPropertiesSet(configuration);
+            Service.ChannelId = channelId;
+            Service.MappingChannelId = mappingChannelId;
         }
 
-
-        /// <summary>
-        /// This method starts the service. We then set specific channels to listen on.
-        /// </summary>
-        public override void Start()
-        {
-            base.Start();
-
-        }
     }
     /// <summary>
     /// This is the Service Bus Topic Listener harness
@@ -61,7 +56,8 @@ namespace Xigadee
         public virtual void Configure(IEnvironmentConfiguration configuration, string channelId = null)
         {
             base.Configure(configuration);
-            Service.AzureServiceBusPropertiesSet(configuration, channelId);
+            Service.AzureServiceBusPropertiesSet(configuration);
+            Service.ChannelId = channelId;
         }
     }
 }

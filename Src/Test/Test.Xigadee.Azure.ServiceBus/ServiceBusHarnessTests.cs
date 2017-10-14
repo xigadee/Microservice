@@ -69,7 +69,8 @@ namespace Test.Xigadee.Azure.ServiceBus
             var config = TestContext.ToConfiguration();
             harness.Configure(config, "queuetest");
 
-            harness.Start();
+            harness.Start((("queuetest", "one", "two"), null));
+
         }
 
         [TestMethod]

@@ -84,7 +84,7 @@ namespace Xigadee
 
         #region SettingsValidate()
         /// <summary>
-        /// This override is used to validate the listener configuration settings on startup.
+        /// This override is used to validate the listener configuration settings on start-up.
         /// </summary>
         protected override void SettingsValidate()
         {

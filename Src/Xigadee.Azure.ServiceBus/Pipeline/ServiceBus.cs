@@ -21,14 +21,13 @@ namespace Xigadee
     {
         #region AzureServiceBusPropertiesSet ...
         /// <summary>
-        /// Sets the Azure Service Bus connnection properties.
+        /// Sets the Azure Service Bus connection properties.
         /// </summary>
         /// <param name="service">The service.</param>
         /// <param name="config">The configuration.</param>
         /// <param name="channelId">The channel identifier.</param>
         public static void AzureServiceBusPropertiesSet(this IAzureServiceBusMessagingService service
-            , IEnvironmentConfiguration config
-            , string channelId = null)
+            , IEnvironmentConfiguration config)
         {
             config.ServiceBusConnectionValidate(null);
             var connection = config.ServiceBusConnection();

@@ -29,7 +29,8 @@ namespace Xigadee
     /// <typeparam name="M">The client message type.</typeparam>
     /// <typeparam name="H">The client-holder type.</typeparam>
     [DebuggerDisplay("{GetType().Name}: {ChannelId}|{MappingChannelId}@{Status} [{ComponentId}]")]
-    public class MessagingListenerBase<C, M, H> : MessagingServiceBase<C, M, H, ListenerPartitionConfig>, IListener, IRequireSharedServices
+    public class MessagingListenerBase<C, M, H> : MessagingServiceBase<C, M, H, ListenerPartitionConfig>
+        , IListener, IRequireSharedServices
         where H : ClientHolder<C, M>, new()
     {
         #region Declarations

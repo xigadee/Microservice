@@ -107,7 +107,28 @@ namespace Xigadee
 
             return ClientId == other.ClientId
                 && Header.Equals(other.Header);
-        } 
+        }
+        #endregion
+
+        #region Implicit conversion from ServiceMessageHeader with null client
+        /// <summary>
+        /// Implicitly converts three strings in to a ServiceMessageHeader.
+        /// </summary>
+        /// <param name="t">The value tuple.</param>
+        public static implicit operator MessageFilterWrapper(ServiceMessageHeader t)
+        {
+            return new MessageFilterWrapper(t);
+        }
+        #endregion
+        #region Implicit conversion from (ServiceMessageHeaderFragmentg, string)
+        /// <summary>
+        /// Implicitly converts three strings in to a ServiceMessageHeader.
+        /// </summary>
+        /// <param name="t">The value tuple.</param>
+        public static implicit operator MessageFilterWrapper(ValueTuple<ServiceMessageHeader, string> t)
+        {
+            return new MessageFilterWrapper(t.Item1, t.Item2);
+        }
         #endregion
     }
 }

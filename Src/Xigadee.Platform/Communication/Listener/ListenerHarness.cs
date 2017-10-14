@@ -41,6 +41,24 @@ namespace Xigadee
         }
 
         /// <summary>
+        /// Starts with the specified supported listener message types.
+        /// </summary>
+        /// <param name="supported">The supported message types.</param>
+        public virtual void Start(List<MessageFilterWrapper> supported)
+        {
+            Start();
+            Service.Update(supported);
+        }
+        /// <summary>
+        /// Starts with the specified supported listener message type.
+        /// </summary>
+        /// <param name="supported">The supported message type.</param>
+        public virtual void Start(MessageFilterWrapper supported)
+        {
+            Start(new[]{ supported }.ToList());
+        }
+
+        /// <summary>
         /// This method starts the listener and prioritises the clients.
         /// </summary>
         public override void Start()

@@ -32,7 +32,8 @@ namespace Xigadee
         public virtual void Configure(IEnvironmentConfiguration configuration, string channelId = null)
         {
             base.Configure(configuration);
-            Service.AzureServiceBusPropertiesSet(configuration, channelId);
+            Service.AzureServiceBusPropertiesSet(configuration);
+            Service.ChannelId = channelId;
         }
 
     }
@@ -50,7 +51,8 @@ namespace Xigadee
         public virtual void Configure(IEnvironmentConfiguration configuration, string channelId = null)
         {
             base.Configure(configuration);
-            Service.AzureServiceBusPropertiesSet(configuration, channelId);
+            Service.AzureServiceBusPropertiesSet(configuration);
+            Service.ChannelId = channelId;
         }
     }
 
