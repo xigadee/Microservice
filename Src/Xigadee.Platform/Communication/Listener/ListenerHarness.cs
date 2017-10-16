@@ -41,6 +41,21 @@ namespace Xigadee
         }
 
         /// <summary>
+        /// Configures the specified configuration for the Azure Service Bus.
+        /// </summary>
+        /// <param name="configuration">The configuration parameters.</param>
+        /// <param name="channelId">The channel identifier.</param>
+        /// <param name="mappingChannelId">The actual channel id for the fabric queue.</param>
+        public virtual void Configure(IEnvironmentConfiguration configuration
+            , string channelId
+            , string mappingChannelId = null
+            , bool boundaryLoggingActive = true)
+        {
+            base.Configure(configuration, channelId, boundaryLoggingActive);
+            Service.MappingChannelId = mappingChannelId;
+        }
+
+        /// <summary>
         /// Starts with the specified supported listener message types.
         /// </summary>
         /// <param name="supported">The supported message types.</param>

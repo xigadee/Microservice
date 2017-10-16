@@ -82,6 +82,7 @@ namespace Test.Xigadee.Azure.ServiceBus
             harness.Configure(config, "topictest");
 
             harness.Start();
+            
         }
 
         [TestMethod]
@@ -92,7 +93,7 @@ namespace Test.Xigadee.Azure.ServiceBus
             var config = TestContext.ToConfiguration();
             harness.Configure(config, "topictest");
 
-            harness.Start();
+            harness.Start((("topictest", "one", "two"), harness.Dependencies.OriginatorId.ExternalServiceId));
         }
     }
 }

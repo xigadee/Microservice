@@ -36,27 +36,20 @@ namespace Xigadee
         protected override void Configure(L service)
         {
             base.Configure(service);
-
-            service.ChannelId = ChannelId;
-            service.BoundaryLoggingActive = BoundaryLoggingActive;
         }
-        /// <summary>
-        /// This is the default channel id (testincoming). Override this if you wish to change it.
-        /// </summary>
-        public virtual string ChannelId => "testincoming";
-        /// <summary>
-        /// This is true by default. Override if you wish to change this.
-        /// </summary>
-        public virtual bool BoundaryLoggingActive => true;
+
 
         /// <summary>
         /// Configures the messaging harness.
         /// </summary>
         /// <param name="configuration">The environment configuration.</param>
-        public virtual void Configure(IEnvironmentConfiguration configuration)
+        /// <param name="channelId">The channel identifier.</param>
+        /// <param name="boundaryLoggingActive">Sets boundary logging as active.</param>
+        public virtual void Configure(IEnvironmentConfiguration configuration, string channelId
+            , bool boundaryLoggingActive = true)
         {
-
+            Service.ChannelId = channelId;
+            Service.BoundaryLoggingActive = boundaryLoggingActive;
         }
-
     }
 }

@@ -31,16 +31,16 @@ namespace Xigadee
         /// <param name="configuration">The configuration.</param>
         /// <param name="channelId">The channel identifier.</param>
         /// <param name="mappingChannelId">The actual channel id for the Azure Service Bus queue.</param>
-        public virtual void Configure(IEnvironmentConfiguration configuration
-            , string channelId = null
-            , string mappingChannelId = null)
+        /// <param name="boundaryLoggingActive">Sets boundary logging as active.</param>
+        public override void Configure(IEnvironmentConfiguration configuration
+            , string channelId
+            , string mappingChannelId = null
+            , bool boundaryLoggingActive = true)
         {
-            base.Configure(configuration);
-            Service.AzureServiceBusPropertiesSet(configuration);
-            Service.ChannelId = channelId;
+            base.Configure(configuration, channelId, boundaryLoggingActive);
             Service.MappingChannelId = mappingChannelId;
+            Service.AzureServiceBusPropertiesSet(configuration);
         }
-
     }
     /// <summary>
     /// This is the Service Bus Topic Listener harness
@@ -52,12 +52,16 @@ namespace Xigadee
         /// </summary>
         /// <param name="configuration">The configuration.</param>
         /// <param name="channelId">The channel identifier.</param>
-
-        public virtual void Configure(IEnvironmentConfiguration configuration, string channelId = null)
+        /// <param name="mappingChannelId">The actual channel id for the Azure Service Bus queue.</param>
+        /// <param name="boundaryLoggingActive">Sets boundary logging as active.</param>
+        public override void Configure(IEnvironmentConfiguration configuration
+            , string channelId
+            , string mappingChannelId = null
+            , bool boundaryLoggingActive = true)
         {
-            base.Configure(configuration);
+            base.Configure(configuration, channelId, boundaryLoggingActive);
+            Service.MappingChannelId = mappingChannelId;
             Service.AzureServiceBusPropertiesSet(configuration);
-            Service.ChannelId = channelId;
         }
     }
 }

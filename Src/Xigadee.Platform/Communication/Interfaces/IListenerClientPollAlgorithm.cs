@@ -43,7 +43,7 @@ namespace Xigadee
         /// </summary>
         TimeSpan? PriorityRecalculateFrequency { get; }
         /// <summary>
-        /// The is the frequency that the client collection should be occassionally rebuilt. The default is every 30 minutes.
+        /// The is the frequency that the client collection should be occasionally recalculated. The default is every 30 minutes.
         /// </summary>
         TimeSpan? PriorityRebuildFrequency { get; }
 

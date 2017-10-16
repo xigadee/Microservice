@@ -73,7 +73,9 @@ namespace Xigadee
             {            
                 string queueName = IsDeadLetterListener ? EntityNameHelper.FormatDeadLetterPath(client.Name) : client.Name;
 
-                return new QueueClient(Connection.Connection.ToString(), queueName, Connection.DefaultReceiveMode, Connection.DefaultRetryPolicy);
+                var qClient = new QueueClient(Connection.Connection.ToString(), queueName, Connection.DefaultReceiveMode, Connection.DefaultRetryPolicy);
+                
+                return qClient;
             };
 
             //client.ClientCreate = () =>

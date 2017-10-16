@@ -40,5 +40,7 @@ namespace Xigadee
         /// This is the set of default priority partitions. Override if you wish to change.
         /// </summary>
         public virtual List<SenderPartitionConfig> PriorityPartitions => SenderPartitionConfig.Init(0, 1).ToList();
+
+        
     }
 }

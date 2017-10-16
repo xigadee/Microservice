@@ -32,7 +32,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="collector">The data collector.</param>
         /// <param name="myEvent">The log event.</param>
-        /// <param name="sync">Specifies whether this method should be written syncronously or on to the async queue for offline processing.</param>
+        /// <param name="sync">Specifies whether this method should be written synchronously or on to the async queue for offline processing.</param>
         public static void Write(this IDataCollection collector, LogEvent myEvent, bool sync = false)
         {
             collector.Write(myEvent, DataCollectionSupport.Logger, sync);
@@ -42,7 +42,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="collector">The data collector.</param>
         /// <param name="myEvent">The boundary event.</param>
-        /// <param name="sync">Specifies whether this method should be written syncronously or on to the async queue for offline processing.</param>
+        /// <param name="sync">Specifies whether this method should be written synchronously or on to the async queue for offline processing.</param>
         public static void Write(this IDataCollection collector, BoundaryEvent myEvent, bool sync = false)
         {
             collector.Write(myEvent, DataCollectionSupport.Boundary, sync);
@@ -52,7 +52,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="collector">The data collector.</param>
         /// <param name="myEvent">The event source.</param>
-        /// <param name="sync">Specifies whether this method should be written syncronously or on to the async queue for offline processing.</param>
+        /// <param name="sync">Specifies whether this method should be written synchronously or on to the async queue for offline processing.</param>
         public static void Write(this IDataCollection collector, EventSourceEvent myEvent, bool sync = false)
         {
             collector.Write(myEvent, DataCollectionSupport.EventSource, sync);
@@ -62,7 +62,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="collector">The data collector.</param>
         /// <param name="myEvent">The resource event.</param>
-        /// <param name="sync">Specifies whether this method should be written syncronously or on to the async queue for offline processing.</param>
+        /// <param name="sync">Specifies whether this method should be written synchronously or on to the async queue for offline processing.</param>
         public static void Write(this IDataCollection collector, ResourceEvent myEvent, bool sync = false)
         {
             collector.Write(myEvent, DataCollectionSupport.Resource, sync);
@@ -72,7 +72,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="collector">The data collector.</param>
         /// <param name="myEvent">The telemetry event.</param>
-        /// <param name="sync">Specifies whether this method should be written syncronously or on to the async queue for offline processing.</param>
+        /// <param name="sync">Specifies whether this method should be written synchronously or on to the async queue for offline processing.</param>
         public static void Write(this IDataCollection collector, TelemetryEvent myEvent, bool sync = false)
         {
             collector.Write(myEvent, DataCollectionSupport.Telemetry, sync);

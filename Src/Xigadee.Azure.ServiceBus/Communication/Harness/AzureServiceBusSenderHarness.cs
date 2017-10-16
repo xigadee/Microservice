@@ -29,11 +29,13 @@ namespace Xigadee
         /// </summary>
         /// <param name="configuration">The configuration.</param>
         /// <param name="channelId">The channel identifier.</param>
-        public virtual void Configure(IEnvironmentConfiguration configuration, string channelId = null)
+        /// <param name="boundaryLoggingActive">Sets boundary logging as active.</param>
+        public override void Configure(IEnvironmentConfiguration configuration
+            , string channelId
+            , bool boundaryLoggingActive = true)
         {
-            base.Configure(configuration);
+            base.Configure(configuration, channelId, boundaryLoggingActive);
             Service.AzureServiceBusPropertiesSet(configuration);
-            Service.ChannelId = channelId;
         }
 
     }
@@ -47,12 +49,13 @@ namespace Xigadee
         /// </summary>
         /// <param name="configuration">The configuration.</param>
         /// <param name="channelId">The channel identifier.</param>
-
-        public virtual void Configure(IEnvironmentConfiguration configuration, string channelId = null)
+        /// <param name="boundaryLoggingActive">Sets boundary logging as active.</param>
+        public override void Configure(IEnvironmentConfiguration configuration
+            , string channelId
+            , bool boundaryLoggingActive = true)
         {
-            base.Configure(configuration);
+            base.Configure(configuration, channelId, boundaryLoggingActive);
             Service.AzureServiceBusPropertiesSet(configuration);
-            Service.ChannelId = channelId;
         }
     }
 

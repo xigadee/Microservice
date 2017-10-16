@@ -28,7 +28,7 @@ namespace Xigadee
     public static partial class DataCollectionExtensionMethods
     {
         /// <summary>
-        /// Track the metric for each of the tranckers.
+        /// Track the metric for each of the trackers.
         /// </summary>
         /// <param name="collector">The collector reference.</param>
         /// <param name="metricName"></param>

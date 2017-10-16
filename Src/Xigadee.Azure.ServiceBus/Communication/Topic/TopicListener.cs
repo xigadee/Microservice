@@ -169,7 +169,7 @@ namespace Xigadee
             //        , lockDuration: partition.FabricMaxMessageLock);
             //};
 
-            client.SupportsQueueLength = true;
+            client.SupportsQueueLength = false;
 
             //client.QueueLength = () =>
             //{
