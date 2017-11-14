@@ -37,7 +37,7 @@ namespace Xigadee
         {
             var ms = pipeline.ToMicroservice();
 
-            var mainMenu = new ConsoleMenu(title ?? "Xigadee Microservice Test Console");
+            var mainMenu = new ConsoleMenu(title ?? ms.Id.Description ?? "Xigadee Microservice Test Console");
 
             mainMenu.AddMicroservicePipeline(pipeline);
 

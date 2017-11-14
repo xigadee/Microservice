@@ -53,7 +53,5 @@ namespace Xigadee
                 message.Abandon();
         }
         #endregion
-
-
     }
 }

@@ -78,7 +78,7 @@ namespace Xigadee
         public virtual int DeliveryCount { get; set; } = 0;
 
         /// <summary>
-        /// Signals the message as succeeeded or failed atomically.
+        /// Signals the message as succeeded or failed atomically.
         /// If the release action is set, this will be called the first time this method is called.
         /// </summary>
         /// <param name="success">if set to <c>true</c> [success].</param>

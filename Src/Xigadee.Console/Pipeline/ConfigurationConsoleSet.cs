@@ -40,6 +40,13 @@ namespace Xigadee
             , Func<string,string,bool> fnInclude = null, int priority = 1000)
             where P : IPipeline
         {
+            if (args == null)
+            {
+                if (throwErrors)
+                    throw new ArgumentNullException("args", "Arguments cannot be null.");
+                return pipeline;
+            }
+
             var settings = args.CommandArgsParse(strStart, strDelim, throwErrors);
 
             return pipeline.ConfigurationSetFromConsoleArgs(settings, fnInclude, priority);
@@ -57,6 +64,9 @@ namespace Xigadee
             , Func<string, string, bool> fnInclude = null, int priority = 1000)
             where P : IPipeline
         {
+            if (settings == null)
+                throw new ArgumentNullException("settings", "Settings cannot be null.");
+
             if (settings.Count > 0)
             {
                 if (fnInclude == null)

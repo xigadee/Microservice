@@ -26,7 +26,7 @@ namespace Test.Xigadee
             () =>
             {
                 var menu = new ConsoleMenu(
-                   "Xigadee Microservice Scratchpad Test Console"
+                   "Xigadee Microservice Scratch-pad Test Console"
                    , new ConsoleOption(
                        "Set Persistence storage options"
                        , (m, o) =>
