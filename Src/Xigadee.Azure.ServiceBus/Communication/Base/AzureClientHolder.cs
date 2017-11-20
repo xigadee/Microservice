@@ -82,7 +82,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region MessagesPull(int? count, int? wait)
+        #region MessagesPull(int? count, int? wait, string mappingChannel = null)
         /// <summary>
         /// This method pulls a set of messages from the fabric and unpacks them in to TransmissionPayload messages.
         /// </summary>

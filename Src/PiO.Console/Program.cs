@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Threading.Tasks;
 using Xigadee;
 
 namespace PiO
@@ -13,8 +14,14 @@ namespace PiO
             mservice
                 .AdjustPolicyTaskManagerForDebug()
                 .ConfigurationSetFromConsoleArgs(args)
-                .AddChannelIncoming("incoming", "Incoming UDP traffic", ListenerPartitionConfig.Init(1))
+                .AddChannelIncoming("lightwave", "LightwaveRF UDP traffic", ListenerPartitionConfig.Init(1))
                     .AttachUdpListener(new IPEndPoint(IPAddress.Any, 9761))
+                    .AttachCommand(async (ctx) => 
+                    {
+                        //Do nothing
+                        await Task.Delay(10);
+                    }
+                    , ("lightwave","incoming","data"))
                     .Revert()
                 .AddChannelOutgoing("status", "Outgoing UDP status", SenderPartitionConfig.Init(1))
                     .AttachUdpSender(new IPEndPoint(IPAddress.Any, 44723))

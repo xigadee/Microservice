@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Net.Sockets;
 
 namespace Xigadee
 {
@@ -16,10 +14,13 @@ namespace Xigadee
             , string connectionName = null
             , IEnumerable<ListenerPartitionConfig> priorityPartitions = null
             , IEnumerable<ResourceProfile> resourceProfiles = null
+            , Action<UdpChannelListener> action = null
             )
             where C : IPipelineChannelIncoming<IPipeline>
         {
+            var listener = new UdpChannelListener(false, ep);
 
+            cpipe.AttachListener(listener, action, true);
 
             return cpipe;
         }
@@ -29,10 +30,13 @@ namespace Xigadee
             , string connectionName = null
             , IEnumerable<ListenerPartitionConfig> priorityPartitions = null
             , IEnumerable<ResourceProfile> resourceProfiles = null
+            , Action<UdpChannelListener> action = null
             )
             where C : IPipelineChannelIncoming<IPipeline>
         {
+            var listener = new UdpChannelListener(true, ep);
 
+            cpipe.AttachListener(listener, action, true);
 
             return cpipe;
         }
@@ -42,11 +46,13 @@ namespace Xigadee
             , string connectionName = null
             , IEnumerable<ListenerPartitionConfig> priorityPartitions = null
             , IEnumerable<ResourceProfile> resourceProfiles = null
+            , Action<UdpChannelSender> action = null
             )
             where C : IPipelineChannelOutgoing<IPipeline>
         {
+            var sender = new UdpChannelSender(false, ep);
 
-            //var client = new UdpClient(
+            cpipe.AttachSender(sender, action, true);
 
             return cpipe;
         }
@@ -57,11 +63,13 @@ namespace Xigadee
             , string connectionName = null
             , IEnumerable<ListenerPartitionConfig> priorityPartitions = null
             , IEnumerable<ResourceProfile> resourceProfiles = null
+            , Action<UdpChannelSender> action = null
             )
             where C : IPipelineChannelOutgoing<IPipeline>
         {
+            var sender = new UdpChannelSender(true, ep);
 
-            //var client = new UdpClient(
+            cpipe.AttachSender(sender, action, true);
 
             return cpipe;
         }

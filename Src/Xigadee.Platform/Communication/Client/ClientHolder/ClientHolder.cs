@@ -89,7 +89,7 @@ namespace Xigadee
         public abstract Task<List<TransmissionPayload>> MessagesPull(int? count, int? wait, string mappingChannel = null);
 
         /// <summary>
-        /// This method is used to Transmit the payload. You should override this method to insert your own tranmission logic.
+        /// This method is used to Transmit the payload. You should override this method to insert your own transmission logic.
         /// </summary>
         /// <param name="payload">The payload to transmit.</param>
         /// <param name="retry">This parameter specifies the number of retries that should be attempted if transmission fails. By default this value is 0.</param>
@@ -97,7 +97,7 @@ namespace Xigadee
         public abstract Task Transmit(TransmissionPayload payload, int retry = 0);
 
         /// <summary>
-        /// This boolean property idemtifies whether the client is active and should be polled
+        /// This boolean property identifies whether the client is active and should be polled
         /// for new arriving messages.
         /// </summary>
         public bool IsActive { get; set; }
@@ -171,7 +171,7 @@ namespace Xigadee
         /// </summary>
         public bool SupportsRateLimiting { get; set; }
         /// <summary>
-        /// This property allows a channel to receive a higer poll frequency by setting the rating greater than 1.
+        /// This property allows a channel to receive a higher poll frequency by setting the rating greater than 1.
         /// </summary>
         public decimal Weighting { get; set; }
         /// <summary>

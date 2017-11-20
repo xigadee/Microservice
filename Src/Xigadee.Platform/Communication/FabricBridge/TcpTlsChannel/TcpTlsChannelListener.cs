@@ -87,7 +87,7 @@ namespace Xigadee
 
         #region ClientCreate(ListenerPartitionConfig partition)
         /// <summary>
-        /// This override creates the client and registers/unregisters it with the protocol.
+        /// This override creates the client and registers/un-registers it with the protocol.
         /// </summary>
         /// <param name="partition">The partition to create the client for.</param>
         /// <returns>Returns the client holder.</returns>

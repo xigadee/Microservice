@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This class contains a number of Linq shortcuts from the Ximura opensource library.
+    /// This class contains a number of LINQ shortcuts.
     /// </summary>
     public static partial class LinqHelper
     {
