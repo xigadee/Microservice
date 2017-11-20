@@ -134,7 +134,6 @@ namespace Xigadee
             /// Gets the listener.
             /// </summary>
             public IListener Listener { get; }
-
             /// <summary>
             /// Gets the payload identifier.
             /// </summary>

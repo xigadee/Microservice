@@ -5,7 +5,7 @@ using System.Text;
 namespace Xigadee
 {
     /// <summary>
-    /// This interface contains extensions to allow additional Service Bus paramters to be set for the listeners and senders.
+    /// This interface contains extensions to allow additional Service Bus parameters to be set for the listeners and senders.
     /// </summary>
     /// <seealso cref="Xigadee.ICommunicationBridge" />
     public interface IAzureServiceBusFabricBridge: ICommunicationBridge

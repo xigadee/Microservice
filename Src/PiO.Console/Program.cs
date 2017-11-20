@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using Xigadee;
 
 namespace PiO
@@ -7,17 +8,21 @@ namespace PiO
     {
         static void Main(string[] args)
         {
-            var ms = new MicroservicePipeline("IOListen", description: "Microservice IO Listener");
+            var mservice = new MicroservicePipeline("PiO", description: "PiO Server");
 
-            ms
+            mservice
                 .AdjustPolicyTaskManagerForDebug()
                 .ConfigurationSetFromConsoleArgs(args)
                 .AddChannelIncoming("incoming", "Incoming UDP traffic", ListenerPartitionConfig.Init(1))
-                    .AttachUdpListener()
+                    .AttachUdpListener(new IPEndPoint(IPAddress.Any, 9761))
+                    .Revert()
+                .AddChannelOutgoing("status", "Outgoing UDP status", SenderPartitionConfig.Init(1))
+                    .AttachUdpSender(new IPEndPoint(IPAddress.Any, 44723))
+                    .Revert();
                 ;
-                
 
-            ms.StartWithConsole();
+
+            mservice.StartWithConsole();
         }
     }
 }

@@ -231,7 +231,7 @@ namespace Xigadee
         protected override void StartInternal()
         {
             SettingsValidate();
-            //Do nothing - the start logic is overriden to make sure the clients only
+            //Do nothing - the start logic is overridden to make sure the clients only
             //start when there are active message filters for the connection.
         }
         #endregion

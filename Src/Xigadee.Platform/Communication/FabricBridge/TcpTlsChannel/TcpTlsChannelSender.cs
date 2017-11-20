@@ -29,7 +29,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This sender uses the TCP and TLS protocols to efficently transmit requests to a remote Microservices.
+    /// This sender uses the TCP and TLS protocols to efficiently transmit requests to a remote Microservices.
     /// </summary>
     public class TcpTlsChannelSender :MessagingSenderBase<TcpTlsClient, ServiceMessage, TcpTlsClientHolder>
     {
