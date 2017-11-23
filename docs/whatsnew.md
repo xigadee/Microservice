@@ -8,7 +8,7 @@ This section details the current Xigadee release versions with the features adde
 
 This is the current development version. We are currently porting the libraries over to .NET Standard 2.0 to enable Xigadee to be used in .NET Core applications. We will also be supporting .NET Framework 4.7 and higher as well. 
 
-There are a number of breaking changes to the libraries, specifically with the Azure NuGet package which has been split in to seperate libraries tightly coupled to their NuGet equivalent. This is also due to how the DocumentDb and ServiceBus libraries have been rewritten for .NET Standard by Microsoft.
+There are a number of breaking changes to the libraries, specifically with the Azure NuGet package which has been split in to separate libraries tightly coupled to their NuGet equivalent. This is also due to how the DocumentDb and ServiceBus libraries have been rewritten for .NET Standard by Microsoft.
 
 ### Current Release - 1.1.17235.1 (August 23, 2017)
 
@@ -24,14 +24,13 @@ This is the current supported release. It contains all the core functionality fo
 
 This version contains additional support for rate limiting within the Xigadee core engine, for systems that experience heavy load. There are also a number of bug fixes around high-volume performance issues.
 
-There are also changes around the Command object, specifically the introduction of schedule attributes to simplify the setting up of timed poll jobs. Command method and schedule attributes have also been extended to master job to simplify configuration. There are also some small breaking changes for Command event arguments, but these should not affect normal operation.There are additional failure mode behavior specified in the Command policy object that defines how the command should behave if an unhandled exception is raised in the application code.
+There are also changes around the Command object, specifically the introduction of schedule attributes to simplify the setting up of timed poll jobs. Command method and schedule attributes have also been extended to master job to simplify configuration. There are also some small breaking changes for Command event arguments, but these should not affect normal operation.There are additional failure mode behaviour specified in the Command policy object that defines how the command should behave if an unhandled exception is raised in the application code.
 
 ### Previous Release - 1.0.17160.7 (June 9, 2017)
 
 This initial release has now been superseded by Release 1.1 above.
 
 <table><tr> 
-<td><a href="http://www.hitachiconsulting.com"><img src="hitachi.png" alt="Hitachi Consulting" height="50"/></a></td> 
 <td>Created by: <a href="http://github.com/paulstancer">Paul Stancer</a></td>
   <td><a href="../README.md">Home</a></td>
 </tr></table>
