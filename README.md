@@ -1,12 +1,14 @@
 ![Xigadee](/docs/X2a.png)
 
-Xigadee is an open-source Microservice framework, developed by [Paul Stancer](https://github.com/paulstancer) and [Guy Steel](https://github.com/guysteel) at Hitachi Consulting, and released under the Apache 2 license by Hitachi Consulting in 2016. You are free to use it within your own commercial applications without restriction. 
+Xigadee is an open-source Microservice framework, developed by [Paul Stancer](https://github.com/paulstancer) and [Guy Steel](https://github.com/guysteel), and released under the Apache 2 license by Hitachi Consulting in 2016. You are free to use it within your own commercial applications without restriction. 
 
 The framework is a result of our experience - and frustration - over the past five years, in building large-scale distributed cloud applications for our enterprise customers.
 
 We found that when constructing Microservices, we could spend as much time on building and testing the repeatable "plumbing" code (messaging, monitoring, communication, security etc.) as we did on the actual application business logic. 
 
 So our goal with Xigadee is to solve that challenge. To provide a consistent development approach; and more importantly - a set of reusable tools that we can apply to any type of Microservice application - while removing the drudgery and overhead of "re-inventing the Microservice-wheel" each time we construct a new distributed solution.
+
+**_Please note: the current main branch of the code is being converted to support both .NET Standard 2.0 and .NET Framework 4.7 ready for release 2 of Xigadee. Ideally you should have Visual Studio 2017 v15.4 or later to build._**
 
 ## A quick demonstration
 

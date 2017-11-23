@@ -2,50 +2,44 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class UdpClientHolder : ClientHolder<UdpClient, ServiceMessage>
+    /// <summary>
+    /// This class holds the Udp client and associated logic.
+    /// </summary>
+    public class UdpClientHolder : ClientHolder<UdpClient, UdpReceiveResult>
     {
-        public UdpClientHolder()
-        {
 
-        }
 
         public override async Task<List<TransmissionPayload>> MessagesPull(int? count, int? wait, string mappingChannel = null)
         {
-            List<TransmissionPayload> batch = null;
+            List<TransmissionPayload> batch =  new List<TransmissionPayload>();
 
-            //Guid? batchId = null;
-            //try
-            //{
-            //    var intBatch = (await MessageReceive(count, wait))?.ToList() ?? new List<M>();
-            //    if (BoundaryLoggingActive)
-            //        batchId = Collector?.BoundaryBatchPoll(count ?? -1, intBatch.Count, mappingChannel ?? ChannelId, Priority);
+            try
+            {
+                Guid? batchId = null;
 
-            //    batch = intBatch.Select(m => TransmissionPayloadUnpack(m, Priority, mappingChannel, batchId)).ToList();
-            //}
-            //catch (MessagingException dex)
-            //{
-            //    //OK, something has gone wrong with the Azure fabric.
-            //    LogException("Messaging Exception (Pull)", dex);
-            //    //Let's reinitialise the client
-            //    if (ClientReset == null)
-            //        throw;
+                while (Client.Available > 0)
+                {
+                    var result = await Client.ReceiveAsync();
+                    //if (BoundaryLoggingActive)
+                    //    batchId = Collector?.BoundaryBatchPoll(count ?? -1, intBatch.Count, mappingChannel ?? ChannelId, Priority);
 
-            //    ClientReset(dex);
-            //    batch = batch ?? new List<TransmissionPayload>();
-            //}
-            //catch (TimeoutException tex)
-            //{
-            //    LogException("MessagesPull (Timeout)", tex);
-            //    batch = batch ?? new List<TransmissionPayload>();
-            //}
+                    var sm = MessageUnpack(result);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                LogException("Messaging Exception (Pull)", ex);
+            }
 
             LastTickCount = Environment.TickCount;
 
-            return batch ?? new List<TransmissionPayload>();
+            return batch;
         }
 
         public override Task Transmit(TransmissionPayload payload, int retry = 0)
@@ -53,5 +47,6 @@ namespace Xigadee
             throw new NotImplementedException();
         }
 
+        
     }
 }

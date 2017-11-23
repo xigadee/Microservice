@@ -8,6 +8,16 @@ namespace Xigadee
 {
     public static class ConfigureAzureMessagingHelper
     {
+        /// <summary>
+        /// Configures the Azure messaging settings.
+        /// </summary>
+        /// <typeparam name="P">The message type.</typeparam>
+        /// <param name="component">The component.</param>
+        /// <param name="channelId">The channel identifier.</param>
+        /// <param name="priorityPartitions">The priority partitions.</param>
+        /// <param name="resourceProfiles">The resource profiles.</param>
+        /// <param name="connectionName">Name of the connection.</param>
+        /// <param name="serviceBusConnection">The service bus connection.</param>
         public static void ConfigureAzureMessaging<P>(this IAzureServiceBusMessagingService<P> component
             , string channelId
             , IEnumerable<P> priorityPartitions

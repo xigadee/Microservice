@@ -21,7 +21,7 @@ namespace PiO
                         //Do nothing
                         await Task.Delay(10);
                     }
-                    , ("lightwave","incoming","data"))
+                    , ("incoming","data"))
                     .Revert()
                 .AddChannelOutgoing("status", "Outgoing UDP status", SenderPartitionConfig.Init(1))
                     .AttachUdpSender(new IPEndPoint(IPAddress.Any, 44723))

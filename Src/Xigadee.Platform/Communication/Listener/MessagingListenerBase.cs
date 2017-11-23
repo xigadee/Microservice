@@ -32,6 +32,7 @@ namespace Xigadee
     public class MessagingListenerBase<C, M, H> : MessagingServiceBase<C, M, H, ListenerPartitionConfig>
         , IListener, IRequireSharedServices
         where H : ClientHolder<C, M>, new()
+        where C: class
     {
         #region Declarations
         private object syncObject = new object();

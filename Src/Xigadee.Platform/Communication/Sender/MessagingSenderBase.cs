@@ -27,9 +27,10 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="C">The client type.</typeparam>
     /// <typeparam name="M">The client message type.</typeparam>
-    /// <typeparam name="H">The clientholder type.</typeparam>
+    /// <typeparam name="H">The client holder type.</typeparam>
     public class MessagingSenderBase<C, M, H> : MessagingServiceBase<C, M, H, SenderPartitionConfig>, ISender
         where H : ClientHolder<C, M>, new()
+        where C : class
     {
         #region ProcessMessage(TransmissionPayload payload)
         /// <summary>

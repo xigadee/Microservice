@@ -28,6 +28,7 @@ namespace Xigadee
     /// <typeparam name="C">The client type.</typeparam>
     /// <typeparam name="M">The client message type.</typeparam>
     public abstract class ClientHolder<C, M>: ClientHolder
+        where C: class
     {
         /// <summary>
         /// This is the internal client
@@ -65,8 +66,7 @@ namespace Xigadee
         /// <param name="id">The optional id.</param>
         public virtual void MessageSignalInternal(M message, bool signal, Guid id)
         {
-            if (MessageSignal != null)
-                MessageSignal(message, signal);
+            MessageSignal?.Invoke(message, signal);
         }
 
         /// <summary>

@@ -34,6 +34,7 @@ namespace Xigadee
     public abstract class MessagingServiceBase<C, M, H, P>: ServiceBase<StatusBase>
         , IRequirePayloadManagement, IRequireServiceOriginator, IRequireDataCollector
         , IMessaging, IMessagingService<P> 
+        where C: class
         where H: ClientHolder<C, M>, new()
         where P: PartitionConfig
     {
@@ -215,8 +216,10 @@ namespace Xigadee
         {
             var client = new H();
 
-            //Set the message Collector?.
+            //Set the Data Collector
             client.Collector = Collector;
+            //Set the Serializer.
+            client.PayloadSerializer = PayloadSerializer;
 
             client.BoundaryLoggingActive = BoundaryLoggingActive ?? false;
 
@@ -234,8 +237,9 @@ namespace Xigadee
 
             client.Stop = () =>
             {
-                if (client == null) return;
-                if (client.Client == null) return;
+                if (client?.Client == null)
+                    return;
+
                 client.IsActive = false;
                 client.ClientClose();
             };
@@ -314,7 +318,7 @@ namespace Xigadee
         }
         #endregion
 
-        //Microservice set
+        //Microservice properties set
         #region PayloadSerializer
         /// <summary>
         /// This container is used to serialize and deserialize messaging payloads.
@@ -334,7 +338,6 @@ namespace Xigadee
             get;
             set;
         }
-
         #endregion
         #region Collector
         /// <summary>
@@ -345,6 +348,7 @@ namespace Xigadee
             get;set;
         }
         #endregion
+
         #region LogExceptionLocation(string method)
         /// <summary>
         /// This helper method provides a class name and method name for debugging exceptions. 

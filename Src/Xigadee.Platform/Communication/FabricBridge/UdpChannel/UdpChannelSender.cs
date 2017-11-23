@@ -3,7 +3,7 @@ using System.Net.Sockets;
 
 namespace Xigadee
 {
-    public class UdpChannelSender : MessagingSenderBase<UdpClient, ServiceMessage, UdpClientHolder>
+    public class UdpChannelSender : MessagingSenderBase<UdpClient, UdpReceiveResult, UdpClientHolder>
     {
         public UdpChannelSender(bool isMulticast, IPEndPoint endPoint)
         {

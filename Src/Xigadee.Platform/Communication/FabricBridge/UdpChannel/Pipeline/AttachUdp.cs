@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 
 namespace Xigadee
 {
@@ -11,9 +13,7 @@ namespace Xigadee
     {
         public static C AttachUdpListener<C>(this C cpipe
             , IPEndPoint ep
-            , string connectionName = null
-            , IEnumerable<ListenerPartitionConfig> priorityPartitions = null
-            , IEnumerable<ResourceProfile> resourceProfiles = null
+            , Func<UdpReceiveResult,object> mapper = null
             , Action<UdpChannelListener> action = null
             )
             where C : IPipelineChannelIncoming<IPipeline>
@@ -27,9 +27,6 @@ namespace Xigadee
 
         public static C AttachMulticastUdpListener<C>(this C cpipe
             , IPEndPoint ep
-            , string connectionName = null
-            , IEnumerable<ListenerPartitionConfig> priorityPartitions = null
-            , IEnumerable<ResourceProfile> resourceProfiles = null
             , Action<UdpChannelListener> action = null
             )
             where C : IPipelineChannelIncoming<IPipeline>
@@ -43,9 +40,6 @@ namespace Xigadee
 
         public static C AttachUdpSender<C>(this C cpipe
             , IPEndPoint ep
-            , string connectionName = null
-            , IEnumerable<ListenerPartitionConfig> priorityPartitions = null
-            , IEnumerable<ResourceProfile> resourceProfiles = null
             , Action<UdpChannelSender> action = null
             )
             where C : IPipelineChannelOutgoing<IPipeline>
@@ -60,9 +54,6 @@ namespace Xigadee
 
         public static C AttachMulticastUdpSender<C>(this C cpipe
             , IPEndPoint ep
-            , string connectionName = null
-            , IEnumerable<ListenerPartitionConfig> priorityPartitions = null
-            , IEnumerable<ResourceProfile> resourceProfiles = null
             , Action<UdpChannelSender> action = null
             )
             where C : IPipelineChannelOutgoing<IPipeline>

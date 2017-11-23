@@ -204,6 +204,16 @@ namespace Xigadee
         }
         #endregion
 
+        #region PayloadSerializer
+        /// <summary>
+        /// This container is used to serialize and deserialize messaging payloads.
+        /// </summary>
+        public IPayloadSerializationContainer PayloadSerializer
+        {
+            get;
+            set;
+        }
+        #endregion
         #region Collector
         /// <summary>
         /// This is the system wide data collector
