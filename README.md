@@ -94,9 +94,9 @@ To read what's new in the latest NuGet release packages, please click [here](/do
 
 ## Legal Stuff
 
-_**Copyright © [Hitachi Consulting](http://www.hitachiconsulting.com) 2012-2017**_
+Part of Xigadee is the original Copyright of [Hitachi Consulting](http://www.hitachiconsulting.com) 2012-2017. 
 
-Licensed under the Apache License, Version 2.0 (the "License").
+Xigadee is released under the Apache License, Version 2.0 (the "License").
 You may obtain a copy of the License at: http://www.apache.org/licenses/LICENSE-2.0
  
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -104,6 +104,5 @@ See the License for the specific language governing permissions and limitations 
 
 
 <table><tr> 
-<td><a href="http://www.hitachiconsulting.com"><img src="docs/hitachi.png" alt="Hitachi Consulting" height="50"/></a></td>   
 <td>Created by: <a href="http://github.com/paulstancer">Paul Stancer</a></td>
 </tr></table>
