@@ -29,7 +29,7 @@ namespace Xigadee
         /// This method logs the current status as part of the time poll.
         /// </summary>
         /// <returns></returns>
-        protected async Task LogStatistics()
+        protected Task LogStatistics()
         {
             try
             {
@@ -42,6 +42,8 @@ namespace Xigadee
                 //We're not going to throw any exception here
                 mDataCollection?.LogException("LogStatistics unhandled exception", ex);
             }
+
+            return Task.FromResult(0);
         }
         #endregion
         #region StatisticsRecalculate()

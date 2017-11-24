@@ -1,26 +1,4 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-using System;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xigadee;
+﻿using System.Collections.Concurrent;
 
 namespace Xigadee
 {
@@ -57,23 +35,41 @@ namespace Xigadee
 
             SupportAdd(DataCollectionSupport.ApiBoundary, (e) => EventsBoundary.Add(e));
         }
-
+        /// <summary>
+        /// Gets or sets the EventSource loggers.
+        /// </summary>
         public ConcurrentBag<EventHolder> EventsEventSource { get; set; } = new ConcurrentBag<EventHolder>();
-
+        /// <summary>
+        /// Gets or sets the boundary events loggers.
+        /// </summary>
         public ConcurrentBag<EventHolder> EventsBoundary { get; set; } = new ConcurrentBag<EventHolder>();
-
+        /// <summary>
+        /// Gets or sets the dispatcher events loggers.
+        /// </summary>
         public ConcurrentBag<EventHolder> EventsDispatcher { get; set; } = new ConcurrentBag<EventHolder>();
-
+        /// <summary>
+        /// Gets or sets the log events loggers.
+        /// </summary>
         public ConcurrentBag<EventHolder> EventsLog { get; set; } = new ConcurrentBag<EventHolder>();
-
+        /// <summary>
+        /// Gets or sets the events metric loggers.
+        /// </summary>
         public ConcurrentBag<EventHolder> EventsMetric { get; set; } = new ConcurrentBag<EventHolder>();
-
+        /// <summary>
+        /// Gets or sets the microservice events loggers.
+        /// </summary>
         public ConcurrentBag<EventHolder> EventsMicroservice { get; set; } = new ConcurrentBag<EventHolder>();
-
+        /// <summary>
+        /// Gets or sets the custom events loggers.
+        /// </summary>
         public ConcurrentBag<EventHolder> EventsCustom { get; set; } = new ConcurrentBag<EventHolder>();
-
+        /// <summary>
+        /// Gets or sets the security events loggers.
+        /// </summary>
         public ConcurrentBag<EventHolder> EventsSecurity { get; set; } = new ConcurrentBag<EventHolder>();
-
+        /// <summary>
+        /// Gets or sets the resource events loggers.
+        /// </summary>
         public ConcurrentBag<EventHolder> EventsResource { get; set; } = new ConcurrentBag<EventHolder>();
 
     }

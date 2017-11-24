@@ -78,7 +78,7 @@ If you are new to Microservice development, then the following links gives you a
 Xigadee is made up of a set of libraries, which are listed below. They support different areas of Microservice functionality. These capabilities can be added to your project through the relevant [NuGet](https://www.nuget.org/packages?q=Tags%3A%22Xigadee%22) packages. 
 
 * [Xigadee](Src/Xigadee.Platform/_Docs/Introduction.md) 
-	- This is the core root library that is used to create Microservice and serverless based solutions. 
+	- This is the core root library that is used to create Microservice based solutions. 
 * [Xigadee Azure](Src/Xigadee.Azure/_docs/Introduction.md) 
 	- This library allows for the seamless integration with many of the Azure platform PAAS services.
 * [Xigadee Api Server](Src/Xigadee.Api.Server/_docs/Introduction.md)
