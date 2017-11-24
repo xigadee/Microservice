@@ -9,11 +9,13 @@ namespace PiO
     {
         static void Main(string[] args)
         {
+            DebugMemoryDataCollector coll;
             var mservice = new MicroservicePipeline("PiO", description: "PiO Server");
 
             mservice
                 .AdjustPolicyTaskManagerForDebug()
                 .ConfigurationSetFromConsoleArgs(args)
+                .AddDebugMemoryDataCollector(out coll)
                 .AddChannelIncoming("lightwave", "LightwaveRF UDP traffic", ListenerPartitionConfig.Init(1))
                     .AttachUdpListener(new IPEndPoint(IPAddress.Any, 9761))
                     .AttachCommand(async (ctx) => 
@@ -25,7 +27,11 @@ namespace PiO
                     .Revert()
                 .AddChannelOutgoing("status", "Outgoing UDP status", SenderPartitionConfig.Init(1))
                     .AttachUdpSender(new IPEndPoint(IPAddress.Any, 44723))
-                    .Revert();
+                    .Revert()
+                    .OnEvent((a) => 
+                    {
+                    }
+                    , DataCollectionSupport.Statistics)
                 ;
 
 

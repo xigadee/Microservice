@@ -1,20 +1,4 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-using System;
+﻿using System;
 using System.Threading.Tasks;
 
 namespace Xigadee
@@ -29,7 +13,7 @@ namespace Xigadee
         /// <param name="commandFunction">The command function.</param>
         /// <param name="header">The destination fragment</param>
         /// <param name="referenceId">The optional command reference id</param>
-        /// <param name="startupPriority">The command startup priority.</param>
+        /// <param name="startupPriority">The command start-up priority.</param>
         /// <param name="channelIncoming">The incoming channel. This is optional if you pass channel information in the header.</param>
         /// <param name="autoCreateChannel">Set this to true if you want the incoming channel created if it does not exist. The default is true.</param>
         /// <returns>Returns the pipeline.</returns>
@@ -69,7 +53,7 @@ namespace Xigadee
         /// <param name="commandFunction">The command function.</param>
         /// <param name="header">The header.</param>
         /// <param name="referenceId">The reference identifier.</param>
-        /// <param name="startupPriority">The startup priority.</param>
+        /// <param name="startupPriority">The start-up priority.</param>
         /// <returns>Returns the pipeline.</returns>
         public static E AttachCommand<E>(this E cpipe
             , Func<CommandMethodRequestContext, Task> commandFunction
@@ -92,7 +76,7 @@ namespace Xigadee
         /// <param name="commandFunction">The command function.</param>
         /// <param name="header">The header.</param>
         /// <param name="referenceId">The reference identifier.</param>
-        /// <param name="startupPriority">The startup priority.</param>
+        /// <param name="startupPriority">The start-up priority.</param>
         /// <returns>Returns the pipeline.</returns>
         public static E AttachCommand<E>(this E cpipe
             , Func<CommandMethodRequestContext, Task> commandFunction
@@ -115,7 +99,7 @@ namespace Xigadee
         /// <param name="contract">The contract.</param>
         /// <param name="commandFunction">The command function.</param>
         /// <param name="referenceId">The reference identifier.</param>
-        /// <param name="startupPriority">The startup priority.</param>
+        /// <param name="startupPriority">The start-up priority.</param>
         /// <param name="channelResponse">The channel response.</param>
         /// <returns>Returns the pipeline.</returns>
         /// <exception cref="InvalidMessageContractException"></exception>

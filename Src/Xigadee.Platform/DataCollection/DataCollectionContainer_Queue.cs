@@ -1,25 +1,6 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-using System;
+﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -41,7 +22,7 @@ namespace Xigadee
         /// </summary>
         protected Thread mThreadLog;
         /// <summary>
-        /// This counter holds the current actve overload process tasks.
+        /// This counter holds the current active overload process tasks.
         /// </summary>
         protected int mOverloadProcessCount = 0;
         /// <summary>
@@ -49,7 +30,7 @@ namespace Xigadee
         /// </summary>
         protected long mOverloadProcessHits = 0;
         /// <summary>
-        /// This is teh number of time the overload process has been hit.
+        /// This is the number of time the overload process has been hit.
         /// </summary>
         protected int mOverloadTaskCount = 0;
         #endregion
@@ -134,6 +115,16 @@ namespace Xigadee
         }
         #endregion
 
+        /// <summary>
+        /// This method is called after an event has been processed. It will be passed to any event listeners for additional processing.
+        /// </summary>
+        /// <param name="eventData">The event data.</param>
+        protected void RaiseEvent(EventHolder eventData)
+        {
+
+            
+        }
+
         #region ProcessItem(EventHolder eventData)
         /// <summary>
         /// This method processes the incoming event by looping through the collectors for the particular type.
@@ -143,6 +134,8 @@ namespace Xigadee
         {
             mCollectorSupported[eventData.DataType]?
                 .ForEach((l) => ProcessItem(l, eventData));
+
+            RaiseEvent(eventData);
 
             //Decrement the active count with the time needed to process.
             StatisticsInternal.ActiveDecrement(eventData.Timestamp);
@@ -176,7 +169,7 @@ namespace Xigadee
         /// <param name="eventData">The event data.</param>
         /// <param name="support">The event data type.</param>
         /// <param name="sync">Specifies whether the data should be written out immediately.</param>
-        /// <param name="claims">The optional claims of the calling party. If not set explicity, then this
+        /// <param name="claims">The optional claims of the calling party. If not set explicitly, then this
         /// will be populated from the current thread. If you don't want this then pass an empty claims object.</param>
         public void Write(EventBase eventData, DataCollectionSupport support, bool sync = false, ClaimsPrincipal claims = null)
         {

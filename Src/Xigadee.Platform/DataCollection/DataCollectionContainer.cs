@@ -95,7 +95,12 @@ namespace Xigadee
         }
         #endregion
 
-        #region Add...
+        #region Add...        
+        /// <summary>
+        /// Adds the specified data collector to the collection.
+        /// </summary>
+        /// <param name="component">The data collector component.</param>
+        /// <returns>Returns the component.</returns>
         public IDataCollectorComponent Add(IDataCollectorComponent component)
         {
             mCollectors.Add(component);

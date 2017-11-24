@@ -7,6 +7,11 @@ namespace Xigadee
     /// </summary>
     public class DebugMemoryDataCollector: DataCollectorBase
     {
+        public override void Write(EventHolder holder)
+        {
+            base.Write(holder);
+        }
+
         /// <summary>
         /// This is the default constructor.
         /// </summary>

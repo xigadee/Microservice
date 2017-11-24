@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Security.Claims;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -40,7 +34,7 @@ namespace Xigadee
         public EventBase Data { get; set; }
 
         /// <summary>
-        /// This is the datatype for the event.
+        /// This is the data type for the event.
         /// </summary>
         public DataCollectionSupport DataType { get; }
         /// <summary>
