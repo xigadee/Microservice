@@ -7,13 +7,6 @@ namespace Xigadee
     /// </summary>
     public class DispatchWrapper: WrapperBase, IMicroserviceDispatch
     {
-        #region Declarations
-        /// <summary>
-        /// Identifies whether the payload trace is enabled.
-        /// </summary>
-        protected readonly bool mTransmissionPayloadTraceEnabled; 
-        #endregion
-
         #region Constructor
         /// <summary>
         /// Initializes a new instance of the <see cref="DispatchWrapper"/> class.
@@ -28,10 +21,14 @@ namespace Xigadee
             Name = GetType().Name;
             ExecuteOrEnqueue = executeOrEnqueue;
             Serialization = serializer;
-            mTransmissionPayloadTraceEnabled = traceEnabled;
+            PayloadTraceEnabled = traceEnabled;
         }
         #endregion
 
+        /// <summary>
+        /// Identifies whether the payload trace is enabled.
+        /// </summary>
+        public bool PayloadTraceEnabled { get; }
         /// <summary>
         /// Gets the serialization container.
         /// </summary>
@@ -53,7 +50,7 @@ namespace Xigadee
         {
             ValidateServiceStarted();
 
-            if (mTransmissionPayloadTraceEnabled)
+            if (PayloadTraceEnabled)
             {
                 payload.TraceEnabled = true;
                 payload.TraceWrite($"{Name} received.");

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Xigadee
@@ -12,8 +10,6 @@ namespace Xigadee
     /// </summary>
     public class UdpClientHolder : ClientHolder<UdpClient, UdpReceiveResult>
     {
-
-
         public override async Task<List<TransmissionPayload>> MessagesPull(int? count, int? wait, string mappingChannel = null)
         {
             List<TransmissionPayload> batch =  new List<TransmissionPayload>();
@@ -44,9 +40,8 @@ namespace Xigadee
 
         public override Task Transmit(TransmissionPayload payload, int retry = 0)
         {
+            payload.CompleteSet();
             return Task.FromResult(0);
-        }
-
-        
+        }      
     }
 }
