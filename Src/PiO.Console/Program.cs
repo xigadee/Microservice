@@ -28,10 +28,10 @@ namespace PiO
                 .AddChannelOutgoing("status", "Outgoing UDP status", SenderPartitionConfig.Init(1))
                     .AttachUdpSender(new IPEndPoint(IPAddress.Any, 44723))
                     .Revert()
-                    .OnEvent((a) => 
-                    {
-                    }
-                    , DataCollectionSupport.Statistics)
+                .OnDataCollection((ctx,ev) => 
+                {
+                }
+                , DataCollectionSupport.Statistics)
                 ;
 
 

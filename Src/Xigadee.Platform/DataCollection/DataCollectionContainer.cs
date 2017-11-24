@@ -129,6 +129,9 @@ namespace Xigadee
                 if ((service as IRequirePayloadManagement) != null)
                     ((IRequirePayloadManagement)service).PayloadSerializer = PayloadSerializer;
 
+                if ((service as IRequireDataCollector) != null)
+                    ((IRequireDataCollector)service).Collector = this;
+
                 base.ServiceStart(service);
             }
             catch (Exception ex)

@@ -117,15 +117,6 @@ namespace Xigadee
             return (mSupportMapActual & support)>0;
         }
         #endregion
-        #region OriginatorId
-        /// <summary>
-        /// This is is the Microservice originator information.
-        /// </summary>
-        public virtual MicroserviceId OriginatorId
-        {
-            get; set;
-        }
-        #endregion
 
         #region Write...
         /// <summary>
@@ -154,6 +145,15 @@ namespace Xigadee
         public bool CanFlush { get; set; }
         #endregion
 
+        #region OriginatorId
+        /// <summary>
+        /// This is the Microservice originator information.
+        /// </summary>
+        public virtual MicroserviceId OriginatorId
+        {
+            get; set;
+        }
+        #endregion
         #region Security
         /// <summary>
         /// This is a reference to the security service used for encryption.
@@ -163,7 +163,6 @@ namespace Xigadee
             get; set;
         }
         #endregion
-
         #region SharedServices
         /// <summary>
         /// This is the shared service collection.
