@@ -62,7 +62,7 @@ namespace Xigadee
             , string originatorServiceId = null
             )
         {
-            Process((Policy.ChannelId, header)
+            this.Process((Policy.ChannelId, header)
             , package
             , ChannelPriority
             , options
@@ -94,7 +94,7 @@ namespace Xigadee
             , string originatorServiceId = null
             )
         {
-            Process((Policy.ChannelId, header)
+            this.Process((Policy.ChannelId, header)
             , package
             , ChannelPriority
             , options

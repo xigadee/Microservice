@@ -30,6 +30,7 @@ namespace PiO
                     .Revert()
                 .OnDataCollection((ctx,ev) => 
                 {
+                    ctx.Outgoing.Process(("status", null, null), ev, 1, ProcessOptions.RouteExternal);
                 }
                 , DataCollectionSupport.Statistics)
                 ;

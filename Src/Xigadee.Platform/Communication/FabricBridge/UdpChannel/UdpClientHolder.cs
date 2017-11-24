@@ -44,7 +44,7 @@ namespace Xigadee
 
         public override Task Transmit(TransmissionPayload payload, int retry = 0)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(0);
         }
 
         
