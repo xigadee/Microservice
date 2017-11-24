@@ -28,7 +28,7 @@ namespace Xigadee
     /// </summary>
     public partial class DataCollectionContainer: ServiceContainerBase<DataCollectionStatistics, DataCollectionPolicy>
         , IDataCollection, IRequireServiceOriginator
-        , ITaskManagerProcess, IRequireSharedServices, IRequireSecurityService
+        , ITaskManagerProcess, IRequireSharedServices, IRequireSecurityService, IRequirePayloadManagement
     {
         #region Declarations
         /// <summary>
@@ -126,6 +126,9 @@ namespace Xigadee
                 if ((service as IRequireSecurityService) != null)
                     ((IRequireSecurityService)service).Security = Security;
 
+                if ((service as IRequirePayloadManagement) != null)
+                    ((IRequirePayloadManagement)service).PayloadSerializer = PayloadSerializer;
+
                 base.ServiceStart(service);
             }
             catch (Exception ex)
@@ -145,7 +148,6 @@ namespace Xigadee
             get; set;
         }
         #endregion
-
         #region SharedServices
         /// <summary>
         /// This is the shared service collection
@@ -156,7 +158,6 @@ namespace Xigadee
             set;
         }
         #endregion
-
         #region Security
         /// <summary>
         /// This is the security service primarily used for encryption.
@@ -165,6 +166,12 @@ namespace Xigadee
         {
             get; set;
         }
+        #endregion
+        #region PayloadSerializer
+        /// <summary>
+        /// This is the system wide Payload serializer.
+        /// </summary>
+        public IPayloadSerializationContainer PayloadSerializer { get; set; } 
         #endregion
 
         #region Flush()

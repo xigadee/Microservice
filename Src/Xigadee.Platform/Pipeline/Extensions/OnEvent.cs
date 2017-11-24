@@ -23,23 +23,39 @@ namespace Xigadee
                 throw new ArgumentNullException("action", "'action' cannot be null for OnEvent");
 
             var ms = pipeline.ToMicroservice();
-
-            var comp = pipeline.Service.DataCollection.Register(new OnEventDataCollectionComponent(supported, action));
+            
+            var comp = pipeline.Service.DataCollection.Register(new OnEventDataCollectionComponent(supported, action, ms.Dispatch));
 
             return pipeline;
         }
 
-        internal class OnEventDataCollectionComponent: DataCollectorBase
+        internal class OnEventDataCollectionComponent: DataCollectorBase, IRequirePayloadManagement
         {
             DataCollectionSupport? mSupportedFilter = null;
             Action<EventHolder> mAction;
+            IMicroserviceDispatch mDispatcher;
 
-            internal OnEventDataCollectionComponent(DataCollectionSupport? supported, Action<EventHolder> action)
+            /// <summary>
+            /// Initializes a new instance of the <see cref="OnEventDataCollectionComponent"/> class.
+            /// </summary>
+            /// <param name="supported">The supported event types.</param>
+            /// <param name="action">The action to process a supported event.</param>
+            /// <param name="dispatcher">The dispatcher.</param>
+            internal OnEventDataCollectionComponent(DataCollectionSupport? supported, Action<EventHolder> action, IMicroserviceDispatch dispatcher)
             {
                 mSupportedFilter = supported;
                 mAction = action;
+                mDispatcher = dispatcher;
             }
 
+            /// <summary>
+            /// This is the system wide Payload serializer.
+            /// </summary>
+            public IPayloadSerializationContainer PayloadSerializer { get; set; }
+
+            /// <summary>
+            /// This method loads the support.
+            /// </summary>
             protected override void SupportLoadDefault()
             {
                 Enum.GetValues(typeof(DataCollectionSupport))

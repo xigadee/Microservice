@@ -1,24 +1,4 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Xigadee
 {
@@ -28,14 +8,36 @@ namespace Xigadee
     /// </summary>
     public interface IChannelService
     {
+        /// <summary>
+        /// Gets the channels.
+        /// </summary>
         IEnumerable<Channel> Channels { get; }
-
+        /// <summary>
+        /// Adds the specific channel.
+        /// </summary>
+        /// <param name="item">The channel to add.</param>
+        /// <returns>Returns true if the channel is added successfully.</returns>
         bool Add(Channel item);
-
+        /// <summary>
+        /// Removes the specific channel.
+        /// </summary>
+        /// <param name="item">The channel to remove.</param>
+        /// <returns>Returns true if the channel is removed successfully.</returns>
         bool Remove(Channel item);
-
+        /// <summary>
+        /// Returns true if the channel exists in the specific direction.
+        /// </summary>
+        /// <param name="channelId">The channel identifier.</param>
+        /// <param name="direction">The direction.</param>
+        /// <returns>Returns true if the channel and direction exist.</returns>
         bool Exists(string channelId, ChannelDirection direction);
-
+        /// <summary>
+        /// Attempts to retrieve the channel object.
+        /// </summary>
+        /// <param name="channelId">The channel identifier.</param>
+        /// <param name="direction">The direction.</param>
+        /// <param name="channel">The channel object.</param>
+        /// <returns>Returns true if the channel and direction exist, else false.</returns>
         bool TryGet(string channelId, ChannelDirection direction, out Channel channel);
 
     }
