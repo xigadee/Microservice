@@ -18,7 +18,7 @@ namespace Xigadee
             )
             where C : IPipelineChannelIncoming<IPipeline>
         {
-            var listener = new UdpChannelListener(false, ep);
+            var listener = new UdpChannelListener(false, ep, mapper);
 
             cpipe.AttachListener(listener, action, true);
 
@@ -27,11 +27,12 @@ namespace Xigadee
 
         public static C AttachMulticastUdpListener<C>(this C cpipe
             , IPEndPoint ep
+            , Func<UdpReceiveResult, object> mapper = null
             , Action<UdpChannelListener> action = null
             )
             where C : IPipelineChannelIncoming<IPipeline>
         {
-            var listener = new UdpChannelListener(true, ep);
+            var listener = new UdpChannelListener(true, ep, mapper);
 
             cpipe.AttachListener(listener, action, true);
 
