@@ -7,9 +7,9 @@ namespace Xigadee
     /// <summary>
     /// This sender is used to convert object to their binary format and transmit them as UDP packets.
     /// </summary>
-    public class UdpChannelSender : MessagingSenderBase<UdpClient, UdpReceiveResult, UdpClientHolder>
+    public class UdpChannelSender : MessagingSenderBase<UdpClient, UdpContext, UdpClientHolder>
     {
-        public UdpChannelSender(bool isMulticast, IPEndPoint endPoint, Func<object, UdpReceiveResult> convert = null)
+        public UdpChannelSender(bool isMulticast, IPEndPoint endPoint, Action<UdpContext> convert = null)
         {
             IsMulticast = isMulticast;
             EndPoint = endPoint;
@@ -19,7 +19,7 @@ namespace Xigadee
         /// <summary>
         /// This is the convert function used to format outgoing messages.
         /// </summary>
-        Func<object, UdpReceiveResult> ConvertOutgoing { get; }
+        Action<UdpContext> ConvertOutgoing { get; }
         /// <summary>
         /// Gets a value indicating whether this instance is a multicast socket.
         /// </summary>

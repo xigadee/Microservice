@@ -5,7 +5,10 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class UdpReceiveContext: UdpContextBase
+    /// <summary>
+    /// This class contains the base context properties.
+    /// </summary>
+    public class UdpContext
     {
     }
 }

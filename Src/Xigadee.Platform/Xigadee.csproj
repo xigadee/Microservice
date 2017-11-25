@@ -26,4 +26,9 @@
     <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Communication\FabricBridge\UdpChannel\Context\" />
+    <Folder Include="Interfaces\Attributes\" />
+  </ItemGroup>
+
 </Project>

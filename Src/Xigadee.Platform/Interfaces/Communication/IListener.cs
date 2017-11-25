@@ -50,7 +50,7 @@ namespace Xigadee
     /// <summary>
     /// This interface is implemented by listeners that require frequent polling.
     /// </summary>
-    public interface IListenerPoll:IListener
+    public interface IListenerPoll : IListener
     {
         /// <summary>
         /// This boolean property determines whether the listener requires a poll

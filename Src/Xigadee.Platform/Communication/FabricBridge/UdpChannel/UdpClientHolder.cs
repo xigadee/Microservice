@@ -8,12 +8,11 @@ namespace Xigadee
     /// <summary>
     /// This class holds the Udp client and associated logic.
     /// </summary>
-    public class UdpClientHolder : ClientHolder<UdpClient, UdpReceiveResult>
+    public class UdpClientHolder : ClientHolder<UdpClient, UdpContext>
     {
-        public Func<UdpReceiveResult, object> ConvertIncoming { get; set; }
+        public Action<UdpReceiveContext> ConvertIncoming { get; set; }
 
-        public Func<object, UdpReceiveResult> ConvertOutgoing { get; set; }
-
+        public Action<UdpTransmitContext> ConvertOutgoing { get; set; }
         
 
         /// <summary>
