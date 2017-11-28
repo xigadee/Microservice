@@ -45,7 +45,7 @@ namespace Xigadee
             try
             {
                 //Create a list of listeners that require a frequent poll.
-                mListenerPoll = mListener.Where((l) => l is IListenerPoll).Cast<IListenerPoll>().ToList();
+                mListenerPoll = mListener.Where((l) => l.PollSupported).ToList();
 
                 //Start each of the listeners.
                 mListener.ForEach(l => ServiceStart(l));
@@ -199,7 +199,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="context">The client priority holder context.</param>
         /// <returns>Returns a tracker of type listener poll.</returns>
-        private void TrackerSubmitFromListener(IListenerPoll context)
+        private void TrackerSubmitFromListener(IListener context)
         {
             TaskTracker tracker = new TaskTracker(TaskTrackerType.ListenerPoll, mPolicy.ListenerRequestTimespan)
             {
@@ -210,7 +210,7 @@ namespace Xigadee
 
             tracker.Execute = async t =>
             {
-                var currentContext = ((IListenerPoll)tracker.Context);
+                var currentContext = ((IListener)tracker.Context);
 
                 await currentContext.Poll();
             };

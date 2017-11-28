@@ -13,12 +13,12 @@ namespace Xigadee
     {
         public static C AttachUdpListener<C>(this C cpipe
             , IPEndPoint ep
-            , Func<UdpReceiveResult,object> mapper = null
+            , Action<UdpContext> convert = null
             , Action<UdpChannelListener> action = null
             )
             where C : IPipelineChannelIncoming<IPipeline>
         {
-            var listener = new UdpChannelListener(false, ep, mapper);
+            var listener = new UdpChannelListener(false, ep, convert);
 
             cpipe.AttachListener(listener, action, true);
 
@@ -27,12 +27,12 @@ namespace Xigadee
 
         public static C AttachMulticastUdpListener<C>(this C cpipe
             , IPEndPoint ep
-            , Func<UdpReceiveResult, object> mapper = null
+            , Action<UdpContext> convert = null
             , Action<UdpChannelListener> action = null
             )
             where C : IPipelineChannelIncoming<IPipeline>
         {
-            var listener = new UdpChannelListener(true, ep, mapper);
+            var listener = new UdpChannelListener(true, ep, convert);
 
             cpipe.AttachListener(listener, action, true);
 
@@ -41,11 +41,12 @@ namespace Xigadee
 
         public static C AttachUdpSender<C>(this C cpipe
             , IPEndPoint ep
+            , Action<UdpContext> convert = null
             , Action<UdpChannelSender> action = null
             )
             where C : IPipelineChannelOutgoing<IPipeline>
         {
-            var sender = new UdpChannelSender(false, ep);
+            var sender = new UdpChannelSender(false, ep, convert);
 
             cpipe.AttachSender(sender, action, true);
 
@@ -55,11 +56,12 @@ namespace Xigadee
 
         public static C AttachMulticastUdpSender<C>(this C cpipe
             , IPEndPoint ep
+            , Action<UdpContext> convert = null
             , Action<UdpChannelSender> action = null
             )
             where C : IPipelineChannelOutgoing<IPipeline>
         {
-            var sender = new UdpChannelSender(true, ep);
+            var sender = new UdpChannelSender(true, ep, convert);
 
             cpipe.AttachSender(sender, action, true);
 

@@ -284,6 +284,7 @@ namespace Xigadee
         public TimeSpan? ExecutionTime { get; private set; }
         #endregion
 
+        #region Trace ...
         /// <summary>
         /// Gets or sets a value indicating whether trace is enabled for the request.
         /// </summary>
@@ -333,6 +334,7 @@ namespace Xigadee
                 return;
 
             TraceWrite(new TransmissionPayloadTraceEventArgs(TickCount, message, source));
-        }
+        } 
+        #endregion
     }
 }

@@ -10,10 +10,26 @@ namespace Xigadee
     /// </summary>
     public class UdpClientHolder : ClientHolder<UdpClient, UdpContext>
     {
-        public Action<UdpReceiveContext> ConvertIncoming { get; set; }
+        public UdpClientHolder()
+        {
+            ConvertIncoming = ConvertIncomingBase;
+            ConvertOutgoing = ConvertOutgoingBase;
+        }
 
-        public Action<UdpTransmitContext> ConvertOutgoing { get; set; }
-        
+        public Action<UdpContext> ConvertIncoming { get; set; }
+
+        public Action<UdpContext> ConvertOutgoing { get; set; }
+
+
+        protected void ConvertIncomingBase(UdpContext context)
+        {
+
+        }
+
+        protected void ConvertOutgoingBase(UdpContext context)
+        {
+
+        }
 
         /// <summary>
         /// This method pulls fabric messages and converts them in to generic payload messages for the Microservice to process.
@@ -44,11 +60,23 @@ namespace Xigadee
                     && (!timeOut.HasValue || timeOut.Value>Environment.TickCount)
                     )
                 {
-                    var result = await Client.ReceiveAsync();
+                    UdpContext context = null;
+                    try
+                    {
+                        var result = await Client.ReceiveAsync();
+                        context = new UdpContext(PayloadSerializer, result);
+
+                        //ConvertIncoming?.Invoke(context) ?? ConvertIncomingBase(context);
+                    }
+                    catch (Exception)
+                    {
+
+                        throw;
+                    }
                     //if (BoundaryLoggingActive)
                     //    batchId = Collector?.BoundaryBatchPoll(count ?? -1, intBatch.Count, mappingChannel ?? ChannelId, Priority);
 
-                    var sm = MessageUnpack(result);
+                    //var sm = MessageUnpack(result);
 
                     countMax--;
                 }
@@ -71,7 +99,11 @@ namespace Xigadee
         /// <returns></returns>
         public override Task Transmit(TransmissionPayload payload, int retry = 0)
         {
-            payload.CompleteSet();
+            UdpContext context = new UdpContext(PayloadSerializer, payload.Message);
+
+            //ConvertOutgoing?.Invoke(context) ??
+
+
             return Task.FromResult(0);
         }      
     }

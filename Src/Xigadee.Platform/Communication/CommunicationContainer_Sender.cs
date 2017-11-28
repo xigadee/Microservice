@@ -1,20 +1,4 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-#region using
+﻿#region using
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -87,7 +71,7 @@ namespace Xigadee
 
             try
             {
-                //Set outgoing routing information to lowercase. This is important as messaging protocols such as
+                //Set outgoing routing information to lower case. This is important as messaging protocols such as
                 //Service Bus can be case sensitive when running subscription filters.
                 if (mPolicy.ServiceMessageHeaderConvertToLowercase)
                     payload.Message.ConvertMessageHeadersToLowercase();
@@ -140,7 +124,7 @@ namespace Xigadee
             string channelId = message.ChannelId;
             List<ISender> newMap = mSenders.Where(h => h.SupportsChannel(channelId)).ToList();
 
-            //Make sure that the handler is queueAdded as a null value to stop further resolution attemps
+            //Make sure that the handler is queueAdded as a null value to stop further resolution attempts
             mMessageSenderMap.AddOrUpdate(channelId, newMap, (k, u) => newMap.Count == 0 ? null : newMap);
 
             return newMap;

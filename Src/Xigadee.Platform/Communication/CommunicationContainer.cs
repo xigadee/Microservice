@@ -45,7 +45,7 @@ namespace Xigadee
         /// <summary>
         /// This is the list of listeners that require polling support.
         /// </summary>
-        private List<IListenerPoll> mListenerPoll = null;
+        private List<IListener> mListenerPoll = null;
         /// <summary>
         /// This is the list of communication senders.
         /// </summary>

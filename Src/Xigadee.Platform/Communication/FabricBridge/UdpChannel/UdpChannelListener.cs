@@ -45,7 +45,7 @@ namespace Xigadee
             {
                 var sMessage = new ServiceMessage();
 
-                string text = Encoding.UTF8.GetString(u.Buffer);
+                //string text = Encoding.UTF8.GetString(u.Buffer);
 
 
                 return sMessage;

@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Net;
 using System.Net.Sockets;
 using System.Net.Security;
 using System.Security.Authentication;
 using System.Text;
 using System.Security.Cryptography.X509Certificates;
-using System.IO;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Linq;
 
@@ -18,7 +14,7 @@ namespace Xigadee
     /// <summary>
     /// This channel uses the TCP and TLS protocol to communicate between Microservices.
     /// </summary>
-    public class TcpTlsChannelListener : MessagingListenerBase<TcpTlsClient, ServiceMessage, TcpTlsClientHolder>, IListenerPoll
+    public class TcpTlsChannelListener : MessagingListenerBase<TcpTlsClient, ServiceMessage, TcpTlsClientHolder>, IListener
     {
         /// <summary>
         /// This is the listener.
@@ -87,7 +83,7 @@ namespace Xigadee
 
         #region ClientCreate(ListenerPartitionConfig partition)
         /// <summary>
-        /// This override creates the client and registers/un-registers it with the protocol.
+        /// This override creates the client and registers/unregisters it with the protocol.
         /// </summary>
         /// <param name="partition">The partition to create the client for.</param>
         /// <returns>Returns the client holder.</returns>
@@ -104,11 +100,17 @@ namespace Xigadee
         }
         #endregion
 
+        #region PollSupported
+        /// <summary>
+        /// This boolean property specifies that the listener requires polling support.
+        /// </summary>
+        public override bool PollSupported { get { return true; } } 
+        #endregion
         #region PollRequired
         /// <summary>
         /// This property determines whether the listener requires a poll.
         /// </summary>
-        public bool PollRequired
+        public override bool PollRequired
         {
             get
             {
@@ -134,7 +136,7 @@ namespace Xigadee
         /// This method returns a job that can be used to monitor communication.
         /// </summary>
         /// <returns>Async.</returns>
-        public async Task Poll()
+        public override async Task Poll()
         {
             //Firstly, do we have any awaiting clients to process.
             if (Status == ServiceStatus.Running && (mTcpListener?.Pending() ?? false))
@@ -143,14 +145,14 @@ namespace Xigadee
                 await ClientOpen(new TcpTlsConnection { Client = client });
             }
 
-            //Find the clients that are pending closure and cloe them.
+            //Find the clients that are pending closure and close them.
             var close = mTcpClients
                 .Where((c) => c.CanClose)
                 .Select((c) => ClientClose(c));
 
             await Task.WhenAll(close);
 
-            //Ok, do we have anything to read?
+            //OK, do we have anything to read?
             var reads = mTcpClients
                 .Where((c) => c.CanRead)
                 .Select((c) => ClientRead(c));

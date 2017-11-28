@@ -28,7 +28,6 @@
 
   <ItemGroup>
     <Folder Include="Communication\FabricBridge\UdpChannel\Context\" />
-    <Folder Include="Interfaces\Attributes\" />
   </ItemGroup>
 
 </Project>

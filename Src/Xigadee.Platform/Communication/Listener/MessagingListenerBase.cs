@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 #endregion
 namespace Xigadee
 {
@@ -115,7 +116,7 @@ namespace Xigadee
         public string MappingChannelId
         {
             get;set;
-        } 
+        }
         #endregion
 
         #region ClientsValidate(List<MessageFilterWrapper> oldList, List<MessageFilterWrapper> newList)
@@ -245,5 +246,22 @@ namespace Xigadee
             ClientsStop();
         }
         #endregion
+
+        /// <summary>
+        /// This boolean property determines whether the listener requires polling support.
+        /// </summary>
+        public virtual bool PollSupported { get; } = false;
+
+        /// <summary>
+        /// This boolean property determines whether the listener require a poll.
+        /// </summary>
+        public virtual bool PollRequired { get; } = false;
+        /// <summary>
+        /// This is the async poll function. This will be called if PollRequired is set to true.
+        /// </summary>
+        public virtual Task Poll()
+        {
+            throw new NotImplementedException("Poll is not supported.");
+        }
     }
 }
