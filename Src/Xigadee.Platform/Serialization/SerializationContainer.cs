@@ -1,20 +1,4 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-#region using
+﻿#region using
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -108,7 +92,7 @@ namespace Xigadee
             mPayloadSerializers.Add(serializer.Identifier, serializer);
         }
         /// <summary>
-        /// This method clears all the serliazers currently registered.
+        /// This method clears all the serializers currently registered.
         /// </summary>
         public void Clear()
         {
@@ -117,139 +101,10 @@ namespace Xigadee
         #endregion
 
         #region PayloadDeserialize...
-        #region TransmissionPayload ...
-        /// <summary>
-        /// This method extracts the binary blob from the message and deserializes and returns the object.
-        /// </summary>
-        /// <param name="payload">The transmission payload.</param>
-        /// <returns>Returns the object deserialized from the binary blob.</returns>
-        public object PayloadDeserialize(TransmissionPayload payload)
-        {
-            return PayloadDeserialize(payload.Message);
-        }
-        /// <summary>
-        /// This method extracts the binary blob from the message and deserializes and returns the object.
-        /// </summary>
-        /// <typeparam name="P">The payload message type.</typeparam>
-        /// <param name="payload">The transmission payload.</param>
-        /// <returns>Returns the object deserialized from the binary blob.</returns>
-        public P PayloadDeserialize<P>(TransmissionPayload payload)
-        {
-            return PayloadDeserialize<P>(payload.Message);
-        }
-        /// <summary>
-        /// This method tries to extract an entity from the message if present.
-        /// </summary>
-        /// <param name="payload">The transmission payload.</param>
-        /// <param name="entity">The deserialized entity</param>
-        /// <returns>Returns true if the message is present.</returns>
-        public bool PayloadTryDeserialize(TransmissionPayload payload, out object entity)
-        {
-            entity = null;
-            if (payload?.Message?.Blob == null)
-                return false;
-
-            entity = PayloadDeserialize(payload);
-
-            return true;
-        }
-        /// <summary>
-        /// This method tries to extract an entity from the message if present.
-        /// </summary>
-        /// <typeparam name="P">The payload message type.</typeparam>
-        /// <param name="payload">The transmission payload.</param>
-        /// <param name="entity">The deserialized entity</param>
-        /// <returns>Returns true if the message is present.</returns>
-        public bool PayloadTryDeserialize<P>(TransmissionPayload payload, out P entity)
-        {
-            entity = default(P);
-            if (payload?.Message?.Blob == null)
-                return false;
-
-            entity = PayloadDeserialize<P>(payload);
-
-            return true;
-        }
-
-        #endregion
 
         #region ServiceMessage ...
-        /// <summary>
-        /// This method extracts the binary blob from the message and deserializes and returns the object.
-        /// </summary>
-        /// <param name="message">The service message.</param>
-        /// <returns>Returns the object deserialized from the binary blob.</returns>
-        public object PayloadDeserialize(ServiceMessage message)
-        {
-            try
-            {
-                if (message.Blob == null || mPayloadSerializers.Count == 0)
-                    return null;
 
-                var serializer = mPayloadSerializers.Values.FirstOrDefault(s => s.SupportsPayloadDeserialization(message.Blob));
 
-                if (serializer != null)
-                    return serializer.Deserialize(message.Blob);
-
-                return null;
-            }
-            catch (Exception ex)
-            {
-                throw new PayloadDeserializationException(message.OriginatorKey, ex);
-            }
-        }
-
-        /// <summary>
-        /// This method extracts the binary blob from the message and deserializes and returns the object.
-        /// </summary>
-        /// <typeparam name="P">The payload message type.</typeparam>
-        /// <param name="message">The service message.</param>
-        /// <returns>Returns the object deserialized from the binary blob.</returns>
-        public P PayloadDeserialize<P>(ServiceMessage message)
-        {
-            try
-            {
-                return PayloadDeserialize<P>(message.Blob);
-            }
-            catch (Exception ex)
-            {
-                throw new PayloadSerializationException(message.OriginatorKey, ex);
-            }
-        }
-
-        /// <summary>
-        /// This method tries to extract an entity from the message if present.
-        /// </summary>
-        /// <param name="message">The service message.</param>
-        /// <param name="entity">The deserialized entity</param>
-        /// <returns>Returns true if the message is present.</returns>
-        public bool PayloadTryDeserialize(ServiceMessage message, out object entity)
-        {
-            entity = null;
-            if (message?.Blob == null)
-                return false;
-
-            entity = PayloadDeserialize(message);
-
-            return true;
-        }
-        /// <summary>
-        /// This method tries to extract an entity from the message if present.
-        /// </summary>
-        /// <typeparam name="P">The payload message type.</typeparam>
-        /// <param name="message">The service message.</param>
-        /// <param name="entity">The deserialized entity</param>
-        /// <returns>Returns true if the message is present.</returns>
-        public bool PayloadTryDeserialize<P>(ServiceMessage message, out P entity)
-        {
-            entity = default(P);
-            if (message?.Blob == null)
-                return false;
-
-            entity = PayloadDeserialize<P>(message);
-
-            return true;
-        }
         #endregion
 
         #region byte[]...
@@ -259,9 +114,9 @@ namespace Xigadee
         /// <typeparam name="P">The payload message type.</typeparam>
         /// <param name="blob">The binary blob.</param>
         /// <returns>Returns the object deserialized from the binary blob.</returns>
-        public P PayloadDeserialize<P>(byte[] blob)
+        public P PayloadDeserialize<P>(SerializationHolder blob)
         {
-            if (blob == null || mPayloadSerializers.Count == 0)
+            if (blob?.Blob == null || mPayloadSerializers.Count == 0)
                 return default(P);
 
             var serializer = mPayloadSerializers.Values.FirstOrDefault(s => s.SupportsPayloadDeserialization(blob));
@@ -277,9 +132,9 @@ namespace Xigadee
         /// </summary>
         /// <param name="blob">The binary blob.</param>
         /// <returns>Returns the object deserialized from the binary blob.</returns>
-        public object PayloadDeserialize(byte[] blob)
+        public object PayloadDeserialize(SerializationHolder blob)
         {
-            if (blob == null || mPayloadSerializers.Count == 0)
+            if (blob?.Blob == null || mPayloadSerializers.Count == 0)
                 return null;
 
             var serializer = mPayloadSerializers.Values.FirstOrDefault(s => s.SupportsPayloadDeserialization(blob));
@@ -299,7 +154,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="payload">The requestPayload to serialize.</param>
         /// <returns>Returns the binary blob object.</returns>
-        public byte[] PayloadSerialize(object payload)
+        public SerializationHolder PayloadSerialize(object payload)
         {
             if (payload == null)
                 return null;

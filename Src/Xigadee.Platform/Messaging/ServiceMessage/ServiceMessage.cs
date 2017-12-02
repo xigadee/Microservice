@@ -8,8 +8,6 @@ namespace Xigadee
     /// <summary>
     /// The ServiceMessage is used to pass information through the Dispatcher and the sender/receive queue architecture.
     /// </summary>
-    [Serializable]
-    [DataContract]
     [DebuggerDisplay("Type={ChannelId}/{MessageType}/{ActionType} {ResponseChannelId} [{OriginatorServiceId}]")]
     public class ServiceMessage
     {
@@ -46,7 +44,6 @@ namespace Xigadee
         /// <summary>
         /// This is the security signature.
         /// </summary>
-        [DataMember]
         public string SecuritySignature { get; set; }
         #endregion
 
@@ -54,21 +51,18 @@ namespace Xigadee
         /// <summary>
         /// This is the unique key assigned by the system.
         /// </summary>
-        [DataMember]
         public string OriginatorKey { get; set; } 
         #endregion
         #region OriginatorServiceId
         /// <summary>
         /// The name of the machine that created the message.
         /// </summary>
-        [DataMember]
         public string OriginatorServiceId { get; set; } 
         #endregion
         #region OriginatorUTC
         /// <summary>
         /// Gets or sets the time stamp of the message originator in UTC.
         /// </summary>
-        [DataMember]
         public DateTime OriginatorUTC { get; set; }
         #endregion
 
@@ -76,7 +70,6 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the correlation key which is the original key reference.
         /// </summary>
-        [DataMember]
         public string ProcessCorrelationKey { get; set; }
         #endregion
 
@@ -84,21 +77,18 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the correlation key which is the original key reference.
         /// </summary>
-        [DataMember]
         public string CorrelationKey { get; set; } 
         #endregion
         #region CorrelationServiceId
         /// <summary>
         /// This is the Id of the service that created the message.
         /// </summary>
-        [DataMember]
         public string CorrelationServiceId { get; set; }
         #endregion
         #region CorrelationUTC
         /// <summary>
         /// Gets or sets the time stamp.
         /// </summary>
-        [DataMember]
         public DateTime? CorrelationUTC { get; set; }
         #endregion
 
@@ -113,7 +103,6 @@ namespace Xigadee
         /// <summary>
         /// This message sets the dispatcher transit hop count.
         /// </summary>
-        [DataMember]
         public int DispatcherTransitCount { get; set; } 
         #endregion
 
@@ -121,28 +110,24 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the channelId of the request message.
         /// </summary>
-        [DataMember]
         public string ChannelId { get; set; } 
         #endregion
         #region ChannelPriority
         /// <summary>
         /// Gets or sets the priority for the ChannelId.
         /// </summary>
-        [DataMember]
         public int ChannelPriority { get; set; }
         #endregion
         #region MessageType
         /// <summary>
         /// Gets or sets the channelId.
         /// </summary>
-        [DataMember]
         public string MessageType { get; set; } 
         #endregion
         #region ActionType
         /// <summary>
         /// Gets or sets the channelId of the action.
         /// </summary>
-        [DataMember]
         public string ActionType { get; set; } 
         #endregion
 
@@ -150,28 +135,24 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the channelId of the response message.
         /// </summary>
-        [DataMember]
         public string ResponseChannelId { get; set; }
         #endregion
         #region ResponseChannelPriority
         /// <summary>
         /// Gets or sets the priority for the ResponseChannelId.
         /// </summary>
-        [DataMember]
         public int ResponseChannelPriority { get; set; }
         #endregion
         #region ResponseMessageType
         /// <summary>
         /// Gets or sets the Response message type.
         /// </summary>
-        [DataMember]
         public string ResponseMessageType { get; set; }
         #endregion
         #region ResponseActionType
         /// <summary>
         /// Gets or sets the response action type.
         /// </summary>
-        [DataMember]
         public string ResponseActionType { get; set; }
         #endregion
 
@@ -179,27 +160,19 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the binary blob for the serialized object.
         /// </summary>
-        [DataMember]
-        public byte[] Blob { get; set; } 
+        public SerializationHolder Blob { get; set; }
         #endregion
-
-        /// <summary>
-        /// This optional identifier is added by the serialization container and specifies the id of the deserialized object stored in the object registry.
-        /// </summary>
-        public Guid? ObjectRegistryId { get; set; }
 
         #region IsNoop
         /// <summary>
         /// Gets or sets a value indicating whether this is a trace message with no-operation
         /// </summary>
-        [DataMember]
         public bool IsNoop { get; set; }
         #endregion
         #region IsReplay
         /// <summary>
         /// Gets or sets a value indicating whether this instance is replay.
         /// </summary>
-        [DataMember]
         public bool IsReplay { get; set; } 
         #endregion
 
@@ -207,14 +180,12 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the status.
         /// </summary>
-        [DataMember]
         public string Status { get; set; } 
         #endregion
         #region StatusDescription
         /// <summary>
         /// Gets or sets the status description.
         /// </summary>
-        [DataMember]
         public string StatusDescription { get; set; }
         #endregion
 
@@ -265,5 +236,54 @@ namespace Xigadee
             return ServiceMessageHeader.ToKey(ResponseChannelId, ResponseMessageType, ResponseActionType);
         }
         #endregion
+    }
+
+    /// <summary>
+    /// This class holds the metadata for the service message blob.
+    /// </summary>
+    public class SerializationHolder
+    {
+        /// <summary>
+        /// Gets or sets the BLOB.
+        /// </summary>
+        public byte[] Blob { get; set; }
+        /// <summary>
+        /// Gets or sets the BLOB serializer content type identifier. If this is set, the specific serializer will be used without attempting to identify the magic bytes at the start of the blob stream.
+        /// </summary>
+        public string ContentType { get; set; }
+        /// <summary>
+        /// Gets or sets the BLOB serializer content type identifier. If this is set, the specific serializer will be used without attempting to identify the magic bytes at the start of the blob stream.
+        /// </summary>
+        public string ContentEncoding { get; set; }
+        /// <summary>
+        /// Gets or sets the BLOB serializer content type identifier. If this is set, the specific serializer will be used without attempting to identify the magic bytes at the start of the blob stream.
+        /// </summary>
+        public string ContentTypeEncoding { get; set; }
+        /// <summary>
+        /// This optional identifier is added by the serialization container and specifies the id of the deserialized object stored in the object registry.
+        /// </summary>
+        public Guid? ObjectRegistryId { get; set; }
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="SerializationHolder"/> to a byte array./>.
+        /// </summary>
+        /// <param name="blob">The byte array.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        public static implicit operator byte[] (SerializationHolder blob)
+        {
+            return blob?.Blob;
+        }
+        /// <summary>
+        /// Performs an implicit conversion from a byte array to <see cref="SerializationHolder"/>.
+        /// </summary>
+        /// <param name="blob">The BLOB.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        public static implicit operator SerializationHolder(byte[] blob)
+        {
+            return new SerializationHolder() { Blob = blob };
+        }
     }
 }

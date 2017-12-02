@@ -9,9 +9,10 @@ namespace Xigadee
     public class SerializationPolicy: PolicyBase
     {
         /// <summary>
-        /// Specifies whether the serialization container supports the object registry.
+        /// Specifies whether the serialization container supports the object registry. 
+        /// By default this is false to preserve legacy behaviour.
         /// </summary>
-        public bool ObjectRegistrySupported { get; set; } = true;
+        public bool ObjectRegistrySupported { get; set; } = false;
         /// <summary>
         /// This is the maximum number of objects that the registry will support. Leave this null to not define a limit.
         /// </summary>

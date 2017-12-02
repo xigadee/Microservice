@@ -87,6 +87,7 @@ namespace Xigadee
                 message.OriginatorServiceId = originatorServiceId;
 
             message.ChannelPriority = ChannelPriority;
+
             if (package != null)
                 message.Blob = dispatcher.Serialization.PayloadSerialize(package);
 
