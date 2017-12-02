@@ -51,7 +51,6 @@ Within the command, you can use attributes to register methods that can receive 
 - Command Test Harness
 
 <table><tr> 
-<td><a href="http://www.hitachiconsulting.com"><img src="../../../docs/hitachi.png" alt="Hitachi Consulting" height="50"/></a></td> 
 <td>Created by: <a href="http://github.com/paulstancer">Paul Stancer</a></td>
   <td><a href="https://www.nuget.org/packages/Xigadee">NuGet Package</a></td>
   <td><a href="../../../README.md">Home</a></td>

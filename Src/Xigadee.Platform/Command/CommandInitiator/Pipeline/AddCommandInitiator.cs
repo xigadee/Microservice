@@ -4,7 +4,6 @@ namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
-
         static string ValidateOrCreateOutgoingChannel(IPipeline pipeline, string outgoingChannelId, Guid componentId, bool create)
         {
             outgoingChannelId = string.IsNullOrEmpty(outgoingChannelId?.Trim()) ? $"CommandInitiator{componentId.ToString("N").ToUpperInvariant()}":outgoingChannelId;

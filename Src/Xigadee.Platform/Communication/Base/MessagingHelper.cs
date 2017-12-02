@@ -15,7 +15,7 @@ namespace Xigadee
         /// but our message types and action types are not.
         /// </summary>
         /// <param name="value">The incoming value.</param>
-        /// <returns>The outgoing lowercase value.</returns>
+        /// <returns>The outgoing lower-case value.</returns>
         public static string ToSafeLower(string value)
         {
             if (string.IsNullOrWhiteSpace(value))

@@ -220,6 +220,7 @@ namespace Xigadee
         /// </summary>
         public IDataCollection Collector{get; set;}
         #endregion
+
         #region BoundaryLoggingActive
         /// <summary>
         /// This boolean property specifies whether boundary logging is active for this client.

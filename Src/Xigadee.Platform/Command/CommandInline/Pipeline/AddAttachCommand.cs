@@ -6,7 +6,7 @@ namespace Xigadee
     public static partial class CorePipelineExtensions
     {
         /// <summary>
-        /// This extension adds the inline command to the pipeline
+        /// This extension adds the in-line command to the pipeline
         /// </summary>
         /// <typeparam name="P">The pipeline type.</typeparam>
         /// <param name="pipeline">The pipeline.</param>
@@ -46,7 +46,7 @@ namespace Xigadee
         }
 
         /// <summary>
-        /// This extension adds the inline command to the pipeline
+        /// This extension adds the in-line command to the pipeline
         /// </summary>
         /// <typeparam name="E">The pipeline type.</typeparam>
         /// <param name="cpipe">The pipeline.</param>
@@ -69,7 +69,7 @@ namespace Xigadee
         }
 
         /// <summary>
-        /// This extension adds the inline command to the pipeline
+        /// This extension adds the in-line command to the pipeline
         /// </summary>
         /// <typeparam name="E">The pipeline type.</typeparam>
         /// <param name="cpipe">The pipeline.</param>
@@ -92,7 +92,7 @@ namespace Xigadee
         }
 
         /// <summary>
-        /// This extension adds the inline command to the pipeline
+        /// This extension adds the in-line command to the pipeline
         /// </summary>
         /// <typeparam name="E">The pipeline type.</typeparam>
         /// <param name="cpipe">The pipeline.</param>
