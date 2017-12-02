@@ -28,13 +28,15 @@ namespace PiO
                 .AddChannelOutgoing("status", "Outgoing UDP status", SenderPartitionConfig.Init(1))
                     .AttachUdpSender(new IPEndPoint(IPAddress.Any, 44723))
                     .Revert()
-                .OnDataCollection((ctx,ev) => 
-                {
-                    ctx.Outgoing.Process(("status", null, null), ev, 1, ProcessOptions.RouteExternal);
-                }
-                , DataCollectionSupport.Statistics)
+                .OnDataCollection
+                (
+                    (ctx,ev) => 
+                    {
+                        ctx.Outgoing.Process(("status", null, null), ev, 1, ProcessOptions.RouteExternal);
+                    }
+                    , DataCollectionSupport.Statistics
+                )
                 ;
-
 
             mservice.StartWithConsole();
         }

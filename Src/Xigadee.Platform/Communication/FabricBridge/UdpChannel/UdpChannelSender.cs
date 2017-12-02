@@ -28,7 +28,13 @@ namespace Xigadee
         /// Gets the end point for the UDP socket.
         /// </summary>
         IPEndPoint EndPoint { get; }
-
+        /// <summary>
+        /// This is the default client create logic.
+        /// </summary>
+        /// <param name="partition"></param>
+        /// <returns>
+        /// Returns the client.
+        /// </returns>
         protected override UdpClientHolder ClientCreate(SenderPartitionConfig partition)
         {
             var client = base.ClientCreate(partition);

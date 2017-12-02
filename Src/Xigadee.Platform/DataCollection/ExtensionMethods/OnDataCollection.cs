@@ -1,8 +1,5 @@
-﻿
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using Xigadee;
 
 namespace Xigadee
 {
@@ -90,6 +87,9 @@ namespace Xigadee
                     .ForEach((t) => SupportAdd(t, (e) => Action(e)));
             }
 
+            /// <summary>
+            /// This is the context.
+            /// </summary>
             protected OnDataCollectionContext Context
             {
                 get

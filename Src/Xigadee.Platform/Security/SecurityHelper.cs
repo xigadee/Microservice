@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
 using System.Security.Cryptography;
@@ -22,7 +21,7 @@ namespace Xigadee
         /// <param name="xmsdate">The xmsdate.</param>
         /// <param name="date">The date.</param>
         /// <param name="idBased">if set to <c>true</c> [identifier based].</param>
-        /// <returns>The authentication as a Url encoded string.</returns>
+        /// <returns>The authentication as a URL encoded string.</returns>
         public static string CalculateAuth(string key, string verb, string resourceType, string resourceId, string xmsdate, string date = "", bool idBased = false)
         {
             string data = string.Format(CultureInfo.InvariantCulture,

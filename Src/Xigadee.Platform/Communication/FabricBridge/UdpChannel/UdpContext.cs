@@ -43,7 +43,6 @@ namespace Xigadee
         } 
         #endregion
 
-
         /// <summary>
         /// Gets the direction for the context, either incoming or outgoing.
         /// </summary>

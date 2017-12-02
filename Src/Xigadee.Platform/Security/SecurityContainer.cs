@@ -1,25 +1,6 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -62,6 +43,7 @@ namespace Xigadee
         }
         #endregion
 
+        #region StatisticsRecalculate(SecurityContainerStatistics statistics)
         /// <summary>
         /// This method updates the security statistics.
         /// </summary>
@@ -79,8 +61,8 @@ namespace Xigadee
             {
 
             }
-
-        }
+        } 
+        #endregion
 
         //Authentication
         #region HasAuthenticationHandler(string identifier)
@@ -193,33 +175,55 @@ namespace Xigadee
         protected override void StopInternal()
         {
 
-        } 
+        }
         #endregion
 
-
+        #region Encrypt(EncryptionHandlerId handler, byte[] input)
+        /// <summary>
+        /// Encrypts the specified blob using the handler provided..
+        /// </summary>
+        /// <param name="handler">The handler.</param>
+        /// <param name="input">The input blob.</param>
+        /// <returns>The encrypted output blob.</returns>
         public byte[] Encrypt(EncryptionHandlerId handler, byte[] input)
         {
             EncryptionValidate(handler);
 
             return mEncryptionHandlers[handler.Id].Encrypt(input);
-        }
-
+        } 
+        #endregion
+        #region Decrypt(EncryptionHandlerId handler, byte[] input)
+        /// <summary>
+        /// Decrypts the specified blob using the handler provided..
+        /// </summary>
+        /// <param name="handler">The handler.</param>
+        /// <param name="input">The input blob.</param>
+        /// <returns>Returns the unencrypted blob.</returns>
         public byte[] Decrypt(EncryptionHandlerId handler, byte[] input)
         {
             EncryptionValidate(handler);
 
             return mEncryptionHandlers[handler.Id].Decrypt(input);
-        }
-
+        } 
+        #endregion
+        #region EncryptionValidate(EncryptionHandlerId handler, bool throwErrors = true)
+        /// <summary>
+        /// Validates that the required handler is supported.
+        /// </summary>
+        /// <param name="handler">The handler identifier.</param>
+        /// <param name="throwErrors">if set to <c>true</c> [throw errors].</param>
+        /// <returns>Returns true if the encryption handler is supported.</returns>
+        /// <exception cref="EncryptionHandlerNotResolvedException">This exception is thrown if the handler is not present and throwErrors is set to true.</exception>
         public bool EncryptionValidate(EncryptionHandlerId handler, bool throwErrors = true)
         {
             if (!mEncryptionHandlers.ContainsKey(handler.Id))
                 if (throwErrors)
                     throw new EncryptionHandlerNotResolvedException(handler.Id);
-            else
+                else
                     return false;
 
             return true;
-        }
+        } 
+        #endregion
     }
 }

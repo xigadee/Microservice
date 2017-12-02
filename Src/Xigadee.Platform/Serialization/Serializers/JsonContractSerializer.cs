@@ -27,6 +27,7 @@ namespace Xigadee
     public class JsonContractSerializer : DefaultSerializerBase<JsonSerializer, SerializerState>
     {
         private readonly JsonSerializer mJsonSerializer = new JsonSerializer {TypeNameHandling = TypeNameHandling.Auto};
+
         /// <summary>
         /// This is the specific magic number for this serializer: 67,216
         /// </summary>

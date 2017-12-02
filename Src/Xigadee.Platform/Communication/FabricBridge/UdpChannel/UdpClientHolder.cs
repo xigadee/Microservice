@@ -6,6 +6,18 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
+    /// This is the generic binary holder for an incoming Udp message.
+    /// </summary>
+    public class UdpMessageHolder
+    {
+
+        /// <summary>
+        /// The binary payload.
+        /// </summary>
+        public byte[] Blob { get; set; }
+    }
+
+    /// <summary>
     /// This class holds the Udp client and associated logic.
     /// </summary>
     public class UdpClientHolder : ClientHolder<UdpClient, UdpContext>
@@ -23,7 +35,9 @@ namespace Xigadee
 
         protected void ConvertIncomingBase(UdpContext context)
         {
-
+            var sm = new ServiceMessage();
+            
+            context.Message =  sm;
         }
 
         protected void ConvertOutgoingBase(UdpContext context)
@@ -53,8 +67,6 @@ namespace Xigadee
 
             try
             {
-                Guid? batchId = null;
-
                 while (Client.Available > 0 
                     && countMax > 0
                     && (!timeOut.HasValue || timeOut.Value>Environment.TickCount)
