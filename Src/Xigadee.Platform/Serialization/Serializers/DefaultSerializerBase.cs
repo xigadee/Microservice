@@ -1,20 +1,4 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-#region using
+﻿#region using
 
 using System;
 using System.Collections.Concurrent;
@@ -45,7 +29,11 @@ namespace Xigadee
         /// Gets or sets the entity.
         /// </summary>
         public object Entity { get; set; }
-    } 
+        /// <summary>
+        /// Gets or sets the content-type parameter.
+        /// </summary>
+        public string ContentType { get; set; }
+    }
     #endregion
 
     /// <summary>
@@ -57,6 +45,8 @@ namespace Xigadee
         where S : SerializerState, new()
     {
         #region Declarations        
+        const string cnSerializerType = "x-xigadeeserializermb";
+
         /// <summary>
         /// Holds the disposed state.
         /// </summary>
@@ -65,12 +55,17 @@ namespace Xigadee
         /// The records the supported status of the known types.
         /// </summary>
         ConcurrentDictionary<Type, bool> mSupported;
+        #endregion
 
         /// <summary>
         /// This is the byte header for the serialization payload.
         /// </summary>
         public abstract byte[] Identifier { get; }
-        #endregion
+        /// <summary>
+        /// Gets the content-type parameter, which can be used to quickly identify the serialization type used.
+        /// </summary>
+        public virtual string ContentType => cnSerializerType + "/" + BitConverter.ToString(Identifier).Replace("-", "").ToLowerInvariant();
+
         #region Constructor
         /// <summary>
         /// This is the default constructor.
@@ -377,7 +372,5 @@ namespace Xigadee
         /// <param name="sw">The binary writer.</param>
         /// <param name="state">The state.</param>
         protected abstract void ObjectWrite(BinaryWriter sw, S state);
-
-
     }
 }

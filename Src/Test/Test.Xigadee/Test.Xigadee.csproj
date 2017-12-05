@@ -116,6 +116,7 @@
     <Compile Include="Security\TransportEncryptionTests.cs" />
     <Compile Include="Security\TransportVerificationTests.cs" />
     <Compile Include="Security\JWTUnitTests.cs" />
+    <Compile Include="Serialization\SerializationContainerTests.cs" />
     <Compile Include="Serialization\SerializationTests.cs" />
     <Compile Include="Security\SignatureHelper.cs" />
     <Compile Include="Pipeline\Pipeline1.cs" />

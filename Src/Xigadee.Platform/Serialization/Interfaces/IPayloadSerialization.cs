@@ -9,6 +9,10 @@ namespace Xigadee
     public interface IPayloadSerializer: IDisposable
     {
         /// <summary>
+        /// Gets the content-type parameter, which can be used to quickly identify the serializer used.
+        /// </summary>
+        string ContentType { get; }
+        /// <summary>
         /// This is the byte header for the serialization payload.
         /// </summary>
         byte[] Identifier { get; }
@@ -82,6 +86,5 @@ namespace Xigadee
         /// <param name="entity">The entity.</param>
         /// <returns>The binary blob.</returns>
         byte[] Serialize(object entity);
-
     }
 }
