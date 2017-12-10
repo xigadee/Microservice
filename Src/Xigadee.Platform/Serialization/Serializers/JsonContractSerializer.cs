@@ -8,9 +8,9 @@ namespace Xigadee
     /// <summary>
     /// This class is used for serialization support, using the standard Newtonsoft Json settings.
     /// </summary>
-    public class JsonContractSerializer : DefaultSerializerBase<JsonSerializer, SerializerState>
+    public class JsonContractSerializer : MagicByteLegacySerializer<JsonSerializer, SerializerState>
     {
-        private readonly JsonSerializer mJsonSerializer = new JsonSerializer {TypeNameHandling = TypeNameHandling.Auto};
+        private readonly JsonSerializer mJsonSerializer = new JsonSerializer { TypeNameHandling = TypeNameHandling.Auto };
 
         /// <summary>
         /// This is the specific magic number for this serializer: 67,216

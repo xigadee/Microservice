@@ -20,7 +20,12 @@ namespace Xigadee
     public partial class SerializationContainer : ServiceContainerBase<SerializationStatistics, SerializationPolicy>
         , IPayloadSerializationContainer, IRequireDataCollector
     {
-        #region Declarations
+        #region Declarations        
+        /// <summary>
+        /// This is a list of serializers in the order they were added to the collection. The first serializer added will get priority when serializing objects.
+        /// </summary>
+        protected List<IPayloadSerializer> mSerializers;
+
         /// <summary>
         /// This contains the supported serializers.
         /// </summary>

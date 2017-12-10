@@ -1,30 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Xigadee
+﻿namespace Xigadee
 {
+    /// <summary>
+    /// This class contains the dependencies for the serialization harness.
+    /// </summary>
+    /// <seealso cref="Xigadee.ServiceHarnessDependencies" />
     public class SerializationHarnessDependencies: ServiceHarnessDependencies
     {
         /// <summary>
-        /// Initializes the service relationships.
+        /// This is set to null as we are the serializer.
         /// </summary>
-        protected override void Initialise()
-        {
-            ResourceTracker.Start();
-
-            Scheduler.Collector = Collector;
-            Scheduler.Start();
-
-            ResourceTracker.Collector = Collector;
-            ResourceTracker.SharedServices = SharedService;
-            ResourceTracker.Start();
-        }
-
-
         public override ServiceHarnessSerializationContainer PayloadSerializer => null;
     }
 
+    /// <summary>
+    /// This harness is used for unit testing the serialization container.
+    /// </summary>
     public class SerializationContainerHarness: ServiceHarness<SerializationContainer, SerializationHarnessDependencies>
     {
     }

@@ -40,21 +40,20 @@ namespace Xigadee
     /// This abstract class is used to define serializers used on the system to provide binary transport
     /// between the various parts of the system.
     /// </summary>
-    public abstract class DefaultSerializerBase<A,S> : IPayloadSerializer
+    public abstract class MagicByteLegacySerializer<A,S> : SerializerBase, IPayloadSerializer
         where A : class
         where S : SerializerState, new()
     {
         #region Declarations        
-        const string cnSerializerType = "x-xigadeeserializermb";
-
         /// <summary>
-        /// Holds the disposed state.
+        /// The magic-byte serializer type
         /// </summary>
-        protected bool mDisposed = false;
+        public const string cnSerializerType = "x-xigadeeserializermb";
+
         /// <summary>
         /// The records the supported status of the known types.
         /// </summary>
-        ConcurrentDictionary<Type, bool> mSupported;
+        protected ConcurrentDictionary<Type, bool> mSupported;
         #endregion
 
         /// <summary>
@@ -64,44 +63,16 @@ namespace Xigadee
         /// <summary>
         /// Gets the content-type parameter, which can be used to quickly identify the serialization type used.
         /// </summary>
-        public virtual string ContentType => cnSerializerType + "/" + BitConverter.ToString(Identifier).Replace("-", "").ToLowerInvariant();
+        public override string ContentType => cnSerializerType + "/" + BitConverter.ToString(Identifier).Replace("-", "").ToLowerInvariant();
 
         #region Constructor
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        public DefaultSerializerBase()
+        public MagicByteLegacySerializer()
         {
             mSupported = new ConcurrentDictionary<Type, bool>();
         } 
-        #endregion
-
-        #region Dispose()
-        /// <summary>
-        /// This method is called when the logger is disposed.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
-        #region Dispose(bool disposing)
-        /// <summary>
-        /// This method disposes of the concurrent queue.
-        /// </summary>
-        /// <param name="disposing">Set to true if disposing.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (mDisposed)
-                return;
-
-            if (disposing)
-            {
-                mDisposed = true;
-
-            }
-        }
         #endregion
 
         #region SupportsObjectTypeSerialization(Type entityType)
@@ -217,38 +188,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region Deserialize public        
-        /// <summary>
-        /// Deserializes the specified binary blob.
-        /// </summary>
-        /// <typeparam name="E">The entity type.</typeparam>
-        /// <param name="blob">The binary blob.</param>
-        /// <returns>The deserialized entity.</returns>
-        public virtual E Deserialize<E>(byte[] blob)
-        {
-            return Deserialize<E>(blob, 0, blob.Length);
-        }
-        /// <summary>
-        /// Deserializes the specified binary blob.
-        /// </summary>
-        /// <typeparam name="E">The entity type.</typeparam>
-        /// <param name="blob">The binary blob.</param>
-        /// <param name="start">The array start.</param>
-        /// <param name="length">The array length.</param>
-        /// <returns>The deserialized entity.</returns>
-        public virtual E Deserialize<E>(byte[] blob, int start, int length)
-        {
-            return (E)Deserialize(blob, start, length);
-        }
-        /// <summary>
-        /// Deserializes the specified binary blob.
-        /// </summary>
-        /// <param name="blob">The binary blob.</param>
-        /// <returns>The deserialized entity.</returns>
-        public virtual object Deserialize(byte[] blob)
-        {
-            return Deserialize(blob, 0, blob.Length);
-        }
         /// <summary>
         /// Deserializes the specified binary blob.
         /// </summary>
@@ -256,33 +195,14 @@ namespace Xigadee
         /// <param name="start">The array start.</param>
         /// <param name="length">The array length.</param>
         /// <returns>The deserialized entity.</returns>
-        public virtual object Deserialize(byte[] blob, int start, int length)
+        public override object Deserialize(byte[] blob, int start, int length)
         {
             S state = new S();
             DeserializeInternal(state, blob, start, length);
             return state.Entity;
         }
-        #endregion
-        #region Serialize public        
-        /// <summary>
-        /// Serializes the specified entity.
-        /// </summary>
-        /// <typeparam name="E">The entity type.</typeparam>
-        /// <param name="entity">The entity.</param>
-        /// <returns>The binary blob.</returns>
-        public virtual byte[] Serialize<E>(E entity)
-        {
-            return Serialize((object)entity);
-        }
-        /// <summary>
-        /// Serializes the specified entity.
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <returns>The binary blob.</returns>
-        public abstract byte[] Serialize(object entity);
 
-        #endregion
-
+        #region DeserializeInternal(S state, byte[] blob, int index, int count)
         /// <summary>
         /// Deserializes the entity in to the state object.
         /// </summary>
@@ -304,13 +224,15 @@ namespace Xigadee
                 {
                     ObjectTypeRead(sr, state);
 
-                    ObjectRead(sr, state);        
+                    ObjectRead(sr, state);
                 }
 
                 stream.Close();
             }
         }
+        #endregion
 
+        #region SerializeInternal(S state)
         /// <summary>
         /// Serializes the entity from the state object.
         /// </summary>
@@ -339,7 +261,9 @@ namespace Xigadee
                 return outBlob;
             }
         }
+        #endregion
 
+        #region ObjectTypeRead(BinaryReader sr, S state)
         /// <summary>
         /// Sets the state object type.
         /// </summary>
@@ -350,6 +274,8 @@ namespace Xigadee
             string typeName = sr.ReadString();
             state.EntityType = Type.GetType(typeName);
         }
+        #endregion
+        #region ObjectTypeWrite(BinaryWriter sw, S state)
         /// <summary>
         /// Writes the object type to the binary writer.
         /// </summary>
@@ -358,7 +284,8 @@ namespace Xigadee
         protected virtual void ObjectTypeWrite(BinaryWriter sw, S state)
         {
             sw.Write(state.EntityType.AssemblyQualifiedName);
-        }
+        } 
+        #endregion
         /// <summary>
         /// Reads the object from the binary reader and sets it in the state.
         /// </summary>

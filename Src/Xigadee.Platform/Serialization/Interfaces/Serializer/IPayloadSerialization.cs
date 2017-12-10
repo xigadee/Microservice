@@ -3,10 +3,22 @@ using System.Collections.Generic;
 
 namespace Xigadee
 {
+    public interface IPayloadSerializerMagicBytes
+    {
+        /// <summary>
+        /// This is the byte header for the serialization payload.
+        /// </summary>
+        byte[] Identifier { get; }
+        /// <summary>
+        /// This is the collection of byte magic numbers the byte array will index with,
+        /// </summary>
+        /// <returns>A collection of 2 byte arrays.</returns>
+        IEnumerable<byte[]> PayloadMagicNumbers();
+    }
     /// <summary>
     /// This is the interface used to serialize and deserialize payloads.
     /// </summary>
-    public interface IPayloadSerializer: IDisposable
+    public interface IPayloadSerializer
     {
         /// <summary>
         /// Gets the content-type parameter, which can be used to quickly identify the serializer used.

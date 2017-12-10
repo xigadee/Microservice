@@ -36,7 +36,7 @@ namespace Xigadee
         /// </summary>
         protected virtual void Initialise()
         {
-            PayloadSerializer.Start();
+            PayloadSerializer?.Start();
             ResourceTracker.Start();
 
             Scheduler.Collector = Collector;
