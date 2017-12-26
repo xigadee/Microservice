@@ -3,49 +3,22 @@ using System.Collections.Generic;
 
 namespace Xigadee
 {
-    public interface IPayloadSerializerMagicBytes
-    {
-        /// <summary>
-        /// This is the byte header for the serialization payload.
-        /// </summary>
-        byte[] Identifier { get; }
-        /// <summary>
-        /// This is the collection of byte magic numbers the byte array will index with,
-        /// </summary>
-        /// <returns>A collection of 2 byte arrays.</returns>
-        IEnumerable<byte[]> PayloadMagicNumbers();
-    }
     /// <summary>
     /// This is the interface used to serialize and deserialize payloads.
     /// </summary>
-    public interface IPayloadSerializer
+    public interface IPayloadSerializer: IPayloadSerializerMagicBytes
     {
         /// <summary>
         /// Gets the content-type parameter, which can be used to quickly identify the serializer used.
         /// </summary>
         string ContentType { get; }
         /// <summary>
-        /// This is the byte header for the serialization payload.
-        /// </summary>
-        byte[] Identifier { get; }
-        /// <summary>
-        /// This is the collection of byte magic numbers the byte array will index with,
-        /// </summary>
-        /// <returns>A collection of 2 byte arrays.</returns>
-        IEnumerable<byte[]> PayloadMagicNumbers();
-        /// <summary>
         /// Returns true of the serializer supports this object channelId.
         /// </summary>
         /// <param name="entityType">The object channelId.</param>
         /// <returns>Returns true.</returns>
         bool SupportsObjectTypeSerialization(Type entityType);
-        /// <summary>
-        /// This method matches the incoming byte stream and identifies whether the serializer
-        /// can deserialize on the basis of the index of the byte array.
-        /// </summary>
-        /// <param name="blob">The incoming byte array</param>
-        /// <returns>Returns true if it is a match.</returns>
-        bool SupportsPayloadDeserialization(byte[] blob);
+
         /// <summary>
         /// This method matches the incoming byte stream and identifies whether the serializer
         /// can deserialize on the basis of the index of the byte array.

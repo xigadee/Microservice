@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace Xigadee
 {
     /// <summary>
-    /// This class is used for serialization support, using the standard Newtonsoft Json settings.
+    /// This class is used for serialization support, using the standard NewtonSoft Json settings.
     /// </summary>
     public class JsonContractSerializer : MagicByteLegacySerializer<JsonSerializer, SerializerState>
     {

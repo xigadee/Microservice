@@ -19,6 +19,9 @@ namespace Test.Xigadee.Serialization
             var sr = harness.Service;
 
             var srJson = sr.Add(new JsonContractSerializer());
+            //var srBson = sr.Add(new BsonContractSerializer());
+            //var srJsonRaw = sr.Add(new JsonRawSerializer());
+            //var srBsonRaw = sr.Add(new BsonRawSerializer());
 
             try
             {

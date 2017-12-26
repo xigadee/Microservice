@@ -8,10 +8,15 @@ using System.Threading.Tasks;
 #endregion
 namespace Xigadee
 {
-    public class ObjectRegistryHolder
+    /// <summary>
+    /// This is the content holder.
+    /// </summary>
+    public class ContentRegistryHolder
     {
-
-        public object Item { get; set; }
+        /// <summary>
+        /// Gets or sets the content.
+        /// </summary>
+        public object Content { get; set; }
     }
 
     /// <summary>
@@ -30,14 +35,16 @@ namespace Xigadee
         /// This contains the supported serializers.
         /// </summary>
         protected Dictionary<byte[], IPayloadSerializer> mPayloadSerializers;
+
         /// <summary>
         /// This is the look up cache for the specific type.
         /// </summary>
         protected ConcurrentDictionary<Type, IPayloadSerializer> mLookUpCache;
+
         /// <summary>
         /// This is the object registry cache.
         /// </summary>
-        protected ConcurrentDictionary<Guid, ObjectRegistryHolder> mObjectRegistry;
+        protected ConcurrentDictionary<Guid, ContentRegistryHolder> mContentRegistry;
         #endregion
         #region Constructor
         /// <summary>
@@ -91,7 +98,7 @@ namespace Xigadee
                 throw new PayloadSerializerCollectionIsEmptyException();
 
             mLookUpCache = new ConcurrentDictionary<Type, IPayloadSerializer>();
-            mObjectRegistry = new ConcurrentDictionary<Guid, ObjectRegistryHolder>();
+            mContentRegistry = new ConcurrentDictionary<Guid, ContentRegistryHolder>();
         }
         #endregion
         #region StopInternal()
@@ -102,8 +109,8 @@ namespace Xigadee
         {
             mLookUpCache.Clear();
             mPayloadSerializers.Clear();
-            mObjectRegistry.Clear();
-            mObjectRegistry = null;
+            mContentRegistry.Clear();
+            mContentRegistry = null;
         }
         #endregion
 
@@ -253,14 +260,14 @@ namespace Xigadee
             if (!holder.ObjectRegistryId.HasValue)
                 return false;
 
-            ObjectRegistryHolder item;
-            if (!mObjectRegistry.TryGetValue(holder.ObjectRegistryId.Value, out item))
+            ContentRegistryHolder item;
+            if (!mContentRegistry.TryGetValue(holder.ObjectRegistryId.Value, out item))
                 return false;
 
-            if (item.Item.GetType().IsAssignableFrom(typeof(P)))
+            if (item.Content.GetType().IsAssignableFrom(typeof(P)))
                 return false;
 
-            dto = (P)item.Item;
+            dto = (P)item.Content;
             return true;
         } 
         #endregion

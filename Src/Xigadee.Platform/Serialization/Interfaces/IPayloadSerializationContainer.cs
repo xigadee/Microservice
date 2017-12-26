@@ -2,8 +2,7 @@
 namespace Xigadee
 {
     /// <summary>
-    /// This interface is used to expose the serialization container to applications 
-    /// that require access to it.
+    /// This interface is used to expose the serialization container to applications that require access to it.
     /// </summary>
     public interface IPayloadSerializationContainer
     {
@@ -14,18 +13,19 @@ namespace Xigadee
         /// <param name="holder">The incoming serialization holder.</param>
         /// <param name="dto">The data transfer object.</param>
         /// <param name="throwExceptions">Throws a detailed exception if deserialization fails and this property is set to true.</param>
-        /// <param name="useObjectRegistryIfSupported">Specifies whether to use the object registry if supported.</param>
+        /// <param name="useContentRegistryIfSupported">Specifies whether to use the object registry if supported.</param>
         /// <returns>Returns true if the object has been successfully deserialized.</returns>
-        bool DtoTryExtraction<P>(SerializationHolder holder, out P dto, bool throwExceptions = false, bool useObjectRegistryIfSupported = true);
+        bool DtoTryExtraction<P>(SerializationHolder holder, out P dto, bool throwExceptions = false, bool useContentRegistryIfSupported = true);
+
         /// <summary>
         /// Attempts to extract the data transfer object from the serialization holder, or the object registry.
         /// </summary>
         /// <param name="holder">The incoming serialization holder.</param>
         /// <param name="dto">The data transfer object.</param>
         /// <param name="throwExceptions">Throws a detailed exception if deserialization fails and this property is set to true.</param>
-        /// <param name="useObjectRegistryIfSupported">Specifies whether to use the object registry if supported.</param>
+        /// <param name="useContentRegistryIfSupported">Specifies whether to use the object registry if supported.</param>
         /// <returns>Returns true if the object has been successfully deserialized.</returns>
-        bool DtoTryExtraction(SerializationHolder holder, out object dto, bool throwExceptions = false, bool useObjectRegistryIfSupported = true);
+        bool DtoTryExtraction(SerializationHolder holder, out object dto, bool throwExceptions = false, bool useContentRegistryIfSupported = true);
 
         /// <summary>
         /// Attempts to insert the entity in to a serialization holder or the object registry.
@@ -33,9 +33,9 @@ namespace Xigadee
         /// <param name="dto">The data transfer object.</param>
         /// <param name="holder">The outgoing serialization holder.</param>
         /// <param name="throwExceptions">Throws a detailed exception if serialization fails and this property is set to true.</param>
-        /// <param name="useObjectRegistryIfSupported">Specifies whether to use the object registry if supported.</param>
+        /// <param name="useContentRegistryIfSupported">Specifies whether to use the object registry if supported.</param>
         /// <returns>Returns true if successful.</returns>
-        bool DtoTryInsertion(object dto, out SerializationHolder holder, bool throwExceptions = false, bool useObjectRegistryIfSupported = true);
+        bool DtoTryInsertion(object dto, out SerializationHolder holder, bool throwExceptions = false, bool useContentRegistryIfSupported = true);
 
         /// <summary>
         /// This method deserializes the binary blob and returns the object.
@@ -52,9 +52,6 @@ namespace Xigadee
         /// <returns>Returns the object deserialized from the binary blob.</returns>
         object PayloadDeserialize(SerializationHolder blob);
 
-
-
-
         /// <summary>
         /// This method serializes the requestPayload object in to a binary blob using the 
         /// serializer collection.
@@ -63,14 +60,5 @@ namespace Xigadee
         /// <returns>Returns the binary blob object.</returns>
         [Obsolete("")]
         SerializationHolder PayloadSerialize(object dto);
-
-        ///// <summary>
-        ///// Payloads the register.
-        ///// </summary>
-        ///// <param name="message">The service message object to register the data transfer object.</param>
-        ///// <param name="dto">The data transfer object to serialize.</param>
-        ///// <param name="useObjectRegistry">if set to <c>true</c> the serializer will store a reference to the DTO in the object registry instead of explicitly serializing the object.</param>
-        ///// <returns>Returns true if successful.</returns>
-        //bool PayloadRegister(ServiceMessage message, object dto, bool useObjectRegistry = false);
     }
 }

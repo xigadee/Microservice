@@ -6,7 +6,7 @@ namespace Xigadee
     /// This interface is implemented by legacy serializers that do not pass a content-type but prepend two "magic" bytes to the serialization byte array 
     /// to identify the serialized content.
     /// </summary>
-    public interface IPayloadSerializationSupportsMagicByte
+    public interface IPayloadSerializerSupportsMagicByte
     {
         /// <summary>
         /// This is the byte header for the serialization payload.

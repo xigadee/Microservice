@@ -12,7 +12,7 @@ namespace Test.Xigadee.Serialization
         {
             var container = new SerializationContainer();
 
-            container.Add( new JsonContractSerializer());
+            var sr = container.Add(new JsonContractSerializer());
 
             container.Start();
 
