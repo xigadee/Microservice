@@ -234,7 +234,7 @@ namespace Xigadee
         /// <returns>Returns a tracker of type listener poll.</returns>
         private void TrackerSubmitFromClientPriorityHolder(ClientPriorityHolder context)
         {
-            //Create the task that will poll the client
+            //Create the task that will poll the client for incoming messages.
             TaskTracker tracker = new TaskTracker(TaskTrackerType.ListenerClientPoll, mPolicy.ListenerRequestTimespan)
             {
                 Priority = TaskTracker.PriorityInternal,
@@ -270,7 +270,7 @@ namespace Xigadee
 
         #region PayloadSubmit(ClientHolder client, TransmissionPayload payload)
         /// <summary>
-        /// This method processes an individual payload returned from a client.
+        /// This method processes an individual incoming payload submitted from a client.
         /// </summary>
         /// <param name="clientId">The originating client.</param>
         /// <param name="payload">The payload.</param>
@@ -321,6 +321,7 @@ namespace Xigadee
                 //Submit the tracker to the task manager.
                 payload.TraceWrite("Outgoing", "CommunicationContainer/PayloadSubmit");
 
+                //Submit the task to be processed.
                 TaskSubmit(tracker);
             }
             catch (Exception ex)

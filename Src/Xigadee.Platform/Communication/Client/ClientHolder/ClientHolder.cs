@@ -214,6 +214,7 @@ namespace Xigadee
             set;
         }
         #endregion
+
         #region Collector
         /// <summary>
         /// This is the system wide data collector

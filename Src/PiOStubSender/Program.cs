@@ -15,11 +15,11 @@ namespace PiOStubSender
             while (true)
             {
                 Console.ReadLine();
-                for (int i = 0; i < 11; i++)
-                {
+                //for (int i = 0; i < 11; i++)
+                //{
                     byte[] data = Encoding.UTF8.GetBytes($"{{Hello mom = '{Environment.TickCount}'}}");
                     uc.Send(data, data.Length, ep);
-                }
+                //}
 
                 Console.WriteLine("Sent. Press Enter to send again.");
             }

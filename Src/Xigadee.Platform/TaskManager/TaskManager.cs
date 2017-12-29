@@ -297,7 +297,7 @@ namespace Xigadee
         #endregion
         #region ProcessExecute(ProcessHolder process)
         /// <summary>
-        /// This method executes a particular process syncronously, and catches any exceptions that might be thrown.
+        /// This method executes a particular process synchronously, and catches any exceptions that might be thrown.
         /// </summary>
         /// <param name="context">The process to execute.</param>
         private void ProcessExecute(TaskManagerProcessContext context)

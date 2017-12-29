@@ -8,6 +8,10 @@ namespace Xigadee
     public class SerializationHolder
     {
         /// <summary>
+        /// Gets or sets the metadata context. The context holds any additional metadata from the incoming connection.
+        /// </summary>
+        public object Metadata { get; set; }
+        /// <summary>
         /// Gets or sets the BLOB.
         /// </summary>
         public byte[] Blob { get; set; }
@@ -33,11 +37,11 @@ namespace Xigadee
         /// <summary>
         /// Gets a value indicating whether this instance has content.
         /// </summary>
-        public bool HasContent => Content != null;
+        public bool HasObject => Object != null;
         /// <summary>
         /// Gets or sets the content.
         /// </summary>
-        public object Content { get; set; }
+        public object Object { get; set; }
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="SerializationHolder"/> to a byte array./>.

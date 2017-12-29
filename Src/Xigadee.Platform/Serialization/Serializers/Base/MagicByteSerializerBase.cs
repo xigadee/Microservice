@@ -40,7 +40,7 @@ namespace Xigadee
     /// This abstract class is used to define serializers used on the system to provide binary transport
     /// between the various parts of the system.
     /// </summary>
-    public abstract class MagicByteLegacySerializer<A,S> : SerializerBase, IPayloadSerializer
+    public abstract class MagicByteLegacySerializer<A,S> : SerializerBase, IPayloadSerializerMagicBytes
         where A : class
         where S : SerializerState, new()
     {
@@ -57,13 +57,21 @@ namespace Xigadee
         #endregion
 
         /// <summary>
+        /// Converts the identifier to a hex string.
+        /// </summary>
+        /// <returns>A hex string.</returns>
+        public string ToIdentifier()
+        {
+            return BitConverter.ToString(Identifier).Replace("-", "").ToLowerInvariant();
+        }
+        /// <summary>
         /// This is the byte header for the serialization payload.
         /// </summary>
         public abstract byte[] Identifier { get; }
         /// <summary>
         /// Gets the content-type parameter, which can be used to quickly identify the serialization type used.
         /// </summary>
-        public override string ContentType => cnSerializerType + "/" + BitConverter.ToString(Identifier).Replace("-", "").ToLowerInvariant();
+        public override string ContentType => (cnSerializerType + "/" + ToIdentifier()).ToLowerInvariant();
 
         #region Constructor
         /// <summary>
@@ -81,7 +89,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="entityType">The object channelId.</param>
         /// <returns>Returns true.</returns>
-        public virtual bool SupportsObjectTypeSerialization(Type entityType)
+        public override bool SupportsContentTypeSerialization(Type entityType)
         {
             A data;
             return ValidateType(entityType, out data);
@@ -188,6 +196,7 @@ namespace Xigadee
         }
         #endregion
 
+        #region Deserialize(byte[] blob, int start, int length)
         /// <summary>
         /// Deserializes the specified binary blob.
         /// </summary>
@@ -195,12 +204,13 @@ namespace Xigadee
         /// <param name="start">The array start.</param>
         /// <param name="length">The array length.</param>
         /// <returns>The deserialized entity.</returns>
-        public override object Deserialize(byte[] blob, int start, int length)
+        public virtual object Deserialize(byte[] blob, int start, int length)
         {
             S state = new S();
             DeserializeInternal(state, blob, start, length);
             return state.Entity;
-        }
+        } 
+        #endregion
 
         #region DeserializeInternal(S state, byte[] blob, int index, int count)
         /// <summary>
@@ -284,20 +294,89 @@ namespace Xigadee
         protected virtual void ObjectTypeWrite(BinaryWriter sw, S state)
         {
             sw.Write(state.EntityType.AssemblyQualifiedName);
-        } 
+        }
         #endregion
+
+        #region ObjectRead(BinaryReader b, S state)
         /// <summary>
         /// Reads the object from the binary reader and sets it in the state.
         /// </summary>
-        /// <param name="sr">The binary reader.</param>
+        /// <param name="b">The binary reader.</param>
         /// <param name="state">The state.</param>
-        protected abstract void ObjectRead(BinaryReader sr, S state);
-
+        protected abstract void ObjectRead(BinaryReader b, S state);
+        #endregion
+        #region ObjectWrite(BinaryWriter b, S state)
         /// <summary>
         /// Writes the object in the state to the binary writer.
         /// </summary>
-        /// <param name="sw">The binary writer.</param>
+        /// <param name="b">The binary writer.</param>
         /// <param name="state">The state.</param>
-        protected abstract void ObjectWrite(BinaryWriter sw, S state);
+        protected abstract void ObjectWrite(BinaryWriter b, S state);
+        #endregion
+
+
+        #region Deserialize public        
+        /// <summary>
+        /// Deserializes the specified binary blob.
+        /// </summary>
+        /// <typeparam name="E">The entity type.</typeparam>
+        /// <param name="blob">The binary blob.</param>
+        /// <returns>The deserialized entity.</returns>
+        public virtual E Deserialize<E>(byte[] blob)
+        {
+            return Deserialize<E>(blob, 0, blob.Length);
+        }
+        /// <summary>
+        /// Deserializes the specified binary blob.
+        /// </summary>
+        /// <typeparam name="E">The entity type.</typeparam>
+        /// <param name="blob">The binary blob.</param>
+        /// <param name="start">The array start.</param>
+        /// <param name="length">The array length.</param>
+        /// <returns>The deserialized entity.</returns>
+        public virtual E Deserialize<E>(byte[] blob, int start, int length)
+        {
+            return (E)Deserialize(blob, start, length);
+        }
+        /// <summary>
+        /// Deserializes the specified binary blob.
+        /// </summary>
+        /// <param name="blob">The binary blob.</param>
+        /// <returns>The deserialized entity.</returns>
+        public virtual object Deserialize(byte[] blob)
+        {
+            return Deserialize(blob, 0, blob.Length);
+        }
+        #endregion
+        #region Serialize public        
+        /// <summary>
+        /// Serializes the specified entity.
+        /// </summary>
+        /// <typeparam name="E">The entity type.</typeparam>
+        /// <param name="entity">The entity.</param>
+        /// <returns>The binary blob.</returns>
+        public virtual byte[] Serialize<E>(E entity)
+        {
+            return Serialize((object)entity);
+        }
+
+
+        ///// <summary>
+        ///// Serializes the specified entity.
+        ///// </summary>
+        ///// <param name="entity">The entity.</param>
+        ///// <returns>The binary blob.</returns>
+        //public abstract byte[] Serialize(object entity);
+
+        ///// <summary>
+        ///// Deserializes the specified binary blob.
+        ///// </summary>
+        ///// <param name="blob">The binary blob.</param>
+        ///// <param name="start">The array start.</param>
+        ///// <param name="length">The array length.</param>
+        ///// <returns>The deserialized entity.</returns>
+        //public abstract object Deserialize(byte[] blob, int start, int length);
+        #endregion
+
     }
 }

@@ -37,7 +37,7 @@ namespace Xigadee
         public virtual IPayloadSerializer RegisterPayloadSerializer(Func<IPayloadSerializer> fnSerializer)
         {
             ValidateServiceNotStarted();
-            return mContainer.Add(fnSerializer);
+            return mContainer.Add(fnSerializer());
         }            
         #endregion
         #region ClearPayloadSerializers()

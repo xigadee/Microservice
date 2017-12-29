@@ -8,16 +8,32 @@ namespace Xigadee
     /// <summary>
     /// This listener is used to receive UDP packets and to convert the packets in to entities that can be processed by the Xigadee framework.
     /// </summary>
-    public class UdpChannelListener : MessagingListenerBase<UdpClient, UdpContext, UdpClientHolder>
+    public class UdpChannelListener : MessagingListenerBase<UdpClient, SerializationHolder, UdpClientHolder>
     {
-        public UdpChannelListener(bool isMulticast, IPEndPoint endPoint, Action<UdpContext> convert = null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UdpChannelListener"/> class.
+        /// </summary>
+        /// <param name="isMulticast">Specifies whether this is a multicast connection.</param>
+        /// <param name="endPoint">The IP end point to listen to.</param>
+        /// <param name="contentType">The MIME Content Type which is used to identify the deserializer.</param>
+        /// <param name="contentEncoding">The optional content encoding.</param>
+        public UdpChannelListener(bool isMulticast, IPEndPoint endPoint, string contentType, string contentEncoding = null)
         {
             IsMulticast = isMulticast;
             EndPoint = endPoint;
-            ConvertIncoming = convert;
+            ContentType = contentType;
+            ContentEncoding = contentEncoding;
         }
 
-        Action<UdpContext> ConvertIncoming { get; }
+        /// <summary>
+        /// Gets the Mime type used for deserialization.
+        /// </summary>
+        public string ContentType { get; }
+        /// <summary>
+        /// Gets the optional content encoding for the deserializer.
+        /// </summary>
+        public string ContentEncoding { get; }
+
         /// <summary>
         /// Gets a value indicating whether this instance is a multicast socket.
         /// </summary>
@@ -31,6 +47,9 @@ namespace Xigadee
         {
             var client = base.ClientCreate(partition);
 
+            client.ContentType = ContentType;
+            client.ContentEncoding = ContentEncoding;
+
             client.ClientCreate = () =>
             {
                 var c = new UdpClient(EndPoint);
@@ -38,6 +57,7 @@ namespace Xigadee
                 if (IsMulticast)
                     c.JoinMulticastGroup(EndPoint.Address);
 
+                
                 return c;
             };
 

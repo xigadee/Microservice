@@ -9,17 +9,23 @@ namespace Xigadee
     /// </summary>
     public class UdpChannelSender : MessagingSenderBase<UdpClient, UdpContext, UdpClientHolder>
     {
-        public UdpChannelSender(bool isMulticast, IPEndPoint endPoint, Action<UdpContext> convert = null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UdpChannelSender"/> class.
+        /// </summary>
+        /// <param name="isMulticast">if set to <c>true</c> [is multicast].</param>
+        /// <param name="endPoint">The end point.</param>
+        /// <param name="mimeType">The serialization mime type.</param>
+        public UdpChannelSender(bool isMulticast, IPEndPoint endPoint, string mimeType)
         {
             IsMulticast = isMulticast;
             EndPoint = endPoint;
-            ConvertOutgoing = convert;
+            MimeType = mimeType;
         }
-
         /// <summary>
-        /// This is the convert function used to format outgoing messages.
+        /// Gets the serialization mime type.
         /// </summary>
-        Action<UdpContext> ConvertOutgoing { get; }
+        public string MimeType { get; }
+
         /// <summary>
         /// Gets a value indicating whether this instance is a multicast socket.
         /// </summary>

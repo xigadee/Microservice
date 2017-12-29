@@ -33,7 +33,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="entity">The entity to serialize</param>
         /// <returns>The compressed byte stream with the identifier prepended</returns>
-        public override byte[] Serialize(object entity)
+        public virtual byte[] Serialize(object entity)
         {
             var state = new SerializerState {MagicNumbers = Identifier, EntityType = entity.GetType(), Entity = entity};
             return SerializeInternal(state);
@@ -72,6 +72,16 @@ namespace Xigadee
 
             sw.Write(blob.Length);
             sw.Write(blob, 0, blob.Length);
+        }
+
+        public override void Deserialize(SerializationHolder holder)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Serialize(SerializationHolder holder)
+        {
+            throw new NotImplementedException();
         }
     }
 }

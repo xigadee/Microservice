@@ -27,24 +27,20 @@ namespace Xigadee
     {
         #region Declarations        
         /// <summary>
-        /// This is a list of serializers in the order they were added to the collection. The first serializer added will get priority when serializing objects.
+        /// The serializers that support magic bytes.
         /// </summary>
-        protected List<IPayloadSerializer> mSerializers;
+        protected Dictionary<string, IPayloadSerializerMagicBytes> mPayloadSerializersMagicBytes;
 
         /// <summary>
         /// This contains the supported serializers.
         /// </summary>
-        protected Dictionary<byte[], IPayloadSerializer> mPayloadSerializers;
+        protected Dictionary<string, IPayloadSerializer> mPayloadSerializers;
 
         /// <summary>
         /// This is the look up cache for the specific type.
         /// </summary>
         protected ConcurrentDictionary<Type, IPayloadSerializer> mLookUpCache;
 
-        /// <summary>
-        /// This is the object registry cache.
-        /// </summary>
-        protected ConcurrentDictionary<Guid, ContentRegistryHolder> mContentRegistry;
         #endregion
         #region Constructor
         /// <summary>
@@ -54,16 +50,15 @@ namespace Xigadee
         public SerializationContainer(SerializationPolicy policy = null)
             : base(policy)
         {
-            mPayloadSerializers = new Dictionary<byte[], IPayloadSerializer>();
+            mPayloadSerializers = new Dictionary<string, IPayloadSerializer>();
+            mPayloadSerializersMagicBytes = new Dictionary<string, IPayloadSerializerMagicBytes>();
         }
         #endregion
 
-        #region Collector
         /// <summary>
-        /// This is the data collector.
+        /// Gets or sets the default type of the content type. This is based on the first serializer added to the collection.
         /// </summary>
-        public IDataCollection Collector { get; set; } 
-        #endregion
+        public string DefaultContentType { get; protected set; }
 
         #region StatisticsRecalculate(SerializationStatistics statistics)
         /// <summary>
@@ -79,7 +74,7 @@ namespace Xigadee
                 statistics.ItemCount = mPayloadSerializers?.Count ?? 0;
                 statistics.CacheCount = mLookUpCache?.Count ?? 0;
 
-                statistics.Serialization = mPayloadSerializers?.Select((c) => $"{BitConverter.ToString(c.Key)}: {c.Value.GetType().Name}").ToArray();
+                statistics.Serialization = mPayloadSerializers?.Select((c) => $"{c.Key}: {c.Value.GetType().Name}").ToArray();
                 statistics.Cache = mLookUpCache?.Select((c) => $"{c.Key.Name}: {c.Value.GetType().Name}").ToArray();
             }
             catch (Exception)
@@ -98,7 +93,6 @@ namespace Xigadee
                 throw new PayloadSerializerCollectionIsEmptyException();
 
             mLookUpCache = new ConcurrentDictionary<Type, IPayloadSerializer>();
-            mContentRegistry = new ConcurrentDictionary<Guid, ContentRegistryHolder>();
         }
         #endregion
         #region StopInternal()
@@ -109,8 +103,6 @@ namespace Xigadee
         {
             mLookUpCache.Clear();
             mPayloadSerializers.Clear();
-            mContentRegistry.Clear();
-            mContentRegistry = null;
         }
         #endregion
 
@@ -118,19 +110,23 @@ namespace Xigadee
         /// <summary>
         /// This method adds the serializer to the collection.
         /// </summary>
-        /// <param name="fnSerializer">The function to create the serializer.</param>
-        public IPayloadSerializer Add(Func<IPayloadSerializer> fnSerializer)
-        {
-            return Add(fnSerializer());
-        }
-        /// <summary>
-        /// This method adds the serializer to the collection.
-        /// </summary>
         /// <param name="serializer">The serializer to add.</param>
         public IPayloadSerializer Add(IPayloadSerializer serializer)
         {
-            mPayloadSerializers.Add(serializer.Identifier, serializer);
+            if (string.IsNullOrEmpty(serializer.ContentType))
+                throw new ArgumentOutOfRangeException("ContentType cannot be null or empty.");
+
+            var contentType = serializer.ContentType.ToLowerInvariant();
+            mPayloadSerializers.Add(contentType, serializer);
+            if (serializer is IPayloadSerializerMagicBytes)
+            {
+                var mb = (IPayloadSerializerMagicBytes)serializer;
+                mPayloadSerializersMagicBytes.Add(mb.ToIdentifier(), mb);
+            }
+
             mLookUpCache?.Clear();
+
+            DefaultContentType = DefaultContentType ?? contentType;
 
             return serializer;
         }
@@ -141,6 +137,7 @@ namespace Xigadee
         {
             mPayloadSerializers.Clear();
             mLookUpCache?.Clear();
+            DefaultContentType = null;
         }
         /// <summary>
         /// Gets the count on the number of registered serializers.
@@ -149,22 +146,25 @@ namespace Xigadee
         #endregion
 
         #region PayloadDeserialize...
-
         /// <summary>
         /// This method deserializes the binary blob and returns the object.
         /// </summary>
         /// <typeparam name="P">The payload message type.</typeparam>
-        /// <param name="blob">The binary blob.</param>
+        /// <param name="holder">The binary holder.</param>
         /// <returns>Returns the object deserialized from the binary blob.</returns>
-        public P PayloadDeserialize<P>(SerializationHolder blob)
+        public P PayloadDeserialize<P>(SerializationHolder holder)
         {
-            if (blob?.Blob == null || mPayloadSerializers.Count == 0)
+            if (holder?.Blob == null || mPayloadSerializers.Count == 0)
                 return default(P);
 
-            var serializer = mPayloadSerializers.Values.FirstOrDefault(s => s.SupportsPayloadDeserialization(blob));
+            var mimeType = PrepareMimeType(holder.ContentType);
 
-            if (serializer != null)
-                return serializer.Deserialize<P>(blob);
+            var serializer = mPayloadSerializers[mimeType];
+
+            if (serializer != null 
+                && serializer.TryDeserialize(holder) 
+                && holder.ObjectType == typeof(P))
+                return (P)holder.Object;
 
             return default(P);
         }
@@ -172,17 +172,20 @@ namespace Xigadee
         /// <summary>
         /// This method deserializes the binary blob and returns the object.
         /// </summary>
-        /// <param name="blob">The binary blob.</param>
+        /// <param name="holder">The binary holder.</param>
         /// <returns>Returns the object deserialized from the binary blob.</returns>
-        public object PayloadDeserialize(SerializationHolder blob)
+        public object PayloadDeserialize(SerializationHolder holder)
         {
-            if (blob?.Blob == null || mPayloadSerializers.Count == 0)
+            if (holder?.Blob == null || mPayloadSerializers.Count == 0)
                 return null;
 
-            var serializer = mPayloadSerializers.Values.FirstOrDefault(s => s.SupportsPayloadDeserialization(blob));
+            var mimeType = PrepareMimeType(holder.ContentType);
 
-            if (serializer != null)
-                return serializer.Deserialize(blob);
+            var serializer = mPayloadSerializers[mimeType];
+
+            if (serializer != null
+                && serializer.TryDeserialize(holder))
+                return holder.Object;
 
             return null;
         } 
@@ -197,12 +200,12 @@ namespace Xigadee
         /// <returns>Returns the binary blob object.</returns>
         public SerializationHolder PayloadSerialize(object payload)
         {
-            if (payload == null)
-                return null;
+            //if (payload == null)
+            //    return null;
 
-            var serializer = mPayloadSerializers.Values.FirstOrDefault(s => s.SupportsObjectTypeSerialization(payload.GetType()));
-            if (serializer != null)
-                return serializer.Serialize(payload);
+            //var serializer = mPayloadSerializers.Values.FirstOrDefault(s => s.SupportsContentTypeSerialization(payload.GetType()));
+            //if (serializer != null)
+            //    return serializer.Serialize(payload);
 
             throw new PayloadTypeSerializationNotSupportedException(payload.GetType().AssemblyQualifiedName);
         }
@@ -229,7 +232,7 @@ namespace Xigadee
                         IPayloadSerializer ser = null;
                         try
                         {
-                            ser = mPayloadSerializers.Values.FirstOrDefault((s) => s.SupportsObjectTypeSerialization(t));
+                            ser = mPayloadSerializers.Values.FirstOrDefault((s) => s.SupportsContentTypeSerialization(t));
                         }
                         catch (Exception ex)
                         {
@@ -245,32 +248,32 @@ namespace Xigadee
         }
         #endregion
 
-        #region RegistryExtract<P>(SerializationHolder holder, out P dto)
-        /// <summary>
-        /// This method extracts an item from the object registry.
-        /// </summary>
-        /// <typeparam name="P">The object type.</typeparam>
-        /// <param name="holder">The serialization holder.</param>
-        /// <param name="dto">The data transfer object.</param>
-        /// <returns>Returns true if the object has been found in the object registry.</returns>
-        public bool RegistryExtract<P>(SerializationHolder holder, out P dto)
-        {
-            dto = default(P);
+        //#region RegistryExtract<P>(SerializationHolder holder, out P dto)
+        ///// <summary>
+        ///// This method extracts an item from the object registry.
+        ///// </summary>
+        ///// <typeparam name="P">The object type.</typeparam>
+        ///// <param name="holder">The serialization holder.</param>
+        ///// <param name="dto">The data transfer object.</param>
+        ///// <returns>Returns true if the object has been found in the object registry.</returns>
+        //public bool RegistryExtract<P>(SerializationHolder holder, out P dto)
+        //{
+        //    dto = default(P);
 
-            if (!holder.ObjectRegistryId.HasValue)
-                return false;
+        //    if (!holder.ObjectRegistryId.HasValue)
+        //        return false;
 
-            ContentRegistryHolder item;
-            if (!mContentRegistry.TryGetValue(holder.ObjectRegistryId.Value, out item))
-                return false;
+        //    ContentRegistryHolder item;
+        //    if (!mContentRegistry.TryGetValue(holder.ObjectRegistryId.Value, out item))
+        //        return false;
 
-            if (item.Content.GetType().IsAssignableFrom(typeof(P)))
-                return false;
+        //    if (item.Content.GetType().IsAssignableFrom(typeof(P)))
+        //        return false;
 
-            dto = (P)item.Content;
-            return true;
-        } 
-        #endregion
+        //    dto = (P)item.Content;
+        //    return true;
+        //} 
+        //#endregion
 
         public bool DtoTryExtraction(SerializationHolder holder, out object dto, bool throwExceptions = false, bool useObjectRegistryIfSupported = true)
         {
@@ -279,8 +282,8 @@ namespace Xigadee
 
         public bool DtoTryExtraction<P>(SerializationHolder holder, out P dto, bool throwExceptions = false, bool useObjectRegistryIfSupported = true)
         {
-            if (useObjectRegistryIfSupported && RegistryExtract(holder, out dto))
-                return true;
+            //if (useObjectRegistryIfSupported && RegistryExtract(holder, out dto))
+            //    return true;
 
             throw new NotImplementedException();
         }
@@ -289,16 +292,39 @@ namespace Xigadee
         {
             holder = new SerializationHolder();
 
-            if (dto == null)
+            //if (dto == null)
                 return false;
 
-            IPayloadSerializer serializer;
-            if (!SerializerResolve(dto.GetType(), out serializer))
-                return false;
+            //IPayloadSerializer serializer;
+            //if (!SerializerResolve(dto.GetType(), out serializer))
+            //    return false;
 
-            holder.Blob = serializer.Serialize(dto);
+            //holder.Blob = serializer.Serialize(dto);
 
-            return true;
+            //return true;
         }
+
+        private string PrepareMimeType(string mimetype)
+        {
+            if (mimetype == null)
+                throw new ArgumentNullException(nameof(mimetype));
+
+            var items = mimetype.Split(';');
+
+            return items[0].Trim().ToLowerInvariant();
+        }
+
+        public bool SupportsSerializer(string mimetype)
+        {
+            return mPayloadSerializers.ContainsKey(PrepareMimeType(mimetype));
+        }
+
+        #region Collector
+        /// <summary>
+        /// This is the data collector.
+        /// </summary>
+        public IDataCollection Collector { get; set; }
+        #endregion
+
     }
 }

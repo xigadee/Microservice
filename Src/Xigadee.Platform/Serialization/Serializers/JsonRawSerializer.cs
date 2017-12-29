@@ -11,19 +11,40 @@ namespace Xigadee
     /// <seealso cref="Xigadee.SerializerBase" />
     public class JsonRawSerializer : SerializerBase
     {
-        /// <summary>
-        /// Gets the content-type parameter: application/json
-        /// </summary>
-        public override string ContentType { get; } = "application/json";
+        private readonly JsonSerializer mJsonSerializer;
 
-        public override object Deserialize(byte[] blob, int start, int length)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JsonRawSerializer"/> class.
+        /// </summary>
+        public JsonRawSerializer()
         {
-            throw new NotImplementedException();
+            ContentType = "application/json";
+            mJsonSerializer = new JsonSerializer { TypeNameHandling = TypeNameHandling.Auto };
         }
 
-        public override byte[] Serialize(object entity)
+        public override void Deserialize(SerializationHolder holder)
         {
-            throw new NotImplementedException();
+            //mJsonSerializer.Deserialize(
+        }
+
+        public override void Serialize(SerializationHolder holder)
+        {
+            using (var stream = new MemoryStream())
+            using (var streamWriter = new StreamWriter(stream))
+            using (var textWriter = new JsonTextWriter(streamWriter))
+            {
+                mJsonSerializer.Serialize(textWriter, holder.Object);
+                streamWriter.Flush();
+                stream.Position = 0;
+                holder.Blob = stream.ToArray();
+            }
+
+            holder.ContentType = ContentType + $"; type=\"{holder.Object.GetType().ToString()}\"";
+        }
+
+        public override bool SupportsContentTypeSerialization(Type entityType)
+        {
+            return true;
         }
     }
 }

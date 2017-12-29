@@ -9,11 +9,14 @@ namespace Xigadee
         /// </summary>
         /// <typeparam name="P">The pipeline type.</typeparam>
         /// <param name="pipeline">The pipeline.</param>
+        /// <param name="supportLegacy">This parameter specifies whether the JsonContractSerializer should be added to the collection. The default is true.</param>
         /// <returns>The pipeline.</returns>
-        public static P AddPayloadSerializerDefaultJson<P>(this P pipeline)
+        public static P AddPayloadSerializerDefaultJson<P>(this P pipeline, bool supportLegacy = true)
             where P : IPipeline
         {
-            var component = pipeline.Service.Serialization.RegisterPayloadSerializer(new JsonContractSerializer());
+            pipeline.Service.Serialization.RegisterPayloadSerializer(new JsonRawSerializer());
+            if (supportLegacy)
+                pipeline.Service.Serialization.RegisterPayloadSerializer(new JsonContractSerializer());
 
             return pipeline;
         }

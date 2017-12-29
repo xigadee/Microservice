@@ -6,44 +6,18 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This is the generic binary holder for an incoming Udp message.
-    /// </summary>
-    public class UdpMessageHolder
-    {
-
-        /// <summary>
-        /// The binary payload.
-        /// </summary>
-        public byte[] Blob { get; set; }
-    }
-
-    /// <summary>
     /// This class holds the Udp client and associated logic.
     /// </summary>
-    public class UdpClientHolder : ClientHolder<UdpClient, UdpContext>
+    public class UdpClientHolder : ClientHolder<UdpClient, SerializationHolder>
     {
-        public UdpClientHolder()
-        {
-            ConvertIncoming = ConvertIncomingBase;
-            ConvertOutgoing = ConvertOutgoingBase;
-        }
-
-        public Action<UdpContext> ConvertIncoming { get; set; }
-
-        public Action<UdpContext> ConvertOutgoing { get; set; }
-
-
-        protected void ConvertIncomingBase(UdpContext context)
-        {
-            var sm = new ServiceMessage();
-            
-            context.Message =  sm;
-        }
-
-        protected void ConvertOutgoingBase(UdpContext context)
-        {
-
-        }
+        /// <summary>
+        /// Gets or sets the type of the binary content. This is used for deserialization.
+        /// </summary>
+        public string ContentType { get; set; }
+        /// <summary>
+        /// Gets or sets any specific encoding used for the binary payload, i.e. GZIP
+        /// </summary>
+        public string ContentEncoding { get; set; }
 
         /// <summary>
         /// This method pulls fabric messages and converts them in to generic payload messages for the Microservice to process.
@@ -72,19 +46,21 @@ namespace Xigadee
                     && (!timeOut.HasValue || timeOut.Value>Environment.TickCount)
                     )
                 {
-                    UdpContext context = null;
                     try
                     {
                         var result = await Client.ReceiveAsync();
-                        context = new UdpContext(PayloadSerializer, result);
+                        var holder = (SerializationHolder)result.Buffer;
+                        holder.Metadata = result.RemoteEndPoint;
+                        holder.ContentType = ContentType;
+                        holder.ContentEncoding = ContentEncoding;
 
-                        //ConvertIncoming?.Invoke(context) ?? ConvertIncomingBase(context);
                     }
                     catch (Exception)
                     {
 
                         throw;
                     }
+
                     //if (BoundaryLoggingActive)
                     //    batchId = Collector?.BoundaryBatchPoll(count ?? -1, intBatch.Count, mappingChannel ?? ChannelId, Priority);
 
@@ -111,7 +87,7 @@ namespace Xigadee
         /// <returns></returns>
         public override Task Transmit(TransmissionPayload payload, int retry = 0)
         {
-            UdpContext context = new UdpContext(PayloadSerializer, payload.Message);
+            //UdpContext context = new UdpContext(PayloadSerializer, payload.Message);
 
             //ConvertOutgoing?.Invoke(context) ??
 

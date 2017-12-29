@@ -9,6 +9,11 @@ namespace Xigadee
     public interface IPayloadSerializerMagicBytes
     {
         /// <summary>
+        /// Converts the identifier to a hex string.
+        /// </summary>
+        /// <returns>A hex string.</returns>
+        string ToIdentifier();
+        /// <summary>
         /// This is the byte header for the serialization payload.
         /// </summary>
         byte[] Identifier { get; }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -13,111 +14,121 @@ namespace Xigadee
     /// <summary>
     /// This class allows for serialization root functionality to be shared.
     /// </summary>
-    public abstract class SerializerBase
+    [DebuggerDisplay("Type={ContentType}")]
+    public abstract class SerializerBase: IPayloadSerializer
     {
         /// <summary>
         /// Gets the content-type parameter, which can be used to quickly identify the serialization type used.
         /// </summary>
-        public abstract string ContentType { get; }
+        public virtual string ContentType { get; set; }
 
         /// <summary>
-        /// Validates that the incoming holder is correctly configured..
+        /// Returns true if the holder can be deserialized.
         /// </summary>
         /// <param name="holder">The holder.</param>
-        protected virtual void CheckIncoming(SerializationHolder holder)
+        /// <returns>
+        /// Returns true if it can be deserialized.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">holder</exception>
+        public virtual bool SupportsDeserialization(SerializationHolder holder)
         {
             if (holder == null)
                 throw new ArgumentNullException("holder");
 
-            if (!holder.ContentType.Equals(ContentType, StringComparison.InvariantCultureIgnoreCase))
-                throw new SerializationHolderContentTypeException(holder, ContentType);
+            return (holder.ContentType ?? "").Equals(ContentType, StringComparison.InvariantCultureIgnoreCase);
         }
         /// <summary>
-        /// Validates that the outgoing holder is correctly configured..
+        /// Returns true if the Content in the holder can be serialized.
         /// </summary>
         /// <param name="holder">The holder.</param>
-        protected virtual void CheckOutgoing(SerializationHolder holder)
+        /// <returns>
+        /// Returns true if it can be serialized.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">holder</exception>
+        public virtual bool SupportsSerialization(SerializationHolder holder)
         {
             if (holder == null)
                 throw new ArgumentNullException("holder");
+
+            return true;
         }
 
+        /// <summary>
+        /// Tries to deserialize the incoming holder.
+        /// </summary>
+        /// <param name="holder">The holder.</param>
+        /// <returns>
+        /// Returns true if the incoming binary payload is successfully deserialized to a content object.
+        /// </returns>
         public virtual bool TryDeserialize(SerializationHolder holder)
         {
-            CheckIncoming(holder);
+            if (!SupportsDeserialization(holder))
+                return false;
+
+            try
+            {
+                Deserialize(holder);
+                return true;
+            }
+            catch (Exception ex)
+            {
+            }
 
             return false;
         }
 
+        public abstract void Deserialize(SerializationHolder holder);
+
+        public abstract void Serialize(SerializationHolder holder);
+
+        /// <summary>
+        /// Tries to serialize the outgoing payload.
+        /// </summary>
+        /// <param name="holder">The holder.</param>
+        /// <returns>
+        /// Returns true if the Content is serialized correctly to a binary blob.
+        /// </returns>
         public virtual bool TrySerialize(SerializationHolder holder)
         {
-            CheckOutgoing(holder);
+            if (!SupportsSerialization(holder))
+                return false;
+
+            try
+            {
+                Serialize(holder);
+                return true;
+            }
+            catch (Exception ex)
+            {
+            }
 
             return false;
-        }
+        }       
 
-        
+        /// <summary>
+        /// Returns true if the serializer supports this entity type for serialization.
+        /// </summary>
+        /// <param name="entityType">The entity type.</param>
+        /// <returns>Returns true if supported.</returns>
+        public abstract bool SupportsContentTypeSerialization(Type entityType);
+        /// <summary>
+        /// Returns true if the serializer supports this content type for serialization.
+        /// </summary>
+        /// <param name="holder">The holder.</param>
+        /// <returns>
+        /// Returns true if supported.
+        /// </returns>
+        public virtual bool SupportsContentTypeSerialization(SerializationHolder holder)
+        {
+            if (!holder.HasObject)
+                return false;
 
-        #region Deserialize public        
-        /// <summary>
-        /// Deserializes the specified binary blob.
-        /// </summary>
-        /// <typeparam name="E">The entity type.</typeparam>
-        /// <param name="blob">The binary blob.</param>
-        /// <returns>The deserialized entity.</returns>
-        public virtual E Deserialize<E>(byte[] blob)
-        {
-            return Deserialize<E>(blob, 0, blob.Length);
-        }
-        /// <summary>
-        /// Deserializes the specified binary blob.
-        /// </summary>
-        /// <typeparam name="E">The entity type.</typeparam>
-        /// <param name="blob">The binary blob.</param>
-        /// <param name="start">The array start.</param>
-        /// <param name="length">The array length.</param>
-        /// <returns>The deserialized entity.</returns>
-        public virtual E Deserialize<E>(byte[] blob, int start, int length)
-        {
-            return (E)Deserialize(blob, start, length);
-        }
-        /// <summary>
-        /// Deserializes the specified binary blob.
-        /// </summary>
-        /// <param name="blob">The binary blob.</param>
-        /// <returns>The deserialized entity.</returns>
-        public virtual object Deserialize(byte[] blob)
-        {
-            return Deserialize(blob, 0, blob.Length);
-        }
-        /// <summary>
-        /// Deserializes the specified binary blob.
-        /// </summary>
-        /// <param name="blob">The binary blob.</param>
-        /// <param name="start">The array start.</param>
-        /// <param name="length">The array length.</param>
-        /// <returns>The deserialized entity.</returns>
-        public abstract object Deserialize(byte[] blob, int start, int length);
-        #endregion
-        #region Serialize public        
-        /// <summary>
-        /// Serializes the specified entity.
-        /// </summary>
-        /// <typeparam name="E">The entity type.</typeparam>
-        /// <param name="entity">The entity.</param>
-        /// <returns>The binary blob.</returns>
-        public virtual byte[] Serialize<E>(E entity)
-        {
-            return Serialize((object)entity);
-        }
-        /// <summary>
-        /// Serializes the specified entity.
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <returns>The binary blob.</returns>
-        public abstract byte[] Serialize(object entity);
+            Type cType = holder.ObjectType ?? holder.Object?.GetType();
 
-        #endregion
+            if (cType == null)
+                return false;
 
+            return SupportsContentTypeSerialization(cType);
+        }
     }
 }
