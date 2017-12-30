@@ -149,9 +149,9 @@ namespace Xigadee
         /// <summary>
         /// This abstract method stops the service. You should override this method for your own logic.
         /// </summary>
-        protected abstract void StopInternal(); 
+        protected abstract void StopInternal();
 
-        #region ServiceStart(object service, Dictionary<string, string> args)
+        #region ServiceStart(object service)
         /// <summary>
         /// This method starts a specific IServiceProcess service.
         /// </summary>

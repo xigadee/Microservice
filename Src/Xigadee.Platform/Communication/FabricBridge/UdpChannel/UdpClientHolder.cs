@@ -10,6 +10,10 @@ namespace Xigadee
     /// </summary>
     public class UdpClientHolder : ClientHolder<UdpClient, SerializationHolder>
     {
+        public UdpClientHolder()
+        {
+
+        }
         /// <summary>
         /// Gets or sets the type of the binary content. This is used for deserialization.
         /// </summary>
@@ -33,11 +37,15 @@ namespace Xigadee
         {
             int? timeOut = null;
             int countMax = count ?? 10;
+            //Guid? batchId = null;
 
             if (wait.HasValue)
                 timeOut = Environment.TickCount + wait.Value;
 
             List<TransmissionPayload> batch =  new List<TransmissionPayload>();
+
+            //if (BoundaryLoggingActive)
+            //    batchId = Collector?.BoundaryBatchPoll(count ?? -1, intBatch.Count, mappingChannel ?? ChannelId, Priority);
 
             try
             {
@@ -54,6 +62,10 @@ namespace Xigadee
                         holder.ContentType = ContentType;
                         holder.ContentEncoding = ContentEncoding;
 
+                        this.PayloadSerializer.PayloadDeserialize(
+
+                        var payload = TransmissionPayload.Create();
+
                     }
                     catch (Exception)
                     {
@@ -61,8 +73,6 @@ namespace Xigadee
                         throw;
                     }
 
-                    //if (BoundaryLoggingActive)
-                    //    batchId = Collector?.BoundaryBatchPoll(count ?? -1, intBatch.Count, mappingChannel ?? ChannelId, Priority);
 
                     //var sm = MessageUnpack(result);
 

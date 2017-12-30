@@ -17,6 +17,7 @@ namespace Xigadee
         /// Gets or sets the default type of the content type. This is based on the first serializer added to the collection.
         /// </summary>
         string DefaultContentType{get;}
+
         /// <summary>
         /// Attempts to extract the data transfer object from the serialization holder, or the object registry.
         /// </summary>
