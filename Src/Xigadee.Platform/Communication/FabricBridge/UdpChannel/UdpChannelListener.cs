@@ -94,7 +94,6 @@ namespace Xigadee
 
                 if (IsMulticast)
                     c.JoinMulticastGroup(EndPoint.Address);
-
                 
                 return c;
             };
@@ -103,8 +102,7 @@ namespace Xigadee
             {
                 if (!PayloadSerializer.TryPayloadDeserialize(holder))
                 {
-                    holder.Object = new UdpBinaryContext { Blob = holder.Blob, Endpoint = (IPEndPoint)holder.Metadata };
-                    holder.ObjectType = typeof(UdpBinaryContext);
+                    holder.SetObject(new UdpBinaryContext { Blob = holder.Blob, Endpoint = (IPEndPoint)holder.Metadata });
                 }
 
                 var sMessage = new ServiceMessage((client.MappingChannelId ?? client.ChannelId, RequestAddress), ResponseAddress);

@@ -24,11 +24,7 @@ namespace PiO
                 .AddChannelIncoming("lightwave", "LightwaveRF UDP traffic", ListenerPartitionConfig.Init(1))
                     .AttachUdpListener(new IPEndPoint(IPAddress.Any, 9761)
                         , requestAddress: ("message","in")
-                        , deserialize: (holder) =>
-                        {
-                            holder.Object = new LightwaveMessage(holder);
-                            holder.ObjectType = typeof(LightwaveMessage);
-                        })
+                        , deserialize: (holder) => holder.SetObject(new LightwaveMessage(holder)))
                     .AttachCommand(async (ctx) => 
                     {
                         //Do nothing

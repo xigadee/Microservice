@@ -25,7 +25,7 @@ namespace PiOStubSender
                 message.Title = "Mr.";
                 message.Name = "Sid";
                 message.City = "London";
-                message.TimeStamp = Environment.TickCount;
+                message.TimeStamp = DateTime.UtcNow;
                 message.Id = id;
 
                 var authorData = JsonConvert.SerializeObject(message, Formatting.Indented);

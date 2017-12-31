@@ -1,6 +1,8 @@
-﻿using Xigadee;
+﻿using System;
 using System.Text;
 using Newtonsoft.Json;
+using Xigadee;
+
 namespace PiO
 {
     /// <summary>
@@ -8,6 +10,10 @@ namespace PiO
     /// </summary>
     public class LightwaveMessage
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LightwaveMessage"/> class and sets the properties from the incoming JSON binary payload.
+        /// </summary>
+        /// <param name="holder">The holder containing the binary data.</param>
         public LightwaveMessage(SerializationHolder holder)
         {
             var json = Encoding.UTF8.GetString(holder.Blob);
@@ -18,7 +24,7 @@ namespace PiO
 
         public int Id { get; }
 
-        public int TimeStamp { get; }
+        public DateTime? TimeStamp { get; }
     }
 
 }

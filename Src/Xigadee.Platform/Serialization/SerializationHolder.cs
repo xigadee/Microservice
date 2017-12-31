@@ -44,6 +44,15 @@ namespace Xigadee
         public object Object { get; set; }
 
         /// <summary>
+        /// Sets the object and the object type for the holder.
+        /// </summary>
+        /// <param name="incoming">The incoming object.</param>
+        public void SetObject(object incoming)
+        {
+            Object = incoming;
+            ObjectType = incoming?.GetType();
+        }
+        /// <summary>
         /// Performs an implicit conversion from <see cref="SerializationHolder"/> to a byte array./>.
         /// </summary>
         /// <param name="holder">The serialization holder.</param>
