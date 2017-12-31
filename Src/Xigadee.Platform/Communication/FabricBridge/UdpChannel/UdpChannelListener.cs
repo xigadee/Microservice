@@ -17,13 +17,29 @@ namespace Xigadee
         /// <param name="endPoint">The IP end point to listen to.</param>
         /// <param name="contentType">The MIME Content Type which is used to identify the deserializer.</param>
         /// <param name="contentEncoding">The optional content encoding.</param>
-        public UdpChannelListener(bool isMulticast, IPEndPoint endPoint, string contentType, string contentEncoding = null)
+        /// <param name="addressSend">This is the optional address fragment which specifies the incoming message destination. If this is not set then ("","") will be used. This does not include a channelId as this will be provided by the pipeline.</param>
+        /// <param name="addressReturn">This is the optional return address destination to be set for the incoming messages.</param>
+        public UdpChannelListener(bool isMulticast, IPEndPoint endPoint
+            , string contentType, string contentEncoding = null
+            , ServiceMessageHeaderFragment addressSend = null, ServiceMessageHeader addressReturn = null
+            )
         {
             IsMulticast = isMulticast;
             EndPoint = endPoint;
             ContentType = contentType;
             ContentEncoding = contentEncoding;
+            AddressSend = addressSend ?? ("","");
+            AddressReturn = addressReturn;
         }
+
+        /// <summary>
+        /// This is the optional address fragment which specifies the incoming message destination. If this is not set then ("","") will be used.
+        /// </summary>
+        public ServiceMessageHeaderFragment AddressSend { get; }
+        /// <summary>
+        /// This is the optional return address destination to be set for the incoming messages.
+        /// </summary>
+        public ServiceMessageHeader AddressReturn { get; }
 
         /// <summary>
         /// Gets the Mime type used for deserialization.
@@ -43,6 +59,13 @@ namespace Xigadee
         /// </summary>
         IPEndPoint EndPoint { get; }
 
+        /// <summary>
+        /// This override sets the default processing time to the client for incoming messages.
+        /// </summary>
+        /// <param name="partition">The current partition.</param>
+        /// <returns>
+        /// Returns the new client.
+        /// </returns>
         protected override UdpClientHolder ClientCreate(ListenerPartitionConfig partition)
         {
             var client = base.ClientCreate(partition);
@@ -61,12 +84,17 @@ namespace Xigadee
                 return c;
             };
 
-            client.MessageUnpack = (u) =>
+            client.MessageUnpack = (holder) =>
             {
-                var sMessage = new ServiceMessage();
+                if (!PayloadSerializer.TryPayloadDeserialize(holder))
+                {
+                    holder.Object = new UdpBinaryContext { Blob = holder.Blob, Endpoint = (IPEndPoint)holder.Metadata };
+                    holder.ObjectType = typeof(UdpBinaryContext);
+                }
 
-                //string text = Encoding.UTF8.GetString(u.Buffer);
-
+                var sMessage = new ServiceMessage((client.ChannelId, AddressSend), AddressReturn);
+                sMessage.ChannelPriority = client.Priority;
+                sMessage.Blob = holder;
 
                 return sMessage;
             };

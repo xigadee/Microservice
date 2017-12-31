@@ -23,6 +23,7 @@ namespace PiO
                 .AddDebugMemoryDataCollector(out coll)
                 .AddChannelIncoming("lightwave", "LightwaveRF UDP traffic", ListenerPartitionConfig.Init(1))
                     .AttachUdpListener(new IPEndPoint(IPAddress.Any, 9761)
+                        , addressSend: ("message","in")
                         , deserialize: (holder) =>
                         {
                             holder.Object = new LightwaveMessage(holder);
@@ -33,7 +34,7 @@ namespace PiO
                         //Do nothing
                         await Task.Delay(10);
                     }
-                    , ("incoming","data"))
+                    , ("message", "in"))
                     .Revert()
                 .AddChannelOutgoing("status", "Outgoing UDP status", SenderPartitionConfig.Init(1))
                     .AttachUdpSender(new IPEndPoint(IPAddress.Any, 44723)
