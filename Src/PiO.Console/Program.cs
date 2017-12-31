@@ -5,9 +5,6 @@ using Xigadee;
 
 namespace PiO
 {
-
-
-
     class Program
     {
         static MicroservicePipeline mservice;
@@ -24,7 +21,7 @@ namespace PiO
                 .AddChannelIncoming("lightwave", "LightwaveRF UDP traffic", ListenerPartitionConfig.Init(1))
                     .AttachUdpListener(new IPEndPoint(IPAddress.Any, 9761)
                         , requestAddress: ("message","in")
-                        , deserialize: (holder) => holder.SetObject(new LightwaveMessage(holder)))
+                        , deserialize: (holder) => holder.SetObject(new LightwaveMessage(holder.Blob, (IPEndPoint)holder.Metadata)))
                     .AttachCommand(async (ctx) => 
                     {
                         //Do nothing
