@@ -28,7 +28,7 @@ namespace PiOStubSender
                 message.TimeStamp = DateTime.UtcNow;
                 message.Id = id;
 
-                var authorData = JsonConvert.SerializeObject(message, Formatting.Indented);
+                var authorData = JsonConvert.SerializeObject(message, Formatting.None);
 
                 byte[] data = Encoding.UTF8.GetBytes(authorData);
                 uc.Send(data, data.Length, ep);

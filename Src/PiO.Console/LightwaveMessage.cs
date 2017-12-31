@@ -18,13 +18,13 @@ namespace PiO
         {
             var json = Encoding.UTF8.GetString(holder.Blob);
             dynamic incoming = JsonConvert.DeserializeObject(json);
-            Id = incoming.Id;
-            TimeStamp = incoming.TimeStamp;
+            TempId = incoming.Id;
+            TempTimeStamp = incoming.TimeStamp;
         }
 
-        public int Id { get; }
+        public int TempId { get; }
 
-        public DateTime? TimeStamp { get; }
+        public DateTime? TempTimeStamp { get; }
     }
 
 }
