@@ -59,6 +59,7 @@ namespace Xigadee
                         holder.ContentType = ContentType;
                         holder.ContentEncoding = ContentEncoding;
 
+                        //Unpack the message in the holder.
                         var sm = MessageUnpack(holder);
 
                         batch.Add(new TransmissionPayload(sm));

@@ -17,29 +17,44 @@ namespace Xigadee
         /// <param name="endPoint">The IP end point to listen to.</param>
         /// <param name="contentType">The MIME Content Type which is used to identify the deserializer.</param>
         /// <param name="contentEncoding">The optional content encoding.</param>
-        /// <param name="addressSend">This is the optional address fragment which specifies the incoming message destination. If this is not set then ("","") will be used. This does not include a channelId as this will be provided by the pipeline.</param>
-        /// <param name="addressReturn">This is the optional return address destination to be set for the incoming messages.</param>
+        /// <param name="requestAddress">This is the optional address fragment which specifies the incoming message destination. If this is not set then ("","") will be used. This does not include a channelId as this will be provided by the pipeline.</param>
+        /// <param name="responseAddress">This is the optional return address destination to be set for the incoming messages.</param>
+        /// <param name="requestAddressPriority">This is the default priority for the request message. The default is 1.</param>
+        /// <param name="responseAddressPriority">This is the priority for the response address. The default is 1.</param>
         public UdpChannelListener(bool isMulticast, IPEndPoint endPoint
             , string contentType, string contentEncoding = null
-            , ServiceMessageHeaderFragment addressSend = null, ServiceMessageHeader addressReturn = null
+            , ServiceMessageHeaderFragment requestAddress = null
+            , ServiceMessageHeader responseAddress = null
+            , int? requestAddressPriority = null
+            , int responseAddressPriority = 1
             )
         {
             IsMulticast = isMulticast;
             EndPoint = endPoint;
             ContentType = contentType;
             ContentEncoding = contentEncoding;
-            AddressSend = addressSend ?? ("","");
-            AddressReturn = addressReturn;
+            RequestAddress = requestAddress ?? ("","");
+            RequestAddressPriority = requestAddressPriority;
+            ResponseAddress = responseAddress;
+            ResponseAddressPriority = responseAddressPriority;
         }
 
         /// <summary>
         /// This is the optional address fragment which specifies the incoming message destination. If this is not set then ("","") will be used.
         /// </summary>
-        public ServiceMessageHeaderFragment AddressSend { get; }
+        public ServiceMessageHeaderFragment RequestAddress { get; }
+        /// <summary>
+        /// Gets the address return priority.
+        /// </summary>
+        public int? RequestAddressPriority { get; }
         /// <summary>
         /// This is the optional return address destination to be set for the incoming messages.
         /// </summary>
-        public ServiceMessageHeader AddressReturn { get; }
+        public ServiceMessageHeader ResponseAddress { get; }
+        /// <summary>
+        /// Gets the address return priority.
+        /// </summary>
+        public int ResponseAddressPriority { get; }
 
         /// <summary>
         /// Gets the Mime type used for deserialization.
@@ -92,8 +107,12 @@ namespace Xigadee
                     holder.ObjectType = typeof(UdpBinaryContext);
                 }
 
-                var sMessage = new ServiceMessage((client.ChannelId, AddressSend), AddressReturn);
-                sMessage.ChannelPriority = client.Priority;
+                var sMessage = new ServiceMessage((client.MappingChannelId ?? client.ChannelId, RequestAddress), ResponseAddress);
+
+                if (ResponseAddress != null)
+                    sMessage.ResponseChannelPriority = ResponseAddressPriority;
+
+                sMessage.ChannelPriority = RequestAddressPriority ?? client.Priority;
                 sMessage.Blob = holder;
 
                 return sMessage;

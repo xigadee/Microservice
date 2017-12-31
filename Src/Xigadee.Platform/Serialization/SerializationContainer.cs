@@ -270,14 +270,30 @@ namespace Xigadee
             return mPayloadSerializers.ContainsKey(PrepareMimeType(mimetype));
         }
 
+        protected bool TryGetSerializer(string mimetype, out IPayloadSerializer serializer)
+        {
+            var sType = PrepareMimeType(mimetype);
+            return mPayloadSerializers.TryGetValue(sType, out serializer);
+        }
+
         public bool TryPayloadSerialize(SerializationHolder holder)
         {
-            return false;
+            IPayloadSerializer serializer;
+
+            if (!TryGetSerializer(holder.ContentType, out serializer))
+                return false;
+
+            return serializer.TrySerialize(holder);
         }
 
         public bool TryPayloadDeserialize(SerializationHolder holder)
         {
-            return false;
+            IPayloadSerializer serializer;
+
+            if (!TryGetSerializer(holder.ContentType, out serializer))
+                return false;
+
+            return serializer.TryDeserialize(holder);
         }
 
         #region Collector

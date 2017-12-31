@@ -1,8 +1,6 @@
-﻿using System;
-using System.Net;
-using System.Threading.Tasks;
-using Xigadee;
-
+﻿using Xigadee;
+using System.Text;
+using Newtonsoft.Json;
 namespace PiO
 {
     /// <summary>
@@ -10,15 +8,17 @@ namespace PiO
     /// </summary>
     public class LightwaveMessage
     {
-        /// <summary>
-        /// The serialization mime type.
-        /// </summary>
-        public const string MimeContentType = "udp/lightwave";
-
         public LightwaveMessage(SerializationHolder holder)
         {
-
+            var json = Encoding.UTF8.GetString(holder.Blob);
+            dynamic incoming = JsonConvert.DeserializeObject(json);
+            Id = incoming.Id;
+            TimeStamp = incoming.TimeStamp;
         }
+
+        public int Id { get; }
+
+        public int TimeStamp { get; }
     }
 
 }
