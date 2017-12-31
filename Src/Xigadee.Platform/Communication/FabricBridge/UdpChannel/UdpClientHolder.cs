@@ -62,9 +62,13 @@ namespace Xigadee
                         holder.ContentType = ContentType;
                         holder.ContentEncoding = ContentEncoding;
 
-                        this.PayloadSerializer.PayloadDeserialize(
+                        if (!PayloadSerializer.TryPayloadDeserialize(holder))
+                        {
+                            holder.Object = result;
+                            holder.ObjectType = result.GetType();
+                        }
 
-                        var payload = TransmissionPayload.Create();
+                        var p = TransmissionPayload.Create();
 
                     }
                     catch (Exception)

@@ -37,6 +37,11 @@ namespace Xigadee
         protected Dictionary<string, IPayloadSerializer> mPayloadSerializers;
 
         /// <summary>
+        /// This contains the supported serializers.
+        /// </summary>
+        protected Dictionary<string, IPayloadCompressor> mPayloadCompression;
+
+        /// <summary>
         /// This is the look up cache for the specific type.
         /// </summary>
         protected ConcurrentDictionary<Type, IPayloadSerializer> mLookUpCache;
@@ -248,61 +253,7 @@ namespace Xigadee
         }
         #endregion
 
-        //#region RegistryExtract<P>(SerializationHolder holder, out P dto)
-        ///// <summary>
-        ///// This method extracts an item from the object registry.
-        ///// </summary>
-        ///// <typeparam name="P">The object type.</typeparam>
-        ///// <param name="holder">The serialization holder.</param>
-        ///// <param name="dto">The data transfer object.</param>
-        ///// <returns>Returns true if the object has been found in the object registry.</returns>
-        //public bool RegistryExtract<P>(SerializationHolder holder, out P dto)
-        //{
-        //    dto = default(P);
 
-        //    if (!holder.ObjectRegistryId.HasValue)
-        //        return false;
-
-        //    ContentRegistryHolder item;
-        //    if (!mContentRegistry.TryGetValue(holder.ObjectRegistryId.Value, out item))
-        //        return false;
-
-        //    if (item.Content.GetType().IsAssignableFrom(typeof(P)))
-        //        return false;
-
-        //    dto = (P)item.Content;
-        //    return true;
-        //} 
-        //#endregion
-
-        public bool DtoTryExtraction(SerializationHolder holder, out object dto, bool throwExceptions = false, bool useObjectRegistryIfSupported = true)
-        {
-            return DtoTryExtraction<object>(holder, out dto, throwExceptions, useObjectRegistryIfSupported);
-        }
-
-        public bool DtoTryExtraction<P>(SerializationHolder holder, out P dto, bool throwExceptions = false, bool useObjectRegistryIfSupported = true)
-        {
-            //if (useObjectRegistryIfSupported && RegistryExtract(holder, out dto))
-            //    return true;
-
-            throw new NotImplementedException();
-        }
-
-        public bool DtoTryInsertion(object dto, out SerializationHolder holder, bool throwExceptions = false, bool useObjectRegistryIfSupported = true)
-        {
-            holder = new SerializationHolder();
-
-            //if (dto == null)
-                return false;
-
-            //IPayloadSerializer serializer;
-            //if (!SerializerResolve(dto.GetType(), out serializer))
-            //    return false;
-
-            //holder.Blob = serializer.Serialize(dto);
-
-            //return true;
-        }
 
         private string PrepareMimeType(string mimetype)
         {
@@ -317,6 +268,16 @@ namespace Xigadee
         public bool SupportsSerializer(string mimetype)
         {
             return mPayloadSerializers.ContainsKey(PrepareMimeType(mimetype));
+        }
+
+        public bool TryPayloadSerialize(SerializationHolder holder)
+        {
+            return false;
+        }
+
+        public bool TryPayloadDeserialize(SerializationHolder holder)
+        {
+            return false;
         }
 
         #region Collector
