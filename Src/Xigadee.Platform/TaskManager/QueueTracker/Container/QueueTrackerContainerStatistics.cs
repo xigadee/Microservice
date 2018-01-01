@@ -31,5 +31,9 @@ namespace Xigadee
         /// This is the list of queues and their statistics.
         /// </summary>
         public List<QueueTrackerStatistics> Queues { get; set; }
+        /// <summary>
+        /// Gets or sets the total of pending requests.
+        /// </summary>
+        public int Waiting { get; set; }
     }
 }

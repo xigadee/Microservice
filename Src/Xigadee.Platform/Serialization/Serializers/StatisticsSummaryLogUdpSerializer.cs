@@ -38,6 +38,10 @@ namespace Xigadee
             message.TimeStamp = DateTime.UtcNow.ToString("O");
             message.Engine = $"{stats.Id.ServiceVersionId}/{stats.Id.ServiceEngineVersionId}";
             message.Uptime = stats.Uptime;
+
+            message.TasksActive = stats.Tasks.Availability.Active;
+            message.TasksWaiting = stats.Tasks.Queues.Waiting;
+
             var authorData = JsonConvert.SerializeObject(message);
 
             holder.Blob = Encoding.UTF8.GetBytes(authorData);

@@ -69,6 +69,8 @@ namespace Xigadee
             base.StatisticsRecalculate(stats);
 
             stats.Queues = mTasksQueue.Values.Select((q) => q.Statistics).ToList();
+
+            stats.Waiting = mTasksQueue.Values.Select((q) => q.Statistics.Waiting).Sum();
         } 
         #endregion
 
