@@ -98,6 +98,8 @@ namespace Xigadee
                 return c;
             };
 
+            client.ClientClose = () => client.Client.Close();
+
             client.MessageUnpack = (holder) =>
             {
                 if (!PayloadSerializer.TryPayloadDeserialize(holder))

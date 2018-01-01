@@ -40,9 +40,10 @@ namespace Xigadee
             )
             where C : IPipelineChannelIncoming<IPipeline>
         {
-            defaultDeserializerContentType = defaultDeserializerContentType 
+            defaultDeserializerContentType = (
+                defaultDeserializerContentType 
                 ?? $"udp_in/{cpipe.Channel.Id}"
-                .ToLowerInvariant();
+                ).ToLowerInvariant();
             
             var listener = new UdpChannelListener(isMulticast, ep
                 , defaultDeserializerContentType, defaultDeserializerContentEncoding
@@ -90,10 +91,11 @@ namespace Xigadee
             )
             where C : IPipelineChannelIncoming<IPipeline>
         {
-            defaultDeserializerContentType = defaultDeserializerContentType 
+            defaultDeserializerContentType = (
+                defaultDeserializerContentType 
                 ?? serializer?.ContentType 
                 ?? $"udp_in/{cpipe.Channel.Id}"
-                .ToLowerInvariant();
+                ).ToLowerInvariant();
 
             var listener = new UdpChannelListener(isMulticast, ep
                 , defaultDeserializerContentType, defaultDeserializerContentEncoding
@@ -114,30 +116,80 @@ namespace Xigadee
         /// <typeparam name="C">The pipeline type.</typeparam>
         /// <param name="cpipe">The pipeline.</param>
         /// <param name="ep">The UDP endpoint to transmit on.</param>
-        /// <param name="preferedSerializerMimeType">Type of the preferred serializer's MIME type.</param>
+        /// <param name="defaultSerializerContentType">Default serializer MIME Content-type, i.e application/json.</param>
+        /// <param name="defaultSerializerContentTypeEncoding">Default serializer MIME Content-encoding, i.e. GZIP.</param>
         /// <param name="serializer">This is an optional serializer that can be added with the specific mime type. Note:  the serializer mime type will be changed, so you should not share this serializer instance.</param>
         /// <param name="action">The optional action to be called when the sender is created.</param>
         /// <param name="isMulticast">Specifies whether this connection is a multicast connection. The default is false.</param>
         /// <returns>Returns the pipeline.</returns>
         public static C AttachUdpSender<C>(this C cpipe
             , IPEndPoint ep
-            , string preferedSerializerMimeType
+            , string defaultSerializerContentType = null
+            , string defaultSerializerContentTypeEncoding = null
             , IPayloadSerializer serializer = null
             , Action<UdpChannelSender> action = null
             , bool isMulticast = false
             )
             where C : IPipelineChannelOutgoing<IPipeline>
         {
-            var sender = new UdpChannelSender(isMulticast, ep, preferedSerializerMimeType);
+            defaultSerializerContentType = (
+                defaultSerializerContentType
+                ?? serializer?.ContentType
+                ?? $"udp_out/{cpipe.Channel.Id}"
+                ).ToLowerInvariant();
+
+            var sender = new UdpChannelSender(isMulticast, ep
+                , defaultSerializerContentType, defaultSerializerContentTypeEncoding);
 
             if (serializer != null)
-                cpipe.Pipeline.AddPayloadSerializer(serializer, preferedSerializerMimeType);
+                cpipe.Pipeline.AddPayloadSerializer(serializer, defaultSerializerContentType);
 
             cpipe.AttachSender(sender, action, true);
 
             return cpipe;
         }
 
+        /// <summary>
+        /// Attaches the UDP sender to the outgoing channel.
+        /// </summary>
+        /// <typeparam name="C">The pipeline type.</typeparam>
+        /// <param name="cpipe">The pipeline.</param>
+        /// <param name="ep">The UDP endpoint to transmit on.</param>
+        /// <param name="defaultSerializerContentType">Default serializer MIME Content-type, i.e application/json.</param>
+        /// <param name="defaultSerializerContentTypeEncoding">Default serializer MIME Content-encoding, i.e. GZIP.</param>
+        /// <param name="serialize">The serialize action.</param>
+        /// <param name="canSerialize">The optional serialize check function.</param>
+        /// <param name="action">The optional action to be called when the sender is created.</param>
+        /// <param name="isMulticast">Specifies whether this connection is a multicast connection. The default is false.</param>
+        /// <returns>Returns the pipeline.</returns>
+        public static C AttachUdpSender<C>(this C cpipe
+            , IPEndPoint ep
+            , string defaultSerializerContentType = null
+            , string defaultSerializerContentTypeEncoding = null
+            , Action<SerializationHolder> serialize = null
+            , Func<SerializationHolder, bool> canSerialize = null
+            , Action<UdpChannelSender> action = null
+            , bool isMulticast = false
+            )
+            where C : IPipelineChannelOutgoing<IPipeline>
+        {
+            defaultSerializerContentType = (
+                defaultSerializerContentType
+                ?? $"udp_out/{cpipe.Channel.Id}"
+                ).ToLowerInvariant();
+
+            var sender = new UdpChannelSender(isMulticast, ep
+                , defaultSerializerContentType, defaultSerializerContentTypeEncoding);
+
+            if (serialize != null)
+                cpipe.Pipeline.AddPayloadSerializer(defaultSerializerContentType
+                    , serialize: serialize
+                    , canSerialize: canSerialize);
+
+            cpipe.AttachSender(sender, action, true);
+
+            return cpipe;
+        }
 
     }
 }

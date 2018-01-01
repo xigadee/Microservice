@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
@@ -19,6 +20,9 @@ namespace Xigadee
         /// </summary>
         public string ContentEncoding { get; set; }
 
+        public IPEndPoint LocalEndpoint { get; set; }
+
+        #region MessagesPull(int? count, int? wait, string mappingChannel = null)
         /// <summary>
         /// This method pulls fabric messages and converts them in to generic payload messages for the Microservice to process.
         /// </summary>
@@ -39,21 +43,22 @@ namespace Xigadee
             if (wait.HasValue)
                 timeOut = Environment.TickCount + wait.Value;
 
-            List<TransmissionPayload> batch =  new List<TransmissionPayload>();
+            List<TransmissionPayload> batch = new List<TransmissionPayload>();
 
             //if (BoundaryLoggingActive)
             //    batchId = Collector?.BoundaryBatchPoll(count ?? -1, intBatch.Count, mappingChannel ?? ChannelId, Priority);
 
             try
             {
-                while (Client.Available > 0 
+                while (Client.Available > 0
                     && countMax > 0
-                    && (!timeOut.HasValue || timeOut.Value>Environment.TickCount)
+                    && (!timeOut.HasValue || timeOut.Value > Environment.TickCount)
                     )
                 {
                     try
                     {
                         var result = await Client.ReceiveAsync();
+
                         var holder = (SerializationHolder)result.Buffer;
                         holder.Metadata = result.RemoteEndPoint;
                         holder.ContentType = ContentType;
@@ -81,7 +86,8 @@ namespace Xigadee
             LastTickCount = Environment.TickCount;
 
             return batch;
-        }
+        } 
+        #endregion
 
         /// <summary>
         /// This method is used to Transmit the payload. You should override this method to insert your own transmission logic.
@@ -89,14 +95,23 @@ namespace Xigadee
         /// <param name="payload">The payload to transmit.</param>
         /// <param name="retry">This parameter specifies the number of retries that should be attempted if transmission fails. By default this value is 0.</param>
         /// <returns></returns>
-        public override Task Transmit(TransmissionPayload payload, int retry = 0)
+        public override async Task Transmit(TransmissionPayload payload, int retry = 0)
         {
-            //UdpContext context = new UdpContext(PayloadSerializer, payload.Message);
+            try
+            {
+                var holder = MessagePack(payload);
 
-            //ConvertOutgoing?.Invoke(context) ??
+                if (holder.Blob != null)
+                {
+                    var result = await Client.SendAsync(holder.Blob, holder.Blob.Length);
+                }
 
+            }
+            catch (Exception ex)
+            {
+                Collector?.LogException("UdpClientHolder/Transmit", ex);
+            }
 
-            return Task.FromResult(0);
         }      
     }
 }

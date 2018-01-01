@@ -8,6 +8,17 @@ namespace Xigadee
     public class SerializationHolder
     {
         /// <summary>
+        /// A static constructor that sets the internal object.
+        /// /// </summary>
+        /// <param name="entity">The entity.</param>
+        /// <returns>Returns the new holder.</returns>
+        public static SerializationHolder CreateWithObject(object entity)
+        {
+            var holder = new SerializationHolder();
+            holder.SetObject(entity);
+            return holder;
+        }
+        /// <summary>
         /// Gets or sets the metadata context. The context holds any additional metadata from the incoming connection.
         /// </summary>
         public object Metadata { get; set; }

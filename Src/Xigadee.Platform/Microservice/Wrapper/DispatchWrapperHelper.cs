@@ -88,8 +88,9 @@ namespace Xigadee
 
             message.ChannelPriority = ChannelPriority;
 
-            if (package != null)
-                message.Blob = dispatcher.Serialization.PayloadSerialize(package);
+            message.Blob = SerializationHolder.CreateWithObject(package);
+            //if (package != null)
+            //    message.Blob = dispatcher.Serialization.PayloadSerialize(package);
 
             if (responseHeader != null)
                 message.ResponseChannelPriority = ResponseChannelPriority;

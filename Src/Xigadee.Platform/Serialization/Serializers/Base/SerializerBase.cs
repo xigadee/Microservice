@@ -50,7 +50,7 @@ namespace Xigadee
             if (holder == null)
                 throw new ArgumentNullException("holder");
 
-            return true;
+            return holder.HasObject;
         }
 
         /// <summary>
@@ -70,15 +70,20 @@ namespace Xigadee
                 Deserialize(holder);
                 return true;
             }
-            catch (Exception ex)
-            {
-            }
+            catch (Exception) { }
 
             return false;
         }
 
+        /// <summary>
+        /// Deserializes the specified byte array in the holder and sets the object with the entity.
+        /// </summary>
+        /// <param name="holder">The holder.</param>
         public abstract void Deserialize(SerializationHolder holder);
-
+        /// <summary>
+        /// Serializes the specified object in the holder and sets the byte array.
+        /// </summary>
+        /// <param name="holder">The holder.</param>
         public abstract void Serialize(SerializationHolder holder);
 
         /// <summary>
@@ -98,9 +103,7 @@ namespace Xigadee
                 Serialize(holder);
                 return true;
             }
-            catch (Exception ex)
-            {
-            }
+            catch (Exception) { }
 
             return false;
         }       

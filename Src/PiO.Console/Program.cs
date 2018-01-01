@@ -13,7 +13,6 @@ namespace PiO
         {
             DebugMemoryDataCollector coll;
             mservice = new MicroservicePipeline("PiO", description: "PiO Server");
-
             mservice
                 .AdjustPolicyTaskManagerForDebug()
                 .ConfigurationSetFromConsoleArgs(args)
@@ -30,8 +29,8 @@ namespace PiO
                     , ("message", "in"))
                     .Revert()
                 .AddChannelOutgoing("status", "Outgoing UDP status", SenderPartitionConfig.Init(1))
-                    .AttachUdpSender(new IPEndPoint(IPAddress.Any, 44723)
-                        , StatisticsSummaryLog.MimeContentType, new StatisticsSummaryLogUdpSerializer())
+                    .AttachUdpSender(new IPEndPoint(IPAddress.Parse("255.255.255.255"), 44723)
+                        , serializer: new StatisticsSummaryLogUdpSerializer())
                     .Revert()
                 .OnDataCollection
                 (
