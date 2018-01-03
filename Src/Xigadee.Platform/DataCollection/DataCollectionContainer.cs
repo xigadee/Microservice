@@ -28,7 +28,7 @@ namespace Xigadee
     /// </summary>
     public partial class DataCollectionContainer: ServiceContainerBase<DataCollectionStatistics, DataCollectionPolicy>
         , IDataCollection, IRequireServiceOriginator
-        , ITaskManagerProcess, IRequireSharedServices, IRequireSecurityService, IRequirePayloadManagement
+        , ITaskManagerProcess, IRequireSharedServices, IRequireSecurityService, IRequirePayloadSerialization
     {
         #region Declarations
         /// <summary>
@@ -126,8 +126,8 @@ namespace Xigadee
                 if ((service as IRequireSecurityService) != null)
                     ((IRequireSecurityService)service).Security = Security;
 
-                if ((service as IRequirePayloadManagement) != null)
-                    ((IRequirePayloadManagement)service).PayloadSerializer = PayloadSerializer;
+                if ((service as IRequirePayloadSerialization) != null)
+                    ((IRequirePayloadSerialization)service).PayloadSerializer = PayloadSerializer;
 
                 if ((service as IRequireDataCollector) != null)
                     ((IRequireDataCollector)service).Collector = this;

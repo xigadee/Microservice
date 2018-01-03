@@ -1,26 +1,7 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -29,6 +10,9 @@ namespace Xigadee
     /// </summary>
     public class ConsoleInfoContext
     {
+        /// <summary>
+        /// The internal count.
+        /// </summary>
         protected long mCount = 0;
 
         /// <summary>
@@ -36,13 +20,31 @@ namespace Xigadee
         /// </summary>
         public long Count { get { return mCount; } }
 
+        /// <summary>
+        /// Adds the specified information.
+        /// </summary>
+        /// <param name="info">The information logging message.</param>
         public void Add(ErrorInfo info)
         {
             info.LoggingId = Interlocked.Increment(ref mCount) -1;
             InfoMessages.Add(info);
             InfoCurrent = info.LoggingId;
         }
+        /// <summary>
+        /// Adds the specified message.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="type">The logging type. The default value is 'Info'</param>
+        public void Add(string message, LoggingLevel type = LoggingLevel.Info)
+        {
+            Add(new ErrorInfo { Message = message, Type = type });
+        }
 
+        /// <summary>
+        /// Gets the info messages for the specified number of entries.
+        /// </summary>
+        /// <param name="count">The number of records needed.</param>
+        /// <returns>Returns an enumeration.</returns>
         public IEnumerable<ErrorInfo> GetCurrent(int count)
         {
             if (InfoCurrent < (count-1))
@@ -61,6 +63,10 @@ namespace Xigadee
         /// </summary>
         public ConcurrentBag<ErrorInfo> InfoMessages { get; } = new ConcurrentBag<ErrorInfo>();
 
+        /// <summary>
+        /// Decrements the current position.
+        /// </summary>
+        /// <returns>Returns false if the last position has been reached.</returns>
         public bool InfoDecrement()
         {
             if (InfoCurrent == 0)
@@ -70,7 +76,10 @@ namespace Xigadee
 
             return true;
         }
-
+        /// <summary>
+        /// Increments the current position.
+        /// </summary>
+        /// <returns>Returns false if the maximum position has been reached.</returns>
         public bool InfoIncrement()
         {
             if (InfoCurrent == Count - 1)
@@ -80,10 +89,14 @@ namespace Xigadee
 
             return true;
         }
-
+        /// <summary>
+        /// Gets or sets the current position.
+        /// </summary>
         public long InfoCurrent { get; set; }
 
-
+        /// <summary>
+        /// Specifies the default behaviour on whether the display should refresh when an item is added.
+        /// </summary>
         public bool Refresh { get; set; }
     }
 }

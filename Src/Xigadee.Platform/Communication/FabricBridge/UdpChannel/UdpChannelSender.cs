@@ -7,28 +7,28 @@ namespace Xigadee
     /// <summary>
     /// This sender is used to convert object to their binary format and transmit them as UDP packets.
     /// </summary>
-    public class UdpChannelSender : MessagingSenderBase<UdpClient, SerializationHolder, UdpClientHolder>
+    public class UdpChannelSender : MessagingSenderBase<UdpHelper, SerializationHolder, UdpClientHolder>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UdpChannelSender"/> class.
         /// </summary>
-        /// <param name="isMulticast">Set to true if this is a multicast sender.</param>
-        /// <param name="localEndPoint">The local end point.</param>
+        /// <param name="udp">The UDP endpoint configuration.</param>
         /// <param name="contentType">The MIME Content Type which is used to identify the serializer.</param>
         /// <param name="contentEncoding">The optional content encoding for the binary blob.</param>
-        public UdpChannelSender(bool isMulticast
-            , IPEndPoint localEndPoint
+        public UdpChannelSender(UdpConfig udp
             , string contentType
             , string contentEncoding = null
-            , IPEndPoint multicastEndpoint = null
             )
         {
-            IsMulticast = isMulticast;
-            LocalEndPoint = localEndPoint;
+            Config = udp;
             ContentType = contentType;
             ContentEncoding = contentEncoding;
-            MulticastEndPoint = multicastEndpoint;
         }
+
+        /// <summary>
+        /// Gets the UDP configuration.
+        /// </summary>
+        public UdpConfig Config { get; }
 
         /// <summary>
         /// Gets the serialization mime Content-type.
@@ -39,16 +39,6 @@ namespace Xigadee
         /// </summary>
         public string ContentEncoding { get; }
 
-        /// <summary>
-        /// Gets a value indicating whether this instance is a multicast socket.
-        /// </summary>
-        bool IsMulticast { get; }
-        /// <summary>
-        /// Gets the end point for the UDP socket.
-        /// </summary>
-        IPEndPoint LocalEndPoint { get; }
-
-        IPEndPoint MulticastEndPoint { get; }
         /// <summary>
         /// This is the default client create logic.
         /// </summary>
@@ -62,37 +52,15 @@ namespace Xigadee
 
             client.ContentType = ContentType;
             client.ContentEncoding = ContentEncoding;
-            client.LocalEndpoint = LocalEndPoint;
-
-            client.Start = () =>
-            {
-                client.Client = client.ClientCreate();
-                client.IsActive = true;
-            };
-
-            client.ClientClose = () =>
-            {
-                client.IsActive = false;
-
-                if (IsMulticast)
-                    client.Client.DropMulticastGroup(LocalEndPoint.Address);
-
-                client.Client.Close();
-            };
-
 
             client.ClientCreate = () =>
             {
-                var c = new UdpClient();
-                c.EnableBroadcast = true;
-
-                if (IsMulticast)
-                    c.JoinMulticastGroup(LocalEndPoint.Address);
-
-                c.Connect(LocalEndPoint);
-
+                var c = new UdpHelper(Config, UdpHelperMode.Sender);
+                c.Start();
                 return c;
             };
+
+            client.ClientClose = () => client.Client.Stop();
 
             client.MessagePack = (p) =>
             {

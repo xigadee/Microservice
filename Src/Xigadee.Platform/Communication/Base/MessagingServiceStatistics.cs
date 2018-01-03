@@ -54,7 +54,7 @@ namespace Xigadee
         /// <summary>
         /// This method is used to decrement the active count and submits the processing time.
         /// </summary>
-        /// <param name="delta">The processing time in milliseconds.</param>
+        /// <param name="enqueueTime">The processing time in milliseconds.</param>
         public virtual void QueueTimeLog(DateTime? enqueueTime)
         {
             if (enqueueTime.HasValue)

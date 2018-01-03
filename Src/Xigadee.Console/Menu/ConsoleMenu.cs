@@ -1,22 +1,5 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 
 namespace Xigadee
@@ -108,15 +91,47 @@ namespace Xigadee
 
             //Execute any registered shortcut
             if (shortcut != null)
-            {
-                var option = Context.Options.FirstOrDefault((o) => o.Shortcut == shortcut);
-                option.Action?.Invoke(this, option);
-            }
+                ShortcutInvoke(Context, shortcut);
 
             Display();
 
             OnClose?.Invoke(this, null);
         }
+        #endregion
+
+        #region ShortcutInvoke ...
+        /// <summary>
+        /// This method traverses the menu structure and executes the shortcut option.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="shortcut">The shortcut id.</param>
+        protected void ShortcutInvoke(ConsoleMenuContext context, string shortcut)
+        {
+            if (context == null || string.IsNullOrEmpty(shortcut))
+                return;
+
+            context.Options?.ForEach((o) => ShortcutInvoke(o, shortcut));
+        }
+        /// <summary>
+        /// This method traverses the menu structure and executes the shortcut option.
+        /// </summary>
+        /// <param name="option">The option.</param>
+        /// <param name="shortcut">The shortcut id to execute.</param>
+        protected void ShortcutInvoke(ConsoleOption option, string shortcut)
+        {
+            if (option == null || string.IsNullOrEmpty(shortcut))
+                return;
+
+            if (option.Shortcut == shortcut)
+            {
+                ContextInfo.Add($"Shortcut '{shortcut}' executed.");
+                option.Action?.Invoke(this, option);
+
+                return;
+            }
+
+            ShortcutInvoke(option.Menu?.Context, shortcut);
+        } 
         #endregion
 
         #region ProcessKeyPress(string shortcut)
@@ -233,8 +248,6 @@ namespace Xigadee
         /// <summary>
         /// This method displays the options on the console page.
         /// </summary>
-        /// <param name="start">The page start.</param>
-        /// <param name="pageLength">The page length.</param>
         /// <returns>Returns a list of the disabled options on the page based on their position.</returns>
         private void DisplayOptions()
         {

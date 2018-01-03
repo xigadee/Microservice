@@ -70,7 +70,7 @@ namespace Xigadee
     public interface ICommand: ICommandMasterJob, ICommandEvents
         , IService
         , IRequireScheduler
-        , IRequirePayloadManagement
+        , IRequirePayloadSerialization
         , IRequireServiceOriginator
         , IRequireSharedServices
         , IRequireDataCollector

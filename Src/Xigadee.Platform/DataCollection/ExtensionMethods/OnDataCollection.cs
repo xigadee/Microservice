@@ -50,7 +50,7 @@ namespace Xigadee
             }
         }
 
-        internal class OnEventDataCollectionComponent: DataCollectorBase, IRequirePayloadManagement, IRequireDataCollector
+        internal class OnEventDataCollectionComponent: DataCollectorBase, IRequirePayloadSerialization, IRequireDataCollector
         {
             DataCollectionSupport? mSupportedFilter = null;
             Action<OnDataCollectionContext, EventHolder> mAction;

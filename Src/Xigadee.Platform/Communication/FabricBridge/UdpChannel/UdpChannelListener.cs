@@ -8,20 +8,19 @@ namespace Xigadee
     /// <summary>
     /// This listener is used to receive UDP packets and to convert the packets in to entities that can be processed by the Xigadee framework.
     /// </summary>
-    public class UdpChannelListener : MessagingListenerBase<UdpClient, SerializationHolder, UdpClientHolder>
+    public class UdpChannelListener : MessagingListenerBase<UdpHelper, SerializationHolder, UdpClientHolder>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UdpChannelListener"/> class.
         /// </summary>
-        /// <param name="isMulticast">Specifies whether this is a multicast connection.</param>
-        /// <param name="endPoint">The IP end point to listen to.</param>
+        /// <param name="udp">The UDP endpoint configuration.</param>
         /// <param name="contentType">The MIME Content Type which is used to identify the deserializer.</param>
         /// <param name="contentEncoding">The optional content encoding.</param>
         /// <param name="requestAddress">This is the optional address fragment which specifies the incoming message destination. If this is not set then ("","") will be used. This does not include a channelId as this will be provided by the pipeline.</param>
         /// <param name="responseAddress">This is the optional return address destination to be set for the incoming messages.</param>
         /// <param name="requestAddressPriority">This is the default priority for the request message. The default is 1.</param>
         /// <param name="responseAddressPriority">This is the priority for the response address. The default is 1.</param>
-        public UdpChannelListener(bool isMulticast, IPEndPoint endPoint
+        public UdpChannelListener(UdpConfig udp
             , string contentType, string contentEncoding = null
             , ServiceMessageHeaderFragment requestAddress = null
             , ServiceMessageHeader responseAddress = null
@@ -29,8 +28,7 @@ namespace Xigadee
             , int responseAddressPriority = 1
             )
         {
-            IsMulticast = isMulticast;
-            EndPoint = endPoint;
+            Config = udp;
             ContentType = contentType;
             ContentEncoding = contentEncoding;
             RequestAddress = requestAddress ?? ("","");
@@ -39,6 +37,10 @@ namespace Xigadee
             ResponseAddressPriority = responseAddressPriority;
         }
 
+        /// <summary>
+        /// Gets the UDP configuration.
+        /// </summary>
+        public UdpConfig Config { get; }
         /// <summary>
         /// This is the optional address fragment which specifies the incoming message destination. If this is not set then ("","") will be used.
         /// </summary>
@@ -66,15 +68,6 @@ namespace Xigadee
         public string ContentEncoding { get; }
 
         /// <summary>
-        /// Gets a value indicating whether this instance is a multicast socket.
-        /// </summary>
-        bool IsMulticast { get; }
-        /// <summary>
-        /// Gets the end point for the UDP socket.
-        /// </summary>
-        IPEndPoint EndPoint { get; }
-
-        /// <summary>
         /// This override sets the default processing time to the client for incoming messages.
         /// </summary>
         /// <param name="partition">The current partition.</param>
@@ -90,21 +83,18 @@ namespace Xigadee
 
             client.ClientCreate = () =>
             {
-                var c = new UdpClient(EndPoint);
-
-                if (IsMulticast)
-                    c.JoinMulticastGroup(EndPoint.Address);
-                
+                var c = new UdpHelper(Config, UdpHelperMode.Listener);
+                c.Start();
                 return c;
             };
 
-            client.ClientClose = () => client.Client.Close();
+            client.ClientClose = () => client.Client.Stop();
 
             client.MessageUnpack = (holder) =>
             {
                 if (!PayloadSerializer.TryPayloadDeserialize(holder))
                 {
-                    holder.SetObject(new UdpBinaryContext { Blob = holder.Blob, Endpoint = (IPEndPoint)holder.Metadata });
+                    holder.SetObject(new UdpHelper.Message { Buffer = holder.Blob, RemoteEndPoint = (IPEndPoint)holder.Metadata });
                 }
 
                 var sMessage = new ServiceMessage((client.MappingChannelId ?? client.ChannelId, RequestAddress), ResponseAddress);
