@@ -27,12 +27,13 @@ namespace Xigadee
 
         public void Receive(AsyncCallback ar)
         {
-            RemoteEndpoint = new IPEndPoint(IPAddress.Any, 0);
+            RemoteEndpoint = new IPEndPoint(0, 0);
 
             Socket.BeginReceiveFrom(Buffer, 0, Buffer.Length, SocketFlags.None
                 , ref RemoteEndpoint
                 , ar, this);
         }
+
     }
 
 
@@ -151,20 +152,26 @@ namespace Xigadee
 
             mConnectionsListener.Add(ep, state);
 
-            state.Receive(new AsyncCallback(ListenReceive));
-
+            state.Receive(new AsyncCallback(EndReceiveFrom));
         }
 
-        private void ListenReceive(IAsyncResult ar)
+        private void EndReceiveFrom(IAsyncResult ar)
         {
+            EndPoint ep = new IPEndPoint(0, 0);
             var state = (UdpHelperState)ar.AsyncState;
             Socket socket = state.Socket;
-            int read = socket.EndReceive(ar);
+            int read = socket.EndReceiveFrom(ar, ref ep);
 
-            if (read> 0)
-                state.Receive(new AsyncCallback(ListenReceive));
+            if (read > 0)
+            {
+                var message = new Message() { RemoteEndPoint = (IPEndPoint)ep };
+                message.Buffer = new byte[read];
+                Buffer.BlockCopy(state.Buffer, 0, message.Buffer, 0, read);
 
+                mIncomingPending.Enqueue(message);
 
+                state.Receive(new AsyncCallback(EndReceiveFrom));
+            }
         }
 
         public void SenderAdd(IPEndPoint ep)

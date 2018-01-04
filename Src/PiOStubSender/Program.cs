@@ -36,8 +36,8 @@ namespace PiOStubSender
 
                 var authorData = JsonConvert.SerializeObject(message, Formatting.None);
 
-                //byte[] data = Encoding.UTF8.GetBytes(authorData);
-                byte[] data = new byte[65507];
+                byte[] data = Encoding.UTF8.GetBytes(authorData);
+                //byte[] data = new byte[65507];
                 uc.Send(data, data.Length, ep);
                 //}
 
