@@ -48,14 +48,16 @@ namespace Xigadee
 
             try
             {
+                UdpHelper.Message result = null;
+
                 while (Client.Available
                     && countMax > 0
                     && (!timeOut.HasValue || timeOut.Value > Environment.TickCount)
+                    && Client.TryDequeue(out result)
                     )
                 {
                     try
                     {
-                        var result = await Client.ReceiveAsync();
 
                         var holder = (SerializationHolder)result.Buffer;
                         holder.Metadata = result.RemoteEndPoint;

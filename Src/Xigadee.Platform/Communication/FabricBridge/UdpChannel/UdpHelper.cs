@@ -13,31 +13,36 @@ namespace Xigadee
 
     }
 
-    /// <summary>
-    /// This enumeration specifies how the helper processes messages, i.e. incoming, outgoing or both.
-    /// </summary>
-    public enum UdpHelperMode
+    public class UdpHelperState
     {
-        /// <summary>
-        /// The helper is in listener mode.
-        /// </summary>
-        Listener,
-        /// <summary>
-        /// The helper is in sender mode.
-        /// </summary>
-        Sender,
-        /// <summary>
-        /// The helper is bidirectional
-        /// </summary>
-        Bidirectional
+        public const int UDPMAXSIZE = 65507;
+
+        public Socket Socket { get; set; }
+
+        public UdpHelperMode Mode { get; set; }
+
+        public byte[] Buffer { get; set; } = new byte[UDPMAXSIZE];
+
+        public EndPoint RemoteEndpoint;
+
+        public void Receive(AsyncCallback ar)
+        {
+            RemoteEndpoint = new IPEndPoint(IPAddress.Any, 0);
+
+            Socket.BeginReceiveFrom(Buffer, 0, Buffer.Length, SocketFlags.None
+                , ref RemoteEndpoint
+                , ar, this);
+        }
     }
+
+
 
     /// <summary>
     /// This is the Udp Helper class.
     /// </summary>
     public class UdpHelper:ServiceBase<UdpHelperStatistics>
     {
-        Dictionary<IPEndPoint, Socket> mConnectionsListener, mConnectionsSender;
+        Dictionary<IPEndPoint, UdpHelperState> mConnectionsListener, mConnectionsSender;
         ConcurrentQueue<Message> mIncomingPending;
 
         /// <summary>
@@ -48,10 +53,17 @@ namespace Xigadee
             Config = udp;
             Mode = mode;
 
-            mConnectionsListener = new Dictionary<IPEndPoint, Socket>();
-            mConnectionsSender = new Dictionary<IPEndPoint, Socket>();
+            mConnectionsListener = new Dictionary<IPEndPoint, UdpHelperState>();
+            mConnectionsSender = new Dictionary<IPEndPoint, UdpHelperState>();
 
             mIncomingPending = new ConcurrentQueue<Message>();
+        }
+
+        public bool TryDequeue(out Message message)
+        {
+            message = null;
+
+            return mIncomingPending.TryDequeue(out message);
         }
 
         /// <summary>
@@ -72,6 +84,21 @@ namespace Xigadee
                         throw new NotImplementedException();
                         break;
                 }
+
+            if (Mode == UdpHelperMode.Sender || Mode == UdpHelperMode.Bidirectional)
+                switch (Config.Mode)
+                {
+                    case UdpMode.Unicast:
+                        Config.Addresses.ForEach((a) => SenderAddUnicast(a, Config.Port));
+                        break;
+                    case UdpMode.Broadcast:
+                        throw new NotImplementedException();
+                        break;
+                    case UdpMode.Multicast:
+                        throw new NotImplementedException();
+                        break;
+                }
+
         }
 
         /// <summary>
@@ -79,8 +106,8 @@ namespace Xigadee
         /// </summary>
         protected override void StopInternal()
         {
-            mConnectionsListener.ForEach((k) => k.Value.Close());
-            mConnectionsSender.ForEach((k) => k.Value.Close(1));
+            mConnectionsListener.ForEach((k) => k.Value.Socket.Close());
+            mConnectionsSender.ForEach((k) => k.Value.Socket.Close(1));
         }
 
         /// <summary>
@@ -102,24 +129,42 @@ namespace Xigadee
             get
             {
                 return (mIncomingPending.Count > 0)
-                    || (mConnectionsListener.Values.Select((s) => s.Available > 0).FirstOrDefault());
+                    || (mConnectionsListener.Values.Select((s) => s.Socket.Available > 0).FirstOrDefault());
             }
-        } 
+        }
         #endregion
+
+        protected virtual void SenderAddUnicast(IPAddress address, int port)
+        {
+
+        }
 
         protected virtual void ListenerAddUnicast(IPAddress address, int port)
         {
+            var ep = new IPEndPoint(address, port);
             var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.ExclusiveAddressUse, false);
+            socket.ExclusiveAddressUse = Config.ExclusiveAddressUse;
 
-            var cb = new AsyncCallback(ListenReceive);
+            socket.Bind(ep);
 
-            mConnectionsListener.Add(new IPEndPoint(address, port), socket);
+            var state = new UdpHelperState { Socket = socket, Mode = UdpHelperMode.Listener };
+
+            mConnectionsListener.Add(ep, state);
+
+            state.Receive(new AsyncCallback(ListenReceive));
+
         }
 
-        private void ListenReceive(IAsyncResult result)
+        private void ListenReceive(IAsyncResult ar)
         {
-            
+            var state = (UdpHelperState)ar.AsyncState;
+            Socket socket = state.Socket;
+            int read = socket.EndReceive(ar);
+
+            if (read> 0)
+                state.Receive(new AsyncCallback(ListenReceive));
+
+
         }
 
         public void SenderAdd(IPEndPoint ep)
@@ -234,5 +279,24 @@ namespace Xigadee
             /// </summary>
             public IPEndPoint RemoteEndPoint { get; set; }
         }
+    }
+
+    /// <summary>
+    /// This enumeration specifies how the helper processes messages, i.e. incoming, outgoing or both.
+    /// </summary>
+    public enum UdpHelperMode
+    {
+        /// <summary>
+        /// The helper is in listener mode.
+        /// </summary>
+        Listener,
+        /// <summary>
+        /// The helper is in sender mode.
+        /// </summary>
+        Sender,
+        /// <summary>
+        /// The helper is bidirectional
+        /// </summary>
+        Bidirectional
     }
 }

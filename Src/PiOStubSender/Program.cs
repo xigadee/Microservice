@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Dynamic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -11,7 +12,12 @@ namespace PiOStubSender
     {
         static void Main(string[] args)
         {
-            var ep = new IPEndPoint(IPAddress.Loopback, 9761);
+            var name = Dns.GetHostName();
+            var host = Dns.GetHostEntry(name);
+
+            var ipList = host.AddressList.Where((ip) => ip.AddressFamily == AddressFamily.InterNetwork);
+
+            var ep = new IPEndPoint(ipList.First(), 9761);
             UdpClient uc = new UdpClient(9760);
             Console.WriteLine("Press Enter to send.");
             int id = 0;
@@ -30,7 +36,8 @@ namespace PiOStubSender
 
                 var authorData = JsonConvert.SerializeObject(message, Formatting.None);
 
-                byte[] data = Encoding.UTF8.GetBytes(authorData);
+                //byte[] data = Encoding.UTF8.GetBytes(authorData);
+                byte[] data = new byte[65507];
                 uc.Send(data, data.Length, ep);
                 //}
 

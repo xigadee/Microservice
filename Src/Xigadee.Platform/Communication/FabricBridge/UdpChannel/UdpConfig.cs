@@ -8,25 +8,6 @@ using System.Text;
 namespace Xigadee
 {
     /// <summary>
-    /// This is the mode for the UDPHelper class.
-    /// </summary>
-    public enum UdpMode
-    {
-        /// <summary>
-        /// UDP is in unicast mode.
-        /// </summary>
-        Unicast,
-        /// <summary>
-        /// UDP is in broadcast mode.
-        /// </summary>
-        Broadcast,
-        /// <summary>
-        /// UDP is in multicast mode.
-        /// </summary>
-        Multicast
-    }
-
-    /// <summary>
     /// This class holds the various UDP configuration modes and provides shortcut constructors to the supported modes.
     /// </summary>
     public class UdpConfig
@@ -54,6 +35,7 @@ namespace Xigadee
         /// </summary>
         public int? MulticastTtl { get; private set;}
 
+        public bool ExclusiveAddressUse { get; set; }= false;
         /// <summary>
         /// Gets the port that the Udp transport is using.
         /// </summary>
@@ -81,5 +63,24 @@ namespace Xigadee
             return host.AddressList.Where((ip) => ip.AddressFamily == family);
         }
         #endregion
+    }
+
+    /// <summary>
+    /// This is the mode for the UDPHelper class.
+    /// </summary>
+    public enum UdpMode
+    {
+        /// <summary>
+        /// UDP is in unicast mode.
+        /// </summary>
+        Unicast,
+        /// <summary>
+        /// UDP is in broadcast mode.
+        /// </summary>
+        Broadcast,
+        /// <summary>
+        /// UDP is in multicast mode.
+        /// </summary>
+        Multicast
     }
 }
