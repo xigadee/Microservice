@@ -13,21 +13,76 @@ namespace Xigadee
 
     }
 
+    /// <summary>
+    /// This class holds the Socket state when receiving and transmitting information.
+    /// </summary>
     public class UdpHelperState
     {
+        #region Declarations
+        /// <summary>
+        /// The maximum permitted size for a UDP message body.
+        /// </summary>
         public const int UDPMAXSIZE = 65507;
 
-        public Socket Socket { get; set; }
+        private HashSet<IPAddress> mIPAddressExclude; 
+        #endregion
+        #region Constructor
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UdpHelperState"/> class.
+        /// </summary>
+        /// <param name="mode">The mode.</param>
+        /// <param name="socket">The socket.</param>
+        public UdpHelperState(UdpHelperMode mode, Socket socket)
+        {
+            Mode = mode;
+            Buffer = Mode != UdpHelperMode.Sender ? (new byte[UDPMAXSIZE]) : null;
+            Socket = socket;
+            mIPAddressExclude = new HashSet<IPAddress>();
+        } 
+        #endregion
+        /// <summary>
+        /// Gets the socket.
+        /// </summary>
+        public Socket Socket { get; }
+        /// <summary>
+        /// Gets the context mode.
+        /// </summary>
+        public UdpHelperMode Mode { get; }
+        /// <summary>
+        /// Gets the buffer.
+        /// </summary>
+        public byte[] Buffer { get; }
 
-        public UdpHelperMode Mode { get; set; }
+        #region TransmitOk(IPAddress address)
+        /// <summary>
+        /// Checks that an address is OK to transmit on the socket interface.
+        /// </summary>
+        /// <param name="address">The address to check.</param>
+        /// <returns>Returns true if OK to transmit.</returns>
+        public bool TransmitOk(IPAddress address)
+        {
+            return !mIPAddressExclude.Contains(address);
+        }
+        #endregion
+        #region TransmitBlock(IPAddress address)
+        /// <summary>
+        /// Registers an address as blocked for transmission. This usually happens when there is no route to the address on a previous transmit attempt.
+        /// </summary>
+        /// <param name="address">The address.</param>
+        public void TransmitBlock(IPAddress address)
+        {
+            if (!mIPAddressExclude.Contains(address))
+                mIPAddressExclude.Add(address);
+        }
+        #endregion
 
-        public byte[] Buffer { get; set; } = new byte[UDPMAXSIZE];
-
-        public EndPoint RemoteEndpoint;
-
+        /// <summary>
+        /// Sets the async function when receiving data on the socket.
+        /// </summary>
+        /// <param name="ar">The callback.</param>
         public void Receive(AsyncCallback ar)
         {
-            RemoteEndpoint = new IPEndPoint(0, 0);
+            EndPoint RemoteEndpoint = new IPEndPoint(0, 0);
 
             Socket.BeginReceiveFrom(Buffer, 0, Buffer.Length, SocketFlags.None
                 , ref RemoteEndpoint
@@ -36,16 +91,16 @@ namespace Xigadee
 
     }
 
-
-
     /// <summary>
     /// This is the Udp Helper class.
     /// </summary>
     public class UdpHelper:ServiceBase<UdpHelperStatistics>
     {
+        #region Declarations
         Dictionary<IPEndPoint, UdpHelperState> mConnectionsListener, mConnectionsSender;
         ConcurrentQueue<Message> mIncomingPending;
-
+        #endregion
+        #region Constructor
         /// <summary>
         /// Initializes a new instance of the <see cref="UdpHelper"/> class.
         /// </summary>
@@ -58,15 +113,42 @@ namespace Xigadee
             mConnectionsSender = new Dictionary<IPEndPoint, UdpHelperState>();
 
             mIncomingPending = new ConcurrentQueue<Message>();
-        }
+        } 
+        #endregion
 
+        /// <summary>
+        /// Gets the UDP configuration.
+        /// </summary>
+        public UdpConfig Config { get; }
+        /// <summary>
+        /// Gets the mode.
+        /// </summary>
+        public UdpHelperMode Mode { get; }
+
+        /// <summary>
+        /// Gets the available data.
+        /// </summary>
+        public bool Available => mIncomingPending.Count > 0;
+        /// <summary>
+        /// Gets the count of the pending incoming messages.
+        /// </summary>
+        public int Count => mIncomingPending.Count;
+
+        #region TryDequeue(out Message message)
+        /// <summary>
+        /// Tries to dequeue a message from the incoming queue.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <returns>Returns true if a message has been successfully dequeued.</returns>
         public bool TryDequeue(out Message message)
         {
             message = null;
 
             return mIncomingPending.TryDequeue(out message);
         }
+        #endregion
 
+        #region StartInternal()
         /// <summary>
         /// This method starts the service. 
         /// </summary>
@@ -76,7 +158,7 @@ namespace Xigadee
                 switch (Config.Mode)
                 {
                     case UdpMode.Unicast:
-                        Config.Addresses.ForEach((a) => ListenerAddUnicast(a, Config.Port));
+                        Config.Addresses.ForEach((a) => ListenerUnicastAdd(a, Config.Port));
                         break;
                     case UdpMode.Broadcast:
                         throw new NotImplementedException();
@@ -90,7 +172,7 @@ namespace Xigadee
                 switch (Config.Mode)
                 {
                     case UdpMode.Unicast:
-                        Config.Addresses.ForEach((a) => SenderAddUnicast(a, Config.Port));
+                        Config.Addresses.ForEach((a) => SenderUnicastAdd(a, Config.Port, Config.RemoteEndPoint));
                         break;
                     case UdpMode.Broadcast:
                         throw new NotImplementedException();
@@ -101,46 +183,28 @@ namespace Xigadee
                 }
 
         }
-
+        #endregion
+        #region StopInternal()
         /// <summary>
         /// This method stops the service. 
         /// </summary>
         protected override void StopInternal()
         {
             mConnectionsListener.ForEach((k) => k.Value.Socket.Close());
+            mConnectionsListener.Clear();
             mConnectionsSender.ForEach((k) => k.Value.Socket.Close(1));
-        }
-
-        /// <summary>
-        /// Gets the UDP configuration.
-        /// </summary>
-        public UdpConfig Config { get; }
-        /// <summary>
-        /// Gets the mode.
-        /// </summary>
-        public UdpHelperMode Mode { get; }
-
-
-        #region Available
-        /// <summary>
-        /// Gets the available data.
-        /// </summary>
-        public bool Available
-        {
-            get
-            {
-                return (mIncomingPending.Count > 0)
-                    || (mConnectionsListener.Values.Select((s) => s.Socket.Available > 0).FirstOrDefault());
-            }
+            mConnectionsSender.Clear();
         }
         #endregion
 
-        protected virtual void SenderAddUnicast(IPAddress address, int port)
-        {
-
-        }
-
-        protected virtual void ListenerAddUnicast(IPAddress address, int port)
+        #region SenderUnicastAdd(IPAddress address, int port, IPEndPoint destination)
+        /// <summary>
+        /// Adds a Udp sender with the specific destination.
+        /// </summary>
+        /// <param name="address">The local address.</param>
+        /// <param name="port">The local port.</param>
+        /// <param name="destination">The destination address and port.</param>
+        protected virtual void SenderUnicastAdd(IPAddress address, int port, IPEndPoint destination)
         {
             var ep = new IPEndPoint(address, port);
             var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
@@ -148,70 +212,131 @@ namespace Xigadee
 
             socket.Bind(ep);
 
-            var state = new UdpHelperState { Socket = socket, Mode = UdpHelperMode.Listener };
+            var state = new UdpHelperState(UdpHelperMode.Sender, socket);
+
+            mConnectionsSender.Add(ep, state);
+        } 
+        #endregion
+
+        #region ListenerUnicastAdd(IPAddress address, int port)
+        /// <summary>
+        /// Adds a specific UDP listener for the address and port.
+        /// </summary>
+        /// <param name="address">The address.</param>
+        /// <param name="port">The port.</param>
+        protected virtual void ListenerUnicastAdd(IPAddress address, int port)
+        {
+            var ep = new IPEndPoint(address, port);
+            var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            socket.ExclusiveAddressUse = Config.ExclusiveAddressUse;
+
+            socket.Bind(ep);
+
+            var state = new UdpHelperState(UdpHelperMode.Listener, socket);
 
             mConnectionsListener.Add(ep, state);
 
-            state.Receive(new AsyncCallback(EndReceiveFrom));
+            state.Receive(new AsyncCallback(ListenerUnicastEndReceiveFrom));
         }
 
-        private void EndReceiveFrom(IAsyncResult ar)
+        private void ListenerUnicastEndReceiveFrom(IAsyncResult ar)
         {
-            EndPoint ep = new IPEndPoint(0, 0);
-            var state = (UdpHelperState)ar.AsyncState;
-            Socket socket = state.Socket;
-            int read = socket.EndReceiveFrom(ar, ref ep);
-
-            if (read > 0)
+            try
             {
-                var message = new Message() { RemoteEndPoint = (IPEndPoint)ep };
-                message.Buffer = new byte[read];
-                Buffer.BlockCopy(state.Buffer, 0, message.Buffer, 0, read);
+                EndPoint ep = new IPEndPoint(0, 0);
+                var state = (UdpHelperState)ar.AsyncState;
+                Socket socket = state.Socket;
+                int read = socket.EndReceiveFrom(ar, ref ep);
 
-                mIncomingPending.Enqueue(message);
+                if (read > 0)
+                {
+                    var message = new Message() { RemoteEndPoint = (IPEndPoint)ep };
+                    message.Buffer = new byte[read];
+                    Buffer.BlockCopy(state.Buffer, 0, message.Buffer, 0, read);
 
-                state.Receive(new AsyncCallback(EndReceiveFrom));
+                    mIncomingPending.Enqueue(message);
+
+                    state.Receive(new AsyncCallback(ListenerUnicastEndReceiveFrom));
+                }
             }
-        }
+            catch (ObjectDisposedException odex)
+            {
+                //This is throw when the socket is closed and the Async wait is completed.
+                //We should just ignore this.
+            }
+            catch (Exception ex)
+            {
 
-        public void SenderAdd(IPEndPoint ep)
+                throw;
+            }
+
+        }
+        #endregion
+
+        //public void SenderAdd(IPEndPoint ep)
+        //{
+        //    if (mConnectionsListener.ContainsKey(ep))
+        //        throw new ArgumentOutOfRangeException("ep", $"The EndPoint {ep.Address.ToString()}:{ep.Port} is already registered.");
+
+        //    var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        //    socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.ExclusiveAddressUse, false);
+
+        //    //if (MulticastTtl.HasValue)
+        //    //    socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, MulticastTtl);
+
+        //    //Socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.
+        //    //Socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(ip, IPAddress.Any));
+        //    //Socket.Bind(
+        //}
+
+
+        #region Send(byte[] blob, int length)
+        /// <summary>
+        /// Sends the specified BLOB to the configuration remote endpoint.
+        /// </summary>
+        /// <param name="blob">The BLOB.</param>
+        /// <param name="length">The length.</param>
+        /// <returns>Returns true if the message transmitted successfully on at least one interface.</returns>
+        public bool Send(byte[] blob, int length)
         {
-            if (mConnectionsListener.ContainsKey(ep))
-                throw new ArgumentOutOfRangeException("ep", $"The EndPoint {ep.Address.ToString()}:{ep.Port} is already registered.");
-
-            var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.ExclusiveAddressUse, false);
-
-            //if (MulticastTtl.HasValue)
-            //    socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, MulticastTtl);
-
-            //Socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.
-            //Socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(ip, IPAddress.Any));
-            //Socket.Bind(
-        }
-
-
-        public async Task<Message> ReceiveAsync()
+            return SendTo(blob, length, Config.RemoteEndPoint);
+        } 
+        #endregion
+        #region SendTo(byte[] blob, int length, IPEndPoint remoteEndPoint)
+        /// <summary>
+        /// Sends the specified BLOB to the specified endpoint.
+        /// </summary>
+        /// <param name="blob">The binary blob.</param>
+        /// <param name="length">The byte length.</param>
+        /// <param name="remoteEndPoint">The specified remote IP endpoint.</param>
+        /// <returns>Returns true if the message transmitted successfully on at least one interface.</returns>
+        public bool SendTo(byte[] blob, int length, IPEndPoint remoteEndPoint)
         {
-            //var e = new SocketAsyncEventArgs();
-            //e.Completed += ReceiveCompleted;
-            //Socket.ReceiveAsync(e);
+            if (remoteEndPoint == null)
+                throw new ArgumentNullException("remoteEndPoint");
 
-            //Socket.
-            //var success = await Socket.ReceiveAsync(e);
-
-            return null;
+            bool success = false;
+            mConnectionsSender.Values.ForEach((s) =>
+            {
+                try
+                {
+                    if (s.TransmitOk(remoteEndPoint.Address))
+                    {
+                        s.Socket.SendTo(blob, length, SocketFlags.None, remoteEndPoint);
+                        success = true;
+                    }
+                }
+                catch (SocketException sex)
+                {
+                    if (sex.SocketErrorCode == SocketError.NetworkUnreachable)
+                        s.TransmitBlock(remoteEndPoint.Address);
+                    else
+                        throw sex;
+                }
+            });
+            return success;
         }
-
-        private void ReceiveCompleted(object sender, SocketAsyncEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<int> SendAsync(byte[] blob, int length, IPEndPoint ep = null)
-        {
-            return 0;
-        }
+        #endregion
 
         void UdpTransmitHelper(string mcastGroup, int port, int ttl, int rep)
         {

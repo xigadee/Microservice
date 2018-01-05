@@ -53,6 +53,13 @@ namespace Xigadee
             client.ContentType = ContentType;
             client.ContentEncoding = ContentEncoding;
 
+            client.Start = () =>
+            {
+                client.Client = client.ClientCreate();
+
+                client.IsActive = true;
+            };
+
             client.ClientCreate = () =>
             {
                 var c = new UdpHelper(Config, UdpHelperMode.Sender);

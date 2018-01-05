@@ -26,7 +26,7 @@ namespace PiO
                 .ConfigurationSetFromConsoleArgs(args)
                 .AddDebugMemoryDataCollector(out coll)
                 .AddChannelIncoming("lightwave", "LightwaveRF UDP traffic", ListenerPartitionConfig.Init(1))
-                    .AttachUdpListener(UdpConfig.UnicastAllIps(9761)
+                    .AttachUdpListener(UdpConfig.UnicastAllIps(9761, "xigadee.org")
                         , requestAddress: ("message","in")
                         , deserialize: (holder) => holder.SetObject(new LightwaveMessage(holder.Blob, (IPEndPoint)holder.Metadata)))
                     .AttachCommand(async (ctx) => 
@@ -37,7 +37,7 @@ namespace PiO
                     , ("message", "in"))
                     .Revert()
                 .AddChannelOutgoing("status", "Outgoing UDP status", SenderPartitionConfig.Init(1))
-                    .AttachUdpSender(UdpConfig.BroadcastAllIps(44723)
+                    .AttachUdpSender(UdpConfig.UnicastAllIps(9762, "hitachiconsulting.com") //UdpConfig.BroadcastAllIps(44723)
                         , serializer: new StatisticsSummaryLogUdpSerializer())
                     .Revert()
                 .OnDataCollection

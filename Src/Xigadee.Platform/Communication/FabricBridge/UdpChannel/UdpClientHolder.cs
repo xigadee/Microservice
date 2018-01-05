@@ -102,9 +102,7 @@ namespace Xigadee
                 var holder = MessagePack(payload);
 
                 if (holder.Blob != null)
-                {
-                    var result = await Client.SendAsync(holder.Blob, holder.Blob.Length);
-                }
+                    Client.Send(holder.Blob, holder.Blob.Length);
 
             }
             catch (Exception ex)

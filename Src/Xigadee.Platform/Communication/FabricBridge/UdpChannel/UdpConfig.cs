@@ -14,14 +14,39 @@ namespace Xigadee
     {
         private UdpConfig() { }
 
-        public static UdpConfig UnicastIpEndPoint(IPEndPoint ep)
+        public static UdpConfig UnicastIpEndPoint(IPEndPoint ep, IPEndPoint remoteEp = null)
         {
-            return new UdpConfig { Port = ep.Port, Addresses = new IPAddress[] { ep.Address }, Mode = UdpMode.Unicast };
+            return new UdpConfig
+            {
+                Port = ep.Port
+                , Addresses = new IPAddress[] { ep.Address }
+                , Mode = UdpMode.Unicast
+                , RemoteEndPoint = remoteEp
+            };
         }
 
-        public static UdpConfig UnicastAllIps(int port)
+        public static UdpConfig UnicastAllIps(int port, string remoteHost, int? remotePort = null)
         {
-            return new UdpConfig { Port = port, Addresses = IpAddresses().ToList(), Mode = UdpMode.Unicast };
+            var host = Dns.GetHostEntry(remoteHost);
+
+            return new UdpConfig
+            {
+                  Port = port
+                , Addresses = IpAddresses().ToList()
+                , Mode = UdpMode.Unicast
+                , RemoteEndPoint = new IPEndPoint(host.AddressList.First(), remotePort ?? port)
+            };
+        }
+
+        public static UdpConfig UnicastAllIps(int port, IPEndPoint remoteEp)
+        {
+            return new UdpConfig
+            {
+                  Port = port
+                , Addresses = IpAddresses().ToList()
+                , Mode = UdpMode.Unicast
+                , RemoteEndPoint = remoteEp
+            };
         }
 
         public static UdpConfig BroadcastAllIps(int port)
@@ -29,6 +54,7 @@ namespace Xigadee
             return new UdpConfig { Port = port, Addresses = IpAddresses().ToList(), Mode = UdpMode.Broadcast };
         }
 
+        public IPEndPoint RemoteEndPoint { get; private set; }
 
         /// <summary>
         /// Gets the multicast time to live.
