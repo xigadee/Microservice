@@ -42,6 +42,7 @@ namespace Xigadee
             message.TasksWaiting = stats.Tasks.Queues.Waiting;
 
             var authorData = JsonConvert.SerializeObject(message);
+            //var authorData = JsonConvert.SerializeObject(stats);
 
             holder.Blob = Encoding.UTF8.GetBytes(authorData);
         }

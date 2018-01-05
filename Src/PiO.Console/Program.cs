@@ -37,7 +37,8 @@ namespace PiO
                     , ("message", "in"))
                     .Revert()
                 .AddChannelOutgoing("status", "Outgoing UDP status", SenderPartitionConfig.Init(1))
-                    .AttachUdpSender(UdpConfig.UnicastAllIps(9762, "hitachiconsulting.com") //UdpConfig.BroadcastAllIps(44723)
+                    .AttachUdpSender(//UdpConfig.UnicastAllIps(9762, "hitachiconsulting.com") 
+                        UdpConfig.BroadcastAllIps(44723)
                         , serializer: new StatisticsSummaryLogUdpSerializer())
                     .Revert()
                 .OnDataCollection

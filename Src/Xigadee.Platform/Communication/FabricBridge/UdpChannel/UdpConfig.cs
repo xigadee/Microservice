@@ -49,9 +49,15 @@ namespace Xigadee
             };
         }
 
-        public static UdpConfig BroadcastAllIps(int port)
+        public static UdpConfig BroadcastAllIps(int port, int? destinationPort = null)
         {
-            return new UdpConfig { Port = port, Addresses = IpAddresses().ToList(), Mode = UdpMode.Broadcast };
+            return new UdpConfig
+            {
+                  Port = port
+                , Addresses = IpAddresses().ToList()
+                , Mode = UdpMode.Broadcast
+                , RemoteEndPoint = new IPEndPoint(IPAddress.Parse("255.255.255.255"), destinationPort ?? port)
+            };
         }
 
         public IPEndPoint RemoteEndPoint { get; private set; }

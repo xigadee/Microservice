@@ -175,7 +175,7 @@ namespace Xigadee
                         Config.Addresses.ForEach((a) => SenderUnicastAdd(a, Config.Port, Config.RemoteEndPoint));
                         break;
                     case UdpMode.Broadcast:
-                        throw new NotImplementedException();
+                        Config.Addresses.ForEach((a) => SenderBroadcastAdd(a, Config.Port, Config.RemoteEndPoint));
                         break;
                     case UdpMode.Multicast:
                         throw new NotImplementedException();
@@ -215,7 +215,35 @@ namespace Xigadee
             var state = new UdpHelperState(UdpHelperMode.Sender, socket);
 
             mConnectionsSender.Add(ep, state);
-        } 
+        }
+        #endregion
+
+        #region SenderBroadcastAdd(IPAddress address, int port, IPEndPoint destination)
+        /// <summary>
+        /// Adds a Udp sender with the specific destination.
+        /// </summary>
+        /// <param name="address">The local address.</param>
+        /// <param name="port">The local port.</param>
+        /// <param name="destination">The destination address and port.</param>
+        protected virtual void SenderBroadcastAdd(IPAddress address, int port, IPEndPoint destination)
+        {
+            var ep = new IPEndPoint(address, port);
+            var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            socket.ExclusiveAddressUse = Config.ExclusiveAddressUse;
+
+            // set the Don't Fragment flag.
+            socket.DontFragment = true;
+            // Enable broadcast.
+            socket.EnableBroadcast = true;
+            // Disable multicast loop-back.
+            socket.MulticastLoopback = false;
+            socket.Blocking = true;
+            socket.Bind(ep);
+
+            var state = new UdpHelperState(UdpHelperMode.Sender, socket);
+
+            mConnectionsSender.Add(ep, state);
+        }
         #endregion
 
         #region ListenerUnicastAdd(IPAddress address, int port)
@@ -322,7 +350,7 @@ namespace Xigadee
                 {
                     if (s.TransmitOk(remoteEndPoint.Address))
                     {
-                        s.Socket.SendTo(blob, length, SocketFlags.None, remoteEndPoint);
+                        int b = s.Socket.SendTo(blob, length, SocketFlags.None, remoteEndPoint);
                         success = true;
                     }
                 }
@@ -332,6 +360,10 @@ namespace Xigadee
                         s.TransmitBlock(remoteEndPoint.Address);
                     else
                         throw sex;
+                }
+                catch (Exception ex)
+                {
+
                 }
             });
             return success;
