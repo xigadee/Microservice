@@ -21,9 +21,7 @@ namespace Test.Xigadee.Serialization
         [TestMethod]
         public void TestCastFromHolder()
         {
-            var holder = new SerializationHolder();
-
-            holder.Blob = new byte[10] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            var holder = new SerializationHolder().SetBlob(new byte[10] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 });
 
             byte[] blob = holder;
 

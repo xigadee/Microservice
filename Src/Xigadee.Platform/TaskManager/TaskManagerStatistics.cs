@@ -44,9 +44,13 @@ namespace Xigadee
 
         public bool AutotuneActive { get; set; }
 
+        /// <summary>
+        /// Gets or sets the current active task count.
+        /// </summary>
         public int TaskCount { get; set; }
 
         public bool InternalQueueActive { get; set; }
+
         public int? InternalQueueLength { get; set; }
 
         public QueueTrackerContainerStatistics Queues { get; set; }

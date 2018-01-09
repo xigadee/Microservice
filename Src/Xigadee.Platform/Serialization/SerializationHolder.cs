@@ -14,18 +14,41 @@ namespace Xigadee
         /// <returns>Returns the new holder.</returns>
         public static SerializationHolder CreateWithObject(object entity)
         {
-            var holder = new SerializationHolder();
-            holder.SetObject(entity);
-            return holder;
+            return new SerializationHolder().SetObject(entity);
         }
         /// <summary>
         /// Gets or sets the metadata context. The context holds any additional metadata from the incoming connection.
         /// </summary>
         public object Metadata { get; set; }
+
+        #region SetBlob(byte[] blob, string contentType = null, int? maxLength = null)
         /// <summary>
-        /// Gets or sets the BLOB.
+        /// Sets the Blob value for the byte array.
         /// </summary>
-        public byte[] Blob { get; set; }
+        /// <param name="blob">The binary blob parameter.</param>
+        /// <param name="contentType">This is the optional content type parameter.</param>
+        /// <param name="maxLength">The maximum length.</param>
+        /// <returns>Returns this container object to allow for Fluent behaviour.</returns>
+        /// <exception cref="Xigadee.SerializationBlobLimitExceeededException">Throw if the byte array length exceeds the maximum permitted value.</exception>
+        public SerializationHolder SetBlob(byte[] blob, string contentType = null, int? maxLength = null)
+        {
+            if (blob != null && maxLength.HasValue && blob.Length > maxLength.Value)
+                throw new SerializationBlobLimitExceeededException(maxLength.Value, blob.Length);
+
+            Blob = blob;
+
+            if (contentType != null)
+                ContentType = contentType;
+
+            return this;
+        } 
+        #endregion
+
+        /// <summary>
+        /// Gets or sets the binary blob.
+        /// </summary>
+        public byte[] Blob { get; private set; }
+
         /// <summary>
         /// Gets or sets the BLOB serializer content type identifier. 
         /// If this is set, the specific serializer will be used without attempting to identify the magic bytes at the start of the blob stream.
@@ -38,31 +61,33 @@ namespace Xigadee
         public string ContentEncoding { get; set; }
 
         /// <summary>
-        /// The object type, which is parsed from the ContentType parameter.
-        /// </summary>
-        public Type ObjectType { get; set; }
-        /// <summary>
-        /// This optional identifier is added by the serialization container and specifies the id of the deserialized object stored in the object registry.
-        /// </summary>
-        public Guid? ObjectRegistryId { get; set; }
-        /// <summary>
         /// Gets a value indicating whether this instance has content.
         /// </summary>
         public bool HasObject => Object != null;
         /// <summary>
         /// Gets or sets the content.
         /// </summary>
-        public object Object { get; set; }
+        public object Object { get; private set; }
+        /// <summary>
+        /// The object type, which is parsed from the ContentType parameter.
+        /// </summary>
+        public Type ObjectType { get; set; }
 
+        #region SetObject(object incoming)
         /// <summary>
         /// Sets the object and the object type for the holder.
         /// </summary>
         /// <param name="incoming">The incoming object.</param>
-        public void SetObject(object incoming)
+        /// <returns>Returns this container object to allow for Fluent behaviour.</returns>
+        public SerializationHolder SetObject(object incoming)
         {
             Object = incoming;
             ObjectType = incoming?.GetType();
+            return this;
         }
+        #endregion
+
+        #region Implicit binary operators ...
         /// <summary>
         /// Performs an implicit conversion from <see cref="SerializationHolder"/> to a byte array./>.
         /// </summary>
@@ -83,7 +108,26 @@ namespace Xigadee
         /// </returns>
         public static implicit operator SerializationHolder(byte[] blob)
         {
-            return new SerializationHolder() { Blob = blob, ContentType = "application/octet-stream" };
+            return new SerializationHolder().SetBlob(blob, "application/octet-stream");
+        } 
+        #endregion
+    }
+
+    /// <summary>
+    /// This exception is thrown when the byte array is larger than the amount permitted. 
+    /// This is used for messaging systems that have a specific limit.
+    /// </summary>
+    /// <seealso cref="System.Exception" />
+    public class SerializationBlobLimitExceeededException: Exception
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SerializationBlobLimitExceeededException"/> class.
+        /// </summary>
+        /// <param name="maxLength">The maximum byte array length.</param>
+        /// <param name="length">The actual byte array length.</param>
+        public SerializationBlobLimitExceeededException(int maxLength, int length)
+            :base($"The byte array of length {length} has exceeded the permitted length of {maxLength}")
+        {
         }
     }
 }

@@ -36,7 +36,7 @@ namespace Xigadee
                 mJsonSerializer.Serialize(textWriter, holder.Object);
                 streamWriter.Flush();
                 stream.Position = 0;
-                holder.Blob = stream.ToArray();
+                holder.SetBlob(stream.ToArray());
             }
 
             holder.ContentType = ContentType + $"; type=\"{holder.Object.GetType().ToString()}\"";
