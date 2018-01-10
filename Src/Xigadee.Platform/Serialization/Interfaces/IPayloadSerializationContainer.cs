@@ -2,6 +2,32 @@
 namespace Xigadee
 {
     /// <summary>
+    /// This interface is used to manage payload compression.
+    /// </summary>
+    public interface IPayloadCompressionContainer
+    {
+        /// <summary>
+        /// A boolean function that returns true if the compression type is supported.
+        /// </summary>
+        /// <param name="holder">The serialization holder.</param>
+        /// <returns>Returns true when supported.</returns>
+        bool SupportsCompression(SerializationHolder holder);
+
+        /// <summary>
+        /// Tries to decompress the incoming holder.
+        /// </summary>
+        /// <param name="holder">The holder.</param>
+        /// <returns>Returns true if the incoming binary payload is successfully decompressed.</returns>
+        bool TryDecompression(SerializationHolder holder);
+        /// <summary>
+        /// Tries to compress the outgoing payload.
+        /// </summary>
+        /// <param name="holder">The holder.</param>
+        /// <returns>Returns true if the Content is compressed correctly to a binary blob.</returns>
+        bool TryCompression(SerializationHolder holder);
+    }
+
+    /// <summary>
     /// This interface is used to expose the serialization container to applications that require access to it.
     /// </summary>
     public interface IPayloadSerializationContainer

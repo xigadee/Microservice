@@ -4,14 +4,6 @@ using System.Collections.Generic;
 namespace Xigadee
 {
     /// <summary>
-    /// This interface is implemented by compression algorithms, such as GZip and Deflate.
-    /// </summary>
-    public interface IPayloadCompressor
-    {
-
-    }
-
-    /// <summary>
     /// This is the root serialization interface based around the SerializationHolder object.
     /// </summary>
     public interface IPayloadSerializer

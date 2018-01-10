@@ -9,17 +9,6 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This is the content holder.
-    /// </summary>
-    public class ContentRegistryHolder
-    {
-        /// <summary>
-        /// Gets or sets the content.
-        /// </summary>
-        public object Content { get; set; }
-    }
-
-    /// <summary>
     /// This container holds the system serialization/de-serialization components that are used when transmitting data outside of the system.
     /// </summary>
     public partial class SerializationContainer : ServiceContainerBase<SerializationStatistics, SerializationPolicy>
@@ -39,7 +28,7 @@ namespace Xigadee
         /// <summary>
         /// This contains the supported serializers.
         /// </summary>
-        protected Dictionary<string, IPayloadCompressor> mPayloadCompression;
+        protected Dictionary<string, IPayloadCompressor> mPayloadCompressors;
 
         /// <summary>
         /// This is the look up cache for the specific type.
@@ -57,13 +46,16 @@ namespace Xigadee
         {
             mPayloadSerializers = new Dictionary<string, IPayloadSerializer>();
             mPayloadSerializersMagicBytes = new Dictionary<string, IPayloadSerializerMagicBytes>();
+            mPayloadCompressors = new Dictionary<string, IPayloadCompressor>();
         }
         #endregion
 
+        #region DefaultContentType
         /// <summary>
         /// Gets or sets the default type of the content type. This is based on the first serializer added to the collection.
         /// </summary>
-        public string DefaultContentType { get; protected set; }
+        public string DefaultContentType { get; protected set; } 
+        #endregion
 
         #region StatisticsRecalculate(SerializationStatistics statistics)
         /// <summary>
@@ -253,8 +245,7 @@ namespace Xigadee
         }
         #endregion
 
-
-
+        #region PrepareMimeType(string mimetype)
         private string PrepareMimeType(string mimetype)
         {
             if (mimetype == null)
@@ -263,19 +254,43 @@ namespace Xigadee
             var items = mimetype.Split(';');
 
             return items[0].Trim().ToLowerInvariant();
-        }
+        } 
+        #endregion
 
+        #region SupportsSerializer(string mimetype)
+        /// <summary>
+        /// Checks that a specific serializer is supported.
+        /// </summary>
+        /// <param name="mimetype">The mime type identifier for the serializer.</param>
+        /// <returns>
+        /// Returns true if the serializer is supported.
+        /// </returns>
         public bool SupportsSerializer(string mimetype)
         {
             return mPayloadSerializers.ContainsKey(PrepareMimeType(mimetype));
         }
-
+        #endregion
+        #region TryGetSerializer(string mimetype, out IPayloadSerializer serializer)
+        /// <summary>
+        /// Tries to get the serializer.
+        /// </summary>
+        /// <param name="mimetype">The serializer mime type.</param>
+        /// <param name="serializer">The serializer.</param>
+        /// <returns>Returns true if successful.</returns>
         protected bool TryGetSerializer(string mimetype, out IPayloadSerializer serializer)
         {
             var sType = PrepareMimeType(mimetype);
             return mPayloadSerializers.TryGetValue(sType, out serializer);
         }
-
+        #endregion
+        #region TryPayloadSerialize(SerializationHolder holder)
+        /// <summary>
+        /// This method attempts to Serialize the object and sets the blob and headers in the holder.
+        /// </summary>
+        /// <param name="holder">The serialization holder.</param>
+        /// <returns>
+        /// Returns true if the operation is successful.
+        /// </returns>
         public bool TryPayloadSerialize(SerializationHolder holder)
         {
             IPayloadSerializer serializer;
@@ -285,7 +300,15 @@ namespace Xigadee
 
             return serializer.TrySerialize(holder);
         }
-
+        #endregion
+        #region TryPayloadDeserialize(SerializationHolder holder)
+        /// <summary>
+        /// This method attempts to deserialize the binary blob and sets the object in the holder.
+        /// </summary>
+        /// <param name="holder">The serialization holder.</param>
+        /// <returns>
+        /// Returns true if the operation is successful.
+        /// </returns>
         public bool TryPayloadDeserialize(SerializationHolder holder)
         {
             IPayloadSerializer serializer;
@@ -294,7 +317,8 @@ namespace Xigadee
                 return false;
 
             return serializer.TryDeserialize(holder);
-        }
+        } 
+        #endregion
 
         #region Collector
         /// <summary>
@@ -302,6 +326,5 @@ namespace Xigadee
         /// </summary>
         public IDataCollection Collector { get; set; }
         #endregion
-
     }
 }

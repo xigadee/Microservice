@@ -13,7 +13,7 @@ namespace Xigadee
     {
         #region Declarations
         /// <summary>
-        /// These are the handlers used to encrpyt and decrypt blob payloads
+        /// These are the handlers used to encrypt and decrypt blob payloads
         /// </summary>
         private Dictionary<string, IEncryptionHandler> mEncryptionHandlers;
         /// <summary>
