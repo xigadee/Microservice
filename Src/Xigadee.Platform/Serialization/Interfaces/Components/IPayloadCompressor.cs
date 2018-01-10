@@ -11,7 +11,7 @@ namespace Xigadee
         /// <summary>
         /// Gets the content-encoding parameter, which can be used to quickly identify the compression used (if any), i.e. GZIP.
         /// </summary>
-        string ContentEncoding { get; set; }
+        string ContentEncoding { get; }
 
         /// <summary>
         /// A boolean function that returns true if the compression type is supported.

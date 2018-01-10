@@ -27,10 +27,11 @@ namespace Xigadee
         /// </summary>
         /// <param name="blob">The binary blob parameter.</param>
         /// <param name="contentType">This is the optional content type parameter.</param>
+        /// <param name="contentEncoding">This is the optional content encoding parameter.</param>
         /// <param name="maxLength">The maximum length.</param>
         /// <returns>Returns this container object to allow for Fluent behaviour.</returns>
         /// <exception cref="Xigadee.SerializationBlobLimitExceeededException">Throw if the byte array length exceeds the maximum permitted value.</exception>
-        public SerializationHolder SetBlob(byte[] blob, string contentType = null, int? maxLength = null)
+        public SerializationHolder SetBlob(byte[] blob, string contentType = null, string contentEncoding = null, int? maxLength = null)
         {
             if (blob != null && maxLength.HasValue && blob.Length > maxLength.Value)
                 throw new SerializationBlobLimitExceeededException(maxLength.Value, blob.Length);
@@ -39,6 +40,8 @@ namespace Xigadee
 
             if (contentType != null)
                 ContentType = contentType;
+
+            ContentEncoding = contentEncoding;
 
             return this;
         } 
