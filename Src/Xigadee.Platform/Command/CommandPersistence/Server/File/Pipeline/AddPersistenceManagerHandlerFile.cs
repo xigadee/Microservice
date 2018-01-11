@@ -27,7 +27,7 @@ namespace Xigadee
         /// <param name="keySerializer">The key serializer function.</param>
         /// <param name="prePopulate">The optional pre-population collection.</param>
         /// <returns>The pipeline.</returns>
-        public static P AddPersistenceManagerHandlerMemory<P,K,E>(this P pipeline
+        public static P AddPersistenceManagerHandlerFile<P,K,E>(this P pipeline
             , Func<E, K> keyMaker
             , Func<string, K> keyDeserializer
             , IPipelineChannelIncoming<P> cpipe
@@ -46,9 +46,9 @@ namespace Xigadee
             where P : IPipeline
             where K : IEquatable<K>
         {
-            PersistenceManagerHandlerMemory<K,E> pm = null;
+            PersistenceManagerHandlerFile<K,E> pm = null;
 
-            return pipeline.AddPersistenceManagerHandlerMemory(keyMaker, keyDeserializer, cpipe, out pm
+            return pipeline.AddPersistenceManagerHandlerFile(keyMaker, keyDeserializer, cpipe, out pm
                   , startupPriority
                   , entityName: entityName
                   , versionPolicy: versionPolicy
@@ -85,11 +85,11 @@ namespace Xigadee
         /// <param name="keySerializer">The key serializer function.</param>
         /// <param name="prePopulate">The optional pre-population collection.</param>
         /// <returns>The pipeline.</returns>
-        public static P AddPersistenceManagerHandlerMemory<P, K, E>(this P pipeline
+        public static P AddPersistenceManagerHandlerFile<P, K, E>(this P pipeline
             , Func<E, K> keyMaker
             , Func<string, K> keyDeserializer
             , IPipelineChannelIncoming<P> cpipe
-            , out PersistenceManagerHandlerMemory<K,E> pm
+            , out PersistenceManagerHandlerFile<K,E> pm
             , int startupPriority = 100
             , string entityName = null
             , VersionPolicy<E> versionPolicy = null
@@ -112,7 +112,7 @@ namespace Xigadee
             if (cpipe == null)
                 throw new ArgumentNullException("cpipe", $"cpipe cannot be null in {nameof(AddPersistenceManagerHandlerMemory)}");
 
-            pm = new PersistenceManagerHandlerMemory<K,E>(keyMaker, keyDeserializer
+            pm = new PersistenceManagerHandlerFile<K,E>(keyMaker, keyDeserializer
                   , entityName: entityName
                   , versionPolicy: versionPolicy
                   , defaultTimeout: defaultTimeout

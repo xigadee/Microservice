@@ -51,7 +51,7 @@ namespace Xigadee
             {
                 var client = ClientResolve(1);
                 var payload = TransmissionPayload.Create();
-                payload.MessageObject = entry;
+                payload.Message.Blob.SetObject(entry);
 
                 payload.Message.OriginatorServiceId = originatorId;
                 if (utcTimeStamp.HasValue)
@@ -72,12 +72,12 @@ namespace Xigadee
         /// This method packs the ServiceMessage in to the BrokeredMessage format
         /// for communication through the Azure Service Bus.
         /// </summary>
-        /// <param name="sMessage">The ServiceMessage object to convert.</param>
+        /// <param name="payload">The Transmission payload.</param>
         /// <returns>Returns a converted BrokeredMessage from transmission.</returns>
         public static EventData PackEventSource(TransmissionPayload payload)
         {
             ServiceMessage sMessage = payload.Message;
-            var entry = payload.MessageObject as EventSourceEntry;
+            var entry = payload.Message.Blob.Object as EventSourceEntry;
 
             EventData bMessage;
             if (sMessage.Blob == null)

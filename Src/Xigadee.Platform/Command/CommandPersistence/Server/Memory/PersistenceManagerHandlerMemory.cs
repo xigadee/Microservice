@@ -1,20 +1,4 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-#region using
+﻿#region using
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -24,11 +8,11 @@ using System.Linq;
 using System.Linq.Expressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Diagnostics;
 
 #endregion
 namespace Xigadee
 {
-    #region PersistenceManagerHandlerMemory<K, E>
     /// <summary>
     /// This persistence class is used to hold entities in memory during the lifetime of the 
     /// Microservice and does not persist to any backing store.
@@ -37,65 +21,9 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class PersistenceManagerHandlerMemory<K, E> : PersistenceManagerHandlerMemory<K, E, PersistenceStatistics>
+    [DebuggerDisplay("{mContainer.Debug}")]
+    public class PersistenceManagerHandlerMemory<K, E> : PersistenceManagerHandlerJsonBase<K, E, PersistenceStatistics, PersistenceManagerHandlerMemory<K, E>.CommandPolicy>
         where K : IEquatable<K>
-    {
-        #region Constructor
-        /// <summary>
-        /// This is the memory persistence agent.
-        /// </summary>
-        /// <param name="keyMaker">This function creates a key of type K from an entity of type E</param>
-        /// <param name="keyDeserializer">The entity key deserializer.</param>
-        /// <param name="entityName">The entity name to be used in the collection. By default this will be set through reflection.</param>
-        /// <param name="versionPolicy">The version policy. This is needed if you wish to support optimistic locking for updates.</param>
-        /// <param name="defaultTimeout">The default timeout. This is used for testing to simulate timeouts.</param>
-        /// <param name="persistenceRetryPolicy">The retry policy. This is used for testing purposes.</param>
-        /// <param name="resourceProfile">The resource profile.</param>
-        /// <param name="cacheManager">The cache manager.</param>
-        /// <param name="referenceMaker">The reference maker. This is used for entities that support read by reference.</param>
-        /// <param name="referenceHashMaker">The reference hash maker. This is used for fast lookup.</param>
-        /// <param name="keySerializer">The key serializer function.</param>
-        public PersistenceManagerHandlerMemory(Func<E, K> keyMaker
-            , Func<string, K> keyDeserializer
-            , string entityName = null
-            , VersionPolicy<E> versionPolicy = null
-            , TimeSpan? defaultTimeout = null
-            , PersistenceRetryPolicy persistenceRetryPolicy = null
-            , ResourceProfile resourceProfile = null
-            , ICacheManager<K, E> cacheManager = null
-            , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
-            , Func<Tuple<string, string>, string> referenceHashMaker = null
-            , Func<K, string> keySerializer = null
-            )
-            : base(keyMaker, keyDeserializer
-                  , entityName: entityName
-                  , versionPolicy: versionPolicy
-                  , defaultTimeout: defaultTimeout
-                  , persistenceRetryPolicy: persistenceRetryPolicy
-                  , resourceProfile: resourceProfile
-                  , cacheManager: cacheManager
-                  , referenceMaker: referenceMaker
-                  , referenceHashMaker : referenceHashMaker
-                  , keySerializer: keySerializer
-                  )
-        {
-        }
-        #endregion
-    }
-    #endregion
-
-    /// <summary>
-    /// This persistence class is used to hold entities in memory during the lifetime of the 
-    /// Microservice and does not persist to any backing store.
-    /// This class is used extensively by the Unit test projects. The class inherits from Json base
-    /// and so employs the same logic as that used by the Azure Storage and DocumentDb persistence classes.
-    /// </summary>
-    /// <typeparam name="K">The key type.</typeparam>
-    /// <typeparam name="E">The entity type.</typeparam>
-    /// <typeparam name="S">An extended statistics class.</typeparam>
-    public abstract class PersistenceManagerHandlerMemory<K, E, S> : PersistenceManagerHandlerJsonBase<K, E, S, PersistenceManagerHandlerMemoryPolicy>
-        where K : IEquatable<K>
-        where S : PersistenceStatistics, new()
     {
         #region Declarations
         /// <summary>
@@ -106,6 +34,12 @@ namespace Xigadee
         /// This is the time span for the delay.
         /// </summary>
         private TimeSpan? mDelay = null;
+
+        /// <summary>
+        /// Gets the pre-populate collection.
+        /// </summary>
+        protected IEnumerable<KeyValuePair<K, E>> mPrePopulate;
+
         #endregion
         #region Constructor
         /// <summary>
@@ -125,7 +59,9 @@ namespace Xigadee
         /// <param name="referenceMaker">The reference maker. This is used for entities that support read by reference.</param>
         /// <param name="referenceHashMaker">The reference hash maker. This is used for fast lookup.</param>
         /// <param name="keySerializer">The key serializer function.</param>
-        protected PersistenceManagerHandlerMemory(Func<E, K> keyMaker
+        /// <param name="policy">The policy.</param>
+        /// <param name="prePopulate">The optional pre-population collection.</param>
+        public PersistenceManagerHandlerMemory(Func<E, K> keyMaker
             , Func<string, K> keyDeserializer
             , string entityName = null
             , VersionPolicy<E> versionPolicy = null
@@ -136,13 +72,19 @@ namespace Xigadee
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             , Func<Tuple<string, string>, string> referenceHashMaker = null
             , Func<K, string> keySerializer = null
-            , PersistenceManagerHandlerMemoryPolicy policy = null)
-            : base(keyMaker, keyDeserializer, entityName, versionPolicy, defaultTimeout, persistenceRetryPolicy, resourceProfile, cacheManager, referenceMaker, referenceHashMaker, keySerializer)
+            , CommandPolicy policy = null
+            , IEnumerable<KeyValuePair<K, E>> prePopulate = null
+            )
+            : base(keyMaker, keyDeserializer, entityName, versionPolicy, defaultTimeout, persistenceRetryPolicy, resourceProfile, cacheManager, referenceMaker, referenceHashMaker, keySerializer, policy)
         {
+            mPrePopulate = prePopulate;
         }
         #endregion
 
-        #region Start/Stop
+        #region Start/Stop        
+        /// <summary>
+        /// This method starts the persistence command.
+        /// </summary>
         protected override void StartInternal()
         {
             try
@@ -158,7 +100,9 @@ namespace Xigadee
 
             base.StartInternal();
         }
-
+        /// <summary>
+        /// This method stops the persistence command.
+        /// </summary>
         protected override void StopInternal()
         {
             base.StopInternal();
@@ -167,14 +111,14 @@ namespace Xigadee
             mContainer = null;
         }
         #endregion
-
         #region PrePopulate()
         /// <summary>
-        /// This method is used to prepopulate entities in to the memory cache.
+        /// This method is used to pre-populate entities in to the memory cache.
         /// </summary>
         public virtual void PrePopulate()
         {
-
+            mPrePopulate?.ForEach((k) => mContainer.Add(k.Key, k.Value, mTransform?.ReferenceMaker?.Invoke(k.Value)));
+            mPrePopulate = null;
         }
         #endregion
 
@@ -199,14 +143,11 @@ namespace Xigadee
             //PersistenceCommandRegister<MemoryPersistenceDirectiveRequest, MemoryPersistenceDirectiveResponse>("Directive", ProcessDirective);
         }
 
-        #region Behaviour
+        #region Behaviour        
         /// <summary>
-        /// This is not currently used.
+        /// Processes the directive.
         /// </summary>
-        /// <param name="rq"></param>
-        /// <param name="rs"></param>
-        /// <param name="prq"></param>
-        /// <param name="prs"></param>
+        /// <param name="holder">The holder.</param>
         /// <returns></returns>
         protected virtual async Task ProcessDirective(PersistenceRequestHolder<MemoryPersistenceDirectiveRequest, MemoryPersistenceDirectiveResponse> holder)
         {
@@ -439,6 +380,15 @@ namespace Xigadee
             return await base.InternalSearch(key, holder);
         }
 
-      
+
+        #region Class -> CommandPolicy
+        /// <summary>
+        /// This policy class is used to configure the test conditions that can be set up for this persistence agent.
+        /// </summary>
+        /// <seealso cref="Xigadee.PersistenceCommandPolicy" />
+        public class CommandPolicy: PersistenceCommandPolicy
+        {
+        } 
+        #endregion
     }
 }

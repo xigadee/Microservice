@@ -1,20 +1,4 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-#region using
+﻿#region using
 
 using System;
 using System.Collections.Generic;
@@ -26,8 +10,11 @@ namespace Xigadee
     /// <summary>
     /// This is the abstract base class for persistence services that use JSON and the serialization mechanism.
     /// </summary>
-    /// <typeparam name="K"></typeparam>
-    /// <typeparam name="E"></typeparam>
+    /// <typeparam name="K">The key type.</typeparam>
+    /// <typeparam name="E">The entity type.</typeparam>
+    /// <typeparam name="S">The persistence statistics type.</typeparam>
+    /// <typeparam name="P">THe persistence command policy type.</typeparam>
+    /// <seealso cref="Xigadee.PersistenceCommandBase{K, E, S, P}" />
     public abstract class PersistenceManagerHandlerJsonBase<K, E, S, P> : PersistenceCommandBase<K, E, S, P>
         where K : IEquatable<K>
         where S : PersistenceStatistics, new()
@@ -37,17 +24,18 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        /// <param name="keyDeserializer"></param>
+        /// <param name="keyMaker">This function creates a key of type K from an entity of type E</param>
+        /// <param name="keyDeserializer">The entity key deserializer.</param>
         /// <param name="entityName">The entity name, derived from E if left null.</param>
         /// <param name="versionPolicy">The optional version and locking policy.</param>
         /// <param name="defaultTimeout">The default timeout when making requests.</param>
-        /// <param name="keyMaker"></param>
-        /// <param name="persistenceRetryPolicy"></param>
-        /// <param name="resourceProfile"></param>
-        /// <param name="cacheManager"></param>
-        /// <param name="referenceMaker"></param>
-        /// <param name="referenceHashMaker"></param>
-        /// <param name="keySerializer"></param>
+        /// <param name="persistenceRetryPolicy">The retry policy. This is used for testing purposes.</param>
+        /// <param name="resourceProfile">The resource profile.</param>
+        /// <param name="cacheManager">The cache manager.</param>
+        /// <param name="referenceMaker">The reference maker. This is used for entities that support read by reference.</param>
+        /// <param name="referenceHashMaker">The reference hash maker. This is used for fast lookup.</param>
+        /// <param name="keySerializer">The key serializer function.</param>
+        /// <param name="policy">The optional persistence policy.</param>
         protected PersistenceManagerHandlerJsonBase(
               Func<E, K> keyMaker
             , Func<string, K> keyDeserializer
@@ -60,6 +48,7 @@ namespace Xigadee
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             , Func<Tuple<string, string>, string> referenceHashMaker = null
             , Func<K, string> keySerializer = null
+            , P policy = null
             ) :
             base(persistenceRetryPolicy: persistenceRetryPolicy
                 , resourceProfile: resourceProfile
@@ -72,6 +61,7 @@ namespace Xigadee
                 , referenceHashMaker: referenceHashMaker
                 , keySerializer: keySerializer
                 , keyDeserializer: keyDeserializer
+                , policy: policy
                 )
         {
         }

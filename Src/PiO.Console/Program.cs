@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Net;
-using System.Net.Sockets;
-using System.Threading.Tasks;
 using Xigadee;
 
 namespace PiO
@@ -29,15 +27,14 @@ namespace PiO
                     .AttachCommand(async (ctx) => 
                     {
                         //Do nothing
+                        var debug = pm.ChannelId;
                         var rs = await pc.Create(ctx.Request.Message.Blob.Object as LightwaveMessage);
                     }, ("message", "in"))
                     .AttachPersistenceManagerHandlerMemory((LightwaveMessage m) => m.Trans, (s) => int.Parse(s), out pm)
                     .AttachPersistenceClient(out pc)
                     .Revert()
                 .AddChannelOutgoing("status", "Outgoing UDP status", SenderPartitionConfig.Init(1))
-                    .AttachUdpSender(//UdpConfig.UnicastAllIps(9762, "hitachiconsulting.com") 
-                        UdpConfig.BroadcastAllIps(44723)
-                        , serializer: new StatisticsSummaryLogUdpSerializer())
+                    .AttachUdpSender(UdpConfig.BroadcastAllIps(44723), serializer: new StatisticsSummaryLogUdpSerializer())
                     .Revert()
                 .OnDataCollection
                 (

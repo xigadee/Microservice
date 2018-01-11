@@ -1,27 +1,8 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-using System;
-using System.Collections;
-using System.Collections.Concurrent;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -31,6 +12,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
+    [DebuggerDisplay("{Debug}")]
     public class PersistenceEntityContainer<K,E>
         where K: IEquatable<K>
     {
@@ -140,7 +122,7 @@ namespace Xigadee
 
             public int GetHashCode(Tuple<string, string> obj)
             {
-                //We create a lowwercase invariant tuple and return its hash code. This will make Equals fire for comparison.
+                //We create a lower-case invariant tuple and return its hash code. This will make Equals fire for comparison.
                 var invariantTuple = new Tuple<string, string>(obj?.Item1?.ToLowerInvariant(), obj?.Item2?.ToLowerInvariant());
                 return invariantTuple.GetHashCode();
             }
@@ -164,24 +146,43 @@ namespace Xigadee
             public E Entity { get; }
 
             public List<Tuple<string, string>> References { get; }
-        } 
+        }
         #endregion
 
+        #region ContainsKey(K key)
+        /// <summary>
+        /// Determines whether the collection contains the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>
+        ///   <c>true</c> if the collection contains the key; otherwise, <c>false</c>.
+        /// </returns>
         public bool ContainsKey(K key)
         {
             return Atomic(() => mContainer.ContainsKey(key));
         }
-
+        #endregion
+        #region ContainsReference(Tuple<string, string> reference)
+        /// <summary>
+        /// Determines whether the collection contains the reference.
+        /// </summary>
+        /// <param name="reference">The reference.</param>
+        /// <returns>
+        ///   <c>true</c> if the collection contains reference; otherwise, <c>false</c>.
+        /// </returns>
         public bool ContainsReference(Tuple<string, string> reference)
         {
             return Atomic(() => mContainerReference.ContainsKey(reference));
-        }
+        } 
+        #endregion
 
+        #region Add(K key, E value, IEnumerable<Tuple<string, string>> references = null)
         /// <summary>
-        /// This is the entity referemce.
+        /// This is the entity reference.
         /// </summary>
-        /// <param name="key">The enity key</param>
+        /// <param name="key">The entity key</param>
         /// <param name="value">The entity</param>
+        /// <param name="references">The optional references.</param>
         /// <returns>
         /// 201 - Created
         /// 409 - Conflict
@@ -212,7 +213,8 @@ namespace Xigadee
                 return 201;
             });
         }
-
+        #endregion
+        #region ReferenceExistingMatch(IEnumerable<Tuple<string,string>> references, bool skipOnKeyMatch = false, K key = default(K))
         /// <summary>
         /// This method checks for existing references, but also skips matches if the associated key is set to the value passed. 
         /// This allows the method to be used for both create and update requests.
@@ -221,7 +223,7 @@ namespace Xigadee
         /// <param name="skipOnKeyMatch">A boolean property that specifies a match should be skipped if it matches the key passed in the key parameter.</param>
         /// <param name="key">The key value to skip on a match.</param>
         /// <returns>Returns true if a references has been matched to an item in the collection.</returns>
-        private bool ReferenceExistingMatch(IEnumerable<Tuple<string,string>> references, bool skipOnKeyMatch = false, K key = default(K))
+        private bool ReferenceExistingMatch(IEnumerable<Tuple<string, string>> references, bool skipOnKeyMatch = false, K key = default(K))
         {
             if (references != null && references.Count() > 0)
             {
@@ -238,12 +240,14 @@ namespace Xigadee
 
             return false;
         }
-
+        #endregion
+        #region Update(K key, E newEntity, IEnumerable<Tuple<string, string>> newReferences = null)
         /// <summary>
         /// This method updates an existing entity.
         /// </summary>
         /// <param name="key">THe entity key.</param>
         /// <param name="newEntity">The newEntity.</param>
+        /// <param name="newReferences">The optional new references.</param>
         /// <returns>
         /// 200 - Updated
         /// 404 - Not sound.
@@ -265,7 +269,7 @@ namespace Xigadee
                 var newContainer = new EntityContainer(key, newEntity, newReferences);
 
                 //OK, update the entity
-                mContainer[key]= newContainer;
+                mContainer[key] = newContainer;
                 //Remove the old references, and add the new references.
                 //Note we're being lazy we add/replace even if nothing has changed.
                 oldContainer.References.ForEach((r) => mContainerReference.Remove(r));
@@ -275,7 +279,13 @@ namespace Xigadee
                 return 200;
             });
         }
-
+        #endregion
+        #region Remove(K key)
+        /// <summary>
+        /// Removes an entity with the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>Returns true if the entity is removed successfully.</returns>
         public bool Remove(K key)
         {
             return Atomic(() =>
@@ -287,6 +297,13 @@ namespace Xigadee
                 return false;
             });
         }
+        #endregion
+        #region Remove(Tuple<string, string> reference)
+        /// <summary>
+        /// Removes the specified entities by the supplied reference.
+        /// </summary>
+        /// <param name="reference">The reference identifier.</param>
+        /// <returns>Returns true if the entity is removed successfully.</returns>
         public bool Remove(Tuple<string, string> reference)
         {
             return Atomic(() =>
@@ -297,7 +314,8 @@ namespace Xigadee
 
                 return RemoveInternal(container);
             });
-        }
+        } 
+        #endregion
 
         private bool RemoveInternal(EntityContainer container)
         {
@@ -308,11 +326,18 @@ namespace Xigadee
             return result;
         }
 
+        #region TryGetValue(K key, out E value)
+        /// <summary>
+        /// Tries to retrieve and entity by the key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The output value.</param>
+        /// <returns>True if the key exists.</returns>
         public bool TryGetValue(K key, out E value)
         {
             value = default(E);
 
-            EntityContainer newValue = null;;
+            EntityContainer newValue = null; ;
 
             bool result = Atomic(() =>
             {
@@ -320,11 +345,18 @@ namespace Xigadee
             });
 
             if (result)
-                value = newValue==null?default(E): newValue.Entity;
+                value = newValue == null ? default(E) : newValue.Entity;
 
             return result;
         }
-
+        #endregion
+        #region TryGetValue(Tuple<string, string> reference, out E value)
+        /// <summary>
+        /// Tries to retrieve and entity by the reference id.
+        /// </summary>
+        /// <param name="reference">The reference id.</param>
+        /// <param name="value">The output value.</param>
+        /// <returns>True if the reference exists.</returns>
         public bool TryGetValue(Tuple<string, string> reference, out E value)
         {
             value = default(E);
@@ -341,16 +373,25 @@ namespace Xigadee
 
             return result;
         }
+        #endregion
 
+        #region Clear()
+        /// <summary>
+        /// Clears this collection.
+        /// </summary>
         public void Clear()
         {
-            Atomic(()=>
+            Atomic(() =>
             {
                 mContainer?.Clear();
                 mContainerReference?.Clear();
             });
         }
-
+        #endregion
+        #region Keys
+        /// <summary>
+        /// Gets the keys collection.
+        /// </summary>
         public ICollection<K> Keys
         {
             get
@@ -358,7 +399,11 @@ namespace Xigadee
                 return Atomic(() => mContainer.Keys.ToList());
             }
         }
-
+        #endregion
+        #region Values
+        /// <summary>
+        /// Gets the values collection.
+        /// </summary>
         public ICollection<E> Values
         {
             get
@@ -366,13 +411,23 @@ namespace Xigadee
                 return Atomic(() => mContainer.Values.Select((c) => c.Entity).ToList());
             }
         }
-
-        public ICollection<Tuple<string,string>> References
+        #endregion
+        #region References
+        /// <summary>
+        /// Gets the references collection.
+        /// </summary>
+        public ICollection<Tuple<string, string>> References
         {
             get
             {
                 return Atomic(() => mContainerReference.Keys.ToList());
             }
         }
+        #endregion
+
+        /// <summary>
+        /// Gets the debug string.
+        /// </summary>
+        public string Debug => $"{typeof(K).Name}/{typeof(E).Name} Entities={Count} References={CountReference}";
     }
 }

@@ -48,19 +48,20 @@ namespace Xigadee
         /// This constructor specifies whether the service should be registered as a shared service
         /// that can be called directly by other message handler and Microservice components.
         /// </summary>
-        /// <param name="persistenceRetryPolicy"></param>
-        /// <param name="resourceProfile"></param>
-        /// <param name="cacheManager"></param>
-        /// <param name="defaultTimeout"></param>
-        /// <param name="entityName"></param>
-        /// <param name="versionPolicy"></param>
-        /// <param name="keyMaker"></param>
+        /// <param name="persistenceRetryPolicy">The retry policy. This is used for testing purposes.</param>
+        /// <param name="resourceProfile">The resource profile.</param>
+        /// <param name="cacheManager">The cache manager.</param>
+        /// <param name="defaultTimeout">The default timeout. This is used for testing to simulate timeouts.</param>
+        /// <param name="entityName">The entity name to be used in the collection. By default this will be set through reflection.</param>
+        /// <param name="versionPolicy">The version policy. This is needed if you wish to support optimistic locking for updates.</param>
+        /// <param name="keyMaker">This function creates a key of type K from an entity of type E</param>
         /// <param name="persistenceEntitySerializer"></param>
         /// <param name="cachingEntitySerializer"></param>
-        /// <param name="keySerializer"></param>
-        /// <param name="keyDeserializer"></param>
-        /// <param name="referenceMaker"></param>
-        /// <param name="referenceHashMaker"></param>
+        /// <param name="keySerializer">The key serializer function.</param>
+        /// <param name="keyDeserializer">The entity key deserializer.</param>
+        /// <param name="referenceMaker">The reference maker. This is used for entities that support read by reference.</param>
+        /// <param name="referenceHashMaker">The reference hash maker. This is used for fast lookup.</param>
+        /// <param name="policy">The optional persistence policy.</param>
         protected PersistenceCommandBase(
               PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
@@ -75,7 +76,8 @@ namespace Xigadee
             , Func<string, K> keyDeserializer = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             , Func<Tuple<string, string>, string> referenceHashMaker = null
-            )
+            , P policy = null
+            ):base(policy)
         {
             mTransform = EntityTransformCreate(entityName, versionPolicy, keyMaker
                 , persistenceEntitySerializer, cachingEntitySerializer
@@ -83,9 +85,9 @@ namespace Xigadee
 
             mRequestsCurrent = new ConcurrentDictionary<Guid, IPersistenceRequestHolder>();
 
-            Policy.DefaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(10);
-            Policy.PersistenceRetryPolicy = persistenceRetryPolicy ?? new PersistenceRetryPolicy();
-            Policy.ResourceProfile = resourceProfile;
+            Policy.DefaultTimeout = defaultTimeout ?? Policy.DefaultTimeout ?? TimeSpan.FromSeconds(10);
+            Policy.PersistenceRetryPolicy = persistenceRetryPolicy ?? Policy.PersistenceRetryPolicy ?? new PersistenceRetryPolicy();
+            Policy.ResourceProfile = resourceProfile ?? Policy.ResourceProfile;
 
             mCacheManager = cacheManager ?? new NullCacheManager<K, E>();
         }
@@ -94,13 +96,21 @@ namespace Xigadee
         /// This constructor specifies whether the service should be registered as a shared service
         /// that can be called directly by other message handler and Microservice components.
         /// </summary>
+        /// <param name="entityTransform">The entity transform.</param>
+        /// <param name="persistenceRetryPolicy">The persistence retry policy.</param>
+        /// <param name="resourceProfile">The resource profile.</param>
+        /// <param name="cacheManager">The cache manager.</param>
+        /// <param name="defaultTimeout">The default timeout.</param>
+        /// <param name="policy">The policy.</param>
+        /// <exception cref="ArgumentNullException">entityTransform cannot be null</exception>
         protected PersistenceCommandBase(
               EntityTransformHolder<K, E> entityTransform
             , PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
             , ICacheManager<K, E> cacheManager = null
             , TimeSpan? defaultTimeout = null
-            )
+            , P policy = null
+            ):base(policy)
         {
             if (entityTransform == null)
                 throw new ArgumentNullException("entityTransform cannot be null");

@@ -1,108 +1,24 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class UdpHelperStatistics: StatusBase
-    {
-
-    }
-
-    /// <summary>
-    /// This class holds the Socket state when receiving and transmitting information.
-    /// </summary>
-    public class UdpHelperState
-    {
-        #region Declarations
-        /// <summary>
-        /// The maximum permitted size for a UDP message body.
-        /// </summary>
-        public const int UDPMAXSIZE = 65507;
-
-        private HashSet<IPAddress> mIPAddressExclude; 
-        #endregion
-        #region Constructor
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UdpHelperState"/> class.
-        /// </summary>
-        /// <param name="mode">The mode.</param>
-        /// <param name="socket">The socket.</param>
-        public UdpHelperState(UdpHelperMode mode, Socket socket)
-        {
-            Mode = mode;
-            Buffer = Mode != UdpHelperMode.Sender ? (new byte[UDPMAXSIZE]) : null;
-            Socket = socket;
-            mIPAddressExclude = new HashSet<IPAddress>();
-        } 
-        #endregion
-        /// <summary>
-        /// Gets the socket.
-        /// </summary>
-        public Socket Socket { get; }
-        /// <summary>
-        /// Gets the context mode.
-        /// </summary>
-        public UdpHelperMode Mode { get; }
-        /// <summary>
-        /// Gets the buffer.
-        /// </summary>
-        public byte[] Buffer { get; }
-
-        #region TransmitOk(IPAddress address)
-        /// <summary>
-        /// Checks that an address is OK to transmit on the socket interface.
-        /// </summary>
-        /// <param name="address">The address to check.</param>
-        /// <returns>Returns true if OK to transmit.</returns>
-        public bool TransmitOk(IPAddress address)
-        {
-            return !mIPAddressExclude.Contains(address);
-        }
-        #endregion
-        #region TransmitBlock(IPAddress address)
-        /// <summary>
-        /// Registers an address as blocked for transmission. This usually happens when there is no route to the address on a previous transmit attempt.
-        /// </summary>
-        /// <param name="address">The address.</param>
-        public void TransmitBlock(IPAddress address)
-        {
-            if (!mIPAddressExclude.Contains(address))
-                mIPAddressExclude.Add(address);
-        }
-        #endregion
-
-        /// <summary>
-        /// Sets the async function when receiving data on the socket.
-        /// </summary>
-        /// <param name="ar">The callback.</param>
-        public void Receive(AsyncCallback ar)
-        {
-            EndPoint RemoteEndpoint = new IPEndPoint(0, 0);
-
-            Socket.BeginReceiveFrom(Buffer, 0, Buffer.Length, SocketFlags.None
-                , ref RemoteEndpoint
-                , ar, this);
-        }
-
-    }
-
     /// <summary>
     /// This is the Udp Helper class.
     /// </summary>
-    public class UdpHelper:ServiceBase<UdpHelperStatistics>
+    public class UdpHelper:ServiceBase<UdpHelper.Statistics>
     {
+        #region Static Declarations
         /// <summary>
         /// The maximum packet size for a UDP packet. 
         /// </summary>
-        public const int PacketMaxSize = 508;
-
+        public const int PacketMaxSize = 508; 
+        #endregion
         #region Declarations
-        Dictionary<IPEndPoint, UdpHelperState> mConnectionsListener, mConnectionsSender;
+        Dictionary<IPEndPoint, State> mConnectionsListener, mConnectionsSender;
         ConcurrentQueue<Message> mIncomingPending;
         #endregion
         #region Constructor
@@ -114,8 +30,8 @@ namespace Xigadee
             Config = udp;
             Mode = mode;
 
-            mConnectionsListener = new Dictionary<IPEndPoint, UdpHelperState>();
-            mConnectionsSender = new Dictionary<IPEndPoint, UdpHelperState>();
+            mConnectionsListener = new Dictionary<IPEndPoint, State>();
+            mConnectionsSender = new Dictionary<IPEndPoint, State>();
 
             mIncomingPending = new ConcurrentQueue<Message>();
         } 
@@ -217,7 +133,7 @@ namespace Xigadee
 
             socket.Bind(ep);
 
-            var state = new UdpHelperState(UdpHelperMode.Sender, socket);
+            var state = new State(UdpHelperMode.Sender, socket);
 
             mConnectionsSender.Add(ep, state);
         }
@@ -245,7 +161,7 @@ namespace Xigadee
             socket.Blocking = true;
             socket.Bind(ep);
 
-            var state = new UdpHelperState(UdpHelperMode.Sender, socket);
+            var state = new State(UdpHelperMode.Sender, socket);
 
             mConnectionsSender.Add(ep, state);
         }
@@ -265,7 +181,7 @@ namespace Xigadee
 
             socket.Bind(ep);
 
-            var state = new UdpHelperState(UdpHelperMode.Listener, socket);
+            var state = new State(UdpHelperMode.Listener, socket);
 
             mConnectionsListener.Add(ep, state);
 
@@ -277,7 +193,7 @@ namespace Xigadee
             try
             {
                 EndPoint ep = new IPEndPoint(0, 0);
-                var state = (UdpHelperState)ar.AsyncState;
+                var state = (State)ar.AsyncState;
                 Socket socket = state.Socket;
                 int read = socket.EndReceiveFrom(ar, ref ep);
 
@@ -433,7 +349,96 @@ namespace Xigadee
             //s.Close();
         }
 
+        #region Class -> Statistics
+        /// <summary>
+        /// This is the helper statistics class
+        /// </summary>
+        /// <seealso cref="Xigadee.StatusBase" />
+        public class Statistics: StatusBase
+        {
 
+        }
+        #endregion
+        #region Class -> State
+        /// <summary>
+        /// This class holds the Socket state when receiving and transmitting information.
+        /// </summary>
+        public class State
+        {
+            #region Declarations
+            /// <summary>
+            /// The maximum permitted size for a UDP message body.
+            /// </summary>
+            public const int UDPMAXSIZE = 65507;
+
+            private HashSet<IPAddress> mIPAddressExclude;
+            #endregion
+            #region Constructor
+            /// <summary>
+            /// Initializes a new instance of the <see cref="UdpHelperState"/> class.
+            /// </summary>
+            /// <param name="mode">The mode.</param>
+            /// <param name="socket">The socket.</param>
+            public State(UdpHelperMode mode, Socket socket)
+            {
+                Mode = mode;
+                Buffer = Mode != UdpHelperMode.Sender ? (new byte[UDPMAXSIZE]) : null;
+                Socket = socket;
+                mIPAddressExclude = new HashSet<IPAddress>();
+            }
+            #endregion
+            /// <summary>
+            /// Gets the socket.
+            /// </summary>
+            public Socket Socket { get; }
+            /// <summary>
+            /// Gets the context mode.
+            /// </summary>
+            public UdpHelperMode Mode { get; }
+            /// <summary>
+            /// Gets the buffer.
+            /// </summary>
+            public byte[] Buffer { get; }
+
+            #region TransmitOk(IPAddress address)
+            /// <summary>
+            /// Checks that an address is OK to transmit on the socket interface.
+            /// </summary>
+            /// <param name="address">The address to check.</param>
+            /// <returns>Returns true if OK to transmit.</returns>
+            public bool TransmitOk(IPAddress address)
+            {
+                return !mIPAddressExclude.Contains(address);
+            }
+            #endregion
+            #region TransmitBlock(IPAddress address)
+            /// <summary>
+            /// Registers an address as blocked for transmission. This usually happens when there is no route to the address on a previous transmit attempt.
+            /// </summary>
+            /// <param name="address">The address.</param>
+            public void TransmitBlock(IPAddress address)
+            {
+                if (!mIPAddressExclude.Contains(address))
+                    mIPAddressExclude.Add(address);
+            }
+            #endregion
+
+            /// <summary>
+            /// Sets the async function when receiving data on the socket.
+            /// </summary>
+            /// <param name="ar">The callback.</param>
+            public void Receive(AsyncCallback ar)
+            {
+                EndPoint RemoteEndpoint = new IPEndPoint(0, 0);
+
+                Socket.BeginReceiveFrom(Buffer, 0, Buffer.Length, SocketFlags.None
+                    , ref RemoteEndpoint
+                    , ar, this);
+            }
+
+        }
+        #endregion
+        #region Class -> Message
         /// <summary>
         /// This class holds the incoming UDP binary data. This is used when the deserializers cannot pick up the message type.
         /// </summary>
@@ -447,25 +452,8 @@ namespace Xigadee
             /// Gets or sets the endpoint.
             /// </summary>
             public IPEndPoint RemoteEndPoint { get; set; }
-        }
+        } 
+        #endregion
     }
 
-    /// <summary>
-    /// This enumeration specifies how the helper processes messages, i.e. incoming, outgoing or both.
-    /// </summary>
-    public enum UdpHelperMode
-    {
-        /// <summary>
-        /// The helper is in listener mode.
-        /// </summary>
-        Listener,
-        /// <summary>
-        /// The helper is in sender mode.
-        /// </summary>
-        Sender,
-        /// <summary>
-        /// The helper is bidirectional
-        /// </summary>
-        Bidirectional
-    }
 }
