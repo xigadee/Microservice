@@ -22,25 +22,9 @@ namespace Xigadee
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
     [DebuggerDisplay("{mContainer.Debug}")]
-    public class PersistenceManagerHandlerMemory<K, E> : PersistenceManagerHandlerJsonBase<K, E, PersistenceStatistics, PersistenceManagerHandlerMemory<K, E>.CommandPolicy>
+    public class PersistenceManagerHandlerMemory<K, E> : PersistenceManagerHandlerContainerBase<K, E, PersistenceStatistics, PersistenceManagerHandlerMemory<K, E>.CommandPolicy, EntityContainerMemory<K,E>>
         where K : IEquatable<K>
     {
-        #region Declarations
-        /// <summary>
-        /// This container holds the memory back entity collection.
-        /// </summary>
-        protected PersistenceEntityContainer<K, E> mContainer;
-        /// <summary>
-        /// This is the time span for the delay.
-        /// </summary>
-        private TimeSpan? mDelay = null;
-
-        /// <summary>
-        /// Gets the pre-populate collection.
-        /// </summary>
-        protected IEnumerable<KeyValuePair<K, E>> mPrePopulate;
-
-        #endregion
         #region Constructor
         /// <summary>
         /// This is the default constructor for the memory persistence manager. 
@@ -75,311 +59,30 @@ namespace Xigadee
             , CommandPolicy policy = null
             , IEnumerable<KeyValuePair<K, E>> prePopulate = null
             )
-            : base(keyMaker, keyDeserializer, entityName, versionPolicy, defaultTimeout, persistenceRetryPolicy, resourceProfile, cacheManager, referenceMaker, referenceHashMaker, keySerializer, policy)
+            : base(keyMaker
+                  , keyDeserializer
+                  , entityName
+                  , versionPolicy
+                  , defaultTimeout
+                  , persistenceRetryPolicy
+                  , resourceProfile
+                  , cacheManager
+                  , referenceMaker
+                  , referenceHashMaker
+                  , keySerializer
+                  , policy
+                  , prePopulate
+                  )
         {
-            mPrePopulate = prePopulate;
         }
         #endregion
 
-        #region Start/Stop        
         /// <summary>
-        /// This method starts the persistence command.
+        /// This method is called to configure the container. There are not any changes for the memory collection.
         /// </summary>
-        protected override void StartInternal()
+        protected override void ContainerConfigure()
         {
-            try
-            {
-                mContainer = new PersistenceEntityContainer<K, E>();
-                PrePopulate();
-            }
-            catch (Exception ex)
-            {
-
-                throw;
-            }
-
-            base.StartInternal();
         }
-        /// <summary>
-        /// This method stops the persistence command.
-        /// </summary>
-        protected override void StopInternal()
-        {
-            base.StopInternal();
-
-            mContainer.Clear();
-            mContainer = null;
-        }
-        #endregion
-        #region PrePopulate()
-        /// <summary>
-        /// This method is used to pre-populate entities in to the memory cache.
-        /// </summary>
-        public virtual void PrePopulate()
-        {
-            mPrePopulate?.ForEach((k) => mContainer.Add(k.Key, k.Value, mTransform?.ReferenceMaker?.Invoke(k.Value)));
-            mPrePopulate = null;
-        }
-        #endregion
-
-        #region DiagnosticsSetMessageDelay(TimeSpan? delay)
-        /// <summary>
-        /// This method can be used during testing. It will insert a delay to the task.
-        /// </summary>
-        /// <param name="delay">The delay.</param>
-        public void DiagnosticsSetMessageDelay(TimeSpan? delay)
-        {
-            mDelay = delay;
-        } 
-        #endregion
-
-        /// <summary>
-        /// This override process the Directive command which can be used to instigate test behaviour.
-        /// </summary>
-        protected override void CommandsRegister()
-        {
-            base.CommandsRegister();
-
-            //PersistenceCommandRegister<MemoryPersistenceDirectiveRequest, MemoryPersistenceDirectiveResponse>("Directive", ProcessDirective);
-        }
-
-        #region Behaviour        
-        /// <summary>
-        /// Processes the directive.
-        /// </summary>
-        /// <param name="holder">The holder.</param>
-        /// <returns></returns>
-        protected virtual async Task ProcessDirective(PersistenceRequestHolder<MemoryPersistenceDirectiveRequest, MemoryPersistenceDirectiveResponse> holder)
-        {
-            holder.Rs.ResponseCode = (int)PersistenceResponse.NotImplemented501;
-            holder.Rs.ResponseMessage = "Not implemented.";
-        }
-        #endregion
-
-        #region EntityPopulate(K key, E entity)
-        /// <summary>
-        /// This method allows items to be added to the collection. This method is broken out to allow
-        /// entities to be loaded in the pre-populate stage.
-        /// </summary>
-        /// <param name="key">The entity key.</param>
-        /// <param name="entity">The entity.</param>
-        /// <returns>The response status</returns>
-        protected virtual int EntityPopulate(K key, E entity)
-        {
-            return mContainer.Add(key, entity, mTransform.ReferenceMaker(entity)); ;
-        } 
-        #endregion
-
-        #region InternalCreate(K key, PersistenceRequestHolder<K, E> holder)
-        /// <summary>
-        /// This is the create override for the command.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="holder">The entity holder.</param>
-        /// <returns></returns>
-        protected override async Task<IResponseHolder<E>> InternalCreate(K key, PersistenceRequestHolder<K, E> holder)
-        {
-            //if (await ProvideTaskDelay(holder.Prq.Cancel))
-            //    return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
-
-            E entity = holder.Rq.Entity;
-            int response = EntityPopulate(key, entity);
-
-            if (response == 201)
-            {
-                JsonHolder<K> jsonHolder = mTransform.JsonMaker(entity);
-                return new PersistenceResponseHolder<E>(PersistenceResponse.Created201, jsonHolder.Json, mTransform.PersistenceEntitySerializer.Deserializer(jsonHolder.Json));
-            }
-            else
-                return new PersistenceResponseHolder<E>(PersistenceResponse.Conflict409);
-
-        }
-        #endregion
-        #region InternalRead(K key, PersistenceRequestHolder<K, E> holder)
-        /// <summary>
-        /// This is the read implementation.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="holder">The request holder.</param>
-        /// <returns></returns>
-        protected override async Task<IResponseHolder<E>> InternalRead(K key, PersistenceRequestHolder<K, E> holder)
-        {
-            //if (await ProvideTaskDelay(holder.Prq.Cancel))
-            //    return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
-
-            E entity;
-            bool success = mContainer.TryGetValue(key, out entity);
-
-            if (success)
-            {
-                JsonHolder<K> jsonHolder = mTransform.JsonMaker(entity);
-                return new PersistenceResponseHolder<E>(PersistenceResponse.Ok200, jsonHolder.Json, mTransform.PersistenceEntitySerializer.Deserializer(jsonHolder.Json));
-            }
-            else
-                return new PersistenceResponseHolder<E>(PersistenceResponse.NotFound404);
-
-        } 
-        #endregion
-
-        protected override async Task<IResponseHolder<E>> InternalReadByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, E> holder)
-        {
-            //if (await ProvideTaskDelay(holder.Prq.Cancel))
-            //    return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
-
-            E entity;
-            bool success = mContainer.TryGetValue(reference, out entity);
-
-            if (success)
-            {
-                JsonHolder<K> jsonHolder = mTransform.JsonMaker(entity);
-                return new PersistenceResponseHolder<E>(PersistenceResponse.Ok200, jsonHolder.Json, mTransform.PersistenceEntitySerializer.Deserializer(jsonHolder.Json));
-            }
-            else
-                return new PersistenceResponseHolder<E>(PersistenceResponse.NotFound404);
-
-        }
-
-        protected override async Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRequestHolder<K, E> holder)
-        {
-            //if (await ProvideTaskDelay(holder.Prq.Cancel))
-            //    return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
-
-            E oldEntity;
-            bool successExisting = mContainer.TryGetValue(key, out oldEntity);
-            if (!successExisting)
-                return new PersistenceResponseHolder<E>(PersistenceResponse.NotFound404);
-
-            E newEntity = holder.Rq.Entity;
-
-
-            var ver = mTransform.Version;
-            if (ver.SupportsOptimisticLocking)
-            {
-                if (ver.EntityVersionAsString(oldEntity)!= ver.EntityVersionAsString(newEntity))
-                    return new PersistenceResponseHolder<E>(PersistenceResponse.PreconditionFailed412);
-            }
-
-            if (ver.SupportsVersioning)
-                ver.EntityVersionUpdate(newEntity);
-
-
-            mContainer.Update(key, newEntity, mTransform.ReferenceMaker(newEntity));
-
-            var jsonHolder = mTransform.JsonMaker(newEntity);
-            return new PersistenceResponseHolder<E>(PersistenceResponse.Ok200)
-            {
-                  Content = jsonHolder.Json
-                , IsSuccess = true
-                , Entity = newEntity
-            };
-        }
-
-        protected override async Task<IResponseHolder> InternalDelete(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
-        {
-            //if (await ProvideTaskDelay(holder.Prq.Cancel))
-            //    return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
-
-            if (!mContainer.Remove(key))
-                return new PersistenceResponseHolder(PersistenceResponse.NotFound404);
-
-            return new PersistenceResponseHolder(PersistenceResponse.Ok200);
-        }
-
-        protected override async Task<IResponseHolder> InternalDeleteByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
-        {
-            //if (await ProvideTaskDelay(holder.Prq.Cancel))
-            //    return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
-
-            if (!mContainer.Remove(reference))
-                return new PersistenceResponseHolder(PersistenceResponse.NotFound404);
-
-            return new PersistenceResponseHolder(PersistenceResponse.Ok200);
-
-        }
-
-        protected override async Task<IResponseHolder> InternalVersion(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
-        {
-            //if (await ProvideTaskDelay(holder.Prq.Cancel))
-            //    return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
-
-            E entity;
-            bool success = mContainer.TryGetValue(key, out entity);
-
-            if (success)
-            {
-                JsonHolder<K> jsonHolder = mTransform.JsonMaker(entity);
-                return new PersistenceResponseHolder(PersistenceResponse.Ok200, jsonHolder.Json);
-            }
-            else
-                return new PersistenceResponseHolder(PersistenceResponse.NotFound404);
-        }
-
-        protected override async Task<IResponseHolder> InternalVersionByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
-        {
-            //if (await ProvideTaskDelay(holder.Prq.Cancel))
-            //    return new PersistenceResponseHolder<E>(PersistenceResponse.RequestTimeout408);
-
-            E entity;
-            bool success = mContainer.TryGetValue(reference, out entity);
-
-            if (success)
-            {
-                JsonHolder<K> jsonHolder = mTransform.JsonMaker(entity);
-                return new PersistenceResponseHolder(PersistenceResponse.Ok200, jsonHolder.Json);
-            }
-            else
-                return new PersistenceResponseHolder(PersistenceResponse.NotFound404);
-                
-        }
-
-        protected async override Task<IResponseHolder<SearchResponse>> InternalSearch(
-            SearchRequest key, PersistenceRequestHolder<SearchRequest, SearchResponse> holder)
-        {
-            var query = mContainer.Values.AsQueryable<E>();
-
-            Expression expression = mTransform.SearchTranslator.Build(key);
-
-            //Execute Expression on Query
-            bool success = true; //for the time being since we are not executing any queries
-            holder.Rs.Entity = new SearchResponse();
-            List<JObject> jObjects = new List<JObject>();
-            foreach (var source in query.ToList())
-            {
-                jObjects.Add(JObject.FromObject(source));
-            }
-            if (success)
-            {
-                var resultEntities = query.ToList();
-                holder.Rs.Entity.Data = jObjects;
-                return new PersistenceResponseHolder<SearchResponse>(PersistenceResponse.Ok200, null, holder.Rs.Entity);
-            }
-            
-            
-
-            //holder.Rs.
-            //key.Select
-            ////Create the expression parameters
-            //ParameterExpression num1 = Expression.Parameter(typeof(E), "num1");
-            //ParameterExpression num2 = Expression.Parameter(typeof(E), "num2");
-
-            ////Create the expression parameters
-            //ParameterExpression[] parameters = new ParameterExpression[] { num1, num2 };
-
-            ////Create the expression body
-            //BinaryExpression body = Expression.Add(num1, num2);
-            ////Expression predicateBody = Expression.OrElse(e1, e2);
-            ////Create the expression 
-            //Expression<Func<int, int, int>> expression = Expression.Lambda<Func<int, int, int>>(body, parameters);
-
-            //// Compile the expression
-            //Func<int, int, int> compiledExpression = expression.Compile();
-
-            //// Execute the expression. 
-            //int result = compiledExpression(3, 4);
-
-            return await base.InternalSearch(key, holder);
-        }
-
 
         #region Class -> CommandPolicy
         /// <summary>
@@ -391,4 +94,5 @@ namespace Xigadee
         } 
         #endregion
     }
+
 }

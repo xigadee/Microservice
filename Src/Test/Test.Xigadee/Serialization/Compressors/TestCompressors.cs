@@ -21,19 +21,21 @@ namespace Test.Xigadee.Serialization
             message.TimeStamp = DateTime.UtcNow;
             message.Id = 42;
 
-            var authorData = JsonConvert.SerializeObject(message, Formatting.None);
+            var jsonIn = JsonConvert.SerializeObject(message, Formatting.None);
 
-            byte[] data = Encoding.UTF8.GetBytes(authorData);
+            byte[] data = Encoding.UTF8.GetBytes(jsonIn);
 
             SerializationHolder holder = data;
 
-            var comp = new PayloadCompressorGzip();
+            var comp = new PayloadCompressorDeflate();
 
             bool successCompress = comp.TryCompression(holder);
 
             bool successDecompress = comp.TryDecompression(holder);
 
+            string jsonOut = Encoding.UTF8.GetString(holder.Blob);
 
+            Assert.IsTrue(jsonIn == jsonOut);
         }
     }
 }

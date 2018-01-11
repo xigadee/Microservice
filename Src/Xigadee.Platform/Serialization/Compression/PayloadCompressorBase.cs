@@ -92,12 +92,12 @@ namespace Xigadee
         #endregion
 
         /// <summary>
-        /// Switches the blobs from compressed to uncompressed or visa versa.
+        /// Encodes the blobs from uncompressed to compressed.
         /// </summary>
         /// <param name="holder">The holder.</param>
         /// <param name="getStream">The get compressor stream function.</param>
         /// <param name="contentEncoding">The content encoding parameter.</param>
-        /// <returns></returns>
+        /// <returns>Returns true if encoded without error.</returns>
         /// <exception cref="ArgumentNullException">holder</exception>
         protected virtual bool Compress(SerializationHolder holder, Func<Stream,Stream> getStream, string contentEncoding)
         {
@@ -106,10 +106,8 @@ namespace Xigadee
                 using (MemoryStream ms = new MemoryStream())
                 using (Stream compress = getStream(ms))
                 {
-                    compress.Write(holder.Blob, 0, holder.Blob.Length);
-                    compress.Flush();
-
-                    ms.Flush();
+                    compress.Write(holder.Blob,0, holder.Blob.Length);
+                    compress.Close();
 
                     holder.SetBlob(ms.ToArray(), holder.ContentType, contentEncoding);
                 }
@@ -121,32 +119,23 @@ namespace Xigadee
 
             return true;
         }
-
+        /// <summary>
+        /// Encodes the blobs from compressed to uncompressed.
+        /// </summary>
+        /// <param name="holder">The holder.</param>
+        /// <param name="getStream">The get decompressor stream function.</param>
+        /// <returns>Returns true if encoded without error.</returns>
         protected virtual bool Decompress(SerializationHolder holder, Func<Stream, Stream> getStream)
         {
-            int size = 4096;
-
             try
             {
-                byte[] buffer = new byte[size];
-
-                using (MemoryStream ms = new MemoryStream(holder.Blob))
-                using (Stream decompress = getStream(ms))
-                using (MemoryStream memory = new MemoryStream())
+                using (MemoryStream msIn = new MemoryStream(holder.Blob))
+                using (Stream decompress = getStream(msIn))
+                using (MemoryStream msOut = new MemoryStream())
                 {
-                    ms.Position = 0;
-                    int count = 0;
-                    do
-                    {
-                        count = decompress.Read(buffer, 0, size);
-                        if (count > 0)
-                        {
-                            memory.Write(buffer, 0, count);
-                        }
-                    }
-                    while (count > 0);
-
-                    holder.SetBlob(memory.ToArray());
+                    decompress.CopyTo(msOut);
+                    decompress.Close();
+                    holder.SetBlob(msOut.ToArray(), holder.ContentType);
                 }
             }
             catch (Exception ex)

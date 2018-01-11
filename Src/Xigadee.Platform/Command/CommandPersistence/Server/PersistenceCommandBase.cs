@@ -158,7 +158,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="entityName">The entity name.</param>
         /// <param name="versionPolicy">The version policy for the entity.</param>
-        /// <param name="keyMaker">The keymaker function that creates a key for the entity.</param>
+        /// <param name="keyMaker">The key maker function that creates a key for the entity.</param>
         /// <param name="persistenceEntitySerializer">Used to serialize / deserialize for persistence</param>
         /// <param name="cachingEntitySerializer">Used to serialize / deserialize for caching</param>
         /// <param name="keySerializer">The serializer that converts the key in to a string.</param>

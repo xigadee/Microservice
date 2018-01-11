@@ -19,18 +19,10 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    //[DebuggerDisplay("{mContainer.Debug}")]
-    public class PersistenceManagerHandlerFile<K, E>: PersistenceManagerHandlerJsonBase<K, E, PersistenceStatistics, PersistenceManagerHandlerFile<K, E>.CommandPolicy>
+    [DebuggerDisplay("{mContainer.Debug}")]
+    public class PersistenceManagerHandlerFile<K, E>: PersistenceManagerHandlerContainerBase<K, E, PersistenceStatistics, PersistenceManagerHandlerFile<K, E>.CommandPolicy, EntityContainerFile<K, E>>
         where K : IEquatable<K>
     {
-        #region Declarations
-        protected DirectoryInfo mDirectory;
-        /// <summary>
-        /// Gets the pre-populate collection.
-        /// </summary>
-        protected IEnumerable<KeyValuePair<K, E>> mPrePopulate;
-
-        #endregion
         #region Constructor
         /// <summary>
         /// This is the default constructor for the memory persistence manager. 
@@ -65,11 +57,17 @@ namespace Xigadee
             , CommandPolicy policy = null
             , IEnumerable<KeyValuePair<K, E>> prePopulate = null
             )
-            : base(keyMaker, keyDeserializer, entityName, versionPolicy, defaultTimeout, persistenceRetryPolicy, resourceProfile, cacheManager, referenceMaker, referenceHashMaker, keySerializer, policy)
+            : base(keyMaker, keyDeserializer, entityName, versionPolicy, defaultTimeout, persistenceRetryPolicy, resourceProfile, cacheManager, referenceMaker, referenceHashMaker, keySerializer, policy, prePopulate)
         {
-            mPrePopulate = prePopulate;
         }
-        #endregion
+        #endregion    
+        
+        /// <summary>
+        /// This method is called to configure the container.
+        /// </summary>
+        protected override void ContainerConfigure()
+        {
+        }
 
         #region Class -> CommandPolicy
         /// <summary>

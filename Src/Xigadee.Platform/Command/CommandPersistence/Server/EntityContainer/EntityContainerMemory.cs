@@ -13,7 +13,7 @@ namespace Xigadee
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
     [DebuggerDisplay("{Debug}")]
-    public class PersistenceEntityContainer<K,E>
+    public class EntityContainerMemory<K,E>: EntityContainerBase<K,E>
         where K: IEquatable<K>
     {
         #region Declarations
@@ -34,14 +34,12 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        /// <param name="referenceMaker">The reference maker.</param>
-        public PersistenceEntityContainer()
+        public EntityContainerMemory()
         {
             mContainer = new Dictionary<K, EntityContainer>();
 
             mContainerReference = new Dictionary<Tuple<string, string>, EntityContainer>(new ReferenceComparer());
 
-            mReferenceModifyLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
         } 
         #endregion
 
@@ -49,7 +47,7 @@ namespace Xigadee
         /// <summary>
         /// This is the number of entities in the collection.
         /// </summary>
-        public int Count
+        public override int Count
         {
             get
             {
@@ -59,51 +57,13 @@ namespace Xigadee
         #endregion
         #region CountReference
         /// <summary>
-        /// This is the number of entities in the collection.
+        /// This is the number of entity references in the collection.
         /// </summary>
-        public int CountReference
+        public override int CountReference
         {
             get
             {
                 return Atomic(() => mContainerReference.Count);
-            }
-        }
-        #endregion
-        #region Atomic Wrappers...
-        /// <summary>
-        /// This wraps the requests the ensure that only one is processed at the same time.
-        /// </summary>
-        /// <param name="action">The action to process.</param>
-        private void Atomic(Action action)
-        {
-            try
-            {
-                mReferenceModifyLock.EnterReadLock();
-
-                action();
-            }
-            finally
-            {
-                mReferenceModifyLock.ExitReadLock();
-            }
-        }
-
-        /// <summary>
-        /// This wraps the requests the ensure that only one is processed at the same time.
-        /// </summary>
-        /// <param name="action">The action to process.</param>
-        /// <returns>Returns the value.</returns>
-        private T Atomic<T>(Func<T> action)
-        {
-            try
-            {
-                mReferenceModifyLock.EnterReadLock();
-
-                return action();
-            }
-            finally
-            {
-                mReferenceModifyLock.ExitReadLock();
             }
         }
         #endregion
@@ -157,20 +117,20 @@ namespace Xigadee
         /// <returns>
         ///   <c>true</c> if the collection contains the key; otherwise, <c>false</c>.
         /// </returns>
-        public bool ContainsKey(K key)
+        public override bool ContainsKey(K key)
         {
             return Atomic(() => mContainer.ContainsKey(key));
         }
         #endregion
         #region ContainsReference(Tuple<string, string> reference)
         /// <summary>
-        /// Determines whether the collection contains the reference.
+        /// Determines whether the collection contains the entity reference.
         /// </summary>
         /// <param name="reference">The reference.</param>
         /// <returns>
         ///   <c>true</c> if the collection contains reference; otherwise, <c>false</c>.
         /// </returns>
-        public bool ContainsReference(Tuple<string, string> reference)
+        public override bool ContainsReference(Tuple<string, string> reference)
         {
             return Atomic(() => mContainerReference.ContainsKey(reference));
         } 
@@ -187,7 +147,7 @@ namespace Xigadee
         /// 201 - Created
         /// 409 - Conflict
         /// </returns>
-        public int Add(K key, E value, IEnumerable<Tuple<string, string>> references = null)
+        public override int Add(K key, E value, IEnumerable<Tuple<string, string>> references = null)
         {
             return Atomic(() =>
             {
@@ -253,7 +213,7 @@ namespace Xigadee
         /// 404 - Not sound.
         /// 409 - Conflict
         /// </returns>
-        public int Update(K key, E newEntity, IEnumerable<Tuple<string, string>> newReferences = null)
+        public override int Update(K key, E newEntity, IEnumerable<Tuple<string, string>> newReferences = null)
         {
             return Atomic(() =>
             {
@@ -286,7 +246,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="key">The key.</param>
         /// <returns>Returns true if the entity is removed successfully.</returns>
-        public bool Remove(K key)
+        public override bool Remove(K key)
         {
             return Atomic(() =>
             {
@@ -304,7 +264,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="reference">The reference identifier.</param>
         /// <returns>Returns true if the entity is removed successfully.</returns>
-        public bool Remove(Tuple<string, string> reference)
+        public override bool Remove(Tuple<string, string> reference)
         {
             return Atomic(() =>
             {
@@ -333,7 +293,7 @@ namespace Xigadee
         /// <param name="key">The key.</param>
         /// <param name="value">The output value.</param>
         /// <returns>True if the key exists.</returns>
-        public bool TryGetValue(K key, out E value)
+        public override bool TryGetValue(K key, out E value)
         {
             value = default(E);
 
@@ -357,7 +317,7 @@ namespace Xigadee
         /// <param name="reference">The reference id.</param>
         /// <param name="value">The output value.</param>
         /// <returns>True if the reference exists.</returns>
-        public bool TryGetValue(Tuple<string, string> reference, out E value)
+        public override bool TryGetValue(Tuple<string, string> reference, out E value)
         {
             value = default(E);
 
@@ -377,9 +337,9 @@ namespace Xigadee
 
         #region Clear()
         /// <summary>
-        /// Clears this collection.
+        /// Clears this collection of all entities and references.
         /// </summary>
-        public void Clear()
+        public override void Clear()
         {
             Atomic(() =>
             {
@@ -392,7 +352,7 @@ namespace Xigadee
         /// <summary>
         /// Gets the keys collection.
         /// </summary>
-        public ICollection<K> Keys
+        public override ICollection<K> Keys
         {
             get
             {
@@ -404,7 +364,7 @@ namespace Xigadee
         /// <summary>
         /// Gets the values collection.
         /// </summary>
-        public ICollection<E> Values
+        public override ICollection<E> Values
         {
             get
             {
@@ -416,7 +376,7 @@ namespace Xigadee
         /// <summary>
         /// Gets the references collection.
         /// </summary>
-        public ICollection<Tuple<string, string>> References
+        public override ICollection<Tuple<string, string>> References
         {
             get
             {
@@ -424,10 +384,5 @@ namespace Xigadee
             }
         }
         #endregion
-
-        /// <summary>
-        /// Gets the debug string.
-        /// </summary>
-        public string Debug => $"{typeof(K).Name}/{typeof(E).Name} Entities={Count} References={CountReference}";
     }
 }

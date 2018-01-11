@@ -15,7 +15,7 @@ namespace Xigadee
     /// <typeparam name="S">The persistence statistics type.</typeparam>
     /// <typeparam name="P">THe persistence command policy type.</typeparam>
     /// <seealso cref="Xigadee.PersistenceCommandBase{K, E, S, P}" />
-    public abstract class PersistenceManagerHandlerJsonBase<K, E, S, P> : PersistenceCommandBase<K, E, S, P>
+    public abstract class PersistenceManagerHandlerJsonBase<K,E,S,P> : PersistenceCommandBase<K,E,S,P>
         where K : IEquatable<K>
         where S : PersistenceStatistics, new()
         where P : PersistenceCommandPolicy, new()
