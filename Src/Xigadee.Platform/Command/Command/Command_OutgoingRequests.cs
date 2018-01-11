@@ -364,8 +364,8 @@ namespace Xigadee
                             //payload.Message.
                             var response = new ResponseWrapper<RS>(payloadRs);
 
-                            if (payloadRs.MessageObject != null)
-                                response.Response = (RS)payloadRs.MessageObject;
+                            if (payloadRs.Message.Blob.HasObject)
+                                response.Response = (RS)payloadRs.Message.Blob.Object;
                             else if (payloadRs.Message.Blob != null)
                                 response.Response = PayloadSerializer.PayloadDeserialize<RS>(payloadRs);
 

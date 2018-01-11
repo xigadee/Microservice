@@ -48,13 +48,16 @@ namespace Xigadee
             )
             where C : IPipelineChannelIncoming<IPipeline>
             where K : IEquatable<K>
-        {
-          
+        {        
             command = new PersistenceClient<K, E>(cacheManager, defaultRequestTimespan);
 
-            if (responseChannel == null || !cpipe.ToMicroservice().Communication.HasChannel(responseChannel, ChannelDirection.Incoming))
+            bool channelInternalOnly = responseChannel == null;
+            if (channelInternalOnly)
+                responseChannel = $"PersistenceClient{command.ComponentId.ToString("N").ToUpperInvariant()}";
+
+            if (!cpipe.ToMicroservice().Communication.HasChannel(responseChannel, ChannelDirection.Incoming))
             {
-                var outPipe = cpipe.ToPipeline().AddChannelIncoming($"PersistenceClient{command.ComponentId.ToString("N").ToUpperInvariant()}");
+                var outPipe = cpipe.ToPipeline().AddChannelIncoming(responseChannel, isAutocreated:true, internalOnly: channelInternalOnly, description:$"Persistence Client Response: {typeof(E).Name}");
                 command.ResponseChannelId = outPipe.Channel.Id;
             }
             else

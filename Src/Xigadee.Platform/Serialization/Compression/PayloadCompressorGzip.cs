@@ -22,7 +22,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="inner">The inner byte stream.</param>
         /// <returns>Returns the compression stream</returns>
-        public override Stream GetCompressionStream(Stream inner)
+        protected override Stream GetCompressionStream(Stream inner)
         {
             return new GZipStream(inner, CompressionMode.Compress, false);
         }
@@ -31,7 +31,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="inner">The inner byte stream.</param>
         /// <returns>Returns the decompression stream.</returns>
-        public override Stream GetDecompressionStream(Stream inner)
+        protected override Stream GetDecompressionStream(Stream inner)
         {
             return new GZipStream(inner, CompressionMode.Decompress, false);
         }

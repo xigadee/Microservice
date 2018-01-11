@@ -36,6 +36,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -116,12 +117,12 @@
     <Compile Include="Security\TransportEncryptionTests.cs" />
     <Compile Include="Security\TransportVerificationTests.cs" />
     <Compile Include="Security\JWTUnitTests.cs" />
+    <Compile Include="Serialization\Compressors\TestCompressors.cs" />
     <Compile Include="Serialization\SerializationContainerTests.cs" />
     <Compile Include="Serialization\SerializationTests.cs" />
     <Compile Include="Security\SignatureHelper.cs" />
     <Compile Include="Pipeline\Pipeline1.cs" />
     <Compile Include="PopulatorExtensions.cs" />
-    <Compile Include="Serialization\Serializers\BsonRawTests.cs" />
     <Compile Include="Serialization\Serializers\JsonContractTests.cs" />
     <Compile Include="Serialization\Serializers\JsonRawTests.cs" />
     <Compile Include="Serialization\SerializationHolderTests.cs" />

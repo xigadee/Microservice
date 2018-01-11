@@ -166,16 +166,6 @@ namespace Xigadee
         public ServiceMessage Message { get; private set; }
         #endregion
 
-        #region MessageObject
-        /// <summary>
-        /// This is the message object to be processed. It can be used to speed up
-        /// internal transmission without serializing and deserializing objects between
-        /// internal commands.
-        /// </summary>
-        [Obsolete("This property will be removed in the next version of Xigadee")]
-        public object MessageObject { get; set; }
-        #endregion
-
         #region Options
         /// <summary>
         /// This provides custom routing instructions to the dispatcher.

@@ -15,16 +15,25 @@ namespace Xigadee
         /// <param name="udp">The UDP endpoint configuration.</param>
         /// <param name="contentType">The MIME Content Type which is used to identify the serializer.</param>
         /// <param name="contentEncoding">The optional content encoding for the binary blob.</param>
+        /// <param name="maxUdpMessagePayloadSize">This is the max UDP message payload size. The default is 508 bytes. If you set this to null, the sender will not check the size before transmitting.</param>
         public UdpChannelSender(UdpConfig udp
             , string contentType
             , string contentEncoding = null
+            , int? maxUdpMessagePayloadSize = UdpHelper.PacketMaxSize
             )
         {
             Config = udp;
             ContentType = contentType;
             ContentEncoding = contentEncoding;
+            UdpMessageMaximumPayloadSize = maxUdpMessagePayloadSize;
         }
-
+        /// <summary>
+        /// Gets the maximum size of the UDP message payload.
+        /// </summary>
+        /// <value>
+        /// The maximum size of the UDP message payload.
+        /// </value>
+        public int? UdpMessageMaximumPayloadSize { get; }
         /// <summary>
         /// Gets the UDP configuration.
         /// </summary>
@@ -82,6 +91,11 @@ namespace Xigadee
                 if (!PayloadSerializer.TryPayloadSerialize(holder))
                 {
                     throw new ArgumentException("Cannot serialize.");
+                }
+
+                if (holder.Blob.Length > UdpMessageMaximumPayloadSize)
+                {
+                    //throw new 
                 }
 
                 return holder;

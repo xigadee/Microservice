@@ -13,12 +13,9 @@ namespace PiO
 
         static void Main(string[] args)
         {
-            var name = Dns.GetHostName();
-            var host = Dns.GetHostEntry(name);
-            var listv4 = host.AddressList.Where((ip) => ip.AddressFamily == AddressFamily.InterNetwork).ToList();
-            var listv6 = host.AddressList.Where((ip) => ip.AddressFamily == AddressFamily.InterNetworkV6).ToList();
-
             DebugMemoryDataCollector coll;
+            PersistenceManagerHandlerMemory<int, LightwaveMessage> pm = null;
+            PersistenceClient<int, LightwaveMessage> pc = null;
             mservice = new MicroservicePipeline("PiO", description: "PiO Server");
 
             mservice
@@ -26,15 +23,16 @@ namespace PiO
                 .ConfigurationSetFromConsoleArgs(args)
                 .AddDebugMemoryDataCollector(out coll)
                 .AddChannelIncoming("lightwave", "LightwaveRF UDP traffic", ListenerPartitionConfig.Init(1))
-                    .AttachUdpListener(UdpConfig.UnicastAllIps(9761, "xigadee.org")
-                        , requestAddress: ("message","in")
-                        , deserialize: (holder) => holder.SetObject(new LightwaveMessage(holder.Blob, (IPEndPoint)holder.Metadata)))
+                    .AttachUdpListener(UdpConfig.UnicastAllIps(9761)
+                        , requestAddress: ("message", "in")
+                        , deserialize: (holder) => holder.SetObject(new LightwaveMessage(holder.Blob, (IPEndPoint)holder.Metadata),true))
                     .AttachCommand(async (ctx) => 
                     {
                         //Do nothing
-                        await Task.Delay(10);
-                    }
-                    , ("message", "in"))
+                        var rs = await pc.Create(ctx.Request.Message.Blob.Object as LightwaveMessage);
+                    }, ("message", "in"))
+                    .AttachPersistenceManagerHandlerMemory((LightwaveMessage m) => m.Trans, (s) => int.Parse(s), out pm)
+                    .AttachPersistenceClient(out pc)
                     .Revert()
                 .AddChannelOutgoing("status", "Outgoing UDP status", SenderPartitionConfig.Init(1))
                     .AttachUdpSender(//UdpConfig.UnicastAllIps(9762, "hitachiconsulting.com") 

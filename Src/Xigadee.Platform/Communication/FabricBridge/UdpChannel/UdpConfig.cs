@@ -25,6 +25,17 @@ namespace Xigadee
             };
         }
 
+        public static UdpConfig UnicastAllIps(int port)
+        {
+            return new UdpConfig
+            {
+                  Port = port
+                , Addresses = IpAddresses().ToList()
+                , Mode = UdpMode.Unicast
+                , RemoteEndPoint = null
+            };
+        }
+
         public static UdpConfig UnicastAllIps(int port, string remoteHost, int? remotePort = null)
         {
             var host = Dns.GetHostEntry(remoteHost);
@@ -66,7 +77,9 @@ namespace Xigadee
         /// Gets the multicast time to live.
         /// </summary>
         public int? MulticastTtl { get; private set;}
-
+        /// <summary>
+        /// Gets or sets a value indicating whether to the UDP port exclusively. The default is false.
+        /// </summary>
         public bool ExclusiveAddressUse { get; set; }= false;
         /// <summary>
         /// Gets the port that the Udp transport is using.

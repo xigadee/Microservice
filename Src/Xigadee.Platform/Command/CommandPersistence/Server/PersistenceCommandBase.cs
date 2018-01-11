@@ -1,26 +1,8 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-#region using
+﻿#region using
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
 using System.Threading.Tasks;
 #endregion
 namespace Xigadee
@@ -305,10 +287,12 @@ namespace Xigadee
 
                     try
                     {
-                        RepositoryHolder<KT, ET> rqTemp = incoming.MessageObject as RepositoryHolder<KT, ET>;
+                        RepositoryHolder<KT, ET> rqTemp = null;
 
-                        //Deserialize the incoming payloadRq request
-                        if (rqTemp == null)
+                        if (incoming.Message.Blob.HasObject)
+                            rqTemp = incoming.Message.Blob.Object as RepositoryHolder<KT, ET>;
+                        else if (rqTemp == null)
+                        //Try and deserialize the incoming payloadRq request
                             rqTemp = PayloadSerializer.PayloadDeserialize<RepositoryHolder<KT, ET>>(incoming);
 
                         profileHolder.Rq = new PersistenceRepositoryHolder<KT, ET>(rqTemp);
@@ -394,7 +378,7 @@ namespace Xigadee
                             {
                                 logEventSource = true;
                                 Collector?.LogMessage(LoggingLevel.Info
-                                    , string.Format("Recovered timeout sucessfully for {0}-{1} for request:{2} - response:{3}", EntityType, actionType, profileHolder.Rq, profileHolder.Rs)
+                                    , string.Format("Recovered timeout successfully for {0}-{1} for request:{2} - response:{3}", EntityType, actionType, profileHolder.Rq, profileHolder.Rs)
                                     , "DBTimeout");
                             }
                             else
@@ -414,8 +398,7 @@ namespace Xigadee
                         //Serialize the payloadRs
                         var reposHolder = profileHolder.Rs.ToRepositoryHolder();
 
-                        rsPayload.MessageObject = reposHolder;
-                        rsPayload.Message.Blob = PayloadSerializer.PayloadSerialize(reposHolder);
+                        rsPayload.Message.Blob.SetObject(reposHolder);
 
                         rsPayload.Message.Status = "200";
 

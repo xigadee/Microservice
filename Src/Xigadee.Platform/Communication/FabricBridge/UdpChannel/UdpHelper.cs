@@ -96,6 +96,11 @@ namespace Xigadee
     /// </summary>
     public class UdpHelper:ServiceBase<UdpHelperStatistics>
     {
+        /// <summary>
+        /// The maximum packet size for a UDP packet. 
+        /// </summary>
+        public const int PacketMaxSize = 508;
+
         #region Declarations
         Dictionary<IPEndPoint, UdpHelperState> mConnectionsListener, mConnectionsSender;
         ConcurrentQueue<Message> mIncomingPending;

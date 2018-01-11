@@ -40,7 +40,8 @@ namespace Xigadee
         /// <param name="internalOnly"></param>
         /// <param name="assign"></param>
         /// <param name="autosetPartition01"></param>
-        /// <returns></returns>
+        /// <param name="isAutocreated">A boolean property that specifies whether the channel was created automatically by the communications container.</param>
+        /// <returns>The original pipeline.</returns>
         public static IPipelineChannelIncoming<P> AddChannelIncoming<P>(this P pipeline
             , Func<IEnvironmentConfiguration, string> creatorId
             , string description = null
@@ -50,6 +51,7 @@ namespace Xigadee
             , bool internalOnly = false
             , Action<IPipelineChannelIncoming<P>, Channel> assign = null
             , bool autosetPartition01 = true
+            , bool isAutocreated = false
             )
             where P : IPipeline
         {
@@ -60,7 +62,8 @@ namespace Xigadee
                 , resourceProfiles
                 , internalOnly
                 , assign
-                , autosetPartition01);
+                , autosetPartition01
+                , isAutocreated);
         }
         /// <summary>
         /// Use this pipeline command to add a channel to a Microservice.
@@ -74,6 +77,7 @@ namespace Xigadee
         /// <param name="internalOnly">Set this flag to true if you don't wish to attach any external listeners to this channel, i.e. internal only.</param>
         /// <param name="assign"></param>
         /// <param name="autosetPartition01">This method automatically sets the default priority 0 and 1 partitions for the channel.</param>
+        /// <param name="isAutocreated">A boolean property that specifies whether the channel was created automatically by the communications container.</param>
         /// <returns>The original pipeline.</returns>
         public static IPipelineChannelIncoming<P> AddChannelIncoming<P>(this P pipeline
             , string channelId
@@ -84,11 +88,12 @@ namespace Xigadee
             , bool internalOnly = false
             , Action<IPipelineChannelIncoming<P>, Channel> assign = null
             , bool autosetPartition01 = true
+            , bool isAutocreated = false
             )
             where P: IPipeline
         {     
             var channel = pipeline.ToMicroservice().Communication.RegisterChannel(
-                new Channel(channelId, ChannelDirection.Incoming, description, boundaryLoggingEnabled, internalOnly));
+                new Channel(channelId, ChannelDirection.Incoming, description, boundaryLoggingEnabled, internalOnly,isAutocreated: isAutocreated));
 
             if (partitions == null && autosetPartition01)
                 partitions = ListenerPartitionConfig.Init(0,1);

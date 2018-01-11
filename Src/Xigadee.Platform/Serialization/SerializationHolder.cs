@@ -81,11 +81,16 @@ namespace Xigadee
         /// Sets the object and the object type for the holder.
         /// </summary>
         /// <param name="incoming">The incoming object.</param>
+        /// <param name="clearBlob">Optional parameter that clears the incoming binary payload. The default behaviour is false.</param>
         /// <returns>Returns this container object to allow for Fluent behaviour.</returns>
-        public SerializationHolder SetObject(object incoming)
+        public SerializationHolder SetObject(object incoming, bool clearBlob = false)
         {
             Object = incoming;
             ObjectType = incoming?.GetType();
+
+            if (clearBlob)
+                Blob = null;
+
             return this;
         }
         #endregion

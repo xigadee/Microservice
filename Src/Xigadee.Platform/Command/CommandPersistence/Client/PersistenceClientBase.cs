@@ -275,8 +275,8 @@ namespace Xigadee
                 switch (rType)
                 {
                     case TaskStatus.RanToCompletion:
-                        if (payload.MessageObject != null)
-                            return payload.MessageObject as RepositoryHolder<KT, ET>;
+                        if (payload.Message.Blob.HasObject)
+                            return payload.Message.Blob.Object as RepositoryHolder<KT, ET>;
 
                         if (payload.Message.Blob == null)
                         {
