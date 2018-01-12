@@ -20,7 +20,7 @@ namespace Xigadee
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
     [DebuggerDisplay("{mContainer.Debug}")]
-    public class PersistenceManagerHandlerFile<K, E>: PersistenceManagerHandlerContainerBase<K, E, PersistenceStatistics, PersistenceManagerHandlerFile<K, E>.CommandPolicy, EntityContainerFile<K, E>>
+    public class PersistenceManagerHandlerFile<K, E>: PersistenceManagerHandlerContainerBase<K, E, PersistenceStatistics, PersistenceManagerHandlerFile<K, E>.CommandPolicy, EntityContainerFileSystem<K, E>>
         where K : IEquatable<K>
     {
         #region Constructor
@@ -62,12 +62,6 @@ namespace Xigadee
         }
         #endregion    
         
-        /// <summary>
-        /// This method is called to configure the container.
-        /// </summary>
-        protected override void ContainerConfigure()
-        {
-        }
 
         #region Class -> CommandPolicy
         /// <summary>

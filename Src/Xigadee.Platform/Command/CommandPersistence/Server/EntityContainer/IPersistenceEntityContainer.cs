@@ -12,6 +12,11 @@ namespace Xigadee
         where K : IEquatable<K>
     {
         /// <summary>
+        /// Configures the specified container.
+        /// </summary>
+        /// <param name="transform">The persistence transform entity.</param>
+        void Configure(EntityTransformHolder<K, E> transform);
+        /// <summary>
         /// This is the number of entities in the collection.
         /// </summary>
         int Count { get; }

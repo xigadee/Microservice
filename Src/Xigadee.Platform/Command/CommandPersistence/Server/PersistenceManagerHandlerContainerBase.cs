@@ -1,15 +1,10 @@
 ﻿#region using
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Linq.Expressions;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Diagnostics;
-
 #endregion
 namespace Xigadee
 {
@@ -35,11 +30,6 @@ namespace Xigadee
         /// This container holds the memory back entity collection.
         /// </summary>
         protected C mContainer;
-        /// <summary>
-        /// This is the time span for the delay.
-        /// </summary>
-        private TimeSpan? mDelay = null;
-
         /// <summary>
         /// Gets the pre-populate collection.
         /// </summary>
@@ -131,7 +121,10 @@ namespace Xigadee
         /// <summary>
         /// This method is called to configure the container.
         /// </summary>
-        protected abstract void ContainerConfigure();
+        protected virtual void ContainerConfigure()
+        {
+            mContainer.Configure(mTransform);
+        }
 
         #region EntityPopulate(K key, E entity)
         /// <summary>

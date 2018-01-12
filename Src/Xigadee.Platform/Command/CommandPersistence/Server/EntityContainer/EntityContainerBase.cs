@@ -21,6 +21,12 @@ namespace Xigadee
         /// </summary>
         ReaderWriterLockSlim mReferenceModifyLock;
         #endregion
+
+        /// <summary>
+        /// Gets or sets the transform container.
+        /// </summary>
+        protected EntityTransformHolder<K, E> Transform { get; set; }
+
         #region Constructor
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityContainerBase{K, E}"/> class.
@@ -28,6 +34,31 @@ namespace Xigadee
         public EntityContainerBase()
         {
             mReferenceModifyLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
+        }
+        #endregion
+
+        #region IncomingParameterChecks ...
+        /// <summary>
+        /// Checks the incoming key parameter has a value.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Key must be set to a value</exception>
+        protected virtual void IncomingParameterChecks(K key)
+        {
+            if (key.Equals(default(K)))
+                throw new ArgumentOutOfRangeException("key must be set to a value");
+        }
+        /// <summary>
+        /// Checks the incoming key and entity value parameters have values.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The entity value.</param>
+        /// <exception cref="ArgumentNullException">key or value must be set</exception>
+        protected virtual void IncomingParameterChecks(K key, E value)
+        {
+            IncomingParameterChecks(key);
+            if (value.Equals(default(E)))
+                throw new ArgumentNullException("value must be set to a value");
         } 
         #endregion
 
@@ -70,19 +101,41 @@ namespace Xigadee
         }
         #endregion
 
+        #region Start/Stop
+        /// <summary>
+        /// This method starts the service. You should override this method for your own logic and implement your specific start-up implementation.
+        /// </summary>
         protected override void StartInternal()
         {
-        }
 
+        }
+        /// <summary>
+        /// This method stops the service. You should override this method for your own logic.
+        /// </summary>
         protected override void StopInternal()
         {
-            Clear();
-        }
 
+        }
+        #endregion
+
+        #region Configure(EntityTransformHolder<K, E> transform)
+        /// <summary>
+        /// Configures the specified container.
+        /// </summary>
+        /// <param name="transform">The persistence transform entity.</param>
+        public virtual void Configure(EntityTransformHolder<K, E> transform)
+        {
+            Transform = transform;
+        }
+        #endregion
+
+        #region Debug
         /// <summary>
         /// Gets the debug string.
         /// </summary>
-        public virtual string Debug => $"{typeof(K).Name}/{typeof(E).Name} Entities={Count} References={CountReference}";
+        public virtual string Debug => $"{typeof(K).Name}/{typeof(E).Name} Entities={Count} References={CountReference}"; 
+        #endregion
+
         /// <summary>
         /// This is the number of entities in the collection.
         /// </summary>

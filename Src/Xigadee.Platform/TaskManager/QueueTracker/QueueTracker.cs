@@ -30,7 +30,7 @@ namespace Xigadee
     /// <summary>
     /// This class tracks any jobs that are enqueued and records how long they are held in the queue.
     /// </summary>
-    [DebuggerDisplay("Queue: {mQueue.Count}")]
+    [DebuggerDisplay("Level={Level} Queue={Count}")]
     public class QueueTracker: StatisticsBase<QueueTrackerStatistics>, IQueueTracker
     {
         #region Declarations
@@ -46,6 +46,22 @@ namespace Xigadee
         public QueueTracker()
         {
             mQueue = new ConcurrentQueue<QueueTrackerHolder>();
+        }
+        #endregion
+
+        /// <summary>
+        /// Gets or sets the queue level.
+        /// </summary>
+        public int Level { get; protected set; }
+
+        #region Configure(int level)
+        /// <summary>
+        /// Gets or sets the queue level.
+        /// </summary>
+        /// <param name="level">The specific level</param>
+        public void Configure(int level)
+        {
+            Level = level;
         } 
         #endregion
 
@@ -109,7 +125,9 @@ namespace Xigadee
         /// <param name="stats">The incoming statistics.</param>
         protected override void StatisticsRecalculate(QueueTrackerStatistics stats)
         {
+            stats.Level = Level;
             stats.Waiting = Count;
         }
+
     }
 }

@@ -35,5 +35,20 @@ namespace Xigadee
         /// Gets or sets the total of pending requests.
         /// </summary>
         public int Waiting { get; set; }
+
+        /// <summary>
+        /// This is the message logged for simple loggers.
+        /// </summary>
+        public override string Message
+        {
+            get
+            {
+                var result = string.Concat(Queues?.Select((q) => q.Message + "|")??new string[] {"|"});
+                return result.Substring(0, result.Length -1);
+            }
+            set
+            {
+            }
+        }
     }
 }

@@ -39,7 +39,6 @@ namespace PiO
                 return;
             }
 
-
             dynamic incoming = null;
 
             try

@@ -40,7 +40,18 @@ namespace Xigadee
 
             mContainerReference = new Dictionary<Tuple<string, string>, EntityContainer>(new ReferenceComparer());
 
-        } 
+        }
+        #endregion
+
+        #region StopInternal()
+        /// <summary>
+        /// This method stops the service. The override also clears the memory array of all data.
+        /// </summary>
+        protected override void StopInternal()
+        {
+            Clear();
+            base.StopInternal();
+        }
         #endregion
 
         #region Count
@@ -133,8 +144,9 @@ namespace Xigadee
         public override bool ContainsReference(Tuple<string, string> reference)
         {
             return Atomic(() => mContainerReference.ContainsKey(reference));
-        } 
+        }
         #endregion
+
 
         #region Add(K key, E value, IEnumerable<Tuple<string, string>> references = null)
         /// <summary>
@@ -151,10 +163,7 @@ namespace Xigadee
         {
             return Atomic(() =>
             {
-                if (key.Equals(default(K)))
-                    throw new ArgumentOutOfRangeException("key must be set to a value");
-                if (value.Equals(default(E)))
-                    throw new ArgumentNullException("value must be set to a value");
+                IncomingParameterChecks(key, value);
 
                 //Does the key already exist in the collection
                 if (mContainer.ContainsKey(key))
@@ -205,18 +214,20 @@ namespace Xigadee
         /// <summary>
         /// This method updates an existing entity.
         /// </summary>
-        /// <param name="key">THe entity key.</param>
-        /// <param name="newEntity">The newEntity.</param>
+        /// <param name="key">The entity key.</param>
+        /// <param name="value">The new entity value.</param>
         /// <param name="newReferences">The optional new references.</param>
         /// <returns>
         /// 200 - Updated
         /// 404 - Not sound.
         /// 409 - Conflict
         /// </returns>
-        public override int Update(K key, E newEntity, IEnumerable<Tuple<string, string>> newReferences = null)
+        public override int Update(K key, E value, IEnumerable<Tuple<string, string>> newReferences = null)
         {
             return Atomic(() =>
             {
+                IncomingParameterChecks(key, value);
+
                 //Does the key already exist in the collection
                 EntityContainer oldContainer;
                 if (!mContainer.TryGetValue(key, out oldContainer))
@@ -226,7 +237,7 @@ namespace Xigadee
                 if (ReferenceExistingMatch(newReferences, true, key))
                     return 409;
 
-                var newContainer = new EntityContainer(key, newEntity, newReferences);
+                var newContainer = new EntityContainer(key, value, newReferences);
 
                 //OK, update the entity
                 mContainer[key] = newContainer;
@@ -250,6 +261,7 @@ namespace Xigadee
         {
             return Atomic(() =>
             {
+                IncomingParameterChecks(key);
                 EntityContainer container = null;
                 if (mContainer.TryGetValue(key, out container))
                     return RemoveInternal(container);
@@ -295,6 +307,7 @@ namespace Xigadee
         /// <returns>True if the key exists.</returns>
         public override bool TryGetValue(K key, out E value)
         {
+            IncomingParameterChecks(key);
             value = default(E);
 
             EntityContainer newValue = null; ;
@@ -348,6 +361,7 @@ namespace Xigadee
             });
         }
         #endregion
+
         #region Keys
         /// <summary>
         /// Gets the keys collection.

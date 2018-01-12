@@ -1,24 +1,5 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -87,7 +68,7 @@ namespace Xigadee
         #endregion
 
         /// <summary>
-        /// This is the number of priorty levels supported in the Task Manager.
+        /// This is the number of priority levels supported in the Task Manager.
         /// </summary>
         public int PriorityLevels { get { return (mPriorityLevels?.Length ?? 0);} }
 
@@ -103,15 +84,11 @@ namespace Xigadee
         }
 
         /// <summary>
-        /// This specifies whether autotune should be supported.
-        /// </summary>
-        public bool AutotuneEnabled { get; set; }
-        /// <summary>
         /// This is the time that a process is marked as killed after it has been marked as cancelled.
         /// </summary>
         public TimeSpan? ProcessKillOverrunGracePeriod { get; set; } = TimeSpan.FromSeconds(15);
         /// <summary>
-        /// This is maximum target percentage usuage limit.
+        /// This is maximum target percentage usage limit.
         /// </summary>
         public int ProcessorTargetLevelPercentage { get; set; } 
         /// <summary>

@@ -34,18 +34,15 @@ namespace Xigadee
             dynamic message = new ExpandoObject();
             message.Id = stats.Id.ExternalServiceId;
             message.Status = stats.Status;
-            message.TS = DateTime.UtcNow.ToString("O");
+            message.TS = DateTime.UtcNow.ToBinary();
             message.Engine = $"{stats.Id.ServiceVersionId}/{stats.Id.ServiceEngineVersionId}";
             message.Uptime = stats.Uptime;
 
-            message.Active = stats.Tasks.Availability.Active;
-            message.Queued = stats.Tasks.Queues.Waiting;
-            message.Avalability = stats.Tasks.Availability;
+            message.Tasks = stats.Tasks.Message;
 
             var authorData = JsonConvert.SerializeObject(message);
-            //var authorData = JsonConvert.SerializeObject(stats);
 
-            holder.SetBlob(Encoding.UTF8.GetBytes(authorData), maxLength:508);
+            holder.SetBlob(Encoding.UTF8.GetBytes(authorData), maxLength:UdpHelper.PacketMaxSize);
         }
 
         /// <summary>

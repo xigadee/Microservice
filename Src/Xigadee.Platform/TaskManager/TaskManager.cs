@@ -116,9 +116,6 @@ namespace Xigadee
             if (policy == null)
                 throw new ArgumentNullException($"{nameof(TaskManager)}: policy can not be null");
 
-            if (dispatcher == null)
-                throw new ArgumentNullException($"{nameof(TaskManager)}: dispatcher can not be null");
-
             mPauseCheck = new ManualResetEventSlim();
 
             mAvailability = new TaskAvailability(policy.PriorityLevels, policy.ConcurrentRequestsMax);
@@ -129,7 +126,7 @@ namespace Xigadee
 
             mProcesses = new ConcurrentDictionary<string, TaskManagerProcessContext>();
 
-            Dispatcher = dispatcher;
+            Dispatcher = dispatcher ?? throw new ArgumentNullException($"{nameof(TaskManager)}: dispatcher can not be null");
 
             if (!mPolicy.ProcessKillOverrunGracePeriod.HasValue)
                 mPolicy.ProcessKillOverrunGracePeriod = TimeSpan.FromSeconds(15);
@@ -179,8 +176,6 @@ namespace Xigadee
             stats.InternalQueueActive = !mPolicy.ExecuteInternalDirect;
 
             stats.InternalQueueLength = mProcessInternalQueue?.Count;
-
-            stats.AutotuneActive = mPolicy.AutotuneEnabled;
 
             stats.Availability = mAvailability.Statistics;
 

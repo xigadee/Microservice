@@ -53,7 +53,7 @@ namespace Xigadee
             Enumerable.Range(0, levels).ForEach((i) =>
             {
                 Q queue = new Q();
-                queue.Statistics.Name = string.Format("Queue {0}", i);
+                queue.Configure(i);
                 mTasksQueue.Add(i, queue);
             });
         }

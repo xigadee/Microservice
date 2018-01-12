@@ -22,6 +22,14 @@ namespace Xigadee
     public interface IQueueTracker
     {
         /// <summary>
+        /// Gets the queue level.
+        /// </summary>
+        int Level { get; }
+        /// <summary>
+        /// Gets or sets the queue level.
+        /// </summary>
+        void Configure(int level);
+        /// <summary>
         /// Returns true if the queue is empty.
         /// </summary>
         bool IsEmpty { get; }

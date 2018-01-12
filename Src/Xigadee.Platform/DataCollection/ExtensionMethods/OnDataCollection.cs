@@ -115,7 +115,7 @@ namespace Xigadee
                 {
                     mAction(Context, holder);
                 }
-                catch
+                catch (Exception ex)
                 {
                     //We're not interested in catching exceptions here. This is for the pipeline code to sort out.
                 }

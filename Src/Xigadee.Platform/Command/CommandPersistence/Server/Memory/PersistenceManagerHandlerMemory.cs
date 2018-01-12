@@ -77,13 +77,6 @@ namespace Xigadee
         }
         #endregion
 
-        /// <summary>
-        /// This method is called to configure the container. There are not any changes for the memory collection.
-        /// </summary>
-        protected override void ContainerConfigure()
-        {
-        }
-
         #region Class -> CommandPolicy
         /// <summary>
         /// This policy class is used to configure the test conditions that can be set up for this persistence agent.
