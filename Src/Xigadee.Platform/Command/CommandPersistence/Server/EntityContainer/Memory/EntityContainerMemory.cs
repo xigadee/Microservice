@@ -366,7 +366,7 @@ namespace Xigadee
         /// <summary>
         /// Gets the keys collection.
         /// </summary>
-        public override ICollection<K> Keys
+        public override IEnumerable<K> Keys
         {
             get
             {
@@ -378,7 +378,7 @@ namespace Xigadee
         /// <summary>
         /// Gets the values collection.
         /// </summary>
-        public override ICollection<E> Values
+        public override IEnumerable<E> Values
         {
             get
             {
@@ -390,7 +390,7 @@ namespace Xigadee
         /// <summary>
         /// Gets the references collection.
         /// </summary>
-        public override ICollection<Tuple<string, string>> References
+        public override IEnumerable<Tuple<string, string>> References
         {
             get
             {

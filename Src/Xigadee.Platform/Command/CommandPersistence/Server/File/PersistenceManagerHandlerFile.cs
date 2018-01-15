@@ -1,16 +1,7 @@
 ﻿#region using
 using System;
-using System.IO;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Linq;
-using System.Linq.Expressions;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System.Diagnostics;
-
 #endregion
 namespace Xigadee
 {
@@ -19,7 +10,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    [DebuggerDisplay("{mContainer.Debug}")]
+    [DebuggerDisplay("{Container.Debug}")]
     public class PersistenceManagerHandlerFile<K, E>: PersistenceManagerHandlerContainerBase<K, E, PersistenceStatistics, PersistenceManagerHandlerFile<K, E>.CommandPolicy, EntityContainerFileSystem<K, E>>
         where K : IEquatable<K>
     {
@@ -60,8 +51,7 @@ namespace Xigadee
             : base(keyMaker, keyDeserializer, entityName, versionPolicy, defaultTimeout, persistenceRetryPolicy, resourceProfile, cacheManager, referenceMaker, referenceHashMaker, keySerializer, policy, prePopulate)
         {
         }
-        #endregion    
-        
+        #endregion          
 
         #region Class -> CommandPolicy
         /// <summary>

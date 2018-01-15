@@ -8,7 +8,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public interface IPersistenceEntityContainer<K, E>:IService 
+    public interface IPersistenceEntityContainer<K, E>:IService, IRequirePayloadSerialization, IRequireSecurityService
         where K : IEquatable<K>
     {
         /// <summary>
@@ -31,15 +31,15 @@ namespace Xigadee
         /// <summary>
         /// Gets the keys collection.
         /// </summary>
-        ICollection<K> Keys { get; }
+        IEnumerable<K> Keys { get; }
         /// <summary>
         /// Gets the references collection.
         /// </summary>
-        ICollection<Tuple<string, string>> References { get; }
+        IEnumerable<Tuple<string, string>> References { get; }
         /// <summary>
         /// Gets the values collection.
         /// </summary>
-        ICollection<E> Values { get; }
+        IEnumerable<E> Values { get; }
 
         /// <summary>
         /// Clears this collection of all entities and references.

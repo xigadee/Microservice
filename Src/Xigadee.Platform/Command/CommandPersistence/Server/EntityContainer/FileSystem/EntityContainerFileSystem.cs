@@ -7,55 +7,97 @@ using System.Threading;
 
 namespace Xigadee
 {
-    public class EntityContainerFolderStructure
-    {
-        public EntityContainerFolderStructure(string entityName)
-        {
-
-        }
-
-        public string EntityName { get; }
-
-        public DirectoryInfo Main { get; }
-
-        public DirectoryInfo Entity { get; }
-
-        public DirectoryInfo Reference { get; }
-    }
-
     /// <summary>
     /// This class contains the logic to store and retrieve entities from a file based store.
     /// This class is not optimised for speed, but is used to provide a simple File based IO system.
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    /// <seealso cref="Xigadee.EntityContainerBase{K, E}" />
     public class EntityContainerFileSystem<K,E>: EntityContainerBase<K,E>
         where K : IEquatable<K>
     {
-        EntityContainerFolderStructure mFS;
+        const string cnEntityMatch = "ent";
+        const string cnReferenceMatch = "ref";
 
-        public EntityContainerFileSystem()
+        protected override void StartInternal()
         {
+            base.StartInternal();
 
+            FS = FS ?? new EntityContainerFolderStructure(Transform.EntityName, new DirectoryInfo(Environment.CurrentDirectory));
+
+            Keys = new EntityContainerFileSystemReadOnlyCollection<K>(FS.Entity, ToFilter(ExtensionEntity), (f) => default(K));
+            References = new EntityContainerFileSystemReadOnlyCollection<Tuple<string, string>>(FS.Reference, ToFilter(ExtensionReference), (f) => null);
+            Values = new EntityContainerFileSystemReadOnlyCollection<E>(FS.Entity, ToFilter(ExtensionEntity), (f) => default(E));
         }
+
+        public string ExtensionEntity { get; set; } = cnEntityMatch;
+
+        public string ExtensionReference { get; set; } = cnReferenceMatch;
+
+        private string ToFilter(string extension)
+        {
+            return $"*.{extension}";
+        }
+
+        /// <summary>
+        /// Gets or sets the file system information.
+        /// </summary>
+        public EntityContainerFolderStructure FS { get; set; }
 
         /// <summary>
         /// This is the number of entities in the collection.
         /// </summary>
-        public override int Count => mFS.Entity.GetFileSystemInfos("*", SearchOption.TopDirectoryOnly).Length;
+        public override int Count => (Keys as EntityContainerFileSystemReadOnlyCollection).Count;
         /// <summary>
         /// This is the number of entity references in the collection.
         /// </summary>
-        public override int CountReference => mFS.Reference.GetFileSystemInfos("*", SearchOption.TopDirectoryOnly).Length;
+        public override int CountReference => (References as EntityContainerFileSystemReadOnlyCollection).Count;
 
-        public override ICollection<K> Keys => throw new NotImplementedException();
+        public override IEnumerable<K> Keys { get; protected set; }
 
-        public override ICollection<Tuple<string, string>> References => throw new NotImplementedException();
+        public override IEnumerable<Tuple<string, string>> References { get; protected set; }
 
-        public override ICollection<E> Values => throw new NotImplementedException();
+        public override IEnumerable<E> Values { get; protected set; }
 
+        protected virtual string PrepareKey(K key)
+        {
+            return $"{Transform.KeyStringMaker(key)}.{ExtensionEntity}";
+        }
+
+        protected virtual FileInfo GetFileInfo(K key)
+        {
+            string sKey = PrepareKey(key);
+
+            return new FileInfo(Path.Combine(FS.Entity.FullName, sKey));
+        }
+
+        /// <summary>
+        /// This is the entity reference.
+        /// </summary>
+        /// <param name="key">The entity key</param>
+        /// <param name="value">The entity</param>
+        /// <param name="references">The optional references.</param>
+        /// <returns>
+        /// 201 - Created
+        /// 409 - Conflict
+        /// </returns>
         public override int Add(K key, E value, IEnumerable<Tuple<string, string>> references = null)
+        {
+            var fi = GetFileInfo(key);
+            if (fi.Exists)
+                return 409;
+
+            string entityData = Transform.JsonSerialize(value);
+
+            using (var fs = fi.Open(FileMode.CreateNew, FileAccess.Write))
+            {
+                //fs.e
+            }
+
+            return 201;
+        }
+
+        public override int Update(K key, E newEntity, IEnumerable<Tuple<string, string>> newReferences = null)
         {
             throw new NotImplementedException();
         }
@@ -67,12 +109,12 @@ namespace Xigadee
 
         public override bool ContainsKey(K key)
         {
-            return false;
+            return FS.Entity.GetFiles(PrepareKey(key), SearchOption.TopDirectoryOnly).Length>0;
         }
 
         public override void Clear()
         {
-            throw new NotImplementedException();
+            //FS.Entity.Delete(true);
         }
 
         public override bool TryGetValue(K key, out E value)
@@ -85,10 +127,6 @@ namespace Xigadee
             throw new NotImplementedException();
         }
 
-        public override int Update(K key, E newEntity, IEnumerable<Tuple<string, string>> newReferences = null)
-        {
-            throw new NotImplementedException();
-        }
 
         #region ContainsReference(Tuple<string, string> reference)
         /// <summary>

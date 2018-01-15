@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading;
 
 namespace Xigadee
@@ -21,12 +19,6 @@ namespace Xigadee
         /// </summary>
         ReaderWriterLockSlim mReferenceModifyLock;
         #endregion
-
-        /// <summary>
-        /// Gets or sets the transform container.
-        /// </summary>
-        protected EntityTransformHolder<K, E> Transform { get; set; }
-
         #region Constructor
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityContainerBase{K, E}"/> class.
@@ -35,6 +27,13 @@ namespace Xigadee
         {
             mReferenceModifyLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
         }
+        #endregion
+
+        #region Transform
+        /// <summary>
+        /// Gets or sets the transform container.
+        /// </summary>
+        protected EntityTransformHolder<K, E> Transform { get; set; } 
         #endregion
 
         #region IncomingParameterChecks ...
@@ -107,7 +106,12 @@ namespace Xigadee
         /// </summary>
         protected override void StartInternal()
         {
-
+            if (Transform == null)
+                throw new ArgumentOutOfRangeException("Transform", "The Entity transform holder 'Transform' is not set.");
+            if (PayloadSerializer == null)
+                throw new ArgumentOutOfRangeException("PayloadSerializer", "The PayloadSerializer is not set.");
+            if (Security == null)
+                throw new ArgumentOutOfRangeException("Security", "The Security container is not set.");
         }
         /// <summary>
         /// This method stops the service. You should override this method for your own logic.
@@ -133,7 +137,14 @@ namespace Xigadee
         /// <summary>
         /// Gets the debug string.
         /// </summary>
-        public virtual string Debug => $"{typeof(K).Name}/{typeof(E).Name} Entities={Count} References={CountReference}"; 
+        public virtual string Debug => $"{typeof(K).Name}/{typeof(E).Name} Entities={Count} References={CountReference}";
+        #endregion
+
+        #region Security
+        /// <summary>
+        /// This method provides a link to the Microservice to the security service, that provides authentication and encryption support.
+        /// </summary>
+        public virtual ISecurityService Security { get; set; }
         #endregion
 
         /// <summary>
@@ -147,15 +158,15 @@ namespace Xigadee
         /// <summary>
         /// Gets the keys collection.
         /// </summary>
-        public abstract ICollection<K> Keys { get; }
+        public virtual IEnumerable<K> Keys { get; protected set; }
         /// <summary>
         /// Gets the references collection.
         /// </summary>
-        public abstract ICollection<Tuple<string, string>> References { get; }
+        public virtual IEnumerable<Tuple<string, string>> References { get; protected set;}
         /// <summary>
         /// Gets the values collection.
         /// </summary>
-        public abstract ICollection<E> Values { get; }
+        public virtual IEnumerable<E> Values { get; protected set;}
         /// <summary>
         /// This is the entity reference.
         /// </summary>
@@ -233,5 +244,10 @@ namespace Xigadee
         /// 409 - Conflict
         /// </returns>
         public abstract int Update(K key, E newEntity, IEnumerable<Tuple<string, string>> newReferences = null);
+
+        /// <summary>
+        /// This is the system wide serializer.
+        /// </summary>
+        public IPayloadSerializationContainer PayloadSerializer { get; set; }
     }
 }

@@ -21,7 +21,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    [DebuggerDisplay("{mContainer.Debug}")]
+    [DebuggerDisplay("{Container.Debug}")]
     public class PersistenceManagerHandlerMemory<K, E> : PersistenceManagerHandlerContainerBase<K, E, PersistenceStatistics, PersistenceManagerHandlerMemory<K, E>.CommandPolicy, EntityContainerMemory<K,E>>
         where K : IEquatable<K>
     {
@@ -87,5 +87,4 @@ namespace Xigadee
         } 
         #endregion
     }
-
 }

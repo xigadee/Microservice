@@ -19,17 +19,13 @@ namespace Xigadee
     /// <typeparam name="S">The persistence statistics type.</typeparam>
     /// <typeparam name="P">The persistence command policy type.</typeparam>
     /// <typeparam name="C">The entity container type.</typeparam>
-    public abstract class PersistenceManagerHandlerContainerBase<K, E, S, P, C>: PersistenceManagerHandlerJsonBase<K, E, S, P>
+    public abstract class PersistenceManagerHandlerContainerBase<K, E, S, P, C>: PersistenceManagerHandlerJsonBase<K, E, S, P>, IRequireSecurityService
         where K : IEquatable<K>
         where S : PersistenceStatistics, new()
         where P : PersistenceCommandPolicy, new()
         where C : class, IPersistenceEntityContainer<K, E>, new()
     {
         #region Declarations
-        /// <summary>
-        /// This container holds the memory back entity collection.
-        /// </summary>
-        protected C mContainer;
         /// <summary>
         /// Gets the pre-populate collection.
         /// </summary>
@@ -83,9 +79,11 @@ namespace Xigadee
         {
             try
             {
-                mContainer = new C();
+                Container = new C();
                 ContainerConfigure();
-                mContainer.Start();
+                Container.PayloadSerializer = PayloadSerializer;
+                Container.Security = Security;
+                Container.Start();
                 PrePopulate();
             }
             catch (Exception ex)
@@ -103,8 +101,8 @@ namespace Xigadee
         {
             base.StopInternal();
 
-            mContainer.Stop();
-            mContainer = null;
+            Container.Stop();
+            Container = null;
         }
         #endregion
         #region PrePopulate()
@@ -113,18 +111,26 @@ namespace Xigadee
         /// </summary>
         public virtual void PrePopulate()
         {
-            mPrePopulate?.ForEach((k) => mContainer.Add(k.Key, k.Value, mTransform?.ReferenceMaker?.Invoke(k.Value)));
+            mPrePopulate?.ForEach((k) => Container.Add(k.Key, k.Value, mTransform?.ReferenceMaker?.Invoke(k.Value)));
             mPrePopulate = null;
         }
-        #endregion        
+        #endregion
 
+        #region Container
+        /// <summary>
+        /// This container holds the entity collection in storage.
+        /// </summary>
+        protected C Container { get; set; }
+        #endregion
+        #region ContainerConfigure()
         /// <summary>
         /// This method is called to configure the container.
         /// </summary>
         protected virtual void ContainerConfigure()
         {
-            mContainer.Configure(mTransform);
-        }
+            Container.Configure(mTransform);
+        } 
+        #endregion
 
         #region EntityPopulate(K key, E entity)
         /// <summary>
@@ -136,7 +142,7 @@ namespace Xigadee
         /// <returns>The response status</returns>
         protected virtual int EntityPopulate(K key, E entity)
         {
-            return mContainer.Add(key, entity, mTransform.ReferenceMaker(entity)); ;
+            return Container.Add(key, entity, mTransform.ReferenceMaker(entity)); ;
         }
         #endregion
 
@@ -173,7 +179,7 @@ namespace Xigadee
         {
 
             E entity;
-            bool success = mContainer.TryGetValue(key, out entity);
+            bool success = Container.TryGetValue(key, out entity);
 
             if (success)
             {
@@ -195,7 +201,7 @@ namespace Xigadee
         protected override async Task<IResponseHolder<E>> InternalReadByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, E> holder)
         {
             E entity;
-            bool success = mContainer.TryGetValue(reference, out entity);
+            bool success = Container.TryGetValue(reference, out entity);
 
             if (success)
             {
@@ -217,7 +223,7 @@ namespace Xigadee
         protected override async Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRequestHolder<K, E> holder)
         {
             E oldEntity;
-            bool successExisting = mContainer.TryGetValue(key, out oldEntity);
+            bool successExisting = Container.TryGetValue(key, out oldEntity);
             if (!successExisting)
                 return new PersistenceResponseHolder<E>(PersistenceResponse.NotFound404);
 
@@ -235,7 +241,7 @@ namespace Xigadee
                 ver.EntityVersionUpdate(newEntity);
 
 
-            mContainer.Update(key, newEntity, mTransform.ReferenceMaker(newEntity));
+            Container.Update(key, newEntity, mTransform.ReferenceMaker(newEntity));
 
             var jsonHolder = mTransform.JsonMaker(newEntity);
             return new PersistenceResponseHolder<E>(PersistenceResponse.Ok200)
@@ -255,7 +261,7 @@ namespace Xigadee
         /// <returns></returns>
         protected override async Task<IResponseHolder> InternalDelete(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            if (!mContainer.Remove(key))
+            if (!Container.Remove(key))
                 return new PersistenceResponseHolder(PersistenceResponse.NotFound404);
 
             return new PersistenceResponseHolder(PersistenceResponse.Ok200);
@@ -270,7 +276,7 @@ namespace Xigadee
         /// <returns></returns>
         protected override async Task<IResponseHolder> InternalDeleteByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            if (!mContainer.Remove(reference))
+            if (!Container.Remove(reference))
                 return new PersistenceResponseHolder(PersistenceResponse.NotFound404);
 
             return new PersistenceResponseHolder(PersistenceResponse.Ok200);
@@ -287,7 +293,7 @@ namespace Xigadee
         protected override async Task<IResponseHolder> InternalVersion(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
             E entity;
-            bool success = mContainer.TryGetValue(key, out entity);
+            bool success = Container.TryGetValue(key, out entity);
 
             if (success)
             {
@@ -308,7 +314,7 @@ namespace Xigadee
         protected override async Task<IResponseHolder> InternalVersionByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
             E entity;
-            bool success = mContainer.TryGetValue(reference, out entity);
+            bool success = Container.TryGetValue(reference, out entity);
 
             if (success)
             {
@@ -330,7 +336,7 @@ namespace Xigadee
         /// <returns></returns>
         protected async override Task<IResponseHolder<SearchResponse>> InternalSearch(SearchRequest key, PersistenceRequestHolder<SearchRequest, SearchResponse> holder)
         {
-            var query = mContainer.Values.AsQueryable<E>();
+            var query = Container.Values.AsQueryable<E>();
 
             Expression expression = mTransform.SearchTranslator.Build(key);
 
@@ -374,6 +380,13 @@ namespace Xigadee
 
             return await base.InternalSearch(key, holder);
         }
+        #endregion
+
+        #region Security
+        /// <summary>
+        /// This method provides a link to the Microservice to the security service, that provides authentication and encryption support.
+        /// </summary>
+        public virtual ISecurityService Security { get; set; } 
         #endregion
     }
 }
