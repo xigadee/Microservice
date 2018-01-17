@@ -234,7 +234,7 @@ namespace Xigadee
                         if (TypeOut != null)
                         {
                             var response = pIn.ToResponse();
-                            response.Message.Blob = ser.PayloadSerialize(output);
+                            response.Message.Holder = ser.PayloadSerialize(output);
                             response.Message.Status = "200";
 
                             pOut.Add(response);

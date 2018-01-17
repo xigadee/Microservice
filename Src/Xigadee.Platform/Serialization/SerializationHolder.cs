@@ -52,6 +52,7 @@ namespace Xigadee
         /// </summary>
         public byte[] Blob { get; private set; }
 
+        #region ContentType/HasContentType
         /// <summary>
         /// Gets or sets the BLOB serializer content type identifier. 
         /// If this is set, the specific serializer will be used without attempting to identify the magic bytes at the start of the blob stream.
@@ -59,9 +60,20 @@ namespace Xigadee
         /// </summary>
         public string ContentType { get; set; }
         /// <summary>
+        /// Gets a value indicating whether this instance has a content type set.
+        /// </summary>
+        public bool HasContentType => !string.IsNullOrEmpty(ContentType); 
+        #endregion
+        #region ContentEncoding/HasContentEncoding
+        /// <summary>
         /// Identifies the blob encoding type, typically 'gzip'.
         /// </summary>
         public string ContentEncoding { get; set; }
+        /// <summary>
+        /// Gets a value indicating whether this instance has a content encoding set.
+        /// </summary>
+        public bool HasContentEncoding => !string.IsNullOrEmpty(ContentEncoding); 
+        #endregion
 
         /// <summary>
         /// Gets a value indicating whether this instance has content.

@@ -2,36 +2,29 @@
 namespace Xigadee
 {
     /// <summary>
-    /// This interface is used to manage payload compression.
+    /// This interface is used to expose the serialization container to applications that require access to it.
     /// </summary>
-    public interface IPayloadCompressionContainer
+    public interface IPayloadSerializationContainer
     {
         /// <summary>
         /// A boolean function that returns true if the compression type is supported.
         /// </summary>
-        /// <param name="holder">The serialization holder.</param>
-        /// <returns>Returns true when supported.</returns>
-        bool SupportsCompression(SerializationHolder holder);
-
+        /// <param name="contentEncodingType">The content encoding type, i.e. GZIP/DEFLATE etc..</param>
+        /// <returns>Returns true when the ContentEncoding type is supported.</returns>
+        bool SupportsCompressor(string contentEncodingType);
         /// <summary>
         /// Tries to decompress the incoming holder.
         /// </summary>
         /// <param name="holder">The holder.</param>
         /// <returns>Returns true if the incoming binary payload is successfully decompressed.</returns>
-        bool TryDecompression(SerializationHolder holder);
+        bool TryDecompress(SerializationHolder holder);
         /// <summary>
         /// Tries to compress the outgoing payload.
         /// </summary>
         /// <param name="holder">The holder.</param>
         /// <returns>Returns true if the Content is compressed correctly to a binary blob.</returns>
-        bool TryCompression(SerializationHolder holder);
-    }
+        bool TryCompress(SerializationHolder holder);
 
-    /// <summary>
-    /// This interface is used to expose the serialization container to applications that require access to it.
-    /// </summary>
-    public interface IPayloadSerializationContainer
-    {
         /// <summary>
         /// Checks that a specific serializer is supported.
         /// </summary>
@@ -63,15 +56,17 @@ namespace Xigadee
         /// This method attempts to Serialize the object and sets the blob and headers in the holder.
         /// </summary>
         /// <param name="holder">The serialization holder.</param>
+        /// <param name="throwExceptions">Directs the container to throw detailed exceptions on failure. The default is false.</param>
         /// <returns>Returns true if the operation is successful.</returns>
-        bool TryPayloadSerialize(SerializationHolder holder);
+        bool TryPayloadSerialize(SerializationHolder holder, bool throwExceptions = false);
 
         /// <summary>
         /// This method attempts to deserialize the binary blob and sets the object in the holder.
         /// </summary>
         /// <param name="holder">The serialization holder.</param>
+        /// <param name="throwExceptions">Directs the container to throw detailed exceptions on failure. The default is false.</param>
         /// <returns>Returns true if the operation is successful.</returns>
-        bool TryPayloadDeserialize(SerializationHolder holder);
+        bool TryPayloadDeserialize(SerializationHolder holder, bool throwExceptions = false);
 
         /// <summary>
         /// This method serializes the requestPayload object in to a binary blob using the 

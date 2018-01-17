@@ -20,9 +20,9 @@ namespace Xigadee
             //First decrypt the payload.
             if (channel.Encryption != null)
             {
-                byte[] decrypt = Decrypt(channel.Encryption, payloadIn.Message.Blob);
+                byte[] decrypt = Decrypt(channel.Encryption, payloadIn.Message.Holder);
 
-                payloadIn.Message.Blob = decrypt;
+                payloadIn.Message.Holder = decrypt;
             }
 
             //Now verify the signature
@@ -61,9 +61,9 @@ namespace Xigadee
             //Now encrypt the payload.
             if (channel.Encryption != null)
             {
-                byte[] encrypt = Encrypt(channel.Encryption, payloadOut.Message.Blob);
+                byte[] encrypt = Encrypt(channel.Encryption, payloadOut.Message.Holder);
 
-                payloadOut.Message.Blob = encrypt;
+                payloadOut.Message.Holder = encrypt;
             }
         } 
         #endregion

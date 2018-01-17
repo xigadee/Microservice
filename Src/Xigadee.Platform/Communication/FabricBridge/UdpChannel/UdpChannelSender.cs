@@ -80,7 +80,7 @@ namespace Xigadee
 
             client.MessagePack = (p) =>
             {
-                var holder = p.Message.Blob;
+                var holder = p.Message.Holder;
 
                 if (holder.ContentType == null)
                     holder.ContentType = ContentType;
@@ -93,7 +93,8 @@ namespace Xigadee
                     throw new ArgumentException("Cannot serialize.");
                 }
 
-                if (holder.Blob.Length > UdpMessageMaximumPayloadSize)
+                //Do a bounds check for the binary payload size.
+                if (UdpMessageMaximumPayloadSize.HasValue && holder.Blob.Length > UdpMessageMaximumPayloadSize)
                 {
                     //throw new 
                 }

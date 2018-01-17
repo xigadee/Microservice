@@ -1,20 +1,4 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-#region using
+﻿#region using
 
 #endregion
 using System.Text;
@@ -26,19 +10,34 @@ namespace Xigadee
     /// </summary>
     public class JsonHolder
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JsonHolder"/> class.
+        /// </summary>
+        /// <param name="Version">The version.</param>
+        /// <param name="Json">The entity as a json string.</param>
+        /// <param name="Id">The identifier.</param>
         public JsonHolder(string Version, string Json, string Id = null)
         {
             this.Version = Version;
             this.Json = Json;
             this.Id = Id;
         }
-
+        /// <summary>
+        /// Gets or sets the identifier.
+        /// </summary>
         public string Id { get; set; }
-
+        /// <summary>
+        /// Gets or sets the version.
+        /// </summary>
         public string Version { get; set; }
-
+        /// <summary>
+        /// Gets or sets the json.
+        /// </summary>
         public string Json { get; set; }
-
+        /// <summary>
+        /// Converts the JSON to a binary array.
+        /// </summary>
+        /// <returns>Returns a UTF8 representation on the JSON string.</returns>
         public byte[] ToBlob()
         {
             return Json == null?(byte[])null: Encoding.UTF8.GetBytes(Json);
@@ -51,6 +50,13 @@ namespace Xigadee
     /// <typeparam name="KT">The key type.</typeparam>
     public class JsonHolder<KT>: JsonHolder
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JsonHolder{KT}"/> class.
+        /// </summary>
+        /// <param name="Key">The key.</param>
+        /// <param name="Version">The version.</param>
+        /// <param name="Json">The entity as a json string.</param>
+        /// <param name="Id">The identifier.</param>
         public JsonHolder(KT Key, string Version, string Json, string Id = null):base(Version, Json, Id)
         {
             this.Key = Key;
@@ -70,6 +76,14 @@ namespace Xigadee
     /// <typeparam name="ET">The entity type.</typeparam>
     public class JsonHolder<KT, ET> : JsonHolder<KT>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JsonHolder{KT, ET}"/> class.
+        /// </summary>
+        /// <param name="Entity">The entity.</param>
+        /// <param name="Key">The entity key.</param>
+        /// <param name="Version">The entity version.</param>
+        /// <param name="Json">The entity as a json string.</param>
+        /// <param name="Id">The entity identifier as a string.</param>
         public JsonHolder(ET Entity, KT Key, string Version, string Json, string Id = null):base(Key, Version, Json, Id)
         {
             this.Entity = Entity;

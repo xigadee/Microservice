@@ -47,13 +47,13 @@ namespace Test.Xigadee.Serialization
 
             sr.Add(new JsonContractSerializer());
 
-            Assert.AreEqual(sr.Count, 1);
+            Assert.AreEqual(sr.CountSerializers, 1);
 
-            sr.Clear();
-            Assert.AreEqual(sr.Count, 0);
+            sr.ClearSerializers();
+            Assert.AreEqual(sr.CountSerializers, 0);
 
             sr.Add(new JsonContractSerializer());
-            Assert.AreEqual(sr.Count, 1);
+            Assert.AreEqual(sr.CountSerializers, 1);
 
             try
             {

@@ -23,6 +23,7 @@ namespace Xigadee
         public static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
         #endregion
 
+        #region Constructor
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityTransformHolder{K, E}"/> class.
         /// </summary>
@@ -41,13 +42,15 @@ namespace Xigadee
 
             // Handle the most common key types of string and guid for deserializing the key from string
             KeySerializer = k => k.ToString();
-            if (typeof (K) == typeof(string))
+            if (typeof(K) == typeof(string))
                 KeyDeserializer = s => (K)(object)(s);
             else if (typeof(K) == typeof(Guid))
                 KeyDeserializer = s => (K)(object)Guid.Parse(s);
 
             SearchTranslator = new SearchExpressionHelper<E>();
-        }
+        } 
+        #endregion
+
         /// <summary>
         /// This is the search expression helper for search requests.
         /// </summary>
@@ -102,7 +105,7 @@ namespace Xigadee
         /// <returns>The object to return.</returns>
         public virtual E JsonDeserialize(string json)
         {
-            // Remove the document db id field prior to de-serializing
+            // Remove the documentDb id field prior to de-serializing
             var jObj = JObject.Parse(json);
 
             jObj.Remove("id");
@@ -121,8 +124,8 @@ namespace Xigadee
         /// <summary>
         /// This method converts in the incoming entity in to a JSON object.
         /// </summary>
-        /// <param name="rq">The request type.</param>
-        /// <returns>Returns a JsonHolder object with the contentid, versionid and json body.</returns>
+        /// <param name="entity">The request type.</param>
+        /// <returns>Returns a JsonHolder object with the content id, version id and json body.</returns>
         public virtual string JsonSerialize(E entity)
         {
             return JsonMaker(entity).Json;
@@ -133,8 +136,8 @@ namespace Xigadee
         /// <summary>
         /// This method converts in the incoming entity in to a JSON object.
         /// </summary>
-        /// <param name="rq">The request type.</param>
-        /// <returns>Returns a JsonHolder object with the contentid, versionid and json body.</returns>
+        /// <param name="entity">The request type.</param>
+        /// <returns>Returns a JsonHolder object with the content id, version id and json body.</returns>
         public JsonHolder<K> JsonMaker(E entity)
         {
             var jObj = JObject.Parse(JsonConvert.SerializeObject(entity, SerializerSettings));

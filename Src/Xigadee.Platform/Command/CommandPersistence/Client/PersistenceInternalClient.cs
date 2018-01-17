@@ -129,7 +129,7 @@ namespace Xigadee
 
             payloadRq.MaxProcessingTime = rq.Settings?.WaitTime ?? mDefaultRequestTimespan;
 
-            message.Blob.SetObject(rq);
+            message.Holder.SetObject(rq);
 
             message.ChannelId = ChannelId;
             message.ChannelPriority = processAsync ? 0:-1;

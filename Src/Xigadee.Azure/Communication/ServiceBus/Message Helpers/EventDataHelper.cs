@@ -45,10 +45,10 @@ namespace Xigadee
         {
             ServiceMessage sMessage = payload.Message;
             EventData bMessage;
-            if (sMessage.Blob == null)
+            if (sMessage.Holder == null)
                 bMessage = new EventData();
             else
-                bMessage = new EventData(sMessage.Blob);
+                bMessage = new EventData(sMessage.Holder);
 
             bMessage.Properties.Add("OriginatorKey", sMessage.OriginatorKey);
             bMessage.Properties.Add("OriginatorServiceId", sMessage.OriginatorServiceId);

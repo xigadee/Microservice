@@ -41,7 +41,7 @@ namespace Xigadee
         public static bool PayloadTryDeserialize(this IPayloadSerializationContainer srz, TransmissionPayload payload, out object entity)
         {
             entity = null;
-            if (payload?.Message?.Blob == null)
+            if (payload?.Message?.Holder == null)
                 return false;
 
             entity = srz.PayloadDeserialize(payload);
@@ -59,7 +59,7 @@ namespace Xigadee
         public static bool PayloadTryDeserialize<P>(this IPayloadSerializationContainer srz, TransmissionPayload payload, out P entity)
         {
             entity = default(P);
-            if (payload?.Message?.Blob == null)
+            if (payload?.Message?.Holder == null)
                 return false;
 
             entity = srz.PayloadDeserialize<P>(payload);
@@ -81,7 +81,7 @@ namespace Xigadee
         {
             try
             {
-                return srz.PayloadDeserialize<P>(message.Blob);
+                return srz.PayloadDeserialize<P>(message.Holder);
             }
             catch (Exception ex)
             {
@@ -99,7 +99,7 @@ namespace Xigadee
         public static bool PayloadTryDeserialize(this IPayloadSerializationContainer srz, ServiceMessage message, out object entity)
         {
             entity = null;
-            if (message?.Blob == null)
+            if (message?.Holder == null)
                 return false;
 
             entity = srz.PayloadDeserialize(message);
@@ -117,7 +117,7 @@ namespace Xigadee
         public static bool PayloadTryDeserialize<P>(this IPayloadSerializationContainer srz, ServiceMessage message, out P entity)
         {
             entity = default(P);
-            if (message?.Blob == null)
+            if (message?.Holder == null)
                 return false;
 
             entity = srz.PayloadDeserialize<P>(message);
@@ -135,10 +135,10 @@ namespace Xigadee
         {
             try
             {
-                if (message.Blob?.Blob == null)
+                if (message.Holder?.Blob == null)
                     return null;
 
-                return srz.PayloadDeserialize(message.Blob);
+                return srz.PayloadDeserialize(message.Holder);
             }
             catch (Exception ex)
             {

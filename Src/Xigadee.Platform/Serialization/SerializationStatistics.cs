@@ -14,6 +14,10 @@
         /// </summary>
         public string[] Serialization { get; set; }
         /// <summary>
+        /// The supported serialization classes.
+        /// </summary>
+        public string[] Compression { get; set; }
+        /// <summary>
         /// The serialization cache.
         /// </summary>
         public string[] Cache { get; set; }

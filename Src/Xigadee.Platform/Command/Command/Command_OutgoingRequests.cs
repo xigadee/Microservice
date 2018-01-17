@@ -261,7 +261,7 @@ namespace Xigadee
                 payload.Message.ResponseChannelPriority = payload.Message.ChannelPriority;
 
                 //Set the payload
-                payload.Message.Blob = PayloadSerializer.PayloadSerialize(rq);
+                payload.Message.Holder = PayloadSerializer.PayloadSerialize(rq);
 
                 //Set the processing time
                 payload.MaxProcessingTime = rqSettings?.WaitTime ?? fallbackMaxProcessingTime ?? Policy.OutgoingRequestMaxProcessingTimeDefault;
@@ -364,9 +364,9 @@ namespace Xigadee
                             //payload.Message.
                             var response = new ResponseWrapper<RS>(payloadRs);
 
-                            if (payloadRs.Message.Blob.HasObject)
-                                response.Response = (RS)payloadRs.Message.Blob.Object;
-                            else if (payloadRs.Message.Blob != null)
+                            if (payloadRs.Message.Holder.HasObject)
+                                response.Response = (RS)payloadRs.Message.Holder.Object;
+                            else if (payloadRs.Message.Holder != null)
                                 response.Response = PayloadSerializer.PayloadDeserialize<RS>(payloadRs);
 
                             return response;

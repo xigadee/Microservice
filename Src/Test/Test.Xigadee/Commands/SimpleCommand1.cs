@@ -64,7 +64,7 @@ namespace Test.Xigadee
         {
             var blahIn = PayloadSerializer.PayloadDeserialize<Blah>(incoming);
             var rs = incoming.ToResponse();
-            rs.Message.Blob.SetObject("Freaky");
+            rs.Message.Holder.SetObject("Freaky");
             rs.Message.Status = "204";
             rs.Message.StatusDescription = "Hello";
             outgoing.Add(rs);
@@ -77,7 +77,7 @@ namespace Test.Xigadee
         {
             var blahIn = PayloadSerializer.PayloadDeserialize<Blah>(incoming);
             var rs = incoming.ToResponse();
-            rs.Message.Blob = PayloadSerializer.PayloadSerialize(blahIn.Message);
+            rs.Message.Holder = PayloadSerializer.PayloadSerialize(blahIn.Message);
             rs.Message.Status = "204";
             rs.Message.StatusDescription = "Hello";
             outgoing.Add(rs);
@@ -89,7 +89,7 @@ namespace Test.Xigadee
             var blahIn = PayloadSerializer.PayloadDeserialize<Blah>(incoming);
             var rs = incoming.ToResponse();
             //rs.Message.Blob = PayloadSerializer.PayloadSerialize(new Blah { ContentId = blahIn.ContentId, Message = "Howdy" });
-            rs.Message.Blob.SetObject("Freaky");
+            rs.Message.Holder.SetObject("Freaky");
             rs.Message.Status = "204";
             rs.Message.StatusDescription = "Hello";
             outgoing.Add(rs);
@@ -102,7 +102,7 @@ namespace Test.Xigadee
         {
             var blahIn = PayloadSerializer.PayloadDeserialize<Blah>(incoming);
             var rs = incoming.ToResponse();
-            rs.Message.Blob = PayloadSerializer.PayloadSerialize(blahIn.Message);
+            rs.Message.Holder = PayloadSerializer.PayloadSerialize(blahIn.Message);
             rs.Message.Status = "204";
             rs.Message.StatusDescription = "Hello";
             outgoing.Add(rs);

@@ -103,7 +103,7 @@ namespace Xigadee
                     sMessage.ResponseChannelPriority = ResponseAddressPriority;
 
                 sMessage.ChannelPriority = RequestAddressPriority ?? client.Priority;
-                sMessage.Blob = holder;
+                sMessage.Holder = holder;
 
                 return sMessage;
             };

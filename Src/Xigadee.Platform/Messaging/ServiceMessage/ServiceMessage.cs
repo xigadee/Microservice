@@ -156,11 +156,11 @@ namespace Xigadee
         public string ResponseActionType { get; set; }
         #endregion
 
-        #region Blob
+        #region Holder
         /// <summary>
-        /// Gets or sets the binary blob for the serialized object.
+        /// Gets or sets the serialization holder for the message.
         /// </summary>
-        public SerializationHolder Blob { get; set; }
+        public SerializationHolder Holder { get; set; }
         #endregion
 
         #region IsNoop

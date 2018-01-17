@@ -26,7 +26,7 @@ namespace Xigadee
             ars.Message.StatusSet(status, description);
 
             if (!response.Equals(default(C)))
-                ars.Message.Blob = c.PayloadSerializer.PayloadSerialize(response);
+                ars.Message.Holder = c.PayloadSerializer.PayloadSerialize(response);
 
             c.Responses.Add(ars);
         }

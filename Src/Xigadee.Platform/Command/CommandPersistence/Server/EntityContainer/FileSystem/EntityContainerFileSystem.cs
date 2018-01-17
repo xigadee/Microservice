@@ -30,8 +30,13 @@ namespace Xigadee
             Values = new EntityContainerFileSystemReadOnlyCollection<E>(FS.Entity, ToFilter(ExtensionEntity), (f) => default(E));
         }
 
+        /// <summary>
+        /// This is the extension string for entity file objects.
+        /// </summary>
         public string ExtensionEntity { get; set; } = cnEntityMatch;
-
+        /// <summary>
+        /// This is the extension string for reference file objects.
+        /// </summary>
         public string ExtensionReference { get; set; } = cnReferenceMatch;
 
         private string ToFilter(string extension)
@@ -64,6 +69,11 @@ namespace Xigadee
             return $"{Transform.KeyStringMaker(key)}.{ExtensionEntity}";
         }
 
+        protected virtual string PrepareReference(Tuple<string, string> reference)
+        {
+            return $"{reference.Item1}_{reference.Item2}.{ExtensionReference}";
+        }
+
         protected virtual FileInfo GetFileInfo(K key)
         {
             string sKey = PrepareKey(key);
@@ -87,7 +97,8 @@ namespace Xigadee
             if (fi.Exists)
                 return 409;
 
-            string entityData = Transform.JsonSerialize(value);
+            var jsonHolder = Transform.JsonMaker(value);
+
 
             using (var fs = fi.Open(FileMode.CreateNew, FileAccess.Write))
             {

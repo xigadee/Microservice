@@ -51,7 +51,7 @@ namespace Xigadee
             {
                 var client = ClientResolve(1);
                 var payload = TransmissionPayload.Create();
-                payload.Message.Blob.SetObject(entry);
+                payload.Message.Holder.SetObject(entry);
 
                 payload.Message.OriginatorServiceId = originatorId;
                 if (utcTimeStamp.HasValue)
@@ -77,13 +77,13 @@ namespace Xigadee
         public static EventData PackEventSource(TransmissionPayload payload)
         {
             ServiceMessage sMessage = payload.Message;
-            var entry = payload.Message.Blob.Object as EventSourceEntry;
+            var entry = payload.Message.Holder.Object as EventSourceEntry;
 
             EventData bMessage;
-            if (sMessage.Blob == null)
+            if (sMessage.Holder == null)
                 bMessage = new EventData();
             else
-                bMessage = new EventData(sMessage.Blob);
+                bMessage = new EventData(sMessage.Holder);
 
             bMessage.Properties.Add("OriginatorServiceId", sMessage.OriginatorServiceId);
 

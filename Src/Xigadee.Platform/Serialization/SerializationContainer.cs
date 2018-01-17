@@ -19,22 +19,18 @@ namespace Xigadee
         /// The serializers that support magic bytes.
         /// </summary>
         protected Dictionary<string, IPayloadSerializerMagicBytes> mPayloadSerializersMagicBytes;
-
         /// <summary>
         /// This contains the supported serializers.
         /// </summary>
         protected Dictionary<string, IPayloadSerializer> mPayloadSerializers;
-
         /// <summary>
         /// This contains the supported serializers.
         /// </summary>
         protected Dictionary<string, IPayloadCompressor> mPayloadCompressors;
-
         /// <summary>
         /// This is the look up cache for the specific type.
         /// </summary>
         protected ConcurrentDictionary<Type, IPayloadSerializer> mLookUpCache;
-
         #endregion
         #region Constructor
         /// <summary>
@@ -72,6 +68,7 @@ namespace Xigadee
                 statistics.CacheCount = mLookUpCache?.Count ?? 0;
 
                 statistics.Serialization = mPayloadSerializers?.Select((c) => $"{c.Key}: {c.Value.GetType().Name}").ToArray();
+                statistics.Compression = mPayloadCompressors?.Select((c) => $"{c.Key}: {c.Value.GetType().Name}").ToArray();
                 statistics.Cache = mLookUpCache?.Select((c) => $"{c.Key.Name}: {c.Value.GetType().Name}").ToArray();
             }
             catch (Exception)
@@ -98,48 +95,83 @@ namespace Xigadee
         /// </summary>
         protected override void StopInternal()
         {
-            mLookUpCache.Clear();
-            mPayloadSerializers.Clear();
+            ClearSerializers();
+            ClearCompressors();
         }
         #endregion
 
-        #region Add/Clear/Count
+        #region Add/Clear/Count - Serializers
         /// <summary>
         /// This method adds the serializer to the collection.
         /// </summary>
-        /// <param name="serializer">The serializer to add.</param>
-        public IPayloadSerializer Add(IPayloadSerializer serializer)
+        /// <param name="component">The serializer to add.</param>
+        public IPayloadSerializer Add(IPayloadSerializer component)
         {
-            if (string.IsNullOrEmpty(serializer.ContentType))
-                throw new ArgumentOutOfRangeException("ContentType cannot be null or empty.");
+            if (component == null)
+                throw new ArgumentNullException("component");
 
-            var contentType = serializer.ContentType.ToLowerInvariant();
-            mPayloadSerializers.Add(contentType, serializer);
-            if (serializer is IPayloadSerializerMagicBytes)
+            string id;
+            if (!ExtractContentType(component.ContentType, out id))
+                throw new ArgumentOutOfRangeException($"ContentType '{component.ContentType}' is not valid.");
+
+            mPayloadSerializers.Add(id, component);
+            if (component is IPayloadSerializerMagicBytes)
             {
-                var mb = (IPayloadSerializerMagicBytes)serializer;
+                var mb = (IPayloadSerializerMagicBytes)component;
                 mPayloadSerializersMagicBytes.Add(mb.ToIdentifier(), mb);
             }
 
             mLookUpCache?.Clear();
 
-            DefaultContentType = DefaultContentType ?? contentType;
+            DefaultContentType = DefaultContentType ?? id;
 
-            return serializer;
+            return component;
         }
         /// <summary>
         /// This method clears all the serializers currently registered.
         /// </summary>
-        public void Clear()
+        public void ClearSerializers()
         {
             mPayloadSerializers.Clear();
+            mPayloadSerializersMagicBytes.Clear();
             mLookUpCache?.Clear();
             DefaultContentType = null;
         }
         /// <summary>
         /// Gets the count on the number of registered serializers.
         /// </summary>
-        public int Count => mPayloadSerializers?.Count ?? 0; 
+        public int CountSerializers => mPayloadSerializers?.Count ?? 0;
+
+        #endregion
+        #region Add/Clear/Count - Compressors
+        /// <summary>
+        /// This method adds the compressor to the collection.
+        /// </summary>
+        /// <param name="component">The compressor to add.</param>
+        public IPayloadCompressor Add(IPayloadCompressor component)
+        {
+            if (component == null)
+                throw new ArgumentNullException("component");
+
+            string id;
+            if (!ExtractContentEncoding(component.ContentEncoding, out id))
+                throw new ArgumentOutOfRangeException($"ContentEncoding '{component.ContentEncoding}' is not valid.");
+
+            mPayloadCompressors.Add(id, component);
+
+            return component;
+        }
+        /// <summary>
+        /// This method clears all the compressors currently registered.
+        /// </summary>
+        public void ClearCompressors()
+        {
+            mPayloadCompressors.Clear();
+        }
+        /// <summary>
+        /// Gets the count on the number of registered compressors.
+        /// </summary>
+        public int CountCompressors => mPayloadCompressors?.Count ?? 0; 
         #endregion
 
         #region PayloadDeserialize...
@@ -151,19 +183,7 @@ namespace Xigadee
         /// <returns>Returns the object deserialized from the binary blob.</returns>
         public P PayloadDeserialize<P>(SerializationHolder holder)
         {
-            if (holder?.Blob == null || mPayloadSerializers.Count == 0)
-                return default(P);
-
-            var mimeType = PrepareMimeType(holder.ContentType);
-
-            var serializer = mPayloadSerializers[mimeType];
-
-            if (serializer != null 
-                && serializer.TryDeserialize(holder) 
-                && holder.ObjectType == typeof(P))
-                return (P)holder.Object;
-
-            return default(P);
+            return (P)PayloadDeserialize(holder);
         }
 
         /// <summary>
@@ -176,35 +196,28 @@ namespace Xigadee
             if (holder?.Blob == null || mPayloadSerializers.Count == 0)
                 return null;
 
-            var mimeType = PrepareMimeType(holder.ContentType);
-
-            var serializer = mPayloadSerializers[mimeType];
-
-            if (serializer != null
-                && serializer.TryDeserialize(holder))
+            if (TryPayloadDeserialize(holder))
                 return holder.Object;
 
             return null;
         } 
         #endregion
-
         #region PayloadSerialize(object requestPayload)
         /// <summary>
         /// This method serializes the requestPayload object in to a binary blob using the 
         /// serializer collection.
         /// </summary>
         /// <param name="payload">The requestPayload to serialize.</param>
-        /// <returns>Returns the binary blob object.</returns>
+        /// <returns>Returns the binary blob holder.</returns>
         public SerializationHolder PayloadSerialize(object payload)
         {
-            //if (payload == null)
-            //    return null;
+            var holder = SerializationHolder.CreateWithObject(payload);
+            holder.ContentType = DefaultContentType;
 
-            //var serializer = mPayloadSerializers.Values.FirstOrDefault(s => s.SupportsContentTypeSerialization(payload.GetType()));
-            //if (serializer != null)
-            //    return serializer.Serialize(payload);
+            if (TryPayloadSerialize(holder))
+                return holder;
 
-            throw new PayloadTypeSerializationNotSupportedException(payload.GetType().AssemblyQualifiedName);
+            return null;
         }
         #endregion
 
@@ -245,78 +258,205 @@ namespace Xigadee
         }
         #endregion
 
-        #region PrepareMimeType(string mimetype)
-        private string PrepareMimeType(string mimetype)
+        #region ExtractContentType(string contentType, out string value)        
+        /// <summary>
+        /// Extracts the type of the content in the format type/subtype.
+        /// </summary>
+        /// <param name="headerField">Type of the content.</param>
+        /// <param name="value">The value.</param>
+        /// <remarks>See: https://www.w3.org/Protocols/rfc1341/4_Content-Type.html </remarks>
+        /// <returns>Returns true if the content type can be extracted from the header field.</returns>
+        public static bool ExtractContentType(string headerField, out string value)
         {
-            if (mimetype == null)
-                throw new ArgumentNullException(nameof(mimetype));
+            value = null;
 
-            var items = mimetype.Split(';');
+            if (string.IsNullOrEmpty(headerField))
+                return false;
 
-            return items[0].Trim().ToLowerInvariant();
-        } 
+            var items = headerField.Split(';');
+
+            value = items[0].Trim().ToLowerInvariant();
+            return true;
+        }
+        #endregion
+        #region ExtractContentEncoding(string contentEncoding, out string value)        
+        /// <summary>
+        /// Extracts the content encoding in to a matchable format.
+        /// </summary>
+        /// <param name="contentEncoding">The content encoding.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>Returns true if it can be extracted.</returns>
+        public static bool ExtractContentEncoding(string contentEncoding, out string value)
+        {
+            value = null;
+
+            if (string.IsNullOrEmpty(contentEncoding))
+                return false;
+
+            value = contentEncoding.Trim().ToLowerInvariant();
+            return true;
+        }
         #endregion
 
-        #region SupportsSerializer(string mimetype)
+        #region SupportsSerializer(string contentType)
         /// <summary>
         /// Checks that a specific serializer is supported.
         /// </summary>
-        /// <param name="mimetype">The mime type identifier for the serializer.</param>
+        /// <param name="contentType">The content type identifier for the serializer.</param>
         /// <returns>
         /// Returns true if the serializer is supported.
         /// </returns>
-        public bool SupportsSerializer(string mimetype)
+        public bool SupportsSerializer(string contentType)
         {
-            return mPayloadSerializers.ContainsKey(PrepareMimeType(mimetype));
+            IPayloadSerializer serializer;
+            return TryGetSerializer(contentType, out serializer);
         }
         #endregion
-        #region TryGetSerializer(string mimetype, out IPayloadSerializer serializer)
+        #region TryGetSerializer(string contentType, out IPayloadSerializer serializer)
         /// <summary>
         /// Tries to get the serializer.
         /// </summary>
-        /// <param name="mimetype">The serializer mime type.</param>
-        /// <param name="serializer">The serializer.</param>
-        /// <returns>Returns true if successful.</returns>
-        protected bool TryGetSerializer(string mimetype, out IPayloadSerializer serializer)
+        /// <param name="contentType">The serializer mime type.</param>
+        /// <param name="serializer">The output serializer.</param>
+        /// <returns>Returns true if successfully matched.</returns>
+        protected bool TryGetSerializer(string contentType, out IPayloadSerializer serializer)
         {
-            var sType = PrepareMimeType(mimetype);
+            serializer = null;
+            if (string.IsNullOrEmpty(contentType))
+                return false;
+
+            string sType;
+            if (!ExtractContentType(contentType, out sType))
+                return false;
+
             return mPayloadSerializers.TryGetValue(sType, out serializer);
         }
         #endregion
-        #region TryPayloadSerialize(SerializationHolder holder)
+
+        #region SupportsCompressor(string contentEncodingType)
+        /// <summary>
+        /// A boolean function that returns true if the compression type is supported.
+        /// </summary>
+        /// <param name="contentEncodingType">The content encoding type, i.e. GZIP/DEFLATE etc..</param>
+        /// <returns>
+        /// Returns true when the ContentEncoding type is supported.
+        /// </returns>
+        public bool SupportsCompressor(string contentEncodingType)
+        {
+            IPayloadCompressor compressor;
+            return TryGetCompressor(contentEncodingType, out compressor);
+        } 
+        #endregion
+        #region TryGetCompressor(string contentEncodingType, out IPayloadCompressor compressor)
+        /// <summary>
+        /// Tries to get the compressor.
+        /// </summary>
+        /// <param name="contentEncodingType">The content encoding type.</param>
+        /// <param name="compressor">The compressor.</param>
+        /// <returns>Returns true if successful.</returns>
+        protected bool TryGetCompressor(string contentEncodingType, out IPayloadCompressor compressor)
+        {
+            compressor = null;
+            string ceType;
+
+            if (!ExtractContentEncoding(contentEncodingType, out ceType))
+                return false;
+
+            return mPayloadCompressors.TryGetValue(ceType, out compressor);
+        }
+        #endregion
+
+        /// <summary>
+        /// Tries to resolve the serializer and compressor.
+        /// </summary>
+        /// <param name="holder">The holder.</param>
+        /// <param name="throwExceptions">if set to <c>true</c> [throw exceptions].</param>
+        /// <param name="serializer">The output serializer.</param>
+        /// <param name="compressor">The output compressor.</param>
+        /// <returns>Returns true if successful.</returns>
+        protected virtual bool TryResolve(SerializationHolder holder, bool throwExceptions, out IPayloadSerializer serializer, out IPayloadCompressor compressor)
+        {
+            serializer = null;
+            compressor = null;
+            if (!TryGetSerializer(holder.ContentType, out serializer))
+                return false;
+
+            return !holder.HasContentEncoding || TryGetCompressor(holder.ContentEncoding, out compressor);
+        }
+
+        #region TryPayloadSerialize(SerializationHolder holder, bool throwExceptions = false)
         /// <summary>
         /// This method attempts to Serialize the object and sets the blob and headers in the holder.
         /// </summary>
         /// <param name="holder">The serialization holder.</param>
+        /// <param name="throwExceptions">Directs the container to throw detailed exceptions on failure. The default is false.</param>
         /// <returns>
         /// Returns true if the operation is successful.
         /// </returns>
-        public bool TryPayloadSerialize(SerializationHolder holder)
+        public bool TryPayloadSerialize(SerializationHolder holder, bool throwExceptions = false)
         {
             IPayloadSerializer serializer;
-
-            if (!TryGetSerializer(holder.ContentType, out serializer))
+            IPayloadCompressor compressor;
+            if (!TryResolve(holder, throwExceptions, out serializer, out compressor))
                 return false;
 
-            return serializer.TrySerialize(holder);
+            return serializer.TrySerialize(holder) 
+                && (compressor?.TryCompression(holder) ?? true);
         }
         #endregion
-        #region TryPayloadDeserialize(SerializationHolder holder)
+        #region TryPayloadDeserialize(SerializationHolder holder, bool throwExceptions = false)
         /// <summary>
         /// This method attempts to deserialize the binary blob and sets the object in the holder.
         /// </summary>
         /// <param name="holder">The serialization holder.</param>
+        /// <param name="throwExceptions">Directs the container to throw detailed exceptions on failure. The default is false.</param>
         /// <returns>
         /// Returns true if the operation is successful.
         /// </returns>
-        public bool TryPayloadDeserialize(SerializationHolder holder)
+        public bool TryPayloadDeserialize(SerializationHolder holder, bool throwExceptions = false)
         {
             IPayloadSerializer serializer;
-
-            if (!TryGetSerializer(holder.ContentType, out serializer))
+            IPayloadCompressor compressor;
+            if (!TryResolve(holder, throwExceptions, out serializer, out compressor))
                 return false;
 
-            return serializer.TryDeserialize(holder);
+            return (compressor?.TryDecompression(holder) ?? true) 
+                && serializer.TryDeserialize(holder);
+        }
+        #endregion
+
+        #region TryDecompress(SerializationHolder holder)
+        /// <summary>
+        /// Tries to decompress the incoming holder.
+        /// </summary>
+        /// <param name="holder">The holder.</param>
+        /// <returns>
+        /// Returns true if the incoming binary payload is successfully decompressed.
+        /// </returns>
+        public bool TryDecompress(SerializationHolder holder)
+        {
+            IPayloadCompressor comp;
+            if (!TryGetCompressor(holder.ContentEncoding, out comp))
+                return false;
+
+            return comp.TryDecompression(holder);
+        }
+        #endregion
+        #region TryCompress(SerializationHolder holder)
+        /// <summary>
+        /// Tries to compress the outgoing payload.
+        /// </summary>
+        /// <param name="holder">The holder.</param>
+        /// <returns>
+        /// Returns true if the Content is compressed correctly to a binary blob.
+        /// </returns>
+        public bool TryCompress(SerializationHolder holder)
+        {
+            IPayloadCompressor comp;
+            if (!TryGetCompressor(holder.ContentEncoding, out comp))
+                return false;
+
+            return comp.TryCompression(holder);
         } 
         #endregion
 

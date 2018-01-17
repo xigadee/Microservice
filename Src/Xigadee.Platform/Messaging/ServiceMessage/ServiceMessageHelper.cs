@@ -267,7 +267,7 @@ namespace Xigadee
             baseMessage.CorrelationUTC = message.OriginatorUTC;
             baseMessage.CorrelationKey = message.OriginatorKey;
             baseMessage.DispatcherTransitCount = message.DispatcherTransitCount;
-            baseMessage.Blob = blob;
+            baseMessage.Holder = blob;
 
             return baseMessage;
         }
@@ -296,7 +296,7 @@ namespace Xigadee
             baseMessage.CorrelationUTC = message.CorrelationUTC;
             baseMessage.CorrelationKey = correlationId ?? message.OriginatorKey;
             baseMessage.DispatcherTransitCount = message.DispatcherTransitCount;
-            baseMessage.Blob = blob;
+            baseMessage.Holder = blob;
 
             return baseMessage;
         }

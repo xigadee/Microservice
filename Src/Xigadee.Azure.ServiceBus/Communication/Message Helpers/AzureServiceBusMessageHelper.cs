@@ -36,10 +36,10 @@ namespace Xigadee
         {
             ServiceMessage sMessage = payload.Message;
             Microsoft.Azure.ServiceBus.Message bMessage;
-            if (sMessage.Blob == null)
+            if (sMessage.Holder == null)
                 bMessage = new Microsoft.Azure.ServiceBus.Message();
             else
-                bMessage = new Microsoft.Azure.ServiceBus.Message(sMessage.Blob);
+                bMessage = new Microsoft.Azure.ServiceBus.Message(sMessage.Holder);
 
             bMessage.UserProperties.Add("SecuritySignature", sMessage.SecuritySignature);
 
@@ -133,7 +133,7 @@ namespace Xigadee
             sMessage.Status = bMessage.UserProperties["Status"] as string;
             sMessage.StatusDescription = bMessage.UserProperties["StatusDescription"] as string;
 
-            sMessage.Blob = bMessage.Body;
+            sMessage.Holder = bMessage.Body;
 
             sMessage.FabricDeliveryCount = bMessage.SystemProperties.DeliveryCount;
 

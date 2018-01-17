@@ -47,13 +47,13 @@ namespace Xigadee
         public virtual void ClearPayloadSerializers()
         {
             ValidateServiceNotStarted();
-            mContainer.Clear();
+            mContainer.ClearSerializers();
         }
         #endregion
 
         /// <summary>
         /// Gets the payload serializer count.
         /// </summary>
-        public virtual int PayloadSerializerCount => mContainer?.Count ?? 0;
+        public virtual int PayloadSerializerCount => mContainer?.CountSerializers ?? 0;
     }
 }

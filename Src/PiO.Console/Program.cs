@@ -29,7 +29,7 @@ namespace PiO
                     {
                         //Do nothing
                         var debug = pm.ChannelId;
-                        var rs = await pc.Create(ctx.Request.Message.Blob.Object as LightwaveMessage);
+                        var rs = await pc.Create(ctx.Request.Message.Holder.Object as LightwaveMessage);
                     }, ("message", "in"))
                     //.AttachPersistenceManagerHandlerMemory((LightwaveMessage m) => m.Trans, (s) => int.Parse(s), out pm)
                     .AttachPersistenceManagerHandlerFile((LightwaveMessage m) => m.Trans, (s) => int.Parse(s), out pm)

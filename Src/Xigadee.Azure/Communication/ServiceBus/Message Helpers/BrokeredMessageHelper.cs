@@ -72,10 +72,10 @@ namespace Xigadee
         {
             ServiceMessage sMessage = payload.Message;
             BrokeredMessage bMessage;
-            if (sMessage.Blob == null)
+            if (sMessage.Holder == null)
                 bMessage = new BrokeredMessage();
             else
-                bMessage = new BrokeredMessage(sMessage.Blob);
+                bMessage = new BrokeredMessage(sMessage.Holder);
 
             bMessage.Properties.Add("SecuritySignature", sMessage.SecuritySignature);
 
@@ -169,7 +169,7 @@ namespace Xigadee
             sMessage.Status = bMessage.Properties["Status"] as string;
             sMessage.StatusDescription = bMessage.Properties["StatusDescription"] as string;
 
-            sMessage.Blob = bMessage.GetBody<byte[]>();
+            sMessage.Holder = bMessage.GetBody<byte[]>();
 
             sMessage.FabricDeliveryCount = bMessage.DeliveryCount;
 

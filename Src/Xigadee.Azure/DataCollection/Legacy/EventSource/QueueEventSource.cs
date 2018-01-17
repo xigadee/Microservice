@@ -103,7 +103,7 @@ namespace Xigadee
             {
                 var client = ClientResolve(1);
                 var payload = TransmissionPayload.Create();
-                payload.Message.Blob.SetObject(entry);
+                payload.Message.Holder.SetObject(entry);
 
                 payload.Message.OriginatorServiceId = originatorId;
                 if (utcTimeStamp.HasValue)
@@ -128,7 +128,7 @@ namespace Xigadee
         /// <returns>Returns a converted BrokeredMessage from transmission.</returns>
         public BrokeredMessage PackEventSource(TransmissionPayload payload)
         {
-            var entry = payload.Message.Blob.Object as EventSourceEntryBase;
+            var entry = payload.Message.Holder.Object as EventSourceEntryBase;
 
             byte[] blob;
 
