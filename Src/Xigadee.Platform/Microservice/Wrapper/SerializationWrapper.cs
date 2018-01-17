@@ -50,10 +50,50 @@ namespace Xigadee
             mContainer.ClearSerializers();
         }
         #endregion
-
         /// <summary>
         /// Gets the payload serializer count.
         /// </summary>
-        public virtual int PayloadSerializerCount => mContainer?.CountSerializers ?? 0;
+        public int PayloadSerializerCount => mContainer?.CountSerializers ?? 0;
+
+        #region RegisterPayloadCompressor ...
+        /// <summary>
+        /// Registers the payload compressor.
+        /// </summary>
+        /// <param name="compressor">The compressor creation function.</param>
+        /// <returns>
+        /// Returns the compressor.
+        /// </returns>
+        public IPayloadCompressor RegisterPayloadCompressor(Func<IPayloadCompressor> compressor)
+        {
+            ValidateServiceNotStarted();
+            return mContainer.Add(compressor());
+        }
+        /// <summary>
+        /// Registers the payload compressor.
+        /// </summary>
+        /// <param name="compressor">The compressor.</param>
+        /// <returns>
+        /// Returns the compressor.
+        /// </returns>
+        public IPayloadCompressor RegisterPayloadCompressor(IPayloadCompressor compressor)
+        {
+            ValidateServiceNotStarted();
+            return mContainer.Add(compressor);
+        }
+        #endregion
+        #region ClearPayloadCompressors()
+        /// <summary>
+        /// Clears the payload compressors.
+        /// </summary>
+        public void ClearPayloadCompressors()
+        {
+            ValidateServiceNotStarted();
+            mContainer.ClearCompressors();
+        } 
+        #endregion
+        /// <summary>
+        /// Gets the payload compressor count.
+        /// </summary>
+        public int PayloadCompressorCount => mContainer?.CountCompressors ?? 0;
     }
 }

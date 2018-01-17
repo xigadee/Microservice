@@ -14,7 +14,6 @@ namespace Xigadee
         /// </summary>
         public PayloadCompressorDeflate() : base("deflate") { }
 
-
         /// <summary>
         /// Gets the compression stream.
         /// </summary>

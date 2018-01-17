@@ -20,12 +20,32 @@ namespace Xigadee
         /// <returns>The serializer.</returns>
         IPayloadSerializer RegisterPayloadSerializer(IPayloadSerializer serializer);
         /// <summary>
+        /// Registers the payload compressor.
+        /// </summary>
+        /// <param name="compressor">The compressor creation function.</param>
+        /// <returns>Returns the compressor.</returns>
+        IPayloadCompressor RegisterPayloadCompressor(Func<IPayloadCompressor> compressor);
+        /// <summary>
+        /// Registers the payload compressor.
+        /// </summary>
+        /// <param name="compressor">The compressor.</param>
+        /// <returns>Returns the compressor.</returns>
+        IPayloadCompressor RegisterPayloadCompressor(IPayloadCompressor compressor);
+        /// <summary>
         /// Clears the payload serializers.
         /// </summary>
         void ClearPayloadSerializers();
         /// <summary>
+        /// Clears the payload compressors.
+        /// </summary>
+        void ClearPayloadCompressors();
+        /// <summary>
         /// Gets the payload serializer count.
         /// </summary>
         int PayloadSerializerCount { get; }
+        /// <summary>
+        /// Gets the payload compressor count.
+        /// </summary>
+        int PayloadCompressorCount { get; }
     }
 }
