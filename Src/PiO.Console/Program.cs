@@ -13,7 +13,7 @@ namespace PiO
         {
             DebugMemoryDataCollector coll;
             //PersistenceManagerHandlerMemory<int, LightwaveMessage> pm = null;
-            PersistenceManagerHandlerFile<int, LightwaveMessage> pm = null;
+            PersistenceManagerHandlerFileSystem<int, LightwaveMessage> pm = null;
             PersistenceClient<int, LightwaveMessage> pc = null;
             mservice = new MicroservicePipeline("PiO", description: "PiO Server");
 
@@ -32,7 +32,7 @@ namespace PiO
                         var rs = await pc.Create(ctx.Request.Message.Holder.Object as LightwaveMessage);
                     }, ("message", "in"))
                     //.AttachPersistenceManagerHandlerMemory((LightwaveMessage m) => m.Trans, (s) => int.Parse(s), out pm)
-                    .AttachPersistenceManagerHandlerFile((LightwaveMessage m) => m.Trans, (s) => int.Parse(s), out pm)
+                    .AttachPersistenceManagerFileSystem((LightwaveMessage m) => m.Trans, (s) => int.Parse(s), out pm)
                     .AttachPersistenceClient(out pc)
                     .Revert()
                 .AddChannelOutgoing("status", "Outgoing UDP status", SenderPartitionConfig.Init(1))

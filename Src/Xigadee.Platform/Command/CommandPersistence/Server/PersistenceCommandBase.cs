@@ -134,7 +134,6 @@ namespace Xigadee
             base.StatisticsRecalculate(stats);
 
             StatisticsInternal.RequestsInPlay = mRequestsCurrent.Values.Select((v) => v?.Debug).ToArray();
-
         } 
         #endregion
 

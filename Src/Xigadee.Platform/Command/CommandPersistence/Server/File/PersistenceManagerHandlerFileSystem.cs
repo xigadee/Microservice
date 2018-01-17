@@ -11,7 +11,7 @@ namespace Xigadee
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
     [DebuggerDisplay("{Container.Debug}")]
-    public class PersistenceManagerHandlerFile<K, E>: PersistenceManagerHandlerContainerBase<K, E, PersistenceStatistics, PersistenceManagerHandlerFile<K, E>.CommandPolicy, EntityContainerFileSystem<K, E>>
+    public class PersistenceManagerHandlerFileSystem<K, E>: PersistenceManagerHandlerEntityContainerBase<K, E, PersistenceStatistics, PersistenceManagerHandlerFileSystem<K, E>.CommandPolicy, EntityContainerFileSystem<K, E>>
         where K : IEquatable<K>
     {
         #region Constructor
@@ -34,7 +34,7 @@ namespace Xigadee
         /// <param name="keySerializer">The key serializer function.</param>
         /// <param name="policy">The policy.</param>
         /// <param name="prePopulate">The optional pre-population collection.</param>
-        public PersistenceManagerHandlerFile(Func<E, K> keyMaker
+        public PersistenceManagerHandlerFileSystem(Func<E, K> keyMaker
             , Func<string, K> keyDeserializer
             , string entityName = null
             , VersionPolicy<E> versionPolicy = null

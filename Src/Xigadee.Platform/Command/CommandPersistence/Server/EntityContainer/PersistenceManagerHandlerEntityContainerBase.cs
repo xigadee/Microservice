@@ -19,7 +19,7 @@ namespace Xigadee
     /// <typeparam name="S">The persistence statistics type.</typeparam>
     /// <typeparam name="P">The persistence command policy type.</typeparam>
     /// <typeparam name="C">The entity container type.</typeparam>
-    public abstract class PersistenceManagerHandlerContainerBase<K, E, S, P, C>: PersistenceManagerHandlerJsonBase<K, E, S, P>, IRequireSecurityService
+    public abstract class PersistenceManagerHandlerEntityContainerBase<K, E, S, P, C>: PersistenceManagerHandlerJsonBase<K, E, S, P>, IRequireSecurityService
         where K : IEquatable<K>
         where S : PersistenceStatistics, new()
         where P : PersistenceCommandPolicy, new()
@@ -51,7 +51,7 @@ namespace Xigadee
         /// <param name="keySerializer">The key serializer function.</param>
         /// <param name="policy">The policy.</param>
         /// <param name="prePopulate">The optional pre-population collection.</param>
-        public PersistenceManagerHandlerContainerBase(Func<E, K> keyMaker
+        public PersistenceManagerHandlerEntityContainerBase(Func<E, K> keyMaker
             , Func<string, K> keyDeserializer
             , string entityName = null
             , VersionPolicy<E> versionPolicy = null

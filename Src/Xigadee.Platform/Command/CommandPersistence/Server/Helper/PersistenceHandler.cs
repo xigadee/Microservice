@@ -1,20 +1,4 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
@@ -24,80 +8,128 @@ namespace Xigadee
     /// <summary>
     /// This handler holds and tracks commands to the persistence agent.
     /// </summary>
-    public class PersistenceHandler:CommandHandler<PersistenceHandlerStatistics>
+    public class PersistenceHandler: CommandHandler<PersistenceHandler.ResponseStatistics>
     {
-        private ConcurrentDictionary<int, PersistenceResponseStatisticsHolder> mResponses = new ConcurrentDictionary<int, PersistenceResponseStatisticsHolder>();
+        private ConcurrentDictionary<int, ResponseCodeStatistics> mResponses = new ConcurrentDictionary<int, ResponseCodeStatistics>();
 
+        #region Record<KT, ET>(PersistenceRequestHolder<KT, ET> holder)
+        /// <summary>
+        /// Records the specified holder response.
+        /// </summary>
+        /// <typeparam name="KT">The key type.</typeparam>
+        /// <typeparam name="ET">The entity type.</typeparam>
+        /// <param name="holder">The request holder.</param>
         public virtual void Record<KT, ET>(PersistenceRequestHolder<KT, ET> holder)
         {
             int responseCode = holder.Rs?.ResponseCode ?? 0;
 
-            var stats = mResponses.GetOrAdd(responseCode, new PersistenceResponseStatisticsHolder(responseCode));
+            var stats = mResponses.GetOrAdd(responseCode, new ResponseCodeStatistics(responseCode));
             stats.Record(holder.Extent, holder.Rs);
         }
+        #endregion
 
-        protected override void StatisticsRecalculate(PersistenceHandlerStatistics stats)
+        #region StatisticsRecalculate(ResponseStatistics stats)
+        /// <summary>
+        /// This method recalculates the statistics for the command handler.
+        /// </summary>
+        /// <param name="stats">The stats to recalculate.</param>
+        protected override void StatisticsRecalculate(ResponseStatistics stats)
         {
             base.StatisticsRecalculate(stats);
 
             stats.Responses = mResponses.Values.ToArray();
-        }
-    }
+        } 
+        #endregion
 
-    public class PersistenceHandlerStatistics: CommandHandlerStatistics
-    {
-        public override string Name
+        #region Class -> ResponseStatistics
+        /// <summary>
+        /// This is the handler statistics class.
+        /// </summary>
+        /// <seealso cref="Xigadee.CommandHandlerStatistics" />
+        public class ResponseStatistics: CommandHandlerStatistics
         {
-            get
+            #region Name
+            /// <summary>
+            /// The override makes sure that name comes first in the output.
+            /// </summary>
+            public override string Name
             {
-                return base.Name;
-            }
+                get
+                {
+                    return base.Name;
+                }
 
-            set
-            {
-                base.Name = value;
+                set
+                {
+                    base.Name = value;
+                }
             }
+            #endregion
+            /// <summary>
+            /// Gets or sets the responses statistics.
+            /// </summary>
+            public ResponseCodeStatistics[] Responses { get; set; }
         }
+        #endregion
 
-        public PersistenceResponseStatisticsHolder[] Responses { get; set; }
-    }
-
-    public class PersistenceResponseStatisticsHolder: MessagingStatistics
-    {
-        private long mRetries = 0;
-        private long mHitCount = 0;
-        private long mCacheHits = 0;
-
-        public PersistenceResponseStatisticsHolder(int status)
+        /// <summary>
+        /// This is the specific command statistics holder for a specific status code..
+        /// </summary>
+        /// <seealso cref="Xigadee.MessagingStatistics" />
+        public class ResponseCodeStatistics: MessagingStatistics
         {
-            Status = status;
+            private long mRetries = 0;
+            private long mHitCount = 0;
+            private long mCacheHits = 0;
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="ResponseCodeStatistics"/> class.
+            /// </summary>
+            /// <param name="status">The status code.</param>
+            public ResponseCodeStatistics(int status)
+            {
+                Status = status;
+            }
+            /// <summary>
+            /// Gets the status code.
+            /// </summary>
+            public int Status { get; }
+            /// <summary>
+            /// Gets the retries.
+            /// </summary>
+            public long Retries { get { return mRetries; } }
+            /// <summary>
+            /// Gets the cache hits.
+            /// </summary>
+            public long CacheHits { get { return mRetries; } }
+            /// <summary>
+            /// Records the specified extent.
+            /// </summary>
+            /// <typeparam name="KT">The key type.</typeparam>
+            /// <typeparam name="ET">The entity type.</typeparam>
+            /// <param name="extent">The timespan extent.</param>
+            /// <param name="rs">The response holder..</param>
+            public void Record<KT, ET>(TimeSpan? extent, PersistenceRepositoryHolder<KT, ET> rs)
+            {
+                if (extent.HasValue)
+                {
+                    ActiveIncrement();
+                    ActiveDecrement(extent.Value);
+                }
+
+                if (rs?.IsRetry ?? false)
+                {
+                    Interlocked.Increment(ref mRetries);
+                }
+
+                if (rs?.IsCached ?? false)
+                {
+                    Interlocked.Increment(ref mCacheHits);
+                }
+
+                Interlocked.Add(ref mRetries, rs?.Retry ?? 0);
+            }
         }
 
-        public int Status { get; }
-
-        public long Retries { get { return mRetries; } }
-
-        public long CacheHits { get { return mRetries; } }
-
-        public void Record<KT, ET>(TimeSpan? extent, PersistenceRepositoryHolder<KT, ET> rs)
-        {
-            if (extent.HasValue)
-            {
-                ActiveIncrement();
-                ActiveDecrement(extent.Value);
-            }
-
-            if (rs?.IsRetry??false)
-            {
-                Interlocked.Increment(ref mRetries);
-            }
-
-            if (rs?.IsCached??false)
-            {
-                Interlocked.Increment(ref mCacheHits);
-            }
-
-            Interlocked.Add(ref mRetries, rs?.Retry??0);
-        }
     }
 }

@@ -26,7 +26,7 @@ namespace Xigadee
         /// <param name="keySerializer">The key serializer function.</param>
         /// <param name="prePopulate">The optional pre-population collection.</param>
         /// <returns>The pipeline.</returns>
-        public static C AttachPersistenceManagerHandlerMemory<C, K, E>(this C cpipe
+        public static C AttachPersistenceManagerFileSystem<C, K, E>(this C cpipe
             , Func<E, K> keyMaker
             , Func<string, K> keyDeserializer
             , int startupPriority = 100
@@ -44,9 +44,9 @@ namespace Xigadee
             where C : IPipelineChannelIncoming<IPipeline>
             where K : IEquatable<K>
         {
-            PersistenceManagerHandlerMemory<K, E> pm = null;
+            PersistenceManagerHandlerFileSystem<K, E> pm = null;
 
-            return cpipe.AttachPersistenceManagerHandlerMemory(keyMaker, keyDeserializer, out pm
+            return cpipe.AttachPersistenceManagerFileSystem(keyMaker, keyDeserializer, out pm
                   , startupPriority
                   , entityName
                   , versionPolicy
@@ -82,10 +82,10 @@ namespace Xigadee
         /// <param name="keySerializer">The key serializer function.</param>
         /// <param name="prePopulate">The optional pre-population collection.</param>
         /// <returns>The pipeline.</returns>
-        public static C AttachPersistenceManagerHandlerMemory<C, K, E>(this C cpipe
+        public static C AttachPersistenceManagerFileSystem<C, K, E>(this C cpipe
             , Func<E, K> keyMaker
             , Func<string, K> keyDeserializer
-            , out PersistenceManagerHandlerMemory<K,E> pm
+            , out PersistenceManagerHandlerFileSystem<K,E> pm
             , int startupPriority = 100
             , string entityName = null
             , VersionPolicy<E> versionPolicy = null
@@ -101,7 +101,7 @@ namespace Xigadee
             where C : IPipelineChannelIncoming<IPipeline>
             where K : IEquatable<K>
         {
-            cpipe.Pipeline.AddPersistenceManagerHandlerMemory(keyMaker, keyDeserializer, cpipe, out pm
+            cpipe.Pipeline.AddPersistenceManagerFileSystem(keyMaker, keyDeserializer, cpipe, out pm
                   , startupPriority
                   , entityName: entityName
                   , versionPolicy: versionPolicy

@@ -27,7 +27,7 @@ namespace Xigadee
         /// <param name="keySerializer">The key serializer function.</param>
         /// <param name="prePopulate">The optional pre-population collection.</param>
         /// <returns>The pipeline.</returns>
-        public static P AddPersistenceManagerHandlerFile<P,K,E>(this P pipeline
+        public static P AddPersistenceManagerFileSystem<P,K,E>(this P pipeline
             , Func<E, K> keyMaker
             , Func<string, K> keyDeserializer
             , IPipelineChannelIncoming<P> cpipe
@@ -46,9 +46,9 @@ namespace Xigadee
             where P : IPipeline
             where K : IEquatable<K>
         {
-            PersistenceManagerHandlerFile<K,E> pm = null;
+            PersistenceManagerHandlerFileSystem<K,E> pm = null;
 
-            return pipeline.AddPersistenceManagerHandlerFile(keyMaker, keyDeserializer, cpipe, out pm
+            return pipeline.AddPersistenceManagerFileSystem(keyMaker, keyDeserializer, cpipe, out pm
                   , startupPriority
                   , entityName: entityName
                   , versionPolicy: versionPolicy
@@ -85,11 +85,11 @@ namespace Xigadee
         /// <param name="keySerializer">The key serializer function.</param>
         /// <param name="prePopulate">The optional pre-population collection.</param>
         /// <returns>The pipeline.</returns>
-        public static P AddPersistenceManagerHandlerFile<P, K, E>(this P pipeline
+        public static P AddPersistenceManagerFileSystem<P, K, E>(this P pipeline
             , Func<E, K> keyMaker
             , Func<string, K> keyDeserializer
             , IPipelineChannelIncoming<P> cpipe
-            , out PersistenceManagerHandlerFile<K,E> pm
+            , out PersistenceManagerHandlerFileSystem<K,E> pm
             , int startupPriority = 100
             , string entityName = null
             , VersionPolicy<E> versionPolicy = null
@@ -106,13 +106,13 @@ namespace Xigadee
             where K : IEquatable<K>
         {
             if (keyMaker == null)
-                throw new ArgumentNullException("keyMaker", $"keyMaker cannot be null in {nameof(AddPersistenceManagerHandlerMemory)}");
+                throw new ArgumentNullException("keyMaker", $"keyMaker cannot be null in {nameof(AddPersistenceManagerFileSystem)}");
             if (keyDeserializer == null)
-                throw new ArgumentNullException("keyDeserializer", $"keyDeserializer cannot be null in {nameof(AddPersistenceManagerHandlerMemory)}");
+                throw new ArgumentNullException("keyDeserializer", $"keyDeserializer cannot be null in {nameof(AddPersistenceManagerFileSystem)}");
             if (cpipe == null)
-                throw new ArgumentNullException("cpipe", $"cpipe cannot be null in {nameof(AddPersistenceManagerHandlerMemory)}");
+                throw new ArgumentNullException("cpipe", $"cpipe cannot be null in {nameof(AddPersistenceManagerFileSystem)}");
 
-            pm = new PersistenceManagerHandlerFile<K,E>(keyMaker, keyDeserializer
+            pm = new PersistenceManagerHandlerFileSystem<K,E>(keyMaker, keyDeserializer
                   , entityName: entityName
                   , versionPolicy: versionPolicy
                   , defaultTimeout: defaultTimeout
