@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO.Compression;
+﻿using System.IO.Compression;
 using System.IO;
 
 namespace Xigadee
@@ -13,9 +10,10 @@ namespace Xigadee
     public class PayloadCompressorDeflate: PayloadCompressorBase
     {
         /// <summary>
-        /// Gets the content encoding, deflate for this compressor.
+        /// Initializes a new instance of the <see cref="PayloadCompressorDeflate"/> class.
         /// </summary>
-        public override string ContentEncoding { get; } = "deflate";
+        public PayloadCompressorDeflate() : base("deflate") { }
+
 
         /// <summary>
         /// Gets the compression stream.

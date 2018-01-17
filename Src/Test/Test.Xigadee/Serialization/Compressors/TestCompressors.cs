@@ -11,7 +11,7 @@ namespace Test.Xigadee.Serialization
     public class TestCompressors
     {
         [TestMethod]
-        public void TestMethod1()
+        public void TestDeflate()
         {
             dynamic message = new ExpandoObject();
 
@@ -28,6 +28,34 @@ namespace Test.Xigadee.Serialization
             SerializationHolder holder = data;
 
             var comp = new PayloadCompressorDeflate();
+
+            bool successCompress = comp.TryCompression(holder);
+
+            bool successDecompress = comp.TryDecompression(holder);
+
+            string jsonOut = Encoding.UTF8.GetString(holder.Blob);
+
+            Assert.IsTrue(jsonIn == jsonOut);
+        }
+
+        [TestMethod]
+        public void TestGZip()
+        {
+            dynamic message = new ExpandoObject();
+
+            message.Title = "Mr.";
+            message.Name = "Sid";
+            message.City = "London";
+            message.TimeStamp = DateTime.UtcNow;
+            message.Id = 42;
+
+            var jsonIn = JsonConvert.SerializeObject(message, Formatting.None);
+
+            byte[] data = Encoding.UTF8.GetBytes(jsonIn);
+
+            SerializationHolder holder = data;
+
+            var comp = new PayloadCompressorGzip();
 
             bool successCompress = comp.TryCompression(holder);
 

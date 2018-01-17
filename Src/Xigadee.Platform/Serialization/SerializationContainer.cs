@@ -366,6 +366,7 @@ namespace Xigadee
         }
         #endregion
 
+        #region TryResolve(SerializationHolder holder, bool throwExceptions, out IPayloadSerializer serializer, out IPayloadCompressor compressor)
         /// <summary>
         /// Tries to resolve the serializer and compressor.
         /// </summary>
@@ -382,7 +383,8 @@ namespace Xigadee
                 return false;
 
             return !holder.HasContentEncoding || TryGetCompressor(holder.ContentEncoding, out compressor);
-        }
+        } 
+        #endregion
 
         #region TryPayloadSerialize(SerializationHolder holder, bool throwExceptions = false)
         /// <summary>

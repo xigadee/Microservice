@@ -10,9 +10,18 @@ namespace Xigadee
     public abstract class PayloadCompressorBase: IPayloadCompressor
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="PayloadCompressorBase"/> class.
+        /// </summary>
+        /// <param name="contentEncoding">The content encoding.</param>
+        /// <exception cref="ArgumentNullException">contentEncoding</exception>
+        protected PayloadCompressorBase(string contentEncoding)
+        {
+            ContentEncoding = contentEncoding ?? throw new ArgumentNullException("contentEncoding");
+        }
+        /// <summary>
         /// Gets the content encoding.
         /// </summary>
-        public abstract string ContentEncoding { get; }
+        public virtual string ContentEncoding { get; }
 
         /// <summary>
         /// Gets the compression stream.
@@ -88,9 +97,10 @@ namespace Xigadee
                 throw new ArgumentNullException("holder", "The serialization holder cannot be null.");
 
             return holder.Blob != null;
-        } 
+        }
         #endregion
 
+        #region Compress(SerializationHolder holder, Func<Stream,Stream> getStream, string contentEncoding)
         /// <summary>
         /// Encodes the blobs from uncompressed to compressed.
         /// </summary>
@@ -99,14 +109,14 @@ namespace Xigadee
         /// <param name="contentEncoding">The content encoding parameter.</param>
         /// <returns>Returns true if encoded without error.</returns>
         /// <exception cref="ArgumentNullException">holder</exception>
-        protected virtual bool Compress(SerializationHolder holder, Func<Stream,Stream> getStream, string contentEncoding)
+        protected virtual bool Compress(SerializationHolder holder, Func<Stream, Stream> getStream, string contentEncoding)
         {
             try
             {
                 using (MemoryStream ms = new MemoryStream())
                 using (Stream compress = getStream(ms))
                 {
-                    compress.Write(holder.Blob,0, holder.Blob.Length);
+                    compress.Write(holder.Blob, 0, holder.Blob.Length);
                     compress.Close();
 
                     holder.SetBlob(ms.ToArray(), holder.ContentType, contentEncoding);
@@ -119,11 +129,13 @@ namespace Xigadee
 
             return true;
         }
+        #endregion
+        #region Decompress(SerializationHolder holder, Func<Stream, Stream> getStream)
         /// <summary>
         /// Encodes the blobs from compressed to uncompressed.
         /// </summary>
         /// <param name="holder">The holder.</param>
-        /// <param name="getStream">The get decompressor stream function.</param>
+        /// <param name="getStream">The decompress stream create function.</param>
         /// <returns>Returns true if encoded without error.</returns>
         protected virtual bool Decompress(SerializationHolder holder, Func<Stream, Stream> getStream)
         {
@@ -144,6 +156,7 @@ namespace Xigadee
             }
 
             return true;
-        }
+        } 
+        #endregion
     }
 }

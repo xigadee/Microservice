@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO.Compression;
+﻿using System.IO.Compression;
 using System.IO;
 
 namespace Xigadee
@@ -13,9 +10,9 @@ namespace Xigadee
     public class PayloadCompressorGzip: PayloadCompressorBase
     {
         /// <summary>
-        /// Gets the content encoding, gzip for this compressor.
+        /// Initializes a new instance of the <see cref="PayloadCompressorGzip"/> class.
         /// </summary>
-        public override string ContentEncoding { get; } = "gzip";
+        public PayloadCompressorGzip() : base("gzip") { }
 
         /// <summary>
         /// Gets the compression stream.
