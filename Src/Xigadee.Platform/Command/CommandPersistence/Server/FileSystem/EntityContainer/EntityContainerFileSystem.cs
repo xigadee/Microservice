@@ -25,10 +25,20 @@ namespace Xigadee
 
             FS = FS ?? new EntityContainerFolderStructure(Transform.EntityName, new DirectoryInfo(Environment.CurrentDirectory));
 
-            Keys = new EntityContainerFileSystemReadOnlyCollection<K>(FS.Entity, ToFilter(ExtensionEntity), (f) => default(K));
-            References = new EntityContainerFileSystemReadOnlyCollection<Tuple<string, string>>(FS.Reference, ToFilter(ExtensionReference), (f) => null);
-            Values = new EntityContainerFileSystemReadOnlyCollection<E>(FS.Entity, ToFilter(ExtensionEntity), (f) => default(E));
+            Keys = new EntityContainerFileSystemReadOnlyCollection<K>(FS.Entity
+                , ToFilter(ExtensionEntity)
+                , ParseEntityKey);
+
+            References = new EntityContainerFileSystemReadOnlyCollection<Tuple<string, string>>(FS.Reference
+                , ToFilter(ExtensionReference)
+                , ParseReference);
+
+            Values = new EntityContainerFileSystemReadOnlyCollection<E>(FS.Entity
+                , ToFilter(ExtensionEntity)
+                , ParseEntity);
         }
+
+
 
         /// <summary>
         /// This is the extension string for entity file objects.
@@ -58,11 +68,36 @@ namespace Xigadee
         /// </summary>
         public override int CountReference => (References as EntityContainerFileSystemReadOnlyCollection).Count;
 
+        /// <summary>
+        /// Gets the keys collection enumeration.
+        /// </summary>
         public override IEnumerable<K> Keys { get; protected set; }
-
+        /// <summary>
+        /// Gets or sets the entity reference enumeration.
+        /// </summary>
         public override IEnumerable<Tuple<string, string>> References { get; protected set; }
-
+        /// <summary>
+        /// Gets or sets the entity file enumeration.
+        /// </summary>
         public override IEnumerable<E> Values { get; protected set; }
+
+
+        protected virtual K ParseEntityKey(FileInfo f)
+        {
+            var ent = ParseEntity(f);
+
+            return Transform.KeyMaker(ent);
+        }
+
+        protected virtual E ParseEntity(FileInfo f)
+        {
+            return default(E);
+        }
+
+        protected virtual Tuple<string, string> ParseReference(FileInfo f)
+        {
+            return null;
+        }
 
         protected virtual string PrepareKey(K key)
         {
@@ -99,7 +134,6 @@ namespace Xigadee
 
             var jsonHolder = Transform.JsonMaker(value);
 
-
             using (var fs = fi.Open(FileMode.CreateNew, FileAccess.Write))
             {
                 //fs.e
@@ -123,9 +157,13 @@ namespace Xigadee
             return FS.Entity.GetFiles(PrepareKey(key), SearchOption.TopDirectoryOnly).Length>0;
         }
 
+        /// <summary>
+        /// Clears the entity and reference collection.
+        /// </summary>
         public override void Clear()
         {
-            //FS.Entity.Delete(true);
+            FS.Entity.Delete(true);
+            FS.Reference.Delete(true);
         }
 
         public override bool TryGetValue(K key, out E value)

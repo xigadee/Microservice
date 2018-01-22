@@ -147,7 +147,6 @@ namespace Xigadee
         }
         #endregion
 
-
         #region Add(K key, E value, IEnumerable<Tuple<string, string>> references = null)
         /// <summary>
         /// This is the entity reference.
