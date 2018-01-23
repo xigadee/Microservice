@@ -32,27 +32,34 @@ namespace Xigadee
 
         private readonly int mBlockSize;
 
+
         /// <summary>
-        /// Constructor
+        /// Initializes a new instance of the <see cref="AesEncryptionHandler"/> class.
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="useCompression"></param>
-        /// <param name="keySize"></param>
-        /// <param name="blockSize"></param>
-        public AesEncryptionHandler(string key, bool useCompression = true, int? keySize = null, int blockSize = 128)
-            :this(Convert.FromBase64String(key), useCompression, keySize, blockSize)
+        /// <param name="id">The identifier.</param>
+        /// <param name="key">The base64 encoded AES key.</param>
+        /// <param name="useCompression">if set to <c>true</c> [use compression].</param>
+        /// <param name="keySize">Size of the key.</param>
+        /// <param name="blockSize">Size of the block.</param>
+        public AesEncryptionHandler(string id, string key, bool useCompression = true, int? keySize = null, int blockSize = 128)
+            :this(id, Convert.FromBase64String(key), useCompression, keySize, blockSize)
         {
         }
 
+
         /// <summary>
-        /// Constructor
+        /// Initializes a new instance of the <see cref="AesEncryptionHandler"/> class.
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="useCompression"></param>
-        /// <param name="keySize"></param>
-        /// <param name="blockSize"></param>
-        public AesEncryptionHandler(byte[] key, bool useCompression = true, int? keySize = null, int blockSize = 128)
+        /// <param name="id">The identifier.</param>
+        /// <param name="key">The binary key.</param>
+        /// <param name="useCompression">if set to <c>true</c> [use compression].</param>
+        /// <param name="keySize">Size of the key.</param>
+        /// <param name="blockSize">Size of the block.</param>
+        /// <exception cref="ArgumentNullException">id - id cannot be null</exception>
+        public AesEncryptionHandler(string id, byte[] key, bool useCompression = true, int? keySize = null, int blockSize = 128)
         {
+            Id = id ?? throw new ArgumentNullException("id", "id cannot be null");
+
             mKey = key;
             mUseCompression = useCompression;
             mBlockSize = blockSize;
@@ -144,6 +151,11 @@ namespace Xigadee
         /// <summary>
         /// This is the friendly name for the handler.
         /// </summary>
-        public string Name => nameof(AesEncryptionHandler);
+        public string Name => $"{nameof(AesEncryptionHandler)}/{Id}";
+
+        /// <summary>
+        /// Gets the encryption identifier used to match a handler with a specific id.
+        /// </summary>
+        public string Id { get; }
     }
 }

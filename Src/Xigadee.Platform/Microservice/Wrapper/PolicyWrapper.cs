@@ -1,23 +1,6 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -30,11 +13,11 @@ namespace Xigadee
         TaskManagerPolicy mPolicyTaskManager = null;
         CommandContainerPolicy mPolicyCommand = null;
         CommunicationPolicy mPolicyCommunication = null;
-        SchedulerPolicy mPolicyScheduler = null;
-        SecurityContainerPolicy mPolicySecurity = null;
-        ResourceContainerPolicy mPolicyResourceTracker = null;
+        SchedulerContainer.Policy mPolicyScheduler = null;
+        SecurityContainer.Policy mPolicySecurity = null;
+        ResourceContainer.Policy mPolicyResourceTracker = null;
         DataCollectionPolicy mPolicyDataCollection = null;
-        SerializationPolicy mPolicySerialization = null;
+        SerializationContainer.Policy mPolicySerialization = null;
 
         /// <summary>
         /// This is the collection of policy settings for the Microservice.
@@ -53,7 +36,7 @@ namespace Xigadee
         /// This is the helper class used to pull out the policy container from the incoming collection and to set it within the correct settings.
         /// </summary>
         /// <typeparam name="P">The policy type.</typeparam>
-        /// <param name="existing">The existing value. If this is not null the method will bypass the setup.</param>
+        /// <param name="existing">The existing value. If this is not null the method will bypass the set up.</param>
         /// <param name="onResolve">An action that can be called to adjust the policy settings when it is first resolved.</param>
         /// <returns>Returns the policy.</returns>
         protected P PolicyResolve<P>(P existing, Action<P> onResolve = null)
@@ -106,7 +89,7 @@ namespace Xigadee
         /// This is the policy for the resource tracker.
         /// </summary>
         /// <returns></returns>
-        public virtual ResourceContainerPolicy ResourceMonitor
+        public virtual ResourceContainer.Policy ResourceMonitor
         {
             get
             {
@@ -144,7 +127,7 @@ namespace Xigadee
         /// <summary>
         /// This is the policy for the scheduler.
         /// </summary>
-        public virtual SchedulerPolicy Scheduler
+        public virtual SchedulerContainer.Policy Scheduler
         {
             get
             {
@@ -154,10 +137,10 @@ namespace Xigadee
         #endregion
         #region Security
         /// <summary>
-        /// This is the policy used to set the securty container settings.
+        /// This is the policy used to set the security container settings.
         /// </summary>
         /// <returns></returns>
-        public virtual SecurityContainerPolicy Security
+        public virtual SecurityContainer.Policy Security
         {
             get
             {
@@ -183,7 +166,7 @@ namespace Xigadee
         /// This is the policy used to set the data collection container settings.
         /// </summary>
         /// <returns>The policy</returns>
-        public virtual SerializationPolicy Serialization
+        public virtual SerializationContainer.Policy Serialization
         {
             get
             {

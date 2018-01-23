@@ -6,12 +6,19 @@ namespace Xigadee
     /// </summary>
     public interface IPayloadSerializationContainer
     {
+        #region Compressor
         /// <summary>
         /// A boolean function that returns true if the compression type is supported.
         /// </summary>
         /// <param name="contentEncodingType">The content encoding type, i.e. GZIP/DEFLATE etc..</param>
         /// <returns>Returns true when the ContentEncoding type is supported.</returns>
         bool SupportsCompressor(string contentEncodingType);
+        /// <summary>
+        /// A boolean function that returns true if the compression type is supported.
+        /// </summary>
+        /// <param name="holder">The holder.</param>
+        /// <returns>Returns true when the holder ContentEncoding is supported.</returns>
+        bool SupportsCompressor(SerializationHolder holder);
         /// <summary>
         /// Tries to decompress the incoming holder.
         /// </summary>
@@ -23,7 +30,8 @@ namespace Xigadee
         /// </summary>
         /// <param name="holder">The holder.</param>
         /// <returns>Returns true if the Content is compressed correctly to a binary blob.</returns>
-        bool TryCompress(SerializationHolder holder);
+        bool TryCompress(SerializationHolder holder); 
+        #endregion
 
         /// <summary>
         /// Checks that a specific serializer is supported.
@@ -31,6 +39,25 @@ namespace Xigadee
         /// <param name="mimetype">The mime type identifier for the serializer.</param>
         /// <returns>Returns true if the serializer is supported.</returns>
         bool SupportsSerializer(string mimetype);
+        /// <summary>
+        /// Checks that a specific serializer is supported.
+        /// </summary>
+        /// <param name="holder">The holder.</param>
+        /// <returns>Returns true when the holder ContentType is supported.</returns>
+        bool SupportsSerializer(SerializationHolder holder);
+        /// <summary>
+        /// Tries to deserialize the incoming holder.
+        /// </summary>
+        /// <param name="holder">The holder.</param>
+        /// <returns>Returns true if the incoming binary payload is successfully deserialized.</returns>
+        bool TryDeserialize(SerializationHolder holder);
+        /// <summary>
+        /// Tries to compress the outgoing holder.
+        /// </summary>
+        /// <param name="holder">The holder.</param>
+        /// <returns>Returns true if the Content is serialized correctly to a binary blob.</returns>
+        bool TrySerialize(SerializationHolder holder);
+
 
         /// <summary>
         /// Gets or sets the default type of the content type. This is based on the first serializer added to the collection.

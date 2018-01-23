@@ -47,7 +47,7 @@ namespace Xigadee
         /// <param name="msAssign">The assignment function.</param>
         /// <returns>Returns the pipeline</returns>
         public static P AdjustPolicyResourceTracker<P>(this P pipeline
-            , Action<ResourceContainerPolicy, IEnvironmentConfiguration> msAssign = null) where P : IPipeline
+            , Action<ResourceContainer.Policy, IEnvironmentConfiguration> msAssign = null) where P : IPipeline
         {
             msAssign?.Invoke(pipeline.Service.Policy.ResourceMonitor, pipeline.Configuration);
 
@@ -89,7 +89,7 @@ namespace Xigadee
         /// <param name="msAssign">The assignment function.</param>
         /// <returns>Returns the pipeline</returns>
         public static P AdjustPolicyScheduler<P>(this P pipeline
-            , Action<SchedulerPolicy, IEnvironmentConfiguration> msAssign = null) where P : IPipeline
+            , Action<SchedulerContainer.Policy, IEnvironmentConfiguration> msAssign = null) where P : IPipeline
         {
             msAssign?.Invoke(pipeline.Service.Policy.Scheduler, pipeline.Configuration);
 
@@ -103,7 +103,7 @@ namespace Xigadee
         /// <param name="msAssign">The assignment function.</param>
         /// <returns>Returns the pipeline</returns>
         public static P AdjustPolicySecurity<P>(this P pipeline
-            , Action<SecurityContainerPolicy, IEnvironmentConfiguration> msAssign = null) where P : IPipeline
+            , Action<SecurityContainer.Policy, IEnvironmentConfiguration> msAssign = null) where P : IPipeline
         {
             msAssign?.Invoke(pipeline.Service.Policy.Security, pipeline.Configuration);
 

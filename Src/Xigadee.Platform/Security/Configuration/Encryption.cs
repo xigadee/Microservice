@@ -1,33 +1,29 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-using System;
+﻿using System;
 
 namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
         /// <summary>
+        /// This is the default encryption handler id settings key.
+        /// </summary>
+        [ConfigSettingKey("EncryptionKey")]
+        public const string KeyEncryptionId = "EncryptionId";
+        /// <summary>
         /// This is the default encryption key settings key.
         /// </summary>
         [ConfigSettingKey("EncryptionKey")]
         public const string KeyEncryptionKey = "EncryptionKey";
-
+        /// <summary>
+        /// This is the default encryption key size settings key.
+        /// </summary>
         [ConfigSettingKey("EncryptionKey")]
         public const string KeyEncryptionKeySize = "EncryptionKeySize";
+
+
+        [ConfigSetting("Encryption")]
+        public static string EncryptionId(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyEncryptionId, "transport");
+
 
         [ConfigSetting("Encryption")]
         public static string EncryptionKey(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyEncryptionKey);
@@ -38,13 +34,17 @@ namespace Xigadee
         [ConfigSetting("Encryption")]
         public static AesEncryptionHandler AesEncryption(this IEnvironmentConfiguration config)
         {
-            return string.IsNullOrEmpty(config.EncryptionKey()) ? null : new AesEncryptionHandler(Convert.FromBase64String(config.EncryptionKey()), false, config.EncryptionKeySize());
+            return string.IsNullOrEmpty(config.EncryptionKey()) ? null : 
+                new AesEncryptionHandler(config.EncryptionId()
+                    , Convert.FromBase64String(config.EncryptionKey()), false, config.EncryptionKeySize());
         }
 
         [ConfigSetting("Encryption")]
         public static AesEncryptionHandler AesEncryptionWithCompression(this IEnvironmentConfiguration config)
         {
-            return string.IsNullOrEmpty(config.EncryptionKey()) ? null : new AesEncryptionHandler(Convert.FromBase64String(config.EncryptionKey()), true, config.EncryptionKeySize());
+            return string.IsNullOrEmpty(config.EncryptionKey()) ? null : 
+                new AesEncryptionHandler(config.EncryptionId()
+                    , Convert.FromBase64String(config.EncryptionKey()), true, config.EncryptionKeySize());
         }
 
         /// <summary>

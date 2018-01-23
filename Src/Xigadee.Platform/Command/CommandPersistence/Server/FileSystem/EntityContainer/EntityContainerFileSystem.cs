@@ -16,9 +16,15 @@ namespace Xigadee
     public class EntityContainerFileSystem<K,E>: EntityContainerBase<K,E>
         where K : IEquatable<K>
     {
+        #region Declarations
         const string cnEntityMatch = "ent";
         const string cnReferenceMatch = "ref";
+        #endregion
 
+        #region StartInternal()
+        /// <summary>
+        /// This method starts the service and sets the file based collections.
+        /// </summary>
         protected override void StartInternal()
         {
             base.StartInternal();
@@ -26,94 +32,107 @@ namespace Xigadee
             FS = FS ?? new EntityContainerFolderStructure(Transform.EntityName, new DirectoryInfo(Environment.CurrentDirectory));
 
             Keys = new EntityContainerFileSystemReadOnlyCollection<K>(FS.Entity
-                , ToFilter(ExtensionEntity)
-                , ParseEntityKey);
+                , ToSearchFilter(FileExtensionEntity)
+                , ExtractKey);
 
             References = new EntityContainerFileSystemReadOnlyCollection<Tuple<string, string>>(FS.Reference
-                , ToFilter(ExtensionReference)
-                , ParseReference);
+                , ToSearchFilter(FileExtensionReference)
+                , ExtractReference);
 
             Values = new EntityContainerFileSystemReadOnlyCollection<E>(FS.Entity
-                , ToFilter(ExtensionEntity)
-                , ParseEntity);
+                , ToSearchFilter(FileExtensionEntity)
+                , ExtractEntity);
         }
+        #endregion
 
-
-
-        /// <summary>
-        /// This is the extension string for entity file objects.
-        /// </summary>
-        public string ExtensionEntity { get; set; } = cnEntityMatch;
-        /// <summary>
-        /// This is the extension string for reference file objects.
-        /// </summary>
-        public string ExtensionReference { get; set; } = cnReferenceMatch;
-
-        private string ToFilter(string extension)
-        {
-            return $"*.{extension}";
-        }
-
+        #region FS
         /// <summary>
         /// Gets or sets the file system information.
         /// </summary>
         public EntityContainerFolderStructure FS { get; set; }
+        #endregion
 
+        #region FileExtension Entity/Reference
+        /// <summary>
+        /// This is the extension string for entity file objects.
+        /// </summary>
+        public string FileExtensionEntity { get; set; } = cnEntityMatch;
+        /// <summary>
+        /// This is the extension string for reference file objects.
+        /// </summary>
+        public string FileExtensionReference { get; set; } = cnReferenceMatch;
+        #endregion
+        #region ToSearchFilter(string extension)
+        /// <summary>
+        /// Creates the search filter string.
+        /// </summary>
+        /// <param name="extension">The extension.</param>
+        /// <returns>A string that case be used to scan for the preferred extension type.</returns>
+        protected virtual string ToSearchFilter(string extension)
+        {
+            return $"*.{extension}";
+        } 
+        #endregion
+
+        #region Count
         /// <summary>
         /// This is the number of entities in the collection.
         /// </summary>
         public override int Count => (Keys as EntityContainerFileSystemReadOnlyCollection).Count;
+        #endregion
+        #region CountReference
         /// <summary>
         /// This is the number of entity references in the collection.
         /// </summary>
-        public override int CountReference => (References as EntityContainerFileSystemReadOnlyCollection).Count;
-
-        /// <summary>
-        /// Gets the keys collection enumeration.
-        /// </summary>
-        public override IEnumerable<K> Keys { get; protected set; }
-        /// <summary>
-        /// Gets or sets the entity reference enumeration.
-        /// </summary>
-        public override IEnumerable<Tuple<string, string>> References { get; protected set; }
-        /// <summary>
-        /// Gets or sets the entity file enumeration.
-        /// </summary>
-        public override IEnumerable<E> Values { get; protected set; }
+        public override int CountReference => (References as EntityContainerFileSystemReadOnlyCollection).Count; 
+        #endregion
 
 
-        protected virtual K ParseEntityKey(FileInfo f)
+        protected virtual K ExtractKey(FileInfo f)
         {
-            var ent = ParseEntity(f);
-
+            var ent = ExtractEntity(f);
             return Transform.KeyMaker(ent);
         }
 
-        protected virtual E ParseEntity(FileInfo f)
+        protected virtual E ExtractEntity(FileInfo f)
         {
             return default(E);
         }
 
-        protected virtual Tuple<string, string> ParseReference(FileInfo f)
+        protected virtual Tuple<string, string> ExtractReference(FileInfo f)
         {
             return null;
         }
 
-        protected virtual string PrepareKey(K key)
+        protected virtual string PrepareFileName(K key)
         {
-            return $"{Transform.KeyStringMaker(key)}.{ExtensionEntity}";
+            return $"{Transform.KeyStringMaker(key)}.{FileExtensionEntity}";
         }
 
-        protected virtual string PrepareReference(Tuple<string, string> reference)
+        protected virtual string PrepareFileName(Tuple<string, string> reference)
         {
-            return $"{reference.Item1}_{reference.Item2}.{ExtensionReference}";
+            return $"{reference.Item1}_{reference.Item2}.{FileExtensionReference}";
         }
 
-        protected virtual FileInfo GetFileInfo(K key)
+        protected virtual FileInfo FileInfoPrepare(K key)
         {
-            string sKey = PrepareKey(key);
+            string sKey = PrepareFileName(key);
 
             return new FileInfo(Path.Combine(FS.Entity.FullName, sKey));
+        }
+
+        protected virtual FileInfo FileInfoPrepare(Tuple<string,string> reference)
+        {
+            string sKey = PrepareFileName(reference);
+
+            return new FileInfo(Path.Combine(FS.Entity.FullName, sKey));
+        }
+
+
+        protected virtual void WriteEntity(FileStream fs, E entity)
+        {
+            var json = Transform.JsonMaker(entity);
+            var holder = SerializationHolder.CreateWithObject(entity);
         }
 
         /// <summary>
@@ -128,33 +147,52 @@ namespace Xigadee
         /// </returns>
         public override int Add(K key, E value, IEnumerable<Tuple<string, string>> references = null)
         {
-            var fi = GetFileInfo(key);
+            ValidateServiceStarted();
+
+            var fi = FileInfoPrepare(key);
             if (fi.Exists)
                 return 409;
 
-            var jsonHolder = Transform.JsonMaker(value);
-
             using (var fs = fi.Open(FileMode.CreateNew, FileAccess.Write))
             {
-                //fs.e
+                WriteEntity(fs, value);
             }
 
             return 201;
         }
 
+
         public override int Update(K key, E newEntity, IEnumerable<Tuple<string, string>> newReferences = null)
         {
-            throw new NotImplementedException();
+            ValidateServiceStarted();
+
+            var fi = FileInfoPrepare(key);
+            if (!fi.Exists)
+                return 404;
+
+            using (var fs = fi.Open(FileMode.Open, FileAccess.ReadWrite))
+            {
+                WriteEntity(fs, newEntity);
+            }
+
+            return 200;
         }
 
         public override bool Remove(K key)
         {
-            throw new NotImplementedException();
+            ValidateServiceStarted();
+
+            var fi = FileInfoPrepare(key);
+            if (!fi.Exists)
+                return false;
+
+            return false;
         }
 
         public override bool ContainsKey(K key)
         {
-            return FS.Entity.GetFiles(PrepareKey(key), SearchOption.TopDirectoryOnly).Length>0;
+            ValidateServiceStarted();
+            return FS.Entity.GetFiles(PrepareFileName(key), SearchOption.TopDirectoryOnly).Length>0;
         }
 
         /// <summary>
@@ -162,17 +200,20 @@ namespace Xigadee
         /// </summary>
         public override void Clear()
         {
+            ValidateServiceStarted();
             FS.Entity.Delete(true);
             FS.Reference.Delete(true);
         }
 
         public override bool TryGetValue(K key, out E value)
         {
+            ValidateServiceStarted();
             throw new NotImplementedException();
         }
 
         public virtual bool TryGetKey(Tuple<string, string> reference, out K key)
         {
+            ValidateServiceStarted();
             throw new NotImplementedException();
         }
 

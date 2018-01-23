@@ -1,22 +1,5 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-using System;
+﻿using System;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Xigadee;
@@ -31,7 +14,7 @@ namespace Test.Xigadee
 
         public AesEncryptionTests()
         {
-            mAesEncryption = new AesEncryptionHandler(mKey, false);
+            mAesEncryption = new AesEncryptionHandler("test", mKey, false);
         }
 
         [TestMethod]
@@ -52,7 +35,7 @@ namespace Test.Xigadee
         [TestMethod]
         public void EncryptDecryptWithCompression()
         {
-            var encryption = new AesEncryptionHandler(mKey);
+            var encryption = new AesEncryptionHandler("EncryptDecryptWithCompression", mKey);
             var secret = "I know a secret";
             var encryptedData = encryption.Encrypt(Encoding.UTF8.GetBytes(secret));
             Assert.AreNotEqual(secret, Encoding.UTF8.GetString(encryptedData));
@@ -66,7 +49,7 @@ namespace Test.Xigadee
         [ExpectedException(typeof(ArgumentException))]
         public void InvalidKeySize()
         {
-            var encryption = new AesEncryptionHandler(mKey, keySize:128);
+            var encryption = new AesEncryptionHandler("InvalidKeySize", mKey, keySize:128);
             Assert.Fail("Key size is incorrect so should have thrown an exception");
         }
 
@@ -74,7 +57,7 @@ namespace Test.Xigadee
         [ExpectedException(typeof(ArgumentException))]
         public void InvalidKey()
         {
-            var encryption = new AesEncryptionHandler(Convert.FromBase64String("hNCV1t5sA/xQgDkHeuXYhrSu8kF72p9H436nQoLD"));
+            var encryption = new AesEncryptionHandler("InvalidKey", Convert.FromBase64String("hNCV1t5sA/xQgDkHeuXYhrSu8kF72p9H436nQoLD"));
             Assert.Fail("Key is incorrect so should have thrown an exception");
         }
     }

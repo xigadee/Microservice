@@ -26,7 +26,7 @@ namespace Xigadee
     /// This class is used to connect resource consumers with resource limiters.
     /// Limiters are typically connected to listener clients and reduce the incoming traffic when the resource becomes stressed.
     /// </summary>
-    public class ResourceContainer: ServiceContainerBase<ResourceContainerStatistics, ResourceContainerPolicy>
+    public class ResourceContainer: ServiceContainerBase<ResourceContainerStatistics, ResourceContainer.Policy>
         , IRequireSharedServices, IResourceTracker, IRequireDataCollector
     {
         //AKA Dependency Monitor
@@ -45,7 +45,7 @@ namespace Xigadee
         /// This is the default constructor.
         /// </summary>
         /// <param name="policy">The policy.</param>
-        public ResourceContainer(ResourceContainerPolicy policy = null):base(policy)
+        public ResourceContainer(ResourceContainer.Policy policy = null):base(policy)
         {
             mResources = new ConcurrentDictionary<string, ResourceStatistics>();
 
@@ -222,7 +222,14 @@ namespace Xigadee
                 return null;
 
             return stats.ToResourceStatus();
-        } 
+        }
         #endregion
+
+        /// <summary>
+        /// This policy is used by the ResourceContainer class
+        /// </summary>
+        public class Policy: PolicyBase
+        {
+        }
     }
 }

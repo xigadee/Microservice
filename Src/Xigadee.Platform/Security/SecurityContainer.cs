@@ -8,8 +8,9 @@ namespace Xigadee
     /// The security container class contains all the components to secure the incoming messaging for a Microservice, 
     /// and to ensure that incoming message requests have the correct permissions necessary to be processed.
     /// </summary>
-    public partial class SecurityContainer: ServiceContainerBase<SecurityContainerStatistics, SecurityContainerPolicy>
-        , ISecurityService, IRequireDataCollector, IRequireServiceOriginator
+    public partial class SecurityContainer: ServiceContainerBase<SecurityContainerStatistics, SecurityContainer.Policy>
+        , ISecurityService
+        , IRequireDataCollector, IRequireServiceOriginator
     {
         #region Declarations
         /// <summary>
@@ -27,19 +28,10 @@ namespace Xigadee
         /// This is the default constructor.
         /// </summary>
         /// <param name="policy">The security policy.</param>
-        public SecurityContainer(SecurityContainerPolicy policy) : base(policy)
+        public SecurityContainer(SecurityContainer.Policy policy) : base(policy)
         {
             mEncryptionHandlers = new Dictionary<string, IEncryptionHandler>();
             mAuthenticationHandlers = new Dictionary<string, IAuthenticationHandler>();
-        }
-        #endregion
-        #region Collector
-        /// <summary>
-        /// This is the data collector used for logging.
-        /// </summary>
-        public IDataCollection Collector
-        {
-            get; set;
         }
         #endregion
 
@@ -146,16 +138,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region OriginatorId
-        /// <summary>
-        /// This is the system information.
-        /// </summary>
-        public MicroserviceId OriginatorId
-        {
-            get; set;
-        }
-        #endregion
-
         #region Start/Stop
         /// <summary>
         /// This method starts the service. It sets the authentication handlers config.
@@ -223,6 +205,29 @@ namespace Xigadee
                     return false;
 
             return true;
+        } 
+        #endregion
+
+        #region Collector
+        /// <summary>
+        /// This is the data collector used for logging.
+        /// </summary>
+        public IDataCollection Collector{get; set;}
+        #endregion
+        #region OriginatorId
+        /// <summary>
+        /// This is the system information.
+        /// </summary>
+        public MicroserviceId OriginatorId{get; set;}
+        #endregion
+
+        #region Class -> Policy
+        /// <summary>
+        /// This is the policy container for the security container.
+        /// </summary>
+        public class Policy: PolicyBase
+        {
+
         } 
         #endregion
     }

@@ -1,31 +1,11 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {
         /// <summary>
-        /// This method adds the Jwt authentication handler to the Microservice.
+        /// This method adds the JWT authentication handler to the Microservice.
         /// </summary>
         /// <typeparam name="P">The pipeline type.</typeparam>
         /// <param name="pipeline">The pipeline.</param>
@@ -48,7 +28,7 @@ namespace Xigadee
             if (string.IsNullOrEmpty(base64Secret))
                 throw new ArgumentNullException($"base64Secret cannot be null or empty for {nameof(AddJwtTokenAuthenticationHandler)}");
 
-            var handler = new JwtTokenAuthenticationHandler(algo, base64Secret);
+            var handler = new JwtTokenAuthenticationHandler(identifier, algo, base64Secret);
 
             action?.Invoke(handler);
 
@@ -58,14 +38,14 @@ namespace Xigadee
         }
 
         /// <summary>
-        /// This method adds the Jwt authentication handler to the Microservice.
+        /// This method adds the JWT authentication handler to the Microservice.
         /// </summary>
         /// <typeparam name="P">The pipeline type.</typeparam>
         /// <param name="pipeline">The pipeline.</param>
         /// <param name="identifier">The encryption type identifier. 
         /// This is will be used when assigning the handler to a channel or collector.</param>
         /// <param name="algo">The HMAC algorithm.</param>
-        /// <param name="secretSetter">This is the fucntion to return the base64 encoded secret from configuration.</param>
+        /// <param name="secretSetter">This is the function to return the base64 encoded secret from configuration.</param>
         /// <param name="action">The action on the handler.</param>
         /// <returns>The pipeline.</returns>
         public static P AddJwtTokenAuthenticationHandler<P>(this P pipeline
@@ -91,7 +71,7 @@ namespace Xigadee
                 throw new AuthenticationHandlerInvalidSecretException(ex);
             }
 
-            var handler = new JwtTokenAuthenticationHandler(algo, bySecret);
+            var handler = new JwtTokenAuthenticationHandler(identifier, algo, bySecret);
 
             action?.Invoke(handler);
 
@@ -101,7 +81,7 @@ namespace Xigadee
         }
 
         /// <summary>
-        /// This method adds the Jwt authentication handler to the Microservice.
+        /// This method adds the JWT authentication handler to the Microservice.
         /// </summary>
         /// <typeparam name="P">The pipeline type.</typeparam>
         /// <param name="pipeline">The pipeline.</param>
@@ -126,7 +106,7 @@ namespace Xigadee
             if (secret == null || secret.Length == 0)
                 throw new ArgumentNullException($"secret cannot be null or empty for {nameof(AddJwtTokenAuthenticationHandler)}");
 
-            var handler = new JwtTokenAuthenticationHandler(algo, secret, audience: audience);
+            var handler = new JwtTokenAuthenticationHandler(identifier, algo, secret, audience: audience);
 
             action?.Invoke(handler);
 

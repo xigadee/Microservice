@@ -34,7 +34,7 @@ namespace Xigadee
         /// <summary>
         /// Gets the resource monitor policy.
         /// </summary>
-        ResourceContainerPolicy ResourceMonitor { get; }
+        ResourceContainer.Policy ResourceMonitor { get; }
         /// <summary>
         /// Gets the command container policy.
         /// </summary>
@@ -46,11 +46,11 @@ namespace Xigadee
         /// <summary>
         /// Gets the scheduler policy.
         /// </summary>
-        SchedulerPolicy Scheduler { get; }
+        SchedulerContainer.Policy Scheduler { get; }
         /// <summary>
         /// Gets the security policy.
         /// </summary>
-        SecurityContainerPolicy Security { get; }
+        SecurityContainer.Policy Security { get; }
         /// <summary>
         /// Gets the data collection policy.
         /// </summary>
@@ -58,6 +58,6 @@ namespace Xigadee
         /// <summary>
         /// Gets the serialization policy.
         /// </summary>
-        SerializationPolicy Serialization { get; }
+        SerializationContainer.Policy Serialization { get; }
     }
 }

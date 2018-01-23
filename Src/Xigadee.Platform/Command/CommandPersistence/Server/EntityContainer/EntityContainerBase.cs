@@ -146,6 +146,12 @@ namespace Xigadee
         /// </summary>
         public virtual ISecurityService Security { get; set; }
         #endregion
+        #region PayloadSerializer
+        /// <summary>
+        /// This is the system wide serializer.
+        /// </summary>
+        public IPayloadSerializationContainer PayloadSerializer { get; set; }
+        #endregion
 
         /// <summary>
         /// This is the number of entities in the collection.
@@ -245,9 +251,5 @@ namespace Xigadee
         /// </returns>
         public abstract int Update(K key, E newEntity, IEnumerable<Tuple<string, string>> newReferences = null);
 
-        /// <summary>
-        /// This is the system wide serializer.
-        /// </summary>
-        public IPayloadSerializationContainer PayloadSerializer { get; set; }
     }
 }

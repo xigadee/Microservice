@@ -1,20 +1,4 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-#region using
+﻿#region using
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,17 +22,17 @@ namespace Xigadee
         /// <summary>
         /// This is the policy for the scheduler.
         /// </summary>
-        protected readonly SchedulerPolicy mPolicy;
+        protected readonly Policy mPolicy;
         #endregion
         #region Constructor
         /// <summary>
         /// This is the default constructor.
         /// </summary>
         /// <param name="policy">The scheduler policy.</param>
-        public SchedulerContainer(SchedulerPolicy policy = null)
+        public SchedulerContainer(Policy policy = null)
             : base(null)
         {
-            mPolicy = policy ?? new SchedulerPolicy();
+            mPolicy = policy ?? new Policy();
         }
         #endregion
 
@@ -270,5 +254,22 @@ namespace Xigadee
             schedule.Stop(!failed, isException: failed, lastEx: ex, exceptionTime: DateTime.UtcNow);
         }
         #endregion
+
+        /// <summary>
+        /// This is the scheduler policy.
+        /// </summary>
+        /// <seealso cref="Xigadee.PolicyBase" />
+        public class Policy: PolicyBase
+        {
+            /// <summary>
+            /// Gets or sets the default poll in milliseconds.
+            /// </summary>
+            public virtual int DefaultPollInMs { get; set; } = 100;
+
+            /// <summary>
+            /// Gets or sets the default task priority that schedules are set for the Task Manager,.
+            /// </summary>
+            public int DefaultTaskPriority { get; set; } = 2;
+        }
     }
 }

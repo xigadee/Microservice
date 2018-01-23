@@ -42,11 +42,13 @@ namespace Xigadee
         /// <summary>
         /// This constructor sets the secret and the audience for the handler.
         /// </summary>
+        /// <param name="id">The identifier.</param>
         /// <param name="algo">The hash algorithm to be used.</param>
         /// <param name="base64Secret">The secret byte array as a base64 string.</param>
         /// <param name="audience">The audience. This is compared when the token is received and validated. 
         /// By default it is set to 'comms'</param>
-        public JwtTokenAuthenticationHandler(JwtHashAlgorithm algo, string base64Secret, string audience = "comms"):base(nameof(JwtTokenAuthenticationHandler))
+        public JwtTokenAuthenticationHandler(string id, JwtHashAlgorithm algo, string base64Secret, string audience = "comms")
+            :base(id, nameof(JwtTokenAuthenticationHandler))
         {
             mAlgorithm = algo;
             mSecret = Convert.FromBase64String(base64Secret);
@@ -55,11 +57,13 @@ namespace Xigadee
         /// <summary>
         /// This constructor sets the secret and the audience for the handler.
         /// </summary>
+        /// <param name="id">The identifier.</param>
         /// <param name="algo">The hash algorithm to be used.</param>
         /// <param name="secret">The secret byte array.</param>
         /// <param name="audience">The audience. This is compared when the token is received and validated. 
         /// By default it is set to 'comms'</param>
-        public JwtTokenAuthenticationHandler(JwtHashAlgorithm algo, byte[] secret, string audience = "comms") : base(nameof(JwtTokenAuthenticationHandler))
+        public JwtTokenAuthenticationHandler(string id, JwtHashAlgorithm algo, byte[] secret, string audience = "comms")
+            : base(id, nameof(JwtTokenAuthenticationHandler))
         {
             mAlgorithm = algo;
             mSecret = secret;

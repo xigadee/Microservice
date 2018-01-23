@@ -11,7 +11,7 @@ namespace Xigadee
     /// <summary>
     /// This container holds the system serialization/de-serialization components that are used when transmitting data outside of the system.
     /// </summary>
-    public partial class SerializationContainer : ServiceContainerBase<SerializationStatistics, SerializationPolicy>
+    public partial class SerializationContainer : ServiceContainerBase<SerializationStatistics, SerializationContainer.Policy>
         , IPayloadSerializationContainer, IRequireDataCollector
     {
         #region Declarations        
@@ -37,7 +37,7 @@ namespace Xigadee
         /// This default constructor takes the list of registered serializers.
         /// </summary>
         /// <param name="policy">The collection of serializers</param>
-        public SerializationContainer(SerializationPolicy policy = null)
+        public SerializationContainer(Policy policy = null)
             : base(policy)
         {
             mPayloadSerializers = new Dictionary<string, IPayloadSerializer>();
@@ -100,7 +100,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region Add/Clear/Count - Serializers
+        #region Add/Clear/Count - Serializer
         /// <summary>
         /// This method adds the serializer to the collection.
         /// </summary>
@@ -143,7 +143,7 @@ namespace Xigadee
         public int CountSerializers => mPayloadSerializers?.Count ?? 0;
 
         #endregion
-        #region Add/Clear/Count - Compressors
+        #region Add/Clear/Count - Compressor
         /// <summary>
         /// This method adds the compressor to the collection.
         /// </summary>
@@ -298,7 +298,8 @@ namespace Xigadee
         }
         #endregion
 
-        #region SupportsSerializer(string contentType)
+        //Serializer
+        #region SupportsSerializer...
         /// <summary>
         /// Checks that a specific serializer is supported.
         /// </summary>
@@ -311,6 +312,52 @@ namespace Xigadee
             IPayloadSerializer serializer;
             return TryGetSerializer(contentType, out serializer);
         }
+        /// <summary>
+        /// Checks that a specific serializer is supported.
+        /// </summary>
+        /// <param name="holder">The holder.</param>
+        /// <returns>
+        /// Returns true when the holder ContentType is supported.
+        /// </returns>
+        public bool SupportsSerializer(SerializationHolder holder)
+        {
+            IPayloadSerializer serializer;
+            return TryGetSerializer(holder.ContentType, out serializer);
+        }
+        #endregion
+        #region TryDeserialize(SerializationHolder holder)
+        /// <summary>
+        /// Tries to deserialize the incoming holder.
+        /// </summary>
+        /// <param name="holder">The holder.</param>
+        /// <returns>
+        /// Returns true if the incoming binary payload is successfully deserialized.
+        /// </returns>
+        public bool TryDeserialize(SerializationHolder holder)
+        {
+            IPayloadSerializer sr = null;
+            if (!TryGetSerializer(holder.ContentType, out sr))
+                return false;
+
+            return sr.TryDeserialize(holder);
+        } 
+        #endregion
+        #region TrySerialize(SerializationHolder holder)
+        /// <summary>
+        /// Tries to compress the outgoing holder.
+        /// </summary>
+        /// <param name="holder">The holder.</param>
+        /// <returns>
+        /// Returns true if the Content is serialized correctly to a binary blob.
+        /// </returns>
+        public bool TrySerialize(SerializationHolder holder)
+        {
+            IPayloadSerializer sr = null;
+            if (!TryGetSerializer(holder.ContentType, out sr))
+                return false;
+
+            return sr.TrySerialize(holder);
+        } 
         #endregion
         #region TryGetSerializer(string contentType, out IPayloadSerializer serializer)
         /// <summary>
@@ -332,8 +379,8 @@ namespace Xigadee
             return mPayloadSerializers.TryGetValue(sType, out serializer);
         }
         #endregion
-
-        #region SupportsCompressor(string contentEncodingType)
+        //Compressor
+        #region SupportsCompressor...
         /// <summary>
         /// A boolean function that returns true if the compression type is supported.
         /// </summary>
@@ -345,88 +392,19 @@ namespace Xigadee
         {
             IPayloadCompressor compressor;
             return TryGetCompressor(contentEncodingType, out compressor);
-        } 
-        #endregion
-        #region TryGetCompressor(string contentEncodingType, out IPayloadCompressor compressor)
-        /// <summary>
-        /// Tries to get the compressor.
-        /// </summary>
-        /// <param name="contentEncodingType">The content encoding type.</param>
-        /// <param name="compressor">The compressor.</param>
-        /// <returns>Returns true if successful.</returns>
-        protected bool TryGetCompressor(string contentEncodingType, out IPayloadCompressor compressor)
-        {
-            compressor = null;
-            string ceType;
-
-            if (!ExtractContentEncoding(contentEncodingType, out ceType))
-                return false;
-
-            return mPayloadCompressors.TryGetValue(ceType, out compressor);
         }
-        #endregion
-
-        #region TryResolve(SerializationHolder holder, bool throwExceptions, out IPayloadSerializer serializer, out IPayloadCompressor compressor)
         /// <summary>
-        /// Tries to resolve the serializer and compressor.
+        /// A boolean function that returns true if the compression type is supported.
         /// </summary>
         /// <param name="holder">The holder.</param>
-        /// <param name="throwExceptions">if set to <c>true</c> [throw exceptions].</param>
-        /// <param name="serializer">The output serializer.</param>
-        /// <param name="compressor">The output compressor.</param>
-        /// <returns>Returns true if successful.</returns>
-        protected virtual bool TryResolve(SerializationHolder holder, bool throwExceptions, out IPayloadSerializer serializer, out IPayloadCompressor compressor)
-        {
-            serializer = null;
-            compressor = null;
-            if (!TryGetSerializer(holder.ContentType, out serializer))
-                return false;
-
-            return !holder.HasContentEncoding || TryGetCompressor(holder.ContentEncoding, out compressor);
-        } 
-        #endregion
-
-        #region TryPayloadSerialize(SerializationHolder holder, bool throwExceptions = false)
-        /// <summary>
-        /// This method attempts to Serialize the object and sets the blob and headers in the holder.
-        /// </summary>
-        /// <param name="holder">The serialization holder.</param>
-        /// <param name="throwExceptions">Directs the container to throw detailed exceptions on failure. The default is false.</param>
         /// <returns>
-        /// Returns true if the operation is successful.
+        /// Returns true when the holder ContentEncoding is supported.
         /// </returns>
-        public bool TryPayloadSerialize(SerializationHolder holder, bool throwExceptions = false)
+        public bool SupportsCompressor(SerializationHolder holder)
         {
-            IPayloadSerializer serializer;
-            IPayloadCompressor compressor;
-            if (!TryResolve(holder, throwExceptions, out serializer, out compressor))
-                return false;
-
-            return serializer.TrySerialize(holder) 
-                && (compressor?.TryCompression(holder) ?? true);
+            return SupportsCompressor(holder.ContentEncoding);
         }
         #endregion
-        #region TryPayloadDeserialize(SerializationHolder holder, bool throwExceptions = false)
-        /// <summary>
-        /// This method attempts to deserialize the binary blob and sets the object in the holder.
-        /// </summary>
-        /// <param name="holder">The serialization holder.</param>
-        /// <param name="throwExceptions">Directs the container to throw detailed exceptions on failure. The default is false.</param>
-        /// <returns>
-        /// Returns true if the operation is successful.
-        /// </returns>
-        public bool TryPayloadDeserialize(SerializationHolder holder, bool throwExceptions = false)
-        {
-            IPayloadSerializer serializer;
-            IPayloadCompressor compressor;
-            if (!TryResolve(holder, throwExceptions, out serializer, out compressor))
-                return false;
-
-            return (compressor?.TryDecompression(holder) ?? true) 
-                && serializer.TryDeserialize(holder);
-        }
-        #endregion
-
         #region TryDecompress(SerializationHolder holder)
         /// <summary>
         /// Tries to decompress the incoming holder.
@@ -461,6 +439,56 @@ namespace Xigadee
             return comp.TryCompression(holder);
         } 
         #endregion
+        #region TryGetCompressor(string contentEncodingType, out IPayloadCompressor compressor)
+        /// <summary>
+        /// Tries to get the compressor.
+        /// </summary>
+        /// <param name="contentEncodingType">The content encoding type.</param>
+        /// <param name="compressor">The compressor.</param>
+        /// <returns>Returns true if successful.</returns>
+        protected bool TryGetCompressor(string contentEncodingType, out IPayloadCompressor compressor)
+        {
+            compressor = null;
+            string ceType;
+
+            if (!ExtractContentEncoding(contentEncodingType, out ceType))
+                return false;
+
+            return mPayloadCompressors.TryGetValue(ceType, out compressor);
+        }
+        #endregion
+
+        #region TryPayloadSerialize(SerializationHolder holder, bool throwExceptions = false)
+        /// <summary>
+        /// This method attempts to Serialize the object and sets the blob and headers in the holder.
+        /// </summary>
+        /// <param name="holder">The serialization holder.</param>
+        /// <param name="throwExceptions">Directs the container to throw detailed exceptions on failure. The default is false.</param>
+        /// <returns>
+        /// Returns true if the operation is successful.
+        /// </returns>
+        public bool TryPayloadSerialize(SerializationHolder holder, bool throwExceptions = false)
+        {
+            return TrySerialize(holder) && holder.HasContentEncoding && TryCompress(holder);
+        }
+        #endregion
+        #region TryPayloadDeserialize(SerializationHolder holder, bool throwExceptions = false)
+        /// <summary>
+        /// This method attempts to deserialize the binary blob and sets the object in the holder.
+        /// </summary>
+        /// <param name="holder">The serialization holder.</param>
+        /// <param name="throwExceptions">Directs the container to throw detailed exceptions on failure. The default is false.</param>
+        /// <returns>
+        /// Returns true if the operation is successful.
+        /// </returns>
+        public bool TryPayloadDeserialize(SerializationHolder holder, bool throwExceptions = false)
+        {
+            if (holder.HasContentEncoding && !TryDecompress(holder))
+                return false;
+
+            return TryDeserialize(holder);
+        }
+        #endregion
 
         #region Collector
         /// <summary>
@@ -468,5 +496,31 @@ namespace Xigadee
         /// </summary>
         public IDataCollection Collector { get; set; }
         #endregion
+
+        /// <summary>
+        /// This policy contains the settings for the Serialization Container.
+        /// </summary>
+        /// <seealso cref="Xigadee.PolicyBase" />
+        public class Policy: PolicyBase
+        {
+            /// <summary>
+            /// Specifies whether the serialization container supports the object registry. 
+            /// By default this is false to preserve legacy behaviour.
+            /// </summary>
+            public bool ContentRegistrySupported { get; set; } = false;
+            /// <summary>
+            /// This is the maximum number of objects that the registry will support. Leave this null to not define a limit.
+            /// </summary>
+            public int? ContentRegistryLimit { get; set; } = 10000;
+
+            /// <summary>
+            /// This is the maximum time that an object can survive in the object registry,
+            /// </summary>
+            public TimeSpan ContentRegistryTimeToLive { get; set; } = TimeSpan.FromSeconds(15);
+            /// <summary>
+            /// Specifies that a warning should be issued to the data collector when an object times out.  
+            /// </summary>
+            public bool ContentRegistryWarningOnTimeout { get; set; } = true;
+        }
     }
 }
