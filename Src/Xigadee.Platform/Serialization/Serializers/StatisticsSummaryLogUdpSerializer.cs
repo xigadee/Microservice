@@ -27,7 +27,7 @@ namespace Xigadee
         /// <param name="holder">The holder to set.</param>
         public override void Serialize(SerializationHolder holder)
         {
-            var stats = holder.Object as MicroserviceStatistics;
+            var stats = holder.Object as Microservice.Statistics;
             if (stats == null)
                 throw new ArgumentOutOfRangeException("The holder object is not of type MicroserviceStatistics");
 
@@ -54,7 +54,7 @@ namespace Xigadee
         /// </returns>
         public override bool SupportsSerialization(SerializationHolder holder)
         {
-            return base.SupportsSerialization(holder) && holder.ObjectType == typeof(MicroserviceStatistics);
+            return base.SupportsSerialization(holder) && holder.ObjectType == typeof(Microservice.Statistics);
         }
 
 

@@ -47,7 +47,7 @@ namespace Xigadee
         /// <summary>
         /// Returns the statistics on the queue.
         /// </summary>
-        QueueTrackerStatistics Statistics {get;}
+        QueueTrackerStatistics StatisticsRecalculated {get;}
         /// <summary>
         /// Returns the number of items in the queue.
         /// </summary>

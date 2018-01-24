@@ -51,7 +51,7 @@ namespace Xigadee
         /// <param name="stats">The statistics</param>
         protected override void StatisticsRecalculate(SharedServiceStatistics stats)
         {
-            stats.Services = mContainer.Values.Select((v) => v.Statistics).ToList();
+            stats.Services = mContainer.Values.Select((v) => v.StatisticsRecalculated).ToList();
         }
 
         public bool RegisterService<I>(I instance, string serviceName = null)

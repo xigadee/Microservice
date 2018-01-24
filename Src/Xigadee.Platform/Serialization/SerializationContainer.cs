@@ -11,7 +11,7 @@ namespace Xigadee
     /// <summary>
     /// This container holds the system serialization/de-serialization components that are used when transmitting data outside of the system.
     /// </summary>
-    public partial class SerializationContainer : ServiceContainerBase<SerializationStatistics, SerializationContainer.Policy>
+    public partial class SerializationContainer : ServiceContainerBase<SerializationContainer.Statistics, SerializationContainer.Policy>
         , IPayloadSerializationContainer, IRequireDataCollector
     {
         #region Declarations        
@@ -58,7 +58,7 @@ namespace Xigadee
         /// This method is used to update any calculated fields for the specific service statistics.
         /// </summary>
         /// <param name="statistics">The current statistics.</param>
-        protected override void StatisticsRecalculate(SerializationStatistics statistics)
+        protected override void StatisticsRecalculate(SerializationContainer.Statistics statistics)
         {
             base.StatisticsRecalculate(statistics);
 
@@ -497,6 +497,7 @@ namespace Xigadee
         public IDataCollection Collector { get; set; }
         #endregion
 
+        #region Class -> Policy
         /// <summary>
         /// This policy contains the settings for the Serialization Container.
         /// </summary>
@@ -521,6 +522,30 @@ namespace Xigadee
             /// Specifies that a warning should be issued to the data collector when an object times out.  
             /// </summary>
             public bool ContentRegistryWarningOnTimeout { get; set; } = true;
+        }
+        #endregion
+
+        /// <summary>
+        /// This is the statistics collection for the serialization container.
+        /// </summary>
+        public class Statistics: CollectionStatistics
+        {
+            /// <summary>
+            /// The cache count.
+            /// </summary>
+            public virtual int CacheCount { get; set; }
+            /// <summary>
+            /// The supported serialization classes.
+            /// </summary>
+            public string[] Serialization { get; set; }
+            /// <summary>
+            /// The supported serialization classes.
+            /// </summary>
+            public string[] Compression { get; set; }
+            /// <summary>
+            /// The serialization cache.
+            /// </summary>
+            public string[] Cache { get; set; }
         }
     }
 }

@@ -17,6 +17,7 @@
 #region using
 
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 #endregion
 namespace Xigadee
@@ -33,7 +34,7 @@ namespace Xigadee
         {
             try
             {
-                var statistics = Statistics;
+                var statistics = StatisticsRecalculated;
                 mDataCollection?.Write(statistics, DataCollectionSupport.Statistics);
                 mEventsWrapper.OnStatisticsIssued(statistics);
             }
@@ -50,7 +51,7 @@ namespace Xigadee
         /// <summary>
         /// This method sets the updated Microservice statistics.
         /// </summary>
-        protected override void StatisticsRecalculate(MicroserviceStatistics stats)
+        protected override void StatisticsRecalculate(Microservice.Statistics stats)
         {
             stats.Id = Id;
 
@@ -60,22 +61,136 @@ namespace Xigadee
             stats.Status = Status.ToString();
             stats.LogTime = DateTime.UtcNow;
 
-            stats.Tasks = mTaskManager?.Statistics;
+            stats.Tasks = mTaskManager?.StatisticsRecalculated;
 
-            stats.DataCollection = mDataCollection?.Statistics;
+            stats.DataCollection = mDataCollection?.StatisticsRecalculated;
 
-            stats.Communication = mCommunication?.Statistics;
+            stats.Communication = mCommunication?.StatisticsRecalculated;
 
-            stats.Resources = mResourceMonitor?.Statistics;
+            stats.Resources = mResourceMonitor?.StatisticsRecalculated;
 
-            stats.Commands = mCommands?.Statistics;
+            stats.Commands = mCommands?.StatisticsRecalculated;
 
-            stats.Scheduler = mScheduler?.Statistics;
+            stats.Scheduler = mScheduler?.StatisticsRecalculated;
 
-            stats.Security = mSecurity?.Statistics;
+            stats.Security = mSecurity?.StatisticsRecalculated;
 
-            stats.Serialization = mSerializer?.Statistics;
+            stats.Serialization = mSerializer?.StatisticsRecalculated;
         }
+        #endregion
+
+        #region Class -> Statistics
+        /// <summary>
+        /// This class holds the current status of the Microservice container.
+        /// </summary>
+        [DebuggerDisplay("{Name}-{Status} @ {LogTime}")]
+        public class Statistics: MessagingStatistics, ILogStoreName
+        {
+            #region Constructor
+            /// <summary>
+            /// This is the statistics default constructor.
+            /// </summary>
+            public Statistics() : base()
+            {
+
+            }
+            #endregion
+
+            #region Name
+            /// <summary>
+            /// This override places the name at the top of the JSON
+            /// </summary>
+            public override string Name
+            {
+                get
+                {
+                    return Id?.Name;
+                }
+
+                set
+                {
+                }
+            }
+            #endregion
+
+            /// <summary>
+            /// This is the Microservice identifier collection.
+            /// </summary>
+            public MicroserviceId Id { get; set; }
+
+            /// <summary>
+            /// This is the current status of the service.
+            /// </summary>
+            public string Status { get; set; }
+
+            /// <summary>
+            /// This is the last time that the statistics were updated.
+            /// </summary>
+            public DateTime LogTime { get; set; }
+
+            /// <summary>
+            /// This is the service uptime.
+            /// </summary>
+            public string Uptime
+            {
+                get
+                {
+                    var span = LogTime - Id.StartTime;
+                    return StatsCounter.LargeTime(span);
+                }
+            }
+
+            /// <summary>
+            /// This is the task manager statistics.
+            /// </summary>
+            public TaskManager.Statistics Tasks { get; set; }
+
+            /// <summary>
+            /// This is a list of the handlers active on the system and their status.
+            /// </summary>
+            public CommunicationContainer.Statistics Communication { get; set; }
+
+            /// <summary>
+            /// This is the command container statistics/
+            /// </summary>
+            public CommandContainer.Statistics Commands { get; set; }
+            /// <summary>
+            /// The resource statistics.
+            /// </summary>
+            public ResourceContainer.Statistics Resources { get; set; }
+
+            /// <summary>
+            /// The security statistics.
+            /// </summary>
+            public SecurityContainer.Statistics Security { get; set; }
+
+            /// <summary>
+            /// The security statistics.
+            /// </summary>
+            public SerializationContainer.Statistics Serialization { get; set; }
+            /// <summary>
+            /// The scheduler statistics.
+            /// </summary>
+            public SchedulerContainer.Statistics Scheduler { get; set; }
+
+            /// <summary>
+            /// The data collection statistics. These include the logger, event source and telemetry statistics.
+            /// </summary>
+            public DataCollectionContainer.Statistics DataCollection { get; set; }
+
+            #region StorageId
+            /// <summary>
+            /// This is the Id used in the undelying storage.
+            /// </summary>
+            public string StorageId
+            {
+                get
+                {
+                    return string.Format("{0}_{3:yyyyMMddHHmmssFFF}_{1}_{2}", Id.Name, Id.MachineName, Id.ServiceId, LogTime);
+                }
+            }
+            #endregion
+        } 
         #endregion
     }
 }

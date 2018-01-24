@@ -99,7 +99,7 @@ namespace Xigadee
             stats.LastException = LastException;
             stats.LastExceptionTime = LastExceptionTime;
             
-            stats.Metrics = mMetrics.Statistics;
+            stats.Metrics = mMetrics.StatisticsRecalculated;
         }
         #endregion
 

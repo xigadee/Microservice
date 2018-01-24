@@ -12,9 +12,9 @@ namespace Xigadee
         /// <param name="msAssign">The assignment function.</param>
         /// <returns>Returns the pipeline</returns>
         public static P AdjustPolicyTaskManager<P>(this P pipeline
-            , Action<TaskManagerPolicy, IEnvironmentConfiguration> msAssign = null) where P : IPipeline
+            , Action<TaskManager.Policy, IEnvironmentConfiguration> msAssign = null) where P : IPipeline
         {
-            msAssign?.Invoke(pipeline.Service.Policy.TaskManager, pipeline.Configuration);
+            msAssign?.Invoke(pipeline.Service.Policies.TaskManager, pipeline.Configuration);
 
             return pipeline;
         }

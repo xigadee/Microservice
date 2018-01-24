@@ -1,19 +1,4 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-#region using
+﻿#region using
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -26,7 +11,7 @@ namespace Xigadee
     /// This container contains all the internal handlers, initiators and jobs that are responsible for 
     /// processing messages on the system. This class also holds and maintains the shared service collections.
     /// </summary>
-    public class CommandContainer:ServiceContainerBase<CommandContainerStatistics, CommandContainerPolicy>
+    public class CommandContainer:ServiceContainerBase<CommandContainer.Statistics, CommandContainer.Policy>
     {
         #region Declarations
         /// <summary>
@@ -54,7 +39,7 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        public CommandContainer(CommandContainerPolicy policy = null):base(policy)
+        public CommandContainer(CommandContainer.Policy policy = null):base(policy)
         {
             mCommands = new List<ICommand>();
 
@@ -124,16 +109,16 @@ namespace Xigadee
         }
         #endregion
 
-        #region StatisticsRecalculate(CommandContainerStatistics stats)
+        #region StatisticsRecalculate(CommandContainer.Statistics stats)
         /// <summary>
-        /// This method recalcuates the component statistics.
+        /// This method recalculates the component statistics.
         /// </summary>
-        protected override void StatisticsRecalculate(CommandContainerStatistics stats)
+        protected override void StatisticsRecalculate(CommandContainer.Statistics stats)
         {
             base.StatisticsRecalculate(stats);
 
             if (SharedServices != null)
-                stats.SharedServices = mSharedServices.Statistics;
+                stats.SharedServices = mSharedServices.StatisticsRecalculated;
 
             stats.Commands = Commands
                 .OrderByDescending((c) => c.StartupPriority)
@@ -333,7 +318,30 @@ namespace Xigadee
                 .ForEach(h => serviceStop(h));
 
             mNotificationsActive = false;
-        } 
+        }
         #endregion
+
+        /// <summary>
+        /// This is the specific policy for the command container.
+        /// </summary>
+        public class Policy: PolicyBase
+        {
+        }
+
+        /// <summary>
+        /// This class holds the command container statistics.
+        /// </summary>
+        public class Statistics: StatusBase
+        {
+            /// <summary>
+            /// The command list.
+            /// </summary>
+            public List<CommandStatistics> Commands { get; set; }
+            /// <summary>
+            /// The shared services.
+            /// </summary>
+            public SharedServiceStatistics SharedServices { get; set; }
+
+        }
     }
 }

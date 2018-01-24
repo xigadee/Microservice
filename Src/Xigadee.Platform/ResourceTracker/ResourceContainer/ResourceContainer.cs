@@ -26,7 +26,7 @@ namespace Xigadee
     /// This class is used to connect resource consumers with resource limiters.
     /// Limiters are typically connected to listener clients and reduce the incoming traffic when the resource becomes stressed.
     /// </summary>
-    public class ResourceContainer: ServiceContainerBase<ResourceContainerStatistics, ResourceContainer.Policy>
+    public class ResourceContainer: ServiceContainerBase<ResourceContainer.Statistics, ResourceContainer.Policy>
         , IRequireSharedServices, IResourceTracker, IRequireDataCollector
     {
         //AKA Dependency Monitor
@@ -94,12 +94,12 @@ namespace Xigadee
         }
         #endregion
 
-        #region StatisticsRecalculate(ResourceContainerStatistics stats)
+        #region StatisticsRecalculate(ResourceContainer.Statistics stats)
         /// <summary>
         /// This method recalculates the statistics summaries.
         /// </summary>
         /// <param name="stats">The statistics.</param>
-        protected override void StatisticsRecalculate(ResourceContainerStatistics stats)
+        protected override void StatisticsRecalculate(ResourceContainer.Statistics stats)
         {
             if (mResources != null)
                 stats.Resources = mResources.Values.ToArray();
@@ -225,11 +225,30 @@ namespace Xigadee
         }
         #endregion
 
+        #region Class -> Policy
         /// <summary>
         /// This policy is used by the ResourceContainer class
         /// </summary>
         public class Policy: PolicyBase
         {
         }
+        #endregion
+
+        #region Class -> Statistics
+        /// <summary>
+        /// This class measures the statistics for the resource container.
+        /// </summary>
+        public class Statistics: StatusBase
+        {
+            /// <summary>
+            /// This is the resource collections.
+            /// </summary>
+            public ResourceStatistics[] Resources { get; set; }
+            /// <summary>
+            /// This is the collection of rate limiters
+            /// </summary>
+            public string[] RateLimiters { get; set; }
+        } 
+        #endregion
     }
 }

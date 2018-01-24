@@ -44,7 +44,7 @@ namespace Xigadee
             try
             {
                 client = ClientResolve(payload.Message.ChannelPriority);
-                start = client.Statistics.ActiveIncrement();
+                start = client.StatisticsInternal.ActiveIncrement();
                 await client.Transmit(payload);
                 payload.TraceWrite($"Sent: {client.Name}", "MessagingSenderBase/ProcessMessage");
             }
@@ -54,13 +54,13 @@ namespace Xigadee
                 //OK, not sure what happened here, so we need to throw the exception.
                 payload.TraceWrite($"Exception: {ex.Message}", "MessagingSenderBase/ProcessMessage");
                 if (client != null)
-                    client.Statistics.ErrorIncrement();
+                    client.StatisticsInternal.ErrorIncrement();
                 throw;
             }
             finally
             {
                 if (client != null && start.HasValue)
-                    client.Statistics.ActiveDecrement(start.Value);
+                    client.StatisticsInternal.ActiveDecrement(start.Value);
             }
         } 
         #endregion

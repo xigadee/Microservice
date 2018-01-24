@@ -1,20 +1,4 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-#region using
+﻿#region using
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -27,7 +11,8 @@ namespace Xigadee
     /// <summary>
     /// This container holds the current tasks being processed on the system and calculates the available slots for the supported priority levels.
     /// </summary>
-    public class TaskManager: ServiceContainerBase<TaskManagerStatistics, TaskManagerPolicy>, IRequireDataCollector
+    public partial class TaskManager: ServiceContainerBase<TaskManager.Statistics, TaskManager.Policy>
+        , IRequireDataCollector
     {
         #region Declarations
         /// <summary>
@@ -110,7 +95,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="dispatcher">The dispatcher function that is used to process the specific tasks.</param>
         /// <param name="policy">The task manager policy.</param>
-        public TaskManager(Func<TransmissionPayload, Task> dispatcher, TaskManagerPolicy policy)
+        public TaskManager(Func<TransmissionPayload, Task> dispatcher, TaskManager.Policy policy)
             : base(policy, nameof(TaskManager))
         {
             if (policy == null)
@@ -163,11 +148,11 @@ namespace Xigadee
             DequeueTasksAndReject();
         }
         #endregion
-        #region StatisticsRecalculate()
+        #region StatisticsRecalculate...
         /// <summary>
         /// This method sets the statistics.
         /// </summary>
-        protected override void StatisticsRecalculate(TaskManagerStatistics stats)
+        protected override void StatisticsRecalculate(TaskManager.Statistics stats)
         {
             base.StatisticsRecalculate(stats);
 
@@ -177,7 +162,7 @@ namespace Xigadee
 
             stats.InternalQueueLength = mProcessInternalQueue?.Count;
 
-            stats.Availability = mAvailability.Statistics;
+            stats.Availability = mAvailability.StatisticsRecalculated;
 
             stats.TaskCount = mTaskRequests?.Count ?? 0;
 
@@ -188,7 +173,7 @@ namespace Xigadee
                     .Select((t) => t.Debug)
                     .ToArray();
 
-            if (mTasksQueue != null) stats.Queues = mTasksQueue.Statistics;
+            if (mTasksQueue != null) stats.Queues = mTasksQueue.StatisticsRecalculated;
         }
         #endregion
 

@@ -8,7 +8,7 @@ namespace Xigadee
     /// The security container class contains all the components to secure the incoming messaging for a Microservice, 
     /// and to ensure that incoming message requests have the correct permissions necessary to be processed.
     /// </summary>
-    public partial class SecurityContainer: ServiceContainerBase<SecurityContainerStatistics, SecurityContainer.Policy>
+    public partial class SecurityContainer: ServiceContainerBase<SecurityContainer.Statistics, SecurityContainer.Policy>
         , ISecurityService
         , IRequireDataCollector, IRequireServiceOriginator
     {
@@ -40,7 +40,7 @@ namespace Xigadee
         /// This method updates the security statistics.
         /// </summary>
         /// <param name="statistics">The statistics.</param>
-        protected override void StatisticsRecalculate(SecurityContainerStatistics statistics)
+        protected override void StatisticsRecalculate(SecurityContainer.Statistics statistics)
         {
             base.StatisticsRecalculate(statistics);
 
@@ -228,6 +228,22 @@ namespace Xigadee
         public class Policy: PolicyBase
         {
 
+        }
+        #endregion
+        #region Class -> Statistics
+        /// <summary>
+        /// This class holds a reference to the statistics.
+        /// </summary>
+        public class Statistics: StatusBase
+        {
+            /// <summary>
+            /// This is a list of the supported authentication handlers.
+            /// </summary>
+            public string[] AuthenticationHandlers { get; set; }
+            /// <summary>
+            /// This is a list of the supported encryption handlers.
+            /// </summary>
+            public string[] EncryptionHandlers { get; set; }
         } 
         #endregion
     }

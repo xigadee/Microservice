@@ -100,7 +100,7 @@ namespace Xigadee
             foreach (int priority in Levels)
                 mListenerPollChain[priority].ForIndex((i, g) =>
                 {
-                    var stat = mListenerClients[g].Statistics;
+                    var stat = mListenerClients[g].StatisticsRecalculated;
                     stat.Ordinal = i;
                     data.Add(stat);
                 });

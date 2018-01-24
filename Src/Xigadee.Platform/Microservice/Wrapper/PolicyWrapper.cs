@@ -9,14 +9,14 @@ namespace Xigadee
         #region Declarations
         object syncLock = new object();
 
-        MicroservicePolicy mPolicyMicroservice = null;
-        TaskManagerPolicy mPolicyTaskManager = null;
-        CommandContainerPolicy mPolicyCommand = null;
-        CommunicationPolicy mPolicyCommunication = null;
+        Microservice.Policy mPolicyMicroservice = null;
+        TaskManager.Policy mPolicyTaskManager = null;
+        CommandContainer.Policy mPolicyCommand = null;
+        CommunicationContainer.Policy mPolicyCommunication = null;
         SchedulerContainer.Policy mPolicyScheduler = null;
         SecurityContainer.Policy mPolicySecurity = null;
         ResourceContainer.Policy mPolicyResourceTracker = null;
-        DataCollectionPolicy mPolicyDataCollection = null;
+        DataCollectionContainer.Policy mPolicyDataCollection = null;
         SerializationContainer.Policy mPolicySerialization = null;
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace Xigadee
         /// This is the policy used to set the Microservice default settings.
         /// </summary>
         /// <returns>The microservice policy.</returns>
-        public virtual MicroservicePolicy Microservice
+        public virtual Microservice.Policy Microservice
         {
             get
             {
@@ -76,7 +76,7 @@ namespace Xigadee
         /// This method retrieves the policy for the task manager.
         /// </summary>
         /// <returns>The policy.</returns>
-        public virtual TaskManagerPolicy TaskManager
+        public virtual TaskManager.Policy TaskManager
         {
             get
             {
@@ -102,7 +102,7 @@ namespace Xigadee
         /// This is the policy used to set the command container.
         /// </summary>
         /// <returns></returns>
-        public virtual CommandContainerPolicy CommandContainer
+        public virtual CommandContainer.Policy CommandContainer
         {
             get
             {
@@ -115,7 +115,7 @@ namespace Xigadee
         /// This is the policy used to set the communication component settings.
         /// </summary>
         /// <returns></returns>
-        public virtual CommunicationPolicy Communication
+        public virtual CommunicationContainer.Policy Communication
         {
             get
             {
@@ -153,7 +153,7 @@ namespace Xigadee
         /// This is the policy used to set the data collection container settings.
         /// </summary>
         /// <returns>The policy</returns>
-        public virtual DataCollectionPolicy DataCollection
+        public virtual DataCollectionContainer.Policy DataCollection
         {
             get
             {

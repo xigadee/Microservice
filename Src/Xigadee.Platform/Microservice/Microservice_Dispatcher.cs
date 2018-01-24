@@ -1,20 +1,4 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-#region using
+﻿#region using
 
 using System;
 using System.Collections.Generic;
@@ -144,7 +128,7 @@ namespace Xigadee
 
         #region -->Execute(TransmissionPayload requestPayload)
         /// <summary>
-        /// This is the core method that messages are sent to to be routed and processed.
+        /// This is the core method that messages are sent to be routed and processed.
         /// You can override this task in your service to help debug the messages that are passing 
         /// though.
         /// </summary>
@@ -152,7 +136,7 @@ namespace Xigadee
         protected virtual async Task Execute(TransmissionPayload requestPayload)
         {
             var request = new TransmissionPayloadState(requestPayload
-                , Policy.Microservice.DispatcherTransitCountMax
+                , Policies.Microservice.DispatcherTransitCountMax
                 , StatisticsInternal.ActiveIncrement());
 
             try
@@ -161,10 +145,10 @@ namespace Xigadee
 
                 mEventsWrapper.OnExecuteBegin(request);
 
-                //Validate the imcoming request is correct and not cancelled.
+                //Validate the incoming request is correct and not cancelled.
                 request.IncomingValidate();
 
-                //Log the telemtry for the incoming message.
+                //Log the telemetry for the incoming message.
                 mDataCollection.DispatcherPayloadIncoming(request.Payload);
 
                 //Check that we have not exceeded the maximum transit count.
@@ -202,7 +186,7 @@ namespace Xigadee
 
                 int delta = StatisticsInternal.ActiveDecrement(request.TimerStart);
 
-                //Log the telemtry for the specific message channelId.
+                //Log the telemetry for the specific message channelId.
                 mDataCollection.DispatcherPayloadComplete(request.Payload, delta, request.IsSuccess());
 
                 if (!request.IsSuccess())
@@ -248,7 +232,7 @@ namespace Xigadee
                 return;
             }
 
-            ProcessUnhandledPayload(Policy.Microservice.DispatcherUnresolvedRequestMode
+            ProcessUnhandledPayload(Policies.Microservice.DispatcherUnresolvedRequestMode
                 , DispatcherRequestUnresolvedReason.MessageHandlerNotFound
                 , request.Payload);
         }
@@ -317,7 +301,7 @@ namespace Xigadee
             bool isSuccess = await mCommunication.Send(Payload);
             if (!isSuccess)
             {
-                ProcessUnhandledPayload(Policy.Microservice.DispatcherInvalidChannelMode
+                ProcessUnhandledPayload(Policies.Microservice.DispatcherInvalidChannelMode
                     , DispatcherRequestUnresolvedReason.ChannelOutgoingNotFound
                     , Payload);
             }

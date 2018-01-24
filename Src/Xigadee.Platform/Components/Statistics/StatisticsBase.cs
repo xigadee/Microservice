@@ -110,17 +110,18 @@ namespace Xigadee
         /// <returns>Returns the base statistics collection class</returns>
         public StatusBase StatisticsGet()
         {
-            return Statistics;
+            return StatisticsRecalculated;
         }
         #endregion
-        #region Statistics
+
+        #region StatisticsRecalculated
         /// <summary>
         /// This is the public generic statistics object.
         /// Calling this will result in a recursive call to StatisticsRecalculate
         /// and is provided primarily for external calling parties.
         /// Internal code should use StatisticsInternal to access the collection directly without side effects.
         /// </summary>
-        public virtual S Statistics
+        public virtual S StatisticsRecalculated
         {
             get
             {

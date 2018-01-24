@@ -19,7 +19,7 @@ namespace Test.Xigadee
         private void TestsAddRemove(Channel c1)
         {
             CommunicationContainer mContainer
-                = new CommunicationContainer(new CommunicationPolicy() { AutoCreateChannels = true });
+                = new CommunicationContainer(new CommunicationContainer.Policy() { AutoCreateChannels = true });
 
             Assert.IsTrue(mContainer.Add(c1));
 
@@ -45,7 +45,7 @@ namespace Test.Xigadee
         private void TestChannelAutocreateSuccess(ChannelDirection direction)
         {
             CommunicationContainer mContainer
-                = new CommunicationContainer(new CommunicationPolicy() { AutoCreateChannels = true });
+                = new CommunicationContainer(new CommunicationContainer.Policy() { AutoCreateChannels = true });
 
             Channel channel;
 
@@ -69,7 +69,7 @@ namespace Test.Xigadee
         private void TestChannelAutocreateFail(ChannelDirection direction)
         {
             CommunicationContainer mContainer
-                = new CommunicationContainer(new CommunicationPolicy() { AutoCreateChannels = false });
+                = new CommunicationContainer(new CommunicationContainer.Policy() { AutoCreateChannels = false });
 
             Channel channel = null;
 

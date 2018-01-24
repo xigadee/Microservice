@@ -25,12 +25,12 @@ namespace Xigadee
         /// <summary>
         /// Gets the Microservice default policy.
         /// </summary>
-        MicroservicePolicy Microservice { get; }
+        Microservice.Policy Microservice { get; }
         /// <summary>
         /// Gets the task manager policy.
         /// </summary>
         /// <value>
-        TaskManagerPolicy TaskManager { get; }
+        TaskManager.Policy TaskManager { get; }
         /// <summary>
         /// Gets the resource monitor policy.
         /// </summary>
@@ -38,11 +38,11 @@ namespace Xigadee
         /// <summary>
         /// Gets the command container policy.
         /// </summary>
-        CommandContainerPolicy CommandContainer { get; }
+        CommandContainer.Policy CommandContainer { get; }
         /// <summary>
         /// Gets the communication policy.
         /// </summary>
-        CommunicationPolicy Communication { get; }
+        CommunicationContainer.Policy Communication { get; }
         /// <summary>
         /// Gets the scheduler policy.
         /// </summary>
@@ -54,7 +54,7 @@ namespace Xigadee
         /// <summary>
         /// Gets the data collection policy.
         /// </summary>
-        DataCollectionPolicy DataCollection { get; }
+        DataCollectionContainer.Policy DataCollection { get; }
         /// <summary>
         /// Gets the serialization policy.
         /// </summary>

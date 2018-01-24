@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Xigadee;
 
-namespace Test.Xigadee.TaskManager
+namespace Test.Xigadee
 {
     [Contract("INTERNALIN", "FRANKY", "johnny5")]
     public interface ICaseSensitiveTest1: IMessageContract { }

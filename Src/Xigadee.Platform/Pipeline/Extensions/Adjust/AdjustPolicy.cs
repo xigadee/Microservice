@@ -32,9 +32,9 @@ namespace Xigadee
         /// <param name="msAssign">The assignment function.</param>
         /// <returns>Returns the pipeline</returns>
         public static P AdjustPolicyMicroservice<P>(this P pipeline
-            , Action<MicroservicePolicy, IEnvironmentConfiguration> msAssign = null) where P: IPipeline
+            , Action<Microservice.Policy, IEnvironmentConfiguration> msAssign = null) where P: IPipeline
         {
-            msAssign?.Invoke(pipeline.Service.Policy.Microservice, pipeline.Configuration);
+            msAssign?.Invoke(pipeline.Service.Policies.Microservice, pipeline.Configuration);
 
             return pipeline;
         }
@@ -49,7 +49,7 @@ namespace Xigadee
         public static P AdjustPolicyResourceTracker<P>(this P pipeline
             , Action<ResourceContainer.Policy, IEnvironmentConfiguration> msAssign = null) where P : IPipeline
         {
-            msAssign?.Invoke(pipeline.Service.Policy.ResourceMonitor, pipeline.Configuration);
+            msAssign?.Invoke(pipeline.Service.Policies.ResourceMonitor, pipeline.Configuration);
 
             return pipeline;
         }
@@ -61,9 +61,9 @@ namespace Xigadee
         /// <param name="msAssign">The assignment function.</param>
         /// <returns>Returns the pipeline</returns>
         public static P AdjustPolicyCommandContainer<P>(this P pipeline
-            , Action<CommandContainerPolicy, IEnvironmentConfiguration> msAssign = null) where P : IPipeline
+            , Action<CommandContainer.Policy, IEnvironmentConfiguration> msAssign = null) where P : IPipeline
         {
-            msAssign?.Invoke(pipeline.Service.Policy.CommandContainer, pipeline.Configuration);
+            msAssign?.Invoke(pipeline.Service.Policies.CommandContainer, pipeline.Configuration);
 
             return pipeline;
         }
@@ -75,9 +75,9 @@ namespace Xigadee
         /// <param name="msAssign">The assignment function.</param>
         /// <returns>Returns the pipeline</returns>
         public static P AdjustPolicyCommunication<P>(this P pipeline
-            , Action<CommunicationPolicy, IEnvironmentConfiguration> msAssign = null) where P : IPipeline
+            , Action<CommunicationContainer.Policy, IEnvironmentConfiguration> msAssign = null) where P : IPipeline
         {
-            msAssign?.Invoke(pipeline.Service.Policy.Communication, pipeline.Configuration);
+            msAssign?.Invoke(pipeline.Service.Policies.Communication, pipeline.Configuration);
 
             return pipeline;
         }
@@ -91,7 +91,7 @@ namespace Xigadee
         public static P AdjustPolicyScheduler<P>(this P pipeline
             , Action<SchedulerContainer.Policy, IEnvironmentConfiguration> msAssign = null) where P : IPipeline
         {
-            msAssign?.Invoke(pipeline.Service.Policy.Scheduler, pipeline.Configuration);
+            msAssign?.Invoke(pipeline.Service.Policies.Scheduler, pipeline.Configuration);
 
             return pipeline;
         }
@@ -105,7 +105,7 @@ namespace Xigadee
         public static P AdjustPolicySecurity<P>(this P pipeline
             , Action<SecurityContainer.Policy, IEnvironmentConfiguration> msAssign = null) where P : IPipeline
         {
-            msAssign?.Invoke(pipeline.Service.Policy.Security, pipeline.Configuration);
+            msAssign?.Invoke(pipeline.Service.Policies.Security, pipeline.Configuration);
 
             return pipeline;
         }
@@ -117,9 +117,9 @@ namespace Xigadee
         /// <param name="msAssign">The assignment function.</param>
         /// <returns>Returns the pipeline</returns>
         public static P AdjustPolicyDataCollection<P>(this P pipeline
-            , Action<DataCollectionPolicy, IEnvironmentConfiguration> msAssign = null) where P : IPipeline
+            , Action<DataCollectionContainer.Policy, IEnvironmentConfiguration> msAssign = null) where P : IPipeline
         {
-            msAssign?.Invoke(pipeline.Service.Policy.DataCollection, pipeline.Configuration);
+            msAssign?.Invoke(pipeline.Service.Policies.DataCollection, pipeline.Configuration);
 
             return pipeline;
         }

@@ -108,7 +108,7 @@ namespace Xigadee
         {
             get
             {
-                return Statistics;
+                return StatisticsRecalculated;
             }
         }
         #endregion

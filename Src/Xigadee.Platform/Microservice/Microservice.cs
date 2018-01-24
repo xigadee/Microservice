@@ -8,7 +8,7 @@ namespace Xigadee
     /// <summary>
     /// This class enables the communication fabric to be plugged in to existing code with minimal effort.
     /// </summary>
-    public partial class Microservice: ServiceBase<MicroserviceStatistics>, IMicroservice
+    public partial class Microservice: ServiceBase<Microservice.Statistics>, IMicroservice
     {
         #region Declarations
         /// <summary>
@@ -68,7 +68,7 @@ namespace Xigadee
             )
             : base(name)
         {
-            Policy = new PolicyWrapper(policySettings, () => Status);
+            Policies = new PolicyWrapper(policySettings, () => Status);
             //Id
             if (string.IsNullOrEmpty(name))
                 name = GetType().Name;
@@ -110,7 +110,7 @@ namespace Xigadee
         /// </summary>
         protected virtual void ConfigurationInitialise()
         {
-            var tmPolicy = Policy.TaskManager;
+            var tmPolicy = Policies.TaskManager;
 
             //Do some sanity checking on the Max/Min settings. 
             if (tmPolicy.ConcurrentRequestsMin < 0)
@@ -150,20 +150,20 @@ namespace Xigadee
         {
             //Set the status log frequency.
             mScheduler.Register(async (s, cancel) => await LogStatistics()
-                , Policy.Microservice.FrequencyStatisticsGeneration, "Statistics: Output", TimeSpan.FromSeconds(0), isInternal:true);
+                , Policies.Microservice.FrequencyStatisticsGeneration, "Statistics: Output", TimeSpan.FromSeconds(0), isInternal:true);
 
             //Set the status log frequency.
-            if (Policy.Microservice.FrequencyAutotune.HasValue)
+            if (Policies.Microservice.FrequencyAutotune.HasValue)
                 mScheduler.Register(async (s, cancel) => await mTaskManager.Autotune()
-                    , Policy.Microservice.FrequencyAutotune.Value, "TaskManager: Autotune", TimeSpan.FromSeconds(10), isInternal: true);
+                    , Policies.Microservice.FrequencyAutotune.Value, "TaskManager: Autotune", TimeSpan.FromSeconds(10), isInternal: true);
 
             // Flush the accumulated telemetry 
             mScheduler.Register(async (s, cancel) => await mDataCollection.Flush()
-                , Policy.Microservice.FrequencyDataCollectionFlush, "Data Collection Flush", TimeSpan.FromSeconds(10), isInternal: true);
+                , Policies.Microservice.FrequencyDataCollectionFlush, "Data Collection Flush", TimeSpan.FromSeconds(10), isInternal: true);
 
             // Kills any overrunning tasks
             mScheduler.Register(async (s, cancel) => await mTaskManager.TaskTimedoutKill()
-                , Policy.Microservice.FrequencyTasksTimeout, "TaskManager: Tasks timed-out kill", TimeSpan.FromSeconds(1), isInternal: true);
+                , Policies.Microservice.FrequencyTasksTimeout, "TaskManager: Tasks timed-out kill", TimeSpan.FromSeconds(1), isInternal: true);
         }
         #endregion
 
@@ -222,7 +222,7 @@ namespace Xigadee
 
                 //OK start the commands in parallel at the same priority group.
                 EventStart(() => Dispatch = new DispatchWrapper(mSerializer, mTaskManager.ExecuteOrEnqueue, () => Status
-                    , Policy.TaskManager.TransmissionPayloadTraceEnabled)
+                    , Policies.TaskManager.TransmissionPayloadTraceEnabled)
                     , "Dispatch Wrapper");
 
                 //Signal that start has completed.
@@ -427,7 +427,7 @@ namespace Xigadee
         /// <summary>
         /// This is the set of policy settings for the microservice.
         /// </summary>
-        public IMicroservicePolicy Policy { get; }
+        public IMicroservicePolicy Policies { get; }
         /// <summary>
         /// This is the security wrapper.
         /// </summary>

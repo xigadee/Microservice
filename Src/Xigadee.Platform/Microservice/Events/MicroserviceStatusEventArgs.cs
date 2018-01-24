@@ -1,24 +1,4 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace Xigadee
 {
@@ -27,36 +7,73 @@ namespace Xigadee
     /// </summary>
     public class MicroserviceStatusEventArgs:EventArgs
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MicroserviceStatusEventArgs"/> class.
+        /// </summary>
+        /// <param name="status">The status.</param>
+        /// <param name="title">The title.</param>
         public MicroserviceStatusEventArgs(MicroserviceComponentStatusChangeAction status, string title)
         {
             Status = status;
             Title = title;
         }
-
+        /// <summary>
+        /// Gets the status.
+        /// </summary>
         public MicroserviceComponentStatusChangeAction Status { get;}
-
+        /// <summary>
+        /// Gets the title.
+        /// </summary>
         public string Title { get; }
-
+        /// <summary>
+        /// Gets or sets the state.
+        /// </summary>
         public MicroserviceComponentStatusChangeState State { get; set; } =  MicroserviceComponentStatusChangeState.Beginning;
-
+        /// <summary>
+        /// Gets or sets the last exception.
+        /// </summary>
         public MicroserviceStatusChangeException Ex { get; set; }
-
+        /// <summary>
+        /// Displays the status as a debug string.
+        /// </summary>
+        /// <returns></returns>
         public string Debug()
         {
             return $"{Status}: {Title} = {State}";
         }
     }
 
+    /// <summary>
+    /// This is the status change action type for a Microservice component.
+    /// </summary>
     public enum MicroserviceComponentStatusChangeAction
     {
+        /// <summary>
+        /// The component service is starting
+        /// </summary>
         Starting,
+        /// <summary>
+        /// The component service is stopping
+        /// </summary>
         Stopping
     }
 
+    /// <summary>
+    /// This enumeration is used to identify a generic state change for a component 
+    /// </summary>
     public enum MicroserviceComponentStatusChangeState
     {
+        /// <summary>
+        /// The component is beginning a state change.
+        /// </summary>
         Beginning,
+        /// <summary>
+        /// The component has completed it's state change.
+        /// </summary>
         Completed,
+        /// <summary>
+        /// The component has failed to change state.
+        /// </summary>
         Failed
     }
 }

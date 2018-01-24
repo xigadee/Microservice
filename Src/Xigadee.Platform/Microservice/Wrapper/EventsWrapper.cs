@@ -239,7 +239,7 @@ namespace Xigadee
         /// This method is called on a regular interval when the statistics are updated.
         /// </summary>
         /// <param name="statistics">The statistics collection.</param>
-        internal virtual void OnStatisticsIssued(MicroserviceStatistics statistics)
+        internal virtual void OnStatisticsIssued(Microservice.Statistics statistics)
         {
             try
             {

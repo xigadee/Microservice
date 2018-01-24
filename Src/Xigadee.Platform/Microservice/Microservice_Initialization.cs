@@ -38,7 +38,7 @@ namespace Xigadee
         /// <returns></returns>
         protected virtual TaskManager InitialiseTaskManager()
         {
-            var policy = Policy.TaskManager;
+            var policy = Policies.TaskManager;
 
             var taskTracker = new TaskManager(Execute, policy);
 
@@ -54,7 +54,7 @@ namespace Xigadee
         /// <returns>Returns the resource tracker.</returns>
         protected virtual ResourceContainer InitialiseResourceMonitor()
         {
-            var container = new ResourceContainer(Policy.ResourceMonitor);
+            var container = new ResourceContainer(Policies.ResourceMonitor);
 
             return container;
         }
@@ -68,7 +68,7 @@ namespace Xigadee
         /// <returns>Returns the container.</returns>
         protected virtual CommandContainer InitialiseCommandContainer()
         {
-            var container = new CommandContainer(Policy.CommandContainer);
+            var container = new CommandContainer(Policies.CommandContainer);
 
             return container;
         }
@@ -82,7 +82,7 @@ namespace Xigadee
         /// <returns>The communication container.</returns>
         protected virtual CommunicationContainer InitialiseCommunicationContainer()
         {
-            var container = new CommunicationContainer(Policy.Communication);
+            var container = new CommunicationContainer(Policies.Communication);
 
             return container;
         }
@@ -94,7 +94,7 @@ namespace Xigadee
         /// <returns>The default scheduler.</returns>
         protected virtual SchedulerContainer InitialiseSchedulerContainer()
         {
-            var container = new SchedulerContainer(Policy.Scheduler);
+            var container = new SchedulerContainer(Policies.Scheduler);
 
             return container;
         }
@@ -108,7 +108,7 @@ namespace Xigadee
         /// <returns>Returns the container.</returns>
         protected virtual SecurityContainer InitialiseSecurityContainer()
         {
-            var container = new SecurityContainer(Policy.Security);
+            var container = new SecurityContainer(Policies.Security);
 
             return container;
         }
@@ -119,7 +119,7 @@ namespace Xigadee
         /// </summary>
         protected virtual SerializationContainer InitialiseSerializationContainer()
         {
-            var container = new SerializationContainer(Policy.Serialization);
+            var container = new SerializationContainer(Policies.Serialization);
 
             return container;
         }
@@ -131,7 +131,7 @@ namespace Xigadee
         /// <returns>The data collection container.</returns>
         protected virtual DataCollectionContainer InitialiseDataCollectionContainer()
         {
-            var container = new DataCollectionContainer(Policy.DataCollection);
+            var container = new DataCollectionContainer(Policies.DataCollection);
 
             return container;
         }

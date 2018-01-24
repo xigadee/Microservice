@@ -9,6 +9,6 @@
         /// <summary>
         /// Gets the statistics for the persistence client.
         /// </summary>
-        PersistenceClientStatistics Statistics { get; }
+        PersistenceClientStatistics StatisticsRecalculated { get; }
     }
 }
