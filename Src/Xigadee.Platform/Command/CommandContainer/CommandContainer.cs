@@ -321,13 +321,15 @@ namespace Xigadee
         }
         #endregion
 
+        #region Class -> Policy
         /// <summary>
         /// This is the specific policy for the command container.
         /// </summary>
         public class Policy: PolicyBase
         {
         }
-
+        #endregion
+        #region Class -> Statistics
         /// <summary>
         /// This class holds the command container statistics.
         /// </summary>
@@ -341,7 +343,7 @@ namespace Xigadee
             /// The shared services.
             /// </summary>
             public SharedServiceStatistics SharedServices { get; set; }
-
-        }
+        } 
+        #endregion
     }
 }

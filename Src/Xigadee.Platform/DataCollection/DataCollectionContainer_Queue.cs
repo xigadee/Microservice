@@ -8,6 +8,12 @@ namespace Xigadee
 {
     public partial class DataCollectionContainer
     {
+        #region Events
+        /// <summary>
+        /// This event is fired just before an item is logged to the underlying collectors.
+        /// </summary>
+        public event EventHandler<EventHolder> OnEvent;
+        #endregion
         #region Declarations
         /// <summary>
         /// This is the concurrent queue that contains the incoming messages.
@@ -115,15 +121,24 @@ namespace Xigadee
         }
         #endregion
 
+        #region RaiseEvent(EventHolder eventData)
         /// <summary>
-        /// This method is called after an event has been processed. It will be passed to any event listeners for additional processing.
+        /// This method is called after an event has been processed. 
+        /// It will be passed to any event listeners for additional processing.
         /// </summary>
         /// <param name="eventData">The event data.</param>
-        protected void RaiseEvent(EventHolder eventData)
+        protected virtual void RaiseEvent(EventHolder eventData)
         {
-
-            
-        }
+            try
+            {
+                OnEvent?.Invoke(this, eventData);
+            }
+            catch (Exception)
+            {
+                //No exceptions here
+            }
+        } 
+        #endregion
 
         #region ProcessItem(EventHolder eventData)
         /// <summary>

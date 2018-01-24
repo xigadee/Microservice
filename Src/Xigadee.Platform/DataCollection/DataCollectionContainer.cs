@@ -23,7 +23,6 @@ namespace Xigadee
 
         private ITaskAvailability mTaskAvailability;
 
-
         private Dictionary<DataCollectionSupport, HashSet<IDataCollectorComponent>> mCollectorSupported;
         #endregion
         #region Constructor
