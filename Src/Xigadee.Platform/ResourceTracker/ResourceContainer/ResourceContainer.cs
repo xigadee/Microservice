@@ -233,7 +233,6 @@ namespace Xigadee
         {
         }
         #endregion
-
         #region Class -> Statistics
         /// <summary>
         /// This class measures the statistics for the resource container.
