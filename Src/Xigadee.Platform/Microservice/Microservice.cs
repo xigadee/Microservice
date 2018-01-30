@@ -12,17 +12,13 @@ namespace Xigadee
     {
         #region Declarations
         /// <summary>
-        /// This collection holds the serializer
-        /// </summary>
-        protected SerializationContainer mSerializer;
-        /// <summary>
         /// This collection holds the loggers for the Microservice.
         /// </summary>
         protected DataCollectionContainer mDataCollection;
         /// <summary>
-        /// This container is used to hold the security infrastructure for the Microservice.
+        /// This container is used to hold the service handler infrastructure for the Microservice.
         /// </summary>
-        protected SecurityContainer mSecurity;
+        protected ServiceHandlerContainer mServiceHandlers;
         /// <summary>
         /// This container holds the components that do work on the system.
         /// </summary>
@@ -79,9 +75,10 @@ namespace Xigadee
                 , serviceVersionId: serviceVersionId ?? Assembly.GetCallingAssembly().GetName().Version.ToString()
                 , serviceEngineVersionId: GetType().Assembly.GetName().Version.ToString()
                 , properties: properties);
-            //Security
-            mSecurity = InitialiseSecurityContainer();
-            Security = new SecurityWrapper(mSecurity, () => Status);
+
+            //Service Handlers
+            mServiceHandlers = InitialiseServiceHandlerContainer();
+            ServiceHandlers = new ServiceHandlerWrapper(mServiceHandlers, () => Status);
             //Communication
             mCommunication = InitialiseCommunicationContainer();
             Communication = new CommunicationWrapper(mCommunication, () => Status);
@@ -97,9 +94,6 @@ namespace Xigadee
             //Events
             mEventsWrapper = new EventsWrapper(this, mDataCollection, () => Status);
             Events = mEventsWrapper;
-            //Serializer
-            mSerializer = InitialiseSerializationContainer();
-            Serialization = new SerializationWrapper(mSerializer, () => Status);
         }
         #endregion
 
@@ -429,9 +423,9 @@ namespace Xigadee
         /// </summary>
         public IMicroservicePolicy Policies { get; }
         /// <summary>
-        /// This is the security wrapper.
+        /// This is the service handler wrapper.
         /// </summary>
-        public IMicroserviceSecurity Security { get; }
+        public IMicroserviceServiceHandlers ServiceHandlers { get; }
         /// <summary>
         /// This is the communication wrapper.
         /// </summary>
@@ -448,10 +442,6 @@ namespace Xigadee
         /// This is the data collection container.
         /// </summary>
         public IMicroserviceDataCollection DataCollection { get; } 
-        /// <summary>
-        /// This is the data collection container.
-        /// </summary>
-        public IMicroserviceSerialization Serialization { get; }
         /// <summary>
         /// This is the resource monitoring wrapper.
         /// </summary>

@@ -46,7 +46,7 @@ namespace Xigadee
         protected readonly OperationContext mContext;
         protected StorageCredentials mCredentails;
         protected TimeSpan? mDefaultTimeout;
-        protected readonly IEncryptionHandler mEncryption;
+        protected readonly IServiceHandlerEncryption mEncryption;
 
         public const string cnMetaDeleted = "Deleted";
         public const string cnMetaContentId = "ContentId";
@@ -71,7 +71,7 @@ namespace Xigadee
             , BlobRequestOptions options = null
             , OperationContext context = null
             , TimeSpan? defaultTimeout = null
-            , IEncryptionHandler encryption = null)
+            , IServiceHandlerEncryption encryption = null)
         {
             if (credentials == null)
                 throw new ArgumentNullException("StorageServiceBase: Storage credentials cannot be null.");

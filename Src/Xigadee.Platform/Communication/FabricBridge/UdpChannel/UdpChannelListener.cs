@@ -8,7 +8,7 @@ namespace Xigadee
     /// <summary>
     /// This listener is used to receive UDP packets and to convert the packets in to entities that can be processed by the Xigadee framework.
     /// </summary>
-    public class UdpChannelListener : MessagingListenerBase<UdpHelper, SerializationHolder, UdpClientHolder>
+    public class UdpChannelListener : MessagingListenerBase<UdpHelper, ServiceHandlerContext, UdpClientHolder>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UdpChannelListener"/> class.

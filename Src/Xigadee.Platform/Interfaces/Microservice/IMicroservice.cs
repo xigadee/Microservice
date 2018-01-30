@@ -18,10 +18,6 @@
         /// </summary>
         IMicroserviceEvents Events { get; }
         /// <summary>
-        /// Gets the security service.
-        /// </summary>
-        IMicroserviceSecurity Security { get; }
-        /// <summary>
         /// Gets the communication service.
         /// </summary>
         IMicroserviceCommunication Communication { get; }
@@ -42,9 +38,9 @@
         /// </summary>
         IMicroserviceDataCollection DataCollection { get; }
         /// <summary>
-        /// Gets the serialization service.
+        /// Gets the service handler service.
         /// </summary>
-        IMicroserviceSerialization Serialization { get; }
+        IMicroserviceServiceHandlers ServiceHandlers { get; }
         /// <summary>
         /// Gets the resource monitor service.
         /// </summary>

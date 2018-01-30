@@ -1,20 +1,4 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Xigadee
@@ -29,7 +13,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="identifier">The identifier. This is used to identify the handler so that it can be assigned to multiple channels.</param>
         /// <param name="handler">The actual handler.</param>
-        void RegisterEncryptionHandler(string identifier, IEncryptionHandler handler);
+        void RegisterEncryptionHandler(string identifier, IServiceHandlerEncryption handler);
 
         /// <summary>
         /// This method specifies whether the microservice has the encryption handler registered.
@@ -43,7 +27,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="identifier">The identifier. This is used to identify the handler so that it can be assigned to multiple channels.</param>
         /// <param name="handler">The actual handler.</param>
-        void RegisterAuthenticationHandler(string identifier, IAuthenticationHandler handler);
+        void RegisterAuthenticationHandler(string identifier, IServiceHandlerAuthentication handler);
 
         /// <summary>
         /// This method specifies whether the microservice has the encryption handler registered.

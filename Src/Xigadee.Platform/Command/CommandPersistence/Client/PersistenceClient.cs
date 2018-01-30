@@ -103,7 +103,7 @@ namespace Xigadee
 
                 payload.Options = routing ?? RoutingDefault ?? ProcessOptions.RouteExternal;
 
-                payload.Message.Holder = SerializationHolder.CreateWithObject(rq);
+                payload.Message.Holder = ServiceHandlerContext.CreateWithObject(rq);
 
                 payload.Message.ResponseChannelId = ResponseChannelId;
 

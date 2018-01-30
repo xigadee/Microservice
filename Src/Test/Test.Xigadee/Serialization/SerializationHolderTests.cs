@@ -10,7 +10,7 @@ namespace Test.Xigadee.Serialization
         [TestMethod]
         public void TestCastToHolder()
         {
-            SerializationHolder holder = new byte[10] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            ServiceHandlerContext holder = new byte[10] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
             Assert.IsNotNull(holder?.Blob);
             Assert.IsTrue(holder.ContentType.Equals("application/octet-stream", StringComparison.InvariantCultureIgnoreCase));
@@ -21,7 +21,7 @@ namespace Test.Xigadee.Serialization
         [TestMethod]
         public void TestCastFromHolder()
         {
-            var holder = new SerializationHolder().SetBlob(new byte[10] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 });
+            var holder = new ServiceHandlerContext().SetBlob(new byte[10] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 });
 
             byte[] blob = holder;
 

@@ -7,7 +7,7 @@ namespace Xigadee
     /// <summary>
     /// This sender is used to convert object to their binary format and transmit them as UDP packets.
     /// </summary>
-    public class UdpChannelSender : MessagingSenderBase<UdpHelper, SerializationHolder, UdpClientHolder>
+    public class UdpChannelSender : MessagingSenderBase<UdpHelper, ServiceHandlerContext, UdpClientHolder>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UdpChannelSender"/> class.

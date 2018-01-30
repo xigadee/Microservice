@@ -99,31 +99,19 @@ namespace Xigadee
             return container;
         }
         #endregion
-        #region InitialiseSecurityContainer()
-        /// <summary>
-        /// This method creates the component container.
-        /// This container holds the jobs, message initiators and handlers and is used to 
-        /// assign incoming requests to the appropriate command.
-        /// </summary>
-        /// <returns>Returns the container.</returns>
-        protected virtual SecurityContainer InitialiseSecurityContainer()
-        {
-            var container = new SecurityContainer(Policies.Security);
 
-            return container;
-        }
-        #endregion
-        #region InitialiseSerializationContainer(List<IPayloadSerializer> payloadSerializers)
+        #region InitialiseServiceHandlerContainer()
         /// <summary>
         /// THis method returns the default scheduler container.
         /// </summary>
-        protected virtual SerializationContainer InitialiseSerializationContainer()
+        protected virtual ServiceHandlerContainer InitialiseServiceHandlerContainer()
         {
-            var container = new SerializationContainer(Policies.Serialization);
+            var container = new ServiceHandlerContainer(Policies.ServiceHandlers);
 
             return container;
         }
         #endregion
+
         #region InitialiseDataCollectionContainer()
         /// <summary>
         /// This method creates the data collection container, which is responsible for logging, event source management, and telemetry.

@@ -24,7 +24,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="serializer">The serializer.</param>
         /// <returns>Returns the serializer.</returns>
-        public virtual IPayloadSerializer RegisterPayloadSerializer(IPayloadSerializer serializer)
+        public virtual ISerializationSerializer RegisterPayloadSerializer(ISerializationSerializer serializer)
         {
             ValidateServiceNotStarted();
             return mContainer.Add(serializer);
@@ -34,7 +34,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="fnSerializer">The serializer creation function.</param>
         /// <returns>Returns the new serializer.</returns>
-        public virtual IPayloadSerializer RegisterPayloadSerializer(Func<IPayloadSerializer> fnSerializer)
+        public virtual ISerializationSerializer RegisterPayloadSerializer(Func<ISerializationSerializer> fnSerializer)
         {
             ValidateServiceNotStarted();
             return mContainer.Add(fnSerializer());
@@ -63,7 +63,7 @@ namespace Xigadee
         /// <returns>
         /// Returns the compressor.
         /// </returns>
-        public IPayloadCompressor RegisterPayloadCompressor(Func<IPayloadCompressor> compressor)
+        public ISerializationCompressor RegisterPayloadCompressor(Func<ISerializationCompressor> compressor)
         {
             ValidateServiceNotStarted();
             return mContainer.Add(compressor());
@@ -75,7 +75,7 @@ namespace Xigadee
         /// <returns>
         /// Returns the compressor.
         /// </returns>
-        public IPayloadCompressor RegisterPayloadCompressor(IPayloadCompressor compressor)
+        public ISerializationCompressor RegisterPayloadCompressor(ISerializationCompressor compressor)
         {
             ValidateServiceNotStarted();
             return mContainer.Add(compressor);

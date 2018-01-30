@@ -25,7 +25,7 @@ namespace Test.Xigadee.Serialization
 
             byte[] data = Encoding.UTF8.GetBytes(jsonIn);
 
-            SerializationHolder holder = data;
+            ServiceHandlerContext holder = data;
 
             var comp = new PayloadCompressorDeflate();
 
@@ -53,7 +53,7 @@ namespace Test.Xigadee.Serialization
 
             byte[] data = Encoding.UTF8.GetBytes(jsonIn);
 
-            SerializationHolder holder = data;
+            ServiceHandlerContext holder = data;
 
             var comp = new PayloadCompressorGzip();
 

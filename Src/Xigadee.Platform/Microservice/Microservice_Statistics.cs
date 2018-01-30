@@ -73,9 +73,8 @@ namespace Xigadee
 
             stats.Scheduler = mScheduler?.StatisticsRecalculated;
 
-            stats.Security = mSecurity?.StatisticsRecalculated;
+            stats.ServiceHandlers = mServiceHandlers?.StatisticsRecalculated;
 
-            stats.Serialization = mSerializer?.StatisticsRecalculated;
         }
         #endregion
 
@@ -165,9 +164,9 @@ namespace Xigadee
             public SecurityContainer.Statistics Security { get; set; }
 
             /// <summary>
-            /// The security statistics.
+            /// The service handler statistics.
             /// </summary>
-            public SerializationContainer.Statistics Serialization { get; set; }
+            public ServiceHandlerContainer.Statistics ServiceHandlers { get; set; }
             /// <summary>
             /// The scheduler statistics.
             /// </summary>

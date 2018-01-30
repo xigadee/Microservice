@@ -9,7 +9,7 @@ namespace Xigadee
     /// <summary>
     /// This class holds the Udp client and associated logic.
     /// </summary>
-    public class UdpClientHolder : ClientHolder<UdpHelper, SerializationHolder>
+    public class UdpClientHolder : ClientHolder<UdpHelper, ServiceHandlerContext>
     {
         /// <summary>
         /// Gets or sets the type of the binary content. This is used for deserialization.
@@ -59,7 +59,7 @@ namespace Xigadee
                     try
                     {
 
-                        var holder = (SerializationHolder)result.Buffer;
+                        var holder = (ServiceHandlerContext)result.Buffer;
                         holder.Metadata = result.RemoteEndPoint;
                         holder.ContentType = ContentType;
                         holder.ContentEncoding = ContentEncoding;

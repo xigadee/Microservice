@@ -14,10 +14,9 @@ namespace Xigadee
         CommandContainer.Policy mPolicyCommand = null;
         CommunicationContainer.Policy mPolicyCommunication = null;
         SchedulerContainer.Policy mPolicyScheduler = null;
-        SecurityContainer.Policy mPolicySecurity = null;
         ResourceContainer.Policy mPolicyResourceTracker = null;
         DataCollectionContainer.Policy mPolicyDataCollection = null;
-        SerializationContainer.Policy mPolicySerialization = null;
+        ServiceHandlerContainer.Policy mPolicyServiceHandlers = null;
 
         /// <summary>
         /// This is the collection of policy settings for the Microservice.
@@ -135,19 +134,6 @@ namespace Xigadee
             }
         }
         #endregion
-        #region Security
-        /// <summary>
-        /// This is the policy used to set the security container settings.
-        /// </summary>
-        /// <returns></returns>
-        public virtual SecurityContainer.Policy Security
-        {
-            get
-            {
-                return PolicyResolve(mPolicySecurity, (p) => mPolicySecurity = p);
-            }
-        }
-        #endregion
         #region DataCollection
         /// <summary>
         /// This is the policy used to set the data collection container settings.
@@ -161,16 +147,15 @@ namespace Xigadee
             }
         }
         #endregion
-        #region Serialization
+        #region ServiceHandler
         /// <summary>
-        /// This is the policy used to set the data collection container settings.
+        /// Gets the service handler policy.
         /// </summary>
-        /// <returns>The policy</returns>
-        public virtual SerializationContainer.Policy Serialization
+        public ServiceHandlerContainer.Policy ServiceHandlers
         {
             get
             {
-                return PolicyResolve(mPolicySerialization, (p) => mPolicySerialization = p);
+                return PolicyResolve(mPolicyServiceHandlers, (p) => mPolicyServiceHandlers = p);
             }
         }
         #endregion

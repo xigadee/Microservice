@@ -32,8 +32,8 @@ namespace Xigadee
             , ServiceMessageHeader responseAddress = null
             , int? requestAddressPriority = null
             , int responseAddressPriority = 1
-            , Action<SerializationHolder> deserialize = null
-            , Func<SerializationHolder, bool> canDeserialize = null
+            , Action<ServiceHandlerContext> deserialize = null
+            , Func<ServiceHandlerContext, bool> canDeserialize = null
             , Action<UdpChannelListener> action = null
             )
             where C : IPipelineChannelIncoming<IPipeline>
@@ -82,14 +82,14 @@ namespace Xigadee
             , ServiceMessageHeader responseAddress = null
             , int? requestAddressPriority = null
             , int responseAddressPriority = 1
-            , IPayloadSerializer serializer = null
+            , IServiceHandlerSerialization serializer = null
             , Action<UdpChannelListener> action = null
             )
             where C : IPipelineChannelIncoming<IPipeline>
         {
             defaultDeserializerContentType = (
                 defaultDeserializerContentType 
-                ?? serializer?.ContentType 
+                ?? serializer?.Id 
                 ?? $"udp_in/{cpipe.Channel.Id}"
                 ).ToLowerInvariant();
 
@@ -99,7 +99,7 @@ namespace Xigadee
                 );
 
             if (serializer != null)
-                cpipe.Pipeline.AddPayloadSerializer(serializer, defaultDeserializerContentType);
+                cpipe.Pipeline.AddPayloadSerializer(serializer);
 
             cpipe.AttachListener(listener, action, true);
 
@@ -122,7 +122,7 @@ namespace Xigadee
             , UdpConfig udp
             , string defaultSerializerContentType = null
             , string defaultSerializerContentTypeEncoding = null
-            , IPayloadSerializer serializer = null
+            , IServiceHandlerSerialization serializer = null
             , Action<UdpChannelSender> action = null
             , int? maxUdpMessagePayloadSize = UdpHelper.PacketMaxSize
             )
@@ -130,14 +130,14 @@ namespace Xigadee
         {
             defaultSerializerContentType = (
                 defaultSerializerContentType
-                ?? serializer?.ContentType
+                ?? serializer?.Id
                 ?? $"udp_out/{cpipe.Channel.Id}"
                 ).ToLowerInvariant();
 
             var sender = new UdpChannelSender(udp, defaultSerializerContentType, defaultSerializerContentTypeEncoding, maxUdpMessagePayloadSize);
 
             if (serializer != null)
-                cpipe.Pipeline.AddPayloadSerializer(serializer, defaultSerializerContentType);
+                cpipe.Pipeline.AddPayloadSerializer(serializer);
 
             cpipe.AttachSender(sender, action, true);
 
@@ -161,8 +161,8 @@ namespace Xigadee
             , UdpConfig udp
             , string defaultSerializerContentType = null
             , string defaultSerializerContentTypeEncoding = null
-            , Action<SerializationHolder> serialize = null
-            , Func<SerializationHolder, bool> canSerialize = null
+            , Action<ServiceHandlerContext> serialize = null
+            , Func<ServiceHandlerContext, bool> canSerialize = null
             , Action<UdpChannelSender> action = null
             , int? maxUdpMessagePayloadSize = UdpHelper.PacketMaxSize
             )

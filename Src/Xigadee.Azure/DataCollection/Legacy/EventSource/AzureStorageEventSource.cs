@@ -30,7 +30,7 @@ namespace Xigadee
     [Obsolete("This will be removed. Used the Azure Storage DataCollector instead")]
     public class AzureStorageEventSource: AzureStorageLoggingBase<EventSourceEntryBase>, IEventSourceComponent
     {
-        public AzureStorageEventSource(StorageCredentials credentials, string serviceName, string containerName = "eventsource", ResourceProfile resourceProfile = null, IEncryptionHandler encryption = null)
+        public AzureStorageEventSource(StorageCredentials credentials, string serviceName, string containerName = "eventsource", ResourceProfile resourceProfile = null, IServiceHandlerEncryption encryption = null)
             :base(credentials, containerName, serviceName, resourceProfile:resourceProfile, encryption:encryption)
         {
         }

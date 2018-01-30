@@ -73,7 +73,7 @@ namespace Xigadee
             , BlobRequestOptions options = null
             , OperationContext context = null
             , ResourceProfile resourceProfile = null
-            , IEncryptionHandler encryption = null)
+            , IServiceHandlerEncryption encryption = null)
         {
             mStorage = new StorageServiceBase(credentials, containerName, accessType, options, context, defaultTimeout: defaultTimeout, encryption: encryption);
             mIdMaker = idMaker ?? IdMaker;

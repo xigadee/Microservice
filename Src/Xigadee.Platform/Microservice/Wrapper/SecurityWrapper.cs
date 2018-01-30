@@ -41,7 +41,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="identifier">The identifier. This is used to identify the handler so that it can be assigned to multiple channels.</param>
         /// <param name="handler">The actual handler.</param>
-        public void RegisterEncryptionHandler(string identifier, IEncryptionHandler handler)
+        public void RegisterEncryptionHandler(string identifier, IServiceHandlerEncryption handler)
         {
             mSecurity.RegisterEncryptionHandler(identifier, handler);
         }
@@ -61,7 +61,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="identifier">The identifier. This is used to identify the handler so that it can be assigned to multiple channels.</param>
         /// <param name="handler">The actual handler.</param>
-        public void RegisterAuthenticationHandler(string identifier, IAuthenticationHandler handler)
+        public void RegisterAuthenticationHandler(string identifier, IServiceHandlerAuthentication handler)
         {
             mSecurity.RegisterAuthenticationHandler(identifier, handler);
         }

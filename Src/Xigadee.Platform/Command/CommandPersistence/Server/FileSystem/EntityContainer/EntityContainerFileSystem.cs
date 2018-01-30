@@ -132,7 +132,7 @@ namespace Xigadee
         protected virtual void WriteEntity(FileStream fs, E entity)
         {
             var json = Transform.JsonMaker(entity);
-            var holder = SerializationHolder.CreateWithObject(entity);
+            var holder = ServiceHandlerContext.CreateWithObject(entity);
         }
 
         /// <summary>
