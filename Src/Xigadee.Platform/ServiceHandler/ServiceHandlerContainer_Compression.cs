@@ -15,7 +15,7 @@ namespace Xigadee
 
         }
 
-        #region TryDecompress(SerializationHolder holder)
+        #region TryDecompress(ServiceHandlerContext holder)
         /// <summary>
         /// Tries to decompress the incoming holder.
         /// </summary>

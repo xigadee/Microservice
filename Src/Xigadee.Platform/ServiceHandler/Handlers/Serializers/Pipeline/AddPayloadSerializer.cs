@@ -14,7 +14,7 @@ namespace Xigadee
         public static P AddPayloadSerializer<P>(this P pipeline, IServiceHandlerSerialization serializer)
             where P : IPipeline
         {
-            pipeline.Service.Serialization.RegisterPayloadSerializer(serializer);
+            pipeline.Service.ServiceHandlers.Serialization.Add(serializer);
 
             return pipeline;
         }
@@ -27,11 +27,12 @@ namespace Xigadee
         /// <param name="pipeline">The pipeline.</param>
         /// <param name="creator">The serializer creator function.</param>
         /// <returns>The pipeline.</returns>
-        public static P AddPayloadSerializer<P>(this P pipeline, Func<IEnvironmentConfiguration, IServiceHandlerSerialization> creator)
+        public static P AddPayloadSerializer<P>(this P pipeline
+            , Func<IEnvironmentConfiguration, IServiceHandlerSerialization> creator)
             where P : IPipeline
         {
             var serializer = creator(pipeline.Configuration);
-            pipeline.AddPayloadSerializer(serializer);
+            pipeline.Service.ServiceHandlers.Serialization.Add(serializer);
 
             return pipeline;
         }
@@ -47,7 +48,7 @@ namespace Xigadee
         /// <param name="deserialize">The deserialize action.</param>
         /// <param name="canDeserialize">The deserialize check function.</param>
         /// <param name="supportsContentTypeSerialization">The function that checks the ContentType for serialization.</param>
-        /// <param name="friendlyName">This is the friendly name for the dynamic serializer.</param>
+        /// <param name="friendlyName">This is the friendly name of the serializer.</param>
         /// <returns>The pipeline.</returns>
         public static P AddPayloadSerializer<P>(this P pipeline
             , string mimeContentType
@@ -57,7 +58,6 @@ namespace Xigadee
             , Func<ServiceHandlerContext, bool> canDeserialize = null
             , Func<Type, bool> supportsContentTypeSerialization = null
             , string friendlyName = null
-
             )
             where P : IPipeline
         {
@@ -66,7 +66,7 @@ namespace Xigadee
 
             var serializer = new DynamicSerializer(mimeContentType, friendlyName, serialize, canSerialize, deserialize, canDeserialize, supportsContentTypeSerialization);
 
-            pipeline.AddPayloadSerializer(serializer);
+            pipeline.Service.ServiceHandlers.Serialization.Add(serializer);
 
             return pipeline;
         }

@@ -143,12 +143,10 @@ namespace Xigadee
             /// This is the task manager statistics.
             /// </summary>
             public TaskManager.Statistics Tasks { get; set; }
-
             /// <summary>
             /// This is a list of the handlers active on the system and their status.
             /// </summary>
             public CommunicationContainer.Statistics Communication { get; set; }
-
             /// <summary>
             /// This is the command container statistics/
             /// </summary>
@@ -157,12 +155,6 @@ namespace Xigadee
             /// The resource statistics.
             /// </summary>
             public ResourceContainer.Statistics Resources { get; set; }
-
-            /// <summary>
-            /// The security statistics.
-            /// </summary>
-            public SecurityContainer.Statistics Security { get; set; }
-
             /// <summary>
             /// The service handler statistics.
             /// </summary>
@@ -171,7 +163,6 @@ namespace Xigadee
             /// The scheduler statistics.
             /// </summary>
             public SchedulerContainer.Statistics Scheduler { get; set; }
-
             /// <summary>
             /// The data collection statistics. These include the logger, event source and telemetry statistics.
             /// </summary>

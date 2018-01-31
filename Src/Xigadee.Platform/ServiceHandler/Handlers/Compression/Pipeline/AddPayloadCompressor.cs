@@ -14,7 +14,7 @@ namespace Xigadee
         public static P AddPayloadCompressor<P>(this P pipeline, IServiceHandlerCompression compressor)
             where P : IPipeline
         {
-            pipeline.Service.Serialization.RegisterPayloadCompressor(compressor);
+            pipeline.Service.ServiceHandlers.Compression.Add(compressor);
 
             return pipeline;
         }
@@ -27,12 +27,11 @@ namespace Xigadee
         /// <param name="pipeline">The pipeline.</param>
         /// <param name="creator">The compressor creator function.</param>
         /// <returns>The pipeline.</returns>
-        public static P AddPayloadCompressor<P>(this P pipeline
-            , Func<IEnvironmentConfiguration, IServiceHandlerCompression> creator)
+        public static P AddPayloadCompressor<P>(this P pipeline, Func<IEnvironmentConfiguration, IServiceHandlerCompression> creator)
             where P : IPipeline
         {
-            var serializer = creator(pipeline.Configuration);
-            pipeline.AddPayloadCompressor(serializer);
+            var compressor = creator(pipeline.Configuration);
+            pipeline.Service.ServiceHandlers.Compression.Add(compressor);
 
             return pipeline;
         }

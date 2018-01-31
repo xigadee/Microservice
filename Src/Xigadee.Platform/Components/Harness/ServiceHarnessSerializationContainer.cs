@@ -1,22 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Xigadee
+﻿namespace Xigadee
 {
     /// <summary>
     /// This is the stub serialization container.
     /// </summary>
-    public class ServiceHarnessSerializationContainer: SerializationContainer
+    public class ServiceHarnessSerializationContainer: ServiceHandlerContainer
     {
         /// <summary>
         /// This override adds the Json serializer by default.
         /// </summary>
         protected override void StartInternal()
         {
-            Add(new JsonContractSerializer());
+            Serialization.Add(new JsonRawSerializer());
+
+            Compression.Add(new PayloadCompressorDeflate());
+            Compression.Add(new PayloadCompressorGzip());
+
             base.StartInternal();
         }
     }

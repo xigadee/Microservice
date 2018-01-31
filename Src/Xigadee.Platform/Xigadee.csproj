@@ -15,8 +15,11 @@
 
   <ItemGroup>
     <Compile Remove="ServiceHandler\JWT\Interfaces\**" />
+    <Compile Remove="ServiceHandler\Pipeline\Add\**" />
     <EmbeddedResource Remove="ServiceHandler\JWT\Interfaces\**" />
+    <EmbeddedResource Remove="ServiceHandler\Pipeline\Add\**" />
     <None Remove="ServiceHandler\JWT\Interfaces\**" />
+    <None Remove="ServiceHandler\Pipeline\Add\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,10 +33,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="ServiceHandler\Pipeline\Add\" />
   </ItemGroup>
 
 </Project>

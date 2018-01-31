@@ -102,10 +102,10 @@ namespace Xigadee
         /// <param name="pipeline">The pipeline.</param>
         /// <param name="msAssign">The assignment function.</param>
         /// <returns>Returns the pipeline</returns>
-        public static P AdjustPolicySecurity<P>(this P pipeline
-            , Action<SecurityContainer.Policy, IEnvironmentConfiguration> msAssign = null) where P : IPipeline
+        public static P AdjustPolicyServiceHandler<P>(this P pipeline
+            , Action<ServiceHandlerContainer.Policy, IEnvironmentConfiguration> msAssign = null) where P : IPipeline
         {
-            msAssign?.Invoke(pipeline.Service.Policies.Security, pipeline.Configuration);
+            msAssign?.Invoke(pipeline.Service.Policies.ServiceHandlers, pipeline.Configuration);
 
             return pipeline;
         }

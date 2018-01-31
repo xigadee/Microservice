@@ -11,7 +11,7 @@
         public static P ClearPayloadCompressors<P>(this P pipeline)
             where P : IPipeline
         {
-            pipeline.Service.Serialization.ClearPayloadCompressors();
+            pipeline.Service.ServiceHandlers.Compression.Clear();
 
             return pipeline;
         }

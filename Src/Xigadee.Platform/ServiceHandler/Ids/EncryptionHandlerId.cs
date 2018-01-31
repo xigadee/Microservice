@@ -21,5 +21,15 @@
         {
             return new EncryptionHandlerId(id);
         }
+
+
+        /// <summary>
+        /// Implicitly converts a string in to a resource profile.
+        /// </summary>
+        /// <param name="handlerId">The handler id.</param>
+        public static implicit operator string(EncryptionHandlerId handlerId)
+        {
+            return handlerId.Id;
+        }
     }
 }

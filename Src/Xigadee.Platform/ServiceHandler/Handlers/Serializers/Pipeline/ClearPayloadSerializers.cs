@@ -11,7 +11,7 @@
         public static P ClearPayloadSerializers<P>(this P pipeline)
             where P : IPipeline
         {
-            pipeline.Service.Serialization.ClearPayloadSerializers();
+            pipeline.Service.ServiceHandlers.Serialization.Clear();
 
             return pipeline;
         }

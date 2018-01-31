@@ -38,5 +38,15 @@
         {
             return new SerializationHandlerId(id);
         }
+
+
+        /// <summary>
+        /// Implicitly converts a string in to a resource profile.
+        /// </summary>
+        /// <param name="handlerId">The handler id.</param>
+        public static implicit operator string(SerializationHandlerId handlerId)
+        {
+            return handlerId.Id;
+        }
     }
 }
