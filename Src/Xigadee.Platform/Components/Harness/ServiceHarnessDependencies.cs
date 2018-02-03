@@ -36,7 +36,7 @@ namespace Xigadee
         /// </summary>
         protected virtual void Initialise()
         {
-            PayloadSerializer?.Start();
+            ServiceHandlers?.Start();
             ResourceTracker.Start();
 
             Scheduler.Collector = Collector;
@@ -66,15 +66,15 @@ namespace Xigadee
             if (service is IRequireServiceOriginator)
                 ((IRequireServiceOriginator)service).OriginatorId = OriginatorId;
 
-            if (service is IRequirePayloadSerialization)
-                ((IRequirePayloadSerialization)service).PayloadSerializer = PayloadSerializer;
+            if (service is IRequireServiceHandlers)
+                ((IRequireServiceHandlers)service).ServiceHandlers = ServiceHandlers;
         } 
         #endregion
 
         /// <summary>
         /// This is the stub Payload serializer.
         /// </summary>
-        public virtual ServiceHarnessSerializationContainer PayloadSerializer { get; }  = new ServiceHarnessSerializationContainer();
+        public virtual ServiceHarnessServiceHandlerContainer ServiceHandlers { get; }  = new ServiceHarnessServiceHandlerContainer();
         /// <summary>
         /// This is the example originator id.
         /// </summary>

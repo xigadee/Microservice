@@ -27,7 +27,7 @@ namespace Test.Xigadee.Serialization
 
             ServiceHandlerContext holder = data;
 
-            var comp = new PayloadCompressorDeflate();
+            var comp = new CompressorDeflate();
 
             bool successCompress = comp.TryCompression(holder);
 
@@ -55,7 +55,7 @@ namespace Test.Xigadee.Serialization
 
             ServiceHandlerContext holder = data;
 
-            var comp = new PayloadCompressorGzip();
+            var comp = new CompressorGzip();
 
             bool successCompress = comp.TryCompression(holder);
 

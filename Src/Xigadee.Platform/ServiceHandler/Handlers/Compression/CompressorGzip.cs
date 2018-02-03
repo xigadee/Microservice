@@ -6,13 +6,13 @@ namespace Xigadee
     /// <summary>
     /// This is the GZIP payload compressor.
     /// </summary>
-    /// <seealso cref="Xigadee.PayloadCompressorBase" />
-    public class PayloadCompressorGzip: PayloadCompressorBase
+    /// <seealso cref="Xigadee.CompressorBase" />
+    public class CompressorGzip: CompressorBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PayloadCompressorGzip"/> class.
+        /// Initializes a new instance of the <see cref="CompressorGzip"/> class.
         /// </summary>
-        public PayloadCompressorGzip() : base("gzip") { }
+        public CompressorGzip() : base("gzip") { }
 
         /// <summary>
         /// Gets the compression stream.

@@ -62,7 +62,7 @@ namespace Test.Xigadee
         [CommandContract(messageType: "simples1", actionType: "async")]
         private async Task ActionAsync(TransmissionPayload incoming, List<TransmissionPayload> outgoing)
         {
-            var blahIn = PayloadSerializer.PayloadDeserialize<Blah>(incoming);
+            var blahIn = ServiceHandlers.PayloadDeserialize<Blah>(incoming);
             var rs = incoming.ToResponse();
             rs.Message.Holder.SetObject("Freaky");
             rs.Message.Status = "204";
@@ -75,9 +75,9 @@ namespace Test.Xigadee
         [CommandContract(messageType: "simples1", actionType: "sync")]
         private void ActionSync(TransmissionPayload incoming, List<TransmissionPayload> outgoing)
         {
-            var blahIn = PayloadSerializer.PayloadDeserialize<Blah>(incoming);
+            var blahIn = ServiceHandlers.PayloadDeserialize<Blah>(incoming);
             var rs = incoming.ToResponse();
-            rs.Message.Holder = PayloadSerializer.PayloadSerialize(blahIn.Message);
+            rs.Message.Holder = ServiceHandlers.PayloadSerialize(blahIn.Message);
             rs.Message.Status = "204";
             rs.Message.StatusDescription = "Hello";
             outgoing.Add(rs);
@@ -86,7 +86,7 @@ namespace Test.Xigadee
         [MasterJobCommandContract(messageType: "simples2", actionType: "async")]
         private async Task ActionAsyncMaster(TransmissionPayload incoming, List<TransmissionPayload> outgoing)
         {
-            var blahIn = PayloadSerializer.PayloadDeserialize<Blah>(incoming);
+            var blahIn = ServiceHandlers.PayloadDeserialize<Blah>(incoming);
             var rs = incoming.ToResponse();
             //rs.Message.Blob = PayloadSerializer.PayloadSerialize(new Blah { ContentId = blahIn.ContentId, Message = "Howdy" });
             rs.Message.Holder.SetObject("Freaky");
@@ -100,9 +100,9 @@ namespace Test.Xigadee
         [MasterJobCommandContract(messageType: "simples2", actionType: "sync")]
         private void ActionSyncMaster(TransmissionPayload incoming, List<TransmissionPayload> outgoing)
         {
-            var blahIn = PayloadSerializer.PayloadDeserialize<Blah>(incoming);
+            var blahIn = ServiceHandlers.PayloadDeserialize<Blah>(incoming);
             var rs = incoming.ToResponse();
-            rs.Message.Holder = PayloadSerializer.PayloadSerialize(blahIn.Message);
+            rs.Message.Holder = ServiceHandlers.PayloadSerialize(blahIn.Message);
             rs.Message.Status = "204";
             rs.Message.StatusDescription = "Hello";
             outgoing.Add(rs);

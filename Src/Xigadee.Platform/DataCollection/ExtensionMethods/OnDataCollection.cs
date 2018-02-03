@@ -35,22 +35,22 @@ namespace Xigadee
             /// <summary>
             /// This is the default constructor.
             /// </summary>
-            /// <param name="serializer">The serialization container.</param>
+            /// <param name="serviceHandlers">The service handler container.</param>
             /// <param name="collector">The data collector.</param>
             /// <param name="sharedServices">The shared service context.</param>
             /// <param name="originatorId">This is the Microservice identifiers.</param>
             /// <param name="outgoingRequest">This is the outgoing request initiator.</param>
             public OnDataCollectionContext(
-              IPayloadSerializationContainer serializer
+              IServiceHandlerContainer serviceHandlers
             , IDataCollection collector
             , ISharedService sharedServices
             , MicroserviceId originatorId
-            , IMicroserviceDispatch outgoingRequest): base(serializer, collector, sharedServices, originatorId, outgoingRequest)
+            , IMicroserviceDispatch outgoingRequest): base(serviceHandlers, collector, sharedServices, originatorId, outgoingRequest)
             {
             }
         }
 
-        internal class OnEventDataCollectionComponent: DataCollectorBase, IRequirePayloadSerialization, IRequireDataCollector
+        internal class OnEventDataCollectionComponent: DataCollectorBase, IRequireServiceHandlers, IRequireDataCollector
         {
             DataCollectionSupport? mSupportedFilter = null;
             Action<OnDataCollectionContext, EventHolder> mAction;
@@ -73,7 +73,7 @@ namespace Xigadee
             /// <summary>
             /// This is the system wide Payload serializer.
             /// </summary>
-            public IPayloadSerializationContainer PayloadSerializer { get; set; }
+            public IServiceHandlerContainer ServiceHandlers { get; set; }
 
             /// <summary>
             /// This method loads the support.
@@ -97,7 +97,7 @@ namespace Xigadee
                     if (mContext == null)
                     {
                         var d = mDispatcherFunction();
-                        mContext = new OnDataCollectionContext(PayloadSerializer, Collector, SharedServices, OriginatorId, d);
+                        mContext = new OnDataCollectionContext(ServiceHandlers, Collector, SharedServices, OriginatorId, d);
                     }
 
                     return mContext;

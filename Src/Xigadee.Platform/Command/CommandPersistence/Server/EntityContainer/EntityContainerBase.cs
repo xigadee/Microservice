@@ -108,7 +108,7 @@ namespace Xigadee
         {
             if (Transform == null)
                 throw new ArgumentOutOfRangeException("Transform", "The Entity transform holder 'Transform' is not set.");
-            if (PayloadSerializer == null)
+            if (ServiceHandlers == null)
                 throw new ArgumentOutOfRangeException("PayloadSerializer", "The PayloadSerializer is not set.");
             if (Security == null)
                 throw new ArgumentOutOfRangeException("Security", "The Security container is not set.");
@@ -146,11 +146,11 @@ namespace Xigadee
         /// </summary>
         public virtual ISecurityService Security { get; set; }
         #endregion
-        #region PayloadSerializer
+        #region ServiceHandlers
         /// <summary>
         /// This is the system wide serializer.
         /// </summary>
-        public IPayloadSerializationContainer PayloadSerializer { get; set; }
+        public IServiceHandlerContainer ServiceHandlers { get; set; }
         #endregion
 
         /// <summary>

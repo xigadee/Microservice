@@ -56,7 +56,7 @@ namespace Xigadee
         {
             foreach (var holder in this.CommandMethodSignatures<CommandContractAttribute,CommandMethodSignature>(true, Policy.CommandContractAttributeInherit))
                 CommandRegister(CommandChannelIdAdjust(holder.Attribute)
-                    , (rq, rs) => holder.Signature.Action(rq, rs, PayloadSerializer)
+                    , (rq, rs) => holder.Signature.Action(rq, rs, ServiceHandlers)
                     , referenceId: holder.Reference
                     );
         }
@@ -109,7 +109,7 @@ namespace Xigadee
         {
             Func<TransmissionPayload, List<TransmissionPayload>, Task> actionReduced = async (m, l) =>
             {
-                PM payload = PayloadSerializer.PayloadDeserialize<PM>(m);
+                PM payload = ServiceHandlers.PayloadDeserialize<PM>(m);
                 await action(payload, m, l);
             };
 

@@ -202,7 +202,7 @@ namespace Xigadee
             //Set the Data Collector
             client.Collector = Collector;
             //Set the Serializer.
-            client.PayloadSerializer = PayloadSerializer;
+            client.ServiceHandlers = ServiceHandlers;
 
             client.BoundaryLoggingActive = BoundaryLoggingActive ?? false;
 
@@ -302,11 +302,11 @@ namespace Xigadee
         #endregion
 
         //Microservice properties set
-        #region PayloadSerializer
+        #region ServiceHandlers
         /// <summary>
-        /// This container is used to serialize and deserialize messaging payloads.
+        /// This container is used to contain the service handler collection.
         /// </summary>
-        public IPayloadSerializationContainer PayloadSerializer
+        public IServiceHandlerContainer ServiceHandlers
         {
             get;
             set;

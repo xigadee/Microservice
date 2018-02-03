@@ -463,7 +463,7 @@ namespace Xigadee
 
             foreach (var holder in this.CommandMethodSignatures<MasterJobCommandContractAttribute, CommandMethodSignature>(true, Policy.MasterJobCommandContractAttributeInherit))
                 CommandRegister(CommandChannelIdAdjust(holder.Attribute)
-                    , (rq, rs) => holder.Signature.Action(rq, rs, PayloadSerializer)
+                    , (rq, rs) => holder.Signature.Action(rq, rs, ServiceHandlers)
                     , referenceId: holder.Reference
                     , isMasterJob: true
                     );

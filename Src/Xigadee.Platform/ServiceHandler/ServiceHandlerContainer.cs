@@ -8,7 +8,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="S">The status class.</typeparam>
     /// <typeparam name="P">The policy class.</typeparam>
-    public partial class ServiceHandlerContainer: ServiceContainerBase<ServiceHandlerContainer.Statistics, ServiceHandlerContainer.Policy>
+    public partial class ServiceHandlerContainer: ServiceContainerBase<ServiceHandlerContainer.Statistics, ServiceHandlerContainer.Policy>, IServiceHandlerContainer
         , IRequireDataCollector, IRequireServiceOriginator, IRequireSharedServices
     {
         #region Constructor

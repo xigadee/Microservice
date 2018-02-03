@@ -11,8 +11,8 @@
         public static P AddPayloadCompressorsDefault<P>(this P pipeline)
             where P : IPipeline
         {
-            pipeline.Service.ServiceHandlers.Compression.Add(new PayloadCompressorDeflate());
-            pipeline.Service.ServiceHandlers.Compression.Add(new PayloadCompressorGzip());
+            pipeline.Service.ServiceHandlers.Compression.Add(new CompressorDeflate());
+            pipeline.Service.ServiceHandlers.Compression.Add(new CompressorGzip());
 
             return pipeline;
         }

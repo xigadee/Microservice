@@ -1,0 +1,36 @@
+﻿namespace Xigadee
+{
+    /// <summary>
+    /// This interface is used by the service handler collection
+    /// </summary>
+    public interface IServiceHandlerContainer
+    {
+
+        /// <summary>
+        /// Gets the default content-type for the serialization collection.
+        /// </summary>
+        /// <value>
+        /// The default type of the content.
+        /// </value>
+        string DefaultContentType { get; }
+        
+        /// <summary>
+        /// Gets the authentication handler collection.
+        /// </summary>
+        ServiceHandlerCollection<IServiceHandlerAuthentication> Authentication { get; }
+        /// <summary>
+        /// Gets the compression handler collection.
+        /// </summary>
+        ServiceHandlerCollection<IServiceHandlerCompression> Compression { get; }
+        /// <summary>
+        /// Gets the encryption handler collection.
+        /// </summary>
+        ServiceHandlerCollection<IServiceHandlerEncryption> Encryption { get; }
+        /// <summary>
+        /// Gets the serialization handler collection.
+        /// </summary>
+        ServiceHandlerCollection<IServiceHandlerSerialization> Serialization { get; }
+
+
+    }
+}

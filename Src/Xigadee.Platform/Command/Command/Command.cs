@@ -126,11 +126,11 @@ namespace Xigadee
             }
         }
         #endregion
-        #region PayloadSerializer
+        #region ServiceHandlers
         /// <summary>
-        /// This is the requestPayload serializer used across the system.
+        /// This is the service handler collection.
         /// </summary>
-        public IPayloadSerializationContainer PayloadSerializer
+        public IServiceHandlerContainer ServiceHandlers
         {
             get;
             set;

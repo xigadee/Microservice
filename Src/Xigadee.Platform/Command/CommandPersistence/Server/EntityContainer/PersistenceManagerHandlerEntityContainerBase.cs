@@ -81,7 +81,7 @@ namespace Xigadee
             {
                 Container = new C();
                 ContainerConfigure();
-                Container.PayloadSerializer = PayloadSerializer;
+                Container.ServiceHandlers = ServiceHandlers;
                 Container.Security = Security;
                 Container.Start();
                 PrePopulate();

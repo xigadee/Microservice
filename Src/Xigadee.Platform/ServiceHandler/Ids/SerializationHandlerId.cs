@@ -41,7 +41,7 @@
 
 
         /// <summary>
-        /// Implicitly converts a string in to a resource profile.
+        /// Implicitly converts a handler id to a string.
         /// </summary>
         /// <param name="handlerId">The handler id.</param>
         public static implicit operator string(SerializationHandlerId handlerId)

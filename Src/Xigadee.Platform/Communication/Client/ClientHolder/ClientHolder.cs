@@ -188,11 +188,11 @@ namespace Xigadee
         }
         #endregion
 
-        #region PayloadSerializer
+        #region ServiceHandlers
         /// <summary>
         /// This container is used to serialize and deserialize messaging payloads.
         /// </summary>
-        public IPayloadSerializationContainer PayloadSerializer
+        public IServiceHandlerContainer ServiceHandlers
         {
             get;
             set;

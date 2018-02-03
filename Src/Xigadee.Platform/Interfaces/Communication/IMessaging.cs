@@ -5,7 +5,7 @@ namespace Xigadee
     /// <summary>
     /// This is the base interface shared by both listeners and senders.
     /// </summary>
-    public interface IMessaging: IRequirePayloadSerialization, IRequireServiceOriginator
+    public interface IMessaging: IRequireServiceHandlers, IRequireServiceOriginator
         , IRequireDataCollector, IRequireSharedServices
     {
         /// <summary>

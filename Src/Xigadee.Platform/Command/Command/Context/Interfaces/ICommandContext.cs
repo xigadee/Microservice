@@ -14,9 +14,9 @@
         /// </summary>
         MicroserviceId OriginatorId { get; }
         /// <summary>
-        /// Gets the payload serializer.
+        /// Gets the service handers.
         /// </summary>
-        IPayloadSerializationContainer PayloadSerializer { get; }
+        IServiceHandlerContainer ServiceHandlers { get; }
         /// <summary>
         /// Gets the shared services collection.
         /// </summary>

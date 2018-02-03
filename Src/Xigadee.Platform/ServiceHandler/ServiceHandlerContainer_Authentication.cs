@@ -17,7 +17,5 @@ namespace Xigadee
             handler.OriginatorId = OriginatorId;
         }
 
-
-
     }
 }

@@ -14,7 +14,17 @@
         {
         }
 
-
+        /// <summary>
+        /// Processes the incoming identifier in to a standard format..
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns>
+        /// The processed identifier.
+        /// </returns>
+        public override string ProcessIdentifier(string id)
+        {
+            return base.ProcessIdentifier(id.Trim().ToLowerInvariant());
+        }
         /// <summary>
         /// Implicitly converts a string in to a resource profile.
         /// </summary>
@@ -26,7 +36,7 @@
 
 
         /// <summary>
-        /// Implicitly converts a string in to a resource profile.
+        /// Implicitly converts a handler to a string.
         /// </summary>
         /// <param name="handlerId">The handler id.</param>
         public static implicit operator string(AuthenticationHandlerId handlerId)

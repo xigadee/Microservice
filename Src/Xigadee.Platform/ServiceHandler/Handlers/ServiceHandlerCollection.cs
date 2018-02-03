@@ -75,8 +75,29 @@ namespace Xigadee
             mOnAdd?.Invoke(handler);
             mHandlers.Add(handler.Id, handler);
             return handler;
-        } 
+        }
         #endregion
+
+        /// <summary>
+        /// Gets the <see cref="I"/> with the specified identifier.
+        /// </summary>
+        /// <value>
+        /// The <see cref="I"/>.
+        /// </value>
+        /// <param name="id">The identifier.</param>
+        /// <returns>The item for the specific key.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">id</exception>
+        public I this[string id]
+        {
+            get
+            {
+                I item;
+                if (!TryGet(id, out item))
+                    throw new ArgumentOutOfRangeException("id", $"The key '{id}' cannot be found in collection {typeof(I).Name}");
+
+                return item;
+            }
+        }
 
         #region TryGet(string id, out I handler)
         /// <summary>

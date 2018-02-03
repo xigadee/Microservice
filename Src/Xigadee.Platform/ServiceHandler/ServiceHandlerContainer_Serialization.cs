@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 namespace Xigadee
@@ -22,49 +23,6 @@ namespace Xigadee
             DefaultContentType = DefaultContentType ?? handler.Id;
         }
 
-        #region TryDeserialize(SerializationHolder holder)
-        /// <summary>
-        /// Tries to deserialize the incoming holder.
-        /// </summary>
-        /// <param name="holder">The holder.</param>
-        /// <returns>
-        /// Returns true if the incoming binary payload is successfully deserialized.
-        /// </returns>
-        public bool TryDeserialize(ServiceHandlerContext holder)
-        {
-            string id;
-            if (!ExtractContentType(holder, out id))
-                return false;
-
-            IServiceHandlerSerialization sr = null;
-            if (!Serialization.TryGet(id, out sr))
-                return false;
-
-            return sr.TryDeserialize(holder);
-        }
-        #endregion
-        #region TrySerialize(SerializationHolder holder)
-        /// <summary>
-        /// Tries to compress the outgoing holder.
-        /// </summary>
-        /// <param name="holder">The holder.</param>
-        /// <returns>
-        /// Returns true if the Content is serialized correctly to a binary blob.
-        /// </returns>
-        public bool TrySerialize(ServiceHandlerContext holder)
-        {
-            string id;
-            if (!ExtractContentType(holder, out id))
-                return false;
-
-            IServiceHandlerSerialization sr = null;
-            if (!Serialization.TryGet(id, out sr))
-                return false;
-
-            return sr.TrySerialize(holder);
-        }
-        #endregion
-
         #region ExtractContentType(string contentType, out string value)        
         /// <summary>
         /// Extracts the type of the content in the format type/subtype.
@@ -80,12 +38,74 @@ namespace Xigadee
             if (!holder.HasContentType)
                 return false;
 
-            var items = holder.ContentType.Split(';');
+            value = holder.ContentType.Id;
 
-            value = items[0].Trim().ToLowerInvariant();
             return true;
         }
         #endregion
 
+    }
+
+    /// <summary>
+    /// This is the extension methods for the service handler collection.
+    /// </summary>
+    public static partial class ServiceHandlerContainerExtensions
+    {
+        /// <summary>
+        /// Checks that a specific serializer is supported.
+        /// </summary>
+        /// <param name="collection">The collection.</param>
+        /// <param name="mimetype">The mime type identifier for the serializer.</param>
+        /// <returns>Returns true if the serializer is supported.</returns>
+        public static bool SupportsSerializer(this ServiceHandlerCollection<IServiceHandlerSerialization> collection, string mimetype)
+        {
+            return collection.Contains(mimetype);
+        }
+        /// <summary>
+        /// Checks that a specific serializer is supported.
+        /// </summary>
+        /// <param name="collection">The collection.</param>
+        /// <param name="holder">The holder.</param>
+        /// <returns>Returns true when the holder ContentType is supported.</returns>
+        public static bool SupportsSerializer(this ServiceHandlerCollection<IServiceHandlerSerialization> collection, ServiceHandlerContext holder)
+        {
+            return collection.Contains(holder.ContentType);
+        }
+        /// <summary>
+        /// Tries to deserialize the incoming holder.
+        /// </summary>
+        /// <param name="collection">The collection.</param>
+        /// <param name="holder">The holder.</param>
+        /// <returns>Returns true if the incoming binary payload is successfully deserialized.</returns>
+        public static bool TryDeserialize(this ServiceHandlerCollection<IServiceHandlerSerialization> collection, ServiceHandlerContext holder)
+        {
+            string id;
+            if (!ServiceHandlerContainer.ExtractContentType(holder, out id))
+                return false;
+
+            IServiceHandlerSerialization sr = null;
+            if (!collection.TryGet(id, out sr))
+                return false;
+
+            return sr.TryDeserialize(holder);
+        }
+        /// <summary>
+        /// Tries to compress the outgoing holder.
+        /// </summary>
+        /// <param name="collection">The collection.</param>
+        /// <param name="holder">The holder.</param>
+        /// <returns>Returns true if the Content is serialized correctly to a binary blob.</returns>
+        public static bool TrySerialize(this ServiceHandlerCollection<IServiceHandlerSerialization> collection, ServiceHandlerContext holder)
+        {
+            string id;
+            if (!ServiceHandlerContainer.ExtractContentType(holder, out id))
+                return false;
+
+            IServiceHandlerSerialization sr = null;
+            if (!collection.TryGet(id, out sr))
+                return false;
+
+            return sr.TrySerialize(holder);
+        }
     }
 }

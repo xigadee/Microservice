@@ -7,14 +7,14 @@ namespace Xigadee
     /// This abstract class is used to provide compression support for payloads.
     /// </summary>
     /// <seealso cref="Xigadee.IServiceHandlerCompression" />
-    public abstract class PayloadCompressorBase: IServiceHandlerCompression
+    public abstract class CompressorBase: IServiceHandlerCompression
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PayloadCompressorBase"/> class.
+        /// Initializes a new instance of the <see cref="CompressorBase"/> class.
         /// </summary>
         /// <param name="contentEncoding">The content encoding.</param>
         /// <exception cref="ArgumentNullException">contentEncoding</exception>
-        protected PayloadCompressorBase(string contentEncoding)
+        protected CompressorBase(string contentEncoding)
         {
             Id = contentEncoding ?? throw new ArgumentNullException("contentEncoding");
             Name = GetType().Name;

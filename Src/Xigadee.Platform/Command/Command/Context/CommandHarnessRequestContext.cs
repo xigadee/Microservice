@@ -18,7 +18,7 @@ namespace Xigadee
         public CommandHarnessRequestContext(ICommandHarness harness, CommandHarnessEventArgs args, TransmissionPayload rq) 
             :base(rq
                 , new List<TransmissionPayload>()
-                , harness.Dependencies.PayloadSerializer
+                , harness.Dependencies.ServiceHandlers
                 , harness.Dependencies.Collector
                 , harness.Dependencies.SharedService
                 , harness.Dependencies.OriginatorId

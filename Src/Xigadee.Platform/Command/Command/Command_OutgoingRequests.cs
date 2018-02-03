@@ -261,7 +261,7 @@ namespace Xigadee
                 payload.Message.ResponseChannelPriority = payload.Message.ChannelPriority;
 
                 //Set the payload
-                payload.Message.Holder = PayloadSerializer.PayloadSerialize(rq);
+                payload.Message.Holder = ServiceHandlers.PayloadSerialize(rq);
 
                 //Set the processing time
                 payload.MaxProcessingTime = rqSettings?.WaitTime ?? fallbackMaxProcessingTime ?? Policy.OutgoingRequestMaxProcessingTimeDefault;
@@ -367,7 +367,7 @@ namespace Xigadee
                             if (payloadRs.Message.Holder.HasObject)
                                 response.Response = (RS)payloadRs.Message.Holder.Object;
                             else if (payloadRs.Message.Holder != null)
-                                response.Response = PayloadSerializer.PayloadDeserialize<RS>(payloadRs);
+                                response.Response = ServiceHandlers.PayloadDeserialize<RS>(payloadRs);
 
                             return response;
                         }
@@ -555,7 +555,7 @@ namespace Xigadee
                 , TimeSpan? defaultRequestTimespan
                 , Func<ServiceStatus> status
                 , bool traceEnabled)
-                :base(command.PayloadSerializer, (p,s) => command.TaskManager(command, s, p), status, traceEnabled)
+                :base(command.ServiceHandlers, (p,s) => command.TaskManager(command, s, p), status, traceEnabled)
             {
                 mStatus = status;
                 mDefaultRequestTimespan = defaultRequestTimespan;

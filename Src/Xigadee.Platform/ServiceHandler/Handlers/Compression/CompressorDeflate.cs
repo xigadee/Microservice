@@ -6,13 +6,13 @@ namespace Xigadee
     /// <summary>
     /// This is the DEFLATE payload compressor.
     /// </summary>
-    /// <seealso cref="Xigadee.PayloadCompressorBase" />
-    public class PayloadCompressorDeflate: PayloadCompressorBase
+    /// <seealso cref="Xigadee.CompressorBase" />
+    public class CompressorDeflate: CompressorBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PayloadCompressorDeflate"/> class.
+        /// Initializes a new instance of the <see cref="CompressorDeflate"/> class.
         /// </summary>
-        public PayloadCompressorDeflate() : base("deflate") { }
+        public CompressorDeflate() : base("deflate") { }
 
         /// <summary>
         /// Gets the compression stream.

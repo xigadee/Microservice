@@ -11,7 +11,7 @@ namespace Xigadee
     /// </summary>
     public partial class DataCollectionContainer: ServiceContainerBase<DataCollectionContainer.Statistics, DataCollectionContainer.Policy>
         , IDataCollection, IRequireServiceOriginator
-        , ITaskManagerProcess, IRequireSharedServices, IRequireSecurityService, IRequirePayloadSerialization
+        , ITaskManagerProcess, IRequireSharedServices, IRequireServiceHandlers
     {
         #region Declarations
         /// <summary>
@@ -105,11 +105,8 @@ namespace Xigadee
                 if ((service as IRequireSharedServices) != null)
                     ((IRequireSharedServices)service).SharedServices = SharedServices;
 
-                if ((service as IRequireSecurityService) != null)
-                    ((IRequireSecurityService)service).Security = Security;
-
-                if ((service as IRequirePayloadSerialization) != null)
-                    ((IRequirePayloadSerialization)service).PayloadSerializer = PayloadSerializer;
+                if ((service as IRequireServiceHandlers) != null)
+                    ((IRequireServiceHandlers)service).ServiceHandlers = ServiceHandlers;
 
                 if ((service as IRequireDataCollector) != null)
                     ((IRequireDataCollector)service).Collector = this;
@@ -143,20 +140,11 @@ namespace Xigadee
             set;
         }
         #endregion
-        #region Security
+        #region ServiceHandlers
         /// <summary>
-        /// This is the security service primarily used for encryption.
+        /// This is the system wide service handler collection.
         /// </summary>
-        public ISecurityService Security
-        {
-            get; set;
-        }
-        #endregion
-        #region PayloadSerializer
-        /// <summary>
-        /// This is the system wide Payload serializer.
-        /// </summary>
-        public IPayloadSerializationContainer PayloadSerializer { get; set; } 
+        public IServiceHandlerContainer ServiceHandlers { get; set; } 
         #endregion
 
         #region Flush()

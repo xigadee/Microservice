@@ -26,7 +26,7 @@ namespace Xigadee
         {
             EncryptionValidate(handler);
 
-            return mEncryptionHandlers[handler.Id].Encrypt(input);
+            return Encryption[handler.Id].Encrypt(input);
         }
         #endregion
         #region Decrypt(EncryptionHandlerId handler, byte[] input)
@@ -40,7 +40,7 @@ namespace Xigadee
         {
             EncryptionValidate(handler);
 
-            return mEncryptionHandlers[handler.Id].Decrypt(input);
+            return Encryption[handler.Id].Decrypt(input);
         }
         #endregion
         #region EncryptionValidate(EncryptionHandlerId handler, bool throwErrors = true)

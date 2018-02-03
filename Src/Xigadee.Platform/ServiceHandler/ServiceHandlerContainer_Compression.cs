@@ -72,10 +72,12 @@ namespace Xigadee
             if (!holder.HasContentEncoding)
                 return false;
 
-            value = holder.ContentEncoding.Trim().ToLowerInvariant();
+            value = holder.ContentEncoding.Id;
             return true;
         }
         #endregion
 
     }
+
+
 }

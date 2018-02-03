@@ -316,8 +316,8 @@ namespace Xigadee
                 if (service is IRequireServiceOriginator)
                     ((IRequireServiceOriginator)service).OriginatorId = Id;
 
-                if (service is IRequirePayloadSerialization)
-                    ((IRequirePayloadSerialization)service).PayloadSerializer = mSerializer;
+                if (service is IRequireServiceHandlers)
+                    ((IRequireServiceHandlers)service).ServiceHandlers = mSerializer;
 
                 if (service is IRequireScheduler)
                     ((IRequireScheduler)service).Scheduler = mScheduler;

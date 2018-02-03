@@ -8,7 +8,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public interface IPersistenceEntityContainer<K, E>:IService, IRequirePayloadSerialization, IRequireSecurityService
+    public interface IPersistenceEntityContainer<K, E>:IService, IRequireServiceHandlers
         where K : IEquatable<K>
     {
         /// <summary>

@@ -3,7 +3,7 @@
     /// <summary>
     /// This is the stub serialization container.
     /// </summary>
-    public class ServiceHarnessSerializationContainer: ServiceHandlerContainer
+    public class ServiceHarnessServiceHandlerContainer: ServiceHandlerContainer
     {
         /// <summary>
         /// This override adds the Json serializer by default.
@@ -12,8 +12,8 @@
         {
             Serialization.Add(new JsonRawSerializer());
 
-            Compression.Add(new PayloadCompressorDeflate());
-            Compression.Add(new PayloadCompressorGzip());
+            Compression.Add(new CompressorDeflate());
+            Compression.Add(new CompressorGzip());
 
             base.StartInternal();
         }

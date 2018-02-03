@@ -14,6 +14,10 @@
         {
         }
 
+        public override string ProcessIdentifier(string id)
+        {
+            return id.Trim().ToLowerInvariant();
+        }
 
         /// <summary>
         /// Implicitly converts a string in to a resource profile.

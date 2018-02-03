@@ -88,7 +88,7 @@ namespace Xigadee
                 if (holder.ContentEncoding == null)
                     holder.ContentEncoding = ContentEncoding;
 
-                if (!PayloadSerializer.TryPayloadSerialize(holder))
+                if (!ServiceHandlers.TryPayloadSerialize(holder))
                 {
                     throw new ArgumentException("Cannot serialize.");
                 }

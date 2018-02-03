@@ -37,7 +37,7 @@ namespace Xigadee
         protected override void CommandsRegister()
         {
             CommandRegister(mKey,
-                async (rq, rs) => await mCommand(new CommandMethodRequestContext(rq, rs, PayloadSerializer, Collector, SharedServices, OriginatorId, Outgoing))
+                async (rq, rs) => await mCommand(new CommandMethodRequestContext(rq, rs, ServiceHandlers, Collector, SharedServices, OriginatorId, Outgoing))
                 , null
                 , mReferenceId);
         }

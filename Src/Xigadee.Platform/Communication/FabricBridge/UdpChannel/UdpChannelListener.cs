@@ -92,7 +92,7 @@ namespace Xigadee
 
             client.MessageUnpack = (holder) =>
             {
-                if (!PayloadSerializer.TryPayloadDeserialize(holder))
+                if (!ServiceHandlers.TryPayloadDeserialize(holder))
                 {
                     holder.SetObject(new UdpHelper.Message { Buffer = holder.Blob, RemoteEndPoint = (IPEndPoint)holder.Metadata });
                 }

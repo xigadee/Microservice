@@ -290,7 +290,7 @@ namespace Xigadee
 
                         try
                         {
-                            var response = PayloadSerializer.PayloadDeserialize<RepositoryHolder<KT, ET>>(payload);
+                            var response = ServiceHandlers.PayloadDeserialize<RepositoryHolder<KT, ET>>(payload);
                             return response;
                         }
                         catch (Exception ex)

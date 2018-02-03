@@ -3,11 +3,11 @@
     /// <summary>
     /// This interface is for components that require payload serialization and deserialization.
     /// </summary>
-    public interface IRequirePayloadSerialization
+    public interface IRequireServiceHandlers
     {
         /// <summary>
-        /// This is the system wide Payload serializer.
+        /// This is the system wide service handlers.
         /// </summary>
-        IPayloadSerializationContainer PayloadSerializer { get; set; }
+        IServiceHandlerContainer ServiceHandlers { get; set; }
     }
 }
