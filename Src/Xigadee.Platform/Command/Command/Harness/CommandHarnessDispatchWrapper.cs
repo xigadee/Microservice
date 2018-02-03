@@ -10,12 +10,12 @@ namespace Xigadee
     public class CommandHarnessDispatchWrapper : DispatchWrapper, ICommandHarnessDispath
     {
         internal CommandHarnessDispatchWrapper(CommandPolicy policy
-            , IPayloadSerializationContainer serializer
+            , IServiceHandlerContainer serviceHandlers
             , Action<TransmissionPayload, string> executeOrEnqueue
             , Func<ServiceStatus> getStatus
             , bool traceEnabled
             , string originatorServiceId = null) 
-            : base(serializer, executeOrEnqueue, getStatus, traceEnabled)
+            : base(serviceHandlers, executeOrEnqueue, getStatus, traceEnabled)
         {
             DefaultOriginatorServiceId = originatorServiceId;
             Policy = policy;

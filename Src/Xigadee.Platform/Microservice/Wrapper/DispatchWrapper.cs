@@ -11,16 +11,16 @@ namespace Xigadee
         /// <summary>
         /// Initializes a new instance of the <see cref="DispatchWrapper"/> class.
         /// </summary>
-        /// <param name="serializer">The serializer.</param>
+        /// <param name="serviceHandlers">The service handler collection.</param>
         /// <param name="executeOrEnqueue">The execute or enqueue action.</param>
         /// <param name="getStatus">The get status function.</param>
         /// <param name="traceEnabled">if set to <c>true</c> trace is enabled for payloads.</param>
-        protected internal DispatchWrapper(IPayloadSerializationContainer serializer, Action<TransmissionPayload, string> executeOrEnqueue, Func<ServiceStatus> getStatus, bool traceEnabled)
+        protected internal DispatchWrapper(IServiceHandlerContainer serviceHandlers, Action<TransmissionPayload, string> executeOrEnqueue, Func<ServiceStatus> getStatus, bool traceEnabled)
             : base(getStatus)
         {
             Name = GetType().Name;
             ExecuteOrEnqueue = executeOrEnqueue;
-            Serialization = serializer;
+            ServiceHandlers = serviceHandlers;
             PayloadTraceEnabled = traceEnabled;
         }
         #endregion
@@ -32,7 +32,7 @@ namespace Xigadee
         /// <summary>
         /// Gets the serialization container.
         /// </summary>
-        public IPayloadSerializationContainer Serialization { get; }
+        public IServiceHandlerContainer ServiceHandlers { get; }
         /// <summary>
         /// Gets the execute or enqueue action.
         /// </summary>

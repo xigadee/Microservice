@@ -48,7 +48,7 @@ namespace Xigadee
             if (holder == null)
                 throw new ArgumentNullException("holder");
 
-            return (holder.ContentType ?? "").Equals(Id, StringComparison.InvariantCultureIgnoreCase);
+            return (holder.ContentType?.Id ?? "").Equals(Id, StringComparison.InvariantCultureIgnoreCase);
         }
         /// <summary>
         /// Returns true if the Content in the holder can be serialized.

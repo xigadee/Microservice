@@ -37,7 +37,7 @@ namespace Xigadee
         {
             Channel channel = cpipe.ToChannel(ChannelDirection.Outgoing);
 
-            if (!cpipe.Pipeline.Service.Security.HasAuthenticationHandler(handler.Id))
+            if (!cpipe.Pipeline.Service.ServiceHandlers.Authentication.Contains(handler.Id))
                 throw new AuthenticationHandlerNotResolvedException(channel.Id, handler.Id);
 
             if (channel.Authentication != null)

@@ -28,7 +28,7 @@ namespace Xigadee
 
             action?.Invoke(handler);
 
-            pipeline.Service.Security.RegisterEncryptionHandler(identifier, handler);
+            pipeline.Service.ServiceHandlers.Encryption.Add(handler);
 
             return pipeline;
         }
@@ -38,12 +38,10 @@ namespace Xigadee
         /// </summary>
         /// <typeparam name="P">The pipeline type.</typeparam>
         /// <param name="pipeline">The pipeline.</param>
-        /// <param name="identifier">The encryption type identifier.</param> 
         /// <param name="creator">This function is used to create the handler from the configuration collection.</param>
         /// <param name="action">The action on the handler.</param>
         /// <returns>The pipeline.</returns>
         public static P AddEncryptionHandlerAes<P>(this P pipeline
-            , string identifier
             , Func<IEnvironmentConfiguration, IServiceHandlerEncryption> creator
             , Action<IServiceHandlerEncryption> action = null)
             where P : IPipeline
@@ -52,7 +50,7 @@ namespace Xigadee
 
             action?.Invoke(handler);
 
-            pipeline.Service.Security.RegisterEncryptionHandler(identifier, handler);
+            pipeline.Service.ServiceHandlers.Encryption.Add(handler);
 
             return pipeline;
         }

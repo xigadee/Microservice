@@ -37,7 +37,7 @@ namespace Xigadee
         {
             Channel channel = cpipe.ToChannel(ChannelDirection.Outgoing);
 
-            if (!cpipe.Pipeline.Service.Security.HasEncryptionHandler(handler.Id))
+            if (!cpipe.Pipeline.Service.ServiceHandlers.Encryption.Contains(handler.Id))
                 throw new EncryptionHandlerNotResolvedException(channel.Id, handler.Id);
 
             if (channel.Encryption != null)

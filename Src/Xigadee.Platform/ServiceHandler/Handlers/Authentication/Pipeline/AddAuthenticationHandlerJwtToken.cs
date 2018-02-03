@@ -30,9 +30,7 @@ namespace Xigadee
 
             var handler = new JwtTokenAuthenticationHandler(identifier, algo, base64Secret);
 
-            action?.Invoke(handler);
-
-            pipeline.Service.Security.RegisterAuthenticationHandler(identifier, handler);
+            pipeline.AddAuthenticationHandler(handler, action);
 
             return pipeline;
         }
@@ -73,9 +71,7 @@ namespace Xigadee
 
             var handler = new JwtTokenAuthenticationHandler(identifier, algo, bySecret);
 
-            action?.Invoke(handler);
-
-            pipeline.Service.Security.RegisterAuthenticationHandler(identifier, handler);
+            pipeline.AddAuthenticationHandler(handler, action);
 
             return pipeline;
         }
@@ -108,13 +104,9 @@ namespace Xigadee
 
             var handler = new JwtTokenAuthenticationHandler(identifier, algo, secret, audience: audience);
 
-            action?.Invoke(handler);
-
-            pipeline.Service.Security.RegisterAuthenticationHandler(identifier, handler);
+            pipeline.AddAuthenticationHandler(handler, action);
 
             return pipeline;
         }
-
-
     }
 }

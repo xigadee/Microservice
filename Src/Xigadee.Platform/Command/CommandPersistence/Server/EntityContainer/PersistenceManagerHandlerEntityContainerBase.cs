@@ -19,7 +19,7 @@ namespace Xigadee
     /// <typeparam name="S">The persistence statistics type.</typeparam>
     /// <typeparam name="P">The persistence command policy type.</typeparam>
     /// <typeparam name="C">The entity container type.</typeparam>
-    public abstract class PersistenceManagerHandlerEntityContainerBase<K, E, S, P, C>: PersistenceManagerHandlerJsonBase<K, E, S, P>, IRequireSecurityService
+    public abstract class PersistenceManagerHandlerEntityContainerBase<K, E, S, P, C>: PersistenceManagerHandlerJsonBase<K, E, S, P>
         where K : IEquatable<K>
         where S : PersistenceStatistics, new()
         where P : PersistenceCommandPolicy, new()
@@ -82,7 +82,6 @@ namespace Xigadee
                 Container = new C();
                 ContainerConfigure();
                 Container.ServiceHandlers = ServiceHandlers;
-                Container.Security = Security;
                 Container.Start();
                 PrePopulate();
             }
@@ -382,11 +381,5 @@ namespace Xigadee
         }
         #endregion
 
-        #region Security
-        /// <summary>
-        /// This method provides a link to the Microservice to the security service, that provides authentication and encryption support.
-        /// </summary>
-        public virtual ISecurityService Security { get; set; } 
-        #endregion
     }
 }

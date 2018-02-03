@@ -191,7 +191,7 @@ namespace Xigadee
         /// <summary>
         /// This is the command action that is executed.
         /// </summary>
-        public Func<TransmissionPayload, List<TransmissionPayload>, IPayloadSerializationContainer, Task> Action
+        public Func<TransmissionPayload, List<TransmissionPayload>, IServiceHandlerContainer, Task> Action
         {
             get
             {

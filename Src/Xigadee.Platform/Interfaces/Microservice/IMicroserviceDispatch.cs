@@ -12,8 +12,8 @@
         void Process(TransmissionPayload payload);
 
         /// <summary>
-        /// Gets the serialization container.
+        /// Gets the service handler container.
         /// </summary>
-        IPayloadSerializationContainer Serialization { get; }
+        IServiceHandlerContainer ServiceHandlers { get; }
     }
 }

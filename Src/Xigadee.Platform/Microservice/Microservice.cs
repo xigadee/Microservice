@@ -179,7 +179,7 @@ namespace Xigadee
                 EventStart(() => CoreEngineInitialize(), "Core Engine Initialization");
 
                 //This method initialises the serialization container.
-                EventStart(() => ServiceStart(mSerializer), "Serialization");
+                EventStart(() => ServiceStart(mServiceHandlers), "Service Handlers Container");
 
                 //Start data collection.
                 EventStart(() => ServiceStart(mDataCollection), "Data Collection");
@@ -189,9 +189,6 @@ namespace Xigadee
 
                 //This method connects any components that require Shared Service together before they start.
                 EventStart(() => mCommands.SharedServicesConnect(), "Command Shared Services");
-
-                //Start the channel controller.
-                EventStart(() => ServiceStart(mSecurity), "Security Container");
 
                 //Ensure that the communication handler is working.
                 EventStart(() => ServiceStart(mCommunication), "Communication Container");
@@ -215,7 +212,7 @@ namespace Xigadee
                 EventStart(() => mCommunication.ListenersStart(), "Communication Listeners");
 
                 //OK start the commands in parallel at the same priority group.
-                EventStart(() => Dispatch = new DispatchWrapper(mSerializer, mTaskManager.ExecuteOrEnqueue, () => Status
+                EventStart(() => Dispatch = new DispatchWrapper(mServiceHandlers, mTaskManager.ExecuteOrEnqueue, () => Status
                     , Policies.TaskManager.TransmissionPayloadTraceEnabled)
                     , "Dispatch Wrapper");
 
@@ -268,13 +265,11 @@ namespace Xigadee
             EventStop(() => ServiceStop(mCommunication), "Communication Container");
 
             //Stop the channel controller.
-            EventStop(() => ServiceStop(mSecurity), "Security Container");
-
             EventStop(() => ServiceStop(mResourceMonitor), "Resource Tracker");
 
             EventStop(() => ServiceStop(mDataCollection), "Data Collection");
 
-            EventStop(() => ServiceStop(mSerializer), "Serialization");
+            EventStop(() => ServiceStop(mServiceHandlers), "Service Handler Container");
 
             mEventsWrapper.OnStopCompleted();
         }
@@ -317,13 +312,10 @@ namespace Xigadee
                     ((IRequireServiceOriginator)service).OriginatorId = Id;
 
                 if (service is IRequireServiceHandlers)
-                    ((IRequireServiceHandlers)service).ServiceHandlers = mSerializer;
+                    ((IRequireServiceHandlers)service).ServiceHandlers = mServiceHandlers;
 
                 if (service is IRequireScheduler)
                     ((IRequireScheduler)service).Scheduler = mScheduler;
-
-                if (service is IRequireSecurityService)
-                    ((IRequireSecurityService)service).Security = mSecurity;
 
                 if (service is IRequireSharedServices)
                     ((IRequireSharedServices)service).SharedServices = mCommands.SharedServices;
@@ -343,7 +335,6 @@ namespace Xigadee
                 throw;
             }
         }
-
         #endregion
         #region ServiceStop(object service)
         /// <summary>
