@@ -26,7 +26,19 @@ namespace Xigadee
 {
     public static partial class AzureStorageExtensionMethods
     {
-
+        /// <summary>
+        /// Adds the azure storage data collector.
+        /// </summary>
+        /// <typeparam name="P">The pipeline type.</typeparam>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="creds">The Azure storage credentials.</param>
+        /// <param name="adjustPolicy">The adjust policy.</param>
+        /// <param name="resourceProfile">The resource profile.</param>
+        /// <param name="handler">The encryption handler id.</param>
+        /// <param name="onCreate">The optional on-create intercept action.</param>
+        /// <param name="context">The operation context.</param>
+        /// <returns>Returns the pipeline</returns>
+        /// <exception cref="EncryptionHandlerNotResolvedException">This error is thrown when the encryption handler id is not found.</exception>
         public static P AddAzureStorageDataCollector<P>(this P pipeline
             , StorageCredentials creds = null
             , Action<AzureStorageDataCollectorPolicy> adjustPolicy = null
@@ -41,7 +53,7 @@ namespace Xigadee
 
             if (handler != null)
             {
-                if (!pipeline.Service.Security.HasEncryptionHandler(handler.Id))
+                if (!pipeline.Service.ServiceHandlers.Encryption.Contains(handler.Id))
                     throw new EncryptionHandlerNotResolvedException(handler.Id);
             }
 

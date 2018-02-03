@@ -296,13 +296,7 @@ namespace Xigadee
 
                     try
                     {
-                        RepositoryHolder<KT, ET> rqTemp = null;
-
-                        if (incoming.Message.Holder.HasObject)
-                            rqTemp = incoming.Message.Holder.Object as RepositoryHolder<KT, ET>;
-                        else if (rqTemp == null)
-                        //Try and deserialize the incoming payloadRq request
-                            rqTemp = ServiceHandlers.PayloadDeserialize<RepositoryHolder<KT, ET>>(incoming);
+                        RepositoryHolder<KT, ET> rqTemp = incoming.Message.Holder.Object as RepositoryHolder<KT, ET>;
 
                         profileHolder.Rq = new PersistenceRepositoryHolder<KT, ET>(rqTemp);
 

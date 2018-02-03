@@ -117,7 +117,7 @@ namespace Xigadee
         /// <summary>
         /// The object type, which is parsed from the ContentType parameter.
         /// </summary>
-        public Type ObjectType { get; set; } 
+        public Type ObjectType { get; private set; } 
         #endregion
         #region SetObject(object incoming)
         /// <summary>

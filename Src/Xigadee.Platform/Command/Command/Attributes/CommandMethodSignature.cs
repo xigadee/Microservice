@@ -202,7 +202,7 @@ namespace Xigadee
                         var collection = new object[Parameters.Count];
 
                         if (ParamInPos.HasValue)
-                            collection[ParamInPos.Value] = ser.PayloadDeserialize(pIn.Message);
+                            collection[ParamInPos.Value] = pIn.Message.Holder.Object;
 
                         if (StandardInPos.HasValue)
                             collection[StandardInPos.Value] = pIn;
@@ -234,7 +234,7 @@ namespace Xigadee
                         if (TypeOut != null)
                         {
                             var response = pIn.ToResponse();
-                            response.Message.Holder = ser.PayloadSerialize(output);
+                            response.Message.Holder.SetObject(output);
                             response.Message.Status = "200";
 
                             pOut.Add(response);

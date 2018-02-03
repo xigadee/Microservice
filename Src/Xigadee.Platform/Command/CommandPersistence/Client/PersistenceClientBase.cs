@@ -275,9 +275,6 @@ namespace Xigadee
                 switch (rType)
                 {
                     case TaskStatus.RanToCompletion:
-                        if (payload.Message.Holder.HasObject)
-                            return payload.Message.Holder.Object as RepositoryHolder<KT, ET>;
-
                         if (payload.Message.Holder == null)
                         {
                             int rsCode = 500;
@@ -290,13 +287,15 @@ namespace Xigadee
 
                         try
                         {
-                            var response = ServiceHandlers.PayloadDeserialize<RepositoryHolder<KT, ET>>(payload);
-                            return response;
+                            if (payload.Message.Holder.HasObject)
+                                return (RepositoryHolder<KT, ET>)payload.Message.Holder.Object;
+                            else
+                                return null;
                         }
                         catch (Exception ex)
                         {
                             StatisticsInternal.ErrorIncrement();
-                            return new RepositoryHolder<KT, ET>(responseCode: 500, responseMessage: ex.Message);
+                            return new RepositoryHolder<KT, ET>(responseCode: 500, responseMessage: $"Unexpected cast error: {payload.Message.Holder.Object.GetType().Name}-{ex.Message}");
                         }
                     case TaskStatus.Canceled:
                         StatisticsInternal.ErrorIncrement();

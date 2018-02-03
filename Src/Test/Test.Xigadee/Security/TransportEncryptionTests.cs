@@ -42,7 +42,7 @@ namespace Test.Xigadee
                     DebugMemoryDataCollector memp1, memp2;
 
                     var p1 = new MicroservicePipeline("Sender")
-                        .AddEncryptionHandler("rogue1", encOut)
+                        .AddEncryptionHandler(encOut)
                         .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
                         .AddDataCollector((c) => new DebugMemoryDataCollector(), (c) => memp1 = c)
                         .AddChannelIncoming("cresponse")
@@ -56,7 +56,7 @@ namespace Test.Xigadee
                             ;
 
                     var p2 = new MicroservicePipeline("Receiver")
-                        .AddEncryptionHandler("rogue2", encIn)
+                        .AddEncryptionHandler(encIn)
                         .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
                         .AddDataCollector((c) => new DebugMemoryDataCollector(), (c) => memp2 = c)
                         .AddChannelIncoming("crequest")

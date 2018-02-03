@@ -227,7 +227,7 @@ namespace Xigadee
         {
             try
             {
-                EntityChangeReference<K> entityChangeReference = ServiceHandlers.PayloadDeserialize<EntityChangeReference<K>>(rq);
+                EntityChangeReference<K> entityChangeReference = (EntityChangeReference<K>)(rq.Message.Holder.Object);
                 var key = entityChangeReference.Key;
                 Remove(key);
             }

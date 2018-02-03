@@ -49,7 +49,7 @@ namespace Test.Xigadee
                     .AttachListener(bridgeOut.GetListener())
                     .AttachCommand(typeof(IContractFinal), (ctx) =>
                     {
-                        var value = ctx.PayloadSerializer.PayloadDeserialize<string>(ctx.Request);
+                        var value = ctx.Request.Message.Holder.Object as string;
 
                         success = value == "Hello";
                         mre.Set();

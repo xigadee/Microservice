@@ -257,9 +257,8 @@ namespace Xigadee
         /// This extension method turns a request message in to its corresponding response message by using the originator information as the new correlation information.
         /// </summary>
         /// <param name="message">The incoming message.</param>
-        /// <param name="blob">The outgoing payload.</param>
         /// <returns>Returns a new message.</returns>
-        public static ServiceMessage ToResponse(this ServiceMessage message, byte[] blob = null)
+        public static ServiceMessage ToResponse(this ServiceMessage message)
         {
             var baseMessage = CreateMessageBase();
 
@@ -267,7 +266,7 @@ namespace Xigadee
             baseMessage.CorrelationUTC = message.OriginatorUTC;
             baseMessage.CorrelationKey = message.OriginatorKey;
             baseMessage.DispatcherTransitCount = message.DispatcherTransitCount;
-            baseMessage.Holder = blob;
+            baseMessage.Holder = new ServiceHandlerContext();
 
             return baseMessage;
         }
@@ -286,8 +285,7 @@ namespace Xigadee
         /// <returns></returns>
         public static ServiceMessage ToResponse<C>(this ServiceMessage message
             , string location = null, string correlationId = null
-            , string messageId = null, string serviceId = null
-            , byte[] blob = null)
+            , string messageId = null, string serviceId = null)
             where C:IMessageContract
         {
             var baseMessage = CreateMessageBase<C>();
@@ -296,7 +294,6 @@ namespace Xigadee
             baseMessage.CorrelationUTC = message.CorrelationUTC;
             baseMessage.CorrelationKey = correlationId ?? message.OriginatorKey;
             baseMessage.DispatcherTransitCount = message.DispatcherTransitCount;
-            baseMessage.Holder = blob;
 
             return baseMessage;
         }

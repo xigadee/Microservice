@@ -240,7 +240,7 @@ namespace Xigadee
                 payload = TransmissionPayload.Create(Policy.TransmissionPayloadTraceEnabled);
                 payload.SecurityPrincipal = TransmissionPayload.ConvertToClaimsPrincipal(principal ?? Thread.CurrentPrincipal);
 
-                // Set the process correlation key to the correlation id, if passed through the rq settings
+                // Set the process correlation key to the correlation id, if passed through the request settings
                 if (!string.IsNullOrEmpty(rqSettings?.CorrelationId))
                     payload.Message.ProcessCorrelationKey = rqSettings.CorrelationId;
 
@@ -261,7 +261,7 @@ namespace Xigadee
                 payload.Message.ResponseChannelPriority = payload.Message.ChannelPriority;
 
                 //Set the payload
-                payload.Message.Holder = ServiceHandlers.PayloadSerialize(rq);
+                payload.Message.Holder = ServiceHandlerContext.CreateWithObject(rq);
 
                 //Set the processing time
                 payload.MaxProcessingTime = rqSettings?.WaitTime ?? fallbackMaxProcessingTime ?? Policy.OutgoingRequestMaxProcessingTimeDefault;
@@ -366,8 +366,6 @@ namespace Xigadee
 
                             if (payloadRs.Message.Holder.HasObject)
                                 response.Response = (RS)payloadRs.Message.Holder.Object;
-                            else if (payloadRs.Message.Holder != null)
-                                response.Response = ServiceHandlers.PayloadDeserialize<RS>(payloadRs);
 
                             return response;
                         }

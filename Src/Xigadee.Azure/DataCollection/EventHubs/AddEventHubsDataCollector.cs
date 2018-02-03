@@ -21,7 +21,7 @@ namespace Xigadee
     public static partial class AzureExtensionMethods
     {
         /// <summary>
-        /// Adds an events hub data colletor to the pipeline
+        /// Adds an events hub data collector to the pipeline
         /// </summary>
         /// <typeparam name="P">Type of IPipeline</typeparam>
         /// <param name="pipeline">Pipeline</param>
@@ -42,7 +42,7 @@ namespace Xigadee
         {
             var policy = new EventHubsDataCollectorPolicy();
 
-            if (encryptionHandler != null && !pipeline.Service.Security.HasEncryptionHandler(encryptionHandler.Id))
+            if (encryptionHandler != null && !pipeline.Service.ServiceHandlers.Encryption.Contains(encryptionHandler.Id))
                 throw new EncryptionHandlerNotResolvedException(encryptionHandler.Id);
 
             adjustPolicy?.Invoke(policy);

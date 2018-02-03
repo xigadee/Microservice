@@ -109,8 +109,10 @@ namespace Xigadee
         {
             Func<TransmissionPayload, List<TransmissionPayload>, Task> actionReduced = async (m, l) =>
             {
-                PM payload = ServiceHandlers.PayloadDeserialize<PM>(m);
-                await action(payload, m, l);
+                if (!(m.Message?.Holder?.HasObject ?? false))
+                    await action(default(PM), m, l);
+                else
+                    await action((PM)m.Message.Holder.Object, m, l);
             };
 
             CommandRegister<CM>(actionReduced, exceptionAction);

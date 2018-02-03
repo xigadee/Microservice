@@ -10,17 +10,17 @@ namespace Test.Xigadee.Serialization
         [TestMethod]
         public void Test1()
         {
-            var container = new SerializationContainer();
+            var container = new ServiceHandlerContainer();
 
-            var sr = container.Add(new JsonContractSerializer());
+            var sr = container.Serialization.Add(new JsonContractSerializer());
 
             container.Start();
 
             var test = new Blah { Message = "Hmm" };
 
-            var blob = container.PayloadSerialize(test);
+            var blob = container.Serialization.SerializeToBlob(test);
 
-            var resolve = container.PayloadDeserialize<Blah>(blob);
+            var resolve = container.Serialization.DeserializeToObject<Blah>(blob);
 
             Assert.AreEqual(test, resolve);
         }

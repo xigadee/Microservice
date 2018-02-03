@@ -41,8 +41,8 @@ namespace Test.Xigadee
                         .AttachMessagePriorityOverrideForResponse()
                         .AttachCommand((CommandMethodRequestContext ctx) =>
                         {                    
-                            var payload = ctx.RequestPayloadGet<Blah>();
-                            ctx.ResponseSet(200, payload.Message);
+                            var payload = ctx.Request.Message.Holder;
+                            ctx.ResponseSet(200, payload.Object);
                             return Task.FromResult(0);
                         }, ("FRANKY", "johnny5"))
                         .AttachCommand((CommandMethodRequestContext ctx) =>

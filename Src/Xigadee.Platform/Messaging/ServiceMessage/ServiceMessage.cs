@@ -160,7 +160,7 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the serialization holder for the message.
         /// </summary>
-        public ServiceHandlerContext Holder { get; set; }
+        public ServiceHandlerContext Holder { get; set; } = new ServiceHandlerContext();
         #endregion
 
         #region IsNoop

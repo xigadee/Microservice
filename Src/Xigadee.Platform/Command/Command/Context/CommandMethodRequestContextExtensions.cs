@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Xigadee
+﻿namespace Xigadee
 {
     /// <summary>
     /// This static class contains a number of extension methods to make using an inline command simpler.
@@ -26,7 +20,7 @@ namespace Xigadee
             ars.Message.StatusSet(status, description);
 
             if (!response.Equals(default(C)))
-                ars.Message.Holder = c.ServiceHandlers.PayloadSerialize(response);
+                ars.Message.Holder = ServiceHandlerContext.CreateWithObject(response);
 
             c.Responses.Add(ars);
         }
@@ -55,9 +49,14 @@ namespace Xigadee
         /// <returns>Returns true if the payload is present.</returns>
         public static bool RequestPayloadTryGet<C>(this ICommandRequestContext c, out C response)
         {
-            response = default(C);
+            if (c.Request.Message.Holder.HasObject)
+            {
+                response = (C)c.Request.Message.Holder.Object;
+                return true;
+            }
 
-            return c.PayloadSerializer.PayloadTryDeserialize<C>(c.Request, out response);
+            response = default(C);
+            return false;
         }
 
         /// <summary>
@@ -68,7 +67,7 @@ namespace Xigadee
         /// <returns>Returns the payload object.</returns>
         public static C RequestPayloadGet<C>(this ICommandRequestContext c)
         {
-            return c.PayloadSerializer.PayloadDeserialize<C>(c.Request);
+            return (C)c.Request.Message.Holder.Object;
         }
     }
 }

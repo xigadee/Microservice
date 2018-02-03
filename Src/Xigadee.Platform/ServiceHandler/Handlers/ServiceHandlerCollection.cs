@@ -27,6 +27,8 @@ namespace Xigadee
         } 
         #endregion
 
+        public string Default { get; set; }
+
         #region Contains ...
         /// <summary>
         /// Determines whether the handler id is contained in the collection.

@@ -15,7 +15,7 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the default type of the content type. This is based on the first serializer added to the collection.
         /// </summary>
-        public string DefaultContentType { get; protected set; }
+        public string DefaultContentType { get { return Serialization.Default; } set { Serialization.Default = value; } }
         #endregion
 
         private void OnSerializationAdd(IServiceHandlerSerialization handler)
@@ -106,6 +106,38 @@ namespace Xigadee
                 return false;
 
             return sr.TrySerialize(holder);
+        }
+
+        /// <summary>
+        /// Tries to compress the outgoing holder.
+        /// </summary>
+        /// <param name="collection">The collection.</param>
+        /// <param name="item">The item.</param>
+        /// <returns>Returns true if the Content is serialized correctly to a binary blob.</returns>
+        public static byte[] SerializeToBlob(this ServiceHandlerCollection<IServiceHandlerSerialization> collection, object item)
+        {
+            var context = ServiceHandlerContext.CreateWithObject(item);
+            //context.ContentType = collection.
+            if (collection.TrySerialize(context))
+                return context.Blob;
+
+            throw new PayloadSerializationException();
+        }
+
+        /// <summary>
+        /// Tries to compress the outgoing holder.
+        /// </summary>
+        /// <param name="collection">The collection.</param>
+        /// <param name="blob">The binary array.</param>
+        /// <returns>Returns true if the Content is serialized correctly to a binary blob.</returns>
+        public static O DeserializeToObject<O>(this ServiceHandlerCollection<IServiceHandlerSerialization> collection, byte[] blob)
+        {
+            ServiceHandlerContext context = blob;
+
+            if (collection.TryDeserialize(context))
+                return (O)context.Object;
+
+            throw new PayloadDeserializationException();
         }
     }
 }
