@@ -181,7 +181,7 @@ namespace Xigadee
                     TrackerSubmitFromClientPriorityHolder(context);
                     //Check whether we can continue. Note the current collection may be rebuilt and closed 
                     //during this poll.
-                    if (!CanProcess() || currentColl.IsClosed)
+                    if (!CanProcessContainerIsReady || currentColl.IsClosed)
                         break;
                 }
             }

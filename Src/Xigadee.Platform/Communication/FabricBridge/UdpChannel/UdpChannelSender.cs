@@ -13,18 +13,21 @@ namespace Xigadee
         /// Initializes a new instance of the <see cref="UdpChannelSender"/> class.
         /// </summary>
         /// <param name="udp">The UDP endpoint configuration.</param>
-        /// <param name="contentType">The MIME Content Type which is used to identify the serializer.</param>
-        /// <param name="contentEncoding">The optional content encoding for the binary blob.</param>
+        /// <param name="contentType">The MIME Content Type which is used to specify the serialization handler.</param>
+        /// <param name="contentEncoding">The optional content encoding handler for the binary blob.</param>
+        /// <param name="encryption">The optional payload encryption handler.</param>
         /// <param name="maxUdpMessagePayloadSize">This is the max UDP message payload size. The default is 508 bytes. If you set this to null, the sender will not check the size before transmitting.</param>
         public UdpChannelSender(UdpConfig udp
-            , string contentType
-            , string contentEncoding = null
+            , SerializationHandlerId contentType
+            , CompressionHandlerId contentEncoding = null
+            , EncryptionHandlerId encryption = null
             , int? maxUdpMessagePayloadSize = UdpHelper.PacketMaxSize
             )
         {
             Config = udp;
-            ContentType = contentType;
+            ContentType = contentType ?? throw new ArgumentNullException("contentType");
             ContentEncoding = contentEncoding;
+            Encryption = encryption;
             UdpMessageMaximumPayloadSize = maxUdpMessagePayloadSize;
         }
         /// <summary>
@@ -42,11 +45,15 @@ namespace Xigadee
         /// <summary>
         /// Gets the serialization mime Content-type.
         /// </summary>
-        public string ContentType { get; }
+        public SerializationHandlerId ContentType { get; }
         /// <summary>
         /// Gets the serialization content type encoding, i.e. GZIP
         /// </summary>
-        public string ContentEncoding { get; }
+        public CompressionHandlerId ContentEncoding { get; }
+        /// <summary>
+        /// Gets the default encryption handler
+        /// </summary>
+        public EncryptionHandlerId Encryption { get; }
 
         /// <summary>
         /// This is the default client create logic.

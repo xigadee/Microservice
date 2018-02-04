@@ -135,8 +135,18 @@ namespace Xigadee
         /// <returns></returns>
         public bool CanProcess()
         {
-            return Status == ServiceStatus.Running && TaskSubmit != null;
+            return CanProcessContainerIsReady && mProcessIsActive == 0;
         }
+        /// <summary>
+        /// The private boolean value is set when the process in active. 0 = not active, 1 = active
+        /// </summary>
+        private int mProcessIsActive = 0;
+        #endregion
+        #region CanProcessContainerIsReady
+        /// <summary>
+        /// Gets a value indicating whether the container is running and available for polling.
+        /// </summary>
+        protected bool CanProcessContainerIsReady => Status == ServiceStatus.Running && TaskSubmit != null; 
         #endregion
         #region --> Process(TaskManagerAvailability availability)
         /// <summary>
@@ -145,23 +155,33 @@ namespace Xigadee
         /// </summary>
         public void Process()
         {
-            //Set the current collection for this iteration.
-            //This could change during execution of this process.
-            var collection = mClientCollection;
+            try
+            {
+                //Limit processing while active. This is picked up the CanProcess() method.
+                Interlocked.Exchange(ref mProcessIsActive, 1);
 
-            //Check that we have something to do. If this is null, closed, or without any clients, then we skip polling.
-            if (collection == null || collection.IsClosed || collection.Count == 0)
-                return;
+                //Set the current collection for this iteration.
+                //This could change during execution of this process.
+                var collection = mClientCollection;
 
-            if ((mListenerPoll?.Count ?? 0) > 0)
-                ProcessListeners();
+                //Check that we have something to do. If this is null, closed, or without any clients, then we skip polling.
+                if (collection == null || collection.IsClosed || collection.Count == 0)
+                    return;
 
-            //Do the past due scan to process the lower priority clients that have overdue polls first.
-            if (mPolicy.ListenerClientPollAlgorithm.SupportPassDueScan)
-                ProcessClients(true);
+                if ((mListenerPoll?.Count ?? 0) > 0)
+                    ProcessListeners();
 
-            //Process the standard client logic poll.
-            ProcessClients(false);
+                //Do the past due scan to process the lower priority clients that have overdue polls first.
+                if (mPolicy.ListenerClientPollAlgorithm.SupportPassDueScan)
+                    ProcessClients(true);
+
+                //Process the standard client logic poll.
+                ProcessClients(false);
+            }
+            finally
+            {
+                Interlocked.Exchange(ref mProcessIsActive, 0);
+            }
         }
         #endregion
 
