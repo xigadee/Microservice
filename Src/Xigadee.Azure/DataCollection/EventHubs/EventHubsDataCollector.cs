@@ -115,9 +115,12 @@ namespace Xigadee
             var result = ResourceRequestResult.Unknown;
             try
             {
+                //Serialize the blob.
                 var blob = options.SerializerBinary(eventHolder, OriginatorId).Blob;
+
+                //Encrypt the blob is that is the policy.
                 if (options.EncryptionPolicy != AzureStorageEncryption.None && mEncryption != null)
-                    blob = (Security?.Encrypt(mEncryption, blob) ?? blob);
+                    blob = ServiceHandlers.Encryption[mEncryption].Encrypt(blob);
 
                 mEventHubClient.SendAsync(new EventData(blob)).Wait();
                 result = ResourceRequestResult.Success;

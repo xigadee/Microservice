@@ -9,7 +9,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="S">The statistics type.</typeparam>
     /// <typeparam name="P">The policy type.</typeparam>
-    public abstract class DataCollectorBase<S, P>: ServiceContainerBase<S, P>, IDataCollectorComponent, IRequireSecurityService, IRequireSharedServices
+    public abstract class DataCollectorBase<S, P>: ServiceContainerBase<S, P>, IDataCollectorComponent, IRequireServiceHandlers, IRequireSharedServices
         where S : DataCollectorStatistics, new()
         where P : DataCollectorPolicy, new()
     {
@@ -154,14 +154,11 @@ namespace Xigadee
             get; set;
         }
         #endregion
-        #region Security
+        #region ServiceHandlers
         /// <summary>
-        /// This is a reference to the security service used for encryption.
+        /// This is a reference to the service handler service.
         /// </summary>
-        public ISecurityService Security
-        {
-            get; set;
-        }
+        public IServiceHandlerContainer ServiceHandlers { get; set; }
         #endregion
         #region SharedServices
         /// <summary>

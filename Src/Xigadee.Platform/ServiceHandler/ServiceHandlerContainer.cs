@@ -20,9 +20,9 @@ namespace Xigadee
         public ServiceHandlerContainer(Policy policy = null, string name = null) : base(policy, name)
         {
             Authentication = new ServiceHandlerCollection<IServiceHandlerAuthentication>(OnAuthenticationAdd);
-            Compression = new ServiceHandlerCollection<IServiceHandlerCompression>(OnCompressionAdd);
-            Encryption = new ServiceHandlerCollection<IServiceHandlerEncryption>(OnEncryptionAdd);
-            Serialization = new ServiceHandlerCollection<IServiceHandlerSerialization>(OnSerializationAdd);
+            Compression = new ServiceHandlerCollection<IServiceHandlerCompression>();
+            Encryption = new ServiceHandlerCollection<IServiceHandlerEncryption>();
+            Serialization = new ServiceHandlerCollection<IServiceHandlerSerialization>();
         } 
         #endregion
 

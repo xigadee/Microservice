@@ -10,11 +10,6 @@ namespace Xigadee
         /// </summary>
         public ServiceHandlerCollection<IServiceHandlerEncryption> Encryption { get; }
 
-        private void OnEncryptionAdd(IServiceHandlerEncryption handler)
-        {
-
-        }
-
         #region Encrypt(EncryptionHandlerId handler, byte[] input)
         /// <summary>
         /// Encrypts the specified blob using the handler provided..

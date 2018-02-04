@@ -3,7 +3,7 @@
     /// <summary>
     /// This class encapsulates the encryption handler id.
     /// </summary>
-    public class EncryptionHandlerId: ServiceHandlerIdBase, ISecurityService
+    public class EncryptionHandlerId: ServiceHandlerIdBase
     {
         /// <summary>
         /// The default constructor.
@@ -13,20 +13,6 @@
         {
         }
 
-        public byte[] Decrypt(EncryptionHandlerId id, byte[] input)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public byte[] Encrypt(EncryptionHandlerId id, byte[] input)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public bool EncryptionValidate(EncryptionHandlerId id, bool throwErrors = true)
-        {
-            throw new System.NotImplementedException();
-        }
 
         /// <summary>
         /// Processes the incoming identifier in to a standard format..
@@ -40,15 +26,6 @@
             return base.ProcessIdentifier(id.Trim().ToLowerInvariant());
         }
 
-        public void Secure(Channel channel, TransmissionPayload payloadOut)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void Verify(Channel channel, TransmissionPayload payloadIn)
-        {
-            throw new System.NotImplementedException();
-        }
 
         /// <summary>
         /// Implicitly converts a string in to a the encryption handler class.

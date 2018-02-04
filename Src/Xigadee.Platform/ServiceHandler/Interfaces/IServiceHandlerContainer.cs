@@ -5,14 +5,6 @@
     /// </summary>
     public interface IServiceHandlerContainer
     {
-
-        /// <summary>
-        /// Gets the default content-type for the serialization collection.
-        /// </summary>
-        /// <value>
-        /// The default type of the content.
-        /// </value>
-        string DefaultContentType { get; }
         
         /// <summary>
         /// Gets the authentication handler collection.

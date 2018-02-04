@@ -24,12 +24,29 @@ namespace Xigadee
         public ServiceHandlerCollection(Action<I> onAdd = null)
         {
             mOnAdd = onAdd;
-        } 
+        }
         #endregion
 
+        #region Default
+        /// <summary>
+        /// Gets or sets the default identifier. This is initially set when the first item is added.
+        /// </summary>
         public string Default { get; set; }
+        #endregion
 
-        #region Contains ...
+        #region Contains/Validate ...
+
+        /// <summary>
+        /// Determines whether the handler id is contained in the collection.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns><c>true</c> if the collection [contains] [the specified identifier]; otherwise, <c>false</c>.</returns>
+        public void Validate(string id)
+        {
+            if (!mHandlers.ContainsKey(id))
+                throw new ArgumentOutOfRangeException("id",$"Invalid identifier for {id} in collection: {typeof(I).Name}");
+        }
+
         /// <summary>
         /// Determines whether the handler id is contained in the collection.
         /// </summary>
@@ -76,19 +93,21 @@ namespace Xigadee
 
             mOnAdd?.Invoke(handler);
             mHandlers.Add(handler.Id, handler);
+
+            if (Default == null)
+                Default = handler.Id;
+
             return handler;
         }
         #endregion
 
+        #region this[string id]
         /// <summary>
-        /// Gets the <see cref="I"/> with the specified identifier.
+        /// Gets the specific item based on the identifier.
         /// </summary>
-        /// <value>
-        /// The <see cref="I"/>.
-        /// </value>
         /// <param name="id">The identifier.</param>
         /// <returns>The item for the specific key.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">id</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The id cannot be found in the collection.</exception>
         public I this[string id]
         {
             get
@@ -99,7 +118,8 @@ namespace Xigadee
 
                 return item;
             }
-        }
+        } 
+        #endregion
 
         #region TryGet(string id, out I handler)
         /// <summary>

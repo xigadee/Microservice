@@ -110,8 +110,6 @@ namespace Xigadee
                 throw new ArgumentOutOfRangeException("Transform", "The Entity transform holder 'Transform' is not set.");
             if (ServiceHandlers == null)
                 throw new ArgumentOutOfRangeException("PayloadSerializer", "The PayloadSerializer is not set.");
-            if (Security == null)
-                throw new ArgumentOutOfRangeException("Security", "The Security container is not set.");
         }
         /// <summary>
         /// This method stops the service. You should override this method for your own logic.
@@ -140,12 +138,6 @@ namespace Xigadee
         public virtual string Debug => $"{typeof(K).Name}/{typeof(E).Name} Entities={Count} References={CountReference}";
         #endregion
 
-        #region Security
-        /// <summary>
-        /// This method provides a link to the Microservice to the security service, that provides authentication and encryption support.
-        /// </summary>
-        public virtual ISecurityService Security { get; set; }
-        #endregion
         #region ServiceHandlers
         /// <summary>
         /// This is the system wide serializer.

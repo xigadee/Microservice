@@ -81,9 +81,7 @@ namespace Xigadee
 
             //Check that the key is valid.
             if (mEncryption != null)
-            {
-                Security.EncryptionValidate(mEncryption);
-            }
+                ServiceHandlers.Encryption.Validate(mEncryption);
 
             mStorageAccount = new CloudStorageAccount(mCredentails, true);
 
@@ -164,7 +162,7 @@ namespace Xigadee
                     , StorageAccount = mStorageAccount
                     , DefaultTimeout = mDefaultTimeout
                     , Context = mContext
-                    , Encryptor = (b) => mEncryption == null?null:Security.Encrypt(mEncryption,b)
+                    , Encryptor = (b) => mEncryption == null?null:ServiceHandlers.Encryption[mEncryption].Encrypt(b)
                     , EncryptionPolicy = k.EncryptionPolicy
                 });
 

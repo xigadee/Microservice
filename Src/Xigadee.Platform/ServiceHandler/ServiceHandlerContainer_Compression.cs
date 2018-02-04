@@ -10,17 +10,6 @@ namespace Xigadee
         /// </summary>
         public ServiceHandlerCollection<IServiceHandlerCompression> Compression { get; }
 
-        private void OnCompressionAdd(IServiceHandlerCompression handler)
-        {
-
-        }
-
-        #region DefaultContentEncoding
-        /// <summary>
-        /// Gets or sets the default type of the content type. This is based on the first serializer added to the collection.
-        /// </summary>
-        public string DefaultContentEncoding { get { return Compression.Default; } set { Compression.Default = value; } }
-        #endregion
 
         #region TryDecompress(ServiceHandlerContext holder)
         /// <summary>

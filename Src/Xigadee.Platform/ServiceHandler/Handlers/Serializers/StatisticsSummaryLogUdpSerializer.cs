@@ -11,6 +11,10 @@ namespace Xigadee
     /// <seealso cref="Xigadee.SerializerBase" />
     public class StatisticsSummaryLogUdpSerializer: SerializerBase
     {
+        public StatisticsSummaryLogUdpSerializer():base("application/summarylog","The summary log serializer")
+        {
+
+        }
         /// <summary>
         /// This method is not supported.
         /// </summary>

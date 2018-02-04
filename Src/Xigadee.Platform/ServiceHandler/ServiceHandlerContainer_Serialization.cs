@@ -11,18 +11,6 @@ namespace Xigadee
         /// </summary>
         public ServiceHandlerCollection<IServiceHandlerSerialization> Serialization { get; }
 
-        #region DefaultContentType
-        /// <summary>
-        /// Gets or sets the default type of the content type. This is based on the first serializer added to the collection.
-        /// </summary>
-        public string DefaultContentType { get { return Serialization.Default; } set { Serialization.Default = value; } }
-        #endregion
-
-        private void OnSerializationAdd(IServiceHandlerSerialization handler)
-        {
-            DefaultContentType = DefaultContentType ?? handler.Id;
-        }
-
         #region ExtractContentType(string contentType, out string value)        
         /// <summary>
         /// Extracts the type of the content in the format type/subtype.
