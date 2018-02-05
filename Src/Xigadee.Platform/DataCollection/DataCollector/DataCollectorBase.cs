@@ -158,7 +158,7 @@ namespace Xigadee
         /// <summary>
         /// This is a reference to the service handler service.
         /// </summary>
-        public IServiceHandlerContainer ServiceHandlers { get; set; }
+        public IServiceHandlers ServiceHandlers { get; set; }
         #endregion
         #region SharedServices
         /// <summary>

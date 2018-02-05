@@ -65,8 +65,9 @@ namespace Xigadee
         /// <typeparam name="C">The pipeline type.</typeparam>
         /// <param name="cpipe">The pipeline.</param>
         /// <param name="udp">The UDP endpoint configuration.</param>
-        /// <param name="defaultDeserializerContentType">Default deserializer MIME Content-type, i.e application/json.</param>
-        /// <param name="defaultDeserializerContentEncoding">Default deserializer MIME Content-encoding, i.e. GZIP.</param>
+        /// <param name="serializerId">Default serializer MIME Content-type id, i.e application/json.</param>
+        /// <param name="compressionId">Default serializer MIME Content-encoding id, i.e. GZIP.</param>
+        /// <param name="encryptionId">The encryption handler id.</param>
         /// <param name="requestAddress">This is the optional address fragment which specifies the incoming message destination. If this is not set then ("","") will be used. This does not include a channelId as this will be provided by the pipeline.</param>
         /// <param name="responseAddress">This is the optional return address destination to be set for the incoming messages.</param>
         /// <param name="requestAddressPriority">This is the default priority for the request message. The default is null. This will inherit from the channel priority.</param>
@@ -76,8 +77,9 @@ namespace Xigadee
         /// <returns>Returns the pipeline.</returns>
         public static C AttachUdpListener<C>(this C cpipe
             , UdpConfig udp
-            , string defaultDeserializerContentType = null
-            , string defaultDeserializerContentEncoding = null
+            , SerializationHandlerId serializerId = null
+            , CompressionHandlerId compressionId = null
+            , EncryptionHandlerId encryptionId = null
             , ServiceMessageHeaderFragment requestAddress = null
             , ServiceMessageHeader responseAddress = null
             , int? requestAddressPriority = null
@@ -87,14 +89,14 @@ namespace Xigadee
             )
             where C : IPipelineChannelIncoming<IPipeline>
         {
-            defaultDeserializerContentType = (
-                defaultDeserializerContentType 
+            serializerId = (
+                serializerId?.Id
                 ?? serializer?.Id 
                 ?? $"udp_in/{cpipe.Channel.Id}"
                 ).ToLowerInvariant();
 
             var listener = new UdpChannelListener(udp
-                , defaultDeserializerContentType, defaultDeserializerContentEncoding
+                , serializerId, compressionId
                 , requestAddress, responseAddress, requestAddressPriority, responseAddressPriority
                 );
 
@@ -112,29 +114,31 @@ namespace Xigadee
         /// <typeparam name="C">The pipeline type.</typeparam>
         /// <param name="cpipe">The pipeline.</param>
         /// <param name="udp">The UDP endpoint configuration.</param>
-        /// <param name="defaultSerializerContentType">Default serializer MIME Content-type, i.e application/json.</param>
-        /// <param name="defaultSerializerContentTypeEncoding">Default serializer MIME Content-encoding, i.e. GZIP.</param>
+        /// <param name="serializerId">Default serializer MIME Content-type id, i.e application/json.</param>
+        /// <param name="compressionId">Default serializer MIME Content-encoding id, i.e. GZIP.</param>
+        /// <param name="encryptionId">The encryption handler id.</param>
         /// <param name="serializer">This is an optional serializer that can be added with the specific mime type. Note:  the serializer mime type will be changed, so you should not share this serializer instance.</param>
         /// <param name="action">The optional action to be called when the sender is created.</param>
         /// <param name="maxUdpMessagePayloadSize">This is the max UDP message payload size. The default is 508 bytes. If you set this to null, the sender will not check the size before transmitting.</param>
         /// <returns>Returns the pipeline.</returns>
         public static C AttachUdpSender<C>(this C cpipe
             , UdpConfig udp
-            , string defaultSerializerContentType = null
-            , string defaultSerializerContentTypeEncoding = null
+            , SerializationHandlerId serializerId = null
+            , CompressionHandlerId compressionId = null
+            , EncryptionHandlerId encryptionId = null
             , IServiceHandlerSerialization serializer = null
             , Action<UdpChannelSender> action = null
             , int? maxUdpMessagePayloadSize = UdpHelper.PacketMaxSize
             )
             where C : IPipelineChannelOutgoing<IPipeline>
         {
-            defaultSerializerContentType = (
-                defaultSerializerContentType
+            serializerId = (
+                serializerId?.Id
                 ?? serializer?.Id
                 ?? $"udp_out/{cpipe.Channel.Id}"
                 ).ToLowerInvariant();
 
-            var sender = new UdpChannelSender(udp, defaultSerializerContentType, defaultSerializerContentTypeEncoding, maxUdpMessagePayloadSize);
+            var sender = new UdpChannelSender(udp, serializerId, compressionId, encryptionId, maxUdpMessagePayloadSize);
 
             if (serializer != null)
                 cpipe.Pipeline.AddPayloadSerializer(serializer);
@@ -150,8 +154,9 @@ namespace Xigadee
         /// <typeparam name="C">The pipeline type.</typeparam>
         /// <param name="cpipe">The pipeline.</param>
         /// <param name="udp">The UDP endpoint configuration.</param>
-        /// <param name="defaultSerializerContentType">Default serializer MIME Content-type, i.e application/json.</param>
-        /// <param name="defaultSerializerContentTypeEncoding">Default serializer MIME Content-encoding, i.e. GZIP.</param>
+        /// <param name="serializerId">Default serializer MIME Content-type id, i.e application/json.</param>
+        /// <param name="compressionId">Default serializer MIME Content-encoding id, i.e. GZIP.</param>
+        /// <param name="encryptionId">The encryption handler id.</param>
         /// <param name="serialize">The serialize action.</param>
         /// <param name="canSerialize">The optional serialize check function.</param>
         /// <param name="action">The optional action to be called when the sender is created.</param>
@@ -159,8 +164,9 @@ namespace Xigadee
         /// <returns>Returns the pipeline.</returns>
         public static C AttachUdpSender<C>(this C cpipe
             , UdpConfig udp
-            , string defaultSerializerContentType = null
-            , string defaultSerializerContentTypeEncoding = null
+            , SerializationHandlerId serializerId = null
+            , CompressionHandlerId compressionId = null
+            , EncryptionHandlerId encryptionId = null
             , Action<ServiceHandlerContext> serialize = null
             , Func<ServiceHandlerContext, bool> canSerialize = null
             , Action<UdpChannelSender> action = null
@@ -168,15 +174,14 @@ namespace Xigadee
             )
             where C : IPipelineChannelOutgoing<IPipeline>
         {
-            defaultSerializerContentType = (
-                defaultSerializerContentType
-                ?? $"udp_out/{cpipe.Channel.Id}"
+            serializerId = (
+                serializerId?.Id?? $"udp_out/{cpipe.Channel.Id}"
                 ).ToLowerInvariant();
 
-            var sender = new UdpChannelSender(udp, defaultSerializerContentType, defaultSerializerContentTypeEncoding, maxUdpMessagePayloadSize);
+            var sender = new UdpChannelSender(udp, serializerId, compressionId, encryptionId, maxUdpMessagePayloadSize);
 
             if (serialize != null)
-                cpipe.Pipeline.AddPayloadSerializer(defaultSerializerContentType
+                cpipe.Pipeline.AddPayloadSerializer(serializerId
                     , serialize: serialize
                     , canSerialize: canSerialize);
 

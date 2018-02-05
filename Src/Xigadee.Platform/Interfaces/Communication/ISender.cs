@@ -25,6 +25,11 @@ namespace Xigadee
     public interface ISender: IMessaging
     {
         /// <summary>
+        /// This is a list of active clients.
+        /// </summary>
+        IEnumerable<ClientHolder> Clients { get; }
+
+        /// <summary>
         /// Dispatches the message.
         /// </summary>
         /// <param name="message">The message.</param>

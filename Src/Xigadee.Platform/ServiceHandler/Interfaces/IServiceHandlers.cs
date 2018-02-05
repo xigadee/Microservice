@@ -3,7 +3,7 @@
     /// <summary>
     /// This interface is used by the service handler collection
     /// </summary>
-    public interface IServiceHandlerContainer
+    public interface IServiceHandlers
     {
         
         /// <summary>
@@ -22,7 +22,5 @@
         /// Gets the serialization handler collection.
         /// </summary>
         ServiceHandlerCollection<IServiceHandlerSerialization> Serialization { get; }
-
-
     }
 }

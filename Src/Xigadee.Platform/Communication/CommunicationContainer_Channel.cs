@@ -39,7 +39,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="direction">The channel direction.</param>
         /// <param name="incoming">The incoming function.</param>
-        /// <param name="outgoing">The outgoing funtion.</param>
+        /// <param name="outgoing">The outgoing function.</param>
         /// <returns></returns>
         private bool? Wrapper(ChannelDirection direction, Func<bool?, bool?> incoming, Func<bool?, bool?> outgoing)
         {
@@ -117,7 +117,7 @@ namespace Xigadee
         #endregion
         #region Exists(string channelId, ChannelDirection direction)
         /// <summary>
-        /// This method checks whether a channel has been adeed.
+        /// This method checks whether a channel has been added.
         /// </summary>
         /// <param name="channelId">The channel Id.</param>
         /// <param name="direction">The direction.</param>

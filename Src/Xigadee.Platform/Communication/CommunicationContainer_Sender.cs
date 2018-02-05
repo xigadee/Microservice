@@ -78,11 +78,11 @@ namespace Xigadee
 
                 Channel channel = PayloadOutgoingRedirectChecks(payload);
 
-                PayloadOutgoingSecurity(payload);
+                PayloadPack(payload);
 
                 //No, we want to send the message externally.
                 List<ISender> messageSenders = null;
-                //Get the supported message handler
+                //Get the supported message senders
                 if (channel != null && !mMessageSenderMap.TryGetValue(channel.Id, out messageSenders))
                     messageSenders = MessageSenderResolve(payload);
 

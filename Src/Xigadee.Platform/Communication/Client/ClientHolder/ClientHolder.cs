@@ -192,7 +192,7 @@ namespace Xigadee
         /// <summary>
         /// This container is used to serialize and deserialize messaging payloads.
         /// </summary>
-        public IServiceHandlerContainer ServiceHandlers
+        public IServiceHandlers ServiceHandlers
         {
             get;
             set;

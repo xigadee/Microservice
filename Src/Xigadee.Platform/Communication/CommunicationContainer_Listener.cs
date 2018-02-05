@@ -288,7 +288,7 @@ namespace Xigadee
                 mClientCollection.QueueTimeLog(clientId, payload.Message.EnqueuedTimeUTC);
 
                 //Verify the incoming payload with the security container.
-                PayloadIncomingSecurity(payload);
+                PayloadUnpack(payload);
 
                 //Do we need to redirect the payload based on the redirect/rewrite rules.
                 PayloadIncomingRedirectCheck(payload);

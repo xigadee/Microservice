@@ -306,7 +306,7 @@ namespace Xigadee
         /// <summary>
         /// This container is used to contain the service handler collection.
         /// </summary>
-        public IServiceHandlerContainer ServiceHandlers
+        public IServiceHandlers ServiceHandlers
         {
             get;
             set;

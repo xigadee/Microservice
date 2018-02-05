@@ -142,7 +142,7 @@ namespace Xigadee
         /// <summary>
         /// This is the system wide serializer.
         /// </summary>
-        public IServiceHandlerContainer ServiceHandlers { get; set; }
+        public IServiceHandlers ServiceHandlers { get; set; }
         #endregion
 
         /// <summary>

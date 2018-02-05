@@ -15,7 +15,7 @@
         /// <param name="originatorId">This is the Microservice identifiers.</param>
         /// <param name="outgoingRequest">This is the outgoing request initiator.</param>
         public CommandContextBase(
-              IServiceHandlerContainer serviceHandlers
+              IServiceHandlers serviceHandlers
             , IDataCollection collector
             , ISharedService sharedServices
             , MicroserviceId originatorId
@@ -30,7 +30,7 @@
         /// <summary>
         /// The service handlers container.
         /// </summary>
-        public IServiceHandlerContainer ServiceHandlers { get; }
+        public IServiceHandlers ServiceHandlers { get; }
         /// <summary>
         /// This is the data collector.
         /// </summary>

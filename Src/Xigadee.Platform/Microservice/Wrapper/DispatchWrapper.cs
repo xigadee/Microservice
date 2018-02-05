@@ -15,7 +15,7 @@ namespace Xigadee
         /// <param name="executeOrEnqueue">The execute or enqueue action.</param>
         /// <param name="getStatus">The get status function.</param>
         /// <param name="traceEnabled">if set to <c>true</c> trace is enabled for payloads.</param>
-        protected internal DispatchWrapper(IServiceHandlerContainer serviceHandlers, Action<TransmissionPayload, string> executeOrEnqueue, Func<ServiceStatus> getStatus, bool traceEnabled)
+        protected internal DispatchWrapper(IServiceHandlers serviceHandlers, Action<TransmissionPayload, string> executeOrEnqueue, Func<ServiceStatus> getStatus, bool traceEnabled)
             : base(getStatus)
         {
             Name = GetType().Name;
@@ -32,7 +32,7 @@ namespace Xigadee
         /// <summary>
         /// Gets the serialization container.
         /// </summary>
-        public IServiceHandlerContainer ServiceHandlers { get; }
+        public IServiceHandlers ServiceHandlers { get; }
         /// <summary>
         /// Gets the execute or enqueue action.
         /// </summary>

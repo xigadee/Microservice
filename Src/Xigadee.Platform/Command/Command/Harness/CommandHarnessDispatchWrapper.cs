@@ -10,7 +10,7 @@ namespace Xigadee
     public class CommandHarnessDispatchWrapper : DispatchWrapper, ICommandHarnessDispath
     {
         internal CommandHarnessDispatchWrapper(CommandPolicy policy
-            , IServiceHandlerContainer serviceHandlers
+            , IServiceHandlers serviceHandlers
             , Action<TransmissionPayload, string> executeOrEnqueue
             , Func<ServiceStatus> getStatus
             , bool traceEnabled

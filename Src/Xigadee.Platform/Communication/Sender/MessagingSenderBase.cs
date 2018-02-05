@@ -44,8 +44,11 @@ namespace Xigadee
             try
             {
                 client = ClientResolve(payload.Message.ChannelPriority);
+
                 start = client.StatisticsInternal.ActiveIncrement();
+
                 await client.Transmit(payload);
+
                 payload.TraceWrite($"Sent: {client.Name}", "MessagingSenderBase/ProcessMessage");
             }
             catch (Exception ex)

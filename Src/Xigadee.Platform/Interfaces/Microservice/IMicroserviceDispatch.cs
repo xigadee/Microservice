@@ -14,6 +14,6 @@
         /// <summary>
         /// Gets the service handler container.
         /// </summary>
-        IServiceHandlerContainer ServiceHandlers { get; }
+        IServiceHandlers ServiceHandlers { get; }
     }
 }

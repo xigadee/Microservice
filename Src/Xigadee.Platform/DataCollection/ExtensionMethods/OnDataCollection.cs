@@ -41,7 +41,7 @@ namespace Xigadee
             /// <param name="originatorId">This is the Microservice identifiers.</param>
             /// <param name="outgoingRequest">This is the outgoing request initiator.</param>
             public OnDataCollectionContext(
-              IServiceHandlerContainer serviceHandlers
+              IServiceHandlers serviceHandlers
             , IDataCollection collector
             , ISharedService sharedServices
             , MicroserviceId originatorId
@@ -73,7 +73,7 @@ namespace Xigadee
             /// <summary>
             /// This is the system wide Payload serializer.
             /// </summary>
-            public IServiceHandlerContainer ServiceHandlers { get; set; }
+            public IServiceHandlers ServiceHandlers { get; set; }
 
             /// <summary>
             /// This method loads the support.

@@ -9,6 +9,11 @@ namespace Xigadee
     public interface IListener : IMessaging
     {
         /// <summary>
+        /// This is a list of active clients.
+        /// </summary>
+        IEnumerable<ClientHolder> Clients { get; }
+
+        /// <summary>
         /// This method is used to change the supported filters. This happens when a command starts or stops in the microservice.
         /// </summary>
         /// <param name="supported"></param>

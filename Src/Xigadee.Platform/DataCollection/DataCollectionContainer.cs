@@ -144,7 +144,7 @@ namespace Xigadee
         /// <summary>
         /// This is the system wide service handler collection.
         /// </summary>
-        public IServiceHandlerContainer ServiceHandlers { get; set; } 
+        public IServiceHandlers ServiceHandlers { get; set; } 
         #endregion
 
         #region Flush()

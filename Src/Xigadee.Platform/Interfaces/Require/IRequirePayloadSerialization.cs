@@ -8,6 +8,6 @@
         /// <summary>
         /// This is the system wide service handlers.
         /// </summary>
-        IServiceHandlerContainer ServiceHandlers { get; set; }
+        IServiceHandlers ServiceHandlers { get; set; }
     }
 }

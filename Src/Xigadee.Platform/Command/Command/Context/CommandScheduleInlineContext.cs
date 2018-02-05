@@ -20,7 +20,7 @@ namespace Xigadee
         /// <param name="originatorId">This is the Microservice identifiers.</param>
         /// <param name="outgoingRequest">This is the outgoing request initiator.</param>
         public CommandScheduleInlineContext(Schedule schedule, CancellationToken token
-            , IServiceHandlerContainer serviceHandlers
+            , IServiceHandlers serviceHandlers
             , IDataCollection collector
             , ISharedService sharedServices
             , MicroserviceId originatorId

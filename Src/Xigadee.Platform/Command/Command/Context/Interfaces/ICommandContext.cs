@@ -16,7 +16,7 @@
         /// <summary>
         /// Gets the service handers.
         /// </summary>
-        IServiceHandlerContainer ServiceHandlers { get; }
+        IServiceHandlers ServiceHandlers { get; }
         /// <summary>
         /// Gets the shared services collection.
         /// </summary>

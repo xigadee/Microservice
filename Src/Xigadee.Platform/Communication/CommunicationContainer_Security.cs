@@ -29,12 +29,12 @@ namespace Xigadee
 {
     public partial class CommunicationContainer
     {
-        #region PayloadIncomingSecurityCheck(TransmissionPayload payload)
+        #region PayloadUnpack(TransmissionPayload payload)
         /// <summary>
         /// This method validates the payload with the security container.
         /// </summary>
         /// <param name="payload">The incoming payload.</param>
-        protected virtual void PayloadIncomingSecurity(TransmissionPayload payload)
+        protected virtual void PayloadUnpack(TransmissionPayload payload)
         { 
             //Try and resolve the channel.
             Channel channel = null;
@@ -50,7 +50,7 @@ namespace Xigadee
         /// This method validates the payload with the security container.
         /// </summary>
         /// <param name="payload">The incoming payload.</param>
-        protected virtual void PayloadOutgoingSecurity(TransmissionPayload payload)
+        protected virtual void PayloadPack(TransmissionPayload payload)
         {
             //Try and resolve the channel.
             Channel channel = null;

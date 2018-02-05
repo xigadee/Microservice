@@ -12,11 +12,11 @@ namespace Xigadee
     {
         #region Static methods
         /// <summary>
-        /// This static method sets the priorty channels for the integers passed at their default settings.
+        /// This static method sets the priority channels for the integers passed at their default settings.
         /// By default, only channel 0 will support rate limiting. The default processing time is set to 4 minutes.
         /// </summary>
         /// <param name="priority">The priority list, i.e. 0,1</param>
-        /// <returns>Returns a list of configs.</returns>
+        /// <returns>Returns a list of partition configurations.</returns>
         public static IEnumerable<ListenerPartitionConfig> Init(params int[] priority)
         {
             foreach(int p in priority)

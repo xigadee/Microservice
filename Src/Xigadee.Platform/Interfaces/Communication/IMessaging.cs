@@ -5,13 +5,9 @@ namespace Xigadee
     /// <summary>
     /// This is the base interface shared by both listeners and senders.
     /// </summary>
-    public interface IMessaging: IRequireServiceHandlers, IRequireServiceOriginator
-        , IRequireDataCollector, IRequireSharedServices
+    public interface IMessaging: IRequireServiceHandlers, IRequireServiceOriginator, IRequireDataCollector, IRequireSharedServices
     {
-        /// <summary>
-        /// This is a list of active clients.
-        /// </summary>
-        IEnumerable<ClientHolder> Clients { get; }
+
 
         /// <summary>
         /// This is the channel id for the messaging agent.
