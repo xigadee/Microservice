@@ -52,7 +52,7 @@ namespace Xigadee
             , bool boundaryLoggingActive = true)
         {
             base.Configure(configuration, channelId, boundaryLoggingActive);
-            Service.MappingChannelId = mappingChannelId;
+            Service.ListenerMappingChannelId = mappingChannelId;
         }
 
         /// <summary>

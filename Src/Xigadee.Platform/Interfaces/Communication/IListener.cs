@@ -11,7 +11,7 @@ namespace Xigadee
         /// <summary>
         /// This is a list of active clients.
         /// </summary>
-        IEnumerable<ClientHolder> Clients { get; }
+        IEnumerable<ClientHolder> ListenerClients { get; }
 
         /// <summary>
         /// This method is used to change the supported filters. This happens when a command starts or stops in the microservice.
@@ -22,7 +22,7 @@ namespace Xigadee
         /// <summary>
         /// This is the channel id that incoming messages will be mapped to.
         /// </summary>
-        string MappingChannelId { get; set;}
+        string ListenerMappingChannelId { get; set;}
 
         /// <summary>
         /// This is the list of resource profiles attached to the listener.
@@ -38,17 +38,17 @@ namespace Xigadee
         /// <summary>
         /// This boolean property determines whether the listener supports polling.
         /// </summary>
-        bool PollSupported { get; }
+        bool ListenerPollSupported { get; }
 
         /// <summary>
         /// This boolean property determines whether the listener requires a poll
         /// </summary>
-        bool PollRequired { get; }
+        bool ListenerPollRequired { get; }
 
         /// <summary>
         /// This is the async poll.
         /// </summary>
         /// <returns>Async.</returns>
-        Task Poll();
+        Task ListenerPoll();
     }
 }

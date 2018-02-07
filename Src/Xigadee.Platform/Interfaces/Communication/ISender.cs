@@ -27,13 +27,13 @@ namespace Xigadee
         /// <summary>
         /// This is a list of active clients.
         /// </summary>
-        IEnumerable<ClientHolder> Clients { get; }
+        IEnumerable<ClientHolder> ListenerClients { get; }
 
         /// <summary>
-        /// Dispatches the message.
+        /// Transmits the message.
         /// </summary>
         /// <param name="message">The message.</param>
-        Task ProcessMessage(TransmissionPayload message);
+        Task SenderTransmit(TransmissionPayload message);
 
         /// <summary>
         /// This method returns true if the sender supports the channel.

@@ -94,10 +94,10 @@ namespace Xigadee
             base.StatisticsRecalculate(stats);
 
             if (mSenders != null)
-                stats.Senders = mSenders.SelectMany((c) => c.Clients).Select((l) => l.StatisticsRecalculated).ToList();
+                stats.Senders = mSenders.SelectMany((c) => c.ListenerClients).Select((l) => l.StatisticsRecalculated).ToList();
 
             if (mListener != null)
-                stats.Listeners = mListener.SelectMany((c) => c.Clients).Select((l) => l.StatisticsRecalculated).ToList();
+                stats.Listeners = mListener.SelectMany((c) => c.ListenerClients).Select((l) => l.StatisticsRecalculated).ToList();
 
             if (mClientCollection != null)
                 stats.Active = mClientCollection.StatisticsRecalculated;
@@ -169,14 +169,14 @@ namespace Xigadee
                     return;
 
                 if ((mListenerPoll?.Count ?? 0) > 0)
-                    ProcessListeners();
+                    ProcessListenerPolls();
 
                 //Do the past due scan to process the lower priority clients that have overdue polls first.
                 if (mPolicy.ListenerClientPollAlgorithm.SupportPassDueScan)
-                    ProcessClients(true);
+                    ProcessListenerClients(true);
 
                 //Process the standard client logic poll.
-                ProcessClients(false);
+                ProcessListenerClients(false);
             }
             finally
             {

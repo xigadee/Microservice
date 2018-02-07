@@ -45,7 +45,7 @@ namespace Xigadee
             try
             {
                 //Create a list of listeners that require a frequent poll.
-                mListenerPoll = mListener.Where((l) => l.PollSupported).ToList();
+                mListenerPoll = mListener.Where((l) => l.ListenerPollSupported).ToList();
 
                 //Start each of the listeners.
                 mListener.ForEach(l => ServiceStart(l));
@@ -106,70 +106,66 @@ namespace Xigadee
         /// <param name="rebuild">This boolean property specifies whether the collection should be rebuilt or reordered. True rebuilds the collection.</param>
         private Task ListenersPriorityRecalculate(bool rebuild = true)
         {
-            if (Status != ServiceStatus.Running)
-                return Task.FromResult(0);
-
-            try
-            {
-                if (!rebuild && mClientCollection != null)
+            if (Status == ServiceStatus.Running)
+                try
                 {
-                    mClientCollection.Reprioritise();
-                    Collector?.LogMessage(LoggingLevel.Info, $"ListenersPriorityRecalculate completed {mListenersPriorityIteration}.");
+                    if (!rebuild && mClientCollection != null)
+                    {
+                        mClientCollection.Reprioritise();
+                    }
+                    else
+                    {
+                        //We do an atomic switch to add in a new priority list.
+                        var newColl = new ClientPriorityCollection(
+                              mListener
+                            , mResourceTracker
+                            , mPolicy.ListenerClientPollAlgorithm
+                            , Interlocked.Increment(ref mListenersPriorityIteration)
+                            );
+
+                        //Switch out the old collection for the new collection atomically
+                        var oldColl = Interlocked.Exchange(ref mClientCollection, newColl);
+
+                        //Close the old collection, note that it will be null the first time.
+                        oldColl?.Close();
+                    }
+
+                    Collector?.LogMessage(LoggingLevel.Info, $"{nameof(ListenersPriorityRecalculate)} completed {mListenersPriorityIteration}.");
                 }
-                else
+                catch (Exception ex)
                 {
-                    //We do an atomic switch to add in a new priority list.
-                    var newColl = new ClientPriorityCollection(
-                          mListener
-                        , mResourceTracker
-                        , mPolicy.ListenerClientPollAlgorithm
-                        , Interlocked.Increment(ref mListenersPriorityIteration)
-                        );
-
-                    //Switch out the old collection for the new collection atomically
-                    var oldColl = Interlocked.Exchange(ref mClientCollection, newColl);
-
-                    //Close the old collection, note that it will be null the first time.
-                    oldColl?.Close();
-
-                    Collector?.LogMessage(LoggingLevel.Info, $"ListenersPriorityRebuild completed {mListenersPriorityIteration}.");
+                    Collector?.LogException($"{nameof(ListenersPriorityRecalculate)} failed.", ex);
                 }
-            }
-            catch (Exception ex)
-            {
-                Collector?.LogException("ListenersPriorityCalculate failed.", ex);
-            }
 
             return Task.FromResult(0);
         }
         #endregion
 
-        #region ProcessListeners()
+        #region ProcessListenerPolls()
         /// <summary>
         /// This method processes the listeners that require a frequent poll.
         /// </summary>
-        protected void ProcessListeners()
+        protected void ProcessListenerPolls()
         {
             try
             {
                 mListenerPoll
-                    .Where((l) => l.PollRequired)
+                    .Where((l) => l.ListenerPollRequired)
                     .ForEach((l) => TrackerSubmitFromListener(l));
             }
             catch (Exception ex)
             {
                 Collector?.LogException("CommunicationContainer/ProcessListeners", ex);
             }
-        } 
+        }
         #endregion
-
-        #region ProcessClients(bool pastDue)
+        #region ProcessListenerClients(bool pastDue)
         /// <summary>
         /// This method processes the active clients in order of their priority an allocates available slots to them.
         /// </summary>
         /// <param name="pastDue">A boolean that specifies to the polling logic to poll any clients that have waited longer then the maximum time. 
         /// This stops higher priority clients hogging all the processing bandwidth.</param>
-        protected void ProcessClients(bool pastDue)
+        protected void ProcessListenerClients(bool pastDue)
         {
             try
             {
@@ -212,7 +208,7 @@ namespace Xigadee
             {
                 var currentContext = ((IListener)tracker.Context);
 
-                await currentContext.Poll();
+                await currentContext.ListenerPoll();
             };
 
             tracker.ExecuteComplete = (tr, failed, ex) =>

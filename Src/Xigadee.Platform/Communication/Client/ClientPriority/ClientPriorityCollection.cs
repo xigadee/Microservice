@@ -67,10 +67,10 @@ namespace Xigadee
             //Get the list of active clients.
             mListenerClients = new Dictionary<Guid, ClientPriorityHolder>();
             foreach (var listener in listeners)
-                if (listener.Clients != null)
-                    foreach (var client in listener.Clients)
+                if (listener.ListenerClients != null)
+                    foreach (var client in listener.ListenerClients)
                     {
-                        var holder = new ClientPriorityHolder(resourceTracker, client, listener.MappingChannelId, algorithm);
+                        var holder = new ClientPriorityHolder(resourceTracker, client, listener.ListenerMappingChannelId, algorithm);
                         mListenerClients.Add(holder.Id, holder);
                     }
 
@@ -122,7 +122,7 @@ namespace Xigadee
 
         #region Reprioritise()
         /// <summary>
-        /// This method reprioritises the client poll chain based on their calculated priority.
+        /// This method re-prioritises the client poll chain based on their calculated priority.
         /// </summary>
         public void Reprioritise()
         {

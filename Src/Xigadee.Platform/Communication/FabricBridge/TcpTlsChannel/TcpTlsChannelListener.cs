@@ -104,13 +104,13 @@ namespace Xigadee
         /// <summary>
         /// This boolean property specifies that the listener requires polling support.
         /// </summary>
-        public override bool PollSupported { get { return true; } } 
+        public override bool ListenerPollSupported { get { return true; } } 
         #endregion
         #region PollRequired
         /// <summary>
         /// This property determines whether the listener requires a poll.
         /// </summary>
-        public override bool PollRequired
+        public override bool ListenerPollRequired
         {
             get
             {
@@ -136,7 +136,7 @@ namespace Xigadee
         /// This method returns a job that can be used to monitor communication.
         /// </summary>
         /// <returns>Async.</returns>
-        public override async Task Poll()
+        public override async Task ListenerPoll()
         {
             //Firstly, do we have any awaiting clients to process.
             if (Status == ServiceStatus.Running && (mTcpListener?.Pending() ?? false))

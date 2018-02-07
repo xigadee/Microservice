@@ -32,12 +32,12 @@ namespace Xigadee
         where H : ClientHolder<C, M>, new()
         where C : class
     {
-        #region ProcessMessage(TransmissionPayload payload)
+        #region SenderTransmit(TransmissionPayload payload)
         /// <summary>
         /// This method resolves the client and processes the message.
         /// </summary>
         /// <param name="payload">The payload to transmit.</param>
-        public virtual async Task ProcessMessage(TransmissionPayload payload)
+        public virtual async Task SenderTransmit(TransmissionPayload payload)
         {
             int? start = null;
             H client = null;

@@ -147,25 +147,13 @@ namespace Xigadee
         /// <summary>
         /// This is the same id as the underlying client.
         /// </summary>
-        public Guid ClientId
-        {
-            get
-            {
-                return Client.Id;
-            }
-        }
+        public Guid ClientId => Client.Id;
         #endregion
         #region IsActive
         /// <summary>
         /// A shortcut that defines whether the client is active
         /// </summary>
-        public bool IsActive
-        {
-            get
-            {
-                return Client.IsActive;
-            }
-        } 
+        public bool IsActive => Client.IsActive;
         #endregion
 
         #region --> IsReserved

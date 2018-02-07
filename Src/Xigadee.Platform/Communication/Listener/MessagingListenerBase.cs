@@ -41,7 +41,7 @@ namespace Xigadee
         /// </summary>
         public virtual void Update(List<MessageFilterWrapper> supported)
         {
-            var newList = supported.Where((m) => string.Equals(m.Header.ChannelId, (MappingChannelId ?? ChannelId), StringComparison.InvariantCultureIgnoreCase)).ToList();
+            var newList = supported.Where((m) => string.Equals(m.Header.ChannelId, (ListenerMappingChannelId ?? ChannelId), StringComparison.InvariantCultureIgnoreCase)).ToList();
             var oldList = mSupportedMessageTypes;
 
             ClientsValidate(oldList, newList);
@@ -59,7 +59,7 @@ namespace Xigadee
 
             client.MessageMaxProcessingTime = partition.PayloadMaxProcessingTime;
             client.FabricMaxMessageLock = partition.FabricMaxMessageLock;
-            client.MappingChannelId = MappingChannelId;
+            client.MappingChannelId = ListenerMappingChannelId;
 
             client.SupportsRateLimiting = partition.SupportsRateLimiting;
             client.Weighting = partition.PriorityWeighting;
@@ -82,11 +82,11 @@ namespace Xigadee
         }
         #endregion
 
-        #region MappingChannelId
+        #region ListenerMappingChannelId
         /// <summary>
         /// This is the mapping channel id. It is used to map the incoming channel to a new channel when required.
         /// </summary>
-        public string MappingChannelId
+        public string ListenerMappingChannelId
         {
             get;set;
         }
@@ -223,16 +223,16 @@ namespace Xigadee
         /// <summary>
         /// This boolean property determines whether the listener requires polling support.
         /// </summary>
-        public virtual bool PollSupported { get; } = false;
+        public virtual bool ListenerPollSupported { get; } = false;
 
         /// <summary>
         /// This boolean property determines whether the listener require a poll.
         /// </summary>
-        public virtual bool PollRequired { get; } = false;
+        public virtual bool ListenerPollRequired { get; } = false;
         /// <summary>
         /// This is the async poll function. This will be called if PollRequired is set to true.
         /// </summary>
-        public virtual Task Poll()
+        public virtual Task ListenerPoll()
         {
             throw new NotImplementedException("Poll is not supported.");
         }

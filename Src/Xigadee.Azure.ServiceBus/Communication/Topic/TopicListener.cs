@@ -130,7 +130,7 @@ namespace Xigadee
                 list.Add(TopicHelper.SqlFilterQuery(new MessageFilterWrapper(servMess, OriginatorId.ExternalServiceId)));
             }
             else
-                list = TopicHelper.SqlFilter(mSupportedMessageTypes, ChannelId, MappingChannelId);
+                list = TopicHelper.SqlFilter(mSupportedMessageTypes, ChannelId, ListenerMappingChannelId);
 
             return list;
         }

@@ -60,7 +60,7 @@ namespace Xigadee
         /// <summary>
         /// This method returns the clients created for the messaging service.
         /// </summary>
-        public IEnumerable<ClientHolder> Clients
+        public IEnumerable<ClientHolder> ListenerClients
         {
             get
             {

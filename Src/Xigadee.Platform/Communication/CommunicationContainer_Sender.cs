@@ -99,7 +99,7 @@ namespace Xigadee
                     payload.Message.OriginatorServiceId = OriginatorId.ExternalServiceId;
 
                 //Send the message to the supported senders.
-                await Task.WhenAll(messageSenders.Select(s => s.ProcessMessage(payload)));
+                await Task.WhenAll(messageSenders.Select(s => s.SenderTransmit(payload)));
             }
             catch (Exception ex)
             {
