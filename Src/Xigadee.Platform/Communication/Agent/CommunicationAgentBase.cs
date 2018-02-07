@@ -35,6 +35,8 @@ namespace Xigadee
 
         public virtual IEnumerable<ClientHolder> ListenerClients { get; }
 
+        public virtual IEnumerable<ClientHolder> SenderClients { get; }
+
         /// <summary>
         /// This is the channel id that incoming messages will be mapped to.
         /// </summary>
@@ -66,13 +68,43 @@ namespace Xigadee
         }
         #endregion
 
+        #region SenderTransmit(TransmissionPayload payload)
         /// <summary>
-        /// Transmits the outgoing message.
+        /// This method resolves the client and processes the message.
         /// </summary>
-        /// <param name="message">The message.</param>
-        /// <returns>This is an async message.</returns>
-        public abstract Task SenderTransmit(TransmissionPayload message);
+        /// <param name="payload">The payload to transmit.</param>
+        public virtual async Task SenderTransmit(TransmissionPayload payload)
+        {
+            int? start = null;
+            ClientHolder client = null;
+            try
+            {
+                client = SenderClientResolve(payload.Message.ChannelPriority);
 
+                start = client.StatisticsInternal.ActiveIncrement();
+
+                await client.Transmit(payload);
+
+                payload.TraceWrite($"Sent: {client.Name}", "MessagingSenderBase/ProcessMessage");
+            }
+            catch (Exception ex)
+            {
+                LogExceptionLocation($"{nameof(SenderTransmit)} (Unhandled)", ex);
+                //OK, not sure what happened here, so we need to throw the exception.
+                payload.TraceWrite($"Exception: {ex.Message}", "MessagingSenderBase/ProcessMessage");
+                if (client != null)
+                    client.StatisticsInternal.ErrorIncrement();
+                throw;
+            }
+            finally
+            {
+                if (client != null && start.HasValue)
+                    client.StatisticsInternal.ActiveDecrement(start.Value);
+            }
+        } 
+        #endregion
+
+        protected abstract ClientHolder SenderClientResolve(int priority);
 
         #region SupportsChannel(string channel)
         /// <summary>
@@ -101,6 +133,7 @@ namespace Xigadee
         }
         #endregion
 
+        #region ListenerClientsValidate(List<MessageFilterWrapper> oldList, List<MessageFilterWrapper> newList)
         /// <summary>
         /// This method is used to revalidate the clients when a message type is enabled or disabled, and stop or start the appropriate clients.
         /// </summary>
@@ -133,7 +166,9 @@ namespace Xigadee
                 if (deltaNew.Count > 0 || deltaOld.Count > 0)
                     ListenerClients.ForEach((c) => ListenerClientValidate(c, newList));
             }
-        }
+        } 
+        #endregion
+
         /// <summary>
         /// This method triggers a revalidates of the particular client.
         /// </summary>
@@ -163,6 +198,18 @@ namespace Xigadee
         }
         #endregion
 
+        #region LogExceptionLocation(string method)
+        /// <summary>
+        /// This helper method provides a class name and method name for debugging exceptions. 
+        /// </summary>
+        /// <param name="method">The method.</param>
+        /// <param name="ex">The exception.</param>
+        /// <returns>A combination string.</returns>
+        protected void LogExceptionLocation(string method, Exception ex)
+        {
+            Collector?.LogException($"{GetType().Name}/{method}", ex);
+        }
+        #endregion
         /// <summary>
         /// This is the system wide service handlers.
         /// </summary>

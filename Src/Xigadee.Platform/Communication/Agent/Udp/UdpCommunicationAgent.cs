@@ -26,5 +26,10 @@ namespace Xigadee
         {
             throw new NotImplementedException();
         }
+
+        protected override ClientHolder SenderClientResolve(int priority)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

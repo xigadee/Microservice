@@ -346,6 +346,7 @@ namespace Xigadee
         /// This helper method provides a class name and method name for debugging exceptions. 
         /// </summary>
         /// <param name="method">The method.</param>
+        /// <param name="ex">The exception.</param>
         /// <returns>A combination string.</returns>
         protected void LogExceptionLocation(string method, Exception ex)
         {
