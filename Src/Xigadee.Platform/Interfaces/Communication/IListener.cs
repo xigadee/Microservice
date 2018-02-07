@@ -28,7 +28,7 @@ namespace Xigadee
         /// This is the list of resource profiles attached to the listener.
         /// Resource profiles are use to implement rate limiting for incoming requests.
         /// </summary>
-        List<ResourceProfile> ResourceProfiles {get;set;}
+        List<ResourceProfile> ListenerResourceProfiles {get;set;}
 
         /// <summary>
         /// This contains the listener priority partitions.

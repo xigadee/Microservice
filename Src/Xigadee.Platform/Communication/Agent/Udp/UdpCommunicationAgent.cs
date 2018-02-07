@@ -7,6 +7,7 @@ namespace Xigadee
 {
     public class UdpCommunicationAgent: CommunicationAgentBase<StatusBase>
     {
+
         public override Task SenderTransmit(TransmissionPayload message)
         {
             throw new NotImplementedException();

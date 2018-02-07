@@ -30,7 +30,7 @@ namespace Xigadee
         /// <summary>
         /// This is the list of resource profiles that the Listener can be throttled on.
         /// </summary>
-        public List<ResourceProfile> ResourceProfiles { get; set; } = new List<ResourceProfile>();
+        public List<ResourceProfile> ListenerResourceProfiles { get; set; } = new List<ResourceProfile>();
         #endregion
 
         #region Update(List<MessageFilterWrapper> supported)
@@ -155,7 +155,7 @@ namespace Xigadee
                 {
                     var client = ClientCreate(partition);
 
-                    client.ResourceProfiles = ResourceProfiles;
+                    client.ResourceProfiles = ListenerResourceProfiles;
 
                     mClients.AddOrUpdate(partition.Priority, client, (i,h) => h);
 

@@ -52,7 +52,7 @@ namespace Xigadee
                 listener.ChannelId = channel.Id;
                 listener.PriorityPartitions = channel.Partitions.Cast<ListenerPartitionConfig>().ToList();
                 listener.BoundaryLoggingActive = channel.BoundaryLoggingActive;
-                listener.ResourceProfiles = channel.ResourceProfiles;
+                listener.ListenerResourceProfiles = channel.ResourceProfiles;
             }
 
             action?.Invoke(listener);
