@@ -1,15 +1,45 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public abstract partial class CommunicationAgentBase<S>
+    public abstract partial class CommunicationAgentBase<S>: ISender
     {
-        public virtual IEnumerable<ClientHolder> SenderClients { get; }
+        /// <summary>
+        /// This is the client collection.
+        /// </summary>
+        protected ConcurrentDictionary<int, ClientHolder> mSenderClients = new ConcurrentDictionary<int, ClientHolder>();
 
-        #region SenderTransmit(TransmissionPayload payload)
+        public virtual IEnumerable<ClientHolder> SenderClients => mSenderClients.Values;
+
+        public List<SenderPartitionConfig> SenderPriorityPartitions { get;set; }
+
+        protected abstract ClientHolder SenderClientResolve(int priority);
+
+
+        #region SenderSettingsValidate()
+        /// <summary>
+        /// This method is called at start-up and can be used to validate any sender specific settings.
+        /// </summary>
+        protected virtual void SenderSettingsValidate()
+        {
+
+        } 
+        #endregion
+
+        public virtual void SenderStart()
+        {
+
+        }
+        public virtual void SenderStop()
+        {
+
+        }
+
+        #region --> SenderTransmit(TransmissionPayload payload)
         /// <summary>
         /// This method resolves the client and processes the message.
         /// </summary>
@@ -45,6 +75,5 @@ namespace Xigadee
         }
         #endregion
 
-        protected abstract ClientHolder SenderClientResolve(int priority);
     }
 }

@@ -27,7 +27,7 @@ namespace Xigadee
         /// <summary>
         /// This is a list of active clients.
         /// </summary>
-        IEnumerable<ClientHolder> ListenerClients { get; }
+        IEnumerable<ClientHolder> SenderClients { get; }
 
         /// <summary>
         /// Transmits the message.
@@ -40,12 +40,12 @@ namespace Xigadee
         /// </summary>
         /// <param name="channel">The channelId to validate.</param>
         /// <returns>Returns true if the sender can handle the channel.</returns>
-        bool SupportsChannel(string channel);
+        bool SenderSupportsChannel(string channel);
 
         /// <summary>
         /// This contains the sender partitions.
         /// </summary>
-        List<SenderPartitionConfig> PriorityPartitions { get; set; }
+        List<SenderPartitionConfig> SenderPriorityPartitions { get; set; }
 
     }
 

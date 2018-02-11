@@ -50,22 +50,22 @@ namespace Xigadee
             }
         }
         
-        /// <summary>
-        /// This is the default client create logic for the manual sender.
-        /// </summary>
-        /// <param name="partition">The partition collection.</param>
-        /// <returns>
-        /// Returns the client.
-        /// </returns>
-        protected override ManualChannelClientHolder ClientCreate(SenderPartitionConfig partition)
-        {
-            var client = base.ClientCreate(partition);
+        ///// <summary>
+        ///// This is the default client create logic for the manual sender.
+        ///// </summary>
+        ///// <param name="partition">The partition collection.</param>
+        ///// <returns>
+        ///// Returns the client.
+        ///// </returns>
+        //protected override ManualChannelClientHolder ClientCreate(SenderPartitionConfig partition)
+        //{
+        //    var client = base.ClientCreate(partition);
 
-            client.Name = mPriorityClientNamer(ChannelId, partition.Priority);
+        //    client.Name = mPriorityClientNamer(ChannelId, partition.Priority);
 
-            client.IncomingAction = ProcessInvoke;
+        //    client.IncomingAction = ProcessInvoke;
 
-            return client;
-        }
+        //    return client;
+        //}
     }
 }

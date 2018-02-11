@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class UdpCommunicationAgent: CommunicationAgentBase<StatusBase>
+    public class UdpCommunicationAgent: CommunicationAgentBase
     {
+        public override CommunicationAgentCapabilities Capabilities { get { return CommunicationAgentCapabilities.Bidirectional; } }
 
         public override Task SenderTransmit(TransmissionPayload message)
         {

@@ -38,24 +38,24 @@ namespace Xigadee
             where C: IPipelineChannelOutgoing<IPipeline>
             where S: ISender
         {
-            Channel channel = cpipe.ToChannel(ChannelDirection.Outgoing);
+            //Channel channel = cpipe.ToChannel(ChannelDirection.Outgoing);
 
-            if (channel.InternalOnly)
-                throw new ChannelInternalOnlyException(channel.Id, channel.Direction);
+            //if (channel.InternalOnly)
+            //    throw new ChannelInternalOnlyException(channel.Id, channel.Direction);
 
-            if (setFromChannelProperties)
-            {
-                if (channel.Partitions == null)
-                    throw new ChannelPartitionConfigNotSetException(channel.Id);
+            //if (setFromChannelProperties)
+            //{
+            //    if (channel.Partitions == null)
+            //        throw new ChannelPartitionConfigNotSetException(channel.Id);
 
-                sender.ChannelId = channel.Id;
-                sender.PriorityPartitions = channel.Partitions.Cast<SenderPartitionConfig>().ToList();
-                sender.BoundaryLoggingActive = channel.BoundaryLoggingActive;
-            }
+            //    sender.ChannelId = channel.Id;
+            //    sender.ListenerPriorityPartitions = channel.Partitions.Cast<SenderPartitionConfig>().ToList();
+            //    sender.BoundaryLoggingActive = channel.BoundaryLoggingActive;
+            //}
 
-            action?.Invoke(sender);
+            //action?.Invoke(sender);
 
-            cpipe.Pipeline.Service.Communication.RegisterSender(sender);
+            //cpipe.Pipeline.Service.Communication.RegisterSender(sender);
 
             return cpipe;
         }

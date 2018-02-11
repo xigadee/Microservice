@@ -50,7 +50,7 @@ namespace Xigadee
                     throw new ChannelPartitionConfigNotSetException(channel.Id);
 
                 listener.ChannelId = channel.Id;
-                listener.PriorityPartitions = channel.Partitions.Cast<ListenerPartitionConfig>().ToList();
+                listener.ListenerPriorityPartitions = channel.Partitions.Cast<ListenerPartitionConfig>().ToList();
                 listener.BoundaryLoggingActive = channel.BoundaryLoggingActive;
                 listener.ListenerResourceProfiles = channel.ResourceProfiles;
             }

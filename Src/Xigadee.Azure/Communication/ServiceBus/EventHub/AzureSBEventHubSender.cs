@@ -35,7 +35,7 @@ namespace Xigadee
         /// </summary>
         public AzureSBEventHubSender() :base()
         {
-            PriorityPartitions = SenderPartitionConfig.Init(1).ToList();
+            SenderPriorityPartitions = SenderPartitionConfig.Init(1).ToList();
         } 
         #endregion
 

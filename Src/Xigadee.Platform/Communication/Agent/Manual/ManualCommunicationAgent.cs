@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class ManualCommunicationAgent: CommunicationAgentBase<StatusBase>
+    public class ManualCommunicationAgent: CommunicationAgentBase
     {
+        public override CommunicationAgentCapabilities Capabilities { get { return CommunicationAgentCapabilities.Bidirectional; } }
+
         public override Task SenderTransmit(TransmissionPayload message)
         {
             throw new NotImplementedException();

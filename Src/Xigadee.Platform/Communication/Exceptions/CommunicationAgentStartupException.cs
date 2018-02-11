@@ -29,14 +29,14 @@ namespace Xigadee
     /// <summary>
     /// This exception is used during start up when validating the messaging setting
     /// </summary>
-    public class StartupMessagingException:MessagingException
+    public class CommunicationAgentStartupException:MessagingException
     {
         /// <summary>
         /// This is the default constructor.
         /// </summary>
         /// <param name="property">The property that has caused the error.</param>
         /// <param name="message">The error message.</param>
-        public StartupMessagingException(string property, string message):base(message)
+        public CommunicationAgentStartupException(string property, string message):base(message)
         {
             Property = property;
         }
@@ -46,18 +46,4 @@ namespace Xigadee
         public string Property { get; }
     }
 
-    /// <summary>
-    /// This exception is used during start up when validating the messaging setting
-    /// </summary>
-    public class ClientsUndefinedMessagingException: MessagingException
-    {
-        /// <summary>
-        /// This is the default constructor.
-        /// </summary>
-        /// <param name="message">The error message.</param>
-        public ClientsUndefinedMessagingException(string message) : base(message)
-        {
-        }
-
-    }
 }

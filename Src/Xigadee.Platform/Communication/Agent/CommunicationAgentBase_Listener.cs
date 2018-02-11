@@ -1,20 +1,50 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public abstract partial class CommunicationAgentBase<S>
+    public abstract partial class CommunicationAgentBase<S>:IListener
     {
-        public virtual IEnumerable<ClientHolder> ListenerClients { get; }
+        /// <summary>
+        /// This is the client collection.
+        /// </summary>
+        protected ConcurrentDictionary<int, ClientHolder> mListenerClients = new ConcurrentDictionary<int, ClientHolder>();
+        /// <summary>
+        /// This is the default priority. 1 if present
+        /// </summary>
+        protected int? mDefaultPriority;
+        /// <summary>
+        /// This method is used to name the client based on the priority.
+        /// </summary>
+        protected Func<string, int, string> mPriorityClientNamer = (s, i) => string.Format("{0}{1}", s, i == 1 ? "" : i.ToString());
+
+        private int mClientStarted = 0;
+        private int mClientStopped = 0;
+
+
+        public List<ListenerPartitionConfig> ListenerPriorityPartitions { get; set; }
+
+        public virtual IEnumerable<ClientHolder> ListenerClients => mListenerClients.Values;
 
         public List<ResourceProfile> ListenerResourceProfiles { get; set; }
 
+        #region ListenerMappingChannelId
         /// <summary>
         /// This is the channel id that incoming messages will be mapped to.
         /// </summary>
         public string ListenerMappingChannelId { get; set; }
+        #endregion
+        #region ListenerSettingsValidate()
+        /// <summary>
+        /// This method is called at start-up and can be used to validate any listener specific settings.
+        /// </summary>
+        protected virtual void ListenerSettingsValidate()
+        {
+        } 
+        #endregion
 
         #region ListenerPoll
         /// <summary>
@@ -28,22 +58,19 @@ namespace Xigadee
         /// <summary>
         /// This is the async poll.
         /// </summary>
-        /// <returns>
-        /// Async.
-        /// </returns>
         public virtual Task ListenerPoll()
         {
             throw new NotSupportedException($"{nameof(ListenerPoll)} is not supported.");
         }
         #endregion
 
-        #region Update(List<MessageFilterWrapper> supported)
+        #region ListenerCommandsActiveChange(List<MessageFilterWrapper> supported)
         /// <summary>
         /// This method is called with the list of currently supported message type supported by the Microservice.
         /// This can be used to filter the incoming messages where this is supported by the transport mechanism.
         /// The client should decide whether it should be active based on this list.
         /// </summary>
-        public virtual void Update(List<MessageFilterWrapper> supported)
+        public virtual void ListenerCommandsActiveChange(List<MessageFilterWrapper> supported)
         {
             var newList = supported.Where((m) => string.Equals(m.Header.ChannelId, (ListenerMappingChannelId ?? ChannelId), StringComparison.InvariantCultureIgnoreCase)).ToList();
             var oldList = mSupportedMessageTypes;
@@ -51,7 +78,6 @@ namespace Xigadee
             ListenerClientsValidate(oldList, newList);
         }
         #endregion
-
         #region ListenerClientsValidate(List<MessageFilterWrapper> oldList, List<MessageFilterWrapper> newList)
         /// <summary>
         /// This method is used to revalidate the clients when a message type is enabled or disabled, and stop or start the appropriate clients.
@@ -98,5 +124,35 @@ namespace Xigadee
         protected abstract void ListenerClientsStart();
 
         protected abstract void ListenerClientsStop();
+
+
+        public virtual void ListenerStart()
+        {
+
+        }
+        public virtual void ListenerStop()
+        {
+
+        }
+
+        #region TearUp()
+        /// <summary>
+        /// This override can be used to add additional logic during the start up phase.
+        /// This method is called before the clients are created.
+        /// </summary>
+        protected virtual void TearUp()
+        {
+        }
+        #endregion
+        #region TearDown()
+        /// <summary>
+        /// This method can be used to clean up any additional communication methods.
+        /// It is called after the clients have been closed.
+        /// </summary>
+        protected virtual void TearDown()
+        {
+
+        }
+        #endregion
     }
 }

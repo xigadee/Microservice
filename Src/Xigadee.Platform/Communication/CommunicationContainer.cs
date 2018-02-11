@@ -94,7 +94,7 @@ namespace Xigadee
             base.StatisticsRecalculate(stats);
 
             if (mSenders != null)
-                stats.Senders = mSenders.SelectMany((c) => c.ListenerClients).Select((l) => l.StatisticsRecalculated).ToList();
+                stats.Senders = mSenders.SelectMany((c) => c.SenderClients).Select((l) => l.StatisticsRecalculated).ToList();
 
             if (mListener != null)
                 stats.Listeners = mListener.SelectMany((c) => c.ListenerClients).Select((l) => l.StatisticsRecalculated).ToList();
@@ -210,7 +210,7 @@ namespace Xigadee
         {
             mSupportedMessages = e.Messages;
 
-            mListener.ForEach((c) => c.Update(e.Messages));
+            mListener.ForEach((c) => c.ListenerCommandsActiveChange(e.Messages));
 
             //Update the listeners as there may be new active listeners or other may have shutdown.
             ListenersPriorityRecalculate(true).Wait();
@@ -329,7 +329,7 @@ namespace Xigadee
                 base.ServiceStart(service);
 
                 if (service is IListener)
-                    ((IListener)service).Update(mSupportedMessages);
+                    ((IListener)service).ListenerCommandsActiveChange(mSupportedMessages);
             }
             catch (Exception ex)
             {

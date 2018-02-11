@@ -18,7 +18,7 @@ namespace Xigadee
         }
 
         /// <summary>
-        /// Gets the Azure storage credentials credentials.
+        /// Gets the Azure storage credentials.
         /// </summary>
         protected StorageCredentials Credentials { get; }
 

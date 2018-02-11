@@ -14,7 +14,7 @@ namespace Xigadee
     /// <typeparam name="M">The client message type.</typeparam>
     /// <typeparam name="H">The client-holder type.</typeparam>
     [DebuggerDisplay("{GetType().Name}: {ChannelId}|{MappingChannelId}@{Status} [{ComponentId}]")]
-    public class MessagingListenerBase<C, M, H> : MessagingServiceBase<C, M, H, ListenerPartitionConfig>, IListener
+    public class MessagingListenerBase<C, M, H> : MessagingServiceBase<C, M, H>, IListener
         where H : ClientHolder<C, M>, new()
         where C: class
     {
@@ -26,20 +26,20 @@ namespace Xigadee
         protected List<MessageFilterWrapper> mSupportedMessageTypes= new List<MessageFilterWrapper>();
         #endregion
 
-        #region ResourceProfiles
+        #region ListenerResourceProfiles
         /// <summary>
         /// This is the list of resource profiles that the Listener can be throttled on.
         /// </summary>
         public List<ResourceProfile> ListenerResourceProfiles { get; set; } = new List<ResourceProfile>();
         #endregion
 
-        #region Update(List<MessageFilterWrapper> supported)
+        #region ListenerCommandsActiveChange(List<MessageFilterWrapper> supported)
         /// <summary>
         /// This method is called with the list of currently supported message type supported by the Microservice.
         /// This can be used to filter the incoming messages where this is supported by the transport mechanism.
         /// The client should decide whether it should be active based on this list.
         /// </summary>
-        public virtual void Update(List<MessageFilterWrapper> supported)
+        public virtual void ListenerCommandsActiveChange(List<MessageFilterWrapper> supported)
         {
             var newList = supported.Where((m) => string.Equals(m.Header.ChannelId, (ListenerMappingChannelId ?? ChannelId), StringComparison.InvariantCultureIgnoreCase)).ToList();
             var oldList = mSupportedMessageTypes;
@@ -48,39 +48,39 @@ namespace Xigadee
         }
         #endregion
 
-        #region ClientCreate()
-        /// <summary>
-        /// This override sets the default processing time to the client for incoming messages.
-        /// </summary>
-        /// <returns>Returns the new client.</returns>
-        protected override H ClientCreate(ListenerPartitionConfig partition)
-        {
-            var client = base.ClientCreate(partition);
+        //#region ClientCreate()
+        ///// <summary>
+        ///// This override sets the default processing time to the client for incoming messages.
+        ///// </summary>
+        ///// <returns>Returns the new client.</returns>
+        //protected override H ClientCreate(ListenerPartitionConfig partition)
+        //{
+        //    var client = base.ClientCreate(partition);
 
-            client.MessageMaxProcessingTime = partition.PayloadMaxProcessingTime;
-            client.FabricMaxMessageLock = partition.FabricMaxMessageLock;
-            client.MappingChannelId = ListenerMappingChannelId;
+        //    client.MessageMaxProcessingTime = partition.PayloadMaxProcessingTime;
+        //    client.FabricMaxMessageLock = partition.FabricMaxMessageLock;
+        //    client.MappingChannelId = ListenerMappingChannelId;
 
-            client.SupportsRateLimiting = partition.SupportsRateLimiting;
-            client.Weighting = partition.PriorityWeighting;
+        //    client.SupportsRateLimiting = partition.SupportsRateLimiting;
+        //    client.Weighting = partition.PriorityWeighting;
 
-            client.Start = () =>
-            {
-                client.Client = client.ClientCreate();
+        //    client.Start = () =>
+        //    {
+        //        client.Client = client.ClientCreate();
 
-                client.IsActive = true;
-            };
+        //        client.IsActive = true;
+        //    };
 
-            client.Stop = () =>
-            {
-                client.IsActive = false;
+        //    client.Stop = () =>
+        //    {
+        //        client.IsActive = false;
 
-                client.ClientClose();
-            };
+        //        client.ClientClose();
+        //    };
             
-            return client;
-        }
-        #endregion
+        //    return client;
+        //}
+        //#endregion
 
         #region ListenerMappingChannelId
         /// <summary>
@@ -146,38 +146,38 @@ namespace Xigadee
         /// </summary>
         protected virtual void ClientsStart()
         {
-            try
-            {
-                TearUp();
+            //try
+            //{
+            //    TearUp();
 
-                //Start the client in either listener or sender mode.
-                foreach (var partition in PriorityPartitions)
-                {
-                    var client = ClientCreate(partition);
+            //    //Start the client in either listener or sender mode.
+            //    foreach (var partition in ListenerPriorityPartitions)
+            //    {
+            //        var client = ClientCreate(partition);
 
-                    client.ResourceProfiles = ListenerResourceProfiles;
+            //        client.ResourceProfiles = ListenerResourceProfiles;
 
-                    mClients.AddOrUpdate(partition.Priority, client, (i,h) => h);
+            //        mClients.AddOrUpdate(partition.Priority, client, (i,h) => h);
 
-                    if (client.CanStart)
-                        base.ClientStart(client);
-                    else
-                        Collector?.LogMessage(string.Format("Client not started: {0} :{1}/{2}", client.Type, client.Name, client.Priority));
+            //        if (client.CanStart)
+            //            base.ClientStart(client);
+            //        else
+            //            Collector?.LogMessage(string.Format("Client not started: {0} :{1}/{2}", client.Type, client.Name, client.Priority));
 
-                    if (partition.Priority == 1)
-                        mDefaultPriority = 1;
-                }
+            //        if (partition.Priority == 1)
+            //            mDefaultPriority = 1;
+            //    }
 
-                //If the incoming priority cannot be reconciled we set it to the default
-                //which is 1, unless 1 is not present and then we set it to the max value.
-                if (!mDefaultPriority.HasValue && base.PriorityPartitions != null)
-                    mDefaultPriority = base.PriorityPartitions.Select((p) => p.Priority).Max();
-            }
-            catch (Exception ex)
-            {
-                LogExceptionLocation("StartInternal", ex);
-                throw;
-            }
+            //    //If the incoming priority cannot be reconciled we set it to the default
+            //    //which is 1, unless 1 is not present and then we set it to the max value.
+            //    if (!mDefaultPriority.HasValue && ListenerPriorityPartitions != null)
+            //        mDefaultPriority = ListenerPriorityPartitions.Select((p) => p.Priority).Max();
+            //}
+            //catch (Exception ex)
+            //{
+            //    LogExceptionLocation("StartInternal", ex);
+            //    throw;
+            //}
         } 
         #endregion
         #region ClientsStop()
@@ -229,6 +229,9 @@ namespace Xigadee
         /// This boolean property determines whether the listener require a poll.
         /// </summary>
         public virtual bool ListenerPollRequired { get; } = false;
+
+        public List<ListenerPartitionConfig> ListenerPriorityPartitions { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
         /// <summary>
         /// This is the async poll function. This will be called if PollRequired is set to true.
         /// </summary>

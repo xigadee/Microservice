@@ -76,7 +76,7 @@ namespace Xigadee
         protected override void SettingsValidate()
         {
             if (AzureConn == null)
-                throw new StartupMessagingException("AzureConn", "AzureConn cannot be null");
+                throw new CommunicationAgentStartupException("AzureConn", "AzureConn cannot be null");
 
             base.SettingsValidate();
         }

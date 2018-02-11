@@ -81,24 +81,24 @@ namespace Xigadee
         }
         #endregion
 
-        #region ClientCreate(ListenerPartitionConfig partition)
-        /// <summary>
-        /// This override creates the client and registers/unregisters it with the protocol.
-        /// </summary>
-        /// <param name="partition">The partition to create the client for.</param>
-        /// <returns>Returns the client holder.</returns>
-        protected override TcpTlsClientHolder ClientCreate(ListenerPartitionConfig partition)
-        {
-            var client = base.ClientCreate(partition);
+        //#region ClientCreate(ListenerPartitionConfig partition)
+        ///// <summary>
+        ///// This override creates the client and registers/unregisters it with the protocol.
+        ///// </summary>
+        ///// <param name="partition">The partition to create the client for.</param>
+        ///// <returns>Returns the client holder.</returns>
+        //protected override TcpTlsClientHolder ClientCreate(ListenerPartitionConfig partition)
+        //{
+        //    var client = base.ClientCreate(partition);
 
-            client.Type = "TcpTls Listener";
-            client.Name = $"Channel{partition.Priority}";
+        //    client.Type = "TcpTls Listener";
+        //    client.Name = $"Channel{partition.Priority}";
 
-            //TODO: client.ClientCreate = () => new TcpTlsClient();
+        //    //TODO: client.ClientCreate = () => new TcpTlsClient();
 
-            return client;
-        }
-        #endregion
+        //    return client;
+        //}
+        //#endregion
 
         #region PollSupported
         /// <summary>

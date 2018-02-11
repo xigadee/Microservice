@@ -59,7 +59,7 @@ namespace Xigadee
         protected override void SettingsValidate()
         {
             if (Connection == null)
-                throw new StartupMessagingException("Connection", "Connection cannot be null");
+                throw new CommunicationAgentStartupException("Connection", "Connection cannot be null");
 
             base.SettingsValidate();
         } 

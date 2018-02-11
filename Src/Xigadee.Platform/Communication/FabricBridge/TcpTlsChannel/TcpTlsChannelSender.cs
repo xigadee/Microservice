@@ -65,21 +65,21 @@ namespace Xigadee
         }
         #endregion
 
-        #region ClientCreate(SenderPartitionConfig partition)
-        /// <summary>
-        /// This method creates the client.
-        /// </summary>
-        /// <param name="partition">The sender partitions.</param>
-        /// <returns>Returns the client holder.</returns>
-        protected override TcpTlsClientHolder ClientCreate(SenderPartitionConfig partition)
-        {
-            var client = base.ClientCreate(partition);
+        //#region ClientCreate(SenderPartitionConfig partition)
+        ///// <summary>
+        ///// This method creates the client.
+        ///// </summary>
+        ///// <param name="partition">The sender partitions.</param>
+        ///// <returns>Returns the client holder.</returns>
+        //protected override TcpTlsClientHolder ClientCreate(SenderPartitionConfig partition)
+        //{
+        //    var client = base.ClientCreate(partition);
 
-            client.Type = "TcpTls Sender";
-            client.Name = partition.Priority.ToString();
+        //    client.Type = "TcpTls Sender";
+        //    client.Name = partition.Priority.ToString();
 
-            return client;
-        } 
-        #endregion
+        //    return client;
+        //} 
+        //#endregion
     }
 }

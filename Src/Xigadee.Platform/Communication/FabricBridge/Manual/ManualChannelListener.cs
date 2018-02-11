@@ -31,34 +31,34 @@ namespace Xigadee
         public ManualFabricBridge Fabric { get; set; }
         #endregion
 
-        /// <summary>
-        /// This override sets the default processing time to the client for incoming messages.
-        /// </summary>
-        /// <param name="partition">The listener partition.</param>
-        /// <returns>
-        /// Returns the new client.
-        /// </returns>
-        protected override ManualChannelClientHolder ClientCreate(ListenerPartitionConfig partition)
-        {
-            var client = base.ClientCreate(partition);
+        ///// <summary>
+        ///// This override sets the default processing time to the client for incoming messages.
+        ///// </summary>
+        ///// <param name="partition">The listener partition.</param>
+        ///// <returns>
+        ///// Returns the new client.
+        ///// </returns>
+        //protected override ManualChannelClientHolder ClientCreate(ListenerPartitionConfig partition)
+        //{
+        //    var client = base.ClientCreate(partition);
 
-            client.Name = mPriorityClientNamer(ChannelId, partition.Priority);
+        //    client.Name = mPriorityClientNamer(ChannelId, partition.Priority);
 
 
-            client.ClientCreate = () =>
-            {
-                var queue = Fabric.CreateQueueClient(client.Name);
+        //    client.ClientCreate = () =>
+        //    {
+        //        var queue = Fabric.CreateQueueClient(client.Name);
 
-                return queue;
-            };
+        //        return queue;
+        //    };
 
-            //client.SupportsQueueLength = true;
-            //client.QueueLength => return Fabric.
+        //    //client.SupportsQueueLength = true;
+        //    //client.QueueLength => return Fabric.
 
-            client.ClientClose = () => client.Purge();
+        //    client.ClientClose = () => client.Purge();
 
-            return client;
-        }
+        //    return client;
+        //}
 
         /// <summary>
         /// This method injects a service message manually in to the Microservice.

@@ -74,42 +74,42 @@ namespace Xigadee
         /// <returns>
         /// Returns the new client.
         /// </returns>
-        protected override UdpClientHolder ClientCreate(ListenerPartitionConfig partition)
-        {
-            var client = base.ClientCreate(partition);
+        //protected override UdpClientHolder ClientCreate(ListenerPartitionConfig partition)
+        //{
+        //    var client = base.ClientCreate(partition);
 
-            client.ContentType = ContentType;
-            client.ContentEncoding = ContentEncoding;
+        //    client.ContentType = ContentType;
+        //    client.ContentEncoding = ContentEncoding;
 
-            client.ClientCreate = () =>
-            {
-                var c = new UdpHelper(Config, UdpHelperMode.Listener);
-                c.Start();
-                return c;
-            };
+        //    client.ClientCreate = () =>
+        //    {
+        //        var c = new UdpHelper(Config, UdpHelperMode.Listener);
+        //        c.Start();
+        //        return c;
+        //    };
 
-            client.ClientClose = () => client.Client.Stop();
+        //    client.ClientClose = () => client.Client.Stop();
 
-            client.MessageUnpack = (holder) =>
-            {
-                if (!ServiceHandlers.Serialization.TrySerialize(holder))
-                {
-                    holder.SetObject(new UdpHelper.Message { Buffer = holder.Blob, RemoteEndPoint = (IPEndPoint)holder.Metadata });
-                }
+        //    client.MessageUnpack = (holder) =>
+        //    {
+        //        if (!ServiceHandlers.Serialization.TrySerialize(holder))
+        //        {
+        //            holder.SetObject(new UdpHelper.Message { Buffer = holder.Blob, RemoteEndPoint = (IPEndPoint)holder.Metadata });
+        //        }
 
-                var sMessage = new ServiceMessage((client.MappingChannelId ?? client.ChannelId, RequestAddress), ResponseAddress);
+        //        var sMessage = new ServiceMessage((client.MappingChannelId ?? client.ChannelId, RequestAddress), ResponseAddress);
 
-                if (ResponseAddress != null)
-                    sMessage.ResponseChannelPriority = ResponseAddressPriority;
+        //        if (ResponseAddress != null)
+        //            sMessage.ResponseChannelPriority = ResponseAddressPriority;
 
-                sMessage.ChannelPriority = RequestAddressPriority ?? client.Priority;
-                sMessage.Holder = holder;
+        //        sMessage.ChannelPriority = RequestAddressPriority ?? client.Priority;
+        //        sMessage.Holder = holder;
 
-                return sMessage;
-            };
+        //        return sMessage;
+        //    };
 
-            return client;
-        }
+        //    return client;
+        //}
 
     }
 }

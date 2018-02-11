@@ -57,7 +57,7 @@ namespace Xigadee
         public QueueEventSource() :base()
         {
             mJsonSerializer = new JsonSerializer { TypeNameHandling = TypeNameHandling.Auto };
-            PriorityPartitions = SenderPartitionConfig.Init(1).ToList();
+            ListenerPriorityPartitions = SenderPartitionConfig.Init(1).ToList();
         }
         #endregion
 

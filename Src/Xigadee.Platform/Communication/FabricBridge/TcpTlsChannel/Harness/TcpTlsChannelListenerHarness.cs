@@ -36,7 +36,7 @@ namespace Xigadee
 
             var wrapper = new MessageFilterWrapper(new ServiceMessageHeader(Service.ChannelId, "one", "two"));
 
-            Service.Update(new[] { wrapper }.ToList());
+            Service.ListenerCommandsActiveChange(new[] { wrapper }.ToList());
         }
     }
 }

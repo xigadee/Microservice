@@ -7,16 +7,12 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="P">The partition type.</typeparam>
     /// <seealso cref="Xigadee.IRequireDataCollector" />
-    public interface IMessagingService<P> : IRequireDataCollector
-        where P : PartitionConfig
+    public interface IMessagingService : IRequireDataCollector
     {
         /// <summary>
         /// Gets or sets the channel identifier.
         /// </summary>
         string ChannelId { get; set; }
-        /// <summary>
-        /// Gets or sets a list of priority partitions.
-        /// </summary>
-        List<P> PriorityPartitions { get; set; }
+
     }
 }

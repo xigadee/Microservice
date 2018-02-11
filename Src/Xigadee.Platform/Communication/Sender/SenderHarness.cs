@@ -34,7 +34,7 @@ namespace Xigadee
         {
             base.Configure(service);
 
-            service.PriorityPartitions = PriorityPartitions;
+            //service.ListenerPriorityPartitions = PriorityPartitions;
         }
         /// <summary>
         /// This is the set of default priority partitions. Override if you wish to change.

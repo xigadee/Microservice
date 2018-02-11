@@ -62,54 +62,54 @@ namespace Xigadee
         /// <returns>
         /// Returns the client.
         /// </returns>
-        protected override UdpClientHolder ClientCreate(SenderPartitionConfig partition)
-        {
-            var client = base.ClientCreate(partition);
+        //protected override UdpClientHolder ClientCreate(SenderPartitionConfig partition)
+        //{
+        //    var client = base.ClientCreate(partition);
 
-            client.ContentType = ContentType;
-            client.ContentEncoding = ContentEncoding;
+        //    client.ContentType = ContentType;
+        //    client.ContentEncoding = ContentEncoding;
 
-            client.Start = () =>
-            {
-                client.Client = client.ClientCreate();
+        //    client.Start = () =>
+        //    {
+        //        client.Client = client.ClientCreate();
 
-                client.IsActive = true;
-            };
+        //        client.IsActive = true;
+        //    };
 
-            client.ClientCreate = () =>
-            {
-                var c = new UdpHelper(Config, UdpHelperMode.Sender);
-                c.Start();
-                return c;
-            };
+        //    client.ClientCreate = () =>
+        //    {
+        //        var c = new UdpHelper(Config, UdpHelperMode.Sender);
+        //        c.Start();
+        //        return c;
+        //    };
 
-            client.ClientClose = () => client.Client.Stop();
+        //    client.ClientClose = () => client.Client.Stop();
 
-            client.MessagePack = (p) =>
-            {
-                var holder = p.Message.Holder;
+        //    client.MessagePack = (p) =>
+        //    {
+        //        var holder = p.Message.Holder;
 
-                if (holder.ContentType == null)
-                    holder.ContentType = ContentType;
+        //        if (holder.ContentType == null)
+        //            holder.ContentType = ContentType;
 
-                if (holder.ContentEncoding == null)
-                    holder.ContentEncoding = ContentEncoding;
+        //        if (holder.ContentEncoding == null)
+        //            holder.ContentEncoding = ContentEncoding;
 
-                if (!ServiceHandlers.Serialization.TrySerialize(holder))
-                {
-                    throw new ArgumentException("Cannot serialize.");
-                }
+        //        if (!ServiceHandlers.Serialization.TrySerialize(holder))
+        //        {
+        //            throw new ArgumentException("Cannot serialize.");
+        //        }
 
-                //Do a bounds check for the binary payload size.
-                if (UdpMessageMaximumPayloadSize.HasValue && holder.Blob.Length > UdpMessageMaximumPayloadSize)
-                {
-                    //throw new 
-                }
+        //        //Do a bounds check for the binary payload size.
+        //        if (UdpMessageMaximumPayloadSize.HasValue && holder.Blob.Length > UdpMessageMaximumPayloadSize)
+        //        {
+        //            //throw new 
+        //        }
 
-                return holder;
-            };
+        //        return holder;
+        //    };
 
-            return client;
-        }
+        //    return client;
+        //}
     }
 }

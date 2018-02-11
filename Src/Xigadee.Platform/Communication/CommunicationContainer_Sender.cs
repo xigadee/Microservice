@@ -122,7 +122,7 @@ namespace Xigadee
             var message = payload.Message;
 
             string channelId = message.ChannelId;
-            List<ISender> newMap = mSenders.Where(h => h.SupportsChannel(channelId)).ToList();
+            List<ISender> newMap = mSenders.Where(h => h.SenderSupportsChannel(channelId)).ToList();
 
             //Make sure that the handler is queueAdded as a null value to stop further resolution attempts
             mMessageSenderMap.AddOrUpdate(channelId, newMap, (k, u) => newMap.Count == 0 ? null : newMap);

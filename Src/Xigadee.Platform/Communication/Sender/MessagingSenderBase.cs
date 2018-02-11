@@ -28,10 +28,19 @@ namespace Xigadee
     /// <typeparam name="C">The client type.</typeparam>
     /// <typeparam name="M">The client message type.</typeparam>
     /// <typeparam name="H">The client holder type.</typeparam>
-    public class MessagingSenderBase<C, M, H> : MessagingServiceBase<C, M, H, SenderPartitionConfig>, ISender
+    public class MessagingSenderBase<C, M, H> : MessagingServiceBase<C, M, H>, ISender
         where H : ClientHolder<C, M>, new()
         where C : class
     {
+        #region PriorityPartitions
+        /// <summary>
+        /// This is the set of priority partitions used to provide different priority for messages.
+        /// </summary>
+        public List<SenderPartitionConfig> SenderPriorityPartitions { get; set; }
+        #endregion
+
+        public IEnumerable<ClientHolder> SenderClients => throw new NotImplementedException();
+
         #region SenderTransmit(TransmissionPayload payload)
         /// <summary>
         /// This method resolves the client and processes the message.

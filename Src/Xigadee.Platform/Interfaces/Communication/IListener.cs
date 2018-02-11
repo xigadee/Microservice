@@ -14,10 +14,10 @@ namespace Xigadee
         IEnumerable<ClientHolder> ListenerClients { get; }
 
         /// <summary>
-        /// This method is used to change the supported filters. This happens when a command starts or stops in the microservice.
+        /// This method is used to change the supported command endpoint addresses. This happens when a command starts or stops in the microservice.
         /// </summary>
-        /// <param name="supported"></param>
-        void Update(List<MessageFilterWrapper> supported);
+        /// <param name="supported">The supported command destinations.</param>
+        void ListenerCommandsActiveChange(List<MessageFilterWrapper> supported);
 
         /// <summary>
         /// This is the channel id that incoming messages will be mapped to.
@@ -33,7 +33,7 @@ namespace Xigadee
         /// <summary>
         /// This contains the listener priority partitions.
         /// </summary>
-        List<ListenerPartitionConfig> PriorityPartitions { get; set; }
+        List<ListenerPartitionConfig> ListenerPriorityPartitions { get; set; }
 
         /// <summary>
         /// This boolean property determines whether the listener supports polling.

@@ -15,11 +15,9 @@ namespace Xigadee
     /// <typeparam name="M">The client message class type.</typeparam>
     /// <typeparam name="H">The client holder class type.</typeparam>
     /// <typeparam name="P">The partition configuration class type.</typeparam>
-    public abstract class MessagingServiceBase<C, M, H, P>: ServiceBase<StatusBase>
-        , IMessaging, IMessagingService<P>
+    public abstract class MessagingServiceBase<C, M, H>: ServiceBase<StatusBase>, IMessaging
         where C: class
         where H: ClientHolder<C, M>, new()
-        where P: PartitionConfig
     {
         #region Declarations
         /// <summary>
@@ -39,12 +37,6 @@ namespace Xigadee
         private int mClientStopped = 0;
         #endregion
 
-        #region PriorityPartitions
-        /// <summary>
-        /// This is the set of priority partitions used to provide different priority for messages.
-        /// </summary>
-        public List<P> PriorityPartitions { get; set; } 
-        #endregion
         #region ChannelId
         /// <summary>
         /// This is the ChannelId for the messaging service
@@ -75,7 +67,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="channel"></param>
         /// <returns>Returns true if the channel is supported.</returns>
-        public bool SupportsChannel(string channel)
+        public bool SenderSupportsChannel(string channel)
         {
             return string.Equals(channel, ChannelId, StringComparison.InvariantCultureIgnoreCase);
         }
@@ -88,14 +80,8 @@ namespace Xigadee
         protected virtual void SettingsValidate()
         {
             if (ChannelId == null)
-                throw new StartupMessagingException("ChannelId", "ChannelId cannot be null");
+                throw new CommunicationAgentStartupException("ChannelId", "ChannelId cannot be null");
 
-            if (PriorityPartitions == null)
-                throw new StartupMessagingException("PriorityPartitions", "PriorityPartitions cannot be null");
-
-            //Set the partition priority to a single partition if null or an empty set.
-            if (PriorityPartitions.Count == 0)
-                throw new StartupMessagingException("PriorityPartitions", "PriorityPartitions must have at least one member.");
         } 
         #endregion
 
@@ -105,38 +91,38 @@ namespace Xigadee
         /// </summary>
         protected override void StartInternal()
         {
-            SettingsValidate();
+            //SettingsValidate();
 
-            try
-            {
-                TearUp();
+            //try
+            //{
+            //    TearUp();
 
-                //Start the client in either listener or sender mode.
-                foreach (var priority in PriorityPartitions)
-                {
-                    var client = ClientCreate(priority);
+            //    //Start the client in either listener or sender mode.
+            //    foreach (var priority in ListenerPriorityPartitions)
+            //    {
+            //        var client = ClientCreate(priority);
 
-                    mClients.AddOrUpdate(priority.Priority, client, (i,h) => h);
+            //        mClients.AddOrUpdate(priority.Priority, client, (i,h) => h);
 
-                    if (client.CanStart)
-                        ClientStart(client);
-                    else
-                        Collector?.LogMessage(string.Format("Client not started: {0} :{1}/{2}", client.Type, client.Name, client.Priority));
+            //        if (client.CanStart)
+            //            ClientStart(client);
+            //        else
+            //            Collector?.LogMessage(string.Format("Client not started: {0} :{1}/{2}", client.Type, client.Name, client.Priority));
 
-                    if (priority.Priority == 1)
-                        mDefaultPriority = 1;
-                }
+            //        if (priority.Priority == 1)
+            //            mDefaultPriority = 1;
+            //    }
 
-                //If the incoming priority cannot be reconciled we set it to the default
-                //which is 1, unless 1 is not present and then we set it to the max value.
-                if (!mDefaultPriority.HasValue)
-                    mDefaultPriority = PriorityPartitions.Select((p) => p.Priority).Max();
-            }
-            catch (Exception ex)
-            {
-                LogExceptionLocation("StartInternal", ex);
-                throw;
-            }
+            //    //If the incoming priority cannot be reconciled we set it to the default
+            //    //which is 1, unless 1 is not present and then we set it to the max value.
+            //    if (!mDefaultPriority.HasValue)
+            //        mDefaultPriority = ListenerPriorityPartitions.Select((p) => p.Priority).Max();
+            //}
+            //catch (Exception ex)
+            //{
+            //    LogExceptionLocation("StartInternal", ex);
+            //    throw;
+            //}
         }
         #endregion
         #region StopInternal()
@@ -190,48 +176,48 @@ namespace Xigadee
             Interlocked.Increment(ref mClientStarted);
         }
         #endregion
-        #region ClientCreate()
-        /// <summary>
-        /// This is the default client create logic.
-        /// </summary>
-        /// <returns>Returns the client.</returns>
-        protected virtual H ClientCreate(P partition)
-        {
-            var client = new H();
+        //#region ClientCreate()
+        ///// <summary>
+        ///// This is the default client create logic.
+        ///// </summary>
+        ///// <returns>Returns the client.</returns>
+        //protected virtual H ClientCreate(P partition)
+        //{
+        //    var client = new H();
 
-            //Set the Data Collector
-            client.Collector = Collector;
-            //Set the Serializer.
-            client.ServiceHandlers = ServiceHandlers;
+        //    //Set the Data Collector
+        //    client.Collector = Collector;
+        //    //Set the Serializer.
+        //    client.ServiceHandlers = ServiceHandlers;
 
-            client.BoundaryLoggingActive = BoundaryLoggingActive ?? false;
+        //    client.BoundaryLoggingActive = BoundaryLoggingActive ?? false;
 
-            client.ClientRefresh = () => { };
+        //    client.ClientRefresh = () => { };
 
-            client.ChannelId = ChannelId;
+        //    client.ChannelId = ChannelId;
 
-            client.Priority = partition.Priority;
+        //    client.Priority = partition.Priority;
 
-            client.QueueLength = () => (int?)null;
+        //    client.QueueLength = () => (int?)null;
 
-            client.FabricInitialize = () => { };
+        //    client.FabricInitialize = () => { };
 
-            client.Start = () => { };
+        //    client.Start = () => { };
 
-            client.Stop = () =>
-            {
-                if (client?.Client == null)
-                    return;
+        //    client.Stop = () =>
+        //    {
+        //        if (client?.Client == null)
+        //            return;
 
-                client.IsActive = false;
-                client.ClientClose();
-            };
+        //        client.IsActive = false;
+        //        client.ClientClose();
+        //    };
 
-            client.ClientReset = (ex) => ClientReset(client, ex);
+        //    client.ClientReset = (ex) => ClientReset(client, ex);
             
-            return client;
-        }
-        #endregion
+        //    return client;
+        //}
+        //#endregion
         #region ClientStop(H client)
         /// <summary>
         /// This method stops the client.

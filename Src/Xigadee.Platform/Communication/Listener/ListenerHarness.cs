@@ -37,7 +37,7 @@ namespace Xigadee
         {
             base.Configure(service);
 
-            service.PriorityPartitions = PriorityPartitions;
+            service.ListenerPriorityPartitions = PriorityPartitions;
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace Xigadee
         public virtual void Start(List<MessageFilterWrapper> supported)
         {
             Start();
-            Service.Update(supported);
+            Service.ListenerCommandsActiveChange(supported);
         }
         /// <summary>
         /// Starts with the specified supported listener message type.
