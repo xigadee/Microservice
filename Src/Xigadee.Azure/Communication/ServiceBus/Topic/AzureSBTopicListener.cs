@@ -166,76 +166,76 @@ namespace Xigadee
         #endregion
 
         #region ClientCreate()
-        /// <summary>
-        /// This method creates the specific client.
-        /// </summary>
-        /// <returns>Returns the client.</returns>
-        protected override AzureClientHolder<SubscriptionClient, BrokeredMessage> ClientCreate(ListenerPartitionConfig partition)
-        {
-            var client = base.ClientCreate(partition);
+        ///// <summary>
+        ///// This method creates the specific client.
+        ///// </summary>
+        ///// <returns>Returns the client.</returns>
+        //protected override AzureClientHolder<SubscriptionClient, BrokeredMessage> ClientCreate(ListenerPartitionConfig partition)
+        //{
+        //    var client = base.ClientCreate(partition);
 
-            client.Filters = GetFilters().Select((f) => f.SqlExpression).ToList();
+        //    client.Filters = GetFilters().Select((f) => f.SqlExpression).ToList();
 
-            client.Type = "Subscription Listener";
+        //    client.Type = "Subscription Listener";
 
-            client.Name = mPriorityClientNamer(AzureConn.ConnectionName, partition.Priority);
+        //    client.Name = mPriorityClientNamer(AzureConn.ConnectionName, partition.Priority);
 
-            client.AssignMessageHelpers();
+        //    client.AssignMessageHelpers();
 
-            client.FabricInitialize = () =>
-            {
-                AzureConn.TopicFabricInitialize(client.Name);
-                var subDesc = AzureConn.SubscriptionFabricInitialize(client.Name, mSubscriptionId
-                    , autoDeleteSubscription: DeleteOnIdleTime
-                    , lockDuration: partition.FabricMaxMessageLock);
-            };
+        //    client.FabricInitialize = () =>
+        //    {
+        //        AzureConn.TopicFabricInitialize(client.Name);
+        //        var subDesc = AzureConn.SubscriptionFabricInitialize(client.Name, mSubscriptionId
+        //            , autoDeleteSubscription: DeleteOnIdleTime
+        //            , lockDuration: partition.FabricMaxMessageLock);
+        //    };
 
-            client.SupportsQueueLength = true;
+        //    client.SupportsQueueLength = true;
 
-            client.QueueLength = () =>
-            {
-                try
-                {
-                    var desc = AzureConn.NamespaceManager.GetSubscription(client.Name, mSubscriptionId);
+        //    client.QueueLength = () =>
+        //    {
+        //        try
+        //        {
+        //            var desc = AzureConn.NamespaceManager.GetSubscription(client.Name, mSubscriptionId);
 
-                    client.QueueLengthLastPoll = DateTime.UtcNow;
+        //            client.QueueLengthLastPoll = DateTime.UtcNow;
 
-                    return desc.MessageCountDetails.ActiveMessageCount;
-                }
-                catch (Exception)
-                {
-                    return null;
-                }
-            };
+        //            return desc.MessageCountDetails.ActiveMessageCount;
+        //        }
+        //        catch (Exception)
+        //        {
+        //            return null;
+        //        }
+        //    };
 
-            client.CanStart = GetFilters().Count > 0;
+        //    client.CanStart = GetFilters().Count > 0;
 
-            client.ClientCreate = () =>
-            {
-                var messagingFactory = MessagingFactory.CreateFromConnectionString(AzureConn.ConnectionString);
-                var subClient = messagingFactory.CreateSubscriptionClient(client.Name, mSubscriptionId);
+        //    client.ClientCreate = () =>
+        //    {
+        //        var messagingFactory = MessagingFactory.CreateFromConnectionString(AzureConn.ConnectionString);
+        //        var subClient = messagingFactory.CreateSubscriptionClient(client.Name, mSubscriptionId);
 
-                subClient.PrefetchCount = 50;
+        //        subClient.PrefetchCount = 50;
 
-                subClient.RemoveRule("$default");
-                SetFilters(subClient, client.Name, mSubscriptionId);
+        //        subClient.RemoveRule("$default");
+        //        SetFilters(subClient, client.Name, mSubscriptionId);
 
-                return subClient;
-            };
+        //        return subClient;
+        //    };
 
-            client.ClientRefresh = () =>
-            {
-                SetFilters(client.Client, client.Name, mSubscriptionId);
-            };
+        //    client.ClientRefresh = () =>
+        //    {
+        //        SetFilters(client.Client, client.Name, mSubscriptionId);
+        //    };
 
-            client.MessageReceive = async (c,t) =>
-            {
-                var messages = await client.Client.ReceiveBatchAsync(c??10, TimeSpan.FromMilliseconds(t??500));
-                return messages;
-            };
+        //    client.MessageReceive = async (c,t) =>
+        //    {
+        //        var messages = await client.Client.ReceiveBatchAsync(c??10, TimeSpan.FromMilliseconds(t??500));
+        //        return messages;
+        //    };
 
-            return client;
-        }
+        //    return client;
+        //}
         #endregion
         #region SetFilters(SubscriptionClient client, string name, string subscriptionId)
         /// <summary>

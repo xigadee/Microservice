@@ -39,27 +39,27 @@ namespace Xigadee
         } 
         #endregion
 
-        #region ClientCreate()
-        /// <summary>
-        /// This override sets the transmit options for the client.
-        /// </summary>
-        /// <returns>Returns the client.</returns>
-        protected override AzureClientHolder<EventHubClient, EventData> ClientCreate(SenderPartitionConfig partition)
-        {
-            var client = base.ClientCreate(partition);
-            client.Name = mPriorityClientNamer(AzureConn.ConnectionName, partition.Priority);
+        //#region ClientCreate()
+        ///// <summary>
+        ///// This override sets the transmit options for the client.
+        ///// </summary>
+        ///// <returns>Returns the client.</returns>
+        //protected override AzureClientHolder<EventHubClient, EventData> ClientCreate(SenderPartitionConfig partition)
+        //{
+        //    var client = base.ClientCreate(partition);
+        //    client.Name = mPriorityClientNamer(AzureConn.ConnectionName, partition.Priority);
 
-            client.AssignMessageHelpers();
+        //    client.AssignMessageHelpers();
 
-            client.FabricInitialize = () => AzureConn.EventHubFabricInitialize(client.Name);
-            //Set the method that creates the client.
-            client.ClientCreate = () => EventHubClient.CreateFromConnectionString(AzureConn.ConnectionString, AzureConn.ConnectionName);
+        //    client.FabricInitialize = () => AzureConn.EventHubFabricInitialize(client.Name);
+        //    //Set the method that creates the client.
+        //    client.ClientCreate = () => EventHubClient.CreateFromConnectionString(AzureConn.ConnectionString, AzureConn.ConnectionName);
 
-            //We have to do this due to the stupid inheritance rules for Azure Service Bus.
-            client.MessageTransmit = async (b) => await client.Client.SendAsync(b);
+        //    //We have to do this due to the stupid inheritance rules for Azure Service Bus.
+        //    client.MessageTransmit = async (b) => await client.Client.SendAsync(b);
 
-            return client;
-        } 
-        #endregion
+        //    return client;
+        //} 
+        //#endregion
     }
 }

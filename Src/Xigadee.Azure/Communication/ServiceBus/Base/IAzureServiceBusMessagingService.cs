@@ -28,7 +28,7 @@ namespace Xigadee
     /// This interface is used for Azure service bus messaging.
     /// </summary>
     /// <typeparam name="P">The partition config type.</typeparam>
-    public interface IAzureServiceBusMessagingService<P>: IMessagingService<P>
+    public interface IAzureServiceBusMessagingService<P>//: IMessagingService<P>
         where P : PartitionConfig
     {
         /// <summary>
