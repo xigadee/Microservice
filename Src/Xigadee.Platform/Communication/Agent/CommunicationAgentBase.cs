@@ -11,7 +11,20 @@ namespace Xigadee
     /// </summary>
     public abstract class CommunicationAgentBase: CommunicationAgentBase<CommunicationAgentStatistics>
     {
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommunicationAgentBase"/> class.
+        /// </summary>
+        /// <param name="capabilities">The agent capabilities. The default is bidirectional.</param>
+        /// <param name="serializerId">The optional preferred serializer identifier.</param>
+        /// <param name="compressionId">The optional preferred compression identifier.</param>
+        /// <param name="encryptionId">The optional preferred encryption identifier.</param>
+        protected CommunicationAgentBase(
+            CommunicationAgentCapabilities capabilities = CommunicationAgentCapabilities.Bidirectional
+            , SerializationHandlerId serializerId = null
+            , CompressionHandlerId compressionId = null
+            , EncryptionHandlerId encryptionId = null):base(capabilities, serializerId, compressionId, encryptionId)
+        {
+        }
     } 
     #endregion
 
@@ -36,10 +49,34 @@ namespace Xigadee
         /// <summary>
         /// Initializes a new instance of the <see cref="CommunicationAgentBase{S}"/> class.
         /// </summary>
-        protected CommunicationAgentBase()
+        /// <param name="capabilities">The agent capabilities. The default is bidirectional.</param>
+        /// <param name="serializerId">The optional preferred serializer identifier.</param>
+        /// <param name="compressionId">The optional preferred compression identifier.</param>
+        /// <param name="encryptionId">The optional preferred encryption identifier.</param>
+        protected CommunicationAgentBase(
+            CommunicationAgentCapabilities capabilities = CommunicationAgentCapabilities.Bidirectional
+            , SerializationHandlerId serializerId = null
+            , CompressionHandlerId compressionId = null
+            , EncryptionHandlerId encryptionId = null)
         {
-
+            Capabilities = capabilities;
+            PreferredSerializerId = serializerId;
+            PreferredCompressionId = compressionId;
+            PreferredEncryptionId = encryptionId;
         }
+
+        /// <summary>
+        /// Gets or sets the preferred serializer identifier.
+        /// </summary>
+        public SerializationHandlerId PreferredSerializerId { get; protected set; }
+        /// <summary>
+        /// Gets or sets the preferred compression identifier.
+        /// </summary>
+        public CompressionHandlerId PreferredCompressionId { get; protected set; }
+        /// <summary>
+        /// Gets or sets the preferred encryption identifier.
+        /// </summary>
+        public EncryptionHandlerId PreferredEncryptionId { get; protected set; }
 
         #region Capabilities/CanListen/CanSend
         /// <summary>
@@ -80,9 +117,16 @@ namespace Xigadee
             SettingsValidate();
 
             if (CanSend)
+            {
+                SenderSettingsValidate();
                 SenderStart();
+            }
+
             if (CanListen)
+            {
+                ListenerSettingsValidate();
                 ListenerStart();
+            }
         }
         /// <summary>
         /// This method stops the agent.

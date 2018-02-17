@@ -15,19 +15,38 @@ namespace Xigadee
 
         public virtual IEnumerable<ClientHolder> SenderClients => mSenderClients.Values;
 
-        public List<SenderPartitionConfig> SenderPriorityPartitions { get;set; }
+        /// <summary>
+        /// This contains the sender partitions.
+        /// </summary>
+        public List<SenderPartitionConfig> SenderPriorityPartitions { get; set; }
 
-        protected abstract ClientHolder SenderClientResolve(int priority);
+        #region SenderClientResolve(int priority)
+        /// <summary>
+        /// Resolves the sender client resolve.
+        /// </summary>
+        /// <param name="priority">The priority.</param>
+        /// <returns>The resolved client.</returns>
+        protected virtual ClientHolder SenderClientResolve(int priority)
+        {
+            if ((mSenderClients?.Count ?? 0) == 0)
+                throw new ClientsUndefinedMessagingException($"No Clients are defined for {ChannelId}");
+
+            if (mSenderClients.ContainsKey(priority))
+                return mSenderClients[priority];
+
+            if (!mDefaultPriority.HasValue)
+                throw new ClientsUndefinedMessagingException($"Channel={ChannelId} Priority={priority} cannot be found and a default priority value has not been set.");
+
+            return mSenderClients[mDefaultPriority.Value];
+        } 
+        #endregion
 
 
         #region SenderSettingsValidate()
         /// <summary>
         /// This method is called at start-up and can be used to validate any sender specific settings.
         /// </summary>
-        protected virtual void SenderSettingsValidate()
-        {
-
-        } 
+        protected virtual void SenderSettingsValidate(){} 
         #endregion
 
         public virtual void SenderStart()
@@ -47,30 +66,30 @@ namespace Xigadee
         public virtual async Task SenderTransmit(TransmissionPayload payload)
         {
             int? start = null;
-            ClientHolder client = null;
+            ClientHolder sender = null;
             try
             {
-                client = SenderClientResolve(payload.Message.ChannelPriority);
+                sender = SenderClientResolve(payload.Message.ChannelPriority);
 
-                start = client.StatisticsInternal.ActiveIncrement();
+                start = sender.StatisticsInternal.ActiveIncrement();
 
-                await client.Transmit(payload);
+                await sender.Transmit(payload);
 
-                payload.TraceWrite($"Sent: {client.Name}", "MessagingSenderBase/ProcessMessage");
+                payload.TraceWrite($"Sent: {sender.Name}", "MessagingSenderBase/ProcessMessage");
             }
             catch (Exception ex)
             {
                 LogExceptionLocation($"{nameof(SenderTransmit)} (Unhandled)", ex);
                 //OK, not sure what happened here, so we need to throw the exception.
                 payload.TraceWrite($"Exception: {ex.Message}", "MessagingSenderBase/ProcessMessage");
-                if (client != null)
-                    client.StatisticsInternal.ErrorIncrement();
+                if (sender != null)
+                    sender.StatisticsInternal.ErrorIncrement();
                 throw;
             }
             finally
             {
-                if (client != null && start.HasValue)
-                    client.StatisticsInternal.ActiveDecrement(start.Value);
+                if (sender != null && start.HasValue)
+                    sender.StatisticsInternal.ActiveDecrement(start.Value);
             }
         }
         #endregion

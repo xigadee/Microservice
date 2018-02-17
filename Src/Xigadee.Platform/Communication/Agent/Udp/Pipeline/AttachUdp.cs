@@ -41,9 +41,9 @@ namespace Xigadee
             defaultDeserializerContentType = (defaultDeserializerContentType ?? $"udp_in/{cpipe.Channel.Id}").ToLowerInvariant();
             
             var listener = new UdpCommunicationAgent(udp
+                , CommunicationAgentCapabilities.Listener
                 , defaultDeserializerContentType, defaultDeserializerContentEncoding, null
                 , requestAddress, responseAddress, requestAddressPriority, responseAddressPriority
-                , CommunicationAgentCapabilities.Listener
                 );
 
             if (deserialize != null)
@@ -90,9 +90,9 @@ namespace Xigadee
             serializerId = (serializerId?.Id ?? serializer?.Id ?? $"udp_in/{cpipe.Channel.Id}").ToLowerInvariant();
 
             var listener = new UdpCommunicationAgent(udp
+                , CommunicationAgentCapabilities.Listener
                 , serializerId, compressionId, encryptionId
                 , requestAddress, responseAddress, requestAddressPriority, responseAddressPriority
-                , CommunicationAgentCapabilities.Listener
                 );
 
             if (serializer != null)
@@ -133,8 +133,9 @@ namespace Xigadee
                 ?? $"udp_out/{cpipe.Channel.Id}"
                 ).ToLowerInvariant();
 
-            var sender = new UdpCommunicationAgent(udp, serializerId, compressionId, encryptionId
-                , capabilities: CommunicationAgentCapabilities.Sender
+            var sender = new UdpCommunicationAgent(udp
+                , CommunicationAgentCapabilities.Sender
+                , serializerId, compressionId, encryptionId
                 , maxUdpMessagePayloadSize: maxUdpMessagePayloadSize);
 
             if (serializer != null)
@@ -175,8 +176,9 @@ namespace Xigadee
                 serializerId?.Id?? $"udp_out/{cpipe.Channel.Id}"
                 ).ToLowerInvariant();
 
-            var sender = new UdpCommunicationAgent(udp, serializerId, compressionId, encryptionId
-                , capabilities: CommunicationAgentCapabilities.Sender
+            var sender = new UdpCommunicationAgent(udp
+                , CommunicationAgentCapabilities.Sender
+                , serializerId, compressionId, encryptionId
                 , maxUdpMessagePayloadSize: maxUdpMessagePayloadSize
                 );
 

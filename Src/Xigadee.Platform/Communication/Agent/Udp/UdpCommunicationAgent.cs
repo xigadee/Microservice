@@ -16,9 +16,18 @@ namespace Xigadee
         /// <summary>
         /// Initializes a new instance of the <see cref="UdpCommunicationAgent"/> class.
         /// </summary>
-        /// <param name="config">The configuration.</param>
-        /// <param name="capabilities">The capabilities.</param>
+        /// <param name="config">The UDP endpoint configuration.</param>
+        /// <param name="serializerId">The optional serializer identifier.</param>
+        /// <param name="compressionId">The optional compression identifier.</param>
+        /// <param name="encryptionId">The optional encryption identifier.</param>
+        /// <param name="requestAddress">The optional request address.</param>
+        /// <param name="responseAddress">The optional response address.</param>
+        /// <param name="requestAddressPriority">The optional request address priority.</param>
+        /// <param name="responseAddressPriority">The optional response address priority.</param>
+        /// <param name="capabilities">The agent capabilities. The default is bidirectional.</param>
+        /// <param name="maxUdpMessagePayloadSize">Maximum size of the UDP message payload.</param>
         public UdpCommunicationAgent(UdpConfig config
+            , CommunicationAgentCapabilities capabilities = CommunicationAgentCapabilities.Bidirectional
             , SerializationHandlerId serializerId = null
             , CompressionHandlerId compressionId = null
             , EncryptionHandlerId encryptionId = null
@@ -26,12 +35,10 @@ namespace Xigadee
             , ServiceMessageHeader responseAddress = null
             , int? requestAddressPriority = null
             , int responseAddressPriority = 1
-            , CommunicationAgentCapabilities capabilities = CommunicationAgentCapabilities.Bidirectional
             , int? maxUdpMessagePayloadSize = UdpHelper.PacketMaxSize
-            )
+            ):base(capabilities, serializerId, compressionId, encryptionId)
         {
-            mConfig = config;
-            Capabilities = capabilities;
+            mConfig = config ?? throw new ArgumentNullException("config", "Udp configuration cannot be null.");
         }
 
 
@@ -50,14 +57,5 @@ namespace Xigadee
             throw new NotImplementedException();
         }
 
-        public override Task SenderTransmit(TransmissionPayload message)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override ClientHolder SenderClientResolve(int priority)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

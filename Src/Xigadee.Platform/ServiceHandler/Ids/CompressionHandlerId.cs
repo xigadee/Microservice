@@ -16,7 +16,7 @@
 
         public override string ProcessIdentifier(string id)
         {
-            return id.Trim().ToLowerInvariant();
+            return id?.Trim().ToLowerInvariant();
         }
 
         /// <summary>
