@@ -14,7 +14,7 @@ namespace Xigadee
     /// <typeparam name="C">The client entity type.</typeparam>
     /// <typeparam name="M">The messaging type.</typeparam>
     public abstract class AzureSBSenderBase<C, M> : MessagingSenderBase<C, M, AzureClientHolder<C, M>>
-        , IAzureServiceBusMessagingService<SenderPartitionConfig>
+        //, IAzureServiceBusMessagingService<SenderPartitionConfig>
         where C : ClientEntity
     {
         #region Connection
@@ -31,28 +31,28 @@ namespace Xigadee
         public string EntityName { get; set; } 
         #endregion
 
-        #region ClientCreate(SenderPartitionConfig partition)
-        /// <summary>
-        /// This is the default client create logic.
-        /// </summary>
-        /// <param name="partition">The specific partition to create the client.</param>
-        /// <returns>
-        /// Returns the client.
-        /// </returns>
-        protected override AzureClientHolder<C, M> ClientCreate(SenderPartitionConfig partition)
-        {
-            var client = base.ClientCreate(partition);
+        //#region ClientCreate(SenderPartitionConfig partition)
+        ///// <summary>
+        ///// This is the default client create logic.
+        ///// </summary>
+        ///// <param name="partition">The specific partition to create the client.</param>
+        ///// <returns>
+        ///// Returns the client.
+        ///// </returns>
+        //protected override AzureClientHolder<C, M> ClientCreate(SenderPartitionConfig partition)
+        //{
+        //    var client = base.ClientCreate(partition);
 
-            client.Start = () =>
-            {
-                client.Client = client.ClientCreate();
-                client.IsActive = true;
-            };
+        //    client.Start = () =>
+        //    {
+        //        client.Client = client.ClientCreate();
+        //        client.IsActive = true;
+        //    };
 
-            client.ClientClose = () => client.Client.CloseAsync().Wait();
+        //    client.ClientClose = () => client.Client.CloseAsync().Wait();
 
-            return client;
-        } 
-        #endregion
+        //    return client;
+        //} 
+        //#endregion
     }
 }

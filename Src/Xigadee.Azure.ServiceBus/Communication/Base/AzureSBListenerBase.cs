@@ -6,7 +6,7 @@ namespace Xigadee
     /// <summary>
     /// This is the abstract listener base.
     /// </summary>
-    public abstract class AzureSBListenerBase<C, M> : MessagingListenerBase<C, M, AzureClientHolder<C, M>>, IAzureServiceBusMessagingService<ListenerPartitionConfig>
+    public abstract class AzureSBListenerBase<C, M> : MessagingListenerBase<C, M, AzureClientHolder<C, M>>//, IAzureServiceBusMessagingService<ListenerPartitionConfig>
         where C : ClientEntity
     {
         #region Connection
@@ -33,24 +33,24 @@ namespace Xigadee
         } 
         #endregion
 
-        #region ClientCreate()
-        /// <summary>
-        /// This method sets the start and stop listener methods.
-        /// </summary>
-        /// <returns>The client.</returns>
-        protected override AzureClientHolder<C, M> ClientCreate(ListenerPartitionConfig partition)
-        {
-            var client = base.ClientCreate(partition);
+        //#region ClientCreate()
+        ///// <summary>
+        ///// This method sets the start and stop listener methods.
+        ///// </summary>
+        ///// <returns>The client.</returns>
+        //protected override AzureClientHolder<C, M> ClientCreate(ListenerPartitionConfig partition)
+        //{
+        //    var client = base.ClientCreate(partition);
 
-            client.ClientClose = () => 
-            {
-                if (client.Client != null)
-                    client.Client.CloseAsync().Wait();
-            };
+        //    client.ClientClose = () => 
+        //    {
+        //        if (client.Client != null)
+        //            client.Client.CloseAsync().Wait();
+        //    };
           
-            return client;
-        }
-        #endregion
+        //    return client;
+        //}
+        //#endregion
 
         #region SettingsValidate()
         /// <summary>

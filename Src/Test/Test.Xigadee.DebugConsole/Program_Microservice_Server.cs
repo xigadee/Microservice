@@ -82,9 +82,9 @@ namespace Test.Xigadee
                     break;
                 case CommunicationOptions.Tls:
                     break;
-                case CommunicationOptions.AzureServiceBus:
-                    cpipe.AttachAzureServiceBusTopicListener();
-                    break;
+                //case CommunicationOptions.AzureServiceBus:
+                //    cpipe.AttachAzureServiceBusTopicListener();
+                //    break;
                 case CommunicationOptions.AzureBlobQueue:
                     break;
                 default:

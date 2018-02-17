@@ -35,20 +35,20 @@ namespace Xigadee
         public AzureConnection AzureConn { get; set; }
         #endregion
 
-        protected override AzureClientHolder<C, M> ClientCreate(SenderPartitionConfig partition)
-        {
-            var client = base.ClientCreate(partition);
+        //protected override AzureClientHolder<C, M> ClientCreate(SenderPartitionConfig partition)
+        //{
+        //    var client = base.ClientCreate(partition);
 
-            client.Start = () =>
-            {
-                client.Client = client.ClientCreate();
-                client.IsActive = true;
-            };
+        //    client.Start = () =>
+        //    {
+        //        client.Client = client.ClientCreate();
+        //        client.IsActive = true;
+        //    };
 
-            client.ClientClose = () => client.Client.Close();
+        //    client.ClientClose = () => client.Client.Close();
 
-            return client;
-        }
+        //    return client;
+        //}
 
     }
 }

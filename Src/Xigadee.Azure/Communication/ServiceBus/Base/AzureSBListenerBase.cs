@@ -51,24 +51,24 @@ namespace Xigadee
         } 
         #endregion
 
-        #region ClientCreate()
-        /// <summary>
-        /// This method sets the start and stop listener methods.
-        /// </summary>
-        /// <returns>The client.</returns>
-        protected override AzureClientHolder<C, M> ClientCreate(ListenerPartitionConfig partition)
-        {
-            var client = base.ClientCreate(partition);
+        //#region ClientCreate()
+        ///// <summary>
+        ///// This method sets the start and stop listener methods.
+        ///// </summary>
+        ///// <returns>The client.</returns>
+        //protected override AzureClientHolder<C, M> ClientCreate(ListenerPartitionConfig partition)
+        //{
+        //    var client = base.ClientCreate(partition);
 
-            client.ClientClose = () => 
-            {
-                if (client.Client != null)
-                    client.Client.Close();
-            };
+        //    client.ClientClose = () => 
+        //    {
+        //        if (client.Client != null)
+        //            client.Client.Close();
+        //    };
           
-            return client;
-        }
-        #endregion
+        //    return client;
+        //}
+        //#endregion
 
         /// <summary>
         /// This override is used to validate the listener configuration settings on startup.
