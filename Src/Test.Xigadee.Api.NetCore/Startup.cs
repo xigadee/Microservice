@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Xigadee;
 
 namespace Test.Xigadee.Api.NetCore
 {
@@ -32,6 +33,7 @@ namespace Test.Xigadee.Api.NetCore
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseXigadee();
             }
 
             app.UseMvc();

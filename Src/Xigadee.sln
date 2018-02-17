@@ -97,6 +97,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PiOStubSender", "PiOStubSen
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Api.NetCore", "Test.Xigadee.Api.NetCore\Test.Xigadee.Api.NetCore.csproj", "{AD78BA6B-3409-498F-BB5F-7B181E69A43D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.AspNetCore.Helper", "Xigadee.AspNetCore.Helper\Xigadee.AspNetCore.Helper.csproj", "{A613C071-4D08-4F37-AAD1-17009C84FBA3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -247,6 +249,10 @@ Global
 		{AD78BA6B-3409-498F-BB5F-7B181E69A43D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD78BA6B-3409-498F-BB5F-7B181E69A43D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD78BA6B-3409-498F-BB5F-7B181E69A43D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A613C071-4D08-4F37-AAD1-17009C84FBA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A613C071-4D08-4F37-AAD1-17009C84FBA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A613C071-4D08-4F37-AAD1-17009C84FBA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A613C071-4D08-4F37-AAD1-17009C84FBA3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
