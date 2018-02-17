@@ -25,7 +25,7 @@ namespace Xigadee
         /// <summary>
         /// Initializes a new instance of the <see cref="UdpHelper"/> class.
         /// </summary>
-        public UdpHelper(UdpConfig udp, UdpHelperMode mode)
+        public UdpHelper(UdpConfig udp, CommunicationAgentCapabilities mode)
         {
             Config = udp;
             Mode = mode;
@@ -44,7 +44,7 @@ namespace Xigadee
         /// <summary>
         /// Gets the mode.
         /// </summary>
-        public UdpHelperMode Mode { get; }
+        public CommunicationAgentCapabilities Mode { get; }
 
         /// <summary>
         /// Gets the available data.
@@ -75,30 +75,30 @@ namespace Xigadee
         /// </summary>
         protected override void StartInternal()
         {
-            if (Mode == UdpHelperMode.Listener || Mode == UdpHelperMode.Bidirectional)
+            if (Mode == CommunicationAgentCapabilities.Listener || Mode == CommunicationAgentCapabilities.Bidirectional)
                 switch (Config.Mode)
                 {
-                    case UdpMode.Unicast:
+                    case UdpTransmissionMode.Unicast:
                         Config.Addresses.ForEach((a) => ListenerUnicastAdd(a, Config.Port));
                         break;
-                    case UdpMode.Broadcast:
+                    case UdpTransmissionMode.Broadcast:
                         throw new NotImplementedException();
                         break;
-                    case UdpMode.Multicast:
+                    case UdpTransmissionMode.Multicast:
                         throw new NotImplementedException();
                         break;
                 }
 
-            if (Mode == UdpHelperMode.Sender || Mode == UdpHelperMode.Bidirectional)
+            if (Mode == CommunicationAgentCapabilities.Sender || Mode == CommunicationAgentCapabilities.Bidirectional)
                 switch (Config.Mode)
                 {
-                    case UdpMode.Unicast:
+                    case UdpTransmissionMode.Unicast:
                         Config.Addresses.ForEach((a) => SenderUnicastAdd(a, Config.Port, Config.RemoteEndPoint));
                         break;
-                    case UdpMode.Broadcast:
+                    case UdpTransmissionMode.Broadcast:
                         Config.Addresses.ForEach((a) => SenderBroadcastAdd(a, Config.Port, Config.RemoteEndPoint));
                         break;
-                    case UdpMode.Multicast:
+                    case UdpTransmissionMode.Multicast:
                         throw new NotImplementedException();
                         break;
                 }
@@ -133,7 +133,7 @@ namespace Xigadee
 
             socket.Bind(ep);
 
-            var state = new State(UdpHelperMode.Sender, socket);
+            var state = new State(CommunicationAgentCapabilities.Sender, socket);
 
             mConnectionsSender.Add(ep, state);
         }
@@ -161,7 +161,7 @@ namespace Xigadee
             socket.Blocking = true;
             socket.Bind(ep);
 
-            var state = new State(UdpHelperMode.Sender, socket);
+            var state = new State(CommunicationAgentCapabilities.Sender, socket);
 
             mConnectionsSender.Add(ep, state);
         }
@@ -181,7 +181,7 @@ namespace Xigadee
 
             socket.Bind(ep);
 
-            var state = new State(UdpHelperMode.Listener, socket);
+            var state = new State(CommunicationAgentCapabilities.Listener, socket);
 
             mConnectionsListener.Add(ep, state);
 
@@ -379,10 +379,10 @@ namespace Xigadee
             /// </summary>
             /// <param name="mode">The mode.</param>
             /// <param name="socket">The socket.</param>
-            public State(UdpHelperMode mode, Socket socket)
+            public State(CommunicationAgentCapabilities mode, Socket socket)
             {
                 Mode = mode;
-                Buffer = Mode != UdpHelperMode.Sender ? (new byte[UDPMAXSIZE]) : null;
+                Buffer = Mode != CommunicationAgentCapabilities.Sender ? (new byte[UDPMAXSIZE]) : null;
                 Socket = socket;
                 mIPAddressExclude = new HashSet<IPAddress>();
             }
@@ -394,7 +394,7 @@ namespace Xigadee
             /// <summary>
             /// Gets the context mode.
             /// </summary>
-            public UdpHelperMode Mode { get; }
+            public CommunicationAgentCapabilities Mode { get; }
             /// <summary>
             /// Gets the buffer.
             /// </summary>

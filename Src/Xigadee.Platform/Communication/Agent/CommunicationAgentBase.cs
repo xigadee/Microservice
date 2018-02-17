@@ -45,7 +45,7 @@ namespace Xigadee
         /// <summary>
         /// Override this to specify your agents capabilities.
         /// </summary>
-        public abstract CommunicationAgentCapabilities Capabilities { get; }
+        public virtual CommunicationAgentCapabilities Capabilities { get; protected set;}
         /// <summary>
         /// Gets a value indicating whether this agent can listen for message.
         /// </summary>

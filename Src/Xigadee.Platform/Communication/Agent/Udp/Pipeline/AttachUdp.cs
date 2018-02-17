@@ -34,18 +34,16 @@ namespace Xigadee
             , int responseAddressPriority = 1
             , Action<ServiceHandlerContext> deserialize = null
             , Func<ServiceHandlerContext, bool> canDeserialize = null
-            , Action<UdpChannelListener> action = null
+            , Action<IListener> action = null
             )
             where C : IPipelineChannelIncoming<IPipeline>
         {
-            defaultDeserializerContentType = (
-                defaultDeserializerContentType 
-                ?? $"udp_in/{cpipe.Channel.Id}"
-                ).ToLowerInvariant();
+            defaultDeserializerContentType = (defaultDeserializerContentType ?? $"udp_in/{cpipe.Channel.Id}").ToLowerInvariant();
             
-            var listener = new UdpChannelListener(udp
-                , defaultDeserializerContentType, defaultDeserializerContentEncoding
+            var listener = new UdpCommunicationAgent(udp
+                , defaultDeserializerContentType, defaultDeserializerContentEncoding, null
                 , requestAddress, responseAddress, requestAddressPriority, responseAddressPriority
+                , CommunicationAgentCapabilities.Listener
                 );
 
             if (deserialize != null)
@@ -85,19 +83,16 @@ namespace Xigadee
             , int? requestAddressPriority = null
             , int responseAddressPriority = 1
             , IServiceHandlerSerialization serializer = null
-            , Action<UdpChannelListener> action = null
+            , Action<IListener> action = null
             )
             where C : IPipelineChannelIncoming<IPipeline>
         {
-            serializerId = (
-                serializerId?.Id
-                ?? serializer?.Id 
-                ?? $"udp_in/{cpipe.Channel.Id}"
-                ).ToLowerInvariant();
+            serializerId = (serializerId?.Id ?? serializer?.Id ?? $"udp_in/{cpipe.Channel.Id}").ToLowerInvariant();
 
-            var listener = new UdpChannelListener(udp
-                , serializerId, compressionId
+            var listener = new UdpCommunicationAgent(udp
+                , serializerId, compressionId, encryptionId
                 , requestAddress, responseAddress, requestAddressPriority, responseAddressPriority
+                , CommunicationAgentCapabilities.Listener
                 );
 
             if (serializer != null)
@@ -127,7 +122,7 @@ namespace Xigadee
             , CompressionHandlerId compressionId = null
             , EncryptionHandlerId encryptionId = null
             , IServiceHandlerSerialization serializer = null
-            , Action<UdpChannelSender> action = null
+            , Action<ISender> action = null
             , int? maxUdpMessagePayloadSize = UdpHelper.PacketMaxSize
             )
             where C : IPipelineChannelOutgoing<IPipeline>
@@ -138,7 +133,9 @@ namespace Xigadee
                 ?? $"udp_out/{cpipe.Channel.Id}"
                 ).ToLowerInvariant();
 
-            var sender = new UdpChannelSender(udp, serializerId, compressionId, encryptionId, maxUdpMessagePayloadSize);
+            var sender = new UdpCommunicationAgent(udp, serializerId, compressionId, encryptionId
+                , capabilities: CommunicationAgentCapabilities.Sender
+                , maxUdpMessagePayloadSize: maxUdpMessagePayloadSize);
 
             if (serializer != null)
                 cpipe.Pipeline.AddPayloadSerializer(serializer);
@@ -169,7 +166,7 @@ namespace Xigadee
             , EncryptionHandlerId encryptionId = null
             , Action<ServiceHandlerContext> serialize = null
             , Func<ServiceHandlerContext, bool> canSerialize = null
-            , Action<UdpChannelSender> action = null
+            , Action<ISender> action = null
             , int? maxUdpMessagePayloadSize = UdpHelper.PacketMaxSize
             )
             where C : IPipelineChannelOutgoing<IPipeline>
@@ -178,7 +175,10 @@ namespace Xigadee
                 serializerId?.Id?? $"udp_out/{cpipe.Channel.Id}"
                 ).ToLowerInvariant();
 
-            var sender = new UdpChannelSender(udp, serializerId, compressionId, encryptionId, maxUdpMessagePayloadSize);
+            var sender = new UdpCommunicationAgent(udp, serializerId, compressionId, encryptionId
+                , capabilities: CommunicationAgentCapabilities.Sender
+                , maxUdpMessagePayloadSize: maxUdpMessagePayloadSize
+                );
 
             if (serialize != null)
                 cpipe.Pipeline.AddPayloadSerializer(serializerId
