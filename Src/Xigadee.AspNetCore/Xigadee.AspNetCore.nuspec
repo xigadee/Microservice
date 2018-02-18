@@ -1,20 +1,20 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>Xigadee</id>
+    <id>Xigadee.AspNetCore</id>
     <version>{UpdateVersion.ps1.replace}</version>
-    <title>Xigadee Microservice Library</title>
+    <title>Xigadee AspNetCore extension Library</title>
     <authors>Paul Stancer and Guy Steel</authors>
     <owners>Xigadee.org</owners>
     <iconUrl>https://raw.githubusercontent.com/xigadee/Microservice/master/docs/Logo.png</iconUrl>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <projectUrl>http://xigadee.org</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>The Xigadee library is used to create Microservice and Serverless based applications.</description>
+    <description>This Xigadee library is used to extend AspNetCore applications.</description>
     <summary>Xigadee Microservice Framework for .NET</summary>
     <releaseNotes>Initial push.</releaseNotes>
     <copyright>Part of the original copyright came from Hitachi Consulting 2012-2017</copyright>
-    <tags>Xigadee Microservice .NET Hitachi</tags>
+    <tags>Xigadee Microservice ASP.NET Core</tags>
     <dependencies>
       <group targetFramework=".NETFramework4.7">
         <dependency id="Microsoft.CSharp" version="4.4.0" exclude="Build,Analyzers" />
@@ -27,8 +27,8 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\Release\Xigadee*.dll" target="lib\net46\" />
-    <file src="bin\Release\Xigadee*.pdb" target="lib\net46\" />
-    <file src="bin\Release\Xigadee*.xml" target="lib\net46\" />
+    <file src="bin\Release\Xigadee.AspNetCore*.dll" target="lib\net47\" />
+    <file src="bin\Release\Xigadee.AspNetCore*.pdb" target="lib\net47\" />
+    <file src="bin\Release\Xigadee.AspNetCore*.xml" target="lib\net47\" />
   </files>
 </package>
