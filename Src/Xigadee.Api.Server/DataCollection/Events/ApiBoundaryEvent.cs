@@ -1,19 +1,4 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-#region using
+﻿#region using
 using System;
 using System.Net;
 using System.Net.Http;
@@ -26,7 +11,7 @@ using System.Web.Http.Filters;
 namespace Xigadee
 {
     /// <summary>
-    /// This is the base event class for the Api Boundary Event logger.
+    /// This is the base event class for the API Boundary Event logger.
     /// </summary>
     public class ApiBoundaryEvent: BoundaryEvent
     {
@@ -35,7 +20,7 @@ namespace Xigadee
         /// <summary>
         /// This is the base constructor.
         /// </summary>
-        /// <param name="context">This is the api context.</param>
+        /// <param name="context">This is the API context.</param>
         /// <param name="level">This enumeration determines which part of the data should be logged.</param>
         public ApiBoundaryEvent(HttpActionExecutedContext context, ApiBoundaryLoggingFilterLevel level)
         {

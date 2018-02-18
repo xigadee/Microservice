@@ -33,8 +33,10 @@ namespace Test.Xigadee.Api.NetCore
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseXigadee();
             }
+
+            app.UseXigadee()
+                ;
 
             app.UseMvc();
         }

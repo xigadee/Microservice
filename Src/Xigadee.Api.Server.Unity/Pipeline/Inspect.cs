@@ -29,7 +29,7 @@ namespace Xigadee
         /// <param name="msInspect">An action to inspect the Microservice</param>
         /// <param name="cfInspect">An action to inspect the configuration.</param>
         /// <param name="httpInspect">An Action to inspect the WebApi HttpConfiguration.</param>
-        /// <returns>The passthrough of the pipeline.</returns>
+        /// <returns>The pass-through of the pipeline.</returns>
         public static P Inspect<P>(this P pipeline
             , Action<IMicroservice> msInspect = null
             , Action<IEnvironmentConfiguration> cfInspect = null
