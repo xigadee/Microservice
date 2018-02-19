@@ -16,31 +16,30 @@
 
 //#region using
 //using System;
-//using System.Collections.Generic;
-//using System.Linq;
 //using System.Net;
 //using System.Net.Http;
-//using System.Net.Http.Headers;
-//using System.Security.Principal;
-//using System.ServiceModel.Channels;
-//using System.Text;
 //using System.Threading;
 //using System.Threading.Tasks;
-//using System.Web;
-//using System.Web.Http.Controllers;
-//using System.Web.Http.Filters;
-//using Newtonsoft.Json.Linq;
+//using Microsoft.AspNetCore.Mvc.Filters;
+
 //#endregion
 //namespace Xigadee
 //{
 //    /// <summary>
 //    /// This filter can be applied to specific method calls and interacts with the Xigadee Resource Tracker.
-//    /// The filter is used to limit ot stop incoming requests in a Microservice system, when there are problems
+//    /// The filter is used to limit to stop incoming requests in a Microservice system, when there are problems
 //    /// with downstream resources.
 //    /// </summary>
 //    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
 //    public class WebApiMicroserviceStartupFilterAttribute: ActionFilterAttribute
 //    {
+//        public WebApiMicroserviceStartupFilterAttribute(IMicroservice ms)
+//        {
+//            Microservice = ms;
+//        }
+
+//        protected IMicroservice Microservice { get; }
+
 //        /// <summary>
 //        /// This random function is used to provide random support for the half open state that allow some messages to progress
 //        /// when the service is validating connectivity to the resource.
@@ -64,17 +63,11 @@
 //            mResourceProfileId = resourceProfileId;
 //            mDiscloseStatusinHTTPResponse = discloseStatusinHTTPResponse;
 //        }
-//        /// <summary>
-//        /// This method is called before the method is executed to verify that the resource is available.
-//        /// </summary>
-//        /// <param name="actionContext">The action context.</param>
-//        /// <param name="cancellationToken">The cancellation token.</param>
-//        /// <returns>Async method.</returns>
-//        public override async Task OnActionExecutingAsync(HttpActionContext actionContext, CancellationToken cancellationToken)
-//        {
-//            var ms = actionContext.ToMicroservice();
 
-//            ResourceStatus status = ms?.ResourceMonitor.ResourceStatusGet(mResourceProfileId);
+
+//        public override Task OnActionExecutionAsync(ActionExecutingContext actionContext, ActionExecutionDelegate next)
+//        {
+//            ResourceStatus status = Microservice?.ResourceMonitor.ResourceStatusGet(mResourceProfileId);
 
 //            switch (status?.State ?? CircuitBreakerState.Closed)
 //            {
@@ -83,15 +76,16 @@
 //                case CircuitBreakerState.HalfOpen:// Check the probability function to randomly let some messages through, this is based on a 0-100% filter. 
 //                    if (mRand.Next(0, 100) <= status.FilterPercentage)
 //                        break;
-//                    actionContext.Response = GenerateRequest(status, actionContext.Request);
+//                    actionContext.Response = GenerateRequest(status, actionContext..Request);
 //                    return;
 //                case CircuitBreakerState.Open: //Return a 429 error
 //                    actionContext.Response = GenerateRequest(status, actionContext.Request);
 //                    return;
 //            }
 
-//            await base.OnActionExecutingAsync(actionContext, cancellationToken);
+//            return base.OnActionExecutionAsync(actionContext, next);
 //        }
+
 
 //        private HttpResponseMessage GenerateRequest(ResourceStatus status, HttpRequestMessage request)
 //        {

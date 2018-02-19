@@ -20,7 +20,7 @@ namespace Test.Xigadee.Api.NetCore
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseXigadee()
+                //.UseXigadee("freddy")
                 .UseStartup<Startup>()
                 .Build();
     }
