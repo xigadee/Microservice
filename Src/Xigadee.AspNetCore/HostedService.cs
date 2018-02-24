@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
@@ -21,42 +22,27 @@ namespace Xigadee
     {
         public XigadeeService(string name = null
             , string serviceId = null
-            , string description = null)
+            , string description = null
+            , IEnumerable<PolicyBase> policy = null
+            , IEnumerable<Tuple<string, string>> properties = null
+            , IEnvironmentConfiguration config = null
+            , Action<IMicroservice> assign = null
+            , Action<IEnvironmentConfiguration> configAssign = null
+            , bool addDefaultJsonPayloadSerializer = true
+            , bool addDefaultPayloadCompressors = true
+            , string serviceVersionId = null
+            , Type serviceReference = null)
         {
-            Service = new Microservice(name, serviceId, description);
+            Pipeline = new MicroservicePipeline(name, serviceId, description, policy
+                , properties, config, assign
+                , configAssign, addDefaultJsonPayloadSerializer, addDefaultPayloadCompressors
+                , serviceVersionId, serviceReference);
         }
 
-        public IMicroservice Service { get; private set; }
-
-        private readonly ILogger _logger;
+        public MicroservicePipeline Pipeline { get; private set; }
 
         private Task _executingTask;
 
-        private readonly CancellationTokenSource _stoppingCts = new CancellationTokenSource();
-
-
-
-        protected async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            LogDebug($"GracePeriodManagerService is starting.");
-            stoppingToken.Register(() =>
-                    LogDebug($" GracePeriod background task is stopping."));
-
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                LogDebug($"GracePeriod task doing background work.");
-
-                // This eShopOnContainers method is querying a database table 
-                // and publishing events into the Event Bus (RabbitMS / ServiceBus)
-                //CheckConfirmedGracePeriodOrders();
-
-                //await Task.Delay(_settings.CheckUpdateTime, stoppingToken);
-                await Task.Delay(1000, stoppingToken);
-            }
-
-            LogDebug($"GracePeriod background task is stopping.");
-
-        }
 
         private void LogDebug(string eventData)
         {
@@ -66,14 +52,14 @@ namespace Xigadee
         public virtual Task StartAsync(CancellationToken cancellationToken)
         {
             // Store the task we're executing
-            _executingTask = ExecuteAsync(_stoppingCts.Token);
-
-            // If the task is completed then return it, 
-            // this will bubble cancellation and failure to the caller
-            if (_executingTask.IsCompleted)
-            {
-                return _executingTask;
-            }
+            //_executingTask = ExecuteAsync(_stoppingCts.Token);
+            TryStart();
+            //// If the task is completed then return it, 
+            //// this will bubble cancellation and failure to the caller
+            //if (_executingTask.IsCompleted)
+            //{
+            //    return _executingTask;
+            //}
 
             // Otherwise it's running
             return Task.CompletedTask;
@@ -90,7 +76,7 @@ namespace Xigadee
             try
             {
                 // Signal cancellation to the executing method
-                _stoppingCts.Cancel();
+                TryStop(false);
             }
             finally
             {
@@ -102,7 +88,26 @@ namespace Xigadee
 
         public virtual void Dispose()
         {
-            _stoppingCts.Cancel();
+            TryStop(true);
+        }
+
+        public bool TryStart()
+        {
+            if (Pipeline.Service.Status != ServiceStatus.Created)
+                return false;
+
+            Pipeline.Service.Start();
+            return true;
+        }
+
+        public bool TryStop(bool force)
+        {
+            if (Pipeline.Service.Status != ServiceStatus.Running)
+                return false;
+
+            Pipeline.Service.Stop();
+
+            return true;
         }
     }
 }

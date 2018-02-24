@@ -66,7 +66,7 @@ namespace Xigadee
             var ms = new XigadeeService(name, serviceId, description);
 
             services.AddSingleton<IHostedService>(ms);
-            services.AddSingleton<IMicroservice>(ms.Service);
+            services.AddSingleton<MicroservicePipeline>(ms.Pipeline);
 
             return services;
         }

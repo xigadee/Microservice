@@ -27,7 +27,7 @@ namespace Test.Xigadee.Api.NetCore
             
             services.AddMvc();
 
-            services.AddXigadee("cock");
+            services.AddXigadee("cool");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
