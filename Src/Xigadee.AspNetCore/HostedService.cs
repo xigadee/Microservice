@@ -8,19 +8,29 @@ using Xigadee;
 
 namespace Xigadee
 {
-    public interface IXigadeeMicroservice: IHostedService, IDisposable
-    {
-
-    }
-
     /// <summary>
     /// This class host the Microservice within the AspNetCore application.
     /// </summary>
     /// <seealso cref = "Microsoft.Extensions.Hosting.IHostedService" />
     /// < seealso cref= "https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/multi-container-microservice-net-applications/background-tasks-with-ihostedservice" />
-    public class XigadeeService: IXigadeeMicroservice
+    public class XigadeeHostedService: IHostedService, IDisposable
     {
-        public XigadeeService(string name = null
+        /// <summary>
+        /// Initializes a new instance of the <see cref="XigadeeHostedService"/> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="serviceId">The service identifier.</param>
+        /// <param name="description">The description.</param>
+        /// <param name="policy">The policy.</param>
+        /// <param name="properties">The properties.</param>
+        /// <param name="config">The configuration.</param>
+        /// <param name="assign">The assign.</param>
+        /// <param name="configAssign">The configuration assign.</param>
+        /// <param name="addDefaultJsonPayloadSerializer">if set to <c>true</c> [add default json payload serializer].</param>
+        /// <param name="addDefaultPayloadCompressors">if set to <c>true</c> [add default payload compressors].</param>
+        /// <param name="serviceVersionId">The service version identifier.</param>
+        /// <param name="serviceReference">The service reference.</param>
+        public XigadeeHostedService(string name = null
             , string serviceId = null
             , string description = null
             , IEnumerable<PolicyBase> policy = null
@@ -34,44 +44,30 @@ namespace Xigadee
             , Type serviceReference = null)
         {
             Pipeline = new MicroservicePipeline(name, serviceId, description, policy
-                , properties, config, assign
-                , configAssign, addDefaultJsonPayloadSerializer, addDefaultPayloadCompressors
+                , properties, config, assign, configAssign
+                , addDefaultJsonPayloadSerializer, addDefaultPayloadCompressors
                 , serviceVersionId, serviceReference);
         }
 
+        /// <summary>
+        /// Gets the Microservice pipeline.
+        /// </summary>
         public MicroservicePipeline Pipeline { get; private set; }
-
-        private Task _executingTask;
-
-
-        private void LogDebug(string eventData)
-        {
-
-        }
+        /// <summary>
+        /// Gets the Microservice.
+        /// </summary>
+        public IMicroservice Service => Pipeline?.Service;
 
         public virtual Task StartAsync(CancellationToken cancellationToken)
         {
-            // Store the task we're executing
-            //_executingTask = ExecuteAsync(_stoppingCts.Token);
             TryStart();
-            //// If the task is completed then return it, 
-            //// this will bubble cancellation and failure to the caller
-            //if (_executingTask.IsCompleted)
-            //{
-            //    return _executingTask;
-            //}
 
             // Otherwise it's running
             return Task.CompletedTask;
         }
 
-        public virtual async Task StopAsync(CancellationToken cancellationToken)
+        public virtual Task StopAsync(CancellationToken cancellationToken)
         {
-            // Stop called without start
-            if (_executingTask == null)
-            {
-                return;
-            }
 
             try
             {
@@ -81,9 +77,10 @@ namespace Xigadee
             finally
             {
                 // Wait until the task completes or the stop token triggers
-                await Task.WhenAny(_executingTask, Task.Delay(Timeout.Infinite,cancellationToken));
+                //await Task.WhenAny(_executingTask, Task.Delay(Timeout.Infinite,cancellationToken));
             }
 
+            return Task.CompletedTask;
         }
 
         public virtual void Dispose()
@@ -91,7 +88,7 @@ namespace Xigadee
             TryStop(true);
         }
 
-        public bool TryStart()
+        protected bool TryStart()
         {
             if (Pipeline.Service.Status != ServiceStatus.Created)
                 return false;
@@ -100,7 +97,7 @@ namespace Xigadee
             return true;
         }
 
-        public bool TryStop(bool force)
+        protected bool TryStop(bool force)
         {
             if (Pipeline.Service.Status != ServiceStatus.Running)
                 return false;
