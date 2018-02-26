@@ -14,7 +14,6 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor for the pipeline.
         /// </summary>
-        /// <param name="app">The AspNetCore application.</param>
         /// <param name="name">The Microservice name.</param>
         /// <param name="serviceId">The service id.</param>
         /// <param name="description">This is an optional Microservice description.</param>
@@ -27,8 +26,9 @@ namespace Xigadee
         /// <param name="addDefaultPayloadCompressors">This method ensures the Gzip and Deflate compressors are added to the Microservice.</param>
         /// <param name="serviceVersionId">This is the version id of the calling assembly as a string.</param>
         /// <param name="serviceReference">This is a reference type used to identify the version id of the root assembly.</param>
-        public AspNetCoreMicroservicePipeline(IApplicationBuilder app
-            , string name = null
+        /// <param name="app">The optional AspNetCore application.</param>
+        public AspNetCoreMicroservicePipeline(
+              string name = null
             , string serviceId = null
             , string description = null
             , IEnumerable<PolicyBase> policy = null
@@ -40,9 +40,10 @@ namespace Xigadee
             , bool addDefaultPayloadCompressors = true
             , string serviceVersionId = null
             , Type serviceReference = null
+            , IApplicationBuilder app = null
             ) : base(name, serviceId, description, policy, properties, config, assign, configAssign, addDefaultJsonPayloadSerializer, addDefaultPayloadCompressors, serviceVersionId, serviceReference)
         {
-            App = app ?? throw new ArgumentNullException("app");
+            App = app;
         }
 
         /// <summary>
@@ -53,9 +54,9 @@ namespace Xigadee
         /// <param name="app">The AspNetCore application.</param>
         public AspNetCoreMicroservicePipeline(IMicroservice service
             , IEnvironmentConfiguration config
-            , IApplicationBuilder app) : base(service, config)
+            , IApplicationBuilder app = null) : base(service, config)
         {
-            App = app ?? throw new ArgumentNullException("app");
+            App = app;
         }
         #endregion
 
@@ -63,7 +64,7 @@ namespace Xigadee
         /// <summary>
         /// This is the AspNetCore application
         /// </summary>
-        public IApplicationBuilder App { get; protected set; }
+        public IApplicationBuilder App { get; set; }
         #endregion
     }
 }

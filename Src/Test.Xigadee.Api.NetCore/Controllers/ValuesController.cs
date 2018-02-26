@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Test.Xigadee.Api.NetCore.Controllers
 {
     [Route("api/[controller]")]
+    [RequireHttps]
     public class ValuesController : Controller
     {
         // GET api/values

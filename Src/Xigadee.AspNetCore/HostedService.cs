@@ -43,7 +43,7 @@ namespace Xigadee
             , string serviceVersionId = null
             , Type serviceReference = null)
         {
-            Pipeline = new MicroservicePipeline(name, serviceId, description, policy
+            Pipeline = new AspNetCoreMicroservicePipeline(name, serviceId, description, policy
                 , properties, config, assign, configAssign
                 , addDefaultJsonPayloadSerializer, addDefaultPayloadCompressors
                 , serviceVersionId, serviceReference);
@@ -52,7 +52,7 @@ namespace Xigadee
         /// <summary>
         /// Gets the Microservice pipeline.
         /// </summary>
-        public MicroservicePipeline Pipeline { get; private set; }
+        public AspNetCoreMicroservicePipeline Pipeline { get; private set; }
         /// <summary>
         /// Gets the Microservice.
         /// </summary>

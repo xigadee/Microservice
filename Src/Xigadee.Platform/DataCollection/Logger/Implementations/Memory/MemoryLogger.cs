@@ -43,16 +43,12 @@ namespace Xigadee
                 Enum.GetValues(typeof(LoggingLevel))
                     .Cast<LoggingLevel>()
                     .ToDictionary((l) => l, (l) => new MemoryLogEventLevelHolder(l, capacityCalculator(l)));
-
         }
 
         /// <summary>
         /// The service originator.
         /// </summary>
-        public MicroserviceId OriginatorId
-        {
-            get; set;
-        }
+        public MicroserviceId OriginatorId{get; set;}
 
         /// <summary>
         /// This method asynchronously logs an event.
@@ -69,6 +65,18 @@ namespace Xigadee
         }
 
         /// <summary>
+        /// This method returns the holder.
+        /// If the logger has not yet started, then this method will return null.
+        /// </summary>
+        /// <param name="level">The logging level requested.</param>
+        /// <returns>Returns the logging level container.</returns>
+        public MemoryLogEventLevelHolder Holder(LoggingLevel level)
+        {
+            return mHolders?[level];
+        }
+
+        #region Unused start/stop code.
+        /// <summary>
         /// This method starts the service.
         /// </summary>
         protected override void StartInternal()
@@ -79,17 +87,8 @@ namespace Xigadee
         /// </summary>
         protected override void StopInternal()
         {
-        }
+        } 
+        #endregion
 
-        /// <summary>
-        /// This method returns the holder.
-        /// If the logger has not yet started, then this method will return null.
-        /// </summary>
-        /// <param name="level">The logging level requested.</param>
-        /// <returns>Returns the logging level container.</returns>
-        public MemoryLogEventLevelHolder Holder(LoggingLevel level)
-        {
-            return mHolders?[level];
-        }
     }
 }

@@ -39,8 +39,7 @@ namespace Test.Xigadee.Api.NetCore
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseXigadee()
-                ;
+            app.UseXigadee();
 
             app.UseMvc();
         }
