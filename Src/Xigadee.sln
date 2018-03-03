@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2027
+VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Azure", "Xigadee.Azure\Xigadee.Azure.csproj", "{069F5121-BC8E-4F1F-B08C-BA3F4806DB78}"
 EndProject
@@ -95,9 +95,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PiO.Console", "PiO.Console\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PiOStubSender", "PiOStubSender\PiOStubSender.csproj", "{987BEFAA-4A1A-485E-8DC6-B2D50AD7E190}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Api.NetCore", "Test.Xigadee.Api.NetCore\Test.Xigadee.Api.NetCore.csproj", "{AD78BA6B-3409-498F-BB5F-7B181E69A43D}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.AspNetCore", "Xigadee.AspNetCore\Xigadee.AspNetCore.csproj", "{B683B9FC-FDE3-4228-A98E-926B4D4AA86C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.AspNetCore", "Test.Xigadee.AspNetCore\Test.Xigadee.AspNetCore.csproj", "{320A3E2C-EAD5-4DA3-9154-5C127D41ACA7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -245,14 +245,14 @@ Global
 		{987BEFAA-4A1A-485E-8DC6-B2D50AD7E190}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{987BEFAA-4A1A-485E-8DC6-B2D50AD7E190}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{987BEFAA-4A1A-485E-8DC6-B2D50AD7E190}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AD78BA6B-3409-498F-BB5F-7B181E69A43D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AD78BA6B-3409-498F-BB5F-7B181E69A43D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AD78BA6B-3409-498F-BB5F-7B181E69A43D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AD78BA6B-3409-498F-BB5F-7B181E69A43D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B683B9FC-FDE3-4228-A98E-926B4D4AA86C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B683B9FC-FDE3-4228-A98E-926B4D4AA86C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B683B9FC-FDE3-4228-A98E-926B4D4AA86C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B683B9FC-FDE3-4228-A98E-926B4D4AA86C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{320A3E2C-EAD5-4DA3-9154-5C127D41ACA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{320A3E2C-EAD5-4DA3-9154-5C127D41ACA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{320A3E2C-EAD5-4DA3-9154-5C127D41ACA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{320A3E2C-EAD5-4DA3-9154-5C127D41ACA7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -275,10 +275,10 @@ Global
 		{A3906C23-E5FB-43EA-B7EE-44E08322E336} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 		{FD9818A5-882B-4023-94BE-5F9E8F700BFF} = {147BDD3C-B68D-4D13-912C-240F23DD1C91}
 		{987BEFAA-4A1A-485E-8DC6-B2D50AD7E190} = {147BDD3C-B68D-4D13-912C-240F23DD1C91}
-		{AD78BA6B-3409-498F-BB5F-7B181E69A43D} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
+		{320A3E2C-EAD5-4DA3-9154-5C127D41ACA7} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {8BF7561D-7A94-4B22-B0EB-D82D95B110DE}
 		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
+		SolutionGuid = {8BF7561D-7A94-4B22-B0EB-D82D95B110DE}
 	EndGlobalSection
 EndGlobal

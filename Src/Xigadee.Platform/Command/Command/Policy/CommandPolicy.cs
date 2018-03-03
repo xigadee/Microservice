@@ -102,7 +102,7 @@ namespace Xigadee
         /// <summary>
         /// This is the default time out poll, which is set at an initial 10 second wait and then a repeated 5 seconds poll by default.
         /// </summary>
-        public virtual ScheduleTimerConfig OutgoingRequestsTimeoutPollInterval { get; set; } = new ScheduleTimerConfig() { Interval = TimeSpan.FromSeconds(1) };
+        public virtual ScheduleTimerConfig OutgoingRequestsTimeoutPollInterval { get; set; } = new ScheduleTimerConfig(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(10));
 
         //Master Job
         /// <summary>

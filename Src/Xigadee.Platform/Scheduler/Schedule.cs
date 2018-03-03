@@ -1,20 +1,4 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-#region using
+﻿#region using
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -39,7 +23,7 @@ namespace Xigadee
         private long mExecuteActiveSkipCount = 0;
         private ScheduleTimerConfig mTimerConfig = null;
         #endregion
-        #region Constructor        
+        #region Constructor    
         /// <summary>
         /// Initializes a new instance of the <see cref="Schedule"/> class.
         /// The schedule is disabled until the initialise function is called.
@@ -49,6 +33,7 @@ namespace Xigadee
             mShouldExecute = false;
             Statistics = new MessagingStatistics();
             Statistics.ComponentId = Id;
+            mTimerConfig = new ScheduleTimerConfig(enforceSetting:false);
         }
         /// <summary>
         /// Initializes a new instance of the <see cref="Schedule"/> class.
@@ -58,9 +43,9 @@ namespace Xigadee
         /// <param name="context">The context.</param>
         /// <param name="timerConfig">The optional timer configuration.</param>
         /// <param name="isLongRunning">Specifies whether the schedule is a long running process.</param>
-        public Schedule(Func<Schedule, CancellationToken, Task> execute, string name = null, object context = null, ScheduleTimerConfig timerConfig = null, bool isLongRunning = false) :this()
+        public Schedule(Func<Schedule, CancellationToken, Task> execute, ScheduleTimerConfig timerConfig, string name = null, object context = null, bool isLongRunning = false) :this()
         {
-            Initialise(execute, name, context);
+            Initialise(execute, timerConfig, name, context);
             Statistics.Name = name;
         }
         #endregion
@@ -74,7 +59,11 @@ namespace Xigadee
         /// <param name="context">The context.</param>
         /// <param name="timerConfig">The optional timer configuration.</param>
         /// <param name="isLongRunning">Specifies whether the schedule is a long running process.</param>
-        public virtual void Initialise(Func<Schedule, CancellationToken, Task> execute, string name = null, object context = null, ScheduleTimerConfig timerConfig = null, bool isLongRunning = false)
+        public virtual void Initialise(Func<Schedule, CancellationToken, Task> execute
+            , ScheduleTimerConfig timerConfig
+            , string name = null
+            , object context = null
+            , bool isLongRunning = false)
         {
             mExecute = execute ?? throw new ArgumentNullException("execute", $"{GetType().Name}/{nameof(Initialise)}");
 
@@ -83,9 +72,7 @@ namespace Xigadee
             Name = name;
             Context = context;
 
-            mTimerConfig = timerConfig;
-            if (timerConfig != null)
-                TimerSet(timerConfig);
+            TimerSet(timerConfig);
 
             IsLongRunning = isLongRunning;
         }
@@ -251,31 +238,38 @@ namespace Xigadee
         /// <param name="timerConfig">The timer configuration.</param>
         public void TimerSet(ScheduleTimerConfig timerConfig)
         {
-            if (timerConfig == null)
-                throw new ArgumentNullException("timerConfig");
-
-            Frequency = timerConfig.Interval;
-            InitialTime = timerConfig.InitialWaitUTCTime;
-            InitialWait = timerConfig.InitialWait;
+            mTimerConfig = timerConfig ?? throw new ArgumentNullException("timerConfig");
         } 
         #endregion
         #region InitialWait
         /// <summary>
         /// This is the initial wait in a TimeSpan before the timer event fires.
         /// </summary>
-        public TimeSpan? InitialWait { get; set; }
+        public TimeSpan? InitialWait
+        {
+            get { return mTimerConfig.InitialWait; }
+            set { mTimerConfig.InitialWait = value; }
+        }
         #endregion
-        #region InitialTime
+        #region InitialWaitUTCTime
         /// <summary>
         /// This is the specific date-time that the schedule should use for it's first execution.
         /// </summary>
-        public DateTime? InitialTime { get; set; }
+        public DateTime? InitialWaitUTCTime
+        {
+            get { return mTimerConfig.InitialWaitUTCTime; }
+            set { mTimerConfig.InitialWaitUTCTime = value; }
+        }
         #endregion
-        #region Frequency
+        #region Interval
         /// <summary>
         /// This is the repeat frequency that the event should fire.
         /// </summary>
-        public TimeSpan? Frequency { get; set; }
+        public TimeSpan? Interval
+        {
+            get { return mTimerConfig.Interval; }
+            set { mTimerConfig.Interval = value; }
+        }
         #endregion
 
         #region ExecutionCount
@@ -328,11 +322,11 @@ namespace Xigadee
                 if (!force && NextExecuteTime.HasValue && NextExecuteTime.Value > DateTime.UtcNow)
                     return;
 
-                if (InitialTime.HasValue)
+                if (InitialWaitUTCTime.HasValue)
                 {
-                    NextExecuteTime = InitialTime.Value;
+                    NextExecuteTime = InitialWaitUTCTime.Value;
                     InitialWait = null;
-                    InitialTime = null;
+                    InitialWaitUTCTime = null;
                     return;
                 }
 
@@ -340,13 +334,13 @@ namespace Xigadee
                 {
                     NextExecuteTime = DateTime.UtcNow.Add(InitialWait.Value);
                     InitialWait = null;
-                    InitialTime = null;
+                    InitialWaitUTCTime = null;
                     return;
                 }
 
-                if (Frequency.HasValue)
+                if (Interval.HasValue)
                 {
-                    NextExecuteTime = DateTime.UtcNow.Add(Frequency.Value);
+                    NextExecuteTime = DateTime.UtcNow.Add(Interval.Value);
                     return;
                 }
 
@@ -354,7 +348,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                throw new ScheduleRecalculateException($"Schedule recalculation failed for {ScheduleType}:'{Name ?? Id.ToString("N").ToUpperInvariant()}' Active={Active} -> InitialTime:'{InitialTime}' InitialWait:'{InitialWait}' Frequency:'{Frequency}'", ex);
+                throw new ScheduleRecalculateException($"Schedule recalculation failed for {ScheduleType}:'{Name ?? Id.ToString("N").ToUpperInvariant()}' Active={Active} -> InitialTime:'{InitialWaitUTCTime}' InitialWait:'{InitialWait}' Frequency:'{Interval}'", ex);
             }
 
         }
@@ -376,7 +370,7 @@ namespace Xigadee
             get
             {
                 //One time hit for the first execution.
-                if (mExecutionCount == 0 && !InitialWait.HasValue && !InitialTime.HasValue && !Frequency.HasValue)
+                if (mExecutionCount == 0 && !InitialWait.HasValue && !InitialWaitUTCTime.HasValue && !Interval.HasValue)
                     return true;
 
                 var compareTime = DateTime.UtcNow;

@@ -44,7 +44,7 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the entity poll schedule.
         /// </summary>
-        public virtual ScheduleTimerConfig JobPollSchedule { get; set; } = new ScheduleTimerConfig();
+        public virtual ScheduleTimerConfig JobPollSchedule { get; set; } = new ScheduleTimerConfig(TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10));
         /// <summary>
         /// Gets or sets a value indicating whether job poll is long running. The default is false.
         /// </summary>

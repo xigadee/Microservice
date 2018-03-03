@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:55554/",
+      "applicationUrl": "http://localhost:8438/",
       "sslPort": 0
     }
   },
@@ -16,14 +16,14 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "App": {
+    "Test.Xigadee.AspNetCore": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "api/values",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:55555/"
+      "applicationUrl": "http://localhost:8439/"
     }
   }
 }

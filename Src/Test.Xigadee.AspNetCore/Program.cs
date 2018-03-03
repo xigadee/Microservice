@@ -7,9 +7,8 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Xigadee;
 
-namespace Test.Xigadee.Api.NetCore
+namespace Test.Xigadee.AspNetCore
 {
     public class Program
     {
@@ -19,8 +18,8 @@ namespace Test.Xigadee.Api.NetCore
         }
 
         public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                //.UseXigadee("freddy")
+            WebHost
+                .CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
                 .Build();
     }

@@ -4,10 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Test.Xigadee.Api.NetCore.Controllers
+namespace Test.Xigadee.AspNetCore.Controllers
 {
-    [Route("api/values")]
-    [RequireHttps]
+    [Route("api/[controller]")]
     public class ValuesController : Controller
     {
         // GET api/values

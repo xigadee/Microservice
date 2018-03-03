@@ -43,18 +43,18 @@ namespace Xigadee
             switch (state)
             {
                 case MasterJobState.Active:
-                    schedule.Frequency = TimeSpan.FromSeconds(5 + Generator.Next(10));
+                    schedule.Interval = TimeSpan.FromSeconds(5 + Generator.Next(10));
                     break;
                 case MasterJobState.Inactive:
                 case MasterJobState.VerifyingComms:
                     //schedule.Frequency = TimeSpan.FromMilliseconds(300);
-                    schedule.InitialTime = DateTime.UtcNow.AddSeconds(3);
+                    schedule.InitialWaitUTCTime = DateTime.UtcNow.AddSeconds(3);
                     break;
                 default:
                     if (this.PollAttemptsExceeded(state, pollAttempts))
-                        schedule.Frequency = TimeSpan.FromSeconds(5 + Generator.Next(25));
+                        schedule.Interval = TimeSpan.FromSeconds(5 + Generator.Next(25));
                     else
-                        schedule.Frequency = TimeSpan.FromSeconds(10 + Generator.Next(20));
+                        schedule.Interval = TimeSpan.FromSeconds(10 + Generator.Next(20));
                     break;
             }
         }
@@ -71,8 +71,7 @@ namespace Xigadee
         /// </summary>
         public MasterJobNegotiationStrategyDebug() : base("Debug")
         {
-            InitialPollFrequency = TimeSpan.FromMilliseconds(100);
-            InitialPollWait = TimeSpan.FromMilliseconds(100);
+            InitialPoll = new ScheduleTimerConfig(TimeSpan.FromMilliseconds(100),TimeSpan.FromMilliseconds(100));
         }
 
         /// <summary>
@@ -86,19 +85,19 @@ namespace Xigadee
             switch (state)
             {
                 case MasterJobState.Active:
-                    schedule.Frequency = TimeSpan.FromMilliseconds(5 + Generator.Next(10));
+                    schedule.Interval = TimeSpan.FromMilliseconds(5 + Generator.Next(10));
                     break;
                 case MasterJobState.Inactive:
                 case MasterJobState.VerifyingComms:
                 case MasterJobState.Starting:
-                    schedule.Frequency = TimeSpan.FromMilliseconds(300);
-                    schedule.InitialTime = DateTime.UtcNow.AddMilliseconds(300);
+                    schedule.Interval = TimeSpan.FromMilliseconds(300);
+                    schedule.InitialWaitUTCTime = DateTime.UtcNow.AddMilliseconds(300);
                     break;
                 default:
                     if (this.PollAttemptsExceeded(state,pollAttempts))
-                        schedule.Frequency = TimeSpan.FromMilliseconds(5 + Generator.Next(25));
+                        schedule.Interval = TimeSpan.FromMilliseconds(5 + Generator.Next(25));
                     else
-                        schedule.Frequency = TimeSpan.FromMilliseconds(25 + Generator.Next(50));
+                        schedule.Interval = TimeSpan.FromMilliseconds(25 + Generator.Next(50));
                     break;
             }
         }

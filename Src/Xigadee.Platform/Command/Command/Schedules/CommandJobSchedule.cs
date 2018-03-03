@@ -52,7 +52,7 @@ namespace Xigadee
             , Action<Schedule> tearUp = null
             , Action<Schedule> tearDown = null
             , bool isMasterJob = false
-            ) : base(execute, name, context, timerConfig, isLongRunning)
+            ) : base(execute, timerConfig, name, context, isLongRunning)
         {
             Initialise(execute, timerConfig, context, name, isLongRunning, tearUp, tearDown, isMasterJob);
         } 
@@ -71,7 +71,7 @@ namespace Xigadee
         /// <param name="tearDown">The clear down action.</param>
         /// <param name="isMasterJob">Indicates whether this schedule is associated to a master job.</param>
         public virtual void Initialise(Func<Schedule, CancellationToken, Task> execute
-            , ScheduleTimerConfig timerConfig = null
+            , ScheduleTimerConfig timerConfig
             , object context = null
             , string name = null
             , bool isLongRunning = false
@@ -79,7 +79,7 @@ namespace Xigadee
             , Action<Schedule> tearDown = null
             , bool isMasterJob = false)
         {
-            base.Initialise(execute, name, context, timerConfig, isLongRunning);
+            base.Initialise(execute, timerConfig, name, context, isLongRunning);
 
             TearUp = tearUp;
             TearDown = tearDown;
@@ -96,7 +96,7 @@ namespace Xigadee
         /// </summary>
         public Action<Schedule> TearUp { get; protected set;}
         /// <summary>
-        /// Gets the cleanup action.
+        /// Gets the clean-up action.
         /// </summary>
         public Action<Schedule> TearDown { get; protected set; }
         /// <summary>

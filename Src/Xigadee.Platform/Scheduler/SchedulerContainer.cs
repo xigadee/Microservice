@@ -57,11 +57,10 @@ namespace Xigadee
             , bool isInternal = false
             )
         {
-            var schedule = new Schedule(action, name)
+            var timer = new ScheduleTimerConfig(frequency, initialWait, initialTime, shouldExecute);
+
+            var schedule = new Schedule(action, timer, name)
             {
-                Frequency = frequency,
-                InitialWait = initialWait,
-                InitialTime = initialTime,
                 ShouldExecute = shouldExecute,
                 IsInternal = isInternal
             };

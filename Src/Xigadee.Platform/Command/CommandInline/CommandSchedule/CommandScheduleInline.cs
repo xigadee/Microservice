@@ -31,7 +31,7 @@ namespace Xigadee
         {
             mCommand = command ?? throw new ArgumentNullException("command", "The command function cannot be null");
 
-            mTimerConfig = config;
+            mTimerConfig = config ?? new ScheduleTimerConfig(enforceSetting:false);
             mReferenceId = referenceId;
             mIsLongRunning = isLongRunning;
         }

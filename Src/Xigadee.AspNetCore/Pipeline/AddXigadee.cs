@@ -13,7 +13,7 @@ namespace Xigadee
     {
 
 
-        public static IServiceCollection AddXigadee(this IServiceCollection services, string name = null
+        public static IPipelineAspNetCore AddXigadee(this IServiceCollection services, string name = null
             , string serviceId = null
             , string description = null
             , IEnumerable<PolicyBase> policy = null
@@ -35,7 +35,7 @@ namespace Xigadee
             services.AddSingleton(ms.Pipeline);
             services.AddSingleton<IMicroservice>(ms.Pipeline.Service);
 
-            return services;
+            return ms.Pipeline;
         }
     }
 }
