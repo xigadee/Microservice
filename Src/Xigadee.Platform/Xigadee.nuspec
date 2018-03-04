@@ -18,11 +18,11 @@
     <dependencies>
       <group targetFramework=".NETFramework4.7">
         <dependency id="Microsoft.CSharp" version="4.4.0" exclude="Build,Analyzers" />
-        <dependency id="Newtonsoft.Json" version="10.0.3" exclude="Build,Analyzers" />
+        <dependency id="Newtonsoft.Json" version="11.0.1" exclude="Build,Analyzers" />
       </group>
       <group targetFramework=".NETStandard2.0">
         <dependency id="Microsoft.CSharp" version="4.4.0" exclude="Build,Analyzers" />
-        <dependency id="Newtonsoft.Json" version="10.0.3" exclude="Build,Analyzers" />
+        <dependency id="Newtonsoft.Json" version="11.0.1" exclude="Build,Analyzers" />
       </group>
     </dependencies>
   </metadata>

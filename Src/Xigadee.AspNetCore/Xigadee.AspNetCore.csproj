@@ -1,8 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  
   <PropertyGroup>
+  <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <RootNamespace>Xigadee</RootNamespace>
+    <Version>0.0.0.0</Version>
+    <Product />
+    <Company />
+    <Authors>Xigadee</Authors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netcoreapp2.0\Xigadee.AspNetCore.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
