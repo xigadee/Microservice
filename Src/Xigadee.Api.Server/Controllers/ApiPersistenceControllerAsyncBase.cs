@@ -29,9 +29,6 @@ using System.Web.OData;
 using System.Web.OData.Query;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Csdl;
-using Microsoft.OData.Edm.Library;
-using Microsoft.OData.Core.UriParser;
-using Microsoft.OData.Core.UriParser.Semantic;
 #endregion
 namespace Xigadee
 {
