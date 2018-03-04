@@ -4,34 +4,37 @@
     <id>Xigadee.Azure.ApplicationInsights</id>
     <version>{UpdateVersion.ps1.replace}</version>
     <title>Xigadee Azure ApplicationInsights Library</title>
-    <authors>Paul Stancer and Guy Steel at Hitachi Consulting (http://hitachiconsulting.com)</authors>
-    <owners>Hitachi Consulting</owners>
+    <authors>Paul Stancer and Guy Steel</authors>
+    <owners>Xigadee</owners>
     <iconUrl>https://raw.githubusercontent.com/xigadee/Microservice/master/docs/Logo.png</iconUrl>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <projectUrl>http://xigadee.org</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>This library contains the Xigadee connectors for Azure ApplicationInsights.</description>
     <releaseNotes>First update for 2.0.</releaseNotes>
-    <copyright>Copyright © Hitachi Consulting 2012-2017</copyright>
+    <copyright>Copyright © Xigadee 2017-2018 incorporates copyright of Hitachi Consulting 2012-2017</copyright>
     <tags>Xigadee Microservice Azure ApplicationInsights .NET Hitachi</tags>
     <dependencies>
       <group targetFramework=".NETFramework4.7">
         <dependency id="Xigadee" version="{UpdateVersion.ps1.replace}" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.ApplicationInsights" version="2.4.0" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.CSharp" version="4.4.0" exclude="Build,Analyzers" />
-        <dependency id="Newtonsoft.Json" version="10.0.3" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.ApplicationInsights" version="2.5.1" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.CSharp" version="4.4.1" exclude="Build,Analyzers" />
+        <dependency id="Newtonsoft.Json" version="11.0.1" exclude="Build,Analyzers" />
       </group>
       <group targetFramework=".NETStandard2.0">
         <dependency id="Xigadee" version="{UpdateVersion.ps1.replace}" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.ApplicationInsights" version="2.4.0" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.CSharp" version="4.4.0" exclude="Build,Analyzers" />
-        <dependency id="Newtonsoft.Json" version="10.0.3" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.ApplicationInsights" version="2.5.1" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.CSharp" version="4.4.1" exclude="Build,Analyzers" />
+        <dependency id="Newtonsoft.Json" version="11.0.1" exclude="Build,Analyzers" />
       </group>
     </dependencies>
   </metadata>
-  <!--<files>
-    <file src="bin\Release\Xigadee.Azure.dll" target="lib\net46\" />
-    <file src="bin\Release\Xigadee.Azure.pdb" target="lib\net46\" />
-    <file src="bin\Release\Xigadee.Azure.xml" target="lib\net46\" />
-  </files>-->
+  <files>
+    <file src="bin\Release\net47\Xigadee.Azure.ApplicationInsights.dll" target="lib\net47\" />
+    <file src="bin\Release\net47\Xigadee.Azure.ApplicationInsights.pdb" target="lib\net47\" />
+    <file src="bin\Release\net47\Xigadee.Azure.ApplicationInsights.xml" target="lib\net47\" />
+    <file src="bin\Release\netstandard2.0\Xigadee.Azure.ApplicationInsights.dll" target="lib\netstandard2.0\" />
+    <file src="bin\Release\netstandard2.0\Xigadee.Azure.ApplicationInsights.pdb" target="lib\netstandard2.0\" />
+    <file src="bin\Release\netstandard2.0\XXigadee.Azure.ApplicationInsights.xml" target="lib\netstandard2.0\" />
+  </files>
 </package>

@@ -13,15 +13,15 @@
     <description>The Xigadee library is used to create Microservice based applications.</description>
     <summary>Xigadee Microservice Framework for .NET</summary>
     <releaseNotes>Initial push.</releaseNotes>
-    <copyright>Part of the original copyright came from Hitachi Consulting 2012-2017</copyright>
+    <copyright>Copyright © Xigadee 2017-2018 incorporates copyright of Hitachi Consulting 2012-2017</copyright>
     <tags>Xigadee Microservice .NET Hitachi</tags>
     <dependencies>
       <group targetFramework=".NETFramework4.7">
-        <dependency id="Microsoft.CSharp" version="4.4.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.CSharp" version="4.4.1" exclude="Build,Analyzers" />
         <dependency id="Newtonsoft.Json" version="11.0.1" exclude="Build,Analyzers" />
       </group>
       <group targetFramework=".NETStandard2.0">
-        <dependency id="Microsoft.CSharp" version="4.4.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.CSharp" version="4.4.1" exclude="Build,Analyzers" />
         <dependency id="Newtonsoft.Json" version="11.0.1" exclude="Build,Analyzers" />
       </group>
     </dependencies>
