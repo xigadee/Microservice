@@ -22,17 +22,18 @@ namespace Test.Xigadee.AspNetCore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
-
             services
                 .AddXigadee()
                 .AddSchedule((s) =>
                 {
-                    //s.Schedule.SetNextPoll(1);
-
+                    s.SetNextPollTime(TimeSpan.FromSeconds(1));
                     return Task.CompletedTask;
-                });
+                }
+                //, new ScheduleTimerConfig(TimeSpan.FromSeconds(2))
+                )
                 ;
+
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

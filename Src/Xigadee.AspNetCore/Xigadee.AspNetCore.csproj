@@ -14,7 +14,11 @@
   <ItemGroup>
     <ProjectReference Include="..\Xigadee.Platform\Xigadee.csproj" />
   </ItemGroup>
-
+  
+  <ItemGroup>
+    <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
+  </ItemGroup>
+  
   <ItemGroup>
     <Folder Include="DataCollection\" />
   </ItemGroup>

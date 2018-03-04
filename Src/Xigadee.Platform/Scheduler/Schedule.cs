@@ -70,9 +70,10 @@ namespace Xigadee
             mShouldExecute = true;
 
             Name = name;
+
             Context = context;
 
-            TimerSet(timerConfig);
+            mTimerConfig = timerConfig ?? throw new ArgumentNullException("timerConfig");
 
             IsLongRunning = isLongRunning;
         }
@@ -90,19 +91,6 @@ namespace Xigadee
         /// If the timer schedule is not changed before leaving the method, it will not be called again.
         /// </summary>
         public bool StatusRequiresTimerConfiguration => StatusIsInitialPoll && (mTimerConfig?.IsUnset??true); 
-        #endregion
-
-        #region Debug
-        /// <summary>
-        /// This is the debug message used for the statistics.
-        /// </summary>
-        public virtual string Debug
-        {
-            get
-            {
-                return $"{ScheduleType}:'{Name ?? Id.ToString("N").ToUpperInvariant()}' Active={Active} [ShouldExecute={ShouldExecute}] @ {NextExecuteTime} Run={ExecutionCount}";
-            }
-        }
         #endregion
 
         #region ScheduleType
@@ -231,39 +219,29 @@ namespace Xigadee
         }
         #endregion
 
-        #region TimerSet(ScheduleTimerConfig timerConfig)
+        #region InitialInterval
         /// <summary>
-        /// Sets the timer configuration from a ScheduleTimerConfig object.
+        /// This is the initial wait as a TimeSpan before the first timer event fires.
         /// </summary>
-        /// <param name="timerConfig">The timer configuration.</param>
-        public void TimerSet(ScheduleTimerConfig timerConfig)
+        public TimeSpan? InitialInterval
         {
-            mTimerConfig = timerConfig ?? throw new ArgumentNullException("timerConfig");
-        } 
-        #endregion
-        #region InitialWait
-        /// <summary>
-        /// This is the initial wait in a TimeSpan before the timer event fires.
-        /// </summary>
-        public TimeSpan? InitialWait
-        {
-            get { return mTimerConfig.InitialWait; }
-            set { mTimerConfig.InitialWait = value; }
+            get { return mTimerConfig.InitialInterval; }
+            set { mTimerConfig.InitialInterval = value; }
         }
         #endregion
-        #region InitialWaitUTCTime
+        #region UTCPollTime
         /// <summary>
-        /// This is the specific date-time that the schedule should use for it's first execution.
+        /// This is the specific date-time that the schedule should use for it's next execution.
         /// </summary>
-        public DateTime? InitialWaitUTCTime
+        public DateTime? UTCPollTime
         {
-            get { return mTimerConfig.InitialWaitUTCTime; }
-            set { mTimerConfig.InitialWaitUTCTime = value; }
+            get { return mTimerConfig.UTCPollTime; }
+            set { mTimerConfig.UTCPollTime = value; }
         }
         #endregion
         #region Interval
         /// <summary>
-        /// This is the repeat frequency that the event should fire.
+        /// This is the repeat frequency that the schedule should fire.
         /// </summary>
         public TimeSpan? Interval
         {
@@ -322,19 +300,19 @@ namespace Xigadee
                 if (!force && NextExecuteTime.HasValue && NextExecuteTime.Value > DateTime.UtcNow)
                     return;
 
-                if (InitialWaitUTCTime.HasValue)
+                if (UTCPollTime.HasValue)
                 {
-                    NextExecuteTime = InitialWaitUTCTime.Value;
-                    InitialWait = null;
-                    InitialWaitUTCTime = null;
+                    NextExecuteTime = UTCPollTime.Value;
+                    InitialInterval = null;
+                    UTCPollTime = null;
                     return;
                 }
 
-                if (InitialWait.HasValue)
+                if (InitialInterval.HasValue)
                 {
-                    NextExecuteTime = DateTime.UtcNow.Add(InitialWait.Value);
-                    InitialWait = null;
-                    InitialWaitUTCTime = null;
+                    NextExecuteTime = DateTime.UtcNow.Add(InitialInterval.Value);
+                    InitialInterval = null;
+                    UTCPollTime = null;
                     return;
                 }
 
@@ -348,7 +326,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                throw new ScheduleRecalculateException($"Schedule recalculation failed for {ScheduleType}:'{Name ?? Id.ToString("N").ToUpperInvariant()}' Active={Active} -> InitialTime:'{InitialWaitUTCTime}' InitialWait:'{InitialWait}' Frequency:'{Interval}'", ex);
+                throw new ScheduleRecalculateException($"Schedule recalculation failed for {ScheduleType}:'{Name ?? Id.ToString("N").ToUpperInvariant()}' Active={Active} -> InitialTime:'{UTCPollTime}' InitialWait:'{InitialInterval}' Frequency:'{Interval}'", ex);
             }
 
         }
@@ -370,7 +348,7 @@ namespace Xigadee
             get
             {
                 //One time hit for the first execution.
-                if (mExecutionCount == 0 && !InitialWait.HasValue && !InitialWaitUTCTime.HasValue && !Interval.HasValue)
+                if (mExecutionCount == 0 && !InitialInterval.HasValue && !UTCPollTime.HasValue && !Interval.HasValue)
                     return true;
 
                 var compareTime = DateTime.UtcNow;
@@ -429,6 +407,19 @@ namespace Xigadee
         {
             return other != null && other.Id == Id;
         } 
+        #endregion
+
+        #region Debug
+        /// <summary>
+        /// This is the debug message used for the statistics.
+        /// </summary>
+        public virtual string Debug
+        {
+            get
+            {
+                return $"{ScheduleType}:'{Name ?? Id.ToString("N").ToUpperInvariant()}' Active={Active} [ShouldExecute={ShouldExecute}] @ {NextExecuteTime} Run={ExecutionCount}";
+            }
+        }
         #endregion
     }
 }

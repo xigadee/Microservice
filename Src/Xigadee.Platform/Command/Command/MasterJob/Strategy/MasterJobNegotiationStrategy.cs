@@ -48,7 +48,7 @@ namespace Xigadee
                 case MasterJobState.Inactive:
                 case MasterJobState.VerifyingComms:
                     //schedule.Frequency = TimeSpan.FromMilliseconds(300);
-                    schedule.InitialWaitUTCTime = DateTime.UtcNow.AddSeconds(3);
+                    schedule.UTCPollTime = DateTime.UtcNow.AddSeconds(3);
                     break;
                 default:
                     if (this.PollAttemptsExceeded(state, pollAttempts))
@@ -91,7 +91,7 @@ namespace Xigadee
                 case MasterJobState.VerifyingComms:
                 case MasterJobState.Starting:
                     schedule.Interval = TimeSpan.FromMilliseconds(300);
-                    schedule.InitialWaitUTCTime = DateTime.UtcNow.AddMilliseconds(300);
+                    schedule.UTCPollTime = DateTime.UtcNow.AddMilliseconds(300);
                     break;
                 default:
                     if (this.PollAttemptsExceeded(state,pollAttempts))
