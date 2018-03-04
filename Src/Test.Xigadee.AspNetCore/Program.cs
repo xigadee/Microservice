@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Xigadee;
 
 namespace Test.Xigadee.AspNetCore
 {
@@ -22,6 +24,10 @@ namespace Test.Xigadee.AspNetCore
             WebHost
                 .CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
+                .UseXigadee()
                 .Build();
+
+
+
     }
 }
