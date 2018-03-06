@@ -35,6 +35,6 @@
     <file src="bin\Release\net47\Xigadee.Azure.Storage.xml" target="lib\net47\" />
     <file src="bin\Release\netstandard2.0\Xigadee.Azure.Storage.dll" target="lib\netstandard2.0\" />
     <file src="bin\Release\netstandard2.0\Xigadee.Azure.Storage.pdb" target="lib\netstandard2.0\" />
-    <file src="bin\Release\netstandard2.0\XXigadee.Azure.Storage.xml" target="lib\netstandard2.0\" />
+    <file src="bin\Release\netstandard2.0\Xigadee.Azure.Storage.xml" target="lib\netstandard2.0\" />
   </files>
 </package>
