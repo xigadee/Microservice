@@ -12,7 +12,7 @@ namespace Xigadee
     /// This class host the Microservice within the AspNetCore application.
     /// </summary>
     /// <seealso cref = "Microsoft.Extensions.Hosting.IHostedService" />
-    /// < seealso cref= "https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/multi-container-microservice-net-applications/background-tasks-with-ihostedservice" />
+    /// <seealso cref= "https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/multi-container-microservice-net-applications/background-tasks-with-ihostedservice" />
     public class XigadeeHostedService: IHostedService, IDisposable
     {
         /// <summary>
@@ -57,7 +57,11 @@ namespace Xigadee
         /// Gets the Microservice.
         /// </summary>
         public IMicroservice Service => Pipeline?.Service;
-
+        /// <summary>
+        /// Triggered when the application host is ready to start the service.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Returns the completed task.</returns>
         public virtual Task StartAsync(CancellationToken cancellationToken)
         {
             TryStart();
@@ -65,7 +69,11 @@ namespace Xigadee
             // Otherwise it's running
             return Task.CompletedTask;
         }
-
+        /// <summary>
+        /// Triggered when the application host is performing a graceful shutdown.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns>A async completed task.</returns>
         public virtual Task StopAsync(CancellationToken cancellationToken)
         {
 
@@ -83,11 +91,17 @@ namespace Xigadee
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
         public virtual void Dispose()
         {
             TryStop(true);
         }
-
+        /// <summary>
+        /// Tries to start the service.
+        /// </summary>
+        /// <returns>Returns true if the service has started successfully.</returns>
         protected bool TryStart()
         {
             if (Pipeline.Service.Status != ServiceStatus.Created)
@@ -96,7 +110,11 @@ namespace Xigadee
             Pipeline.Service.Start();
             return true;
         }
-
+        /// <summary>
+        /// Tries to stop the service.
+        /// </summary>
+        /// <param name="force">if set to <c>true</c> [force].</param>
+        /// <returns>Returns true if the service stops successfully.</returns>
         protected bool TryStop(bool force)
         {
             if (Pipeline.Service.Status != ServiceStatus.Running)

@@ -80,7 +80,7 @@ namespace Xigadee
             if (service != null)
                 return service.Pipeline;
 
-            var ms = services.XigadeeConfigure(name, serviceId, description, policy
+            var ms = services.XigadeeCreate(name, serviceId, description, policy
                 , properties, config, assign
                 , configAssign, addDefaultJsonPayloadSerializer, addDefaultPayloadCompressors
                 , serviceVersionId, serviceReference);

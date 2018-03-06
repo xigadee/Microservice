@@ -24,7 +24,7 @@ namespace Test.Xigadee.AspNetCore
             WebHost
                 .CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
-                .UseXigadee()
+                .UseXigadee()//configure: (p) => p.
                 .Build();
 
 

@@ -19,6 +19,7 @@ namespace Test.Xigadee.AspNetCore
 
         public Startup(IConfiguration configuration) => Configuration = configuration;
 
+        DebugMemoryDataCollector mColl;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -46,7 +47,10 @@ namespace Test.Xigadee.AspNetCore
                 app.UseDeveloperExceptionPage();
             }
 
-            var serv = app.GetXigadee();
+            app.UseXigadeeHttpBoundaryLogging();
+
+            var serv = app.GetXigadeePipeline()
+                .AddDebugMemoryDataCollector(out mColl);
 
             app.UseMvc();
         }
