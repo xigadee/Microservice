@@ -77,7 +77,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Xigadee.Framework.licenseheader" />
     <None Include="Xigadee.Framework.nuspec" />
     <None Include="_docs\Introduction.md" />
   </ItemGroup>

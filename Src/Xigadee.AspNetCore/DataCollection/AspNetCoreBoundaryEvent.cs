@@ -23,16 +23,19 @@ namespace Xigadee
         /// </summary>
         /// <param name="context">This is the API context.</param>
         /// <param name="level">This enumeration determines which part of the data should be logged.</param>
-        public AspNetCoreBoundaryEvent(HttpContext context, ApiBoundaryLoggingFilterLevel level)
+        public AspNetCoreBoundaryEvent(HttpContext context, ApiBoundaryLoggingFilterLevel level, Exception logEx)
         {
             Level = level;
             mContext = context;
             Direction = ChannelDirection.Incoming;
             Type = BoundaryEventType.Interface;
             Id = Guid.NewGuid();
+            Ex = logEx;
 
             //if ((level & ApiBoundaryLoggingFilterLevel.Exception) > 0)
             //    Ex = context.Exception;
+
+            //var exceptionFeature = context.Features.Get<IExceptionHandlerPathFeature>();
 
             if ((level & ApiBoundaryLoggingFilterLevel.Request) > 0)
                 Request = new ApiHttpRequestWrapper(context);

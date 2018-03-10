@@ -239,7 +239,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-    <None Include="Xigadee.VisualStudio.licenseheader" />
     <None Include="Xigadee.VisualStudio.nuspec" />
     <None Include="_doc\Introduction.md" />
   </ItemGroup>

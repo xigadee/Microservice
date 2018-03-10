@@ -38,8 +38,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee", "Test\Test.X
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Api", "Test\Test.Xigadee.Api\Test.Xigadee.Api.csproj", "{D10589C2-5487-4860-A756-292946D5AE9B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Api.Client", "Test\Test.Xigadee.Api.Client\Test.Xigadee.Api.Client.csproj", "{37A0A4FC-647E-4115-B72E-62B043B84D7A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Api.Server", "Test\Test.Xigadee.Api.Server\Test.Xigadee.Api.Server.csproj", "{3C7D695D-4111-499E-9764-6B9E6EC93952}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Azure.Console", "Test\Test.Xigadee.Azure.Console\Test.Xigadee.Azure.Console.csproj", "{9CA85091-9308-44B5-A99E-EF6E579C286B}"
@@ -97,7 +95,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PiOStubSender", "PiOStubSen
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.AspNetCore", "Xigadee.AspNetCore\Xigadee.AspNetCore.csproj", "{B683B9FC-FDE3-4228-A98E-926B4D4AA86C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.AspNetCore", "Test.Xigadee.AspNetCore\Test.Xigadee.AspNetCore.csproj", "{320A3E2C-EAD5-4DA3-9154-5C127D41ACA7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Xigadee.AspNetCore", "Test.Xigadee.AspNetCore\Test.Xigadee.AspNetCore.csproj", "{320A3E2C-EAD5-4DA3-9154-5C127D41ACA7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -145,10 +143,6 @@ Global
 		{D10589C2-5487-4860-A756-292946D5AE9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D10589C2-5487-4860-A756-292946D5AE9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D10589C2-5487-4860-A756-292946D5AE9B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{37A0A4FC-647E-4115-B72E-62B043B84D7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{37A0A4FC-647E-4115-B72E-62B043B84D7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{37A0A4FC-647E-4115-B72E-62B043B84D7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{37A0A4FC-647E-4115-B72E-62B043B84D7A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3C7D695D-4111-499E-9764-6B9E6EC93952}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3C7D695D-4111-499E-9764-6B9E6EC93952}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C7D695D-4111-499E-9764-6B9E6EC93952}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -261,7 +255,6 @@ Global
 		{C66F3869-118D-4962-A904-4359E396AEB7} = {8A962CE2-CA28-441A-B6BE-F688E62A6AF8}
 		{C523008A-BAF6-418D-8822-48E0820A427D} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 		{D10589C2-5487-4860-A756-292946D5AE9B} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
-		{37A0A4FC-647E-4115-B72E-62B043B84D7A} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 		{3C7D695D-4111-499E-9764-6B9E6EC93952} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 		{9CA85091-9308-44B5-A99E-EF6E579C286B} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 		{F81F3402-897C-40AE-832C-7EF1000D2595} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
@@ -278,7 +271,7 @@ Global
 		{320A3E2C-EAD5-4DA3-9154-5C127D41ACA7} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
 		SolutionGuid = {8BF7561D-7A94-4B22-B0EB-D82D95B110DE}
+		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
 	EndGlobalSection
 EndGlobal
