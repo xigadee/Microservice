@@ -181,9 +181,32 @@ namespace Xigadee
         public string Connection { get; set; }
         #endregion
 
-        protected override EntityTransformHolder<K, E> EntityTransformCreate(string entityName = null, VersionPolicy<E> versionPolicy = null, Func<E, K> keyMaker = null, EntitySerializer<E> persistenceEntitySerializer = null, EntitySerializer<E> cacheEntitySerializer = null, Func<K, string> keySerializer = null, Func<string, K> keyDeserializer = null, Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null, Func<Tuple<string, string>, string> referenceHashMaker = null)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="entityName"></param>
+        /// <param name="versionPolicy"></param>
+        /// <param name="keyMaker"></param>
+        /// <param name="persistenceEntitySerializer"></param>
+        /// <param name="cacheEntitySerializer"></param>
+        /// <param name="keySerializer"></param>
+        /// <param name="keyDeserializer"></param>
+        /// <param name="referenceMaker"></param>
+        /// <param name="referenceHashMaker"></param>
+        /// <returns></returns>
+        protected override EntityTransformHolder<K, E> EntityTransformCreate(string entityName = null
+            , VersionPolicy<E> versionPolicy = null
+            , Func<E, K> keyMaker = null
+            , EntitySerializer<E> persistenceEntitySerializer = null
+            , EntitySerializer<E> cacheEntitySerializer = null
+            , Func<K, string> keySerializer = null
+            , Func<string, K> keyDeserializer = null
+            , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
+            , Func<Tuple<string, string>, string> referenceHashMaker = null
+            )
         {
             var transform = base.EntityTransformCreate(entityName, versionPolicy, keyMaker, persistenceEntitySerializer, cacheEntitySerializer, keySerializer, keyDeserializer, referenceMaker, referenceHashMaker);
+
             transform.CacheEntitySerializer = mCacheEntitySerializer ?? new EntitySerializer<E>(transform.JsonSerialize, transform.JsonDeserialize);
 
             return transform;

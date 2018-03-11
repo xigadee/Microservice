@@ -237,14 +237,11 @@
     <Compile Include="Pipeline\Config\AzureStorage.cs" />
     <Compile Include="Persistence\BlobStorage\Pipeline\AddPersistenceManagerAzureBlobStorage.cs" />
     <Compile Include="Persistence\BlobStorage\Pipeline\AttachPersistenceManagerAzureBlobStorage.cs" />
-    <Compile Include="Persistence\DocumentDbSDK\Pipeline\AddPersistenceManagerDocumentDbSdk.cs" />
-    <Compile Include="Persistence\DocumentDbSDK\Pipeline\AttachPersistenceManagerDocumentDbSdk.cs" />
     <Compile Include="Persistence\RedisCache\Pipeline\AddPersistenceManagerRedisCache.cs" />
     <Compile Include="Persistence\RedisCache\Pipeline\AttachPersistenceManagerRedisCache.cs" />
     <Compile Include="Communication\ServiceBus\Pipeline\Attach\ConfigureAzureMessagingHelper.cs" />
     <Compile Include="Configuration\ConfigResolver\KeyVault\ConfigKeyVaultException.cs" />
     <Compile Include="ApplicationInsights\Pipeline\AddApplicationInsightsConnector.cs" />
-    <Compile Include="Persistence\DocumentDbSDK\SDKHelper.cs" />
     <Compile Include="Communication\ServiceBus\Pipeline\Attach\AttachAzureServiceBusQueueListener.cs" />
     <Compile Include="Communication\ServiceBus\Pipeline\Attach\AttachAzureServiceBusQueueSender.cs" />
     <Compile Include="Communication\ServiceBus\Pipeline\Attach\AttachAzureServiceBusTopicListener.cs" />
@@ -266,7 +263,6 @@
     <Compile Include="DataCollection\Legacy\Logger\AzureStorageLogger.cs" />
     <Compile Include="DataCollection\Legacy\AzureStorageLoggingBase.cs" />
     <Compile Include="Persistence\BlobStorage\PersistenceMessageHandlerAzureBlobStorageBase.cs" />
-    <Compile Include="Persistence\DocumentDbSDK\PersistenceMessageHandlerDocumentDbSdk.cs" />
     <Compile Include="Persistence\BlobStorage\StorageResponseHolder.cs" />
     <Compile Include="Persistence\RedisCache\PersistenceMessageHandlerRedisCache.cs" />
     <Compile Include="Persistence\RedisCache\RedisCacheManager.cs" />

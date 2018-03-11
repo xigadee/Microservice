@@ -13,10 +13,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Command\CommandPersistence\Server\DocumentDb\**" />
     <Compile Remove="ServiceHandler\JWT\Interfaces\**" />
     <Compile Remove="ServiceHandler\Pipeline\Add\**" />
+    <EmbeddedResource Remove="Command\CommandPersistence\Server\DocumentDb\**" />
     <EmbeddedResource Remove="ServiceHandler\JWT\Interfaces\**" />
     <EmbeddedResource Remove="ServiceHandler\Pipeline\Add\**" />
+    <None Remove="Command\CommandPersistence\Server\DocumentDb\**" />
     <None Remove="ServiceHandler\JWT\Interfaces\**" />
     <None Remove="ServiceHandler\Pipeline\Add\**" />
   </ItemGroup>
@@ -36,6 +39,7 @@
 
   <ItemGroup>
     <Folder Include="Communication\Agent\Interfaces\" />
+    <Folder Include="DataCollection\EventSource\Implementation\" />
   </ItemGroup>
 
 </Project>
