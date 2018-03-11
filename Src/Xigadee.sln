@@ -97,6 +97,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.AspNetCore", "Xigad
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Xigadee.AspNetCore", "Test.Xigadee.AspNetCore\Test.Xigadee.AspNetCore.csproj", "{320A3E2C-EAD5-4DA3-9154-5C127D41ACA7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Abstractions", "Xigadee.Abstractions\Xigadee.Abstractions.csproj", "{B26E866D-8E1F-42E2-ADE6-80937734FB48}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -247,6 +249,10 @@ Global
 		{320A3E2C-EAD5-4DA3-9154-5C127D41ACA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{320A3E2C-EAD5-4DA3-9154-5C127D41ACA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{320A3E2C-EAD5-4DA3-9154-5C127D41ACA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B26E866D-8E1F-42E2-ADE6-80937734FB48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B26E866D-8E1F-42E2-ADE6-80937734FB48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B26E866D-8E1F-42E2-ADE6-80937734FB48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B26E866D-8E1F-42E2-ADE6-80937734FB48}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -271,7 +277,7 @@ Global
 		{320A3E2C-EAD5-4DA3-9154-5C127D41ACA7} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {8BF7561D-7A94-4B22-B0EB-D82D95B110DE}
 		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
+		SolutionGuid = {8BF7561D-7A94-4B22-B0EB-D82D95B110DE}
 	EndGlobalSection
 EndGlobal

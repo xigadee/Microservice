@@ -48,7 +48,11 @@ namespace Xigadee
             , CommandPolicy policy = null
             , IEnumerable<KeyValuePair<K, E>> prePopulate = null
             )
-            : base(keyMaker, keyDeserializer, entityName, versionPolicy, defaultTimeout, persistenceRetryPolicy, resourceProfile, cacheManager, referenceMaker, referenceHashMaker, keySerializer, policy, prePopulate)
+            : base(keyMaker, keyDeserializer, entityName
+                  , versionPolicy, defaultTimeout, persistenceRetryPolicy
+                  , resourceProfile, cacheManager
+                  , referenceMaker, referenceHashMaker
+                  , keySerializer, policy, prePopulate)
         {
         }
         #endregion          

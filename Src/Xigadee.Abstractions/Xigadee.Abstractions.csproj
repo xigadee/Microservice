@@ -3,15 +3,13 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net47</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <PackageId>Xigadee.Azure.Redis</PackageId>
+    <PackageId>Xigadee.Abstractions</PackageId>
     <RootNamespace>Xigadee</RootNamespace>
-    <AssemblyName>Xigadee.Azure.Redis</AssemblyName>
+    <AssemblyName>Xigadee.Abstractions</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Xigadee.Azure.Redis.xml</DocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Xigadee.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,13 +19,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
-    <PackageReference Include="StackExchange.Redis" Version="1.2.6" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Xigadee.Abstractions\Xigadee.Abstractions.csproj" />
-    <ProjectReference Include="..\Xigadee.Platform\Xigadee.csproj" />
     <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj" />
   </ItemGroup>
-
+  
 </Project>

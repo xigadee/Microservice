@@ -9,7 +9,7 @@ namespace Xigadee
 {
     /// <summary>
     /// This class contains the logic to store and retrieve entities from a file based store.
-    /// This class is not optimised for speed, but is used to provide a simple File based IO system.
+    /// This class is not optimised for speed or concurrency, but is used to provide a simple File based IO system.
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
