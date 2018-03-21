@@ -92,6 +92,10 @@ namespace Xigadee
                 throw new ArgumentException("handler.Id", "The handler.Id parameter cannot be null or an empty string");
 
             mOnAdd?.Invoke(handler);
+
+            if (mHandlers.ContainsKey(handler.Id))
+                throw new ServiceHandlerDuplicationException(handler.Id, handler.GetType().Name, typeof(I).Name);
+
             mHandlers.Add(handler.Id, handler);
 
             if (Default == null)

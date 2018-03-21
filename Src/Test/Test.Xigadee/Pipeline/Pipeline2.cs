@@ -58,81 +58,102 @@ namespace Test.Xigadee
                 var pClient2 = new MicroservicePipeline("Client2");
                 var pServer = new MicroservicePipeline("Server");
 
-                pServer
-                    .AdjustPolicyTaskManagerForDebug()
-                    .AddDebugMemoryDataCollector(out collector2)
-                    .AddPayloadSerializerDefaultJson()
-                    .AddChannelIncoming("internalIn", internalOnly: false
-                        , autosetPartition01: false
-                        , assign: (p, c) => cpipeIn = p)
-                        .AttachPriorityPartition((0, 1.0M), (1, 0.9M))
-                        .AttachListener(bridgeOut.GetListener())
-                        .AttachMessagePriorityOverrideForResponse()
-                        .AttachCommand((CommandMethodRequestContext ctx) =>
-                        {
-                            var payload = ctx.RequestPayloadGet<Blah>();
-                            ctx.ResponseSet(200, payload.Message);
-                            return Task.FromResult(0);
-                        }, ("franky", "johnny5"))
-                        .AttachCommand((CommandMethodRequestContext ctx) =>
-                        {
-                            var payload = ctx.RequestPayloadGet<Blah>();
-                            ctx.ResponseSet(201, payload.Message);
-                            return Task.FromResult(0);
-                        }, ("franky", "johnny6"))
-                        .Revert()
-                    .AddChannelOutgoing("return")
-                        .AttachSender(bridgeReturn.GetSender())
-                        .Revert();
-                        ;
+                try
+                {
+                    pServer
+                        .AdjustPolicyTaskManagerForDebug()
+                        .AddDebugMemoryDataCollector(out collector2)
+                        //.AddPayloadSerializerDefaultJson()
+                        .AddChannelIncoming("internalIn", internalOnly: false
+                            , autosetPartition01: false
+                            , assign: (p, c) => cpipeIn = p)
+                            .AttachPriorityPartition((0, 1.0M), (1, 0.9M))
+                            .AttachListener(bridgeOut.GetListener())
+                            .AttachMessagePriorityOverrideForResponse()
+                            .AttachCommand((CommandMethodRequestContext ctx) =>
+                            {
+                                var payload = ctx.RequestPayloadGet<Blah>();
+                                ctx.ResponseSet(200, payload.Message);
+                                return Task.FromResult(0);
+                            }, ("franky", "johnny5"))
+                            .AttachCommand((CommandMethodRequestContext ctx) =>
+                            {
+                                var payload = ctx.RequestPayloadGet<Blah>();
+                                ctx.ResponseSet(201, payload.Message);
+                                return Task.FromResult(0);
+                            }, ("franky", "johnny6"))
+                            .Revert()
+                        .AddChannelOutgoing("return")
+                            .AttachSender(bridgeReturn.GetSender())
+                            .Revert();
+                            ;
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
 
-                pClient
-                    .AdjustPolicyTaskManagerForDebug()
-                    .AddDebugMemoryDataCollector(out collector1)
-                    .AddChannelIncoming("spooky", internalOnly:true)
-                        .AttachCommand((CommandMethodRequestContext ctx) =>
-                        {
-                            var payload = ctx.RequestPayloadGet<Blah>();
-                            ctx.ResponseSet(200, payload.Message);
-                            return Task.FromResult(0);
-                        }, ("franky", "johnny5"))
-                        .Revert()
-                    .AddChannelIncoming("return")
-                        .AttachListener(bridgeReturn.GetListener())
-                        .AttachMessagePriorityOverrideForResponse()
-                        .AttachCommandInitiator(out init)
-                        .Revert()
-                    .AddChannelOutgoing("internalIn", internalOnly: false
-                        , autosetPartition01: false
-                        , assign: (p,c) => cpipeOut = p)
-                        .AttachPriorityPartition(0, 1)
-                        .AttachSender(bridgeOut.GetSender())
-                        .Revert()
-                        ;
+                try
+                {
+                    pClient
+                        .AdjustPolicyTaskManagerForDebug()
+                        .AddDebugMemoryDataCollector(out collector1)
+                        .AddChannelIncoming("spooky", internalOnly:true)
+                            .AttachCommand((CommandMethodRequestContext ctx) =>
+                            {
+                                var payload = ctx.RequestPayloadGet<Blah>();
+                                ctx.ResponseSet(200, payload.Message);
+                                return Task.FromResult(0);
+                            }, ("franky", "johnny5"))
+                            .Revert()
+                        .AddChannelIncoming("return")
+                            .AttachListener(bridgeReturn.GetListener())
+                            .AttachMessagePriorityOverrideForResponse()
+                            .AttachCommandInitiator(out init)
+                            .Revert()
+                        .AddChannelOutgoing("internalIn", internalOnly: false
+                            , autosetPartition01: false
+                            , assign: (p,c) => cpipeOut = p)
+                            .AttachPriorityPartition(0, 1)
+                            .AttachSender(bridgeOut.GetSender())
+                            .Revert()
+                            ;
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
 
 
-                pClient2
-                    .AdjustPolicyTaskManagerForDebug()
-                    .AddDebugMemoryDataCollector(out collector1a)
-                    .AddChannelIncoming("spooky", internalOnly: true)
-                        .AttachCommand((CommandMethodRequestContext ctx) =>
-                        {
-                            var payload = ctx.RequestPayloadGet<Blah>();
-                            ctx.ResponseSet(200, payload.Message);
-                            return Task.FromResult(0);
-                        }, ("franky", "johnny5"))
-                        .Revert()
-                    .AddChannelIncoming("return")
-                        .AttachListener(bridgeReturn.GetListener())
-                        .AttachMessagePriorityOverrideForResponse()
-                        .AttachCommandInitiator(out init2)
-                        .Revert()
-                    .AddChannelOutgoing("internalIn", internalOnly: false
-                        , autosetPartition01: false)
-                        .AttachPriorityPartition(0, 1)
-                        .AttachSender(bridgeOut.GetSender())
-                        .Revert()
-                        ;
+                try
+                {
+                    pClient2
+                        .AdjustPolicyTaskManagerForDebug()
+                        .AddDebugMemoryDataCollector(out collector1a)
+                        .AddChannelIncoming("spooky", internalOnly: true)
+                            .AttachCommand((CommandMethodRequestContext ctx) =>
+                            {
+                                var payload = ctx.RequestPayloadGet<Blah>();
+                                ctx.ResponseSet(200, payload.Message);
+                                return Task.FromResult(0);
+                            }, ("franky", "johnny5"))
+                            .Revert()
+                        .AddChannelIncoming("return")
+                            .AttachListener(bridgeReturn.GetListener())
+                            .AttachMessagePriorityOverrideForResponse()
+                            .AttachCommandInitiator(out init2)
+                            .Revert()
+                        .AddChannelOutgoing("internalIn", internalOnly: false
+                            , autosetPartition01: false)
+                            .AttachPriorityPartition(0, 1)
+                            .AttachSender(bridgeOut.GetSender())
+                            .Revert()
+                            ;
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
 
                 pClient.Start();
                 pClient2.Start();

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -45,7 +43,7 @@ namespace Xigadee
         /// </summary>
         protected List<MessageFilterWrapper> mSupportedMessageTypes = new List<MessageFilterWrapper>();
         #endregion
-
+        #region Constructor
         /// <summary>
         /// Initializes a new instance of the <see cref="CommunicationAgentBase{S}"/> class.
         /// </summary>
@@ -63,7 +61,8 @@ namespace Xigadee
             PreferredSerializerId = serializerId;
             PreferredCompressionId = compressionId;
             PreferredEncryptionId = encryptionId;
-        }
+        } 
+        #endregion
 
         /// <summary>
         /// Gets or sets the preferred serializer identifier.

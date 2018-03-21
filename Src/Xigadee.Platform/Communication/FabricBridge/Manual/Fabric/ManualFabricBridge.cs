@@ -25,6 +25,7 @@ namespace Xigadee
     public class ManualFabricBridge: FabricBridgeBase<ICommunicationBridge>
     {
         private ConcurrentDictionary<string, ManualFabricChannel> mChannels;
+
         private ConcurrentDictionary<FabricMode, ICommunicationBridge> mAgents;
         /// <summary>
         /// Initializes a new instance of the <see cref="ManualFabricBridge"/> class.

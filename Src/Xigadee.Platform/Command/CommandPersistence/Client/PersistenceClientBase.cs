@@ -76,6 +76,7 @@ namespace Xigadee
             get; set;
         } 
         #endregion
+
         #region Persistence shortcuts
 
         #region Create(E entity, RepositorySettings settings = null)
@@ -87,6 +88,8 @@ namespace Xigadee
         /// <returns>Returns a response holder that indicates the status of the request and the entity or key and version id where appropriate.</returns>
         public virtual async Task<RepositoryHolder<K, E>> Create(E entity, RepositorySettings settings = null)
         {
+            ValidateServiceStarted();
+
             return await TransmitInternal(EntityActions.Create, new RepositoryHolder<K, E> { Entity = entity, Settings = settings }, principal: DefaultPrincipal);
         }
         #endregion
@@ -99,6 +102,8 @@ namespace Xigadee
         /// <returns>Returns a holder that indicates the status of the request and the entity where appropriate.</returns>
         public virtual async Task<RepositoryHolder<K, E>> Read(K key, RepositorySettings settings = null)
         {
+            ValidateServiceStarted();
+
             if ((settings?.UseCache ?? true) && mCacheManager.IsActive)
             {
                 var result = await mCacheManager.Read(key);
@@ -121,6 +126,8 @@ namespace Xigadee
         /// <returns>Returns a response holder that indicates the status of the request and the entity or key and version id where appropriate.</returns>
         public virtual async Task<RepositoryHolder<K, E>> ReadByRef(string refKey, string refValue, RepositorySettings settings = null)
         {
+            ValidateServiceStarted();
+
             if ((settings?.UseCache ?? true) && mCacheManager.IsActive)
             {
                 // Do a version read initially to check it is there and get the key (not returned in a read by ref)
@@ -145,6 +152,8 @@ namespace Xigadee
         /// <returns>Returns a response holder that indicates the status of the request and the entity or key and version id where appropriate.</returns>
         public virtual async Task<RepositoryHolder<K, E>> Update(E entity, RepositorySettings settings = null)
         {
+            ValidateServiceStarted();
+
             return await TransmitInternal(EntityActions.Update, new RepositoryHolder<K, E> { Entity = entity, Settings = settings }, principal: DefaultPrincipal);
         }
         #endregion
@@ -157,6 +166,8 @@ namespace Xigadee
         /// <returns>Returns a response holder that indicates the status of the request and the entity or key and version id where appropriate.</returns>
         public virtual async Task<RepositoryHolder<K, Tuple<K, string>>> Delete(K key, RepositorySettings settings = null)
         {
+            ValidateServiceStarted();
+
             return await TransmitInternal(EntityActions.Delete, new RepositoryHolder<K, Tuple<K, string>> { Key = key, Settings = settings }, principal: DefaultPrincipal);
         }
         #endregion
@@ -170,6 +181,8 @@ namespace Xigadee
         /// <returns>Returns a response holder that indicates the status of the request and the entity or key and version id where appropriate.</returns>
         public virtual async Task<RepositoryHolder<K, Tuple<K, string>>> DeleteByRef(string refKey, string refValue, RepositorySettings settings = null)
         {
+            ValidateServiceStarted();
+
             return await TransmitInternal(EntityActions.DeleteByRef, new RepositoryHolder<K, Tuple<K, string>> { KeyReference = new Tuple<string, string>(refKey, refValue), Settings = settings }, principal: DefaultPrincipal);
         }
         #endregion
@@ -182,6 +195,8 @@ namespace Xigadee
         /// <returns>Returns a response holder that indicates the status of the request and the entity or key and version id where appropriate.</returns>
         public virtual async Task<RepositoryHolder<K, Tuple<K, string>>> Version(K key, RepositorySettings settings = null)
         {
+            ValidateServiceStarted();
+
             if ((settings?.UseCache ?? true) && mCacheManager.IsActive)
             {
                 var result = await mCacheManager.VersionRead(key);
@@ -204,6 +219,8 @@ namespace Xigadee
         /// <returns>Returns a response holder that indicates the status of the request and the entity or key and version id where appropriate.</returns>
         public virtual async Task<RepositoryHolder<K, Tuple<K, string>>> VersionByRef(string refKey, string refValue, RepositorySettings settings = null)
         {
+            ValidateServiceStarted();
+
             if ((settings?.UseCache ?? true) && mCacheManager.IsActive)
             {
                 var result = await mCacheManager.VersionRead(new Tuple<string, string>(refKey, refValue));
@@ -226,6 +243,8 @@ namespace Xigadee
         /// <returns>The search response.</returns>
         public virtual async Task<RepositoryHolder<SearchRequest, SearchResponse>> Search(SearchRequest rq, RepositorySettings settings = null)
         {
+            ValidateServiceStarted();
+
             //if ((settings?.UseCache ?? true) && mCacheManager.IsActive)
             //{
             //    var result = await mCacheManager.VersionRead(new Tuple<string, string>(refKey, refValue));

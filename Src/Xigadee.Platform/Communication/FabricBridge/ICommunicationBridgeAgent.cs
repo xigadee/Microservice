@@ -20,7 +20,7 @@ namespace Xigadee
         /// </summary>
         event EventHandler<CommunicationBridgeAgentEventArgs> OnTransmit;
         /// <summary>
-        /// Gets the mode, round robin or braodcast.
+        /// Gets the mode, round robin or broadcast.
         /// </summary>
         FabricMode Mode { get; }
         /// <summary>
