@@ -23,10 +23,10 @@ namespace Xigadee
     /// This is the root logger interface to support async logging support through the framework.
     /// </summary>
     [Obsolete("Use the new data collection interfaces")]
-    public interface ILogger
+    public interface IXigadeeLogger
     {
         /// <summary>
-        /// This method asyncronously logs an event.
+        /// This method asynchronously logs an event.
         /// </summary>
         /// <param name="logEvent">The event to log.</param>
         /// <returns>This is an async task.</returns>

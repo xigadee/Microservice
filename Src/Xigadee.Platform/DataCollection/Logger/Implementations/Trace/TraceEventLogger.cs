@@ -28,7 +28,7 @@ namespace Xigadee
     /// This logger outputs event to the trace output.
     /// </summary>
     [Obsolete]
-    public class TraceEventLogger : ILogger
+    public class TraceEventLogger : IXigadeeLogger
     {
         ConcurrentDictionary<LoggingLevel, LogConvert> mContains;
 

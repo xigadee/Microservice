@@ -27,7 +27,7 @@ namespace Xigadee
     /// <summary>
     /// This method holds the action for the Collector?.
     /// </summary>
-    public class LoggerActionHolder : ILogger
+    public class LoggerActionHolder : IXigadeeLogger
     {
         Func<LogEvent, Task> mLogAction;
 

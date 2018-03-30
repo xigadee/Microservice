@@ -11,7 +11,7 @@ namespace Xigadee
     /// size parameter passed through in the constructor.
     /// </summary>
     [Obsolete]
-    public class MemoryLogger: ServiceBase<LoggingStatistics>, ILogger, IRequireServiceOriginator
+    public class MemoryLogger: ServiceBase<LoggingStatistics>, IXigadeeLogger, IRequireServiceOriginator
     {
         #region Declarations
         /// <summary>

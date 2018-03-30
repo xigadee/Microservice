@@ -29,7 +29,7 @@ namespace Xigadee
     /// This is a basic logger based on documentdb
     /// </summary>
     [Obsolete]
-    public class DocumentDbLogger : ServiceBase<LoggingStatistics>, ILogger, IRequireServiceOriginator
+    public class DocumentDbLogger : ServiceBase<LoggingStatistics>, IXigadeeLogger, IRequireServiceOriginator
     {
         #region Declarations
         /// <summary>
