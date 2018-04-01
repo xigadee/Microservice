@@ -40,11 +40,11 @@
   <ItemGroup>
     <Folder Include="Communication\Agent\Interfaces\" />
     <Folder Include="DataCollection\EventSource\Implementation\" />
-    <Folder Include="Interfaces\Contracts\" />
     <Folder Include="Messaging\ServiceMessage\" />
     <Folder Include="Messaging\TransmissionPayload\" />
     <Folder Include="ServiceHandler\Handlers\Serializers\Base\" />
     <Folder Include="ServiceHandler\Ids\" />
+    <Folder Include="ServiceHandler\Interfaces\Handler\" />
   </ItemGroup>
 
 </Project>

@@ -51,7 +51,7 @@ namespace Xigadee
         /// This is the internal statistics collection. Components should use this when referencing the collection directly.
         /// Use of Statistics will trigger a recursive StatisticsRecalculate calls each time.
         /// </summary>
-        protected internal S StatisticsInternal { get; private set; } 
+        public S StatisticsInternal { get; private set; } 
         #endregion
 
         #region ComponentId
