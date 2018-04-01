@@ -26,7 +26,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Xigadee.Abstractions\Xigadee.Abstractions.csproj" />
-    <ProjectReference Include="..\Xigadee.Platform\Xigadee.csproj" />
   </ItemGroup>
 
 </Project>
