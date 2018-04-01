@@ -74,6 +74,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Xigadee.Abstractions\Xigadee.Abstractions.csproj">
+      <Project>{b26e866d-8e1f-42e2-ade6-80937734fb48}</Project>
+      <Name>Xigadee.Abstractions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Xigadee.Api\Xigadee.Api.csproj">
       <Project>{9680b7a6-f4b7-4ecb-bbb4-d46941b9cfed}</Project>
       <Name>Xigadee.Api</Name>

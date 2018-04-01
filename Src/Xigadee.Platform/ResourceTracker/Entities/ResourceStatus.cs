@@ -34,7 +34,7 @@ namespace Xigadee
         /// </summary>
         public int? RetryInSeconds { get; set; }
         /// <summary>
-        /// This is the precentage of requests that should pass through, if the circuit breaker is in a half-open state.
+        /// This is the percentage of requests that should pass through, if the circuit breaker is in a half-open state.
         /// </summary>
         public int FilterPercentage { get; set; } = 100;
     }

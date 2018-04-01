@@ -29,7 +29,7 @@ namespace Xigadee
         /// <summary>
         /// Initializes a new instance of the <see cref="TransmissionPayloadTraceEventArgs"/> class.
         /// </summary>
-        /// <param name="start">The tickcount start.</param>
+        /// <param name="start">The tick-count start.</param>
         /// <param name="message">The message.</param>
         /// <param name="source">The optional source parameter.</param>
         public TransmissionPayloadTraceEventArgs(int start, string message = null, string source = null)

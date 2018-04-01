@@ -6,29 +6,6 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    /// <summary>
-    /// This is the base contract exception.
-    /// </summary>
-    public abstract class ContractException : Exception
-    {
-        protected ContractException(Type contract)
-        {
-            ContractName = contract.Name;
-        }
-
-        public string ContractName { get; }
-    }
-
-    /// <summary>
-    /// This exception is thrown when a message contract does not resolve.
-    /// </summary>
-    public class InvalidMessageContractException : ContractException
-    {
-        public InvalidMessageContractException(Type contract):base(contract)
-        {
-
-        }
-    }
 
     /// <summary>
     /// This exception occurs when the channel information is not passed to the AddCommand extension.
@@ -49,14 +26,24 @@ namespace Xigadee
     /// </summary>
     public class InvalidPipelineChannelContractException : ContractException
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InvalidPipelineChannelContractException"/> class.
+        /// </summary>
+        /// <param name="contract">The contract type.</param>
+        /// <param name="actualChannelId">The actual channel identifier.</param>
+        /// <param name="expectedChannelId">The expected channel identifier.</param>
         public InvalidPipelineChannelContractException(Type contract, string actualChannelId, string expectedChannelId) : base(contract)
         {
             ActualChannelId = actualChannelId;
             ExpectedChannelId = expectedChannelId;
         }
-
+        /// <summary>
+        /// Gets the actual channel identifier.
+        /// </summary>
         public string ActualChannelId { get; }
-
+        /// <summary>
+        /// Gets the expected channel identifier.
+        /// </summary>
         public string ExpectedChannelId { get; }
     }
 }
