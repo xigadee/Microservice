@@ -14,7 +14,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Xigadee.Console\Xigadee.Console.csproj" />
     <ProjectReference Include="..\Xigadee.Platform\Xigadee.csproj" />
-    <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj" />
   </ItemGroup>
 
 </Project>

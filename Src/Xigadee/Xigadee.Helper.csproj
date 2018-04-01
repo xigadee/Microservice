@@ -15,12 +15,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Entities\Binary\**" />
-    <EmbeddedResource Remove="Entities\Binary\**" />
-    <None Remove="Entities\Binary\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
   </ItemGroup>
 

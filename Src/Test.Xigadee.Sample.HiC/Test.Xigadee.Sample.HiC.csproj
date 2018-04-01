@@ -194,10 +194,6 @@
       <Project>{0916df44-f8dc-47b7-abc7-a429db2786fc}</Project>
       <Name>Xigadee.SpreadLedger</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj">
-      <Project>{4f785b7b-1fdc-4dcc-9453-fe42447fded2}</Project>
-      <Name>Xigadee.Helper</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />

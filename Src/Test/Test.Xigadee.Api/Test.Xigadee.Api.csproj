@@ -114,6 +114,10 @@
     <Compile Include="StartUp\StartUpCommand.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Xigadee.Abstractions\Xigadee.Abstractions.csproj">
+      <Project>{b26e866d-8e1f-42e2-ade6-80937734fb48}</Project>
+      <Name>Xigadee.Abstractions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Xigadee.Api.Client\Xigadee.Api.Client.csproj">
       <Project>{19f45b9b-5c21-4ec3-ae73-84001ebccc4b}</Project>
       <Name>Xigadee.Api.Client</Name>

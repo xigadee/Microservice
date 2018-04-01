@@ -74,10 +74,6 @@
       <Project>{862141c9-c3ef-4be4-b324-0943f8d6da53}</Project>
       <Name>Xigadee</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj">
-      <Project>{c7ac27ce-0bac-4fba-9238-9e45bc006752}</Project>
-      <Name>Xigadee.Helper</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -59,8 +59,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{147B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Xigadee.Helper", "Test.Xigadee.Helper\Test.Xigadee.Helper.csproj", "{1ADF4FE0-B46C-4BBF-9C23-9CE6F4DF2DA3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Helper", "Xigadee\Xigadee.Helper.csproj", "{C7AC27CE-0BAC-4FBA-9238-9E45BC006752}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee", "Xigadee.Platform\Xigadee.csproj", "{862141C9-C3EF-4BE4-B324-0943F8D6DA53}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Xigadee.Sample.HiC", "Test.Xigadee.Sample.HiC\Test.Xigadee.Sample.HiC.csproj", "{91381A5F-26CB-4E03-9A76-938932649F4A}"
@@ -97,7 +95,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.AspNetCore", "Xigad
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Xigadee.AspNetCore", "Test.Xigadee.AspNetCore\Test.Xigadee.AspNetCore.csproj", "{320A3E2C-EAD5-4DA3-9154-5C127D41ACA7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Abstractions", "Xigadee.Abstractions\Xigadee.Abstractions.csproj", "{B26E866D-8E1F-42E2-ADE6-80937734FB48}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Abstractions", "Xigadee.Abstractions\Xigadee.Abstractions.csproj", "{B26E866D-8E1F-42E2-ADE6-80937734FB48}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -173,10 +171,6 @@ Global
 		{1ADF4FE0-B46C-4BBF-9C23-9CE6F4DF2DA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1ADF4FE0-B46C-4BBF-9C23-9CE6F4DF2DA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1ADF4FE0-B46C-4BBF-9C23-9CE6F4DF2DA3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C7AC27CE-0BAC-4FBA-9238-9E45BC006752}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C7AC27CE-0BAC-4FBA-9238-9E45BC006752}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C7AC27CE-0BAC-4FBA-9238-9E45BC006752}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C7AC27CE-0BAC-4FBA-9238-9E45BC006752}.Release|Any CPU.Build.0 = Release|Any CPU
 		{862141C9-C3EF-4BE4-B324-0943F8D6DA53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{862141C9-C3EF-4BE4-B324-0943F8D6DA53}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{862141C9-C3EF-4BE4-B324-0943F8D6DA53}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -277,7 +271,7 @@ Global
 		{320A3E2C-EAD5-4DA3-9154-5C127D41ACA7} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
 		SolutionGuid = {8BF7561D-7A94-4B22-B0EB-D82D95B110DE}
+		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
 	EndGlobalSection
 EndGlobal

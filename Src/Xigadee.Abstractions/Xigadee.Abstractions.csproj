@@ -19,16 +19,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Helper\" />
-    <Folder Include="Persistence\Entities\" />
-    <Folder Include="Persistence\Interfaces\" />
+    <PackageReference Include="System.Net.Http" Version="4.3.3" />
   </ItemGroup>
   
 </Project>
