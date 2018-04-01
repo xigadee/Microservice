@@ -32,7 +32,7 @@ namespace Xigadee
         /// This static method is used for converting a date time string in to an object.
         /// </summary>
         /// <param name="data">The string.</param>
-        /// <param name="styles">The style that the date is in default is to asssume that we are dealing with universal time UTC</param>
+        /// <param name="styles">The style that the date is in default is to assume that we are dealing with universal time UTC</param>
         /// <returns>The datetime object or null if the string cannot be converted.</returns>
         public static DateTime? ToDateTime(string data, DateTimeStyles styles = DateTimeStyles.AssumeUniversal)
         {

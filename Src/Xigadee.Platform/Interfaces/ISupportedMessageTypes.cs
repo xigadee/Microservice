@@ -36,7 +36,7 @@ namespace Xigadee
     }
 
     /// <summary>
-    /// This class is used to wrap cammand message changes.
+    /// This class is used to wrap command message changes.
     /// </summary>
     public class SupportedMessagesChangeEventArgs:EventArgs
     {

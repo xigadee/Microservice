@@ -24,5 +24,11 @@
   <ItemGroup>
     <ProjectReference Include="..\Xigadee\Xigadee.Helper.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Helper\" />
+    <Folder Include="Persistence\Entities\" />
+    <Folder Include="Persistence\Interfaces\" />
+  </ItemGroup>
   
 </Project>

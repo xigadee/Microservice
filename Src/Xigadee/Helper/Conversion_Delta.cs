@@ -1,31 +1,18 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-#region using
+﻿#region using
 using System;
 #endregion
 namespace Xigadee
 {
+    /// <summary>
+    /// This library is used to perform tick-count conversion.
+    /// </summary>
     public static partial class ConversionHelper
     {
 
         #region CalculateDelta(int now, int start)
         /// <summary>
         /// This method calculates the delta and takes in to account that the
-        /// tickcount recycles to negative every 49 days.
+        /// tick-count recycles to negative every 49 days.
         /// </summary>
         /// <param name="now">The current tick count.</param>
         /// <param name="start">The start point.</param>
@@ -50,7 +37,7 @@ namespace Xigadee
         /// This method calculates the tick count delta.
         /// </summary>
         /// <param name="tickStart">The start point.</param>
-        /// <param name="tickNow">The current tickcount. If this is null Environment.TickCount is used.</param>
+        /// <param name="tickNow">The current tick-count. If this is null Environment.TickCount is used.</param>
         /// <returns>The delta.</returns>
         public static int DeltaAsMs(int tickStart, int? tickNow = null)
         {
@@ -60,7 +47,7 @@ namespace Xigadee
         /// Returns the delta as a timespan.
         /// </summary>
         /// <param name="tickStart">The start point. If this is null, then the method returns null.</param>
-        /// <param name="tickNow">The current tickcount. If this is null Environment.TickCount is used.</param>
+        /// <param name="tickNow">The current tick-count. If this is null Environment.TickCount is used.</param>
         /// <returns>The delta as a timespan.</returns>
         public static TimeSpan? DeltaAsTimeSpan(int? tickStart, int? tickNow = null)
         {
@@ -73,7 +60,7 @@ namespace Xigadee
         /// Returns the delta as a human readable string..
         /// </summary>
         /// <param name="tickStart">The start point.</param>
-        /// <param name="tickNow">The current tickcount. If this is null Environment.TickCount is used.</param>
+        /// <param name="tickNow">The current tick-count. If this is null Environment.TickCount is used.</param>
         /// <returns>A string containing the time span.</returns>
         public static string DeltaAsFriendlyTime(int tickStart, int? tickNow = null)
         {

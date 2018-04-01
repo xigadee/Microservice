@@ -1,20 +1,4 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-using System;
+﻿using System;
 
 namespace Xigadee
 {
@@ -23,34 +7,60 @@ namespace Xigadee
     /// </summary>
     public struct BitMaskInt32
     {
-        int bitPosition;
-        int bitMask, bitMaskNeg;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BitMaskInt32"/> struct.
+        /// </summary>
+        /// <param name="bitPosition">The bit position: 0-22.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Bit position is out of range. Valid values are 0-22</exception>
         public BitMaskInt32(int bitPosition)
         {
             if (bitPosition < 0 || bitPosition >= 23)
                 throw new ArgumentOutOfRangeException("", "Bit position is out of range. Valid values are 0-22");
 
-            this.bitPosition = bitPosition;
-            bitMask = 1 << bitPosition;
-            bitMaskNeg = 0x7FFFFFFF ^ bitMask;
+            BitPosition = bitPosition;
+            BitMask = 1 << bitPosition;
+            BitMaskNeg = 0x7FFFFFFF ^ BitMask;
         }
 
-        public int BitPosition { get { return bitPosition; } }
+        /// <summary>
+        /// Gets the bit position.
+        /// </summary>
+        public int BitPosition { get; }
+        /// <summary>
+        /// Gets the bit mask.
+        /// </summary>
+        public int BitMask { get; }
+        /// <summary>
+        /// Gets the bit mask negative map.
+        /// </summary>
+        public int BitMaskNeg { get; }
 
+        /// <summary>
+        /// Returns true if the bit is set.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>True if set.</returns>
         public bool BitCheck(int value)
         {
-            return (value & bitMask) > 0;
+            return (value & BitMask) > 0;
         }
-
+        /// <summary>
+        /// Applies the bit mask to the incoming data.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns>The adjusted data.</returns>
         public int BitSet(int data)
         {
-            return data | bitMask;
+            return data | BitMask;
         }
-
+        /// <summary>
+        /// Removes the bit-mask from the incoming number.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns>The data with the unset bit.</returns>
         public int BitUnset(int data)
         {
-            return data & bitMaskNeg;
+            return data & BitMaskNeg;
         }
     }
 }
