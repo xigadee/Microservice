@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Xigadee
+﻿namespace Xigadee
 {
     /// <summary>
     /// This is the base interface shared by both listeners and senders.
