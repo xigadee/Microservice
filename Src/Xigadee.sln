@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2036
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28527.54
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Azure", "Xigadee.Azure\Xigadee.Azure.csproj", "{069F5121-BC8E-4F1F-B08C-BA3F4806DB78}"
 EndProject
@@ -26,7 +26,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Datapump", "Datapump", "{8A
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Xigadee.Datapump.Sql", "Xigadee.Datapump.Sql\Xigadee.Datapump.Sql.sqlproj", "{C66F3869-118D-4962-A904-4359E396AEB7}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{DCA58A2C-4AC0-4978-944C-DC8ABB50DC42}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Documentation", "_Documentation", "{DCA58A2C-4AC0-4978-944C-DC8ABB50DC42}"
 	ProjectSection(SolutionItems) = preProject
 		..\README.md = ..\README.md
 		..\docs\whatsnew.md = ..\docs\whatsnew.md
@@ -265,7 +265,7 @@ Global
 		{320A3E2C-EAD5-4DA3-9154-5C127D41ACA7} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
 		SolutionGuid = {8BF7561D-7A94-4B22-B0EB-D82D95B110DE}
+		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
 	EndGlobalSection
 EndGlobal

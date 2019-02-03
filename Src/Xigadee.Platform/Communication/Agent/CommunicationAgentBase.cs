@@ -23,7 +23,7 @@ namespace Xigadee
             , EncryptionHandlerId encryptionId = null):base(capabilities, serializerId, compressionId, encryptionId)
         {
         }
-    } 
+    }
     #endregion
 
     /// <summary>
