@@ -1,0 +1,10 @@
+GET /2663428/PID_1267705_leaderboard_728x90.swf HTTP/1.1
+Host: s0.2mdn.net
+Connection: keep-alive
+User-Agent: Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.5 (KHTML, like Gecko) Chrome/4.0.249.89 Safari/532.5
+Referer: http://www.guardian.co.uk/film/2010/mar/18/i-love-you-phillip-morris-review
+Accept: */*
+Accept-Encoding: gzip,deflate,sdch
+Accept-Language: en-GB,en-US;q=0.8,en;q=0.6
+Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.3
+

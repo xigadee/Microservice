@@ -243,7 +243,7 @@
     <None Include="_doc\Introduction.md" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Xigadee.Platform\Xigadee.csproj">
+    <ProjectReference Include="..\Xigadee\Xigadee.csproj">
       <Project>{862141c9-c3ef-4be4-b324-0943f8d6da53}</Project>
       <Name>Xigadee</Name>
     </ProjectReference>

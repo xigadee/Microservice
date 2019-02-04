@@ -4,7 +4,7 @@ This is the source folder for the Xigadee project. The main code libraries are h
 
 ## Legal Stuff
 
-_**Copyright © [Hitachi Consulting](http://www.hitachiconsulting.com) 2012-2017**_
+_**Partial Copyright © [Hitachi Consulting](http://www.hitachiconsulting.com) 2012-2017**_
 
 Licensed under the Apache License, Version 2.0 (the "License").
 You may obtain a copy of the License at: http://www.apache.org/licenses/LICENSE-2.0
@@ -14,6 +14,5 @@ See the License for the specific language governing permissions and limitations 
 
 
 <table><tr> 
-<td><a href="http://www.hitachiconsulting.com"><img src="../docs/hitachi.png" alt="Hitachi Consulting" height="50"/></a></td>   
 <td>Created by: <a href="http://github.com/paulstancer">Paul Stancer</a></td>
 </tr></table>

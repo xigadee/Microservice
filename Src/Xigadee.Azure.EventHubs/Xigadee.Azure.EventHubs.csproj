@@ -1,10 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net47</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageId>Xigadee.Azure.EventHubs</PackageId>
     <RootNamespace>Xigadee</RootNamespace>
     <AssemblyName>Xigadee.Azure.EventHubs</AssemblyName>
@@ -27,8 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Xigadee.Abstractions\Xigadee.Abstractions.csproj" />
-    <ProjectReference Include="..\Xigadee.Platform\Xigadee.csproj" />
+    <ProjectReference Include="..\Xigadee\Xigadee.csproj" />
   </ItemGroup>
 
 </Project>

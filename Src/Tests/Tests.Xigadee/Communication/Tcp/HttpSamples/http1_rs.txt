@@ -1,0 +1,9 @@
+HTTP/1.1 302 Found
+Location: http://www.google.co.uk/
+Cache-Control: private
+Content-Type: text/html; charset=UTF-8
+Date: Tue, 16 Mar 2010 21:46:59 GMT
+Server: gws
+Content-Length: 221
+X-XSS-Protection: 0
+

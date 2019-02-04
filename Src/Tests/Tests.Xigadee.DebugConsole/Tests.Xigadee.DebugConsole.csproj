@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <PackageId>Tests.Xigadee.DebugConsole</PackageId>
+    <RootNamespace>Tests.Xigadee</RootNamespace>
+    <AssemblyName>Tests.Xigadee.DebugConsole</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Xigadee.Console\Xigadee.Console.csproj" />
+    <ProjectReference Include="..\..\Xigadee\Xigadee.csproj" />
+    <ProjectReference Include="..\Tests.Xigadee.Shared\Tests.Xigadee.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

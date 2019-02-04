@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net47</TargetFrameworks>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Xigadee.Abstractions\Xigadee.Abstractions.csproj" />
-    <ProjectReference Include="..\Xigadee.Api\Xigadee.Api.csproj" />
   </ItemGroup>
 
 </Project>

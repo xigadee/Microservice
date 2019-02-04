@@ -70,7 +70,7 @@
       <Project>{b26e866d-8e1f-42e2-ade6-80937734fb48}</Project>
       <Name>Xigadee.Abstractions</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Xigadee.Platform\Xigadee.csproj">
+    <ProjectReference Include="..\Xigadee\Xigadee.csproj">
       <Project>{862141c9-c3ef-4be4-b324-0943f8d6da53}</Project>
       <Name>Xigadee</Name>
     </ProjectReference>

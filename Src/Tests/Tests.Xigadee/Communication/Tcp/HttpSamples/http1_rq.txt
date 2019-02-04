@@ -1,0 +1,10 @@
+HEAD / HTTP/1.1
+Host: www.google.com
+Connection: keep-alive
+User-Agent: Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.5 (KHTML, like Gecko) Chrome/4.0.249.89 Safari/532.5
+Content-Length: 0
+Accept-Encoding: gzip,deflate,sdch
+Cookie: rememberme=true; PREF=ID=2d3a0cd430672d4d:U=73e3d726b6ce1168:TM=1247141843:LM=1258153316:GM=1:S=yQ9v5SMfbNyA6VEP; HSID=AcuaajkTtHDRTyHZE; SID=DQAAAIcAAACZqTDlTL7xzjEfpYqpBAcmXF0PHhV_hls0JGFOOaANwtwD2Fs_6LOXp4qXGVkgchXmoopgwvgaxX8EPQhUP-r1HmQOr4H-W7IF6HnEHhr2KY8Bc0Vqa2-2PaSc0J7Ei9mgCvhZxqFYdduPyp6bMYMx_pWKCXHlap99iURdPo5fEnOfVg5Gv1VXPYjWINYNqYM; NID=32=g1QbVc7LvAZtoC_7QFemjaPDHYjrgv08HRFZhkH8knasHTzwdLzM76zr4kahYOSw2hDI4pFdIBgRy6NRBP6kyIsEpJ24vz-_idDrmN6gt_fOuGY451OZabGB5QAn4GKv
+Accept-Language: en-GB,en-US;q=0.8,en;q=0.6
+Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.3
+

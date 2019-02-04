@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <PackageId>Xigadee</PackageId>
+    <RootNamespace>Xigadee</RootNamespace>
+    <AssemblyName>Xigadee</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Xigadee.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Command\CommandPersistence\Server\DocumentDb\**" />
+    <Compile Remove="ServiceHandler\JWT\Interfaces\**" />
+    <Compile Remove="ServiceHandler\Pipeline\Add\**" />
+    <EmbeddedResource Remove="Command\CommandPersistence\Server\DocumentDb\**" />
+    <EmbeddedResource Remove="ServiceHandler\JWT\Interfaces\**" />
+    <EmbeddedResource Remove="ServiceHandler\Pipeline\Add\**" />
+    <None Remove="Command\CommandPersistence\Server\DocumentDb\**" />
+    <None Remove="ServiceHandler\JWT\Interfaces\**" />
+    <None Remove="ServiceHandler\Pipeline\Add\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Xigadee.Abstractions\Xigadee.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Communication\Agent\Interfaces\" />
+    <Folder Include="DataCollection\EventSource\Implementation\" />
+    <Folder Include="ServiceHandler\Handlers\Serializers\Base\" />
+    <Folder Include="ServiceHandler\Ids\" />
+    <Folder Include="ServiceHandler\Interfaces\Handler\" />
+  </ItemGroup>
+
+</Project>

@@ -136,25 +136,9 @@
       <Project>{b26e866d-8e1f-42e2-ade6-80937734fb48}</Project>
       <Name>Xigadee.Abstractions</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Xigadee.Platform\Xigadee.csproj">
+    <ProjectReference Include="..\..\Xigadee\Xigadee.csproj">
       <Project>{862141c9-c3ef-4be4-b324-0943f8d6da53}</Project>
       <Name>Xigadee</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Test.Xigadee.Shared\Test.Xigadee.Shared.csproj">
-      <Project>{6aa8f0e5-ab72-4df5-bd02-a23fbd8fdb83}</Project>
-      <Name>Test.Xigadee.Shared</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Xigadee.Api.Client\Xigadee.Api.Client.csproj">
-      <Project>{19f45b9b-5c21-4ec3-ae73-84001ebccc4b}</Project>
-      <Name>Xigadee.Api.Client</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Xigadee.Api\Xigadee.Api.csproj">
-      <Project>{9680b7a6-f4b7-4ecb-bbb4-d46941b9cfed}</Project>
-      <Name>Xigadee.Api</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Xigadee.Azure\Xigadee.Azure.csproj">
-      <Project>{069f5121-bc8e-4f1f-b08c-ba3f4806db78}</Project>
-      <Name>Xigadee.Azure</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

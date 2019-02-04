@@ -229,7 +229,6 @@
     <Compile Include="PipelineBasic.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PipelineUnityWebApi.cs" />
-    <Compile Include="Samples\APISample1.cs" />
     <Compile Include="Security\SecurityScaffoldBase.cs" />
     <Compile Include="Security\SecurityScaffoldTest1.cs" />
   </ItemGroup>
@@ -238,19 +237,7 @@
       <Project>{636956f9-6cce-4f3e-be57-5a851c089243}</Project>
       <Name>Xigadee.Api.Server.Unity</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Xigadee.Api.Server\Xigadee.Api.Server.csproj">
-      <Project>{c39cd117-3863-4e8c-9bd0-043e5f1fb67c}</Project>
-      <Name>Xigadee.Api.Server</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Xigadee.Api\Xigadee.Api.csproj">
-      <Project>{9680b7a6-f4b7-4ecb-bbb4-d46941b9cfed}</Project>
-      <Name>Xigadee.Api</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Xigadee.Azure\Xigadee.Azure.csproj">
-      <Project>{069f5121-bc8e-4f1f-b08c-ba3f4806db78}</Project>
-      <Name>Xigadee.Azure</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Xigadee.Platform\Xigadee.csproj">
+    <ProjectReference Include="..\..\Xigadee\Xigadee.csproj">
       <Project>{862141c9-c3ef-4be4-b324-0943f8d6da53}</Project>
       <Name>Xigadee</Name>
     </ProjectReference>

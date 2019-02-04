@@ -215,41 +215,17 @@
     <None Include="_docs\ReadMe.md" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Xigadee.Api.Client\Xigadee.Api.Client.csproj">
-      <Project>{19f45b9b-5c21-4ec3-ae73-84001ebccc4b}</Project>
-      <Name>Xigadee.Api.Client</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Xigadee.Api\Xigadee.Api.csproj">
-      <Project>{9680b7a6-f4b7-4ecb-bbb4-d46941b9cfed}</Project>
-      <Name>Xigadee.Api</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Xigadee.Azure\Xigadee.Azure.csproj">
-      <Project>{069f5121-bc8e-4f1f-b08c-ba3f4806db78}</Project>
-      <Name>Xigadee.Azure</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Xigadee.Console\Xigadee.Console.csproj">
       <Project>{af748540-d35c-409a-ad23-d990cf19ded9}</Project>
       <Name>Xigadee.Console</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Xigadee.Framework\Xigadee.Framework.csproj">
-      <Project>{af9b61ba-6a9c-4bd3-a87a-fb513188f21f}</Project>
-      <Name>Xigadee.Framework</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Xigadee.Platform\Xigadee.csproj">
+    <ProjectReference Include="..\..\Xigadee\Xigadee.csproj">
       <Project>{862141c9-c3ef-4be4-b324-0943f8d6da53}</Project>
       <Name>Xigadee</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Xigadee\Xigadee.Helper.csproj">
       <Project>{c7ac27ce-0bac-4fba-9238-9e45bc006752}</Project>
       <Name>Xigadee.Helper</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Test.Xigadee.Api.Server\Test.Xigadee.Api.Server.csproj">
-      <Project>{3c7d695d-4111-499e-9764-6b9e6ec93952}</Project>
-      <Name>Test.Xigadee.Api.Server</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Test.Xigadee.Shared\Test.Xigadee.Shared.csproj">
-      <Project>{6aa8f0e5-ab72-4df5-bd02-a23fbd8fdb83}</Project>
-      <Name>Test.Xigadee.Shared</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
