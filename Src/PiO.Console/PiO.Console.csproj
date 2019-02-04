@@ -7,10 +7,7 @@
     <StartupObject>PiO.Program</StartupObject>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netcoreapp2.0\PiO.Console.xml</DocumentationFile>
-  </PropertyGroup>
-
+  
   <ItemGroup>
     <ProjectReference Include="..\Xigadee.Console\Xigadee.Console.csproj" />
     <ProjectReference Include="..\Xigadee\Xigadee.csproj" />

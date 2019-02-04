@@ -12,21 +12,21 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>This Xigadee library is used to extend AspNetCore applications.</description>
     <summary>Xigadee Microservice Framework for .NET</summary>
-    <releaseNotes>Initial push.</releaseNotes>
+    <releaseNotes>Release 2.0</releaseNotes>
     <copyright>Copyright © Xigadee 2017-2018</copyright>
     <tags>Xigadee Microservice ASP.NET Core</tags>
     <dependencies>
-      <group targetFramework=".NETCoreApp2.0">
+      <group targetFramework=".NETCoreApp2.2">
         <dependency id="Microsoft.AspNetCore.Mvc.Core" version="2.0.2" exclude="Build,Analyzers" />
         <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="2.0.0" exclude="Build,Analyzers" />
-        <dependency id="Newtonsoft.Json" version="11.0.1" exclude="Build,Analyzers" />
+        <dependency id="Newtonsoft.Json" version="12.0.1" exclude="Build,Analyzers" />
         <dependency id="Xigadee" version="{UpdateVersion.ps1.replace}" exclude="Build,Analyzers" />
       </group>
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\Release\netcoreapp2.0\Xigadee.AspNetCore.dll" target="lib\netcoreapp2.0\" />
-    <file src="bin\Release\netcoreapp2.0\Xigadee.AspNetCore.pdb" target="lib\netcoreapp2.0\" />
-    <file src="bin\Release\netcoreapp2.0\Xigadee.AspNetCore.xml" target="lib\netcoreapp2.0\" />
+    <file src="bin\Release\netcoreapp2.2\Xigadee.AspNetCore.dll" target="lib\netcoreapp2.2\" />
+    <file src="bin\Release\netcoreapp2.2\Xigadee.AspNetCore.pdb" target="lib\netcoreapp2.2\" />
+    <file src="bin\Release\netcoreapp2.2\Xigadee.AspNetCore.xml" target="lib\netcoreapp2.2\" />
   </files>
 </package>

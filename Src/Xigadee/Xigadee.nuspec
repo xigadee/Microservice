@@ -12,26 +12,18 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>The Xigadee library is used to create Microservice based applications.</description>
     <summary>Xigadee Microservice Framework for .NET</summary>
-    <releaseNotes>Initial push.</releaseNotes>
-    <copyright>Copyright © Xigadee 2017-2018 incorporates copyright of Hitachi Consulting 2012-2017</copyright>
+    <releaseNotes>Release 2.0</releaseNotes>
+    <copyright>Copyright © Xigadee 2017-2019 incorporates copyright of Hitachi Consulting 2012-2017</copyright>
     <tags>Xigadee Microservice .NET</tags>
     <dependencies>
-      <group targetFramework=".NETFramework4.7">
-        <dependency id="Microsoft.CSharp" version="4.4.1" exclude="Build,Analyzers" />
-        <dependency id="Newtonsoft.Json" version="11.0.1" exclude="Build,Analyzers" />
-        <dependency id="Xigadee.Abstractions" version="{UpdateVersion.ps1.replace}" exclude="Build,Analyzers" />
-      </group>
       <group targetFramework=".NETStandard2.0">
-        <dependency id="Microsoft.CSharp" version="4.4.1" exclude="Build,Analyzers" />
-        <dependency id="Newtonsoft.Json" version="11.0.1" exclude="Build,Analyzers" />
+        <dependency id="Newtonsoft.Json" version="12.0.1" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.CSharp" version="4.5.0" exclude="Build,Analyzers" />
         <dependency id="Xigadee.Abstractions" version="{UpdateVersion.ps1.replace}" exclude="Build,Analyzers" />
       </group>
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\Release\net47\Xigadee.dll" target="lib\net47\" />
-    <file src="bin\Release\net47\Xigadee.pdb" target="lib\net47\" />
-    <file src="bin\Release\net47\Xigadee.xml" target="lib\net47\" />
     <file src="bin\Release\netstandard2.0\Xigadee.dll" target="lib\netstandard2.0\" />
     <file src="bin\Release\netstandard2.0\Xigadee.pdb" target="lib\netstandard2.0\" />
     <file src="bin\Release\netstandard2.0\Xigadee.xml" target="lib\netstandard2.0\" />
