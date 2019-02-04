@@ -10,7 +10,7 @@ namespace Xigadee
     /// <summary>
     /// This class holds the schedule jobs within the Microservice.
     /// </summary>
-    public class SchedulerContainer : CollectionContainerBase<Schedule, SchedulerContainer.Statistics>
+    public class SchedulerContainer : CollectionContainerBase<Schedule, SchedulerContainerStatistics>
         , IScheduler, ITaskManagerProcess, IRequireDataCollector
     {
         #region Declarations
@@ -20,17 +20,17 @@ namespace Xigadee
         /// <summary>
         /// This is the policy for the scheduler.
         /// </summary>
-        protected readonly Policy mPolicy;
+        protected readonly SchedulerContainerPolicy mPolicy;
         #endregion
         #region Constructor
         /// <summary>
         /// This is the default constructor.
         /// </summary>
         /// <param name="policy">The scheduler policy.</param>
-        public SchedulerContainer(Policy policy = null)
+        public SchedulerContainer(SchedulerContainerPolicy policy = null)
             : base(null)
         {
-            mPolicy = policy ?? new Policy();
+            mPolicy = policy ?? new SchedulerContainerPolicy();
         }
         #endregion
 
@@ -110,7 +110,7 @@ namespace Xigadee
         /// This method recalculates the stats for the scheduler.
         /// </summary>
         /// <param name="stats">The statistics.</param>
-        protected override void StatisticsRecalculate(SchedulerContainer.Statistics stats)
+        protected override void StatisticsRecalculate(SchedulerContainerStatistics stats)
         {
             base.StatisticsRecalculate(stats);
 
@@ -252,77 +252,5 @@ namespace Xigadee
         }
         #endregion
 
-        #region Class -> Policy
-        /// <summary>
-        /// This is the scheduler policy.
-        /// </summary>
-        /// <seealso cref="Xigadee.PolicyBase" />
-        public class Policy: PolicyBase
-        {
-            /// <summary>
-            /// Gets or sets the default poll in milliseconds.
-            /// </summary>
-            public virtual int DefaultPollInMs { get; set; } = 100;
-
-            /// <summary>
-            /// Gets or sets the default task priority that schedules are set for the Task Manager,.
-            /// </summary>
-            public int DefaultTaskPriority { get; set; } = 2;
-        }
-        #endregion
-        #region Class -> Statistics
-        /// <summary>
-        /// This class contains the statistics for the scheduler collection.
-        /// </summary>
-        /// <seealso cref="Xigadee.CollectionStatistics" />
-        public class Statistics: CollectionStatistics
-        {
-            #region Name
-            /// <summary>
-            /// This is the service name.
-            /// </summary>
-            public override string Name
-            {
-                get
-                {
-                    return base.Name;
-                }
-
-                set
-                {
-                    base.Name = value;
-                }
-            }
-            #endregion
-            #region ItemCount
-            /// <summary>
-            /// The item count.
-            /// </summary>
-            public override int ItemCount
-            {
-                get
-                {
-                    return base.ItemCount;
-                }
-
-                set
-                {
-                    base.ItemCount = value;
-                }
-            }
-            #endregion
-            #region DefaultPollInMs
-            /// <summary>
-            /// Displays the default poll time in milliseconds.
-            /// </summary>
-            public int DefaultPollInMs { get; set; }
-            #endregion
-
-            /// <summary>
-            /// Gets or sets the schedule statistics.
-            /// </summary>
-            public List<Schedule> Schedules { get; set; }
-        } 
-        #endregion
     }
 }

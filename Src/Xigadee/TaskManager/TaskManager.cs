@@ -11,7 +11,7 @@ namespace Xigadee
     /// <summary>
     /// This container holds the current tasks being processed on the system and calculates the available slots for the supported priority levels.
     /// </summary>
-    public partial class TaskManager: ServiceContainerBase<TaskManager.Statistics, TaskManager.Policy>
+    public partial class TaskManager: ServiceContainerBase<TaskManagerStatistics, TaskManagerPolicy>
         , IRequireDataCollector
     {
         #region Declarations
@@ -95,7 +95,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="dispatcher">The dispatcher function that is used to process the specific tasks.</param>
         /// <param name="policy">The task manager policy.</param>
-        public TaskManager(Func<TransmissionPayload, Task> dispatcher, TaskManager.Policy policy)
+        public TaskManager(Func<TransmissionPayload, Task> dispatcher, TaskManagerPolicy policy)
             : base(policy, nameof(TaskManager))
         {
             if (policy == null)
@@ -152,7 +152,7 @@ namespace Xigadee
         /// <summary>
         /// This method sets the statistics.
         /// </summary>
-        protected override void StatisticsRecalculate(TaskManager.Statistics stats)
+        protected override void StatisticsRecalculate(TaskManagerStatistics stats)
         {
             base.StatisticsRecalculate(stats);
 

@@ -49,7 +49,7 @@ namespace Xigadee
         /// <returns>Returns a file name for the event.</returns>
         public static string StatisticsMakeId(EventHolder ev, MicroserviceId msId)
         {
-            var e = ev.Data as Microservice.Statistics;
+            var e = ev.Data as MicroserviceStatistics;
             return $"{e.StorageId}.json";
         }
         /// <summary>
@@ -60,7 +60,7 @@ namespace Xigadee
         /// <returns>Returns a folder path.</returns>
         public static string StatisticsMakeFolder(EventHolder ev, MicroserviceId msId)
         {
-            var e = ev.Data as Microservice.Statistics;
+            var e = ev.Data as MicroserviceStatistics;
             return string.Format("{0}/{1:yyyy-MM-dd}/{1:HH}", msId.Name, DateTime.UtcNow);
         }
         //Logger        

@@ -267,7 +267,7 @@ namespace Xigadee
 
         private void WriteMicroserviceStatistics(EventHolder eventHolder)
         {
-            var eventData = eventHolder.Data as Microservice.Statistics;
+            var eventData = eventHolder.Data as MicroserviceStatistics;
             if (string.IsNullOrEmpty(eventData?.Name))
                 return;
 

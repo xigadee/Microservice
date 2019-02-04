@@ -11,7 +11,7 @@ namespace Xigadee
     /// This container contains all the internal handlers, initiators and jobs that are responsible for 
     /// processing messages on the system. This class also holds and maintains the shared service collections.
     /// </summary>
-    public class CommandContainer:ServiceContainerBase<CommandContainer.Statistics, CommandContainer.Policy>
+    public class CommandContainer:ServiceContainerBase<CommandContainerStatistics, CommandContainerPolicy>
     {
         #region Declarations
         /// <summary>
@@ -39,7 +39,7 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        public CommandContainer(CommandContainer.Policy policy = null):base(policy)
+        public CommandContainer(CommandContainerPolicy policy = null):base(policy)
         {
             mCommands = new List<ICommand>();
 
@@ -113,7 +113,7 @@ namespace Xigadee
         /// <summary>
         /// This method recalculates the component statistics.
         /// </summary>
-        protected override void StatisticsRecalculate(CommandContainer.Statistics stats)
+        protected override void StatisticsRecalculate(CommandContainerStatistics stats)
         {
             base.StatisticsRecalculate(stats);
 
@@ -321,29 +321,8 @@ namespace Xigadee
         }
         #endregion
 
-        #region Class -> Policy
-        /// <summary>
-        /// This is the specific policy for the command container.
-        /// </summary>
-        public class Policy: PolicyBase
-        {
-        }
-        #endregion
-        #region Class -> Statistics
-        /// <summary>
-        /// This class holds the command container statistics.
-        /// </summary>
-        public class Statistics: StatusBase
-        {
-            /// <summary>
-            /// The command list.
-            /// </summary>
-            public List<CommandStatistics> Commands { get; set; }
-            /// <summary>
-            /// The shared services.
-            /// </summary>
-            public SharedServiceStatistics SharedServices { get; set; }
-        } 
-        #endregion
+
     }
+
+
 }

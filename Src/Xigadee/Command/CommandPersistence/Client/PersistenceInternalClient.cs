@@ -29,8 +29,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class PersistenceInternalClient<K, E>: PersistenceClientBase<K, E, PersistenceInternalClientPolicy>
-        , IPersistenceSharedService 
+    public class PersistenceInternalClient<K, E>: PersistenceClientBase<K, E, PersistenceInternalClientPolicy>, IPersistenceSharedService 
         where K : IEquatable<K>
     {
         #region Declarations

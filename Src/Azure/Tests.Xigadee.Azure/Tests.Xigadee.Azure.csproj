@@ -14,7 +14,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Tests\Tests.Xigadee.Shared\Tests.Xigadee.Shared.csproj" />
+    <ProjectReference Include="..\..\Xigadee.Azure.ApiManagement\Xigadee.Azure.ApiManagement.csproj" />
+    <ProjectReference Include="..\..\Xigadee.Azure.ApplicationInsights\Xigadee.Azure.ApplicationInsights.csproj" />
     <ProjectReference Include="..\..\Xigadee.Azure.DocumentDB\Xigadee.Azure.DocumentDB.csproj" />
+    <ProjectReference Include="..\..\Xigadee.Azure.EventHubs\Xigadee.Azure.EventHubs.csproj" />
     <ProjectReference Include="..\..\Xigadee.Azure.KeyVault\Xigadee.Azure.KeyVault.csproj" />
     <ProjectReference Include="..\..\Xigadee.Azure.Redis\Xigadee.Azure.Redis.csproj" />
     <ProjectReference Include="..\..\Xigadee.Azure.ServiceBus\Xigadee.Azure.ServiceBus.csproj" />

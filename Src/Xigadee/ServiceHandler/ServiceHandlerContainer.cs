@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 namespace Xigadee
 {
@@ -8,7 +7,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="S">The status class.</typeparam>
     /// <typeparam name="P">The policy class.</typeparam>
-    public partial class ServiceHandlerContainer: ServiceContainerBase<ServiceHandlerContainer.Statistics, ServiceHandlerContainer.Policy>, IServiceHandlers
+    public partial class ServiceHandlerContainer: ServiceContainerBase<ServiceHandlerContainerStatistics, ServiceHandlerContainerPolicy>, IServiceHandlers
         , IRequireDataCollector, IRequireServiceOriginator, IRequireSharedServices
     {
         #region Constructor
@@ -17,21 +16,21 @@ namespace Xigadee
         /// </summary>
         /// <param name="policy">The optional policy class.</param>
         /// <param name="name">The optional name for the component.</param>
-        public ServiceHandlerContainer(Policy policy = null, string name = null) : base(policy, name)
+        public ServiceHandlerContainer(ServiceHandlerContainerPolicy policy = null, string name = null) : base(policy, name)
         {
             Authentication = new ServiceHandlerCollection<IServiceHandlerAuthentication>(OnAuthenticationAdd);
             Compression = new ServiceHandlerCollection<IServiceHandlerCompression>();
             Encryption = new ServiceHandlerCollection<IServiceHandlerEncryption>();
             Serialization = new ServiceHandlerCollection<IServiceHandlerSerialization>();
-        } 
+        }
         #endregion
 
-        #region StatisticsRecalculate(SecurityContainerStatistics statistics)
+        #region StatisticsRecalculate(ServiceHandlerContainerStatistics statistics)
         /// <summary>
         /// This method updates the security statistics.
         /// </summary>
         /// <param name="statistics">The statistics.</param>
-        protected override void StatisticsRecalculate(ServiceHandlerContainer.Statistics statistics)
+        protected override void StatisticsRecalculate(ServiceHandlerContainerStatistics statistics)
         {
             base.StatisticsRecalculate(statistics);
 
@@ -90,39 +89,6 @@ namespace Xigadee
         /// Gets or sets the shared services.
         /// </summary>
         public ISharedService SharedServices { get; set; } 
-        #endregion
-
-        #region Class -> Policy
-        /// <summary>
-        /// This is the policy container.
-        /// </summary>
-        public class Policy: PolicyBase
-        {
-        }
-        #endregion
-        #region Class -> Statistics
-        /// <summary>
-        /// This class holds a reference to the statistics.
-        /// </summary>
-        public class Statistics: StatusBase
-        {
-            /// <summary>
-            /// This is a list of the supported authentication handlers.
-            /// </summary>
-            public string[] Authentication { get; set; }
-            /// <summary>
-            /// This is a list of the supported encryption handlers.
-            /// </summary>
-            public string[] Encryption { get; set; }
-            /// <summary>
-            /// This is a list of the supported encryption handlers.
-            /// </summary>
-            public string[] Compression { get; set; }
-            /// <summary>
-            /// This is a list of the supported encryption handlers.
-            /// </summary>
-            public string[] Serialization { get; set; }
-        }
         #endregion
 
         #region Verify(Channel channel, TransmissionPayload payloadIn)

@@ -1,20 +1,4 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-#region using
+﻿#region using
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -26,7 +10,7 @@ namespace Xigadee
     /// This class is used to connect resource consumers with resource limiters.
     /// Limiters are typically connected to listener clients and reduce the incoming traffic when the resource becomes stressed.
     /// </summary>
-    public class ResourceContainer: ServiceContainerBase<ResourceContainer.Statistics, ResourceContainer.Policy>
+    public class ResourceContainer: ServiceContainerBase<ResourceContainerStatistics, ResourceContainerPolicy>
         , IRequireSharedServices, IResourceTracker, IRequireDataCollector
     {
         //AKA Dependency Monitor
@@ -45,7 +29,7 @@ namespace Xigadee
         /// This is the default constructor.
         /// </summary>
         /// <param name="policy">The policy.</param>
-        public ResourceContainer(ResourceContainer.Policy policy = null):base(policy)
+        public ResourceContainer(ResourceContainerPolicy policy = null):base(policy)
         {
             mResources = new ConcurrentDictionary<string, ResourceStatistics>();
 
@@ -99,7 +83,7 @@ namespace Xigadee
         /// This method recalculates the statistics summaries.
         /// </summary>
         /// <param name="stats">The statistics.</param>
-        protected override void StatisticsRecalculate(ResourceContainer.Statistics stats)
+        protected override void StatisticsRecalculate(ResourceContainerStatistics stats)
         {
             if (mResources != null)
                 stats.Resources = mResources.Values.ToArray();
@@ -225,29 +209,5 @@ namespace Xigadee
         }
         #endregion
 
-        #region Class -> Policy
-        /// <summary>
-        /// This policy is used by the ResourceContainer class
-        /// </summary>
-        public class Policy: PolicyBase
-        {
-        }
-        #endregion
-        #region Class -> Statistics
-        /// <summary>
-        /// This class measures the statistics for the resource container.
-        /// </summary>
-        public class Statistics: StatusBase
-        {
-            /// <summary>
-            /// This is the resource collections.
-            /// </summary>
-            public ResourceStatistics[] Resources { get; set; }
-            /// <summary>
-            /// This is the collection of rate limiters
-            /// </summary>
-            public string[] RateLimiters { get; set; }
-        } 
-        #endregion
     }
 }

@@ -9,7 +9,7 @@ namespace Test.Xigadee
     {
         private ResourceContainer CreateResourceContainer()
         {
-            var policy = new ResourceContainer.Policy();
+            var policy = new ResourceContainerPolicy();
             SharedServiceContainer sharedServices = new SharedServiceContainer();
 
             var resourceContainer = new ResourceContainer(policy);

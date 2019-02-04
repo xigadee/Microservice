@@ -11,7 +11,7 @@ namespace Test.Xigadee
         [TestMethod]
         public void TestMethod1()
         {
-            var policy = new TaskManager.Policy();
+            var policy = new TaskManagerPolicy();
 
             policy.BulkheadReserve(4,4,4);
 

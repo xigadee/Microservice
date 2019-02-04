@@ -18,4 +18,5 @@
         /// </summary>
         public long LoggingId;
     }
+
 }

@@ -63,7 +63,7 @@ namespace Test.Xigadee
             }
         }
 
-        private void CommunicationBridgeTests_OnExecuteBegin(object sender, Microservice.TransmissionPayloadState e)
+        private void CommunicationBridgeTests_OnExecuteBegin(object sender, TransmissionPayloadState e)
         {
 
         }

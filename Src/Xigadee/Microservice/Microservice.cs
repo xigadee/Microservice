@@ -2,13 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading.Tasks;
 #endregion
 namespace Xigadee
 {
     /// <summary>
     /// This class enables the communication fabric to be plugged in to existing code with minimal effort.
     /// </summary>
-    public partial class Microservice: ServiceBase<Microservice.Statistics>, IMicroservice
+    public partial class Microservice: ServiceBase<MicroserviceStatistics>, IMicroservice
     {
         #region Declarations
         /// <summary>
@@ -389,6 +390,60 @@ namespace Xigadee
 
         }
         #endregion
+
+        #region LogStatistics()
+        /// <summary>
+        /// This method logs the current status as part of the time poll.
+        /// </summary>
+        /// <returns></returns>
+        protected Task LogStatistics()
+        {
+            try
+            {
+                var statistics = StatisticsRecalculated;
+                mDataCollection?.Write(statistics, DataCollectionSupport.Statistics);
+                mEventsWrapper.OnStatisticsIssued(statistics);
+            }
+            catch (Exception ex)
+            {
+                //We're not going to throw any exception here
+                mDataCollection?.LogException("LogStatistics unhandled exception", ex);
+            }
+
+            return Task.FromResult(0);
+        }
+        #endregion
+        #region StatisticsRecalculate()
+        /// <summary>
+        /// This method sets the updated Microservice statistics.
+        /// </summary>
+        protected override void StatisticsRecalculate(MicroserviceStatistics stats)
+        {
+            stats.Id = Id;
+
+            stats.Name = Id.Name;
+            stats.Created = Id.StartTime;
+
+            stats.Status = Status.ToString();
+            stats.LogTime = DateTime.UtcNow;
+
+            stats.Tasks = mTaskManager?.StatisticsRecalculated;
+
+            stats.DataCollection = mDataCollection?.StatisticsRecalculated;
+
+            stats.Communication = mCommunication?.StatisticsRecalculated;
+
+            stats.Resources = mResourceMonitor?.StatisticsRecalculated;
+
+            stats.Commands = mCommands?.StatisticsRecalculated;
+
+            stats.Scheduler = mScheduler?.StatisticsRecalculated;
+
+            stats.ServiceHandlers = mServiceHandlers?.StatisticsRecalculated;
+
+        }
+        #endregion
+
 
         //Identifiers
         #region Id

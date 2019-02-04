@@ -13,7 +13,7 @@ namespace Xigadee
     /// <summary>
     /// This container holds all the communication components (sender/listener/bidirectional) for the Microservice.
     /// </summary>
-    public partial class CommunicationContainer: ServiceContainerBase<CommunicationContainer.Statistics, CommunicationContainer.Policy>
+    public partial class CommunicationContainer: ServiceContainerBase<CommunicationContainerStatistics, CommunicationContainerPolicy>
         , IRequireServiceOriginator, IRequireDataCollector, IRequireServiceHandlers, IRequireSharedServices
         , IRequireScheduler, ITaskManagerProcess
     {
@@ -74,7 +74,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="policy">This is a algorithm used to calculate the 
         /// client poll order and the number of slots to release. You can use another algorithm when necessary by substituting this class for your own.</param>
-        public CommunicationContainer(CommunicationContainer.Policy policy = null):base(policy)
+        public CommunicationContainer(CommunicationContainerPolicy policy = null):base(policy)
         {
             mMessageSenderMap = new ConcurrentDictionary<string, List<ISender>>();
             mSupportedMessages = new List<MessageFilterWrapper>();
@@ -89,7 +89,7 @@ namespace Xigadee
         /// <summary>
         /// This method recalculates the statistics for the communication holder.
         /// </summary>
-        protected override void StatisticsRecalculate(CommunicationContainer.Statistics stats)
+        protected override void StatisticsRecalculate(CommunicationContainerStatistics stats)
         {
             base.StatisticsRecalculate(stats);
 
@@ -337,81 +337,6 @@ namespace Xigadee
                 throw;
             }
         }
-        #endregion
-
-        #region Class -> Policy
-        /// <summary>
-        /// This is the policy that defines how the communication component operates.
-        /// </summary>
-        public class Policy: PolicyBase
-        {
-            /// <summary>
-            /// Set outgoing routing information to lower-case. This is important as messaging protocols such as
-            /// Service Bus can be case sensitive when running subscription filters.
-            /// </summary>
-            public bool ServiceMessageHeaderConvertToLowercase { get; set; } = true;
-            /// <summary>
-            /// Gets or sets a value indicating whether the TransmissionPayload trace flag should be set to true.
-            /// </summary>
-            public bool TransmissionPayloadTraceEnabled { get; set; }
-            /// <summary>
-            /// This is the default time that a process submitted from a listener can execute for. The default value is 30 seconds.
-            /// </summary>
-            public TimeSpan? ListenerRequestTimespan { get; set; } = null;
-            /// <summary>
-            /// This is the default boundary logging status. When the specific status is not set, this value 
-            /// will be used. The default setting is false.
-            /// </summary>
-            public bool BoundaryLoggingActiveDefault { get; set; }
-            /// <summary>
-            /// This property specifies that channel can be created automatically if they do not exist.
-            /// If this is set to false, an error will be generated when a message is sent to a channel
-            /// that has not been explicitly created.
-            /// </summary>
-            public bool AutoCreateChannels { get; set; } = true;
-            /// <summary>
-            /// This is the default algorithm used to assign poll cycles to the various listeners.
-            /// </summary>
-            public virtual IListenerClientPollAlgorithm ListenerClientPollAlgorithm { get; set; } = new MultipleClientPollSlotAllocationAlgorithm();
-        } 
-        #endregion
-        #region Class -> Statistics
-        /// <summary>
-        /// This is the default statistics class.
-        /// </summary>
-        public class Statistics: StatusBase
-        {
-            #region Name
-            /// <summary>
-            /// Name override so that it gets serialized at the top of the JSON data.
-            /// </summary>
-            public override string Name
-            {
-                get
-                {
-                    return base.Name;
-                }
-
-                set
-                {
-                    base.Name = value;
-                }
-            }
-            #endregion
-
-            /// <summary>
-            /// This list of active clients and their poll statistics.
-            /// </summary>
-            public ClientPriorityCollectionStatistics Active { get; set; }
-            /// <summary>
-            /// The senders collection.
-            /// </summary>
-            public List<MessagingServiceStatistics> Senders { get; set; }
-            /// <summary>
-            /// The listeners collection.
-            /// </summary>
-            public List<MessagingServiceStatistics> Listeners { get; set; }
-        } 
         #endregion
     }
 }

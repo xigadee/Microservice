@@ -14,12 +14,15 @@
 
   <ItemGroup>
     <Compile Remove="Command\CommandPersistence\Server\DocumentDb\**" />
+    <Compile Remove="ServiceHandler\Ids\**" />
     <Compile Remove="ServiceHandler\JWT\Interfaces\**" />
     <Compile Remove="ServiceHandler\Pipeline\Add\**" />
     <EmbeddedResource Remove="Command\CommandPersistence\Server\DocumentDb\**" />
+    <EmbeddedResource Remove="ServiceHandler\Ids\**" />
     <EmbeddedResource Remove="ServiceHandler\JWT\Interfaces\**" />
     <EmbeddedResource Remove="ServiceHandler\Pipeline\Add\**" />
     <None Remove="Command\CommandPersistence\Server\DocumentDb\**" />
+    <None Remove="ServiceHandler\Ids\**" />
     <None Remove="ServiceHandler\JWT\Interfaces\**" />
     <None Remove="ServiceHandler\Pipeline\Add\**" />
   </ItemGroup>
@@ -39,9 +42,13 @@
 
   <ItemGroup>
     <Folder Include="Communication\Agent\Interfaces\" />
-    <Folder Include="DataCollection\EventSource\Implementation\" />
+    <Folder Include="Communication\Client\ClientHolder\" />
+    <Folder Include="Components\Statistics\" />
+    <Folder Include="DataCollection\Events\Base\" />
+    <Folder Include="DataCollection\Interfaces\" />
+    <Folder Include="Pipeline\Exceptions\" />
+    <Folder Include="ResourceTracker\Entities\" />
     <Folder Include="ServiceHandler\Handlers\Serializers\Base\" />
-    <Folder Include="ServiceHandler\Ids\" />
     <Folder Include="ServiceHandler\Interfaces\Handler\" />
   </ItemGroup>
 

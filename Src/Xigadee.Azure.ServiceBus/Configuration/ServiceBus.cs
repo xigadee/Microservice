@@ -39,20 +39,20 @@ namespace Xigadee
         [ConfigSetting(ServiceBus)]
         public static string ServiceBusConnection(this IEnvironmentConfiguration config) => config.PlatformOrConfigCache(KeyServiceBusConnection);
 
-        /// <summary>
-        /// This extension sets the fabric bridge Service Bus connection from the pipeline configuration.
-        /// </summary>
-        /// <typeparam name="P">The pipeline type.</typeparam>
-        /// <param name="pipeline">The pipeline.</param>
-        /// <param name="fabric">The fabric to configure from the pipeline.</param>
-        /// <returns>Returns the pipeline</returns>
-        public static P FabricConfigure<P>(this P pipeline, AzureServiceBusFabricBridge fabric) where P : IPipeline
-        {
-            var conn = pipeline.Configuration.ServiceBusConnection();
+        ///// <summary>
+        ///// This extension sets the fabric bridge Service Bus connection from the pipeline configuration.
+        ///// </summary>
+        ///// <typeparam name="P">The pipeline type.</typeparam>
+        ///// <param name="pipeline">The pipeline.</param>
+        ///// <param name="fabric">The fabric to configure from the pipeline.</param>
+        ///// <returns>Returns the pipeline</returns>
+        //public static P FabricConfigure<P>(this P pipeline, AzureServiceBusFabricBridge fabric) where P : IPipeline
+        //{
+        //    var conn = pipeline.Configuration.ServiceBusConnection();
 
-            fabric.Connection = new ServiceBusConnectionStringBuilder(conn);
+        //    fabric.Connection = new ServiceBusConnectionStringBuilder(conn);
 
-            return pipeline;
-        }
+        //    return pipeline;
+        //}
     }
 }

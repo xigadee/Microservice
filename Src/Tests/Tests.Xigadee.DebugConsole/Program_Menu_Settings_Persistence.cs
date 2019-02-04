@@ -27,46 +27,46 @@ namespace Test.Xigadee
             {
                 var menu = new ConsoleMenu(
                     "Persistence storage options"
-                    , new ConsoleOption("Sql based Persistence"
-                        , (m, o) =>
-                        {
-                            sSettings.PersistenceType = PersistenceOptions.Sql;
-                        }
-                        , enabled: (m, o) => sServer.Config?.CanResolve(ConfigBaseHelperSql.KeySqlConnection) ?? false
-                        , selected: (m, o) => sSettings.PersistenceType == PersistenceOptions.Sql
-                    )
-                    , new ConsoleOption("DocumentDb based Persistence"
-                        , (m, o) =>
-                        {
-                            sSettings.PersistenceType = PersistenceOptions.DocumentDb;
-                        }
-                        , enabled: (m, o) => sServer.Config?.CanResolve(ConfigBaseHelperDocumentDb.KeyDocDBAccountName, ConfigBaseHelperDocumentDb.KeyDocDBAccountAccessKey) ?? false
-                        , selected: (m, o) => sSettings.PersistenceType == PersistenceOptions.DocumentDb
-                    )
-                    , new ConsoleOption("DocumentDb Sdk based Persistence"
-                        , (m, o) =>
-                        {
-                            sSettings.PersistenceType = PersistenceOptions.DocumentDbSdk;
-                        }
-                        , enabled: (m, o) => sServer.Config?.CanResolve(ConfigBaseHelperDocumentDb.KeyDocDBAccountName, ConfigBaseHelperDocumentDb.KeyDocDBAccountAccessKey) ?? false
-                        , selected: (m, o) => sSettings.PersistenceType == PersistenceOptions.DocumentDbSdk
-                    )
-                    , new ConsoleOption("Blob storage based Persistence"
-                        , (m, o) =>
-                        {
-                            sSettings.PersistenceType = PersistenceOptions.Blob;
-                        }
-                        , enabled: (m, o) => sServer.Config?.CanResolve(AzureExtensionMethods.KeyAzureStorageAccountName, AzureExtensionMethods.KeyAzureStorageAccountAccessKey) ?? false
-                        , selected: (m, o) => sSettings.PersistenceType == PersistenceOptions.Blob
-                    )
-                    , new ConsoleOption("Redis Cache based Persistence"
-                        , (m, o) =>
-                        {
-                            sSettings.PersistenceType = PersistenceOptions.RedisCache;
-                        }
-                        , enabled: (m, o) => sServer.Config?.CanResolve(AzureExtensionMethods.KeyRedisCacheConnection) ?? false
-                        , selected: (m, o) => sSettings.PersistenceType == PersistenceOptions.RedisCache
-                    )
+                    //, new ConsoleOption("Sql based Persistence"
+                    //    , (m, o) =>
+                    //    {
+                    //        sSettings.PersistenceType = PersistenceOptions.Sql;
+                    //    }
+                    //    , enabled: (m, o) => sServer.Config?.CanResolve(ConfigBaseHelperSql.KeySqlConnection) ?? false
+                    //    , selected: (m, o) => sSettings.PersistenceType == PersistenceOptions.Sql
+                    //)
+                    //, new ConsoleOption("DocumentDb based Persistence"
+                    //    , (m, o) =>
+                    //    {
+                    //        sSettings.PersistenceType = PersistenceOptions.DocumentDb;
+                    //    }
+                    //    , enabled: (m, o) => sServer.Config?.CanResolve(ConfigBaseHelperDocumentDb.KeyDocDBAccountName, ConfigBaseHelperDocumentDb.KeyDocDBAccountAccessKey) ?? false
+                    //    , selected: (m, o) => sSettings.PersistenceType == PersistenceOptions.DocumentDb
+                    //)
+                    //, new ConsoleOption("DocumentDb Sdk based Persistence"
+                    //    , (m, o) =>
+                    //    {
+                    //        sSettings.PersistenceType = PersistenceOptions.DocumentDbSdk;
+                    //    }
+                    //    , enabled: (m, o) => sServer.Config?.CanResolve(ConfigBaseHelperDocumentDb.KeyDocDBAccountName, ConfigBaseHelperDocumentDb.KeyDocDBAccountAccessKey) ?? false
+                    //    , selected: (m, o) => sSettings.PersistenceType == PersistenceOptions.DocumentDbSdk
+                    //)
+                    //, new ConsoleOption("Blob storage based Persistence"
+                    //    , (m, o) =>
+                    //    {
+                    //        sSettings.PersistenceType = PersistenceOptions.Blob;
+                    //    }
+                    //    , enabled: (m, o) => sServer.Config?.CanResolve(AzureExtensionMethods.KeyAzureStorageAccountName, AzureExtensionMethods.KeyAzureStorageAccountAccessKey) ?? false
+                    //    , selected: (m, o) => sSettings.PersistenceType == PersistenceOptions.Blob
+                    //)
+                    //, new ConsoleOption("Redis Cache based Persistence"
+                    //    , (m, o) =>
+                    //    {
+                    //        sSettings.PersistenceType = PersistenceOptions.RedisCache;
+                    //    }
+                    //    , enabled: (m, o) => sServer.Config?.CanResolve(AzureExtensionMethods.KeyRedisCacheConnection) ?? false
+                    //    , selected: (m, o) => sSettings.PersistenceType == PersistenceOptions.RedisCache
+                    //)
                     , new ConsoleOption("Memory based Persistence"
                         , (m, o) =>
                         {
@@ -75,22 +75,22 @@ namespace Test.Xigadee
                         , enabled: (m, o) => true
                         , selected: (m, o) => sSettings.PersistenceType == PersistenceOptions.Memory
                     )
-                    , new ConsoleOption("Client RedisCache Persistence extension enabled"
-                        , (m, o) =>
-                        {
-                            sClient.RepositoryRedisCacheEnabled = !sClient.RepositoryRedisCacheEnabled;
-                        }
-                        , enabled: (m, o) => sClient?.Config?.CanResolve(AzureExtensionMethods.KeyRedisCacheConnection) ?? false
-                        , selected: (m, o) => sClient.RepositoryRedisCacheEnabled
-                    )
-                    , new ConsoleOption("Server RedisCache Persistence extension enabled"
-                        , (m, o) =>
-                        {
-                            sServer.RepositoryRedisCacheEnabled = !sServer.RepositoryRedisCacheEnabled;
-                        }
-                        , enabled: (m, o) => sServer?.Config?.CanResolve(AzureExtensionMethods.KeyRedisCacheConnection) ?? false
-                        , selected: (m, o) => sServer.RepositoryRedisCacheEnabled
-                    )
+                    //, new ConsoleOption("Client RedisCache Persistence extension enabled"
+                    //    , (m, o) =>
+                    //    {
+                    //        sClient.RepositoryRedisCacheEnabled = !sClient.RepositoryRedisCacheEnabled;
+                    //    }
+                    //    , enabled: (m, o) => sClient?.Config?.CanResolve(AzureExtensionMethods.KeyRedisCacheConnection) ?? false
+                    //    , selected: (m, o) => sClient.RepositoryRedisCacheEnabled
+                    //)
+                    //, new ConsoleOption("Server RedisCache Persistence extension enabled"
+                    //    , (m, o) =>
+                    //    {
+                    //        sServer.RepositoryRedisCacheEnabled = !sServer.RepositoryRedisCacheEnabled;
+                    //    }
+                    //    , enabled: (m, o) => sServer?.Config?.CanResolve(AzureExtensionMethods.KeyRedisCacheConnection) ?? false
+                    //    , selected: (m, o) => sServer.RepositoryRedisCacheEnabled
+                    //)
                     );
 
                 menu.ContextInfoInherit = false;

@@ -38,22 +38,22 @@ namespace Test.Xigadee
                         , enabled: (m, o) => true
                         , selected: (m, o) => sSettings.CommunicationType == CommunicationOptions.Local
                     )
-                    , new ConsoleOption("Azure Service Bus"
-                        , (m, o) =>
-                        {
-                            sSettings.CommunicationType = CommunicationOptions.AzureServiceBus;
-                        }
-                        , enabled: (m, o) => sServer.Config?.CanResolve(AzureExtensionMethods.KeyServiceBusConnection) ?? false
-                        , selected: (m, o) => sSettings.CommunicationType == CommunicationOptions.AzureServiceBus
-                    )
-                    , new ConsoleOption("Azure Storage Queue"
-                        , (m, o) =>
-                        {
-                            sSettings.CommunicationType = CommunicationOptions.AzureBlobQueue;
-                        }
-                        , enabled: (m, o) => sServer.Config?.CanResolve(AzureExtensionMethods.KeyAzureStorageAccountName, AzureExtensionMethods.KeyAzureStorageAccountAccessKey) ?? false
-                        , selected: (m, o) => sSettings.CommunicationType == CommunicationOptions.AzureBlobQueue
-                    )
+                    //, new ConsoleOption("Azure Service Bus"
+                    //    , (m, o) =>
+                    //    {
+                    //        sSettings.CommunicationType = CommunicationOptions.AzureServiceBus;
+                    //    }
+                    //    , enabled: (m, o) => sServer.Config?.CanResolve(AzureExtensionMethods.KeyServiceBusConnection) ?? false
+                    //    , selected: (m, o) => sSettings.CommunicationType == CommunicationOptions.AzureServiceBus
+                    //)
+                    //, new ConsoleOption("Azure Storage Queue"
+                    //    , (m, o) =>
+                    //    {
+                    //        sSettings.CommunicationType = CommunicationOptions.AzureBlobQueue;
+                    //    }
+                    //    , enabled: (m, o) => sServer.Config?.CanResolve(AzureExtensionMethods.KeyAzureStorageAccountName, AzureExtensionMethods.KeyAzureStorageAccountAccessKey) ?? false
+                    //    , selected: (m, o) => sSettings.CommunicationType == CommunicationOptions.AzureBlobQueue
+                    //)
                     , new ConsoleOption("TCP"
                         , (m, o) =>
                         {
@@ -62,14 +62,14 @@ namespace Test.Xigadee
                         , enabled: (m, o) => true
                         , selected: (m, o) => sSettings.CommunicationType == CommunicationOptions.Tcp
                     )
-                    , new ConsoleOption("TLS"
-                        , (m, o) =>
-                        {
-                            sSettings.CommunicationType = CommunicationOptions.Tls;
-                        }
-                        , enabled: (m, o) => sServer.Config?.CanResolve(AzureExtensionMethods.KeyAzureStorageAccountName, AzureExtensionMethods.KeyAzureStorageAccountAccessKey) ?? false
-                        , selected: (m, o) => sSettings.CommunicationType == CommunicationOptions.Tls
-                    )
+                    //, new ConsoleOption("TLS"
+                    //    , (m, o) =>
+                    //    {
+                    //        sSettings.CommunicationType = CommunicationOptions.Tls;
+                    //    }
+                    //    , enabled: (m, o) => sServer.Config?.CanResolve(AzureExtensionMethods.KeyAzureStorageAccountName, AzureExtensionMethods.KeyAzureStorageAccountAccessKey) ?? false
+                    //    , selected: (m, o) => sSettings.CommunicationType == CommunicationOptions.Tls
+                    //)
                     );
 
                 menu.ContextInfoInherit = false;

@@ -9,14 +9,14 @@ namespace Xigadee
         #region Declarations
         object syncLock = new object();
 
-        Microservice.Policy mPolicyMicroservice = null;
-        TaskManager.Policy mPolicyTaskManager = null;
-        CommandContainer.Policy mPolicyCommand = null;
-        CommunicationContainer.Policy mPolicyCommunication = null;
-        SchedulerContainer.Policy mPolicyScheduler = null;
-        ResourceContainer.Policy mPolicyResourceTracker = null;
-        DataCollectionContainer.Policy mPolicyDataCollection = null;
-        ServiceHandlerContainer.Policy mPolicyServiceHandlers = null;
+        MicroservicePolicy mPolicyMicroservice = null;
+        TaskManagerPolicy mPolicyTaskManager = null;
+        CommandContainerPolicy mPolicyCommand = null;
+        CommunicationContainerPolicy mPolicyCommunication = null;
+        SchedulerContainerPolicy mPolicyScheduler = null;
+        ResourceContainerPolicy mPolicyResourceTracker = null;
+        DataCollectionContainerPolicy mPolicyDataCollection = null;
+        ServiceHandlerContainerPolicy mPolicyServiceHandlers = null;
 
         /// <summary>
         /// This is the collection of policy settings for the Microservice.
@@ -62,7 +62,7 @@ namespace Xigadee
         /// This is the policy used to set the Microservice default settings.
         /// </summary>
         /// <returns>The microservice policy.</returns>
-        public virtual Microservice.Policy Microservice
+        public virtual MicroservicePolicy Microservice
         {
             get
             {
@@ -75,7 +75,7 @@ namespace Xigadee
         /// This method retrieves the policy for the task manager.
         /// </summary>
         /// <returns>The policy.</returns>
-        public virtual TaskManager.Policy TaskManager
+        public virtual TaskManagerPolicy TaskManager
         {
             get
             {
@@ -88,7 +88,7 @@ namespace Xigadee
         /// This is the policy for the resource tracker.
         /// </summary>
         /// <returns></returns>
-        public virtual ResourceContainer.Policy ResourceMonitor
+        public virtual ResourceContainerPolicy ResourceMonitor
         {
             get
             {
@@ -101,7 +101,7 @@ namespace Xigadee
         /// This is the policy used to set the command container.
         /// </summary>
         /// <returns></returns>
-        public virtual CommandContainer.Policy CommandContainer
+        public virtual CommandContainerPolicy CommandContainer
         {
             get
             {
@@ -114,7 +114,7 @@ namespace Xigadee
         /// This is the policy used to set the communication component settings.
         /// </summary>
         /// <returns></returns>
-        public virtual CommunicationContainer.Policy Communication
+        public virtual CommunicationContainerPolicy Communication
         {
             get
             {
@@ -126,7 +126,7 @@ namespace Xigadee
         /// <summary>
         /// This is the policy for the scheduler.
         /// </summary>
-        public virtual SchedulerContainer.Policy Scheduler
+        public virtual SchedulerContainerPolicy Scheduler
         {
             get
             {
@@ -139,7 +139,7 @@ namespace Xigadee
         /// This is the policy used to set the data collection container settings.
         /// </summary>
         /// <returns>The policy</returns>
-        public virtual DataCollectionContainer.Policy DataCollection
+        public virtual DataCollectionContainerPolicy DataCollection
         {
             get
             {
@@ -151,7 +151,7 @@ namespace Xigadee
         /// <summary>
         /// Gets the service handler policy.
         /// </summary>
-        public ServiceHandlerContainer.Policy ServiceHandlers
+        public ServiceHandlerContainerPolicy ServiceHandlers
         {
             get
             {

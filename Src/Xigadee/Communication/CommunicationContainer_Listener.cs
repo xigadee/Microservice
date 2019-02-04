@@ -42,6 +42,9 @@ namespace Xigadee
             if (!mPolicy.ListenerRequestTimespan.HasValue)
                 mPolicy.ListenerRequestTimespan = TimeSpan.FromSeconds(30);
 
+            if (mPolicy.ListenerClientPollAlgorithm == null)
+                mPolicy.ListenerClientPollAlgorithm = new MultipleClientPollSlotAllocationAlgorithm();
+
             try
             {
                 //Create a list of listeners that require a frequent poll.

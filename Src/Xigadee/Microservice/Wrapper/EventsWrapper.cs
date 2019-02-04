@@ -24,11 +24,11 @@ namespace Xigadee
         /// <summary>
         /// This event handler can be used to inspect an incoming message before it executes.
         /// </summary>
-        public event EventHandler<Microservice.TransmissionPayloadState> ExecuteBegin;
+        public event EventHandler<TransmissionPayloadState> ExecuteBegin;
         /// <summary>
         /// This event handler can be used to inspect an incoming message after it has executed.
         /// </summary>
-        public event EventHandler<Microservice.TransmissionPayloadState> ExecuteComplete;
+        public event EventHandler<TransmissionPayloadState> ExecuteComplete;
 
         /// <summary>
         /// This event is raised when the service start begins
@@ -81,7 +81,7 @@ namespace Xigadee
         /// <summary>
         /// This method is called when the Microservice receives a start request.
         /// </summary>
-        internal virtual void OnExecuteBegin(Microservice.TransmissionPayloadState state)
+        internal virtual void OnExecuteBegin(TransmissionPayloadState state)
         {
             try
             {
@@ -93,11 +93,11 @@ namespace Xigadee
             }
         }
         #endregion
-        #region OnExecuteComplete(Microservice.TransmissionPayloadState state)
+        #region OnExecuteComplete(TransmissionPayloadState state)
         /// <summary>
         /// This method is called when the Microservice completes the start request.
         /// </summary>
-        internal virtual void OnExecuteComplete(Microservice.TransmissionPayloadState state)
+        internal virtual void OnExecuteComplete(TransmissionPayloadState state)
         {
             try
             {
@@ -218,7 +218,7 @@ namespace Xigadee
         /// This method is called on a regular interval when the statistics are updated.
         /// </summary>
         /// <param name="statistics">The statistics collection.</param>
-        internal virtual void OnStatisticsIssued(Microservice.Statistics statistics)
+        internal virtual void OnStatisticsIssued(MicroserviceStatistics statistics)
         {
             try
             {
