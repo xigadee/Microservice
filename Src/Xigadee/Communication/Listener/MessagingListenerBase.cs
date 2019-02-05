@@ -1,10 +1,8 @@
-﻿#region using
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-#endregion
 namespace Xigadee
 {
     /// <summary>
@@ -230,7 +228,10 @@ namespace Xigadee
         /// </summary>
         public virtual bool ListenerPollRequired { get; } = false;
 
-        public List<ListenerPartitionConfig> ListenerPriorityPartitions { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        /// <summary>
+        /// This listener partition configuration.
+        /// </summary>
+        public List<ListenerPartitionConfig> ListenerPriorityPartitions { get; set; }
 
         /// <summary>
         /// This is the async poll function. This will be called if PollRequired is set to true.

@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.WindowsAzure.Storage.Auth;
-
 namespace Xigadee
 {
     /// <summary>

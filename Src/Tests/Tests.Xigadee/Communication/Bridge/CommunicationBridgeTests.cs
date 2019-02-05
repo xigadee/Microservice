@@ -59,7 +59,7 @@ namespace Test.Xigadee
             }
             catch (Exception ex)
             {
-                throw;
+                Assert.Fail(ex.Message);
             }
         }
 
