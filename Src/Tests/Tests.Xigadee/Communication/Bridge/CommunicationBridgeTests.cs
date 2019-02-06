@@ -17,6 +17,12 @@ namespace Test.Xigadee
                 var bridgeOut = fabric[FabricMode.Queue];
                 var bridgein = fabric[FabricMode.Broadcast];
 
+                var listenerS = bridgein.GetListener();
+                var senderS = bridgeOut.GetSender();
+
+                var listenerR = bridgeOut.GetListener();
+                var senderR = bridgein.GetSender();
+
                 PersistenceClient<Guid, BridgeMe> init;
                 DebugMemoryDataCollector memp1, memp2;
 
@@ -24,10 +30,10 @@ namespace Test.Xigadee
                     .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
                     .AddDebugMemoryDataCollector(out memp1)
                     .AddChannelIncoming("cresponse")
-                        .AttachListener(bridgein.GetListener())
+                        .AttachListener(listenerS)
                         .Revert()
                     .AddChannelOutgoing("crequest")
-                        .AttachSender(bridgeOut.GetSender())
+                        .AttachSender(senderS)
                         .AttachPersistenceClient("cresponse", out init)
                         .Revert()
                         ;
@@ -36,11 +42,11 @@ namespace Test.Xigadee
                     .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
                     .AddDebugMemoryDataCollector(out memp2)
                     .AddChannelIncoming("crequest")
-                        .AttachListener(bridgeOut.GetListener())
+                        .AttachListener(listenerR)
                         .AttachCommand(new PersistenceManagerHandlerMemory<Guid, BridgeMe>((e) => e.Id, (s) => new Guid(s)))
                         .Revert()
                     .AddChannelOutgoing("cresponse")
-                        .AttachSender(bridgein.GetSender())
+                        .AttachSender(senderR)
                         ;
 
                 p2.ToMicroservice().Events.ExecuteBegin += CommunicationBridgeTests_OnExecuteBegin;

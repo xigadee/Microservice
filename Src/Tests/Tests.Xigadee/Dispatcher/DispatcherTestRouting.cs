@@ -13,9 +13,13 @@ namespace Test.Xigadee
     {
         #region Declarations
         IPipeline mPipeline = null;
+
+        ManualFabricBridge fabric = null;
         ManualChannelListener mListener = null;
         ManualChannelSender mSender = null;
         DispatcherCommand mDCommand = null;
+
+
 
         const string cnChannelIn = "internalIn";
         const string cnChannelOut = "internalOut";
@@ -24,15 +28,21 @@ namespace Test.Xigadee
         [TestInitialize]
         public void TearUp()
         {
+            fabric = new ManualFabricBridge();
+            var bridgeOut = fabric[FabricMode.Queue];
+            var bridgein = fabric[FabricMode.Broadcast];
+            mListener = (ManualChannelListener)bridgein.GetListener();
+            mSender = (ManualChannelSender)bridgeOut.GetSender();
+
             try
             {
                 mPipeline = new MicroservicePipeline(GetType().Name)
                     .AddChannelIncoming(cnChannelIn)
-                        .AttachManualListener(out mListener)
+                        .AttachListener(mListener)
                         .AttachCommand(new DispatcherCommand(), assign: (c) => mDCommand = c)
                         .Revert()
                     .AddChannelOutgoing(cnChannelOut)
-                        .AttachManualSender(out mSender)
+                        .AttachSender(mSender)
                         .Revert()
                     ;
 

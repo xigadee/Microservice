@@ -44,7 +44,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Communication\Client\ClientHolder\" />
     <Folder Include="Components\Statistics\" />
     <Folder Include="DataCollection\Events\Base\" />
     <Folder Include="DataCollection\Interfaces\" />

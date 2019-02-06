@@ -214,7 +214,7 @@ namespace Xigadee
         //    };
 
         //    client.ClientReset = (ex) => ClientReset(client, ex);
-            
+
         //    return client;
         //}
         //#endregion

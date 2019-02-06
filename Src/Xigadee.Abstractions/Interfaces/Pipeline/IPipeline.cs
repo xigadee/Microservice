@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Xigadee
+﻿namespace Xigadee
 {
     /// <summary>
     /// This interface is implemented by the Pipeline.

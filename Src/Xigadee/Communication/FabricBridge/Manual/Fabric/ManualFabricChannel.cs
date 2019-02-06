@@ -2,60 +2,9 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public class QueueHolder
-    {
-        public QueueHolder()
-        {
-            Queue = new ConcurrentQueue<FabricMessage>();
-        }
-
-        public bool Enqueue(FabricMessage message)
-        {
-            if (!(Filter?.Invoke(message) ?? true))
-                return false;
-
-            Queue.Enqueue(message);
-            return true;
-        }
-
-        private object syncDeadletter = new object();
-
-        public void DeadletterEnqueue(FabricMessage message)
-        {
-            if (Deadletter == null)
-                lock (syncDeadletter)
-                {
-                    if (Deadletter == null)
-                        Deadletter = new ConcurrentQueue<FabricMessage>();
-                }
-
-            Deadletter.Enqueue(message);
-        }
-
-        public bool TryDequeue(out FabricMessage message)
-        {
-            return Queue.TryDequeue(out message);
-        }
-
-
-        public bool TryDeadletterDequeue(out FabricMessage message)
-        {
-            message = null;
-            return Deadletter?.TryDequeue(out message) ?? false;
-        }
-
-
-        public Func<FabricMessage, bool> Filter { get; set; }
-
-        public ConcurrentQueue<FabricMessage> Queue { get; }
-
-        public ConcurrentQueue<FabricMessage> Deadletter { get; private set;}
-    }
     /// <summary>
     /// This is the manual channel.
     /// </summary>
@@ -67,7 +16,7 @@ namespace Xigadee
         private ConcurrentBag<Guid> mConnectionsTransmit;
         private ConcurrentBag<Guid> mConnectionsListen;
 
-        private ConcurrentDictionary<string, QueueHolder> mOutgoing;
+        private ConcurrentDictionary<string, ManualFabricQueueHolder> mOutgoing;
 
         private const string cnDefault = "DEFAULT";
 
@@ -88,7 +37,7 @@ namespace Xigadee
             mConnectionsTransmit = new ConcurrentBag<Guid>();
             mConnectionsListen = new ConcurrentBag<Guid>();
 
-            mOutgoing = new ConcurrentDictionary<string, QueueHolder>();
+            mOutgoing = new ConcurrentDictionary<string, ManualFabricQueueHolder>();
 
             if (mode.HasValue)
                 Mode = mode;
@@ -205,7 +154,7 @@ namespace Xigadee
         {
             if (!Mode.HasValue)
                 throw new ArgumentException("Mode is not configured.");
-            QueueHolder queue;
+            ManualFabricQueueHolder queue;
             switch (Mode.Value)
             {
                 case FabricMode.Queue:
@@ -221,7 +170,7 @@ namespace Xigadee
         private IEnumerable<FabricMessage> Receive(ManualFabricConnection conn, int? count)
         {
             string queueName = (Mode == FabricMode.Queue)?cnDefault:conn.Subscription;
-            QueueHolder queue;
+            ManualFabricQueueHolder queue;
             if (mOutgoing.TryGetValue(queueName, out queue))
             {
                 count = count ??1;
@@ -243,7 +192,7 @@ namespace Xigadee
                 return;
 
             message.DeliveryCount++;
-            QueueHolder queue;
+            ManualFabricQueueHolder queue;
             if (!mOutgoing.TryGetValue(queueName, out queue))
                 return;
 
@@ -275,10 +224,10 @@ namespace Xigadee
             switch (Mode)
             {
                 case FabricMode.Queue:
-                    mOutgoing.TryAdd(cnDefault, new QueueHolder());
+                    mOutgoing.TryAdd(cnDefault, new ManualFabricQueueHolder());
                     break;
                 case FabricMode.Broadcast:
-                    mOutgoing.TryAdd(conn.Subscription.ToLowerInvariant(), new QueueHolder());
+                    mOutgoing.TryAdd(conn.Subscription.ToLowerInvariant(), new ManualFabricQueueHolder());
                     break;
             }
         } 

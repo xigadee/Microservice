@@ -19,6 +19,7 @@ namespace Xigadee
         /// Occurs before a message is transmitted.
         /// </summary>
         event EventHandler<CommunicationBridgeAgentEventArgs> OnTransmit;
+
         /// <summary>
         /// Gets the mode, round robin or broadcast.
         /// </summary>

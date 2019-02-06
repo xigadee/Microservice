@@ -7,9 +7,12 @@ namespace Xigadee
     /// </summary>
     public class ManualFabricBridge: FabricBridgeBase<ICommunicationBridge>
     {
+        #region Declarations
         private ConcurrentDictionary<string, ManualFabricChannel> mChannels;
 
         private ConcurrentDictionary<FabricMode, ICommunicationBridge> mAgents;
+        #endregion
+        #region Constructor
         /// <summary>
         /// Initializes a new instance of the <see cref="ManualFabricBridge"/> class.
         /// </summary>
@@ -20,7 +23,9 @@ namespace Xigadee
 
             PayloadHistoryEnabled = payloadHistoryEnabled;
             RetryAttempts = retryAttempts;
-        }
+        } 
+        #endregion
+
         /// <summary>
         /// Gets a value indicating whether the payload history will be stored.
         /// </summary>
@@ -52,7 +57,7 @@ namespace Xigadee
 
 
         /// <summary>
-        /// Creates the queue client.
+        /// Creates the queue reader client.
         /// </summary>
         /// <param name="channelId">The channel identifier.</param>
         /// <returns>The manual fabric connection.</returns>
@@ -61,7 +66,7 @@ namespace Xigadee
             return GetChannel(channelId).CreateConnection(ManualFabricConnectionMode.Queue);
         }
         /// <summary>
-        /// Creates the subscription client.
+        /// Creates the subscription reader client.
         /// </summary>
         /// <param name="channelId">The channel identifier.</param>
         /// <param name="subscriptionId">The subscription identifier.</param>
