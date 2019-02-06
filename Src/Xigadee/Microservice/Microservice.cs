@@ -1,9 +1,7 @@
-﻿#region using
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
-#endregion
 namespace Xigadee
 {
     /// <summary>
@@ -96,6 +94,14 @@ namespace Xigadee
             mEventsWrapper = new EventsWrapper(this, mDataCollection, () => Status);
             Events = mEventsWrapper;
         }
+        #endregion
+
+        //Identifiers
+        #region Id
+        /// <summary>
+        /// This contains the set of identifiers for the Microservice.
+        /// </summary>
+        public MicroserviceId Id { get; } 
         #endregion
 
         #region ConfigurationInitialise()
@@ -442,15 +448,6 @@ namespace Xigadee
             stats.ServiceHandlers = mServiceHandlers?.StatisticsRecalculated;
 
         }
-        #endregion
-
-
-        //Identifiers
-        #region Id
-        /// <summary>
-        /// This contains the set of identifiers for the Microservice.
-        /// </summary>
-        public MicroserviceId Id { get; } 
         #endregion
 
         #region Collector

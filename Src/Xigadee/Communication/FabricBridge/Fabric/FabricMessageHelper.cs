@@ -1,7 +1,4 @@
-﻿#region using
-using System;
-#endregion
-namespace Xigadee
+﻿namespace Xigadee
 {
     /// <summary>
     /// This static class is used to set the key properties to enable messages to be transmitted

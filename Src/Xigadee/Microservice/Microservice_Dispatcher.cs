@@ -1,12 +1,8 @@
-﻿#region using
-
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-#endregion
 namespace Xigadee
 {
     //Dispatcher
