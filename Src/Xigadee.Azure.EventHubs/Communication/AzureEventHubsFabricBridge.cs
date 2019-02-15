@@ -22,7 +22,7 @@ namespace Xigadee
     /// This is the Farbric Bridge for the Azure Event Hubs.
     /// </summary>
     /// <seealso cref="Xigadee.FabricBridgeBase" />
-    public class AzureEventHubsFabricBridge : FabricBridgeBase<ICommunicationBridge>
+    public class AzureEventHubsFabricBridge : FabricBridgeBase<ICommunicationAgent>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureEventHubsFabricBridge"/> class.
@@ -32,16 +32,16 @@ namespace Xigadee
 
         }
         /// <summary>
-        /// Gets the <see cref="ICommunicationBridge"/> with the specified mode.
+        /// Gets the <see cref="ICommunicationAgent"/> with the specified mode.
         /// </summary>
         /// <value>
-        /// The <see cref="ICommunicationBridge"/>.
+        /// The <see cref="ICommunicationAgent"/>.
         /// </value>
         /// <param name="mode">The mode.</param>
         /// <returns></returns>
         /// <exception cref="BridgeAgentModeNotSetException"></exception>
         /// <exception cref="NotSupportedException"></exception>
-        public override ICommunicationBridge this[FabricMode mode]
+        public override ICommunicationAgent this[FabricMode mode]
         {
             get
             {

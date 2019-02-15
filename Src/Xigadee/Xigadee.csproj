@@ -50,6 +50,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Communication\Listener\" />
+    <Folder Include="Communication\Sender\" />
     <Folder Include="DataCollection\Events\Base\" />
     <Folder Include="DataCollection\Interfaces\" />
     <Folder Include="Pipeline\Exceptions\" />

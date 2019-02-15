@@ -4,20 +4,20 @@ namespace Xigadee
     /// <summary>
     /// This is the base abstract class used to implement different communication technologies.
     /// </summary>
-    public abstract class CommunicationBridgeAgent: ICommunicationBridge
+    public abstract class CommunicationBridgeAgent: ICommunicationAgent
     {
         /// <summary>
         /// This event is called if there is an exception during transmission.
         /// </summary>
-        public event EventHandler<CommunicationBridgeAgentEventArgs> OnException;
+        public event EventHandler<CommunicationAgentEventArgs> OnException;
         /// <summary>
         /// This event is fired before a cloned payload is sent to a remote listener
         /// </summary>
-        public event EventHandler<CommunicationBridgeAgentEventArgs> OnTransmit;
+        public event EventHandler<CommunicationAgentEventArgs> OnTransmit;
         /// <summary>
         /// This event is fired when a message is received from a sender and before it is resolved.
         /// </summary>
-        public event EventHandler<CommunicationBridgeAgentEventArgs> OnReceive;
+        public event EventHandler<CommunicationAgentEventArgs> OnReceive;
 
         /// <summary>
         /// This is the default constructor. 
@@ -35,7 +35,7 @@ namespace Xigadee
         /// <param name="ex">The exception raised.</param>
         protected void OnExceptionInvoke(object sender, TransmissionPayload payload, Exception ex)
         {
-            var e = new CommunicationBridgeAgentEventArgs(payload, ex);
+            var e = new CommunicationAgentEventArgs(payload, ex);
             OnException?.Invoke(sender, e);
         }
         /// <summary>
@@ -45,7 +45,7 @@ namespace Xigadee
         /// <param name="payload">The payload.</param>
         protected void OnTransmitInvoke(object sender, TransmissionPayload payload)
         {
-            var e = new CommunicationBridgeAgentEventArgs(payload);
+            var e = new CommunicationAgentEventArgs(payload);
             OnTransmit?.Invoke(sender, e);
         }
         /// <summary>
@@ -55,7 +55,7 @@ namespace Xigadee
         /// <param name="payload">The payload.</param>
         protected void OnReceiveInvoke(object sender, TransmissionPayload payload)
         {
-            var e = new CommunicationBridgeAgentEventArgs(payload);
+            var e = new CommunicationAgentEventArgs(payload);
             OnReceive?.Invoke(sender, e);
         }
 

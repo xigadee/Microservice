@@ -5,12 +5,12 @@ namespace Xigadee
     /// <summary>
     /// This is the communication bridge that simulates passing messages between Microservices and can be used for unit test based scenarios.
     /// </summary>
-    public class ManualFabricBridge: FabricBridgeBase<ICommunicationBridge>
+    public class ManualFabricBridge: FabricBridgeBase<ICommunicationAgent>
     {
         #region Declarations
         private ConcurrentDictionary<string, ManualFabricChannel> mChannels;
 
-        private ConcurrentDictionary<FabricMode, ICommunicationBridge> mAgents;
+        private ConcurrentDictionary<FabricMode, ICommunicationAgent> mAgents;
         #endregion
         #region Constructor
         /// <summary>
@@ -19,7 +19,7 @@ namespace Xigadee
         public ManualFabricBridge(bool payloadHistoryEnabled = true, int? retryAttempts = null)
         {
             mChannels = new ConcurrentDictionary<string, ManualFabricChannel>();
-            mAgents = new ConcurrentDictionary<FabricMode, ICommunicationBridge>();
+            mAgents = new ConcurrentDictionary<FabricMode, ICommunicationAgent>();
 
             PayloadHistoryEnabled = payloadHistoryEnabled;
             RetryAttempts = retryAttempts;
@@ -36,15 +36,15 @@ namespace Xigadee
         public int? RetryAttempts { get; }
 
         /// <summary>
-        /// Gets the <see cref="ICommunicationBridge"/> with the specified mode.
+        /// Gets the <see cref="ICommunicationAgent"/> with the specified mode.
         /// </summary>
         /// <value>
-        /// The <see cref="ICommunicationBridge"/>.
+        /// The <see cref="ICommunicationAgent"/>.
         /// </value>
         /// <param name="mode">The mode.</param>
         /// <returns></returns>
         /// <exception cref="NotSupportedException">The communication bridge mode is not supported</exception>
-        public override ICommunicationBridge this[FabricMode mode]
+        public override ICommunicationAgent this[FabricMode mode]
         {
             get
             {

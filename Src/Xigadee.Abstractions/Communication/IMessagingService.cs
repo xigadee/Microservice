@@ -13,6 +13,5 @@ namespace Xigadee
         /// Gets or sets the channel identifier.
         /// </summary>
         string ChannelId { get; set; }
-
     }
 }

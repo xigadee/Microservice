@@ -5,20 +5,20 @@ namespace Xigadee
     /// <summary>
     /// This is the base interface for a communication bridge
     /// </summary>
-    public interface ICommunicationBridge
+    public interface ICommunicationAgent
     {
         /// <summary>
         /// Occurs when an exception is raised.
         /// </summary>
-        event EventHandler<CommunicationBridgeAgentEventArgs> OnException;
+        event EventHandler<CommunicationAgentEventArgs> OnException;
         /// <summary>
         /// Occurs when a message is received.
         /// </summary>
-        event EventHandler<CommunicationBridgeAgentEventArgs> OnReceive;
+        event EventHandler<CommunicationAgentEventArgs> OnReceive;
         /// <summary>
         /// Occurs before a message is transmitted.
         /// </summary>
-        event EventHandler<CommunicationBridgeAgentEventArgs> OnTransmit;
+        event EventHandler<CommunicationAgentEventArgs> OnTransmit;
 
         /// <summary>
         /// Gets the mode, round robin or broadcast.

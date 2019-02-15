@@ -29,6 +29,7 @@ namespace Xigadee
         /// </summary>
         public Guid Id { get; set; }
 
+        #region Name
         /// <summary>
         /// Name override so that it gets serialized at the top of the JSON data.
         /// </summary>
@@ -43,7 +44,8 @@ namespace Xigadee
             {
                 base.Name = value;
             }
-        }
+        } 
+        #endregion
 
         /// <summary>
         /// This boolean property indicates whether the service is active.

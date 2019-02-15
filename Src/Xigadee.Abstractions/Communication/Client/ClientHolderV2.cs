@@ -9,20 +9,25 @@ namespace Xigadee
     /// implementations away from the task scheduler code.
     /// </summary>
     [DebuggerDisplay("{Type}|{Name}|{Priority} Active={IsActive} {Id}")]
-    public abstract class ClientHolder : StatisticsBase<MessagingServiceStatistics>, IClientHolder, IRequireDataCollector
+    public abstract class ClientHolderV2 : StatisticsBase<MessagingServiceStatistics>, IClientHolder, IRequireDataCollector
     {
-
+        #region Declarations
+        /// <summary>
+        /// This is the unique client id.
+        /// </summary>
+        public Guid Id { get; } = Guid.NewGuid();
+        #endregion
         #region Constructor
         /// <summary>
         /// This is the default constructor for the client.
         /// </summary>
-        public ClientHolder()
+        public ClientHolderV2()
         {
             MaxRetries = 5;
             Priority = 1;
             CanStart = true;
             LastTickCount = Environment.TickCount;
-            QueueLength = () => (int?)null;
+            //QueueLength = () => (int?)null;
             Filters = new List<string>();
         }
         #endregion
@@ -53,13 +58,6 @@ namespace Xigadee
         {
             StatisticsInternal.ErrorIncrement();
         }
-        #endregion
-
-        #region Id
-        /// <summary>
-        /// This is the unique client id.
-        /// </summary>
-        public Guid Id { get; } = Guid.NewGuid();
         #endregion
 
         /// <summary>
@@ -116,24 +114,24 @@ namespace Xigadee
         /// <summary>
         /// This action starts the client.
         /// </summary>
-        public Action Start { get; set; }
+        public virtual void Start() { }
         /// <summary>
         /// This action stops the client.
         /// </summary>
-        public Action Stop { get; set; }
+        public virtual void Stop() { }
 
         /// <summary>
         /// This method is used to close the client.
         /// </summary>
-        public Action ClientClose { get; set; }
+        public virtual void ClientClose() { }
         /// <summary>
         /// This method is used to reset the client.
         /// </summary>
-        public Action<Exception> ClientReset { get; set; }
+        public virtual void ClientReset(Exception ex) { }
         /// <summary>
         /// This method is used to initialise or reinitialise the underlying fabric.
         /// </summary>
-        public Action FabricInitialize { get; set; }
+        public virtual void FabricInitialize() { }
         /// <summary>
         /// This is the maximum number of retries to send the message.
         /// </summary>
@@ -141,9 +139,7 @@ namespace Xigadee
         /// <summary>
         /// This method returns the length on the queue if supported, null if not supported.
         /// </summary>
-        public Func<long?> QueueLength { get; set; }
-
-        public long? QueueLengthCurrent() => QueueLength?.Invoke() ?? default(long?);
+        public virtual long? QueueLengthCurrent() => null;
         /// <summary>
         /// This is the last time the queue length was retrieved.
         /// </summary>
@@ -176,7 +172,7 @@ namespace Xigadee
         /// This method is used to validate the current filter settings for the client.
         /// The default is to do nothing.
         /// </summary>
-        public Action ClientRefresh;
+        public virtual void ClientRefresh() { }
 
         #region Logger/LogException
         /// <summary>
@@ -224,7 +220,7 @@ namespace Xigadee
         {
             stats.Name = DebugStatus;
 
-            stats.QueueLength = QueueLength();
+            stats.QueueLength = QueueLengthCurrent();
             stats.Filters = Filters;
             stats.IsActive = IsActive;
             stats.Id = this.Id;

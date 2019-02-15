@@ -19,5 +19,10 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Communication\Listener\" />
+    <Folder Include="Communication\Sender\" />
+  </ItemGroup>
   
 </Project>

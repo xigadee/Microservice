@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Xigadee
+﻿namespace Xigadee
 {
     /// <summary>
     /// This static class contains a set of shared helper methods for messaging services.

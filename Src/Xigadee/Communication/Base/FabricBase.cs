@@ -4,13 +4,13 @@
     /// This class is used to form the fabric used to communicate between Microservices.
     /// </summary>
     public abstract class FabricBridgeBase<B>
-        where B: ICommunicationBridge
+        where B: ICommunicationAgent
     {
         /// <summary>
-        /// Gets the <see cref="ICommunicationBridge"/> for the specified mode.
+        /// Gets the <see cref="ICommunicationAgent"/> for the specified mode.
         /// </summary>
         /// <value>
-        /// The <see cref="ICommunicationBridge"/>.
+        /// The <see cref="ICommunicationAgent"/>.
         /// </value>
         /// <param name="mode">The communication mode.</param>
         /// <returns>A bridge for the specific communication mode.</returns>

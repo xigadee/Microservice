@@ -5,7 +5,7 @@ namespace Xigadee
     /// <summary>
     /// This is the base class for Azure Queue communication.
     /// </summary>
-    public class AzureQueueFabricBridge : FabricBridgeBase<ICommunicationBridge>
+    public class AzureQueueFabricBridge : FabricBridgeBase<ICommunicationAgent>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureQueueFabricBridge"/> class.
@@ -22,15 +22,15 @@ namespace Xigadee
         protected StorageCredentials Credentials { get; }
 
         /// <summary>
-        /// Gets the <see cref="ICommunicationBridge"/> with the specified mode.
+        /// Gets the <see cref="ICommunicationAgent"/> with the specified mode.
         /// </summary>
         /// <value>
-        /// The <see cref="ICommunicationBridge"/>.
+        /// The <see cref="ICommunicationAgent"/>.
         /// </value>
         /// <param name="mode">The mode.</param>
         /// <returns></returns>
         /// <exception cref="NotSupportedException">Only queue is supported. Broadcast is not available on Azure Storage.</exception>
-        public override ICommunicationBridge this[FabricMode mode]
+        public override ICommunicationAgent this[FabricMode mode]
         {
             get
             {

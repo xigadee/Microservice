@@ -14,7 +14,6 @@ namespace Xigadee
     /// <typeparam name="C">The client class type.</typeparam>
     /// <typeparam name="M">The client message class type.</typeparam>
     /// <typeparam name="H">The client holder class type.</typeparam>
-    /// <typeparam name="P">The partition configuration class type.</typeparam>
     public abstract class MessagingServiceBase<C, M, H>: ServiceBase<StatusBase>, IMessaging
         where C: class
         where H: ClientHolder<C, M>, new()

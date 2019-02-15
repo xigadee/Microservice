@@ -34,19 +34,13 @@
         /// Implicitly converts a string in to an id.
         /// </summary>
         /// <param name="id">The name of the resource profile.</param>
-        public static implicit operator SerializationHandlerId(string id)
-        {
-            return new SerializationHandlerId(id);
-        }
+        public static implicit operator SerializationHandlerId(string id) => new SerializationHandlerId(id);
 
 
         /// <summary>
         /// Implicitly converts a handler id to a string.
         /// </summary>
         /// <param name="handlerId">The handler id.</param>
-        public static implicit operator string(SerializationHandlerId handlerId)
-        {
-            return handlerId.Id;
-        }
+        public static implicit operator string(SerializationHandlerId handlerId) => handlerId.Id;
     }
 }

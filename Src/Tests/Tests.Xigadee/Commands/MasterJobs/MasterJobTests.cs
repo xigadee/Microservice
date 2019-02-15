@@ -84,7 +84,7 @@ namespace Test.Xigadee
             }
 
             public void Create(string id
-                , ICommunicationBridge bridgeOut, ICommunicationBridge bridgeIn, ICommunicationBridge bridgeMaster
+                , ICommunicationAgent bridgeOut, ICommunicationAgent bridgeIn, ICommunicationAgent bridgeMaster
                 , TestMasterJobCommand masterjob
                 , out PersistenceClient<Guid, BridgeMe> init, out DebugMemoryDataCollector memcollector)
             {
