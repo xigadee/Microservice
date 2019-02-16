@@ -1,5 +1,8 @@
 ﻿namespace Xigadee
 {
+    /// <summary>
+    /// This helper provides Transmission Payload helper methods.
+    /// </summary>
     public static class TransmissionPayloadTaskTrackerHelper
     {
         /// <summary>

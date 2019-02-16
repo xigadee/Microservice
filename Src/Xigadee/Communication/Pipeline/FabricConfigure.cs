@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace Xigadee
+﻿namespace Xigadee
 {
     public static partial class CorePipelineExtensions
     {

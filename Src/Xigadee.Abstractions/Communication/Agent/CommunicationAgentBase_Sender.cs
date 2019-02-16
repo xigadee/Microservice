@@ -12,7 +12,9 @@ namespace Xigadee
         /// This is the client collection.
         /// </summary>
         protected ConcurrentDictionary<int, IClientHolder> mSenderClients = new ConcurrentDictionary<int, IClientHolder>();
-
+        /// <summary>
+        /// This is the list of active clients.
+        /// </summary>
         public virtual IEnumerable<IClientHolder> SenderClients => mSenderClients.Values;
 
         /// <summary>
@@ -49,10 +51,12 @@ namespace Xigadee
         protected virtual void SenderSettingsValidate(){} 
         #endregion
 
+
         public virtual void SenderStart()
         {
 
         }
+
         public virtual void SenderStop()
         {
 

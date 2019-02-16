@@ -15,7 +15,6 @@ namespace Xigadee
         /// <summary>
         /// Gets the task manager policy.
         /// </summary>
-        /// <value>
         TaskManagerPolicy TaskManager { get; }
         /// <summary>
         /// Gets the resource monitor policy.

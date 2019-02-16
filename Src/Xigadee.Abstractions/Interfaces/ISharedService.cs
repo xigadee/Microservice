@@ -13,7 +13,7 @@ namespace Xigadee
         /// <typeparam name="I">The interface type.</typeparam>
         /// <param name="instance">The instance.</param>
         /// <param name="serviceName">Name of the service.</param>
-        /// <returns>Returns true if registered successfully./returns>
+        /// <returns>Returns true if registered successfully.</returns>
         bool RegisterService<I>(I instance, string serviceName = null) where I : class;
         /// <summary>
         /// Registers the service.
@@ -21,13 +21,13 @@ namespace Xigadee
         /// <typeparam name="I">The interface type.</typeparam>
         /// <param name="instance">The instance.</param>
         /// <param name="serviceName">Name of the service.</param>
-        /// <returns>Returns true if registered successfully./returns>
+        /// <returns>Returns true if registered successfully.</returns>
         bool RegisterService<I>(Lazy<I> instance, string serviceName = null) where I : class;
         /// <summary>
         /// Removes the service.
         /// </summary>
         /// <typeparam name="I">The interface type.</typeparam>
-        /// <returns>Returns true if removed successfully./returns>
+        /// <returns>Returns true if removed successfully.</returns>
         bool RemoveService<I>() where I : class;
         /// <summary>
         /// Gets the service.

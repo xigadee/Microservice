@@ -1,9 +1,7 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 
 namespace Xigadee
 {
@@ -14,29 +12,31 @@ namespace Xigadee
     {
         private UdpConfig() { }
 
-
+        /// <summary>
+        /// This is the remote endpoint.
+        /// </summary>
         public IPEndPoint RemoteEndPoint { get; private set; }
 
         /// <summary>
         /// Gets the multicast time to live.
         /// </summary>
-        public int? MulticastTtl { get; private set;}
+        public int? MulticastTtl { get; private set; }
         /// <summary>
         /// Gets or sets a value indicating whether to the UDP port exclusively. The default is false.
         /// </summary>
-        public bool ExclusiveAddressUse { get; set; }= false;
+        public bool ExclusiveAddressUse { get; set; } = false;
         /// <summary>
         /// Gets the port that the Udp transport is using.
         /// </summary>
-        public int Port { get; private set;}
+        public int Port { get; private set; }
         /// <summary>
         /// Gets the Udp mode.
         /// </summary>
-        public UdpTransmissionMode Mode { get; private set;}
+        public UdpTransmissionMode Mode { get; private set; }
         /// <summary>
         /// Gets the IP addresses that the Udp transport is active on.
         /// </summary>
-        public IEnumerable<IPAddress> Addresses { get; private set;}
+        public IEnumerable<IPAddress> Addresses { get; private set; }
 
         #region Static constructors
         public static UdpConfig UnicastIpEndPoint(IPEndPoint ep, IPEndPoint remoteEp = null)
@@ -44,9 +44,12 @@ namespace Xigadee
             return new UdpConfig
             {
                 Port = ep.Port
-                , Addresses = new IPAddress[] { ep.Address }
-                , Mode = UdpTransmissionMode.Unicast
-                , RemoteEndPoint = remoteEp
+                ,
+                Addresses = new IPAddress[] { ep.Address }
+                ,
+                Mode = UdpTransmissionMode.Unicast
+                ,
+                RemoteEndPoint = remoteEp
             };
         }
 
@@ -55,9 +58,12 @@ namespace Xigadee
             return new UdpConfig
             {
                 Port = port
-                , Addresses = IpAddresses().ToList()
-                , Mode = UdpTransmissionMode.Unicast
-                , RemoteEndPoint = null
+                ,
+                Addresses = IpAddresses().ToList()
+                ,
+                Mode = UdpTransmissionMode.Unicast
+                ,
+                RemoteEndPoint = null
             };
         }
 
@@ -68,9 +74,12 @@ namespace Xigadee
             return new UdpConfig
             {
                 Port = port
-                , Addresses = IpAddresses().ToList()
-                , Mode = UdpTransmissionMode.Unicast
-                , RemoteEndPoint = new IPEndPoint(host.AddressList.First(), remotePort ?? port)
+                ,
+                Addresses = IpAddresses().ToList()
+                ,
+                Mode = UdpTransmissionMode.Unicast
+                ,
+                RemoteEndPoint = new IPEndPoint(host.AddressList.First(), remotePort ?? port)
             };
         }
 
@@ -79,9 +88,12 @@ namespace Xigadee
             return new UdpConfig
             {
                 Port = port
-                , Addresses = IpAddresses().ToList()
-                , Mode = UdpTransmissionMode.Unicast
-                , RemoteEndPoint = remoteEp
+                ,
+                Addresses = IpAddresses().ToList()
+                ,
+                Mode = UdpTransmissionMode.Unicast
+                ,
+                RemoteEndPoint = remoteEp
             };
         }
 
@@ -90,11 +102,14 @@ namespace Xigadee
             return new UdpConfig
             {
                 Port = port
-                , Addresses = IpAddresses().ToList()
-                , Mode = UdpTransmissionMode.Broadcast
-                , RemoteEndPoint = new IPEndPoint(IPAddress.Parse("255.255.255.255"), destinationPort ?? port)
+                ,
+                Addresses = IpAddresses().ToList()
+                ,
+                Mode = UdpTransmissionMode.Broadcast
+                ,
+                RemoteEndPoint = new IPEndPoint(IPAddress.Parse("255.255.255.255"), destinationPort ?? port)
             };
-        } 
+        }
         #endregion
 
         #region Static -> IpAddresses(AddressFamily family = AddressFamily.InterNetwork)

@@ -8,6 +8,9 @@ namespace Xigadee
 {
     public abstract partial class CommunicationAgentBase<S>:IListener
     {
+        private int mClientStarted = 0;
+        private int mClientStopped = 0;
+
         /// <summary>
         /// This is the client collection.
         /// </summary>
@@ -21,8 +24,6 @@ namespace Xigadee
         /// </summary>
         protected Func<string, int, string> mPriorityClientNamer = (s, i) => string.Format("{0}{1}", s, i == 1 ? "" : i.ToString());
 
-        private int mClientStarted = 0;
-        private int mClientStopped = 0;
 
 
         public List<ListenerPartitionConfig> ListenerPriorityPartitions { get; set; }
