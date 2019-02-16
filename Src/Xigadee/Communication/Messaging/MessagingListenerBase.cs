@@ -122,7 +122,7 @@ namespace Xigadee
                 //and let them work out how to do it themselves.
                 if (deltaNew.Count > 0 || deltaOld.Count > 0)
                 {
-                    foreach (var client in mClients.Values)
+                    foreach (var client in mListenerClients.Values)
                         ClientValidate(client, newList);
                 }
             }
@@ -186,8 +186,8 @@ namespace Xigadee
         {
             try
             {
-                mClients.Values.ForEach((c) => ClientStop(c));
-                mClients.Clear();
+                mListenerClients.Values.ForEach((c) => ClientStop(c));
+                mListenerClients.Clear();
                 TearDown();
             }
             catch (Exception ex)

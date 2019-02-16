@@ -22,7 +22,7 @@ namespace Xigadee
         /// <summary>
         /// This is the client collection.
         /// </summary>
-        protected ConcurrentDictionary<int, H> mClients= new ConcurrentDictionary<int, H>();
+        protected ConcurrentDictionary<int, H> mListenerClients= new ConcurrentDictionary<int, H>();
         /// <summary>
         /// This is the default priority. 1 if present
         /// </summary>
@@ -55,7 +55,7 @@ namespace Xigadee
         {
             get
             {
-                return mClients?.Values;
+                return mListenerClients?.Values;
             }
         } 
         #endregion
@@ -132,14 +132,14 @@ namespace Xigadee
         {
             try
             {
-                mClients.Values.ForEach((c)=>ClientStop(c));
-                mClients.Clear();
+                mListenerClients.Values.ForEach((c)=>ClientStop(c));
+                mListenerClients.Clear();
             }
             catch (Exception ex)
             {
                 LogExceptionLocation("StopInternal", ex);
             }
-            mClients = null;
+            mListenerClients = null;
             TearDown();
         }
         #endregion
@@ -273,16 +273,16 @@ namespace Xigadee
         /// <returns>The specific client holder.</returns>
         protected virtual H ClientResolve(int priority)
         {
-            if ((mClients?.Count??0) == 0)
+            if ((mListenerClients?.Count??0) == 0)
                 throw new ClientsUndefinedMessagingException($"No Clients are defined for {ChannelId}");
 
-            if (mClients.ContainsKey(priority))
-                return mClients[priority];
+            if (mListenerClients.ContainsKey(priority))
+                return mListenerClients[priority];
 
             if (!mDefaultPriority.HasValue)
                 throw new ClientsUndefinedMessagingException($"Channel={ChannelId} Priority={priority} cannot be found and a default priority value has not been set.");
 
-            return mClients[mDefaultPriority.Value];
+            return mListenerClients[mDefaultPriority.Value];
         }
         #endregion
 
