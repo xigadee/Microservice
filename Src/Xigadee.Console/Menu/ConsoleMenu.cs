@@ -77,7 +77,7 @@ namespace Xigadee
         /// <param name="pageLength">This is the number of menu items per page. The default is 9.</param>
         /// <param name="shortcut">This property allows a supported shortcut to the executed automatically</param>
         /// <param name="contextInfo">This method allows the menu context to be inherited by a child menu. If ContextInfoInherit is set to false, this is ignored.</param>
-        public virtual void Show(object state = null, int pageLength = 9, string shortcut = null, ConsoleInfoContext contextInfo = null)
+        public virtual void Show(object state = null, int pageLength = 9, string shortcut = null, ConsoleInfoContext contextInfo = null, bool confirmExit = false)
         {
             if (contextInfo != null && ContextInfoInherit)
                 ContextInfo = contextInfo;
@@ -93,11 +93,18 @@ namespace Xigadee
             if (shortcut != null)
                 ShortcutInvoke(Context, shortcut);
 
-            Display();
+            do
+            {
+                Display();
+            }
+            while (confirmExit && !ConsoleHelper.PopUpYesNo("Are you sure you want to quit?"));
 
             OnClose?.Invoke(this, null);
+
+            Console.Clear();
         }
         #endregion
+
 
         #region ShortcutInvoke ...
         /// <summary>

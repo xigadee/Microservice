@@ -17,20 +17,86 @@ namespace Xigadee
                 setter(config, config.Switches[id]);
         }
 
+        public static int WriteAtPos(int left, int top, string format, params object[] args)
+        {
+            Console.SetCursorPosition(left, top);
+            Console.Write(format, args);
+            return top + 1;
+        }
 
-        public static bool YesNo(string message, bool appendyesno = true)
+        private static string PopUpBanner(bool isTop, int width)
+        {
+            if (isTop)
+                return " ╔" + new string('═', width - 4) + "╗ ";
+            else
+                return " ╚" + new string('═', width - 4) + "╝ ";
+        }
+
+        private static string PopUpValue(int width, string format, params object[] args)
+        {
+            var value = string.Format(format, args);
+            var result = "";
+
+            int textLen = width - 4 - value.Length;
+
+
+            if (string.IsNullOrWhiteSpace(value))
+                result = new string(' ', width - 4);
+            else
+            {
+                result = new string(' ', textLen/2);
+                result = result + value;
+                result = result + new string(' ', width - 4 - result.Length);
+            }
+
+            return " ║" + result + "║ ";
+        }
+
+        public static bool PopUpYesNo(string message, int left = 20, int top = 10, int? width = null, bool appendyesno = true, bool escapeValue = true)
+        {
+            var fCol = Console.ForegroundColor;
+            var bCol = Console.BackgroundColor;
+
+            if (!width.HasValue)
+                width = Console.WindowWidth - 2 - (left * 2);
+
+            Console.BackgroundColor = ConsoleColor.DarkBlue;
+            Console.ForegroundColor = ConsoleColor.Yellow;
+
+            top = WriteAtPos(left, top, PopUpBanner(true, width.Value));
+
+            top = WriteAtPos(left, top, PopUpValue(width.Value, ""));
+            top = WriteAtPos(left, top, PopUpValue(width.Value, "{0} (y/n)", message));
+            top = WriteAtPos(left, top, PopUpValue(width.Value, ""));
+
+            top = WriteAtPos(left, top, PopUpBanner(false, width.Value));
+
+            Console.BackgroundColor = bCol;
+            Console.ForegroundColor = fCol;
+            Console.CursorVisible = false;
+
+            return ReadYN(escapeValue).Value;
+        }
+
+        public static bool YesNo(string message, bool appendyesno = true, bool defaultValue = false)
         {
             if (appendyesno)
-                System.Console.WriteLine("{0} (y/n)", message);
+                Console.WriteLine("{0} (y/n)", message);
             else
-                System.Console.WriteLine("{0}", message);
+                Console.WriteLine("{0}", message);
+
+            return ReadYN()?? defaultValue;
+        }
+
+        public static bool? ReadYN(bool? defaultValue = null)
+        {
             ConsoleKeyInfo key;
             do
             {
                 key = System.Console.ReadKey(true);
 
                 if (key.Key == ConsoleKey.Escape)
-                    return false;
+                    return defaultValue;
             }
             while (!(new char[] { 'Y', 'y', 'N', 'n' }).Contains(key.KeyChar));
 
@@ -41,7 +107,7 @@ namespace Xigadee
             , ConsoleColor titleColour = ConsoleColor.White, char? startChar = null, char? endChar = null)
         {
             if (length == null)
-                length = System.Console.WindowWidth-2;
+                length = Console.WindowWidth-2;
 
             if (title == null || string.IsNullOrWhiteSpace(title))
             {

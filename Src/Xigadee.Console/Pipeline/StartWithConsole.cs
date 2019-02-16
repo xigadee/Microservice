@@ -28,7 +28,7 @@ namespace Xigadee
 
             var shortcut = (items?.ContainsKey("shortcut")??false)?items["shortcut"]:null;
 
-            mainMenu.Show(shortcut: shortcut);
+            mainMenu.Show(shortcut: shortcut, confirmExit: true);
 
             return pipeline;
         }
