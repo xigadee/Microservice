@@ -16,11 +16,24 @@ namespace Xigadee
         /// <param name="serializerId">The optional preferred serializer identifier.</param>
         /// <param name="compressionId">The optional preferred compression identifier.</param>
         /// <param name="encryptionId">The optional preferred encryption identifier.</param>
+        /// <param name="authenticationId">The optional preferred authentication identifier.</param>
         protected CommunicationAgentBase(
             CommunicationAgentCapabilities capabilities = CommunicationAgentCapabilities.Bidirectional
             , SerializationHandlerId serializerId = null
             , CompressionHandlerId compressionId = null
-            , EncryptionHandlerId encryptionId = null):base(capabilities, serializerId, compressionId, encryptionId)
+            , EncryptionHandlerId encryptionId = null
+            , AuthenticationHandlerId authenticationId = null)
+            : base(capabilities, new ServiceHandlerIdCollection { Authentication = null, Compression = compressionId, Encryption = encryptionId, Serializer = serializerId })
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommunicationAgentBase{S}"/> class.
+        /// </summary>
+        /// <param name="capabilities">The agent capabilities. The default is bidirectional.</param>
+        /// <param name="shIds">The service handler id collection</param>
+        protected CommunicationAgentBase(CommunicationAgentCapabilities capabilities = CommunicationAgentCapabilities.Bidirectional
+            , ServiceHandlerIdCollection shIds = null):base(capabilities, shIds)
         {
         }
     }
@@ -51,33 +64,37 @@ namespace Xigadee
         /// <param name="serializerId">The optional preferred serializer identifier.</param>
         /// <param name="compressionId">The optional preferred compression identifier.</param>
         /// <param name="encryptionId">The optional preferred encryption identifier.</param>
+        /// <param name="authenticationId">The optional preferred authentication identifier.</param>
         protected CommunicationAgentBase(
             CommunicationAgentCapabilities capabilities = CommunicationAgentCapabilities.Bidirectional
             , SerializationHandlerId serializerId = null
             , CompressionHandlerId compressionId = null
-            , EncryptionHandlerId encryptionId = null)
+            , EncryptionHandlerId encryptionId = null
+            , AuthenticationHandlerId authenticationId = null) 
+            : this(capabilities, new ServiceHandlerIdCollection { Authentication = null, Compression = compressionId, Encryption = encryptionId, Serializer = serializerId })
+        {
+        }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommunicationAgentBase{S}"/> class.
+        /// </summary>
+        /// <param name="capabilities">The agent capabilities. The default is bidirectional.</param>
+        /// <param name="shIds">The service handler id collection</param>
+        protected CommunicationAgentBase(CommunicationAgentCapabilities capabilities = CommunicationAgentCapabilities.Bidirectional
+            , ServiceHandlerIdCollection shIds = null)
         {
             Capabilities = capabilities;
-            PreferredSerializerId = serializerId;
-            PreferredCompressionId = compressionId;
-            PreferredEncryptionId = encryptionId;
-        } 
+            ServiceHandlerIds = shIds ?? new ServiceHandlerIdCollection() ;
+        }
         #endregion
 
+        #region ServiceHandlerIds
         /// <summary>
-        /// Gets or sets the preferred serializer identifier.
+        /// The service handler ids.
         /// </summary>
-        public SerializationHandlerId PreferredSerializerId { get; protected set; }
-        /// <summary>
-        /// Gets or sets the preferred compression identifier.
-        /// </summary>
-        public CompressionHandlerId PreferredCompressionId { get; protected set; }
-        /// <summary>
-        /// Gets or sets the preferred encryption identifier.
-        /// </summary>
-        public EncryptionHandlerId PreferredEncryptionId { get; protected set; }
+        public ServiceHandlerIdCollection ServiceHandlerIds { get; } 
+        #endregion
 
-        #region Capabilities/CanListen/CanSend
+        #region Capabilities & CanListen/CanSend
         /// <summary>
         /// Override this to specify your agents capabilities.
         /// </summary>

@@ -6,7 +6,10 @@ namespace Xigadee
 {
     public class ManualCommunicationAgent: CommunicationAgentBase
     {
-        public override CommunicationAgentCapabilities Capabilities { get { return CommunicationAgentCapabilities.Bidirectional; } }
+        public ManualCommunicationAgent(ServiceHandlerIdCollection shIds = null) :base(CommunicationAgentCapabilities.Bidirectional, shIds)
+        {
+
+        }
 
         protected override void ListenerClientsStart()
         {
