@@ -32,34 +32,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region Logging
-        /// <summary>
-        /// This method logs the last time a message was enqueued.
-        /// </summary>
-        /// <param name="EnqueuedTimeUTC">The current UTC time.</param>
-        public void QueueTimeLog(DateTime? EnqueuedTimeUTC)
-        {
-            StatisticsInternal.QueueTimeLog(EnqueuedTimeUTC);
-            StatisticsInternal.ActiveIncrement();
-        }
-
-        /// <summary>
-        /// This method decrements the active messages.
-        /// </summary>
-        /// <param name="start">The tick count when the process started.</param>
-        public void ActiveDecrement(int start)
-        {
-            StatisticsInternal.ActiveDecrement(start);
-        }
-        /// <summary>
-        /// This method increments the error count.
-        /// </summary>
-        public void ErrorIncrement()
-        {
-            StatisticsInternal.ErrorIncrement();
-        }
-        #endregion
-
         /// <summary>
         /// This method pulls fabric messages and converts them in to generic payload messages for the Microservice to process.
         /// </summary>

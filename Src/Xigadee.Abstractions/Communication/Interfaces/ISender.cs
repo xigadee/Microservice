@@ -11,7 +11,7 @@ namespace Xigadee
         /// <summary>
         /// This is a list of active clients.
         /// </summary>
-        IEnumerable<ClientHolder> SenderClients { get; }
+        IEnumerable<IClientHolder> SenderClients { get; }
 
         /// <summary>
         /// Transmits the message.

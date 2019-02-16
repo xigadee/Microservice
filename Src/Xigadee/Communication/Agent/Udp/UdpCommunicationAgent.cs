@@ -52,7 +52,7 @@ namespace Xigadee
             throw new NotImplementedException();
         }
 
-        protected override void ListenerClientValidate(ClientHolder client, List<MessageFilterWrapper> newList)
+        protected override void ListenerClientValidate(IClientHolder client, List<MessageFilterWrapper> newList)
         {
             throw new NotImplementedException();
         }

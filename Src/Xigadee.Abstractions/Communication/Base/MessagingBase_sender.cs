@@ -8,7 +8,7 @@ namespace Xigadee
     public abstract partial class MessagingBase<C, M, H>
     {
 
-        public IEnumerable<ClientHolder> SenderClients => throw new NotImplementedException();
+        public IEnumerable<IClientHolder> SenderClients => throw new NotImplementedException();
 
         public List<SenderPartitionConfig> SenderPriorityPartitions { get; set; }
 

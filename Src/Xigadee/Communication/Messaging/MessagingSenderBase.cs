@@ -23,7 +23,7 @@ namespace Xigadee
         public List<SenderPartitionConfig> SenderPriorityPartitions { get; set; }
         #endregion
 
-        public IEnumerable<ClientHolder> SenderClients => throw new NotImplementedException();
+        public IEnumerable<IClientHolder> SenderClients => throw new NotImplementedException();
 
         #region SenderTransmit(TransmissionPayload payload)
         /// <summary>

@@ -18,7 +18,7 @@ namespace Xigadee
             throw new NotImplementedException();
         }
 
-        protected override void ListenerClientValidate(ClientHolder client, List<MessageFilterWrapper> newList)
+        protected override void ListenerClientValidate(IClientHolder client, List<MessageFilterWrapper> newList)
         {
             throw new NotImplementedException();
         }
@@ -28,7 +28,7 @@ namespace Xigadee
             throw new NotImplementedException();
         }
 
-        protected override ClientHolder SenderClientResolve(int priority)
+        protected override IClientHolder SenderClientResolve(int priority)
         {
             throw new NotImplementedException();
         }

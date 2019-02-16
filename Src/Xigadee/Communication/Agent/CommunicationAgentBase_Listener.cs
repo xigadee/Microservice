@@ -11,7 +11,7 @@ namespace Xigadee
         /// <summary>
         /// This is the client collection.
         /// </summary>
-        protected ConcurrentDictionary<int, ClientHolder> mListenerClients = new ConcurrentDictionary<int, ClientHolder>();
+        protected ConcurrentDictionary<int, IClientHolder> mListenerClients = new ConcurrentDictionary<int, IClientHolder>();
         /// <summary>
         /// This is the default priority. 1 if present
         /// </summary>
@@ -27,7 +27,7 @@ namespace Xigadee
 
         public List<ListenerPartitionConfig> ListenerPriorityPartitions { get; set; }
 
-        public virtual IEnumerable<ClientHolder> ListenerClients => mListenerClients.Values;
+        public virtual IEnumerable<IClientHolder> ListenerClients => mListenerClients.Values;
 
         public List<ResourceProfile> ListenerResourceProfiles { get; set; }
 
@@ -119,7 +119,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="client">The client.</param>
         /// <param name="newList">The new list of message filter wrappers.</param>
-        protected abstract void ListenerClientValidate(ClientHolder client, List<MessageFilterWrapper> newList);
+        protected abstract void ListenerClientValidate(IClientHolder client, List<MessageFilterWrapper> newList);
 
         protected abstract void ListenerClientsStart();
 

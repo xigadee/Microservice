@@ -11,7 +11,7 @@ namespace Xigadee
         /// <summary>
         /// This is a list of active clients.
         /// </summary>
-        IEnumerable<ClientHolder> ListenerClients { get; }
+        IEnumerable<IClientHolder> ListenerClients { get; }
 
         /// <summary>
         /// This method is used to change the supported command endpoint addresses. This happens when a command starts or stops in the microservice.

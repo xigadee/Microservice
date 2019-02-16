@@ -11,9 +11,9 @@ namespace Xigadee
         /// <summary>
         /// This is the client collection.
         /// </summary>
-        protected ConcurrentDictionary<int, ClientHolder> mSenderClients = new ConcurrentDictionary<int, ClientHolder>();
+        protected ConcurrentDictionary<int, IClientHolder> mSenderClients = new ConcurrentDictionary<int, IClientHolder>();
 
-        public virtual IEnumerable<ClientHolder> SenderClients => mSenderClients.Values;
+        public virtual IEnumerable<IClientHolder> SenderClients => mSenderClients.Values;
 
         /// <summary>
         /// This contains the sender partitions.
@@ -26,7 +26,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="priority">The priority.</param>
         /// <returns>The resolved client.</returns>
-        protected virtual ClientHolder SenderClientResolve(int priority)
+        protected virtual IClientHolder SenderClientResolve(int priority)
         {
             if ((mSenderClients?.Count ?? 0) == 0)
                 throw new ClientsUndefinedMessagingException($"No Clients are defined for {ChannelId}");
@@ -66,12 +66,12 @@ namespace Xigadee
         public virtual async Task SenderTransmit(TransmissionPayload payload)
         {
             int? start = null;
-            ClientHolder sender = null;
+            IClientHolder sender = null;
             try
             {
                 sender = SenderClientResolve(payload.Message.ChannelPriority);
 
-                start = sender.StatisticsInternal.ActiveIncrement();
+                start = sender.ActiveIncrement();
 
                 await sender.Transmit(payload);
 
@@ -83,13 +83,13 @@ namespace Xigadee
                 //OK, not sure what happened here, so we need to throw the exception.
                 payload.TraceWrite($"Exception: {ex.Message}", "MessagingSenderBase/ProcessMessage");
                 if (sender != null)
-                    sender.StatisticsInternal.ErrorIncrement();
+                    sender.ErrorIncrement();
                 throw;
             }
             finally
             {
                 if (sender != null && start.HasValue)
-                    sender.StatisticsInternal.ActiveDecrement(start.Value);
+                    sender.ActiveDecrement(start.Value);
             }
         }
         #endregion

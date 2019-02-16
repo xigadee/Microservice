@@ -16,8 +16,5 @@ namespace Xigadee
         where H : ClientHolder<C, M>, new()
         where C : class
     {
-
-
-
     }
 }
