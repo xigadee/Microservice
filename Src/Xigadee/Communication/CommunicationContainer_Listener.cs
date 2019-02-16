@@ -62,10 +62,10 @@ namespace Xigadee
                         , isInternal: true);
 
 
-                //Do we have a poll recalculate frequency set in the algorithm.
+                //Do we have a poll rebuild frequency set in the algorithm.
                 if (mPolicy.ListenerClientPollAlgorithm.PriorityRebuildFrequency.HasValue)
-                    //If so, set the reschedule priority.
-                    mClientRecalculateSchedule = Scheduler.Register(
+                    //If so, set the rebuild priority.
+                    mClientRebuildSchedule = Scheduler.Register(
                         async (s, cancel) => await ListenersPriorityRecalculate(true)
                         , mPolicy.ListenerClientPollAlgorithm.PriorityRebuildFrequency.Value
                         , "Communication: Listeners Priority Rebuild"
@@ -88,6 +88,9 @@ namespace Xigadee
         {
             if (mClientRecalculateSchedule != null)
                 Scheduler?.Unregister(mClientRecalculateSchedule);
+
+            if (mClientRebuildSchedule != null)
+                Scheduler?.Unregister(mClientRebuildSchedule);
 
             mClientCollection?.Close();
 

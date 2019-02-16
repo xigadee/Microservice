@@ -67,6 +67,11 @@ namespace Xigadee
         /// This is the schedule used to call the clients that require polling support.
         /// </summary>
         protected Schedule mClientRecalculateSchedule = null;
+
+        /// <summary>
+        /// This is the schedule used to call the clients that require polling support.
+        /// </summary>
+        protected Schedule mClientRebuildSchedule = null;
         #endregion
         #region Constructor
         /// <summary>

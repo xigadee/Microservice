@@ -47,7 +47,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Communication\Agent\Udp\" />
     <Folder Include="DataCollection\Events\Base\" />
     <Folder Include="DataCollection\Interfaces\" />
   </ItemGroup>
