@@ -93,13 +93,13 @@ namespace Xigadee
             {
                 mSupportedMessageTypes = newList;
 
-                if (newList == null || newList.Count == 0)
+                if ((newList?.Count??0) == 0)
                 {
                     ListenerClientsStop();
                     return;
                 }
 
-                if ((oldList == null || oldList.Count == 0) && newList.Count > 0)
+                if (((oldList?.Count??0) == 0) && newList.Count > 0)
                 {
                     ListenerClientsStart();
                     return;
@@ -131,6 +131,7 @@ namespace Xigadee
         {
 
         }
+
         public virtual void ListenerStop()
         {
 

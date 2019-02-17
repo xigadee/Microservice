@@ -86,8 +86,9 @@ namespace Xigadee
                 LogExceptionLocation($"{nameof(SenderTransmit)} (Unhandled)", ex);
                 //OK, not sure what happened here, so we need to throw the exception.
                 payload.TraceWrite($"Exception: {ex.Message}", "MessagingSenderBase/ProcessMessage");
-                if (sender != null)
-                    sender.ErrorIncrement();
+
+                sender?.ErrorIncrement();
+
                 throw;
             }
             finally

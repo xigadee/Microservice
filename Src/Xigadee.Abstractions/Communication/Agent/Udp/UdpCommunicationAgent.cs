@@ -42,17 +42,17 @@ namespace Xigadee
 
         protected override void ListenerClientsStart()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         protected override void ListenerClientsStop()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         protected override void ListenerClientValidate(IClientHolder client, List<MessageFilterWrapper> newList)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
     }
