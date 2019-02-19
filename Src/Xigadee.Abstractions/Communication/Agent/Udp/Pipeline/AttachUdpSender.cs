@@ -27,6 +27,9 @@ namespace Xigadee
             )
             where C : IPipelineChannelOutgoing<IPipeline>
         {
+            if (shIdColl == null)
+                shIdColl = new ServiceHandlerIdCollection();
+
             shIdColl.Serializer = (
                 shIdColl.Serializer?.Id
                 ?? serializer?.Id

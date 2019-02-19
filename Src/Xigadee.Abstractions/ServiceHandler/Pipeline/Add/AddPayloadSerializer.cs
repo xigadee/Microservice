@@ -32,9 +32,8 @@ namespace Xigadee
             where P : IPipeline
         {
             var serializer = creator(pipeline.Configuration);
-            pipeline.Service.ServiceHandlers.Serialization.Add(serializer);
 
-            return pipeline;
+            return pipeline.AddPayloadSerializer(serializer);
         }
 
         /// <summary>
@@ -66,9 +65,7 @@ namespace Xigadee
 
             var serializer = new DynamicSerializer(mimeContentType, friendlyName, serialize, canSerialize, deserialize, canDeserialize, supportsContentTypeSerialization);
 
-            pipeline.Service.ServiceHandlers.Serialization.Add(serializer);
-
-            return pipeline;
+            return pipeline.AddPayloadSerializer(serializer);
         }
     }
 }
