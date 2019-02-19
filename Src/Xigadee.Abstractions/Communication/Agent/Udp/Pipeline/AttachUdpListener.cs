@@ -98,7 +98,8 @@ namespace Xigadee
             var listener = new UdpCommunicationAgent(udp
                 , CommunicationAgentCapabilities.Listener
                 , shIdColl
-                , requestAddress, responseAddress, requestAddressPriority, responseAddressPriority
+                , requestAddress, responseAddress
+                , requestAddressPriority, responseAddressPriority
                 );
 
             if (serializer != null)

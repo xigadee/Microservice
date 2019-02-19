@@ -8,7 +8,7 @@ namespace Xigadee
     public static partial class UdpCommunicationPipelineExtensions
     {
         /// <summary>
-        /// Attaches the UDP sender to the outgoing channel.
+        /// Attaches the Udp sender to the outgoing channel.
         /// </summary>
         /// <typeparam name="C">The pipeline type.</typeparam>
         /// <param name="cpipe">The pipeline.</param>
@@ -50,7 +50,7 @@ namespace Xigadee
         }
 
         /// <summary>
-        /// Attaches the UDP sender to the outgoing channel.
+        /// Attaches the Udp sender to the outgoing channel.
         /// </summary>
         /// <typeparam name="C">The pipeline type.</typeparam>
         /// <param name="cpipe">The pipeline.</param>
