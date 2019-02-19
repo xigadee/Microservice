@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Xigadee.Sql\Xigadee.Sql.csproj" />
+    <ProjectReference Include="..\..\Xigadee.Azure.Sql\Xigadee.Azure.Sql.csproj" />
     <ProjectReference Include="..\..\Xigadee\Xigadee.csproj" />
     <ProjectReference Include="..\Tests.Xigadee.Shared\Tests.Xigadee.Shared.csproj" />
   </ItemGroup>

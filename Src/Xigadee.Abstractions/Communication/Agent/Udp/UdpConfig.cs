@@ -10,6 +10,12 @@ namespace Xigadee
     /// </summary>
     public class UdpConfig
     {
+        #region Static Declarations
+        /// <summary>
+        /// The maximum packet size for a UDP packet. 
+        /// </summary>
+        public const int PacketMaxSize = 508;
+        #endregion
         private UdpConfig() { }
 
         /// <summary>

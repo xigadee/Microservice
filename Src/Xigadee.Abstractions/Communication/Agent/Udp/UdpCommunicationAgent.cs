@@ -11,13 +11,12 @@ namespace Xigadee
     {
         UdpConfig mConfig;
 
+        #region Constructor
         /// <summary>
         /// Initializes a new instance of the <see cref="UdpCommunicationAgent"/> class.
         /// </summary>
         /// <param name="config">The UDP endpoint configuration.</param>
-        /// <param name="serializerId">The optional serializer identifier.</param>
-        /// <param name="compressionId">The optional compression identifier.</param>
-        /// <param name="encryptionId">The optional encryption identifier.</param>
+        /// <param name="shcIds">The optional ServiceHandlerIdCollection identifiers.</param>
         /// <param name="requestAddress">The optional request address.</param>
         /// <param name="responseAddress">The optional response address.</param>
         /// <param name="requestAddressPriority">The optional request address priority.</param>
@@ -26,18 +25,17 @@ namespace Xigadee
         /// <param name="maxUdpMessagePayloadSize">Maximum size of the UDP message payload.</param>
         public UdpCommunicationAgent(UdpConfig config
             , CommunicationAgentCapabilities capabilities = CommunicationAgentCapabilities.Bidirectional
-            , SerializationHandlerId serializerId = null
-            , CompressionHandlerId compressionId = null
-            , EncryptionHandlerId encryptionId = null
+            , ServiceHandlerIdCollection shcIds = null
             , ServiceMessageHeaderFragment requestAddress = null
             , ServiceMessageHeader responseAddress = null
             , int? requestAddressPriority = null
             , int responseAddressPriority = 1
-            , int? maxUdpMessagePayloadSize = UdpHelper.PacketMaxSize
-            ):base(capabilities, serializerId, compressionId, encryptionId)
+            , int? maxUdpMessagePayloadSize = UdpConfig.PacketMaxSize
+            ) : base(capabilities, shcIds)
         {
             mConfig = config ?? throw new ArgumentNullException("config", "Udp configuration cannot be null.");
-        }
+        } 
+        #endregion
 
 
         protected override void ListenerClientsStart()

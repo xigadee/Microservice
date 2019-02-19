@@ -6,7 +6,7 @@ namespace Xigadee
     {
         private Func<ServiceStatus> Status;
 
-        internal WrapperBase(Func<ServiceStatus> getStatus)
+        public WrapperBase(Func<ServiceStatus> getStatus)
         {
             Status = getStatus;
         }

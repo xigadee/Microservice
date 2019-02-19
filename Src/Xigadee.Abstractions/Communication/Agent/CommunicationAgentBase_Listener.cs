@@ -12,9 +12,10 @@ namespace Xigadee
         private int mClientStopped = 0;
 
         /// <summary>
-        /// This is the client collection.
+        /// This is the client collection based on the specific priority.
         /// </summary>
         protected ConcurrentDictionary<int, IClientHolder> mListenerClients = new ConcurrentDictionary<int, IClientHolder>();
+
         /// <summary>
         /// This is the default priority. 1 if present
         /// </summary>
@@ -25,9 +26,13 @@ namespace Xigadee
         protected Func<string, int, string> mPriorityClientNamer = (s, i) => string.Format("{0}{1}", s, i == 1 ? "" : i.ToString());
 
 
-
+        /// <summary>
+        /// This is the set of partitions for the listener. A partition is an integer that identifies priority channel for communication. Higher is better so 2 will go before 1 (default).
+        /// </summary>
         public List<ListenerPartitionConfig> ListenerPriorityPartitions { get; set; }
-
+        /// <summary>
+        /// This is the external set of clients.
+        /// </summary>
         public virtual IEnumerable<IClientHolder> ListenerClients => mListenerClients.Values;
 
         public List<ResourceProfile> ListenerResourceProfiles { get; set; }
@@ -36,7 +41,7 @@ namespace Xigadee
         /// <summary>
         /// This is the channel id that incoming messages will be mapped to.
         /// </summary>
-        public string ListenerMappingChannelId { get; set; }
+        public string ListenerMappingChannelId { get; set; } = null;
         #endregion
         #region ListenerSettingsValidate()
         /// <summary>
@@ -116,7 +121,7 @@ namespace Xigadee
         #endregion
 
         /// <summary>
-        /// This method triggers a revalidates of the particular client.
+        /// This method triggers a revalidation of the particular client.
         /// </summary>
         /// <param name="client">The client.</param>
         /// <param name="newList">The new list of message filter wrappers.</param>

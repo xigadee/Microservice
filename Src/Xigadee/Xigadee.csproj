@@ -46,9 +46,4 @@
     <ProjectReference Include="..\Xigadee.Abstractions\Xigadee.Abstractions.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DataCollection\Events\Base\" />
-    <Folder Include="DataCollection\Interfaces\" />
-  </ItemGroup>
-
 </Project>

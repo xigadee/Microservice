@@ -3,26 +3,26 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <PackageId>Xigadee.Abstractions</PackageId>
+    <PackageId>Xigadee.Azure.Sql</PackageId>
     <RootNamespace>Xigadee</RootNamespace>
-    <AssemblyName>Xigadee.Abstractions</AssemblyName>
+    <AssemblyName>Xigadee.Azure.Sql</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Xigadee.Abstractions.xml</DocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Xigadee.Azure.Sql.xml</DocumentationFile>
   </PropertyGroup>
-
+ 
   <ItemGroup>
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
   </ItemGroup>
-
+  
   <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.6.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ServiceHandler\Handlers\Encryption\" />
+    <ProjectReference Include="..\Xigadee.Abstractions\Xigadee.Abstractions.csproj" />
   </ItemGroup>
-  
+
 </Project>

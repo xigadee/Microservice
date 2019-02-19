@@ -17,7 +17,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\..\Xigadee.Sql\Xigadee.Sql.csproj" />
     <ProjectReference Include="..\..\Xigadee\Xigadee.csproj" />
   </ItemGroup>
 

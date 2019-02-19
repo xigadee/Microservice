@@ -3,14 +3,14 @@ using System.Collections.Generic;
 
 namespace Xigadee
 {
-    internal class CommunicationWrapper: WrapperBase, IMicroserviceCommunication
+    public class CommunicationWrapper: WrapperBase, IMicroserviceCommunication
     {
         /// <summary>
         /// This container holds the communication components.
         /// </summary>
         protected CommunicationContainer mCommunication;
 
-        internal CommunicationWrapper(CommunicationContainer communication, Func<ServiceStatus> getStatus) : base(getStatus)
+        public CommunicationWrapper(CommunicationContainer communication, Func<ServiceStatus> getStatus) : base(getStatus)
         {
             mCommunication = communication;
         }

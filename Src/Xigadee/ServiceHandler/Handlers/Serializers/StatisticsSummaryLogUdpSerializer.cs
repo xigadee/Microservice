@@ -46,7 +46,7 @@ namespace Xigadee
 
             var authorData = JsonConvert.SerializeObject(message);
 
-            holder.SetBlob(Encoding.UTF8.GetBytes(authorData), maxLength:UdpHelper.PacketMaxSize);
+            holder.SetBlob(Encoding.UTF8.GetBytes(authorData), maxLength:UdpConfig.PacketMaxSize);
         }
 
         /// <summary>

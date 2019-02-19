@@ -4,14 +4,14 @@ using System.Collections.Generic;
 
 namespace Xigadee
 {
-    internal class CommandWrapper: WrapperBase, IMicroserviceCommand
+    public class CommandWrapper: WrapperBase, IMicroserviceCommand
     {
         /// <summary>
         /// This container holds the components that do work on the system.
         /// </summary>
         private CommandContainer mCommands;
 
-        internal CommandWrapper(CommandContainer commands, Func<ServiceStatus> getStatus) : base(getStatus)
+        public CommandWrapper(CommandContainer commands, Func<ServiceStatus> getStatus) : base(getStatus)
         {
             mCommands = commands;
         }

@@ -60,8 +60,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Microsoft.Azure", "Microsof
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{2D95B4DF-5B82-402D-859A-92492C4DCF22}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Sql", "Xigadee.Sql\Xigadee.Sql.csproj", "{3DF66B73-6BA9-48E8-AC30-6BEB0689CF78}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Xigadee.Abstractions", "Tests\Tests.Xigadee.Abstractions\Tests.Xigadee.Abstractions.csproj", "{D335BA68-ECC7-44D8-B6A3-8D810260119A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Xigadee", "Tests\Tests.Xigadee\Tests.Xigadee.csproj", "{954AD464-E0CA-45C4-ACE7-41BA5431A530}"
@@ -79,6 +77,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Xigadee.Azure.Console", "Azure\Tests.Xigadee.Azure.Console\Tests.Xigadee.Azure.Console.csproj", "{15D4B503-2D4A-49B2-9DF7-A6138CE85F00}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Xigadee.Sql", "Tests\Tests.Xigadee.Sql\Tests.Xigadee.Sql.csproj", "{2C1C00E4-232A-4EAD-8136-727AC60AC164}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Azure.Sql", "Xigadee.Azure.Sql\Xigadee.Azure.Sql.csproj", "{6042BBEF-14DD-48CA-9375-A44026BC3567}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Amazon.Web.Service", "Amazon.Web.Service", "{6BF9FD33-1160-4E10-AED6-F51A1ABC7C19}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -142,10 +144,6 @@ Global
 		{B26E866D-8E1F-42E2-ADE6-80937734FB48}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B26E866D-8E1F-42E2-ADE6-80937734FB48}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B26E866D-8E1F-42E2-ADE6-80937734FB48}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3DF66B73-6BA9-48E8-AC30-6BEB0689CF78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3DF66B73-6BA9-48E8-AC30-6BEB0689CF78}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3DF66B73-6BA9-48E8-AC30-6BEB0689CF78}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3DF66B73-6BA9-48E8-AC30-6BEB0689CF78}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D335BA68-ECC7-44D8-B6A3-8D810260119A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D335BA68-ECC7-44D8-B6A3-8D810260119A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D335BA68-ECC7-44D8-B6A3-8D810260119A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -182,6 +180,10 @@ Global
 		{2C1C00E4-232A-4EAD-8136-727AC60AC164}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C1C00E4-232A-4EAD-8136-727AC60AC164}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C1C00E4-232A-4EAD-8136-727AC60AC164}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6042BBEF-14DD-48CA-9375-A44026BC3567}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6042BBEF-14DD-48CA-9375-A44026BC3567}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6042BBEF-14DD-48CA-9375-A44026BC3567}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6042BBEF-14DD-48CA-9375-A44026BC3567}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -210,9 +212,10 @@ Global
 		{4F22F1C5-2A84-4061-9B70-2FF4B31BEC38} = {2D95B4DF-5B82-402D-859A-92492C4DCF22}
 		{15D4B503-2D4A-49B2-9DF7-A6138CE85F00} = {2D95B4DF-5B82-402D-859A-92492C4DCF22}
 		{2C1C00E4-232A-4EAD-8136-727AC60AC164} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
+		{6042BBEF-14DD-48CA-9375-A44026BC3567} = {BB74DB4E-5BF2-4CA1-8A3A-E64EBD66FD03}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
 		SolutionGuid = {8BF7561D-7A94-4B22-B0EB-D82D95B110DE}
+		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
 	EndGlobalSection
 EndGlobal
