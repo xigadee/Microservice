@@ -2,10 +2,16 @@
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This is the base wrapper class.
+    /// </summary>
     public abstract class WrapperBase
     {
         private Func<ServiceStatus> Status;
-
+        /// <summary>
+        /// The default constructor.
+        /// </summary>
+        /// <param name="getStatus">The function used to access the status.</param>
         public WrapperBase(Func<ServiceStatus> getStatus)
         {
             Status = getStatus;

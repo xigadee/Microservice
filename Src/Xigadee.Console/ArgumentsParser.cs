@@ -69,8 +69,7 @@ namespace Xigadee
         }
         #endregion 
 
-        private static void ParseData(string strData, out string strKey,
-            out string strValue, string strStart, string strDelim)
+        private static void ParseData(string strData, out string strKey, out string strValue, string strStart, string strDelim)
         {
             //Ok, trim any space of the data
             strData = strData.Trim();
