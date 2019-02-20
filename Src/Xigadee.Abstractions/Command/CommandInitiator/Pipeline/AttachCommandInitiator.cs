@@ -2,7 +2,7 @@
 
 namespace Xigadee
 {
-    public static partial class CorePipelineExtensions
+    public static partial class CorePipelineExtensionsCore
     {
         /// <summary>
         /// This method adds a command initiator to the Microservice incoming channel.

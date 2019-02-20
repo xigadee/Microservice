@@ -2,7 +2,7 @@
 using System.Linq;
 namespace Xigadee
 {
-    public static partial class CorePipelineExtensions
+    public static partial class CorePipelineExtensionsCore
     {
         /// <summary>
         /// This extension method attaches a listener to an incoming pipeline.

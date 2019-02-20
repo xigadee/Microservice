@@ -2,7 +2,7 @@
 
 namespace Xigadee
 {
-    public static partial class CorePipelineExtensions
+    public static partial class CorePipelineExtensionsCore
     {
         /// <summary>
         /// Assigns a master job to the broadcast channel.

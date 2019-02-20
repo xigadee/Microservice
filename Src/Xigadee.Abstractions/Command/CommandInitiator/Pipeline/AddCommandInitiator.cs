@@ -2,7 +2,7 @@
 
 namespace Xigadee
 {
-    public static partial class CorePipelineExtensions
+    public static partial class CorePipelineExtensionsCore
     {
         static string ValidateOrCreateOutgoingChannel(IPipeline pipeline, string outgoingChannelId, Guid componentId, bool create)
         {

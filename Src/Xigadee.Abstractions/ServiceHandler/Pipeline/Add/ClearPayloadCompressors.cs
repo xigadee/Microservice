@@ -1,6 +1,6 @@
 ﻿namespace Xigadee
 {
-    public static partial class CorePipelineExtensions
+    public static partial class CorePipelineExtensionsCore
     {
         /// <summary>
         /// Clears the payload serializers collection..

@@ -2,7 +2,7 @@
 
 namespace Xigadee
 {
-    public static partial class CorePipelineExtensions
+    public static partial class CorePipelineExtensionsCore
     {
         /// <summary>
         /// This extension method can be used to inspect the pipeline components.

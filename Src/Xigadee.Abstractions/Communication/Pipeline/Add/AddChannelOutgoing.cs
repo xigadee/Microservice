@@ -6,7 +6,7 @@ namespace Xigadee
     /// <summary>
     /// These methods can be used to create a channel.
     /// </summary>
-    public static partial class CorePipelineExtensions
+    public static partial class CorePipelineExtensionsCore
     {
         public static IPipelineChannelOutgoing<P> AddChannelOutgoing<P>(this P pipeline
             , Func<IEnvironmentConfiguration, string> creatorId

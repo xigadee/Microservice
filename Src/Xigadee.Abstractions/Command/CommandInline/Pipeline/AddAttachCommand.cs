@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public static partial class CorePipelineExtensions
+    public static partial class CorePipelineExtensionsCore
     {
         /// <summary>
         /// This extension adds the in-line command to the pipeline

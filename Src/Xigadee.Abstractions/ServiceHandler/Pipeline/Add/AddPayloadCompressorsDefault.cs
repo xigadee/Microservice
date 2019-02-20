@@ -1,6 +1,6 @@
 ﻿namespace Xigadee
 {
-    public static partial class CorePipelineExtensions
+    public static partial class CorePipelineExtensionsCore
     {
         /// <summary>
         /// Adds the default payload compressors (Deflate and Gzip) to the Microservice.

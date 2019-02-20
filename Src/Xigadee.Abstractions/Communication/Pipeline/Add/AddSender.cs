@@ -2,7 +2,7 @@
 
 namespace Xigadee
 {
-    public static partial class CorePipelineExtensions
+    public static partial class CorePipelineExtensionsCore
     {
         public static P AddSender<P>(this P pipeline, ISender sender)
             where P : IPipeline

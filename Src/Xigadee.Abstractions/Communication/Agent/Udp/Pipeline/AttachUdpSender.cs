@@ -36,13 +36,13 @@ namespace Xigadee
                 ?? $"udp_out/{cpipe.Channel.Id}"
                 ).ToLowerInvariant();
 
+            if (serializer != null)
+                cpipe.Pipeline.AddPayloadSerializer(serializer);
+
             var sender = new UdpCommunicationAgent(udp
                 , CommunicationAgentCapabilities.Sender
                 , shIdColl
                 , maxUdpMessagePayloadSize: maxUdpMessagePayloadSize);
-
-            if (serializer != null)
-                cpipe.Pipeline.AddPayloadSerializer(serializer);
 
             cpipe.AttachSender(sender, action, true);
 

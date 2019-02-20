@@ -37,11 +37,13 @@ namespace Xigadee
             )
             where C : IPipelineChannelIncoming<IPipeline>
         {
+
             defaultDeserializerContentType = (defaultDeserializerContentType ?? $"udp_in/{cpipe.Channel.Id}").ToLowerInvariant();
             var shidCol = new ServiceHandlerIdCollection();
 
             if (deserialize != null)
             {
+                
                 cpipe.Pipeline.AddPayloadSerializer(
                       defaultDeserializerContentType
                     , deserialize: deserialize
@@ -60,7 +62,6 @@ namespace Xigadee
                 , requestAddressPriority
                 , responseAddressPriority
                 );
-
 
             cpipe.AttachListener(listener, action, true);
 
@@ -93,6 +94,12 @@ namespace Xigadee
             )
             where C : IPipelineChannelIncoming<IPipeline>
         {
+            if (shIdColl == null)
+                shIdColl = new ServiceHandlerIdCollection();
+
+            if (serializer != null)
+                cpipe.Pipeline.AddPayloadSerializer(serializer);
+
             shIdColl.Serializer = (shIdColl.Serializer?.Id ?? serializer?.Id ?? $"udp_in/{cpipe.Channel.Id}").ToLowerInvariant();
 
             var listener = new UdpCommunicationAgent(udp
@@ -102,8 +109,6 @@ namespace Xigadee
                 , requestAddressPriority, responseAddressPriority
                 );
 
-            if (serializer != null)
-                cpipe.Pipeline.AddPayloadSerializer(serializer);
 
             cpipe.AttachListener(listener, action, true);
 

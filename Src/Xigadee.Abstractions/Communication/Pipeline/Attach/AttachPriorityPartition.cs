@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 namespace Xigadee
 {
-    public static partial class CorePipelineExtensions
+    public static partial class CorePipelineExtensionsCore
     {
         private static void AttachPriorityPartition<P>(IPipelineChannel pipeline, P config)
             where P : PartitionConfig

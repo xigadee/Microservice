@@ -1,6 +1,6 @@
 ﻿namespace Xigadee
 {
-    public static partial class CorePipelineExtensions
+    public static partial class CorePipelineExtensionsCore
     {
         /// <summary>
         /// This method sets the process priority for incoming messages to the maximum settings for the Microservice.

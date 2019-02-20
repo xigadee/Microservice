@@ -1,7 +1,7 @@
 ﻿using System;
 namespace Xigadee
 {
-    public static partial class CorePipelineExtensions
+    public static partial class CorePipelineExtensionsCore
     {
         /// <summary>
         /// This extension method attaches one or more resource profiles to an incoming channel.

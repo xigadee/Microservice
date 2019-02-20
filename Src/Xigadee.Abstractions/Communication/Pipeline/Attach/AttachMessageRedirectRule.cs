@@ -1,7 +1,7 @@
 ﻿using System;
 namespace Xigadee
 {
-    public static partial class CorePipelineExtensions
+    public static partial class CorePipelineExtensionsCore
     {
         /// <summary>
         /// This method attaches a rewrite rule to the channel pipeline.

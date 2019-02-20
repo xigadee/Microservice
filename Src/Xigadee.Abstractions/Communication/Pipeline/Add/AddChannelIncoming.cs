@@ -6,7 +6,7 @@ namespace Xigadee
     /// <summary>
     /// These methods can be used to create a channel.
     /// </summary>
-    public static partial class CorePipelineExtensions
+    public static partial class CorePipelineExtensionsCore
     {
         /// <summary>
         /// Use this pipeline command to add a channel to a Microservice.

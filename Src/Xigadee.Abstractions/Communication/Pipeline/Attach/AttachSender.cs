@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Xigadee
 {
-    public static partial class CorePipelineExtensions
+    public static partial class CorePipelineExtensionsCore
     {
         /// <summary>
         /// This method attaches a sender to the outgoing channel.

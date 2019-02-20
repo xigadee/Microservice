@@ -1,6 +1,6 @@
 ﻿namespace Xigadee
 {
-    public static partial class CorePipelineExtensions
+    public static partial class CorePipelineExtensionsCore
     {
         /// <summary>
         /// This is a helper method that identifies the current pipeline. It is useful for autocomplete identification. 
