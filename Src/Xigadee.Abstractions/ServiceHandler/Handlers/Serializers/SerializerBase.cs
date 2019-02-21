@@ -14,7 +14,7 @@ namespace Xigadee
     /// <summary>
     /// This class allows for serialization root functionality to be shared.
     /// </summary>
-    [DebuggerDisplay("Type={ContentType}")]
+    [DebuggerDisplay("{Name}=>'{Id}'")]
     public abstract class SerializerBase: IServiceHandlerSerialization
     {
         /// <summary>

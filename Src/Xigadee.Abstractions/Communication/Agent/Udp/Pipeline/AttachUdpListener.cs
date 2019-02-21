@@ -37,35 +37,26 @@ namespace Xigadee
             )
             where C : IPipelineChannelIncoming<IPipeline>
         {
-
-            defaultDeserializerContentType = (defaultDeserializerContentType ?? $"udp_in/{cpipe.Channel.Id}").ToLowerInvariant();
-            var shidCol = new ServiceHandlerIdCollection();
+            IServiceHandlerSerialization serializer = null;
+            var shIdColl = new ServiceHandlerIdCollection();
 
             if (deserialize != null)
             {
-                
-                cpipe.Pipeline.AddPayloadSerializer(
-                      defaultDeserializerContentType
-                    , deserialize: deserialize
-                    , canDeserialize: canDeserialize);
-
-                shidCol.Serializer = defaultDeserializerContentType;
+                defaultDeserializerContentType = (defaultDeserializerContentType ?? $"udp_in/{cpipe.Channel.Id}").ToLowerInvariant();
+                serializer = CorePipelineExtensionsCore.CreateDynamicSerializer(defaultDeserializerContentType, deserialize: deserialize, canDeserialize: canDeserialize);
+                shIdColl.Serializer = serializer.Id;
             }
 
-            //shidCol.Serializer = defaultDeserializerContentType;
-            //shidCol.Compression = defaultDeserializerContentType;
-
-            var listener = new UdpCommunicationAgent(udp
-                , CommunicationAgentCapabilities.Listener
-                , shidCol
-                , requestAddress, responseAddress
+            return cpipe.AttachUdpListener(
+                  udp
+                , shIdColl
+                , requestAddress
+                , responseAddress
                 , requestAddressPriority
                 , responseAddressPriority
+                , serializer
+                , action
                 );
-
-            cpipe.AttachListener(listener, action, true);
-
-            return cpipe;
         }
 
         /// <summary>
@@ -108,7 +99,6 @@ namespace Xigadee
                 , requestAddress, responseAddress
                 , requestAddressPriority, responseAddressPriority
                 );
-
 
             cpipe.AttachListener(listener, action, true);
 

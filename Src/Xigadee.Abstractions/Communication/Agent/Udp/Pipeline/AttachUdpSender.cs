@@ -27,8 +27,7 @@ namespace Xigadee
             )
             where C : IPipelineChannelOutgoing<IPipeline>
         {
-            if (shIdColl == null)
-                shIdColl = new ServiceHandlerIdCollection();
+            shIdColl = shIdColl ?? new ServiceHandlerIdCollection();
 
             shIdColl.Serializer = (
                 shIdColl.Serializer?.Id
@@ -71,24 +70,26 @@ namespace Xigadee
             )
             where C : IPipelineChannelOutgoing<IPipeline>
         {
+
+            IServiceHandlerSerialization serializer = null;
+            shIdColl = shIdColl ?? new ServiceHandlerIdCollection();
+
             shIdColl.Serializer = (
                 shIdColl.Serializer?.Id?? $"udp_out/{cpipe.Channel.Id}"
                 ).ToLowerInvariant();
 
-            var sender = new UdpCommunicationAgent(udp
-                , CommunicationAgentCapabilities.Sender
-                , shIdColl
-                , maxUdpMessagePayloadSize: maxUdpMessagePayloadSize
-                );
-
             if (serialize != null)
-                cpipe.Pipeline.AddPayloadSerializer(shIdColl.Serializer.Id
-                    , serialize: serialize
-                    , canSerialize: canSerialize);
+            {
+                serializer = CorePipelineExtensionsCore.CreateDynamicSerializer(shIdColl.Serializer.Id, serialize: serialize, canSerialize: canSerialize);
+                shIdColl.Serializer = serializer.Id;
+            }
 
-            cpipe.AttachSender(sender, action, true);
-
-            return cpipe;
+            return cpipe.AttachUdpSender(
+                  udp
+                , shIdColl
+                , serializer
+                , action
+                , maxUdpMessagePayloadSize);
         }
 
     }

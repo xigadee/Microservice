@@ -25,7 +25,6 @@ namespace Xigadee
             //	Although there are more efficent ways, other than a for-next loop,
             //	to search through a list, there will only be a limited number of 
             //	items so this has not been optimized. 
-
             Dictionary<string, string> data = new Dictionary<string, string>();
 
             if (args == null)
@@ -60,8 +59,6 @@ namespace Xigadee
                         throw new ArgumentException("Incorrect format", strData);
                     }
                 }
-
-
             }
 
             return data;

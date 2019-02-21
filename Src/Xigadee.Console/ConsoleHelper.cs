@@ -78,17 +78,17 @@ namespace Xigadee
             return ReadYN(escapeValue).Value;
         }
 
-        public static bool YesNo(string message, bool appendyesno = true, bool defaultValue = false)
+        public static bool YesNo(string message, bool appendyesno = true, bool escapeValue = false)
         {
             if (appendyesno)
                 Console.WriteLine("{0} (y/n)", message);
             else
                 Console.WriteLine("{0}", message);
 
-            return ReadYN()?? defaultValue;
+            return ReadYN()?? escapeValue;
         }
 
-        public static bool? ReadYN(bool? defaultValue = null)
+        public static bool? ReadYN(bool? escapeValue = null)
         {
             ConsoleKeyInfo key;
             do
@@ -96,7 +96,7 @@ namespace Xigadee
                 key = System.Console.ReadKey(true);
 
                 if (key.Key == ConsoleKey.Escape)
-                    return defaultValue;
+                    return escapeValue;
             }
             while (!(new char[] { 'Y', 'y', 'N', 'n' }).Contains(key.KeyChar));
 
