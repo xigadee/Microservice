@@ -5,7 +5,7 @@ namespace Xigadee
     /// <summary>
     /// These extensions are used to attach a UDP based listener and sender to a channel
     /// </summary>
-    public static partial class UdpCommunicationPipelineExtensions
+    public static partial class CorePipelineExtensionsCore
     {
         /// <summary>
         /// Attaches the Udp sender to the outgoing channel.
@@ -80,7 +80,7 @@ namespace Xigadee
 
             if (serialize != null)
             {
-                serializer = CorePipelineExtensionsCore.CreateDynamicSerializer(shIdColl.Serializer.Id, serialize: serialize, canSerialize: canSerialize);
+                serializer = CreateDynamicSerializer(shIdColl.Serializer.Id, serialize: serialize, canSerialize: canSerialize);
                 shIdColl.Serializer = serializer.Id;
             }
 

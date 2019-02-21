@@ -5,7 +5,7 @@ namespace Xigadee
     /// <summary>
     /// These extensions are used to attach a UDP based listener and sender to a channel
     /// </summary>
-    public static partial class UdpCommunicationPipelineExtensions
+    public static partial class CorePipelineExtensionsCore
     {
         /// <summary>
         /// Attaches the UDP listener to the incoming channel.
@@ -43,7 +43,7 @@ namespace Xigadee
             if (deserialize != null)
             {
                 defaultDeserializerContentType = (defaultDeserializerContentType ?? $"udp_in/{cpipe.Channel.Id}").ToLowerInvariant();
-                serializer = CorePipelineExtensionsCore.CreateDynamicSerializer(defaultDeserializerContentType, deserialize: deserialize, canDeserialize: canDeserialize);
+                serializer = CreateDynamicSerializer(defaultDeserializerContentType, deserialize: deserialize, canDeserialize: canDeserialize);
                 shIdColl.Serializer = serializer.Id;
             }
 

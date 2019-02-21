@@ -12,17 +12,11 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>This library contains the Xigadee connectors for Azure Redis Cache.</description>
     <releaseNotes>First update for 2.0.</releaseNotes>
-    <copyright>Copyright © Xigadee 2017-2018 incorporates copyright of Hitachi Consulting 2012-2017</copyright>
-    <tags>Xigadee Microservice Azure Redis Cache .NET Hitachi</tags>
+    <copyright>Copyright © Xigadee 2017-2019 incorporates copyright of Hitachi Consulting 2012-2017</copyright>
+    <tags>Xigadee Microservice Azure Redis Cache .NET</tags>
     <dependencies>
-      <group targetFramework=".NETFramework4.7">
-        <dependency id="Xigadee" version="{UpdateVersion.ps1.replace}" exclude="Build,Analyzers" />
-        <dependency id="StackExchange.Redis" version="1.2.6" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.CSharp" version="4.4.1" exclude="Build,Analyzers" />
-        <dependency id="Newtonsoft.Json" version="11.0.1" exclude="Build,Analyzers" />
-      </group>
       <group targetFramework=".NETStandard2.0">
-        <dependency id="Xigadee" version="{UpdateVersion.ps1.replace}" exclude="Build,Analyzers" />
+        <dependency id="Xigadee.Abstractions" version="{UpdateVersion.ps1.replace}" exclude="Build,Analyzers" />
         <dependency id="StackExchange.Redis" version="1.2.6" exclude="Build,Analyzers" />
         <dependency id="Microsoft.CSharp" version="4.4.1" exclude="Build,Analyzers" />
         <dependency id="Newtonsoft.Json" version="11.0.1" exclude="Build,Analyzers" />
@@ -30,9 +24,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\Release\net47\Xigadee.Azure.Redis.dll" target="lib\net47\" />
-    <file src="bin\Release\net47\Xigadee.Azure.Redis.pdb" target="lib\net47\" />
-    <file src="bin\Release\net47\Xigadee.Azure.Redis.xml" target="lib\net47\" />
     <file src="bin\Release\netstandard2.0\Xigadee.Azure.Redis.dll" target="lib\netstandard2.0\" />
     <file src="bin\Release\netstandard2.0\Xigadee.Azure.Redis.pdb" target="lib\netstandard2.0\" />
     <file src="bin\Release\netstandard2.0\XXigadee.Azure.Redis.xml" target="lib\netstandard2.0\" />

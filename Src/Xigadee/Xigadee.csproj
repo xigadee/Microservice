@@ -46,4 +46,8 @@
     <ProjectReference Include="..\Xigadee.Abstractions\Xigadee.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DataCollection\Pipeline\Add\" />
+  </ItemGroup>
+
 </Project>

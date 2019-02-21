@@ -4,7 +4,7 @@
     <id>Xigadee.Azure.EventHubs</id>
     <version>{UpdateVersion.ps1.replace}</version>
     <title>Xigadee Azure EventHubs Library</title>
-    <authors>Paul Stancer and Guy Steel at Hitachi Consulting (http://hitachiconsulting.com)</authors>
+    <authors>Paul Stancer and Guy Steel</authors>
     <owners>Hitachi Consulting</owners>
     <iconUrl>https://raw.githubusercontent.com/xigadee/Microservice/master/docs/Logo.png</iconUrl>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
@@ -12,17 +12,11 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>This library contains the Xigadee connectors for Azure EventHubs.</description>
     <releaseNotes>First update for 2.0.</releaseNotes>
-    <copyright>Copyright © Hitachi Consulting 2012-2017</copyright>
-    <tags>Xigadee Microservice Azure EventHubs .NET Hitachi</tags>
+    <copyright>Copyright © Xigadee 2017-2019 incorporates copyright of Hitachi Consulting 2012-2017</copyright>
+    <tags>Xigadee Microservice Azure EventHubs .NET</tags>
     <dependencies>
-      <group targetFramework=".NETFramework4.7">
-        <dependency id="Xigadee" version="{UpdateVersion.ps1.replace}" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.Azure.EventHubs" version="1.0.3" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.CSharp" version="4.4.0" exclude="Build,Analyzers" />
-        <dependency id="Newtonsoft.Json" version="10.0.3" exclude="Build,Analyzers" />
-      </group>
       <group targetFramework=".NETStandard2.0">
-        <dependency id="Xigadee" version="{UpdateVersion.ps1.replace}" exclude="Build,Analyzers" />
+        <dependency id="Xigadee.Abstractions" version="{UpdateVersion.ps1.replace}" exclude="Build,Analyzers" />
         <dependency id="Microsoft.Azure.EventHubs" version="1.0.3" exclude="Build,Analyzers" />
         <dependency id="Microsoft.CSharp" version="4.4.0" exclude="Build,Analyzers" />
         <dependency id="Newtonsoft.Json" version="10.0.3" exclude="Build,Analyzers" />

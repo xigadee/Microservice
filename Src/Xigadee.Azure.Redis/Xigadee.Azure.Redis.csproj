@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Xigadee\Xigadee.csproj" />
+    <ProjectReference Include="..\Xigadee.Abstractions\Xigadee.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>
