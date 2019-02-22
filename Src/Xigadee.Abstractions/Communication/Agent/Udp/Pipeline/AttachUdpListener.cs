@@ -12,7 +12,7 @@ namespace Xigadee
         /// </summary>
         /// <typeparam name="C">The pipeline type.</typeparam>
         /// <param name="cpipe">The pipeline.</param>
-        /// <param name="udp">The UDP endpoint configuration.</param>
+        /// <param name="udpDefault">The UDP endpoint configuration.</param>
         /// <param name="defaultDeserializerContentType">Default deserializer MIME Content-type, i.e application/json.</param>
         /// <param name="defaultDeserializerContentEncoding">Default deserializer MIME Content-encoding, i.e. GZIP.</param>
         /// <param name="requestAddress">This is the optional address fragment which specifies the incoming message destination. If this is not set then ("","") will be used. This does not include a channelId as this will be provided by the pipeline.</param>
@@ -24,7 +24,7 @@ namespace Xigadee
         /// <param name="action">The optional action to be called when the listener is created.</param>
         /// <returns>Returns the pipeline.</returns>
         public static C AttachUdpListener<C>(this C cpipe
-            , UdpConfig udp
+            , UdpConfig udpDefault = null
             , string defaultDeserializerContentType = null
             , string defaultDeserializerContentEncoding = null
             , ServiceMessageHeaderFragment requestAddress = null
@@ -34,6 +34,7 @@ namespace Xigadee
             , Action<ServiceHandlerContext> deserialize = null
             , Func<ServiceHandlerContext, bool> canDeserialize = null
             , Action<IListener> action = null
+            , (int priority, UdpConfig config)[] udpExtended = null
             )
             where C : IPipelineChannelIncoming<IPipeline>
         {
@@ -48,7 +49,7 @@ namespace Xigadee
             }
 
             return cpipe.AttachUdpListener(
-                  udp
+                  udpDefault
                 , shIdColl
                 , requestAddress
                 , responseAddress
@@ -56,6 +57,7 @@ namespace Xigadee
                 , responseAddressPriority
                 , serializer
                 , action
+                , udpExtended
                 );
         }
 
@@ -64,7 +66,7 @@ namespace Xigadee
         /// </summary>
         /// <typeparam name="C">The pipeline type.</typeparam>
         /// <param name="cpipe">The pipeline.</param>
-        /// <param name="udp">The UDP endpoint configuration.</param>
+        /// <param name="udpDefault">The UDP endpoint configuration.</param>
         /// <param name="shIdColl">Default service handler id collection.</param>
         /// <param name="requestAddress">This is the optional address fragment which specifies the incoming message destination. If this is not set then ("","") will be used. This does not include a channelId as this will be provided by the pipeline.</param>
         /// <param name="responseAddress">This is the optional return address destination to be set for the incoming messages.</param>
@@ -74,7 +76,7 @@ namespace Xigadee
         /// <param name="action">The optional action to be called when the listener is created.</param>
         /// <returns>Returns the pipeline.</returns>
         public static C AttachUdpListener<C>(this C cpipe
-            , UdpConfig udp
+            , UdpConfig udpDefault = null
             , ServiceHandlerIdCollection shIdColl = null
             , ServiceMessageHeaderFragment requestAddress = null
             , ServiceMessageHeader responseAddress = null
@@ -82,6 +84,7 @@ namespace Xigadee
             , int responseAddressPriority = 1
             , IServiceHandlerSerialization serializer = null
             , Action<IListener> action = null
+            , (int priority, UdpConfig config)[] udpExtended = null
             )
             where C : IPipelineChannelIncoming<IPipeline>
         {
@@ -93,7 +96,7 @@ namespace Xigadee
 
             shIdColl.Serializer = (shIdColl.Serializer?.Id ?? serializer?.Id ?? $"udp_in/{cpipe.Channel.Id}").ToLowerInvariant();
 
-            var listener = new UdpCommunicationAgent(udp
+            var listener = new UdpCommunicationAgent(udpDefault
                 , CommunicationAgentCapabilities.Listener
                 , shIdColl
                 , requestAddress, responseAddress

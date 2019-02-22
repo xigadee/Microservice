@@ -1,7 +1,4 @@
-﻿#region using
-using System;
-using System.Linq;
-#endregion
+﻿using System;
 namespace Xigadee
 {
     /// <summary>

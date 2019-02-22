@@ -25,7 +25,6 @@ namespace Xigadee
         /// </summary>
         protected Func<string, int, string> mPriorityClientNamer = (s, i) => string.Format("{0}{1}", s, i == 1 ? "" : i.ToString());
 
-
         /// <summary>
         /// This is the set of partitions for the listener. A partition is an integer that identifies priority channel for communication. Higher is better so 2 will go before 1 (default).
         /// </summary>

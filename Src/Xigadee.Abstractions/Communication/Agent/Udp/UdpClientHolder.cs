@@ -9,13 +9,19 @@ namespace Xigadee
     /// <summary>
     /// This class holds the Udp client and associated logic.
     /// </summary>
-    public class UdpClientHolder : ClientHolderV2
+    public class UdpClientHolder : ClientHolderV2<MessagingServiceStatistics>
     {
         #region Declarations
-        Dictionary<IPEndPoint, State> mConnectionsListener, mConnectionsSender;
-        ConcurrentQueue<Message> mIncomingPending;
+        readonly Dictionary<IPEndPoint, State> mConnectionsListener;
+        readonly Dictionary<IPEndPoint, State> mConnectionsSender;
+        readonly ConcurrentQueue<Message> mIncomingPending;
         #endregion
-
+        #region Constructor
+        /// <summary>
+        /// This is Udp client holder. This class receives and sends the UDP Datagrams.
+        /// </summary>
+        /// <param name="udp">The Udp configuration.</param>
+        /// <param name="mode">The transmission mode.</param>
         public UdpClientHolder(UdpConfig udp, CommunicationAgentCapabilities mode)
         {
             Config = udp;
@@ -25,7 +31,8 @@ namespace Xigadee
             mConnectionsSender = new Dictionary<IPEndPoint, State>();
 
             mIncomingPending = new ConcurrentQueue<Message>();
-        }
+        } 
+        #endregion
 
         /// <summary>
         /// Gets the UDP configuration.
@@ -146,16 +153,6 @@ namespace Xigadee
         #endregion
 
 
-        #region Class -> Statistics
-        /// <summary>
-        /// This is the helper statistics class
-        /// </summary>
-        /// <seealso cref="Xigadee.StatusBase" />
-        public class Statistics : StatusBase
-        {
-
-        }
-        #endregion
         #region Class -> State
         /// <summary>
         /// This class holds the Socket state when receiving and transmitting information.
@@ -172,7 +169,7 @@ namespace Xigadee
             #endregion
             #region Constructor
             /// <summary>
-            /// Initializes a new instance of the <see cref="UdpHelperState"/> class.
+            /// Initializes a new instance of the <see cref="State"/> class.
             /// </summary>
             /// <param name="mode">The mode.</param>
             /// <param name="socket">The socket.</param>

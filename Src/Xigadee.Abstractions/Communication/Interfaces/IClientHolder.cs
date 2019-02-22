@@ -29,6 +29,7 @@ namespace Xigadee
         string DebugStatus { get; }
 
         MessagingServiceStatistics StatisticsInternal { get; }
+
         MessagingServiceStatistics StatisticsRecalculated { get; }
     }
 

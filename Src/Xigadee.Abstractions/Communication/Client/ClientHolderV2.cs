@@ -4,19 +4,21 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 namespace Xigadee
 {
+    public abstract class ClientHolderV2 : ClientHolderV2<MessagingServiceStatistics>
+    {
+        public ClientHolderV2():base()
+        {
+
+        }
+    }
     /// <summary>
     /// This is the generic base class that is used by the TaskManager to abstract fabric specific 
     /// implementations away from the task scheduler code.
     /// </summary>
     [DebuggerDisplay("{Type}|{Name}|{Priority} Active={IsActive} {Id}")]
-    public abstract class ClientHolderV2 : StatisticsBase<MessagingServiceStatistics>, IClientHolder, IRequireDataCollector
+    public abstract class ClientHolderV2<S> : StatisticsBase<S>, IClientHolder, IRequireDataCollector
+        where S: MessagingServiceStatistics, new()
     {
-        #region Declarations
-        /// <summary>
-        /// This is the unique client id.
-        /// </summary>
-        public Guid Id { get; } = Guid.NewGuid();
-        #endregion
         #region Constructor
         /// <summary>
         /// This is the default constructor for the client.
@@ -27,9 +29,16 @@ namespace Xigadee
             Priority = 1;
             CanStart = true;
             LastTickCount = Environment.TickCount;
-            //QueueLength = () => (int?)null;
             Filters = new List<string>();
+            Type = GetType().Name;
         }
+        #endregion
+
+        #region Id
+        /// <summary>
+        /// This is the unique client id.
+        /// </summary>
+        public Guid Id { get; } = Guid.NewGuid();
         #endregion
 
         /// <summary>
@@ -152,30 +161,21 @@ namespace Xigadee
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="ex">The exception.</param>
-        protected void LogException(string message, Exception ex)
-        {
-            Collector?.LogException(string.Format("{0}={1} - {2}", Name, message, ex.Message), ex);
-        }
+        protected void LogException(string message, Exception ex) => Collector?.LogException(string.Format("{0}={1} - {2}", Name, message, ex.Message), ex);
         #endregion
 
         #region ServiceHandlers
         /// <summary>
         /// This container is used to serialize and deserialize messaging payloads.
         /// </summary>
-        public IServiceHandlers ServiceHandlers
-        {
-            get;
-            set;
-        }
+        public IServiceHandlers ServiceHandlers { get; set; }
         #endregion
-
         #region Collector
         /// <summary>
         /// This is the system wide data collector
         /// </summary>
         public IDataCollection Collector { get; set; }
         #endregion
-
         #region BoundaryLoggingActive
         /// <summary>
         /// This boolean property specifies whether boundary logging is active for this client.
@@ -188,7 +188,7 @@ namespace Xigadee
         /// <summary>
         /// This method recalculates the statistics for the client.
         /// </summary>
-        protected override void StatisticsRecalculate(MessagingServiceStatistics stats)
+        protected override void StatisticsRecalculate(S stats)
         {
             stats.Name = DebugStatus;
 
@@ -208,5 +208,10 @@ namespace Xigadee
         /// This is the client status.
         /// </summary>
         public string DebugStatus { get { return string.Format("{0}: {1} [{2}] ({3}) {4}", Type, Name, Priority, IsActive ? "Active" : "Inactive", Id); } }
+
+
+        MessagingServiceStatistics IClientHolder.StatisticsInternal => StatisticsInternal;
+
+        MessagingServiceStatistics IClientHolder.StatisticsRecalculated => StatisticsRecalculated;
     }
 }

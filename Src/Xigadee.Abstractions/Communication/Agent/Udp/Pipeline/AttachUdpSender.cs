@@ -12,18 +12,19 @@ namespace Xigadee
         /// </summary>
         /// <typeparam name="C">The pipeline type.</typeparam>
         /// <param name="cpipe">The pipeline.</param>
-        /// <param name="udp">The UDP endpoint configuration.</param>
+        /// <param name="udpDefault">The UDP endpoint configuration.</param>
         /// <param name="shIdColl">Default service handler id collection.</param>
         /// <param name="serializer">This is an optional serializer that can be added with the specific mime type. Note:  the serializer mime type will be changed, so you should not share this serializer instance.</param>
         /// <param name="action">The optional action to be called when the sender is created.</param>
         /// <param name="maxUdpMessagePayloadSize">This is the max UDP message payload size. The default is 508 bytes. If you set this to null, the sender will not check the size before transmitting.</param>
         /// <returns>Returns the pipeline.</returns>
         public static C AttachUdpSender<C>(this C cpipe
-            , UdpConfig udp
+            , UdpConfig udpDefault = null
             , ServiceHandlerIdCollection shIdColl = null
             , IServiceHandlerSerialization serializer = null
             , Action<ISender> action = null
             , int? maxUdpMessagePayloadSize = UdpConfig.PacketMaxSize
+            , params (int priority, UdpConfig config)[] udpExtended
             )
             where C : IPipelineChannelOutgoing<IPipeline>
         {
@@ -38,7 +39,7 @@ namespace Xigadee
             if (serializer != null)
                 cpipe.Pipeline.AddPayloadSerializer(serializer);
 
-            var sender = new UdpCommunicationAgent(udp
+            var sender = new UdpCommunicationAgent(udpDefault
                 , CommunicationAgentCapabilities.Sender
                 , shIdColl
                 , maxUdpMessagePayloadSize: maxUdpMessagePayloadSize);
@@ -53,7 +54,7 @@ namespace Xigadee
         /// </summary>
         /// <typeparam name="C">The pipeline type.</typeparam>
         /// <param name="cpipe">The pipeline.</param>
-        /// <param name="udp">The UDP endpoint configuration.</param>
+        /// <param name="udpDefault">The UDP endpoint configuration.</param>
         /// <param name="shIdColl">Default service handler id collection.</param>
         /// <param name="serialize">The serialize action.</param>
         /// <param name="canSerialize">The optional serialize check function.</param>
@@ -61,12 +62,13 @@ namespace Xigadee
         /// <param name="maxUdpMessagePayloadSize">This is the max UDP message payload size. The default is 508 bytes. If you set this to null, the sender will not check the size before transmitting.</param>
         /// <returns>Returns the pipeline.</returns>
         public static C AttachUdpSender<C>(this C cpipe
-            , UdpConfig udp
+            , UdpConfig udpDefault = null
             , ServiceHandlerIdCollection shIdColl = null
             , Action<ServiceHandlerContext> serialize = null
             , Func<ServiceHandlerContext, bool> canSerialize = null
             , Action<ISender> action = null
             , int? maxUdpMessagePayloadSize = UdpConfig.PacketMaxSize
+            , params (int priority, UdpConfig config)[] udpExtended
             )
             where C : IPipelineChannelOutgoing<IPipeline>
         {
@@ -85,11 +87,12 @@ namespace Xigadee
             }
 
             return cpipe.AttachUdpSender(
-                  udp
+                  udpDefault
                 , shIdColl
                 , serializer
                 , action
-                , maxUdpMessagePayloadSize);
+                , maxUdpMessagePayloadSize
+                , udpExtended);
         }
 
     }
