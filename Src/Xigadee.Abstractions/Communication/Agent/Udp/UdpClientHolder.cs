@@ -34,6 +34,10 @@ namespace Xigadee
         }
         #endregion
 
+        #region Start()
+        /// <summary>
+        /// This method creates the socket configuration for the Udp protocol. 
+        /// </summary>
         public override void Start()
         {
             base.Start();
@@ -46,27 +50,31 @@ namespace Xigadee
                         break;
                     case UdpTransmissionMode.Broadcast:
                         throw new NotImplementedException();
+                    //break;
+                    case UdpTransmissionMode.Multicast:
+                        throw new NotImplementedException();
+                        //break;
+                }
+
+            if (Mode == CommunicationAgentCapabilities.Sender || Mode == CommunicationAgentCapabilities.Bidirectional)
+                switch (Config.Mode)
+                {
+                    case UdpTransmissionMode.Unicast:
+                        Config.Addresses.ForEach((a) => SenderUnicastAdd(a, Config.Port, Config.RemoteEndPoint));
+                        break;
+                    case UdpTransmissionMode.Broadcast:
+                        Config.Addresses.ForEach((a) => SenderBroadcastAdd(a, Config.Port, Config.RemoteEndPoint));
                         break;
                     case UdpTransmissionMode.Multicast:
                         throw new NotImplementedException();
-                        break;
+                        //break;
                 }
-
-            //if (Mode == CommunicationAgentCapabilities.Sender || Mode == CommunicationAgentCapabilities.Bidirectional)
-            //    switch (Config.Mode)
-            //    {
-            //        case UdpTransmissionMode.Unicast:
-            //            Config.Addresses.ForEach((a) => SenderUnicastAdd(a, Config.Port, Config.RemoteEndPoint));
-            //            break;
-            //        case UdpTransmissionMode.Broadcast:
-            //            Config.Addresses.ForEach((a) => SenderBroadcastAdd(a, Config.Port, Config.RemoteEndPoint));
-            //            break;
-            //        case UdpTransmissionMode.Multicast:
-            //            throw new NotImplementedException();
-            //            break;
-            //    }
         }
-
+        #endregion
+        #region Stop()
+        /// <summary>
+        /// This method closes all the Udp sockets.
+        /// </summary>
         public override void Stop()
         {
             mConnectionsListener.ForEach((k) => k.Value.Socket.Close());
@@ -75,8 +83,9 @@ namespace Xigadee
             mConnectionsSender.Clear();
 
             base.Stop();
-        }
-        
+        } 
+        #endregion
+
         /// <summary>
         /// Gets the UDP configuration.
         /// </summary>
@@ -125,45 +134,46 @@ namespace Xigadee
 
             List<TransmissionPayload> batch = new List<TransmissionPayload>();
 
-            //if (BoundaryLoggingActive)
-            //    batchId = Collector?.BoundaryBatchPoll(count ?? -1, intBatch.Count, mappingChannel ?? ChannelId, Priority);
+            if (BoundaryLoggingActive)
+                batchId = Collector?.BoundaryBatchPoll(count ?? -1, mIncomingPending.Count
+                    , mappingChannel ?? ChannelId, Priority);
 
-            //try
-            //{
-            //    UdpHelper.Message result = null;
+            try
+            {
+                UdpHelper.Message result = null;
 
-            //    while (Client.Available
-            //        && countMax > 0
-            //        && (!timeOut.HasValue || timeOut.Value > Environment.TickCount)
-            //        && Client.TryDequeue(out result)
-            //        )
-            //    {
-            //        try
-            //        {
+                //while (Client.Available
+                //    && countMax > 0
+                //    && (!timeOut.HasValue || timeOut.Value > Environment.TickCount)
+                //    && Client.TryDequeue(out result)
+                //    )
+                //{
+                //    try
+                //    {
 
-            //            var holder = (ServiceHandlerContext)result.Buffer;
-            //            holder.Metadata = result.RemoteEndPoint;
-            //            holder.ContentType = ContentType;
-            //            holder.ContentEncoding = ContentEncoding;
+                //        var holder = (ServiceHandlerContext)result.Buffer;
+                //        holder.Metadata = result.RemoteEndPoint;
+                //        holder.ContentType = ContentType;
+                //        holder.ContentEncoding = ContentEncoding;
 
-            //            //Unpack the message in the holder.
-            //            var sm = MessageUnpack(holder);
+                //        //Unpack the message in the holder.
+                //        var sm = MessageUnpack(holder);
 
-            //            batch.Add(new TransmissionPayload(sm));
-            //        }
-            //        catch (Exception ex)
-            //        {
-            //            Collector?.LogException("UdpClientHolder/MessagesPull deserialization error.", ex);
-            //            errorCount++;
-            //        }
+                //        batch.Add(new TransmissionPayload(sm));
+                //    }
+                //    catch (Exception ex)
+                //    {
+                //        Collector?.LogException("UdpClientHolder/MessagesPull deserialization error.", ex);
+                //        errorCount++;
+                //    }
 
-            //        countMax--;
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    LogException("Messaging Exception (Pull)", ex);
-            //}
+                //    countMax--;
+                //}
+            }
+            catch (Exception ex)
+            {
+                LogException("Messaging Exception (Pull)", ex);
+            }
 
             LastTickCount = Environment.TickCount;
 
@@ -194,7 +204,6 @@ namespace Xigadee
 
         }
         #endregion
-
 
         #region Class -> State
         /// <summary>
@@ -344,6 +353,54 @@ namespace Xigadee
                 throw;
             }
 
+        }
+        #endregion
+
+        #region SenderUnicastAdd(IPAddress address, int port, IPEndPoint destination)
+        /// <summary>
+        /// Adds a Udp sender with the specific destination.
+        /// </summary>
+        /// <param name="address">The local address.</param>
+        /// <param name="port">The local port.</param>
+        /// <param name="destination">The destination address and port.</param>
+        protected virtual void SenderUnicastAdd(IPAddress address, int port, IPEndPoint destination)
+        {
+            var ep = new IPEndPoint(address, port);
+            var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            socket.ExclusiveAddressUse = Config.ExclusiveAddressUse;
+
+            socket.Bind(ep);
+
+            var state = new State(CommunicationAgentCapabilities.Sender, socket);
+
+            mConnectionsSender.Add(ep, state);
+        }
+        #endregion
+        #region SenderBroadcastAdd(IPAddress address, int port, IPEndPoint destination)
+        /// <summary>
+        /// Adds a Udp sender with the specific destination.
+        /// </summary>
+        /// <param name="address">The local address.</param>
+        /// <param name="port">The local port.</param>
+        /// <param name="destination">The destination address and port.</param>
+        protected virtual void SenderBroadcastAdd(IPAddress address, int port, IPEndPoint destination)
+        {
+            var ep = new IPEndPoint(address, port);
+            var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            socket.ExclusiveAddressUse = Config.ExclusiveAddressUse;
+
+            // set the Don't Fragment flag.
+            socket.DontFragment = true;
+            // Enable broadcast.
+            socket.EnableBroadcast = true;
+            // Disable multicast loop-back.
+            socket.MulticastLoopback = false;
+            socket.Blocking = true;
+            socket.Bind(ep);
+
+            var state = new State(CommunicationAgentCapabilities.Sender, socket);
+
+            mConnectionsSender.Add(ep, state);
         }
         #endregion
 
