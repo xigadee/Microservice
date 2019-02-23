@@ -1,8 +1,11 @@
-﻿namespace Xigadee
+﻿using System.Diagnostics;
+
+namespace Xigadee
 {
     /// <summary>
     /// This is base class for security related handlers.
     /// </summary>
+    [DebuggerDisplay("{Id}")]
     public abstract class ServiceHandlerIdBase
     {
         /// <summary>

@@ -24,7 +24,7 @@ namespace Xigadee
             , IServiceHandlerSerialization serializer = null
             , Action<ISender> action = null
             , int? maxUdpMessagePayloadSize = UdpConfig.PacketMaxSize
-            , params (int priority, UdpConfig config)[] udpExtended
+            , (int priority, UdpConfig config)[] udpExtended = null
             )
             where C : IPipelineChannelOutgoing<IPipeline>
         {
@@ -68,12 +68,13 @@ namespace Xigadee
             , Func<ServiceHandlerContext, bool> canSerialize = null
             , Action<ISender> action = null
             , int? maxUdpMessagePayloadSize = UdpConfig.PacketMaxSize
-            , params (int priority, UdpConfig config)[] udpExtended
+            , (int priority, UdpConfig config)[] udpExtended = null
             )
             where C : IPipelineChannelOutgoing<IPipeline>
         {
 
             IServiceHandlerSerialization serializer = null;
+
             shIdColl = shIdColl ?? new ServiceHandlerIdCollection();
 
             shIdColl.Serializer = (

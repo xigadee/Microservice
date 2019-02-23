@@ -22,12 +22,11 @@ namespace PiO
                 .ConfigurationSetFromConsoleArgs(args)
                 .AddDebugMemoryDataCollector(out coll)
                 .AddChannelIncoming("lightwave", "LightwaveRF UDP traffic", ListenerPartitionConfig.Init(1))
-                    .AttachUdpListener(
-                          requestAddress: ("message", "in")
+                    .AttachUdpListener(UdpConfig.UnicastAllIps(9761)
+                        , requestAddress: ("message", "in")
                         , deserialize: (holder) => holder.SetObject(new LightwaveMessage(holder.Blob, (IPEndPoint)holder.Metadata),true)
-                        , udpExtended: new[] { (1, UdpConfig.UnicastAllIps(9761)), (0, UdpConfig.UnicastAllIps(9762)) }
+                        //, udpExtended: new[] { (1, UdpConfig.UnicastAllIps(9761)), (0, UdpConfig.UnicastAllIps(9762)) }
                         )
-                        
                     .AttachCommand(async (ctx) => 
                     {
                         //Do nothing

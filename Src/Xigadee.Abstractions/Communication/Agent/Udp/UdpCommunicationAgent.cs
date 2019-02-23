@@ -9,7 +9,7 @@ namespace Xigadee
     /// <seealso cref="Xigadee.CommunicationAgentBase" />
     public class UdpCommunicationAgent: CommunicationAgentBase
     {
-        UdpConfig mConfig;
+        (int priority, UdpConfig config)[] mConfig;
 
         #region Constructor
         /// <summary>
@@ -33,19 +33,54 @@ namespace Xigadee
             , int? maxUdpMessagePayloadSize = UdpConfig.PacketMaxSize
             ) : base(capabilities, shcIds)
         {
-            mConfig = config ?? throw new ArgumentNullException("config", "Udp configuration cannot be null.");
-        } 
+            if (config == null)
+                throw new ArgumentNullException("config", "Udp configuration cannot be null.");
+
+            mConfig = new[] { (requestAddressPriority ?? 1, config) };
+        }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UdpCommunicationAgent"/> class.
+        /// </summary>
+        /// <param name="configs">The UDP endpoint configurations.</param>
+        /// <param name="shcIds">The optional ServiceHandlerIdCollection identifiers.</param>
+        /// <param name="requestAddress">The optional request address.</param>
+        /// <param name="responseAddress">The optional response address.</param>
+        /// <param name="requestAddressPriority">The optional request address priority.</param>
+        /// <param name="responseAddressPriority">The optional response address priority.</param>
+        /// <param name="capabilities">The agent capabilities. The default is bidirectional.</param>
+        /// <param name="maxUdpMessagePayloadSize">Maximum size of the UDP message payload.</param>
+        public UdpCommunicationAgent((int priority,UdpConfig config)[] configs
+            , CommunicationAgentCapabilities capabilities = CommunicationAgentCapabilities.Bidirectional
+            , ServiceHandlerIdCollection shcIds = null
+            , ServiceMessageHeaderFragment requestAddress = null
+            , ServiceMessageHeader responseAddress = null
+            , int? requestAddressPriority = null
+            , int responseAddressPriority = 1
+            , int? maxUdpMessagePayloadSize = UdpConfig.PacketMaxSize
+            ) : base(capabilities, shcIds)
+        {
+            if (configs == null)
+                throw new ArgumentNullException("config", "Udp configuration cannot be null.");
+
+            mConfig = configs;
+        }
         #endregion
 
 
         protected override void ListenerClientsStart()
         {
-            //throw new NotImplementedException();
+            mConfig.ForEach((c) =>
+                {
+                    var client = new UdpClientHolder(c.config, CommunicationAgentCapabilities.Listener);
+                    client.Priority = c.priority;
+                    mListenerClients.AddOrUpdate(c.priority, client, (i, ct) => client);
+                    client.Start();
+                });
         }
 
         protected override void ListenerClientsStop()
         {
-            //throw new NotImplementedException();
+            //mListenerClients.ForEach((c) => c.Value.
         }
 
         protected override void ListenerClientValidate(IClientHolder client, List<MessageFilterWrapper> newList)

@@ -22,6 +22,7 @@ namespace Xigadee
         /// <param name="deserialize">The deserialize action.</param>
         /// <param name="canDeserialize">The deserialize check function.</param>
         /// <param name="action">The optional action to be called when the listener is created.</param>
+        /// <param name="udpExtended">The extended udp configuration.</param>
         /// <returns>Returns the pipeline.</returns>
         public static C AttachUdpListener<C>(this C cpipe
             , UdpConfig udpDefault = null
@@ -40,6 +41,7 @@ namespace Xigadee
         {
             IServiceHandlerSerialization serializer = null;
             var shIdColl = new ServiceHandlerIdCollection();
+
 
             if (deserialize != null)
             {
@@ -74,6 +76,7 @@ namespace Xigadee
         /// <param name="responseAddressPriority">This is the priority for the response address. The default is 1.</param>
         /// <param name="serializer">This is an optional serializer that can be added with the specific mime type. Note:  the serializer mime type will be changed, so you should not share this serializer instance.</param>
         /// <param name="action">The optional action to be called when the listener is created.</param>
+        /// <param name="udpExtended">The extended udp configuration.</param>
         /// <returns>Returns the pipeline.</returns>
         public static C AttachUdpListener<C>(this C cpipe
             , UdpConfig udpDefault = null
@@ -96,7 +99,9 @@ namespace Xigadee
 
             shIdColl.Serializer = (shIdColl.Serializer?.Id ?? serializer?.Id ?? $"udp_in/{cpipe.Channel.Id}").ToLowerInvariant();
 
-            var listener = new UdpCommunicationAgent(udpDefault
+            var configs = new[] { (requestAddressPriority ?? 1, udpDefault) };
+
+            var listener = new UdpCommunicationAgent(configs
                 , CommunicationAgentCapabilities.Listener
                 , shIdColl
                 , requestAddress, responseAddress

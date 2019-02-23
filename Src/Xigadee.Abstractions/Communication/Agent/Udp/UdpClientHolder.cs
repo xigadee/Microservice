@@ -31,9 +31,52 @@ namespace Xigadee
             mConnectionsSender = new Dictionary<IPEndPoint, State>();
 
             mIncomingPending = new ConcurrentQueue<Message>();
-        } 
+        }
         #endregion
 
+        public override void Start()
+        {
+            base.Start();
+
+            if (Mode == CommunicationAgentCapabilities.Listener || Mode == CommunicationAgentCapabilities.Bidirectional)
+                switch (Config.Mode)
+                {
+                    case UdpTransmissionMode.Unicast:
+                        Config.Addresses.ForEach((a) => ListenerUnicastAdd(a, Config.Port));
+                        break;
+                    case UdpTransmissionMode.Broadcast:
+                        throw new NotImplementedException();
+                        break;
+                    case UdpTransmissionMode.Multicast:
+                        throw new NotImplementedException();
+                        break;
+                }
+
+            //if (Mode == CommunicationAgentCapabilities.Sender || Mode == CommunicationAgentCapabilities.Bidirectional)
+            //    switch (Config.Mode)
+            //    {
+            //        case UdpTransmissionMode.Unicast:
+            //            Config.Addresses.ForEach((a) => SenderUnicastAdd(a, Config.Port, Config.RemoteEndPoint));
+            //            break;
+            //        case UdpTransmissionMode.Broadcast:
+            //            Config.Addresses.ForEach((a) => SenderBroadcastAdd(a, Config.Port, Config.RemoteEndPoint));
+            //            break;
+            //        case UdpTransmissionMode.Multicast:
+            //            throw new NotImplementedException();
+            //            break;
+            //    }
+        }
+
+        public override void Stop()
+        {
+            mConnectionsListener.ForEach((k) => k.Value.Socket.Close());
+            mConnectionsListener.Clear();
+            mConnectionsSender.ForEach((k) => k.Value.Socket.Close(1));
+            mConnectionsSender.Clear();
+
+            base.Stop();
+        }
+        
         /// <summary>
         /// Gets the UDP configuration.
         /// </summary>
@@ -75,7 +118,7 @@ namespace Xigadee
             int? timeOut = null;
             int countMax = count ?? 10;
             int errorCount = 0;
-            //Guid? batchId = null;
+            Guid? batchId = null;
 
             if (wait.HasValue)
                 timeOut = Environment.TickCount + wait.Value;
@@ -248,5 +291,61 @@ namespace Xigadee
             public IPEndPoint RemoteEndPoint { get; set; }
         }
         #endregion
+
+        #region ListenerUnicastAdd(IPAddress address, int port)
+        /// <summary>
+        /// Adds a specific UDP listener for the address and port.
+        /// </summary>
+        /// <param name="address">The address.</param>
+        /// <param name="port">The port.</param>
+        protected virtual void ListenerUnicastAdd(IPAddress address, int port)
+        {
+            var ep = new IPEndPoint(address, port);
+            var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            socket.ExclusiveAddressUse = Config.ExclusiveAddressUse;
+
+            socket.Bind(ep);
+
+            var state = new State(CommunicationAgentCapabilities.Listener, socket);
+
+            mConnectionsListener.Add(ep, state);
+
+            state.Receive(new AsyncCallback(ListenerUnicastEndReceiveFrom));
+        }
+
+        private void ListenerUnicastEndReceiveFrom(IAsyncResult ar)
+        {
+            try
+            {
+                EndPoint ep = new IPEndPoint(0, 0);
+                var state = (State)ar.AsyncState;
+                Socket socket = state.Socket;
+                int read = socket.EndReceiveFrom(ar, ref ep);
+
+                if (read > 0)
+                {
+                    var message = new Message() { RemoteEndPoint = (IPEndPoint)ep };
+                    message.Buffer = new byte[read];
+                    Buffer.BlockCopy(state.Buffer, 0, message.Buffer, 0, read);
+
+                    mIncomingPending.Enqueue(message);
+
+                    state.Receive(new AsyncCallback(ListenerUnicastEndReceiveFrom));
+                }
+            }
+            catch (ObjectDisposedException odex)
+            {
+                //This is throw when the socket is closed and the Async wait is completed.
+                //We should just ignore this.
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
+        }
+        #endregion
+
     }
 }
