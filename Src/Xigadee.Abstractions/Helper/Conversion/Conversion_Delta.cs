@@ -3,7 +3,6 @@ using System;
 #endregion
 namespace Xigadee
 {
-
     public static partial class ConversionHelper
     {
 
