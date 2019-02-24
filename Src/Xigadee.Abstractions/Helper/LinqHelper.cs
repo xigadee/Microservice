@@ -1,6 +1,7 @@
 ﻿#region using
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 #endregion
 namespace Xigadee
 {
@@ -26,6 +27,7 @@ namespace Xigadee
         /// <typeparam name="T">The item type to process.</typeparam>
         /// <param name="items">The collection of items to process.</param>
         /// <param name="action">The action to be executed against each item in the collection.</param>
+        [DebuggerStepperBoundary]
         public static void ForEach<T>(this IEnumerable<T> items, Action<T> action)
         {
             if (items == null) throw new ArgumentNullException("items", "The items enumeration cannot be null.");
@@ -34,15 +36,6 @@ namespace Xigadee
             foreach (var item in items)
                 action(item);
         }
-
-        //public static void ForEach<T>(this IEnumerable<T> items, Action<T> action)
-        //{
-        //    if (items == null) throw new ArgumentNullException("items", "The items enumeration cannot be null.");
-        //    if (action == null) throw new ArgumentNullException("action", "The action delegate cannot be null.");
-
-        //    foreach (var item in items)
-        //        action(item);
-        //}
         #endregion
 
         #region ForIndex<T>(this IEnumerable<T> items, Action<int, T> action)
