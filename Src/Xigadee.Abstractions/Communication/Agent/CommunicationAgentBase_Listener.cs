@@ -14,7 +14,7 @@ namespace Xigadee
         /// <summary>
         /// This is the client collection based on the specific priority.
         /// </summary>
-        protected ConcurrentDictionary<int, IClientHolder> mListenerClients = new ConcurrentDictionary<int, IClientHolder>();
+        protected ConcurrentDictionary<int, IClientHolderV2> mListenerClients = new ConcurrentDictionary<int, IClientHolderV2>();
 
         /// <summary>
         /// This is the default priority. 1 if present
@@ -131,7 +131,15 @@ namespace Xigadee
 
         protected abstract void ListenerClientsStart();
 
-        protected abstract void ListenerClientsStop();
+        protected virtual void ListenerClientsStop()
+        {
+            ListenerClients.ForEach((c) => ListenerClientStop(c));
+        }
+
+        protected virtual void ListenerClientStop(IClientHolder c)
+        {
+            //c.stop
+        }
 
         #region ListenersTearUp()
         /// <summary>

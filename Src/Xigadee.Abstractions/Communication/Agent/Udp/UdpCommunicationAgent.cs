@@ -84,10 +84,6 @@ namespace Xigadee
                 });
         }
 
-        protected override void ListenerClientsStop()
-        {
-            //mListenerClients.ForEach((c) => c.Value.
-        }
 
         protected override void ListenerClientValidate(IClientHolder client, List<MessageFilterWrapper> newList)
         {

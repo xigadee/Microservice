@@ -4,8 +4,12 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This is the default interface for a communication client.
+    /// </summary>
     public interface IClientHolder
     {
+
         Guid Id { get; }
 
         string Name { get; set; }
@@ -31,6 +35,27 @@ namespace Xigadee
         MessagingServiceStatistics StatisticsInternal { get; }
 
         MessagingServiceStatistics StatisticsRecalculated { get; }
+    }
+
+    public interface IClientHolderV2: IClientHolder
+    {
+        /// <summary>
+        /// This action starts the client.
+        /// </summary>
+        void Start();
+        /// <summary>
+        /// This action stops the client.
+        /// </summary>
+        void Stop();
+
+        /// <summary>
+        /// This method is used to close the client.
+        /// </summary>
+        void ClientClose();
+        /// <summary>
+        /// This method is used to reset the client.
+        /// </summary>
+        void ClientReset(Exception ex);
     }
 
     public static class ClientHolderExtensions

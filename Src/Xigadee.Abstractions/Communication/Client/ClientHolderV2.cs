@@ -24,7 +24,7 @@ namespace Xigadee
     /// implementations away from the task scheduler code.
     /// </summary>
     [DebuggerDisplay("{DebugStatus}")]
-    public abstract class ClientHolderV2<S> : StatisticsBase<S>, IClientHolder, IRequireDataCollector
+    public abstract class ClientHolderV2<S> : StatisticsBase<S>, IClientHolderV2, IRequireDataCollector
         where S: MessagingServiceStatistics, new()
     {
         #region Constructor

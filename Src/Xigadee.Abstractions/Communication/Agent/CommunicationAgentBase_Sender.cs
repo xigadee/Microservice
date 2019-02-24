@@ -11,7 +11,7 @@ namespace Xigadee
         /// <summary>
         /// This is the client collection.
         /// </summary>
-        protected ConcurrentDictionary<int, IClientHolder> mSenderClients = new ConcurrentDictionary<int, IClientHolder>();
+        protected ConcurrentDictionary<int, IClientHolderV2> mSenderClients = new ConcurrentDictionary<int, IClientHolderV2>();
         /// <summary>
         /// This is the list of active clients.
         /// </summary>
