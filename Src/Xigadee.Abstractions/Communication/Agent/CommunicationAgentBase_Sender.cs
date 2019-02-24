@@ -93,8 +93,8 @@ namespace Xigadee
             }
             finally
             {
-                if (sender != null && start.HasValue)
-                    sender.ActiveDecrement(start.Value);
+                if (start.HasValue)
+                    sender?.ActiveDecrement(start.Value);
             }
         }
         #endregion

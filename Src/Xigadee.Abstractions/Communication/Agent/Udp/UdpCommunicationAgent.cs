@@ -66,6 +66,12 @@ namespace Xigadee
         }
         #endregion
 
+        #region ProtocolId
+        /// <summary>
+        /// The default is UDP for this agent.
+        /// </summary>
+        public override string ProtocolId { get; } = "Udp"; 
+        #endregion
 
         protected override void ListenerClientsStart()
         {
@@ -88,5 +94,14 @@ namespace Xigadee
             //throw new NotImplementedException();
         }
 
+        public override void SenderStart()
+        {
+            base.SenderStart();
+        }
+
+        public override void SenderStop()
+        {
+            base.SenderStop();
+        }
     }
 }

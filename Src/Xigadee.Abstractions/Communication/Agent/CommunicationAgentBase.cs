@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Xigadee
 {
@@ -29,6 +30,7 @@ namespace Xigadee
     /// <seealso cref="Xigadee.ServiceBase{S}" />
     /// <seealso cref="Xigadee.IListener" />
     /// <seealso cref="Xigadee.ISender" />
+    [DebuggerDisplay("{ProtocolId}/{ChannelId}=>{Capabilities}")]
     public abstract partial class CommunicationAgentBase<S>: ServiceBase<S>
         where S : CommunicationAgentStatistics, new()
     {
@@ -188,5 +190,7 @@ namespace Xigadee
         /// </summary>
         public ISharedService SharedServices { get; set; }
         #endregion
+
+        public virtual string ProtocolId => GetType().Name;
     }
 }

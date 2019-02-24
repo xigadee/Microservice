@@ -4,18 +4,26 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 namespace Xigadee
 {
+    #region Class=>ClientHolderV2
+    /// <summary>
+    /// This is the default client holder that uses the standard messaging statistics.
+    /// </summary>
     public abstract class ClientHolderV2 : ClientHolderV2<MessagingServiceStatistics>
     {
-        public ClientHolderV2():base()
+        /// <summary>
+        /// The default empty constructor.
+        /// </summary>
+        protected ClientHolderV2() : base()
         {
 
         }
-    }
+    } 
+    #endregion
     /// <summary>
     /// This is the generic base class that is used by the TaskManager to abstract fabric specific 
     /// implementations away from the task scheduler code.
     /// </summary>
-    [DebuggerDisplay("{Type}|{Name}|{Priority} Active={IsActive} {Id}")]
+    [DebuggerDisplay("{DebugStatus}")]
     public abstract class ClientHolderV2<S> : StatisticsBase<S>, IClientHolder, IRequireDataCollector
         where S: MessagingServiceStatistics, new()
     {
@@ -23,7 +31,7 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor for the client.
         /// </summary>
-        public ClientHolderV2()
+        protected ClientHolderV2()
         {
             MaxRetries = 5;
             Priority = 1;
@@ -199,16 +207,19 @@ namespace Xigadee
         }
         #endregion
 
+        #region ResourceProfiles
         /// <summary>
         /// This contains the listener resource profiles.
         /// </summary>
-        public List<ResourceProfile> ResourceProfiles { get; set; }
+        public List<ResourceProfile> ResourceProfiles { get; set; } 
+        #endregion
 
+        #region DebugStatus
         /// <summary>
         /// This is the client status.
         /// </summary>
-        public string DebugStatus { get { return string.Format("{0}: {1} [{2}] ({3}) {4}", Type, Name, Priority, IsActive ? "Active" : "Inactive", Id); } }
-
+        public virtual string DebugStatus => $"{Type}: {Name} [{Priority}] ({(IsActive ? "Active" : "Inactive")}) {Id}";
+        #endregion
 
         MessagingServiceStatistics IClientHolder.StatisticsInternal => StatisticsInternal;
 

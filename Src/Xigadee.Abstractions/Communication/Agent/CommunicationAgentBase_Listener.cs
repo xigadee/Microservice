@@ -8,8 +8,8 @@ namespace Xigadee
 {
     public abstract partial class CommunicationAgentBase<S>:IListener
     {
-        private int mClientStarted = 0;
-        private int mClientStopped = 0;
+        private long mClientsStarted = 0;
+        private long mClientsStopped = 0;
 
         /// <summary>
         /// This is the client collection based on the specific priority.
@@ -34,6 +34,9 @@ namespace Xigadee
         /// </summary>
         public virtual IEnumerable<IClientHolder> ListenerClients => mListenerClients.Values;
 
+        /// <summary>
+        /// This is the set of resource profiles for the listeners.
+        /// </summary>
         public List<ResourceProfile> ListenerResourceProfiles { get; set; }
 
         #region ListenerMappingChannelId
@@ -65,7 +68,7 @@ namespace Xigadee
         /// </summary>
         public virtual Task ListenerPoll()
         {
-            throw new NotSupportedException($"{nameof(ListenerPoll)} is not supported.");
+            throw new NotSupportedException($"{GetType().Name}/{nameof(ListenerPoll)} is not configured.");
         }
         #endregion
 
@@ -130,16 +133,24 @@ namespace Xigadee
 
         protected abstract void ListenerClientsStop();
 
-
+        #region ListenerStart()
+        /// <summary>
+        /// This method can be used to set up the listener environment.
+        /// </summary>
         public virtual void ListenerStart()
         {
 
         }
-
+        #endregion
+        #region ListenerStop()
+        /// <summary>
+        /// This method can be used to clean up the listener environment.
+        /// </summary>
         public virtual void ListenerStop()
         {
 
-        }
+        } 
+        #endregion
 
         #region TearUp()
         /// <summary>
