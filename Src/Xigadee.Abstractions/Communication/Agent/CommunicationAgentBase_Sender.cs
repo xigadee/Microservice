@@ -54,7 +54,10 @@ namespace Xigadee
 
         public virtual void SenderStart()
         {
+            SenderPriorityPartitions.ForEach((p) =>
+            {
 
+            });
         }
 
         public virtual void SenderStop()

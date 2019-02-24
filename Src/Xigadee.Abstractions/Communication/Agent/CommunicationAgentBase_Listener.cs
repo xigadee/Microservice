@@ -133,43 +133,23 @@ namespace Xigadee
 
         protected abstract void ListenerClientsStop();
 
-        #region ListenerStart()
+        #region ListenersTearUp()
         /// <summary>
         /// This method can be used to set up the listener environment.
         /// </summary>
-        public virtual void ListenerStart()
+        public virtual void ListenersTearUp()
         {
 
         }
         #endregion
-        #region ListenerStop()
+        #region ListenersTearDown()
         /// <summary>
         /// This method can be used to clean up the listener environment.
         /// </summary>
-        public virtual void ListenerStop()
+        public virtual void ListenersTearDown()
         {
 
         } 
-        #endregion
-
-        #region TearUp()
-        /// <summary>
-        /// This override can be used to add additional logic during the start up phase.
-        /// This method is called before the clients are created.
-        /// </summary>
-        protected virtual void TearUp()
-        {
-        }
-        #endregion
-        #region TearDown()
-        /// <summary>
-        /// This method can be used to clean up any additional communication methods.
-        /// It is called after the clients have been closed.
-        /// </summary>
-        protected virtual void TearDown()
-        {
-
-        }
         #endregion
     }
 }

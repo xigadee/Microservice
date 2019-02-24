@@ -96,7 +96,13 @@ namespace Xigadee
 
         public override void SenderStart()
         {
-            base.SenderStart();
+            mConfig.ForEach((c) =>
+            {
+                var client = new UdpClientHolder(c.config, CommunicationAgentCapabilities.Sender);
+                client.Priority = c.priority;
+                mSenderClients.AddOrUpdate(c.priority, client, (i, ct) => client);
+                client.Start();
+            });
         }
 
         public override void SenderStop()

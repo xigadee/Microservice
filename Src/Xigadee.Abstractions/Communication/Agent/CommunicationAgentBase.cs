@@ -11,7 +11,7 @@ namespace Xigadee
     public abstract class CommunicationAgentBase: CommunicationAgentBase<CommunicationAgentStatistics>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CommunicationAgentBase{S}"/> class.
+        /// Initializes a new instance of the <class.
         /// </summary>
         /// <param name="capabilities">The agent capabilities. The default is bidirectional.</param>
         /// <param name="shIds">The service handler id collection</param>
@@ -26,10 +26,7 @@ namespace Xigadee
     /// <summary>
     /// This is the base communication agent class.
     /// </summary>
-    /// <typeparam name="S"></typeparam>
-    /// <seealso cref="Xigadee.ServiceBase{S}" />
-    /// <seealso cref="Xigadee.IListener" />
-    /// <seealso cref="Xigadee.ISender" />
+    /// <typeparam name="S">This class is the statistics type, which inherits from CommunicationAgentStatistics.</typeparam>
     [DebuggerDisplay("{ProtocolId}/{ChannelId}=>{Capabilities}")]
     public abstract partial class CommunicationAgentBase<S>: ServiceBase<S>
         where S : CommunicationAgentStatistics, new()
@@ -46,7 +43,7 @@ namespace Xigadee
         /// Initializes a new instance of the <see cref="CommunicationAgentBase{S}"/> class.
         /// </summary>
         /// <param name="capabilities">The agent capabilities. The default is bidirectional.</param>
-        /// <param name="shIds">The service handler id collection</param>
+        /// <param name="shIds">The service handler id collection.</param>
         protected CommunicationAgentBase(CommunicationAgentCapabilities capabilities = CommunicationAgentCapabilities.Bidirectional
             , ServiceHandlerIdCollection shIds = null)
         {
@@ -109,7 +106,7 @@ namespace Xigadee
             if (CanListen)
             {
                 ListenerSettingsValidate();
-                ListenerStart();
+                ListenersTearUp();
             }
         }
         /// <summary>
@@ -118,7 +115,7 @@ namespace Xigadee
         protected override void StopInternal()
         {
             if (CanListen)
-                ListenerStop();
+                ListenersTearDown();
             if (CanSend)
                 SenderStop();
         } 
@@ -191,6 +188,11 @@ namespace Xigadee
         public ISharedService SharedServices { get; set; }
         #endregion
 
-        public virtual string ProtocolId => GetType().Name;
+        #region ProtocolId
+        /// <summary>
+        /// This is the default communication Protocol Id. By default it uses the class name.
+        /// </summary>
+        public virtual string ProtocolId => GetType().Name; 
+        #endregion
     }
 }

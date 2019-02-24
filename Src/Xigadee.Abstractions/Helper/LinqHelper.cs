@@ -1,12 +1,10 @@
-﻿#region using
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-#endregion
 namespace Xigadee
 {
     /// <summary>
-    /// This class contains a number of LINQ shortcuts.
+    /// This class contains a number of Linq shortcuts.
     /// </summary>
     public static partial class LinqHelper
     {
@@ -27,7 +25,7 @@ namespace Xigadee
         /// <typeparam name="T">The item type to process.</typeparam>
         /// <param name="items">The collection of items to process.</param>
         /// <param name="action">The action to be executed against each item in the collection.</param>
-        [DebuggerStepperBoundary]
+        [DebuggerStepThrough]
         public static void ForEach<T>(this IEnumerable<T> items, Action<T> action)
         {
             if (items == null) throw new ArgumentNullException("items", "The items enumeration cannot be null.");
@@ -46,6 +44,7 @@ namespace Xigadee
         /// <typeparam name="T">The item type to process.</typeparam>
         /// <param name="items">The collection of items to process.</param>
         /// <param name="action">The action to be executed against each item in the collection.</param>
+        [DebuggerStepThrough]
         public static void ForIndex<T>(this IEnumerable<T> items, Action<int, T> action)
         {
             if (items == null) throw new ArgumentNullException("items", "items enumeration is null");
@@ -58,7 +57,7 @@ namespace Xigadee
                 index++;
             }
         }
-        #endregion // ForIndex<T>(this IEnumerable<T> items, Action<int, T> action)
+        #endregion
         #region ForBigIndex<T>(this IEnumerable<T> items, Action<long, T> action)
         /// <summary>
         /// The ForBigIndex extension method iterates through the items collection, and executes the action for each item and provides 
@@ -67,6 +66,7 @@ namespace Xigadee
         /// <typeparam name="T">The item type to process.</typeparam>
         /// <param name="items">The collection of items to process.</param>
         /// <param name="action">The action to be executed against each item in the collection.</param>
+        [DebuggerStepThrough]
         public static void ForBigIndex<T>(this IEnumerable<T> items, Action<long, T> action)
         {
             if (items == null) throw new ArgumentNullException("items", "items enumeration is null");
@@ -79,7 +79,7 @@ namespace Xigadee
                 index++;
             }
         }
-        #endregion // ForIndex<T>(this IEnumerable<T> items, Action<long, T> action)
+        #endregion
 
         #region ForReverseIndex<T>(this IList<T> items, Action<int, T> action)
         /// <summary>
@@ -89,6 +89,7 @@ namespace Xigadee
         /// <typeparam name="T">The item type to process.</typeparam>
         /// <param name="items">The list of items to process.</param>
         /// <param name="action">The action to be executed against each item in the collection.</param>
+        [DebuggerStepThrough]
         public static void ForReverseIndex<T>(this IList<T> items, Action<int, T> action)
         {
 
@@ -101,6 +102,6 @@ namespace Xigadee
                 action(index, items[index]);
             }
         }
-        #endregion // ForReverseIndex<T>(this IList<T> items, Action<int, T> action)
+        #endregion
     }
 }
