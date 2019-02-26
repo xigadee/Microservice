@@ -22,7 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Communication\Agent\Manual\" />
+    <Folder Include="Communication\Agent\Manual\Pipeline\" />
+    <Folder Include="Communication\Agent\NamedPipes\Pipeline\" />
     <Folder Include="ServiceHandler\Handlers\Encryption\" />
   </ItemGroup>
   
