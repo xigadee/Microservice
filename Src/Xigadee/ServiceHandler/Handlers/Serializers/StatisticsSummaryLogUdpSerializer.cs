@@ -58,7 +58,8 @@ namespace Xigadee
         /// </returns>
         public override bool SupportsSerialization(ServiceHandlerContext holder)
         {
-            return base.SupportsSerialization(holder) && holder.ObjectType == typeof(MicroserviceStatistics);
+            var result =  base.SupportsSerialization(holder) && holder.ObjectType == typeof(MicroserviceStatistics);
+            return result;
         }
 
         /// <summary>

@@ -131,7 +131,28 @@ namespace Xigadee
 
         protected virtual void ListenerClientsStart() => ListenerPriorityPartitions?.ForEach((p) => ListenerClientStart(p));
 
-        protected abstract void ListenerClientStart(ListenerPartitionConfig p);
+        protected virtual void ListenerClientStart(ListenerPartitionConfig p)
+        {
+            try
+            {
+                var client = ListenerClientCreate(p);
+
+                client.Priority = p.Priority;
+                client.MappingChannelId = ListenerMappingChannelId;
+
+                mListenerClients.AddOrUpdate(p.Priority, client, (i, ct) => client);
+
+                ServiceStart(client);
+            }
+            catch (Exception ex)
+            {
+                Collector?.LogException($"{ProtocolId} Client Start error for partition {p.Priority}", ex);
+                throw;
+            }
+
+        }
+
+        protected abstract IClientHolderV2 ListenerClientCreate(ListenerPartitionConfig p);
 
         protected virtual void ListenerClientsStop() => mListenerClients?.ForEach((c) => ListenerClientStop(c.Value));
 

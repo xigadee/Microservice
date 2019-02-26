@@ -32,9 +32,19 @@ namespace Xigadee
         /// <param name="collector">The data collector.</param>
         /// <param name="message">The exception message.</param>
         /// <param name="ex">The exception to be logged.</param>
-        public static void LogException(this IDataCollection collector, string message, Exception ex)
+        public static void LogException(this IDataCollection collector, string message, Exception ex = null)
         {
             collector.Write(new LogEvent(message, ex) { Level = LoggingLevel.Error });
+        }
+        /// <summary>
+        /// This method can be used to log a warning with an optional exception to the data collector.
+        /// </summary>
+        /// <param name="collector">The data collector.</param>
+        /// <param name="message">The exception message.</param>
+        /// <param name="ex">The exception to be logged.</param>
+        public static void LogWarning(this IDataCollection collector, string message, Exception ex = null)
+        {
+            collector.Write(new LogEvent(message, ex) { Level = LoggingLevel.Warning });
         }
         /// <summary>
         /// This extension message can be used to log a message direct to the data collector.

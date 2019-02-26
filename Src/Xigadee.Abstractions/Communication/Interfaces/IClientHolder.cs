@@ -39,16 +39,8 @@ namespace Xigadee
         MessagingServiceStatistics StatisticsRecalculated { get; }
     }
 
-    public interface IClientHolderV2: IClientHolder
+    public interface IClientHolderV2: IClientHolder, IRequireDataCollector, IRequireServiceHandlers, IService
     {
-        /// <summary>
-        /// This action starts the client.
-        /// </summary>
-        void Start();
-        /// <summary>
-        /// This action stops the client.
-        /// </summary>
-        void Stop();
 
         /// <summary>
         /// This method is used to close the client.
@@ -58,6 +50,11 @@ namespace Xigadee
         /// This method is used to reset the client.
         /// </summary>
         void ClientReset(Exception ex);
+
+        /// <summary>
+        /// This is the collection
+        /// </summary>
+        ServiceHandlerIdCollection ServiceHandlerIds { get; set; }
     }
 
     public static class ClientHolderExtensions

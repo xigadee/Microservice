@@ -110,6 +110,7 @@ namespace Xigadee
                 }
         }
         #endregion
+
         #region Start()
         /// <summary>
         /// This method starts the service.

@@ -38,7 +38,7 @@ namespace Xigadee
         /// <summary>
         /// This method creates the socket configuration for the Udp protocol. 
         /// </summary>
-        public override void Start()
+        protected override void StartInternal()
         {
             if (Mode == CommunicationAgentCapabilities.Listener || Mode == CommunicationAgentCapabilities.Bidirectional)
                 switch (Config.Mode)
@@ -73,14 +73,12 @@ namespace Xigadee
         /// <summary>
         /// This method closes all the Udp sockets.
         /// </summary>
-        public override void Stop()
+        protected override void StopInternal()
         {
             mConnectionsListener.ForEach((k) => k.Value.Socket.Close());
             mConnectionsListener.Clear();
             mConnectionsSender.ForEach((k) => k.Value.Socket.Close(1));
             mConnectionsSender.Clear();
-
-            base.Stop();
         } 
         #endregion
 
@@ -93,15 +91,6 @@ namespace Xigadee
         /// Gets the mode.
         /// </summary>
         public CommunicationAgentCapabilities Mode { get; }
-
-        /// <summary>
-        /// Gets or sets the type of the binary content. This is used for deserialization.
-        /// </summary>
-        public string ContentType { get; set; }
-        /// <summary>
-        /// Gets or sets any specific encoding used for the binary payload, i.e. GZIP
-        /// </summary>
-        public string ContentEncoding { get; set; }
 
         /// <summary>
         /// The current length of dequeued messages.
@@ -187,18 +176,26 @@ namespace Xigadee
         /// <param name="retry">This parameter specifies the number of retries that should be attempted if transmission fails. By default this value is 0.</param>
         public override async Task Transmit(TransmissionPayload payload, int retry = 0)
         {
-            //try
-            //{
-            //    var holder = MessagePack(payload);
+            try
+            {
+                IServiceHandlerSerialization serializer;
 
-            //    if (holder.Blob != null)
-            //        Client.Send(holder.Blob, holder.Blob.Length);
+                if (!ServiceHandlers.Serialization.TryGet(ServiceHandlerIds.Serializer, out serializer))
+                    throw new Exception();
 
-            //}
-            //catch (Exception ex)
-            //{
-            //    Collector?.LogException("UdpClientHolder/Transmit", ex);
-            //}
+                if (!serializer.SupportsSerialization(payload.Message.Holder))
+                    throw new Exception();
+
+                if (!serializer.TrySerialize(payload.Message.Holder))
+                    throw new Exception();
+
+                if (payload.Message.Holder.Blob != null)
+                    Send(payload.Message.Holder.Blob, payload.Message.Holder.Blob.Length);
+            }
+            catch (Exception ex)
+            {
+                Collector?.LogException("UdpClientHolder/Transmit", ex);
+            }
         }
         #endregion
 
@@ -398,6 +395,58 @@ namespace Xigadee
             var state = new State(CommunicationAgentCapabilities.Sender, socket);
 
             mConnectionsSender.Add(ep, state);
+        }
+        #endregion
+
+        #region Send(byte[] blob, int length)
+        /// <summary>
+        /// Sends the specified BLOB to the configuration remote endpoint.
+        /// </summary>
+        /// <param name="blob">The BLOB.</param>
+        /// <param name="length">The length.</param>
+        /// <returns>Returns true if the message transmitted successfully on at least one interface.</returns>
+        public bool Send(byte[] blob, int length)
+        {
+            return SendTo(blob, length, Config.RemoteEndPoint);
+        }
+        #endregion
+        #region SendTo(byte[] blob, int length, IPEndPoint remoteEndPoint)
+        /// <summary>
+        /// Sends the specified BLOB to the specified endpoint.
+        /// </summary>
+        /// <param name="blob">The binary blob.</param>
+        /// <param name="length">The byte length.</param>
+        /// <param name="remoteEndPoint">The specified remote IP endpoint.</param>
+        /// <returns>Returns true if the message transmitted successfully on at least one interface.</returns>
+        public bool SendTo(byte[] blob, int length, IPEndPoint remoteEndPoint)
+        {
+            if (remoteEndPoint == null)
+                throw new ArgumentNullException("remoteEndPoint");
+
+            bool success = false;
+            mConnectionsSender.Values.ForEach((s) =>
+            {
+                try
+                {
+                    if (s.TransmitOk(remoteEndPoint.Address))
+                    {
+                        int b = s.Socket.SendTo(blob, length, SocketFlags.None, remoteEndPoint);
+                        success = true;
+                    }
+                }
+                catch (SocketException sex)
+                {
+                    if (sex.SocketErrorCode == SocketError.NetworkUnreachable)
+                        s.TransmitBlock(remoteEndPoint.Address);
+                    else
+                        throw sex;
+                }
+                catch (Exception ex)
+                {
+
+                }
+            });
+            return success;
         }
         #endregion
 

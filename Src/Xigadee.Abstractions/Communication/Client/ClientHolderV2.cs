@@ -24,7 +24,7 @@ namespace Xigadee
     /// implementations away from the task scheduler code.
     /// </summary>
     [DebuggerDisplay("{DebugStatus}")]
-    public abstract class ClientHolderV2<S> : StatisticsBase<S>, IClientHolderV2, IRequireDataCollector
+    public abstract class ClientHolderV2<S> : ServiceBase<S>, IClientHolderV2
         where S: MessagingServiceStatistics, new()
     {
         #region Constructor
@@ -100,14 +100,6 @@ namespace Xigadee
         /// This property determines whether the listener can start.
         /// </summary>
         public bool CanStart { get; set; }
-        /// <summary>
-        /// This action starts the client.
-        /// </summary>
-        public virtual void Start() { }
-        /// <summary>
-        /// This action stops the client.
-        /// </summary>
-        public virtual void Stop() { }
 
         /// <summary>
         /// This method is used to close the client.
@@ -170,6 +162,13 @@ namespace Xigadee
         /// <param name="message">The message.</param>
         /// <param name="ex">The exception.</param>
         protected void LogException(string message, Exception ex) => Collector?.LogException(string.Format("{0}={1} - {2}", Name, message, ex.Message), ex);
+        #endregion
+
+        #region ServiceHandlerIds
+        /// <summary>
+        /// The service handler ids.
+        /// </summary>
+        public ServiceHandlerIdCollection ServiceHandlerIds { get; set; }
         #endregion
 
         #region ServiceHandlers

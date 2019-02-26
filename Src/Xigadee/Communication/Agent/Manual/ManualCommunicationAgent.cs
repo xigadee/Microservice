@@ -6,12 +6,13 @@ namespace Xigadee
 {
     public class ManualCommunicationAgent: CommunicationAgentBase
     {
-        public ManualCommunicationAgent(ServiceHandlerIdCollection shIds = null) :base(CommunicationAgentCapabilities.Bidirectional, shIds)
+        public ManualCommunicationAgent(ServiceHandlerIdCollection shIds = null) 
+            : base(CommunicationAgentCapabilities.Bidirectional, shIds)
         {
 
         }
 
-        public override void SenderStart(SenderPartitionConfig p)
+        public override IClientHolderV2 SenderCreate(SenderPartitionConfig p)
         {
             throw new NotImplementedException();
         }
@@ -21,7 +22,7 @@ namespace Xigadee
             throw new NotImplementedException();
         }
 
-        protected override void ListenerClientStart(ListenerPartitionConfig p)
+        protected override IClientHolderV2 ListenerClientCreate(ListenerPartitionConfig p)
         {
             throw new NotImplementedException();
         }

@@ -28,7 +28,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="S">This class is the statistics type, which inherits from CommunicationAgentStatistics.</typeparam>
     [DebuggerDisplay("{ProtocolId}/{ChannelId}=>{Capabilities}")]
-    public abstract partial class CommunicationAgentBase<S>: ServiceBase<S>
+    public abstract partial class CommunicationAgentBase<S> : ServiceBase<S>
         where S : CommunicationAgentStatistics, new()
     {
         #region Declarations
@@ -48,7 +48,7 @@ namespace Xigadee
             , ServiceHandlerIdCollection shIds = null)
         {
             Capabilities = capabilities;
-            ServiceHandlerIds = shIds ?? new ServiceHandlerIdCollection() ;
+            ServiceHandlerIds = shIds ?? new ServiceHandlerIdCollection();
         }
         #endregion
 
@@ -56,14 +56,14 @@ namespace Xigadee
         /// <summary>
         /// The service handler ids.
         /// </summary>
-        public ServiceHandlerIdCollection ServiceHandlerIds { get; } 
+        public ServiceHandlerIdCollection ServiceHandlerIds { get; }
         #endregion
 
         #region Capabilities & CanListen/CanSend
         /// <summary>
         /// Override this to specify your agents capabilities.
         /// </summary>
-        public virtual CommunicationAgentCapabilities Capabilities { get; protected set;}
+        public virtual CommunicationAgentCapabilities Capabilities { get; protected set; }
         /// <summary>
         /// Gets a value indicating whether this agent can listen for message.
         /// </summary>
@@ -118,7 +118,7 @@ namespace Xigadee
                 ListenersTearDown();
             if (CanSend)
                 SendersStop();
-        } 
+        }
         #endregion
 
         #region SupportsChannel(string channel)
@@ -192,7 +192,24 @@ namespace Xigadee
         /// <summary>
         /// This is the default communication Protocol Id. By default it uses the class name.
         /// </summary>
-        public virtual string ProtocolId => GetType().Name; 
+        public virtual string ProtocolId => GetType().Name;
         #endregion
+
+        protected override void ServiceStart(object service)
+        {
+            if (service is IRequireDataCollector)
+                ((IRequireDataCollector)service).Collector = Collector;
+
+            if (service is IRequireServiceHandlers)
+                ((IRequireServiceHandlers)service).ServiceHandlers = ServiceHandlers;
+
+            if (service is IClientHolderV2)
+            {
+                var holder = service as IClientHolderV2;
+                holder.ServiceHandlerIds = ServiceHandlerIds;
+            }
+
+            base.ServiceStart(service);
+        }
     }
 }

@@ -46,35 +46,30 @@ namespace Xigadee
         public override string ProtocolId { get; } = "Udp";
         #endregion
 
-        protected override void ListenerClientStart(ListenerPartitionConfig c)
+        protected override IClientHolderV2 ListenerClientCreate(ListenerPartitionConfig c)
         {
             if (mConfig.ContainsKey(c.Priority))
-            {
-                var client = new UdpClientHolder(mConfig[c.Priority], CommunicationAgentCapabilities.Listener);
-                client.Priority = c.Priority;
-                mListenerClients.AddOrUpdate(c.Priority, client, (i, ct) => client);
-                client.Start();
-            };
-        }
+                return new UdpClientHolder(mConfig[c.Priority], CommunicationAgentCapabilities.Listener);
 
+            Collector?.LogWarning($"The Udp Listener client configuration is not defined for priority {c.Priority}");
+            throw new Exception();
+        }
 
         protected override void ListenerClientValidate(IClientHolderV2 client, List<MessageFilterWrapper> newList)
         {
             //throw new NotImplementedException();
         }
 
-        public override void SenderStart(SenderPartitionConfig p)
+        public override IClientHolderV2 SenderCreate(SenderPartitionConfig p)
         {
             if (!mConfig.ContainsKey(p.Priority))
                 throw new ArgumentOutOfRangeException($"Udp configuration is not defined for partition priority {p.Priority}");
 
             var config = mConfig[p.Priority];
 
-            var client = new UdpClientHolder(config, CommunicationAgentCapabilities.Sender);
-            client.Priority = p.Priority;
-            mSenderClients.AddOrUpdate(client.Priority, client, (i, ct) => client);
-            client.Start();
+            return new UdpClientHolder(config, CommunicationAgentCapabilities.Sender);
         }
+
 
         public override void SenderStop(IClientHolderV2 client)
         {

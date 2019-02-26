@@ -59,7 +59,24 @@ namespace Xigadee
         /// This abstract method starts the specific sender for a priority partition
         /// </summary>
         /// <param name="p"></param>
-        public abstract void SenderStart(SenderPartitionConfig p);
+        public virtual void SenderStart(SenderPartitionConfig p)
+        {
+            try
+            {
+                var client = SenderCreate(p);
+                client.Priority = p.Priority;
+
+                mSenderClients.AddOrUpdate(client.Priority, client, (i, ct) => client);
+                ServiceStart(client);
+            }
+            catch (Exception ex)
+            {
+                Collector?.LogException($"{ProtocolId} Sender Start error for partition {p.Priority}", ex);
+                throw;
+            }
+        }
+
+        public abstract IClientHolderV2 SenderCreate(SenderPartitionConfig p);
         /// <summary>
         /// This method stops each of the active senders.
         /// </summary>
