@@ -117,7 +117,7 @@ namespace Xigadee
                 //OK, there is a small change. Let the clients know there is additional messages to filter on
                 //and let them work out how to do it themselves.
                 if (deltaNew.Count > 0 || deltaOld.Count > 0)
-                    ListenerClients.ForEach((c) => ListenerClientValidate(c, newList));
+                    mListenerClients.ForEach((c) => ListenerClientValidate(c.Value, newList));
             }
         }
         #endregion
@@ -127,19 +127,15 @@ namespace Xigadee
         /// </summary>
         /// <param name="client">The client.</param>
         /// <param name="newList">The new list of message filter wrappers.</param>
-        protected abstract void ListenerClientValidate(IClientHolder client, List<MessageFilterWrapper> newList);
+        protected abstract void ListenerClientValidate(IClientHolderV2 client, List<MessageFilterWrapper> newList);
 
-        protected abstract void ListenerClientsStart();
+        protected virtual void ListenerClientsStart() => ListenerPriorityPartitions?.ForEach((p) => ListenerClientStart(p));
 
-        protected virtual void ListenerClientsStop()
-        {
-            ListenerClients.ForEach((c) => ListenerClientStop(c));
-        }
+        protected abstract void ListenerClientStart(ListenerPartitionConfig p);
 
-        protected virtual void ListenerClientStop(IClientHolder c)
-        {
-            //c.stop
-        }
+        protected virtual void ListenerClientsStop() => mListenerClients?.ForEach((c) => ListenerClientStop(c.Value));
+
+        protected abstract void ListenerClientStop(IClientHolderV2 client);
 
         #region ListenersTearUp()
         /// <summary>

@@ -100,7 +100,7 @@ namespace Xigadee
             if (CanSend)
             {
                 SenderSettingsValidate();
-                SenderStart();
+                SendersStart();
             }
 
             if (CanListen)
@@ -117,7 +117,7 @@ namespace Xigadee
             if (CanListen)
                 ListenersTearDown();
             if (CanSend)
-                SenderStop();
+                SendersStop();
         } 
         #endregion
 

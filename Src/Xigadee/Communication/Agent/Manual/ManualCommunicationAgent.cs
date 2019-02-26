@@ -11,27 +11,27 @@ namespace Xigadee
 
         }
 
-        protected override void ListenerClientsStart()
+        public override void SenderStart(SenderPartitionConfig p)
         {
             throw new NotImplementedException();
         }
 
-        protected override void ListenerClientsStop()
+        public override void SenderStop(IClientHolderV2 client)
         {
             throw new NotImplementedException();
         }
 
-        protected override void ListenerClientValidate(IClientHolder client, List<MessageFilterWrapper> newList)
+        protected override void ListenerClientStart(ListenerPartitionConfig p)
         {
             throw new NotImplementedException();
         }
 
-        public override Task SenderTransmit(TransmissionPayload message)
+        protected override void ListenerClientStop(IClientHolderV2 client)
         {
             throw new NotImplementedException();
         }
 
-        protected override IClientHolder SenderClientResolve(int priority)
+        protected override void ListenerClientValidate(IClientHolderV2 client, List<MessageFilterWrapper> newList)
         {
             throw new NotImplementedException();
         }

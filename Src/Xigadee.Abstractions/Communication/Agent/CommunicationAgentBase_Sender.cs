@@ -48,22 +48,28 @@ namespace Xigadee
         /// <summary>
         /// This method is called at start-up and can be used to validate any sender specific settings.
         /// </summary>
-        protected virtual void SenderSettingsValidate(){} 
+        protected virtual void SenderSettingsValidate(){}
         #endregion
 
+        /// <summary>
+        /// This method starts the senders for each of the priority partitions.
+        /// </summary>
+        public virtual void SendersStart() => SenderPriorityPartitions?.ForEach((p) => SenderStart(p));
+        /// <summary>
+        /// This abstract method starts the specific sender for a priority partition
+        /// </summary>
+        /// <param name="p"></param>
+        public abstract void SenderStart(SenderPartitionConfig p);
+        /// <summary>
+        /// This method stops each of the active senders.
+        /// </summary>
+        public virtual void SendersStop() => mSenderClients?.ForEach((v) => SenderStop(v.Value));
+        /// <summary>
+        /// This abstract method stops a particular sender client.
+        /// </summary>
+        /// <param name="client"></param>
+        public abstract void SenderStop(IClientHolderV2 client);
 
-        public virtual void SenderStart()
-        {
-            SenderPriorityPartitions.ForEach((p) =>
-            {
-
-            });
-        }
-
-        public virtual void SenderStop()
-        {
-
-        }
 
         #region --> SenderTransmit(TransmissionPayload payload)
         /// <summary>

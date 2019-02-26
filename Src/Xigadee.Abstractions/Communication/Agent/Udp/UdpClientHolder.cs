@@ -40,8 +40,6 @@ namespace Xigadee
         /// </summary>
         public override void Start()
         {
-            base.Start();
-
             if (Mode == CommunicationAgentCapabilities.Listener || Mode == CommunicationAgentCapabilities.Bidirectional)
                 switch (Config.Mode)
                 {
@@ -201,7 +199,6 @@ namespace Xigadee
             //{
             //    Collector?.LogException("UdpClientHolder/Transmit", ex);
             //}
-
         }
         #endregion
 

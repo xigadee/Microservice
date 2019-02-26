@@ -9,7 +9,9 @@ namespace Xigadee
     /// </summary>
     public interface IClientHolder
     {
-
+        /// <summary>
+        /// This is the client identifier
+        /// </summary>
         Guid Id { get; }
 
         string Name { get; set; }
