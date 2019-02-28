@@ -49,6 +49,18 @@ namespace Xigadee
         public Guid Id { get; } = Guid.NewGuid();
         #endregion
 
+        protected override void StartInternal()
+        {
+            CanStart = false;
+            IsActive = true;
+            
+        }
+
+        protected override void StopInternal()
+        {
+            IsActive = false;
+            CanStart = true;
+        }
         /// <summary>
         /// This method pulls fabric messages and converts them in to generic payload messages for the Microservice to process.
         /// </summary>
@@ -68,10 +80,15 @@ namespace Xigadee
         public abstract Task Transmit(TransmissionPayload payload, int retry = 0);
 
         /// <summary>
+        /// This property determines whether the listener can start.
+        /// </summary>
+        public bool CanStart { get; set; }
+        /// <summary>
         /// This boolean property identifies whether the client is active and should be polled
         /// for new arriving messages.
         /// </summary>
         public bool IsActive { get; set; }
+
         /// <summary>
         /// This is the last recorded tick count when the client was active.
         /// </summary>
@@ -96,10 +113,7 @@ namespace Xigadee
         /// This is the client message priority.
         /// </summary>
         public int Priority { get; set; }
-        /// <summary>
-        /// This property determines whether the listener can start.
-        /// </summary>
-        public bool CanStart { get; set; }
+
 
         /// <summary>
         /// This method is used to close the client.

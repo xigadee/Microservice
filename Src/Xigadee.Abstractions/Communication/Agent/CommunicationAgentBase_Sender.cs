@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-
 namespace Xigadee
 {
     public abstract partial class CommunicationAgentBase<S>: ISender
@@ -54,12 +52,12 @@ namespace Xigadee
         /// <summary>
         /// This method starts the senders for each of the priority partitions.
         /// </summary>
-        public virtual void SendersStart() => SenderPriorityPartitions?.ForEach((p) => SenderStart(p));
+        protected virtual void SendersStart() => SenderPriorityPartitions?.ForEach((p) => SenderStart(p));
         /// <summary>
         /// This abstract method starts the specific sender for a priority partition
         /// </summary>
         /// <param name="p"></param>
-        public virtual void SenderStart(SenderPartitionConfig p)
+        protected virtual void SenderStart(SenderPartitionConfig p)
         {
             try
             {
@@ -76,16 +74,21 @@ namespace Xigadee
             }
         }
 
-        public abstract IClientHolderV2 SenderCreate(SenderPartitionConfig p);
+        /// <summary>
+        /// This method creates a new sender client. You must override this method.
+        /// </summary>
+        /// <param name="p">The sender partition configuration.</param>
+        /// <returns>Returns the new client.</returns>
+        protected abstract IClientHolderV2 SenderCreate(SenderPartitionConfig p);
         /// <summary>
         /// This method stops each of the active senders.
         /// </summary>
-        public virtual void SendersStop() => mSenderClients?.ForEach((v) => SenderStop(v.Value));
+        protected virtual void SendersStop() => mSenderClients?.ForEach((v) => SenderStop(v.Value));
         /// <summary>
         /// This abstract method stops a particular sender client.
         /// </summary>
         /// <param name="client"></param>
-        public abstract void SenderStop(IClientHolderV2 client);
+        protected virtual void SenderStop(IClientHolderV2 client) => client.Stop();
 
 
         #region --> SenderTransmit(TransmissionPayload payload)

@@ -195,6 +195,11 @@ namespace Xigadee
         public virtual string ProtocolId => GetType().Name;
         #endregion
 
+        #region ServiceStart(object service)
+        /// <summary>
+        /// This start override is used to start the clients and set the required services.
+        /// </summary>
+        /// <param name="service"></param>
         protected override void ServiceStart(object service)
         {
             if (service is IRequireDataCollector)
@@ -210,6 +215,7 @@ namespace Xigadee
             }
 
             base.ServiceStart(service);
-        }
+        } 
+        #endregion
     }
 }

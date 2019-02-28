@@ -36,6 +36,12 @@ namespace Xigadee
         {
             mConfig = configs?.ToDictionary((c) => c.priority, (c) => c.config)
                 ?? throw new ArgumentNullException("config", "Udp configuration cannot be null.");
+
+            RequestAddress = (requestAddress, requestAddressPriority);
+
+            ResponseAddress = (responseAddress, responseAddressPriority);
+
+            MaxUdpMessagePayloadSize = maxUdpMessagePayloadSize;
         }
         #endregion
 
@@ -46,39 +52,71 @@ namespace Xigadee
         public override string ProtocolId { get; } = "Udp";
         #endregion
 
+        /// <summary>
+        /// This is the default address for the incoming Udp message.
+        /// </summary>
+        protected (ServiceMessageHeaderFragment address, int? priority) RequestAddress { get; }
+        /// <summary>
+        /// This is the optional response message for the incoming Udp message.
+        /// </summary>
+        protected (ServiceMessageHeader address, int? priority) ResponseAddress{ get; }
+        /// <summary>
+        /// The maximum payload message size.
+        /// </summary>
+        protected int? MaxUdpMessagePayloadSize { get; }
+
+        #region ListenerClientCreate(ListenerPartitionConfig c)
+        /// <summary>
+        /// This override creates the UDP listener client.
+        /// </summary>
+        /// <param name="c">The partition configuration.</param>
+        /// <returns>Returns the client.</returns>
         protected override IClientHolderV2 ListenerClientCreate(ListenerPartitionConfig c)
         {
-            if (mConfig.ContainsKey(c.Priority))
-                return new UdpClientHolder(mConfig[c.Priority], CommunicationAgentCapabilities.Listener);
+            if (!mConfig.ContainsKey(c.Priority))
+            {
+                var err = $"The Udp Listener client configuration is not defined for priority {c.Priority}";
+                Collector?.LogWarning(err);
+                throw new ArgumentOutOfRangeException(err);
+            }
 
-            Collector?.LogWarning($"The Udp Listener client configuration is not defined for priority {c.Priority}");
-            throw new Exception();
-        }
+            return new UdpClientHolder(mConfig[c.Priority]
+                , CommunicationAgentCapabilities.Listener
+                , RequestAddress
+                , ResponseAddress
+                , MaxUdpMessagePayloadSize
+                );
+        } 
+        #endregion
 
         protected override void ListenerClientValidate(IClientHolderV2 client, List<MessageFilterWrapper> newList)
         {
             //throw new NotImplementedException();
         }
 
-        public override IClientHolderV2 SenderCreate(SenderPartitionConfig p)
+        #region SenderCreate(SenderPartitionConfig c)
+        /// <summary>
+        /// This override creates the UdpClient
+        /// </summary>
+        /// <param name="c">The partition configuration</param>
+        /// <returns>Returns the client.</returns>
+        protected override IClientHolderV2 SenderCreate(SenderPartitionConfig c)
         {
-            if (!mConfig.ContainsKey(p.Priority))
-                throw new ArgumentOutOfRangeException($"Udp configuration is not defined for partition priority {p.Priority}");
+            if (!mConfig.ContainsKey(c.Priority))
+            {
+                var err = $"The Udp sender client configuration is not defined for priority {c.Priority}";
+                Collector?.LogWarning(err);
+                throw new ArgumentOutOfRangeException(err);
+            }
 
-            var config = mConfig[p.Priority];
+            return new UdpClientHolder(mConfig[c.Priority]
+                , CommunicationAgentCapabilities.Sender
+                , RequestAddress
+                , ResponseAddress
+                , MaxUdpMessagePayloadSize
+                );
+        } 
+        #endregion
 
-            return new UdpClientHolder(config, CommunicationAgentCapabilities.Sender);
-        }
-
-
-        public override void SenderStop(IClientHolderV2 client)
-        {
-            client.Stop();
-        }
-
-        protected override void ListenerClientStop(IClientHolderV2 client)
-        {
-            client.Stop();
-        }
     }
 }

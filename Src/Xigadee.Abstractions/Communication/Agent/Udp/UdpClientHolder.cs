@@ -22,7 +22,12 @@ namespace Xigadee
         /// </summary>
         /// <param name="udp">The Udp configuration.</param>
         /// <param name="mode">The transmission mode.</param>
-        public UdpClientHolder(UdpConfig udp, CommunicationAgentCapabilities mode)
+        public UdpClientHolder(UdpConfig udp
+            , CommunicationAgentCapabilities mode
+            , (ServiceMessageHeaderFragment address, int? priority) requestAddress
+            , (ServiceMessageHeader adddress, int? priority) responseAddress
+            , int? maxUdpMessagePayloadSize
+            )
         {
             Config = udp;
             Mode = mode;
@@ -31,6 +36,10 @@ namespace Xigadee
             mConnectionsSender = new Dictionary<IPEndPoint, State>();
 
             mIncomingPending = new ConcurrentQueue<Message>();
+
+            RequestAddress = requestAddress;
+            ResponseAddress = responseAddress;
+            MaxUdpMessagePayloadSize = maxUdpMessagePayloadSize;
         }
         #endregion
 
@@ -67,6 +76,8 @@ namespace Xigadee
                         throw new NotImplementedException();
                         //break;
                 }
+
+            base.StartInternal();
         }
         #endregion
         #region Stop()
@@ -75,6 +86,8 @@ namespace Xigadee
         /// </summary>
         protected override void StopInternal()
         {
+            base.StopInternal();
+
             mConnectionsListener.ForEach((k) => k.Value.Socket.Close());
             mConnectionsListener.Clear();
             mConnectionsSender.ForEach((k) => k.Value.Socket.Close(1));
@@ -86,6 +99,12 @@ namespace Xigadee
         /// Gets the UDP configuration.
         /// </summary>
         public UdpConfig Config { get; }
+
+        public (ServiceMessageHeaderFragment address, int? priority) RequestAddress { get; }
+
+        public (ServiceMessageHeader address, int? priority) ResponseAddress { get; }
+
+        public int? MaxUdpMessagePayloadSize { get; }
 
         /// <summary>
         /// Gets the mode.
@@ -119,7 +138,7 @@ namespace Xigadee
             if (wait.HasValue)
                 timeOut = Environment.TickCount + wait.Value;
 
-            List<TransmissionPayload> batch = new List<TransmissionPayload>();
+            var batch = new List<TransmissionPayload>();
 
             if (BoundaryLoggingActive)
                 batchId = Collector?.BoundaryBatchPoll(count ?? -1, mIncomingPending.Count
@@ -127,35 +146,54 @@ namespace Xigadee
 
             try
             {
-                UdpHelper.Message result = null;
+                Message result = null;
 
-                //while (Client.Available
-                //    && countMax > 0
-                //    && (!timeOut.HasValue || timeOut.Value > Environment.TickCount)
-                //    && Client.TryDequeue(out result)
-                //    )
-                //{
-                //    try
-                //    {
+                while (!mIncomingPending.IsEmpty
+                    && countMax > 0
+                    && (!timeOut.HasValue || timeOut.Value > Environment.TickCount)
+                    && mIncomingPending.TryDequeue(out result)
+                    )
+                {
+                    try
+                    {
+                        var holder = (ServiceHandlerContext)result.Buffer;
+                        holder.Metadata = result.RemoteEndPoint;
 
-                //        var holder = (ServiceHandlerContext)result.Buffer;
-                //        holder.Metadata = result.RemoteEndPoint;
-                //        holder.ContentType = ContentType;
-                //        holder.ContentEncoding = ContentEncoding;
+                        holder.ContentType = ServiceHandlerIds.Serializer;
+                        //holder.ContentEncoding = ContentEncoding;
 
-                //        //Unpack the message in the holder.
-                //        var sm = MessageUnpack(holder);
+                        IServiceHandlerSerialization serializer;
+                        if (!ServiceHandlers.Serialization.TryGet(ServiceHandlerIds.Serializer, out serializer))
+                            throw new Exception();
 
-                //        batch.Add(new TransmissionPayload(sm));
-                //    }
-                //    catch (Exception ex)
-                //    {
-                //        Collector?.LogException("UdpClientHolder/MessagesPull deserialization error.", ex);
-                //        errorCount++;
-                //    }
+                        if (!serializer.TryDeserialize(holder))
+                        {
+                            holder.SetObject(new UdpHelper.Message { Buffer = holder.Blob, RemoteEndPoint = (IPEndPoint)holder.Metadata });
+                        }
 
-                //    countMax--;
-                //}
+                        var sMessage = new ServiceMessage((MappingChannelId ?? ChannelId, RequestAddress.address), ResponseAddress.address);
+
+                        sMessage.ResponseChannelPriority = ResponseAddress.priority ?? 1;
+
+                        //        //        sMessage.ChannelPriority = RequestAddressPriority ?? client.Priority;
+                        //        //        sMessage.Holder = holder;
+
+                        //        //        return sMessage;
+
+                        //holder.
+                        ////Unpack the message in the holder.
+                        //var sm = MessageUnpack(holder);
+
+                        //batch.Add(new TransmissionPayload(sm));
+                    }
+                    catch (Exception ex)
+                    {
+                        Collector?.LogException("UdpClientHolder/MessagesPull deserialization error.", ex);
+                        errorCount++;
+                    }
+
+                    countMax--;
+                }
             }
             catch (Exception ex)
             {

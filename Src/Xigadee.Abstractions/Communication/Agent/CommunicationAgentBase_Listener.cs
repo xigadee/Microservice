@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Xigadee
@@ -122,15 +123,17 @@ namespace Xigadee
         }
         #endregion
 
+        #region ListenerClientsStart()
         /// <summary>
-        /// This method triggers a revalidation of the particular client.
+        /// This method starts a client for all the configured partitions.
         /// </summary>
-        /// <param name="client">The client.</param>
-        /// <param name="newList">The new list of message filter wrappers.</param>
-        protected abstract void ListenerClientValidate(IClientHolderV2 client, List<MessageFilterWrapper> newList);
-
-        protected virtual void ListenerClientsStart() => ListenerPriorityPartitions?.ForEach((p) => ListenerClientStart(p));
-
+        protected virtual void ListenerClientsStart() => ListenerPriorityPartitions?.ForEach((p) => ListenerClientStart(p)); 
+        #endregion
+        #region ListenerClientStart(ListenerPartitionConfig p)
+        /// <summary>
+        /// This method starts the listeners for the agent.
+        /// </summary>
+        /// <param name="p">The listener partition.</param>
         protected virtual void ListenerClientStart(ListenerPartitionConfig p)
         {
             try
@@ -139,10 +142,10 @@ namespace Xigadee
 
                 client.Priority = p.Priority;
                 client.MappingChannelId = ListenerMappingChannelId;
-
                 mListenerClients.AddOrUpdate(p.Priority, client, (i, ct) => client);
 
                 ServiceStart(client);
+                Interlocked.Increment(ref mClientsStarted);
             }
             catch (Exception ex)
             {
@@ -151,12 +154,48 @@ namespace Xigadee
             }
 
         }
+        #endregion
+        #region ListenerClientsStop()
+        /// <summary>
+        /// This method stops all the current listerners
+        /// </summary>
+        protected virtual void ListenerClientsStop()
+        {
+            mListenerClients?.ForEach((c) =>
+                {
+                    try
+                    {
+                        ListenerClientStop(c.Value);
+                        Interlocked.Increment(ref mClientsStopped);
+                    }
+                    catch (Exception)
+                    {
 
+                        throw;
+                    }
+                });
+        }
+        #endregion
+
+        /// <summary>
+        /// This method creates a listener.
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
         protected abstract IClientHolderV2 ListenerClientCreate(ListenerPartitionConfig p);
 
-        protected virtual void ListenerClientsStop() => mListenerClients?.ForEach((c) => ListenerClientStop(c.Value));
+        /// <summary>
+        /// This method stops the specific listener.
+        /// </summary>
+        /// <param name="client"></param>
+        protected virtual void ListenerClientStop(IClientHolderV2 client) => client.Stop();
 
-        protected abstract void ListenerClientStop(IClientHolderV2 client);
+        /// <summary>
+        /// This method triggers a revalidation of the particular client.
+        /// </summary>
+        /// <param name="client">The client.</param>
+        /// <param name="newList">The new list of message filter wrappers.</param>
+        protected abstract void ListenerClientValidate(IClientHolderV2 client, List<MessageFilterWrapper> newList);
 
         #region ListenersTearUp()
         /// <summary>
