@@ -63,6 +63,7 @@ namespace Xigadee
             {
                 var client = SenderCreate(p);
                 client.Priority = p.Priority;
+                client.ChannelId = ChannelId;
 
                 mSenderClients.AddOrUpdate(client.Priority, client, (i, ct) => client);
                 ServiceStart(client);

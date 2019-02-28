@@ -9,6 +9,7 @@
 
   
   <ItemGroup>
+    <ProjectReference Include="..\PiO.Shared\PiO.Shared.csproj" />
     <ProjectReference Include="..\Xigadee.Console\Xigadee.Console.csproj" />
     <ProjectReference Include="..\Xigadee\Xigadee.csproj" />
   </ItemGroup>

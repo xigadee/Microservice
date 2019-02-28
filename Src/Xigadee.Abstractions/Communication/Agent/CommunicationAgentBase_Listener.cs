@@ -141,6 +141,7 @@ namespace Xigadee
                 var client = ListenerClientCreate(p);
 
                 client.Priority = p.Priority;
+                client.ChannelId = ChannelId;
                 client.MappingChannelId = ListenerMappingChannelId;
                 mListenerClients.AddOrUpdate(p.Priority, client, (i, ct) => client);
 

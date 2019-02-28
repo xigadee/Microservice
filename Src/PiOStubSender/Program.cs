@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using Newtonsoft.Json;
+using PiO;
 
 namespace PiOStubSender
 {
@@ -27,18 +28,23 @@ namespace PiOStubSender
                 //for (int i = 0; i < 11; i++)
                 //{
 
+                //var message = new LightwaveMessage();
                 dynamic message = new ExpandoObject();
+                message.trans = Environment.TickCount;
                 message.Title = "Mr.";
                 message.Name = "Sid";
                 message.City = "London";
                 message.TimeStamp = DateTime.UtcNow;
                 message.Id = id;
+                //message.Trans = Environment.TickCount;
 
                 var authorData = JsonConvert.SerializeObject(message, Formatting.None);
 
                 byte[] data = Encoding.UTF8.GetBytes(authorData);
+                byte[] dataEx = new byte[data.Length + 2];
+                Array.ConstrainedCopy(data, 0, dataEx, 2, data.Length);
                 //byte[] data = new byte[65507];
-                uc.Send(data, data.Length, ep);
+                uc.Send(dataEx, dataEx.Length, ep);
                 //}
 
                 Console.WriteLine("Sent. Press Enter to send again.");

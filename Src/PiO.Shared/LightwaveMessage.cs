@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Diagnostics;
 using System.Net;
 using System.Text;
-using Newtonsoft.Json;
-using Xigadee;
 
 namespace PiO
 {

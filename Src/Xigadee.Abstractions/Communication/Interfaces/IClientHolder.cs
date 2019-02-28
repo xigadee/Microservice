@@ -16,6 +16,8 @@ namespace Xigadee
 
         string Name { get; set; }
 
+        string ChannelId { get; set; }
+
         string MappingChannelId { get; set; }
 
         bool IsActive { get; set; }
@@ -106,7 +108,6 @@ namespace Xigadee
 
         bool BoundaryLoggingActive { get; set; }
         bool CanStart { get; set; }
-        string ChannelId { get; set; }
         Action ClientClose { get; set; }
         Action<Exception> ClientReset { get; set; }
         IDataCollection Collector { get; set; }
