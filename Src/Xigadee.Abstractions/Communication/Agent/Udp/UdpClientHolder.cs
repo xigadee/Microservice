@@ -175,16 +175,10 @@ namespace Xigadee
 
                         sMessage.ResponseChannelPriority = ResponseAddress.priority ?? 1;
 
-                        //        //        sMessage.ChannelPriority = RequestAddressPriority ?? client.Priority;
-                        //        //        sMessage.Holder = holder;
+                        sMessage.ChannelPriority = RequestAddress.priority ?? Priority;
+                        sMessage.Holder = holder;
 
-                        //        //        return sMessage;
-
-                        //holder.
-                        ////Unpack the message in the holder.
-                        //var sm = MessageUnpack(holder);
-
-                        //batch.Add(new TransmissionPayload(sm));
+                        batch.Add(new TransmissionPayload(sMessage));
                     }
                     catch (Exception ex)
                     {
