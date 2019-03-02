@@ -7,6 +7,16 @@ namespace Xigadee
     public abstract class CommunicationBridgeAgent: ICommunicationAgent
     {
         /// <summary>
+        /// This is the default constructor. 
+        /// </summary>
+        /// <param name="mode">The operational mode.</param>
+        protected CommunicationBridgeAgent(FabricMode mode)
+        {
+            Mode = mode;
+        }
+
+        #region Events
+        /// <summary>
         /// This event is called if there is an exception during transmission.
         /// </summary>
         public event EventHandler<CommunicationAgentEventArgs> OnException;
@@ -18,46 +28,29 @@ namespace Xigadee
         /// This event is fired when a message is received from a sender and before it is resolved.
         /// </summary>
         public event EventHandler<CommunicationAgentEventArgs> OnReceive;
-
-        /// <summary>
-        /// This is the default constructor. 
-        /// </summary>
-        /// <param name="mode">The operational mode.</param>
-        protected CommunicationBridgeAgent(FabricMode mode = FabricMode.NotSet)
-        {
-            Mode = mode;
-        }
         /// <summary>
         /// This method is used to fire the event when an exception occurs.
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="payload">The payload.</param>
         /// <param name="ex">The exception raised.</param>
-        protected void OnExceptionInvoke(object sender, TransmissionPayload payload, Exception ex)
-        {
-            var e = new CommunicationAgentEventArgs(payload, ex);
-            OnException?.Invoke(sender, e);
-        }
+        protected void OnExceptionInvoke(object sender, TransmissionPayload payload, Exception ex) => OnException?.Invoke(sender, new CommunicationAgentEventArgs(payload, ex));
+
         /// <summary>
         /// This event is thrown when a payload is transmitted.
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="payload">The payload.</param>
-        protected void OnTransmitInvoke(object sender, TransmissionPayload payload)
-        {
-            var e = new CommunicationAgentEventArgs(payload);
-            OnTransmit?.Invoke(sender, e);
-        }
+        protected void OnTransmitInvoke(object sender, TransmissionPayload payload) => OnTransmit?.Invoke(sender, new CommunicationAgentEventArgs(payload));
+
         /// <summary>
         /// This event is raised when a payload is received by a listener.
         /// </summary>
         /// <param name="sender">The listener.</param>
         /// <param name="payload">The payload.</param>
-        protected void OnReceiveInvoke(object sender, TransmissionPayload payload)
-        {
-            var e = new CommunicationAgentEventArgs(payload);
-            OnReceive?.Invoke(sender, e);
-        }
+        protected void OnReceiveInvoke(object sender, TransmissionPayload payload) => OnReceive?.Invoke(sender, new CommunicationAgentEventArgs(payload));
+
+        #endregion
 
         /// <summary>
         /// This is the communication bridge mode.

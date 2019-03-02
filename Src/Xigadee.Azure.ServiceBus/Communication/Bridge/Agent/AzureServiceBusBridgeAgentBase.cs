@@ -48,7 +48,7 @@ namespace Xigadee
         /// <param name="retryPolicy">The default retry policy.</param>
         protected AzureServiceBusBridgeAgentBase(ServiceBusConnectionStringBuilder connectionString
             , ReceiveMode receiveMode = ReceiveMode.PeekLock
-            , RetryPolicy retryPolicy = null)
+            , RetryPolicy retryPolicy = null):base(FabricMode.NotSet)
         {
             Connection = new AzureServiceBusConnection(connectionString, receiveMode, retryPolicy);
         }

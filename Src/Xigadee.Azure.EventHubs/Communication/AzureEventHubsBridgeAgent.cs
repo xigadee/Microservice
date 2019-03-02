@@ -10,7 +10,7 @@ namespace Xigadee
     /// <seealso cref="Xigadee.CommunicationBridgeAgent" />
     public class AzureEventHubsBridgeAgent : CommunicationBridgeAgent
     {
-        public AzureEventHubsBridgeAgent()
+        public AzureEventHubsBridgeAgent():base(FabricMode.NotSet)
         {
 
         }

@@ -15,6 +15,7 @@ namespace Xigadee
         /// </summary>
         private Action<bool, Guid> mSignalRelease = null;
 
+        #region Constructor
         /// <summary>
         /// Initializes a new instance of the <see cref="FabricMessage"/> class.
         /// </summary>
@@ -27,21 +28,19 @@ namespace Xigadee
         /// Initializes a new instance of the <see cref="FabricMessage"/> class.
         /// </summary>
         /// <param name="blob">The message BLOB.</param>
-        public FabricMessage(byte[] blob):this()
+        public FabricMessage(byte[] blob) : this()
         {
             Message = blob;
-        }
+        } 
+        #endregion
+
         /// <summary>
         /// Gets the enqueued time UTC.
         /// </summary>
-
         public DateTime EnqueuedTimeUtc { get; } = DateTime.UtcNow;
         /// <summary>
         /// Gets the identifier.
         /// </summary>
-        /// <value>
-        /// The identifier.
-        /// </value>
         public Guid Id { get; }
         /// <summary>
         /// Gets or sets the correlation identifier.
@@ -50,7 +49,6 @@ namespace Xigadee
         /// <summary>
         /// Gets the properties dictionary.
         /// </summary>
-
         public virtual Dictionary<string, string> Properties { get; }
         /// <summary>
         /// Gets or sets the binary message.
@@ -61,6 +59,7 @@ namespace Xigadee
         /// </summary>
         public virtual int DeliveryCount { get; set; } = 0;
 
+        #region Signal(bool success)
         /// <summary>
         /// Signals the message as succeeded or failed atomically.
         /// If the release action is set, this will be called the first time this method is called.
@@ -79,8 +78,10 @@ namespace Xigadee
                 catch (Exception ex)
                 {
                 }
-        }
+        } 
+        #endregion
 
+        #region ReleaseSet(Action<bool, Guid> release)
         /// <summary>
         /// Sets the release function for the message.
         /// </summary>
@@ -88,22 +89,27 @@ namespace Xigadee
         internal void ReleaseSet(Action<bool, Guid> release)
         {
             mSignalRelease = release;
-        }
+        } 
+        #endregion
+
+        #region Complete()
         /// <summary>
         /// Marks the message as complete and successfully delivered.
         /// </summary>
         public virtual void Complete()
         {
             Signal(true);
-        }
+        } 
+        #endregion
+        #region Abandon()
         /// <summary>
         /// Abandons this message.
         /// </summary>
         public virtual void Abandon()
         {
             Signal(false);
-        }
-
+        } 
+        #endregion
 
         #region Pack(TransmissionPayload payload)
         /// <summary>

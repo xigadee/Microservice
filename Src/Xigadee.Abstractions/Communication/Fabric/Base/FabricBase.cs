@@ -9,9 +9,6 @@
         /// <summary>
         /// Gets the <see cref="ICommunicationAgent"/> for the specified mode.
         /// </summary>
-        /// <value>
-        /// The <see cref="ICommunicationAgent"/>.
-        /// </value>
         /// <param name="mode">The communication mode.</param>
         /// <returns>A bridge for the specific communication mode.</returns>
         public abstract B this[FabricMode mode] { get; }

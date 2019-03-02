@@ -18,6 +18,7 @@ namespace Xigadee
 
         List<ManualChannelListener> mListeners = new List<ManualChannelListener>();
         List<ManualChannelSender> mSenders = new List<ManualChannelSender>();
+
         JsonContractSerializer mSerializer = new JsonContractSerializer();
 
         ConcurrentDictionary<Guid, TransmissionPayloadHolder> mPayloadsActive = new ConcurrentDictionary<Guid, TransmissionPayloadHolder>();

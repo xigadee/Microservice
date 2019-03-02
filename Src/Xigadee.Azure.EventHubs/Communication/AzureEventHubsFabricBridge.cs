@@ -21,7 +21,6 @@ namespace Xigadee
     /// <summary>
     /// This is the Farbric Bridge for the Azure Event Hubs.
     /// </summary>
-    /// <seealso cref="Xigadee.FabricBridgeBase" />
     public class AzureEventHubsFabricBridge : FabricBridgeBase<ICommunicationAgent>
     {
         /// <summary>

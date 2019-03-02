@@ -168,7 +168,7 @@ namespace Xigadee
 
                         if (!serializer.TryDeserialize(holder))
                         {
-                            holder.SetObject(new UdpHelper.Message { Buffer = holder.Blob, RemoteEndPoint = (IPEndPoint)holder.Metadata });
+                            holder.SetObject(new Message { Buffer = holder.Blob, RemoteEndPoint = (IPEndPoint)holder.Metadata });
                         }
 
                         var sMessage = new ServiceMessage((MappingChannelId ?? ChannelId, RequestAddress.address), ResponseAddress.address);

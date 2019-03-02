@@ -12,7 +12,7 @@ namespace Xigadee
         List<TcpTlsChannelSender> mSenders = new List<TcpTlsChannelSender>();
         IPEndPoint mEndPoint;
 
-        public TcpCommunicationBridgeAgent(IPEndPoint EndPoint)
+        public TcpCommunicationBridgeAgent(IPEndPoint EndPoint):base(FabricMode.NotSet)
         {
             mEndPoint = EndPoint;
         }
