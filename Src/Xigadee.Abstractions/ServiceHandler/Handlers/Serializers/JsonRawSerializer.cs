@@ -23,7 +23,8 @@ namespace Xigadee
 
         public override void Deserialize(ServiceHandlerContext holder)
         {
-            //mJsonSerializer.Deserialize(
+            if (!holder.HasContentType)
+                return;
         }
 
         public override void Serialize(ServiceHandlerContext holder)
@@ -38,7 +39,7 @@ namespace Xigadee
                 holder.SetBlob(stream.ToArray());
             }
 
-            holder.ContentType = Id + $"; type=\"{holder.Object.GetType().ToString()}\"";
+            holder.ContentType = $"{Id}; type=\"{holder.Object.GetType().ToString()}\"";
         }
 
         public override bool SupportsContentTypeSerialization(Type entityType)

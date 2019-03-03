@@ -85,6 +85,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
+
             }
 
             return false;

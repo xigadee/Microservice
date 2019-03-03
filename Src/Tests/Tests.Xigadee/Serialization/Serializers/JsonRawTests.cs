@@ -8,8 +8,9 @@ namespace Test.Xigadee.Serialization
     public class JsonRawTests
     {
         [TestMethod]
-        public void TestMethod1()
+        public void RawSerialization1()
         {
+
         }
     }
 }
