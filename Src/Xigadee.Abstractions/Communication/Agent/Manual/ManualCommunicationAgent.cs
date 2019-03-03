@@ -6,8 +6,8 @@ namespace Xigadee
 {
     public class ManualCommunicationAgent : CommunicationAgentBase
     {
-        public ManualCommunicationAgent(ManualFabricBridge fabricBridge, ServiceHandlerIdCollection shIds = null)
-            : base(CommunicationAgentCapabilities.Bidirectional, shIds)
+        public ManualCommunicationAgent(ManualFabricBridge fabricBridge, CommunicationAgentCapabilities capabilities, ServiceHandlerIdCollection shIds = null)
+            : base(capabilities, shIds)
         {
             FabricBridge = fabricBridge;
         }
@@ -43,29 +43,34 @@ namespace Xigadee
         /// <param name="priority">The optional priority. The default is 1.</param>
         public void Inject(TransmissionPayload payload, int? priority = null)
         {
-            //if (this.Status != ServiceStatus.Running)
-            //{
-            //    payload.SignalSuccess();
-            //    payload.TraceWrite($"Failed: {Status}", "ManualChannelListener/Inject");
-            //    return;
-            //}
+            if (this.Status != ServiceStatus.Running)
+            {
+                payload.SignalSuccess();
+                payload.TraceWrite($"Failed: {Status}", "ManualChannelListener/Inject");
+                return;
+            }
 
-            //try
-            //{
-            //    var client = ClientResolve(priority ?? mDefaultPriority ?? 1);
-            //    client.Inject(payload);
-            //    payload.TraceWrite($"Success: {client.Name}", "ManualChannelListener/Inject");
-            //}
-            //catch (Exception ex)
-            //{
-            //    payload.TraceWrite($"Error: {ex.Message}", "ManualChannelListener/Inject");
-            //}
+            try
+            {
+                IClientHolderV2 client;
+                if (mListenerClients.TryGetValue(priority ?? payload.Message.ChannelPriority, out client))
+                {
+                    ((ManualClientHolder)client).Inject(payload);
+                    payload.TraceWrite($"Success: {client.Name}", "ManualChannelListener/Inject");
+                }
+            }
+            catch (Exception ex)
+            {
+                payload.TraceWrite($"Error: {ex.Message}", "ManualChannelListener/Inject");
+            }
 
         }
 
         protected override IClientHolderV2 ListenerClientCreate(ListenerPartitionConfig p)
         {
-            throw new NotImplementedException();
+            var client = new ManualClientHolder();
+
+            return client;
         }
 
         protected override void ListenerClientValidate(IClientHolderV2 client, List<MessageFilterWrapper> newList)
@@ -75,7 +80,11 @@ namespace Xigadee
 
         protected override IClientHolderV2 SenderCreate(SenderPartitionConfig p)
         {
-            throw new NotImplementedException();
+            var client = new ManualClientHolder();
+
+            client.IncomingAction = (t) => ProcessInvoke(t);
+
+            return client;
         }
     }
 }

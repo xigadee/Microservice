@@ -7,7 +7,7 @@ namespace Xigadee
     /// <summary>
     /// This is the manual tester, primarily used for testing.
     /// </summary>
-    public class ManualChannelListener: MessagingListenerBase<ManualFabricConnection, ManaualFabricMessage, ManualChannelClientHolder>
+    public class ManualChannelListener: MessagingListenerBase<ManualFabricConnection, ManualFabricMessage, ManualChannelClientHolder>
     {
         #region Fabric
         /// <summary>

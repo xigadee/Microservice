@@ -17,9 +17,8 @@ namespace Xigadee
         /// <returns>Returns a new cloned payload.</returns>
         public static TransmissionPayload Clone(this TransmissionPayload inPayload, Action<bool, Guid> signal, bool? traceEnabled = null)
         {
-            traceEnabled = traceEnabled ?? inPayload.TraceEnabled;
             //First clone the service message.
-            var cloned = new TransmissionPayload(inPayload.Message.Clone(), release: signal, traceEnabled: traceEnabled.Value);
+            var cloned = new TransmissionPayload(inPayload.Message.Clone(), release: signal, traceEnabled: traceEnabled ?? inPayload.TraceEnabled);
 
             cloned.TraceWrite("Cloned", "ManualCommunicationBridgeAgent/PayloadCopy");
 

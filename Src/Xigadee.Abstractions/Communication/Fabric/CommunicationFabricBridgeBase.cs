@@ -32,6 +32,7 @@ namespace Xigadee
         /// This event is fired when a message is received from a sender and before it is resolved.
         /// </summary>
         public event EventHandler<CommunicationFabricEventArgs> OnReceive;
+
         /// <summary>
         /// This method is used to fire the event when an exception occurs.
         /// </summary>
@@ -53,7 +54,6 @@ namespace Xigadee
         /// <param name="sender">The listener.</param>
         /// <param name="payload">The payload.</param>
         protected void OnReceiveInvoke(object sender, TransmissionPayload payload) => OnReceive?.Invoke(sender, new CommunicationFabricEventArgs(payload));
-
         #endregion
 
         /// <summary>

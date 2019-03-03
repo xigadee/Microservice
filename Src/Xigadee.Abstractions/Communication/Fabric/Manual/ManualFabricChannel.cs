@@ -150,7 +150,7 @@ namespace Xigadee
         }
         #endregion
 
-        private void Transmit(ManualFabricConnection conn, ManaualFabricMessage message)
+        private void Transmit(ManualFabricConnection conn, ManualFabricMessage message)
         {
             if (!Mode.HasValue)
                 throw new ArgumentException("Mode is not configured.");
@@ -167,14 +167,14 @@ namespace Xigadee
             }
         }
 
-        private IEnumerable<ManaualFabricMessage> Receive(ManualFabricConnection conn, int? count)
+        private IEnumerable<ManualFabricMessage> Receive(ManualFabricConnection conn, int? count)
         {
             string queueName = (Mode == ManualCommunicationFabricMode.Queue)?cnDefault:conn.Subscription;
             ManualFabricQueueHolder queue;
             if (mOutgoing.TryGetValue(queueName, out queue))
             {
                 count = count ??1;
-                ManaualFabricMessage message;
+                ManualFabricMessage message;
                 while (count.Value > 0 && queue.TryDequeue(out message))
                 {
                     message.ReleaseSet((success,id) => Complete(queueName, message, success, id));
@@ -186,7 +186,7 @@ namespace Xigadee
             yield break;
         }
 
-        private void Complete(string queueName, ManaualFabricMessage message, bool success, Guid id)
+        private void Complete(string queueName, ManualFabricMessage message, bool success, Guid id)
         {
             if (success)
                 return;

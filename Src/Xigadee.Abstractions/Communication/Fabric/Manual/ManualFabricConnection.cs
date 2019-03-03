@@ -9,7 +9,7 @@ namespace Xigadee
     /// <summary>
     /// This is the default holder for a manual fabric connection.
     /// </summary>
-    public class ManualFabricConnection:FabricConnectionBase<ManaualFabricMessage>
+    public class ManualFabricConnection:FabricConnectionBase<ManualFabricMessage>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ManualFabricConnection"/> class.
@@ -47,7 +47,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="message">The message.</param>
         /// <exception cref="ArgumentException">Thrown if the connection is not enabled to Transmit.</exception>
-        public void Enqueue(ManaualFabricMessage message)
+        public void Enqueue(ManualFabricMessage message)
         {
             if (!CanEnqueue)
                 throw new ArgumentException($"Transmit is not enabled");
@@ -66,7 +66,7 @@ namespace Xigadee
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="NotSupportedException"></exception>
-        public IEnumerable<ManaualFabricMessage> Dequeue(int? attempt = null)
+        public IEnumerable<ManualFabricMessage> Dequeue(int? attempt = null)
         {
             if (!CanDequeue)
                 throw new ArgumentException($"Receive is not enabled");
@@ -78,8 +78,8 @@ namespace Xigadee
         /// </summary>
         public bool CanDequeue { get { return Receive != null; } }
 
-        internal Action<ManualFabricConnection, ManaualFabricMessage> Transmit { get; set; }
+        internal Action<ManualFabricConnection, ManualFabricMessage> Transmit { get; set; }
 
-        internal Func<ManualFabricConnection, int?, IEnumerable<ManaualFabricMessage>> Receive { get; set; }
+        internal Func<ManualFabricConnection, int?, IEnumerable<ManualFabricMessage>> Receive { get; set; }
     }
 }

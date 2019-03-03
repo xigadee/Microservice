@@ -35,8 +35,6 @@ namespace Xigadee
             }
         }
 
-
-
         /// <summary>
         /// This method injects a payload to be picked up by the polling algorithm.
         /// </summary>

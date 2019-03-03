@@ -79,7 +79,6 @@ namespace Xigadee
         /// </summary>
         public bool HasContentEncoding => ContentEncoding != null;
         #endregion
-
         #region Encryption/HasEncryption
         /// <summary>
         /// Identifies the encryption type.
