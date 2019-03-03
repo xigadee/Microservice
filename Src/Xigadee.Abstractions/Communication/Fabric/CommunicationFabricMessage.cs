@@ -8,7 +8,7 @@ namespace Xigadee
     /// This is the base fabric message. It closely mirrors the BrokeredMessage of Service Bus to allow for simulations of functionality without the need 
     /// for a work service bus to test.
     /// </summary>
-    public class FabricMessage
+    public class CommunicationFabricMessage
     {
         /// <summary>
         /// This action is used to signal that the message can be released back to the listener.
@@ -17,18 +17,18 @@ namespace Xigadee
 
         #region Constructor
         /// <summary>
-        /// Initializes a new instance of the <see cref="FabricMessage"/> class.
+        /// Initializes a new instance of the <see cref="CommunicationFabricMessage"/> class.
         /// </summary>
-        public FabricMessage()
+        public CommunicationFabricMessage()
         {
             Id = Guid.NewGuid();
             Properties = new Dictionary<string, string>();
         }
         /// <summary>
-        /// Initializes a new instance of the <see cref="FabricMessage"/> class.
+        /// Initializes a new instance of the <see cref="CommunicationFabricMessage"/> class.
         /// </summary>
         /// <param name="blob">The message BLOB.</param>
-        public FabricMessage(byte[] blob) : this()
+        public CommunicationFabricMessage(byte[] blob) : this()
         {
             Message = blob;
         } 
@@ -110,6 +110,42 @@ namespace Xigadee
             Signal(false);
         } 
         #endregion
+    }
+
+    /// <summary>
+    /// This static class is used to set the key properties to enable messages to be transmitted
+    /// over the Azure Service Bus.
+    /// </summary>
+    public static class CommunicationFabricMessageHelper
+    {
+        #region AssignMessageHelpers<C>(this AzureClientHolder<C,BrokeredMessage> client)
+        /// <summary>
+        /// This extension method set the Pack, Unpack and Signal functions for Azure Service Bus support.
+        /// </summary>
+        /// <typeparam name="C">The Client Entity type.</typeparam>
+        /// <param name="client">The client to set.</param>
+        public static void AssignMessageHelpers<C>(this ManualChannelClientHolder client)
+        {
+            client.MessagePack = Pack;
+            client.MessageUnpack = Unpack;
+            client.MessageSignal = MessageSignal;
+        }
+        #endregion
+
+        #region MessageSignal(BrokeredMessage message, bool success)
+        /// <summary>
+        /// This helper method signals to the underlying fabric that the message has succeeded or failed.
+        /// </summary>
+        /// <param name="message">The fabric message.</param>
+        /// <param name="success">The message success status.</param>
+        public static void MessageSignal(CommunicationFabricMessage message, bool success)
+        {
+            if (success)
+                message.Complete();
+            else
+                message.Abandon();
+        }
+        #endregion
 
         #region Pack(TransmissionPayload payload)
         /// <summary>
@@ -118,14 +154,14 @@ namespace Xigadee
         /// </summary>
         /// <param name="payload">The payload object to convert to a FabricMessage.</param>
         /// <returns>Returns a FabricMessage object.</returns>
-        public static FabricMessage Pack(TransmissionPayload payload)
+        public static CommunicationFabricMessage Pack(TransmissionPayload payload)
         {
             ServiceMessage sMessage = payload.Message;
-            FabricMessage bMessage;
+            CommunicationFabricMessage bMessage;
             if (sMessage.Holder == null)
-                bMessage = new FabricMessage();
+                bMessage = new CommunicationFabricMessage();
             else
-                bMessage = new FabricMessage(sMessage.Holder);
+                bMessage = new CommunicationFabricMessage(sMessage.Holder);
 
             bMessage.Properties.Add("SecuritySignature", sMessage.SecuritySignature);
 
@@ -169,7 +205,7 @@ namespace Xigadee
         /// /// </summary>
         /// <param name="bMessage">The FabricMessage to convert.</param>
         /// <returns>Returns a generic ServiceMessage class for processing.</returns>
-        public static ServiceMessage Unpack(FabricMessage bMessage)
+        public static ServiceMessage Unpack(CommunicationFabricMessage bMessage)
         {
             var sMessage = new ServiceMessage();
 

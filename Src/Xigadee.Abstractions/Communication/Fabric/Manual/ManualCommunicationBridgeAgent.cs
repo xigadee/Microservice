@@ -9,7 +9,7 @@ namespace Xigadee
     /// <summary>
     /// This agent uses the manual channel agent for communication.
     /// </summary>
-    public class ManualCommunicationBridgeAgent: CommunicationBridgeAgent
+    public class ManualCommunicationBridgeAgent: CommunicationFabricBridgeBase
     {
         #region Declarations
         private long mSendCount = 0;
@@ -37,7 +37,7 @@ namespace Xigadee
         /// <param name="mode">The desired communication mode.</param>
         /// <param name="payloadHistoryEnabled">This property specifies whether the message history should be maintained.</param>
         /// <param name="retryAttempts">This is the number of retry delivery attempts that should be attempted. Leave this null if not required.</param>
-        protected internal ManualCommunicationBridgeAgent(ManualFabricBridge fabric, FabricMode mode            
+        protected internal ManualCommunicationBridgeAgent(ManualCommunicationFabric fabric, CommunicationFabricMode mode            
             , bool payloadHistoryEnabled = false
             , int? retryAttempts = null
             ) : base(mode)
@@ -58,10 +58,10 @@ namespace Xigadee
         /// <param name="mode">The desired communication mode.</param>
         /// <param name="payloadHistoryEnabled">This property specifies whether the message history should be maintained.</param>
         /// <param name="retryAttempts">This is the number of retry delivery attempts that should be attempted. Leave this null if not required.</param>
-        protected internal ManualCommunicationBridgeAgent(FabricMode mode
+        protected internal ManualCommunicationBridgeAgent(CommunicationFabricMode mode
             , bool payloadHistoryEnabled = false
             , int? retryAttempts = null
-            ) : this(new ManualFabricBridge(), mode, payloadHistoryEnabled, retryAttempts)
+            ) : this(new ManualCommunicationFabric(), mode, payloadHistoryEnabled, retryAttempts)
         {
         }
         #endregion        
@@ -69,7 +69,7 @@ namespace Xigadee
         /// <summary>
         /// Gets the connection fabric.
         /// </summary>
-        public ManualFabricBridge Fabric { get; }
+        public ManualCommunicationFabric Fabric { get; }
 
         #region GetListener()
         /// <summary>
@@ -154,10 +154,10 @@ namespace Xigadee
 
                 switch (Mode)
                 {
-                    case FabricMode.Queue:
+                    case CommunicationFabricMode.Queue:
                         Sender_TransmitRoundRobin(e, count);
                         break;
-                    case FabricMode.Broadcast:
+                    case CommunicationFabricMode.Broadcast:
                         Sender_TransmitBroadcast(e, count);
                         break;
                 }

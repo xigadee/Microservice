@@ -2,9 +2,9 @@
 using System.Collections.Concurrent;
 namespace Xigadee
 {
-    public class ManualFabricAgentV2 : CommunicationBridgeAgent
+    public class ManualFabricAgentV2 : CommunicationFabricBridgeBase
     {
-        public ManualFabricAgentV2(FabricMode mode) : base(mode)
+        public ManualFabricAgentV2(CommunicationFabricMode mode) : base(mode)
         {
         }
 

@@ -23,9 +23,9 @@ namespace Test.Xigadee
                 DebugMemoryDataCollector collector1, collector2;
                 CommandInitiator init = null;
 
-                var fabric = new ManualFabricBridge();
-                var bridgeOut = fabric[FabricMode.Queue];
-                var bridgeReturn = fabric[FabricMode.Broadcast];
+                var fabric = new ManualCommunicationFabric();
+                var bridgeOut = fabric[CommunicationFabricMode.Queue];
+                var bridgeReturn = fabric[CommunicationFabricMode.Broadcast];
 
                 var pClient = new MicroservicePipeline("Client");
                 var pServer = new MicroservicePipeline("Server");

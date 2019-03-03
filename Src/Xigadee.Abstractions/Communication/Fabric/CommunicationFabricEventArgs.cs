@@ -5,14 +5,14 @@ namespace Xigadee
     /// <summary>
     /// This class is used to hold temporary payload and exception information.
     /// </summary>
-    public class CommunicationAgentEventArgs: EventArgs
+    public class CommunicationFabricEventArgs: EventArgs
     {
         /// <summary>
         /// This is the default constructor.
         /// </summary>
         /// <param name="Payload">The payload.</param>
         /// <param name="Ex">The optional exception.</param>
-        public CommunicationAgentEventArgs(TransmissionPayload Payload, Exception Ex = null)
+        public CommunicationFabricEventArgs(TransmissionPayload Payload, Exception Ex = null)
         {
             this.Payload = Payload;
             this.Ex = Ex;

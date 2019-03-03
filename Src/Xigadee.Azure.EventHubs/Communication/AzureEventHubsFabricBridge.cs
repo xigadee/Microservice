@@ -21,7 +21,7 @@ namespace Xigadee
     /// <summary>
     /// This is the Farbric Bridge for the Azure Event Hubs.
     /// </summary>
-    public class AzureEventHubsFabricBridge : FabricBridgeBase<ICommunicationAgent>
+    public class AzureEventHubsFabricBridge : CommunicationFabricBase<ICommunicationFabricBridge>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureEventHubsFabricBridge"/> class.
@@ -31,25 +31,25 @@ namespace Xigadee
 
         }
         /// <summary>
-        /// Gets the <see cref="ICommunicationAgent"/> with the specified mode.
+        /// Gets the <see cref="ICommunicationFabricBridge"/> with the specified mode.
         /// </summary>
         /// <value>
-        /// The <see cref="ICommunicationAgent"/>.
+        /// The <see cref="ICommunicationFabricBridge"/>.
         /// </value>
         /// <param name="mode">The mode.</param>
         /// <returns></returns>
         /// <exception cref="BridgeAgentModeNotSetException"></exception>
         /// <exception cref="NotSupportedException"></exception>
-        public override ICommunicationAgent this[FabricMode mode]
+        public override ICommunicationFabricBridge this[CommunicationFabricMode mode]
         {
             get
             {
                 switch (mode)
                 {
-                    case FabricMode.Broadcast:
-                    case FabricMode.Queue:
+                    case CommunicationFabricMode.Broadcast:
+                    case CommunicationFabricMode.Queue:
                         return new AzureEventHubsBridgeAgent();
-                    case FabricMode.NotSet:
+                    case CommunicationFabricMode.NotSet:
                         throw new BridgeAgentModeNotSetException();
                     default:
                         throw new NotSupportedException($"{mode.ToString()} is not supported.");

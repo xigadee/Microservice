@@ -7,13 +7,13 @@ namespace Xigadee
     /// <summary>
     /// This is the manual tester, primarily used for testing.
     /// </summary>
-    public class ManualChannelListener: MessagingListenerBase<ManualFabricConnection, FabricMessage, ManualChannelClientHolder>
+    public class ManualChannelListener: MessagingListenerBase<ManualFabricConnection, CommunicationFabricMessage, ManualChannelClientHolder>
     {
         #region Fabric
         /// <summary>
         /// This is the Azure connection class.
         /// </summary>
-        public ManualFabricBridge Fabric { get; set; }
+        public ManualCommunicationFabric Fabric { get; set; }
         #endregion
 
         ///// <summary>

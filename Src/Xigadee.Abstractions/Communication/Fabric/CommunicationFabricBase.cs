@@ -3,23 +3,23 @@
     /// <summary>
     /// This class is used to form the fabric used to communicate between Microservices.
     /// </summary>
-    public abstract class FabricBridgeBase<B>
-        where B: ICommunicationAgent
+    public abstract class CommunicationFabricBase<B>
+        where B: ICommunicationFabricBridge
     {
         /// <summary>
-        /// Gets the <see cref="ICommunicationAgent"/> for the specified mode.
+        /// Gets the <see cref="ICommunicationFabricBridge"/> for the specified mode.
         /// </summary>
         /// <param name="mode">The communication mode.</param>
         /// <returns>A bridge for the specific communication mode.</returns>
-        public abstract B this[FabricMode mode] { get; }
+        public abstract B this[CommunicationFabricMode mode] { get; }
 
         /// <summary>
         /// Gets the queue agent.
         /// </summary>
-        public virtual B Queue => this[FabricMode.Queue];
+        public virtual B Queue => this[CommunicationFabricMode.Queue];
         /// <summary>
         /// Gets the broadcast agent.
         /// </summary>
-        public virtual B Broadcast => this[FabricMode.Broadcast];
+        public virtual B Broadcast => this[CommunicationFabricMode.Broadcast];
     }
 }

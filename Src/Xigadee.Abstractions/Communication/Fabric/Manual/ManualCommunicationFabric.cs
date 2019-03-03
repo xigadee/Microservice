@@ -5,21 +5,21 @@ namespace Xigadee
     /// <summary>
     /// This is the communication bridge that simulates passing messages between Microservices and can be used for unit test based scenarios.
     /// </summary>
-    public class ManualFabricBridge: FabricBridgeBase<ICommunicationAgent>
+    public class ManualCommunicationFabric: CommunicationFabricBase<ICommunicationFabricBridge>
     {
         #region Declarations
         private ConcurrentDictionary<string, ManualFabricChannel> mChannels;
 
-        private ConcurrentDictionary<FabricMode, ICommunicationAgent> mAgents;
+        private ConcurrentDictionary<CommunicationFabricMode, ICommunicationFabricBridge> mAgents;
         #endregion
         #region Constructor
         /// <summary>
-        /// Initializes a new instance of the <see cref="ManualFabricBridge"/> class.
+        /// Initializes a new instance of the <see cref="ManualCommunicationFabric"/> class.
         /// </summary>
-        public ManualFabricBridge(bool payloadHistoryEnabled = true, int? retryAttempts = null)
+        public ManualCommunicationFabric(bool payloadHistoryEnabled = true, int? retryAttempts = null)
         {
             mChannels = new ConcurrentDictionary<string, ManualFabricChannel>();
-            mAgents = new ConcurrentDictionary<FabricMode, ICommunicationAgent>();
+            mAgents = new ConcurrentDictionary<CommunicationFabricMode, ICommunicationFabricBridge>();
 
             PayloadHistoryEnabled = payloadHistoryEnabled;
             RetryAttempts = retryAttempts;
@@ -36,19 +36,19 @@ namespace Xigadee
         public int? RetryAttempts { get; }
 
         /// <summary>
-        /// Gets the <see cref="ICommunicationAgent"/> with the specified mode.
+        /// Gets the <see cref="ICommunicationFabricBridge"/> with the specified mode.
         /// </summary>
         /// <value>
-        /// The <see cref="ICommunicationAgent"/>.
+        /// The <see cref="ICommunicationFabricBridge"/>.
         /// </value>
         /// <param name="mode">The mode.</param>
         /// <returns></returns>
         /// <exception cref="NotSupportedException">The communication bridge mode is not supported</exception>
-        public override ICommunicationAgent this[FabricMode mode]
+        public override ICommunicationFabricBridge this[CommunicationFabricMode mode]
         {
             get
             {
-                if (mode == FabricMode.NotSet)
+                if (mode == CommunicationFabricMode.NotSet)
                     throw new NotSupportedException("The communication bridge mode is not supported");
 
                 return mAgents.GetOrAdd(mode, (m) => new ManualCommunicationBridgeAgent(this, m, PayloadHistoryEnabled, RetryAttempts));

@@ -13,9 +13,9 @@ namespace Test.Xigadee
         {
             try
             {
-                var fabric = new ManualFabricBridge();
-                var bridgeOut = fabric[FabricMode.Queue];
-                var bridgein = fabric[FabricMode.Broadcast];
+                var fabric = new ManualCommunicationFabric();
+                var bridgeOut = fabric[CommunicationFabricMode.Queue];
+                var bridgein = fabric[CommunicationFabricMode.Broadcast];
 
                 var listenerS = bridgein.GetListener();
                 var senderS = bridgeOut.GetSender();

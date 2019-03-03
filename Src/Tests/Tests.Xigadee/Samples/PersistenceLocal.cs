@@ -99,9 +99,9 @@ namespace Test.Xigadee.Samples
         {
             try
             {
-                var fabric = new ManualFabricBridge();
-                var bridgeRequest = fabric[FabricMode.Queue];
-                var bridgeResponse = fabric[FabricMode.Broadcast];
+                var fabric = new ManualCommunicationFabric();
+                var bridgeRequest = fabric[CommunicationFabricMode.Queue];
+                var bridgeResponse = fabric[CommunicationFabricMode.Broadcast];
 
                 PersistenceClient<Guid, Sample1> repo;
 

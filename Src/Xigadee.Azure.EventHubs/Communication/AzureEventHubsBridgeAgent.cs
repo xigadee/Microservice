@@ -7,10 +7,10 @@ namespace Xigadee
     /// <summary>
     /// This agent is used by the Event Hub fabric.
     /// </summary>
-    /// <seealso cref="Xigadee.CommunicationBridgeAgent" />
-    public class AzureEventHubsBridgeAgent : CommunicationBridgeAgent
+    /// <seealso cref="Xigadee.CommunicationFabricBridgeBase" />
+    public class AzureEventHubsBridgeAgent : CommunicationFabricBridgeBase
     {
-        public AzureEventHubsBridgeAgent():base(FabricMode.NotSet)
+        public AzureEventHubsBridgeAgent():base(CommunicationFabricMode.NotSet)
         {
 
         }

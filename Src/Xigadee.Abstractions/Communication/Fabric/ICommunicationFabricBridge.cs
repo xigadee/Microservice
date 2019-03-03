@@ -5,25 +5,25 @@ namespace Xigadee
     /// <summary>
     /// This is the base interface for a communication bridge
     /// </summary>
-    public interface ICommunicationAgent
+    public interface ICommunicationFabricBridge
     {
         /// <summary>
         /// Occurs when an exception is raised.
         /// </summary>
-        event EventHandler<CommunicationAgentEventArgs> OnException;
+        event EventHandler<CommunicationFabricEventArgs> OnException;
         /// <summary>
         /// Occurs when a message is received.
         /// </summary>
-        event EventHandler<CommunicationAgentEventArgs> OnReceive;
+        event EventHandler<CommunicationFabricEventArgs> OnReceive;
         /// <summary>
         /// Occurs before a message is transmitted.
         /// </summary>
-        event EventHandler<CommunicationAgentEventArgs> OnTransmit;
+        event EventHandler<CommunicationFabricEventArgs> OnTransmit;
 
         /// <summary>
         /// Gets the mode, round robin or broadcast.
         /// </summary>
-        FabricMode Mode { get; }
+        CommunicationFabricMode Mode { get; }
         /// <summary>
         /// Gets a value indicating whether payloads received has all been signalled complete.
         /// </summary>

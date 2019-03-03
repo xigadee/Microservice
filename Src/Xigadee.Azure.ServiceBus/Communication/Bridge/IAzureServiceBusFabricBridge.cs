@@ -3,8 +3,8 @@
     /// <summary>
     /// This interface contains extensions to allow additional Service Bus parameters to be set for the listeners and senders.
     /// </summary>
-    /// <seealso cref="Xigadee.ICommunicationAgent" />
-    public interface IAzureServiceBusFabricBridge: ICommunicationAgent
+    /// <seealso cref="Xigadee.ICommunicationFabricBridge" />
+    public interface IAzureServiceBusFabricBridge: ICommunicationFabricBridge
     {
         /// <summary>
         /// Gets a listener agent for the bridge.

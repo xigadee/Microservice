@@ -9,10 +9,10 @@ namespace Xigadee
     {
         public ManualFabricQueueHolder()
         {
-            Queue = new ConcurrentQueue<FabricMessage>();
+            Queue = new ConcurrentQueue<CommunicationFabricMessage>();
         }
 
-        public bool Enqueue(FabricMessage message)
+        public bool Enqueue(CommunicationFabricMessage message)
         {
             if (!(Filter?.Invoke(message) ?? true))
                 return false;
@@ -23,35 +23,35 @@ namespace Xigadee
 
         private object syncDeadletter = new object();
 
-        public void DeadletterEnqueue(FabricMessage message)
+        public void DeadletterEnqueue(CommunicationFabricMessage message)
         {
             if (Deadletter == null)
                 lock (syncDeadletter)
                 {
                     if (Deadletter == null)
-                        Deadletter = new ConcurrentQueue<FabricMessage>();
+                        Deadletter = new ConcurrentQueue<CommunicationFabricMessage>();
                 }
 
             Deadletter.Enqueue(message);
         }
 
-        public bool TryDequeue(out FabricMessage message)
+        public bool TryDequeue(out CommunicationFabricMessage message)
         {
             return Queue.TryDequeue(out message);
         }
 
 
-        public bool TryDeadletterDequeue(out FabricMessage message)
+        public bool TryDeadletterDequeue(out CommunicationFabricMessage message)
         {
             message = null;
             return Deadletter?.TryDequeue(out message) ?? false;
         }
 
 
-        public Func<FabricMessage, bool> Filter { get; set; }
+        public Func<CommunicationFabricMessage, bool> Filter { get; set; }
 
-        public ConcurrentQueue<FabricMessage> Queue { get; }
+        public ConcurrentQueue<CommunicationFabricMessage> Queue { get; }
 
-        public ConcurrentQueue<FabricMessage> Deadletter { get; private set; }
+        public ConcurrentQueue<CommunicationFabricMessage> Deadletter { get; private set; }
     }
 }

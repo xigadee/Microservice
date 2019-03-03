@@ -9,13 +9,13 @@ namespace Xigadee
     /// <summary>
     /// This class can be used to simulate the sender functionality in unit test projects.
     /// </summary>
-    public class ManualChannelSender:MessagingSenderBase<ManualFabricConnection, FabricMessage, ManualChannelClientHolder>
+    public class ManualChannelSender:MessagingSenderBase<ManualFabricConnection, CommunicationFabricMessage, ManualChannelClientHolder>
     {
         #region Fabric
         /// <summary>
         /// This is the Azure connection class.
         /// </summary>
-        public ManualFabricBridge Fabric { get; set; }
+        public ManualCommunicationFabric Fabric { get; set; }
         #endregion
 
         /// <summary>

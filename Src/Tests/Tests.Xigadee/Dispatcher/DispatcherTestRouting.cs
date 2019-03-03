@@ -14,7 +14,7 @@ namespace Test.Xigadee
         #region Declarations
         IPipeline mPipeline = null;
 
-        ManualFabricBridge fabric = null;
+        ManualCommunicationFabric fabric = null;
         ManualChannelListener mListener = null;
         ManualChannelSender mSender = null;
         DispatcherCommand mDCommand = null;
@@ -28,9 +28,9 @@ namespace Test.Xigadee
         [TestInitialize]
         public void TearUp()
         {
-            fabric = new ManualFabricBridge();
-            var bridgeOut = fabric[FabricMode.Queue];
-            var bridgein = fabric[FabricMode.Broadcast];
+            fabric = new ManualCommunicationFabric();
+            var bridgeOut = fabric[CommunicationFabricMode.Queue];
+            var bridgein = fabric[CommunicationFabricMode.Broadcast];
             mListener = (ManualChannelListener)bridgein.GetListener();
             mSender = (ManualChannelSender)bridgeOut.GetSender();
 

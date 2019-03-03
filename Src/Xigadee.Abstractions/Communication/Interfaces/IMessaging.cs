@@ -5,8 +5,6 @@
     /// </summary>
     public interface IMessaging: IRequireServiceHandlers, IRequireServiceOriginator, IRequireDataCollector, IRequireSharedServices
     {
-
-
         /// <summary>
         /// This is the channel id for the messaging agent.
         /// </summary>

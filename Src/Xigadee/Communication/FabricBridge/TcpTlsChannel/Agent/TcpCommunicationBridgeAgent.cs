@@ -6,13 +6,13 @@ namespace Xigadee
     /// <summary>
     /// This agent uses the Tcp communication to link Microservice applications.
     /// </summary>
-    public class TcpCommunicationBridgeAgent : CommunicationBridgeAgent
+    public class TcpCommunicationBridgeAgent : CommunicationFabricBridgeBase
     {
         List<TcpTlsChannelListener> mListeners = new List<TcpTlsChannelListener>();
         List<TcpTlsChannelSender> mSenders = new List<TcpTlsChannelSender>();
         IPEndPoint mEndPoint;
 
-        public TcpCommunicationBridgeAgent(IPEndPoint EndPoint):base(FabricMode.NotSet)
+        public TcpCommunicationBridgeAgent(IPEndPoint EndPoint):base(CommunicationFabricMode.NotSet)
         {
             mEndPoint = EndPoint;
         }

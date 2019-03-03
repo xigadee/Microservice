@@ -84,7 +84,7 @@ namespace Test.Xigadee
             }
 
             public void Create(string id
-                , ICommunicationAgent bridgeOut, ICommunicationAgent bridgeIn, ICommunicationAgent bridgeMaster
+                , ICommunicationFabricBridge bridgeOut, ICommunicationFabricBridge bridgeIn, ICommunicationFabricBridge bridgeMaster
                 , TestMasterJobCommand masterjob
                 , out PersistenceClient<Guid, BridgeMe> init, out DebugMemoryDataCollector memcollector)
             {
@@ -130,10 +130,10 @@ namespace Test.Xigadee
         {
             var ctx = new EnqueueContext();
 
-            var fabric = new ManualFabricBridge();
-            var bridgeOut = fabric[FabricMode.Queue];
-            var bridgeIn = fabric[FabricMode.Broadcast];
-            var bridgeMaster = fabric[FabricMode.Broadcast];
+            var fabric = new ManualCommunicationFabric();
+            var bridgeOut = fabric[CommunicationFabricMode.Queue];
+            var bridgeIn = fabric[CommunicationFabricMode.Broadcast];
+            var bridgeMaster = fabric[CommunicationFabricMode.Broadcast];
 
             try
             {
