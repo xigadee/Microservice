@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+
 namespace Xigadee
 {
     /// <summary>
@@ -11,7 +13,7 @@ namespace Xigadee
         /// This is the default constructor. 
         /// </summary>
         /// <param name="mode">The operational mode.</param>
-        protected CommunicationFabricBridgeBase(CommunicationFabricMode mode)
+        protected CommunicationFabricBridgeBase(ManualCommunicationFabricMode mode)
         {
             Mode = mode;
         } 
@@ -57,7 +59,7 @@ namespace Xigadee
         /// <summary>
         /// This is the communication bridge mode.
         /// </summary>
-        public CommunicationFabricMode Mode { get; }
+        public ManualCommunicationFabricMode Mode { get; }
 
         /// <summary>
         /// This method returns a new listener.

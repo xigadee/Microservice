@@ -8,7 +8,7 @@ namespace Xigadee
     /// This is the base fabric message. It closely mirrors the BrokeredMessage of Service Bus to allow for simulations of functionality without the need 
     /// for a work service bus to test.
     /// </summary>
-    public class CommunicationFabricMessage
+    public class ManaualFabricMessage
     {
         /// <summary>
         /// This action is used to signal that the message can be released back to the listener.
@@ -17,18 +17,18 @@ namespace Xigadee
 
         #region Constructor
         /// <summary>
-        /// Initializes a new instance of the <see cref="CommunicationFabricMessage"/> class.
+        /// Initializes a new instance of the <see cref="ManaualFabricMessage"/> class.
         /// </summary>
-        public CommunicationFabricMessage()
+        public ManaualFabricMessage()
         {
             Id = Guid.NewGuid();
             Properties = new Dictionary<string, string>();
         }
         /// <summary>
-        /// Initializes a new instance of the <see cref="CommunicationFabricMessage"/> class.
+        /// Initializes a new instance of the <see cref="ManaualFabricMessage"/> class.
         /// </summary>
         /// <param name="blob">The message BLOB.</param>
-        public CommunicationFabricMessage(byte[] blob) : this()
+        public ManaualFabricMessage(byte[] blob) : this()
         {
             Message = blob;
         } 
@@ -116,7 +116,7 @@ namespace Xigadee
     /// This static class is used to set the key properties to enable messages to be transmitted
     /// over the Azure Service Bus.
     /// </summary>
-    public static class CommunicationFabricMessageHelper
+    public static class ManualFabricMessageHelper
     {
         #region AssignMessageHelpers<C>(this AzureClientHolder<C,BrokeredMessage> client)
         /// <summary>
@@ -138,7 +138,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="message">The fabric message.</param>
         /// <param name="success">The message success status.</param>
-        public static void MessageSignal(CommunicationFabricMessage message, bool success)
+        public static void MessageSignal(ManaualFabricMessage message, bool success)
         {
             if (success)
                 message.Complete();
@@ -154,14 +154,14 @@ namespace Xigadee
         /// </summary>
         /// <param name="payload">The payload object to convert to a FabricMessage.</param>
         /// <returns>Returns a FabricMessage object.</returns>
-        public static CommunicationFabricMessage Pack(TransmissionPayload payload)
+        public static ManaualFabricMessage Pack(TransmissionPayload payload)
         {
             ServiceMessage sMessage = payload.Message;
-            CommunicationFabricMessage bMessage;
+            ManaualFabricMessage bMessage;
             if (sMessage.Holder == null)
-                bMessage = new CommunicationFabricMessage();
+                bMessage = new ManaualFabricMessage();
             else
-                bMessage = new CommunicationFabricMessage(sMessage.Holder);
+                bMessage = new ManaualFabricMessage(sMessage.Holder);
 
             bMessage.Properties.Add("SecuritySignature", sMessage.SecuritySignature);
 
@@ -205,7 +205,7 @@ namespace Xigadee
         /// /// </summary>
         /// <param name="bMessage">The FabricMessage to convert.</param>
         /// <returns>Returns a generic ServiceMessage class for processing.</returns>
-        public static ServiceMessage Unpack(CommunicationFabricMessage bMessage)
+        public static ServiceMessage Unpack(ManaualFabricMessage bMessage)
         {
             var sMessage = new ServiceMessage();
 

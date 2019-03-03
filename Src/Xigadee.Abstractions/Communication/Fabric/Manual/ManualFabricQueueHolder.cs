@@ -9,10 +9,10 @@ namespace Xigadee
     {
         public ManualFabricQueueHolder()
         {
-            Queue = new ConcurrentQueue<CommunicationFabricMessage>();
+            Queue = new ConcurrentQueue<ManaualFabricMessage>();
         }
 
-        public bool Enqueue(CommunicationFabricMessage message)
+        public bool Enqueue(ManaualFabricMessage message)
         {
             if (!(Filter?.Invoke(message) ?? true))
                 return false;
@@ -23,35 +23,35 @@ namespace Xigadee
 
         private object syncDeadletter = new object();
 
-        public void DeadletterEnqueue(CommunicationFabricMessage message)
+        public void DeadletterEnqueue(ManaualFabricMessage message)
         {
             if (Deadletter == null)
                 lock (syncDeadletter)
                 {
                     if (Deadletter == null)
-                        Deadletter = new ConcurrentQueue<CommunicationFabricMessage>();
+                        Deadletter = new ConcurrentQueue<ManaualFabricMessage>();
                 }
 
             Deadletter.Enqueue(message);
         }
 
-        public bool TryDequeue(out CommunicationFabricMessage message)
+        public bool TryDequeue(out ManaualFabricMessage message)
         {
             return Queue.TryDequeue(out message);
         }
 
 
-        public bool TryDeadletterDequeue(out CommunicationFabricMessage message)
+        public bool TryDeadletterDequeue(out ManaualFabricMessage message)
         {
             message = null;
             return Deadletter?.TryDequeue(out message) ?? false;
         }
 
 
-        public Func<CommunicationFabricMessage, bool> Filter { get; set; }
+        public Func<ManaualFabricMessage, bool> Filter { get; set; }
 
-        public ConcurrentQueue<CommunicationFabricMessage> Queue { get; }
+        public ConcurrentQueue<ManaualFabricMessage> Queue { get; }
 
-        public ConcurrentQueue<CommunicationFabricMessage> Deadletter { get; private set; }
+        public ConcurrentQueue<ManaualFabricMessage> Deadletter { get; private set; }
     }
 }

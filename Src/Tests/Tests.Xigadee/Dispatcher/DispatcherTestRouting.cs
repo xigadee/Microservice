@@ -29,8 +29,8 @@ namespace Test.Xigadee
         public void TearUp()
         {
             fabric = new ManualCommunicationFabric();
-            var bridgeOut = fabric[CommunicationFabricMode.Queue];
-            var bridgein = fabric[CommunicationFabricMode.Broadcast];
+            var bridgeOut = fabric[ManualCommunicationFabricMode.Queue];
+            var bridgein = fabric[ManualCommunicationFabricMode.Broadcast];
             mListener = (ManualChannelListener)bridgein.GetListener();
             mSender = (ManualChannelSender)bridgeOut.GetSender();
 

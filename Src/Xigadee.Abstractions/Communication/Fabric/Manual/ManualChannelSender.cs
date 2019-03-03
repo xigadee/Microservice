@@ -9,7 +9,7 @@ namespace Xigadee
     /// <summary>
     /// This class can be used to simulate the sender functionality in unit test projects.
     /// </summary>
-    public class ManualChannelSender:MessagingSenderBase<ManualFabricConnection, CommunicationFabricMessage, ManualChannelClientHolder>
+    public class ManualChannelSender:MessagingSenderBase<ManualFabricConnection, ManaualFabricMessage, ManualChannelClientHolder>
     {
         #region Fabric
         /// <summary>

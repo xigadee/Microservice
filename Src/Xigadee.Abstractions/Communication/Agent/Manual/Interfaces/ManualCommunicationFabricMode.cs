@@ -3,7 +3,7 @@
     /// <summary>
     /// This enumeration specifies the mode used for the bridge.
     /// </summary>
-    public enum CommunicationFabricMode
+    public enum ManualCommunicationFabricMode
     {
         /// <summary>
         /// In round robin mode a response message is only sent to a single recipient.

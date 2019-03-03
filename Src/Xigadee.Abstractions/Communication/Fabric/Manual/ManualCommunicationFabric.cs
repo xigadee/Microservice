@@ -10,7 +10,7 @@ namespace Xigadee
         #region Declarations
         private ConcurrentDictionary<string, ManualFabricChannel> mChannels;
 
-        private ConcurrentDictionary<CommunicationFabricMode, ICommunicationFabricBridge> mAgents;
+        private ConcurrentDictionary<ManualCommunicationFabricMode, ICommunicationFabricBridge> mAgents;
         #endregion
         #region Constructor
         /// <summary>
@@ -19,7 +19,7 @@ namespace Xigadee
         public ManualCommunicationFabric(bool payloadHistoryEnabled = true, int? retryAttempts = null)
         {
             mChannels = new ConcurrentDictionary<string, ManualFabricChannel>();
-            mAgents = new ConcurrentDictionary<CommunicationFabricMode, ICommunicationFabricBridge>();
+            mAgents = new ConcurrentDictionary<ManualCommunicationFabricMode, ICommunicationFabricBridge>();
 
             PayloadHistoryEnabled = payloadHistoryEnabled;
             RetryAttempts = retryAttempts;
@@ -44,11 +44,11 @@ namespace Xigadee
         /// <param name="mode">The mode.</param>
         /// <returns></returns>
         /// <exception cref="NotSupportedException">The communication bridge mode is not supported</exception>
-        public override ICommunicationFabricBridge this[CommunicationFabricMode mode]
+        public override ICommunicationFabricBridge this[ManualCommunicationFabricMode mode]
         {
             get
             {
-                if (mode == CommunicationFabricMode.NotSet)
+                if (mode == ManualCommunicationFabricMode.NotSet)
                     throw new NotSupportedException("The communication bridge mode is not supported");
 
                 return mAgents.GetOrAdd(mode, (m) => new ManualCommunicationBridgeAgent(this, m, PayloadHistoryEnabled, RetryAttempts));

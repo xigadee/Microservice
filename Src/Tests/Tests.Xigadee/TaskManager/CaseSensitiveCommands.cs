@@ -24,8 +24,8 @@ namespace Test.Xigadee
                 CommandInitiator init = null;
 
                 var fabric = new ManualCommunicationFabric();
-                var bridgeOut = fabric[CommunicationFabricMode.Queue];
-                var bridgeReturn = fabric[CommunicationFabricMode.Broadcast];
+                var bridgeOut = fabric[ManualCommunicationFabricMode.Queue];
+                var bridgeReturn = fabric[ManualCommunicationFabricMode.Broadcast];
 
                 var pClient = new MicroservicePipeline("Client");
                 var pServer = new MicroservicePipeline("Server");

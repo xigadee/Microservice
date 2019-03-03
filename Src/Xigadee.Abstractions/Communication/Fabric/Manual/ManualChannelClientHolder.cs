@@ -10,7 +10,7 @@ namespace Xigadee
     /// <summary>
     /// This is the manual channel client holder for receiving messages.
     /// </summary>
-    public class ManualChannelClientHolder: ClientHolder<ManualFabricConnection, CommunicationFabricMessage>
+    public class ManualChannelClientHolder: ClientHolder<ManualFabricConnection, ManaualFabricMessage>
     {
         private ConcurrentQueue<TransmissionPayload> mPending = new ConcurrentQueue<TransmissionPayload>();
 

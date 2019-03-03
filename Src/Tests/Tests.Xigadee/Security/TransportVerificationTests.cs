@@ -27,8 +27,8 @@ namespace Test.Xigadee
                 try
                 {
                     var fabric = new ManualCommunicationFabric();
-                    var bridgeOut = fabric[CommunicationFabricMode.Queue];
-                    var bridgein = fabric[CommunicationFabricMode.Broadcast];
+                    var bridgeOut = fabric[ManualCommunicationFabricMode.Queue];
+                    var bridgein = fabric[ManualCommunicationFabricMode.Broadcast];
 
                     PersistenceClient<Guid, SecureMe> init;
                     DebugMemoryDataCollector memp1, memp2;

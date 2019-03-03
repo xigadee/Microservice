@@ -75,8 +75,8 @@ namespace Test.Xigadee.Dispatcher.ErrorPolicy
             DebugMemoryDataCollector collectorS, collectorC;
 
             var fabric = new ManualCommunicationFabric();
-            var bridgeOut = fabric[CommunicationFabricMode.Queue];
-            var bridgeReturn = fabric[CommunicationFabricMode.Broadcast];
+            var bridgeOut = fabric[ManualCommunicationFabricMode.Queue];
+            var bridgeReturn = fabric[ManualCommunicationFabricMode.Broadcast];
 
             var server = new MicroservicePipeline($"{nameof(RPipeExternal)}server");
             var client = new MicroservicePipeline($"{nameof(RPipeExternal)}client");

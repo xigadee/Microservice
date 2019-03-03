@@ -37,7 +37,7 @@ namespace Xigadee
         /// <param name="mode">The desired communication mode.</param>
         /// <param name="payloadHistoryEnabled">This property specifies whether the message history should be maintained.</param>
         /// <param name="retryAttempts">This is the number of retry delivery attempts that should be attempted. Leave this null if not required.</param>
-        protected internal ManualCommunicationBridgeAgent(ManualCommunicationFabric fabric, CommunicationFabricMode mode            
+        protected internal ManualCommunicationBridgeAgent(ManualCommunicationFabric fabric, ManualCommunicationFabricMode mode            
             , bool payloadHistoryEnabled = false
             , int? retryAttempts = null
             ) : base(mode)
@@ -58,7 +58,7 @@ namespace Xigadee
         /// <param name="mode">The desired communication mode.</param>
         /// <param name="payloadHistoryEnabled">This property specifies whether the message history should be maintained.</param>
         /// <param name="retryAttempts">This is the number of retry delivery attempts that should be attempted. Leave this null if not required.</param>
-        protected internal ManualCommunicationBridgeAgent(CommunicationFabricMode mode
+        protected internal ManualCommunicationBridgeAgent(ManualCommunicationFabricMode mode
             , bool payloadHistoryEnabled = false
             , int? retryAttempts = null
             ) : this(new ManualCommunicationFabric(), mode, payloadHistoryEnabled, retryAttempts)
@@ -154,10 +154,10 @@ namespace Xigadee
 
                 switch (Mode)
                 {
-                    case CommunicationFabricMode.Queue:
+                    case ManualCommunicationFabricMode.Queue:
                         Sender_TransmitRoundRobin(e, count);
                         break;
-                    case CommunicationFabricMode.Broadcast:
+                    case ManualCommunicationFabricMode.Broadcast:
                         Sender_TransmitBroadcast(e, count);
                         break;
                 }
