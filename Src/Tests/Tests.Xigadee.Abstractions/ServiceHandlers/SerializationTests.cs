@@ -11,6 +11,10 @@ namespace Tests.Xigadee
         public void SerializationJson1()
         {
             var s1 = new JsonRawSerializer();
+            int intercept = 0;
+
+            s1.ObjectTypeResolved += (object st, ContentTypeEventArgs ea) => intercept++;
+
             var ex1 = new S1JsonTest();
 
             Assert.IsTrue(s1.SupportsContentTypeSerialization(ex1.GetType()));
@@ -35,7 +39,7 @@ namespace Tests.Xigadee
             //OK, now check that these are not the same object.
             ex1.Id = Guid.NewGuid();
             Assert.AreNotEqual(ex1.Item, ((S1JsonTest)holder.Object).Item);
-
+            Assert.IsTrue(intercept==1);
         }
 
         private class S1JsonTest

@@ -14,21 +14,6 @@ namespace Xigadee
             if (string.IsNullOrEmpty(typeAsString))
                 throw new ArgumentNullException($"{nameof(typeAsString)}");
 
-            Type type = null;
-
-            try
-            {
-                type = Type.GetType(typeAsString);
-            }
-            catch (Exception)
-            {
-                if (throwExceptionOnNotResolved)
-                    throw;
-            }
-
-            if (type != null)
-                return type;
-
             var typeparts = typeAsString.Split(',');
 
             return Resolve(typeparts[0], throwExceptionOnNotResolved, typeparts.Length > 2?typeparts[1]:null);

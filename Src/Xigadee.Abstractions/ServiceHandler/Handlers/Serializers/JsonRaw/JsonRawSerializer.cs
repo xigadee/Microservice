@@ -7,12 +7,25 @@ using Newtonsoft.Json;
 namespace Xigadee
 {
     /// <summary>
+    /// This class is used to notify of an incoming type resolution by the serializer.
+    /// </summary>
+    public class ContentTypeEventArgs : EventArgs
+    {
+        public string IncomingType { get; set; }
+        public Type ResolvedType { get; set; }
+    }
+
+    /// <summary>
     /// This is the raw JSON serializer.
     /// </summary>
     /// <seealso cref="Xigadee.SerializerBase" />
     public class JsonRawSerializer : SerializerBase
     {
-        private readonly JsonSerializer mJsonSerializer;
+        protected readonly JsonSerializer mJsonSerializer;
+
+        protected ConcurrentDictionary<string, Type> mTypesResolvedCache = new ConcurrentDictionary<string, Type>();
+
+        public event EventHandler<ContentTypeEventArgs> ObjectTypeResolved;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonRawSerializer"/> class.
@@ -22,7 +35,6 @@ namespace Xigadee
             mJsonSerializer = new JsonSerializer { TypeNameHandling = TypeNameHandling.Auto};
         }
 
-        protected ConcurrentDictionary<string, Type> mTypesResolvedCache = new ConcurrentDictionary<string, Type>();
 
         protected Type TypeResolve(string typeAsString, bool useCache = true)
         {
@@ -31,7 +43,13 @@ namespace Xigadee
             if (useCache && mTypesResolvedCache.TryGetValue(typeAsString, out type))
                 return type;
 
-            type = TypeHelper.Resolve(typeAsString);
+            type = Type.GetType(typeAsString) ?? TypeHelper.Resolve(typeAsString);
+
+            if (type == null)
+                throw new ArgumentOutOfRangeException("");
+            else
+                //Allow resolution to be inspected and rejected if necessary.
+                ObjectTypeResolved?.Invoke(this, new ContentTypeEventArgs() { IncomingType = typeAsString, ResolvedType = type });
 
             return mTypesResolvedCache.AddOrUpdate(typeAsString, type, (s, t) => type);
         }
