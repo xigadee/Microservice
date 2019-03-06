@@ -30,6 +30,12 @@ namespace Tests.Xigadee
 
             s1.Deserialize(holder);
 
+            Assert.AreEqual(ex1.Item, ((S1JsonTest)holder.Object).Item);
+
+            //OK, now check that these are not the same object.
+            ex1.Id = Guid.NewGuid();
+            Assert.AreNotEqual(ex1.Item, ((S1JsonTest)holder.Object).Item);
+
         }
 
         private class S1JsonTest

@@ -68,7 +68,7 @@ namespace Xigadee
         /// <summary>
         /// Gets a value indicating whether this instance has a content type set.
         /// </summary>
-        public bool HasContentType => ContentType!=null;
+        public bool HasContentType => !string.IsNullOrEmpty(ContentType?.ObjectType);
         #endregion
         #region ContentEncoding/HasContentEncoding
         /// <summary>

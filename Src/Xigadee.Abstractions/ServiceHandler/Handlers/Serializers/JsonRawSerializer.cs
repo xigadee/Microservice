@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
@@ -21,12 +22,26 @@ namespace Xigadee
             mJsonSerializer = new JsonSerializer { TypeNameHandling = TypeNameHandling.Auto};
         }
 
+        protected ConcurrentDictionary<string, Type> mTypesResolvedCache = new ConcurrentDictionary<string, Type>();
+
+        protected Type TypeResolve(string typeAsString, bool useCache = true)
+        {
+            Type type;
+
+            if (useCache && mTypesResolvedCache.TryGetValue(typeAsString, out type))
+                return type;
+
+            type = TypeHelper.Resolve(typeAsString);
+
+            return mTypesResolvedCache.AddOrUpdate(typeAsString, type, (s, t) => type);
+        }
+
         public override void Deserialize(ServiceHandlerContext holder)
         {
             if (!holder.HasContentType)
                 return;
-
-            var type = Type.GetType(holder.ContentType.ObjectType);
+            
+            var type = TypeResolve(holder.ContentType.ObjectType);
 
             using (var stream = new MemoryStream(holder.Blob))
             using (var sReader = new StreamReader(stream))
@@ -49,7 +64,7 @@ namespace Xigadee
                 holder.SetBlob(stream.ToArray());
             }
 
-            holder.ContentType = $"{Id}; type=\"{holder.Object.GetType().ToString()}\"";
+            holder.ContentType = $"{Id}; type=\"{holder.Object.GetType().AssemblyQualifiedName}\"";
         }
 
         public override bool SupportsContentTypeSerialization(Type entityType)

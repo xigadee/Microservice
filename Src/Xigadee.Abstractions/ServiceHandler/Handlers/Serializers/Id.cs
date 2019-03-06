@@ -40,7 +40,7 @@ namespace Xigadee
                 if (item.StartsWith("type", StringComparison.InvariantCultureIgnoreCase))
                 {
                     var parts = item.Split('=');
-                    ObjectType = parts.Length == 2 ? parts[1].Trim('\"') : string.Empty;
+                    ObjectType = parts.Length >= 2 ? item.Substring(parts[0].Length+1).Trim('\"') : string.Empty;
                     break;
                 }
             }
