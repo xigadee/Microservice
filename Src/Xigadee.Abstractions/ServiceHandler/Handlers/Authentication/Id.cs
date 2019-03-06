@@ -31,6 +31,9 @@
         /// <param name="id">The name of the resource profile.</param>
         public static implicit operator AuthenticationHandlerId(string id)
         {
+            if (id == null)
+                return null;
+
             return new AuthenticationHandlerId(id);
         }
 
@@ -41,6 +44,9 @@
         /// <param name="handlerId">The handler id.</param>
         public static implicit operator string(AuthenticationHandlerId handlerId)
         {
+            if (handlerId == null)
+                return null;
+
             return handlerId.Id;
         }
     }

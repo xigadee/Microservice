@@ -18,13 +18,23 @@ namespace Xigadee
         /// </summary>
         public JsonRawSerializer():base("application/json")
         {
-            mJsonSerializer = new JsonSerializer { TypeNameHandling = TypeNameHandling.Auto };
+            mJsonSerializer = new JsonSerializer { TypeNameHandling = TypeNameHandling.Auto};
         }
 
         public override void Deserialize(ServiceHandlerContext holder)
         {
             if (!holder.HasContentType)
                 return;
+
+            var type = Type.GetType(holder.ContentType.ObjectType);
+
+            using (var stream = new MemoryStream(holder.Blob))
+            using (var sReader = new StreamReader(stream))
+            using (var textReader = new JsonTextReader(sReader))
+            {
+                var obj = mJsonSerializer.Deserialize(textReader, type);
+                holder.SetObject(obj, true);
+            }
         }
 
         public override void Serialize(ServiceHandlerContext holder)

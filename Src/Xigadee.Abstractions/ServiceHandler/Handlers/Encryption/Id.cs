@@ -33,6 +33,9 @@
         /// <param name="id">The name of the security id.</param>
         public static implicit operator EncryptionHandlerId(string id)
         {
+            if (id == null)
+                return null;
+
             return new EncryptionHandlerId(id);
         }
 
@@ -43,6 +46,9 @@
         /// <param name="handlerId">The handler id.</param>
         public static implicit operator string(EncryptionHandlerId handlerId)
         {
+            if (handlerId == null)
+                return null;
+
             return handlerId.Id;
         }
     }

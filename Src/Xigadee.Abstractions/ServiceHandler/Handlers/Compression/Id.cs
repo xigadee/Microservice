@@ -25,6 +25,9 @@
         /// <param name="id">The name of the resource profile.</param>
         public static implicit operator CompressionHandlerId(string id)
         {
+            if (id == null)
+                return null;
+
             return new CompressionHandlerId(id);
         }
 
@@ -35,6 +38,9 @@
         /// <param name="handlerId">The handler id.</param>
         public static implicit operator string(CompressionHandlerId handlerId)
         {
+            if (handlerId == null)
+                return null;
+
             return handlerId.Id;
         }
     }
