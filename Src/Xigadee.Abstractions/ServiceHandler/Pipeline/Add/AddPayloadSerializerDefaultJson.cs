@@ -2,7 +2,7 @@
 
 namespace Xigadee
 {
-    public static partial class CorePipelineExtensions
+    public static partial class CorePipelineExtensionsCore
     {
         /// <summary>
         /// Adds the default JSON payload serializer to the Microservice.
@@ -17,6 +17,5 @@ namespace Xigadee
 
             return pipeline;
         }
-
     }
 }

@@ -46,6 +46,7 @@
   <ItemGroup>
     <Folder Include="Communication\Messaging\" />
     <Folder Include="DataCollection\Pipeline\Add\" />
+    <Folder Include="ServiceHandler\Handlers\Serializers\Pipeline\" />
   </ItemGroup>
 
 </Project>

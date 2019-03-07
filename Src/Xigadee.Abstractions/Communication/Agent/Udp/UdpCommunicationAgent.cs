@@ -26,7 +26,7 @@ namespace Xigadee
         /// <param name="maxUdpMessagePayloadSize">Maximum size of the UDP message payload.</param>
         public UdpCommunicationAgent((int priority,UdpConfig config)[] configs
             , CommunicationAgentCapabilities capabilities = CommunicationAgentCapabilities.Bidirectional
-            , ServiceHandlerIdCollection shcIds = null
+            , ServiceHandlerCollectionContext shcIds = null
             , ServiceMessageHeaderFragment requestAddress = null
             , ServiceMessageHeader responseAddress = null
             , int? requestAddressPriority = null

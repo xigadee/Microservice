@@ -1,8 +1,5 @@
-﻿#region using
-using System;
+﻿using System;
 using System.Diagnostics;
-using System.Runtime.Serialization; 
-#endregion
 namespace Xigadee
 {
     /// <summary>
@@ -20,6 +17,8 @@ namespace Xigadee
             OriginatorKey = Guid.NewGuid().ToString("N").ToUpperInvariant();
             OriginatorUTC = DateTime.UtcNow;
         }
+
+
         /// <summary>
         /// This constructor sets the header parameters.
         /// </summary>

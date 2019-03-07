@@ -1,12 +1,5 @@
-﻿#region using
-using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.Serialization;
-using System.Text;
-#endregion
 namespace Xigadee
 {
     /// <summary>
@@ -14,32 +7,6 @@ namespace Xigadee
     /// </summary>
     public static class ServiceMessageHelper
     {
-        static JsonContractSerializer sSerializer = new JsonContractSerializer();
-
-        #region PayloadJsonDeserialize(this byte[] blob)
-        /// <summary>
-        /// This method deserializes a Service Message using the blob provided.
-        /// </summary>
-        /// <param name="data">The message to deserialize.</param>
-        /// <returns>A the original message.</returns>
-        public static ServiceMessage PayloadJsonDeserialize(this byte[] data)
-        {
-            return sSerializer.Deserialize<ServiceMessage>(data);
-        }
-        #endregion
-        #region PayloadJsonSerialize(this ServiceMessage message)
-        /// <summary>
-        /// This method serializes a Service Message using a JSON serializer.
-        /// </summary>
-        /// <param name="message">The message to clone.</param>
-        /// <returns>A byte array of the original message.</returns>
-        public static byte[] PayloadJsonSerialize(this ServiceMessage message)
-        {
-            //First clone the service message.
-            return sSerializer.Serialize(message);
-        } 
-        #endregion
-
         #region Clone(this ServiceMessage message)
         /// <summary>
         /// This method clones a Service Message using a JSON serializer.
@@ -48,10 +15,37 @@ namespace Xigadee
         /// <returns>A clone of the original message.</returns>
         public static ServiceMessage Clone(this ServiceMessage message)
         {
-            //First clone the service message.
-            byte[] data = message.PayloadJsonSerialize();
+            var newMessage = new ServiceMessage();
 
-            return data.PayloadJsonDeserialize();
+            //OK, let's do this.
+            newMessage.ActionType = message.ActionType;
+            newMessage.ChannelId = message.ChannelId;
+            newMessage.ChannelPriority = message.ChannelPriority;
+            newMessage.CorrelationKey = message.CorrelationKey;
+            newMessage.CorrelationServiceId = message.CorrelationServiceId;
+            newMessage.CorrelationUTC = message.CorrelationUTC;
+            newMessage.DispatcherTransitCount = message.DispatcherTransitCount;
+            newMessage.EnqueuedTimeUTC = message.EnqueuedTimeUTC;
+            newMessage.FabricDeliveryCount = message.FabricDeliveryCount;
+            newMessage.IsNoop = message.IsNoop;
+            newMessage.IsReplay = message.IsReplay;
+            newMessage.MessageType = message.MessageType;
+            newMessage.OriginatorKey = message.OriginatorKey;
+            newMessage.OriginatorServiceId = message.OriginatorServiceId;
+            newMessage.OriginatorUTC = message.OriginatorUTC;
+            newMessage.ProcessCorrelationKey = message.ProcessCorrelationKey;
+            newMessage.ResponseActionType = message.ResponseActionType;
+            newMessage.ResponseChannelId = message.ResponseChannelId;
+            newMessage.ResponseChannelPriority = message.ResponseChannelPriority;
+            newMessage.ResponseMessageType = message.ResponseMessageType;
+            newMessage.SecuritySignature = message.SecuritySignature;
+            newMessage.Status = message.Status;
+            newMessage.StatusDescription = message.StatusDescription;
+
+            if (message.Holder != null)
+                newMessage.Holder = message.Holder?.Clone();
+
+            return newMessage;
         }
         #endregion
 

@@ -116,7 +116,7 @@ namespace Xigadee
 
         private void Sender_Transmit(ManualCommunicationAgent listener, TransmissionPayload incoming)
         {
-            var payload = incoming.Clone(SignalCompletion, true);
+            var payload = PayloadClone(incoming);
 
             payload.TraceWrite("Cloned", "ManualCommunicationBridgeAgent/PayloadCopy");
 
@@ -132,6 +132,14 @@ namespace Xigadee
             {
                 listener.Collector?.LogException("Unhandled exception in the BridgeAgent", ex);
             }
+        }
+
+
+        private TransmissionPayload PayloadClone(TransmissionPayload incoming)
+        {
+            var payload = incoming.Clone(SignalCompletion, true);
+
+            return payload;
         }
 
 

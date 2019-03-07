@@ -6,7 +6,7 @@ namespace Xigadee
 {
     public class ManualCommunicationAgent : CommunicationAgentBase
     {
-        public ManualCommunicationAgent(ManualFabricBridge fabricBridge, CommunicationAgentCapabilities capabilities, ServiceHandlerIdCollection shIds = null)
+        public ManualCommunicationAgent(ManualFabricBridge fabricBridge, CommunicationAgentCapabilities capabilities, ServiceHandlerCollectionContext shIds = null)
             : base(capabilities, shIds)
         {
             FabricBridge = fabricBridge;

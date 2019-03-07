@@ -17,7 +17,7 @@ namespace Xigadee
         /// <param name="shIds">The service handler id collection</param>
         protected CommunicationAgentBase(
             CommunicationAgentCapabilities capabilities = CommunicationAgentCapabilities.Bidirectional
-            , ServiceHandlerIdCollection shIds = null):base(capabilities, shIds)
+            , ServiceHandlerCollectionContext shIds = null):base(capabilities, shIds)
         {
         }
     }
@@ -45,10 +45,10 @@ namespace Xigadee
         /// <param name="capabilities">The agent capabilities. The default is bidirectional.</param>
         /// <param name="shIds">The service handler id collection.</param>
         protected CommunicationAgentBase(CommunicationAgentCapabilities capabilities = CommunicationAgentCapabilities.Bidirectional
-            , ServiceHandlerIdCollection shIds = null)
+            , ServiceHandlerCollectionContext shIds = null)
         {
             Capabilities = capabilities;
-            ServiceHandlerIds = shIds ?? new ServiceHandlerIdCollection();
+            ServiceHandlerIds = shIds ?? new ServiceHandlerCollectionContext();
         }
         #endregion
 
@@ -56,7 +56,7 @@ namespace Xigadee
         /// <summary>
         /// The service handler ids.
         /// </summary>
-        public ServiceHandlerIdCollection ServiceHandlerIds { get; }
+        public ServiceHandlerCollectionContext ServiceHandlerIds { get; }
         #endregion
 
         #region Capabilities & CanListen/CanSend

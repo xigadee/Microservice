@@ -1,21 +1,12 @@
-﻿#region using
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-#endregion
 namespace Xigadee
 {
     /// <summary>
     /// This class allows for serialization root functionality to be shared.
     /// </summary>
     [DebuggerDisplay("{Name}=>'{Id}'")]
-    public abstract class SerializerBase: IServiceHandlerSerialization
+    public abstract class SerializerBase: ServiceHandlerBase, IServiceHandlerSerialization
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SerializerBase"/> class.
@@ -27,14 +18,7 @@ namespace Xigadee
             Id = id;
             Name = name ?? GetType().Name;
         }
-        /// <summary>
-        /// Gets the content-type parameter, which can be used to quickly identify the serialization type used.
-        /// </summary>
-        public virtual string Id { get; }
-        /// <summary>
-        /// Gets the friendly name.
-        /// </summary>
-        public virtual string Name { get; set;} 
+
         /// <summary>
         /// Returns true if the holder can be deserialized.
         /// </summary>

@@ -30,7 +30,7 @@ namespace Xigadee
         /// <returns>Returns the pipeline.</returns>
         public static C AttachUdpSender<C>(this C cpipe
             , UdpConfig udpDefault = null
-            , ServiceHandlerIdCollection shIdColl = null
+            , ServiceHandlerCollectionContext shIdColl = null
             , IServiceHandlerSerialization serializer = null
             , Action<ISender> action = null
             , int? maxUdpMessagePayloadSize = UdpConfig.PacketMaxSize
@@ -43,10 +43,10 @@ namespace Xigadee
             if ((udpExtended?.Length??0) == 0)
                 udpExtended = new[] {(1, udpDefault)};
 
-            shIdColl = shIdColl ?? new ServiceHandlerIdCollection();
+            shIdColl = shIdColl ?? new ServiceHandlerCollectionContext();
 
-            shIdColl.Serializer = (
-                shIdColl.Serializer?.Id
+            shIdColl.Serialization = (
+                shIdColl.Serialization?.Id
                 ?? serializer?.Id
                 ?? $"udp_out/{cpipe.Channel.Id}"
                 ).ToLowerInvariant();
@@ -79,7 +79,7 @@ namespace Xigadee
         /// <returns>Returns the pipeline.</returns>
         public static C AttachUdpSender<C>(this C cpipe
             , UdpConfig udpDefault = null
-            , ServiceHandlerIdCollection shIdColl = null
+            , ServiceHandlerCollectionContext shIdColl = null
             , Action<ServiceHandlerContext> serialize = null
             , Func<ServiceHandlerContext, bool> canSerialize = null
             , Action<ISender> action = null
@@ -92,16 +92,16 @@ namespace Xigadee
 
             IServiceHandlerSerialization serializer = null;
 
-            shIdColl = shIdColl ?? new ServiceHandlerIdCollection();
+            shIdColl = shIdColl ?? new ServiceHandlerCollectionContext();
 
-            shIdColl.Serializer = (
-                shIdColl.Serializer?.Id?? $"udp_out/{cpipe.Channel.Id}"
+            shIdColl.Serialization = (
+                shIdColl.Serialization?.Id?? $"udp_out/{cpipe.Channel.Id}"
                 ).ToLowerInvariant();
 
             if (serialize != null)
             {
-                serializer = CreateDynamicSerializer(shIdColl.Serializer.Id, serialize: serialize, canSerialize: canSerialize);
-                shIdColl.Serializer = serializer.Id;
+                serializer = CreateDynamicSerializer(shIdColl.Serialization.Id, serialize: serialize, canSerialize: canSerialize);
+                shIdColl.Serialization = serializer.Id;
             }
 
             return cpipe.AttachUdpSender(

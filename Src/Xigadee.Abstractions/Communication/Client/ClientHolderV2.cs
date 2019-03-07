@@ -182,7 +182,7 @@ namespace Xigadee
         /// <summary>
         /// The service handler ids.
         /// </summary>
-        public ServiceHandlerIdCollection ServiceHandlerIds { get; set; }
+        public ServiceHandlerCollectionContext ServiceHandlerIds { get; set; }
         #endregion
 
         #region ServiceHandlers

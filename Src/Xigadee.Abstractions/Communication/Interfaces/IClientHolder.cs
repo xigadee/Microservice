@@ -56,7 +56,7 @@ namespace Xigadee
         /// <summary>
         /// This is the collection
         /// </summary>
-        ServiceHandlerIdCollection ServiceHandlerIds { get; set; }
+        ServiceHandlerCollectionContext ServiceHandlerIds { get; set; }
     }
 
     public static class ClientHolderExtensions

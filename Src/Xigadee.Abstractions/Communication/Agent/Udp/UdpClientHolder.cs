@@ -159,11 +159,11 @@ namespace Xigadee
                         var holder = (ServiceHandlerContext)result.Buffer;
                         holder.Metadata = result.RemoteEndPoint;
 
-                        holder.ContentType = ServiceHandlerIds.Serializer;
+                        holder.ContentType = ServiceHandlerIds.Serialization;
                         //holder.ContentEncoding = ContentEncoding;
 
                         IServiceHandlerSerialization serializer;
-                        if (!ServiceHandlers.Serialization.TryGet(ServiceHandlerIds.Serializer, out serializer))
+                        if (!ServiceHandlers.Serialization.TryGet(ServiceHandlerIds.Serialization, out serializer))
                             throw new Exception();
 
                         if (!serializer.TryDeserialize(holder))
@@ -212,7 +212,7 @@ namespace Xigadee
             {
                 IServiceHandlerSerialization serializer;
 
-                if (!ServiceHandlers.Serialization.TryGet(ServiceHandlerIds.Serializer, out serializer))
+                if (!ServiceHandlers.Serialization.TryGet(ServiceHandlerIds.Serialization, out serializer))
                     throw new Exception();
 
                 if (!serializer.SupportsSerialization(payload.Message.Holder))
