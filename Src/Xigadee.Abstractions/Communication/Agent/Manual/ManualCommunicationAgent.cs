@@ -6,6 +6,12 @@ namespace Xigadee
 {
     public class ManualCommunicationAgent : CommunicationAgentBase
     {
+
+        /// <summary>
+        /// Occurs when a message is sent to the sender. This event is caught and is used to map to corresponding listeners.
+        /// </summary>
+        public event EventHandler<TransmissionPayload> OnProcess;
+
         public ManualCommunicationAgent(ManualFabricBridge fabricBridge, CommunicationAgentCapabilities capabilities, ServiceHandlerCollectionContext shIds = null)
             : base(capabilities, shIds)
         {
@@ -19,10 +25,6 @@ namespace Xigadee
         public ManualFabricBridge FabricBridge { get; }
         #endregion
 
-        /// <summary>
-        /// Occurs when a message is sent to the sender. This event is caught and is used to map to corresponding listeners.
-        /// </summary>
-        public event EventHandler<TransmissionPayload> OnProcess;
 
         private void ProcessInvoke(TransmissionPayload payload)
         {
@@ -36,6 +38,7 @@ namespace Xigadee
             }
         }
 
+        #region Inject(TransmissionPayload payload, int? priority = null)
         /// <summary>
         /// This method injects a service message manually in to the Microservice.
         /// </summary>
@@ -46,25 +49,33 @@ namespace Xigadee
             if (this.Status != ServiceStatus.Running)
             {
                 payload.SignalSuccess();
-                payload.TraceWrite($"Failed: {Status}", "ManualChannelListener/Inject");
+                payload.TraceWrite($"Failed: {Status}", $"{nameof(ManualCommunicationAgent)}/{nameof(Inject)}");
                 return;
             }
 
             try
             {
+                var resolvedPriority = priority ?? payload.Message.ChannelPriority;
+
                 IClientHolderV2 client;
-                if (mListenerClients.TryGetValue(priority ?? payload.Message.ChannelPriority, out client))
+                if (mListenerClients.TryGetValue(resolvedPriority, out client))
                 {
                     ((ManualClientHolder)client).Inject(payload);
-                    payload.TraceWrite($"Success: {client.Name}", "ManualChannelListener/Inject");
+                    payload.TraceWrite($"Success: {client.Name}", $"{nameof(ManualCommunicationAgent)}/{nameof(Inject)}");
+                }
+                else
+                {
+                    payload.TraceWrite($"Unresolved: {ChannelId}/{resolvedPriority}", $"{nameof(ManualCommunicationAgent)}/{nameof(Inject)}");
+                    payload.SignalSuccess();
                 }
             }
             catch (Exception ex)
             {
-                payload.TraceWrite($"Error: {ex.Message}", "ManualChannelListener/Inject");
+                payload.TraceWrite($"Error: {ex.Message}", $"{nameof(ManualCommunicationAgent)}/{nameof(Inject)}");
             }
 
-        }
+        } 
+        #endregion
 
         protected override IClientHolderV2 ListenerClientCreate(ListenerPartitionConfig p)
         {

@@ -20,7 +20,11 @@ namespace Xigadee
 
         }
 
-
+        protected override void StopInternal()
+        {
+            Purge();
+            base.StopInternal();
+        }
         /// <summary>
         /// Purges any remaining messages when the service shuts down.
         /// </summary>
@@ -30,7 +34,7 @@ namespace Xigadee
 
             while (mPending?.TryDequeue(out payload) ?? false)
             {
-                payload.TraceWrite("Purged", "ManualChannelClientHolder/Purge");
+                payload.TraceWrite("Purged", $"{nameof(ManualClientHolder)}/{nameof(Purge)}");
                 payload.SignalFail();
             }
         }
@@ -44,11 +48,11 @@ namespace Xigadee
             try
             {
                 mPending.Enqueue(payload);
-                payload.TraceWrite("Enqueued", "ManualChannelClientHolder/Inject");
+                payload.TraceWrite("Enqueued", $"{nameof(ManualClientHolder)}/{nameof(Inject)}");
             }
             catch (Exception ex)
             {
-                payload.TraceWrite($"Failed: {ex.Message}", "ManualChannelClientHolder/Inject");
+                payload.TraceWrite($"Failed: {ex.Message}", $"{nameof(ManualClientHolder)}/{nameof(Inject)}");
             }
         }
 
@@ -74,7 +78,7 @@ namespace Xigadee
                     Collector?.BoundaryLog(ChannelDirection.Incoming, payload, ChannelId, Priority, batchId: batchId);
 
                 list.Add(payload);
-                payload.TraceWrite("MessagesPull", "ManualChannelClientHolder");
+                payload.TraceWrite("MessagesPull", $"{nameof(ManualClientHolder)}/{nameof(MessagesPull)}");
 
                 countDown--;
             }

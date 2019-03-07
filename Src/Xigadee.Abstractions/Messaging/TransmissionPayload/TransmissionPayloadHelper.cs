@@ -22,7 +22,8 @@ namespace Xigadee
 
             var cloned = new TransmissionPayload(sm, release: signal, traceEnabled: traceEnabled ?? inPayload.TraceEnabled);
 
-            cloned.TraceWrite("Cloned", "ManualCommunicationBridgeAgent/PayloadCopy");
+            cloned.TraceWrite($"Cloned from {inPayload.Id}", $"{nameof(TransmissionPayloadHelper)}/{nameof(Clone)}");
+            inPayload.TraceWrite($"Cloned to {cloned.Id}", $"{nameof(TransmissionPayloadHelper)}/{nameof(Clone)}");
 
             return cloned;
         }

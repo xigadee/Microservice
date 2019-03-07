@@ -28,7 +28,7 @@ namespace Xigadee
     /// This call wraps the incoming message and provides the ability to signal to the underlying
     /// listener that the message can be released.
     /// </summary>
-    [DebuggerDisplay("{Message}")]
+    [DebuggerDisplay("S={SignalResult} {Message}")]
     public class TransmissionPayload
     {
         #region Declarations
@@ -227,6 +227,7 @@ namespace Xigadee
                 try
                 {
                     release(success, Id);
+                    SignalResult = success;
                     TraceWrite(success?"Success":"Failure", "TransmissionPayload/Signal");
                 }
                 catch (Exception ex)
@@ -236,6 +237,10 @@ namespace Xigadee
                 }
         }
         #endregion
+        /// <summary>
+        /// Records the signalled result.
+        /// </summary>
+        public bool? SignalResult { get; private set; }
 
         #region SecurityPrincipal
         /// <summary>

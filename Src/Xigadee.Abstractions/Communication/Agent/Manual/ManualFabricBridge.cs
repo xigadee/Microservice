@@ -69,8 +69,6 @@ namespace Xigadee
 
         private void Sender_OnProcess(object sender, TransmissionPayload e)
         {
-            var key = e.ToConveyorKey();
-
             try
             {
                 if (mActiveListeners.Length == 0)
@@ -118,7 +116,7 @@ namespace Xigadee
         {
             var payload = PayloadClone(incoming);
 
-            payload.TraceWrite("Cloned", "ManualCommunicationBridgeAgent/PayloadCopy");
+            payload.TraceWrite($"Transmit -> {listener.ChannelId}", $"{nameof(ManualFabricBridge)}/{nameof(Sender_Transmit)}");
 
             mPayloadsActive.AddOrUpdate(payload.Id, new TransmissionPayloadHolder(payload, listener), (g, p) => p);
 
@@ -153,7 +151,8 @@ namespace Xigadee
             TransmissionPayloadHolder holder;
             if (mPayloadsActive.TryRemove(id, out holder))
                 mPayloadsHistory?.AddOrUpdate(id, holder.Payload, (i, p) => p);
-
+            else
+                throw new ArgumentOutOfRangeException();
             //if (!success && mRetryAttempts.HasValue)
             //{
             //    //holder.Listener.
