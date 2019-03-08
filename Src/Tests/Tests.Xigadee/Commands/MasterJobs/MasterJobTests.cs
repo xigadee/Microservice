@@ -207,7 +207,7 @@ namespace Test.Xigadee
                 //Check that the payloads have been successfully signalled.
                 Assert.IsTrue(bridgeOut.PayloadsAllSignalled);
                 Assert.IsTrue(bridgeIn.PayloadsAllSignalled);
-                //Assert.IsTrue(bridgeMaster.PayloadsAllSignalled);
+                Assert.IsTrue(bridgeMaster.PayloadsAllSignalled);
             }
             catch (Exception ex)
             {

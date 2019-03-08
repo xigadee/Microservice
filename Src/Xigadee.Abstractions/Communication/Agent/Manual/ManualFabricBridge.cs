@@ -98,7 +98,9 @@ namespace Xigadee
             {
                 OnReceiveInvoke(sender, e);
 
-                if (mActiveListeners.Length == 0)
+                var listeners = mActiveListeners.Where((c) => c.ChannelId == e.Message.ChannelId).ToArray();
+
+                if (listeners.Length == 0)
                 {
                     e.SignalSuccess();
                     return;
@@ -109,10 +111,10 @@ namespace Xigadee
                 switch (Mode)
                 {
                     case ManualCommunicationFabricMode.Queue:
-                        Sender_TransmitRoundRobin(e, count);
+                        Sender_TransmitRoundRobin(listeners, e, count);
                         break;
                     case ManualCommunicationFabricMode.Broadcast:
-                        Sender_TransmitBroadcast(e, count);
+                        Sender_TransmitBroadcast(listeners, e, count);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException("{Mode} is not supported.");
@@ -128,23 +130,22 @@ namespace Xigadee
         /// <summary>
         /// Do a round robin distribution to one of the listening clients.
         /// </summary>
+        /// <param name="listeners">The active listeners</param>
         /// <param name="e">The payload.</param>
         /// <param name="count">The send count.</param>
-        private void Sender_TransmitRoundRobin(TransmissionPayload e, long count)
+        private void Sender_TransmitRoundRobin(ManualCommunicationAgent[] listeners, TransmissionPayload e, long count)
         {
-            var listeners = mActiveListeners;
-
             int position = (int)(count % listeners.Length);
             Sender_Transmit(listeners[position], e);
         }
         /// <summary>
         /// Do a broadcast to all the listening clients.
         /// </summary>
+        /// <param name="listeners">The active listeners</param>
         /// <param name="e">The payload.</param>
         /// <param name="count">The send count.</param>
-        private void Sender_TransmitBroadcast(TransmissionPayload e, long count)
+        private void Sender_TransmitBroadcast(ManualCommunicationAgent[] listeners, TransmissionPayload e, long count)
         {
-            var listeners = mActiveListeners;
             //Send as parallel requests to all the subscribers.
             Enumerable.Range(0, listeners.Length).AsParallel().ForEach((c) => Sender_Transmit(listeners[c], e));
         }
@@ -158,8 +159,7 @@ namespace Xigadee
         {
             var payload = PayloadClone(incoming);
 
-            payload.TraceWrite($"Transmit -> {listener.ChannelId}", $"{nameof(ManualFabricBridge)}/{nameof(Sender_Transmit)}");
-            payload.TraceWrite($"Transmit -> {listener.ChannelId}");
+            payload.TraceWrite($"Transmit -> {listener.ChannelId} -> {incoming.Message.ChannelPriority}");
 
             mPayloadsActive.AddOrUpdate(payload.Id, new TransmissionPayloadHolder(payload, listener), (g, p) => p);
 

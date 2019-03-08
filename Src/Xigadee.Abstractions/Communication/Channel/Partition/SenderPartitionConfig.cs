@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+
 namespace Xigadee
 {
     /// <summary>
     /// This class is used to configure the sender channels.
     /// </summary>
+    [DebuggerDisplay("Sender {Priority}")]
     public class SenderPartitionConfig: PartitionConfig
     {
         #region Static methods

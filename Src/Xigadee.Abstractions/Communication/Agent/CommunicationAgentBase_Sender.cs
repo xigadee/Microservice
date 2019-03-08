@@ -41,7 +41,6 @@ namespace Xigadee
         } 
         #endregion
 
-
         #region SenderSettingsValidate()
         /// <summary>
         /// This method is called at start-up and can be used to validate any sender specific settings.
@@ -64,7 +63,7 @@ namespace Xigadee
                 var client = SenderCreate(p);
                 client.Priority = p.Priority;
                 client.ChannelId = ChannelId;
-
+                client.Name = $"Sender|{ChannelId}|{p.Priority}";
                 mSenderClients.AddOrUpdate(client.Priority, client, (i, ct) => client);
                 ServiceStart(client);
             }
@@ -109,13 +108,13 @@ namespace Xigadee
 
                 await sender.Transmit(payload);
 
-                payload.TraceWrite($"Sent: {sender.Name}", "MessagingSenderBase/ProcessMessage");
+                payload.TraceWrite($"Sent: {sender.Name}");
             }
             catch (Exception ex)
             {
                 LogExceptionLocation($"{nameof(SenderTransmit)} (Unhandled)", ex);
                 //OK, not sure what happened here, so we need to throw the exception.
-                payload.TraceWrite($"Exception: {ex.Message}", "MessagingSenderBase/ProcessMessage");
+                payload.TraceWrite($"Exception: {ex.Message}");
 
                 sender?.ErrorIncrement();
 
@@ -128,6 +127,5 @@ namespace Xigadee
             }
         }
         #endregion
-
     }
 }

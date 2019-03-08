@@ -175,7 +175,8 @@ namespace Xigadee
             if (!string.Equals(rq.Message.OriginatorServiceId, OriginatorId.ExternalServiceId, StringComparison.InvariantCultureIgnoreCase))
                 return false;
 
-            rq.TraceWrite("Processing", "Command/ProcessSelfSentMessage");
+            rq.TraceWrite("Processing MasterJob request");
+
             switch (mMasterJobContext.State)
             {
                 case MasterJobState.VerifyingComms:
@@ -260,7 +261,7 @@ namespace Xigadee
         protected virtual Task NegotiationTransmit(string action)
         {
             var payload = TransmissionPayload.Create(Policy.TransmissionPayloadTraceEnabled);
-            payload.TraceWrite("Create", $"{FriendlyName}/NegotiationTransmit");
+            payload.TraceWrite("Create", instance: FriendlyName);
 
             payload.Options = ProcessOptions.RouteExternal;
 
@@ -285,7 +286,7 @@ namespace Xigadee
                             , mMasterJobContext.State
                             , action
                             , mMasterJobContext.StateChangeCounter)
-                        , (args,ex) => payload.TraceWrite($"Error: {ex.Message}", $"{FriendlyName}/NegotiationTransmit/OnMasterJobCommunication"));
+                        , (args,ex) => payload.TraceWrite($"Error: {ex.Message}", instance:$"{FriendlyName}:OnMasterJobCommunication"));
                     break;
             }
 
@@ -302,18 +303,24 @@ namespace Xigadee
         protected virtual async Task MasterJobStateNotificationIncoming(TransmissionPayload rq, List<TransmissionPayload> rs)
         {
             mMasterJobContext.NegotiationPollLastIn = DateTime.UtcNow;
-            rq.TraceWrite("Received", "Command/MasterJobStateNotificationIncoming");
+            rq.TraceWrite("Received");
 
             //If we are not active then do nothing.
             if (mMasterJobContext.State == MasterJobState.Disabled)
+            {
+                rq.TraceWrite("MasterJob Disabled");
                 return;
+            }
 
             //Filter out the messages sent from this service. 
             //We will use these messages to signal a transition to the next state.
             if (ProcessRequestIfSelfGenerated(rq))
+            {
+                rq.TraceWrite("MasterJob Request gelf-generated.");
                 return;
+            }
 
-            rq.TraceWrite("Processing", "Command/MasterJobStateNotificationIncoming");
+            rq.TraceWrite("Processing");
 
             //Raise an event for the incoming communication.
             FireAndDecorateEventArgs(OnMasterJobCommunication, () => new MasterJobCommunicationEventArgs(
@@ -365,11 +372,12 @@ namespace Xigadee
             }
             else
             {
-                Collector?.LogMessage(LoggingLevel.Warning, $"{rq?.Message?.ActionType??"NULL"} is not a valid negotiating action type for master job {FriendlyName}", "MasterJob");
-                rq.TraceWrite("Unhandled", "Command/MasterJobStateNotificationIncoming");
+                var unknown = rq?.Message?.ActionType ?? "NULL";
+                Collector?.LogMessage(LoggingLevel.Warning, $"{unknown} is not a valid negotiating action type for master job {FriendlyName}", "MasterJob");
+                rq.TraceWrite($"Unhandled State: {unknown}");
                 return;
             }
-            rq.TraceWrite("Complete", "Command/MasterJobStateNotificationIncoming");
+            rq.TraceWrite("Complete");
 
         }
         #endregion

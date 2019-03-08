@@ -276,7 +276,7 @@ namespace Xigadee
             try
             {
                 payload.TraceConfigure(mPolicy.TransmissionPayloadTraceEnabled);
-                payload.TraceWrite("Incoming", "CommunicationContainer/PayloadSubmit");
+                payload.TraceWrite("Incoming");
 
                 //Ensure the priority cannot spoof the internal priority of -1
                 if (payload.Message.ChannelPriority < 0)
@@ -306,17 +306,17 @@ namespace Xigadee
                         
                         contextPayload.Signal(!failed);
 
-                        contextPayload.TraceWrite(failed?"Failed":"Success", "CommunicationContainer/PayloadSubmit -> ExecuteComplete");
+                        contextPayload.TraceWrite(failed?"Failed":"Success");
                     }
                     catch (Exception exin)
                     {
                         Collector?.LogException($"Payload completion error-{payload} after {(tr.Context as TransmissionPayload)?.Message?.FabricDeliveryCount} delivery attempts", exin);
-                        contextPayload.TraceWrite($"Exception: {ex.Message}", "CommunicationContainer/PayloadSubmit -> ExecuteComplete");
+                        contextPayload.TraceWrite($"Exception: {ex.Message}");
                     }
                 };
 
                 //Submit the tracker to the task manager.
-                payload.TraceWrite("Outgoing", "CommunicationContainer/PayloadSubmit");
+                payload.TraceWrite("Outgoing");
 
                 //Submit the task to be processed.
                 TaskSubmit(tracker);
@@ -324,7 +324,7 @@ namespace Xigadee
             catch (Exception ex)
             {
                 Collector?.LogException($"ProcessClientPayload: unhandled error {payload.Source}/{payload.Message.CorrelationKey}-{payload} after {payload.Message?.FabricDeliveryCount} delivery attempts", ex);
-                payload.TraceWrite($"Exception: {ex.Message}", "CommunicationContainer/PayloadSubmit");
+                payload.TraceWrite($"Exception: {ex.Message}");
                 payload.SignalFail();
             }
         }

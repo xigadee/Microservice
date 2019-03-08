@@ -34,7 +34,7 @@ namespace Xigadee
 
             while (mPending?.TryDequeue(out payload) ?? false)
             {
-                payload.TraceWrite("Purged", $"{nameof(ManualClientHolder)}/{nameof(Purge)}");
+                payload.TraceWrite("Purged", instance: Name);
                 payload.SignalFail();
             }
         }
@@ -48,11 +48,11 @@ namespace Xigadee
             try
             {
                 mPending.Enqueue(payload);
-                payload.TraceWrite("Enqueued", $"{nameof(ManualClientHolder)}/{nameof(Inject)}");
+                payload.TraceWrite("Enqueued", instance: Name);
             }
             catch (Exception ex)
             {
-                payload.TraceWrite($"Failed: {ex.Message}", $"{nameof(ManualClientHolder)}/{nameof(Inject)}");
+                payload.TraceWrite($"Failed: {ex.Message}", instance: Name);
             }
         }
 
@@ -78,7 +78,7 @@ namespace Xigadee
                     Collector?.BoundaryLog(ChannelDirection.Incoming, payload, ChannelId, Priority, batchId: batchId);
 
                 list.Add(payload);
-                payload.TraceWrite("MessagesPull", $"{nameof(ManualClientHolder)}/{nameof(MessagesPull)}");
+                payload.TraceWrite("Messages Pulled", instance: Name);
 
                 countDown--;
             }
@@ -98,6 +98,7 @@ namespace Xigadee
                     throw new RetryExceededTransmissionException();
 
                 IncomingAction?.Invoke(payload);
+                payload.TraceWrite("Transmitted", instance: Name);
 
                 if (BoundaryLoggingActive)
                     Collector?.BoundaryLog(ChannelDirection.Outgoing, payload, ChannelId, Priority);
@@ -109,6 +110,7 @@ namespace Xigadee
                 LogException("Unhandled Exception (Transmit)", ex);
                 if (BoundaryLoggingActive)
                     Collector?.BoundaryLog(ChannelDirection.Outgoing, payload, ChannelId, Priority, ex);
+                payload.TraceWrite($"Transmit Error {ex.Message}", instance: Name);
                 throw;
             }
             finally
@@ -120,7 +122,5 @@ namespace Xigadee
             if (tryAgain)
                 await Transmit(payload, ++retry);
         }
-
-
     }
 }

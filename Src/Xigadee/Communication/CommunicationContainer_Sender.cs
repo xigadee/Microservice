@@ -61,7 +61,7 @@ namespace Xigadee
         public virtual async Task<bool> Send(TransmissionPayload payload)
         {
             payload.TraceConfigure(mPolicy.TransmissionPayloadTraceEnabled);
-            payload.TraceWrite("Outgoing", "CommunicationContainer/Send");
+            payload.TraceWrite("Outgoing");
 
             try
             {
@@ -84,7 +84,7 @@ namespace Xigadee
                 if (messageSenders == null || messageSenders.Count == 0)
                 {
                     Collector?.LogMessage(LoggingLevel.Warning, string.Format("Unable to resolve sender for message {0}", payload != null ? payload.Message : null), "Communication");
-                    payload.TraceWrite("Senders Unresolved", "CommunicationContainer/Send");
+                    payload.TraceWrite("Senders Unresolved");
                     return false;
                 }
 
@@ -98,7 +98,7 @@ namespace Xigadee
             catch (Exception ex)
             {
                 Collector?.LogException(string.Format("Unable to send message {0}", payload != null ? payload.Message : null), ex);
-                payload.TraceWrite($"Exception: {ex.Message}", "CommunicationContainer/Send");
+                payload.TraceWrite($"Exception: {ex.Message}");
                 return false;
             }
 

@@ -30,7 +30,7 @@ namespace Xigadee
     /// This call wraps the incoming message and provides the ability to signal to the underlying
     /// listener that the message can be released.
     /// </summary>
-    [DebuggerDisplay("S={SignalResult} {Message}")]
+    [DebuggerDisplay("{Message} S={SignalResult}")]
     public class TransmissionPayload
     {
         #region Declarations
@@ -230,12 +230,12 @@ namespace Xigadee
                 {
                     release(success, Id);
                     SignalResult = success;
-                    TraceWrite(success?"Success":"Failure", "TransmissionPayload/Signal");
+                    TraceWrite(success?"Success":"Failure");
                 }
                 catch (Exception ex)
                 {
                     //We are not interested in exceptions from here.
-                    TraceWrite($"Exception: {ex.Message}", "TransmissionPayload/Signal");
+                    TraceWrite($"Exception: {ex.Message}");
                 }
         }
         #endregion
@@ -320,35 +320,45 @@ namespace Xigadee
             }
         }
 
+
         /// <summary>
-        /// Traces the set.
+        /// This sets the trace message for the payload.
         /// </summary>
         /// <param name="message">The message.</param>
-        /// <param name="source">The optional source parameter.</param>
-        public void TraceWrite(string message, string source = null
+        /// <param name="source">The optional source. If this is not supplied, it will be created from the calling parameters.</param>
+        /// <param name="instance">The optional instance name.</param>
+        /// <param name="callerFilePath">The inserted file path.</param>
+        /// <param name="callerMemberName">The inserted caller member name.</param>
+        /// <param name="sourceLineNumber">The inserted caller line number</param>
+        public void TraceWrite(string message
+            , string source = null
+            , string instance = ""
             , [CallerFilePath]string callerFilePath = null
-            , [CallerMemberName]string callerMemberName = null)
+            , [CallerMemberName]string callerMemberName = null
+            , [CallerLineNumber]int sourceLineNumber = 0
+            )
         {
             if (!TraceEnabled)
                 return;
 
-#if DEBUG
-            if (source == null)
-            {
-                //This is horribly inefficient, so we only use it for Debug purposes.
-                StackTrace stackTrace = new StackTrace();
-                var frame1 = stackTrace.GetFrame(1);
-                var methodBase = frame1.GetMethod();
-                source = $"{methodBase.DeclaringType.Name}/{methodBase.Name}";
-            }
-#else
+//#if DEBUG
+//            if (source == null)
+//            {
+//                This is horribly inefficient, so we only use it for Debug purposes.
+//                StackTrace stackTrace = new StackTrace();
+//                var frame1 = stackTrace.GetFrame(1);
+//                var methodBase = frame1.GetMethod();
+//                source = $"{methodBase.DeclaringType.Name}/{methodBase.Name}";
+//            }
+//#else
             if (source == null)
             {
                 var split = callerFilePath?.Split('/', '\\');
-                source = $"{split.Length>0?split[split.Length - 1]:""}/{callerMemberName}";
+                var className = split.Length > 0 ? split[split.Length - 1] : "";
+                source = $"{className}/{callerMemberName}@line {sourceLineNumber}";
             }
-#endif
-            TraceWrite(new TransmissionPayloadTraceEventArgs(TickCount, message, source));
+//#endif
+            TraceWrite(new TransmissionPayloadTraceEventArgs(TickCount, message, source, instance));
         } 
         #endregion
     }

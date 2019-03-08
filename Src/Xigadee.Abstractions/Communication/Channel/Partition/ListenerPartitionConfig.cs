@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+
 namespace Xigadee
 {
     /// <summary>
     /// This class holds the individual configuration for each listener partition.
     /// </summary>
+    [DebuggerDisplay("Listener {Priority}")]
     public class ListenerPartitionConfig: PartitionConfig
     {
         #region Static methods

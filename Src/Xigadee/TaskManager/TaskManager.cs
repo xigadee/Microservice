@@ -401,13 +401,13 @@ namespace Xigadee
                 else
                 {
                     mProcessInternalQueue.Enqueue(tracker);
-                    payload?.TraceWrite("InternalQueue", "TaskManager");
+                    payload?.TraceWrite("InternalQueue");
                 }
             }
             else
             {
                 mTasksQueue.Enqueue(tracker);
-                payload?.TraceWrite("TaskQueue", "TaskManager");
+                payload?.TraceWrite("TaskQueue");
             }
 
             LoopSet();
@@ -466,7 +466,7 @@ namespace Xigadee
         /// <param name="tracker">The tracker to enqueue.</param>
         private void ExecuteTask(TaskTracker tracker)
         {
-            tracker.ToTransmissionPayload()?.TraceWrite("ExecuteTask", "TaskManager");
+            tracker.ToTransmissionPayload()?.TraceWrite("ExecuteTask");
 
             TaskTrackerEvent(DiagnosticOnExecuteTaskBefore, tracker);
 
@@ -557,7 +557,7 @@ namespace Xigadee
             tracker.IsFailure = failed;
             tracker.FailureException = tex;
 
-            tracker.ToTransmissionPayload()?.TraceWrite("ExecuteTaskComplete", "TaskManager");
+            tracker.ToTransmissionPayload()?.TraceWrite("ExecuteTaskComplete");
 
             try
             {
