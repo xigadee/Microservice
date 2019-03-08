@@ -309,7 +309,14 @@ namespace Xigadee
                             if (payload.Message.Holder.HasObject)
                                 return (RepositoryHolder<KT, ET>)payload.Message.Holder.Object;
                             else
-                                return null;
+                            {
+                                int rsCode = 500;
+                                int.TryParse(payload.Message?.Status, out rsCode);
+
+                                string rsMessage = payload.Message?.StatusDescription ?? "Unexpected response (no payload)";
+
+                                return new RepositoryHolder<KT, ET>(responseCode: rsCode, responseMessage: rsMessage);
+                            }
                         }
                         catch (Exception ex)
                         {

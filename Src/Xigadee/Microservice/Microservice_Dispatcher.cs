@@ -149,7 +149,7 @@ namespace Xigadee
             //Extract the payloads that have been processed internally so that we only have the external payloads left
             var externalPayload = request.Responses.Except(internalPayload).ToList();
 
-            //Send the external payload to their specific destination in paralle;.
+            //Send the external payload to their specific destination in parallel;.
             await Task.WhenAll(externalPayload.Select(async (p) => await TransmitPayload(p, request)));
         }
         #endregion

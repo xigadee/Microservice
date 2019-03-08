@@ -306,10 +306,20 @@ namespace Xigadee
         /// Adds a trace event to the log.
         /// </summary>
         /// <param name="eventArgs">The <see cref="TransmissionPayloadTraceEventArgs"/> instance containing the event data.</param>
-        public void TraceWrite(TransmissionPayloadTraceEventArgs eventArgs)
+        public void TraceWrite(TransmissionPayloadTraceEventArgs eventArgs
+            , [CallerFilePath]string callerFilePath = null
+            , [CallerMemberName]string callerMemberName = null
+            , [CallerLineNumber]int sourceLineNumber = 0)
         {
             if (!TraceEnabled)
                 return;
+
+            if (eventArgs.Source == null)
+            {
+                var split = callerFilePath?.Split('/', '\\');
+                var className = split.Length > 0 ? split[split.Length - 1] : "";
+                eventArgs.Source = $"{className}/{callerMemberName}@line {sourceLineNumber}";
+            }
 
             lock (mTraceObj)
             {

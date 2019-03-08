@@ -29,6 +29,7 @@ namespace Xigadee
         /// <param name="defaultRequestTimespan">The default request timespan.</param>
         /// <param name="responseChannel">The incoming channel to attach the command initiator to.</param>
         /// <param name="createChannel">This will create the channel.</param>
+        /// <param name="adjustPolicy">Allows the initiator policy to be adjusted.</param>
         /// <returns>The pipeline.</returns>
         public static P AddCommandInitiator<P>(this P pipeline
             , out CommandInitiator command
@@ -36,10 +37,14 @@ namespace Xigadee
             , TimeSpan? defaultRequestTimespan = null
             , string responseChannel = null
             , bool createChannel = true
+            , Action<CommandInitiatorPolicy> adjustPolicy = null
             )
             where P:IPipeline
         {
             command = new CommandInitiator(defaultRequestTimespan);
+
+            adjustPolicy?.Invoke(command.Policy);
+
             command.ResponseChannelId = ValidateOrCreateOutgoingChannel(pipeline, responseChannel, command.ComponentId, createChannel);
             return pipeline.AddCommand(command, startupPriority);
         }
@@ -55,6 +60,7 @@ namespace Xigadee
         /// <param name="defaultRequestTimespan">The default request timespan.</param>
         /// <param name="responseChannel">The incoming channel to attach the command initiator to.</param>
         /// <param name="createChannel">This property specifies that the method should create a read-only channel just for the command initiator if the responseChannel is not found.</param>
+        /// <param name="adjustPolicy">Allows the initiator policy to be adjusted.</param>
         /// <returns>The pipeline.</returns>
         public static P AddICommandInitiator<P>(this P pipeline
             , out ICommandInitiator command
@@ -62,11 +68,12 @@ namespace Xigadee
             , TimeSpan? defaultRequestTimespan = null
             , string responseChannel = null
             , bool createChannel = true
+            , Action<CommandInitiatorPolicy> adjustPolicy = null
             )
             where P : IPipeline
         {
             CommandInitiator interim;
-            pipeline.AddCommandInitiator(out interim, startupPriority, defaultRequestTimespan, responseChannel, createChannel);
+            pipeline.AddCommandInitiator(out interim, startupPriority, defaultRequestTimespan, responseChannel, createChannel, adjustPolicy);
             command = interim;
             return pipeline;
         }

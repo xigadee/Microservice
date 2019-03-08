@@ -9,7 +9,7 @@ namespace Test.Xigadee.Dispatcher
         [TestMethod]
         public void TestMethod1()
         {
-            var fabric = new ManualCommunicationFabric();
+            var fabric = new ManualFabric();
             var incoming = fabric[ManualCommunicationFabricMode.Queue];
             var response = fabric[ManualCommunicationFabricMode.Broadcast];
 

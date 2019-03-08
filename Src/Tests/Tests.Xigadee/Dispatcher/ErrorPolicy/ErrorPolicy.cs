@@ -40,10 +40,11 @@ namespace Test.Xigadee.Dispatcher.ErrorPolicy
                     .AttachPersistenceClient(out persistence)
                     .Revert()
                 .AddChannelIncoming("inChannel2")
-                    .AttachPersistenceClient(out persistence2)
+                    .AttachPersistenceClient(out persistence2
+                        , adjustPolicy:(p) => p.TransmissionPayloadTraceEnabled = true)
                     .Revert()
                 .AddChannelIncoming("backout")
-                    .AttachCommandInitiator(out init)
+                    .AttachCommandInitiator(out init, adjustPolicy: (p) => p.TransmissionPayloadTraceEnabled = true)
                     ;
             server.Start();
 
@@ -60,7 +61,7 @@ namespace Test.Xigadee.Dispatcher.ErrorPolicy
             Assert.IsTrue(result2.ResponseCode == 501);
 
             var result3 = init.Process<string,string>(("franky","four","fingers"), ""
-                , new RequestSettings { WaitTime = TimeSpan.FromSeconds(5) }, routing: ProcessOptions.RouteInternal
+                , new RequestSettings { WaitTime = TimeSpan.FromSeconds(500) }, routing: ProcessOptions.RouteInternal
                 ).Result;
 
             Assert.IsTrue(result3.ResponseCode == 501);
@@ -74,7 +75,7 @@ namespace Test.Xigadee.Dispatcher.ErrorPolicy
             CommandInitiator init;
             DebugMemoryDataCollector collectorS, collectorC;
 
-            var fabric = new ManualCommunicationFabric();
+            var fabric = new ManualFabric();
             var bridgeOut = fabric[ManualCommunicationFabricMode.Queue];
             var bridgeReturn = fabric[ManualCommunicationFabricMode.Broadcast];
 

@@ -13,9 +13,9 @@ namespace Test.Xigadee
     {
         #region Declarations
         IPipeline mPipeline = null;
-        ManualCommunicationFabric fabric = null;
-        ManualChannelListener mListener = null;
-        ManualChannelSender mSender = null;
+        ManualFabric fabric = null;
+        ManualCommunicationAgent mListener = null;
+        ManualCommunicationAgent mSender = null;
         DispatcherCommand mDCommand = null;
 
         const string cnChannelIn = "internalIn";
@@ -25,11 +25,11 @@ namespace Test.Xigadee
         [TestInitialize]
         public void TearUp()
         {
-            fabric = new ManualCommunicationFabric();
+            fabric = new ManualFabric();
             var bridgeOut = fabric[ManualCommunicationFabricMode.Queue];
             var bridgein = fabric[ManualCommunicationFabricMode.Broadcast];
-            mListener = (ManualChannelListener)bridgein.GetListener();
-            mSender = (ManualChannelSender)bridgeOut.GetSender();
+            mListener = (ManualCommunicationAgent)bridgein.GetListener();
+            mSender = (ManualCommunicationAgent)bridgeOut.GetSender();
 
             try
             {

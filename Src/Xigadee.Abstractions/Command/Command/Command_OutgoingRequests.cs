@@ -222,6 +222,7 @@ namespace Xigadee
                 StatisticsInternal.ActiveIncrement();
 
                 payload = TransmissionPayload.Create(Policy.TransmissionPayloadTraceEnabled);
+                payload.TraceWrite("Created");
                 payload.SecurityPrincipal = TransmissionPayload.ConvertToClaimsPrincipal(principal ?? Thread.CurrentPrincipal);
 
                 // Set the process correlation key to the correlation id, if passed through the request settings
@@ -314,7 +315,9 @@ namespace Xigadee
                     else
                         payloadRs = await tracker.Tcs.Task;
                 }
-                catch (Exception) { }
+                catch (Exception ex)
+                {
+                }
 
             return processResponse(tracker.Tcs.Task.Status, payloadRs, processAsync);
         }

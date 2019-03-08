@@ -17,6 +17,7 @@ namespace Xigadee
         /// <param name="cacheManager">The cache manager to attach to the persistence agent</param>
         /// <param name="defaultRequestTimespan">The default time out time. If not set, this defaults to 30s as set in the command initiator policy.</param>
         /// <param name="routing">The route map will attempt to first route the message internally and then try an external channel.</param>
+        /// <param name="adjustPolicy">This method allows for the policy to be adjusted.</param>
         /// <returns>The pass through for the channel.</returns>
         public static C AttachPersistenceClient<C,K,E>(this C cpipe
             , out PersistenceClient<K,E> command
@@ -25,11 +26,14 @@ namespace Xigadee
             , ICacheManager<K,E> cacheManager = null
             , TimeSpan? defaultRequestTimespan = null
             , ProcessOptions routing = ProcessOptions.RouteExternal | ProcessOptions.RouteInternal
+            , Action<PersistenceClientPolicy> adjustPolicy = null
             )
             where C : IPipelineChannelIncoming<IPipeline>
             where K : IEquatable<K>
         {        
             command = new PersistenceClient<K, E>(cacheManager, defaultRequestTimespan);
+
+            adjustPolicy?.Invoke(command.Policy);
 
             bool channelInternalOnly = responseChannel == null;
             if (channelInternalOnly)
@@ -69,6 +73,7 @@ namespace Xigadee
         /// <param name="startupPriority"></param>
         /// <param name="defaultRequestTimespan">The default time out time. If not set, this defaults to 30s as set in the command initiator policy.</param>
         /// <param name="verifyChannel">This boolean value by default is true. It ensure the channel names passed exists. Set this to false if you do not want this check to happen.</param>
+        /// <param name="adjustPolicy">This method allows for the policy to be adjusted.</param>
         /// <returns>The pass through for the channel.</returns>
         public static C AttachPersistenceClient<C, K, E>(this C cpipe
             , string responseChannel
@@ -77,11 +82,14 @@ namespace Xigadee
             , ICacheManager<K, E> cacheManager = null
             , TimeSpan? defaultRequestTimespan = null
             , bool verifyChannel = true
+            , Action<PersistenceClientPolicy> adjustPolicy = null
             )
             where C : IPipelineChannelOutgoing<IPipeline>
             where K : IEquatable<K>
         {
             command = new PersistenceClient<K, E>(cacheManager, defaultRequestTimespan);
+
+            adjustPolicy?.Invoke(command.Policy);
 
             if (responseChannel == null)
                 throw new ArgumentNullException("responseChannel", $"{nameof(AttachPersistenceClient)}: responseChannel cannot be null.");

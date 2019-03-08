@@ -48,7 +48,7 @@ namespace Xigadee
             var outgoing = new TransmissionPayload(rsMessage, traceEnabled: incoming.TraceEnabled);
 
             if (incoming.TraceEnabled)
-                outgoing.TraceWrite(new TransmissionPayloadTraceEventArgs(outgoing.TickCount, "Created from request", "ToResponse"));
+                outgoing.TraceWrite(new TransmissionPayloadTraceEventArgs(outgoing.TickCount, "Created from request"));
 
             return outgoing;
         }
