@@ -18,6 +18,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading;
@@ -323,11 +325,29 @@ namespace Xigadee
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="source">The optional source parameter.</param>
-        public void TraceWrite(string message, string source = null)
+        public void TraceWrite(string message, string source = null
+            , [CallerFilePath]string callerFilePath = null
+            , [CallerMemberName]string callerMemberName = null)
         {
             if (!TraceEnabled)
                 return;
 
+#if DEBUG
+            if (source == null)
+            {
+                //This is horribly inefficient, so we only use it for Debug purposes.
+                StackTrace stackTrace = new StackTrace();
+                var frame1 = stackTrace.GetFrame(1);
+                var methodBase = frame1.GetMethod();
+                source = $"{methodBase.DeclaringType.Name}/{methodBase.Name}";
+            }
+#else
+            if (source == null)
+            {
+                var split = callerFilePath?.Split('/', '\\');
+                source = $"{split.Length>0?split[split.Length - 1]:""}/{callerMemberName}";
+            }
+#endif
             TraceWrite(new TransmissionPayloadTraceEventArgs(TickCount, message, source));
         } 
         #endregion

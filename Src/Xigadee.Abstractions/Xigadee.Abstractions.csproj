@@ -22,7 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Communication\Agent\Manual\Pipeline\" />
     <Folder Include="Communication\Agent\NamedPipes\Pipeline\" />
   </ItemGroup>
   

@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace Xigadee
@@ -12,35 +11,51 @@ namespace Xigadee
     /// </summary>
     public class ManualFabricBridge : CommunicationFabricBridgeBase, IManualCommunicationFabricBridge
     {
+        #region Declarations
         protected List<ManualCommunicationAgent> mListeners = new List<ManualCommunicationAgent>();
         protected List<ManualCommunicationAgent> mSenders = new List<ManualCommunicationAgent>();
+
         private long mSendCount = 0;
         private long mSuccess = 0;
         private long mFailure = 0;
+
         ManualCommunicationAgent[] mActiveSenders = null;
         ManualCommunicationAgent[] mActiveListeners = null;
 
         ConcurrentDictionary<Guid, TransmissionPayloadHolder> mPayloadsActive = new ConcurrentDictionary<Guid, TransmissionPayloadHolder>();
         ConcurrentDictionary<Guid, TransmissionPayload> mPayloadsHistory = null;
-
+        #endregion
+        #region Constructor
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="fabric"></param>
+        /// <param name="mode">The distribution mode.</param>
+        /// <param name="payloadHistoryEnabled">Specifies whether payload history is supported. The default is true.</param>
+        /// <param name="retryAttempts">The number of retry attempts for the payload.</param>
         public ManualFabricBridge(ManualFabric fabric, ManualCommunicationFabricMode mode,
-            bool payloadHistoryEnabled = true, int? retryAttempts = null):base(mode)
+            bool payloadHistoryEnabled = true, int? retryAttempts = null) : base(mode)
         {
             PayloadHistoryEnabled = payloadHistoryEnabled;
             RetryAttempts = retryAttempts;
 
             if (payloadHistoryEnabled)
                 mPayloadsHistory = new ConcurrentDictionary<Guid, TransmissionPayload>();
-        }
+        } 
+        #endregion
 
         /// <summary>
         /// Gets the retry attempts. Null if not specified.
         /// </summary>
         public int? RetryAttempts { get; }
 
+        /// <summary>
+        /// This method gets a new listener.
+        /// </summary>
+        /// <returns>Returns the new listener.</returns>
         public override IListener GetListener()
         {
-            var agent = new ManualCommunicationAgent(this, CommunicationAgentCapabilities.Listener);
+            var agent = new ManualCommunicationAgent(CommunicationAgentCapabilities.Listener);
             mListeners.Add(agent);
             agent.StatusChanged += Listener_StatusChanged;
             return agent;
@@ -52,9 +67,13 @@ namespace Xigadee
             Interlocked.Exchange(ref mActiveListeners, newListeners);
         }
 
+        /// <summary>
+        /// This method gets a new sender.
+        /// </summary>
+        /// <returns>The sender.</returns>
         public override ISender GetSender()
         {
-            var agent = new ManualCommunicationAgent(this, CommunicationAgentCapabilities.Sender);
+            var agent = new ManualCommunicationAgent(CommunicationAgentCapabilities.Sender);
             mSenders.Add(agent);
             agent.StatusChanged += Sender_StatusChanged;
             agent.OnProcess += Sender_OnProcess;
@@ -67,17 +86,23 @@ namespace Xigadee
             Interlocked.Exchange(ref mActiveSenders, newSenders);
         }
 
+        /// <summary>
+        /// This method distributes the incoming payload to the relevant senders based on the 
+        /// distribution algorithm chosen.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The payload.</param>
         private void Sender_OnProcess(object sender, TransmissionPayload e)
         {
             try
             {
+                OnReceiveInvoke(sender, e);
+
                 if (mActiveListeners.Length == 0)
                 {
                     e.SignalSuccess();
                     return;
                 }
-
-                OnReceiveInvoke(sender, e);
 
                 long count = Interlocked.Increment(ref mSendCount);
 
@@ -89,14 +114,22 @@ namespace Xigadee
                     case ManualCommunicationFabricMode.Broadcast:
                         Sender_TransmitBroadcast(e, count);
                         break;
+                    default:
+                        throw new ArgumentOutOfRangeException("{Mode} is not supported.");
                 }
             }
             catch (Exception ex)
             {
+                e.SignalFail();
                 OnExceptionInvoke(sender, e, ex);
             }
         }
 
+        /// <summary>
+        /// Do a round robin distribution to one of the listening clients.
+        /// </summary>
+        /// <param name="e">The payload.</param>
+        /// <param name="count">The send count.</param>
         private void Sender_TransmitRoundRobin(TransmissionPayload e, long count)
         {
             var listeners = mActiveListeners;
@@ -104,7 +137,11 @@ namespace Xigadee
             int position = (int)(count % listeners.Length);
             Sender_Transmit(listeners[position], e);
         }
-
+        /// <summary>
+        /// Do a broadcast to all the listening clients.
+        /// </summary>
+        /// <param name="e">The payload.</param>
+        /// <param name="count">The send count.</param>
         private void Sender_TransmitBroadcast(TransmissionPayload e, long count)
         {
             var listeners = mActiveListeners;
@@ -112,11 +149,17 @@ namespace Xigadee
             Enumerable.Range(0, listeners.Length).AsParallel().ForEach((c) => Sender_Transmit(listeners[c], e));
         }
 
+        /// <summary>
+        /// Clone the payload and transmit to the listener specified.
+        /// </summary>
+        /// <param name="listener">The manual listener.</param>
+        /// <param name="incoming">The payload to transmit.</param>
         private void Sender_Transmit(ManualCommunicationAgent listener, TransmissionPayload incoming)
         {
             var payload = PayloadClone(incoming);
 
             payload.TraceWrite($"Transmit -> {listener.ChannelId}", $"{nameof(ManualFabricBridge)}/{nameof(Sender_Transmit)}");
+            payload.TraceWrite($"Transmit -> {listener.ChannelId}");
 
             mPayloadsActive.AddOrUpdate(payload.Id, new TransmissionPayloadHolder(payload, listener), (g, p) => p);
 
