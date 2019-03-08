@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+
 namespace Xigadee
 {
     /// <summary>
@@ -8,29 +10,18 @@ namespace Xigadee
     public class ManualFabric : CommunicationFabricBase<IManualCommunicationFabricBridge>
     {
         #region Declarations
-        private ConcurrentDictionary<ManualCommunicationFabricMode, IManualCommunicationFabricBridge> mBridges;
+        private List<IManualCommunicationFabricBridge> mBridges = new List<IManualCommunicationFabricBridge>();
         #endregion
-        #region Constructor
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ManualFabric"/> class.
-        /// </summary>
-        public ManualFabric(bool payloadHistoryEnabled = true, int? retryAttempts = null)
-        {
-            mBridges = new ConcurrentDictionary<ManualCommunicationFabricMode, IManualCommunicationFabricBridge>();
 
-            PayloadHistoryEnabled = payloadHistoryEnabled;
-            RetryAttempts = retryAttempts;
-        }
-        #endregion
 
         /// <summary>
         /// Gets a value indicating whether the payload history will be stored.
         /// </summary>
-        public bool PayloadHistoryEnabled { get; }
+        public bool PayloadHistoryEnabled { get; } = true;
         /// <summary>
         /// Gets the retry attempts. Null if not specified.
         /// </summary>
-        public int? RetryAttempts { get; }
+        public int? RetryAttempts { get; } = 3;
 
         /// <summary>
         /// Gets the <see cref="ICommunicationFabricBridge"/> with the specified mode.
@@ -45,8 +36,11 @@ namespace Xigadee
                 if (mode == ManualCommunicationFabricMode.NotSet)
                     throw new NotSupportedException("The communication bridge mode is not supported");
 
-                return mBridges.GetOrAdd(mode, (m) => 
-                    new ManualFabricBridge(this, m, PayloadHistoryEnabled, RetryAttempts));
+                var bridge = new ManualFabricBridge(this, mode, PayloadHistoryEnabled, RetryAttempts);
+
+                mBridges.Add(bridge);
+
+                return bridge;
             }
         }
     }

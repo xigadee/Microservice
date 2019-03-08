@@ -22,7 +22,7 @@ namespace Xigadee
         JsonContractSerializer mSerializer = new JsonContractSerializer();
 
         ConcurrentDictionary<Guid, TransmissionPayloadHolder> mPayloadsActive = new ConcurrentDictionary<Guid, TransmissionPayloadHolder>();
-        ConcurrentDictionary<Guid, TransmissionPayload> mPayloadsHistory = null;
+        ConcurrentDictionary<Guid, TransmissionPayloadHolder> mPayloadsHistory = null;
 
         ManualChannelSender[] mActiveSenders = null;
         ManualChannelListener[] mActiveListeners = null;
@@ -48,7 +48,7 @@ namespace Xigadee
             PayloadHistoryEnabled = payloadHistoryEnabled;
             if (payloadHistoryEnabled)
             {
-                mPayloadsHistory = new ConcurrentDictionary<Guid, TransmissionPayload>();
+                mPayloadsHistory = new ConcurrentDictionary<Guid, TransmissionPayloadHolder>();
             }
         }
 
@@ -189,7 +189,7 @@ namespace Xigadee
 
             payload.TraceWrite("Cloned", "ManualCommunicationBridgeAgent/PayloadCopy");
 
-            mPayloadsActive.AddOrUpdate(payload.Id, new TransmissionPayloadHolder(payload,listener), (g, p) => p);
+            mPayloadsActive.AddOrUpdate(payload.Id, new TransmissionPayloadHolder(payload, incoming, listener), (g, p) => p);
 
             OnTransmitInvoke(listener, payload);
 
@@ -212,7 +212,7 @@ namespace Xigadee
 
             TransmissionPayloadHolder holder;
             if (mPayloadsActive.TryRemove(id, out holder) && PayloadHistoryEnabled)
-                mPayloadsHistory.AddOrUpdate(id, holder.Payload, (i,p) => p);
+                mPayloadsHistory.AddOrUpdate(id, holder, (i,p) => p);
 
             if (!success && mRetryAttempts.HasValue)
             {

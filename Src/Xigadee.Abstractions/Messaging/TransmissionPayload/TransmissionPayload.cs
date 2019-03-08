@@ -30,7 +30,7 @@ namespace Xigadee
     /// This call wraps the incoming message and provides the ability to signal to the underlying
     /// listener that the message can be released.
     /// </summary>
-    [DebuggerDisplay("{Message} S={SignalResult}")]
+    [DebuggerDisplay("{Id}S={SignalResult}{Message}")]
     public class TransmissionPayload
     {
         #region Declarations

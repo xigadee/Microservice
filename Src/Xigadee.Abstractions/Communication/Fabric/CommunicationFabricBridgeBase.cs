@@ -57,6 +57,10 @@ namespace Xigadee
         #endregion
 
         /// <summary>
+        /// This is the bridge Id.
+        /// </summary>
+        public Guid Id { get; } = Guid.NewGuid();
+        /// <summary>
         /// This is the communication bridge mode.
         /// </summary>
         public ManualCommunicationFabricMode Mode { get; }
@@ -93,11 +97,15 @@ namespace Xigadee
             /// Initializes a new instance of the <see cref="TransmissionPayloadHolder"/> class.
             /// </summary>
             /// <param name="payload">The payload.</param>
+            /// <param name="originalPayload">The original payload.</param>
             /// <param name="listener">The listener.</param>
             /// <param name="retryCount">This is the permitted number of failure retries.</param>
-            public TransmissionPayloadHolder(TransmissionPayload payload, IListener listener, int? retryCount = null)
+            public TransmissionPayloadHolder(TransmissionPayload payload, TransmissionPayload originalPayload
+                , IListener listener, int? retryCount = null)
             {
                 Payload = payload;
+                OriginalPayload = originalPayload;
+
                 Listener = listener;
                 RetryCount = retryCount;
             }
@@ -118,6 +126,11 @@ namespace Xigadee
             /// Gets the payload identifier.
             /// </summary>
             public Guid Id { get { return Payload.Id; } }
+
+            /// <summary>
+            /// Gets the payload.
+            /// </summary>
+            public TransmissionPayload OriginalPayload { get; }
         }
     }
 }

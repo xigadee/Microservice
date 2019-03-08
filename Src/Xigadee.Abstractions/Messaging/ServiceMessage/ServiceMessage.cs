@@ -5,7 +5,7 @@ namespace Xigadee
     /// <summary>
     /// The ServiceMessage is used to pass information through the Dispatcher and the sender/receive queue architecture.
     /// </summary>
-    [DebuggerDisplay("Type={ChannelId}/{MessageType}/{ActionType} {ResponseChannelId} [{OriginatorServiceId}]")]
+    [DebuggerDisplay("[{ChannelId}/{MessageType}/{ActionType}]R={ResponseChannelId} [{OriginatorServiceId}]")]
     public class ServiceMessage
     {
         #region Constructor

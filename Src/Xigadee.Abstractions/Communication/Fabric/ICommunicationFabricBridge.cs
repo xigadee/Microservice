@@ -8,6 +8,10 @@ namespace Xigadee
     public interface ICommunicationFabricBridge
     {
         /// <summary>
+        /// This is the bridge Id.
+        /// </summary>
+        Guid Id { get; }
+        /// <summary>
         /// Occurs when an exception is raised.
         /// </summary>
         event EventHandler<CommunicationFabricEventArgs> OnException;

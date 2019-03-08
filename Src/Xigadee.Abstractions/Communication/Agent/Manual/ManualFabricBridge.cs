@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 
@@ -9,21 +10,23 @@ namespace Xigadee
     /// <summary>
     /// This bridge connects the listeners and senders together.
     /// </summary>
+    [DebuggerDisplay("{Mode}:Agents[L={mListeners.Count}|S={mSenders.Count}] Payload[A={mPayloadsActive.Count}|H={mPayloadsHistory?.Count??0}] {Id}")]
     public class ManualFabricBridge : CommunicationFabricBridgeBase, IManualCommunicationFabricBridge
     {
         #region Declarations
-        protected List<ManualCommunicationAgent> mListeners = new List<ManualCommunicationAgent>();
-        protected List<ManualCommunicationAgent> mSenders = new List<ManualCommunicationAgent>();
+        long mSendCount = 0;
+        long mSuccess = 0;
+        long mFailure = 0;
 
-        private long mSendCount = 0;
-        private long mSuccess = 0;
-        private long mFailure = 0;
+        List<ManualCommunicationAgent> mListeners = new List<ManualCommunicationAgent>();
+        List<ManualCommunicationAgent> mSenders = new List<ManualCommunicationAgent>();
 
-        ManualCommunicationAgent[] mActiveSenders = null;
-        ManualCommunicationAgent[] mActiveListeners = null;
+        Dictionary<string,ManualCommunicationAgent[]> mActiveSenders = null;
+        Dictionary<string,ManualCommunicationAgent[]> mActiveListeners = null;
 
         ConcurrentDictionary<Guid, TransmissionPayloadHolder> mPayloadsActive = new ConcurrentDictionary<Guid, TransmissionPayloadHolder>();
-        ConcurrentDictionary<Guid, TransmissionPayload> mPayloadsHistory = null;
+        ConcurrentDictionary<Guid, TransmissionPayloadHolder> mPayloadsHistory = null;
+
         #endregion
         #region Constructor
         /// <summary>
@@ -40,8 +43,8 @@ namespace Xigadee
             RetryAttempts = retryAttempts;
 
             if (payloadHistoryEnabled)
-                mPayloadsHistory = new ConcurrentDictionary<Guid, TransmissionPayload>();
-        } 
+                mPayloadsHistory = new ConcurrentDictionary<Guid, TransmissionPayloadHolder>();
+        }
         #endregion
 
         /// <summary>
@@ -49,6 +52,7 @@ namespace Xigadee
         /// </summary>
         public int? RetryAttempts { get; }
 
+        #region Listener...
         /// <summary>
         /// This method gets a new listener.
         /// </summary>
@@ -61,12 +65,26 @@ namespace Xigadee
             return agent;
         }
 
-        private void Listener_StatusChanged(object sender, StatusChangedEventArgs e)
+        private Dictionary<string, ManualCommunicationAgent[]> GetActive(List<ManualCommunicationAgent> agents)
         {
-            var newListeners = mListeners.Where((l) => l.Status == ServiceStatus.Running).ToArray();
-            Interlocked.Exchange(ref mActiveListeners, newListeners);
+            var active = agents
+                .Where((l) => l.Status == ServiceStatus.Running);
+
+            var dict = active
+                .Select((l) => l.ChannelId).Distinct()
+                .ToDictionary((a) => a, (a) => active.Where((l) => l.ChannelId == a).ToArray());
+
+            return dict;
         }
 
+        private void Listener_StatusChanged(object sender, StatusChangedEventArgs e)
+        {
+            var dict = GetActive(mListeners);
+            Interlocked.Exchange(ref mActiveListeners, dict);
+        }
+        #endregion
+
+        #region Sender ...
         /// <summary>
         /// This method gets a new sender.
         /// </summary>
@@ -82,10 +100,12 @@ namespace Xigadee
 
         private void Sender_StatusChanged(object sender, StatusChangedEventArgs e)
         {
-            var newSenders = mSenders.Where((l) => l.Status == ServiceStatus.Running).ToArray();
-            Interlocked.Exchange(ref mActiveSenders, newSenders);
+            var dict = GetActive(mSenders);
+            Interlocked.Exchange(ref mActiveSenders, dict);
         }
+        #endregion
 
+        #region Sender_OnProcess(object sender, TransmissionPayload e)
         /// <summary>
         /// This method distributes the incoming payload to the relevant senders based on the 
         /// distribution algorithm chosen.
@@ -97,10 +117,11 @@ namespace Xigadee
             try
             {
                 OnReceiveInvoke(sender, e);
+                ManualCommunicationAgent[] listeners;
 
-                var listeners = mActiveListeners.Where((c) => c.ChannelId == e.Message.ChannelId).ToArray();
+                var channel = e.Message.ChannelId;
 
-                if (listeners.Length == 0)
+                if (!mActiveListeners.TryGetValue(channel, out listeners) || listeners.Length == 0)
                 {
                     e.SignalSuccess();
                     return;
@@ -126,7 +147,9 @@ namespace Xigadee
                 OnExceptionInvoke(sender, e, ex);
             }
         }
+        #endregion
 
+        #region Sender_TransmitRoundRobin...
         /// <summary>
         /// Do a round robin distribution to one of the listening clients.
         /// </summary>
@@ -138,6 +161,8 @@ namespace Xigadee
             int position = (int)(count % listeners.Length);
             Sender_Transmit(listeners[position], e);
         }
+        #endregion
+        #region Sender_TransmitBroadcast...
         /// <summary>
         /// Do a broadcast to all the listening clients.
         /// </summary>
@@ -147,9 +172,11 @@ namespace Xigadee
         private void Sender_TransmitBroadcast(ManualCommunicationAgent[] listeners, TransmissionPayload e, long count)
         {
             //Send as parallel requests to all the subscribers.
-            Enumerable.Range(0, listeners.Length).AsParallel().ForEach((c) => Sender_Transmit(listeners[c], e));
+            listeners.ForEach((c) => Sender_Transmit(c, e));
         }
+        #endregion
 
+        #region Sender_Transmit ...
         /// <summary>
         /// Clone the payload and transmit to the listener specified.
         /// </summary>
@@ -157,23 +184,24 @@ namespace Xigadee
         /// <param name="incoming">The payload to transmit.</param>
         private void Sender_Transmit(ManualCommunicationAgent listener, TransmissionPayload incoming)
         {
-            var payload = PayloadClone(incoming);
-
-            payload.TraceWrite($"Transmit -> {listener.ChannelId} -> {incoming.Message.ChannelPriority}");
-
-            mPayloadsActive.AddOrUpdate(payload.Id, new TransmissionPayloadHolder(payload, listener), (g, p) => p);
-
-            OnTransmitInvoke(listener, payload);
-
             try
             {
+                var payload = PayloadClone(incoming);
+
+                payload.TraceWrite($"Transmit -> {listener.ChannelId} -> {incoming.Message.ChannelPriority}");
+
+                mPayloadsActive.AddOrUpdate(payload.Id, new TransmissionPayloadHolder(payload, incoming, listener), (g, p) => p);
+
+                OnTransmitInvoke(listener, payload);
+
                 listener.Inject(payload);
             }
             catch (Exception ex)
             {
                 listener.Collector?.LogException("Unhandled exception in the BridgeAgent", ex);
             }
-        }
+        } 
+        #endregion
 
 
         private TransmissionPayload PayloadClone(TransmissionPayload incoming)
@@ -193,7 +221,7 @@ namespace Xigadee
 
             TransmissionPayloadHolder holder;
             if (mPayloadsActive.TryRemove(id, out holder))
-                mPayloadsHistory?.AddOrUpdate(id, holder.Payload, (i, p) => p);
+                mPayloadsHistory?.AddOrUpdate(id, holder, (i, p) => p);
             else
                 throw new ArgumentOutOfRangeException();
             //if (!success && mRetryAttempts.HasValue)
