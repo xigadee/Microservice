@@ -1,5 +1,4 @@
 ﻿using System.Threading;
-
 namespace Xigadee
 {
     /// <summary>

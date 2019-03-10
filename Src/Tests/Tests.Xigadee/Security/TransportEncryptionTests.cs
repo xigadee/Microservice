@@ -28,9 +28,9 @@ namespace Test.Xigadee
             {
                 try
                 {
-                    var fabric = new ManualCommunicationFabric();
-                    var bridgeOut = fabric[ManualCommunicationFabricMode.Queue];
-                    var bridgein = fabric[ManualCommunicationFabricMode.Broadcast];
+                    var fabric = new ManualFabric();
+                    var bridgeOut = fabric.Queue;
+                    var bridgein = fabric.Broadcast;
 
                     var key = CreateSalt(128);
 

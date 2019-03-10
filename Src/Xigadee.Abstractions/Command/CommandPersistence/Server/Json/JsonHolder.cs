@@ -1,8 +1,4 @@
-﻿#region using
-
-#endregion
-using System.Text;
-
+﻿using System.Text;
 namespace Xigadee
 {
     /// <summary>

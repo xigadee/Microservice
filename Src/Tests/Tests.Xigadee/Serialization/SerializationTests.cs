@@ -12,15 +12,16 @@ namespace Test.Xigadee.Serialization
         {
             var container = new ServiceHandlerContainer();
 
-            var sr = container.Serialization.Add(new JsonContractSerializer());
+            var ser = new JsonRawSerializer();
+            var sr = container.Serialization.Add(ser);
 
             container.Start();
 
             var test = new Blah { Message = "Hmm" };
 
-            var blob = container.Serialization.SerializeToBlob(test);
+            var blob = container.Serialization.SerializeToBlob(test, ser.Id);
 
-            var resolve = container.Serialization.DeserializeToObject<Blah>(blob);
+            var resolve = container.Serialization.DeserializeToObject<Blah>(blob, ser.Id);
 
             Assert.AreEqual(test, resolve);
         }

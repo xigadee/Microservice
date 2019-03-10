@@ -10,6 +10,30 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Communication\Tcp\HttpSamples\http1_rq.txt" />
+    <None Remove="Communication\Tcp\HttpSamples\http1_rq_cont.txt" />
+    <None Remove="Communication\Tcp\HttpSamples\http1_rs.txt" />
+    <None Remove="Communication\Tcp\HttpSamples\http2_rq.txt" />
+    <None Remove="Communication\Tcp\HttpSamples\http2_rs.txt" />
+    <None Remove="Communication\Tcp\HttpSamples\http3_rq.txt" />
+    <None Remove="Communication\Tcp\HttpSamples\http3_rs.txt" />
+    <None Remove="Communication\Tcp\HttpSamples\HTTPChuckedTest1.txt" />
+    <None Remove="Communication\Tcp\HttpSamples\httpMime1.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Communication\Tcp\HttpSamples\http1_rq.txt" />
+    <EmbeddedResource Include="Communication\Tcp\HttpSamples\http1_rq_cont.txt" />
+    <EmbeddedResource Include="Communication\Tcp\HttpSamples\http1_rs.txt" />
+    <EmbeddedResource Include="Communication\Tcp\HttpSamples\http2_rq.txt" />
+    <EmbeddedResource Include="Communication\Tcp\HttpSamples\http2_rs.txt" />
+    <EmbeddedResource Include="Communication\Tcp\HttpSamples\http3_rq.txt" />
+    <EmbeddedResource Include="Communication\Tcp\HttpSamples\http3_rs.txt" />
+    <EmbeddedResource Include="Communication\Tcp\HttpSamples\HTTPChuckedTest1.txt" />
+    <EmbeddedResource Include="Communication\Tcp\HttpSamples\httpMime1.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
     <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />

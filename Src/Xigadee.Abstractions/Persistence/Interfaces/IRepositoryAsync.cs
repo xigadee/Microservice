@@ -1,35 +1,11 @@
-﻿#region using
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Security.Principal;
-using System.Text;
+﻿using System;
 using System.Threading.Tasks;
-#endregion
 namespace Xigadee
 {
-    #region IRepositoryAsyncServer<K, E>
     /// <summary>
     /// This is a default repository async interface for entities within the system.
     /// </summary>
-    /// <typeparam name="K">The entity key object.</typeparam>
-    /// <typeparam name="E">The entity type.</typeparam>
-    public interface IRepositoryAsyncServer<K, E> : IRepositoryAsync<K, E>
-        where K : IEquatable<K>
-    {
-        /// <summary>
-        /// Gets or sets the default security principal.
-        /// </summary>
-        IPrincipal DefaultPrincipal { get; set; }
-    }
-    #endregion
-
-    #region IRepositoryAsync<K, E>
-    /// <summary>
-    /// This is a default repository async interface for entities within the system.
-    /// </summary>
-    /// <typeparam name="K">The entity key object.</typeparam>
+    /// <typeparam name="K">The entity key.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
     public interface IRepositoryAsync<K, E>
         where K : IEquatable<K>
@@ -101,5 +77,4 @@ namespace Xigadee
         /// <returns>Returns the holder with the response and data.</returns>
         Task<RepositoryHolder<SearchRequest, SearchResponse>> Search(SearchRequest key, RepositorySettings options = null);
     } 
-    #endregion
 }

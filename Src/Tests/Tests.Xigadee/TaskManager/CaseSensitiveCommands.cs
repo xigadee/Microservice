@@ -23,9 +23,9 @@ namespace Test.Xigadee
                 DebugMemoryDataCollector collector1, collector2;
                 CommandInitiator init = null;
 
-                var fabric = new ManualCommunicationFabric();
-                var bridgeOut = fabric[ManualCommunicationFabricMode.Queue];
-                var bridgeReturn = fabric[ManualCommunicationFabricMode.Broadcast];
+                var fabric = new ManualFabric();
+                var bridgeOut = fabric.Queue;
+                var bridgeReturn = fabric.Broadcast;
 
                 var pClient = new MicroservicePipeline("Client");
                 var pServer = new MicroservicePipeline("Server");
@@ -33,7 +33,6 @@ namespace Test.Xigadee
                 pServer
                     .AdjustPolicyTaskManagerForDebug()
                     .AddDebugMemoryDataCollector(out collector2)
-                    .AddPayloadSerializerDefaultJson()
                     .AddChannelIncoming("INTERNALIN", internalOnly: false
                         , autosetPartition01: false)
                         .AttachPriorityPartition((0, 1.0M), (1, 0.9M))
@@ -42,7 +41,7 @@ namespace Test.Xigadee
                         .AttachCommand((CommandMethodRequestContext ctx) =>
                         {                    
                             var payload = ctx.Request.Message.Holder;
-                            ctx.ResponseSet(200, payload.Object);
+                            ctx.ResponseSet(200, ((Blah)payload.Object).Message);
                             return Task.FromResult(0);
                         }, ("FRANKY", "johnny5"))
                         .AttachCommand((CommandMethodRequestContext ctx) =>

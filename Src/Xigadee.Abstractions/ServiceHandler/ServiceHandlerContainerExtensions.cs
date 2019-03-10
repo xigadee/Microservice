@@ -21,7 +21,7 @@ namespace Xigadee
         {
             value = null;
 
-            if (!holder.HasContentType)
+            if (holder.ContentType == null)
                 return false;
 
             value = holder.ContentType.Id;
@@ -91,11 +91,12 @@ namespace Xigadee
         /// </summary>
         /// <param name="collection">The collection.</param>
         /// <param name="item">The item.</param>
+        /// <param name="serializationId">The serialization id.</param>
         /// <returns>Returns true if the Content is serialized correctly to a binary blob.</returns>
-        public static byte[] SerializeToBlob(this ServiceHandlerCollection<IServiceHandlerSerialization> collection, object item)
+        public static byte[] SerializeToBlob(this ServiceHandlerCollection<IServiceHandlerSerialization> collection, object item, string serializationId)
         {
             var context = ServiceHandlerContext.CreateWithObject(item);
-            //context.ContentType = collection.
+            context.ContentType = serializationId;
             if (collection.TrySerialize(context))
                 return context.Blob;
 
@@ -108,10 +109,10 @@ namespace Xigadee
         /// <param name="collection">The collection.</param>
         /// <param name="blob">The binary array.</param>
         /// <returns>Returns true if the Content is serialized correctly to a binary blob.</returns>
-        public static O DeserializeToObject<O>(this ServiceHandlerCollection<IServiceHandlerSerialization> collection, byte[] blob)
+        public static O DeserializeToObject<O>(this ServiceHandlerCollection<IServiceHandlerSerialization> collection, byte[] blob, string serializationId)
         {
             ServiceHandlerContext context = blob;
-
+            context.ContentType = serializationId;
             if (collection.TryDeserialize(context))
                 return (O)context.Object;
 

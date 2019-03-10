@@ -153,7 +153,7 @@ namespace Xigadee
         {
             Connection = connection;
             mPersistenceEntitySerializer = persistenceEntitySerializer;
-            mCacheEntitySerializer = cachingEntitySerializer ?? mTransform?.CacheEntitySerializer;
+            mCacheEntitySerializer = cachingEntitySerializer ?? Transform?.CacheEntitySerializer;
             mXmlVersionMaker = xmlVersionMaker;
         }
         #endregion
@@ -507,12 +507,12 @@ namespace Xigadee
                 return;
 
 
-            rs.Entity = mTransform.PersistenceEntitySerializer.Deserializer(rs.Content);
+            rs.Entity = Transform.PersistenceEntitySerializer.Deserializer(rs.Content);
 
             try
             {
-                if (mTransform.Version != null)
-                    rs.VersionId = mTransform.Version.EntityVersionAsString(rs.Entity);
+                if (Transform.Version != null)
+                    rs.VersionId = Transform.Version.EntityVersionAsString(rs.Entity);
             }
             catch (Exception)
             {

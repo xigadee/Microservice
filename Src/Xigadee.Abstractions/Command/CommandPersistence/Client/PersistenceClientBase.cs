@@ -27,7 +27,7 @@ namespace Xigadee
     /// <typeparam name="E">The entity type.</typeparam>
     /// <typeparam name="P">The policy.</typeparam>
     public abstract class PersistenceClientBase<K, E, P> : CommandBase<PersistenceClientStatistics, P>
-        , IRepositoryAsyncServer<K, E>
+        , IRepositoryAsyncClient<K, E>
         where K : IEquatable<K>
         where P : CommandPolicy, new()
     {

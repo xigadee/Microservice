@@ -195,7 +195,7 @@ namespace Xigadee
         private PersistenceResponseHolder<E> PersistenceResponseFormat(ResponseHolder result)
         {
             if (result.IsSuccess)
-                return new PersistenceResponseHolder<E>() { StatusCode = result.StatusCode, Content = result.Content, IsSuccess = true, Entity = mTransform.PersistenceEntitySerializer.Deserializer(result.Content) };
+                return new PersistenceResponseHolder<E>() { StatusCode = result.StatusCode, Content = result.Content, IsSuccess = true, Entity = Transform.PersistenceEntitySerializer.Deserializer(result.Content) };
             else
                 return new PersistenceResponseHolder<E>() { StatusCode = result.IsTimeout ? 504 : result.StatusCode, IsSuccess = false, IsTimeout = result.IsTimeout };
         }
@@ -209,7 +209,7 @@ namespace Xigadee
         /// <param name="holder"></param>
         protected async override Task<IResponseHolder<E>> InternalCreate(K key, PersistenceRequestHolder<K, E> holder)
         {
-            var jsonHolder = mTransform.JsonMaker(holder.Rq.Entity);
+            var jsonHolder = Transform.JsonMaker(holder.Rq.Entity);
 
             var result = await Partition(jsonHolder.Key).Create(jsonHolder.Json, holder.Rq.Timeout);
 
@@ -243,7 +243,7 @@ namespace Xigadee
         protected override async Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRequestHolder<K, E> holder)
         {
             //409 Conflict
-            JsonHolder<K> jsonHolder = mTransform.JsonMaker(holder.Rq.Entity);
+            JsonHolder<K> jsonHolder = Transform.JsonMaker(holder.Rq.Entity);
             JsonHolder<K> jsonHolderUpdate;
 
             var documentRq = await ResolveDocumentIdByKey(jsonHolder.Key, holder.Rq.Timeout);
@@ -253,23 +253,23 @@ namespace Xigadee
             string eTag = documentRq.ETag;
 
             //We check this in case optimistic locking has been turned on, but old versions don't support this yet.
-            if (mTransform.Version.SupportsOptimisticLocking && documentRq.Fields.ContainsKey(mTransform.Version.VersionJsonMetadata.Key))
+            if (Transform.Version.SupportsOptimisticLocking && documentRq.Fields.ContainsKey(Transform.Version.VersionJsonMetadata.Key))
             {
-                var currentVersionId = documentRq.Fields[mTransform.Version.VersionJsonMetadata.Key];
+                var currentVersionId = documentRq.Fields[Transform.Version.VersionJsonMetadata.Key];
 
-                if (currentVersionId != mTransform.Version.EntityVersionAsString(holder.Rq.Entity))
+                if (currentVersionId != Transform.Version.EntityVersionAsString(holder.Rq.Entity))
                     return new PersistenceResponseHolder<E>() { StatusCode = 409, IsSuccess = false, IsTimeout = false, VersionId = currentVersionId };
 
                 //Set the new version id on the entity.
-                mTransform.Version.EntityVersionUpdate(holder.Rq.Entity);
-                jsonHolderUpdate = mTransform.JsonMaker(holder.Rq.Entity);
+                Transform.Version.EntityVersionUpdate(holder.Rq.Entity);
+                jsonHolderUpdate = Transform.JsonMaker(holder.Rq.Entity);
             }
             else
                 jsonHolderUpdate = jsonHolder;
 
             var result = await Partition(jsonHolderUpdate.Key).Update(documentRq.DocumentId, jsonHolderUpdate.Json, holder.Rq.Timeout, eTag: eTag);
 
-            if (result.IsSuccess && mTransform.Version.SupportsArchiving)
+            if (result.IsSuccess && Transform.Version.SupportsArchiving)
             {
                 //mCollection.Create(documentRq.DocumentId, jsonHolder.Json, rq.Timeout).Result;
             }
@@ -336,12 +336,12 @@ namespace Xigadee
         /// <returns>Returns the _rid value.</returns>
         protected virtual async Task<ResponseHolder> ResolveDocumentIdByKey(K key, TimeSpan? timeout = null)
         {
-            string id = mTransform.KeyStringMaker(key);
+            string id = Transform.KeyStringMaker(key);
 
             var extractions = new List<KeyValuePair<string, string>>();
-            extractions.Add(mTransform.JsonMetadata_EntityType);
-            if (mTransform.Version.SupportsVersioning)
-                extractions.Add(mTransform.Version.VersionJsonMetadata);
+            extractions.Add(Transform.JsonMetadata_EntityType);
+            if (Transform.Version.SupportsVersioning)
+                extractions.Add(Transform.Version.VersionJsonMetadata);
 
             var result = await Partition(key).ResolveDocumentId(id, timeout: timeout, extractionJPaths: extractions);
 
@@ -356,13 +356,13 @@ namespace Xigadee
             {
                 if (!string.IsNullOrEmpty(holderResponse.Content))
                 {
-                    var entity = mTransform.PersistenceEntitySerializer.Deserializer(holderResponse.Content);
-                    rq.Key = mTransform.KeyMaker(entity);
-                    holderResponse.VersionId = mTransform.Version?.EntityVersionAsString(entity);
+                    var entity = Transform.PersistenceEntitySerializer.Deserializer(holderResponse.Content);
+                    rq.Key = Transform.KeyMaker(entity);
+                    holderResponse.VersionId = Transform.Version?.EntityVersionAsString(entity);
                 }
                 else
                 {
-                    rq.Key = mTransform.KeyDeserializer(holderResponse.Id);
+                    rq.Key = Transform.KeyDeserializer(holderResponse.Id);
                 }
             }
 
@@ -373,10 +373,10 @@ namespace Xigadee
 
         protected override async Task<bool> TimeoutCorrectCreateUpdate(PersistenceRequestHolder<K, E> holder)
         {
-            if (holder.Rq.Entity == null || mTransform == null)
+            if (holder.Rq.Entity == null || Transform == null)
                 return false;
 
-            var jsonHolder = mTransform.JsonMaker(holder.Rq.Entity);
+            var jsonHolder = Transform.JsonMaker(holder.Rq.Entity);
             var alternateHolder = new PersistenceRequestHolder<K, E>(holder.ProfileId, holder.Prq, holder.Prs)
             {
                 Rq = new PersistenceRepositoryHolder<K, E> { Key = jsonHolder.Key, Timeout = holder.Rq.Timeout },
@@ -389,7 +389,7 @@ namespace Xigadee
             holder.Rs.Entity = alternateHolder.Rs.Entity;
             holder.Rs.Key = alternateHolder.Rs.Key;
             holder.Rs.KeyReference = alternateHolder.Rs.KeyReference;
-            holder.Rs.ResponseCode = mTransform.Version.SupportsVersioning && jsonHolder.Version.Equals(mTransform.Version.EntityVersionAsString(holder.Rs.Entity))
+            holder.Rs.ResponseCode = Transform.Version.SupportsVersioning && jsonHolder.Version.Equals(Transform.Version.EntityVersionAsString(holder.Rs.Entity))
                 ? alternateHolder.Rs.ResponseCode
                 : holder.Rs.ResponseCode;
 

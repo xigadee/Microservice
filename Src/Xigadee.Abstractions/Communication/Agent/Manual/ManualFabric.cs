@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Xigadee
@@ -7,12 +6,11 @@ namespace Xigadee
     /// <summary>
     /// This is the communication bridge that simulates passing messages between Microservices and can be used for unit test based scenarios.
     /// </summary>
-    public class ManualFabric : CommunicationFabricBase<IManualCommunicationFabricBridge>
+    public class ManualFabric : CommunicationFabricBase<ICommunicationFabricBridge>
     {
         #region Declarations
-        private List<IManualCommunicationFabricBridge> mBridges = new List<IManualCommunicationFabricBridge>();
+        private List<ICommunicationFabricBridge> mBridges = new List<ICommunicationFabricBridge>();
         #endregion
-
 
         /// <summary>
         /// Gets a value indicating whether the payload history will be stored.
@@ -24,16 +22,16 @@ namespace Xigadee
         public int? RetryAttempts { get; } = 3;
 
         /// <summary>
-        /// Gets the <see cref="ICommunicationFabricBridge"/> with the specified mode.
+        /// Gets a new communication bridge for the specified mode.
         /// </summary>
         /// <param name="mode">The mode.</param>
-        /// <returns>Returns the bridge.</returns>
+        /// <returns>Returns the new bridge.</returns>
         /// <exception cref="NotSupportedException">The communication bridge mode is not supported</exception>
-        public override IManualCommunicationFabricBridge this[ManualCommunicationFabricMode mode]
+        protected override ICommunicationFabricBridge this[CommunicationFabricMode mode]
         {
             get
             {
-                if (mode == ManualCommunicationFabricMode.NotSet)
+                if (mode == CommunicationFabricMode.NotSet)
                     throw new NotSupportedException("The communication bridge mode is not supported");
 
                 var bridge = new ManualFabricBridge(this, mode, PayloadHistoryEnabled, RetryAttempts);

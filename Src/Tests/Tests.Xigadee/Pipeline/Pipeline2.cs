@@ -47,9 +47,9 @@ namespace Test.Xigadee
                 IPipelineChannelIncoming<MicroservicePipeline> cpipeIn = null;
                 IPipelineChannelOutgoing<MicroservicePipeline> cpipeOut = null;
 
-                var fabric = new ManualCommunicationFabric();
-                var bridgeOut = fabric[ManualCommunicationFabricMode.Queue];
-                var bridgeReturn = fabric[ManualCommunicationFabricMode.Broadcast];
+                var fabric = new ManualFabric();
+                var bridgeOut = fabric.Queue;
+                var bridgeReturn = fabric.Broadcast;
 
                 //bridgeReturn.Agent.OnReceive += (o, e) => { if (e.Payload.Extent.Days == 42) init.ToString(); };
                 //bridgeReturn.Agent.OnException += (o, e) => { if (e.Payload.Extent.Days == 42) init.ToString(); };
@@ -63,7 +63,6 @@ namespace Test.Xigadee
                     pServer
                         .AdjustPolicyTaskManagerForDebug()
                         .AddDebugMemoryDataCollector(out collector2)
-                        //.AddPayloadSerializerDefaultJson()
                         .AddChannelIncoming("internalIn", internalOnly: false
                             , autosetPartition01: false
                             , assign: (p, c) => cpipeIn = p)
@@ -162,17 +161,30 @@ namespace Test.Xigadee
                 init.OnRequestUnresolved += Init_OnRequestUnresolved;
                 init2.OnRequestUnresolved += Init_OnRequestUnresolved;
 
+                //var rs1 = init.Process<IPipelineTest2, Blah, string>(new Blah() { Message = "hello1" }).Result;
+                //var rs2 = init.Process<Blah, string>("internalIn", "franky", "johnny5", new Blah() { Message = "hello2" }).Result;
+                //var rs3 = init.Process<Blah, string>(("internalIn", "franky", "johnny5"), new Blah() { Message = "hello3" }).Result;
+                //var rs4 = init.Process<Blah, string>(("internalIn", "franky", "johnny6"), new Blah() { Message = "hello3" }).Result;
+                //var rs5 = init.Process<Blah, string>(("spooky", "franky", "johnny5"), new Blah() { Message = "hellospooky" }).Result;
+
                 var list = new List<Task<ResponseWrapper<string>>>();
+                ResponseWrapper<string>[] result;
+                try
+                {
+                    list.Add(init.Process<IPipelineTest2, Blah, string>(new Blah() { Message = "hello1" }));
+                    list.Add(init.Process<Blah, string>("internalIn", "franky", "johnny5", new Blah() { Message = "hello2" }));
+                    list.Add(init.Process<Blah, string>(("internalIn", "franky", "johnny5"), new Blah() { Message = "hello3" }));
+                    list.Add(init.Process<Blah, string>(("internalIn", "franky", "johnny6"), new Blah() { Message = "hello3" }));
+                    list.Add(init.Process<Blah, string>(("spooky", "franky", "johnny5"), new Blah() { Message = "hellospooky" }));
 
-                list.Add(init.Process<IPipelineTest2, Blah, string>(new Blah() { Message = "hello1" }));
-                list.Add(init.Process<Blah, string>("internalIn", "franky", "johnny5", new Blah() { Message = "hello2" }));
-                list.Add(init.Process<Blah, string>(("internalIn", "franky", "johnny5"), new Blah() { Message = "hello3" }));
-                list.Add(init.Process<Blah, string>(("internalIn", "franky", "johnny6"), new Blah() { Message = "hello3" }));
-                list.Add(init.Process<Blah, string>(("spooky", "franky", "johnny5"), new Blah() { Message = "hellospooky" }));
+                    result = Task.WhenAll(list).Result;
 
-                var result = Task.WhenAll(list).Result;
-
-                result.ForEach((r) => Assert.IsTrue(r.ResponseCode == 200 || r.ResponseCode == 201));
+                    result.ForEach((r) => Assert.IsTrue(r.ResponseCode == 200 || r.ResponseCode == 201));
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
 
                 pClient.Stop();
                 pClient2.Stop();

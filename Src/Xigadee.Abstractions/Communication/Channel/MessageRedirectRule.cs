@@ -26,14 +26,10 @@ namespace Xigadee
         public MessageRedirectRule(Func<TransmissionPayload, bool> canRedirect
             , Action<TransmissionPayload> redirect
             , bool canCache = true)
-        {
-            if (canRedirect == null)
-                throw new ArgumentNullException("match cannot be null.");
-            CanRedirect = canRedirect;
-
-            if (redirect == null)
-                throw new ArgumentNullException("rewrite cannot be null.");
-            Redirect = redirect;
+        {             
+            CanRedirect = canRedirect ?? throw new ArgumentNullException("match cannot be null.");
+                
+            Redirect = redirect ?? throw new ArgumentNullException("rewrite cannot be null.");
 
             CanCache = canCache;
         }

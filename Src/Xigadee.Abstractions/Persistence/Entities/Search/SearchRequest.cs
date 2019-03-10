@@ -8,7 +8,7 @@ namespace Xigadee
     /// This class holds the incoming OData parameters.
     /// </summary>
     [DebuggerDisplay("{ToString()}")]
-    public class SearchRequest: SearchOData4Base, IEquatable<SearchRequest>
+    public class SearchRequest: IEquatable<SearchRequest>
     {
         public bool Equals(SearchRequest other)
         {

@@ -123,10 +123,10 @@ namespace Xigadee
 
         protected override async Task<bool> TimeoutCorrectCreateUpdate(PersistenceRequestHolder<K, E> holder)
         {
-            if (holder.Rq.Entity == null || mTransform == null)
+            if (holder.Rq.Entity == null || Transform == null)
                 return false;
 
-            var jsonHolder = mTransform.JsonMaker(holder.Rq.Entity);
+            var jsonHolder = Transform.JsonMaker(holder.Rq.Entity);
             var alternateHolder = new PersistenceRequestHolder<K, E>(holder.ProfileId, holder.Prq, holder.Prs)
             {
                 Rq = new PersistenceRepositoryHolder<K, E> { Key = jsonHolder.Key, Timeout = holder.Rq.Timeout },
@@ -139,7 +139,7 @@ namespace Xigadee
             holder.Rs.Entity = alternateHolder.Rs.Entity;
             holder.Rs.Key = alternateHolder.Rs.Key;
             holder.Rs.KeyReference = alternateHolder.Rs.KeyReference;
-            holder.Rs.ResponseCode = mTransform.Version.SupportsVersioning && jsonHolder.Version.Equals(mTransform.Version.EntityVersionAsString(holder.Rs.Entity))
+            holder.Rs.ResponseCode = Transform.Version.SupportsVersioning && jsonHolder.Version.Equals(Transform.Version.EntityVersionAsString(holder.Rs.Entity))
                 ? alternateHolder.Rs.ResponseCode
                 : holder.Rs.ResponseCode;
 

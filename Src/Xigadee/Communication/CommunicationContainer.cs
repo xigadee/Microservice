@@ -1,13 +1,8 @@
-﻿#region using
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-
-#endregion
 namespace Xigadee
 {
     /// <summary>
@@ -85,8 +80,8 @@ namespace Xigadee
             mSupportedMessages = new List<MessageFilterWrapper>();
             mSenders = new List<ISender>();
             mListener = new List<IListener>();
-            mContainerIncoming = new Dictionary<string, Channel>();
-            mContainerOutgoing = new Dictionary<string, Channel>();
+            mChannelsIncoming = new ConcurrentDictionary<string, Channel>();
+            mChannelsOutgoing = new ConcurrentDictionary<string, Channel>();
         }
         #endregion
 
@@ -128,8 +123,8 @@ namespace Xigadee
         /// </summary>
         protected override void StopInternal()
         {
-            mContainerIncoming.Clear();
-            mContainerOutgoing.Clear();
+            mChannelsIncoming.Clear();
+            mChannelsOutgoing.Clear();
         }
         #endregion
 

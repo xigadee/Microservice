@@ -15,8 +15,8 @@ namespace Test.Xigadee
             try
             {
                 var fabric = new ManualFabric();
-                var bridgeOut = fabric[ManualCommunicationFabricMode.Queue];
-                var bridgein = fabric[ManualCommunicationFabricMode.Broadcast];
+                var bridgeOut = fabric.Queue;
+                var bridgein = fabric.Broadcast;
 
                 ICommandInitiator init;
                 DebugMemoryDataCollector memp1, memp2;

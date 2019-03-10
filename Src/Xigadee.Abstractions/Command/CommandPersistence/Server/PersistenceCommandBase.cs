@@ -1,10 +1,8 @@
-﻿#region using
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-#endregion
 namespace Xigadee
 {
     /// <summary>
@@ -19,16 +17,12 @@ namespace Xigadee
         where S : PersistenceStatistics, new()
         where P : PersistenceCommandPolicy, new()
     {
+        #region Declarations
         /// <summary>
         /// This event is raised when an entity is created, changes, or is removed.
         /// </summary>
         public event EventHandler<EntityChangeEventArgs> OnEntityChangeAction;
 
-        #region Declarations
-        /// <summary>
-        /// This is the entity transform holder.
-        /// </summary>
-        protected readonly EntityTransformHolder<K, E> mTransform;
         /// <summary>
         /// This is the cache manager.
         /// </summary>
@@ -79,7 +73,7 @@ namespace Xigadee
             , P policy = null
             ):base(policy)
         {
-            mTransform = EntityTransformCreate(entityName, versionPolicy, keyMaker
+            Transform = EntityTransformCreate(entityName, versionPolicy, keyMaker
                 , persistenceEntitySerializer, cachingEntitySerializer
                 , keySerializer, keyDeserializer, referenceMaker, referenceHashMaker);
 
@@ -115,7 +109,7 @@ namespace Xigadee
             if (entityTransform == null)
                 throw new ArgumentNullException("entityTransform cannot be null");
 
-            mTransform = entityTransform;
+            Transform = entityTransform;
 
             Policy.DefaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(10);
             Policy.PersistenceRetryPolicy = persistenceRetryPolicy ?? new PersistenceRetryPolicy();
@@ -123,6 +117,13 @@ namespace Xigadee
 
             mCacheManager = cacheManager ?? new NullCacheManager<K, E>();
         }
+        #endregion
+
+        #region Transform
+        /// <summary>
+        /// This is the entity transform holder.
+        /// </summary>
+        protected EntityTransformHolder<K, E> Transform { get; set; } 
         #endregion
 
         #region StatisticsRecalculate()
@@ -200,7 +201,7 @@ namespace Xigadee
         {
             get
             {
-                return mTransform.EntityName;
+                return Transform.EntityName;
             }
         }
         #endregion
@@ -234,20 +235,22 @@ namespace Xigadee
         /// </summary>
         protected override void CommandsRegister()
         {
+            //Create
             PersistenceCommandRegister<K, E>(EntityActions.Create, ProcessCreate, true, timeoutcorrect: TimeoutCorrectCreateUpdate);
-
+            //Read
             PersistenceCommandRegister<K, E>(EntityActions.Read, ProcessRead);
             PersistenceCommandRegister<K, E>(EntityActions.ReadByRef, ProcessReadByRef);
-
+            //Update
             PersistenceCommandRegister<K, E>(EntityActions.Update, ProcessUpdate, true, timeoutcorrect: TimeoutCorrectCreateUpdate);
-
+            //Delete
             PersistenceCommandRegister<K, Tuple<K, string>>(EntityActions.Delete, ProcessDelete, true, timeoutcorrect: TimeoutCorrectDelete);
             PersistenceCommandRegister<K, Tuple<K, string>>(EntityActions.DeleteByRef, ProcessDeleteByRef, true, timeoutcorrect: TimeoutCorrectDelete);
-
+            //Version
             PersistenceCommandRegister<K, Tuple<K, string>>(EntityActions.Version, ProcessVersion);
             PersistenceCommandRegister<K, Tuple<K, string>>(EntityActions.VersionByRef, ProcessVersionByRef);
-
+            //Search
             PersistenceCommandRegister<SearchRequest, SearchResponse>(EntityActions.Search, ProcessSearch);
+            //History
             PersistenceCommandRegister<HistoryRequest<K>, HistoryResponse<K>>(EntityActions.History, ProcessHistory);
         }
         #endregion
@@ -716,21 +719,20 @@ namespace Xigadee
         #region Create
         protected virtual async Task ProcessCreate(PersistenceRequestHolder<K, E> holder)
         {
-            K key = mTransform.KeyMaker(holder.Rq.Entity);
+            K key = Transform.KeyMaker(holder.Rq.Entity);
 
             var result = await InternalCreate(key, holder);
 
             if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
-                mCacheManager.Write(mTransform, result.Entity);
+                mCacheManager.Write(Transform, result.Entity);
 
             ProcessOutputEntity(key, holder.Rq, holder.Rs, result);
-        }
+        } 
 
         protected virtual async Task<IResponseHolder<E>> InternalCreate(K key, PersistenceRequestHolder<K, E> holder)
         {
             return new PersistenceResponseHolder<E>(PersistenceResponse.NotImplemented501);
         }
-
         #endregion
 
         #region Read
@@ -739,14 +741,14 @@ namespace Xigadee
             IResponseHolder<E> result = null;
 
             if (mCacheManager.IsActive && holder.Rq.Settings.UseCache)
-                result = await mCacheManager.Read(mTransform, holder.Rq.Key);
+                result = await mCacheManager.Read(Transform, holder.Rq.Key);
 
             if (result == null || !result.IsSuccess)
             {
                 result = await InternalRead(holder.Rq.Key, holder);
 
                 if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
-                    mCacheManager.Write(mTransform, result.Entity);
+                    mCacheManager.Write(Transform, result.Entity);
             }
             else
                 result.IsCacheHit = true;
@@ -765,14 +767,14 @@ namespace Xigadee
             IResponseHolder<E> result = null;
 
             if (mCacheManager.IsActive && holder.Rq.Settings.UseCache)
-                result = await mCacheManager.Read(mTransform, holder.Rq.KeyReference);
+                result = await mCacheManager.Read(Transform, holder.Rq.KeyReference);
 
             if (result == null || !result.IsSuccess)
             {
                 result = await InternalReadByRef(holder.Rq.KeyReference, holder);
 
                 if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
-                    mCacheManager.Write(mTransform, result.Entity);
+                    mCacheManager.Write(Transform, result.Entity);
             }
 
             ProcessOutputEntity(holder.Rq.Key, holder.Rq, holder.Rs, result);
@@ -787,17 +789,17 @@ namespace Xigadee
         #region Update
         protected virtual async Task ProcessUpdate(PersistenceRequestHolder<K, E> holder)
         {
-            K key = mTransform.KeyMaker(holder.Rq.Entity);
+            K key = Transform.KeyMaker(holder.Rq.Entity);
 
             // Remove from the cache first to ensure no change of ending up with a stale cached item
             // if the write to cache fails for any reason
             if (mCacheManager.IsActive)
-                mCacheManager.Delete(mTransform, key);
+                mCacheManager.Delete(Transform, key);
 
             var result = await InternalUpdate(key, holder);
 
             if (mCacheManager.IsActive && result.IsSuccess)
-                mCacheManager.Write(mTransform, result.Entity);
+                mCacheManager.Write(Transform, result.Entity);
 
             ProcessOutputEntity(key, holder.Rq, holder.Rs, result);
         }
@@ -814,7 +816,7 @@ namespace Xigadee
             //We presume that the delete will succeed and remove it from the cache before it is processed. 
             //Worse case this will result in a cache miss.
             if (mCacheManager.IsActive)
-                await mCacheManager.Delete(mTransform, holder.Rq.Key);
+                await mCacheManager.Delete(Transform, holder.Rq.Key);
 
             var result = await InternalDelete(holder.Rq.Key, holder);
 
@@ -832,7 +834,7 @@ namespace Xigadee
             var result = await InternalDeleteByRef(holder.Rq.KeyReference, holder);
 
             if (mCacheManager.IsActive && result.IsSuccess)
-                await mCacheManager.Delete(mTransform, mTransform.KeyDeserializer(result.Id));
+                await mCacheManager.Delete(Transform, Transform.KeyDeserializer(result.Id));
 
             ProcessOutputKey(holder.Rq, holder.Rs, result);
         }
@@ -848,18 +850,18 @@ namespace Xigadee
             IResponseHolder result = null;
 
             if (mCacheManager.IsActive)
-                result = await mCacheManager.VersionRead(mTransform, holder.Rq.Key);
+                result = await mCacheManager.VersionRead(Transform, holder.Rq.Key);
 
             if (result == null || !result.IsSuccess)
             {
-                if (mTransform.Version == null)
+                if (Transform.Version == null)
                     //If we don't set a version maker then how can we return the version.
                     result = new PersistenceResponseHolder(PersistenceResponse.NotImplemented501) { IsSuccess = false };
                 else
                     result = await InternalVersion(holder.Rq.Key, holder);
 
                 if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
-                    mCacheManager.WriteVersion(mTransform, holder.Rq.Key, result.VersionId);
+                    mCacheManager.WriteVersion(Transform, holder.Rq.Key, result.VersionId);
             }
 
             ProcessOutputKey(holder.Rq, holder.Rs, result);
@@ -876,16 +878,16 @@ namespace Xigadee
             IResponseHolder result = null;
 
             if (mCacheManager.IsActive)
-                result = await mCacheManager.VersionRead(mTransform, holder.Rq.KeyReference);
+                result = await mCacheManager.VersionRead(Transform, holder.Rq.KeyReference);
 
             if (result == null || !result.IsSuccess)
             {
                 result = await InternalVersionByRef(holder.Rq.KeyReference, holder);
                 if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
-                    mCacheManager.WriteReference(mTransform, holder.Rq.KeyReference, holder.Rq.Key, result.VersionId);
+                    mCacheManager.WriteReference(Transform, holder.Rq.KeyReference, holder.Rq.Key, result.VersionId);
             }
             else
-                holder.Rq.Key = mTransform.KeyDeserializer(result.Id); // Pass back the entities actual id in the key field
+                holder.Rq.Key = Transform.KeyDeserializer(result.Id); // Pass back the entities actual id in the key field
 
             ProcessOutputKey(holder.Rq, holder.Rs, result);
         }
@@ -951,8 +953,8 @@ namespace Xigadee
         protected virtual void ProcessOutputEntity(E entity, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs)
         {
             rs.Entity = entity;
-            rs.Key = mTransform.KeyMaker(rs.Entity);
-            rs.Settings.VersionId = mTransform.Version?.EntityVersionAsString(rs.Entity);
+            rs.Key = Transform.KeyMaker(rs.Entity);
+            rs.Settings.VersionId = Transform.Version?.EntityVersionAsString(rs.Entity);
 
             rs.KeyReference = new Tuple<string, string>(rs.Key.ToString(), rs.Settings.VersionId);
         }
@@ -986,7 +988,7 @@ namespace Xigadee
             rs.ResponseCode = holderResponse.StatusCode;
 
             if (holderResponse.IsSuccess)
-                ProcessOutputEntity(mTransform.PersistenceEntitySerializer.Deserializer(holderResponse.Content), rq, rs);
+                ProcessOutputEntity(Transform.PersistenceEntitySerializer.Deserializer(holderResponse.Content), rq, rs);
             else
                 ProcessOutputError(key, holderResponse, rs);
         }

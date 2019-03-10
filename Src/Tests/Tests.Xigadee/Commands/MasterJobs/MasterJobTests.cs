@@ -144,7 +144,7 @@ namespace Test.Xigadee
             {
                 PersistenceClient<Guid, BridgeMe> init1, init3;
                 DebugMemoryDataCollector memp1, memp2, memp3;
-                ManualChannelSender incoming = null;
+                ISender incoming = null;
 
                 var mast1 = new TestMasterJobCommand();
                 var mast2 = new TestMasterJobCommand();
@@ -166,7 +166,7 @@ namespace Test.Xigadee
                             .AttachCommand(new PersistenceManagerHandlerMemory<Guid, BridgeMe>((e) => e.Id, (s) => new Guid(s)))
                             .Revert()
                         .AddChannelOutgoing("cresponse")
-                            .AttachSender(bridgeIn.GetSender(), (a) => incoming = a as ManualChannelSender)
+                            .AttachSender(bridgeIn.GetSender(), (a) => incoming = a as ISender)
                             .Revert()
                         .AddChannelBroadcast("negotiate")
                             .AttachListener(bridgeMaster.GetListener())

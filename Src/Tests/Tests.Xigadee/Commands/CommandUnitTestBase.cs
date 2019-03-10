@@ -25,7 +25,6 @@ namespace Test.Xigadee
 
             pipeline
                 .AddDebugMemoryDataCollector(out mCollector)
-                .AddPayloadSerializerDefaultJson()
                 .AddChannelIncoming("internalIn", internalOnly: true)
                     .AttachCommand(mCommand)
                     .CallOut((c) => cpipeIn = c)

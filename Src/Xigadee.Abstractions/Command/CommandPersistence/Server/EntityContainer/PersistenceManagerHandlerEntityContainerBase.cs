@@ -110,7 +110,7 @@ namespace Xigadee
         /// </summary>
         public virtual void PrePopulate()
         {
-            mPrePopulate?.ForEach((k) => Container.Add(k.Key, k.Value, mTransform?.ReferenceMaker?.Invoke(k.Value)));
+            mPrePopulate?.ForEach((k) => Container.Add(k.Key, k.Value, Transform?.ReferenceMaker?.Invoke(k.Value)));
             mPrePopulate = null;
         }
         #endregion
@@ -127,7 +127,7 @@ namespace Xigadee
         /// </summary>
         protected virtual void ContainerConfigure()
         {
-            Container.Configure(mTransform);
+            Container.Configure(Transform);
         } 
         #endregion
 
@@ -141,7 +141,7 @@ namespace Xigadee
         /// <returns>The response status</returns>
         protected virtual int EntityPopulate(K key, E entity)
         {
-            return Container.Add(key, entity, mTransform.ReferenceMaker(entity)); ;
+            return Container.Add(key, entity, Transform.ReferenceMaker(entity)); ;
         }
         #endregion
 
@@ -159,8 +159,8 @@ namespace Xigadee
 
             if (response == 201)
             {
-                JsonHolder<K> jsonHolder = mTransform.JsonMaker(entity);
-                return new PersistenceResponseHolder<E>(PersistenceResponse.Created201, jsonHolder.Json, mTransform.PersistenceEntitySerializer.Deserializer(jsonHolder.Json));
+                JsonHolder<K> jsonHolder = Transform.JsonMaker(entity);
+                return new PersistenceResponseHolder<E>(PersistenceResponse.Created201, jsonHolder.Json, Transform.PersistenceEntitySerializer.Deserializer(jsonHolder.Json));
             }
             else
                 return new PersistenceResponseHolder<E>(PersistenceResponse.Conflict409);
@@ -182,8 +182,8 @@ namespace Xigadee
 
             if (success)
             {
-                JsonHolder<K> jsonHolder = mTransform.JsonMaker(entity);
-                return new PersistenceResponseHolder<E>(PersistenceResponse.Ok200, jsonHolder.Json, mTransform.PersistenceEntitySerializer.Deserializer(jsonHolder.Json));
+                JsonHolder<K> jsonHolder = Transform.JsonMaker(entity);
+                return new PersistenceResponseHolder<E>(PersistenceResponse.Ok200, jsonHolder.Json, Transform.PersistenceEntitySerializer.Deserializer(jsonHolder.Json));
             }
             else
                 return new PersistenceResponseHolder<E>(PersistenceResponse.NotFound404);
@@ -204,8 +204,8 @@ namespace Xigadee
 
             if (success)
             {
-                JsonHolder<K> jsonHolder = mTransform.JsonMaker(entity);
-                return new PersistenceResponseHolder<E>(PersistenceResponse.Ok200, jsonHolder.Json, mTransform.PersistenceEntitySerializer.Deserializer(jsonHolder.Json));
+                JsonHolder<K> jsonHolder = Transform.JsonMaker(entity);
+                return new PersistenceResponseHolder<E>(PersistenceResponse.Ok200, jsonHolder.Json, Transform.PersistenceEntitySerializer.Deserializer(jsonHolder.Json));
             }
             else
                 return new PersistenceResponseHolder<E>(PersistenceResponse.NotFound404);
@@ -229,7 +229,7 @@ namespace Xigadee
             E newEntity = holder.Rq.Entity;
 
 
-            var ver = mTransform.Version;
+            var ver = Transform.Version;
             if (ver.SupportsOptimisticLocking)
             {
                 if (ver.EntityVersionAsString(oldEntity) != ver.EntityVersionAsString(newEntity))
@@ -240,9 +240,9 @@ namespace Xigadee
                 ver.EntityVersionUpdate(newEntity);
 
 
-            Container.Update(key, newEntity, mTransform.ReferenceMaker(newEntity));
+            Container.Update(key, newEntity, Transform.ReferenceMaker(newEntity));
 
-            var jsonHolder = mTransform.JsonMaker(newEntity);
+            var jsonHolder = Transform.JsonMaker(newEntity);
             return new PersistenceResponseHolder<E>(PersistenceResponse.Ok200)
             {
                 Content = jsonHolder.Json
@@ -296,7 +296,7 @@ namespace Xigadee
 
             if (success)
             {
-                JsonHolder<K> jsonHolder = mTransform.JsonMaker(entity);
+                JsonHolder<K> jsonHolder = Transform.JsonMaker(entity);
                 return new PersistenceResponseHolder(PersistenceResponse.Ok200, jsonHolder.Json);
             }
             else
@@ -317,7 +317,7 @@ namespace Xigadee
 
             if (success)
             {
-                JsonHolder<K> jsonHolder = mTransform.JsonMaker(entity);
+                JsonHolder<K> jsonHolder = Transform.JsonMaker(entity);
                 return new PersistenceResponseHolder(PersistenceResponse.Ok200, jsonHolder.Json);
             }
             else
@@ -337,7 +337,7 @@ namespace Xigadee
         {
             var query = Container.Values.AsQueryable<E>();
 
-            Expression expression = mTransform.SearchTranslator.Build(key);
+            Expression expression = Transform.SearchTranslator.Build(key);
 
             //Execute Expression on Query
             bool success = true; //for the time being since we are not executing any queries

@@ -13,7 +13,7 @@ namespace Xigadee
         /// This is the default constructor. 
         /// </summary>
         /// <param name="mode">The operational mode.</param>
-        protected CommunicationFabricBridgeBase(ManualCommunicationFabricMode mode)
+        protected CommunicationFabricBridgeBase(CommunicationFabricMode mode)
         {
             Mode = mode;
         } 
@@ -63,7 +63,7 @@ namespace Xigadee
         /// <summary>
         /// This is the communication bridge mode.
         /// </summary>
-        public ManualCommunicationFabricMode Mode { get; }
+        public CommunicationFabricMode Mode { get; }
 
         /// <summary>
         /// This method returns a new listener.

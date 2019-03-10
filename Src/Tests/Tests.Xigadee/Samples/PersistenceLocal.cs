@@ -72,7 +72,8 @@ namespace Test.Xigadee.Samples
                 Assert.IsTrue(rs.IsSuccess);
                 //We have enabled version policy and optimistic locking so the next command should fail.
                 //Update fail as old version
-                Assert.IsFalse(repo.Update(sample).Result.IsSuccess);
+                var rsUf = repo.Update(sample).Result;
+                Assert.IsFalse(rsUf.IsSuccess);
                 //But this one should pass.
                 //Update pass as new entity.
                 Assert.IsTrue(repo.Update(rs.Entity).Result.IsSuccess);
@@ -99,9 +100,9 @@ namespace Test.Xigadee.Samples
         {
             try
             {
-                var fabric = new ManualCommunicationFabric();
-                var bridgeRequest = fabric[ManualCommunicationFabricMode.Queue];
-                var bridgeResponse = fabric[ManualCommunicationFabricMode.Broadcast];
+                var fabric = new ManualFabric();
+                var bridgeRequest = fabric.Queue;
+                var bridgeResponse = fabric.Broadcast;
 
                 PersistenceClient<Guid, Sample1> repo;
 

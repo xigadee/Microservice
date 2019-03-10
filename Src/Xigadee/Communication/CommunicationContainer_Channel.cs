@@ -1,58 +1,14 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-#region using
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-
-#endregion
 namespace Xigadee
 {
     public partial class CommunicationContainer: IChannelService
     {
         #region Declarations
-        private Dictionary<string, Channel> mContainerIncoming;
-        private Dictionary<string, Channel> mContainerOutgoing;
-        #endregion
-
-        #region Wrapper...
-        /// <summary>
-        /// This method is used to ensure either of both collections are invoked for channel based methods.
-        /// </summary>
-        /// <param name="direction">The channel direction.</param>
-        /// <param name="incoming">The incoming function.</param>
-        /// <param name="outgoing">The outgoing function.</param>
-        /// <returns></returns>
-        private bool? Wrapper(ChannelDirection direction, Func<bool?, bool?> incoming, Func<bool?, bool?> outgoing)
-        {
-            bool? result = null;
-
-            if ((direction & ChannelDirection.Incoming) > 0)
-                result = incoming?.Invoke(result);
-
-            if ((direction & ChannelDirection.Outgoing) > 0)
-                result = outgoing?.Invoke(result);
-
-            return result;
-        } 
+        private ConcurrentDictionary<string, Channel> mChannelsIncoming;
+        private ConcurrentDictionary<string, Channel> mChannelsOutgoing;
         #endregion
 
         #region Channels
@@ -63,10 +19,11 @@ namespace Xigadee
         {
             get
             {
-                return mContainerIncoming.Values.Union(mContainerOutgoing.Values).Distinct();
+                return mChannelsIncoming.Values.Union(mChannelsOutgoing.Values);
             }
         }
         #endregion
+
         #region Add(Channel item)
         /// <summary>
         /// This method adds a channel to the collection
@@ -80,23 +37,23 @@ namespace Xigadee
             if (!item.BoundaryLoggingActive.HasValue)
                 item.BoundaryLoggingActive = mPolicy.BoundaryLoggingActiveDefault;
 
-            return Wrapper(item.Direction,
-                (r) =>
-                {
-                    if (mContainerIncoming.ContainsKey(item.Id))
-                        throw new DuplicateChannelException(item.Id, item.Direction);
+            if (item.IsIncoming())
+            {
+                if (mChannelsIncoming.ContainsKey(item.Id))
+                    throw new DuplicateChannelException(item.Id, item.Direction);
 
-                    mContainerIncoming.Add(item.Id, item);
-                    return true;
-                },
-                (r) =>
-                {
-                    if (mContainerOutgoing.ContainsKey(item.Id))
-                        throw new DuplicateChannelException(item.Id, item.Direction);
+                mChannelsIncoming.TryAdd(item.Id, item);
+            }
 
-                    mContainerOutgoing.Add(item.Id, item);
-                    return true;
-                }) ?? false;
+            if (item.IsOutgoing())
+            {
+                if (mChannelsOutgoing.ContainsKey(item.Id))
+                    throw new DuplicateChannelException(item.Id, item.Direction);
+
+                mChannelsOutgoing.TryAdd(item.Id, item);
+            }
+
+            return true;
         }
         #endregion
         #region Remove(Channel item)
@@ -107,12 +64,16 @@ namespace Xigadee
         /// <returns>True if the channel is removed.</returns>
         public virtual bool Remove(Channel item)
         {
-            var success = Wrapper(item.Direction,
-                 (r) => mContainerIncoming.Remove(item.Id)?true:r
-                ,(r) => mContainerOutgoing.Remove(item.Id)?true:r
-                );
+            Channel channel = null;
+            bool success = false;
 
-            return success ?? false;
+            if (item.IsIncoming())
+                success |= mChannelsIncoming.TryRemove(item.Id, out channel);
+
+            if (item.IsOutgoing())
+                success |= mChannelsOutgoing.TryRemove(item.Id, out channel);
+
+            return success;
         }
         #endregion
         #region Exists(string channelId, ChannelDirection direction)
@@ -124,12 +85,20 @@ namespace Xigadee
         /// <returns></returns>
         public bool Exists(string channelId, ChannelDirection direction)
         {
-            var success = Wrapper(direction,
-              (r) => mContainerIncoming.ContainsKey(channelId) ? true : default(bool?)
-            , (r) => mContainerOutgoing.ContainsKey(channelId) ? true : r
-            );
+            if (string.IsNullOrWhiteSpace(channelId))
+                return false;
 
-            return success ?? false;
+            channelId = channelId.ToLowerInvariant();
+
+            bool success = false;
+
+            if (direction.IsIncoming())
+                success |= mChannelsIncoming.ContainsKey(channelId);
+
+            if (direction.IsOutgoing())
+                success |= mChannelsOutgoing.ContainsKey(channelId);
+
+            return success;
         }
         #endregion
         #region TryGet(string channelId, ChannelDirection direction, out Channel channel)
@@ -144,19 +113,34 @@ namespace Xigadee
         {
             channel = null;
 
-            if ((direction & ChannelDirection.Incoming) > 0
-                & mContainerIncoming.TryGetValue(channelId, out channel))
-                return true;
+            if (string.IsNullOrWhiteSpace(channelId))
+                return false;
 
-            if ((direction & ChannelDirection.Outgoing) > 0
-                & mContainerOutgoing.TryGetValue(channelId, out channel))
-                return true;
+            channelId = channelId.ToLowerInvariant();
 
             if (mPolicy.AutoCreateChannels)
             {
-                channel = new Channel(channelId, direction, isAutocreated:true);
-                Add(channel);
-                return true;
+                if (direction.IsIncoming())
+                {
+                    channel = mChannelsIncoming.GetOrAdd(channelId, (id) => new Channel(id, ChannelDirection.Incoming, isAutocreated: true));
+                    return true;
+                }
+
+                if (direction.IsOutgoing())
+                {
+                    channel = mChannelsOutgoing.GetOrAdd(channelId, (id) => new Channel(id, ChannelDirection.Outgoing, isAutocreated: true));
+                    return true;
+                }
+            }
+            else
+            {
+                if (direction.IsIncoming()
+                    & mChannelsIncoming.TryGetValue(channelId, out channel))
+                    return true;
+
+                if (direction.IsOutgoing()
+                    & mChannelsOutgoing.TryGetValue(channelId, out channel))
+                    return true;
             }
 
             return false;

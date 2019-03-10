@@ -39,7 +39,7 @@ namespace Test.Xigadee
         public override void DbSerializeEntity(MondayMorningBlues entity, SqlCommand cmd)
         {
             cmd.Parameters.Add("@ExternalId", SqlDbType.UniqueIdentifier).Value = entity.Id;
-            cmd.Parameters.Add("@Data", SqlDbType.Xml).Value = mTransform.PersistenceEntitySerializer.Serializer(entity);
+            cmd.Parameters.Add("@Data", SqlDbType.Xml).Value = Transform.PersistenceEntitySerializer.Serializer(entity);
         }
     }
 }

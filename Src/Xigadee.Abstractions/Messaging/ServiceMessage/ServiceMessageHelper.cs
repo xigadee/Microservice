@@ -18,9 +18,12 @@ namespace Xigadee
             var newMessage = new ServiceMessage();
 
             //OK, let's do this.
-            newMessage.ActionType = message.ActionType;
             newMessage.ChannelId = message.ChannelId;
+            newMessage.MessageType = message.MessageType;
+            newMessage.ActionType = message.ActionType;
+
             newMessage.ChannelPriority = message.ChannelPriority;
+
             newMessage.CorrelationKey = message.CorrelationKey;
             newMessage.CorrelationServiceId = message.CorrelationServiceId;
             newMessage.CorrelationUTC = message.CorrelationUTC;
@@ -29,7 +32,6 @@ namespace Xigadee
             newMessage.FabricDeliveryCount = message.FabricDeliveryCount;
             newMessage.IsNoop = message.IsNoop;
             newMessage.IsReplay = message.IsReplay;
-            newMessage.MessageType = message.MessageType;
             newMessage.OriginatorKey = message.OriginatorKey;
             newMessage.OriginatorServiceId = message.OriginatorServiceId;
             newMessage.OriginatorUTC = message.OriginatorUTC;

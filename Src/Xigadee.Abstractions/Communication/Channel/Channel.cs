@@ -44,7 +44,7 @@ namespace Xigadee
             if (string.IsNullOrEmpty(id))
                 throw new ArgumentNullException("id cannot be null or empty.");
 
-            Id = id;
+            Id = id.ToLowerInvariant();
             Direction = direction;
             Description = description;
             InternalOnly = internalOnly;
@@ -63,7 +63,7 @@ namespace Xigadee
         /// </summary>
         public bool IsAutoCreated { get; }
         /// <summary>
-        /// The channel Id.
+        /// The channel Id. Note that channel ids are case-insensitive and are always lower-case.
         /// </summary>
         public string Id { get; }
         /// <summary>
@@ -199,5 +199,45 @@ namespace Xigadee
         /// This identifier is set when we require authentication of the incoming message.
         /// </summary>
         public AuthenticationHandlerId Authentication { get; set; }
+    }
+
+    /// <summary>
+    /// This is the channel helper class.
+    /// </summary>
+    public static class ChannelHelper
+    {
+        /// <summary>
+        /// Determines whether this instance is incoming.
+        /// </summary>
+        /// <param name="channel">The channel.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified channel is incoming; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsIncoming(this Channel channel) => channel.Direction.IsIncoming();
+        /// <summary>
+        /// Determines whether this instance is incoming.
+        /// </summary>
+        /// <param name="direction">The direction.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified direction is incoming; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsIncoming(this ChannelDirection direction) => (direction & ChannelDirection.Incoming) > 0;
+        /// <summary>
+        /// Determines whether this instance is outgoing.
+        /// </summary>
+        /// <param name="channel">The channel.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified channel is outgoing; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsOutgoing(this Channel channel) => channel.Direction.IsOutgoing();
+        /// <summary>
+        /// Determines whether this instance is outgoing.
+        /// </summary>
+        /// <param name="direction">The direction.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified direction is outgoing; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsOutgoing(this ChannelDirection direction) => (direction & ChannelDirection.Outgoing) > 0;
+
     }
 }

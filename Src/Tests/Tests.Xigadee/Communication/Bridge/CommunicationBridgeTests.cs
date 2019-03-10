@@ -15,8 +15,8 @@ namespace Test.Xigadee
             {
                 var fabric = new ManualFabric();
 
-                var bridgeOut = fabric[ManualCommunicationFabricMode.Queue];
-                var bridgein = fabric[ManualCommunicationFabricMode.Broadcast];
+                var bridgeOut = fabric.Queue;
+                var bridgein = fabric.Broadcast;
 
                 var listenerS = bridgein.GetListener();
                 var senderS = bridgeOut.GetSender();
@@ -77,8 +77,8 @@ namespace Test.Xigadee
             try
             {
                 var fabric = new ManualFabric();
-                var bridgeOut = fabric[ManualCommunicationFabricMode.Queue];
-                var bridgein = fabric[ManualCommunicationFabricMode.Broadcast];
+                var bridgeOut = fabric.Queue;
+                var bridgein = fabric.Broadcast;
 
                 var listenerS = bridgein.GetListener();
                 var senderS = bridgeOut.GetSender();

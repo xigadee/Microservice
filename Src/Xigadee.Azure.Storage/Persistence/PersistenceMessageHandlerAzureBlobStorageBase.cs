@@ -95,7 +95,7 @@ namespace Xigadee
         {
             mDirectory = entityName ?? typeof(E).Name;
             mStorage = new StorageServiceBase(credentials, "persistence", accessType, options, context, defaultTimeout: defaultTimeout, encryption:encryption);
-            mStorageIdMaker = storageIdMaker ?? mTransform.KeySerializer;
+            mStorageIdMaker = storageIdMaker ?? Transform.KeySerializer;
         }
         #endregion
 
@@ -125,7 +125,7 @@ namespace Xigadee
             if (result.IsSuccess)
             {
                 if (result.Content != null)
-                    return new PersistenceResponseHolder<E>() { StatusCode = result.StatusCode, Content = result.Content, IsSuccess = true, Entity = mTransform.PersistenceEntitySerializer.Deserializer(result.Content), VersionId = result.VersionId };
+                    return new PersistenceResponseHolder<E>() { StatusCode = result.StatusCode, Content = result.Content, IsSuccess = true, Entity = Transform.PersistenceEntitySerializer.Deserializer(result.Content), VersionId = result.VersionId };
                 else
                     return new PersistenceResponseHolder<E>() { StatusCode = result.StatusCode, IsSuccess = true, VersionId = result.VersionId };
             }
@@ -143,7 +143,7 @@ namespace Xigadee
         /// <param name="prs">The outgoing payload.</param>
         protected override async Task<IResponseHolder<E>> InternalCreate(K key, PersistenceRequestHolder<K, E> holder)
         {
-            var jsonHolder = mTransform.JsonMaker(holder.Rq.Entity);
+            var jsonHolder = Transform.JsonMaker(holder.Rq.Entity);
 
             var result = await mStorage.Create(mStorageIdMaker(jsonHolder.Key)
                 , jsonHolder.ToBlob()
@@ -178,7 +178,7 @@ namespace Xigadee
         /// <param name="prs">The outgoing payload.</param>
         protected override async Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRequestHolder<K, E> holder)
         {
-            var jsonHolder = mTransform.JsonMaker(holder.Rq.Entity);
+            var jsonHolder = Transform.JsonMaker(holder.Rq.Entity);
 
             var result = await mStorage.Update(mStorageIdMaker(jsonHolder.Key)
                 , jsonHolder.ToBlob()

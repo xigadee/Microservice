@@ -27,7 +27,7 @@ namespace Xigadee
         /// <summary>
         /// Gets the mode, round robin or broadcast.
         /// </summary>
-        ManualCommunicationFabricMode Mode { get; }
+        CommunicationFabricMode Mode { get; }
         /// <summary>
         /// Gets a value indicating whether payloads received has all been signalled complete.
         /// </summary>

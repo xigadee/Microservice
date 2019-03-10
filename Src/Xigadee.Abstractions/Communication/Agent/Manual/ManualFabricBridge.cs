@@ -11,7 +11,7 @@ namespace Xigadee
     /// This bridge connects the listeners and senders together.
     /// </summary>
     [DebuggerDisplay("{Mode}:Agents[L={mListeners.Count}|S={mSenders.Count}] Payload[A={mPayloadsActive.Count}|H={mPayloadsHistory?.Count??0}] {Id}")]
-    public class ManualFabricBridge : CommunicationFabricBridgeBase, IManualCommunicationFabricBridge
+    public class ManualFabricBridge : CommunicationFabricBridgeBase, ICommunicationFabricBridge
     {
         #region Declarations
         long mSendCount = 0;
@@ -26,7 +26,6 @@ namespace Xigadee
 
         ConcurrentDictionary<Guid, TransmissionPayloadHolder> mPayloadsActive = new ConcurrentDictionary<Guid, TransmissionPayloadHolder>();
         ConcurrentDictionary<Guid, TransmissionPayloadHolder> mPayloadsHistory = null;
-
         #endregion
         #region Constructor
         /// <summary>
@@ -36,7 +35,7 @@ namespace Xigadee
         /// <param name="mode">The distribution mode.</param>
         /// <param name="payloadHistoryEnabled">Specifies whether payload history is supported. The default is true.</param>
         /// <param name="retryAttempts">The number of retry attempts for the payload.</param>
-        public ManualFabricBridge(ManualFabric fabric, ManualCommunicationFabricMode mode,
+        public ManualFabricBridge(ManualFabric fabric, CommunicationFabricMode mode,
             bool payloadHistoryEnabled = true, int? retryAttempts = null) : base(mode)
         {
             PayloadHistoryEnabled = payloadHistoryEnabled;
@@ -71,8 +70,10 @@ namespace Xigadee
                 .Where((l) => l.Status == ServiceStatus.Running);
 
             var dict = active
-                .Select((l) => l.ChannelId).Distinct()
-                .ToDictionary((a) => a, (a) => active.Where((l) => l.ChannelId == a).ToArray());
+                .Select((l) => l.ChannelId.ToLowerInvariant()).Distinct()
+                .ToDictionary((a) => a.ToLowerInvariant()
+                    , (a) => active.Where((l) => l.ChannelId.ToLowerInvariant() == a).ToArray()
+                    );
 
             return dict;
         }
@@ -119,7 +120,7 @@ namespace Xigadee
                 OnReceiveInvoke(sender, e);
                 ManualCommunicationAgent[] listeners;
 
-                var channel = e.Message.ChannelId;
+                var channel = e.Message.ChannelId.ToLowerInvariant();
 
                 if (!mActiveListeners.TryGetValue(channel, out listeners) || listeners.Length == 0)
                 {
@@ -131,10 +132,10 @@ namespace Xigadee
 
                 switch (Mode)
                 {
-                    case ManualCommunicationFabricMode.Queue:
+                    case CommunicationFabricMode.Queue:
                         Sender_TransmitRoundRobin(listeners, e, count);
                         break;
-                    case ManualCommunicationFabricMode.Broadcast:
+                    case CommunicationFabricMode.Broadcast:
                         Sender_TransmitBroadcast(listeners, e, count);
                         break;
                     default:

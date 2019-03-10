@@ -69,18 +69,18 @@ namespace Test.Xigadee.Dispatcher.ErrorPolicy
         }
 
         [TestMethod]
-        public void RPipeExternal()
+        public void RPipeExternalCheckCaseSensitivity()
         {
-            PersistenceClient<Guid, PipeTest1> persistence, persistence2;
+            PersistenceClient<Guid, PipeTest1> persistence;
             CommandInitiator init;
             DebugMemoryDataCollector collectorS, collectorC;
 
             var fabric = new ManualFabric();
-            var bridgeOut = fabric[ManualCommunicationFabricMode.Queue];
-            var bridgeReturn = fabric[ManualCommunicationFabricMode.Broadcast];
+            var bridgeOut = fabric.Queue;
+            var bridgeReturn = fabric.Broadcast;
 
-            var server = new MicroservicePipeline($"{nameof(RPipeExternal)}server");
-            var client = new MicroservicePipeline($"{nameof(RPipeExternal)}client");
+            var server = new MicroservicePipeline($"{nameof(RPipeExternalCheckCaseSensitivity)}server");
+            var client = new MicroservicePipeline($"{nameof(RPipeExternalCheckCaseSensitivity)}client");
 
             server.ToMicroservice().Events.ProcessRequestError += Events_ProcessRequestError;
             server.ToMicroservice().Events.ProcessRequestUnresolved += Events_ProcessRequestUnresolved;
@@ -121,22 +121,10 @@ namespace Test.Xigadee.Dispatcher.ErrorPolicy
             client.Start();
 
             var result = persistence.Create(new PipeTest1() { Message = "Hello" }
-                , new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }
+                , new RepositorySettings() { WaitTime = TimeSpan.FromSeconds(5) }
                 ).Result;
 
             Assert.IsTrue(result.ResponseCode == 201);
-
-            //var result2 = persistence2.Create(new PipeTest1() { Message = "Hello" }
-            //    , new RepositorySettings() { WaitTime = TimeSpan.FromSeconds(5) }
-            //    ).Result;
-
-            //Assert.IsTrue(result2.ResponseCode == 501);
-
-            //var result3 = init.Process<string, string>(("franky", "four", "fingers"), ""
-            //    , new RequestSettings { WaitTime = TimeSpan.FromSeconds(5) }, routing: ProcessOptions.RouteInternal
-            //    ).Result;
-
-            //Assert.IsTrue(result3.ResponseCode == 501);
 
         }
 

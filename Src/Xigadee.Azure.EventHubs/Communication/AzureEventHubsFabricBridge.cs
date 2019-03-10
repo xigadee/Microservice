@@ -40,16 +40,16 @@ namespace Xigadee
         /// <returns></returns>
         /// <exception cref="BridgeAgentModeNotSetException"></exception>
         /// <exception cref="NotSupportedException"></exception>
-        public override ICommunicationFabricBridge this[ManualCommunicationFabricMode mode]
+        protected override ICommunicationFabricBridge this[CommunicationFabricMode mode]
         {
             get
             {
                 switch (mode)
                 {
-                    case ManualCommunicationFabricMode.Broadcast:
-                    case ManualCommunicationFabricMode.Queue:
+                    case CommunicationFabricMode.Broadcast:
+                    case CommunicationFabricMode.Queue:
                         return new AzureEventHubsBridgeAgent();
-                    case ManualCommunicationFabricMode.NotSet:
+                    case CommunicationFabricMode.NotSet:
                         throw new BridgeAgentModeNotSetException();
                     default:
                         throw new NotSupportedException($"{mode.ToString()} is not supported.");

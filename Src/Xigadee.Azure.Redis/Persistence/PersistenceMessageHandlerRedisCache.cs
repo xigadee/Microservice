@@ -69,7 +69,7 @@ namespace Xigadee
 
         protected async override Task<IResponseHolder<E>> InternalCreate(K key, PersistenceRequestHolder<K, E> holder)
         {          
-            if (await mCacheManager.Write(mTransform, holder.Rq.Entity))
+            if (await mCacheManager.Write(Transform, holder.Rq.Entity))
                 return new PersistenceResponseHolder<E> { IsSuccess = true, StatusCode = 201, Entity = holder.Rq.Entity };
 
             return new PersistenceResponseHolder<E> { IsSuccess = false, StatusCode = 409 };
@@ -77,7 +77,7 @@ namespace Xigadee
 
         protected async override Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRequestHolder<K, E> holder)
         {
-            if (await mCacheManager.Write(mTransform, holder.Rq.Entity))
+            if (await mCacheManager.Write(Transform, holder.Rq.Entity))
                 return new PersistenceResponseHolder<E> { IsSuccess = true, StatusCode = 200, Entity = holder.Rq.Entity };
 
             return new PersistenceResponseHolder<E> { IsSuccess = false, StatusCode = 409 };
@@ -85,27 +85,27 @@ namespace Xigadee
 
         protected async override Task<IResponseHolder<E>> InternalRead(K key, PersistenceRequestHolder<K, E> holder)
         {
-            return await mCacheManager.Read(mTransform, key);
+            return await mCacheManager.Read(Transform, key);
         }
 
         protected async override Task<IResponseHolder<E>> InternalReadByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, E> holder)
         {
-            return await mCacheManager.Read(mTransform, reference);
+            return await mCacheManager.Read(Transform, reference);
         }
 
         protected async override Task<IResponseHolder> InternalVersion(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return await mCacheManager.VersionRead(mTransform, key);
+            return await mCacheManager.VersionRead(Transform, key);
         }
 
         protected async override Task<IResponseHolder> InternalVersionByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return await mCacheManager.VersionRead(mTransform, reference);
+            return await mCacheManager.VersionRead(Transform, reference);
         }
 
         protected async override Task<IResponseHolder> InternalDelete(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            if (await mCacheManager.Delete(mTransform, key))
+            if (await mCacheManager.Delete(Transform, key))
                 return new PersistenceResponseHolder<E> { IsSuccess = true, StatusCode = 200 };
 
             return new PersistenceResponseHolder<E> { IsSuccess = false, StatusCode = 404 };
@@ -113,7 +113,7 @@ namespace Xigadee
 
         protected async override Task<IResponseHolder> InternalDeleteByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            if (await mCacheManager.Delete(mTransform, reference))
+            if (await mCacheManager.Delete(Transform, reference))
                 return new PersistenceResponseHolder<E> { IsSuccess = true, StatusCode = 200 };
 
             return new PersistenceResponseHolder<E> { IsSuccess = false, StatusCode = 404 };

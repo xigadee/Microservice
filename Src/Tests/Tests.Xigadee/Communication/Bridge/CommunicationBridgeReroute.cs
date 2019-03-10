@@ -22,7 +22,7 @@ namespace Test.Xigadee
         [TestMethod]
         public void TestReroute()
         {
-            var bridgeOut = new ManualFabric()[ManualCommunicationFabricMode.Queue];
+            var bridgeOut = new ManualFabric().Queue;
             bool success = false;
             ManualResetEvent mre = new ManualResetEvent(false);
             DebugMemoryDataCollector memp1,memp2;
