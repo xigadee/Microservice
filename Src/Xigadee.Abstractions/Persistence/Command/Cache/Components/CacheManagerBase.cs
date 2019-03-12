@@ -3,7 +3,8 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public abstract class CacheManagerBase<K, E>: ICacheManager<K, E> where K : IEquatable<K>
+    public abstract class CacheManagerBase<K, E>: ICacheManager<K, E> 
+        where K : IEquatable<K>
     {
         private readonly bool mReadOnly;
 

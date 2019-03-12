@@ -33,10 +33,6 @@ namespace Xigadee
     {
         #region Declarations
         /// <summary>
-        /// This is the internal cache manager that can be set to redirect calls to the cache. 
-        /// </summary>
-        protected readonly ICacheManager<K, E> mCacheManager;
-        /// <summary>
         /// This is the default timespan that a message will wait if not set.
         /// </summary>
         protected readonly TimeSpan? mDefaultRequestTimespan;
@@ -49,9 +45,16 @@ namespace Xigadee
         /// <param name="defaultRequestTimespan">This is the default wait time for a response to arrive. This can be set to override the value stored in the policy.</param>
         protected PersistenceClientBase(ICacheManager<K, E> cacheManager = null, TimeSpan? defaultRequestTimespan = null)
         {
-            mCacheManager = cacheManager ?? new NullCacheManager<K, E>();
+            CacheManager = cacheManager;
             mDefaultRequestTimespan = defaultRequestTimespan;
         }
+        #endregion
+
+        #region CacheManager
+        /// <summary>
+        /// This is the internal cache manager that can be set to redirect calls to the cache. 
+        /// </summary>
+        protected ICacheManager<K, E> CacheManager { get; } 
         #endregion
 
         #region FriendlyName
@@ -104,9 +107,9 @@ namespace Xigadee
         {
             ValidateServiceStarted();
 
-            if ((settings?.UseCache ?? true) && mCacheManager.IsActive)
+            if ((settings?.UseCache ?? true) && (CacheManager?.IsActive??false))
             {
-                var result = await mCacheManager.Read(key);
+                var result = await CacheManager.Read(key);
                 if (result.IsSuccess)
                 {
                     return new RepositoryHolder<K, E>(key, new Tuple<string, string>(result.Id, result.VersionId), responseCode: 200, entity: result.Entity) { IsCached = true };
@@ -128,13 +131,13 @@ namespace Xigadee
         {
             ValidateServiceStarted();
 
-            if ((settings?.UseCache ?? true) && mCacheManager.IsActive)
+            if ((settings?.UseCache ?? true) && (CacheManager?.IsActive ?? false))
             {
                 // Do a version read initially to check it is there and get the key (not returned in a read by ref)
-                var resultVersion = await mCacheManager.VersionRead(new Tuple<string, string>(refKey, refValue));
+                var resultVersion = await CacheManager.VersionRead(new Tuple<string, string>(refKey, refValue));
                 if (resultVersion.IsSuccess)
                 {
-                    var resultRead = await mCacheManager.Read(new Tuple<string, string>(refKey, refValue));
+                    var resultRead = await CacheManager.Read(new Tuple<string, string>(refKey, refValue));
                     if (resultRead.IsSuccess)
                         return new RepositoryHolder<K, E>(resultVersion.Entity.Item1, new Tuple<string, string>(resultVersion.Id, resultVersion.VersionId), responseCode: 200, entity: resultRead.Entity) { IsCached = true };
                 }
@@ -197,9 +200,9 @@ namespace Xigadee
         {
             ValidateServiceStarted();
 
-            if ((settings?.UseCache ?? true) && mCacheManager.IsActive)
+            if ((settings?.UseCache ?? true) && (CacheManager?.IsActive ?? false))
             {
-                var result = await mCacheManager.VersionRead(key);
+                var result = await CacheManager.VersionRead(key);
                 if (result.IsSuccess)
                 {
                     return new RepositoryHolder<K, Tuple<K, string>>(result.Entity.Item1, new Tuple<string, string>(result.Id, result.VersionId), responseCode: 200, entity: result.Entity) { IsCached = true };
@@ -221,9 +224,9 @@ namespace Xigadee
         {
             ValidateServiceStarted();
 
-            if ((settings?.UseCache ?? true) && mCacheManager.IsActive)
+            if ((settings?.UseCache ?? true) && (CacheManager?.IsActive ?? false))
             {
-                var result = await mCacheManager.VersionRead(new Tuple<string, string>(refKey, refValue));
+                var result = await CacheManager.VersionRead(new Tuple<string, string>(refKey, refValue));
                 if (result.IsSuccess)
                 {
                     return new RepositoryHolder<K, Tuple<K, string>>(result.Entity.Item1, new Tuple<string, string>(result.Id, result.VersionId), responseCode: 200, entity: result.Entity) { IsCached = true };

@@ -130,6 +130,7 @@ namespace Xigadee
                 , policy
                 )
         {
+            Repository = repository;
 
             Transform = RepositoryEntityTransformCreate(
                   repository ?? throw new ArgumentNullException("repository")
@@ -139,6 +140,12 @@ namespace Xigadee
 
         }
         #endregion
+
+        /// <summary>
+        /// Gets the internal repository.
+        /// </summary>
+        protected virtual IRepositoryAsyncServer<K, E> Repository { get; }
+
 
         #region RepositoryTransform
         /// <summary>
@@ -177,42 +184,42 @@ namespace Xigadee
 
         protected override async Task<IResponseHolder<E>> InternalCreate(K key, PersistenceRequestHolder<K, E> holder)
         {
-            var rs = await RepositoryTransform.Repository.Create(holder.Rq.Entity);
+            var rs = await Repository.Create(holder.Rq.Entity);
 
             return new PersistenceResponseHolder<E>((PersistenceResponse)rs.ResponseCode, entity:rs.Entity);
         }
 
         protected override async Task<IResponseHolder<E>> InternalRead(K key, PersistenceRequestHolder<K, E> holder)
         {
-            var rs = await RepositoryTransform.Repository.Read(key);
+            var rs = await Repository.Read(key);
 
             return new PersistenceResponseHolder<E>((PersistenceResponse)rs.ResponseCode, entity: rs.Entity);
         }
 
         protected override async Task<IResponseHolder<E>> InternalReadByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, E> holder)
         {
-            var rs = await RepositoryTransform.Repository.ReadByRef(reference.Item1, reference.Item2);
+            var rs = await Repository.ReadByRef(reference.Item1, reference.Item2);
 
             return new PersistenceResponseHolder<E>((PersistenceResponse)rs.ResponseCode, entity: rs.Entity);
         }
 
         protected override async Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRequestHolder<K, E> holder)
         {
-            var rs = await RepositoryTransform.Repository.Update(holder.Rq.Entity);
+            var rs = await Repository.Update(holder.Rq.Entity);
 
             return new PersistenceResponseHolder<E>((PersistenceResponse)rs.ResponseCode, entity: rs.Entity);
         }
 
         protected override async Task<IResponseHolder> InternalDelete(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            var rs = await RepositoryTransform.Repository.Delete(key);
+            var rs = await Repository.Delete(key);
 
             return new PersistenceResponseHolder<E>((PersistenceResponse)rs.ResponseCode);
         }
 
         protected override async Task<IResponseHolder> InternalDeleteByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            var rs = await RepositoryTransform.Repository.DeleteByRef(reference.Item1, reference.Item2);
+            var rs = await Repository.DeleteByRef(reference.Item1, reference.Item2);
 
             //return new PersistenceResponseHolder<Tuple<K, string>> { StatusCode = 200, IsSuccess = true, Id = transform.KeySerializer(resolve.Item2), VersionId = resolve.Item3, Entity = new Tuple<K, string>(resolve.Item2, resolve.Item3) };
 
@@ -228,14 +235,14 @@ namespace Xigadee
 
         protected override async Task<IResponseHolder> InternalVersionByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            var rs = await RepositoryTransform.Repository.VersionByRef(reference.Item1, reference.Item2);
+            var rs = await Repository.VersionByRef(reference.Item1, reference.Item2);
 
             return await base.InternalVersionByRef(reference, holder);
         }
 
         protected override async Task<IResponseHolder<SearchResponse>> InternalSearch(SearchRequest key, PersistenceRequestHolder<SearchRequest, SearchResponse> holder)
         {
-            var rs = await RepositoryTransform.Repository.Search(key);
+            var rs = await Repository.Search(key);
 
             return await base.InternalSearch(key, holder);
         }

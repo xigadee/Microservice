@@ -23,10 +23,7 @@ namespace Xigadee
         /// </summary>
         public event EventHandler<EntityChangeEventArgs> OnEntityChangeAction;
 
-        /// <summary>
-        /// This is the cache manager.
-        /// </summary>
-        protected readonly ICacheManager<K, E> mCacheManager;
+
         /// <summary>
         /// This is the set of in play requests currently being processed.
         /// </summary>
@@ -83,7 +80,7 @@ namespace Xigadee
             Policy.PersistenceRetryPolicy = persistenceRetryPolicy ?? Policy.PersistenceRetryPolicy ?? new PersistenceRetryPolicy();
             Policy.ResourceProfile = resourceProfile ?? Policy.ResourceProfile;
 
-            mCacheManager = cacheManager ?? new NullCacheManager<K, E>();
+            CacheManager = cacheManager;
         }
 
         /// <summary>
@@ -115,7 +112,7 @@ namespace Xigadee
             Policy.PersistenceRetryPolicy = persistenceRetryPolicy ?? new PersistenceRetryPolicy();
             Policy.ResourceProfile = resourceProfile;
 
-            mCacheManager = cacheManager ?? new NullCacheManager<K, E>();
+            CacheManager = cacheManager;
         }
         #endregion
 
@@ -123,7 +120,19 @@ namespace Xigadee
         /// <summary>
         /// This is the entity transform holder.
         /// </summary>
-        protected EntityTransformHolder<K, E> Transform { get; set; } 
+        protected EntityTransformHolder<K, E> Transform { get; set; }
+        #endregion
+        #region CacheManager
+        /// <summary>
+        /// This is the cache manager.
+        /// </summary>
+        protected ICacheManager<K, E> CacheManager { get; }
+        #endregion
+        #region FriendlyName
+        /// <summary>
+        /// Update to friendly name to make it clear which entity is being used
+        /// </summary>
+        public override string FriendlyName => $"{base.FriendlyName}-{typeof(E).Name}";
         #endregion
 
         #region StatisticsRecalculate()
@@ -136,19 +145,6 @@ namespace Xigadee
 
             StatisticsInternal.RequestsInPlay = mRequestsCurrent.Values.Select((v) => v?.Debug).ToArray();
         } 
-        #endregion
-
-        #region FriendlyName
-        /// <summary>
-        /// Update to friendly name to make it clear which entity is being used
-        /// </summary>
-        public override string FriendlyName
-        {
-            get
-            {
-                return $"{base.FriendlyName}-{typeof(E).Name}";
-            }
-        }
         #endregion
 
         #region EntityTransformCreate...
@@ -197,13 +193,7 @@ namespace Xigadee
         /// <summary>
         /// This is the entity type Name used for matching request and payloadRs messages.
         /// </summary>
-        public virtual string EntityType
-        {
-            get
-            {
-                return Transform.EntityName;
-            }
-        }
+        public virtual string EntityType => Transform.EntityName;
         #endregion
 
         #region Start/Stop Internal
@@ -472,7 +462,7 @@ namespace Xigadee
         /// <param name="traceId">The trace event</param>
         /// <param name="idVersion">The id and version as string.</param>
         /// <param name="processCorrelationKey">This is the original initiating process id.</param>
-        /// <param name="originatorKey">This is the message orination id.</param>
+        /// <param name="originatorKey">This is the message origination id.</param>
         protected virtual void RaiseEntityChangeEvent(string actionType, string entityType
             , Guid traceId, Tuple<string, string> idVersion
             , string processCorrelationKey, string originatorKey)
@@ -557,8 +547,8 @@ namespace Xigadee
         #region LogException<KT, ET>...
         /// <summary>
         /// We don't want to pass the exception details back to the calling party as this may
-        /// leak sensitive information aboout the application and persistence agent.
-        /// This method logs the error and assigns it a trackable id and sends that instead to the 
+        /// leak sensitive information about the application and persistence agent.
+        /// This method logs the error and assigns it a track-able id and sends that instead to the 
         /// front end.
         /// </summary>
         /// <typeparam Name="KT">The key type.</typeparam>
@@ -716,46 +706,64 @@ namespace Xigadee
         #endregion
 
         //Requests
-        #region Create
+        #region Create        
+        /// <summary>
+        /// Processes the create entity request.
+        /// </summary>
+        /// <param name="holder">The holder.</param>
         protected virtual async Task ProcessCreate(PersistenceRequestHolder<K, E> holder)
         {
             K key = Transform.KeyMaker(holder.Rq.Entity);
 
             var result = await InternalCreate(key, holder);
 
-            if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
-                mCacheManager.Write(Transform, result.Entity);
+            if ((CacheManager?.IsActive ?? false) && !CacheManager.IsReadOnly && result.IsSuccess)
+                CacheManager.Write(Transform, result.Entity);
 
             ProcessOutputEntity(key, holder.Rq, holder.Rs, result);
-        } 
-
+        }
+        /// <summary>
+        /// The internal create method that is called if the cache handler is not valid.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="holder">The holder.</param>
+        /// <returns>Returns the response holder.</returns>
         protected virtual async Task<IResponseHolder<E>> InternalCreate(K key, PersistenceRequestHolder<K, E> holder)
         {
             return new PersistenceResponseHolder<E>(PersistenceResponse.NotImplemented501);
         }
         #endregion
 
-        #region Read
+        #region Read        
+        /// <summary>
+        /// Processes the read request.
+        /// </summary>
+        /// <param name="holder">The holder.</param>
         protected virtual async Task ProcessRead(PersistenceRequestHolder<K, E> holder)
         {
             IResponseHolder<E> result = null;
 
-            if (mCacheManager.IsActive && holder.Rq.Settings.UseCache)
-                result = await mCacheManager.Read(Transform, holder.Rq.Key);
+            if ((CacheManager?.IsActive ?? false) && holder.Rq.Settings.UseCache)
+                result = await CacheManager.Read(Transform, holder.Rq.Key);
 
             if (result == null || !result.IsSuccess)
             {
                 result = await InternalRead(holder.Rq.Key, holder);
 
-                if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
-                    mCacheManager.Write(Transform, result.Entity);
+                if ((CacheManager?.IsActive ?? false) && !CacheManager.IsReadOnly && result.IsSuccess)
+                    CacheManager.Write(Transform, result.Entity);
             }
             else
                 result.IsCacheHit = true;
 
             ProcessOutputEntity(holder.Rq.Key, holder.Rq, holder.Rs, result);
         }
-
+        /// <summary>
+        /// Processes the read if the cache manager is not hit.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="holder">The holder.</param>
+        /// <returns>Returns the response holder.</returns>
         protected async virtual Task<IResponseHolder<E>> InternalRead(K key, PersistenceRequestHolder<K, E> holder)
         {
             return new PersistenceResponseHolder<E>(PersistenceResponse.NotImplemented501);
@@ -766,15 +774,15 @@ namespace Xigadee
         {
             IResponseHolder<E> result = null;
 
-            if (mCacheManager.IsActive && holder.Rq.Settings.UseCache)
-                result = await mCacheManager.Read(Transform, holder.Rq.KeyReference);
+            if ((CacheManager?.IsActive ?? false) && holder.Rq.Settings.UseCache)
+                result = await CacheManager.Read(Transform, holder.Rq.KeyReference);
 
             if (result == null || !result.IsSuccess)
             {
                 result = await InternalReadByRef(holder.Rq.KeyReference, holder);
 
-                if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
-                    mCacheManager.Write(Transform, result.Entity);
+                if ((CacheManager?.IsActive ?? false) && !CacheManager.IsReadOnly && result.IsSuccess)
+                    CacheManager.Write(Transform, result.Entity);
             }
 
             ProcessOutputEntity(holder.Rq.Key, holder.Rq, holder.Rs, result);
@@ -793,13 +801,13 @@ namespace Xigadee
 
             // Remove from the cache first to ensure no change of ending up with a stale cached item
             // if the write to cache fails for any reason
-            if (mCacheManager.IsActive)
-                mCacheManager.Delete(Transform, key);
+            if ((CacheManager?.IsActive ?? false))
+                CacheManager.Delete(Transform, key);
 
             var result = await InternalUpdate(key, holder);
 
-            if (mCacheManager.IsActive && result.IsSuccess)
-                mCacheManager.Write(Transform, result.Entity);
+            if ((CacheManager?.IsActive ?? false) && result.IsSuccess)
+                CacheManager.Write(Transform, result.Entity);
 
             ProcessOutputEntity(key, holder.Rq, holder.Rs, result);
         }
@@ -815,8 +823,8 @@ namespace Xigadee
         {
             //We presume that the delete will succeed and remove it from the cache before it is processed. 
             //Worse case this will result in a cache miss.
-            if (mCacheManager.IsActive)
-                await mCacheManager.Delete(Transform, holder.Rq.Key);
+            if ((CacheManager?.IsActive ?? false))
+                await CacheManager.Delete(Transform, holder.Rq.Key);
 
             var result = await InternalDelete(holder.Rq.Key, holder);
 
@@ -833,8 +841,8 @@ namespace Xigadee
         {
             var result = await InternalDeleteByRef(holder.Rq.KeyReference, holder);
 
-            if (mCacheManager.IsActive && result.IsSuccess)
-                await mCacheManager.Delete(Transform, Transform.KeyDeserializer(result.Id));
+            if ((CacheManager?.IsActive ?? false) && result.IsSuccess)
+                await CacheManager.Delete(Transform, Transform.KeyDeserializer(result.Id));
 
             ProcessOutputKey(holder.Rq, holder.Rs, result);
         }
@@ -849,8 +857,8 @@ namespace Xigadee
         {
             IResponseHolder result = null;
 
-            if (mCacheManager.IsActive)
-                result = await mCacheManager.VersionRead(Transform, holder.Rq.Key);
+            if ((CacheManager?.IsActive ?? false))
+                result = await CacheManager.VersionRead(Transform, holder.Rq.Key);
 
             if (result == null || !result.IsSuccess)
             {
@@ -860,8 +868,8 @@ namespace Xigadee
                 else
                     result = await InternalVersion(holder.Rq.Key, holder);
 
-                if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
-                    mCacheManager.WriteVersion(Transform, holder.Rq.Key, result.VersionId);
+                if ((CacheManager?.IsActive ?? false) && !CacheManager.IsReadOnly && result.IsSuccess)
+                    CacheManager.WriteVersion(Transform, holder.Rq.Key, result.VersionId);
             }
 
             ProcessOutputKey(holder.Rq, holder.Rs, result);
@@ -877,14 +885,14 @@ namespace Xigadee
         {
             IResponseHolder result = null;
 
-            if (mCacheManager.IsActive)
-                result = await mCacheManager.VersionRead(Transform, holder.Rq.KeyReference);
+            if ((CacheManager?.IsActive ?? false))
+                result = await CacheManager.VersionRead(Transform, holder.Rq.KeyReference);
 
             if (result == null || !result.IsSuccess)
             {
                 result = await InternalVersionByRef(holder.Rq.KeyReference, holder);
-                if (mCacheManager.IsActive && !mCacheManager.IsReadOnly && result.IsSuccess)
-                    mCacheManager.WriteReference(Transform, holder.Rq.KeyReference, holder.Rq.Key, result.VersionId);
+                if ((CacheManager?.IsActive ?? false) && !CacheManager.IsReadOnly && result.IsSuccess)
+                    CacheManager.WriteReference(Transform, holder.Rq.KeyReference, holder.Rq.Key, result.VersionId);
             }
             else
                 holder.Rq.Key = Transform.KeyDeserializer(result.Id); // Pass back the entities actual id in the key field
