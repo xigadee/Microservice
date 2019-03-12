@@ -7,7 +7,7 @@ namespace Xigadee
         /// <summary>
         /// This extension method attaches a memory persistence command to the incoming pipeline.
         /// </summary>
-        /// <typeparam name="P">The incoming channel type.</typeparam>
+        /// <typeparam name="C">The incoming channel type.</typeparam>
         /// <typeparam name="K">The equatable key type.</typeparam>
         /// <typeparam name="E">The entity type.</typeparam>
         /// <param name="cpipe">The pipeline.</param>
@@ -27,8 +27,8 @@ namespace Xigadee
             //    throw new ArgumentNullException("keyMaker", $"keyMaker cannot be null in {nameof(AddPersistenceManagerMemory)}");
             //if (keyDeserializer == null)
             //    throw new ArgumentNullException("keyDeserializer", $"keyDeserializer cannot be null in {nameof(AddPersistenceManagerMemory)}");
-            //if (cpipe == null)
-            //    throw new ArgumentNullException("cpipe", $"cpipe cannot be null in {nameof(AddPersistenceRepositoryCommand)}");
+            if (cpipe == null)
+                throw new ArgumentNullException("cpipe", $"cpipe cannot be null in {nameof(AddPersistenceRepositoryCommand)}");
 
             pm = null;
 
