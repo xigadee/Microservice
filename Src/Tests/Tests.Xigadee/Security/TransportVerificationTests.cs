@@ -54,7 +54,7 @@ namespace Test.Xigadee
                         .AddChannelIncoming("crequest", boundaryLoggingEnabled: true)
                             .AttachListener(bridgeOut.GetListener())
                             .AttachTransportPayloadVerification("id1")
-                            .AttachCommand(new PersistenceManagerHandlerMemory<Guid, SecureMe>((e) => e.Id, (s) => new Guid(s)))
+                            .AttachPersistenceManagerHandlerMemory((SecureMe e) => e.Id, (s) => new Guid(s))
                             .Revert()
                         .AddChannelOutgoing("cresponse", boundaryLoggingEnabled: true)
                             .AttachSender(bridgein.GetSender())

@@ -11,8 +11,12 @@ namespace PiO
 
         static void Main(string[] args)
         {
+            var repo = new RepositoryMemory<int, LightwaveMessage>(
+                (LightwaveMessage m) => m.Trans
+                );
+
             DebugMemoryDataCollector coll;
-            PersistenceManagerHandlerMemory<int, LightwaveMessage> pm = null;
+            RepositoryWrapperPersistenceCommand<int, LightwaveMessage> pm = null;
             //PersistenceManagerHandlerFileSystem<int, LightwaveMessage> pm = null;
             PersistenceClient<int, LightwaveMessage> pc = null;
             mservice = new MicroservicePipeline("PiO", description: "PiO Server");
@@ -33,7 +37,7 @@ namespace PiO
                         var debug = pm.ChannelId;
                         var rs = await pc.Create(ctx.Request.Message.Holder.Object as LightwaveMessage);
                     }, ("message", "in"))
-                    .AttachPersistenceManagerHandlerMemory((LightwaveMessage m) => m.Trans, (s) => int.Parse(s), out pm)
+                    .AttachPersistenceRepositoryCommand(repo, out pm)
                     //.AttachPersistenceManagerFileSystem((LightwaveMessage m) => m.Trans, (s) => int.Parse(s), out pm)
                     .AttachPersistenceClient(out pc)
                     .Revert()

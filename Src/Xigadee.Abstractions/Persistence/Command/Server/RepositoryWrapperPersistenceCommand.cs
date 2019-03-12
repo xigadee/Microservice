@@ -144,7 +144,7 @@ namespace Xigadee
         /// <summary>
         /// Gets the internal repository.
         /// </summary>
-        protected virtual IRepositoryAsyncServer<K, E> Repository { get; }
+        public virtual IRepositoryAsyncServer<K, E> Repository { get; }
 
 
         #region RepositoryTransform

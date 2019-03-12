@@ -7,10 +7,13 @@ namespace Test.Xigadee
     public class Microservice_Validate_Persistence
     {
         #region Declarations
-        protected PersistenceManagerHandlerMemory<Guid, MyTestEntity1> mPersistenceCommand1;
-        protected PersistenceClient<Guid, MyTestEntity1> mPersistenceService1;
+        protected RepositoryMemory<Guid, MyTestEntity1> repo1;
+        protected RepositoryMemory<Guid, MyTestEntity2> repo2;
 
-        protected PersistenceManagerHandlerMemory<Guid, MyTestEntity2> mPersistenceCommand2;
+        protected RepositoryWrapperPersistenceCommand<Guid, MyTestEntity1> mPersistenceCommand1;
+        protected RepositoryWrapperPersistenceCommand<Guid, MyTestEntity2> mPersistenceCommand2;
+
+        protected PersistenceClient<Guid, MyTestEntity1> mPersistenceService1;
         protected PersistenceClient<Guid, MyTestEntity2> mPersistenceService2;
 
         protected MicroservicePipeline mMs;
@@ -21,12 +24,14 @@ namespace Test.Xigadee
         {
             mMs = new MicroservicePipeline();
 
-            mMs.AddChannelIncoming("internal")
-                .AttachPersistenceManagerHandlerMemory((MyTestEntity1 e) => e.Id, (e) => new Guid(e))
-                .AttachPersistenceManagerHandlerMemory((MyTestEntity2 e) => e.Id
-                    , (e) => new Guid(e)
+            repo1 = new RepositoryMemory<Guid, MyTestEntity1>((MyTestEntity1 e) => e.Id);
+            repo2 = new RepositoryMemory<Guid, MyTestEntity2>((MyTestEntity2 e) => e.Id
                     , versionPolicy: new VersionPolicy<MyTestEntity2>((e) => e.VersionId.ToString("N").ToUpperInvariant(), (e) => e.VersionId = Guid.NewGuid())
-                    )
+            );
+
+            mMs.AddChannelIncoming("internal")
+                .AttachPersistenceRepositoryCommand(repo1, out mPersistenceCommand1)
+                .AttachPersistenceRepositoryCommand(repo2, out mPersistenceCommand2)
                 .AttachPersistenceClient(out mPersistenceService1)
                 .AttachPersistenceClient(out mPersistenceService2)
                 ;

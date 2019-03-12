@@ -3,17 +3,18 @@ using System.Collections.Generic;
 
 namespace Xigadee
 {
-    public static partial class CorePipelineExtensions
+    public static partial class CorePipelineExtensionsCore
     {
         /// <summary>
         /// This extension method attaches a memory persistence command to the incoming pipeline.
         /// </summary>
-        /// <typeparam name="C">The incoming channel type.</typeparam>
+        /// <typeparam name="P">The incoming channel type.</typeparam>
         /// <typeparam name="K">The equatable key type.</typeparam>
         /// <typeparam name="E">The entity type.</typeparam>
-        /// <param name="cpipe">The incoming channel pipeline.</param>
+        /// <param name="pipeline">The pipeline.</param>
         /// <param name="keyMaker">This function creates a key of type K from an entity of type E</param>
         /// <param name="keyDeserializer">The entity key deserializer.</param>
+        /// <param name="cpipe">The incoming channel to listen for requests.</param>
         /// <param name="startupPriority">The command start-up priority.</param>
         /// <param name="entityName">The entity name to be used in the collection. By default this will be set through reflection.</param>
         /// <param name="versionPolicy">The version policy. This is needed if you wish to support optimistic locking for updates.</param>
@@ -26,9 +27,10 @@ namespace Xigadee
         /// <param name="keySerializer">The key serializer function.</param>
         /// <param name="prePopulate">The optional pre-population collection.</param>
         /// <returns>The pipeline.</returns>
-        public static C AttachPersistenceManagerHandlerMemory<C, K, E>(this C cpipe
+        public static P AddPersistenceManagerMemory<P, K, E>(this P pipeline
             , Func<E, K> keyMaker
             , Func<string, K> keyDeserializer
+            , IPipelineChannelIncoming<P> cpipe
             , int startupPriority = 100
             , string entityName = null
             , VersionPolicy<E> versionPolicy = null
@@ -41,34 +43,35 @@ namespace Xigadee
             , Func<K, string> keySerializer = null
             , IEnumerable<KeyValuePair<K, E>> prePopulate = null
             )
-            where C : IPipelineChannelIncoming<IPipeline>
+            where P : IPipeline
             where K : IEquatable<K>
         {
-            PersistenceManagerHandlerMemory<K, E> pm = null;
+            RepositoryWrapperPersistenceCommand<K, E> pm = null;
 
-            return cpipe.AttachPersistenceManagerHandlerMemory(keyMaker, keyDeserializer, out pm
+            return pipeline.AddPersistenceManagerMemory(keyMaker, keyDeserializer, cpipe, out pm
                   , startupPriority
-                  , entityName
-                  , versionPolicy
-                  , defaultTimeout
-                  , persistenceRetryPolicy
-                  , resourceProfile
-                  , cacheManager
-                  , referenceMaker
-                  , referenceHashMaker
-                  , keySerializer
-                  , prePopulate);
+                  , entityName: entityName
+                  , versionPolicy: versionPolicy
+                  , defaultTimeout: defaultTimeout
+                  , persistenceRetryPolicy: persistenceRetryPolicy
+                  , resourceProfile: resourceProfile
+                  , cacheManager: cacheManager
+                  , referenceMaker: referenceMaker
+                  , referenceHashMaker: referenceHashMaker
+                  , keySerializer: keySerializer
+                  , prePopulate: prePopulate);
         }
 
         /// <summary>
         /// This extension method attaches a memory persistence command to the incoming pipeline.
         /// </summary>
-        /// <typeparam name="C">The incoming channel type.</typeparam>
+        /// <typeparam name="P">The incoming channel type.</typeparam>
         /// <typeparam name="K">The equatable key type.</typeparam>
         /// <typeparam name="E">The entity type.</typeparam>
-        /// <param name="cpipe">The incoming channel pipeline.</param>
+        /// <param name="pipeline">The pipeline.</param>
         /// <param name="keyMaker">This function creates a key of type K from an entity of type E</param>
         /// <param name="keyDeserializer">The entity key deserializer.</param>
+        /// <param name="cpipe">The incoming channel to listen for requests.</param>
         /// <param name="pm">An output parameter for the persistence manager.</param>
         /// <param name="startupPriority">The command start-up priority.</param>
         /// <param name="entityName">The entity name to be used in the collection. By default this will be set through reflection.</param>
@@ -82,10 +85,11 @@ namespace Xigadee
         /// <param name="keySerializer">The key serializer function.</param>
         /// <param name="prePopulate">The optional pre-population collection.</param>
         /// <returns>The pipeline.</returns>
-        public static C AttachPersistenceManagerHandlerMemory<C, K, E>(this C cpipe
+        public static P AddPersistenceManagerMemory<P, K, E>(this P pipeline
             , Func<E, K> keyMaker
             , Func<string, K> keyDeserializer
-            , out PersistenceManagerHandlerMemory<K,E> pm
+            , IPipelineChannelIncoming<P> cpipe
+            , out RepositoryWrapperPersistenceCommand<K, E> pm
             , int startupPriority = 100
             , string entityName = null
             , VersionPolicy<E> versionPolicy = null
@@ -96,25 +100,38 @@ namespace Xigadee
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             , Func<Tuple<string, string>, string> referenceHashMaker = null
             , Func<K, string> keySerializer = null
-            , IEnumerable<KeyValuePair<K,E>> prePopulate = null
+            , IEnumerable<KeyValuePair<K, E>> prePopulate = null
             )
-            where C : IPipelineChannelIncoming<IPipeline>
+            where P : IPipeline
             where K : IEquatable<K>
         {
-            cpipe.Pipeline.AddPersistenceManagerMemory(keyMaker, keyDeserializer, cpipe, out pm
-                  , startupPriority
-                  , entityName: entityName
-                  , versionPolicy: versionPolicy
-                  , defaultTimeout: defaultTimeout
-                  , persistenceRetryPolicy: persistenceRetryPolicy
-                  , resourceProfile: resourceProfile
-                  , cacheManager: cacheManager
-                  , referenceMaker: referenceMaker
-                  , referenceHashMaker: referenceHashMaker
-                  , keySerializer: keySerializer
-                  , prePopulate: prePopulate);
+            if (keyMaker == null)
+                throw new ArgumentNullException("keyMaker", $"keyMaker cannot be null in {nameof(AddPersistenceManagerMemory)}");
+            if (keyDeserializer == null)
+                throw new ArgumentNullException("keyDeserializer", $"keyDeserializer cannot be null in {nameof(AddPersistenceManagerMemory)}");
+            if (cpipe == null)
+                throw new ArgumentNullException("cpipe", $"cpipe cannot be null in {nameof(AddPersistenceManagerMemory)}");
 
-            return cpipe;
+            var repo = new RepositoryMemory<K, E>(keyMaker);
+
+            pm = new RepositoryWrapperPersistenceCommand<K, E>(repo);
+
+            //pm = new PersistenceManagerHandlerMemory<K, E>(keyMaker
+            //      , keyDeserializer
+            //      , entityName: entityName
+            //      , versionPolicy: versionPolicy
+            //      , defaultTimeout: defaultTimeout
+            //      , persistenceRetryPolicy: persistenceRetryPolicy
+            //      , resourceProfile: resourceProfile
+            //      , cacheManager: cacheManager
+            //      , referenceMaker: referenceMaker
+            //      , referenceHashMaker: referenceHashMaker
+            //      , keySerializer: keySerializer
+            //      , prePopulate: prePopulate);
+
+            pipeline.AddCommand(pm, startupPriority, channelIncoming: cpipe);
+
+            return pipeline;
         }
     }
 }

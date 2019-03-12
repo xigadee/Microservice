@@ -62,7 +62,7 @@ namespace Test.Xigadee
                         .AddChannelIncoming("crequest")
                             .AttachTransportPayloadDecryption("rogue2")
                             .AttachListener(bridgeOut.GetListener())
-                            .AttachCommand(new PersistenceManagerHandlerMemory<Guid, SecureMe>((e) => e.Id, (s) => new Guid(s)))
+                            .AttachPersistenceManagerHandlerMemory((SecureMe e) => e.Id, (s) => new Guid(s))
                             .Revert()
                         .AddChannelOutgoing("cresponse")
                             .AttachSender(bridgein.GetSender())

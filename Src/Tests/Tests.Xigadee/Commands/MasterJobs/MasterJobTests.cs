@@ -163,7 +163,7 @@ namespace Test.Xigadee
                             .Revert()
                         .AddChannelIncoming("crequest")
                             .AttachListener(bridgeOut.GetListener())
-                            .AttachCommand(new PersistenceManagerHandlerMemory<Guid, BridgeMe>((e) => e.Id, (s) => new Guid(s)))
+                            .AttachPersistenceManagerHandlerMemory((BridgeMe e) => e.Id, (s) => new Guid(s))
                             .Revert()
                         .AddChannelOutgoing("cresponse")
                             .AttachSender(bridgeIn.GetSender(), (a) => incoming = a as ISender)
