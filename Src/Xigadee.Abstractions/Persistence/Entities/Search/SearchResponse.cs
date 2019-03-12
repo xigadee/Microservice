@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Xigadee
 {
-    public class SearchResponse: SearchResponse<JObject>
+    public class SearchResponse: SearchResponse<string>
     {
 
     }

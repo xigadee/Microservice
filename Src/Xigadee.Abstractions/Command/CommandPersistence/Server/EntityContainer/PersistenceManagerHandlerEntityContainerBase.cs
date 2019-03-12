@@ -347,12 +347,12 @@ namespace Xigadee
             {
                 jObjects.Add(JObject.FromObject(source));
             }
-            if (success)
-            {
-                var resultEntities = query.ToList();
-                holder.Rs.Entity.Data = jObjects;
-                return new PersistenceResponseHolder<SearchResponse>(PersistenceResponse.Ok200, null, holder.Rs.Entity);
-            }
+            //if (success)
+            //{
+            //    var resultEntities = query.ToList();
+            //    holder.Rs.Entity.Data = jObjects;
+            //    return new PersistenceResponseHolder<SearchResponse>(PersistenceResponse.Ok200, null, holder.Rs.Entity);
+            //}
 
 
 

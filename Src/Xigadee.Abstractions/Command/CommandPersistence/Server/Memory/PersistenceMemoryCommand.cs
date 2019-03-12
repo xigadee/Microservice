@@ -9,7 +9,7 @@ namespace Xigadee
 
     }
 
-    public class PersistenceMemoryCommand<K, E> : RepositoryPersistenceWrapperCommand<K, E, PersistenceMemoryStatistics, PersistenceCommandPolicy>
+    public class PersistenceMemoryCommand<K, E> : RepositoryWrapperPersistenceCommand<K, E, PersistenceMemoryStatistics, PersistenceCommandPolicy>
         where K : IEquatable<K>
     {
         public PersistenceMemoryCommand(IRepositoryAsyncServer<K, E> repository

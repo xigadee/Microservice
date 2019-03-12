@@ -10,8 +10,8 @@ namespace Test.Xigadee
         protected PersistenceClient<Guid, MyTestEntity1> mPersistenceService1;
         protected PersistenceClient<Guid, MyTestEntity2> mPersistenceService2;
 
-        protected RepositoryPersistenceWrapperCommand<Guid, MyTestEntity1> mPersistenceCommand1;
-        protected RepositoryPersistenceWrapperCommand<Guid, MyTestEntity2> mPersistenceCommand2;
+        protected RepositoryWrapperPersistenceCommand<Guid, MyTestEntity1> mPersistenceCommand1;
+        protected RepositoryWrapperPersistenceCommand<Guid, MyTestEntity2> mPersistenceCommand2;
 
         protected MicroservicePipeline mMs;
         #endregion
