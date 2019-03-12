@@ -25,11 +25,6 @@ namespace Xigadee
         where K : IEquatable<K>
     {
         /// <summary>
-        /// The key manager
-        /// </summary>
-        RepositoryKeyManager<K> KeyManager { get; }
-
-        /// <summary>
         /// Tries to extract the key.
         /// </summary>
         /// <param name="entity">The entity.</param>

@@ -147,9 +147,9 @@ namespace Xigadee
         protected RepositoryEntityTransformHolder<K, E> RepositoryTransform => Transform as RepositoryEntityTransformHolder<K, E>;
         #endregion
 
-
+        #region EntityTransform...
         protected virtual RepositoryEntityTransformHolder<K, E> RepositoryEntityTransformCreate(
-            IRepositoryAsyncServer<K,E> repo
+            IRepositoryAsyncServer<K, E> repo
             , string entityName = null, VersionPolicy<E> versionPolicy = null, Func<E, K> keyMaker = null, EntitySerializer<E> persistenceEntitySerializer = null, EntitySerializer<E> cachingEntitySerializer = null, Func<K, string> keySerializer = null, Func<string, K> keyDeserializer = null, Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null, Func<Tuple<string, string>, string> referenceHashMaker = null)
         {
             var transform = new RepositoryEntityTransformHolder<K, E>(repo)
@@ -172,7 +172,8 @@ namespace Xigadee
         {
             //We set this later in the main constructor with the repository.
             return null;
-        }
+        } 
+        #endregion
 
         protected override async Task<IResponseHolder<E>> InternalCreate(K key, PersistenceRequestHolder<K, E> holder)
         {
@@ -213,21 +214,30 @@ namespace Xigadee
         {
             var rs = await RepositoryTransform.Repository.DeleteByRef(reference.Item1, reference.Item2);
 
-            return await base.InternalDeleteByRef(reference, holder);
+            //return new PersistenceResponseHolder<Tuple<K, string>> { StatusCode = 200, IsSuccess = true, Id = transform.KeySerializer(resolve.Item2), VersionId = resolve.Item3, Entity = new Tuple<K, string>(resolve.Item2, resolve.Item3) };
+
+            return new PersistenceResponseHolder<E>((PersistenceResponse)rs.ResponseCode);
         }
 
-        protected override async Task<IResponseHolder> InternalVersion(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
-        {
-            var rs = await RepositoryTransform.Repository.Version(key);
+        //protected override async Task<IResponseHolder> InternalVersion(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
+        //{
+        //    var rs = await RepositoryTransform.Repository.Version(key);
 
-            return await base.InternalVersion(key, holder);
-        }
+        //    return new PersistenceResponseHolder<Tuple<K, string>> { StatusCode = 200, IsSuccess = true, Id = RepositoryTransform.KeySerializer(resolve.Item2), VersionId = resolve.Item3, Entity = new Tuple<K, string>(resolve.Item2, resolve.Item3) };
+        //}
 
         protected override async Task<IResponseHolder> InternalVersionByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
             var rs = await RepositoryTransform.Repository.VersionByRef(reference.Item1, reference.Item2);
 
             return await base.InternalVersionByRef(reference, holder);
+        }
+
+        protected override async Task<IResponseHolder<SearchResponse>> InternalSearch(SearchRequest key, PersistenceRequestHolder<SearchRequest, SearchResponse> holder)
+        {
+            var rs = await RepositoryTransform.Repository.Search(key);
+
+            return await base.InternalSearch(key, holder);
         }
     }
 

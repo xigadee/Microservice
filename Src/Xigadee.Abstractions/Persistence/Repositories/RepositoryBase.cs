@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 namespace Xigadee
@@ -7,10 +9,10 @@ namespace Xigadee
     /// <summary>
     /// This is the base repository holder.
     /// </summary>
-    /// <typeparam name="TKey">The key type.</typeparam>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
-    public abstract class RepositoryBase<TKey, TEntity> : IRepositoryAsyncServer<TKey, TEntity>
-        where TKey : IEquatable<TKey>
+    /// <typeparam name="K">The key type.</typeparam>
+    /// <typeparam name="E">The entity type.</typeparam>
+    public abstract class RepositoryBase<K, E> : IRepositoryAsyncServer<K, E>
+        where K : IEquatable<K>
     {
         #region Events
         /// <summary>
@@ -21,38 +23,53 @@ namespace Xigadee
         /// <summary>
         /// Occurs before and entity is created.
         /// </summary>
-        public event EventHandler<TEntity> OnBeforeCreate;
+        public event EventHandler<E> OnBeforeCreate;
         /// <summary>
         /// Occurs before an entity is updated.
         /// </summary>
-        public event EventHandler<TEntity> OnBeforeUpdate;
+        public event EventHandler<E> OnBeforeUpdate;
         /// <summary>
         /// Occurs after an entity is created.
         /// </summary>
-        public event EventHandler<TEntity> OnAfterCreate;
+        public event EventHandler<E> OnAfterCreate;
         /// <summary>
         /// Occurs after an entity is updated.
         /// </summary>
-        public event EventHandler<TEntity> OnAfterUpdate;
+        public event EventHandler<E> OnAfterUpdate;
         /// <summary>
         /// Occurs before an entity is read.
         /// </summary>
-        public event EventHandler<ReferenceHolder<TKey>> OnBeforeRead;
+        public event EventHandler<ReferenceHolder<K>> OnBeforeRead;
         /// <summary>
         /// Occurs before an entity is deleted.
         /// </summary>
-        public event EventHandler<ReferenceHolder<TKey>> OnBeforeDelete;
+        public event EventHandler<ReferenceHolder<K>> OnBeforeDelete;
         /// <summary>
         /// Occurs before an entity is versioned.
         /// </summary>
-        public event EventHandler<ReferenceHolder<TKey>> OnBeforeVersion;
+        public event EventHandler<ReferenceHolder<K>> OnBeforeVersion;
 
-        #region OnEntityEvent(EventType type, TEntity entity)
+        #region OnEntityEvent(EventType type, TEntity entity)        
+        /// <summary>
+        /// This is the entity event type.
+        /// </summary>
         protected enum EntityEventType
         {
+            /// <summary>
+            /// Before the entity is created
+            /// </summary>
             BeforeCreate,
+            /// <summary>
+            /// Before the entity is update
+            /// </summary>
             BeforeUpdate,
+            /// <summary>
+            /// After the entity is created
+            /// </summary>
             AfterCreate,
+            /// <summary>
+            /// After the entity is updated
+            /// </summary>
             AfterUpdate
         }
         /// <summary>
@@ -60,7 +77,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="type">The type.</param>
         /// <param name="entity">The entity.</param>
-        protected void OnEntityEvent(EntityEventType type, Func<TEntity> entity)
+        protected void OnEntityEvent(EntityEventType type, Func<E> entity)
         {
             switch (type)
             {
@@ -93,9 +110,9 @@ namespace Xigadee
         /// <param name="key"></param>
         /// <param name="refType"></param>
         /// <param name="refValue"></param>
-        protected void OnKeyEvent(KeyEventType type, TKey key = default(TKey), string refType = null, string refValue = null)
+        protected void OnKeyEvent(KeyEventType type, K key = default(K), string refType = null, string refValue = null)
         {
-            var holder = new ReferenceHolder<TKey>() { Key = key, RefType = refType, RefValue = refValue };
+            var holder = new ReferenceHolder<K>() { Key = key, RefType = refType, RefValue = refValue };
 
             switch (type)
             {
@@ -122,21 +139,20 @@ namespace Xigadee
         }
         #endregion
         #endregion
-
         #region Declarations        
         /// <summary>
         /// The key maker used to extract the key from an incoming entity.
         /// </summary>
-        protected readonly Func<TEntity, TKey> _keyMaker;
+        protected readonly Func<E, K> _keyMaker;
 
         /// <summary>
         /// The reference maker used to make the reference values from an entity.
         /// </summary>
-        protected readonly Func<TEntity, IEnumerable<Tuple<string, string>>> _referenceMaker;
+        protected readonly Func<E, IEnumerable<Tuple<string, string>>> _referenceMaker;
         /// <summary>
         /// The properties maker is used to extract the common entity properties.
         /// </summary>
-        protected readonly Func<TEntity, IEnumerable<Tuple<string, string>>> _propertiesMaker;
+        protected readonly Func<E, IEnumerable<Tuple<string, string>>> _propertiesMaker;
         #endregion
 
         #region Constructor
@@ -144,20 +160,17 @@ namespace Xigadee
         /// Initializes a new instance of the <see cref="RepositoryBase{TKey, TEntity}"/> class.
         /// </summary>
         /// <param name="keyMaker">The key maker.</param>
-        /// <param name="keyManager">The key manager.</param>
         /// <param name="referenceMaker">The reference maker.</param>
         /// <param name="propertiesMaker">The properties maker.</param>
         /// <param name="versionPolicy">The version policy.</param>
         /// <exception cref="ArgumentNullException">keyMaker</exception>
-        protected RepositoryBase(Func<TEntity, TKey> keyMaker
-            , Func<TEntity, IEnumerable<Tuple<string, string>>> referenceMaker = null
-            , Func<TEntity, IEnumerable<Tuple<string, string>>> propertiesMaker = null
-            , VersionPolicy<TEntity> versionPolicy = null
-            , RepositoryKeyManager<TKey> keyManager = null
+        protected RepositoryBase(Func<E, K> keyMaker
+            , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
+            , Func<E, IEnumerable<Tuple<string, string>>> propertiesMaker = null
+            , VersionPolicy<E> versionPolicy = null
             )
         {
             _keyMaker = keyMaker ?? throw new ArgumentNullException(nameof(keyMaker));
-            KeyManager = keyManager ?? RepositoryKeyManager.Resolve<TKey>() ?? throw new ArgumentNullException(nameof(keyManager));
 
             _referenceMaker = referenceMaker ?? (e => new List<Tuple<string, string>>());
             _propertiesMaker = propertiesMaker ?? (e => new List<Tuple<string, string>>());
@@ -174,11 +187,11 @@ namespace Xigadee
         /// <returns>
         /// Returns the key.
         /// </returns>
-        public virtual bool TryKeyExtract(TEntity entity, out TKey key)
+        public virtual bool TryKeyExtract(E entity, out K key)
         {
             if (entity == null || _keyMaker == null)
             {
-                key = default(TKey);
+                key = default(K);
                 return false;
             }
 
@@ -192,89 +205,153 @@ namespace Xigadee
         /// Holds the policy concerning whether the repository implements optimistic locking 
         /// and or history of entities.
         /// </summary>
-        public VersionPolicy<TEntity> VersionPolicy { get; }
-        #endregion
-        #region KeyManager
-        /// <summary>
-        /// The key manager.
-        /// </summary>
-        public virtual RepositoryKeyManager<TKey> KeyManager { get; } 
+        public VersionPolicy<E> VersionPolicy { get; }
         #endregion
 
         /// <summary>
         /// Creates the specified entity.
         /// </summary>
         /// <param name="entity">The entity.</param>
+        /// <param name="options">The repository options.</param>
         /// <returns>
         /// Returns the holder with the response and data.
         /// </returns>
-        public abstract Task<RepositoryHolder<TKey, TEntity>> Create(TEntity entity, RepositorySettings options = null);
+        public abstract Task<RepositoryHolder<K, E>> Create(E entity, RepositorySettings options = null);
         /// <summary>
         /// Deletes the entity by the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
+        /// <param name="options">The repository options.</param>
         /// <returns>
         /// Returns the holder with the response and data.
         /// </returns>
-        public abstract Task<RepositoryHolder<TKey, Tuple<TKey, string>>> Delete(TKey key, RepositorySettings options = null);
+        public abstract Task<RepositoryHolder<K, Tuple<K, string>>> Delete(K key, RepositorySettings options = null);
         /// <summary>
         /// Deletes the entity by reference.
         /// </summary>
         /// <param name="refKey">The reference key.</param>
         /// <param name="refValue">The reference value.</param>
+        /// <param name="options">The repository options.</param>
         /// <returns>
         /// Returns the holder with the response and data.
         /// </returns>
-        public abstract Task<RepositoryHolder<TKey, Tuple<TKey, string>>> DeleteByRef(string refKey, string refValue, RepositorySettings options = null);
+        public abstract Task<RepositoryHolder<K, Tuple<K, string>>> DeleteByRef(string refKey, string refValue, RepositorySettings options = null);
         /// <summary>
         /// Reads the entity by the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
+        /// <param name="options">The repository options.</param>
         /// <returns>
         /// Returns the holder with the response and data.
         /// </returns>
-        public abstract Task<RepositoryHolder<TKey, TEntity>> Read(TKey key, RepositorySettings options = null);
+        public abstract Task<RepositoryHolder<K, E>> Read(K key, RepositorySettings options = null);
         /// <summary>
         /// Reads the entity by a reference key-value pair.
         /// </summary>
         /// <param name="refKey">The reference key.</param>
         /// <param name="refValue">The reference value.</param>
+        /// <param name="options">The repository options.</param>
         /// <returns>
         /// Returns the holder with the response and data.
         /// </returns>
-        public abstract Task<RepositoryHolder<TKey, TEntity>> ReadByRef(string refKey, string refValue, RepositorySettings options = null);
+        public abstract Task<RepositoryHolder<K, E>> ReadByRef(string refKey, string refValue, RepositorySettings options = null);
         /// <summary>
         /// Updates the specified entity.
         /// </summary>
         /// <param name="entity">The entity.</param>
+        /// <param name="options">The repository options.</param>
         /// <returns>
         /// Returns the holder with the response and data.
         /// </returns>
-        public abstract Task<RepositoryHolder<TKey, TEntity>> Update(TEntity entity, RepositorySettings options = null);
+        public abstract Task<RepositoryHolder<K, E>> Update(E entity, RepositorySettings options = null);
         /// <summary>
         /// Validates the version by key.
         /// </summary>
         /// <param name="key">The key.</param>
+        /// <param name="options">The repository options.</param>
         /// <returns>
         /// Returns the holder with the response and data.
         /// </returns>
-        public abstract Task<RepositoryHolder<TKey, Tuple<TKey, string>>> Version(TKey key, RepositorySettings options = null);
+        public abstract Task<RepositoryHolder<K, Tuple<K, string>>> Version(K key, RepositorySettings options = null);
         /// <summary>
         /// Validates the version by reference.
         /// </summary>
         /// <param name="refKey">The reference key.</param>
         /// <param name="refValue">The reference value.</param>
+        /// <param name="options">The repository options.</param>
         /// <returns>
         /// Returns the holder with the response and data.
         /// </returns>
-        public abstract Task<RepositoryHolder<TKey, Tuple<TKey, string>>> VersionByRef(string refKey, string refValue, RepositorySettings options = null);
+        public abstract Task<RepositoryHolder<K, Tuple<K, string>>> VersionByRef(string refKey, string refValue, RepositorySettings options = null);
         /// <summary>
         /// Searches the entity store.
         /// </summary>
         /// <param name="key">The key.</param>
+        /// <param name="options">The repository options.</param>
         /// <returns>
         /// Returns the holder with the response and data.
         /// </returns>
         public abstract Task<RepositoryHolder<SearchRequest, SearchResponse>> Search(SearchRequest key, RepositorySettings options = null);
+
+        #region Class -> EntityContainer
+        /// <summary>
+        /// This is a private class it is used to ensure that we do not duplicate data.
+        /// </summary>
+        protected class EntityContainer
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="EntityContainer"/> class.
+            /// </summary>
+            /// <param name="key">The key.</param>
+            /// <param name="entity">The entity.</param>
+            /// <param name="references">The entity references.</param>
+            /// <param name="properties">The entity properties.</param>
+            /// <param name="versionId">The version id of the entity..</param>
+            public EntityContainer(K key, E entity
+                , IEnumerable<Tuple<string, string>> references
+                , IEnumerable<Tuple<string, string>> properties
+                , string versionId
+                )
+            {
+                Key = key;
+
+                JsonBody = JsonConvert.SerializeObject(entity);
+
+                References = references == null ? new List<Tuple<string, string>>() : references.ToList();
+                Properties = properties == null ? new List<Tuple<string, string>>() : properties.ToList();
+
+                VersionId = versionId;
+            }
+            /// <summary>
+            /// Contains the key.
+            /// </summary>
+            public K Key { get; }
+            /// <summary>
+            /// Gets or sets the version identifier.
+            /// </summary>
+            public string VersionId { get; }
+            /// <summary>
+            /// Contains the entity.
+            /// </summary>
+            public E Entity => string.IsNullOrEmpty(JsonBody) ? default(E) : JsonConvert.DeserializeObject<E>(JsonBody);
+
+            /// <summary>
+            /// Gets or sets the json body of the entity. This is used to ensure that the entity is
+            /// not modified in the main collection by other processes.
+            /// </summary>
+            public string JsonBody { get; }
+
+            /// <summary>
+            /// Contains the entity references.
+            /// </summary>
+            public List<Tuple<string, string>> References { get; }
+            /// <summary>
+            /// Contains the entity references.
+            /// </summary>
+            public List<Tuple<string, string>> Properties { get; }
+
+        }
+        #endregion
+
     }
 }

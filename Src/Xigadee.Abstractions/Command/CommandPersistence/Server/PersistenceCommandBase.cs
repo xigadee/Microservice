@@ -946,10 +946,9 @@ namespace Xigadee
         /// <summary>
         /// This method sets the entity and any associated metadata in to the response.
         /// </summary>
-        /// <param name="key">The entity key.</param>
+        /// <param name="entity">The entity.</param>
         /// <param name="rq">The original request.</param>
         /// <param name="rs">The outgoing response.</param>
-        /// <param name="holderResponse">The underlying storage response.</param>
         protected virtual void ProcessOutputEntity(E entity, PersistenceRepositoryHolder<K, E> rq, PersistenceRepositoryHolder<K, E> rs)
         {
             rs.Entity = entity;

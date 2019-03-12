@@ -269,7 +269,11 @@ namespace Xigadee
                 if (result.HasValue)
                 {
                     var entity = transform.CacheEntitySerializer.Deserializer(result);
-                    return new PersistenceResponseHolder<E> { StatusCode = 200, Content = result, IsSuccess = true, Entity = entity, Id = transform.KeySerializer(key), VersionId = transform.Version?.EntityVersionAsString(entity) };
+                    return new PersistenceResponseHolder<E> { StatusCode = 200, Content = result
+                        , IsSuccess = true
+                        , Entity = entity
+                        , Id = transform.KeySerializer(key)
+                        , VersionId = transform.Version?.EntityVersionAsString(entity) };
                 }
 
                 return new PersistenceResponseHolder<E> { StatusCode = 404, IsSuccess = false };

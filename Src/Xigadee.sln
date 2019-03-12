@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28527.54
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.438
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Console", "Xigadee.Console\Xigadee.Console.csproj", "{AF748540-D35C-409A-AD23-D990CF19DED9}"
 EndProject
@@ -86,7 +86,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApiTest", "ApiTest", "{7042
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Xigadee.ApiTest", "Tests.Xigadee.ApiTest\Tests.Xigadee.ApiTest.csproj", "{042A0029-995C-4EC6-B73F-3F105172563C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PiO.Shared", "PiO.Shared\PiO.Shared.csproj", "{334E03BE-E7B9-45EA-9AFF-1923E461BB87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PiO.Shared", "PiO.Shared\PiO.Shared.csproj", "{334E03BE-E7B9-45EA-9AFF-1923E461BB87}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Xigadee.Azure.Sql", "Tests.Xigadee.Azure.Sql\Tests.Xigadee.Azure.Sql.csproj", "{494ECAD6-EEFF-41A5-8915-1A2BEB05ABE1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -198,6 +200,10 @@ Global
 		{334E03BE-E7B9-45EA-9AFF-1923E461BB87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{334E03BE-E7B9-45EA-9AFF-1923E461BB87}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{334E03BE-E7B9-45EA-9AFF-1923E461BB87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{494ECAD6-EEFF-41A5-8915-1A2BEB05ABE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{494ECAD6-EEFF-41A5-8915-1A2BEB05ABE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{494ECAD6-EEFF-41A5-8915-1A2BEB05ABE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{494ECAD6-EEFF-41A5-8915-1A2BEB05ABE1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -230,9 +236,10 @@ Global
 		{70429F4B-4653-48EC-8E79-954C44739DFD} = {147BDD3C-B68D-4D13-912C-240F23DD1C91}
 		{042A0029-995C-4EC6-B73F-3F105172563C} = {70429F4B-4653-48EC-8E79-954C44739DFD}
 		{334E03BE-E7B9-45EA-9AFF-1923E461BB87} = {3F79ACF7-014D-4589-919F-FF09A7938BE0}
+		{494ECAD6-EEFF-41A5-8915-1A2BEB05ABE1} = {2D95B4DF-5B82-402D-859A-92492C4DCF22}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {8BF7561D-7A94-4B22-B0EB-D82D95B110DE}
 		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
+		SolutionGuid = {8BF7561D-7A94-4B22-B0EB-D82D95B110DE}
 	EndGlobalSection
 EndGlobal

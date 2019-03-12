@@ -13,6 +13,8 @@ namespace Test.Xigadee
     {
         public Guid Id { get; set; } = Guid.NewGuid();
 
+        public Guid VersionId { get; set; } = Guid.NewGuid();
+
         /// <summary>
         /// Gets or sets the unique name.
         /// </summary>
@@ -68,8 +70,14 @@ namespace Test.Xigadee
         [TestInitialize]
         public void Init()
         {
-            _repo = new RepositoryMemory<Guid, TestClass>((r) => r.Id, 
-                referenceMaker: References, propertiesMaker: Properties);
+            _repo = new RepositoryMemory<Guid, TestClass>((r) => r.Id
+                , referenceMaker: References
+                , propertiesMaker: Properties
+                , versionPolicy: new VersionPolicy<TestClass>(
+                    (e) => e.VersionId.ToString("N").ToUpperInvariant()
+                    , (e) => e.VersionId = Guid.NewGuid()
+                )
+                );
         }
 
         [TestMethod]
@@ -77,7 +85,10 @@ namespace Test.Xigadee
         {
             var result2 = await _repo.Create(new TestClass() { Name = "Ferd", Type = "nerd" });
             var result3 = await _repo.Create(new TestClass() { Name = "Freda", Type = "nerd" });
+
+            //This will fail as it has the same 'Name' as an earlier entity.
             var result4 = await _repo.Create(new TestClass() { Name = "Ferd", Type = "geek" });
+
             var result5 = await _repo.Create(new TestClass() { Name = "Ferdy", Type = "geek" });
 
             Assert.IsTrue(result2.IsSuccess);
@@ -93,18 +104,24 @@ namespace Test.Xigadee
         [TestMethod]
         public async Task Update()
         {
-            var result = await _repo.Create(new TestClass() { Name = "Gangly" });
+            var e1 = new TestClass() { Name = "Gangly" };
+
+            var result = await _repo.Create(e1);
 
             Assert.IsTrue(result.IsSuccess);
 
-            var entity = result.Entity;
+            var e2 = result.Entity;
 
-            entity.DateUpdated = DateTime.UtcNow;
+            e2.DateUpdated = DateTime.UtcNow;
 
-            var result2 = await _repo.Update(entity);
+            var result2 = await _repo.Update(e2);
 
             Assert.IsTrue(result2.IsSuccess);
 
+            //This should now fail as the version id has been changed by the earlier update.
+            var result3 = await _repo.Update(e2);
+
+            Assert.IsTrue(result3.IsFaulted);
         }
 
 
