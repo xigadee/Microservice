@@ -32,13 +32,15 @@ namespace Xigadee
         protected Dictionary<string, Func<E, List<KeyValuePair<string, string>>, bool>> _filterMethods;
 
         protected readonly Func<IEnumerable<Tuple<string, Func<E, List<KeyValuePair<string, string>>, bool>>>> _searchMaker;
+
+        protected long _etagOrdinal = 0;
+
         #endregion
         #region Constructor        
         /// <summary>
         /// Initializes a new instance of the <see cref="RepositoryMemory{K, E}"/> class.
         /// </summary>
         /// <param name="keyMaker">The key maker.</param>
-        /// <param name="keyManager">The key manager.</param>
         /// <param name="referenceMaker">The reference maker.</param>
         /// <param name="propertiesMaker">The properties maker.</param>
         /// <param name="searchMaker">The search maker.</param>
@@ -106,6 +108,8 @@ namespace Xigadee
 
                 //Add the entity references
                 newContainer.References.ForEach((r) => _containerReference.Add(r, newContainer));
+
+                ETagOrdinalIncrement();
 
                 OnEntityEvent(EntityEventType.AfterCreate, () => newEntity);
 
@@ -213,6 +217,8 @@ namespace Xigadee
                 oldContainer.References.ForEach((r) => _containerReference.Remove(r));
                 newContainer.References.ForEach((r) => _containerReference.Add(r, newContainer));
 
+                ETagOrdinalIncrement();
+
                 //All good.
                 OnEntityEvent(EntityEventType.AfterUpdate, () => newEntity);
 
@@ -272,7 +278,11 @@ namespace Xigadee
             bool result = _container.Remove(container.Key);
 
             if (result)
+            {
                 container.References.ForEach((r) => _containerReference.Remove(r));
+
+                ETagOrdinalIncrement();
+            }
 
             return result;
         }
@@ -315,18 +325,55 @@ namespace Xigadee
 
         }
         #endregion
+
         #region Search(SearchRequest key)
         /// <summary>
         /// Searches the collection using the specified parameters.
         /// </summary>
-        /// <param name="key">The search request.</param>
-        /// <returns>Returns a collection of entities.</returns>
-        public override Task<RepositoryHolder<SearchRequest, SearchResponse>> Search(SearchRequest key, RepositorySettings options = null)
+        public override Task<RepositoryHolder<SearchRequest, SearchResponse>> Search(SearchRequest rq, RepositorySettings options = null)
         {
-            throw new NotImplementedException();
-            //OnSearchEvent(key);
+            OnSearchEvent(rq);
 
-            //var response = new SearchResponse<E>() { Etag = Guid.NewGuid().ToString("N") };
+            var response = new SearchResponse() { Etag = ETag };
+            
+            //Func<E, List<KeyValuePair<string, string>>, bool> filter;
+
+            //if (string.IsNullOrEmpty(key.Query))//The default filter returns all records.
+            //    filter = (e, p) => true;
+            //else if (_filterMethods.ContainsKey(key.Query))
+            //    filter = _filterMethods[key.Query];
+            //else
+            //    return Task.FromResult(new RepositoryHolder<SearchRequest, SearchResponse<E>>(key, response, 404));
+
+            //response.Data = Atomic(() =>
+            //{
+            //    var res = _container.Values
+            //    .Where((e) => filter(e.Entity, key.FilterParams))
+            //    .Select((c) => c.Entity);
+
+            //    if (key.Skip.HasValue)
+            //        res = res.Skip(key.Top.Value);
+
+            //    if (key.Top.HasValue)
+            //        res = res.Take(key.Top.Value);
+
+            //    return res.ToList();
+            //});
+
+            var result = new RepositoryHolder<SearchRequest, SearchResponse>(key:rq, entity:response, responseCode: 200);
+
+            return Task.FromResult(result);
+        }
+        #endregion
+        #region SearchEntity(SearchRequest key)
+        /// <summary>
+        /// Searches the collection using the specified parameters.
+        /// </summary>
+        public override Task<RepositoryHolder<SearchRequest, SearchResponse<E>>> SearchEntity(SearchRequest rq, RepositorySettings options = null)
+        {
+            OnSearchEvent(rq);
+
+            var response = new SearchResponse<E>() { Etag = ETag };
 
             //Func<E, List<KeyValuePair<string, string>>, bool> filter;
 
@@ -352,9 +399,9 @@ namespace Xigadee
             //    return res.ToList();
             //});
 
-            //var result = new RepositoryHolder<SearchRequest, SearchResponse<E>>(key, response, 200);
+            var result = new RepositoryHolder<SearchRequest, SearchResponse<E>>(key: rq, entity: response, responseCode: 200);
 
-            //return Task.FromResult(result);
+            return Task.FromResult(result);
         }
         #endregion
 
@@ -564,6 +611,28 @@ namespace Xigadee
                 var invariantTuple = new Tuple<string, string>(obj?.Item1?.ToLowerInvariant(), obj?.Item2?.ToLowerInvariant());
                 return invariantTuple.GetHashCode();
             }
+        }
+        #endregion
+
+        #region ETag
+        /// <summary>
+        /// Gets the current collection ETag. This changes when an entity is created/updated or deleted.
+        /// </summary>
+        public string ETag => $"{typeof(E).Name}:{ETagCollectionId}:{_etagOrdinal}";
+        #endregion
+        #region ETagCollectionId
+        /// <summary>
+        /// Gets the collection identifier that is set when the collection is created.
+        /// </summary>
+        public string ETagCollectionId { get; } = Guid.NewGuid().ToString("N").ToUpperInvariant(); 
+        #endregion
+        #region ETagOrdinalIncrement()
+        /// <summary>
+        /// This method is called when the collection is changed.
+        /// </summary>
+        protected virtual void ETagOrdinalIncrement()
+        {
+            Interlocked.Increment(ref _etagOrdinal);
         } 
         #endregion
     }

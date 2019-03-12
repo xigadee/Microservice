@@ -15,5 +15,8 @@ namespace Xigadee
             : base(keyMaker, referenceMaker, propertiesMaker, versionPolicy)
         {
         }
+
+        private readonly string _SqlConnection;
+
     }
 }

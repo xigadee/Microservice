@@ -286,12 +286,22 @@ namespace Xigadee
         /// <summary>
         /// Searches the entity store.
         /// </summary>
-        /// <param name="key">The key.</param>
+        /// <param name="rq">The request.</param>
         /// <param name="options">The repository options.</param>
         /// <returns>
         /// Returns the holder with the response and data.
         /// </returns>
-        public abstract Task<RepositoryHolder<SearchRequest, SearchResponse>> Search(SearchRequest key, RepositorySettings options = null);
+        public abstract Task<RepositoryHolder<SearchRequest, SearchResponse>> Search(SearchRequest rq, RepositorySettings options = null);
+
+        /// <summary>
+        /// Searches the entity store.
+        /// </summary>
+        /// <param name="rq">The request.</param>
+        /// <param name="options">The repository options.</param>
+        /// <returns>
+        /// Returns the holder with the response and entities.
+        /// </returns>
+        public abstract Task<RepositoryHolder<SearchRequest, SearchResponse<E>>> SearchEntity(SearchRequest rq, RepositorySettings options = null);
 
         #region Class -> EntityContainer
         /// <summary>
