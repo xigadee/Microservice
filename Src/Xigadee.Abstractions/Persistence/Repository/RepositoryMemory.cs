@@ -81,7 +81,10 @@ namespace Xigadee
             if (IsReadOnly)
                 return ResultFormat(400, () => key, () => default(E));
 
+            IncomingParameterChecks(key, entity);
+
             OnEntityEvent(EntityEventType.BeforeCreate, () => entity);
+
             //We have to be careful as the caller still has a reference to the old entity and may change it.
             var references = _referenceMaker?.Invoke(entity).ToList();
             var properties = _propertiesMaker?.Invoke(entity).ToList();
@@ -90,8 +93,6 @@ namespace Xigadee
 
             var result = Atomic(() =>
             {
-                IncomingParameterChecks(key, entity);
-
                 //Does the key already exist in the collection
                 if (_container.ContainsKey(key))
                     return 409;
@@ -100,7 +101,7 @@ namespace Xigadee
                 if (ReferenceExistingMatch(references))
                     return 409;
 
-                EntityContainer newContainer = new EntityContainer(key, entity, references, properties, VersionPolicy?.EntityVersionAsString(entity));
+                var newContainer = new EntityContainer(key, entity, references, properties, VersionPolicy?.EntityVersionAsString(entity));
                 newEntity = newContainer.Entity;
 
                 //OK, add the entity
@@ -111,10 +112,11 @@ namespace Xigadee
 
                 ETagOrdinalIncrement();
 
-                OnEntityEvent(EntityEventType.AfterCreate, () => newEntity);
-
                 return 201;
             });
+
+            if (result == 201)
+                OnEntityEvent(EntityEventType.AfterCreate, () => newEntity);
 
             return ResultFormat(result, () => key, () => newEntity);
         }
@@ -134,6 +136,8 @@ namespace Xigadee
             bool result = Atomic(() => _container.TryGetValue(key, out container));
 
             var entity = container == null ? default(E) : container.Entity;
+
+            container?.ReadHitIncrement();
 
             return ResultFormat(result ? 200 : 404
                 , () => result ? container.Key : default(K)
@@ -155,6 +159,8 @@ namespace Xigadee
 
             E entity = container == null ?default(E):container.Entity;
 
+            container?.ReadHitIncrement();
+
             return ResultFormat(result ? 200 : 404
                 , () => result ? container.Key : default(K)
                 , () => result ? entity : default(E)
@@ -172,6 +178,8 @@ namespace Xigadee
             if (IsReadOnly)
                 return ResultFormat(400, () => key, () => default(E));
 
+            IncomingParameterChecks(key, entity);
+
             OnEntityEvent(EntityEventType.BeforeUpdate, () => entity);
 
             var newReferences = _referenceMaker?.Invoke(entity).ToList();
@@ -183,8 +191,6 @@ namespace Xigadee
 
             var result = Atomic(() =>
             {
-                IncomingParameterChecks(key, entity);
-
                 //If the doesn't already exist in the collection, throw a not-found error.
                 if (!_container.TryGetValue(key, out var oldContainer))
                     return 404;
@@ -219,11 +225,12 @@ namespace Xigadee
 
                 ETagOrdinalIncrement();
 
-                //All good.
-                OnEntityEvent(EntityEventType.AfterUpdate, () => newEntity);
-
                 return 200;
             });
+
+            //All good.
+            if (result == 200)
+                OnEntityEvent(EntityEventType.AfterUpdate, () => newEntity);
 
             return ResultFormat(result, () => key, () => newEntity);
         }
@@ -237,11 +244,12 @@ namespace Xigadee
             if (IsReadOnly)
                 return ResultFormat(400, () => key, () => new Tuple<K, string>(key, ""));
 
+            IncomingParameterChecks(key);
+
             OnKeyEvent(KeyEventType.BeforeDelete, key);
 
             var result = Atomic(() =>
             {
-                IncomingParameterChecks(key);
                 if (_container.TryGetValue(key, out var container))
                     return DeleteInternal(container);
 
@@ -293,14 +301,18 @@ namespace Xigadee
         /// </summary>
         public override Task<RepositoryHolder<K, Tuple<K, string>>> Version(K key, RepositorySettings options = null)
         {
+            IncomingParameterChecks(key);
+
             OnKeyEvent(KeyEventType.BeforeVersion, key);
 
             EntityContainer container = null;
+
             var result = Atomic(() =>
             {
-                IncomingParameterChecks(key);
                 return _container.TryGetValue(key, out container);
             });
+
+            container?.ReadHitIncrement();
 
             return ResultFormat(result ? 200 : 404, () => container.Key, () => new Tuple<K, string>(container.Key, container.VersionId));
         }
@@ -315,11 +327,15 @@ namespace Xigadee
             OnKeyEvent(KeyEventType.BeforeVersion, refType: refKey, refValue: refValue);
 
             EntityContainer container = null;
+
+            var reference = new Tuple<string, string>(refKey, refValue);
+
             var result = Atomic(() =>
             {
-                var reference = new Tuple<string, string>(refKey, refValue);
                 return _containerReference.TryGetValue(reference, out container);
             });
+
+            container?.ReadHitIncrement();
 
             return ResultFormat(result ? 200 : 404, () => container.Key, () => new Tuple<K, string>(container.Key, container.VersionId));
 

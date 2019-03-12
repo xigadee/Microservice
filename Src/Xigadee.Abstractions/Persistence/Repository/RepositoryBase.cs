@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 namespace Xigadee
 {
@@ -309,6 +310,8 @@ namespace Xigadee
         /// </summary>
         protected class EntityContainer
         {
+            private long _hitCount = 0;
+
             /// <summary>
             /// Initializes a new instance of the <see cref="EntityContainer"/> class.
             /// </summary>
@@ -359,6 +362,17 @@ namespace Xigadee
             /// Contains the entity references.
             /// </summary>
             public List<Tuple<string, string>> Properties { get; }
+
+            /// <summary>
+            /// The current 
+            /// </summary>
+            /// <returns>The previous count.</returns>
+            public void ReadHitIncrement() => Interlocked.Increment(ref _hitCount);
+
+            /// <summary>
+            /// Gets the current hit count.
+            /// </summary>
+            public long ReadHitCount => _hitCount;
 
         }
         #endregion
