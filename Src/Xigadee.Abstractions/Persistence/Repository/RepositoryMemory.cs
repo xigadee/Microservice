@@ -479,30 +479,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region ResultFormat<KT, ET>(int result, Func<KT> key, Func<ET> entity)
-        /// <summary>
-        /// Formats the outgoing result.
-        /// </summary>
-        /// <typeparam name="KT">The key type.</typeparam>
-        /// <typeparam name="ET">The entity type..</typeparam>
-        /// <param name="result">The result.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="entity">The entity.</param>
-        /// <returns>Returns the holder.</returns>
-        protected Task<RepositoryHolder<KT, ET>> ResultFormat<KT, ET>(int result, Func<KT> key, Func<ET> entity)
-        {
-            switch (result)
-            {
-                case 200:
-                case 201:
-                    return Task.FromResult(new RepositoryHolder<KT, ET>(key(), null, entity(), result));
-                case 404:
-                    return Task.FromResult(new RepositoryHolder<KT, ET>(key(), null, default(ET), result));
-                default:
-                    return Task.FromResult(new RepositoryHolder<KT, ET>(key == null ? default(KT) : key(), null, default(ET), result));
-            }
-        }
-        #endregion
         #region Atomic...
         /// <summary>
         /// This wraps the requests the ensure that only one is processed at the same time.
@@ -541,31 +517,6 @@ namespace Xigadee
             {
                 _referenceModifyLock.ExitReadLock();
             }
-        }
-        #endregion
-        #region IncomingParameterChecks ...
-        /// <summary>
-        /// Checks the incoming key parameter has a value.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <exception cref="ArgumentOutOfRangeException">Key must be set to a value</exception>
-        protected virtual void IncomingParameterChecks(K key)
-        {
-            if (key.Equals(default(K)))
-                throw new ArgumentOutOfRangeException("key must be set to a value");
-        }
-
-        /// <summary>
-        /// Checks the incoming key and entity value parameters have values.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The entity value.</param>
-        /// <exception cref="ArgumentNullException">key or value must be set</exception>
-        protected virtual void IncomingParameterChecks(K key, E value)
-        {
-            IncomingParameterChecks(key);
-            if (value.Equals(default(E)))
-                throw new ArgumentNullException("value must be set to a value");
         }
         #endregion
         #region ReferenceExistingMatch...

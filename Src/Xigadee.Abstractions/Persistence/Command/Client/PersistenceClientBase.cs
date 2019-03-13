@@ -1,20 +1,4 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-using System;
+﻿using System;
 using System.Security.Principal;
 using System.Threading.Tasks;
 
@@ -80,8 +64,6 @@ namespace Xigadee
         } 
         #endregion
 
-        #region Persistence shortcuts
-
         #region Create(E entity, RepositorySettings settings = null)
         /// <summary>
         /// This method is used to create an entity in the persistence store.
@@ -112,7 +94,7 @@ namespace Xigadee
                 var result = await CacheManager.Read(key);
                 if (result.IsSuccess)
                 {
-                    return new RepositoryHolder<K, E>(key, new Tuple<string, string>(result.Id, result.VersionId), responseCode: 200, entity: result.Entity) { IsCached = true };
+                    return new RepositoryHolder<K, E>(key, new Tuple<string, string>(result.Id, result.VersionId), responseCode: 200, entity: result.Entity) { IsCacheHit = true };
                 }
             }
 
@@ -139,7 +121,7 @@ namespace Xigadee
                 {
                     var resultRead = await CacheManager.Read(new Tuple<string, string>(refKey, refValue));
                     if (resultRead.IsSuccess)
-                        return new RepositoryHolder<K, E>(resultVersion.Entity.Item1, new Tuple<string, string>(resultVersion.Id, resultVersion.VersionId), responseCode: 200, entity: resultRead.Entity) { IsCached = true };
+                        return new RepositoryHolder<K, E>(resultVersion.Entity.Item1, new Tuple<string, string>(resultVersion.Id, resultVersion.VersionId), responseCode: 200, entity: resultRead.Entity) { IsCacheHit = true };
                 }
             }
 
@@ -205,7 +187,7 @@ namespace Xigadee
                 var result = await CacheManager.VersionRead(key);
                 if (result.IsSuccess)
                 {
-                    return new RepositoryHolder<K, Tuple<K, string>>(result.Entity.Item1, new Tuple<string, string>(result.Id, result.VersionId), responseCode: 200, entity: result.Entity) { IsCached = true };
+                    return new RepositoryHolder<K, Tuple<K, string>>(result.Entity.Item1, new Tuple<string, string>(result.Id, result.VersionId), responseCode: 200, entity: result.Entity) { IsCacheHit = true };
                 }
             }
 
@@ -229,7 +211,7 @@ namespace Xigadee
                 var result = await CacheManager.VersionRead(new Tuple<string, string>(refKey, refValue));
                 if (result.IsSuccess)
                 {
-                    return new RepositoryHolder<K, Tuple<K, string>>(result.Entity.Item1, new Tuple<string, string>(result.Id, result.VersionId), responseCode: 200, entity: result.Entity) { IsCached = true };
+                    return new RepositoryHolder<K, Tuple<K, string>>(result.Entity.Item1, new Tuple<string, string>(result.Id, result.VersionId), responseCode: 200, entity: result.Entity) { IsCacheHit = true };
                 }
             }
 
@@ -259,8 +241,6 @@ namespace Xigadee
 
             return await TransmitInternal(EntityActions.Search, new RepositoryHolder<SearchRequest, SearchResponse> { Key = rq, Settings = settings }, principal: DefaultPrincipal);
         } 
-        #endregion
-
         #endregion
 
         /// <summary>

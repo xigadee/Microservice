@@ -717,10 +717,10 @@ namespace Xigadee
 
             var result = await InternalCreate(key, holder);
 
-            if ((CacheManager?.IsActive ?? false) && !CacheManager.IsReadOnly && result.IsSuccess)
-                CacheManager.Write(Transform, result.Entity);
+            //if ((CacheManager?.IsActive ?? false) && !CacheManager.IsReadOnly && result.IsSuccess)
+            //    CacheManager.Write(Transform, result.Entity);
 
-            ProcessOutputEntity(key, holder.Rq, holder.Rs, result);
+            ProcessOutput(holder, result);
         }
         /// <summary>
         /// The internal create method that is called if the cache handler is not valid.
@@ -728,9 +728,9 @@ namespace Xigadee
         /// <param name="key">The key.</param>
         /// <param name="holder">The holder.</param>
         /// <returns>Returns the response holder.</returns>
-        protected virtual async Task<IResponseHolder<E>> InternalCreate(K key, PersistenceRequestHolder<K, E> holder)
+        protected virtual Task<RepositoryHolder<K,E>> InternalCreate(K key, PersistenceRequestHolder<K, E> holder)
         {
-            return new PersistenceResponseHolder<E>(PersistenceResponse.NotImplemented501);
+            return RepositoryBase.ResultFormat<K,E>((int)PersistenceResponse.NotImplemented501, () => key);
         }
         #endregion
 
@@ -741,22 +741,23 @@ namespace Xigadee
         /// <param name="holder">The holder.</param>
         protected virtual async Task ProcessRead(PersistenceRequestHolder<K, E> holder)
         {
-            IResponseHolder<E> result = null;
+            //IResponseHolder<E> result = null;
 
-            if ((CacheManager?.IsActive ?? false) && holder.Rq.Settings.UseCache)
-                result = await CacheManager.Read(Transform, holder.Rq.Key);
+            var key = holder.Rq.Key;
+            //if ((CacheManager?.IsActive ?? false) && holder.Rq.Settings.UseCache)
+            //    result = await CacheManager.Read(Transform, holder.Rq.Key);
 
-            if (result == null || !result.IsSuccess)
-            {
-                result = await InternalRead(holder.Rq.Key, holder);
+            //if (result == null || !result.IsSuccess)
+            //{
+            var result = await InternalRead(key, holder);
 
-                if ((CacheManager?.IsActive ?? false) && !CacheManager.IsReadOnly && result.IsSuccess)
-                    CacheManager.Write(Transform, result.Entity);
-            }
-            else
-                result.IsCacheHit = true;
+            //if ((CacheManager?.IsActive ?? false) && !CacheManager.IsReadOnly && result.IsSuccess)
+            //    CacheManager.Write(Transform, result.Entity);
+            //}
+            //else
+            //    result.IsCacheHit = true;
 
-            ProcessOutputEntity(holder.Rq.Key, holder.Rq, holder.Rs, result);
+            ProcessOutput(holder, result);
         }
         /// <summary>
         /// Processes the read if the cache manager is not hit.
@@ -764,33 +765,33 @@ namespace Xigadee
         /// <param name="key">The key.</param>
         /// <param name="holder">The holder.</param>
         /// <returns>Returns the response holder.</returns>
-        protected async virtual Task<IResponseHolder<E>> InternalRead(K key, PersistenceRequestHolder<K, E> holder)
+        protected virtual Task<RepositoryHolder<K, E>> InternalRead(K key, PersistenceRequestHolder<K, E> holder)
         {
-            return new PersistenceResponseHolder<E>(PersistenceResponse.NotImplemented501);
+            return RepositoryBase.ResultFormat<K, E>((int)PersistenceResponse.NotImplemented501, () => key);
         }
         #endregion
         #region ReadByRef
         protected virtual async Task ProcessReadByRef(PersistenceRequestHolder<K, E> holder)
         {
-            IResponseHolder<E> result = null;
+            //IResponseHolder<E> result = null;
 
-            if ((CacheManager?.IsActive ?? false) && holder.Rq.Settings.UseCache)
-                result = await CacheManager.Read(Transform, holder.Rq.KeyReference);
+            //if ((CacheManager?.IsActive ?? false) && holder.Rq.Settings.UseCache)
+            //    result = await CacheManager.Read(Transform, holder.Rq.KeyReference);
 
-            if (result == null || !result.IsSuccess)
-            {
-                result = await InternalReadByRef(holder.Rq.KeyReference, holder);
+            //if (result == null || !result.IsSuccess)
+            //{
+            var result = await InternalReadByRef(holder.Rq.KeyReference, holder);
 
-                if ((CacheManager?.IsActive ?? false) && !CacheManager.IsReadOnly && result.IsSuccess)
-                    CacheManager.Write(Transform, result.Entity);
-            }
+            //    if ((CacheManager?.IsActive ?? false) && !CacheManager.IsReadOnly && result.IsSuccess)
+            //        CacheManager.Write(Transform, result.Entity);
+            //}
 
-            ProcessOutputEntity(holder.Rq.Key, holder.Rq, holder.Rs, result);
+            ProcessOutput(holder, result);
         }
 
-        protected async virtual Task<IResponseHolder<E>> InternalReadByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, E> holder)
+        protected virtual Task<RepositoryHolder<K, E>> InternalReadByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, E> holder)
         {
-            return new PersistenceResponseHolder<E>(PersistenceResponse.NotImplemented501);
+            return RepositoryBase.ResultFormat<K, E>((int)PersistenceResponse.NotImplemented501);
         }
         #endregion
 
@@ -799,41 +800,41 @@ namespace Xigadee
         {
             K key = Transform.KeyMaker(holder.Rq.Entity);
 
-            // Remove from the cache first to ensure no change of ending up with a stale cached item
-            // if the write to cache fails for any reason
-            if ((CacheManager?.IsActive ?? false))
-                CacheManager.Delete(Transform, key);
+            //// Remove from the cache first to ensure no change of ending up with a stale cached item
+            //// if the write to cache fails for any reason
+            //if ((CacheManager?.IsActive ?? false))
+            //    CacheManager.Delete(Transform, key);
 
             var result = await InternalUpdate(key, holder);
 
-            if ((CacheManager?.IsActive ?? false) && result.IsSuccess)
-                CacheManager.Write(Transform, result.Entity);
+            //if ((CacheManager?.IsActive ?? false) && result.IsSuccess)
+            //    CacheManager.Write(Transform, result.Entity);
 
-            ProcessOutputEntity(key, holder.Rq, holder.Rs, result);
+            ProcessOutput(holder, result);
         }
 
-        protected virtual async Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRequestHolder<K, E> holder)
+        protected virtual Task<RepositoryHolder<K, E>> InternalUpdate(K key, PersistenceRequestHolder<K, E> holder)
         {
-            return new PersistenceResponseHolder<E>(PersistenceResponse.NotImplemented501);
+            return RepositoryBase.ResultFormat<K, E>((int)PersistenceResponse.NotImplemented501, () => key);
         }
         #endregion
 
         #region Delete
         protected virtual async Task ProcessDelete(PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            //We presume that the delete will succeed and remove it from the cache before it is processed. 
-            //Worse case this will result in a cache miss.
-            if ((CacheManager?.IsActive ?? false))
-                await CacheManager.Delete(Transform, holder.Rq.Key);
+            ////We presume that the delete will succeed and remove it from the cache before it is processed. 
+            ////Worse case this will result in a cache miss.
+            //if ((CacheManager?.IsActive ?? false))
+            //    await CacheManager.Delete(Transform, holder.Rq.Key);
 
             var result = await InternalDelete(holder.Rq.Key, holder);
 
-            ProcessOutputKey(holder.Rq, holder.Rs, result);
+            ProcessOutput(holder, result);
         }
 
-        protected virtual async Task<IResponseHolder> InternalDelete(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
+        protected virtual Task<RepositoryHolder<K, Tuple<K, string>>> InternalDelete(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return new PersistenceResponseHolder(PersistenceResponse.NotImplemented501);
+            return RepositoryBase.ResultFormat<K, Tuple<K, string>>((int)PersistenceResponse.NotImplemented501, () => key);
         }
         #endregion
         #region DeleteByRef
@@ -841,68 +842,68 @@ namespace Xigadee
         {
             var result = await InternalDeleteByRef(holder.Rq.KeyReference, holder);
 
-            if ((CacheManager?.IsActive ?? false) && result.IsSuccess)
-                await CacheManager.Delete(Transform, Transform.KeyDeserializer(result.Id));
+            //if ((CacheManager?.IsActive ?? false) && result.IsSuccess)
+            //    await CacheManager.Delete(Transform, Transform.KeyDeserializer(result.Id));
 
-            ProcessOutputKey(holder.Rq, holder.Rs, result);
+            ProcessOutput(holder, result);
         }
-        protected virtual async Task<IResponseHolder> InternalDeleteByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
+        protected virtual Task<RepositoryHolder<K, Tuple<K, string>>> InternalDeleteByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return new PersistenceResponseHolder(PersistenceResponse.NotImplemented501);
+            return RepositoryBase.ResultFormat<K, Tuple<K, string>>((int)PersistenceResponse.NotImplemented501);
         }
         #endregion
 
         #region Version
         protected virtual async Task ProcessVersion(PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            IResponseHolder result = null;
+            //IResponseHolder result = null;
 
-            if ((CacheManager?.IsActive ?? false))
-                result = await CacheManager.VersionRead(Transform, holder.Rq.Key);
+            //if ((CacheManager?.IsActive ?? false))
+            //    result = await CacheManager.VersionRead(Transform, holder.Rq.Key);
 
-            if (result == null || !result.IsSuccess)
-            {
-                if (Transform.Version == null)
-                    //If we don't set a version maker then how can we return the version.
-                    result = new PersistenceResponseHolder(PersistenceResponse.NotImplemented501) { IsSuccess = false };
-                else
-                    result = await InternalVersion(holder.Rq.Key, holder);
+            //if (result == null || !result.IsSuccess)
+            //{
+                //if (Transform.Version == null)
+                //    //If we don't set a version maker then how can we return the version.
+                //    result = new PersistenceResponseHolder(PersistenceResponse.NotImplemented501) { IsSuccess = false };
+                //else
+            var result = await InternalVersion(holder.Rq.Key, holder);
 
-                if ((CacheManager?.IsActive ?? false) && !CacheManager.IsReadOnly && result.IsSuccess)
-                    CacheManager.WriteVersion(Transform, holder.Rq.Key, result.VersionId);
-            }
+            //    if ((CacheManager?.IsActive ?? false) && !CacheManager.IsReadOnly && result.IsSuccess)
+            //        CacheManager.WriteVersion(Transform, holder.Rq.Key, result.VersionId);
+            //}
 
-            ProcessOutputKey(holder.Rq, holder.Rs, result);
+            ProcessOutput(holder, result);
         }
 
-        protected virtual async Task<IResponseHolder> InternalVersion(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
+        protected virtual Task<RepositoryHolder<K, Tuple<K, string>>> InternalVersion(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return new PersistenceResponseHolder(PersistenceResponse.NotImplemented501) { IsSuccess = false };
+            return RepositoryBase.ResultFormat<K, Tuple<K, string>>((int)PersistenceResponse.NotImplemented501, () => key);
         }
         #endregion
         #region VersionByRef
         protected virtual async Task ProcessVersionByRef(PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            IResponseHolder result = null;
+            //RepositoryHolder<K,> result = null;
 
-            if ((CacheManager?.IsActive ?? false))
-                result = await CacheManager.VersionRead(Transform, holder.Rq.KeyReference);
+            //if ((CacheManager?.IsActive ?? false))
+            //    result = await CacheManager.VersionRead(Transform, holder.Rq.KeyReference);
 
-            if (result == null || !result.IsSuccess)
-            {
-                result = await InternalVersionByRef(holder.Rq.KeyReference, holder);
-                if ((CacheManager?.IsActive ?? false) && !CacheManager.IsReadOnly && result.IsSuccess)
-                    CacheManager.WriteReference(Transform, holder.Rq.KeyReference, holder.Rq.Key, result.VersionId);
-            }
-            else
-                holder.Rq.Key = Transform.KeyDeserializer(result.Id); // Pass back the entities actual id in the key field
+            //if (result == null || !result.IsSuccess)
+            //{
+            var result = await InternalVersionByRef(holder.Rq.KeyReference, holder);
+            //    if ((CacheManager?.IsActive ?? false) && !CacheManager.IsReadOnly && result.IsSuccess)
+            //        CacheManager.WriteReference(Transform, holder.Rq.KeyReference, holder.Rq.Key, result.VersionId);
+            //}
+            //else
+            //    holder.Rq.Key = Transform.KeyDeserializer(result.Id); // Pass back the entities actual id in the key field
 
-            ProcessOutputKey(holder.Rq, holder.Rs, result);
+            ProcessOutput(holder, result);
         }
 
-        protected virtual async Task<IResponseHolder> InternalVersionByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
+        protected virtual Task<RepositoryHolder<K, Tuple<K, string>>> InternalVersionByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
         {
-            return new PersistenceResponseHolder(PersistenceResponse.NotImplemented501) { IsSuccess = false };
+            return RepositoryBase.ResultFormat<K, Tuple<K, string>>((int)PersistenceResponse.NotImplemented501);
         }
         #endregion
 
@@ -914,9 +915,7 @@ namespace Xigadee
         /// <returns>This is an async task.</returns>
         protected virtual async Task ProcessSearch(PersistenceRequestHolder<SearchRequest, SearchResponse> holder)
         {
-            IResponseHolder<SearchResponse> result = null;
-
-            result = await InternalSearch(holder.Rq.Key, holder);
+            var result = await InternalSearch(holder.Rq.Key, holder);
 
             holder.Rs.Entity = result.Entity;
 
@@ -926,14 +925,14 @@ namespace Xigadee
 
             //rs.KeyReference = new Tuple<string, string>(rs.Key.ToString(), rs.Settings.VersionId);
 
-            holder.Rs.ResponseCode = (int)result.StatusCode;
+            holder.Rs.ResponseCode = result.ResponseCode;
             //holder.Rs.ResponseMessage = "Search is not implemented.";
         }
 
 
-        protected async virtual Task<IResponseHolder<SearchResponse>> InternalSearch(SearchRequest key, PersistenceRequestHolder<SearchRequest, SearchResponse> holder)
+        protected virtual Task<RepositoryHolder<SearchRequest, SearchResponse>> InternalSearch(SearchRequest key, PersistenceRequestHolder<SearchRequest, SearchResponse> holder)
         {
-            return new PersistenceResponseHolder<SearchResponse>(PersistenceResponse.NotImplemented501);
+            return RepositoryBase.ResultFormat<SearchRequest, SearchResponse>((int)PersistenceResponse.NotImplemented501, () => key);
         }
         #endregion
         #region History
@@ -948,6 +947,18 @@ namespace Xigadee
             holder.Rs.ResponseMessage = "History is not implemented.";
         }
         #endregion
+
+        protected virtual void ProcessOutput(PersistenceRequestHolder<K, E> holder
+            , RepositoryHolder<K, E> result)
+        {
+
+        }
+
+        protected virtual void ProcessOutput(PersistenceRequestHolder<K, Tuple<K, string>> holder
+            , RepositoryHolder<K, Tuple<K, string>> result)
+        {
+
+        }
 
         //Response Processing
         #region ProcessOutputEntity...

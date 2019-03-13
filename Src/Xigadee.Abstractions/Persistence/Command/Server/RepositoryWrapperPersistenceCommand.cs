@@ -146,7 +146,6 @@ namespace Xigadee
         /// </summary>
         public virtual IRepositoryAsyncServer<K, E> Repository { get; }
 
-
         #region RepositoryTransform
         /// <summary>
         /// Gets the repository transform that contains the repository.
@@ -179,73 +178,36 @@ namespace Xigadee
         {
             //We set this later in the main constructor with the repository.
             return null;
-        } 
+        }
         #endregion
 
-        protected override async Task<IResponseHolder<E>> InternalCreate(K key, PersistenceRequestHolder<K, E> holder)
-        {
-            var rs = await Repository.Create(holder.Rq.Entity);
+        protected override Task<RepositoryHolder<K, E>> InternalCreate(K key, PersistenceRequestHolder<K, E> holder)
+            => Repository.Create(holder.Rq.Entity);
 
-            return new PersistenceResponseHolder<E>((PersistenceResponse)rs.ResponseCode, entity:rs.Entity);
-        }
+        protected override Task<RepositoryHolder<K, E>> InternalRead(K key, PersistenceRequestHolder<K, E> holder)
+            => Repository.Read(key);
 
-        protected override async Task<IResponseHolder<E>> InternalRead(K key, PersistenceRequestHolder<K, E> holder)
-        {
-            var rs = await Repository.Read(key);
+        protected override Task<RepositoryHolder<K, E>> InternalReadByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, E> holder)
+            => Repository.ReadByRef(reference.Item1, reference.Item2);
 
-            return new PersistenceResponseHolder<E>((PersistenceResponse)rs.ResponseCode, entity: rs.Entity);
-        }
+        protected override Task<RepositoryHolder<K, E>> InternalUpdate(K key, PersistenceRequestHolder<K, E> holder)
+            => Repository.Update(holder.Rq.Entity);
 
-        protected override async Task<IResponseHolder<E>> InternalReadByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, E> holder)
-        {
-            var rs = await Repository.ReadByRef(reference.Item1, reference.Item2);
+        protected override Task<RepositoryHolder<K, Tuple<K, string>>> InternalDelete(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
+            => Repository.Delete(key);
 
-            return new PersistenceResponseHolder<E>((PersistenceResponse)rs.ResponseCode, entity: rs.Entity);
-        }
+        protected override Task<RepositoryHolder<K, Tuple<K, string>>> InternalDeleteByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
+            => Repository.DeleteByRef(reference.Item1, reference.Item2);
 
-        protected override async Task<IResponseHolder<E>> InternalUpdate(K key, PersistenceRequestHolder<K, E> holder)
-        {
-            var rs = await Repository.Update(holder.Rq.Entity);
+        protected override Task<RepositoryHolder<K, Tuple<K, string>>> InternalVersion(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
+            => RepositoryTransform.Repository.Version(key);
 
-            return new PersistenceResponseHolder<E>((PersistenceResponse)rs.ResponseCode, entity: rs.Entity);
-        }
+        protected override Task<RepositoryHolder<K, Tuple<K, string>>> InternalVersionByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
+            => Repository.VersionByRef(reference.Item1, reference.Item2);
 
-        protected override async Task<IResponseHolder> InternalDelete(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
-        {
-            var rs = await Repository.Delete(key);
+        protected override Task<RepositoryHolder<SearchRequest, SearchResponse>> InternalSearch(SearchRequest key, PersistenceRequestHolder<SearchRequest, SearchResponse> holder)
+            => Repository.Search(key);
 
-            return new PersistenceResponseHolder<E>((PersistenceResponse)rs.ResponseCode);
-        }
-
-        protected override async Task<IResponseHolder> InternalDeleteByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
-        {
-            var rs = await Repository.DeleteByRef(reference.Item1, reference.Item2);
-
-            //return new PersistenceResponseHolder<Tuple<K, string>> { StatusCode = 200, IsSuccess = true, Id = transform.KeySerializer(resolve.Item2), VersionId = resolve.Item3, Entity = new Tuple<K, string>(resolve.Item2, resolve.Item3) };
-
-            return new PersistenceResponseHolder<E>((PersistenceResponse)rs.ResponseCode);
-        }
-
-        //protected override async Task<IResponseHolder> InternalVersion(K key, PersistenceRequestHolder<K, Tuple<K, string>> holder)
-        //{
-        //    var rs = await RepositoryTransform.Repository.Version(key);
-
-        //    return new PersistenceResponseHolder<Tuple<K, string>> { StatusCode = 200, IsSuccess = true, Id = RepositoryTransform.KeySerializer(resolve.Item2), VersionId = resolve.Item3, Entity = new Tuple<K, string>(resolve.Item2, resolve.Item3) };
-        //}
-
-        protected override async Task<IResponseHolder> InternalVersionByRef(Tuple<string, string> reference, PersistenceRequestHolder<K, Tuple<K, string>> holder)
-        {
-            var rs = await Repository.VersionByRef(reference.Item1, reference.Item2);
-
-            return await base.InternalVersionByRef(reference, holder);
-        }
-
-        protected override async Task<IResponseHolder<SearchResponse>> InternalSearch(SearchRequest key, PersistenceRequestHolder<SearchRequest, SearchResponse> holder)
-        {
-            var rs = await Repository.Search(key);
-
-            return await base.InternalSearch(key, holder);
-        }
     }
 
     public class RepositoryPersistenceCommandPolicy : PersistenceCommandPolicy { }

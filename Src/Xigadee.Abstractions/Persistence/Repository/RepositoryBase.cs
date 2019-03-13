@@ -8,11 +8,71 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
+    /// This is the base holding class.
+    /// </summary>
+    public abstract class RepositoryBase
+    {
+        #region ResultFormat...
+        /// <summary>
+        /// Formats the outgoing result.
+        /// </summary>
+        /// <typeparam name="KT">The key type.</typeparam>
+        /// <typeparam name="ET">The entity type..</typeparam>
+        /// <param name="result">The result.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="entity">The entity.</param>
+        /// <returns>Returns the holder.</returns>
+        public static Task<RepositoryHolder<KT, ET>> ResultFormat<KT, ET>(int result, Func<KT> key = null, Func<ET> entity = null)
+            where KT : IEquatable<KT>
+        {
+            var k = key!= null?key() : default(KT);
+            var e = entity!=null?entity(): default(ET);
+
+            switch (result)
+            {
+                case 200:
+                case 201:
+                    return Task.FromResult(new RepositoryHolder<KT, ET>(k, null, e, result));
+                case 404:
+                    return Task.FromResult(new RepositoryHolder<KT, ET>(k, null, default(ET), result));
+                default:
+                    return Task.FromResult(new RepositoryHolder<KT, ET>(k, null, default(ET), result));
+            }
+        }
+        #endregion
+
+        #region IncomingParameterChecks ...
+        /// <summary>
+        /// Checks the incoming key parameter has a value.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Key must be set to a value</exception>
+        public static void IncomingParameterChecks<KT>(KT key) where KT: IEquatable<KT>
+        {
+            if (key.Equals(default(KT)))
+                throw new ArgumentOutOfRangeException("key must be set to a value");
+        }
+
+        /// <summary>
+        /// Checks the incoming key and entity value parameters have values.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The entity value.</param>
+        /// <exception cref="ArgumentNullException">key or value must be set</exception>
+        public static void IncomingParameterChecks<KT,ET>(KT key, ET value) where KT : IEquatable<KT>
+        {
+            IncomingParameterChecks(key);
+            if (value.Equals(default(ET)))
+                throw new ArgumentNullException("value must be set to a value");
+        }
+        #endregion
+    }
+    /// <summary>
     /// This is the base repository holder.
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public abstract class RepositoryBase<K, E> : IRepositoryAsyncServer<K, E>
+    public abstract class RepositoryBase<K, E> : RepositoryBase, IRepositoryAsyncServer<K, E>
         where K : IEquatable<K>
     {
         #region Events

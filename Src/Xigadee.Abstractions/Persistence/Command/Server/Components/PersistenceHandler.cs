@@ -122,7 +122,7 @@ namespace Xigadee
                     Interlocked.Increment(ref mRetries);
                 }
 
-                if (rs?.IsCached ?? false)
+                if (rs?.IsCacheHit ?? false)
                 {
                     Interlocked.Increment(ref mCacheHits);
                 }

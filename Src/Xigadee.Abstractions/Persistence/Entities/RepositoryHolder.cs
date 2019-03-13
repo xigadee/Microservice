@@ -41,6 +41,7 @@ namespace Xigadee
         /// Gets or sets the entity.
         /// </summary>
         public virtual E Entity { get; set; }
+
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
@@ -79,6 +80,10 @@ namespace Xigadee
     public class RepositoryHolder
     {
         /// <summary>
+        /// Gets or sets any exception raised.
+        /// </summary>
+        public Exception Ex { get; set; }
+        /// <summary>
         /// Gets or sets the key reference.
         /// </summary>
         public virtual Tuple<string, string> KeyReference { get; set; }
@@ -101,7 +106,7 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets a value indicating whether this instance is cached.
         /// </summary>
-        public virtual bool IsCached { get; set; }
+        public virtual bool IsCacheHit { get; set; }
         /// <summary>
         /// Gets a value indicating whether this instance is faulted.
         /// </summary>
