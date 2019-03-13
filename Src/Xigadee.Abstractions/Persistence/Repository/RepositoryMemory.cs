@@ -118,7 +118,7 @@ namespace Xigadee
             if (result == 201)
                 OnEntityEvent(EntityEventType.AfterCreate, () => newEntity);
 
-            return ResultFormat(result, () => key, () => newEntity);
+            return ResultFormat(result, () => key, () => newEntity, options);
         }
         #endregion
         #region Read(K key)/ReadByRef(string refKey, string refValue)
@@ -142,6 +142,7 @@ namespace Xigadee
             return ResultFormat(result ? 200 : 404
                 , () => result ? container.Key : default(K)
                 , () => result ? entity : default(E)
+                , options
                 );
         }
         /// <summary>
@@ -164,6 +165,7 @@ namespace Xigadee
             return ResultFormat(result ? 200 : 404
                 , () => result ? container.Key : default(K)
                 , () => result ? entity : default(E)
+                , options
                 );
         }
         #endregion
@@ -232,7 +234,7 @@ namespace Xigadee
             if (result == 200)
                 OnEntityEvent(EntityEventType.AfterUpdate, () => newEntity);
 
-            return ResultFormat(result, () => key, () => newEntity);
+            return ResultFormat(result, () => key, () => newEntity, options);
         }
         #endregion
         #region Delete(K key)/DeleteByRef(string refKey, string refValue)
@@ -256,7 +258,7 @@ namespace Xigadee
                 return false;
             });
 
-            return ResultFormat(result ? 200 : 404, () => key, () => new Tuple<K, string>(key, ""));
+            return ResultFormat(result ? 200 : 404, () => key, () => new Tuple<K, string>(key, ""), options);
         }
         /// <summary>
         /// Delete by reference
@@ -278,7 +280,12 @@ namespace Xigadee
                 return DeleteInternal(container);
             });
 
-            return ResultFormat(result ? 200 : 404, () => container.Key, () => new Tuple<K, string>(container.Key, ""));
+            var key = result ? container.Key : default(K);
+
+            return ResultFormat(result ? 200 : 404
+                , () => key
+                , () => new Tuple<K, string>(key, "")
+                , options);
         }
 
         private bool DeleteInternal(EntityContainer container)
@@ -314,7 +321,10 @@ namespace Xigadee
 
             container?.ReadHitIncrement();
 
-            return ResultFormat(result ? 200 : 404, () => container.Key, () => new Tuple<K, string>(container.Key, container.VersionId));
+            return ResultFormat(result ? 200 : 404
+                , () => key
+                , () => new Tuple<K, string>(key, container?.VersionId ?? "")
+                , options);
         }
         /// <summary>
         /// Returns the version by reference.
@@ -337,7 +347,10 @@ namespace Xigadee
 
             container?.ReadHitIncrement();
 
-            return ResultFormat(result ? 200 : 404, () => container.Key, () => new Tuple<K, string>(container.Key, container.VersionId));
+            var key = result ? container.Key : default(K);
+
+            return ResultFormat(result ? 200 : 404, () => key
+                , () => new Tuple<K, string>(key, container?.VersionId ?? ""));
 
         }
         #endregion

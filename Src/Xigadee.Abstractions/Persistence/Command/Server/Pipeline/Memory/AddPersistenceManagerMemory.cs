@@ -46,7 +46,7 @@ namespace Xigadee
             where P : IPipeline
             where K : IEquatable<K>
         {
-            PersistenceCommand<K, E> pm = null;
+            PersistenceServer<K, E> pm = null;
 
             return pipeline.AddPersistenceManagerMemory(keyMaker, keyDeserializer, cpipe, out pm
                   , startupPriority
@@ -89,7 +89,7 @@ namespace Xigadee
             , Func<E, K> keyMaker
             , Func<string, K> keyDeserializer
             , IPipelineChannelIncoming<P> cpipe
-            , out PersistenceCommand<K, E> pm
+            , out PersistenceServer<K, E> pm
             , int startupPriority = 100
             , string entityName = null
             , VersionPolicy<E> versionPolicy = null
@@ -114,7 +114,7 @@ namespace Xigadee
 
             var repo = new RepositoryMemory<K, E>(keyMaker);
 
-            pm = new PersistenceCommand<K, E>(repo);
+            pm = new PersistenceServer<K, E>(repo);
 
             //pm = new PersistenceManagerHandlerMemory<K, E>(keyMaker
             //      , keyDeserializer

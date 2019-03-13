@@ -11,19 +11,19 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class PersistenceCommand<K, E>: PersistenceCommand<K, E, PersistenceServerStatistics, PersistenceServerPolicy>
+    public class PersistenceServer<K, E>: PersistenceServer<K, E, PersistenceServerStatistics, PersistenceServerPolicy>
     where K : IEquatable<K>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="RepositoryWrapperPersistenceCommand{K, E, S, P}"/> class.
+        /// Initializes a new instance of the PersistenceServer class that hosts a repository in the Microservice.
         /// </summary>
-        /// <param name="repository">The repository.</param>
-        /// <param name="persistenceRetryPolicy">The persistence retry policy.</param>
-        /// <param name="resourceProfile">The resource profile.</param>
-        /// <param name="cacheManager">The cache manager.</param>
+        /// <param name="repository">The repository. This is mandatory.</param>
+        /// <param name="persistenceRetryPolicy">The optional persistence retry policy.</param>
+        /// <param name="resourceProfile">The optional resource profile.</param>
+        /// <param name="cacheManager">The optional cache manager.</param>
         /// <param name="defaultTimeout">The default timeout.</param>
-        /// <param name="policy">The policy.</param>
-        public PersistenceCommand(IRepositoryAsyncServer<K, E> repository
+        /// <param name="policy">The optional policy.</param>
+        public PersistenceServer(IRepositoryAsyncServer<K, E> repository
             , PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
             , ICacheManager<K, E> cacheManager = null
@@ -41,13 +41,13 @@ namespace Xigadee
     }
     #endregion
     /// <summary>
-    /// This is the base abstract persistence provider class.
+    /// Initializes a new instance of the PersistenceServer class that hosts a repository in the Microservice.
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
     /// <typeparam name="S">The persistence statistics type.</typeparam>
     /// <typeparam name="P">The persistence command policy type.</typeparam>
-    public class PersistenceCommand<K, E, S, P> : CommandBase<S, P, PersistenceHandler>, IPersistenceMessageHandler
+    public class PersistenceServer<K, E, S, P> : CommandBase<S, P, PersistenceHandler>, IPersistenceMessageHandler
         where K : IEquatable<K>
         where S : PersistenceServerStatistics, new()
         where P : PersistenceServerPolicy, new()
@@ -60,17 +60,16 @@ namespace Xigadee
         #endregion
         #region Constructor
         /// <summary>
-        /// This constructor specifies whether the service should be registered as a shared service
-        /// that can be called directly by other message handler and Microservice components.
+        /// Initializes a new instance of the PersistenceServer class that hosts a repository in the Microservice.
         /// </summary>
-        /// <param name="repository">The entity repository.</param>
-        /// <param name="persistenceRetryPolicy">The persistence retry policy.</param>
-        /// <param name="resourceProfile">The resource profile.</param>
-        /// <param name="cacheManager">The cache manager.</param>
+        /// <param name="repository">The repository. This is mandatory.</param>
+        /// <param name="persistenceRetryPolicy">The optional persistence retry policy.</param>
+        /// <param name="resourceProfile">The optional resource profile.</param>
+        /// <param name="cacheManager">The optional cache manager.</param>
         /// <param name="defaultTimeout">The default timeout.</param>
-        /// <param name="policy">The command policy.</param>
+        /// <param name="policy">The optional policy.</param>
         /// <exception cref="ArgumentNullException">entityTransform cannot be null</exception>
-        public PersistenceCommand(
+        public PersistenceServer(
               IRepositoryAsyncServer<K, E> repository
             , PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null

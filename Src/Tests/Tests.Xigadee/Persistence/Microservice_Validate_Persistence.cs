@@ -10,8 +10,8 @@ namespace Test.Xigadee
         protected RepositoryMemory<Guid, MyTestEntity1> repo1;
         protected RepositoryMemory<Guid, MyTestEntity2> repo2;
 
-        protected PersistenceCommand<Guid, MyTestEntity1> mPersistenceCommand1;
-        protected PersistenceCommand<Guid, MyTestEntity2> mPersistenceCommand2;
+        protected PersistenceServer<Guid, MyTestEntity1> mPersistenceCommand1;
+        protected PersistenceServer<Guid, MyTestEntity2> mPersistenceCommand2;
 
         protected PersistenceClient<Guid, MyTestEntity1> mPersistenceService1;
         protected PersistenceClient<Guid, MyTestEntity2> mPersistenceService2;

@@ -380,8 +380,10 @@ namespace Xigadee
         /// <param name="result">The result.</param>
         /// <param name="key">The key.</param>
         /// <param name="entity">The entity.</param>
+        /// <param name="options">The incoming options.</param>
         /// <returns>Returns the holder.</returns>
-        public static Task<RepositoryHolder<KT, ET>> ResultFormat<KT, ET>(int result, Func<KT> key = null, Func<ET> entity = null)
+        public static Task<RepositoryHolder<KT, ET>> ResultFormat<KT, ET>(int result, Func<KT> key = null, Func<ET> entity = null
+            , RepositorySettings options = null)
             where KT : IEquatable<KT>
         {
             var k = key != null ? key() : default(KT);

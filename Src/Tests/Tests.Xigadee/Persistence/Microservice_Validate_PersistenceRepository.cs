@@ -10,8 +10,8 @@ namespace Test.Xigadee
         protected PersistenceClient<Guid, MyTestEntity1> mPersistenceService1;
         protected PersistenceClient<Guid, MyTestEntity2> mPersistenceService2;
 
-        protected PersistenceCommand<Guid, MyTestEntity1> mPersistenceCommand1;
-        protected PersistenceCommand<Guid, MyTestEntity2> mPersistenceCommand2;
+        protected PersistenceServer<Guid, MyTestEntity1> mPersistenceCommand1;
+        protected PersistenceServer<Guid, MyTestEntity2> mPersistenceCommand2;
 
         protected MicroservicePipeline mMs;
         #endregion
@@ -44,7 +44,9 @@ namespace Test.Xigadee
             var entity = new MyTestEntity2();
 
             //mPersistenceCommand2.DiagnosticsSetMessageDelay(TimeSpan.FromSeconds(5));
-            var response1 = mPersistenceService2.Create(entity, new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(10) }).Result;
+            var response1 = mPersistenceService2.Create(entity
+                , new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(10) }
+                ).Result;
             Assert.IsTrue(response1.IsSuccess);
             Assert.AreEqual(response1.ResponseCode, 201);
 
@@ -54,6 +56,15 @@ namespace Test.Xigadee
 
             var response3 = mPersistenceService2.Update(response2.Entity).Result;
             Assert.IsTrue(response3.IsSuccess);
+
+            var response3b = mPersistenceService2.Update(entity).Result;
+            Assert.IsFalse(response3b.IsSuccess);
+
+            var responsev = mPersistenceService2.Version(entity.Id
+                , new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(10), CorrelationId="42" }).Result;
+            Assert.IsTrue(responsev.IsSuccess);
+            Assert.AreEqual(response3.Entity.VersionId, new Guid(responsev.Entity.Item2));
+
 
             var response4 = mPersistenceService2.Delete(entity.Id).Result;
             Assert.IsTrue(response4.IsSuccess);
@@ -65,6 +76,10 @@ namespace Test.Xigadee
 
             var response6 = mPersistenceService2.Read(entity.Id).Result;
             Assert.IsFalse(response6.IsSuccess);
+
+            var responsevf = mPersistenceService2.Version(entity.Id
+                , new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(10), CorrelationId = "42" }).Result;
+            Assert.IsFalse(responsevf.IsSuccess);
         }
 
         [TestMethod]
