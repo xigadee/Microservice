@@ -5,7 +5,7 @@ namespace Xigadee
     /// This is the root statistics class for a persistence handler.
     /// </summary>
     /// <seealso cref="Xigadee.CommandStatistics" />
-    public class PersistenceStatistics: CommandStatistics
+    public class PersistenceServerStatistics: CommandStatistics
     {
 
         #region Name

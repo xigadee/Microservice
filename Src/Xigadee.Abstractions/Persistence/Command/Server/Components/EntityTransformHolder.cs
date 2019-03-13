@@ -45,27 +45,23 @@ namespace Xigadee
                 KeyDeserializer = s => (K)(object)(s);
             else if (typeof(K) == typeof(Guid))
                 KeyDeserializer = s => (K)(object)Guid.Parse(s);
-
-            SearchTranslator = new SearchExpressionHelper<E>();
         } 
         #endregion
 
         /// <summary>
-        /// This is the search expression helper for search requests.
-        /// </summary>
-        public virtual SearchExpressionHelper<E> SearchTranslator { get; protected set; }
-        /// <summary>
         /// This function is used by optimistic locking, it is used to define the version id for the entity.
         /// </summary>
-        public virtual VersionPolicy<E> Version { get; set; }
-        /// <summary>
-        /// This is the entity name.
-        /// </summary>
-        public virtual string EntityName { get; set; }
+        public virtual VersionPolicy<E> VersionPolicy { get; set; }
         /// <summary>
         /// This function can be set to make the key from the entity.
         /// </summary>
         public virtual Func<E, K> KeyMaker { get; set; }
+
+        /// <summary>
+        /// This is the entity name.
+        /// </summary>
+        public virtual string EntityName { get; set; }
+
         /// <summary>
         /// This is the serializer used to store and retrieve the entity from persistence.
         /// </summary>
@@ -111,8 +107,8 @@ namespace Xigadee
 
             jObj.Remove(JsonMetadata_EntityType.Key);
 
-            if (Version != null)
-                jObj.Remove(Version.VersionJsonMetadata.Key);
+            if (VersionPolicy != null)
+                jObj.Remove(VersionPolicy.VersionJsonMetadata.Key);
 
             var entity = JsonConvert.DeserializeObject<E>(jObj.ToString(Formatting.None), SerializerSettings);
 
@@ -149,10 +145,10 @@ namespace Xigadee
 
             //Check for version support.
             string version = null;
-            if (Version != null && Version.SupportsVersioning)
+            if (VersionPolicy != null && VersionPolicy.SupportsVersioning)
             {
-                version = Version.EntityVersionAsString(entity);
-                jObj[Version.VersionJsonMetadata.Key] = version;
+                version = VersionPolicy.EntityVersionAsString(entity);
+                jObj[VersionPolicy.VersionJsonMetadata.Key] = version;
             }
 
             return new JsonHolder<K>(key, version, jObj.ToString(), id);

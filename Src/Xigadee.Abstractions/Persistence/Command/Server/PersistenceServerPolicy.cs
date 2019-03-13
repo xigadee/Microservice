@@ -5,7 +5,7 @@ namespace Xigadee
     /// <summary>
     /// This is the default command policy for the persistence class.
     /// </summary>
-    public class PersistenceCommandPolicy:CommandPolicy
+    public class PersistenceServerPolicy:CommandPolicy
     {
         /// <summary>
         /// Persistence managers should not be master jobs by default.

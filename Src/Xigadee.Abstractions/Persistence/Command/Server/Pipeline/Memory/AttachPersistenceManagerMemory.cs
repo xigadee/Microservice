@@ -44,7 +44,7 @@ namespace Xigadee
             where C : IPipelineChannelIncoming<IPipeline>
             where K : IEquatable<K>
         {
-            RepositoryWrapperPersistenceCommand<K, E> pm = null;
+            PersistenceCommand<K, E> pm = null;
 
             return cpipe.AttachPersistenceManagerHandlerMemory(keyMaker, keyDeserializer, out pm
                   , startupPriority
@@ -85,7 +85,7 @@ namespace Xigadee
         public static C AttachPersistenceManagerHandlerMemory<C, K, E>(this C cpipe
             , Func<E, K> keyMaker
             , Func<string, K> keyDeserializer
-            , out RepositoryWrapperPersistenceCommand<K, E> pm
+            , out PersistenceCommand<K, E> pm
             , int startupPriority = 100
             , string entityName = null
             , VersionPolicy<E> versionPolicy = null

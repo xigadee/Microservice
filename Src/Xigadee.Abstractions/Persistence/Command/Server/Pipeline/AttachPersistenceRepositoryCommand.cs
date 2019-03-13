@@ -17,7 +17,7 @@ namespace Xigadee
         /// <returns>The pipeline.</returns>
         public static C AttachPersistenceRepositoryCommand<C, K, E>(this C cpipe
             , IRepositoryAsyncServer<K, E> repo
-            , out RepositoryWrapperPersistenceCommand<K, E> pm
+            , out PersistenceCommand<K, E> pm
             , int startupPriority = 100
             )
             where C : IPipelineChannelIncoming<IPipeline>

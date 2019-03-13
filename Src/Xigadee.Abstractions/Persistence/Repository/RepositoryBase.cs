@@ -7,66 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 namespace Xigadee
 {
-    /// <summary>
-    /// This is the base holding class.
-    /// </summary>
-    public abstract class RepositoryBase
-    {
-        #region ResultFormat...
-        /// <summary>
-        /// Formats the outgoing result.
-        /// </summary>
-        /// <typeparam name="KT">The key type.</typeparam>
-        /// <typeparam name="ET">The entity type..</typeparam>
-        /// <param name="result">The result.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="entity">The entity.</param>
-        /// <returns>Returns the holder.</returns>
-        public static Task<RepositoryHolder<KT, ET>> ResultFormat<KT, ET>(int result, Func<KT> key = null, Func<ET> entity = null)
-            where KT : IEquatable<KT>
-        {
-            var k = key!= null?key() : default(KT);
-            var e = entity!=null?entity(): default(ET);
 
-            switch (result)
-            {
-                case 200:
-                case 201:
-                    return Task.FromResult(new RepositoryHolder<KT, ET>(k, null, e, result));
-                case 404:
-                    return Task.FromResult(new RepositoryHolder<KT, ET>(k, null, default(ET), result));
-                default:
-                    return Task.FromResult(new RepositoryHolder<KT, ET>(k, null, default(ET), result));
-            }
-        }
-        #endregion
-
-        #region IncomingParameterChecks ...
-        /// <summary>
-        /// Checks the incoming key parameter has a value.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <exception cref="ArgumentOutOfRangeException">Key must be set to a value</exception>
-        public static void IncomingParameterChecks<KT>(KT key) where KT: IEquatable<KT>
-        {
-            if (key.Equals(default(KT)))
-                throw new ArgumentOutOfRangeException("key must be set to a value");
-        }
-
-        /// <summary>
-        /// Checks the incoming key and entity value parameters have values.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The entity value.</param>
-        /// <exception cref="ArgumentNullException">key or value must be set</exception>
-        public static void IncomingParameterChecks<KT,ET>(KT key, ET value) where KT : IEquatable<KT>
-        {
-            IncomingParameterChecks(key);
-            if (value.Equals(default(ET)))
-                throw new ArgumentNullException("value must be set to a value");
-        }
-        #endregion
-    }
     /// <summary>
     /// This is the base repository holder.
     /// </summary>
@@ -200,12 +141,8 @@ namespace Xigadee
         }
         #endregion
         #endregion
-        #region Declarations        
-        /// <summary>
-        /// The key maker used to extract the key from an incoming entity.
-        /// </summary>
-        protected readonly Func<E, K> _keyMaker;
 
+        #region Declarations        
         /// <summary>
         /// The reference maker used to make the reference values from an entity.
         /// </summary>
@@ -231,33 +168,11 @@ namespace Xigadee
             , VersionPolicy<E> versionPolicy = null
             )
         {
-            _keyMaker = keyMaker ?? throw new ArgumentNullException(nameof(keyMaker));
+            KeyMaker = keyMaker ?? throw new ArgumentNullException(nameof(keyMaker));
 
             _referenceMaker = referenceMaker ?? (e => new List<Tuple<string, string>>());
             _propertiesMaker = propertiesMaker ?? (e => new List<Tuple<string, string>>());
             VersionPolicy = versionPolicy;
-        }
-        #endregion
-
-        #region TryKeyExtract(TEntity entity, out TKey key)
-        /// <summary>
-        /// Extracts the key from the entity.
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <param name="key">The key for the entity</param>
-        /// <returns>
-        /// Returns the key.
-        /// </returns>
-        public virtual bool TryKeyExtract(E entity, out K key)
-        {
-            if (entity == null || _keyMaker == null)
-            {
-                key = default(K);
-                return false;
-            }
-
-            key = _keyMaker(entity);
-            return true;
         }
         #endregion
 
@@ -267,6 +182,18 @@ namespace Xigadee
         /// and or history of entities.
         /// </summary>
         public VersionPolicy<E> VersionPolicy { get; }
+        #endregion
+        #region KeyMaker
+        /// <summary>
+        /// The key maker used to extract the key from an incoming entity.
+        /// </summary>
+        public Func<E, K> KeyMaker { get; protected set; }
+        #endregion
+        #region EntityName
+        /// <summary>
+        /// Gets the name of the entity.
+        /// </summary>
+        public string EntityName { get; protected set; } = typeof(E).Name; 
         #endregion
 
         /// <summary>
@@ -437,5 +364,66 @@ namespace Xigadee
         }
         #endregion
 
+    }
+
+    /// <summary>
+    /// This is the base holding class.
+    /// </summary>
+    public abstract class RepositoryBase
+    {
+        #region ResultFormat...
+        /// <summary>
+        /// Formats the outgoing result.
+        /// </summary>
+        /// <typeparam name="KT">The key type.</typeparam>
+        /// <typeparam name="ET">The entity type..</typeparam>
+        /// <param name="result">The result.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="entity">The entity.</param>
+        /// <returns>Returns the holder.</returns>
+        public static Task<RepositoryHolder<KT, ET>> ResultFormat<KT, ET>(int result, Func<KT> key = null, Func<ET> entity = null)
+            where KT : IEquatable<KT>
+        {
+            var k = key != null ? key() : default(KT);
+            var e = entity != null ? entity() : default(ET);
+
+            switch (result)
+            {
+                case 200:
+                case 201:
+                    return Task.FromResult(new RepositoryHolder<KT, ET>(k, null, e, result));
+                case 404:
+                    return Task.FromResult(new RepositoryHolder<KT, ET>(k, null, default(ET), result));
+                default:
+                    return Task.FromResult(new RepositoryHolder<KT, ET>(k, null, default(ET), result));
+            }
+        }
+        #endregion
+
+        #region IncomingParameterChecks ...
+        /// <summary>
+        /// Checks the incoming key parameter has a value.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Key must be set to a value</exception>
+        public static void IncomingParameterChecks<KT>(KT key) where KT : IEquatable<KT>
+        {
+            if (key.Equals(default(KT)))
+                throw new ArgumentOutOfRangeException("key must be set to a value");
+        }
+
+        /// <summary>
+        /// Checks the incoming key and entity value parameters have values.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The entity value.</param>
+        /// <exception cref="ArgumentNullException">key or value must be set</exception>
+        public static void IncomingParameterChecks<KT, ET>(KT key, ET value) where KT : IEquatable<KT>
+        {
+            IncomingParameterChecks(key);
+            if (value.Equals(default(ET)))
+                throw new ArgumentNullException("value must be set to a value");
+        }
+        #endregion
     }
 }

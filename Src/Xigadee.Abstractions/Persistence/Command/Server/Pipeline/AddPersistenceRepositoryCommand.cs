@@ -20,7 +20,7 @@ namespace Xigadee
         public static P AddPersistenceRepositoryCommand<P, K, E>(this P pipeline
             , IRepositoryAsyncServer<K, E> repo
             , IPipelineChannelIncoming<P> cpipe
-            , out RepositoryWrapperPersistenceCommand<K, E> pm
+            , out PersistenceCommand<K, E> pm
             , int startupPriority = 100
             )
             where P : IPipeline
@@ -33,7 +33,7 @@ namespace Xigadee
             if (cpipe == null)
                 throw new ArgumentNullException("cpipe", $"cpipe cannot be null in {nameof(AddPersistenceRepositoryCommand)}");
 
-            pm = new RepositoryWrapperPersistenceCommand<K, E>(repo
+            pm = new PersistenceCommand<K, E>(repo
                 );
                 
                 //keyMaker, keyDeserializer

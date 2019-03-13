@@ -76,7 +76,7 @@ namespace Xigadee
         /// </summary>
         public override Task<RepositoryHolder<K, E>> Create(E entity, RepositorySettings options = null)
         {
-            var key = _keyMaker(entity);
+            var key = KeyMaker(entity);
 
             if (IsReadOnly)
                 return ResultFormat(400, () => key, () => default(E));
@@ -173,7 +173,7 @@ namespace Xigadee
         /// </summary>
         public override Task<RepositoryHolder<K, E>> Update(E entity, RepositorySettings options = null)
         {
-            var key = _keyMaker(entity);
+            var key = KeyMaker(entity);
 
             if (IsReadOnly)
                 return ResultFormat(400, () => key, () => default(E));

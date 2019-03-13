@@ -25,7 +25,7 @@ namespace Xigadee
     /// <summary>
     /// This class provides specific directives for communicating with the DocumentDb server.
     /// </summary>
-    public class DocumentDbPersistenceCommandPolicy: PersistenceCommandPolicy
+    public class DocumentDbPersistenceCommandPolicy: PersistenceServerPolicy
     {
 
         public bool AutoCreateDatabase { get; set; } = true;

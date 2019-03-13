@@ -25,13 +25,13 @@ namespace Xigadee
         where K : IEquatable<K>
     {
         /// <summary>
-        /// Tries to extract the key.
+        /// Gets the name of the entity.
         /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <param name="key">The extracted key.</param>
-        /// <returns>Returns true if the key is extracted.</returns>
-        bool TryKeyExtract(E entity, out K key);
-
+        string EntityName { get; }
+        /// <summary>
+        /// Gets the key maker.
+        /// </summary>
+        Func<E, K> KeyMaker { get; }
         /// <summary>
         /// Holds the policy concerning whether the repository implements optimistic locking 
         /// and or history of entities.
