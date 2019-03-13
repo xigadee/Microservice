@@ -70,10 +70,6 @@ namespace Test.Xigadee
             Assert.IsTrue(response4.IsSuccess);
             Assert.AreEqual(response4.ResponseCode, 200);
 
-            //var response5 = mPersistenceService2.Version(entity.Id).Result;
-            //Assert.IsTrue(response5.IsSuccess);
-            //Assert.AreEqual(response5.Entity.Item2, 200);
-
             var response6 = mPersistenceService2.Read(entity.Id).Result;
             Assert.IsFalse(response6.IsSuccess);
 

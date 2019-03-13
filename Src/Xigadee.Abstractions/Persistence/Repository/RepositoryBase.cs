@@ -389,16 +389,22 @@ namespace Xigadee
             var k = key != null ? key() : default(KT);
             var e = entity != null ? entity() : default(ET);
 
+            RepositoryHolder<KT, ET> holder;
             switch (result)
             {
                 case 200:
                 case 201:
-                    return Task.FromResult(new RepositoryHolder<KT, ET>(k, null, e, result));
-                case 404:
-                    return Task.FromResult(new RepositoryHolder<KT, ET>(k, null, default(ET), result));
+                    holder = new RepositoryHolder<KT, ET>(k, null, e, result);
+                    break;
+                //case 404:
+                //    return Task.FromResult(new RepositoryHolder<KT, ET>(k, null, default(ET), result));
                 default:
-                    return Task.FromResult(new RepositoryHolder<KT, ET>(k, null, default(ET), result));
+                    holder = new RepositoryHolder<KT, ET>(k, null, default(ET), result);
+                    break;
             }
+
+            
+            return Task.FromResult(holder);
         }
         #endregion
 
