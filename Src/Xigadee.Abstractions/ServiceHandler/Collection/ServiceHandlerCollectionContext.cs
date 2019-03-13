@@ -1,5 +1,32 @@
 ﻿namespace Xigadee
 {
+    public static class ServiceHandlerCollectionContextHelper
+    {
+        public static void Set(this ServiceHandlerCollectionContext context, IServiceHandlerSerialization Serializer)
+        {
+            context.Serializer = Serializer;
+            context.Serialization = Serializer?.Id;
+        }
+
+        public static void Set(this ServiceHandlerCollectionContext context, IServiceHandlerCompression Compressor)
+        {
+            context.Compressor = Compressor;
+            context.Compression = Compressor?.Id;
+        }
+
+        public static void Set(this ServiceHandlerCollectionContext context, IServiceHandlerAuthentication Authenticator)
+        {
+            context.Authenticator = Authenticator;
+            context.Authentication = Authenticator?.Id;
+        }
+
+        public static void Set(this ServiceHandlerCollectionContext context, IServiceHandlerEncryption Encryptor)
+        {
+            context.Encryptor = Encryptor;
+            context.Encryption = Encryptor?.Id;
+        }
+    }
+
     /// <summary>
     /// This class holds the service handlers and their keys.
     /// </summary>
@@ -45,7 +72,7 @@
         public IServiceHandlerAuthentication Authenticator { get; set; }
 
         /// <summary>
-        /// Identifies whether encrpytion is specified.
+        /// Identifies whether encryption is specified.
         /// </summary>
         public bool HasEncryption => Encryption != null;
         /// <summary>
@@ -53,7 +80,7 @@
         /// </summary>
         public EncryptionHandlerId Encryption { get; set; }
         /// <summary>
-        /// This is the encrpytor module.
+        /// This is the encryption module.
         /// </summary>
         public IServiceHandlerEncryption Encryptor { get; set; }
     }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -47,6 +48,7 @@ namespace Xigadee
         /// <param name="prePopulate">The pre-populate function.</param>
         /// <param name="versionPolicy">The version policy.</param>
         /// <param name="readOnly">This property specifies that the collection is read-only.</param>
+        /// <param name="sContext">This context contains the serialization components.</param>
         public RepositoryMemory(Func<E, K> keyMaker
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             , Func<E, IEnumerable<Tuple<string, string>>> propertiesMaker = null
@@ -54,6 +56,7 @@ namespace Xigadee
             , IEnumerable<E> prePopulate = null
             , VersionPolicy<E> versionPolicy = null
             , bool readOnly = false
+            , ServiceHandlerCollectionContext sContext = null
             )
             : base(keyMaker, referenceMaker, propertiesMaker, versionPolicy)
         {
@@ -65,8 +68,81 @@ namespace Xigadee
             _filterMethods = new Dictionary<string, Func<E, List<KeyValuePair<string, string>>, bool>>();
             searchMaker?.Invoke().ForEach((t) => _filterMethods.Add(t.Item1, t.Item2));
 
+            SerializationContext = sContext ?? DefaultSerializationContext();
+
             prePopulate?.ForEach(ke => Create(ke));
             IsReadOnly = readOnly;
+        }
+        #endregion
+
+        #region SerializationContext
+        /// <summary>
+        /// Gets the serialization context that is used to serialize and deserialize the container entity.
+        /// </summary>
+        protected virtual ServiceHandlerCollectionContext SerializationContext { get; }
+        #endregion
+        #region DefaultSerializationContext()
+        /// <summary>
+        /// Creates the default serialization context. Json serialization with gzip compression.
+        /// </summary>
+        protected virtual ServiceHandlerCollectionContext DefaultSerializationContext()
+        {
+            var context = new ServiceHandlerCollectionContext();
+
+            context.Set(new JsonRawSerializer());
+            context.Set(new CompressorGzip());
+
+            return context;
+        } 
+        #endregion
+
+        #region CreateEntityContainer
+        /// <summary>
+        /// Creates the entity container.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="newEntity">The new entity.</param>
+        /// <param name="newReferences">The new references.</param>
+        /// <param name="newProperties">The new properties.</param>
+        /// <param name="newVersionId">The new version identifier.</param>
+        /// <returns>Returns the new container with the serialized entity.</returns>
+        protected virtual EntityContainer CreateEntityContainer(K key, E newEntity
+                , IEnumerable<Tuple<string, string>> newReferences
+                , IEnumerable<Tuple<string, string>> newProperties
+                , string newVersionId)
+        {
+            return new EntityContainer(key, newEntity, newReferences, newProperties, newVersionId, EntityDeserialize, EntitySerialize);
+        }
+
+        protected virtual byte[] EntitySerialize(E entity)
+        {
+            if (!SerializationContext.HasSerialization)
+                throw new ArgumentOutOfRangeException("SerializationContext.Serializer is not set.");
+
+            var ctx = ServiceHandlerContext.CreateWithObject(entity);
+
+            if (entity.Equals(default(E)))
+                return null;
+
+            SerializationContext.Serializer.TrySerialize(ctx);
+
+            return ctx.Blob;
+        }
+
+        protected virtual E EntityDeserialize(byte[] blob)
+        {
+            if (!SerializationContext.HasSerialization)
+                throw new ArgumentOutOfRangeException("SerializationContext.Serializer is not set.");
+
+            if ((blob?.Length ?? 0) == 0)
+                return default(E);
+
+            var ctx = ServiceHandlerContext.CreateWithBlob(
+                blob, SerializationContext.Serialization, SerializationContext.Compression, typeof(E).FullName);
+
+            SerializationContext.Serializer.TryDeserialize(ctx);
+
+            return (E)ctx.Object;
         }
         #endregion
 
@@ -91,7 +167,7 @@ namespace Xigadee
 
             E newEntity = default(E);
 
-            var result = Atomic(() =>
+            var result = Atomic(true,() =>
             {
                 //Does the key already exist in the collection
                 if (_container.ContainsKey(key))
@@ -101,7 +177,7 @@ namespace Xigadee
                 if (ReferenceExistingMatch(references))
                     return 409;
 
-                var newContainer = new EntityContainer(key, entity, references, properties, VersionPolicy?.EntityVersionAsString(entity));
+                var newContainer = CreateEntityContainer(key, entity, references, properties, VersionPolicy?.EntityVersionAsString(entity));
                 newEntity = newContainer.Entity;
 
                 //OK, add the entity
@@ -133,7 +209,7 @@ namespace Xigadee
 
             EntityContainer container = null;
 
-            bool result = Atomic(() => _container.TryGetValue(key, out container));
+            bool result = Atomic(false, () => _container.TryGetValue(key, out container));
 
             var entity = container == null ? default(E) : container.Entity;
 
@@ -156,7 +232,7 @@ namespace Xigadee
 
             EntityContainer container = null;
 
-            bool result = Atomic(() => _containerReference.TryGetValue(reference, out container));
+            bool result = Atomic(false,() => _containerReference.TryGetValue(reference, out container));
 
             E entity = container == null ?default(E):container.Entity;
 
@@ -191,7 +267,7 @@ namespace Xigadee
             E newEntity = default(E);
             string newVersion = null;
 
-            var result = Atomic(() =>
+            var result = Atomic(true,() =>
             {
                 //If the doesn't already exist in the collection, throw a not-found error.
                 if (!_container.TryGetValue(key, out var oldContainer))
@@ -216,7 +292,7 @@ namespace Xigadee
                     newVersion = VersionPolicy.EntityVersionUpdate(newEntity);
                 }
 
-                newContainer = new EntityContainer(key, newEntity, newReferences, newProperties, newVersion);
+                newContainer = CreateEntityContainer(key, newEntity, newReferences, newProperties, newVersion);
 
                 //OK, update the entity
                 _container[key] = newContainer;
@@ -237,6 +313,7 @@ namespace Xigadee
             return ResultFormat(result, () => key, () => newEntity, options);
         }
         #endregion
+
         #region Delete(K key)/DeleteByRef(string refKey, string refValue)
         /// <summary>
         /// Delete
@@ -250,7 +327,7 @@ namespace Xigadee
 
             OnKeyEvent(KeyEventType.BeforeDelete, key);
 
-            var result = Atomic(() =>
+            var result = Atomic(true,() =>
             {
                 if (_container.TryGetValue(key, out var container))
                     return DeleteInternal(container);
@@ -272,7 +349,7 @@ namespace Xigadee
             var reference = new Tuple<string, string>(refKey, refValue);
             EntityContainer container = null;
 
-            var result = Atomic(() =>
+            var result = Atomic(true, () =>
             {
                 if (!_containerReference.TryGetValue(reference, out container))
                     return false;
@@ -314,7 +391,7 @@ namespace Xigadee
 
             EntityContainer container = null;
 
-            var result = Atomic(() =>
+            var result = Atomic(false, () =>
             {
                 return _container.TryGetValue(key, out container);
             });
@@ -340,7 +417,7 @@ namespace Xigadee
 
             var reference = new Tuple<string, string>(refKey, refValue);
 
-            var result = Atomic(() =>
+            var result = Atomic(false, () =>
             {
                 return _containerReference.TryGetValue(reference, out container);
             });
@@ -449,7 +526,7 @@ namespace Xigadee
         {
             get
             {
-                return Atomic(() => _container.Count);
+                return Atomic(false,() => _container.Count);
             }
         }
         #endregion
@@ -461,7 +538,7 @@ namespace Xigadee
         {
             get
             {
-                return Atomic(() => _containerReference.Count);
+                return Atomic(false,() => _containerReference.Count);
             }
         }
         #endregion
@@ -475,7 +552,7 @@ namespace Xigadee
         /// </returns>
         public virtual bool ContainsKey(K key)
         {
-            return Atomic(() => _container.ContainsKey(key));
+            return Atomic(false,() => _container.ContainsKey(key));
         }
         #endregion
         #region ContainsReference(Tuple<string, string> reference)
@@ -488,7 +565,7 @@ namespace Xigadee
         /// </returns>
         public virtual bool ContainsReference(Tuple<string, string> reference)
         {
-            return Atomic(() => _containerReference.ContainsKey(reference));
+            return Atomic(false, () => _containerReference.ContainsKey(reference));
         }
         #endregion
 
@@ -496,39 +573,53 @@ namespace Xigadee
         /// <summary>
         /// This wraps the requests the ensure that only one is processed at the same time.
         /// </summary>
+        /// <param name="write">Specifies whether this is a write action. This will block read actions.</param>
         /// <param name="action">The action to process.</param>
         [DebuggerStepThrough]
-        protected void Atomic(Action action)
+        protected void Atomic(bool write, Action action)
         {
             try
             {
-                _referenceModifyLock.EnterReadLock();
+                if (write)
+                    _referenceModifyLock.EnterWriteLock();
+                else
+                    _referenceModifyLock.EnterReadLock();
 
                 action();
             }
             finally
             {
-                _referenceModifyLock.ExitReadLock();
+                if (write)
+                    _referenceModifyLock.ExitWriteLock();
+                else
+                    _referenceModifyLock.ExitReadLock();
             }
         }
 
         /// <summary>
         /// This wraps the requests the ensure that only one is processed at the same time.
         /// </summary>
+        /// <param name="write">Specifies whether this is a write action. This will block read actions.</param>
         /// <param name="action">The action to process.</param>
         /// <returns>Returns the value.</returns>
         [DebuggerStepThrough]
-        protected T Atomic<T>(Func<T> action)
+        protected T Atomic<T>(bool write, Func<T> action)
         {
             try
             {
-                _referenceModifyLock.EnterReadLock();
+                if (write)
+                    _referenceModifyLock.EnterWriteLock();
+                else
+                    _referenceModifyLock.EnterReadLock();
 
                 return action();
             }
             finally
             {
-                _referenceModifyLock.ExitReadLock();
+                if (write)
+                    _referenceModifyLock.ExitWriteLock();
+                else
+                    _referenceModifyLock.ExitReadLock();
             }
         }
         #endregion
@@ -613,7 +704,99 @@ namespace Xigadee
         protected virtual void ETagOrdinalIncrement()
         {
             Interlocked.Increment(ref _etagOrdinal);
-        } 
+        }
+        #endregion
+
+        #region Class -> EntityContainer
+        /// <summary>
+        /// This is a private class it is used to ensure that we do not duplicate data.
+        /// </summary>
+        protected class EntityContainer
+        {
+            private long _hitCount = 0;
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="EntityContainer"/> class.
+            /// </summary>
+            /// <param name="key">The key.</param>
+            /// <param name="entity">The entity.</param>
+            /// <param name="references">The entity references.</param>
+            /// <param name="properties">The entity properties.</param>
+            /// <param name="versionId">The version id of the entity..</param>
+            /// <param name="deserializer">The deserializer that converts the body to an entity.</param>
+            /// <param name="serializer">The serializer that turns the entity in to a blob.</param>
+            public EntityContainer(K key, E entity
+                , IEnumerable<Tuple<string, string>> references
+                , IEnumerable<Tuple<string, string>> properties
+                , string versionId
+                , Func<byte[],E> deserializer
+                , Func<E, byte[]> serializer
+                )
+            {
+                Key = key;
+
+                Serializer = serializer ?? throw new ArgumentNullException("serializer");
+
+                Deserializer = deserializer ?? throw new ArgumentNullException("deserializer");
+
+                Body = Serializer(entity);
+
+                References = references == null ? new List<Tuple<string, string>>() : references.ToList();
+                Properties = properties == null ? new List<Tuple<string, string>>() : properties.ToList();
+
+                VersionId = versionId;
+            }
+
+            /// <summary>
+            /// Gets the serializer that turns the entity in to a blob.
+            /// </summary>
+            protected Func<E, byte[]> Serializer { get; }
+
+            /// <summary>
+            /// Gets the deserializer that converts the body to an entity.
+            /// </summary>
+            protected Func<byte[], E> Deserializer { get; }
+
+            /// <summary>
+            /// Contains the key.
+            /// </summary>
+            public K Key { get; }
+            /// <summary>
+            /// Gets or sets the version identifier.
+            /// </summary>
+            public string VersionId { get; }
+            /// <summary>
+            /// Contains the entity.
+            /// </summary>
+            public E Entity => (Body?.Length ?? 0)==0 ? default(E) : Deserializer(Body);
+
+            /// <summary>
+            /// Gets or sets the json body of the entity. This is used to ensure that the entity is
+            /// not modified in the main collection by other processes.
+            /// </summary>
+            public byte[] Body { get; }
+
+            /// <summary>
+            /// Contains the entity references.
+            /// </summary>
+            public List<Tuple<string, string>> References { get; }
+            /// <summary>
+            /// Contains the entity references.
+            /// </summary>
+            public List<Tuple<string, string>> Properties { get; }
+
+            /// <summary>
+            /// The current 
+            /// </summary>
+            /// <returns>The previous count.</returns>
+            public void ReadHitIncrement() => Interlocked.Increment(ref _hitCount);
+
+            /// <summary>
+            /// Gets the current hit count.
+            /// </summary>
+            public long ReadHitCount => _hitCount;
+
+        }
         #endregion
     }
 }

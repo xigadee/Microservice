@@ -16,7 +16,7 @@ namespace PiO
                 );
 
             DebugMemoryDataCollector coll;
-            RepositoryWrapperPersistenceCommand<int, LightwaveMessage> pm = null;
+            PersistenceServer<int, LightwaveMessage> pm = null;
             //PersistenceManagerHandlerFileSystem<int, LightwaveMessage> pm = null;
             PersistenceClient<int, LightwaveMessage> pc = null;
             mservice = new MicroservicePipeline("PiO", description: "PiO Server");

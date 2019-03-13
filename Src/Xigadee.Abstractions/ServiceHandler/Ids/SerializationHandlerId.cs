@@ -19,7 +19,7 @@ namespace Xigadee
         /// <summary>
         /// This is the object type.
         /// </summary>
-        public string ObjectType { get; protected set; }
+        public string ObjectType { get; set; }
 
         /// <summary>
         /// Processes the incoming identifier and strips off any additional parameters.

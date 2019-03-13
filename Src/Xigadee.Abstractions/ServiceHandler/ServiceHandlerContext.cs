@@ -18,25 +18,40 @@ namespace Xigadee
         {
             return new ServiceHandlerContext().SetObject(entity);
         }
+
+        /// <summary>
+        /// Sets the Blob value for the byte array with the associated parameters.
+        /// </summary>
+        /// <param name="blob">The binary blob parameter.</param>
+        /// <param name="contentType">This is the optional content type parameter.</param>
+        /// <param name="contentEncoding">This is the optional content encoding parameter.</param>
+        /// <param name="objectType">The entity type to deserialize to.</param>
+        /// <param name="maxLength">The maximum length.</param>
+        /// <returns></returns>
+        public static ServiceHandlerContext CreateWithBlob(byte[] blob, string contentType = null, string contentEncoding = null, string objectType = null, int? maxLength = null)
+        {
+            return new ServiceHandlerContext().SetBlob(blob, contentType, contentEncoding, objectType, maxLength);
+        }
         #endregion
         #region Metadata
         /// <summary>
         /// Gets or sets the metadata context. The context holds any additional metadata from the incoming connection.
         /// </summary>
-        public object Metadata { get; set; } 
+        public object Metadata { get; set; }
         #endregion
 
         #region SetBlob(byte[] blob, string contentType = null, int? maxLength = null)
         /// <summary>
-        /// Sets the Blob value for the byte array.
+        /// Sets the Blob value for the byte array with the associated parameters.
         /// </summary>
         /// <param name="blob">The binary blob parameter.</param>
         /// <param name="contentType">This is the optional content type parameter.</param>
         /// <param name="contentEncoding">This is the optional content encoding parameter.</param>
+        /// <param name="objectType">The entity type to deserialize to.</param>
         /// <param name="maxLength">The maximum length.</param>
         /// <returns>Returns this container object to allow for Fluent behaviour.</returns>
         /// <exception cref="Xigadee.SerializationBlobLimitExceeededException">Throw if the byte array length exceeds the maximum permitted value.</exception>
-        public ServiceHandlerContext SetBlob(byte[] blob, string contentType = null, string contentEncoding = null, int? maxLength = null)
+        public ServiceHandlerContext SetBlob(byte[] blob, string contentType = null, string contentEncoding = null, string objectType = null,int ? maxLength = null)
         {
             if (blob != null && maxLength.HasValue && blob.Length > maxLength.Value)
                 throw new SerializationBlobLimitExceeededException(maxLength.Value, blob.Length);
@@ -44,7 +59,11 @@ namespace Xigadee
             Blob = blob;
 
             if (contentType != null)
+            {
                 ContentType = contentType;
+                ContentType.ObjectType = objectType;
+
+            }
 
             ContentEncoding = contentEncoding;
 

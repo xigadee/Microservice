@@ -65,7 +65,6 @@ namespace Test.Xigadee
             Assert.IsTrue(responsev.IsSuccess);
             Assert.AreEqual(response3.Entity.VersionId, new Guid(responsev.Entity.Item2));
 
-
             var response4 = mPersistenceService2.Delete(entity.Id).Result;
             Assert.IsTrue(response4.IsSuccess);
             Assert.AreEqual(response4.ResponseCode, 200);

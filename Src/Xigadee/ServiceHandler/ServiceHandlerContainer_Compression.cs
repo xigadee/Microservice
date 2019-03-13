@@ -10,7 +10,6 @@ namespace Xigadee
         /// </summary>
         public ServiceHandlerCollection<IServiceHandlerCompression> Compression { get; }
 
-
         #region TryDecompress(ServiceHandlerContext holder)
         /// <summary>
         /// Tries to decompress the incoming holder.
