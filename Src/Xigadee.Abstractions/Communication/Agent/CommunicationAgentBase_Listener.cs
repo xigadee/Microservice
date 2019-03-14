@@ -69,7 +69,7 @@ namespace Xigadee
         /// </summary>
         public virtual Task ListenerPoll()
         {
-            throw new NotSupportedException($"{GetType().Name}/{nameof(ListenerPoll)} is not configured.");
+            throw new NotImplementedException($"{GetType().Name}/{nameof(ListenerPoll)} is not implemented.");
         }
         #endregion
 

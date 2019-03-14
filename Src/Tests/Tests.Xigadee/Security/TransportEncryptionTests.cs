@@ -7,6 +7,7 @@ using Xigadee;
 namespace Test.Xigadee
 {
     [TestClass]
+    [Ignore]
     public class TransportEncryptionTests
     {
         [TestClass]
@@ -24,6 +25,7 @@ namespace Test.Xigadee
             }
 
             [TestMethod]
+            [Ignore]
             public void TestMethod1()
             {
                 try

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This client holder is used by the manual test fabric.
+    /// </summary>
     public class ManualClientHolder : ClientHolderV2<MessagingServiceStatistics>
     {
         private ConcurrentQueue<TransmissionPayload> mPending = new ConcurrentQueue<TransmissionPayload>();
@@ -15,16 +18,18 @@ namespace Xigadee
         /// </summary>
         public Action<TransmissionPayload> IncomingAction { get; set; }
 
-        public ManualClientHolder()
-        {
-
-        }
-
+        #region StopInternal()
+        /// <summary>
+        /// Stops the client and purges any pending messages.
+        /// </summary>
         protected override void StopInternal()
         {
             Purge();
             base.StopInternal();
         }
+        #endregion
+
+        #region Purge()
         /// <summary>
         /// Purges any remaining messages when the service shuts down.
         /// </summary>
@@ -38,7 +43,9 @@ namespace Xigadee
                 payload.SignalFail();
             }
         }
+        #endregion
 
+        #region Inject(TransmissionPayload payload)
         /// <summary>
         /// This method injects a payload to be picked up by the polling algorithm.
         /// </summary>
@@ -54,8 +61,19 @@ namespace Xigadee
             {
                 payload.TraceWrite($"Failed: {ex.Message}", instance: Name);
             }
-        }
+        } 
+        #endregion
 
+        /// <summary>
+        /// This method pulls fabric messages and converts them in to generic payload messages for the Microservice to process.
+        /// </summary>
+        /// <param name="count">The maximum number of messages to return.</param>
+        /// <param name="wait">The maximum wait in milliseconds</param>
+        /// <param name="mappingChannel">This is the incoming mapping channel for subscription based client where the subscription maps
+        /// to a new incoming channel on the same topic.</param>
+        /// <returns>
+        /// Returns a list of transmission for processing.
+        /// </returns>
         public override Task<List<TransmissionPayload>> MessagesPull(int? count, int? wait, string mappingChannel = null)
         {
             var list = new List<TransmissionPayload>();
@@ -86,6 +104,13 @@ namespace Xigadee
             return Task.FromResult(list);
         }
 
+        /// <summary>
+        /// This method is used to Transmit the payload. You should override this method to insert your own transmission logic.
+        /// </summary>
+        /// <param name="payload">The payload to transmit.</param>
+        /// <param name="retry">This parameter specifies the number of retries that should be attempted if transmission fails. By default this value is 0.</param>
+        /// <returns></returns>
+        /// <exception cref="RetryExceededTransmissionException"></exception>
         public override async Task Transmit(TransmissionPayload payload, int retry = 0)
         {
             bool tryAgain = false;

@@ -107,11 +107,14 @@ namespace Test.Xigadee.Samples
                 PersistenceClient<Guid, Sample1> repo;
 
                 var p1 = new MicroservicePipeline("Server")
+                    .AdjustCommunicationPolicyForSingleListenerClient()
                     .AddChannelIncoming("request")
                         .AttachPersistenceManagerHandlerMemory(
                               keyMaker: (Sample1 e) => e.Id
                             , keyDeserializer: (s) => new Guid(s)
-                            , versionPolicy: ((e) => e.VersionId.ToString("N").ToUpperInvariant(), (e) => e.VersionId = Guid.NewGuid(), true)
+                            , versionPolicy: ((e) => e.VersionId.ToString("N").ToUpperInvariant()
+                            , (e) => e.VersionId = Guid.NewGuid()
+                            , true)
                             )
                         .AttachListener(bridgeRequest.GetListener())
                         .Revert()
@@ -120,6 +123,7 @@ namespace Test.Xigadee.Samples
                         ;
 
                 var p2 = new MicroservicePipeline("Client")
+                    .AdjustCommunicationPolicyForSingleListenerClient()
                     .AddChannelIncoming("response")
                         .AttachListener(bridgeResponse.GetListener())
                         .Revert()
@@ -132,21 +136,27 @@ namespace Test.Xigadee.Samples
                 p1.Start();
                 p2.Start();
 
+                int start = Environment.TickCount;
+
                 var sample = new Sample1() { Message = "Hello mom" };
                 var id = sample.Id;
                 //Run a set of simple version entity tests.
                 //Create
                 Assert.IsTrue(repo.Create(sample).Result.IsSuccess);
+
                 //Read
                 var result = repo.Read(id).Result;
                 Assert.IsTrue(result.IsSuccess);
                 Assert.IsTrue(result.Entity.Message == "Hello mom");
+
                 //Update success
                 var rs = repo.Update(sample).Result;
                 Assert.IsTrue(rs.IsSuccess);
+
                 //We have enabled version policy and optimistic locking so the next command should fail.
                 //Update fail as old version
-                Assert.IsFalse(repo.Update(sample).Result.IsSuccess);
+                var rs2 = repo.Update(sample).Result;
+                Assert.IsFalse(rs2.IsSuccess);
                 //But this one should pass.
                 //Update pass as new entity.
                 Assert.IsTrue(repo.Update(rs.Entity).Result.IsSuccess);
@@ -156,6 +166,7 @@ namespace Test.Xigadee.Samples
                 Assert.IsTrue(repo.Delete(sample.Id).Result.IsSuccess);
                 //Read fail.
                 Assert.IsFalse(repo.Read(sample.Id).Result.IsSuccess);
+                int end = Environment.TickCount - start;
 
                 p1.Stop();
                 p2.Stop();

@@ -113,6 +113,7 @@ namespace Xigadee
         {
             ServiceHandlerContext context = blob;
             context.ContentType = serializationId;
+            context.ContentType.ObjectType = typeof(O).FullName;
             if (collection.TryDeserialize(context))
                 return (O)context.Object;
 

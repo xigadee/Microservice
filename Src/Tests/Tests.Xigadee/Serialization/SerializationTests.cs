@@ -8,7 +8,7 @@ namespace Test.Xigadee.Serialization
     public class SerializationTests
     {
         [TestMethod]
-        public void Test1()
+        public void SerializationTest1()
         {
             var container = new ServiceHandlerContainer();
 

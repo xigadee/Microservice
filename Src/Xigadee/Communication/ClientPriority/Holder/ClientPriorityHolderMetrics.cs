@@ -155,13 +155,18 @@ namespace Xigadee
         /// <summary>
         /// This is the minimum wait time that the client should wait before it is polled.
         /// </summary>
-        public TimeSpan MinExpectedPollWait { get; set; } 
+        public TimeSpan MinExpectedPollWait { get; set; }
         #endregion
 
+        #region PollTimeReduceRatio
+        /// <summary>
+        /// This property specifies whether the poll ratio should be reduced. It is specified as a percentage.
+        /// </summary>
         public decimal? PollTimeReduceRatio
         {
             get; set;
-        }
+        } 
+        #endregion
 
         #region PollAttemptedBatch
         /// <summary>

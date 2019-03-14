@@ -112,22 +112,11 @@ namespace Xigadee
             if (cpipe == null)
                 throw new ArgumentNullException("cpipe", $"cpipe cannot be null in {nameof(AddPersistenceManagerMemory)}");
 
-            var repo = new RepositoryMemory<K, E>(keyMaker);
+            var repo = new RepositoryMemory<K, E>(keyMaker
+                , referenceMaker
+                , versionPolicy: versionPolicy);
 
             pm = new PersistenceServer<K, E>(repo);
-
-            //pm = new PersistenceManagerHandlerMemory<K, E>(keyMaker
-            //      , keyDeserializer
-            //      , entityName: entityName
-            //      , versionPolicy: versionPolicy
-            //      , defaultTimeout: defaultTimeout
-            //      , persistenceRetryPolicy: persistenceRetryPolicy
-            //      , resourceProfile: resourceProfile
-            //      , cacheManager: cacheManager
-            //      , referenceMaker: referenceMaker
-            //      , referenceHashMaker: referenceHashMaker
-            //      , keySerializer: keySerializer
-            //      , prePopulate: prePopulate);
 
             pipeline.AddCommand(pm, startupPriority, channelIncoming: cpipe);
 

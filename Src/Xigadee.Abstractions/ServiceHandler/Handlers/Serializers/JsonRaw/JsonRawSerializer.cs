@@ -46,7 +46,7 @@ namespace Xigadee
             type = Type.GetType(typeAsString) ?? TypeHelper.Resolve(typeAsString);
 
             if (type == null)
-                throw new ArgumentOutOfRangeException("");
+                throw new ArgumentOutOfRangeException($"Type {typeAsString} cannot be resolved.");
             else
                 //Allow resolution to be inspected and rejected if necessary.
                 ObjectTypeResolved?.Invoke(this, new ContentTypeEventArgs() { IncomingType = typeAsString, ResolvedType = type });
@@ -57,7 +57,7 @@ namespace Xigadee
         public override void Deserialize(ServiceHandlerContext holder)
         {
             if (!holder.HasContentType)
-                return;
+                throw new MissingFieldException("The holder object type has not been specified.");
             
             var type = TypeResolve(holder.ContentType.ObjectType);
 

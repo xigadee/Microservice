@@ -49,13 +49,23 @@ namespace Xigadee
         public Guid Id { get; } = Guid.NewGuid();
         #endregion
 
+        /// <summary>
+        /// This is the actual name of the client used by the underlying architecture.
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// This method starts the client.
+        /// </summary>
         protected override void StartInternal()
         {
             CanStart = false;
             IsActive = true;
             
         }
-
+        /// <summary>
+        /// This method stops the client. 
+        /// </summary>
         protected override void StopInternal()
         {
             IsActive = false;
@@ -97,10 +107,7 @@ namespace Xigadee
         /// This is the human readable client type.
         /// </summary>
         public string Type { get; set; }
-        /// <summary>
-        /// This is the actual name of the client used by the underlying architecture.
-        /// </summary>
-        public string Name { get; set; }
+
         /// <summary>
         /// This is the internal mapping channel id.
         /// </summary>

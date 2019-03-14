@@ -12,7 +12,7 @@ namespace Test.Xigadee
     [TestClass]
     public class TcpTlsConnectionTests
     {
-        //[Ignore]
+        [Ignore]
         [TestMethod]
         public void Connector1()
         {

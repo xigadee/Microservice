@@ -121,7 +121,7 @@ namespace Test.Xigadee
             //This should now fail as the version id has been changed by the earlier update.
             var result3 = await _repo.Update(e2);
 
-            Assert.IsTrue(result3.IsFaulted);
+            Assert.IsTrue(!result3.IsSuccess);
         }
 
 
@@ -135,10 +135,12 @@ namespace Test.Xigadee
             var entity = result.Entity;
 
             var resultr1 = await _repo.Read(entity.Id);
+            Assert.IsTrue(resultr1.IsSuccess);
 
             var result2 = await _repo.Delete(entity.Id);
-            var resultr2 = await _repo.Read(entity.Id);
+            Assert.IsTrue(result2.IsSuccess);
 
+            var resultr2 = await _repo.Read(entity.Id);
             Assert.IsFalse(resultr2.IsSuccess);
 
         }

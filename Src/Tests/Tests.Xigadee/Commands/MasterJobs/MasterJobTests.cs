@@ -180,6 +180,10 @@ namespace Test.Xigadee
 
                 ctx.Services.Values.ForEach((v) => v.Start());
 
+                //.AdjustCommunicationPolicyForSingleListenerClient()
+
+                int start = Environment.TickCount;
+
                 //Check that the standard comms are working.
                 var entity = new BridgeMe() { Message = "Momma" };
                 var rs = init1.Create(entity, new RepositorySettings() { WaitTime = TimeSpan.FromSeconds(30)}).Result;
@@ -213,6 +217,9 @@ namespace Test.Xigadee
                 Assert.IsTrue(bridgeOut.PayloadsAllSignalled);
                 Assert.IsTrue(bridgeIn.PayloadsAllSignalled);
                 Assert.IsTrue(bridgeMaster.PayloadsAllSignalled);
+
+                int end = Environment.TickCount - start;
+
             }
             catch (Exception ex)
             {

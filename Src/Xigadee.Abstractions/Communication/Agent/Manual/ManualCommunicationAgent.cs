@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -8,7 +9,6 @@ namespace Xigadee
     /// </summary>
     public class ManualCommunicationAgent : CommunicationAgentBase
     {
-
         /// <summary>
         /// Occurs when a message is sent to the sender. 
         /// This event is caught and is used to transmit to the fabric to be distributed.
@@ -73,8 +73,7 @@ namespace Xigadee
                 payload.SignalFail();
                 payload.TraceWrite($"Error: {ex.Message}");
             }
-
-        } 
+        }
         #endregion
 
         protected override IClientHolderV2 ListenerClientCreate(ListenerPartitionConfig p)

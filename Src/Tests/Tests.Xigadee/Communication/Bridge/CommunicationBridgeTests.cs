@@ -28,7 +28,11 @@ namespace Test.Xigadee
                 DebugMemoryDataCollector memp1, memp2;
 
                 var p1 = new MicroservicePipeline("Sender")
-                    .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
+                    .AdjustPolicyCommunication((p, c) =>
+                    {
+                        p.BoundaryLoggingActiveDefault = true;
+                    })
+                    .AdjustCommunicationPolicyForSingleListenerClient()
                     .AddDebugMemoryDataCollector(out memp1)
                     .AddChannelIncoming("cresponse")
                         .AttachListener(listenerS)
@@ -40,7 +44,11 @@ namespace Test.Xigadee
                         ;
 
                 var p2 = new MicroservicePipeline("Receiver")
-                    .AdjustPolicyCommunication((p, c) => p.BoundaryLoggingActiveDefault = true)
+                    .AdjustPolicyCommunication((p, c) =>
+                    {
+                        p.BoundaryLoggingActiveDefault = true;
+                    })
+                    .AdjustCommunicationPolicyForSingleListenerClient()
                     .AddDebugMemoryDataCollector(out memp2)
                     .AddChannelIncoming("crequest")
                         .AttachListener(listenerR)
@@ -54,12 +62,16 @@ namespace Test.Xigadee
                 p1.Start();
                 p2.Start();
 
+                int start = Environment.TickCount;
+
                 int check1 = p1.ToMicroservice().Commands.Count();
                 int check2 = p2.ToMicroservice().Commands.Count();
 
                 var entity = new BridgeMe() { Message = "Momma" };
                 var rs = init.Create(entity, new RepositorySettings() { WaitTime = TimeSpan.FromMinutes(5) }).Result;
                 var rs2 = init.Read(entity.Id).Result;
+
+                int end = Environment.TickCount - start;
 
                 Assert.IsTrue(rs2.IsSuccess);
                 Assert.IsTrue(rs2.Entity.Message == "Momma");

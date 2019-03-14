@@ -11,6 +11,7 @@ namespace Test.Xigadee
     public class TransportVerificationTests
     {
         [TestClass]
+        [Ignore]
         public class CommunicationBridgeTests
         {
             /// <summary>
