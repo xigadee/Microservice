@@ -29,7 +29,7 @@ namespace Xigadee
     /// <summary>
     /// This class is used to set the stored procedure names for an entity store.
     /// </summary>
-    public class SqlStoredProcedureResolver
+    public class SqlStoredProcedureResolver : ISqlStoredProcedureResolver
     {
         private readonly Dictionary<RepositoryMethod, string> _spNames;
 

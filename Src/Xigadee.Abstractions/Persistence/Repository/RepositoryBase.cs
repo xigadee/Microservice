@@ -161,11 +161,13 @@ namespace Xigadee
         /// <param name="referenceMaker">The reference maker.</param>
         /// <param name="propertiesMaker">The properties maker.</param>
         /// <param name="versionPolicy">The version policy.</param>
+        /// <param name="keyManager">The key serialization manager. if this is not passed, then a default serializer will be passed using the component model.</param>
         /// <exception cref="ArgumentNullException">keyMaker</exception>
         protected RepositoryBase(Func<E, K> keyMaker
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             , Func<E, IEnumerable<Tuple<string, string>>> propertiesMaker = null
             , VersionPolicy<E> versionPolicy = null
+            , RepositoryKeyManager<K> keyManager = null
             )
         {
             KeyMaker = keyMaker ?? throw new ArgumentNullException(nameof(keyMaker));
@@ -173,6 +175,7 @@ namespace Xigadee
             _referenceMaker = referenceMaker ?? (e => new List<Tuple<string, string>>());
             _propertiesMaker = propertiesMaker ?? (e => new List<Tuple<string, string>>());
             VersionPolicy = versionPolicy;
+            KeyManager = keyManager ?? RepositoryKeyManager.Resolve<K>();
         }
         #endregion
 
@@ -193,7 +196,13 @@ namespace Xigadee
         /// <summary>
         /// Gets the name of the entity.
         /// </summary>
-        public string EntityName { get; protected set; } = typeof(E).Name; 
+        public string EntityName { get; protected set; } = typeof(E).Name;
+        #endregion
+        #region KeyManager
+        /// <summary>
+        /// Gets the key manager which is used for managing the serialization of a key to and from a string.
+        /// </summary>
+        public RepositoryKeyManager<K> KeyManager { get; } 
         #endregion
 
         /// <summary>

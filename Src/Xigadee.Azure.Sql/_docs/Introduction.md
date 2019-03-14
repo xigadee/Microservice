@@ -5,22 +5,28 @@
 </tr>
 </table>
 
-# Xigadee.Framework Library
+# Xigadee.Azure.Sql Library
 
 This is a Xigadee extension library for the .NET framework. It contains references to core classes that aren't supported in the new .NET Core.
 
 ## Introduction
 
 More to come...
+## Persistence
 
-### Sql Boundary Logger
+### SQL Persistence Base Class
 
-### Sql Persistence Base Class
+### SQL Persistence Json 
+
+## Logging
+### SQL Boundary Logger
+
+
 
 
 <table><tr> 
-<td><a href="http://www.hitachiconsulting.com"><img src="../../../docs/hitachi.png" alt="Hitachi Consulting" height="50"/></a></td> 
+
   <td>Created by: <a href="http://github.com/paulstancer">Paul Stancer</a></td>
-  <td><a href="https://www.nuget.org/packages/Xigadee.Framework">NuGet Package</a></td>
+  <td><a href="https://www.nuget.org/packages/Xigadee.Azure.Sql">NuGet Package</a></td>
   <td><a href="../../../README.md">Home</a></td>
 </tr></table>
