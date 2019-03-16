@@ -9,40 +9,41 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    public class TestClass 
-    {
-        public Guid Id { get; set; } = Guid.NewGuid();
-
-        public Guid VersionId { get; set; } = Guid.NewGuid();
-
-        /// <summary>
-        /// Gets or sets the unique name.
-        /// </summary>
-        public string Name { get; set; }
-
-        public string Type { get; set; }
-
-        public DateTime DateCreated { get; set; } = DateTime.UtcNow;
-
-        public DateTime? DateUpdated { get; set; } 
-    }
 
     [TestClass]
     public class TestMemoryPersistenceCheck
     {
+        private class TestClass
+        {
+            public Guid Id { get; set; } = Guid.NewGuid();
+
+            public Guid VersionId { get; set; } = Guid.NewGuid();
+
+            /// <summary>
+            /// Gets or sets the unique name.
+            /// </summary>
+            public string Name { get; set; }
+
+            public string Type { get; set; }
+
+            public DateTime DateCreated { get; set; } = DateTime.UtcNow;
+
+            public DateTime? DateUpdated { get; set; }
+        }
+
         IRepositoryAsync<Guid, TestClass> _repo;
 
         private IEnumerable<Tuple<string, string>> References(TestClass c)
         {
-            yield return new Tuple<String, string>("name", c.Name);
+            yield return new Tuple<string, string>("name", c.Name);
         }
 
         private IEnumerable<Tuple<string, string>> Properties(TestClass c)
         {
-            yield return new Tuple<String, string>("type", c.Type);
-            yield return new Tuple<String, string>("datecreated", c.DateCreated.ToString("o"));
+            yield return new Tuple<string, string>("type", c.Type);
+            yield return new Tuple<string, string>("datecreated", c.DateCreated.ToString("o"));
         }
-    
+
         //protected Tuple<string, Func<E, List<KeyValuePair<string, string>>, bool>> TBuild<E>(string key, Func<E, List<KeyValuePair<string, string>>, bool> function)
         //{
         //    return new Tuple<string, Func<E, List<KeyValuePair<string, string>>, bool>>(key, function);

@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -26,11 +26,15 @@ namespace Xigadee
         /// </summary>
         protected readonly Dictionary<Tuple<string, string>, EntityContainer> _containerReference;
         /// <summary>
+        /// This is the
+        /// </summary>
+        protected readonly ConcurrentDictionary<K, E> _searchCache;
+        /// <summary>
         /// This lock is used when modifying references.
         /// </summary>
         protected readonly ReaderWriterLockSlim _referenceModifyLock;
 
-        protected Dictionary<string, Func<E, List<KeyValuePair<string, string>>, bool>> _filterMethods;
+        protected Dictionary<string, RepositoryMemorySearch> _filterMethods;
 
         protected readonly Func<IEnumerable<Tuple<string, Func<E, List<KeyValuePair<string, string>>, bool>>>> _searchMaker;
 
@@ -48,13 +52,13 @@ namespace Xigadee
         /// <param name="prePopulate">The pre-populate function.</param>
         /// <param name="versionPolicy">The version policy.</param>
         /// <param name="readOnly">This property specifies that the collection is read-only.</param>
-        /// <param name="sContext">This context contains the serialization components.</param>
+        /// <param name="sContext">This context contains the serialization components for storing the entities.</param>
         public RepositoryMemory(Func<E, K> keyMaker
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             , Func<E, IEnumerable<Tuple<string, string>>> propertiesMaker = null
-            , Func<IEnumerable<Tuple<string, Func<E, List<KeyValuePair<string, string>>, bool>>>> searchMaker = null
-            , IEnumerable<E> prePopulate = null
             , VersionPolicy<E> versionPolicy = null
+            , IEnumerable<RepositoryMemorySearch> searchMaker = null
+            , IEnumerable<E> prePopulate = null
             , bool readOnly = false
             , ServiceHandlerCollectionContext sContext = null
             )
@@ -64,9 +68,10 @@ namespace Xigadee
 
             _container = new Dictionary<K, EntityContainer>();
             _containerReference = new Dictionary<Tuple<string, string>, EntityContainer>(new ReferenceComparer());
+            _searchCache = new ConcurrentDictionary<K, E>();
 
-            _filterMethods = new Dictionary<string, Func<E, List<KeyValuePair<string, string>>, bool>>();
-            searchMaker?.Invoke().ForEach((t) => _filterMethods.Add(t.Item1, t.Item2));
+            //_filterMethods = new Dictionary<string, Func<E, List<KeyValuePair<string, string>>, bool>>();
+            //searchMaker?.Invoke().ForEach((t) => _filterMethods.Add(t.Item1, t.Item2));
 
             SerializationContext = sContext ?? DefaultSerializationContext();
 
@@ -93,7 +98,7 @@ namespace Xigadee
             context.Set(new CompressorGzip());
 
             return context;
-        } 
+        }
         #endregion
 
         #region CreateEntityContainer
@@ -167,18 +172,18 @@ namespace Xigadee
 
             E newEntity = default(E);
 
-            var result = Atomic(true,() =>
-            {
+            var result = Atomic(true, () =>
+             {
                 //Does the key already exist in the collection
                 if (_container.ContainsKey(key))
-                    return 409;
+                     return 409;
 
                 //Are there any references? And do they already exist.
                 if (ReferenceExistingMatch(references))
-                    return 409;
+                     return 409;
 
-                var newContainer = CreateEntityContainer(key, entity, references, properties, VersionPolicy?.EntityVersionAsString(entity));
-                newEntity = newContainer.Entity;
+                 var newContainer = CreateEntityContainer(key, entity, references, properties, VersionPolicy?.EntityVersionAsString(entity));
+                 newEntity = newContainer.Entity;
 
                 //OK, add the entity
                 _container.Add(key, newContainer);
@@ -186,10 +191,10 @@ namespace Xigadee
                 //Add the entity references
                 newContainer.References.ForEach((r) => _containerReference.Add(r, newContainer));
 
-                ETagOrdinalIncrement();
+                 ETagOrdinalIncrement();
 
-                return 201;
-            });
+                 return 201;
+             });
 
             if (result == 201)
                 OnEntityEvent(EntityEventType.AfterCreate, () => newEntity);
@@ -232,9 +237,9 @@ namespace Xigadee
 
             EntityContainer container = null;
 
-            bool result = Atomic(false,() => _containerReference.TryGetValue(reference, out container));
+            bool result = Atomic(false, () => _containerReference.TryGetValue(reference, out container));
 
-            E entity = container == null ?default(E):container.Entity;
+            E entity = container == null ? default(E) : container.Entity;
 
             container?.ReadHitIncrement();
 
@@ -267,44 +272,44 @@ namespace Xigadee
             E newEntity = default(E);
             string newVersion = null;
 
-            var result = Atomic(true,() =>
-            {
+            var result = Atomic(true, () =>
+             {
                 //If the doesn't already exist in the collection, throw a not-found error.
                 if (!_container.TryGetValue(key, out var oldContainer))
-                    return 404;
+                     return 404;
 
                 //OK, get the new references, but check whether they are assigned to another entity and if so flag an error.
                 if (ReferenceExistingMatch(newReferences, true, key))
-                    return 409;
+                     return 409;
 
                 //OK, we don't want to modify the incoming entity, so we first need to clone it.
                 newEntity = entity.JsonClone();
 
-                if (VersionPolicy?.SupportsOptimisticLocking ?? false)
-                {
-                    var incomingVersionId = VersionPolicy.EntityVersionAsString(entity);
+                 if (VersionPolicy?.SupportsOptimisticLocking ?? false)
+                 {
+                     var incomingVersionId = VersionPolicy.EntityVersionAsString(entity);
 
                     //The version id should match the current stored version. If not we reject it.
                     if (incomingVersionId != oldContainer.VersionId)
-                        return 409;
+                         return 409;
 
                     //OK, update the entity version parameters in the new entity.
                     newVersion = VersionPolicy.EntityVersionUpdate(newEntity);
-                }
+                 }
 
-                newContainer = CreateEntityContainer(key, newEntity, newReferences, newProperties, newVersion);
+                 newContainer = CreateEntityContainer(key, newEntity, newReferences, newProperties, newVersion);
 
                 //OK, update the entity
                 _container[key] = newContainer;
                 //Remove the old references, and add the new references.
                 //Note we're being lazy we add/replace even if nothing has changed.
                 oldContainer.References.ForEach((r) => _containerReference.Remove(r));
-                newContainer.References.ForEach((r) => _containerReference.Add(r, newContainer));
+                 newContainer.References.ForEach((r) => _containerReference.Add(r, newContainer));
 
-                ETagOrdinalIncrement();
+                 ETagOrdinalIncrement();
 
-                return 200;
-            });
+                 return 200;
+             });
 
             //All good.
             if (result == 200)
@@ -327,13 +332,13 @@ namespace Xigadee
 
             OnKeyEvent(KeyEventType.BeforeDelete, key);
 
-            var result = Atomic(true,() =>
-            {
-                if (_container.TryGetValue(key, out var container))
-                    return DeleteInternal(container);
+            var result = Atomic(true, () =>
+             {
+                 if (_container.TryGetValue(key, out var container))
+                     return DeleteInternal(container);
 
-                return false;
-            });
+                 return false;
+             });
 
             return ResultFormat(result ? 200 : 404, () => key, () => new Tuple<K, string>(key, ""), options);
         }
@@ -441,7 +446,7 @@ namespace Xigadee
             OnSearchEvent(rq);
 
             var response = new SearchResponse() { Etag = ETag };
-            
+
             //Func<E, List<KeyValuePair<string, string>>, bool> filter;
 
             //if (string.IsNullOrEmpty(key.Query))//The default filter returns all records.
@@ -466,7 +471,7 @@ namespace Xigadee
             //    return res.ToList();
             //});
 
-            var result = new RepositoryHolder<SearchRequest, SearchResponse>(key:rq, entity:response, responseCode: 200);
+            var result = new RepositoryHolder<SearchRequest, SearchResponse>(key: rq, entity: response, responseCode: 200);
 
             return Task.FromResult(result);
         }
@@ -479,7 +484,11 @@ namespace Xigadee
         {
             OnSearchEvent(rq);
 
+            RepositoryHolder<SearchRequest, SearchResponse<E>> result;
             var response = new SearchResponse<E>() { Etag = ETag };
+
+            //if (rq?.Id == null || !_filterMethods.ContainsKey(rq.Id.Trim().ToLowerInvariant())
+
 
             //Func<E, List<KeyValuePair<string, string>>, bool> filter;
 
@@ -505,7 +514,7 @@ namespace Xigadee
             //    return res.ToList();
             //});
 
-            var result = new RepositoryHolder<SearchRequest, SearchResponse<E>>(key: rq, entity: response, responseCode: 200);
+            result = new RepositoryHolder<SearchRequest, SearchResponse<E>>(key: rq, entity: response, responseCode: 200);
 
             return Task.FromResult(result);
         }
@@ -515,7 +524,7 @@ namespace Xigadee
         /// <summary>
         /// Specifies whether the collection is read only.
         /// </summary>
-        protected bool IsReadOnly { get; } 
+        protected bool IsReadOnly { get; }
         #endregion
 
         #region Count
@@ -526,7 +535,7 @@ namespace Xigadee
         {
             get
             {
-                return Atomic(false,() => _container.Count);
+                return Atomic(false, () => _container.Count);
             }
         }
         #endregion
@@ -538,7 +547,7 @@ namespace Xigadee
         {
             get
             {
-                return Atomic(false,() => _containerReference.Count);
+                return Atomic(false, () => _containerReference.Count);
             }
         }
         #endregion
@@ -552,7 +561,7 @@ namespace Xigadee
         /// </returns>
         public virtual bool ContainsKey(K key)
         {
-            return Atomic(false,() => _container.ContainsKey(key));
+            return Atomic(false, () => _container.ContainsKey(key));
         }
         #endregion
         #region ContainsReference(Tuple<string, string> reference)
@@ -695,7 +704,7 @@ namespace Xigadee
         /// <summary>
         /// Gets the collection identifier that is set when the collection is created.
         /// </summary>
-        public string ETagCollectionId { get; } = Guid.NewGuid().ToString("N").ToUpperInvariant(); 
+        public string ETagCollectionId { get; } = Guid.NewGuid().ToString("N").ToUpperInvariant();
         #endregion
         #region ETagOrdinalIncrement()
         /// <summary>
@@ -703,6 +712,7 @@ namespace Xigadee
         /// </summary>
         protected virtual void ETagOrdinalIncrement()
         {
+            _searchCache.Clear();
             Interlocked.Increment(ref _etagOrdinal);
         }
         #endregion
@@ -729,7 +739,7 @@ namespace Xigadee
                 , IEnumerable<Tuple<string, string>> references
                 , IEnumerable<Tuple<string, string>> properties
                 , string versionId
-                , Func<byte[],E> deserializer
+                , Func<byte[], E> deserializer
                 , Func<E, byte[]> serializer
                 )
             {
@@ -768,7 +778,7 @@ namespace Xigadee
             /// <summary>
             /// Contains the entity.
             /// </summary>
-            public E Entity => (Body?.Length ?? 0)==0 ? default(E) : Deserializer(Body);
+            public E Entity => (Body?.Length ?? 0) == 0 ? default(E) : Deserializer(Body);
 
             /// <summary>
             /// Gets or sets the json body of the entity. This is used to ensure that the entity is
@@ -798,5 +808,50 @@ namespace Xigadee
 
         }
         #endregion
+
+
+        protected class ContainerHolder
+        {
+            /// <summary>
+            /// This container holds the entities.
+            /// </summary>
+            protected readonly Dictionary<K, EntityContainer> _container;
+            /// <summary>
+            /// This container holds the key references.
+            /// </summary>
+            protected readonly Dictionary<Tuple<string, string>, EntityContainer> _containerReference;
+
+            public ContainerHolder()
+            {
+                _container = new Dictionary<K, EntityContainer>();
+                _containerReference = new Dictionary<Tuple<string, string>, EntityContainer>(new ReferenceComparer());
+            }
+        }
+
+        /// <summary>
+        /// This helper class is used to filter search results based on search queries.
+        /// </summary>
+        /// <typeparam name="K">The key type.</typeparam>
+        /// <typeparam name="E">The entity type.</typeparam>
+        public class RepositoryMemorySearch
+        {
+            public RepositoryMemorySearch(string id)
+            {
+                Id = id;
+            }
+
+            /// <summary>
+            /// Gets the search identifier.
+            /// </summary>
+            public string Id { get; }
+
+
+            public Task<IEnumerable<E>> SearchEntity()
+            {
+                return Task.FromResult((IEnumerable<E>)null);
+            }
+
+            //Func<E, List<KeyValuePair<string, string>>, bool>
+        }
     }
 }
