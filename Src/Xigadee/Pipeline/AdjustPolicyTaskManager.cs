@@ -52,6 +52,8 @@ namespace Xigadee
                 t.TransmissionPayloadTraceEnabled = true;
             });
 
+            pipeline.AdjustCommunicationPolicyForSingleListenerClient();
+
             return pipeline;
         }
     }
