@@ -29,11 +29,10 @@ namespace Xigadee
         /// This lock is used when modifying references.
         /// </summary>
         protected readonly ReaderWriterLockSlim _referenceModifyLock;
-
-        protected Dictionary<string, RepositoryMemorySearch<K,E>> _filterMethods;
-
-        protected readonly Func<IEnumerable<Tuple<string, Func<E, List<KeyValuePair<string, string>>, bool>>>> _searchMaker;
-
+        /// <summary>
+        /// The supported search collection.
+        /// </summary>
+        protected readonly Dictionary<string, RepositoryMemorySearch<K,E>> _supportedSearches;
         #endregion
         #region Constructor        
         /// <summary>
@@ -63,8 +62,7 @@ namespace Xigadee
             _container = new RepositoryMemoryContainer<K, E>();
             _searchCache = new ConcurrentDictionary<K, E>();
 
-            //_filterMethods = new Dictionary<string, Func<E, List<KeyValuePair<string, string>>, bool>>();
-            //searchMaker?.Invoke().ForEach((t) => _filterMethods.Add(t.Item1, t.Item2));
+            _supportedSearches = searches?.ToDictionary(s => s.Id, s => s) ?? new Dictionary<string, RepositoryMemorySearch<K, E>>();
 
             SerializationContext = sContext ?? DefaultSerializationContext();
 
@@ -486,6 +484,7 @@ namespace Xigadee
         /// </summary>
         public virtual int CountReference => Atomic(false, () => _container.CountReference);
         #endregion
+
         #region ContainsKey(K key)
         /// <summary>
         /// Determines whether the collection contains the specified key.
@@ -566,13 +565,13 @@ namespace Xigadee
         /// <summary>
         /// Gets the current collection ETag. This changes when an entity is created/updated or deleted.
         /// </summary>
-        public string ETag => $"{typeof(E).Name}:{ETagCollectionId}:{_container.ETagOrdinal}";
+        public string ETag => $"{ETagCollectionId}:{_container.ETagOrdinal}";
         #endregion
         #region ETagCollectionId
         /// <summary>
         /// Gets the collection identifier that is set when the collection is created.
         /// </summary>
-        public string ETagCollectionId { get; } = Guid.NewGuid().ToString("N").ToUpperInvariant();
+        public string ETagCollectionId { get; } = $"{typeof(E).Name}:{Guid.NewGuid().ToString("N").ToUpperInvariant()}";
         #endregion
     }
 
