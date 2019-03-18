@@ -282,7 +282,7 @@ namespace Xigadee
                  else
                      newEntity = newContainer.Entity;
 
-                 _container.Update(oldContainer, newContainer);
+                 _container.Replace(oldContainer, newContainer);
 
                  return 200;
              });
@@ -606,6 +606,12 @@ namespace Xigadee
         }
         #endregion
 
+        #region Add(EntityContainer<K, E> newContainer)
+        /// <summary>
+        /// Add an entity container to the collection.
+        /// </summary>
+        /// <param name="newContainer"></param>
+        /// <returns></returns>
         public bool Add(EntityContainer<K, E> newContainer)
         {
             var key = newContainer.Key;
@@ -627,34 +633,70 @@ namespace Xigadee
 
             return true;
         }
-
-        public void Update(EntityContainer<K, E> oldContainer, EntityContainer<K, E> newContainer)
+        #endregion
+        #region Replace(EntityContainer<K, E> oldContainer, EntityContainer<K, E> newContainer)
+        /// <summary>
+        /// Replace a container for an entity.
+        /// </summary>
+        /// <param name="oldContainer"></param>
+        /// <param name="newContainer"></param>
+        public void Replace(EntityContainer<K, E> oldContainer, EntityContainer<K, E> newContainer)
         {
-            var key = newContainer.Key;
+            var key = oldContainer.Key;
+
+            if (!key.Equals(newContainer.Key))
+                throw new ArgumentOutOfRangeException($"Container keys do not match: {key}/{newContainer.Key}");
 
             //OK, update the entity
             _container[key] = newContainer;
+
             //Remove the old references, and add the new references.
             //Note we're being lazy we add/replace even if nothing has changed.
             oldContainer.References.ForEach((r) => _containerReference.Remove(r));
             newContainer.References.ForEach((r) => _containerReference.Add(r, newContainer));
-        }
+        } 
+        #endregion
 
+        /// <summary>
+        /// Checks whether the collection contains the key.
+        /// </summary>
+        /// <param name="key">The key to check.</param>
+        /// <returns>True if the key exists.</returns>
         public bool Contains(K key) => _container.ContainsKey(key);
-
-        public bool Contains(Tuple<string, string> key) => _containerReference.ContainsKey(key);
-
+        /// <summary>
+        /// Checks whether the collection contains the entity reference.
+        /// </summary>
+        /// <param name="reference">The reference.</param>
+        /// <returns>True if the reference exists.</returns>
+        public bool Contains(Tuple<string, string> reference) => _containerReference.ContainsKey(reference);
+        /// <summary>
+        /// Checks for a container.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="container">The container as an output.</param>
+        /// <returns>True if the key exists.</returns>
         public bool TryGetValue(K key, out EntityContainer<K, E> container)
         {
             return _container.TryGetValue(key, out container);
         }
 
-        //Tuple<string, string>
-        public bool TryGetValue(Tuple<string, string> key, out EntityContainer<K, E> container)
+        /// <summary>
+        /// Checks for a container.
+        /// </summary>
+        /// <param name="reference">The reference.</param>
+        /// <param name="container">The container as an output.</param>
+        /// <returns>True if the entity reference exists.</returns>
+        public bool TryGetValue(Tuple<string, string> reference, out EntityContainer<K, E> container)
         {
-            return _containerReference.TryGetValue(key, out container);
+            return _containerReference.TryGetValue(reference, out container);
         }
 
+        /// <summary>
+        /// Deletes a container.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="container">The container as an output.</param>
+        /// <returns>True if the container exists and has been deleted.</returns>
         public bool Delete(K key, out EntityContainer<K, E> container)
         {
             if (_container.TryGetValue(key, out container))
@@ -664,10 +706,15 @@ namespace Xigadee
             return false;
         }
 
-        //Tuple<string, string>
-        public bool Delete(Tuple<string, string> key, out EntityContainer<K, E> container)
+        /// <summary>
+        /// Deletes a container.
+        /// </summary>
+        /// <param name="reference">The reference.</param>
+        /// <param name="container">The container as an output.</param>
+        /// <returns>True if the container exists and has been deleted.</returns>
+        public bool Delete(Tuple<string, string> reference, out EntityContainer<K, E> container)
         {
-            if (_containerReference.TryGetValue(key, out container))
+            if (_containerReference.TryGetValue(reference, out container))
                 return DeleteInternal(container);
 
             container = null;
@@ -894,7 +941,7 @@ namespace Xigadee
         public string Id { get; }
 
 
-        public Task<IEnumerable<E>> SearchEntity()
+        public Task<IEnumerable<E>> SearchEntity(RepositoryMemoryContainer<K, E> collection)
         {
             return Task.FromResult((IEnumerable<E>)null);
         }
