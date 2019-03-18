@@ -130,12 +130,12 @@ namespace Xigadee
             }
         }
         #endregion
-        #region OnSearchEvent(SearchRequest key)
+        #region OnBeforeSearchEvent(SearchRequest key)
         /// <summary>
         /// Called when a search event occurs.
         /// </summary>
         /// <param name="key">The search request.</param>
-        protected void OnSearchEvent(SearchRequest key)
+        protected void OnBeforeSearchEvent(SearchRequest key)
         {
             OnBeforeSearch?.Invoke(this, key);
         }

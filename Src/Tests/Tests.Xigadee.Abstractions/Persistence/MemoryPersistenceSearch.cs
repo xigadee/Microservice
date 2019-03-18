@@ -52,6 +52,8 @@ namespace Test.Xigadee
             , versionPolicy: ((TestClass e) => e.VersionId.ToString("N"), (TestClass e) => e.VersionId = Guid.NewGuid())
                 );
 
+            repo.AddSearch(new RepositoryMemorySearch<Guid, TestClass>("default"));
+
             for (int i = 0; i < 100; i++)
             {
                 var rs = repo.Create(new TestClass() { Amount = i, Name = $"Id{i}" }).Result;
@@ -73,7 +75,7 @@ namespace Test.Xigadee
             e.Name = "Paul123";
             var resChange = await repo.Update(e);
 
-            var res1 = await repo.Search("$id=default&$top=10");
+            var res1 = await repo.Search(sr2);
 
         }
     }

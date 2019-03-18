@@ -43,6 +43,11 @@
         /// </summary>
         public const string Search = "Search";
         /// <summary>
+        /// The search action.
+        /// </summary>
+        public const string SearchEntity = "SearchEntity";
+
+        /// <summary>
         /// The history action.
         /// </summary>
         public const string History = "History";

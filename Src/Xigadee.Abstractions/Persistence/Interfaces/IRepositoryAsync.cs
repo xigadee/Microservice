@@ -76,7 +76,12 @@ namespace Xigadee
         /// <param name="options">The repository options settings.</param>
         /// <returns>Returns the holder with the response and data.</returns>
         Task<RepositoryHolder<SearchRequest, SearchResponse>> Search(SearchRequest key, RepositorySettings options = null);
-
-        //Task<RepositoryHolder<SearchRequest, SearchResponse<E>>> SearchEntity(SearchRequest key, RepositorySettings options = null);
+        /// <summary>
+        /// Searches the entity store are returns full entities.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="options">The options.</param>
+        /// <returns>Returns the holder with the response and data.</returns>
+        Task<RepositoryHolder<SearchRequest, SearchResponse<E>>> SearchEntity(SearchRequest key, RepositorySettings options = null);
     }
 }

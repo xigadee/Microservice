@@ -240,7 +240,30 @@ namespace Xigadee
             //}
 
             return await TransmitInternal(EntityActions.Search, new RepositoryHolder<SearchRequest, SearchResponse> { Key = rq, Settings = settings }, principal: DefaultPrincipal);
-        } 
+        }
+        #endregion
+        #region SearchEntity(SearchRequest rq, RepositorySettings settings = null)
+        /// <summary>
+        /// This method issues a search request.
+        /// </summary>
+        /// <param name="rq">The search request.</param>
+        /// <param name="settings">The persistence request settings.</param>
+        /// <returns>The search response.</returns>
+        public virtual async Task<RepositoryHolder<SearchRequest, SearchResponse<E>>> SearchEntity(SearchRequest rq, RepositorySettings settings = null)
+        {
+            ValidateServiceStarted();
+
+            //if ((settings?.UseCache ?? true) && mCacheManager.IsActive)
+            //{
+            //    var result = await mCacheManager.VersionRead(new Tuple<string, string>(refKey, refValue));
+            //    if (result.IsSuccess)
+            //    {
+            //        return new RepositoryHolder<K, Tuple<K, string>>(result.Entity.Item1, new Tuple<string, string>(result.Id, result.VersionId), responseCode: 200, entity: result.Entity) { IsCached = true };
+            //    }
+            //}
+
+            return await TransmitInternal(EntityActions.SearchEntity, new RepositoryHolder<SearchRequest, SearchResponse<E>> { Key = rq, Settings = settings }, principal: DefaultPrincipal);
+        }
         #endregion
 
         /// <summary>

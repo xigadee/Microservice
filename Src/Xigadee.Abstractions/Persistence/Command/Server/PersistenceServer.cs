@@ -175,6 +175,7 @@ namespace Xigadee
             PersistenceCommandRegister<K, Tuple<K, string>>(EntityActions.VersionByRef, ProcessVersionByRef);
             //Search
             PersistenceCommandRegister<SearchRequest, SearchResponse>(EntityActions.Search, ProcessSearch);
+            PersistenceCommandRegister<SearchRequest, SearchResponse<E>>(EntityActions.SearchEntity, ProcessSearchEntity);
             //History
             PersistenceCommandRegister<HistoryRequest<K>, HistoryResponse<K>>(EntityActions.History, ProcessHistory);
         }
@@ -855,6 +856,24 @@ namespace Xigadee
             => Repository.Search(key);
 
         #endregion
+        #region SearchEntity
+        /// <summary>
+        /// This is the entity search.
+        /// </summary>
+        /// <param name="holder">The is the entity search data.</param>
+        /// <returns>This is an async task.</returns>
+        protected virtual async Task ProcessSearchEntity(PersistenceRequestHolder<SearchRequest, SearchResponse<E>> holder)
+        {
+            var result = await InternalSearchEntity(holder.Rq.Key, holder);
+
+            ProcessOutput(holder, result);
+        }
+
+        protected virtual Task<RepositoryHolder<SearchRequest, SearchResponse<E>>> InternalSearchEntity(SearchRequest key, PersistenceRequestHolder<SearchRequest, SearchResponse<E>> holder)
+            => Repository.SearchEntity(key);
+
+        #endregion
+
         #region History
         /// <summary>
         /// This is the entity history.

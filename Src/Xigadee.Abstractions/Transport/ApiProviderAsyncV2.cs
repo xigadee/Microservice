@@ -294,6 +294,25 @@ namespace Xigadee
             //}
         }
         #endregion
+        #region SearchEntity(K key, RepositorySettings options = null)
+        /// <summary>
+        /// This method reads an entity based on the key passed.
+        /// </summary>
+        /// <param name="key">The key request.</param>
+        /// <param name="options">These are the repository options which define the request type..</param>
+        /// <returns>This is the holder containing the response and the entity where necessary.</returns>
+        public virtual async Task<RepositoryHolder<SearchRequest, SearchResponse<E>>> SearchEntity(SearchRequest key, RepositorySettings options = null)
+        {
+            var uri = mUriMapper.MakeUri(new HttpMethod("Search"));
+
+            throw new NotImplementedException();
+            //using (var content = GetContent(entity))
+            //{
+            //    return await CallClient<K, E>(uri, options, content: content, deserializer: DeserializeEntity,
+            //        mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
+            //}
+        }
+        #endregion
 
         #region ExtractHeaders<KT, ET>(HttpResponseMessage rs, RepositoryHolder<KT, ET> holder, IKeyMapper<KT> keyMapper)
         /// <summary>
