@@ -118,10 +118,10 @@ namespace Xigadee
         /// <summary>
         /// Gets the stored procedure search.
         /// </summary>
-        public virtual string StoredProcedureSearch => _spNames[RepositoryMethod.Search];
+        public virtual string StoredProcedureSearch(string id) => $"{_spNames[RepositoryMethod.Search]}{id.Trim().ToLowerInvariant()}";
         /// <summary>
         /// Gets the stored procedure search entity.
         /// </summary>
-        public virtual string StoredProcedureSearchEntity => _spNames[RepositoryMethod.SearchEntity];
+        public virtual string StoredProcedureSearchEntity(string id) => $"{_spNames[RepositoryMethod.SearchEntity]}{id.Trim().ToLowerInvariant()}";
     }
 }

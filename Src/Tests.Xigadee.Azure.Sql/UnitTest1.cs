@@ -19,7 +19,7 @@ namespace Tests.Xigadee.Azure.Sql
                 , overrides: new[] { (RepositoryMethod.Search, "mysearch1") });
 
             Assert.AreEqual(spNames.StoredProcedureCreate, "[External].spCreate_Test1");
-            Assert.AreEqual(spNames.StoredProcedureSearch, "mysearch1");
+            Assert.AreEqual(spNames.StoredProcedureSearch("default"), "mysearch1default");
         }
     }
 }

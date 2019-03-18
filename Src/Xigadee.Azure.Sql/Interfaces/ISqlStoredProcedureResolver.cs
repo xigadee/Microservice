@@ -50,10 +50,10 @@
         /// <summary>
         /// Gets the search stored procedure name.
         /// </summary>
-        string StoredProcedureSearch { get; }
+        string StoredProcedureSearch(string id);
         /// <summary>
         /// Gets the search entity stored procedure name.
         /// </summary>
-        string StoredProcedureSearchEntity { get; }
+        string StoredProcedureSearchEntity(string id);
     }
 }

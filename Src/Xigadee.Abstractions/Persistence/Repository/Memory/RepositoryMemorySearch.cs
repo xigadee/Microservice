@@ -22,11 +22,16 @@ namespace Xigadee
         }
 
         /// <summary>
-        /// Gets the search identifier.
+        /// Gets the search algorithm identifier.
         /// </summary>
         public string Id { get; }
 
-
+        /// <summary>
+        /// Searches the entity collection and returns a set of entities.
+        /// </summary>
+        /// <param name="collection">The collection.</param>
+        /// <param name="holder">The holder.</param>
+        /// <param name="options">The options.</param>
         public Task SearchEntity(RepositoryMemoryContainer<K, E> collection, RepositoryHolder<SearchRequest, SearchResponse<E>> holder, RepositorySettings options = null)
         {
             holder.ResponseCode = 400;

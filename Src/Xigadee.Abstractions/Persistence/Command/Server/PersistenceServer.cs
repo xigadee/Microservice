@@ -888,7 +888,15 @@ namespace Xigadee
         #endregion
 
 
-        protected virtual void ProcessOutput<KT,ET>(PersistenceRequestHolder<KT, ET> holder
+        #region ProcessOutput<KT,ET>...
+        /// <summary>
+        /// Processes and formats the output.
+        /// </summary>
+        /// <typeparam name="KT">The key type.</typeparam>
+        /// <typeparam name="ET">The entity type.</typeparam>
+        /// <param name="holder">The holder.</param>
+        /// <param name="result">The result.</param>
+        protected virtual void ProcessOutput<KT, ET>(PersistenceRequestHolder<KT, ET> holder
             , RepositoryHolder<KT, ET> result)
         {
             holder.Rs.ResponseCode = result.ResponseCode;
@@ -902,7 +910,8 @@ namespace Xigadee
             //holder.Rs.KeyReference = new Tuple<string, string>(rs.Key.ToString(), rs.Settings.VersionId);
 
             //result.
-        }
+        } 
+        #endregion
 
 
         //Response Processing
