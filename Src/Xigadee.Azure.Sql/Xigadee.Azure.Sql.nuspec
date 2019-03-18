@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Xigadee.Azure.Sql</id>
+    <version>{UpdateVersion.ps1.replace}</version>
+    <title>Xigadee Azure Sql Library</title>
+    <authors>Paul Stancer and Guy Steel</authors>
+    <owners>Xigadee</owners>
+    <iconUrl>https://raw.githubusercontent.com/xigadee/Microservice/master/docs/Logo.png</iconUrl>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <projectUrl>http://xigadee.org</projectUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>This library contains the Xigadee connectors for Sql Server.</description>
+    <releaseNotes>First update for 2.0.</releaseNotes>
+    <copyright>Copyright © Xigadee 2017-2019 incorporates copyright of Hitachi Consulting 2012-2017</copyright>
+    <tags>Xigadee Microservice Azure Sql .NET</tags>
+    <dependencies>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="Xigadee.Abstractions" version="{UpdateVersion.ps1.replace}" exclude="Build,Analyzers" />
+        <dependency id="System.Data.SqlClient" version="4.6.0" exclude="Build,Analyzers" />
+        <dependency id="Newtonsoft.Json" version="12.0.1" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\netstandard2.0\Xigadee.Azure.Sql.dll" target="lib\netstandard2.0\" />
+    <file src="bin\Release\netstandard2.0\Xigadee.Azure.Sql.pdb" target="lib\netstandard2.0\" />
+    <file src="bin\Release\netstandard2.0\Xigadee.Azure.Sql.xml" target="lib\netstandard2.0\" />
+  </files>
+</package>

@@ -11,7 +11,7 @@ namespace Xigadee
     /// <summary>
     /// This container holds the current tasks being processed on the system and calculates the available slots for the supported priority levels.
     /// </summary>
-    public partial class TaskManager: ServiceContainerBase<TaskManagerStatistics, TaskManagerPolicy>
+    public class TaskManager: ServiceContainerBase<TaskManagerStatistics, TaskManagerPolicy>
         , IRequireDataCollector
     {
         #region Declarations
