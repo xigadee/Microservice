@@ -119,7 +119,6 @@ namespace Xigadee
         }
         #endregion
 
-
         #region OnBeforeSearch...
         /// <summary>
         /// Occurs before an entity is created.

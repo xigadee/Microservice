@@ -11,8 +11,10 @@ namespace Xigadee
     public class EntityContainer<K, E>
         where K : IEquatable<K>
     {
+        #region Declarations
         private long _hitCount = 0;
-
+        #endregion
+        #region Constructor
         /// <summary>
         /// Initializes a new instance of the EntityContainer class.
         /// </summary>
@@ -23,15 +25,18 @@ namespace Xigadee
         /// <param name="versionId">The version id of the entity..</param>
         /// <param name="deserializer">The deserializer that converts the body to an entity.</param>
         /// <param name="serializer">The serializer that turns the entity in to a blob.</param>
+        /// <param name="keyAsString">The key as a serialized string.</param>
         public EntityContainer(K key, E entity
             , IEnumerable<Tuple<string, string>> references
             , IEnumerable<Tuple<string, string>> properties
             , string versionId
             , Func<byte[], E> deserializer
             , Func<E, byte[]> serializer
+            , string keyAsString
             )
         {
             Key = key;
+            Id = keyAsString;
 
             Serializer = serializer ?? throw new ArgumentNullException("serializer");
 
@@ -43,7 +48,8 @@ namespace Xigadee
             Properties = properties == null ? new List<Tuple<string, string>>() : properties.ToList();
 
             VersionId = versionId;
-        }
+        } 
+        #endregion
 
         /// <summary>
         /// Gets the serializer that turns the entity in to a blob.
@@ -59,6 +65,12 @@ namespace Xigadee
         /// Contains the key.
         /// </summary>
         public K Key { get; }
+
+        /// <summary>
+        /// Gets the key as a string.
+        /// </summary>
+        public string Id { get; }
+
         /// <summary>
         /// Gets or sets the version identifier.
         /// </summary>
@@ -158,6 +170,11 @@ namespace Xigadee
             }
         }
 
+        /// <summary>
+        /// Gets the first named property.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>Returns the value or null.</returns>
         public string PropertyGet(string key)
         {
             return Container.Properties.FirstOrDefault(p => p.Item1.Equals(key, StringComparison.InvariantCultureIgnoreCase))?.Item2;

@@ -46,6 +46,7 @@ namespace Xigadee
         /// <param name="versionPolicy">The version policy.</param>
         /// <param name="readOnly">This property specifies that the collection is read-only.</param>
         /// <param name="sContext">This context contains the serialization components for storing the entities.</param>
+        /// <param name="keyManager">The key serialization manager. if this is not passed, then a default serializer will be passed using the component model.</param>
         public RepositoryMemory(Func<E, K> keyMaker
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             , Func<E, IEnumerable<Tuple<string, string>>> propertiesMaker = null
@@ -54,8 +55,9 @@ namespace Xigadee
             , IEnumerable<E> prePopulate = null
             , bool readOnly = false
             , ServiceHandlerCollectionContext sContext = null
+            , RepositoryKeyManager<K> keyManager = null
             )
-            : base(keyMaker, referenceMaker, propertiesMaker, versionPolicy)
+            : base(keyMaker, referenceMaker, propertiesMaker, versionPolicy, keyManager)
         {
             _referenceModifyLock = new ReaderWriterLockSlim();
 
@@ -131,9 +133,11 @@ namespace Xigadee
         protected virtual EntityContainer<K,E> CreateEntityContainer(K key, E newEntity
                 , IEnumerable<Tuple<string, string>> newReferences
                 , IEnumerable<Tuple<string, string>> newProperties
-                , string newVersionId)
+                , string newVersionId
+                , string keyAsString)
         {
-            return new EntityContainer<K, E>(key, newEntity, newReferences, newProperties, newVersionId, EntityDeserialize, EntitySerialize);
+            return new EntityContainer<K, E>(
+                key, newEntity, newReferences, newProperties, newVersionId, EntityDeserialize, EntitySerialize, keyAsString);
         }
 
         protected virtual byte[] EntitySerialize(E entity)
@@ -191,7 +195,8 @@ namespace Xigadee
 
             var result = Atomic(true, () =>
              {
-                 var newContainer = CreateEntityContainer(key, entity, references, properties, VersionPolicy?.EntityVersionAsString(entity));
+                 var newContainer = CreateEntityContainer(
+                     key, entity, references, properties, VersionPolicy?.EntityVersionAsString(entity), KeyManager.Serialize(key));
 
                  //OK, add the entity
                  if (!_container.Add(newContainer))
@@ -273,7 +278,7 @@ namespace Xigadee
             var newReferences = _referenceMaker?.Invoke(entity).ToList();
             var newProperties = _propertiesMaker?.Invoke(entity).ToList();
 
-            EntityContainer<K,E> newContainer = CreateEntityContainer(key, entity, newReferences, newProperties, null);
+            EntityContainer<K,E> newContainer = CreateEntityContainer(key, entity, newReferences, newProperties, null, KeyManager.Serialize(key));
 
             var newEntity = default(E);
 
@@ -302,7 +307,7 @@ namespace Xigadee
                      string newVersion = VersionPolicy.EntityVersionUpdate(newEntity);
 
                      //We need to update the container as the version has changed.
-                     newContainer = CreateEntityContainer(key, newEntity, newReferences, newProperties, newVersion);
+                     newContainer = CreateEntityContainer(key, newEntity, newReferences, newProperties, newVersion, KeyManager.Serialize(key));
                  }
                  else
                      newEntity = newContainer.Entity;
@@ -416,8 +421,8 @@ namespace Xigadee
                 output.Fields.Add(0, new FieldMetadata { Name = "key" });
                 rq.Select().ForIndex((i, s) => output.Fields[i+1] = new FieldMetadata { Name = s });
 
-                rs.ForEach(r => AddRecord(output, r));
-
+                rs.ForEach(r => output.Data.Add(CollateRecord(rq, r).ToArray()));
+                
                 return output;
             });
 
@@ -426,9 +431,12 @@ namespace Xigadee
             return result;
         }
 
-        private void AddRecord(SearchResponse output, EntityContainerWrapper<K, E> wrapper)
+        protected virtual IEnumerable<string> CollateRecord(SearchRequest rq, EntityContainerWrapper<K, E> wrapper)
         {
+            yield return wrapper.Container.Id;
 
+            foreach (var id in rq.Select())
+                yield return wrapper.PropertyGet(id);
         }
         #endregion
         #region SearchEntity(SearchRequest key)
