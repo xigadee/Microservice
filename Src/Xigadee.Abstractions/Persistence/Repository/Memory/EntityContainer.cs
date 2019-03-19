@@ -95,4 +95,74 @@ namespace Xigadee
         public long ReadHitCount => _hitCount;
 
     }
+
+    #region Class -> EntityContainerWrapper
+    /// <summary>
+    /// This wrapper class is used to stop multiple deserializations of an entity when filtering a results set.
+    /// </summary>
+    public class EntityContainerWrapper<K,E>
+        where K : IEquatable<K>
+    {
+        /// <summary>
+        /// Initializes a new instance of the EntityContainerWrapper class. That holds a cached deserialized version of the entity.
+        /// </summary>
+        /// <param name="c">The collection.</param>
+        public EntityContainerWrapper(EntityContainer<K, E> c)
+        {
+            Container = c;
+        }
+
+        private E _entity;
+        private bool _interned = false;
+
+        /// <summary>
+        /// Gets the container.
+        /// </summary>
+        public EntityContainer<K, E> Container { get; }
+
+        /// <summary>
+        /// Gets the cached deserialized entity.
+        /// </summary>
+        public E Entity
+        {
+            get
+            {
+                if (!_interned)
+                {
+                    _entity = Container.Entity;
+                    _interned = true;
+                }
+                return _entity;
+            }
+        }
+
+        /// <summary>
+        /// Checks a property for a match.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        public bool PropertyMatch(string key, string value)
+        {
+            try
+            {
+                var result = Container.Properties
+                    .FirstOrDefault(p => p.Item1.Equals(key, StringComparison.InvariantCultureIgnoreCase));
+
+                return result != null && (result.Item2?.Equals(value) ?? false);
+            }
+            catch (Exception)
+            {
+
+                return false; ;
+            }
+        }
+
+        public string PropertyGet(string key)
+        {
+            return Container.Properties.FirstOrDefault(p => p.Item1.Equals(key, StringComparison.InvariantCultureIgnoreCase))?.Item2;
+        }
+    }
+    #endregion
+
 }

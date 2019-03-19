@@ -4,25 +4,30 @@ using Newtonsoft.Json.Linq;
 
 namespace Xigadee
 {
-    public class SearchResponse: SearchResponse<string>
+    public class SearchResponse: SearchResponse<string[]>
     {
+        public Dictionary<int, FieldMetadata> Fields { get; } = new Dictionary<int, FieldMetadata>();
+
+        public override List<string[]> Data { get; set; } = new List<string[]>();
+    }
+
+    public class SearchResponse<E>: SearchResponseBase
+    {
+        public virtual List<E> Data { get; set; }
 
     }
 
-    public class SearchResponse<E>
+    public class SearchResponseBase
     {
         public string Etag { get; set; }
 
-        public Dictionary<int, FieldMetadata> Fields { get; } = new Dictionary<int, FieldMetadata>();
+        public int? Top { get; set; }
 
-        public List<E> Data { get; set; }
-
+        public int? Skip { get; set; }
     }
 
     public class FieldMetadata
     {
         public string Name { get; set; }
-
-        public Type Type { get; set; }
     }
 }

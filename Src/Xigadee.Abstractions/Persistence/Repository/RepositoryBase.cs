@@ -1,9 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 namespace Xigadee
 {
@@ -17,95 +13,79 @@ namespace Xigadee
         where K : IEquatable<K>
     {
         #region Events
-        /// <summary>
-        /// Occurs before an entity is created.
-        /// </summary>
-        public event EventHandler<SearchRequest> OnBeforeSearch;
-        /// <summary>
-        /// Occurs before an entity is created.
-        /// </summary>
-        public event EventHandler<SearchResponse> OnAfterSearch;
-        /// <summary>
-        /// Occurs before an entity is created.
-        /// </summary>
-        public event EventHandler<SearchResponse<E>> OnAfterSearchEntity;
 
+        #region OnBeforeCreate...
+        /// <summary>
+        /// Called before and entity is created.
+        /// </summary>
+        /// <param name="entity">The incoming entity.</param>
+        protected void OnBeforeCreateEvent(E entity) => OnBeforeCreate?.Invoke(this, entity);
         /// <summary>
         /// Occurs before and entity is created.
         /// </summary>
         public event EventHandler<E> OnBeforeCreate;
+        #endregion
+        #region OnAfterCreate
+        /// <summary>
+        /// Occurs after an entity is created/attempted.
+        /// </summary>
+        protected void OnAfterCreateEvent(RepositoryHolder<K, E> holder) => OnAfterCreate?.Invoke(this, holder);
+        /// <summary>
+        /// Occurs after an entity is created.
+        /// </summary>
+        public event EventHandler<RepositoryHolder<K, E>> OnAfterCreate; 
+        #endregion
+
+        #region OnBeforeUpdate ...
+        /// <summary>
+        /// Called before and entity is created.
+        /// </summary>
+        /// <param name="entity">The incoming entity.</param>
+        protected void OnBeforeUpdateEvent(E entity) => OnBeforeUpdate?.Invoke(this, entity);
         /// <summary>
         /// Occurs before an entity is updated.
         /// </summary>
         public event EventHandler<E> OnBeforeUpdate;
+        #endregion
+
+        #region OnAfterUpdate ...
         /// <summary>
-        /// Occurs after an entity is created.
+        /// Occurs after an entity is created/attempted.
         /// </summary>
-        public event EventHandler<E> OnAfterCreate;
+        protected void OnAfterUpdateEvent(RepositoryHolder<K, E> holder) => OnAfterUpdate?.Invoke(this, holder);
         /// <summary>
         /// Occurs after an entity is updated.
         /// </summary>
-        public event EventHandler<E> OnAfterUpdate;
+        public event EventHandler<RepositoryHolder<K, E>> OnAfterUpdate; 
+        #endregion
+
         /// <summary>
         /// Occurs before an entity is read.
         /// </summary>
         public event EventHandler<ReferenceHolder<K>> OnBeforeRead;
+
+        #region OnAfterRead
+        /// <summary>
+        /// Occurs before an entity is read.
+        /// </summary>
+        protected void OnAfterReadEvent(RepositoryHolder<K, E> holder) => OnAfterRead?.Invoke(this, holder);
+
+        /// <summary>
+        /// Occurs before an entity is read.
+        /// </summary>
+        public event EventHandler<RepositoryHolder<K, E>> OnAfterRead; 
+        #endregion
+
         /// <summary>
         /// Occurs before an entity is deleted.
         /// </summary>
         public event EventHandler<ReferenceHolder<K>> OnBeforeDelete;
+
         /// <summary>
         /// Occurs before an entity is versioned.
         /// </summary>
         public event EventHandler<ReferenceHolder<K>> OnBeforeVersion;
 
-        #region OnEntityEvent(EventType type, TEntity entity)        
-        /// <summary>
-        /// This is the entity event type.
-        /// </summary>
-        protected enum EntityEventType
-        {
-            /// <summary>
-            /// Before the entity is created
-            /// </summary>
-            BeforeCreate,
-            /// <summary>
-            /// Before the entity is update
-            /// </summary>
-            BeforeUpdate,
-            /// <summary>
-            /// After the entity is created
-            /// </summary>
-            AfterCreate,
-            /// <summary>
-            /// After the entity is updated
-            /// </summary>
-            AfterUpdate
-        }
-        /// <summary>
-        /// Called when [event].
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <param name="entity">The entity.</param>
-        protected void OnEntityEvent(EntityEventType type, Func<E> entity)
-        {
-            switch (type)
-            {
-                case EntityEventType.BeforeCreate:
-                    OnBeforeCreate?.Invoke(this, entity());
-                    break;
-                case EntityEventType.BeforeUpdate:
-                    OnBeforeUpdate?.Invoke(this, entity());
-                    break;
-                case EntityEventType.AfterCreate:
-                    OnAfterCreate?.Invoke(this, entity());
-                    break;
-                case EntityEventType.AfterUpdate:
-                    OnAfterUpdate?.Invoke(this, entity());
-                    break;
-            }
-        }
-        #endregion
         #region OnKeyEvent(KeyEventType type, TKey key = default(TKey), string refType = null, string refValue = null)
         protected enum KeyEventType
         {
@@ -138,16 +118,43 @@ namespace Xigadee
             }
         }
         #endregion
-        #region OnBeforeSearchEvent(SearchRequest key)
+
+
+        #region OnBeforeSearch...
+        /// <summary>
+        /// Occurs before an entity is created.
+        /// </summary>
+        public event EventHandler<SearchRequest> OnBeforeSearch;
         /// <summary>
         /// Called when a search event occurs.
         /// </summary>
         /// <param name="key">The search request.</param>
-        protected void OnBeforeSearchEvent(SearchRequest key)
-        {
-            OnBeforeSearch?.Invoke(this, key);
-        }
+        protected void OnBeforeSearchEvent(SearchRequest key) => OnBeforeSearch?.Invoke(this, key);
         #endregion
+        #region OnAfterSearchEvent(RepositoryHolder<SearchRequest, SearchResponse> rs)
+        /// <summary>
+        /// Occurs before an entity is created.
+        /// </summary>
+        public event EventHandler<RepositoryHolder<SearchRequest, SearchResponse>> OnAfterSearch;
+        /// <summary>
+        /// Called after a search event occurs.
+        /// </summary>
+        /// <param name="rs">The search response.</param>
+        protected void OnAfterSearchEvent(RepositoryHolder<SearchRequest, SearchResponse> rs) => OnAfterSearch?.Invoke(this, rs);
+
+        #endregion
+        #region OnAfterSearchEntityEvent(RepositoryHolder<SearchRequest, SearchResponse<E>> rs)
+        /// <summary>
+        /// Occurs before an entity is created.
+        /// </summary>
+        public event EventHandler<RepositoryHolder<SearchRequest, SearchResponse<E>>> OnAfterSearchEntity;
+        /// <summary>
+        /// Called after a search event occurs.
+        /// </summary>
+        /// <param name="rs">The search response.</param>
+        protected void OnAfterSearchEntityEvent(RepositoryHolder<SearchRequest, SearchResponse<E>> rs) => OnAfterSearchEntity?.Invoke(this, rs);
+        #endregion
+
         #endregion
 
         #region Declarations        
@@ -324,9 +331,10 @@ namespace Xigadee
         /// <param name="key">The key.</param>
         /// <param name="entity">The entity.</param>
         /// <param name="options">The incoming options.</param>
+        /// <param name="holderAction">The action to execute when the holder is created.</param>
         /// <returns>Returns the holder.</returns>
         public static Task<RepositoryHolder<KT, ET>> ResultFormat<KT, ET>(int result, Func<KT> key = null, Func<ET> entity = null
-            , RepositorySettings options = null)
+            , RepositorySettings options = null, Action<RepositoryHolder<KT, ET>> holderAction = null)
             where KT : IEquatable<KT>
         {
             var k = key != null ? key() : default(KT);
@@ -346,7 +354,8 @@ namespace Xigadee
                     break;
             }
 
-            
+            holderAction?.Invoke(holder);
+
             return Task.FromResult(holder);
         }
         #endregion

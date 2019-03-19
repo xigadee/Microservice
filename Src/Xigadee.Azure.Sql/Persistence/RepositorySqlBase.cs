@@ -112,16 +112,11 @@ namespace Xigadee
         /// </returns>
         public override async Task<RepositoryHolder<K, E>> Create(E entity, RepositorySettings options = null)
         {
-            OnEntityEvent(EntityEventType.BeforeCreate, () => entity);
+            OnBeforeCreateEvent(entity);
 
             var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureCreate, sqlCmd => DbSerializeEntity(entity, sqlCmd), DbDeserializeEntity);
 
-            var response = ProcessOutputEntity(rs);
-
-            if (response.IsSuccess && response.Entity != null)
-                OnEntityEvent(EntityEventType.AfterCreate, () => response.Entity);
-
-            return response;
+            return ProcessOutputEntity(rs, o => OnAfterCreateEvent(o));
         } 
         #endregion
         #region Read
@@ -135,8 +130,11 @@ namespace Xigadee
         /// </returns>
         public override async Task<RepositoryHolder<K, E>> Read(K key, RepositorySettings options = null)
         {
+            OnKeyEvent(KeyEventType.BeforeRead, key);
+
             var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureRead, sqlCmd => DbSerializeKey(key, sqlCmd), DbDeserializeEntity);
-            return ProcessOutputEntity(rs);
+
+            return ProcessOutputEntity(rs, o => OnAfterReadEvent(o));
         }
         /// <summary>
         /// Reads the entity by a reference key-value pair.
@@ -149,9 +147,11 @@ namespace Xigadee
         /// </returns>
         public override async Task<RepositoryHolder<K, E>> ReadByRef(string refKey, string refValue, RepositorySettings options = null)
         {
+            OnKeyEvent(KeyEventType.BeforeRead, default(K), refKey,  refValue);
+
             var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureReadByRef, sqlCmd => DbSerializeKeyReference(new Tuple<string, string>(refKey, refValue), sqlCmd), DbDeserializeEntity);
 
-            return ProcessOutputEntity(rs);
+            return ProcessOutputEntity(rs, o => OnAfterReadEvent(o));
         } 
         #endregion
         #region Update
@@ -165,13 +165,11 @@ namespace Xigadee
         /// </returns>
         public override async Task<RepositoryHolder<K, E>> Update(E entity, RepositorySettings options = null)
         {
-            OnEntityEvent(EntityEventType.BeforeUpdate, () => entity);
-            var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureUpdate, sqlCmd => DbSerializeEntity(entity, sqlCmd), DbDeserializeEntity);
-            var response = ProcessOutputEntity(rs);
-            if (response.IsSuccess && response.Entity != null)
-                OnEntityEvent(EntityEventType.AfterUpdate, () => response.Entity);
+            OnBeforeUpdateEvent(entity);
 
-            return response;
+            var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureUpdate, sqlCmd => DbSerializeEntity(entity, sqlCmd), DbDeserializeEntity);
+
+            return ProcessOutputEntity(rs, o => OnAfterUpdateEvent(o));
         } 
         #endregion
         #region Delete
@@ -344,13 +342,19 @@ namespace Xigadee
         /// Converts the SQL output to a repository holder format..
         /// </summary>
         /// <param name="sqlResponse">The SQL response.</param>
+        /// <param name="onEvent">The event to fire.</param>
         /// <returns>The repository response.</returns>
-        protected virtual RepositoryHolder<K, E> ProcessOutputEntity(SqlEntityResponse<E> sqlResponse)
+        protected virtual RepositoryHolder<K, E> ProcessOutputEntity(SqlEntityResponse<E> sqlResponse
+            , Action<RepositoryHolder<K, E>> onEvent = null)
         {
             E entity = sqlResponse.Entities.FirstOrDefault();
             K key = entity != null ? KeyMaker(entity) : default(K);
 
-            return new RepositoryHolder<K, E>(key, null, entity, sqlResponse.ResponseCode, sqlResponse.ResponseMessage);
+            var rs = new RepositoryHolder<K, E>(key, null, entity, sqlResponse.ResponseCode, sqlResponse.ResponseMessage);
+
+            onEvent?.Invoke(rs);
+
+            return rs;
         }
 
         /// <summary>
@@ -360,15 +364,17 @@ namespace Xigadee
         /// <param name="key">The optional key.</param>
         /// <returns>The repository response.</returns>
         protected virtual RepositoryHolder<K, Tuple<K, string>> ProcessOutputVersion(
-            SqlEntityResponse<Tuple<K, string>> sqlResponse, K key = default(K))
+            SqlEntityResponse<Tuple<K, string>> sqlResponse, K key = default(K)
+            , Action<RepositoryHolder<K, Tuple<K, string>>> onEvent = null)
+
         {
             var entity = sqlResponse.Entities.FirstOrDefault();
-            if (entity == null)
-                return new RepositoryHolder<K, Tuple<K, string>>(key, null, null, 404);
+            var rs = (entity == null)? new RepositoryHolder<K, Tuple<K, string>>(key, null, null, 404)
+                : new RepositoryHolder<K, Tuple<K, string>>(entity.Item1, null, new Tuple<K, string>(entity.Item1, entity.Item2), sqlResponse.ResponseCode,sqlResponse.ResponseMessage);
 
-            return new RepositoryHolder<K, Tuple<K, string>>(entity.Item1, null, 
-                new Tuple<K, string>(entity.Item1, entity.Item2), sqlResponse.ResponseCode,
-                sqlResponse.ResponseMessage);
+            onEvent?.Invoke(rs);
+
+            return rs;
         }
         #endregion
 

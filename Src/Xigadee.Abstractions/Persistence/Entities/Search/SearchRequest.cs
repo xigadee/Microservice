@@ -73,7 +73,7 @@ namespace Xigadee
                 case default(string):
                     break;
                 default:
-                    Parameters[key] = toSet.Value;
+                    FilterParameters[key] = toSet.Value;
                     break;
             }
         }
@@ -81,7 +81,7 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the parameter collection.
         /// </summary>
-        public Dictionary<string, string> Parameters { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> FilterParameters { get; set; } = new Dictionary<string, string>();
 
         /// <summary>
         /// This is the search algorithm that is used to search against the parameters specified.
@@ -126,6 +126,7 @@ namespace Xigadee
         /// </summary>
         public string Select { get; set; }
 
+        #region Equals...
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
         /// </summary>
@@ -150,8 +151,9 @@ namespace Xigadee
             if (obj is SearchRequest)
                 return Equals((SearchRequest)obj);
             return false;
-        }
-
+        } 
+        #endregion
+        #region GetHashCode()
         /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
@@ -165,8 +167,9 @@ namespace Xigadee
                 var result = ToString().GetHashCode();
                 return result;
             }
-        }
-
+        } 
+        #endregion
+        #region ToString()
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
@@ -183,14 +186,17 @@ namespace Xigadee
             addAmp |= AppendParam(sb, "$etag", ETag, addAmp);
             addAmp |= AppendParam(sb, "$filter", Filter, addAmp);
             addAmp |= AppendParam(sb, "$orderby", OrderBy, addAmp);
-            addAmp |= AppendParam(sb, "$top", Top, addAmp);
             addAmp |= AppendParam(sb, "$skip", Skip, addAmp);
+            addAmp |= AppendParam(sb, "$top", Top, addAmp);
             addAmp |= AppendParam(sb, "$select", Select, addAmp);
 
-            Parameters.ForEach(p => addAmp |= AppendParam(sb, p.Key, p.Value, addAmp));
+            FilterParameters
+                .OrderBy(p => p.Key?.ToLowerInvariant()??"")
+                .ForEach(p => addAmp |= AppendParam(sb, p.Key, p.Value, addAmp));
 
             return sb.ToString();
-        }
+        } 
+        #endregion
 
         private bool AppendParam(StringBuilder sb, string part, string value, bool addAmp)
         {
@@ -209,7 +215,7 @@ namespace Xigadee
         /// Implicitly converts a string in to a resource profile.
         /// </summary>
         /// <param name="query">The search query.</param>
-        public static implicit operator SearchRequest(string query)
+        public static explicit operator SearchRequest(string query)
         {
             return new SearchRequest(query??"");
         }
@@ -276,6 +282,26 @@ namespace Xigadee
 
             foreach (var res in resL)
                 yield return (res.Key, res.Value?.Equals("ASC", StringComparison.InvariantCultureIgnoreCase)??true);
+
+        }
+
+        /// <summary>
+        /// This method parses the select parameters
+        /// </summary>
+        /// <param name="sr">The search request.</param>
+        /// <returns>Returns an enumerable list of parameters.</returns>
+        public static IEnumerable<string> Select(this SearchRequest sr)
+        {
+            if (string.IsNullOrEmpty(sr.Select))
+                yield break;
+
+            var resL = StringHelper.SplitOnChars(sr.OrderBy ?? ""
+                , (s) => s.ToLowerInvariant()
+                , (s) => s
+                , new[] { ',' }, new[] { ' ' }, s => s.Trim());
+
+            foreach (var res in resL)
+                yield return res.Key;
 
         }
     }

@@ -71,18 +71,30 @@ namespace Xigadee
         }
         #endregion
 
-        #region AddSearch(RepositoryMemorySearch<K, E> algo)
+        #region SearchAdd(RepositoryMemorySearch<K, E> algo, bool setAsDefault = false)
         /// <summary>
         /// This method can be used to add or replace a search algorithm.
         /// </summary>
         /// <param name="algo">The search algorithm.</param>
-        public void AddSearch(RepositoryMemorySearch<K, E> algo)
+        /// <param name="setAsDefault">Set this algorithm as the default algorithm. If an Id is not set, this one will be used.</param>
+        public void SearchAdd(RepositoryMemorySearch<K, E> algo, bool setAsDefault = false)
         {
-            if (string.IsNullOrEmpty(algo?.Id))
+            var id = algo?.Id;
+
+            if (string.IsNullOrEmpty(id))
                 throw new ArgumentOutOfRangeException($"search id must be a valid string.");
 
-            _supportedSearches[algo.Id.ToLowerInvariant()] = algo;
-        } 
+            _supportedSearches[id.ToLowerInvariant()] = algo;
+
+            if (setAsDefault)
+                SearchDefaultId = id;
+        }
+        #endregion
+        #region SearchDefaultId
+        /// <summary>
+        /// This is the default search algorithm.
+        /// </summary>
+        public string SearchDefaultId { get; set; } 
         #endregion
 
         #region SerializationContext
@@ -169,7 +181,7 @@ namespace Xigadee
 
             IncomingParameterChecks(key, entity);
 
-            OnEntityEvent(EntityEventType.BeforeCreate, () => entity);
+            OnBeforeCreateEvent(entity);
 
             //We have to be careful as the caller still has a reference to the old entity and may change it.
             var references = _referenceMaker?.Invoke(entity).ToList();
@@ -190,10 +202,7 @@ namespace Xigadee
                  return 201;
              });
 
-            if (result == 201)
-                OnEntityEvent(EntityEventType.AfterCreate, () => newEntity);
-
-            return ResultFormat(result, () => key, () => newEntity, options);
+            return ResultFormat(result, () => key, () => newEntity, options, r => OnAfterCreateEvent(r));
         }
         #endregion
         #region Read(K key)/ReadByRef(string refKey, string refValue)
@@ -218,6 +227,7 @@ namespace Xigadee
                 , () => result ? container.Key : default(K)
                 , () => result ? entity : default(E)
                 , options
+                , r => OnAfterReadEvent(r)
                 );
         }
         /// <summary>
@@ -241,6 +251,7 @@ namespace Xigadee
                 , () => result ? container.Key : default(K)
                 , () => result ? entity : default(E)
                 , options
+                , r => OnAfterReadEvent(r)
                 );
         }
         #endregion
@@ -257,7 +268,7 @@ namespace Xigadee
 
             IncomingParameterChecks(key, entity);
 
-            OnEntityEvent(EntityEventType.BeforeUpdate, () => entity);
+            OnBeforeUpdateEvent(entity);
 
             var newReferences = _referenceMaker?.Invoke(entity).ToList();
             var newProperties = _propertiesMaker?.Invoke(entity).ToList();
@@ -301,11 +312,7 @@ namespace Xigadee
                  return 200;
              });
 
-            //All good.
-            if (result == 200)
-                OnEntityEvent(EntityEventType.AfterUpdate, () => newEntity);
-
-            return ResultFormat(result, () => key, () => newEntity, options);
+            return ResultFormat(result, () => key, () => newEntity, options, r => OnAfterUpdateEvent(r));
         }
         #endregion
         #region Delete(K key)/DeleteByRef(string refKey, string refValue)
@@ -402,13 +409,18 @@ namespace Xigadee
         /// </summary>
         public override async Task<RepositoryHolder<SearchRequest, SearchResponse>> Search(SearchRequest rq, RepositorySettings options = null)
         {
-            var entityRes = await SearchEntity(rq, options);
+            var result = await SearchInternal(rq, options, (rs) =>
+            {
+                var output = new SearchResponse();
 
-            var result = new RepositoryHolder<SearchRequest, SearchResponse>();
+                //output.Fields = rq.Select.ForIndex((i,a) => ;
+                //output.Data = rs.Select(i => i.Entity).ToList();
 
-            result.Key = rq;
-            result.Entity = new SearchResponse();
-            result.ResponseCode = 501;
+                return output;
+            });
+
+            OnAfterSearchEvent(result);
+
             return result;
         }
         #endregion
@@ -419,25 +431,70 @@ namespace Xigadee
         public override async Task<RepositoryHolder<SearchRequest, SearchResponse<E>>> SearchEntity(SearchRequest rq
             , RepositorySettings options = null)
         {
-            OnBeforeSearchEvent(rq);
-
-            var result = new RepositoryHolder<SearchRequest, SearchResponse<E>>();
-
-            result.Key = rq;
-            result.Entity = new SearchResponse<E>();
-
-            var searchId = rq.Id.ToLowerInvariant();
-
-            if (_supportedSearches.ContainsKey(searchId))
-                await Atomic(false, async () => await _supportedSearches[searchId].SearchEntity(_container, result, options));
-            else
+            var result = await SearchInternal(rq, options, (rs) =>
             {
-                result.ResponseCode = 404;
-                result.ResponseMessage = $"Search '{rq.Id}' cannot be found.";
-            }
+                var output = new SearchResponse<E>();
+                output.Data = rs.Select(i => i.Entity).ToList();
+                return output;
+            });
+
+            OnAfterSearchEntityEvent(result);
 
             return result;
         }
+        #endregion
+
+        #region SearchInternal<S> ...
+        /// <summary>
+        /// This method provides the generic search method.
+        /// </summary>
+        /// <typeparam name="S">The response type.</typeparam>
+        /// <param name="rq">The search request</param>
+        /// <param name="options">The options.</param>
+        /// <param name="loader">The loader method.</param>
+        /// <returns>Returns the holder.</returns>
+        protected virtual async Task<RepositoryHolder<SearchRequest, S>> SearchInternal<S>(SearchRequest rq, RepositorySettings options
+            , Func<IEnumerable<EntityContainerWrapper<K, E>>, S> loader)
+            where S : SearchResponseBase, new()
+        {
+            OnBeforeSearchEvent(rq);
+
+            var result = new RepositoryHolder<SearchRequest, S>();
+
+            result.Key = rq;
+            result.Entity = new S();
+
+            //Get the search id
+            var searchId = rq.Id?.ToLowerInvariant() ?? SearchDefaultId?.ToLowerInvariant();
+
+            try
+            {
+                if (_supportedSearches.ContainsKey(searchId))
+                {
+                    result.ResponseCode = 200;
+                    var output = await Atomic(false, async () => await _supportedSearches[searchId].SearchEntity(_container, rq, options));
+                    result.Entity = loader(output);
+
+                    result.Entity.Etag = ETag;
+                    result.Entity.Skip = rq.SkipValue;
+                    result.Entity.Top = rq.TopValue;
+
+                }
+                else
+                {
+                    result.ResponseCode = 404;
+                    result.ResponseMessage = $"Search algorithm '{searchId}' cannot be found.";
+                }
+            }
+            catch (Exception ex)
+            {
+                result.ResponseCode = 500;
+                result.ResponseMessage = $"Search algorithm '{searchId}' unexpected exception.";
+                result.Ex = ex;
+            }
+
+            return result;
+        } 
         #endregion
 
         #region IsReadOnly

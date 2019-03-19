@@ -38,32 +38,47 @@ namespace Xigadee
         /// </summary>
         VersionPolicy<E> VersionPolicy { get; }
 
-        /// <summary>
-        /// Occurs before an entity is created.
-        /// </summary>
-        event EventHandler<SearchRequest> OnBeforeSearch;
 
         /// <summary>
         /// Occurs before and entity is created.
         /// </summary>
         event EventHandler<E> OnBeforeCreate;
         /// <summary>
+        /// Occurs after an entity is created.
+        /// </summary>
+        event EventHandler<RepositoryHolder<K, E>> OnAfterCreate;
+        
+        /// <summary>
         /// Occurs before an entity is updated.
         /// </summary>
         event EventHandler<E> OnBeforeUpdate;
         /// <summary>
-        /// Occurs after an entity is created.
-        /// </summary>
-        event EventHandler<E> OnAfterCreate;
-        /// <summary>
         /// Occurs after an entity is updated.
         /// </summary>
-        event EventHandler<E> OnAfterUpdate;
+        event EventHandler<RepositoryHolder<K, E>> OnAfterUpdate;
+
+        /// <summary>
+        /// Occurs before an search is executed.
+        /// </summary>
+        event EventHandler<SearchRequest> OnBeforeSearch;
+        /// <summary>
+        /// Occurs after a search is executed, but before transmission.
+        /// </summary>
+        event EventHandler<RepositoryHolder<SearchRequest, SearchResponse>> OnAfterSearch;
+        /// <summary>
+        /// Occurs after a search is executed, but before transmission.
+        /// </summary>
+        event EventHandler<RepositoryHolder<SearchRequest, SearchResponse<E>>> OnAfterSearchEntity;
 
         /// <summary>
         /// Occurs before an entity is read.
         /// </summary>
         event EventHandler<ReferenceHolder<K>> OnBeforeRead;
+        /// <summary>
+        /// Occurs after the read has been executed.
+        /// </summary>
+        event EventHandler<RepositoryHolder<K, E>> OnAfterRead;
+
         /// <summary>
         /// Occurs before an entity is deleted.
         /// </summary>
