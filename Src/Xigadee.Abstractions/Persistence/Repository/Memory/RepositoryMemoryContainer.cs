@@ -86,6 +86,10 @@ namespace Xigadee
         #endregion
 
         /// <summary>
+        /// Gets the container values.
+        /// </summary>
+        public IEnumerable<EntityContainer<K, E>> Values => _container.Values;
+        /// <summary>
         /// Checks whether the collection contains the key.
         /// </summary>
         /// <param name="key">The key to check.</param>

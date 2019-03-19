@@ -88,7 +88,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Xigadee.ApiTest", "Te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PiO.Shared", "PiO.Shared\PiO.Shared.csproj", "{334E03BE-E7B9-45EA-9AFF-1923E461BB87}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Xigadee.Azure.Sql", "Tests.Xigadee.Azure.Sql\Tests.Xigadee.Azure.Sql.csproj", "{494ECAD6-EEFF-41A5-8915-1A2BEB05ABE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Xigadee.Azure.Sql", "Tests.Xigadee.Azure.Sql\Tests.Xigadee.Azure.Sql.csproj", "{494ECAD6-EEFF-41A5-8915-1A2BEB05ABE1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Azure.EventGrid", "Xigadee.Azure.EventGrid\Xigadee.Azure.EventGrid.csproj", "{F19146DE-C401-41C7-B8F2-6D76A1310E63}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -204,6 +206,10 @@ Global
 		{494ECAD6-EEFF-41A5-8915-1A2BEB05ABE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{494ECAD6-EEFF-41A5-8915-1A2BEB05ABE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{494ECAD6-EEFF-41A5-8915-1A2BEB05ABE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F19146DE-C401-41C7-B8F2-6D76A1310E63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F19146DE-C401-41C7-B8F2-6D76A1310E63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F19146DE-C401-41C7-B8F2-6D76A1310E63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F19146DE-C401-41C7-B8F2-6D76A1310E63}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -237,9 +243,10 @@ Global
 		{042A0029-995C-4EC6-B73F-3F105172563C} = {70429F4B-4653-48EC-8E79-954C44739DFD}
 		{334E03BE-E7B9-45EA-9AFF-1923E461BB87} = {3F79ACF7-014D-4589-919F-FF09A7938BE0}
 		{494ECAD6-EEFF-41A5-8915-1A2BEB05ABE1} = {2D95B4DF-5B82-402D-859A-92492C4DCF22}
+		{F19146DE-C401-41C7-B8F2-6D76A1310E63} = {BB74DB4E-5BF2-4CA1-8A3A-E64EBD66FD03}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
 		SolutionGuid = {8BF7561D-7A94-4B22-B0EB-D82D95B110DE}
+		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
 	EndGlobalSection
 EndGlobal

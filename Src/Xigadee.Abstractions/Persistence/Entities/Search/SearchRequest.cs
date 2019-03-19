@@ -11,6 +11,7 @@ namespace Xigadee
     [DebuggerDisplay("{ToString()}")]
     public class SearchRequest: IEquatable<SearchRequest>
     {
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="SearchRequest"/> class.
         /// </summary>
@@ -28,7 +29,7 @@ namespace Xigadee
                 , (s) => s
                 , new[] { '&' }, new[] { '=' })
                 .ForEach(kv => Assign(kv));
-           
+
         }
         /// <summary>
         /// Initializes a new instance of the <see cref="SearchRequest"/> class.
@@ -36,35 +37,50 @@ namespace Xigadee
         /// <param name="query">The search a uri.</param>
         public SearchRequest(Uri query) : this(query?.Query)
         {
-        }
+        } 
+        #endregion
 
         private void Assign(KeyValuePair<string,string> toSet)
         {
-            switch (toSet.Key)
+            var key = toSet.Key?.ToLowerInvariant();
+
+            switch (key)
             {
                 case "$id":
-                    Id = toSet.Value.Trim();
+                    Id = toSet.Value?.Trim();
                     break;
                 case "$etag":
-                    ETag = toSet.Value.Trim();
+                    ETag = toSet.Value?.Trim();
                     break;
                 case "$filter":
-                    Filter = toSet.Value;
+                    Filter = toSet.Value?.Trim();
                     break;
                 case "$orderby":
-                    OrderBy = toSet.Value;
+                    OrderBy = toSet.Value?.Trim();
                     break;
                 case "$top":
-                    Top = toSet.Value;
+                    Top = toSet.Value?.Trim();
                     break;
                 case "$skip":
-                    Skip = toSet.Value;
+                    Skip = toSet.Value?.Trim();
                     break;
                 case "$select":
-                    Select = toSet.Value;
+                    Select = toSet.Value?.Trim();
+                    break;
+                case "":
+                    break;
+                case default(string):
+                    break;
+                default:
+                    Parameters[key] = toSet.Value;
                     break;
             }
         }
+
+        /// <summary>
+        /// Gets or sets the parameter collection.
+        /// </summary>
+        public Dictionary<string, string> Parameters { get; set; } = new Dictionary<string, string>();
 
         /// <summary>
         /// This is the search algorithm that is used to search against the parameters specified.
@@ -90,11 +106,19 @@ namespace Xigadee
         /// The raw $top query value from the incoming request
         /// </summary>
         public string Top { get; set; }
+        /// <summary>
+        /// Tries to parse the top value in to a integer.
+        /// </summary>
+        public int? TopValue => int.TryParse(Top, out int value) ? value : default(int?);
 
         /// <summary>
         /// The raw $skip query value from the incoming request
         /// </summary>
         public string Skip { get; set; }
+        /// <summary>
+        /// Tries to parse the skip value in to a integer.
+        /// </summary>
+        public int? SkipValue => int.TryParse(Skip, out int value) ? value : default(int?);
 
         /// <summary>
         /// The raw $select query value from the incoming request, this is used for non-entity searches.
@@ -155,12 +179,14 @@ namespace Xigadee
             bool addAmp = false;
 
             addAmp |= AppendParam(sb, "$id", Id, false);
-            addAmp |= AppendParam(sb, "$etag", ETag, false);
-            addAmp |= AppendParam(sb, "$filter", Filter, false);
+            addAmp |= AppendParam(sb, "$etag", ETag, addAmp);
+            addAmp |= AppendParam(sb, "$filter", Filter, addAmp);
             addAmp |= AppendParam(sb, "$orderby", OrderBy, addAmp);
             addAmp |= AppendParam(sb, "$top", Top, addAmp);
             addAmp |= AppendParam(sb, "$skip", Skip, addAmp);
             addAmp |= AppendParam(sb, "$select", Select, addAmp);
+
+            Parameters.ForEach(p => addAmp |= AppendParam(sb, p.Key, p.Value, addAmp));
 
             return sb.ToString();
         }

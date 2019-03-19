@@ -21,6 +21,14 @@ namespace Xigadee
         /// Occurs before an entity is created.
         /// </summary>
         public event EventHandler<SearchRequest> OnBeforeSearch;
+        /// <summary>
+        /// Occurs before an entity is created.
+        /// </summary>
+        public event EventHandler<SearchResponse> OnAfterSearch;
+        /// <summary>
+        /// Occurs before an entity is created.
+        /// </summary>
+        public event EventHandler<SearchResponse<E>> OnAfterSearchEntity;
 
         /// <summary>
         /// Occurs before and entity is created.

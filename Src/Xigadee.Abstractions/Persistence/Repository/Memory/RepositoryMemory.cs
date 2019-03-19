@@ -429,7 +429,7 @@ namespace Xigadee
             var searchId = rq.Id.ToLowerInvariant();
 
             if (_supportedSearches.ContainsKey(searchId))
-                await _supportedSearches[searchId].SearchEntity(_container, result, options);
+                await Atomic(false, async () => await _supportedSearches[searchId].SearchEntity(_container, result, options));
             else
             {
                 result.ResponseCode = 404;

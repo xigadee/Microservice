@@ -26,6 +26,8 @@ namespace Test.Xigadee
 
             public decimal Amount { get; set; }
 
+            public int Group => decimal.ToInt32(Amount) % 10;
+
             public DateTime DateCreated { get; set; } = DateTime.UtcNow;
 
             public DateTime? DateUpdated { get; set; }
@@ -40,6 +42,7 @@ namespace Test.Xigadee
         {
             yield return new Tuple<string, string>("type", c.Amount.ToString());
             yield return new Tuple<string, string>("datecreated", c.DateCreated.ToString("o"));
+            yield return new Tuple<string, string>("group", c.Group.ToString());
         }
 
         #endregion
@@ -48,7 +51,8 @@ namespace Test.Xigadee
         IRepositoryAsync<Guid, TestClass> GetRepo()
         {
             var repo = new RepositoryMemory<Guid, TestClass>(r => r.Id
-            , (e) => new[] { new Tuple<string, string>("name", e.Name) }
+            , (e) => References(e)
+            , (e) => Properties(e)
             , versionPolicy: ((TestClass e) => e.VersionId.ToString("N"), (TestClass e) => e.VersionId = Guid.NewGuid())
                 );
 
@@ -67,15 +71,15 @@ namespace Test.Xigadee
         {
             var repo = GetRepo();
 
-            var sr = new SearchRequest() { Id = "default" };
-            SearchRequest sr2 = "$id=default&$top=10&$select=Name,DateCreated";
-
             var item1 = await repo.ReadByRef("Name", "Id55");
             var e = item1.Entity;
             e.Name = "Paul123";
             var resChange = await repo.Update(e);
 
-            var res1 = await repo.Search(sr2);
+            var sr = new SearchRequest() { Id = "default" };
+            SearchRequest sr2 = "$top=10&$id=default&$skip=3&$select=Name,DateCreated&group=1";
+            var str = sr2.ToString();
+            var res1 = await repo.SearchEntity(sr2);
 
         }
     }
