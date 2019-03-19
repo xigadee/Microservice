@@ -101,12 +101,13 @@ namespace Xigadee
         /// <param name="toSplit"></param>
         /// <param name="convertT"></param>
         /// <param name="convertU"></param>
-        /// <param name="split1"></param>
-        /// <param name="split2"></param>
+        /// <param name="split1">The initial split character.</param>
+        /// <param name="split2">The second split character.</param>
+        /// <param name="adjust">The adjust function for the split raw string.</param>
         /// <returns></returns>
         public static List<KeyValuePair<T, U>> SplitOnChars<T, U>(string toSplit,
             Func<string, T> convertT, Func<string, U> convertU,
-                char[] split1, char[] split2)
+                char[] split1, char[] split2, Func<string,string> adjust = null)
         {
             if (toSplit == null)
                 throw new ArgumentNullException("toSplit", "toSplit cannot be null.");
@@ -118,8 +119,10 @@ namespace Xigadee
             if (pairs.Length == 0)
                 return newList;
 
-            foreach (string pair in pairs)
+            foreach (string p in pairs)
             {
+                var pair = adjust?.Invoke(p)??p;
+
                 string[] pairSplit = pair.Split(split2);
                 string secondParam = pairSplit.Length == 1 ? null : pairSplit[1];
                 KeyValuePair<T, U> keyPair =

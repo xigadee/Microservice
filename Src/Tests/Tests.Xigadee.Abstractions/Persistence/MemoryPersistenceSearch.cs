@@ -77,7 +77,7 @@ namespace Test.Xigadee
             var resChange = await repo.Update(e);
 
             var sr = new SearchRequest() { Id = "default" };
-            SearchRequest sr2 = "$top=10&$id=default&$skip=3&$select=Name,DateCreated&group=1";
+            SearchRequest sr2 = "$top=100&$id=default&$skip=3&$select=Name,DateCreated&$orderby=Type asc, Group desc";
             var str = sr2.ToString();
             var res1 = await repo.SearchEntity(sr2);
 

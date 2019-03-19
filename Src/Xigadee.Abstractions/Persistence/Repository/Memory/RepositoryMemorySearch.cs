@@ -74,7 +74,7 @@ namespace Xigadee
             return Task.FromResult(holder);
         }
         #endregion
-
+        #region Filter(SearchRequest sr, EntityContainerWrapper wr)
         /// <summary>
         /// Filters the entities based on the parameters pushed and the entity properties. $filter is ignored for the default search.
         /// </summary>
@@ -89,9 +89,25 @@ namespace Xigadee
 
             return success;
         }
+        #endregion
 
+        /// <summary>
+        /// Sets the OrderBy filters.
+        /// </summary>
+        /// <param name="sr">The search request.</param>
+        /// <param name="container">The container.</param>
+        /// <returns>The extended Linq query.</returns>
         protected virtual IEnumerable<EntityContainerWrapper> OrderBy(SearchRequest sr, IEnumerable<EntityContainerWrapper> container)
         {
+            var r = sr.OrderBy().ToList();
+            r.Reverse();
+            foreach (var res in r)
+            {
+                if (res.asc)
+                    container = container.OrderBy(e => e.PropertyGet(res.property));
+                else
+                    container = container.OrderByDescending(e => e.PropertyGet(res.property));
+            }
 
             return container;
         }
@@ -155,7 +171,11 @@ namespace Xigadee
 
                     return false; ;
                 }
+            }
 
+            public string PropertyGet(string key)
+            {
+                return Container.Properties.FirstOrDefault(p => p.Item1.Equals(key, StringComparison.InvariantCultureIgnoreCase))?.Item2;
             }
         } 
         #endregion

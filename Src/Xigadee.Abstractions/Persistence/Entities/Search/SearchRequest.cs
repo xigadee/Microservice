@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 
 namespace Xigadee
@@ -256,6 +257,26 @@ namespace Xigadee
                 build = new Uri(baseUri, "?" + sr.ToString());
 
             return build;
+        }
+
+        /// <summary>
+        /// This method parses the OrderBy parameters
+        /// </summary>
+        /// <param name="sr">The search request.</param>
+        /// <returns>Returns an enumerable list of parameters along with the asc/desc flag</returns>
+        public static IEnumerable<(string property, bool asc)> OrderBy(this SearchRequest sr)
+        {
+            if (string.IsNullOrEmpty(sr.OrderBy))
+                yield break;
+
+            var resL = StringHelper.SplitOnChars(sr.OrderBy ?? ""
+                , (s) => s.ToLowerInvariant()
+                , (s) => s
+                , new[] { ',' }, new[] { ' ' }, s => s.Trim());
+
+            foreach (var res in resL)
+                yield return (res.Key, res.Value?.Equals("ASC", StringComparison.InvariantCultureIgnoreCase)??true);
+
         }
     }
 }
