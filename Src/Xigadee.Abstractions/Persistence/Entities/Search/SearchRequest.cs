@@ -295,7 +295,7 @@ namespace Xigadee
             if (string.IsNullOrEmpty(sr.Select))
                 yield break;
 
-            var resL = StringHelper.SplitOnChars(sr.OrderBy ?? ""
+            var resL = StringHelper.SplitOnChars(sr.Select ?? ""
                 , (s) => s.ToLowerInvariant()
                 , (s) => s
                 , new[] { ',' }, new[] { ' ' }, s => s.Trim());

@@ -413,8 +413,10 @@ namespace Xigadee
             {
                 var output = new SearchResponse();
 
-                //output.Fields = rq.Select.ForIndex((i,a) => ;
-                //output.Data = rs.Select(i => i.Entity).ToList();
+                output.Fields.Add(0, new FieldMetadata { Name = "key" });
+                rq.Select().ForIndex((i, s) => output.Fields[i+1] = new FieldMetadata { Name = s });
+
+                rs.ForEach(r => AddRecord(output, r));
 
                 return output;
             });
@@ -422,6 +424,11 @@ namespace Xigadee
             OnAfterSearchEvent(result);
 
             return result;
+        }
+
+        private void AddRecord(SearchResponse output, EntityContainerWrapper<K, E> wrapper)
+        {
+
         }
         #endregion
         #region SearchEntity(SearchRequest key)

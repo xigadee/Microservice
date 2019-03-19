@@ -57,6 +57,26 @@ namespace Xigadee
                 index++;
             }
         }
+
+        /// <summary>
+        /// Selects the item and returns its index position.
+        /// </summary>
+        /// <typeparam name="T">The item type.</typeparam>
+        /// <param name="items">The incoming items.</param>
+        /// <returns>Returns an enumeration with a ValueTuple.</returns>
+        /// <exception cref="ArgumentNullException">items - items enumeration is null</exception>
+        [DebuggerStepThrough]
+        public static IEnumerable<(int index,T item)> SelectIndex<T>(this IEnumerable<T> items)
+        {
+            if (items == null) throw new ArgumentNullException("items", "items enumeration is null");
+
+            int index = 0;
+            foreach (var item in items)
+            {
+                yield return (index, item);
+                index++;
+            }
+        }
         #endregion
         #region ForBigIndex<T>(this IEnumerable<T> items, Action<long, T> action)
         /// <summary>
@@ -76,6 +96,26 @@ namespace Xigadee
             foreach (var item in items)
             {
                 action(index, item);
+                index++;
+            }
+        }
+
+        /// <summary>
+        /// Selects the item and returns its index position.
+        /// </summary>
+        /// <typeparam name="T">The item type.</typeparam>
+        /// <param name="items">The incoming items.</param>
+        /// <returns>Returns an enumeration with a ValueTuple.</returns>
+        /// <exception cref="ArgumentNullException">items - items enumeration is null</exception>
+        [DebuggerStepThrough]
+        public static IEnumerable<(long index, T item)> SelectBigIndex<T>(this IEnumerable<T> items)
+        {
+            if (items == null) throw new ArgumentNullException("items", "items enumeration is null");
+
+            long index = 0;
+            foreach (var item in items)
+            {
+                yield return (index, item);
                 index++;
             }
         }

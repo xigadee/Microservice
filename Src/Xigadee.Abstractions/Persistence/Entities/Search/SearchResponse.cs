@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Newtonsoft.Json.Linq;
 
 namespace Xigadee
@@ -26,6 +27,7 @@ namespace Xigadee
         public int? Skip { get; set; }
     }
 
+    [DebuggerDisplay("{Name}")]
     public class FieldMetadata
     {
         public string Name { get; set; }
