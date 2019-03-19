@@ -418,7 +418,7 @@ namespace Xigadee
             {
                 var output = new SearchResponse();
 
-                output.Fields.Add(0, new FieldMetadata { Name = "key" });
+                output.Fields.Add(0, new FieldMetadata { Name = "_" });
                 rq.Select().ForIndex((i, s) => output.Fields[i+1] = new FieldMetadata { Name = s });
 
                 rs.ForEach(r => output.Data.Add(CollateRecord(rq, r).ToArray()));
