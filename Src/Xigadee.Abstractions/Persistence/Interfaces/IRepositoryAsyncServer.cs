@@ -84,9 +84,18 @@ namespace Xigadee
         /// </summary>
         event EventHandler<ReferenceHolder<K>> OnBeforeDelete;
         /// <summary>
+        /// Occurs before an entity is read.
+        /// </summary>
+        event EventHandler<RepositoryHolder<K, Tuple<K, string>>> OnAfterDelete;
+
+        /// <summary>
         /// Occurs before an entity is versioned.
         /// </summary>
         event EventHandler<ReferenceHolder<K>> OnBeforeVersion;
+        /// <summary>
+        /// Occurs before an entity is read.
+        /// </summary>
+        event EventHandler<RepositoryHolder<K, Tuple<K, string>>> OnAfterVersion;
     }
 
 }

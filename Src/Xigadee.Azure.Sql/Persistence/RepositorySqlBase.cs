@@ -13,7 +13,6 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    /// <seealso cref="Xigadee.RepositoryBase{K, E}" />
     public abstract class RepositorySqlBase<K, E> : RepositoryBase<K, E>
         where K : IEquatable<K>
     {
@@ -52,7 +51,123 @@ namespace Xigadee
             _sqlConnection = sqlConnection ?? throw new ArgumentNullException("sqlConnection");
 
             SpNamer = SpNamer ?? new SqlStoredProcedureResolver<E>();
-        } 
+        }
+        #endregion
+
+        #region Create
+        /// <summary>
+        /// Implements the internal SQL create logic.
+        /// </summary>
+        protected override async Task<RepositoryHolder<K, E>> CreateInternal(K key, E entity, RepositorySettings options
+            , Action<RepositoryHolder<K, E>> holderAction)
+        {
+            var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureCreate
+                , sqlCmd => DbSerializeEntity(entity, sqlCmd)
+                , DbDeserializeEntity
+                , options);
+
+            return ProcessOutputEntity(rs, holderAction);
+        }
+        #endregion
+        #region Read
+        /// <summary>
+        /// Read the entity from the SQL server
+        /// </summary>
+        protected override async Task<RepositoryHolder<K, E>> ReadInternal(K key, RepositorySettings options
+            , Action<RepositoryHolder<K, E>> holderAction)
+        {
+            var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureRead
+                , sqlCmd => DbSerializeKey(key, sqlCmd)
+                , DbDeserializeEntity
+                , options);
+
+            return ProcessOutputEntity(rs, holderAction);
+        }
+        /// <summary>
+        /// Read the entity from the SQL server by reference.
+        /// </summary>
+        protected override async Task<RepositoryHolder<K, E>> ReadByRefInternal(string refKey, string refValue, RepositorySettings options
+            , Action<RepositoryHolder<K, E>> holderAction)
+        {
+            var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureReadByRef
+                , sqlCmd => DbSerializeKeyReference(new Tuple<string, string>(refKey, refValue), sqlCmd)
+                , DbDeserializeEntity
+                , options);
+
+            return ProcessOutputEntity(rs, holderAction);
+        }
+        #endregion
+        #region Update
+        /// <summary>
+        /// Updates the entity.
+        /// </summary>
+        protected override async Task<RepositoryHolder<K, E>> UpdateInternal(K key, E entity, RepositorySettings options
+            , Action<RepositoryHolder<K, E>> holderAction)
+        {
+            var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureUpdate
+                , sqlCmd => DbSerializeEntity(entity, sqlCmd)
+                , DbDeserializeEntity
+                , options);
+
+            return ProcessOutputEntity(rs, holderAction);
+        }
+        #endregion
+        #region Delete
+        /// <summary>
+        /// Deletes the entity from the SQL server, is supported.
+        /// </summary>
+        protected override async Task<RepositoryHolder<K, Tuple<K, string>>> DeleteInternal(K key, RepositorySettings options
+            , Action<RepositoryHolder<K, Tuple<K, string>>> holderAction)
+        {
+            var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureDelete
+                , sqlCmd => DbSerializeKey(key, sqlCmd)
+                , DbDeserializeVersion
+                , options);
+
+            return ProcessOutputVersion(rs, key, holderAction);
+        }
+        /// <summary>
+        /// Delete the entity by reference
+        /// </summary>
+        protected override async Task<RepositoryHolder<K, Tuple<K, string>>> DeleteByRefInternal(string refKey, string refValue, RepositorySettings options
+            , Action<RepositoryHolder<K, Tuple<K, string>>> holderAction)
+        {
+            var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureDeleteByRef
+                , sqlCmd => DbSerializeKeyReference(new Tuple<string, string>(refKey, refValue), sqlCmd)
+                , DbDeserializeVersion
+                , options);
+
+            return ProcessOutputVersion(rs, onEvent: holderAction);
+        }
+        #endregion
+        #region Version
+        /// <summary>
+        /// Retrieves the entity version.
+        /// </summary>
+        protected override async Task<RepositoryHolder<K, Tuple<K, string>>> VersionInternal(K key, RepositorySettings options
+            , Action<RepositoryHolder<K, Tuple<K, string>>> holderAction)
+        {
+            var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureVersion
+                , sqlCmd => DbSerializeKey(key, sqlCmd)
+                , DbDeserializeVersion
+                , options);
+
+            return ProcessOutputVersion(rs, key, holderAction);
+        }
+
+        /// <summary>
+        /// Returns the entity version by reference.
+        /// </summary>
+        protected override async Task<RepositoryHolder<K, Tuple<K, string>>> VersionByRefInternal(string refKey, string refValue
+            , RepositorySettings options, Action<RepositoryHolder<K, Tuple<K, string>>> holderAction)
+        {
+            var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureVersionByRef
+                , sqlCmd => DbSerializeKeyReference(new Tuple<string, string>(refKey, refValue), sqlCmd)
+                , DbDeserializeVersion
+                , options);
+
+            return ProcessOutputVersion(rs, onEvent: holderAction);
+        }
         #endregion
 
 
@@ -101,140 +216,6 @@ namespace Xigadee
             return new Tuple<K, string>(key, versionId);
         }
 
-        #region Create
-        /// <summary>
-        /// Creates the specified entity.
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <param name="options">The repository options.</param>
-        /// <returns>
-        /// Returns the holder with the response and data.
-        /// </returns>
-        public override async Task<RepositoryHolder<K, E>> Create(E entity, RepositorySettings options = null)
-        {
-            OnBeforeCreateEvent(entity);
-
-            var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureCreate, sqlCmd => DbSerializeEntity(entity, sqlCmd), DbDeserializeEntity);
-
-            return ProcessOutputEntity(rs, o => OnAfterCreateEvent(o));
-        } 
-        #endregion
-        #region Read
-        /// <summary>
-        /// Reads the entity by the specified key.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="options">The repository options.</param>
-        /// <returns>
-        /// Returns the holder with the response and data.
-        /// </returns>
-        public override async Task<RepositoryHolder<K, E>> Read(K key, RepositorySettings options = null)
-        {
-            OnKeyEvent(KeyEventType.BeforeRead, key);
-
-            var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureRead, sqlCmd => DbSerializeKey(key, sqlCmd), DbDeserializeEntity);
-
-            return ProcessOutputEntity(rs, o => OnAfterReadEvent(o));
-        }
-        /// <summary>
-        /// Reads the entity by a reference key-value pair.
-        /// </summary>
-        /// <param name="refKey">The reference key.</param>
-        /// <param name="refValue">The reference value.</param>
-        /// <param name="options">The repository options.</param>
-        /// <returns>
-        /// Returns the holder with the response and data.
-        /// </returns>
-        public override async Task<RepositoryHolder<K, E>> ReadByRef(string refKey, string refValue, RepositorySettings options = null)
-        {
-            OnKeyEvent(KeyEventType.BeforeRead, default(K), refKey,  refValue);
-
-            var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureReadByRef, sqlCmd => DbSerializeKeyReference(new Tuple<string, string>(refKey, refValue), sqlCmd), DbDeserializeEntity);
-
-            return ProcessOutputEntity(rs, o => OnAfterReadEvent(o));
-        } 
-        #endregion
-        #region Update
-        /// <summary>
-        /// Updates the specified entity.
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <param name="options">The repository options.</param>
-        /// <returns>
-        /// Returns the holder with the response and data.
-        /// </returns>
-        public override async Task<RepositoryHolder<K, E>> Update(E entity, RepositorySettings options = null)
-        {
-            OnBeforeUpdateEvent(entity);
-
-            var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureUpdate, sqlCmd => DbSerializeEntity(entity, sqlCmd), DbDeserializeEntity);
-
-            return ProcessOutputEntity(rs, o => OnAfterUpdateEvent(o));
-        } 
-        #endregion
-        #region Delete
-        /// <summary>
-        /// Deletes the entity by the specified key.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="options">The repository options.</param>
-        /// <returns>
-        /// Returns the holder with the response and data.
-        /// </returns>
-        public override async Task<RepositoryHolder<K, Tuple<K, string>>> Delete(K key, RepositorySettings options = null)
-        {
-            var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureDelete, sqlCmd => DbSerializeKey(key, sqlCmd), DbDeserializeVersion);
-
-            return ProcessOutputVersion(rs);
-        }
-
-        /// <summary>
-        /// Deletes the entity by reference.
-        /// </summary>
-        /// <param name="refKey">The reference key.</param>
-        /// <param name="refValue">The reference value.</param>
-        /// <param name="options">The repository options.</param>
-        /// <returns>
-        /// Returns the holder with the response and data.
-        /// </returns>
-        public override async Task<RepositoryHolder<K, Tuple<K, string>>> DeleteByRef(string refKey, string refValue, RepositorySettings options = null)
-        {
-            var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureDeleteByRef, sqlCmd => DbSerializeKeyReference(new Tuple<string, string>(refKey, refValue), sqlCmd), DbDeserializeVersion);
-            return ProcessOutputVersion(rs);
-        } 
-        #endregion
-
-        #region Version
-        /// <summary>
-        /// Validates the version by key.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="options">The repository options.</param>
-        /// <returns>
-        /// Returns the holder with the response and data.
-        /// </returns>
-        public override async Task<RepositoryHolder<K, Tuple<K, string>>> Version(K key, RepositorySettings options = null)
-        {
-            var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureVersion, sqlCmd => DbSerializeKey(key, sqlCmd), DbDeserializeVersion);
-            return ProcessOutputVersion(rs);
-        }
-
-        /// <summary>
-        /// Validates the version by reference.
-        /// </summary>
-        /// <param name="refKey">The reference key.</param>
-        /// <param name="refValue">The reference value.</param>
-        /// <param name="options">The repository options.</param>
-        /// <returns>
-        /// Returns the holder with the response and data.
-        /// </returns>
-        public override async Task<RepositoryHolder<K, Tuple<K, string>>> VersionByRef(string refKey, string refValue, RepositorySettings options = null)
-        {
-            var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureVersionByRef, sqlCmd => DbSerializeKeyReference(new Tuple<string, string>(refKey, refValue), sqlCmd), DbDeserializeVersion);
-            return ProcessOutputVersion(rs);
-        }
-        #endregion
-
         #region ExecuteSqlCommand<ET> ...
         /// <summary>
         /// Executes a SQL command and deserializes the response into a set of entities.
@@ -243,10 +224,12 @@ namespace Xigadee
         /// <param name="commandName">The SQL stored procedure name</param>
         /// <param name="populateCommand">Populate command i.e. add SQL parameters</param>
         /// <param name="deserializeToEntity">Read an entity out from a SQL Data Reader Record</param>
+        /// <param name="options">The request options.</param>
         /// <returns>Returns a response object with a set of returned entities.</returns>
         protected async Task<SqlEntityResponse<ET>> ExecuteSqlCommand<ET>(string commandName
             , Action<SqlCommand> populateCommand
-            , Func<SqlDataReader, ET> deserializeToEntity = null)
+            , Func<SqlDataReader, ET> deserializeToEntity = null
+            , RepositorySettings options = null)
         {
             SqlParameter paramReturnValue = null;
             var rs = new SqlEntityResponse<ET>();

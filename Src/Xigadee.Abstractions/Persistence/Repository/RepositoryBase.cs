@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 namespace Xigadee
 {
-
     /// <summary>
     /// This is the base repository holder.
     /// </summary>
@@ -81,10 +80,34 @@ namespace Xigadee
         /// </summary>
         public event EventHandler<ReferenceHolder<K>> OnBeforeDelete;
 
+        #region OnAfterDelete
+        /// <summary>
+        /// Occurs before an entity is read.
+        /// </summary>
+        protected void OnAfterDeleteEvent(RepositoryHolder<K, Tuple<K, string>> holder) => OnAfterDelete?.Invoke(this, holder);
+
+        /// <summary>
+        /// Occurs before an entity is read.
+        /// </summary>
+        public event EventHandler<RepositoryHolder<K, Tuple<K, string>>> OnAfterDelete;
+        #endregion
+
         /// <summary>
         /// Occurs before an entity is versioned.
         /// </summary>
         public event EventHandler<ReferenceHolder<K>> OnBeforeVersion;
+
+        #region OnAfterVersion
+        /// <summary>
+        /// Occurs before an entity is read.
+        /// </summary>
+        protected void OnAfterVersionEvent(RepositoryHolder<K, Tuple<K, string>> holder) => OnAfterVersion?.Invoke(this, holder);
+
+        /// <summary>
+        /// Occurs before an entity is read.
+        /// </summary>
+        public event EventHandler<RepositoryHolder<K, Tuple<K, string>>> OnAfterVersion;
+        #endregion
 
         #region OnKeyEvent(KeyEventType type, TKey key = default(TKey), string refType = null, string refValue = null)
         protected enum KeyEventType
@@ -216,9 +239,10 @@ namespace Xigadee
         /// <summary>
         /// Gets the key manager which is used for managing the serialization of a key to and from a string.
         /// </summary>
-        public RepositoryKeyManager<K> KeyManager { get; } 
+        public RepositoryKeyManager<K> KeyManager { get; }
         #endregion
 
+        #region Create
         /// <summary>
         /// Creates the specified entity.
         /// </summary>
@@ -227,26 +251,29 @@ namespace Xigadee
         /// <returns>
         /// Returns the holder with the response and data.
         /// </returns>
-        public abstract Task<RepositoryHolder<K, E>> Create(E entity, RepositorySettings options = null);
+        public virtual Task<RepositoryHolder<K, E>> Create(E entity, RepositorySettings options = null)
+        {
+            var key = KeyMaker(entity);
+
+            IncomingParameterChecks(key, entity);
+
+            OnBeforeCreateEvent(entity);
+
+            return CreateInternal(key, entity, options, r => OnAfterCreateEvent(r));
+        }
+
         /// <summary>
-        /// Deletes the entity by the specified key.
+        /// This override has the repository specific logic to create an entity.
         /// </summary>
         /// <param name="key">The key.</param>
+        /// <param name="entity">The entity.</param>
         /// <param name="options">The repository options.</param>
-        /// <returns>
-        /// Returns the holder with the response and data.
-        /// </returns>
-        public abstract Task<RepositoryHolder<K, Tuple<K, string>>> Delete(K key, RepositorySettings options = null);
-        /// <summary>
-        /// Deletes the entity by reference.
-        /// </summary>
-        /// <param name="refKey">The reference key.</param>
-        /// <param name="refValue">The reference value.</param>
-        /// <param name="options">The repository options.</param>
-        /// <returns>
-        /// Returns the holder with the response and data.
-        /// </returns>
-        public abstract Task<RepositoryHolder<K, Tuple<K, string>>> DeleteByRef(string refKey, string refValue, RepositorySettings options = null);
+        /// <param name="holderAction">The post completion action.</param>
+        /// <returns></returns>
+        protected abstract Task<RepositoryHolder<K, E>> CreateInternal(K key, E entity, RepositorySettings options
+            , Action<RepositoryHolder<K, E>> holderAction);
+        #endregion
+        #region Read/ReadByRef
         /// <summary>
         /// Reads the entity by the specified key.
         /// </summary>
@@ -255,17 +282,50 @@ namespace Xigadee
         /// <returns>
         /// Returns the holder with the response and data.
         /// </returns>
-        public abstract Task<RepositoryHolder<K, E>> Read(K key, RepositorySettings options = null);
+        public virtual Task<RepositoryHolder<K, E>> Read(K key, RepositorySettings options = null)
+        {
+            IncomingParameterChecks(key);
+
+            OnKeyEvent(KeyEventType.BeforeRead, key);
+
+            return ReadInternal(key, options, r => OnAfterReadEvent(r));
+        }
+        /// <summary>
+        /// Reads the internal.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="options">The repository options.</param>
+        /// <param name="holderAction">The holder action.</param>
+        /// <returns>
+        /// Returns the holder with the response and data.
+        /// </returns>
+        protected abstract Task<RepositoryHolder<K, E>> ReadInternal(K key, RepositorySettings options
+            , Action<RepositoryHolder<K, E>> holderAction);
         /// <summary>
         /// Reads the entity by a reference key-value pair.
         /// </summary>
         /// <param name="refKey">The reference key.</param>
         /// <param name="refValue">The reference value.</param>
         /// <param name="options">The repository options.</param>
-        /// <returns>
-        /// Returns the holder with the response and data.
-        /// </returns>
-        public abstract Task<RepositoryHolder<K, E>> ReadByRef(string refKey, string refValue, RepositorySettings options = null);
+        /// <returns>Returns the holder with the response and data.</returns>
+        public virtual Task<RepositoryHolder<K, E>> ReadByRef(string refKey, string refValue, RepositorySettings options = null)
+        {
+            OnKeyEvent(KeyEventType.BeforeRead, refType: refKey, refValue: refValue);
+
+            return ReadByRefInternal(refKey, refValue, options, r => OnAfterReadEvent(r));
+        }
+        /// <summary>
+        /// Reads the entity by a reference key-value pair.
+        /// </summary>
+        /// <param name="refKey">The reference key.</param>
+        /// <param name="refValue">The reference value.</param>
+        /// <param name="options">The repository options.</param>
+        /// <param name="holderAction">The holder action.</param>
+        /// <returns>Returns the holder with the response and data.</returns>
+        protected abstract Task<RepositoryHolder<K, E>> ReadByRefInternal(string refKey, string refValue, RepositorySettings options
+            , Action<RepositoryHolder<K, E>> holderAction); 
+        #endregion
+        #region Update
         /// <summary>
         /// Updates the specified entity.
         /// </summary>
@@ -274,7 +334,81 @@ namespace Xigadee
         /// <returns>
         /// Returns the holder with the response and data.
         /// </returns>
-        public abstract Task<RepositoryHolder<K, E>> Update(E entity, RepositorySettings options = null);
+        public virtual Task<RepositoryHolder<K, E>> Update(E entity, RepositorySettings options = null)
+        {
+            var key = KeyMaker(entity);
+
+            IncomingParameterChecks(key, entity);
+
+            OnBeforeUpdateEvent(entity);
+
+            return UpdateInternal(key, entity, options, r => OnAfterUpdateEvent(r));
+        }
+
+        /// <summary>
+        /// This override has the repository specific logic to create an entity.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="entity">The entity.</param>
+        /// <param name="options">The repository options.</param>
+        /// <param name="holderAction">The post completion action.</param>
+        /// <returns></returns>
+        protected abstract Task<RepositoryHolder<K, E>> UpdateInternal(K key, E entity, RepositorySettings options
+            , Action<RepositoryHolder<K, E>> holderAction);
+        #endregion
+        #region Delete/DeleteByRef
+        /// <summary>
+        /// Deletes the entity based on the key specified.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="options">The repository options.</param>
+        /// <returns>Returns the holder with the response and data.</returns>
+        public virtual Task<RepositoryHolder<K, Tuple<K, string>>> Delete(K key, RepositorySettings options = null)
+        {
+            IncomingParameterChecks(key);
+
+            OnKeyEvent(KeyEventType.BeforeDelete, key);
+
+            return DeleteInternal(key, options, r => OnAfterDeleteEvent(r));
+        }
+
+        /// <summary>
+        /// Deletes the entity based on the key specified.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="options">The repository options.</param>
+        /// <param name="holderAction">The holder action.</param>
+        /// <returns>Returns the holder with the response and data.</returns>
+        protected abstract Task<RepositoryHolder<K, Tuple<K, string>>> DeleteInternal(K key, RepositorySettings options 
+            , Action<RepositoryHolder<K, Tuple<K, string>>> holderAction);
+
+        /// <summary>
+        /// Deletes the entity by the reference specified.
+        /// </summary>
+        /// <param name="refKey">The reference key.</param>
+        /// <param name="refValue">The reference value.</param>
+        /// <param name="options">The repository options.</param>
+        /// <returns>
+        /// Returns the holder with the response and data.
+        /// </returns>
+        public virtual Task<RepositoryHolder<K, Tuple<K, string>>> DeleteByRef(string refKey, string refValue, RepositorySettings options = null)
+        {
+            OnKeyEvent(KeyEventType.BeforeDelete, refType: refKey, refValue: refValue);
+
+            return DeleteByRefInternal(refKey, refValue, options, r => OnAfterDeleteEvent(r));
+        }
+        /// <summary>
+        /// Deletes the entity by reference specified.
+        /// </summary>
+        /// <param name="refKey">The reference key.</param>
+        /// <param name="refValue">The reference value.</param>
+        /// <param name="options">The options.</param>
+        /// <param name="holderAction">The holder action.</param>
+        /// <returns>Returns the holder with the response and data.</returns>
+        protected abstract Task<RepositoryHolder<K, Tuple<K, string>>> DeleteByRefInternal(string refKey, string refValue, RepositorySettings options = null
+            , Action<RepositoryHolder<K, Tuple<K, string>>> holderAction = null);
+        #endregion
+        #region Version/VersionByRef
         /// <summary>
         /// Validates the version by key.
         /// </summary>
@@ -283,7 +417,26 @@ namespace Xigadee
         /// <returns>
         /// Returns the holder with the response and data.
         /// </returns>
-        public abstract Task<RepositoryHolder<K, Tuple<K, string>>> Version(K key, RepositorySettings options = null);
+        public virtual Task<RepositoryHolder<K, Tuple<K, string>>> Version(K key, RepositorySettings options = null)
+        {
+            IncomingParameterChecks(key);
+
+            OnKeyEvent(KeyEventType.BeforeVersion, key);
+
+            return VersionInternal(key, options, r => OnAfterVersionEvent(r));
+        }
+        /// <summary>
+        /// Versions the internal.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="options">The repository options.</param>
+        /// <param name="holderAction">The holder action.</param>
+        /// <returns>
+        /// Returns the holder with the response and data.
+        /// </returns>
+        protected abstract Task<RepositoryHolder<K, Tuple<K, string>>> VersionInternal(K key, RepositorySettings options
+            , Action<RepositoryHolder<K, Tuple<K, string>>> holderAction);
+
         /// <summary>
         /// Validates the version by reference.
         /// </summary>
@@ -293,7 +446,26 @@ namespace Xigadee
         /// <returns>
         /// Returns the holder with the response and data.
         /// </returns>
-        public abstract Task<RepositoryHolder<K, Tuple<K, string>>> VersionByRef(string refKey, string refValue, RepositorySettings options = null);
+        public virtual Task<RepositoryHolder<K, Tuple<K, string>>> VersionByRef(string refKey, string refValue, RepositorySettings options = null)
+        {
+            OnKeyEvent(KeyEventType.BeforeVersion, refType: refKey, refValue: refValue);
+
+            return VersionByRefInternal(refKey, refValue, options, r => OnAfterVersionEvent(r));
+        }
+        /// <summary>
+        /// Versions the by reference internal.
+        /// </summary>
+        /// <param name="refKey">The reference key.</param>
+        /// <param name="refValue">The reference value.</param>
+        /// <param name="options">The options.</param>
+        /// <param name="holderAction">The holder action.</param>
+        /// <returns>
+        /// Returns the holder with the response and data.
+        /// </returns>
+        protected abstract Task<RepositoryHolder<K, Tuple<K, string>>> VersionByRefInternal(string refKey, string refValue, RepositorySettings options
+            , Action<RepositoryHolder<K, Tuple<K, string>>> holderAction); 
+        #endregion
+
         /// <summary>
         /// Searches the entity store.
         /// </summary>

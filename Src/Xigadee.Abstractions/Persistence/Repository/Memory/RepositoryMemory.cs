@@ -174,18 +174,13 @@ namespace Xigadee
 
         #region Create(E entity)
         /// <summary>
-        /// Create
+        /// Implements the internal create logic.
         /// </summary>
-        public override Task<RepositoryHolder<K, E>> Create(E entity, RepositorySettings options = null)
+        protected override Task<RepositoryHolder<K, E>> CreateInternal(K key, E entity, RepositorySettings options
+            , Action<RepositoryHolder<K, E>> holderAction)
         {
-            var key = KeyMaker(entity);
-
             if (IsReadOnly)
-                return ResultFormat(400, () => key, () => default(E));
-
-            IncomingParameterChecks(key, entity);
-
-            OnBeforeCreateEvent(entity);
+                return ResultFormat(400, () => key, () => default(E), options, holderAction);
 
             //We have to be careful as the caller still has a reference to the old entity and may change it.
             var references = _referenceMaker?.Invoke(entity).ToList();
@@ -194,32 +189,30 @@ namespace Xigadee
             E newEntity = default(E);
 
             var result = Atomic(true, () =>
-             {
-                 var newContainer = CreateEntityContainer(
-                     key, entity, references, properties, VersionPolicy?.EntityVersionAsString(entity), KeyManager.Serialize(key));
+            {
+                var newContainer = CreateEntityContainer(
+                    key, entity, references, properties, VersionPolicy?.EntityVersionAsString(entity), KeyManager.Serialize(key));
 
-                 //OK, add the entity
-                 if (!_container.Add(newContainer))
-                     return 409;
+                //OK, add the entity
+                if (!_container.Add(newContainer))
+                    return 409;
 
-                 newEntity = newContainer.Entity;
+                newEntity = newContainer.Entity;
 
-                 return 201;
-             });
+                return 201;
+            });
 
-            return ResultFormat(result, () => key, () => newEntity, options, r => OnAfterCreateEvent(r));
+            return ResultFormat(result, () => key, () => newEntity, options, holderAction);
         }
+
         #endregion
         #region Read(K key)/ReadByRef(string refKey, string refValue)
         /// <summary>
-        /// Read
+        /// Read the entity
         /// </summary>
-        public override Task<RepositoryHolder<K, E>> Read(K key, RepositorySettings options = null)
+        protected override Task<RepositoryHolder<K, E>> ReadInternal(K key, RepositorySettings options
+            , Action<RepositoryHolder<K, E>> holderAction)
         {
-            OnKeyEvent(KeyEventType.BeforeRead, key);
-
-            IncomingParameterChecks(key);
-
             EntityContainer<K,E> container = null;
 
             bool result = Atomic(false, () => _container.TryGetValue(key, out container));
@@ -232,16 +225,15 @@ namespace Xigadee
                 , () => result ? container.Key : default(K)
                 , () => result ? entity : default(E)
                 , options
-                , r => OnAfterReadEvent(r)
+                , holderAction
                 );
         }
         /// <summary>
         /// Read by Reference
         /// </summary>
-        public override Task<RepositoryHolder<K, E>> ReadByRef(string refKey, string refValue, RepositorySettings options = null)
+        protected override Task<RepositoryHolder<K, E>> ReadByRefInternal(string refKey, string refValue, RepositorySettings options
+            , Action<RepositoryHolder<K, E>> holderAction)
         {
-            OnKeyEvent(KeyEventType.BeforeRead, refType: refKey, refValue: refValue);
-
             var reference = new Tuple<string, string>(refKey, refValue);
 
             EntityContainer<K,E> container = null;
@@ -256,24 +248,19 @@ namespace Xigadee
                 , () => result ? container.Key : default(K)
                 , () => result ? entity : default(E)
                 , options
-                , r => OnAfterReadEvent(r)
+                , holderAction
                 );
         }
         #endregion
         #region Update(E entity)
         /// <summary>
-        /// Update
+        /// Updates the entity.
         /// </summary>
-        public override Task<RepositoryHolder<K, E>> Update(E entity, RepositorySettings options = null)
+        protected override Task<RepositoryHolder<K, E>> UpdateInternal(K key, E entity, RepositorySettings options
+            , Action<RepositoryHolder<K, E>> holderAction)
         {
-            var key = KeyMaker(entity);
-
             if (IsReadOnly)
-                return ResultFormat(400, () => key, () => default(E));
-
-            IncomingParameterChecks(key, entity);
-
-            OnBeforeUpdateEvent(entity);
+                return ResultFormat(400, () => key, () => default(E), options, holderAction);
 
             var newReferences = _referenceMaker?.Invoke(entity).ToList();
             var newProperties = _propertiesMaker?.Invoke(entity).ToList();
@@ -317,34 +304,32 @@ namespace Xigadee
                  return 200;
              });
 
-            return ResultFormat(result, () => key, () => newEntity, options, r => OnAfterUpdateEvent(r));
+            return ResultFormat(result, () => key, () => newEntity, options, holderAction);
         }
         #endregion
         #region Delete(K key)/DeleteByRef(string refKey, string refValue)
         /// <summary>
-        /// Delete
+        /// Deletes the entity.
         /// </summary>
-        public override Task<RepositoryHolder<K, Tuple<K, string>>> Delete(K key, RepositorySettings options = null)
+        protected override Task<RepositoryHolder<K, Tuple<K, string>>> DeleteInternal(K key, RepositorySettings options
+            , Action<RepositoryHolder<K, Tuple<K, string>>> holderAction)
         {
             if (IsReadOnly)
-                return ResultFormat(400, () => key, () => new Tuple<K, string>(key, ""));
-
-            IncomingParameterChecks(key);
-
-            OnKeyEvent(KeyEventType.BeforeDelete, key);
+                return ResultFormat(400, () => key, () => new Tuple<K, string>(key, ""), options, holderAction);
 
             EntityContainer<K, E> container;
             var result = Atomic(true, () => _container.Delete(key, out container));
 
-            return ResultFormat(result ? 200 : 404, () => key, () => new Tuple<K, string>(key, ""), options);
+            return ResultFormat(result ? 200 : 404, () => key, () => new Tuple<K, string>(key, ""), options, holderAction);
         }
         /// <summary>
-        /// Delete by reference
+        /// Delete the entity by reference
         /// </summary>
-        public override Task<RepositoryHolder<K, Tuple<K, string>>> DeleteByRef(string refKey, string refValue, RepositorySettings options = null)
+        protected override Task<RepositoryHolder<K, Tuple<K, string>>> DeleteByRefInternal(string refKey, string refValue, RepositorySettings options
+            , Action<RepositoryHolder<K, Tuple<K, string>>> holderAction)
         {
             if (IsReadOnly)
-                return ResultFormat(400, () => default(K), () => new Tuple<K, string>(default(K), ""));
+                return ResultFormat(400, () => default(K), () => new Tuple<K, string>(default(K), ""), options, holderAction);
 
             OnKeyEvent(KeyEventType.BeforeDelete, refType: refKey, refValue: refValue);
             var reference = new Tuple<string, string>(refKey, refValue);
@@ -358,19 +343,16 @@ namespace Xigadee
             return ResultFormat(result ? 200 : 404
                 , () => key
                 , () => new Tuple<K, string>(key, "")
-                , options);
+                , options, holderAction);
         }
         #endregion
         #region Version(K key)/VersionByRef(string refKey, string refValue)
         /// <summary>
-        /// Version
+        /// Retrieves the entity version.
         /// </summary>
-        public override Task<RepositoryHolder<K, Tuple<K, string>>> Version(K key, RepositorySettings options = null)
+        protected override Task<RepositoryHolder<K, Tuple<K, string>>> VersionInternal(K key, RepositorySettings options
+            , Action<RepositoryHolder<K, Tuple<K, string>>> holderAction)
         {
-            IncomingParameterChecks(key);
-
-            OnKeyEvent(KeyEventType.BeforeVersion, key);
-
             EntityContainer<K,E> container = null;
 
             var result = Atomic(false, () =>_container.TryGetValue(key, out container));
@@ -380,18 +362,15 @@ namespace Xigadee
             return ResultFormat(result ? 200 : 404
                 , () => key
                 , () => new Tuple<K, string>(key, container?.VersionId ?? "")
-                , options);
+                , options
+                , holderAction);
         }
         /// <summary>
-        /// Returns the version by reference.
+        /// Returns the entity version by reference.
         /// </summary>
-        /// <param name="refKey">The reference key.</param>
-        /// <param name="refValue">The reference value.</param>
-        /// <returns>Returns the entity key and version identifier.</returns>
-        public override Task<RepositoryHolder<K, Tuple<K, string>>> VersionByRef(string refKey, string refValue, RepositorySettings options = null)
+        protected override Task<RepositoryHolder<K, Tuple<K, string>>> VersionByRefInternal(string refKey, string refValue
+            , RepositorySettings options, Action<RepositoryHolder<K, Tuple<K, string>>> holderAction)
         {
-            OnKeyEvent(KeyEventType.BeforeVersion, refType: refKey, refValue: refValue);
-
             EntityContainer<K,E> container = null;
 
             var reference = new Tuple<string, string>(refKey, refValue);
@@ -403,7 +382,7 @@ namespace Xigadee
             var key = result ? container.Key : default(K);
 
             return ResultFormat(result ? 200 : 404, () => key
-                , () => new Tuple<K, string>(key, container?.VersionId ?? ""));
+                , () => new Tuple<K, string>(key, container?.VersionId ?? ""), options, holderAction);
 
         }
         #endregion
@@ -430,7 +409,12 @@ namespace Xigadee
 
             return result;
         }
-
+        /// <summary>
+        /// This method collates the search request.
+        /// </summary>
+        /// <param name="rq">The search request.</param>
+        /// <param name="wrapper">The entity wrapper.</param>
+        /// <returns></returns>
         protected virtual IEnumerable<string> CollateRecord(SearchRequest rq, EntityContainerWrapper<K, E> wrapper)
         {
             yield return wrapper.Container.Id;
