@@ -99,78 +99,13 @@ namespace Xigadee
         public string SearchDefaultId { get; set; } 
         #endregion
 
-        #region SerializationContext
+        #region IsReadOnly
         /// <summary>
-        /// Gets the serialization context that is used to serialize and deserialize the container entity.
+        /// Specifies whether the collection is read only.
         /// </summary>
-        protected virtual ServiceHandlerCollectionContext SerializationContext { get; }
-        #endregion
-        #region DefaultSerializationContext()
-        /// <summary>
-        /// Creates the default serialization context. Json serialization with gzip compression.
-        /// </summary>
-        protected virtual ServiceHandlerCollectionContext DefaultSerializationContext()
-        {
-            var context = new ServiceHandlerCollectionContext();
-
-            context.Set(new JsonRawSerializer());
-            context.Set(new CompressorGzip());
-
-            return context;
-        }
+        protected bool IsReadOnly { get; }
         #endregion
 
-        #region CreateEntityContainer
-        /// <summary>
-        /// Creates the entity container.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="newEntity">The new entity.</param>
-        /// <param name="newReferences">The new references.</param>
-        /// <param name="newProperties">The new properties.</param>
-        /// <param name="newVersionId">The new version identifier.</param>
-        /// <returns>Returns the new container with the serialized entity.</returns>
-        protected virtual EntityContainer<K,E> CreateEntityContainer(K key, E newEntity
-                , IEnumerable<Tuple<string, string>> newReferences
-                , IEnumerable<Tuple<string, string>> newProperties
-                , string newVersionId
-                , string keyAsString)
-        {
-            return new EntityContainer<K, E>(
-                key, newEntity, newReferences, newProperties, newVersionId, EntityDeserialize, EntitySerialize, keyAsString);
-        }
-
-        protected virtual byte[] EntitySerialize(E entity)
-        {
-            if (!SerializationContext.HasSerialization)
-                throw new ArgumentOutOfRangeException("SerializationContext.Serializer is not set.");
-
-            var ctx = ServiceHandlerContext.CreateWithObject(entity);
-
-            if (entity.Equals(default(E)))
-                return null;
-
-            SerializationContext.Serializer.TrySerialize(ctx);
-
-            return ctx.Blob;
-        }
-
-        protected virtual E EntityDeserialize(byte[] blob)
-        {
-            if (!SerializationContext.HasSerialization)
-                throw new ArgumentOutOfRangeException("SerializationContext.Serializer is not set.");
-
-            if ((blob?.Length ?? 0) == 0)
-                return default(E);
-
-            var ctx = ServiceHandlerContext.CreateWithBlob(
-                blob, SerializationContext.Serialization, SerializationContext.Compression, typeof(E).FullName);
-
-            SerializationContext.Serializer.TryDeserialize(ctx);
-
-            return (E)ctx.Object;
-        }
-        #endregion
 
         #region Create(E entity)
         /// <summary>
@@ -493,14 +428,80 @@ namespace Xigadee
             }
 
             return result;
-        } 
+        }
         #endregion
 
-        #region IsReadOnly
+        #region SerializationContext
         /// <summary>
-        /// Specifies whether the collection is read only.
+        /// Gets the serialization context that is used to serialize and deserialize the container entity.
         /// </summary>
-        protected bool IsReadOnly { get; }
+        protected virtual ServiceHandlerCollectionContext SerializationContext { get; }
+        #endregion
+        #region DefaultSerializationContext()
+        /// <summary>
+        /// Creates the default serialization context. Json serialization with gzip compression.
+        /// </summary>
+        protected virtual ServiceHandlerCollectionContext DefaultSerializationContext()
+        {
+            var context = new ServiceHandlerCollectionContext();
+
+            context.Set(new JsonRawSerializer());
+            context.Set(new CompressorGzip());
+
+            return context;
+        }
+        #endregion
+
+        #region CreateEntityContainer
+        /// <summary>
+        /// Creates the entity container.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="newEntity">The new entity.</param>
+        /// <param name="newReferences">The new references.</param>
+        /// <param name="newProperties">The new properties.</param>
+        /// <param name="newVersionId">The new version identifier.</param>
+        /// <returns>Returns the new container with the serialized entity.</returns>
+        protected virtual EntityContainer<K, E> CreateEntityContainer(K key, E newEntity
+                , IEnumerable<Tuple<string, string>> newReferences
+                , IEnumerable<Tuple<string, string>> newProperties
+                , string newVersionId
+                , string keyAsString)
+        {
+            return new EntityContainer<K, E>(
+                key, newEntity, newReferences, newProperties, newVersionId, EntityDeserialize, EntitySerialize, keyAsString);
+        }
+
+        protected virtual byte[] EntitySerialize(E entity)
+        {
+            if (!SerializationContext.HasSerialization)
+                throw new ArgumentOutOfRangeException("SerializationContext.Serializer is not set.");
+
+            var ctx = ServiceHandlerContext.CreateWithObject(entity);
+
+            if (entity.Equals(default(E)))
+                return null;
+
+            SerializationContext.Serializer.TrySerialize(ctx);
+
+            return ctx.Blob;
+        }
+
+        protected virtual E EntityDeserialize(byte[] blob)
+        {
+            if (!SerializationContext.HasSerialization)
+                throw new ArgumentOutOfRangeException("SerializationContext.Serializer is not set.");
+
+            if ((blob?.Length ?? 0) == 0)
+                return default(E);
+
+            var ctx = ServiceHandlerContext.CreateWithBlob(
+                blob, SerializationContext.Serialization, SerializationContext.Compression, typeof(E).FullName);
+
+            SerializationContext.Serializer.TryDeserialize(ctx);
+
+            return (E)ctx.Object;
+        }
         #endregion
 
         #region Count
