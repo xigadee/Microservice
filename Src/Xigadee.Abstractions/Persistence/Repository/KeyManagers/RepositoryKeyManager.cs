@@ -12,7 +12,6 @@ namespace Xigadee
     /// <typeparam name="K">The key type.</typeparam>
     /// <seealso cref="Xigadee.RepositoryKeyManager" />
     public abstract class RepositoryKeyManager<K> : RepositoryKeyManager
-        where K : IEquatable<K>
     {
         /// <summary>
         /// Gets the key type for the key manager.
@@ -43,13 +42,14 @@ namespace Xigadee
         {
             _resolvers = new ConcurrentDictionary<Type, RepositoryKeyManager>();
         }
+
         /// <summary>
         /// Resolves this instance for known types..
         /// </summary>
         /// <typeparam name="K">The key type.</typeparam>
         /// <returns>Returns the resolver if it is registered.</returns>
         /// <exception cref="ArgumentOutOfRangeException">(Exception)null</exception>
-        public static RepositoryKeyManager<K> Resolve<K>() where K : IEquatable<K>
+        public static RepositoryKeyManager<K> Resolve<K>()
         {
             if (_resolvers.ContainsKey(typeof(K)))
                 return (RepositoryKeyManager<K>)_resolvers[typeof(K)];

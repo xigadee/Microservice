@@ -1,0 +1,19 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Xigadee
+{
+    /// <summary>
+    /// This class is used to store the authentication details for a user on the system.
+    /// </summary>
+    /// <seealso cref="Xigadee.EntityAuditableBase" />
+    /// <seealso cref="Xigadee.IPropertyBag" />
+    public abstract class UserSecurityBase : EntityAuditableBase, IPropertyBag
+    {
+        /// <summary>
+        /// The property bag container dictionary. This has a set of extensible properties for the user.
+        /// </summary>
+        public Dictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
+    }
+}

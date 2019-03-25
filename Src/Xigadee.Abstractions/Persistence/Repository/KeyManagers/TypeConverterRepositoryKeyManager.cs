@@ -4,7 +4,6 @@ using System.ComponentModel;
 namespace Xigadee
 {
     internal class TypeConverterRepositoryKeyManager<K> : RepositoryKeyManager<K>
-        where K : IEquatable<K>
     {
         TypeConverter _converter;
 
