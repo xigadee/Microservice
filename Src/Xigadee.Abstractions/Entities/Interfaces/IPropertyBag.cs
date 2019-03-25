@@ -19,7 +19,7 @@ namespace Xigadee
     /// </summary>
     public static class PropertyBagHelper
     {
-        #region PropertiesSet<K>(string key, K value)
+        #region PropertiesSet<K>...
         /// <summary>
         /// Sets a property.
         /// </summary>
@@ -46,7 +46,7 @@ namespace Xigadee
             bag.Properties[key] = km.Serialize(value);
         }
         #endregion
-        #region PropertiesGet<K>(string key)
+        #region PropertiesGet<K>...
         /// <summary>
         /// Gets the property for the required key.
         /// </summary>
