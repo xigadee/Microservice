@@ -9,7 +9,7 @@ namespace Xigadee
     /// </summary>
     /// <seealso cref="Xigadee.EntityAuditableBase" />
     /// <seealso cref="Xigadee.IPropertyBag" />
-    public abstract class UserRolesBase : EntityAuditableBase, IPropertyBag
+    public abstract class UserRoles : EntityAuditableBase, IPropertyBag
     {
         /// <summary>
         /// The property bag container dictionary. This has a set of extensible properties for the user.

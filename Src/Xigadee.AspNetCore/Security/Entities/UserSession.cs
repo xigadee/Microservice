@@ -10,7 +10,7 @@ namespace Xigadee
     /// </summary>
     /// <seealso cref="Xigadee.EntityAuditableBase" />
     /// <seealso cref="Xigadee.IPropertyBag" />
-    public abstract class UserSessionBase : UserSecondaryBase
+    public abstract class UserSession : UserSecondaryBase
     {
 
     }

@@ -13,50 +13,23 @@ namespace Xigadee
     /// </summary>
     /// <seealso cref = "Microsoft.Extensions.Hosting.IHostedService" />
     /// <seealso cref= "https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/multi-container-microservice-net-applications/background-tasks-with-ihostedservice" />
-    public class XigadeeHostedService: IHostedService, IDisposable
+    public class MicroserviceHostedService: IHostedService, IDisposable
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="XigadeeHostedService"/> class.
+        /// Initializes a new instance of the <see cref="MicroserviceHostedService"/> class.
         /// </summary>
-        /// <param name="name">The name.</param>
-        /// <param name="serviceId">The service identifier.</param>
-        /// <param name="description">The description.</param>
-        /// <param name="policy">The policy.</param>
-        /// <param name="properties">The properties.</param>
-        /// <param name="config">The configuration.</param>
-        /// <param name="assign">The assign.</param>
-        /// <param name="configAssign">The configuration assign.</param>
-        /// <param name="addDefaultJsonPayloadSerializer">if set to <c>true</c> [add default json payload serializer].</param>
-        /// <param name="addDefaultPayloadCompressors">if set to <c>true</c> [add default payload compressors].</param>
-        /// <param name="serviceVersionId">The service version identifier.</param>
-        /// <param name="serviceReference">The service reference.</param>
-        public XigadeeHostedService(string name = null
-            , string serviceId = null
-            , string description = null
-            , IEnumerable<PolicyBase> policy = null
-            , IEnumerable<Tuple<string, string>> properties = null
-            , IEnvironmentConfiguration config = null
-            , Action<IMicroservice> assign = null
-            , Action<IEnvironmentConfiguration> configAssign = null
-            , bool addDefaultJsonPayloadSerializer = true
-            , bool addDefaultPayloadCompressors = true
-            , string serviceVersionId = null
-            , Type serviceReference = null)
+        /// <param name="pipeline">The pipeline.</param>
+        public MicroserviceHostedService(MicroservicePipeline pipeline)
         {
-            Pipeline = new AspNetCoreMicroservicePipeline(name, serviceId, description, policy
-                , properties, config, assign, configAssign
-                , addDefaultJsonPayloadSerializer, addDefaultPayloadCompressors
-                , serviceVersionId, serviceReference);
+            Pipeline = pipeline;
         }
 
         /// <summary>
         /// Gets the Microservice pipeline.
         /// </summary>
-        public AspNetCoreMicroservicePipeline Pipeline { get; private set; }
-        /// <summary>
-        /// Gets the Microservice.
-        /// </summary>
-        public IMicroservice Service => Pipeline?.Service;
+        public MicroservicePipeline Pipeline { get; }
+
+
         /// <summary>
         /// Triggered when the application host is ready to start the service.
         /// </summary>

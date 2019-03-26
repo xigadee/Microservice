@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Xigadee
@@ -9,7 +7,7 @@ namespace Xigadee
     /// This interface is used to retrieve a user and user security object from a back-end store.
     /// It is primarily used by the Authentication service.
     /// </summary>
-    public interface IUserSecurityModule : IModuleBase
+    public interface IApiUserSecurityModule : IApiModuleBase
     {
         /// <summary>
         /// This is the module realm.
@@ -19,41 +17,41 @@ namespace Xigadee
         /// <summary>
         /// Gets the user using an async method.
         /// </summary>
-        Task<(bool success, UserBase user)> RetrieveUser(Guid id);
+        Task<(bool success, User user)> RetrieveUser(Guid id);
         /// <summary>
         /// Gets the user by reference using an async method.
         /// </summary>
-        Task<(bool success, UserBase user)> RetrieveUser(string type, string value);
+        Task<(bool success, User user)> RetrieveUser(string type, string value);
         /// <summary>
         /// Gets the UserSecurity entity using an async function.
         /// </summary>
-        Task<(bool success, UserSecurityBase uSec)> RetrieveUserSecurity(Guid id);
+        Task<(bool success, UserSecurity uSec)> RetrieveUserSecurity(Guid id);
 
         /// <summary>
         /// Gets the UserSession entity using an async function.
         /// </summary>
-        Task<(bool success, UserSessionBase uSec)> RetrieveUserSession(Guid id);
+        Task<(bool success, UserSession uSess)> RetrieveUserSession(Guid id);
         /// <summary>
         /// Gets the UserExternalAction entity using an async function.
         /// </summary>
-        Task<(bool success, UserExternalActionBase uSec)> RetrieveUserExternalAction(Guid id);
-
+        Task<(bool success, UserExternalAction uExAc)> RetrieveUserExternalAction(Guid id);
 
         /// <summary>
         /// Gets the users repository
         /// </summary>
-        IRepositoryAsync<Guid, UserBase> Users { get; }
+        IRepositoryAsync<Guid, User> Users { get; }
         /// <summary>
         /// Gets the user security repository.
         /// </summary>
-        IRepositoryAsync<Guid, UserSecurityBase> UserSecurity { get; }
+        IRepositoryAsync<Guid, UserSecurity> UserSecurity { get; }
         /// <summary>
         /// Gets the user security repository.
         /// </summary>
-        IRepositoryAsync<Guid, UserSessionBase> UserSession { get; }
+        IRepositoryAsync<Guid, UserSession> UserSession { get; }
+
         /// <summary>
         /// Gets the user security repository.
         /// </summary>
-        IRepositoryAsync<Guid, UserExternalActionBase> UserExternalAction { get; }
+        IRepositoryAsync<Guid, UserExternalAction> UserExternalAction { get; }
     }
 }

@@ -15,7 +15,9 @@ namespace Tests.Xigadee.AspNetCore.Server
         public static void Main(string[] args)
         {
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
+                .CaptureStartupErrors(true)
+                .UseSetting("detailedErrors", "true")
+                .UseStartup<TestStartup>()
                 .Build()
                 .Run();
         }
