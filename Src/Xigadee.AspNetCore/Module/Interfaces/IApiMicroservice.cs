@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 namespace Xigadee
 {
     /// <summary>
-    /// This is the root Api-based microservice application interface.
+    /// This is the root API-based microservice application interface.
     /// </summary>
     public interface IApiMicroservice
     {
@@ -14,29 +14,28 @@ namespace Xigadee
         /// </summary>
         /// <param name="env">The environment.</param>
         void Initialize(IHostingEnvironment env = null);
+
         /// <summary>
         /// Gets or sets the application configuration.
         /// </summary>
         IConfiguration Configuration { get; set; }
+
         /// <summary>
-        /// Connects the modules together
+        /// Gets or sets the hosting environment.
+        /// </summary>
+        IHostingEnvironment Environment { get; set; }
+
+        /// <summary>
+        /// Gets or sets the logger.
+        /// </summary>
+        ILogger Logger { get; set; }
+
+        /// <summary>
+        /// Connects the application components and registers the relevant setvices.
         /// </summary>
         /// <param name="lf">The logger factory.</param>
-        void ConnectModules(ILoggerFactory lf);
+        void Connect(ILoggerFactory lf);
 
-        /// <summary>
-        /// Gets or sets the Microservice identity.
-        /// </summary>
-        MicroserviceId Identity { get; set; }
-
-        /// <summary>
-        /// Gets or sets the certificate module.
-        /// </summary>
-        IApiCertificateModule CertificateModule { get; set; }
-        /// <summary>
-        /// Gets or sets the secret module.
-        /// </summary>
-        IApiSecretModule SecretModule { get; set; }
     }
     /// <summary>
     /// This interface is implemented by applications that use Xigadee in an API or web based application.
@@ -62,5 +61,19 @@ namespace Xigadee
         /// Gets the user security collection, which is used to authenticate a user.
         /// </summary>
         MODSEC UserSecurityModule { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Microservice identity.
+        /// </summary>
+        MicroserviceId Identity { get; set; }
+
+        /// <summary>
+        /// Gets or sets the certificate module.
+        /// </summary>
+        IApiCertificateModule CertificateModule { get; set; }
+        /// <summary>
+        /// Gets or sets the secret module.
+        /// </summary>
+        IApiSecretModule SecretModule { get; set; }
     }
 }

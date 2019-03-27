@@ -8,17 +8,10 @@ using Microsoft.Extensions.Logging;
 namespace Xigadee
 {
     /// <summary>
-    /// This is the base API application context class.
+    /// This is the default start up context.
     /// </summary>
-    /// <typeparam name="MSCONF">The microservice configuration type.</typeparam>
-    /// <typeparam name="MODSEC">The user security module type.</typeparam>
-    /// <typeparam name="CONATEN">The authentication configuration type..</typeparam>
-    /// <typeparam name="CONATHZ">The authorization configuration type.</typeparam>
-    public abstract class ApiStartUpContextBase<MSCONF, MODSEC, CONATEN, CONATHZ> : IApiMicroservice<MODSEC, CONATEN, CONATHZ>
-        where MSCONF : ConfigApiService, new()
-        where MODSEC : IApiUserSecurityModule
-        where CONATEN : ConfigAuthentication, new()
-        where CONATHZ : ConfigAuthorization, new()
+    /// <seealso cref="Xigadee.IApiMicroservice" />
+    public class ApiStartUpContext : IApiMicroservice
     {
         #region Initialize(IHostingEnvironment env = null)
         /// <summary>
@@ -60,11 +53,57 @@ namespace Xigadee
             Configuration = builder.Build();
         }
         #endregion
+
+        /// <summary>
+        /// Creates and set the specific configuration based on the configuration.
+        /// </summary>
+        protected virtual void Bind()
+        {
+
+        }
+
+        /// <summary>
+        /// Gets or sets the hosting environment.
+        /// </summary>
+        public virtual IHostingEnvironment Environment { get; set; }
+        /// <summary>
+        /// Gets or sets the application configuration.
+        /// </summary>
+        public virtual IConfiguration Configuration { get; set; }
+        /// <summary>
+        /// Gets or sets the logger.
+        /// </summary>
+        public virtual ILogger Logger { get; set; }
+
+        /// <summary>
+        /// Connects the application components and registers the relevant services.
+        /// </summary>
+        /// <param name="lf">The logger factory.</param>
+        public virtual void Connect(ILoggerFactory lf)
+        {
+            Logger = lf.CreateLogger<IApiMicroservice>();
+        }
+    }
+
+    /// <summary>
+    /// This is the base API application context class.
+    /// </summary>
+    /// <typeparam name="MSCONF">The microservice configuration type.</typeparam>
+    /// <typeparam name="MODSEC">The user security module type.</typeparam>
+    /// <typeparam name="CONATEN">The authentication configuration type..</typeparam>
+    /// <typeparam name="CONATHZ">The authorization configuration type.</typeparam>
+    public abstract class ApiStartUpContextBase<MSCONF, MODSEC, CONATEN, CONATHZ> : ApiStartUpContext, IApiMicroservice<MODSEC, CONATEN, CONATHZ>
+        where MSCONF : ConfigApplication, new()
+        where MODSEC : IApiUserSecurityModule
+        where CONATEN : ConfigAuthentication, new()
+        where CONATHZ : ConfigAuthorization, new()
+    {
+
         #region Bind()
         /// <summary>
         /// Creates and set the specific configuration based on the configuration.
         /// </summary>
-        public virtual void Bind()
+        protected override void Bind()
         {
             Configuration.Bind("ConfigurationMicroservice", ConfigurationMicroservice);
             ConfigurationMicroservice.Name = Environment.ApplicationName;
@@ -122,18 +161,7 @@ namespace Xigadee
         /// </summary>
         public CONATHZ ConfigurationAuthorization { get; protected set; } = new CONATHZ();
 
-        /// <summary>
-        /// Gets or sets the hosting environment.
-        /// </summary>
-        public virtual IHostingEnvironment Environment { get; set; }
-        /// <summary>
-        /// Gets or sets the application configuration.
-        /// </summary>
-        public virtual IConfiguration Configuration { get; set; }
-        /// <summary>
-        /// Gets or sets the logger.
-        /// </summary>
-        public virtual ILogger Logger { get; set; }
+
         /// <summary>
         /// Gets or sets the certificate module.
         /// </summary>
@@ -152,9 +180,9 @@ namespace Xigadee
         /// Connects the services together and sets the logger for each service..
         /// </summary>
         /// <param name="lf">The logger factory.</param>
-        public virtual void ConnectModules(ILoggerFactory lf)
+        public override void Connect(ILoggerFactory lf)
         {
-            Logger = lf.CreateLogger<IApiMicroservice>();
+            base.Connect(lf);
 
             SetBase(SecretModule, lf.CreateLogger<IApiSecretModule>());
 

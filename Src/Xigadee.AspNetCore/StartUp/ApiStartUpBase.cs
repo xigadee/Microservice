@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -14,15 +15,9 @@ namespace Xigadee
     /// This class is used by all services for the application.
     /// </summary>
     /// <typeparam name="CTX">The application context type.</typeparam>
-    /// <typeparam name="MODSEC">The user security module type.</typeparam>
-    /// <typeparam name="CONATEN">The authentication configuration type..</typeparam>
-    /// <typeparam name="CONATHZ">The authorization configuration type.</typeparam>
-    /// <seealso cref="Microsoft.AspNetCore.Hosting.IStartup" />
-    public abstract class ApiStartupBase<CTX, MODSEC, CONATEN, CONATHZ> : IStartup
-        where CTX : class, IApiMicroservice<MODSEC, CONATEN, CONATHZ>, new()
-        where MODSEC : IApiUserSecurityModule
-        where CONATEN : ConfigAuthentication, new()
-        where CONATHZ : ConfigAuthorization, new()
+    /// <seealso cref="https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/routing?view=aspnetcore-2.2" />
+    public abstract class ApiStartupBase<CTX> : IStartup
+        where CTX : class, IApiMicroservice, new()
     {
         /// <summary>
         /// Initializes a new instance of the API application class.
@@ -31,6 +26,7 @@ namespace Xigadee
         protected ApiStartupBase(Microsoft.AspNetCore.Hosting.IHostingEnvironment env)
         {
             Context = new CTX();
+
             Context.Initialize(env);
 
             CreateMicroservicePipeline();
@@ -54,22 +50,36 @@ namespace Xigadee
         {
             LoggerFactory = app.ApplicationServices.GetService<ILoggerFactory>();
 
-            app.Use(async (context, next) =>
-            {
-                if (!string.IsNullOrEmpty(Context?.Identity?.ServiceVersionId))
-                    context.Response.Headers.Append("x-api-ver", Context.Identity.ServiceVersionId);
-
-                if (!string.IsNullOrEmpty(Activity.Current?.RootId))
-                    context.Response.Headers.Append("x-api-cid", Activity.Current.RootId);
-
-                await next();
-            });
+            ConfigurePipeline(app);
 
             ConfigureLogging(app);
 
-            Context.ConnectModules(LoggerFactory);
-        } 
+            Context.Connect(LoggerFactory);
+
+            ConfigureUseMvc(app);
+        }
+
+        protected virtual void ConfigureUseMvc(IApplicationBuilder app)
+        {
+            app.UseMvc();
+        }
+
         #endregion
+
+        protected virtual void ConfigurePipeline(IApplicationBuilder app)
+        {
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers.Append("x-oh-fuck", "22");
+                //if (!string.IsNullOrEmpty(Context?.Identity?.ServiceVersionId))
+                //    context.Response.Headers.Append("x-api-ver", Context.Identity.ServiceVersionId);
+
+                //if (!string.IsNullOrEmpty(Activity.Current?.RootId))
+                //    context.Response.Headers.Append("x-api-cid", Activity.Current.RootId);
+
+                await next();
+            });
+        }
 
         /// <summary>
         /// Configures the logging provide for the application.
@@ -100,18 +110,26 @@ namespace Xigadee
         /// <returns>Returns the new service provider.</returns>
         public virtual IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            // Add the heartbeat configuration.
-            services.AddSingleton(Context.CertificateModule);
+            //// Add the heartbeat configuration.
+            //services.AddSingleton(Context.CertificateModule);
 
-            services.AddSingleton(Context.Identity);
+            //services.AddSingleton(Context.Identity);
 
             //Add the microservice as a hosted service.
             services.AddSingleton<IHostedService>(Service);
 
+            ConfigureAddMvc(services);
+
             // Add framework services
             return services.BuildServiceProvider();
-        } 
+        }
         #endregion
+
+        protected virtual void ConfigureAddMvc(IServiceCollection services)
+        {
+            //services.AddMvcCore();
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_0);
+        }
 
         /// <summary>
         /// Gets or sets the API application context.

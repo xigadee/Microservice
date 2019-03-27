@@ -5,7 +5,7 @@ namespace Xigadee
     /// <summary>
     /// This is the root configuration service.
     /// </summary>
-    public class ConfigApiService
+    public class ConfigApplication
     {
         /// <summary>
         /// Gets or sets the service logging name.
@@ -36,7 +36,7 @@ namespace Xigadee
     /// <summary>
     /// This class is used to add helper functionality to the settings class.
     /// </summary>
-    public static class ConfigApiServiceHelper
+    public static class ConfigApplicationHelper
     {
         /// <summary>
         /// Resolves a setting against a connection.
@@ -44,7 +44,7 @@ namespace Xigadee
         /// <param name="service">The service settings.</param>
         /// <param name="setting">The module mode.</param>
         /// <returns>Returns the connection string, or null.</returns>
-        public static string ConnectionResolve(this ConfigApiService service, ConfigModuleMode setting)
+        public static string ConnectionResolve(this ConfigApplication service, ConfigModuleMode setting)
         {
             string value = null;
 

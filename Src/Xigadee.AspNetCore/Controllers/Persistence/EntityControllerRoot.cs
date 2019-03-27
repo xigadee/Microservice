@@ -13,7 +13,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public abstract class EntityControllerRoot<K, E> : Controller
+    public abstract class EntityControllerRoot<K, E> : ControllerBase
         where K : IEquatable<K>
     {
         #region Declarations
