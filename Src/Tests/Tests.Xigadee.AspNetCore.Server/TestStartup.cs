@@ -28,6 +28,13 @@ namespace Tests.Xigadee
                     .AttachPersistenceClient(out __client)
                     .Revert()                
                 ;
+
+            pipeline.Service.Events.StartCompleted += Service_StartCompleted; 
+        }
+
+        private void Service_StartCompleted(object sender, StartEventArgs e)
+        {
+            var rs = __client.Create(new MondayMorningBlues() { Id = new Guid("9A2E3F6D-3B98-4C2C-BD45-74F819B5EDFC") }).Result;
         }
 
         public override IServiceProvider ConfigureServices(IServiceCollection services)

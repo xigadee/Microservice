@@ -21,7 +21,7 @@ namespace Xigadee
         /// <param name="pipeline">The pipeline.</param>
         public MicroserviceHostedService(MicroservicePipeline pipeline)
         {
-            Pipeline = pipeline;
+            Pipeline = pipeline ?? throw new ArgumentNullException("pipeline");
         }
 
         /// <summary>
@@ -29,6 +29,10 @@ namespace Xigadee
         /// </summary>
         public MicroservicePipeline Pipeline { get; }
 
+        /// <summary>
+        /// Gets the service.
+        /// </summary>
+        public IMicroservice Service => Pipeline?.Service;
 
         /// <summary>
         /// Triggered when the application host is ready to start the service.
@@ -42,6 +46,7 @@ namespace Xigadee
             // Otherwise it's running
             return Task.CompletedTask;
         }
+
         /// <summary>
         /// Triggered when the application host is performing a graceful shutdown.
         /// </summary>
@@ -71,6 +76,7 @@ namespace Xigadee
         {
             TryStop(true);
         }
+
         /// <summary>
         /// Tries to start the service.
         /// </summary>

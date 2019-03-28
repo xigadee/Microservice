@@ -32,42 +32,45 @@ namespace Xigadee
         public Type EntityType { get; protected set; }
 
 
-        #region GetSerializers<E>...
-        /// <summary>
-        /// This method extract the attributes and returns the transport serializers.
-        /// </summary>
-        /// <typeparam name="E">The entity type.</typeparam>
-        /// <returns>Returns a dictionary of transport serializers.</returns>
-        public static List<TransportSerializer<E>> GetSerializers<E>()
-        {
-            return GetSerializers<E>(typeof(E));
-        }
+        //#region GetSerializers<E>...
+        ///// <summary>
+        ///// This method extract the attributes and returns the transport serializers.
+        ///// </summary>
+        ///// <typeparam name="E">The entity type.</typeparam>
+        ///// <returns>Returns a dictionary of transport serializers.</returns>
+        //public static List<TransportSerializer<E>> GetSerializers<E>()
+        //{
+        //    return GetSerializers<E>(typeof(E));
+        //}
 
-        /// <summary>
-        /// This method extract the attributes and returns the transport serializers.
-        /// </summary>
-        /// <typeparam name="E">The entity type.</typeparam>
-        /// <returns>Returns a dictionary of transport serializers.</returns>
-        public static List<TransportSerializer<E>> GetSerializers<E>(Type baseType)
-        {
-            Type entityType = typeof(E);
+        ///// <summary>
+        ///// This method extract the attributes and returns the transport serializers.
+        ///// </summary>
+        ///// <typeparam name="E">The entity type.</typeparam>
+        ///// <returns>Returns a dictionary of transport serializers.</returns>
+        //public static List<TransportSerializer<E>> GetSerializers<E>(Type baseType)
+        //{
+        //    Type entityType = typeof(E);
 
-            var attrs = baseType.GetCustomAttributes(false)
-                .OfType<MediaTypeConverterAttribute>()
-                .Where((t) => t.EntityType == entityType);
+        //    var attrs = baseType.GetCustomAttributes(false)
+        //        .OfType<MediaTypeConverterAttribute>()
+        //        .Where((t) => t.EntityType == entityType);
 
-            return attrs.Select(att =>
-                {
-                    var tSerial = (TransportSerializer<E>)Activator.CreateInstance(att.ConverterType);
-                    tSerial.Priority = att.Priority;
-                    return tSerial;
-                }).ToList();
-        } 
-        #endregion
+        //    return attrs.Select(att =>
+        //        {
+        //            var tSerial = (TransportSerializer<E>)Activator.CreateInstance(att.ConverterType);
+        //            tSerial.Priority = att.Priority;
+        //            return tSerial;
+        //        }).ToList();
+        //} 
+        //#endregion
     }
 
     public abstract class TransportSerializer<E> : TransportSerializer, ITransportSerializer<E>
     {
+
+        //JsonRawSerializer
+
         public TransportSerializer()
         {
             EntityType = typeof(E);

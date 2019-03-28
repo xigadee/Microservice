@@ -35,7 +35,6 @@ namespace Xigadee
             mJsonSerializer = new JsonSerializer { TypeNameHandling = TypeNameHandling.Auto};
         }
 
-
         protected Type TypeResolve(string typeAsString, bool useCache = true)
         {
             Type type;

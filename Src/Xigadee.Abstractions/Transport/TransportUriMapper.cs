@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -87,6 +84,7 @@ namespace Xigadee
             }
         }
 
+
         protected virtual UriBuilder UriRoot()
         {
             return new UriBuilder(Scheme, Host, PortAdjusted, Path);
@@ -103,7 +101,7 @@ namespace Xigadee
         /// <summary>
         /// This method is used to convert the key in to a string.
         /// </summary>
-        protected IKeyMapper<K> mKeyMapper;
+        protected RepositoryKeyManager<K> mKeyMapper;
         #endregion
         #region Constructor
         /// <summary>
@@ -111,13 +109,15 @@ namespace Xigadee
         /// </summary>
         /// <param name="keyMapper">The key mapper.</param>
         /// <param name="rootUri">This is the root Uri.</param>
-        public TransportUriMapper(IKeyMapper<K> keyMapper = null, Uri rootUri = null, string pathEntity = null):base(rootUri, pathEntity)
+        /// <param name="pathEntity">The entity additional path.</param>
+        public TransportUriMapper(RepositoryKeyManager<K> keyMapper = null, Uri rootUri = null
+            , string pathEntity = null):base(rootUri, pathEntity)
         {
 
             if (keyMapper != null)
                 mKeyMapper = keyMapper;
             else
-                mKeyMapper = (KeyMapper<K>)KeyMapper.Resolve<K>();
+                mKeyMapper = RepositoryKeyManager.Resolve<K>();
         }
         #endregion
 
@@ -152,7 +152,7 @@ namespace Xigadee
         {
             var builder = UriParts(method);
             
-            builder.Path = string.Format("{0}/{1}", builder.Path, Uri.EscapeDataString(mKeyMapper.ToString(key)));
+            builder.Path = string.Format("{0}/{1}", builder.Path, Uri.EscapeDataString(mKeyMapper.Serialize(key)));
             return new KeyValuePair<HttpMethod, Uri>(method, builder.Uri);
         }
 
