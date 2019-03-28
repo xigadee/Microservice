@@ -18,6 +18,24 @@ namespace Test.Xigadee
             return new Tuple<string, string>[] { };
         }
 
+        public static IEnumerable<Tuple<string, string>> ToReferences2(this MondayMorningBlues entity)
+        {
+            if (!string.IsNullOrEmpty(entity.Email))
+                yield return new Tuple<string, string>("email", entity.Email);
+
+            if (!string.IsNullOrEmpty(entity.UserName?.NameFamily))
+                yield return new Tuple<string, string>("namefamily", entity.UserName.NameFamily);
+
+            if (!string.IsNullOrEmpty(entity.UserName?.NameFirst))
+                yield return new Tuple<string, string>("namefirst", entity.UserName.NameFirst);
+
+            yield return new Tuple<string, string>("obiwan", entity.ObiWan.ToString());
+            yield return new Tuple<string, string>("coffee", entity.NotEnoughCoffee.ToString());
+            yield return new Tuple<string, string>("sleep", entity.NotEnoughSleep.ToString());
+
+            //return new Tuple<string, string>[] { };
+        }
+
         public static XElement ToXml(this MondayMorningBlues entity)
         {
             var root = new XElement("MondayMorningBlues");

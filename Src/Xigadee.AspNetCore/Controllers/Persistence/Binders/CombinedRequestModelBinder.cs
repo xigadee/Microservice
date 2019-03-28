@@ -50,20 +50,20 @@ namespace Xigadee
 
             try
             {
-                result.Erm = EntityRequestModelBinder.Bind(bindingContext);
+                result.EntityRequest = EntityRequestModelBinder.Bind(bindingContext);
 
-                if (result.Erm.IsByKey || result.Erm.IsByReference)
+                if (result.EntityRequest.IsByKey || result.EntityRequest.IsByReference)
                 {
                     result.Type = CombinedRequestModelType.ReadEntity;
                 }
                 else
                 {
                     var q = bindingContext.ActionContext.HttpContext.Request.Query;
-                    result.Srm = new SearchRequestModel(q);
+                    result.SearchRequest = new SearchRequestModel(q);
 
-                    if (result.Srm.IsSearchEntity)
+                    if (result.SearchRequest.IsSearchEntity)
                         result.Type = CombinedRequestModelType.SearchEntity;
-                    else if (result.Srm.IsSearch)
+                    else if (result.SearchRequest.IsSearch)
                         result.Type = CombinedRequestModelType.Search;
                 }
 

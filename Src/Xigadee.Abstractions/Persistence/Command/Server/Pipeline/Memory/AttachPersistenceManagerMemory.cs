@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Xigadee
 {
@@ -20,11 +21,12 @@ namespace Xigadee
         /// <param name="defaultTimeout">The default timeout. This is used for testing to simulate timeouts.</param>
         /// <param name="persistenceRetryPolicy">The retry policy. This is used for testing purposes.</param>
         /// <param name="resourceProfile">The resource profile.</param>
-        /// <param name="cacheManager">The cache manager.</param>
         /// <param name="referenceMaker">The reference maker. This is used for entities that support read by reference.</param>
-        /// <param name="referenceHashMaker">The reference hash maker. This is used for fast lookup.</param>
+        /// <param name="propertiesMaker">The entity property maker. This is used by search.</param>
         /// <param name="keySerializer">The key serializer function.</param>
         /// <param name="prePopulate">The optional pre-population collection.</param>
+        /// <param name="searches">The memory search algorithms.</param>
+        /// <param name="searchIdDefault">The default search algorithm identifier.</param>
         /// <returns>The pipeline.</returns>
         public static C AttachPersistenceManagerHandlerMemory<C, K, E>(this C cpipe
             , Func<E, K> keyMaker
@@ -35,29 +37,32 @@ namespace Xigadee
             , TimeSpan? defaultTimeout = default(TimeSpan?)
             , PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
-            , ICacheManager<K, E> cacheManager = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
-            , Func<Tuple<string, string>, string> referenceHashMaker = null
+            , Func<E, IEnumerable<Tuple<string, string>>> propertiesMaker = null
             , Func<K, string> keySerializer = null
             , IEnumerable<KeyValuePair<K, E>> prePopulate = null
+            , IEnumerable<RepositoryMemorySearch<K, E>> searches = null
+            , string searchIdDefault = null
             )
             where C : IPipelineChannelIncoming<IPipeline>
             where K : IEquatable<K>
         {
             PersistenceServer<K, E> pm = null;
 
-            return cpipe.AttachPersistenceManagerHandlerMemory(keyMaker, keyDeserializer, out pm
+            return cpipe.AttachPersistenceManagerHandlerMemory(keyMaker, keyDeserializer
+                  , out pm
                   , startupPriority
                   , entityName
                   , versionPolicy
                   , defaultTimeout
                   , persistenceRetryPolicy
                   , resourceProfile
-                  , cacheManager
                   , referenceMaker
-                  , referenceHashMaker
+                  , propertiesMaker
                   , keySerializer
-                  , prePopulate);
+                  , prePopulate
+                  , searches
+                  , searchIdDefault);
         }
 
         /// <summary>
@@ -76,11 +81,12 @@ namespace Xigadee
         /// <param name="defaultTimeout">The default timeout. This is used for testing to simulate timeouts.</param>
         /// <param name="persistenceRetryPolicy">The retry policy. This is used for testing purposes.</param>
         /// <param name="resourceProfile">The resource profile.</param>
-        /// <param name="cacheManager">The cache manager.</param>
         /// <param name="referenceMaker">The reference maker. This is used for entities that support read by reference.</param>
-        /// <param name="referenceHashMaker">The reference hash maker. This is used for fast lookup.</param>
+        /// <param name="propertiesMaker">The entity property maker. This is used by search.</param>
         /// <param name="keySerializer">The key serializer function.</param>
         /// <param name="prePopulate">The optional pre-population collection.</param>
+        /// <param name="searches">The memory search algorithms.</param>
+        /// <param name="searchIdDefault">The default search algorithm identifier.</param>
         /// <returns>The pipeline.</returns>
         public static C AttachPersistenceManagerHandlerMemory<C, K, E>(this C cpipe
             , Func<E, K> keyMaker
@@ -92,27 +98,31 @@ namespace Xigadee
             , TimeSpan? defaultTimeout = default(TimeSpan?)
             , PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
-            , ICacheManager<K, E> cacheManager = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
-            , Func<Tuple<string, string>, string> referenceHashMaker = null
+            , Func<E, IEnumerable<Tuple<string, string>>> propertiesMaker = null
             , Func<K, string> keySerializer = null
             , IEnumerable<KeyValuePair<K, E>> prePopulate = null
+            , IEnumerable<RepositoryMemorySearch<K, E>> searches = null
+            , string searchIdDefault = null
             )
             where C : IPipelineChannelIncoming<IPipeline>
             where K : IEquatable<K>
         {
-            cpipe.Pipeline.AddPersistenceManagerMemory(keyMaker, keyDeserializer, cpipe, out pm
+            cpipe.Pipeline.AddPersistenceManagerMemory(keyMaker, keyDeserializer, cpipe
+                  , out pm
                   , startupPriority
                   , entityName: entityName
                   , versionPolicy: versionPolicy
                   , defaultTimeout: defaultTimeout
                   , persistenceRetryPolicy: persistenceRetryPolicy
                   , resourceProfile: resourceProfile
-                  , cacheManager: cacheManager
                   , referenceMaker: referenceMaker
-                  , referenceHashMaker: referenceHashMaker
+                  , propertiesMaker: propertiesMaker
                   , keySerializer: keySerializer
-                  , prePopulate: prePopulate);
+                  , prePopulate: prePopulate
+                  , searches: searches
+                  , searchIdDefault: searchIdDefault
+                  );
 
             return cpipe;
         }

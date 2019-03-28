@@ -17,40 +17,36 @@ namespace Tests.Xigadee
         {
         }
 
-        PersistenceClient<Guid, MondayMorningBlues> __client;
+        PersistenceClient<Guid, MondayMorningBlues> _client;
 
         protected override void ConfigureMicroservicePipeline(MicroservicePipeline pipeline)
         {
-            PersistenceServer<Guid, MondayMorningBlues> pm;
-
             pipeline
-                 .AdjustPolicyTaskManagerForDebug()
+                .AdjustPolicyTaskManagerForDebug()
                 .AddChannelIncoming("testin")
                     .AttachPersistenceManagerHandlerMemory(
                         (MondayMorningBlues e) => e.Id
                         , s => new Guid(s)
-                        , out pm
-                        , versionPolicy: ((e) => $"{e.VersionId:N}", (e) => e.VersionId = Guid.NewGuid()             
-                        , true))
-                    .AttachPersistenceClient(out __client)
+                        , versionPolicy: ((e) => $"{e.VersionId:N}", (e) => e.VersionId = Guid.NewGuid(), true)
+                        , propertiesMaker: (e) => e.ToReferences2()
+                        , searches: new[] { new RepositoryMemorySearch<Guid, MondayMorningBlues>("default") }
+                        , searchIdDefault: "default")
+                    .AttachPersistenceClient(out _client)
                     .Revert()                
                 ;
-
-            ((RepositoryMemory<Guid, MondayMorningBlues>)pm.Repository)
-                .SearchAdd(new RepositoryMemorySearch<Guid, MondayMorningBlues>("default"), true);
 
             pipeline.Service.Events.StartCompleted += Service_StartCompleted; 
         }
 
         private void Service_StartCompleted(object sender, StartEventArgs e)
         {
-            var rs = __client.Create(new MondayMorningBlues() { Id = new Guid("9A2E3F6D-3B98-4C2C-BD45-74F819B5EDFC") }).Result;
+            var rs = _client.Create(new MondayMorningBlues() { Id = new Guid("9A2E3F6D-3B98-4C2C-BD45-74F819B5EDFC") }).Result;
         }
 
         public override IServiceProvider ConfigureServices(IServiceCollection services)
         {
             //services.adds
-            services.AddSingleton<IRepositoryAsync<Guid, MondayMorningBlues>>(__client);
+            services.AddSingleton<IRepositoryAsync<Guid, MondayMorningBlues>>(_client);
 
             return base.ConfigureServices(services);
         }

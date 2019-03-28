@@ -201,6 +201,10 @@ namespace Xigadee
         /// <returns>This is the holder containing the response and the entity where necessary.</returns>
         public virtual async Task<RepositoryHolder<SearchRequest, SearchResponse>> Search(SearchRequest key, RepositorySettings options = null)
         {
+            //You should not specify select parameters when selecting the full entity to be returned.
+            if (string.IsNullOrEmpty(key.Select?.Trim()))
+                throw new ArgumentOutOfRangeException("You must select $select parameters when selecting a SearchResponse, i.e. $select=Id, Name");
+
             var uri = mUriMapper.MakeUri(HttpMethod.Get, key);
 
             return await CallClient<SearchRequest, SearchResponse>(uri, options
@@ -217,6 +221,10 @@ namespace Xigadee
         /// <returns>This is the holder containing the response and the entity where necessary.</returns>
         public virtual async Task<RepositoryHolder<SearchRequest, SearchResponse<E>>> SearchEntity(SearchRequest key, RepositorySettings options = null)
         {
+            //You should not specify select parameters when selecting the full entity to be returned.
+            if (!string.IsNullOrEmpty(key.Select))
+                key.Select = null;
+
             var uri = mUriMapper.MakeUri(HttpMethod.Get, key);
 
             return await CallClient<SearchRequest, SearchResponse<E>>(uri, options

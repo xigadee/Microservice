@@ -21,11 +21,12 @@ namespace Xigadee
         /// <param name="defaultTimeout">The default timeout. This is used for testing to simulate timeouts.</param>
         /// <param name="persistenceRetryPolicy">The retry policy. This is used for testing purposes.</param>
         /// <param name="resourceProfile">The resource profile.</param>
-        /// <param name="cacheManager">The cache manager.</param>
         /// <param name="referenceMaker">The reference maker. This is used for entities that support read by reference.</param>
-        /// <param name="referenceHashMaker">The reference hash maker. This is used for fast lookup.</param>
+        /// <param name="propertiesMaker">The entity property maker. This is used by search.</param>
         /// <param name="keySerializer">The key serializer function.</param>
         /// <param name="prePopulate">The optional pre-population collection.</param>
+        /// <param name="searches">The memory search algorithms.</param>
+        /// <param name="searchIdDefault">The default search algorithm identifier.</param>
         /// <returns>The pipeline.</returns>
         public static P AddPersistenceManagerMemory<P, K, E>(this P pipeline
             , Func<E, K> keyMaker
@@ -37,12 +38,12 @@ namespace Xigadee
             , TimeSpan? defaultTimeout = default(TimeSpan?)
             , PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
-            , ICacheManager<K, E> cacheManager = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
-            , Func<Tuple<string, string>, string> referenceHashMaker = null
+            , Func<E, IEnumerable<Tuple<string, string>>> propertiesMaker = null
             , Func<K, string> keySerializer = null
             , IEnumerable<KeyValuePair<K, E>> prePopulate = null
-            )
+            , IEnumerable<RepositoryMemorySearch<K, E>> searches = null
+            , string searchIdDefault = null)
             where P : IPipeline
             where K : IEquatable<K>
         {
@@ -55,11 +56,12 @@ namespace Xigadee
                   , defaultTimeout: defaultTimeout
                   , persistenceRetryPolicy: persistenceRetryPolicy
                   , resourceProfile: resourceProfile
-                  , cacheManager: cacheManager
                   , referenceMaker: referenceMaker
-                  , referenceHashMaker: referenceHashMaker
+                  , propertiesMaker: propertiesMaker
                   , keySerializer: keySerializer
-                  , prePopulate: prePopulate);
+                  , prePopulate: prePopulate
+                  , searches: searches
+                  , searchIdDefault: searchIdDefault);
         }
 
         /// <summary>
@@ -79,11 +81,12 @@ namespace Xigadee
         /// <param name="defaultTimeout">The default timeout. This is used for testing to simulate timeouts.</param>
         /// <param name="persistenceRetryPolicy">The retry policy. This is used for testing purposes.</param>
         /// <param name="resourceProfile">The resource profile.</param>
-        /// <param name="cacheManager">The cache manager.</param>
         /// <param name="referenceMaker">The reference maker. This is used for entities that support read by reference.</param>
-        /// <param name="referenceHashMaker">The reference hash maker. This is used for fast lookup.</param>
+        /// <param name="propertiesMaker">The entity property maker. This is used by search.</param>
         /// <param name="keySerializer">The key serializer function.</param>
         /// <param name="prePopulate">The optional pre-population collection.</param>
+        /// <param name="searches">The memory search algorithms.</param>
+        /// <param name="searchIdDefault">The default search algorithm identifier.</param>
         /// <returns>The pipeline.</returns>
         public static P AddPersistenceManagerMemory<P, K, E>(this P pipeline
             , Func<E, K> keyMaker
@@ -96,12 +99,12 @@ namespace Xigadee
             , TimeSpan? defaultTimeout = default(TimeSpan?)
             , PersistenceRetryPolicy persistenceRetryPolicy = null
             , ResourceProfile resourceProfile = null
-            , ICacheManager<K, E> cacheManager = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
-            , Func<Tuple<string, string>, string> referenceHashMaker = null
+            , Func<E, IEnumerable<Tuple<string, string>>> propertiesMaker = null
             , Func<K, string> keySerializer = null
             , IEnumerable<KeyValuePair<K, E>> prePopulate = null
-            )
+            , IEnumerable<RepositoryMemorySearch<K, E>> searches = null
+            , string searchIdDefault = null)
             where P : IPipeline
             where K : IEquatable<K>
         {
@@ -114,7 +117,10 @@ namespace Xigadee
 
             var repo = new RepositoryMemory<K, E>(keyMaker
                 , referenceMaker
+                , propertiesMaker
                 , versionPolicy: versionPolicy);
+
+            searches?.ForEach(s => repo.SearchAdd(s, s.Id == searchIdDefault));
 
             pm = new PersistenceServer<K, E>(repo);
 

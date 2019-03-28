@@ -8,21 +8,36 @@ namespace Xigadee
     [ModelBinder(typeof(CombinedRequestModelBinder))]
     public class CombinedRequestModel
     {
+        /// <summary>
+        /// Gets or sets the request type.
+        /// </summary>
         public CombinedRequestModelType? Type { get; set; }
         /// <summary>
         /// Gets or sets the entity request model.
         /// </summary>
-        public EntityRequestModel Erm { get; set; }
+        public EntityRequestModel EntityRequest { get; set; }
         /// <summary>
         /// Gets or sets the search request model.
         /// </summary>
-        public SearchRequestModel Srm { get; set; }
+        public SearchRequestModel SearchRequest { get; set; }
     }
 
+    /// <summary>
+    /// The GET request type.
+    /// </summary>
     public enum CombinedRequestModelType
     {
+        /// <summary>
+        /// Read an entity
+        /// </summary>
         ReadEntity,
+        /// <summary>
+        /// The search for a set of entity parameters.
+        /// </summary>
         Search,
+        /// <summary>
+        /// The search for a set of entities.
+        /// </summary>
         SearchEntity
     }
 }

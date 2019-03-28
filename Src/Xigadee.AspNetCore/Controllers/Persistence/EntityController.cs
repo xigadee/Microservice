@@ -55,22 +55,7 @@ namespace Xigadee
         }
         #endregion
 
-        //#region Read
-        ///// <summary>
-        ///// Retrieves an entity by id or ref type/value or search for entities.
-        ///// </summary>
-        ///// <param name="input">The entity id or ref type/value or search parameters.</param>
-        ///// <returns>Returns matching entity/entities</returns>
-        //[Route("")]
-        //[Route("{id1}")]
-        //[Route("{id1}/{id2}")]
-        //[HttpGet]
-        //public virtual Task<IActionResult> Read(EntityRequestModel input)
-        //{
-        //    return base.ReadRoot(input);
-        //}
-        //#endregion
-        #region Read
+        #region Read/Search
         /// <summary>
         /// Retrieves an entity by id or ref type/value or search for entities.
         /// </summary>
@@ -85,11 +70,11 @@ namespace Xigadee
             switch (input?.Type)
             {
                 case CombinedRequestModelType.ReadEntity:
-                    return base.ReadRoot(input.Erm);
+                    return base.ReadRoot(input.EntityRequest);
                 case CombinedRequestModelType.Search:
-                    return base.SearchRoot(input.Srm);
+                    return base.SearchRoot(input.SearchRequest);
                 case CombinedRequestModelType.SearchEntity:
-                    return base.SearchEntityRoot(input.Srm);
+                    return base.SearchEntityRoot(input.SearchRequest);
                 default:
                     return Task.FromResult((IActionResult)StatusCode(400));
             }
@@ -135,33 +120,6 @@ namespace Xigadee
         public virtual Task<IActionResult> Version(EntityRequestModel input)
         {
             return base.VersionRoot(input);
-        }
-        #endregion
-
-        #region Search
-        /// <summary>
-        /// Retrieves an entity by id or ref type/value or search for entities.
-        /// </summary>
-        /// <param name="input">The entity id or ref type/value or search parameters.</param>
-        /// <returns>Returns matching entity/entities</returns>
-        [Route("search")]
-        [HttpGet]
-        protected virtual Task<IActionResult> Search(SearchRequestModel input)
-        {
-            return base.SearchRoot(input);
-        }
-        #endregion
-        #region SearchEntity
-        /// <summary>
-        /// Retrieves an entity by id or ref type/value or search for entities.
-        /// </summary>
-        /// <param name="input">The entity id or ref type/value or search parameters.</param>
-        /// <returns>Returns matching entity/entities</returns>
-        [Route("searchentity")]
-        [HttpGet]
-        public virtual Task<IActionResult> SearchEntity(SearchRequestModel input)
-        {
-            return base.SearchEntityRoot(input);
         }
         #endregion
     }

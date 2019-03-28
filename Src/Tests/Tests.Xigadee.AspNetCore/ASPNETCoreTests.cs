@@ -33,6 +33,7 @@ namespace Tests.Xigadee
                 var rs2 = await prov.Create(e);
                 var rs2v = await prov.Version(rs2.Entity.Id);
 
+                var s2a = await prov.Search("$select=obiwan, coffee, sleep&$filter=coffee eq True");
                 rs2.Entity.NotEnoughCoffee = false;
                 var rs3 = await prov.Update(rs2.Entity);
 
@@ -40,7 +41,8 @@ namespace Tests.Xigadee
 
                 var rs4 = await prov.Version(rs2.Entity.Id);
 
-                var s = await prov.SearchEntity("$top=10&$skip=1");
+                var s1 = await prov.SearchEntity("$top=10&$skip=1");
+                var s2b = await prov.Search("$select=obiwan, coffee, sleep&$filter=coffee eq True");
 
                 var d1 = await prov.Delete(rs2.Entity.Id);
                 var d1b = await prov.Read(rs2.Entity.Id);
