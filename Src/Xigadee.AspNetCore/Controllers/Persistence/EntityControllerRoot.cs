@@ -61,10 +61,22 @@ namespace Xigadee
 
             if (!string.IsNullOrEmpty(t?.Item2))
                 Response.Headers.Add("X-VersionId", t.Item2);
+        }
+        #endregion
+        #region EntityHeadersAdd(RepositoryHolder<K, E> rs)
+        /// <summary>
+        /// Adds the entity id to the outgoing headers.
+        /// </summary>
+        /// <param name="rs">The repository response.</param>
+        protected virtual void EntityHeadersAdd(RepositoryHolder<K, Tuple<K, string>> rs)
+        {
+            var t = rs.KeyReference;
 
-            // Store entity id 
-            if (Activity.Current != null)
-                Activity.Current.AddBaggage("EntityId", $"{rs.Key}");
+            if (!string.IsNullOrEmpty(t?.Item1))
+                Response.Headers.Add("X-EntityId", t.Item1);
+
+            if (!string.IsNullOrEmpty(t?.Item2))
+                Response.Headers.Add("X-VersionId", t.Item2);
         }
         #endregion
 
@@ -88,6 +100,10 @@ namespace Xigadee
                 if (rs.IsSuccess)
                 {
                     EntityHeadersAdd(rs);
+
+                    //https://github.com/dotnet/corefx/issues/29207
+                    //Activity.Current?.AddBaggage("EntityId", $"{rs.Key}");
+
                     return StatusCode(rs.ResponseCode, rs.Entity);
                 }
 
@@ -225,6 +241,12 @@ namespace Xigadee
                 else
                     return StatusCode(StatusCodes.Status404NotFound);
 
+                if (rs.IsSuccess)
+                {
+                    EntityHeadersAdd(rs);
+                    return StatusCode(rs.ResponseCode, rs.Entity);
+                }
+
                 return StatusCode(rs.ResponseCode);
             }
             catch (HttpStatusOutputException stex)
@@ -267,6 +289,12 @@ namespace Xigadee
                 }
                 else
                     return StatusCode(StatusCodes.Status404NotFound);
+
+                if (rs.IsSuccess)
+                {
+                    EntityHeadersAdd(rs);
+                    return StatusCode(rs.ResponseCode, rs.Entity);
+                }
 
                 return StatusCode(rs.ResponseCode);
             }

@@ -12,23 +12,23 @@ namespace Xigadee
     /// <summary>
     /// This the base default Json serializer.
     /// </summary>
-    public class JsonTransportSerializer<E> : TransportSerializer<E>
+    public class JsonTransportSerializer : TransportSerializer
     {
         private readonly JsonSerializerSettings mJsonSerializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
 
-        public JsonTransportSerializer():base()
+        public JsonTransportSerializer() : base()
         {
             MediaType = "application/json";
         }
 
-        public override E GetObjectInternal(byte[] data, Encoding encoding = null)
-        {
-            return JsonConvert.DeserializeObject<E>(encoding.GetString(data), mJsonSerializerSettings);
-        }
-
-        public override byte[] GetDataInternal(E entity, Encoding encoding)
+        protected override byte[] GetDataInternal<E>(E entity, Encoding encoding = null)
         {
             return encoding.GetBytes(JsonConvert.SerializeObject(entity, mJsonSerializerSettings));
+        }
+
+        protected override object GetObjectInternal(Type type, byte[] data, Encoding encoding = null)
+        {
+            return JsonConvert.DeserializeObject(encoding.GetString(data), type, mJsonSerializerSettings);
         }
     }
 }

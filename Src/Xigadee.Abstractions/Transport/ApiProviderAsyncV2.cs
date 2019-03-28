@@ -34,12 +34,12 @@ namespace Xigadee
         /// <summary>
         /// This is the collection of transports available for serialization.
         /// </summary>
-        protected readonly Dictionary<string, TransportSerializer<E>> mTransportSerializers;
+        protected readonly Dictionary<string, TransportSerializer> mTransportSerializers;
 
         /// <summary>
         /// This is the default serializer.
         /// </summary>
-        protected TransportSerializer<E> TransportSerializerDefault => mTransportSerializers[mTransportOutDefault];
+        protected TransportSerializer TransportSerializerDefault => mTransportSerializers[mTransportOutDefault];
         #endregion
         #region Constructor
         /// <summary>
@@ -48,7 +48,7 @@ namespace Xigadee
         public ApiProviderAsyncV2(Uri uri
             , RepositoryKeyManager<K> keyMapper = null
             , TransportUriMapper<K> transportUriMapper = null
-            , IEnumerable<TransportSerializer<E>> transportOverride = null
+            , IEnumerable<TransportSerializer> transportOverride = null
             , IEnumerable<IApiProviderAuthBase> authHandlers = null
             , X509Certificate clientCert = null
             , Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> manualCertValidation = null
@@ -61,8 +61,8 @@ namespace Xigadee
 
             if (transportOverride == null || transportOverride.Count() == 0)
             {
-                mTransportSerializers = new Dictionary<string, TransportSerializer<E>>();
-                var defaultTs = new JsonTransportSerializer<E>();
+                mTransportSerializers = new Dictionary<string, TransportSerializer>();
+                var defaultTs = new JsonTransportSerializer();
                 mTransportOutDefault = defaultTs.MediaType.ToLowerInvariant();
                 mTransportSerializers[mTransportOutDefault] = defaultTs;
             }
@@ -162,6 +162,7 @@ namespace Xigadee
             var uri = mUriMapper.MakeUri(HttpMethod.Delete, key);
 
             return await CallClient<K, Tuple<K, string>>(uri, options
+                , deserializer: EntityDeserialize
                 , mapOut: (rs, holder) => ExtractHeaders(rs, holder));
         }
         #endregion
@@ -178,6 +179,7 @@ namespace Xigadee
             var uri = mUriMapper.MakeUri(HttpMethod.Delete, refKey, refValue);
 
             return await CallClient<K, Tuple<K, string>>(uri, options
+                , deserializer: EntityDeserialize
                 , mapOut: (rs, holder) => ExtractHeaders(rs, holder));
         }
         #endregion
@@ -194,6 +196,7 @@ namespace Xigadee
             var uri = mUriMapper.MakeUri(HttpMethod.Head, key);
 
             return await CallClient<K, Tuple<K, string>>(uri, options
+                , deserializer: EntityDeserialize
                 , mapOut: (rs, holder) => ExtractHeaders(rs, holder));
         }
         #endregion
@@ -210,6 +213,7 @@ namespace Xigadee
             var uri = mUriMapper.MakeUri(HttpMethod.Head, refKey, refValue);
 
             return await CallClient<K, Tuple<K, string>>(uri, options
+                , deserializer: EntityDeserialize
                 , mapOut: (rs, holder) => ExtractHeaders(rs, holder));
         }
         #endregion
@@ -260,9 +264,9 @@ namespace Xigadee
         /// </summary>
         /// <param name="entity">The entity to convert.</param>
         /// <returns>The ByteArrayContent to transmit.</returns>
-        protected virtual ByteArrayContent EntitySerialize(E entity)
+        protected virtual ByteArrayContent EntitySerialize<ET>(ET entity)
         {
-            if (Equals(entity, default(E)))
+            if (Equals(entity, default(ET)))
                 throw new ArgumentNullException("entity");
 
             var data = TransportSerializerDefault.GetData(entity);
@@ -280,14 +284,14 @@ namespace Xigadee
         /// <param name="data">The response content</param>
         /// <param name="holder">The repository holder</param>
         /// <returns>Returns true if the serializer can be resolved.</returns>
-        protected virtual void EntityDeserialize(HttpResponseMessage rs, byte[] data, RepositoryHolder<K, E> holder)
+        protected virtual void EntityDeserialize<ET>(HttpResponseMessage rs, byte[] data, RepositoryHolder<K, ET> holder)
         {
             string mediaType = rs.Content.Headers.ContentType.MediaType;
 
             if (mTransportSerializers.ContainsKey(mediaType.ToLowerInvariant()))
             {
                 var transport = mTransportSerializers[mediaType];
-                holder.Entity = transport.GetObject(data);
+                holder.Entity = transport.GetObject<ET>(data);
             }
             else
                 throw new TransportSerializerResolutionException(mediaType);

@@ -12,6 +12,9 @@ namespace Xigadee
     /// </summary>
     public abstract class TransportSerializer : ITransportSerializer
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TransportSerializer"/> class.
+        /// </summary>
         public TransportSerializer()
         {
             Priority = 0.1;
@@ -31,59 +34,14 @@ namespace Xigadee
         /// </summary>
         public Type EntityType { get; protected set; }
 
+        protected abstract object GetObjectInternal(Type type, byte[] data, Encoding encoding = null);
 
-        //#region GetSerializers<E>...
-        ///// <summary>
-        ///// This method extract the attributes and returns the transport serializers.
-        ///// </summary>
-        ///// <typeparam name="E">The entity type.</typeparam>
-        ///// <returns>Returns a dictionary of transport serializers.</returns>
-        //public static List<TransportSerializer<E>> GetSerializers<E>()
-        //{
-        //    return GetSerializers<E>(typeof(E));
-        //}
-
-        ///// <summary>
-        ///// This method extract the attributes and returns the transport serializers.
-        ///// </summary>
-        ///// <typeparam name="E">The entity type.</typeparam>
-        ///// <returns>Returns a dictionary of transport serializers.</returns>
-        //public static List<TransportSerializer<E>> GetSerializers<E>(Type baseType)
-        //{
-        //    Type entityType = typeof(E);
-
-        //    var attrs = baseType.GetCustomAttributes(false)
-        //        .OfType<MediaTypeConverterAttribute>()
-        //        .Where((t) => t.EntityType == entityType);
-
-        //    return attrs.Select(att =>
-        //        {
-        //            var tSerial = (TransportSerializer<E>)Activator.CreateInstance(att.ConverterType);
-        //            tSerial.Priority = att.Priority;
-        //            return tSerial;
-        //        }).ToList();
-        //} 
-        //#endregion
-    }
-
-    public abstract class TransportSerializer<E> : TransportSerializer, ITransportSerializer<E>
-    {
-
-        //JsonRawSerializer
-
-        public TransportSerializer()
-        {
-            EntityType = typeof(E);
-        }
-
-        public abstract E GetObjectInternal(byte[] data, Encoding encoding = null);
-
-        public virtual E GetObject(byte[] data, Encoding encoding = null)
+        public virtual E GetObject<E>(byte[] data, Encoding encoding = null)
         {
             encoding = encoding ?? Encoding.UTF8;
             try
             {
-                return GetObjectInternal(data, encoding);
+                return (E)GetObjectInternal(typeof(E), data, encoding);
             }
             catch (Exception)
             {
@@ -92,9 +50,9 @@ namespace Xigadee
             }
         }
 
-        public abstract byte[] GetDataInternal(E entity, Encoding encoding = null);
+        protected abstract byte[] GetDataInternal<E>(E entity, Encoding encoding = null);
 
-        public virtual byte[] GetData(E entity, Encoding encoding = null)
+        public virtual byte[] GetData<E>(E entity, Encoding encoding = null)
         {
             encoding = encoding ?? Encoding.UTF8;
             try
@@ -107,7 +65,5 @@ namespace Xigadee
                     string.Format("Cannot deserialize entity of type {0}: {1}", typeof(E).Name, ex.Message), ex);
             }
         }
- 
     }
-
 }

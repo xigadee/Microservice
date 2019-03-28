@@ -28,11 +28,24 @@ namespace Tests.Xigadee
 
                 var rs1 = await prov.Read(new Guid("9A2E3F6D-3B98-4C2C-BD45-74F819B5EDFC"));
 
-                var e2 = new MondayMorningBlues() { NotEnoughCoffee = true, NotEnoughSleep = false };
+                var e = new MondayMorningBlues() { NotEnoughCoffee = true, NotEnoughSleep = false };
 
-                var rs2 = await prov.Create(e2);
+                var rs2 = await prov.Create(e);
+                var rs2v = await prov.Version(rs2.Entity.Id);
 
+                rs2.Entity.NotEnoughCoffee = false;
                 var rs3 = await prov.Update(rs2.Entity);
+
+                var rs3a = await prov.Read(rs3.Entity.Id);
+
+                var rs4 = await prov.Version(rs2.Entity.Id);
+
+                var d1 = await prov.Delete(rs2.Entity.Id);
+                var d1b = await prov.Read(rs2.Entity.Id);
+
+                var er1 = await prov.Read(Guid.NewGuid());
+
+                var ev1 = await prov.Version(Guid.NewGuid());
 
 
                 // Arrange
@@ -41,7 +54,7 @@ namespace Tests.Xigadee
                 // Act
                 var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get
                 //    , "api/values");
-                , $"api/mondaymorningblues/{e2.Id.ToString("N")}");
+                , $"api/mondaymorningblues/{e.Id.ToString("N")}");
 
                 //httpRequestMessage.Headers.Add("Authorization", $"bearer {customBearerToken}");
 

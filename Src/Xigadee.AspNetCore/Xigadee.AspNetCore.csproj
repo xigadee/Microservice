@@ -34,6 +34,7 @@
   <ItemGroup>
     <Folder Include="Pipeline\" />
     <Folder Include="Security\Interfaces\" />
+    <Folder Include="Security\Modules\" />
     <Folder Include="Swagger\" />
     <Folder Include="Properties\" />
   </ItemGroup>
