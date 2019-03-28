@@ -1,19 +1,16 @@
-﻿#region using
+﻿using System;
 using System.Net.Http;
-using System;
+using System.Net.Http.Headers;
+using System.Net.Security;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
-using System.Net.Security;
-using Newtonsoft.Json;
-#endregion
 namespace Xigadee
 {
     /// <summary>
-    /// This abstract base class is used for Api client connectivity.
+    /// This is the abstract base class used for API client connectivity.
     /// </summary>
     public abstract class ApiProviderBase
     {
@@ -42,6 +39,14 @@ namespace Xigadee
         /// This is the user agent that will be passed in the request header
         /// </summary>
         protected readonly string mUserAgent;
+        /// <summary>
+        /// This is the primary transport used for sending requests.
+        /// </summary>
+        protected string mTransportOutDefault;
+        /// <summary>
+        /// This is the collection of transports available for serialization.
+        /// </summary>
+        protected readonly Dictionary<string, TransportSerializer> mTransportSerializers;
         #endregion
         #region Constructor
         /// <summary>
@@ -50,7 +55,9 @@ namespace Xigadee
         protected ApiProviderBase(Uri uri
             , IEnumerable<IApiProviderAuthBase> authHandlers = null
             , X509Certificate clientCert = null
-            , Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> manualCertValidation = null)
+            , Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> manualCertValidation = null
+            , IEnumerable<TransportSerializer> transportOverride = null
+            )
         {
             // Get the types assembly version to add to the request headers
             mAssemblyVersion = AssemblyVersionGet();
@@ -74,9 +81,23 @@ namespace Xigadee
                 mHandler.ClientCertificateOptions = ClientCertificateOption.Manual;
                 mHandler.ClientCertificates.Add(clientCert);
             }
+
+            if (transportOverride == null || transportOverride.Count() == 0)
+            {
+                mTransportSerializers = new Dictionary<string, TransportSerializer>();
+                var defaultTs = new JsonTransportSerializer();
+                mTransportOutDefault = defaultTs.MediaType.ToLowerInvariant();
+                mTransportSerializers[mTransportOutDefault] = defaultTs;
+            }
+            else
+            {
+                mTransportOutDefault = transportOverride.First().MediaType.ToLowerInvariant();
+                mTransportSerializers = transportOverride.ToDictionary(t => t.MediaType.ToLowerInvariant(), t => t);
+            }
         }
         #endregion
-        #region AssemblyVersionGet()
+
+        #region UserAgentGet()
         /// <summary>
         /// This method returns the user agent that is passed to the calling party. 
         /// </summary>
@@ -84,9 +105,21 @@ namespace Xigadee
         protected virtual string UserAgentGet()
         {
             var type = GetType();
-            return $"{GetType().Name}/{type.Assembly.GetName().Version}";
+            return $"Xigadee/{type.Assembly.GetName().Version} ({Environment.OSVersion})";
         }
         #endregion
+        #region AssemblyVersionGet()
+        /// <summary>
+        /// This method returns the assembly version that is passed to the calling party. You can override this
+        /// method to change the version.
+        /// </summary>
+        /// <returns>Returns a string containing the assembly version.</returns>
+        protected virtual string AssemblyVersionGet()
+        {
+            return GetType().Assembly.GetName().Version.ToString();
+        }
+        #endregion
+
         #region ValidateCerts ...
         /// <summary>
         /// Validates the certs.
@@ -106,6 +139,12 @@ namespace Xigadee
             //return errs == SslPolicyErrors.None;
         }
         #endregion
+        #region TransportSerializerDefault
+        /// <summary>
+        /// This is the default serializer.
+        /// </summary>
+        protected TransportSerializer TransportSerializerDefault => mTransportSerializers[mTransportOutDefault]; 
+        #endregion
 
         #region ClientOverride
         /// <summary>
@@ -113,18 +152,6 @@ namespace Xigadee
         /// or creating a new client for each request.
         /// </summary>
         public HttpClient ClientOverride { get; set; } 
-        #endregion
-
-        #region AssemblyVersionGet()
-        /// <summary>
-        /// This method returns the assembly version that is passed to the calling party. You can override this
-        /// method to change the version.
-        /// </summary>
-        /// <returns>Returns a string containing the assembly version.</returns>
-        protected virtual string AssemblyVersionGet()
-        {
-            return GetType().Assembly.GetName().Version.ToString();
-        }
         #endregion
 
         #region Request(HttpMethod verb, Uri uri)
@@ -169,7 +196,6 @@ namespace Xigadee
                 rq.Headers.Add("Prefer", Prefer.Select((k) => string.Format("{0}={1}", k.Key, k.Value)));
         }
         #endregion
-
         #region RequestHeadersAuthSet(HttpRequestMessage rq)
         /// <summary>
         /// This method sets the prefer request headers for the Api call.
@@ -180,6 +206,17 @@ namespace Xigadee
             mAuthHandlers?.ForEach((a) => a.ProcessRequest(rq));
         }
         #endregion
+        #region RequestHeadersSetTransport(HttpRequestMessage rq)
+        /// <summary>
+        /// This method sets the media quality type for the entity transfer.
+        /// </summary>
+        /// <param name="rq">The http request.</param>
+        protected virtual void RequestHeadersSetTransport(HttpRequestMessage rq)
+        {
+            rq.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        }
+        #endregion
+
         #region ResponseHeadersAuth(HttpRequestMessage rq, HttpResponseMessage rs)
         /// <summary>
         /// This method sets the prefer request headers for the Api call.
@@ -207,56 +244,6 @@ namespace Xigadee
             message = string.IsNullOrEmpty(message) ? exception.Message : string.Format("{0} {1}", message, exception.Message);
 
             return FormatExceptionChain(exception.InnerException, message);
-        }
-        #endregion
-
-        #region JsonBody...
-        /// <summary>
-        /// Converts the object in to a Json body.
-        /// </summary>
-        /// <param name="body">The body object.</param>
-        /// <returns>Returns a Http content object.</returns>
-        protected HttpContent JsonBody(object body)
-        {
-            string json = JsonConvert.SerializeObject(body);
-            return JsonBody(json);
-        }
-        /// <summary>
-        /// Converts the text in to a Json body.
-        /// </summary>
-        /// <param name="json">The json.</param>
-        /// <returns></returns>
-        protected HttpContent JsonBody(string json)
-        {
-            byte[] data = Encoding.UTF8.GetBytes(json);
-            var content = new ByteArrayContent(data);
-            content.Headers.Add("Content-Type", "application/json; charset=utf-8");
-            return content;
-        }
-        #endregion
-        #region TextBody(string text)
-        /// <summary>
-        /// Converts the texts in to a http body.
-        /// </summary>
-        /// <param name="text">The text.</param>
-        /// <returns></returns>
-        protected HttpContent TextBody(string text)
-        {
-            byte[] data = Encoding.UTF8.GetBytes(text);
-            var content = new ByteArrayContent(data);
-            content.Headers.Add("Content-Type", "text/plain; charset=utf-8");
-            return content;
-        }
-        #endregion
-
-        #region RequestHeadersSetTransport(HttpRequestMessage rq)
-        /// <summary>
-        /// This method sets the media quality type for the entity transfer.
-        /// </summary>
-        /// <param name="rq">The http request.</param>
-        protected virtual void RequestHeadersSetTransport(HttpRequestMessage rq)
-        {
-            rq.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
         #endregion
 
@@ -365,6 +352,5 @@ namespace Xigadee
             return response;
         }
         #endregion
-
     }
 }

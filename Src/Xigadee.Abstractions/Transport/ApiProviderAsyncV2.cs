@@ -27,19 +27,6 @@ namespace Xigadee
         /// This class is used to translate the requests to the appropriate Uri.
         /// </summary>
         protected TransportUriMapper<K> mUriMapper;
-        /// <summary>
-        /// This is the primary transport used for sending requests.
-        /// </summary>
-        protected string mTransportOutDefault;
-        /// <summary>
-        /// This is the collection of transports available for serialization.
-        /// </summary>
-        protected readonly Dictionary<string, TransportSerializer> mTransportSerializers;
-
-        /// <summary>
-        /// This is the default serializer.
-        /// </summary>
-        protected TransportSerializer TransportSerializerDefault => mTransportSerializers[mTransportOutDefault];
         #endregion
         #region Constructor
         /// <summary>
@@ -53,24 +40,11 @@ namespace Xigadee
             , X509Certificate clientCert = null
             , Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> manualCertValidation = null
         ) 
-            :base(uri, authHandlers, clientCert, manualCertValidation)
+            :base(uri, authHandlers, clientCert, manualCertValidation, transportOverride)
         {
             mKeyMapper = keyMapper ?? RepositoryKeyManager.Resolve<K>();
 
             mUriMapper = transportUriMapper ?? new TransportUriMapper<K>(mKeyMapper, uri, typeof(E).Name.ToLowerInvariant());
-
-            if (transportOverride == null || transportOverride.Count() == 0)
-            {
-                mTransportSerializers = new Dictionary<string, TransportSerializer>();
-                var defaultTs = new JsonTransportSerializer();
-                mTransportOutDefault = defaultTs.MediaType.ToLowerInvariant();
-                mTransportSerializers[mTransportOutDefault] = defaultTs;
-            }
-            else
-            {
-                mTransportOutDefault = transportOverride.First().MediaType.ToLowerInvariant();
-                mTransportSerializers = transportOverride.ToDictionary(t => t.MediaType.ToLowerInvariant(), t => t);
-            }
         }
         #endregion
 
@@ -328,6 +302,17 @@ namespace Xigadee
         protected override void RequestHeadersSetTransport(HttpRequestMessage rq)
         {
             mTransportSerializers.ForEach((t) => rq.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(t.Value.MediaType, t.Value.Priority)));
+        }
+        #endregion
+
+        #region UserAgentGet()
+        /// <summary>
+        /// This method returns the user agent that is passed to the calling party. 
+        /// </summary>
+        /// <returns>Returns a string containing the user agent.</returns>
+        protected override string UserAgentGet()
+        {
+            return $"{base.UserAgentGet()} {typeof(E).Name}";
         }
         #endregion
     }
