@@ -66,6 +66,17 @@ namespace Xigadee
         #region Filter(SearchRequest sr, EntityContainerWrapper wr)
         /// <summary>
         /// Filters the entities based on the parameters pushed and the entity properties. $filter is ignored for the default search.
+        /// Logical Operators
+        /// https://www.odata.org/documentation/odata-version-2-0/uri-conventions/
+        /// Eq Equal	/Suppliers?$filter=Address/City eq 'Redmond'
+        /// Ne Not equal	/Suppliers?$filter=Address/City ne 'London'
+        /// Gt Greater than	/Products?$filter=Price gt 20
+        /// Ge Greater than or equal	/Products?$filter=Price ge 10
+        /// Lt Less than	/Products?$filter=Price lt 20
+        /// Le Less than or equal	/Products?$filter=Price le 100
+        /// And Logical and	/Products?$filter=Price le 200 and Price gt 3.5
+        /// Or Logical or	/Products?$filter=Price le 3.5 or Price gt 200
+        /// Not Logical negation	/Products?$filter=not endswith(Description,'milk')
         /// </summary>
         /// <param name="sr">The search request.</param>
         /// <param name="wr">The container wrapper.</param>
