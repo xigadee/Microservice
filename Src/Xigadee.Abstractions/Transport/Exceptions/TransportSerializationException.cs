@@ -1,10 +1,4 @@
-﻿#region using
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-#endregion
+﻿using System;
 namespace Xigadee
 {
     public class TransportSerializationException : Exception

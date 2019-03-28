@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -40,9 +39,7 @@ namespace Xigadee
         protected EntityControllerRoot(ILogger logger, IRepositoryAsync<K, E> repository, RepositoryKeyManager<K> keyManager = null)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-
             _keyManager = keyManager ?? RepositoryKeyManager.Resolve<K>(); 
         }
         #endregion
