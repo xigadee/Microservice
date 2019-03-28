@@ -40,6 +40,8 @@ namespace Tests.Xigadee
 
                 var rs4 = await prov.Version(rs2.Entity.Id);
 
+                var s = await prov.SearchEntity("$top=10&$skip=1");
+
                 var d1 = await prov.Delete(rs2.Entity.Id);
                 var d1b = await prov.Read(rs2.Entity.Id);
 

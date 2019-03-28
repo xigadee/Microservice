@@ -162,5 +162,13 @@ namespace Xigadee
             builder.Query = string.Format("reftype={0}&refvalue={1}", Uri.EscapeDataString(refKey), Uri.EscapeDataString(refValue));
             return new KeyValuePair<HttpMethod, Uri>(method, builder.Uri);
         }
+
+
+        public virtual KeyValuePair<HttpMethod, Uri> MakeUri(HttpMethod method, SearchRequest rq)
+        {
+            var builder = UriParts(method);
+            builder.Query = rq.ToString();
+            return new KeyValuePair<HttpMethod, Uri>(method, builder.Uri);
+        }
     }
 }

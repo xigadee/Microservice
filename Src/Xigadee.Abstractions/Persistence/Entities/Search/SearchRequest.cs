@@ -38,45 +38,66 @@ namespace Xigadee
         /// <param name="query">The search a uri.</param>
         public SearchRequest(Uri query) : this(query?.Query)
         {
-        } 
+        }
         #endregion
 
-        private void Assign(KeyValuePair<string,string> toSet)
+        /// <summary>
+        /// Assigns the kvp to the collection.
+        /// </summary>
+        /// <param name="toSet">The KeyValuePair to set.</param>
+        protected void Assign(KeyValuePair<string,string> toSet)
         {
-            var key = toSet.Key?.ToLowerInvariant();
+            Assign(toSet.Key, toSet.Value);
+        }
 
-            switch (key)
+        /// <summary>
+        /// Assigns the specified key and value to the search collection.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        protected void Assign(string key, string value)
+        {
+            bool isSet = true;
+
+            switch (key?.Trim().ToLowerInvariant())
             {
                 case "$id":
-                    Id = toSet.Value?.Trim();
+                    Id = value?.Trim();
                     break;
                 case "$etag":
-                    ETag = toSet.Value?.Trim();
+                    ETag = value?.Trim();
                     break;
                 case "$filter":
-                    Filter = toSet.Value?.Trim();
+                    Filter = value?.Trim();
                     break;
                 case "$orderby":
-                    OrderBy = toSet.Value?.Trim();
+                    OrderBy = value?.Trim();
                     break;
                 case "$top":
-                    Top = toSet.Value?.Trim();
+                    Top = value?.Trim();
                     break;
                 case "$skip":
-                    Skip = toSet.Value?.Trim();
+                    Skip = value?.Trim();
                     break;
                 case "$select":
-                    Select = toSet.Value?.Trim();
+                    Select = value?.Trim();
                     break;
                 case "":
-                    break;
                 case default(string):
+                    isSet = false;
                     break;
                 default:
-                    FilterParameters[key] = toSet.Value;
+                    FilterParameters[key] = value;
                     break;
             }
+
+            IsSet |= isSet;
         }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is set.
+        /// </summary>
+        public bool IsSet { get; private set; }
 
         /// <summary>
         /// Gets or sets the parameter collection.
@@ -215,7 +236,7 @@ namespace Xigadee
         /// Implicitly converts a string in to a resource profile.
         /// </summary>
         /// <param name="query">The search query.</param>
-        public static explicit operator SearchRequest(string query)
+        public static implicit operator SearchRequest(string query)
         {
             return new SearchRequest(query??"");
         }

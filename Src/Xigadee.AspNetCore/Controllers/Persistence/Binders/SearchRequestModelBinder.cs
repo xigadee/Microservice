@@ -35,29 +35,7 @@ namespace Xigadee
             {
                 var q = bindingContext.ActionContext.HttpContext.Request.Query;
 
-                var result = new SearchRequestModel(q.ToString());
-
-
-                //if (q.ContainsKey(cnSearch))
-                //{
-                //    result.IsSearch = true;
-                //    result.SearchType = q[cnSearch].FirstOrDefault()?.Replace("*", string.Empty);
-
-                //    if (q.ContainsKey(cnOrderBy))
-                //        result.OrderBy = q[cnOrderBy].FirstOrDefault();
-
-                //    if (q.ContainsKey(cnSkip))
-                //        result.Skip = TryParse(q[cnSkip]);
-
-                //    if (q.ContainsKey(cnTop))
-                //        result.Top = TryParse(q[cnTop]);
-
-                //    result.Parameters = q
-                //        .Where((t) => !Fields.Contains(t.Key.ToLowerInvariant()))
-                //        .Select((t) => new KeyValuePair<string, string>(t.Key, t.Value.FirstOrDefault()))
-                //        .ToList();
-
-
+                var result = new SearchRequestModel(q);
 
                 bindingContext.Result = ModelBindingResult.Success(result);
             }

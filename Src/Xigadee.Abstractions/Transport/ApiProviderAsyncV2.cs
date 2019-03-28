@@ -201,14 +201,11 @@ namespace Xigadee
         /// <returns>This is the holder containing the response and the entity where necessary.</returns>
         public virtual async Task<RepositoryHolder<SearchRequest, SearchResponse>> Search(SearchRequest key, RepositorySettings options = null)
         {
-            var uri = mUriMapper.MakeUri(new HttpMethod("Search"));
+            var uri = mUriMapper.MakeUri(HttpMethod.Get, key);
 
-            throw new NotImplementedException();
-            //using (var content = GetContent(entity))
-            //{
-            //    return await CallClient<K, E>(uri, options, content: content, deserializer: DeserializeEntity,
-            //        mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
-            //}
+            return await CallClient<SearchRequest, SearchResponse>(uri, options
+                , deserializer: (r,b,rs) => rs.Entity = EntityDeserialize<SearchResponse>(r,b)
+                );
         }
         #endregion
         #region SearchEntity(K key, RepositorySettings options = null)
@@ -220,14 +217,11 @@ namespace Xigadee
         /// <returns>This is the holder containing the response and the entity where necessary.</returns>
         public virtual async Task<RepositoryHolder<SearchRequest, SearchResponse<E>>> SearchEntity(SearchRequest key, RepositorySettings options = null)
         {
-            var uri = mUriMapper.MakeUri(new HttpMethod("Search"));
+            var uri = mUriMapper.MakeUri(HttpMethod.Get, key);
 
-            throw new NotImplementedException();
-            //using (var content = GetContent(entity))
-            //{
-            //    return await CallClient<K, E>(uri, options, content: content, deserializer: DeserializeEntity,
-            //        mapper: (rs, holder) => ExtractHeaders(rs, holder, mKeyMapper));
-            //}
+            return await CallClient<SearchRequest, SearchResponse<E>>(uri, options
+                , deserializer: (r, b, rs) => rs.Entity = EntityDeserialize<SearchResponse<E>>(r, b)
+                );
         }
         #endregion
 
@@ -250,7 +244,7 @@ namespace Xigadee
             return content;
         }
         #endregion
-        #region EntityDeserialize(ApiRequest rq, out TransportSerializer<E> transport)
+        #region EntityDeserialize<ET>...
         /// <summary>
         /// This method resolves the appropriate transport serializer from the incoming accept header.
         /// </summary>
@@ -260,15 +254,25 @@ namespace Xigadee
         /// <returns>Returns true if the serializer can be resolved.</returns>
         protected virtual void EntityDeserialize<ET>(HttpResponseMessage rs, byte[] data, RepositoryHolder<K, ET> holder)
         {
+            holder.Entity = EntityDeserialize<ET>(rs, data);
+        }
+        /// <summary>
+        /// This method resolves the appropriate transport serializer from the incoming accept header.
+        /// </summary>
+        /// <param name="rs">The response</param>
+        /// <param name="data">The response content</param>
+        /// <returns>Returns true if the serializer can be resolved.</returns>
+        protected virtual ET EntityDeserialize<ET>(HttpResponseMessage rs, byte[] data)
+        {
             string mediaType = rs.Content.Headers.ContentType.MediaType;
 
             if (mTransportSerializers.ContainsKey(mediaType.ToLowerInvariant()))
             {
                 var transport = mTransportSerializers[mediaType];
-                holder.Entity = transport.GetObject<ET>(data);
+                return transport.GetObject<ET>(data);
             }
-            else
-                throw new TransportSerializerResolutionException(mediaType);
+
+            throw new TransportSerializerResolutionException(mediaType);
         }
         #endregion
 

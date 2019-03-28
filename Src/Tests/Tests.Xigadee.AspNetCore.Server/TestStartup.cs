@@ -21,13 +21,23 @@ namespace Tests.Xigadee
 
         protected override void ConfigureMicroservicePipeline(MicroservicePipeline pipeline)
         {
+            PersistenceServer<Guid, MondayMorningBlues> pm;
+
             pipeline
-                .AdjustPolicyTaskManagerForDebug()
+                 .AdjustPolicyTaskManagerForDebug()
                 .AddChannelIncoming("testin")
-                    .AttachPersistenceManagerHandlerMemory((MondayMorningBlues e) => e.Id, s => new Guid(s), versionPolicy: ((e) => $"{e.VersionId:N}", (e) => e.VersionId = Guid.NewGuid(), true))
+                    .AttachPersistenceManagerHandlerMemory(
+                        (MondayMorningBlues e) => e.Id
+                        , s => new Guid(s)
+                        , out pm
+                        , versionPolicy: ((e) => $"{e.VersionId:N}", (e) => e.VersionId = Guid.NewGuid()             
+                        , true))
                     .AttachPersistenceClient(out __client)
                     .Revert()                
                 ;
+
+            ((RepositoryMemory<Guid, MondayMorningBlues>)pm.Repository)
+                .SearchAdd(new RepositoryMemorySearch<Guid, MondayMorningBlues>("default"), true);
 
             pipeline.Service.Events.StartCompleted += Service_StartCompleted; 
         }

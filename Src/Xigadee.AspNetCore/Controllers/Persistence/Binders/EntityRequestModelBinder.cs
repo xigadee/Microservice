@@ -32,7 +32,7 @@ namespace Xigadee
         } 
         #endregion
 
-        private int? TryParse(IEnumerable<string> items)
+        private static int? TryParse(IEnumerable<string> items)
         {
             var item = items.FirstOrDefault();
 
@@ -44,6 +44,36 @@ namespace Xigadee
         }
 
         /// <summary>
+        /// Binds the entity to specified binding context.
+        /// </summary>
+        /// <param name="bindingContext">The binding context.</param>
+        /// <returns>The model.</returns>
+        public static EntityRequestModel Bind(ModelBindingContext bindingContext)
+        {
+            var result = new EntityRequestModel();
+
+            var q = bindingContext.ActionContext.HttpContext.Request.Query;
+
+            result.Id = bindingContext.ValueProvider.GetValue("id1").FirstOrDefault();
+            result.IsByKey = !string.IsNullOrEmpty(result.Id);
+
+            result.VersionId = bindingContext.ValueProvider.GetValue("id2").FirstOrDefault();
+
+            if (!result.IsByKey)
+            {
+                if (q.ContainsKey(cnRefType))
+                {
+                    result.Reftype = q[cnRefType].FirstOrDefault();
+                    result.IsByReference = !string.IsNullOrEmpty(result.Reftype);
+                }
+                if (q.ContainsKey(cnRefValue))
+                    result.Refvalue = q[cnRefValue].FirstOrDefault();
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Binds the incoming request to a EntityIdModel.
         /// </summary>
         /// <param name="bindingContext">The incoming context.</param>
@@ -52,25 +82,7 @@ namespace Xigadee
         {
             try
             {
-                var result = new EntityRequestModel();
-
-                var q = bindingContext.ActionContext.HttpContext.Request.Query;
-
-                result.Id = bindingContext.ValueProvider.GetValue("id1").FirstOrDefault();
-                result.IsByKey = !string.IsNullOrEmpty(result.Id);
-
-                result.VersionId = bindingContext.ValueProvider.GetValue("id2").FirstOrDefault();
-
-                if (!result.IsByKey)
-                {
-                    if (q.ContainsKey(cnRefType))
-                    {
-                        result.Reftype = q[cnRefType].FirstOrDefault();
-                        result.IsByReference = !string.IsNullOrEmpty(result.Reftype);
-                    }
-                    if (q.ContainsKey(cnRefValue))
-                        result.Refvalue = q[cnRefValue].FirstOrDefault();
-                }
+                var result = Bind(bindingContext);
 
                 bindingContext.Result = ModelBindingResult.Success(result);
             }

@@ -79,7 +79,8 @@ namespace Xigadee
         /// </summary>
         /// <param name="algo">The search algorithm.</param>
         /// <param name="setAsDefault">Set this algorithm as the default algorithm. If an Id is not set, this one will be used.</param>
-        public void SearchAdd(RepositoryMemorySearch<K, E> algo, bool setAsDefault = false)
+        /// <returns>Returns the repository to allow for fluent configuration.</returns>
+        public RepositoryMemory<K, E> SearchAdd(RepositoryMemorySearch<K, E> algo, bool setAsDefault = false)
         {
             var id = algo?.Id;
 
@@ -90,6 +91,8 @@ namespace Xigadee
 
             if (setAsDefault)
                 SearchDefaultId = id;
+
+            return this;
         }
         #endregion
         #region SearchDefaultId
@@ -105,7 +108,6 @@ namespace Xigadee
         /// </summary>
         protected bool IsReadOnly { get; }
         #endregion
-
 
         #region Create(E entity)
         /// <summary>
