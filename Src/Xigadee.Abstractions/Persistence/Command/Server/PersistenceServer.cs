@@ -904,13 +904,15 @@ namespace Xigadee
 
             holder.Rs.Entity = result.Entity;
             holder.Rs.Key = result.Key;
+            holder.Rs.KeyReference = result.KeyReference;
+
             //holder.Rs.IsTimeout = result.;
 
             //holder.Rs.Settings.VersionId = Transform.Version?.EntityVersionAsString(rs.Entity);
             //holder.Rs.KeyReference = new Tuple<string, string>(rs.Key.ToString(), rs.Settings.VersionId);
 
             //result.
-        } 
+        }
         #endregion
 
 

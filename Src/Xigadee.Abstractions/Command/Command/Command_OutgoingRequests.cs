@@ -317,6 +317,7 @@ namespace Xigadee
                 }
                 catch (Exception ex)
                 {
+                    //Most likely a time out
                 }
 
             return processResponse(tracker.Tcs.Task.Status, payloadRs, processAsync);

@@ -501,27 +501,28 @@ namespace Xigadee
         /// <param name="result">The result.</param>
         /// <param name="key">The key.</param>
         /// <param name="entity">The entity.</param>
+        /// <param name="tup">The tuple function.</param>
         /// <param name="options">The incoming options.</param>
         /// <param name="holderAction">The action to execute when the holder is created.</param>
         /// <returns>Returns the holder.</returns>
         public static Task<RepositoryHolder<KT, ET>> ResultFormat<KT, ET>(int result, Func<KT> key = null, Func<ET> entity = null
+            , Func<Tuple<string,string>> tup = null
             , RepositorySettings options = null, Action<RepositoryHolder<KT, ET>> holderAction = null)
             where KT : IEquatable<KT>
         {
             var k = key != null ? key() : default(KT);
             var e = entity != null ? entity() : default(ET);
+            var t = tup != null ? tup() : null;
 
             RepositoryHolder<KT, ET> holder;
             switch (result)
             {
                 case 200:
                 case 201:
-                    holder = new RepositoryHolder<KT, ET>(k, null, e, result);
+                    holder = new RepositoryHolder<KT, ET>(k, t, e, result);
                     break;
-                //case 404:
-                //    return Task.FromResult(new RepositoryHolder<KT, ET>(k, null, default(ET), result));
                 default:
-                    holder = new RepositoryHolder<KT, ET>(k, null, default(ET), result);
+                    holder = new RepositoryHolder<KT, ET>(k, t, default(ET), result);
                     break;
             }
 

@@ -24,7 +24,7 @@ namespace Tests.Xigadee
             pipeline
                 .AdjustPolicyTaskManagerForDebug()
                 .AddChannelIncoming("testin")
-                    .AttachPersistenceManagerHandlerMemory((MondayMorningBlues e) => e.Id, s => new Guid(s))
+                    .AttachPersistenceManagerHandlerMemory((MondayMorningBlues e) => e.Id, s => new Guid(s), versionPolicy: ((e) => $"{e.VersionId:N}", (e) => e.VersionId = Guid.NewGuid(), true))
                     .AttachPersistenceClient(out __client)
                     .Revert()                
                 ;

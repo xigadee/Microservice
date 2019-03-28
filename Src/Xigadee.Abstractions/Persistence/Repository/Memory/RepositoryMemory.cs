@@ -115,13 +115,14 @@ namespace Xigadee
             , Action<RepositoryHolder<K, E>> holderAction)
         {
             if (IsReadOnly)
-                return ResultFormat(400, () => key, () => default(E), options, holderAction);
+                return ResultFormat(400, () => key, () => default(E), null, options, holderAction);
 
             //We have to be careful as the caller still has a reference to the old entity and may change it.
             var references = _referenceMaker?.Invoke(entity).ToList();
             var properties = _propertiesMaker?.Invoke(entity).ToList();
 
             E newEntity = default(E);
+            Tuple<string, string> t = null;
 
             var result = Atomic(true, () =>
             {
@@ -133,11 +134,12 @@ namespace Xigadee
                     return 409;
 
                 newEntity = newContainer.Entity;
+                t = newContainer.Reference;
 
                 return 201;
             });
 
-            return ResultFormat(result, () => key, () => newEntity, options, holderAction);
+            return ResultFormat(result, () => key, () => newEntity, () => t, options, holderAction);
         }
 
         #endregion
@@ -159,6 +161,7 @@ namespace Xigadee
             return ResultFormat(result ? 200 : 404
                 , () => result ? container.Key : default(K)
                 , () => result ? entity : default(E)
+                , () => result ? container.Reference : null
                 , options
                 , holderAction
                 );
@@ -182,6 +185,7 @@ namespace Xigadee
             return ResultFormat(result ? 200 : 404
                 , () => result ? container.Key : default(K)
                 , () => result ? entity : default(E)
+                , () => result ? container.Reference : null
                 , options
                 , holderAction
                 );
@@ -195,7 +199,7 @@ namespace Xigadee
             , Action<RepositoryHolder<K, E>> holderAction)
         {
             if (IsReadOnly)
-                return ResultFormat(400, () => key, () => default(E), options, holderAction);
+                return ResultFormat(400, () => key, () => default(E), null, options, holderAction);
 
             var newReferences = _referenceMaker?.Invoke(entity).ToList();
             var newProperties = _propertiesMaker?.Invoke(entity).ToList();
@@ -203,6 +207,7 @@ namespace Xigadee
             EntityContainer<K,E> newContainer = CreateEntityContainer(key, entity, newReferences, newProperties, null, KeyManager.Serialize(key));
 
             var newEntity = default(E);
+            Tuple<string, string> t = null;
 
             var result = Atomic(true, () =>
              {
@@ -236,10 +241,12 @@ namespace Xigadee
 
                  _container.Replace(oldContainer, newContainer);
 
+                 t = newContainer.Reference;
+
                  return 200;
              });
 
-            return ResultFormat(result, () => key, () => newEntity, options, holderAction);
+            return ResultFormat(result, () => key, () => newEntity, () => t, options, holderAction);
         }
         #endregion
         #region Delete(K key)/DeleteByRef(string refKey, string refValue)
@@ -250,12 +257,17 @@ namespace Xigadee
             , Action<RepositoryHolder<K, Tuple<K, string>>> holderAction)
         {
             if (IsReadOnly)
-                return ResultFormat(400, () => key, () => new Tuple<K, string>(key, ""), options, holderAction);
+                return ResultFormat(400, () => key, () => new Tuple<K, string>(key, ""), null, options, holderAction);
 
-            EntityContainer<K, E> container;
+            EntityContainer<K, E> container = null;
             var result = Atomic(true, () => _container.Delete(key, out container));
 
-            return ResultFormat(result ? 200 : 404, () => key, () => new Tuple<K, string>(key, ""), options, holderAction);
+            return ResultFormat(result ? 200 : 404
+                , () => key
+                , () => new Tuple<K, string>(key, "")
+                , () => result ? container.Reference : null
+                , options
+                , holderAction);
         }
         /// <summary>
         /// Delete the entity by reference
@@ -264,7 +276,7 @@ namespace Xigadee
             , Action<RepositoryHolder<K, Tuple<K, string>>> holderAction)
         {
             if (IsReadOnly)
-                return ResultFormat(400, () => default(K), () => new Tuple<K, string>(default(K), ""), options, holderAction);
+                return ResultFormat(400, () => default(K), () => new Tuple<K, string>(default(K), ""), null, options, holderAction);
 
             OnKeyEvent(KeyEventType.BeforeDelete, refType: refKey, refValue: refValue);
             var reference = new Tuple<string, string>(refKey, refValue);
@@ -278,6 +290,7 @@ namespace Xigadee
             return ResultFormat(result ? 200 : 404
                 , () => key
                 , () => new Tuple<K, string>(key, "")
+                , () => result ? container.Reference : null
                 , options, holderAction);
         }
         #endregion
@@ -297,6 +310,7 @@ namespace Xigadee
             return ResultFormat(result ? 200 : 404
                 , () => key
                 , () => new Tuple<K, string>(key, container?.VersionId ?? "")
+                , () => result ? container.Reference : null
                 , options
                 , holderAction);
         }
@@ -316,8 +330,12 @@ namespace Xigadee
 
             var key = result ? container.Key : default(K);
 
-            return ResultFormat(result ? 200 : 404, () => key
-                , () => new Tuple<K, string>(key, container?.VersionId ?? ""), options, holderAction);
+            return ResultFormat(result ? 200 : 404
+                , () => key
+                , () => new Tuple<K, string>(key, container?.VersionId ?? "")
+                , () => result ? container.Reference : null
+                , options
+                , holderAction);
 
         }
         #endregion

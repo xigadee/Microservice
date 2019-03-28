@@ -262,7 +262,7 @@ namespace Xigadee
         /// <returns>The ByteArrayContent to transmit.</returns>
         protected virtual ByteArrayContent EntitySerialize(E entity)
         {
-            if (default(E).Equals(entity))
+            if (Equals(entity, default(E)))
                 throw new ArgumentNullException("entity");
 
             var data = TransportSerializerDefault.GetData(entity);
@@ -303,10 +303,10 @@ namespace Xigadee
         /// <returns>Returns true if the serializer can be resolved.</returns>
         protected virtual void ExtractHeaders(HttpResponseMessage rs, RepositoryHolder<K> holder)
         {
-            string contentId = rs.Headers.Where((h) => h.Key.Equals("x-img-contentid", StringComparison.InvariantCultureIgnoreCase))
+            string contentId = rs.Headers.Where((h) => h.Key.Equals("x-entityid", StringComparison.InvariantCultureIgnoreCase))
                 .SelectMany((h) => h.Value).FirstOrDefault() ?? "";
 
-            string versionId = rs.Headers.Where((h) => h.Key.Equals("x-img-versionid", StringComparison.InvariantCultureIgnoreCase))
+            string versionId = rs.Headers.Where((h) => h.Key.Equals("x-versionid", StringComparison.InvariantCultureIgnoreCase))
                 .SelectMany((h) => h.Value).FirstOrDefault() ?? "";
 
             holder.KeyReference = new Tuple<string, string>(contentId, versionId);

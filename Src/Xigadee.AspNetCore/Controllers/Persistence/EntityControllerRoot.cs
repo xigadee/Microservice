@@ -54,7 +54,13 @@ namespace Xigadee
         /// <param name="rs">The repository response.</param>
         protected virtual void EntityHeadersAdd(RepositoryHolder<K, E> rs)
         {
-            Response.Headers.Add("X-EntityId", $"{rs.Key}");
+            var t = rs.KeyReference;
+
+            if (!string.IsNullOrEmpty(t?.Item1))
+                Response.Headers.Add("X-EntityId", t.Item1);
+
+            if (!string.IsNullOrEmpty(t?.Item2))
+                Response.Headers.Add("X-VersionId", t.Item2);
 
             // Store entity id 
             if (Activity.Current != null)

@@ -67,6 +67,10 @@ namespace Xigadee
         public K Key { get; }
 
         /// <summary>
+        /// Gets the reference tuple.
+        /// </summary>
+        public Tuple<string, string> Reference => new Tuple<string, string>(Id, VersionId);
+        /// <summary>
         /// Gets the key as a string.
         /// </summary>
         public string Id { get; }
