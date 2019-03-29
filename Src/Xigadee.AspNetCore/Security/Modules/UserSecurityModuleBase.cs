@@ -6,20 +6,26 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public abstract class UserSecurityModuleBase : IApiUserSecurityModule
+    /// <summary>
+    /// This module implements the core application security logic.
+    /// </summary>
+    /// <seealso cref="Xigadee.ApiModuleBase" />
+    /// <seealso cref="Xigadee.IApiUserSecurityModule" />
+    public abstract class UserSecurityModuleBase : ApiModuleBase, IApiUserSecurityModule
     {
         public virtual string Realm { get; set; }
 
         public virtual IRepositoryAsync<Guid, User> Users { get; protected set; }
 
-        public virtual IRepositoryAsync<Guid, UserSecurity> UserSecurity { get; protected set; }
+        public virtual IRepositoryAsync<Guid, UserSecurity> UserSecurities { get; protected set; }
 
-        public virtual IRepositoryAsync<Guid, UserSession> UserSession { get; protected set; }
+        public virtual IRepositoryAsync<Guid, UserSession> UserSessions { get; protected set; }
 
-        public virtual IRepositoryAsync<Guid, UserExternalAction> UserExternalAction { get; protected set; }
+        public virtual IRepositoryAsync<Guid, UserExternalAction> UserExternalActions { get; protected set; }
 
-        public virtual ILogger Logger { get; set; }
+        public virtual IRepositoryAsync<Guid, UserRoles> UserRoles { get; protected set; }
 
+        public virtual IRepositoryAsync<Guid, UserAccessToken> UserAccessTokens { get; protected set; }
 
         public virtual async Task<(bool success, User user)> RetrieveUser(Guid id)
         {
@@ -53,30 +59,20 @@ namespace Xigadee
 
         }
 
-        public Task<(bool success, UserExternalAction uExAc)> RetrieveUserExternalAction(Guid id)
+        public virtual Task<(bool success, UserExternalAction uExAc)> RetrieveUserExternalAction(Guid id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<(bool success, UserSecurity uSec)> RetrieveUserSecurity(Guid id)
+        public virtual Task<(bool success, UserSecurity uSec)> RetrieveUserSecurity(Guid id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<(bool success, UserSession uSess)> RetrieveUserSession(Guid id)
+        public virtual Task<(bool success, UserSession uSess)> RetrieveUserSession(Guid id)
         {
             throw new NotImplementedException();
         }
     }
 
-    /// <summary>
-    /// This module is used for testing purposes.
-    /// </summary>
-    /// <seealso cref="Xigadee.IApiUserSecurityModule" />
-    public class UserSecurityModuleMemory : UserSecurityModuleBase
-    {
-
-
-
-    }
 }

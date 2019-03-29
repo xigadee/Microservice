@@ -9,7 +9,7 @@ namespace Xigadee
     /// This class is used to manage the interactions against the application certificate store, or Azure KeyVault
     /// N.B. This currently assumes that the certificate has been saved into KeyVault using its thumbprint as its name
     /// </summary>
-    public class CertificateModule : IApiCertificateModule
+    public class CertificateModule : ApiModuleBase, IApiCertificateModule
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CertificateModule"/> class.
@@ -24,11 +24,6 @@ namespace Xigadee
         /// Gets the secret module.
         /// </summary>
         protected IApiSecretModule SecretModule { get; }
-
-        /// <summary>
-        /// Gets or sets the logger.
-        /// </summary>
-        public ILogger Logger { get; set; }
 
         /// <summary>
         /// Resolves the specified thumbprint.

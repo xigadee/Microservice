@@ -16,7 +16,7 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the version id of the entity.
         /// </summary>
-        public virtual Guid? VersionId { get; set; } = Guid.NewGuid();
+        public virtual Guid VersionId { get; set; } = Guid.NewGuid();
 
         /// <summary>
         /// Gets or sets the user identifier of the last person who created or updated the entity.
@@ -32,5 +32,13 @@ namespace Xigadee
         /// </summary>
         public virtual DateTime? DateUpdated { get; set; }
 
+        /// <summary>
+        /// Get the standard key maker.
+        /// </summary>
+        public static Guid KeyMaker<U>(U e) where U : EntityAuditableBase => e.Id;
+        /// <summary>
+        /// Gets the standard version policy.
+        /// </summary>
+        public static VersionPolicy<U> VersionPolicyStandard<U>() where U : EntityAuditableBase => ((U e) => $"{e.VersionId:N}", (U e) => e.VersionId = Guid.NewGuid(), true);
     }
 }

@@ -15,7 +15,7 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the version identifier.
         /// </summary>
-        Guid? VersionId { get; set; }
+        Guid VersionId { get; set; }
 
         /// <summary>
         /// Gets or sets the user identifier of the last person who created or updated the entity.
@@ -32,4 +32,6 @@ namespace Xigadee
         /// </summary>
         DateTime? DateUpdated { get; set; }
     }
+
+
 }

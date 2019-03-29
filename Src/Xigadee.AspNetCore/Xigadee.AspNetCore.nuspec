@@ -9,7 +9,6 @@
     <iconUrl>https://raw.githubusercontent.com/xigadee/Microservice/master/docs/Logo.png</iconUrl>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <projectUrl>http://xigadee.org</projectUrl>
-    <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>This Xigadee library is used to extend AspNetCore applications.</description>
     <summary>Xigadee Microservice Framework for .NET</summary>
     <releaseNotes>Release 2.0</releaseNotes>

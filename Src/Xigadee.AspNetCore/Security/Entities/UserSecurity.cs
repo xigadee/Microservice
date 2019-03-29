@@ -9,11 +9,47 @@ namespace Xigadee
     /// </summary>
     /// <seealso cref="Xigadee.EntityAuditableBase" />
     /// <seealso cref="Xigadee.IPropertyBag" />
-    public abstract class UserSecurity : EntityAuditableBase, IPropertyBag
+    public abstract class UserSecurity : EntitySignatureBase, IPropertyBag
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserSecurity"/> class.
+        /// </summary>
+        public UserSecurity()
+        {
+
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserSecurity"/> class.
+        /// </summary>
+        /// <param name="ipAddresses">The permitted IP addresses.</param>
+        /// <param name="certificates">The permitted certificates.</param>
+        public UserSecurity( IEnumerable<KeyValuePair<Guid, string>> ipAddresses, IEnumerable<KeyValuePair<Guid, string>> certificates)
+        {
+            foreach (var item in ipAddresses)
+                IPAddresses.Add(item.Key, item.Value);
+
+            foreach (var item in certificates)
+                Certificates.Add(item.Key, item.Value);
+        }
+
         /// <summary>
         /// The property bag container dictionary. This has a set of extensible properties for the user.
         /// </summary>
         public Dictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
+
+        /// <summary>
+        /// Indicates whether the security record is active or not
+        /// </summary>
+        public bool IsActive { get; set; } = true;
+
+        /// <summary>
+        /// Records any IP address restrictions.
+        /// </summary>
+        public Dictionary<Guid, string> IPAddresses { get; } = new Dictionary<Guid, string>();
+        /// <summary>
+        /// Gets any certificate thumbprint matches.
+        /// </summary>
+        public Dictionary<Guid, string> Certificates { get; } = new Dictionary<Guid, string>();
     }
 }

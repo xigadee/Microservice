@@ -11,13 +11,8 @@ namespace Xigadee
     /// This is the default secrets module. It does not store or retrieve sensitive information.
     /// </summary>
     /// <seealso cref="Xigadee.IApiSecretModule" />
-    public class SecretModule : IApiSecretModule
+    public class SecretModule : ApiModuleBase, IApiSecretModule
     {
-        /// <summary>
-        /// Gets or sets the module logger.
-        /// </summary>
-        public ILogger Logger { get; set; }
-
         /// <summary>
         /// Retrieves a secret from the underlying secret store.
         /// </summary>

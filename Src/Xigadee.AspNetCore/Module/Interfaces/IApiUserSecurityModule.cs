@@ -43,15 +43,22 @@ namespace Xigadee
         /// <summary>
         /// Gets the user security repository.
         /// </summary>
-        IRepositoryAsync<Guid, UserSecurity> UserSecurity { get; }
+        IRepositoryAsync<Guid, UserSecurity> UserSecurities { get; }
         /// <summary>
         /// Gets the user security repository.
         /// </summary>
-        IRepositoryAsync<Guid, UserSession> UserSession { get; }
-
+        IRepositoryAsync<Guid, UserSession> UserSessions { get; }
         /// <summary>
         /// Gets the user security repository.
         /// </summary>
-        IRepositoryAsync<Guid, UserExternalAction> UserExternalAction { get; }
+        IRepositoryAsync<Guid, UserRoles> UserRoles { get; }
+        /// <summary>
+        /// Gets the user security repository.
+        /// </summary>
+        IRepositoryAsync<Guid, UserAccessToken> UserAccessTokens { get; }
+        /// <summary>
+        /// Gets the user security repository.
+        /// </summary>
+        IRepositoryAsync<Guid, UserExternalAction> UserExternalActions { get; }
     }
 }

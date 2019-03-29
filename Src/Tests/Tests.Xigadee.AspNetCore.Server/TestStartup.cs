@@ -11,13 +11,13 @@ using Xigadee;
 
 namespace Tests.Xigadee
 {
-    public class TestStartup : ApiStartupBase<ApiStartUpContext>//<TestStartupContext, ConfigApplication, IApiUserSecurityModule, ConfigAuthorization>
+    public class TestStartup : ApiStartupBase<TestStartupContext>
     {
         public TestStartup(IHostingEnvironment env) : base(env)
         {
         }
 
-        PersistenceClient<Guid, MondayMorningBlues> _client;
+        PersistenceClient<Guid, MondayMorningBlues> _mmbClient;
 
         protected override void ConfigureMicroservicePipeline(MicroservicePipeline pipeline)
         {
@@ -31,7 +31,7 @@ namespace Tests.Xigadee
                         , propertiesMaker: (e) => e.ToReferences2()
                         , searches: new[] { new RepositoryMemorySearch<Guid, MondayMorningBlues>("default") }
                         , searchIdDefault: "default")
-                    .AttachPersistenceClient(out _client)
+                    .AttachPersistenceClient(out _mmbClient)
                     .Revert()                
                 ;
 
@@ -40,17 +40,17 @@ namespace Tests.Xigadee
 
         private void Service_StartCompleted(object sender, StartEventArgs e)
         {
-            var rs = _client.Create(new MondayMorningBlues() { Id = new Guid("9A2E3F6D-3B98-4C2C-BD45-74F819B5EDFC") }).Result;
+            var rs = _mmbClient.Create(new MondayMorningBlues() { Id = new Guid("9A2E3F6D-3B98-4C2C-BD45-74F819B5EDFC") }).Result;
         }
 
         public override IServiceProvider ConfigureServices(IServiceCollection services)
         {
             //services.adds
-            services.AddSingleton<IRepositoryAsync<Guid, MondayMorningBlues>>(_client);
+            services.AddSingleton<IRepositoryAsync<Guid, MondayMorningBlues>>(_mmbClient);
+
+            //services.AddMicroserviceAuthentication(Context.SecurityJwt, () => Context.UserSecurityModule);
 
             return base.ConfigureServices(services);
         }
-
-
     }
 }

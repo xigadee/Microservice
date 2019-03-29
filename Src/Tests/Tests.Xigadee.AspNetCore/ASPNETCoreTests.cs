@@ -31,7 +31,10 @@ namespace Tests.Xigadee
                 var e = new MondayMorningBlues() { NotEnoughCoffee = true, NotEnoughSleep = false };
 
                 var rs2 = await prov.Create(e);
+                Assert.IsTrue(rs2.IsSuccess);
+
                 var rs2v = await prov.Version(rs2.Entity.Id);
+                Assert.IsTrue(rs2v.IsSuccess);
 
                 var s2a = await prov.Search("$select=obiwan, coffee, sleep&$filter=coffee eq True");
                 rs2.Entity.NotEnoughCoffee = false;

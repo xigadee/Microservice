@@ -15,8 +15,7 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the name for the authentication method.
         /// </summary>
-        public override string Name { get; } = "jwt";
-
+        public override string Name { get; set; }
         /// <summary>
         /// Gets or sets the token signing key.
         /// </summary>

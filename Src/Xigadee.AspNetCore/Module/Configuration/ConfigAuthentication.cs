@@ -8,7 +8,7 @@
         /// <summary>
         /// Gets or sets the name for the authentication method.
         /// </summary>
-        public abstract string Name { get; }
+        public abstract string Name { get; set;  }
 
         /// <summary>
         /// Gets or sets a value indicating whether connections can only be https.

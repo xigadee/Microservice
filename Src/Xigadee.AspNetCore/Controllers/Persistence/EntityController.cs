@@ -16,20 +16,6 @@ namespace Xigadee
     public class EntityController<K, E> : EntityControllerRoot<K, E>
         where K : IEquatable<K>
     {
-        #region Declarations
-        /// <summary>
-        /// The entity repository.
-        /// </summary>
-        protected readonly IRepositoryAsync<K, E> _repository;
-        /// <summary>
-        /// The logger.
-        /// </summary>
-        protected readonly ILogger _logger;
-        /// <summary>
-        /// The key manager used for serializing and deserializing the key.
-        /// </summary>
-        protected readonly RepositoryKeyManager<K> _keyManager;
-        #endregion
         #region Constructor
         /// <summary>
         /// Initializes a new instance of the EntityControllerRoot class.

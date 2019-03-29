@@ -9,7 +9,7 @@ namespace Xigadee
     /// </summary>
     /// <seealso cref="Xigadee.EntityAuditableBase" />
     /// <seealso cref="Xigadee.IPropertyBag" />
-    public abstract class UserRoles : EntityAuditableBase, IPropertyBag
+    public abstract class UserRoles : EntitySignatureBase, IPropertyBag
     {
         /// <summary>
         /// The property bag container dictionary. This has a set of extensible properties for the user.
@@ -20,5 +20,6 @@ namespace Xigadee
         /// Gets or sets the list of supported roles.
         /// </summary>
         public List<string> Roles { get; set; } = new List<string>();
+
     }
 }

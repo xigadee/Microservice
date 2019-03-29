@@ -68,17 +68,17 @@ namespace Xigadee
 
         protected virtual void ConfigurePipeline(IApplicationBuilder app)
         {
-            app.Use(async (context, next) =>
-            {
-                context.Response.Headers.Append("x-oh-fuck", "22");
-                //if (!string.IsNullOrEmpty(Context?.Identity?.ServiceVersionId))
-                //    context.Response.Headers.Append("x-api-ver", Context.Identity.ServiceVersionId);
+            //app.Use(async (context, next) =>
+            //{
+            //    context.Response.Headers.Append("x-oh-fuck", "22");
+            //    //if (!string.IsNullOrEmpty(Context?.Identity?.ServiceVersionId))
+            //    //    context.Response.Headers.Append("x-api-ver", Context.Identity.ServiceVersionId);
 
-                //if (!string.IsNullOrEmpty(Activity.Current?.RootId))
-                //    context.Response.Headers.Append("x-api-cid", Activity.Current.RootId);
+            //    //if (!string.IsNullOrEmpty(Activity.Current?.RootId))
+            //    //    context.Response.Headers.Append("x-api-cid", Activity.Current.RootId);
 
-                await next();
-            });
+            //    await next();
+            //});
         }
 
         /// <summary>
