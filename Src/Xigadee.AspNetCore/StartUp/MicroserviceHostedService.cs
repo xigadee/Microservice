@@ -1,18 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Xigadee;
 
 namespace Xigadee
 {
     /// <summary>
-    /// This class host the Microservice within the AspNetCore application.
+    /// This class host the Xigadee microservice within the AspNetCore application as a hosted service.
     /// </summary>
-    /// <seealso cref = "Microsoft.Extensions.Hosting.IHostedService" />
-    /// <seealso cref= "https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/multi-container-microservice-net-applications/background-tasks-with-ihostedservice" />
     public class MicroserviceHostedService: IHostedService, IDisposable
     {
         /// <summary>

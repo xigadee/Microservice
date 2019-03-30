@@ -43,14 +43,13 @@ namespace Tests.Xigadee
             var rs = _mmbClient.Create(new MondayMorningBlues() { Id = new Guid("9A2E3F6D-3B98-4C2C-BD45-74F819B5EDFC") }).Result;
         }
 
-        public override IServiceProvider ConfigureServices(IServiceCollection services)
+
+        protected override void ConfigureSingletons(IServiceCollection services)
         {
             //services.adds
             services.AddSingleton<IRepositoryAsync<Guid, MondayMorningBlues>>(_mmbClient);
 
             services.AddMicroserviceAuthentication(Context.SecurityJwt, () => Context.UserSecurityModule);
-
-            return base.ConfigureServices(services);
         }
 
     }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Xigadee
@@ -13,7 +14,19 @@ namespace Xigadee
         /// Initializes the module with the application environment settings.
         /// </summary>
         /// <param name="env">The environment.</param>
-        void Initialize(IHostingEnvironment env = null);
+        void Initialize(IHostingEnvironment env);
+
+        /// <summary>
+        /// Connects the application components and registers the relevant services.
+        /// </summary>
+        /// <param name="lf">The logger factory.</param>
+        void Connect(ILoggerFactory lf);
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IApiMicroservice" /> interface.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        void ModulesCreate(IServiceCollection services);
 
         /// <summary>
         /// Gets or sets the application configuration.
@@ -29,12 +42,6 @@ namespace Xigadee
         /// Gets or sets the logger.
         /// </summary>
         ILogger Logger { get; set; }
-
-        /// <summary>
-        /// Connects the application components and registers the relevant services.
-        /// </summary>
-        /// <param name="lf">The logger factory.</param>
-        void Connect(ILoggerFactory lf);
 
     }
     /// <summary>
