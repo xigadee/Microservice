@@ -17,6 +17,13 @@ namespace Tests.Xigadee
             Configuration.Bind("SecurityJwt", SecurityJwt);
         }
 
+        /// <summary>
+        /// Gets or sets the JWT security settings.
+        /// </summary>
         public ConfigAuthenticationJwt SecurityJwt { get; set; }
+        /// <summary>
+        /// Gets or sets the user security module that is used to manages the security entities and user logic.
+        /// </summary>
+        public IApiUserSecurityModule UserSecurityModule { get; set; }
     }
 }

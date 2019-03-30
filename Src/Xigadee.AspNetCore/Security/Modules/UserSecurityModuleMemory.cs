@@ -8,42 +8,84 @@ namespace Xigadee
     /// This module is used for testing purposes.
     /// </summary>
     /// <seealso cref="Xigadee.IApiUserSecurityModule" />
-    public class UserSecurityModuleMemory : UserSecurityModuleBase
+    public class UserSecurityModuleMemoryTest : UserSecurityModuleBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserSecurityModuleMemory"/> class.
+        /// Initializes a new instance of the <see cref="UserSecurityModuleMemoryTest"/> class.
         /// This class holds the security objects in memory only and can be used for unit testing.
         /// </summary>
-        public UserSecurityModuleMemory()
+        public UserSecurityModuleMemoryTest()
         {
-            Users = new RepositoryMemory<Guid, User>(EntityAuditableBase.KeyMaker
-                , versionPolicy: EntityAuditableBase.VersionPolicyStandard<User>()
-                );
+            CreateRepositories();
+        }
 
+        /// <summary>
+        /// Creates the repositories.
+        /// </summary>
+        protected virtual void CreateRepositories()
+        {
+            CreateUserRepo();
+
+            CreateUserSecurityRepo();
+
+            CreateUserSessionRepo();
+
+            CreateUserExternalActions();
+
+            CreateUserRoles();
+
+            CreateUserAccessTokens();
+        }
+
+        /// <summary>
+        /// Creates the user repo.
+        /// </summary>
+        protected virtual void CreateUserRepo() =>
+            Users = new RepositoryMemory<Guid, User>(EntityAuditableBase.KeyMaker
+                , versionPolicy: EntityAuditableBase.VersionPolicyStandard<User>());
+
+        /// <summary>
+        /// Creates the user security repo.
+        /// </summary>
+        protected virtual void CreateUserSecurityRepo() =>
             UserSecurities = new RepositoryMemory<Guid, UserSecurity>(EntityAuditableBase.KeyMaker
                 , versionPolicy: EntityAuditableBase.VersionPolicyStandard<UserSecurity>()
                 );
 
+        /// <summary>
+        /// Creates the user session repo.
+        /// </summary>
+        protected virtual void CreateUserSessionRepo() =>
             UserSessions = new RepositoryMemory<Guid, UserSession>(EntityAuditableBase.KeyMaker
                 , propertiesMaker: UserReferenceBase.PropertiesGet
                 , versionPolicy: EntityAuditableBase.VersionPolicyStandard<UserSession>()
                 );
 
+        /// <summary>
+        /// Creates the user external actions.
+        /// </summary>
+        protected virtual void CreateUserExternalActions() =>
             UserExternalActions = new RepositoryMemory<Guid, UserExternalAction>(EntityAuditableBase.KeyMaker
                 , propertiesMaker: UserReferenceBase.PropertiesGet
                 , versionPolicy: EntityAuditableBase.VersionPolicyStandard<UserExternalAction>()
                 );
 
+        /// <summary>
+        /// Creates the user roles.
+        /// </summary>
+        protected virtual void CreateUserRoles() => 
             UserRoles = new RepositoryMemory<Guid, UserRoles>(EntityAuditableBase.KeyMaker
                 , versionPolicy: EntityAuditableBase.VersionPolicyStandard<UserRoles>()
                 );
 
+        /// <summary>
+        /// Creates the user access tokens.
+        /// </summary>
+        protected virtual void CreateUserAccessTokens() =>
             UserAccessTokens = new RepositoryMemory<Guid, UserAccessToken>(EntityAuditableBase.KeyMaker
                 , propertiesMaker: UserReferenceBase.PropertiesGet
                 , versionPolicy: EntityAuditableBase.VersionPolicyStandard<UserAccessToken>()
                 );
-        }
-
 
     }
 }

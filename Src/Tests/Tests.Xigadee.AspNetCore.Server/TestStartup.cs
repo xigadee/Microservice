@@ -19,9 +19,9 @@ namespace Tests.Xigadee
 
         PersistenceClient<Guid, MondayMorningBlues> _mmbClient;
 
-        protected override void ConfigureMicroservicePipeline(MicroservicePipeline pipeline)
+        protected override void MicroserviceConfigure()
         {
-            pipeline
+            Pipeline
                 .AdjustPolicyTaskManagerForDebug()
                 .AddChannelIncoming("testin")
                     .AttachPersistenceManagerHandlerMemory(
@@ -35,7 +35,7 @@ namespace Tests.Xigadee
                     .Revert()                
                 ;
 
-            pipeline.Service.Events.StartCompleted += Service_StartCompleted; 
+            Pipeline.Service.Events.StartCompleted += Service_StartCompleted; 
         }
 
         private void Service_StartCompleted(object sender, StartEventArgs e)
@@ -48,9 +48,10 @@ namespace Tests.Xigadee
             //services.adds
             services.AddSingleton<IRepositoryAsync<Guid, MondayMorningBlues>>(_mmbClient);
 
-            //services.AddMicroserviceAuthentication(Context.SecurityJwt, () => Context.UserSecurityModule);
+            services.AddMicroserviceAuthentication(Context.SecurityJwt, () => Context.UserSecurityModule);
 
             return base.ConfigureServices(services);
         }
+
     }
 }

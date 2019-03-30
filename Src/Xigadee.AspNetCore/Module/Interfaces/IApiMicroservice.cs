@@ -31,7 +31,7 @@ namespace Xigadee
         ILogger Logger { get; set; }
 
         /// <summary>
-        /// Connects the application components and registers the relevant setvices.
+        /// Connects the application components and registers the relevant services.
         /// </summary>
         /// <param name="lf">The logger factory.</param>
         void Connect(ILoggerFactory lf);

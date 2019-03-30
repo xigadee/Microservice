@@ -19,29 +19,70 @@ namespace Xigadee
     public abstract class ApiStartupBase<CTX> : IStartup
         where CTX : class, IApiMicroservice, new()
     {
+        #region --> Constructor
         /// <summary>
         /// Initializes a new instance of the API application class.
         /// </summary>
         /// <param name="env">The environment.</param>
         protected ApiStartupBase(Microsoft.AspNetCore.Hosting.IHostingEnvironment env)
         {
-            Context = new CTX();
+            HostingEnvironment = env;
 
-            Context.Initialize(env);
+            ContextCreate();
 
-            CreateMicroservicePipeline();
+            ContextInitialize();
 
-            ConfigureMicroservicePipeline(Pipeline);
+            MicroserviceCreate();
 
-            Service = new MicroserviceHostedService(Pipeline);
+            MicroserviceConfigure();
+
+            MicroserviceHostedServiceCreate();
         }
-
+        #endregion
+        #region 1. ContextCreate()
         /// <summary>
-        /// Gets or sets the logger factory.
+        /// Initializes the context
         /// </summary>
-        protected ILoggerFactory LoggerFactory { get; set; }
+        protected virtual void ContextCreate()
+        {
+            Context = new CTX();
+        }
+        #endregion
+        #region 2. ContextInitialize()
+        /// <summary>
+        /// Initializes the context
+        /// </summary>
+        protected virtual void ContextInitialize()
+        {
+            Context.Initialize(HostingEnvironment);
+        }
+        #endregion
+        #region 3. MicroserviceCreate()
+        /// <summary>
+        /// Creates and configures the Xigadee microservice pipeline.
+        /// </summary>
+        protected virtual void MicroserviceCreate()
+        {
+            Pipeline = new MicroservicePipeline();
+        }
+        #endregion
+        #region 4. MicroserviceConfigure()
+        /// <summary>
+        /// Creates and configures the Xigadee microservice pipeline.
+        /// </summary>
+        protected abstract void MicroserviceConfigure();
+        #endregion
+        #region 5. MicroserviceHostedServiceCreate()
+        /// <summary>
+        /// Creates and configures the Xigadee microservice pipeline.
+        /// </summary>
+        protected virtual void MicroserviceHostedServiceCreate()
+        {
+            HostedService = new MicroserviceHostedService(Pipeline);
+        }
+        #endregion
 
-        #region Configure(IApplicationBuilder app)
+        #region --> Configure(IApplicationBuilder app)
         /// <summary>
         /// Configures the specified application.
         /// </summary>
@@ -54,18 +95,16 @@ namespace Xigadee
 
             ConfigureLogging(app);
 
-            Context.Connect(LoggerFactory);
+            ContextConnect(app, LoggerFactory);
 
             ConfigureUseMvc(app);
         }
-
-        protected virtual void ConfigureUseMvc(IApplicationBuilder app)
-        {
-            app.UseMvc();
-        }
-
         #endregion
-
+        #region 1. ConfigurePipeline(IApplicationBuilder app)
+        /// <summary>
+        /// Configures the ASP.NET pipeline.
+        /// </summary>
+        /// <param name="app">The application.</param>
         protected virtual void ConfigurePipeline(IApplicationBuilder app)
         {
             //app.Use(async (context, next) =>
@@ -80,7 +119,8 @@ namespace Xigadee
             //    await next();
             //});
         }
-
+        #endregion
+        #region 2. ConfigureLogging(IApplicationBuilder app)
         /// <summary>
         /// Configures the logging provide for the application.
         /// </summary>
@@ -88,21 +128,30 @@ namespace Xigadee
         protected virtual void ConfigureLogging(IApplicationBuilder app)
         {
         }
-
+        #endregion
+        #region 3. ContextConnect(IApplicationBuilder app, ILoggerFactory loggerFactory)
         /// <summary>
-        /// Creates and configures the Xigadee microservice pipeline.
+        /// Override this method to configure the UseMvc command, or to stop it being set.
         /// </summary>
-        protected virtual void CreateMicroservicePipeline()
+        /// <param name="app">The application.</param>
+        /// <param name="loggerFactory">The logger factory.</param>
+        protected virtual void ContextConnect(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
-            Pipeline = new MicroservicePipeline();
-        }
-
+            Context.Connect(loggerFactory);
+        } 
+        #endregion
+        #region 4. ConfigureUseMvc(IApplicationBuilder app)
         /// <summary>
-        /// Creates and configures the Xigadee microservice pipeline.
+        /// Override this method to configure the UseMvc command, or to stop it being set.
         /// </summary>
-        protected abstract void ConfigureMicroservicePipeline(MicroservicePipeline pipeline);
+        /// <param name="app">The application.</param>
+        protected virtual void ConfigureUseMvc(IApplicationBuilder app)
+        {
+            app.UseMvc();
+        }
+        #endregion
 
-        #region ConfigureServices(IServiceCollection services)
+        #region --> ConfigureServices(IServiceCollection services)
         /// <summary>
         /// Configures the services.
         /// </summary>
@@ -110,13 +159,10 @@ namespace Xigadee
         /// <returns>Returns the new service provider.</returns>
         public virtual IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            //// Add the heartbeat configuration.
-            //services.AddSingleton(Context.CertificateModule);
-
-            //services.AddSingleton(Context.Identity);
+            ConfigureSingletons(services);
 
             //Add the microservice as a hosted service.
-            services.AddSingleton<IHostedService>(Service);
+            services.AddSingleton<IHostedService>(HostedService);
 
             ConfigureAddMvc(services);
 
@@ -125,24 +171,51 @@ namespace Xigadee
         }
         #endregion
 
+        protected virtual void ConfigureSingletons(IServiceCollection services)
+        {
+            //// Add the heartbeat configuration.
+            //services.AddSingleton(Context.CertificateModule);
+
+            //services.AddSingleton(Context.Identity);
+        }
+
+
+
         protected virtual void ConfigureAddMvc(IServiceCollection services)
         {
             //services.AddMvcCore();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_0);
         }
 
+        #region HostingEnvironment
+        /// <summary>
+        /// Gets the AspNet Core hosting environment.
+        /// </summary>
+        Microsoft.AspNetCore.Hosting.IHostingEnvironment HostingEnvironment { get; }
+        #endregion
+        #region LoggerFactory
+        /// <summary>
+        /// Gets or sets the logger factory.
+        /// </summary>
+        protected ILoggerFactory LoggerFactory { get; set; }
+        #endregion
+        #region Context
         /// <summary>
         /// Gets or sets the API application context.
         /// </summary>
-        public CTX Context { get; }
-
+        public CTX Context { get; protected set; }
+        #endregion
+        #region Pipeline
         /// <summary>
         /// Gets the pipeline used to configure the Microservice.
         /// </summary>
         public MicroservicePipeline Pipeline { get; protected set; }
+        #endregion
+        #region Service
         /// <summary>
         /// Gets the Microservice ASP.NET Core hosted service.
         /// </summary>
-        public MicroserviceHostedService Service { get; protected set; }
+        public MicroserviceHostedService HostedService { get; protected set; } 
+        #endregion
     }
 }
