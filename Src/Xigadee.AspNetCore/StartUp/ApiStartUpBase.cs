@@ -161,8 +161,7 @@ namespace Xigadee
         {
             ConfigureSingletons(services);
 
-            //Add the microservice as a hosted service.
-            services.AddSingleton<IHostedService>(HostedService);
+            ConfigureMicroserviceHostedService(services);
 
             ConfigureAddMvc(services);
 
@@ -170,7 +169,11 @@ namespace Xigadee
             return services.BuildServiceProvider();
         }
         #endregion
-
+        #region 1.ConfigureSingletons(IServiceCollection services)
+        /// <summary>
+        /// Configures the singletons.
+        /// </summary>
+        /// <param name="services">The services.</param>
         protected virtual void ConfigureSingletons(IServiceCollection services)
         {
             //// Add the heartbeat configuration.
@@ -178,14 +181,30 @@ namespace Xigadee
 
             //services.AddSingleton(Context.Identity);
         }
+        #endregion
+        #region 2.ConfigureMicroserviceHostedService(IServiceCollection services)
+        /// <summary>
+        /// Configures the singletons.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        protected virtual void ConfigureMicroserviceHostedService(IServiceCollection services)
+        {
+            //Add the microservice as a hosted service.
+            services.AddSingleton<IHostedService>(HostedService);
 
-
-
+        }
+        #endregion
+        #region 3.ConfigureAddMvc(IServiceCollection services)
+        /// <summary>
+        /// Configures the add MVC service.
+        /// </summary>
+        /// <param name="services">The services.</param>
         protected virtual void ConfigureAddMvc(IServiceCollection services)
         {
             //services.AddMvcCore();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_0);
-        }
+        } 
+        #endregion
 
         #region HostingEnvironment
         /// <summary>
