@@ -104,7 +104,7 @@ namespace Xigadee
     /// </summary>
     public class ApiMicroserviceStartUpContext : ApiStartUpContext
     {
-        #region 2.Bind()
+        #region 2b.Bind()
         /// <summary>
         /// Creates and binds specific configuration components required by the application.
         /// </summary>
