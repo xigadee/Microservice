@@ -11,7 +11,11 @@ using Xigadee;
 
 namespace Tests.Xigadee
 {
-    public class TestStartup : ApiStartupBase<TestStartupContext>
+    /// <summary>
+    /// This is the base application class.
+    /// </summary>
+    /// <seealso cref="Xigadee.ApiMicroserviceStartupBase{Tests.Xigadee.TestStartupContext}" />
+    public class TestStartup : ApiMicroserviceStartupBase<TestStartupContext>
     {
         public TestStartup(IHostingEnvironment env) : base(env)
         {

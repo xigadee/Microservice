@@ -5,52 +5,14 @@ using Microsoft.Extensions.Logging;
 
 namespace Xigadee
 {
-    /// <summary>
-    /// This is the root API-based microservice application interface.
-    /// </summary>
-    public interface IApiMicroservice
-    {
-        /// <summary>
-        /// Initializes the module with the application environment settings.
-        /// </summary>
-        /// <param name="env">The environment.</param>
-        void Initialize(IHostingEnvironment env);
 
-        /// <summary>
-        /// Connects the application components and registers the relevant services.
-        /// </summary>
-        /// <param name="lf">The logger factory.</param>
-        void Connect(ILoggerFactory lf);
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="IApiMicroservice" /> interface.
-        /// </summary>
-        /// <param name="services">The services.</param>
-        void ModulesCreate(IServiceCollection services);
-
-        /// <summary>
-        /// Gets or sets the application configuration.
-        /// </summary>
-        IConfiguration Configuration { get; set; }
-
-        /// <summary>
-        /// Gets or sets the hosting environment.
-        /// </summary>
-        IHostingEnvironment Environment { get; set; }
-
-        /// <summary>
-        /// Gets or sets the logger.
-        /// </summary>
-        ILogger Logger { get; set; }
-
-    }
     /// <summary>
     /// This interface is implemented by applications that use Xigadee in an API or web based application.
     /// </summary>
     /// <typeparam name="MODSEC">The type of the security module.</typeparam>
     /// <typeparam name="CONATEN">The authentication module type.</typeparam>
     /// <typeparam name="CONATHZ">The authorization module type.</typeparam>
-    public interface IApiMicroservice<MODSEC, CONATEN, CONATHZ>: IApiMicroservice
+    public interface IApiMicroservice<MODSEC, CONATEN, CONATHZ>: IApiStartupContext
         where MODSEC : IApiUserSecurityModule
         where CONATEN : ConfigAuthentication
         where CONATHZ : ConfigAuthorization

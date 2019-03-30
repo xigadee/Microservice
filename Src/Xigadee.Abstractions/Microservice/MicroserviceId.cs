@@ -10,7 +10,7 @@ namespace Xigadee
     /// This class holds the Microservice identifier information in a central place.
     /// </summary>
     [DebuggerDisplay("{ExternalServiceId}")]
-    public class MicroserviceId
+    public class MicroserviceId:IPropertyBag
     {
         /// <summary>
         /// This method validates that a name is legal. This is that the name only contains A-Za-z0-9

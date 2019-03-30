@@ -43,7 +43,8 @@ namespace Xigadee
         /// <param name="pipeline">The pipeline.</param>
         /// <param name="maxPriorityLevel">The maximum priority level. The default is 3.</param>
         /// <returns>Returns the pipeline</returns>
-        public static P AdjustPolicyTaskManagerForDebug<P>(this P pipeline, int maxPriorityLevel = 3) where P : IPipeline
+        public static P AdjustPolicyTaskManagerForDebug<P>(this P pipeline, int maxPriorityLevel = 3) 
+            where P : IPipeline
         {
             pipeline.AdjustPolicyTaskManager((t, c) =>
             {

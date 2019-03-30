@@ -10,6 +10,6 @@ namespace Xigadee
         /// <summary>
         /// The property bag container dictionary.
         /// </summary>
-        Dictionary<string, string> Properties { get; set; }
+        Dictionary<string, string> Properties { get; }
     }
 }

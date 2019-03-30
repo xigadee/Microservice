@@ -7,7 +7,11 @@ using Xigadee;
 
 namespace Tests.Xigadee
 {
-    public class TestStartupContext: ApiStartUpContext
+    /// <summary>
+    /// This class holds the application settings.
+    /// </summary>
+    /// <seealso cref="Xigadee.ApiMicroserviceStartUpContext" />
+    public class TestStartupContext: ApiMicroserviceStartUpContext
     {
         protected override void Bind()
         {

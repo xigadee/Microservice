@@ -28,16 +28,6 @@ namespace Xigadee
             ContextCreate();
 
             ContextInitialize();
-
-            MicroserviceCreate();
-
-            //Check in case we do not need a Microservice.
-            if (Pipeline != null)
-            {
-                MicroserviceConfigure();
-
-                MicroserviceHostedServiceCreate();
-            }
         }
         #endregion
         #region 1. ContextCreate()
@@ -58,30 +48,6 @@ namespace Xigadee
             Context.Initialize(HostingEnvironment);
         }
         #endregion
-        #region 3. MicroserviceCreate()
-        /// <summary>
-        /// Creates and configures the Xigadee microservice pipeline.
-        /// </summary>
-        protected virtual void MicroserviceCreate()
-        {
-            Pipeline = new MicroservicePipeline();
-        }
-        #endregion
-        #region 4. MicroserviceConfigure()
-        /// <summary>
-        /// Creates and configures the Xigadee microservice pipeline.
-        /// </summary>
-        protected virtual void MicroserviceConfigure() { }
-        #endregion
-        #region 5. MicroserviceHostedServiceCreate()
-        /// <summary>
-        /// Creates and configures the Xigadee microservice pipeline.
-        /// </summary>
-        protected virtual void MicroserviceHostedServiceCreate()
-        {
-            HostedService = new MicroserviceHostedService(Pipeline);
-        }
-        #endregion
 
         #region B=>ConfigureServices(IServiceCollection services)
         /// <summary>
@@ -94,8 +60,6 @@ namespace Xigadee
             ConfigureOptions(services);
 
             ConfigureSingletons(services);
-
-            ConfigureMicroserviceHostedService(services);
 
             ContextModulesCreate(services);
 
@@ -132,19 +96,7 @@ namespace Xigadee
             //services.AddSingleton(Context.Identity);
         }
         #endregion
-        #region 3. ConfigureMicroserviceHostedService(IServiceCollection services)
-        /// <summary>
-        /// Configures the singletons.
-        /// </summary>
-        /// <param name="services">The services.</param>
-        protected virtual void ConfigureMicroserviceHostedService(IServiceCollection services)
-        {
-            //Add the microservice as a hosted service.
-            if (HostedService != null)
-                services.AddSingleton<IHostedService>(HostedService);
-        }
-        #endregion
-        #region 4. ContextModulesCreate(IServiceCollection services) -> CXB ->
+        #region 3. ContextModulesCreate(IServiceCollection services) -> CXB ->
         /// <summary>
         /// Calls the context to create and register any modules and services respectively.
         /// </summary>
@@ -154,7 +106,7 @@ namespace Xigadee
             Context.ModulesCreate(services);
         }
         #endregion
-        #region 5. ConfigureSecurityAuthentication(IServiceCollection services)
+        #region 4. ConfigureSecurityAuthentication(IServiceCollection services)
         /// <summary>
         /// Configures the authentication
         /// </summary>
@@ -163,7 +115,7 @@ namespace Xigadee
         {
         }
         #endregion
-        #region 6. ConfigureSecurityAuthorization(IServiceCollection services)
+        #region 5. ConfigureSecurityAuthorization(IServiceCollection services)
         /// <summary>
         /// Configures the authorization.
         /// </summary>
@@ -172,7 +124,7 @@ namespace Xigadee
         {
         }
         #endregion
-        #region 7. ConfigureAddMvc(IServiceCollection services)
+        #region 6. ConfigureAddMvc(IServiceCollection services)
         /// <summary>
         /// Configures the add MVC service.
         /// </summary>
@@ -313,7 +265,7 @@ namespace Xigadee
     /// <summary>
     /// This is the default start up context.
     /// </summary>
-    public class ApiStartUpContext : IApiMicroservice
+    public class ApiStartUpContext : IApiStartupContext
     {
         #region CXA => Initialize(IHostingEnvironment env)
         /// <summary>
@@ -370,7 +322,7 @@ namespace Xigadee
         /// <param name="lf">The logger factory.</param>
         public virtual void Connect(ILoggerFactory lf)
         {
-            Logger = lf.CreateLogger<IApiMicroservice>();
+            Logger = lf.CreateLogger<IApiStartupContext>();
         } 
         #endregion
 
