@@ -14,6 +14,7 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the user identifier. This may not be set for all entities.
         /// </summary>
+        [EntityPropertyHint("userid")]
         public Guid? UserId { get; set; }
 
         /// <summary>
