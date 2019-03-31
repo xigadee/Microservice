@@ -52,6 +52,7 @@ namespace Tests.Xigadee
         {
             //services.adds
             services.AddSingleton<IRepositoryAsync<Guid, MondayMorningBlues>>(_mmbClient);
+            services.AddSingleton<IApiUserSecurityModule>(Context.UserSecurityModule);
 
             services.AddMicroserviceAuthentication(Context.SecurityJwt, () => Context.UserSecurityModule);
         }

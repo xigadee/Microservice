@@ -22,17 +22,25 @@ namespace Xigadee
     /// </summary>
     public class ApiAuthenticationHandler : ApiAuthenticationHandlerBase<ApiAuthenticationSchemeOptions>
     {
+        readonly IApiUserSecurityModule _uSec;
+
         #region Constructor
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiAuthenticationHandler"/> class.
         /// </summary>
         /// <param name="options">The options.</param>
+        /// <param name="uSec">The user security module.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="encoder">The encoder.</param>
         /// <param name="clock">The clock.</param>
-        public ApiAuthenticationHandler(IOptionsMonitor<ApiAuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
+        public ApiAuthenticationHandler(IOptionsMonitor<ApiAuthenticationSchemeOptions> options
+            , IApiUserSecurityModule uSec
+            , ILoggerFactory logger
+            , UrlEncoder encoder
+            , ISystemClock clock)
             : base(options, logger, encoder, clock)
         {
+            _uSec = uSec;
         }
         #endregion
 

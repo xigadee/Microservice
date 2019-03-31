@@ -7,12 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 using Xigadee;
 using Test.Xigadee;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Tests.Xigadee
 {
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiController]
+    [Authorize()]
     public class MondayMorningBluesController : EntityController<Guid, MondayMorningBlues>
     {
         public MondayMorningBluesController(ILogger<MondayMorningBluesController> logger

@@ -23,18 +23,6 @@ namespace Xigadee
     public static partial class SecurityHelper
     {
         /// <summary>
-        /// Set the User and UserSecurity repository read settings.
-        /// </summary>
-        /// <param name="options">The options.</param>
-        /// <param name="repo">The user/user security repository function.</param>
-        public static void UserRepositorySet(this ApiAuthenticationSchemeOptions options, Func<IApiUserSecurityModule> repo)
-        {
-            options.RetrieveUser = (id) => repo().RetrieveUser(id);
-            options.RetrieveUserSecurity = (id) => repo().RetrieveUserSecurity(id);
-            options.RetrieveUserByReference = (id) => repo().RetrieveUser(id.type, id.value);
-        }
-
-        /// <summary>
         /// Adds the default microservice authentication.
         /// </summary>
         /// <param name="services">The services.</param>
@@ -54,7 +42,7 @@ namespace Xigadee
                     options.DefaultAuthenticateScheme = auth.Name;
                 })
                 .AddScheme<ApiAuthenticationSchemeOptions, ApiAuthenticationHandler>(
-                    auth.Name, "Default V1 Basic and V2 JWT authentication", options =>
+                    auth.Name, "authentication", options =>
                     {
                         //options.ClientCertificateThumbprintResolver = new ConditionalCertificateThumbprintResolver(
                         //    apimRequestIndicator,
@@ -69,8 +57,6 @@ namespace Xigadee
                         //    new HttpConnectionIpAddressResolver());
 
                         options.HttpsOnly = auth.HttpsOnly;
-
-                        options.UserRepositorySet(repo);
 
                         options.JwtBearerTokenOptions = BuildJwtBearerTokenOptions(repo(), auth);
                     }
@@ -93,7 +79,7 @@ namespace Xigadee
                         ValidateIssuer = true,
                         ValidIssuer = auth.Issuer,
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(auth.Key)),
+                        IssuerSigningKey = new SymmetricSecurityKey(new Guid(auth.Key).ToByteArray()),
                         ValidateLifetime = auth.ValidateTokenExpiry.GetValueOrDefault(true),
                         ClockSkew = auth.GetClockSkew()
                     },

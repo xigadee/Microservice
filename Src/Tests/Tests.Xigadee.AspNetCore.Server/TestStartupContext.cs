@@ -28,6 +28,6 @@ namespace Tests.Xigadee
         /// <summary>
         /// Gets or sets the user security module that is used to manages the security entities and user logic.
         /// </summary>
-        public IApiUserSecurityModule UserSecurityModule { get; set; }
+        public IApiUserSecurityModule UserSecurityModule { get; set; } = new UserSecurityModuleMemoryTest();
     }
 }
