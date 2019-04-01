@@ -43,10 +43,15 @@ namespace Test.Xigadee
         {
             var t = new TestClass();
             t.Name = "fredo";
+            t.Type = "NiceOne!";
 
-            var resolver = new EntityHintResolver(t.GetType());
+            var resolver = EntityHintHelper.Resolve(t.GetType());
 
+            Guid id = resolver.Id<Guid>(t);
+            var version = resolver.Version(t);
 
+            var r = resolver.References(t).ToList();
+            var p = resolver.Properties(t).ToList();
         }
     }
 }
