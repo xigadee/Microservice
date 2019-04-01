@@ -25,12 +25,17 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the client certificate thumbprint resolver.
         /// </summary>
-        public ICertificateThumbprintResolver RequestCertificateThumbprintResolver { get; set; }
+        public IResolveCertificateThumbprint RequestCertificateThumbprintResolver { get; set; }
 
         /// <summary>
         /// Gets or sets the client IP address resolver.
         /// </summary>
-        public IIpAddressResolver RequestIpAddressResolver { get; set; }
+        public IResolveIpAddress RequestIpAddressResolver { get; set; }
+
+        /// <summary>
+        /// Gets or sets the client IP address resolver.
+        /// </summary>
+        public IResolveJwtToken RequestJwtTokenResolver { get; set; }
 
         /// <summary>
         /// Gets or sets the JWT bearer token options.

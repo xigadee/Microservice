@@ -103,24 +103,4 @@ namespace Xigadee
             return null;
         }
     }
-
-
-
-    public interface IUserSecurityResolver<T>
-    {
-        Task<T> Resolve(HttpContext httpContext);
-    }
-
-    public interface ICertificateThumbprintResolver:IUserSecurityResolver<string>
-    {
-    }
-
-    public interface IIpAddressResolver : IUserSecurityResolver<IPAddress>
-    {
-    }
-
-
-
-
-
 }

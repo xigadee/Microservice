@@ -22,8 +22,6 @@ namespace Xigadee
     /// </summary>
     public class ApiAuthenticationHandler : ApiAuthenticationHandlerBase<ApiAuthenticationSchemeOptions>
     {
-        readonly IApiUserSecurityModule _uSec;
-
         #region Constructor
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiAuthenticationHandler"/> class.
@@ -38,30 +36,8 @@ namespace Xigadee
             , ILoggerFactory logger
             , UrlEncoder encoder
             , ISystemClock clock)
-            : base(options, logger, encoder, clock)
+            : base(options, uSec, logger, encoder, clock)
         {
-            _uSec = uSec;
-        }
-        #endregion
-
-        #region GenerateHash(string data)
-        /// <summary>
-        /// Generates the string base SHA256 hash.
-        /// </summary>
-        /// <param name="data">The data.</param>
-        /// <returns></returns>
-        private string GenerateHash(string data)
-        {
-            string hashString;
-            byte[] bytes = Encoding.UTF8.GetBytes(data);
-
-            using (SHA256Managed hashstring = new SHA256Managed())
-            {
-                byte[] hash = hashstring.ComputeHash(bytes);
-                hashString = Convert.ToBase64String(hash);
-            }
-            //byte[] originaldata = Convert.FromBase64String(hashString);
-            return hashString;
         }
         #endregion
 
@@ -93,6 +69,7 @@ namespace Xigadee
 
                     // Check whether this token is due to expire soon
                     var daysUntilExpiry = validatedToken.ValidTo.Subtract(DateTime.UtcNow).TotalDays;
+
                     if (daysUntilExpiry > (jwtBearerTokenOption.LifetimeCriticalDays ?? 0) && daysUntilExpiry <= (jwtBearerTokenOption.LifetimeWarningDays ?? 0))
                         Logger?.LogWarning($"{claimsPrincipal.ExtractUserId()} bearer token due to expire on {validatedToken.ValidTo:O}");
                     else if (daysUntilExpiry <= (jwtBearerTokenOption.LifetimeCriticalDays ?? 0))
@@ -112,7 +89,7 @@ namespace Xigadee
 
                 if (user == null)
                 {
-                    Logger?.LogWarning($"Unable to resolve user for {claimsPrincipal?.ExtractUserId()?.ToString() ?? claimsPrincipal?.ExtractSubject() }");
+                    Logger?.LogWarning($"Unable to resolve user for {claimsPrincipal?.ExtractUserId()?.ToString() ?? claimsPrincipal?.Extract(JwtRegisteredClaimNames.Sub) }");
                 }
                 else
                 {
@@ -123,12 +100,6 @@ namespace Xigadee
             return user;
         }
         #endregion
-
-        private string GenerateCertificateHash(string certificateThumbprint)
-        {
-            return GenerateHash($"{Options.CertSalt}:{certificateThumbprint}");
-        }
-
         #region ResolveUserByClientCertificate(string certificateThumbprint)
         /// <summary>
         /// Resolves the user by client certificate.
@@ -144,7 +115,7 @@ namespace Xigadee
             {
                 string hash = GenerateCertificateHash(certificateThumbprint);
 
-                var rs = await _uSec.Users.ReadByRef("thumbprint", hash);
+                var rs = await UserSecurityModule.Users.ReadByRef("thumbprint", hash);
 
                 if (rs.IsSuccess)
                     return rs.Entity;
@@ -159,6 +130,44 @@ namespace Xigadee
             return null;
         }
         #endregion
+        #region ResolveUserFromCredentials()
+        /// <summary>
+        /// Resolves the user from credentials.
+        /// </summary>
+        /// <returns>Returns the user if reconciled from the incoming auth information.</returns>
+        protected async Task<User> ResolveUserFromCredentials()
+        {
+            User callingParty = null;
+
+            var result = ExtractAuth();
+
+            //Yes, let's get the user from the scheme?
+            if (result.success)
+                switch (result.scheme.ToLowerInvariant())
+                {
+                    case "bearer":
+                        callingParty = await ResolveUserByJwtToken(result.token);
+                        break;
+                }
+            else
+            {
+                //No auth, but is there a client certificate?
+                //If there is a client SSL cert, can we resolve this to a user?
+                var clientCertificateThumbprint = await Options.RequestCertificateThumbprintResolver.Resolve(Context);
+
+                if (!string.IsNullOrWhiteSpace(clientCertificateThumbprint))
+                    callingParty = await ResolveUserByClientCertificate(clientCertificateThumbprint);
+            }
+
+            return callingParty;
+        } 
+        #endregion
+
+        private string GenerateCertificateHash(string certificateThumbprint)
+        {
+            return GenerateHash($"{Options.CertSalt}:{certificateThumbprint}");
+        }
+
 
         #region ValidateUserAgainstIpRange(UserSecurity uSec)
         /// <summary>
@@ -227,37 +236,7 @@ namespace Xigadee
         }
         #endregion
 
-        /// <summary>
-        /// Resolves the user from credentials.
-        /// </summary>
-        /// <returns>Returns the user if reconciled from the incoming auth information.</returns>
-        protected async Task<User> ResolveUserFromCredentials()
-        {
-            User callingParty = null;
-
-            var result = ExtractAuth();
-
-            //Yes, let's get the user from the scheme?
-            if (result.success)
-                switch (result.scheme.ToLowerInvariant())
-                {
-                    case "bearer":
-                        callingParty = await ResolveUserByJwtToken(result.token);
-                        break;
-                }
-            else
-            {
-                //No auth, but is there a client certificate?
-                //If there is a client SSL cert, can we resolve this to a user?
-                var clientCertificateThumbprint = await Options.RequestCertificateThumbprintResolver.Resolve(Context);
-
-                if (!string.IsNullOrWhiteSpace(clientCertificateThumbprint))
-                    callingParty = await ResolveUserByClientCertificate(clientCertificateThumbprint);
-            }
-
-            return callingParty;
-        }
-
+        #region ValidateAuth()
         /// <summary>
         /// The method is used to validate the incoming auth and return a security ticket against the user repository.
         /// </summary>
@@ -285,7 +264,7 @@ namespace Xigadee
 
             if (user != null)
             {
-                var rs = await _uSec.UserSecurities.Read(user.Id);
+                var rs = await UserSecurityModule.UserSecurities.Read(user.Id);
 
                 //OK, if we have a user security object, do we have any restrictions that we need to validate
                 if (rs.IsSuccess)
@@ -319,7 +298,8 @@ namespace Xigadee
 
             //Fail safe and do nothing: user not resolved, so unauthenticated.
             return (null, null);
-        }
+        } 
+        #endregion
 
 
     }

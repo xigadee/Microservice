@@ -30,14 +30,28 @@ namespace Xigadee
         /// Initializes a new instance of the <see cref="ApiAuthenticationHandlerBase{T}"/> class.
         /// </summary>
         /// <param name="options">The options.</param>
+        /// <param name="uSec">The user security module.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="encoder">The encoder.</param>
         /// <param name="clock">The clock.</param>
-        protected ApiAuthenticationHandlerBase(IOptionsMonitor<T> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
+        protected ApiAuthenticationHandlerBase(
+            IOptionsMonitor<T> options
+            , IApiUserSecurityModule uSec
+            , ILoggerFactory logger
+            , UrlEncoder encoder
+            , ISystemClock clock)
             : base(options, logger, encoder, clock)
         {
+            UserSecurityModule = uSec;
         }
         #endregion
+        #region UserSecurityModule
+        /// <summary>
+        /// Gets the user security module which contains the security entities.
+        /// </summary>
+        protected IApiUserSecurityModule UserSecurityModule { get; }
+        #endregion
+
 
         #region ExtractAuth()
         /// <summary>
@@ -58,14 +72,14 @@ namespace Xigadee
             return (false, null, null);
         }
         #endregion
-        #region ExtractToken(string key, out string token)
+        #region TryExtractToken(string key, out string token)
         /// <summary>
         /// Extracts the token.
         /// </summary>
         /// <param name="key">The token key type.</param>
         /// <param name="token">The token as an output parameter..</param>
         /// <returns>Returns true if the token is found</returns>
-        protected bool ExtractToken(string key, out string token)
+        protected bool TryExtractToken(string key, out string token)
         {
             token = null;
 
@@ -79,6 +93,27 @@ namespace Xigadee
             }
 
             return !string.IsNullOrEmpty(token);
+        }
+        #endregion
+
+        #region GenerateHash(string data)
+        /// <summary>
+        /// Generates the string base SHA256 hash.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
+        protected string GenerateHash(string data)
+        {
+            string hashString;
+            byte[] bytes = Encoding.UTF8.GetBytes(data);
+
+            using (SHA256Managed hashstring = new SHA256Managed())
+            {
+                byte[] hash = hashstring.ComputeHash(bytes);
+                hashString = Convert.ToBase64String(hash);
+            }
+            //byte[] originaldata = Convert.FromBase64String(hashString);
+            return hashString;
         }
         #endregion
 

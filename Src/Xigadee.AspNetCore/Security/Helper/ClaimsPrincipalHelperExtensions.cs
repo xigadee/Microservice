@@ -1,7 +1,5 @@
 ﻿using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Net;
 using System.Security.Claims;
 
 namespace Xigadee
@@ -18,9 +16,9 @@ namespace Xigadee
         /// <returns>Returns the user id in the claim if it can be found.</returns>
         public static Guid? ExtractUserId(this ClaimsPrincipal claimsPrincipal)
         {
-            var claim = claimsPrincipal.Claims.FirstOrDefault(c => ClaimTypes.Sid.Equals(c.Type, StringComparison.InvariantCultureIgnoreCase));
+            var claim = claimsPrincipal.Extract(ClaimTypes.Sid);
 
-            if (claim == null || !Guid.TryParse(claim.Value, out var userId))
+            if (claim == null || !Guid.TryParse(claim, out var userId))
                 return null;
 
             return userId;
@@ -30,10 +28,11 @@ namespace Xigadee
         /// Extracts the subject from the claim.
         /// </summary>
         /// <param name="claimsPrincipal">The claims.</param>
+        /// <param name="claimId">The claim parameter id.</param>
         /// <returns>Returns the subject it can be found.</returns>
-        public static string ExtractSubject(this ClaimsPrincipal claimsPrincipal)
+        public static string Extract(this ClaimsPrincipal claimsPrincipal, string claimId)
         {
-            return claimsPrincipal.Claims.FirstOrDefault(c => JwtRegisteredClaimNames.Sub.Equals(c.Type, StringComparison.InvariantCultureIgnoreCase))?.Value;
+            return claimsPrincipal.Claims.FirstOrDefault(c => claimId.Equals(c.Type, StringComparison.InvariantCultureIgnoreCase))?.Value;
         }
 
     }

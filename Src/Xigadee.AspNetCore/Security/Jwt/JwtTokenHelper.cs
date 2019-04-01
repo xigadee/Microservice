@@ -13,6 +13,7 @@ namespace Xigadee
     /// </summary>
     public static class JwtTokenHelper
     {
+        #region CreateSymmetricHmacSha256 ...
         /// <summary>
         /// Creates the symmetric token.
         /// </summary>
@@ -32,7 +33,6 @@ namespace Xigadee
                 , tokenExpiry
                 , extendedClaims);
         }
-
         /// <summary>
         /// Creates the symmetric token.
         /// </summary>
@@ -53,7 +53,8 @@ namespace Xigadee
 
             return WriteToken(id, creds, Jwt, extendedClaims, tokenExpiry ?? Jwt.DefaultTokenValidity ?? TimeSpan.FromDays(1));
         }
-
+        #endregion
+        #region CreateAsymmetricRsaSha512 ...
         /// <summary>
         /// Creates the symmetric token.
         /// </summary>
@@ -74,7 +75,9 @@ namespace Xigadee
 
             return WriteToken(id, creds, Jwt, extendedClaims, tokenExpiry ?? Jwt.DefaultTokenValidity ?? TimeSpan.FromDays(1));
         }
+        #endregion
 
+        #region WriteToken ...
         /// <summary>
         /// Writes the JWT token.
         /// </summary>
@@ -99,6 +102,7 @@ namespace Xigadee
 
             var handler = new JwtSecurityTokenHandler();
             return handler.WriteToken(token);
-        }
+        } 
+        #endregion
     }
 }

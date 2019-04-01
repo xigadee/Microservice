@@ -7,7 +7,10 @@ namespace Xigadee
 {
     public class JwtBearerTokenOptions
     {
-        public JwtBearerTokenOptions(IClaimsPrincipalUserReferenceResolver claimsPrincipalUserResolver, TokenValidationParameters tokenValidationParameters, int? lifetimeWarningDays = null, int? lifetimeCriticalDays = null)
+        public JwtBearerTokenOptions(IClaimsPrincipalUserReferenceResolver claimsPrincipalUserResolver
+            , TokenValidationParameters tokenValidationParameters
+            , int? lifetimeWarningDays = null
+            , int? lifetimeCriticalDays = null)
         {
             ClaimsPrincipalUserReferenceResolver = claimsPrincipalUserResolver ?? throw new ArgumentNullException(nameof(claimsPrincipalUserResolver));
             TokenValidationParameters = tokenValidationParameters ?? throw new ArgumentNullException(nameof(tokenValidationParameters));
