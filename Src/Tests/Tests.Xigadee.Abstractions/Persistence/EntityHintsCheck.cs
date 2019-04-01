@@ -48,7 +48,7 @@ namespace Test.Xigadee
             var resolver = EntityHintHelper.Resolve(t.GetType());
 
             Guid id = resolver.Id<Guid>(t);
-            var version = resolver.Version(t);
+            var version = resolver.VersionGet(t);
 
             var r = resolver.References(t).ToList();
             var p = resolver.Properties(t).ToList();

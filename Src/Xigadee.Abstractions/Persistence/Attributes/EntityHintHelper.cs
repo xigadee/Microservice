@@ -75,9 +75,9 @@ namespace Xigadee
                 ).ToList();
 
             MethodInfoId = EntityType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
-                .SelectMany((m) => m.GetCustomAttributes<EntityIdHintAttribute>(), (mt, a) => mt)
+                .SelectMany((m) => m.GetCustomAttributes<EntityIdHintAttribute>(), (mt, a) => (a, mt))
                 .Union(EntityType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                        .SelectMany((m) => m.GetCustomAttributes<EntityIdHintAttribute>(), (mt, a) => mt.GetMethod)
+                        .SelectMany((m) => m.GetCustomAttributes<EntityIdHintAttribute>(), (mt, a) => (a,mt.GetMethod))
                 ).FirstOrDefault();
 
             MethodInfoVersionGet = EntityType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
@@ -87,9 +87,9 @@ namespace Xigadee
                 ).FirstOrDefault();
 
             MethodInfoVersionSet = EntityType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
-                .SelectMany((m) => m.GetCustomAttributes<EntityVersionHintAttribute>(), (mt, a) => mt)
+                .SelectMany((m) => m.GetCustomAttributes<EntityVersionHintAttribute>(), (mt, a) => (a,mt))
                 .Union(EntityType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                        .SelectMany((m) => m.GetCustomAttributes<EntityVersionHintAttribute>(), (mt, a) => mt.SetMethod)
+                        .SelectMany((m) => m.GetCustomAttributes<EntityVersionHintAttribute>(), (mt, a) => (a,mt.SetMethod))
                 ).FirstOrDefault();
         }
         #endregion
@@ -105,7 +105,7 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the information identifier method info.
         /// </summary>
-        protected MethodInfo MethodInfoId { get; set; }
+        protected (EntityIdHintAttribute,MethodInfo)? MethodInfoId { get; set; }
         /// <summary>
         /// Gets a value indicating whether Id is supported.
         /// </summary>
@@ -118,13 +118,17 @@ namespace Xigadee
         /// <returns></returns>
         public K Id<K>(object entity)
         {
-            if (MethodInfoId == null)
+            if (MethodInfoId.HasValue && MethodInfoId.Value.Item2 == null)
                 return default(K);
 
-            return (K)MethodInfoId.Invoke(entity, EmptyObjects);
+            return (K)MethodInfoId.Value.Item2.Invoke(entity, EmptyObjects);
         }
         #endregion
         #region Version...
+        /// <summary>
+        /// Gets a value indicating whether Version is supported.
+        /// </summary>
+        public bool SupportsVersion => MethodInfoVersionGet != null;
         /// <summary>
         /// Gets or sets the information version.
         /// </summary>
@@ -132,18 +136,15 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the information version set property. This is used for version control.
         /// </summary>
-        protected MethodInfo MethodInfoVersionSet { get; set; }
-        /// <summary>
-        /// Gets a value indicating whether Version is supported.
-        /// </summary>
-        public bool SupportsVersion => MethodInfoVersionGet != null;
+        protected (EntityVersionHintAttribute, MethodInfo)? MethodInfoVersionSet { get; set; }
+
         /// <summary>
         /// Versions the specified entity.
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentOutOfRangeException">Cannot convert version parameter to string.</exception>
-        public string Version(object entity)
+        public string VersionGet(object entity)
         {
             if (!SupportsVersion)
                 return null;
@@ -158,6 +159,20 @@ namespace Xigadee
                 return ((Guid)v).ToString("N").ToUpperInvariant();
 
             return ConvertValueToString(v, MethodInfoVersionGet);
+        }
+
+        /// <summary>
+        /// Versions the specified entity.
+        /// </summary>
+        /// <param name="entity">The entity.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException">Cannot convert version parameter to string.</exception>
+        public void VersionSet(object entity)
+        {
+            if (!SupportsVersion)
+                throw new NotSupportedException($"VersionSet is not supported for {EntityType.Name}");
+
+            //MethodInfoVersionSet.Value.Item2.Invoke(entity, 
         }
         #endregion
         #region References ...
@@ -244,7 +259,19 @@ namespace Xigadee
                 return converter.ConvertToString(v);
 
             throw new ArgumentOutOfRangeException($"{nameof(EntityHintResolver)} cannot convert version parameter {MethodInfoVersionGet.ReturnType.Name} to string.");
-        } 
+        }
         #endregion
+
+        /// <summary>
+        /// Get the version policy for the entity.
+        /// </summary>
+        /// <typeparam name="P"></typeparam>
+        /// <param name="supportsArchiving">if set to <c>true</c> [supports archiving].</param>
+        /// <returns></returns>
+        public VersionPolicy<P> VersionPolicyGet<P>(bool supportsArchiving = false)
+        {
+            var p = new VersionPolicy<P>((e) => VersionGet(e), (v) => VersionSet(v), supportsArchiving);
+            return p;
+        }
     }
 }
