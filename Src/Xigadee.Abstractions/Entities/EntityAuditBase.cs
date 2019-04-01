@@ -11,16 +11,19 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the entity identifier.
         /// </summary>
+        [EntityIdHint]
         public virtual Guid Id { get; set; } = Guid.NewGuid();
 
         /// <summary>
         /// Gets or sets the version id of the entity.
         /// </summary>
+        [EntityVersionHint]
         public virtual Guid VersionId { get; set; } = Guid.NewGuid();
 
         /// <summary>
         /// Gets or sets the user identifier of the last person who created or updated the entity.
         /// </summary>
+        [EntityPropertyHint("useraudit")]
         public virtual Guid? UserIdAudit { get; set; }
 
         /// <summary>

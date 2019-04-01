@@ -13,6 +13,7 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the type of the action, i.e. Registration confirmation, password reset, etc.
         /// </summary>
+        [EntityPropertyHint("actiontype")]
         public string ActionType { get; set; }
 
         /// <summary>

@@ -27,14 +27,10 @@ namespace Xigadee
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="auth">The authentication settings.</param>
-        /// <param name="repo">The User security repository.</param>
         /// <returns>Returns the service collection.</returns>
         public static IServiceCollection AddMicroserviceAuthentication(this IServiceCollection services
-            , ConfigAuthenticationJwt auth
-            , Func<IApiUserSecurityModule> repo = null)
+            , ConfigAuthenticationJwt auth)
         {
-            repo = repo ?? (() => services.ServiceExtract<IApiUserSecurityModule>());
-
             services
                 .AddAuthentication(options =>
                 {
@@ -58,7 +54,7 @@ namespace Xigadee
 
                         options.HttpsOnly = auth.HttpsOnly;
 
-                        options.JwtBearerTokenOptions = BuildJwtBearerTokenOptions(repo(), auth);
+                        options.JwtBearerTokenOptions = BuildJwtBearerTokenOptions(auth);
                     }
                 )
                 ;
@@ -66,12 +62,12 @@ namespace Xigadee
             return services;
         }
 
-        private static IEnumerable<JwtBearerTokenOptions> BuildJwtBearerTokenOptions(IApiUserSecurityModule userSecurityModule, ConfigAuthenticationJwt auth)
+        private static IEnumerable<JwtBearerTokenOptions> BuildJwtBearerTokenOptions(ConfigAuthenticationJwt auth)
         {
             var options = new List<JwtBearerTokenOptions>
             {
                 new JwtBearerTokenOptions(
-                    new CustomClaimsPrincipalUserResolver(userSecurityModule),
+                    new CustomClaimsPrincipalUserResolver(),
                     new TokenValidationParameters
                     {
                         ValidateAudience = true,
@@ -91,57 +87,24 @@ namespace Xigadee
         }
     }
 
-    public class CustomClaimsPrincipalUserResolver : IClaimsPrincipalUserResolver
+    /// <summary>
+    /// This method extracts the SID parameter from the incoming JWT Token.
+    /// </summary>
+    /// <seealso cref="Xigadee.IClaimsPrincipalUserReferenceResolver" />
+    public class CustomClaimsPrincipalUserResolver : IClaimsPrincipalUserReferenceResolver
     {
-        private readonly IApiUserSecurityModule _userSecurityModule;
-
-        public CustomClaimsPrincipalUserResolver(IApiUserSecurityModule userSecurityModule)
-        {
-            _userSecurityModule = userSecurityModule;
-        }
-
-        public async Task<User> Resolve(ClaimsPrincipal claimsPrincipal)
+        public async Task<Guid?> Resolve(ClaimsPrincipal claimsPrincipal)
         {
             var sid = claimsPrincipal.Claims.FirstOrDefault(claim => claim.Type.Equals(ClaimTypes.Sid, StringComparison.InvariantCultureIgnoreCase));
 
-            if (!Guid.TryParse(sid?.Value, out var userId))
-                return null;
+            if (Guid.TryParse(sid?.Value, out var userId))
+                return userId;
 
-            var (success, user) = await _userSecurityModule.RetrieveUser(userId);
-
-            return success ? user : null;
+            return null;
         }
     }
 
-    public interface IClaimsPrincipalUserResolver
-    {
-        Task<User> Resolve(ClaimsPrincipal claimsPrincipal);
-    }
 
-    public class JwtBearerTokenOptions
-    {
-        public JwtBearerTokenOptions(IClaimsPrincipalUserResolver claimsPrincipalUserResolver, TokenValidationParameters tokenValidationParameters, int? lifetimeWarningDays = null, int? lifetimeCriticalDays = null)
-        {
-            ClaimsPrincipalUserResolver = claimsPrincipalUserResolver ?? throw new ArgumentNullException(nameof(claimsPrincipalUserResolver));
-            TokenValidationParameters = tokenValidationParameters ?? throw new ArgumentNullException(nameof(tokenValidationParameters));
-            LifetimeWarningDays = lifetimeWarningDays;
-            LifetimeCriticalDays = lifetimeCriticalDays;
-        }
-
-        public IClaimsPrincipalUserResolver ClaimsPrincipalUserResolver { get; }
-
-        public TokenValidationParameters TokenValidationParameters { get; }
-
-        /// <summary>
-        /// Number of days before expiry where a warning will be raised
-        /// </summary>
-        public int? LifetimeWarningDays { get; }
-
-        /// <summary>
-        /// Number of days before expiry where a critical error will be raised
-        /// </summary>
-        public int? LifetimeCriticalDays { get; }
-    }
 
     public interface IUserSecurityResolver<T>
     {

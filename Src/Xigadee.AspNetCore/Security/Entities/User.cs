@@ -12,6 +12,7 @@ namespace Xigadee
         /// <summary>
         /// Gets the realm for the user. This is to allow users groupings to be segmented across an application.
         /// </summary>
+        [EntityPropertyHint("realm")]
         public string Realm { get; set; }
         /// <summary>
         /// The property bag container dictionary. This has a set of extensible properties for the user.

@@ -108,7 +108,8 @@ namespace Xigadee
                     continue;
                 }
 
-                user = await jwtBearerTokenOption.ClaimsPrincipalUserResolver.Resolve(claimsPrincipal);
+                var userId = await jwtBearerTokenOption.ClaimsPrincipalUserReferenceResolver.Resolve(claimsPrincipal);
+
                 if (user == null)
                 {
                     Logger?.LogWarning($"Unable to resolve user for {claimsPrincipal?.ExtractUserId()?.ToString() ?? claimsPrincipal?.ExtractSubject() }");
@@ -143,10 +144,10 @@ namespace Xigadee
             {
                 string hash = GenerateCertificateHash(certificateThumbprint);
 
-                var rs = await Options.RetrieveUserByReference(("thumbprint", hash));
+                var rs = await _uSec.Users.ReadByRef("thumbprint", hash);
 
-                if (rs.success)
-                    return rs.user;
+                if (rs.IsSuccess)
+                    return rs.Entity;
 
             }
             catch (Exception ex)
@@ -170,7 +171,7 @@ namespace Xigadee
             if (!uSec.HasIpRestrictions())
                 return true;
 
-            var clientIpAddress = await Options.ClientIpAddressResolver.Resolve(Context);
+            var clientIpAddress = await Options.RequestIpAddressResolver.Resolve(Context);
 
             if (clientIpAddress == null)
                 return false;
@@ -189,7 +190,7 @@ namespace Xigadee
             if (!uSec.HasClientCertificateRestrictions())
                 return true;
 
-            var clientCertificateThumbprint = await Options.ClientCertificateThumbprintResolver.Resolve(Context);
+            var clientCertificateThumbprint = await Options.RequestCertificateThumbprintResolver.Resolve(Context);
 
             if (string.IsNullOrWhiteSpace(clientCertificateThumbprint))
                 return false;
@@ -248,7 +249,7 @@ namespace Xigadee
             {
                 //No auth, but is there a client certificate?
                 //If there is a client SSL cert, can we resolve this to a user?
-                var clientCertificateThumbprint = await Options.ClientCertificateThumbprintResolver.Resolve(Context);
+                var clientCertificateThumbprint = await Options.RequestCertificateThumbprintResolver.Resolve(Context);
 
                 if (!string.IsNullOrWhiteSpace(clientCertificateThumbprint))
                     callingParty = await ResolveUserByClientCertificate(clientCertificateThumbprint);
@@ -284,19 +285,20 @@ namespace Xigadee
 
             if (user != null)
             {
-                var rs = await Options.RetrieveUserSecurity(user.Id);
+                var rs = await _uSec.UserSecurities.Read(user.Id);
 
                 //OK, if we have a user security object, do we have any restrictions that we need to validate
-                if (rs.success)
+                if (rs.IsSuccess)
                     try
                     {
+                        var uSec = rs.Entity;
                         //Are there any IP restrictions in place that should deny access?
                         //Are there any client certificates that need to be validated against the user?
                         //This will throw an exception on failure to pass more detail to the calling party.
-                        if (await ValidateUserAgainstIpRange(rs.uSec)
-                            && await ValidateUserAgainstClientCertificate(rs.uSec))
+                        if (await ValidateUserAgainstIpRange(uSec)
+                            && await ValidateUserAgainstClientCertificate(uSec))
                         {
-                            var ticket = UserGenerateTicket(user, rs.uSec);
+                            var ticket = UserGenerateTicket(user, uSec);
 
                             Logger?.LogDebug("Authentication success {TraceIdentifier}:{RemoteIpAddress} for {UserId}", Context.TraceIdentifier, Context.Connection.RemoteIpAddress?.ToString(), user.Id);
                             return (ticket, null);
@@ -318,5 +320,7 @@ namespace Xigadee
             //Fail safe and do nothing: user not resolved, so unauthenticated.
             return (null, null);
         }
+
+
     }
 }

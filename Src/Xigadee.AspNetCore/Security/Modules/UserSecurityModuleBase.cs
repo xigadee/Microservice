@@ -11,68 +11,61 @@ namespace Xigadee
     /// </summary>
     /// <seealso cref="Xigadee.ApiModuleBase" />
     /// <seealso cref="Xigadee.IApiUserSecurityModule" />
-    public abstract class UserSecurityModuleBase : ApiModuleBase, IApiUserSecurityModule
+    public abstract class UserSecurityModuleBase : UserSecurityModuleBase<User, UserSecurity, UserSession, UserExternalAction, UserRoles, UserAccessToken>
     {
-        public virtual string Realm { get; set; }
 
-        public virtual IRepositoryAsync<Guid, User> Users { get; protected set; }
 
-        public virtual IRepositoryAsync<Guid, UserSecurity> UserSecurities { get; protected set; }
+    }
 
-        public virtual IRepositoryAsync<Guid, UserSession> UserSessions { get; protected set; }
+    /// <summary>
+    /// This module implements the core application security logic.
+    /// </summary>
+    /// <seealso cref="Xigadee.ApiModuleBase" />
+    /// <seealso cref="Xigadee.IApiUserSecurityModule" />
+    public abstract class UserSecurityModuleBase<U,USEC,USES,UEXA,UR,UAT> : ApiModuleBase, IApiUserSecurityModule
+        where U : User
+        where USEC : UserSecurity
+        where USES : UserSession
+        where UEXA : UserExternalAction
+        where UR : UserRoles
+        where UAT : UserAccessToken
+    {
+        protected virtual RepositoryBase<Guid, U> RepoUsers { get; set; }
 
-        public virtual IRepositoryAsync<Guid, UserExternalAction> UserExternalActions { get; protected set; }
+        protected virtual RepositoryBase<Guid, USEC> RepoUserSecurities { get; set; }
 
-        public virtual IRepositoryAsync<Guid, UserRoles> UserRoles { get; protected set; }
+        protected virtual RepositoryBase<Guid, USES> RepoUserSessions { get; set; }
 
-        public virtual IRepositoryAsync<Guid, UserAccessToken> UserAccessTokens { get; protected set; }
+        protected virtual RepositoryBase<Guid, UEXA> RepoUserExternalActions { get; set; }
 
-        public virtual async Task<(bool success, User user)> RetrieveUser(Guid id)
-        {
-            try
-            {
-                var rs = await Users.Read(id);
+        protected virtual RepositoryBase<Guid, UR> RepoUserRoles { get; set; }
 
-                return (rs.IsSuccess, rs.Entity);
-            }
-            catch (Exception ex)
-            {
-                Logger?.LogError("");
-                return (false, null);
-            }
+        protected virtual RepositoryBase<Guid, UAT> RepoUserAccessTokens { get; set; }
 
-        }
-
-        public virtual async Task<(bool success, User user)> RetrieveUser(string type, string value)
-        {
-            try
-            {
-                var rs = await Users.ReadByRef(type,value);
-
-                return (rs.IsSuccess, rs.Entity);
-            }
-            catch (Exception ex)
-            {
-                Logger?.LogError("");
-                return (false, null);
-            }
-
-        }
-
-        public virtual Task<(bool success, UserExternalAction uExAc)> RetrieveUserExternalAction(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual Task<(bool success, UserSecurity uSec)> RetrieveUserSecurity(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual Task<(bool success, UserSession uSess)> RetrieveUserSession(Guid id)
-        {
-            throw new NotImplementedException();
-        }
+        /// <summary>
+        /// Gets the users repository
+        /// </summary>
+        public virtual IRepositoryAsync<Guid, User> Users => RepoUsers as IRepositoryAsync<Guid, User>;
+        /// <summary>
+        /// Gets the user security repository.
+        /// </summary>
+        public virtual IRepositoryAsync<Guid, UserSecurity> UserSecurities => RepoUserSecurities as IRepositoryAsync<Guid, UserSecurity>;
+        /// <summary>
+        /// Gets the user security repository.
+        /// </summary>
+        public virtual IRepositoryAsync<Guid, UserSession> UserSessions => RepoUserSessions as IRepositoryAsync<Guid, UserSession>;
+        /// <summary>
+        /// Gets the user security repository.
+        /// </summary>
+        public virtual IRepositoryAsync<Guid, UserRoles> UserRoles => RepoUserRoles as IRepositoryAsync<Guid, UserRoles>;
+        /// <summary>
+        /// Gets the user security repository.
+        /// </summary>
+        public virtual IRepositoryAsync<Guid, UserAccessToken> UserAccessTokens => RepoUserAccessTokens as IRepositoryAsync<Guid, UserAccessToken>;
+        /// <summary>
+        /// Gets the user security repository.
+        /// </summary>
+        public virtual IRepositoryAsync<Guid, UserExternalAction> UserExternalActions => RepoUserExternalActions as IRepositoryAsync<Guid, UserExternalAction>;
     }
 
 }

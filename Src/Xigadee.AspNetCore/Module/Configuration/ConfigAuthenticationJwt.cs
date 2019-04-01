@@ -16,6 +16,7 @@ namespace Xigadee
         /// Gets or sets the name for the authentication method.
         /// </summary>
         public override string Name { get; set; }
+
         /// <summary>
         /// Gets or sets the token signing key.
         /// </summary>
@@ -30,6 +31,7 @@ namespace Xigadee
         /// Number of days until the token expires where critical errors will generated
         /// </summary>
         public int LifetimeCriticalDays { get; set; } = 1;
+
         /// <summary>
         /// Gets or sets the token audience.
         /// </summary>
@@ -49,6 +51,10 @@ namespace Xigadee
         /// </summary>
         public int? TokenExpirySkewInSeconds { get; set; }
 
+        /// <summary>
+        /// Gets or sets the default token validity time period when creating a token.
+        /// </summary>
+        public TimeSpan? DefaultTokenValidity { get; set; }
 
         /// <summary>
         /// Gets the clock skew, which is the permitted time difference between system time and token time.

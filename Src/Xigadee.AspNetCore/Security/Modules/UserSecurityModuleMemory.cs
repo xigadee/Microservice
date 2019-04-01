@@ -41,14 +41,14 @@ namespace Xigadee
         /// Creates the user repo.
         /// </summary>
         protected virtual void CreateUserRepo() =>
-            Users = new RepositoryMemory<Guid, User>(EntityAuditableBase.KeyMaker
+            RepoUsers = new RepositoryMemory<Guid, User>(EntityAuditableBase.KeyMaker
                 , versionPolicy: EntityAuditableBase.VersionPolicyStandard<User>());
 
         /// <summary>
         /// Creates the user security repo.
         /// </summary>
         protected virtual void CreateUserSecurityRepo() =>
-            UserSecurities = new RepositoryMemory<Guid, UserSecurity>(EntityAuditableBase.KeyMaker
+            RepoUserSecurities = new RepositoryMemory<Guid, UserSecurity>(EntityAuditableBase.KeyMaker
                 , versionPolicy: EntityAuditableBase.VersionPolicyStandard<UserSecurity>()
                 );
 
@@ -56,7 +56,7 @@ namespace Xigadee
         /// Creates the user session repo.
         /// </summary>
         protected virtual void CreateUserSessionRepo() =>
-            UserSessions = new RepositoryMemory<Guid, UserSession>(EntityAuditableBase.KeyMaker
+            RepoUserSessions = new RepositoryMemory<Guid, UserSession>(EntityAuditableBase.KeyMaker
                 , propertiesMaker: UserReferenceBase.PropertiesGet
                 , versionPolicy: EntityAuditableBase.VersionPolicyStandard<UserSession>()
                 );
@@ -65,7 +65,7 @@ namespace Xigadee
         /// Creates the user external actions.
         /// </summary>
         protected virtual void CreateUserExternalActions() =>
-            UserExternalActions = new RepositoryMemory<Guid, UserExternalAction>(EntityAuditableBase.KeyMaker
+            RepoUserExternalActions = new RepositoryMemory<Guid, UserExternalAction>(EntityAuditableBase.KeyMaker
                 , propertiesMaker: UserReferenceBase.PropertiesGet
                 , versionPolicy: EntityAuditableBase.VersionPolicyStandard<UserExternalAction>()
                 );
@@ -73,8 +73,8 @@ namespace Xigadee
         /// <summary>
         /// Creates the user roles.
         /// </summary>
-        protected virtual void CreateUserRoles() => 
-            UserRoles = new RepositoryMemory<Guid, UserRoles>(EntityAuditableBase.KeyMaker
+        protected virtual void CreateUserRoles() =>
+            RepoUserRoles = new RepositoryMemory<Guid, UserRoles>(EntityAuditableBase.KeyMaker
                 , versionPolicy: EntityAuditableBase.VersionPolicyStandard<UserRoles>()
                 );
 
@@ -82,7 +82,7 @@ namespace Xigadee
         /// Creates the user access tokens.
         /// </summary>
         protected virtual void CreateUserAccessTokens() =>
-            UserAccessTokens = new RepositoryMemory<Guid, UserAccessToken>(EntityAuditableBase.KeyMaker
+            RepoUserAccessTokens = new RepositoryMemory<Guid, UserAccessToken>(EntityAuditableBase.KeyMaker
                 , propertiesMaker: UserReferenceBase.PropertiesGet
                 , versionPolicy: EntityAuditableBase.VersionPolicyStandard<UserAccessToken>()
                 );

@@ -25,12 +25,12 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the client certificate thumbprint resolver.
         /// </summary>
-        public ICertificateThumbprintResolver ClientCertificateThumbprintResolver { get; set; }
+        public ICertificateThumbprintResolver RequestCertificateThumbprintResolver { get; set; }
 
         /// <summary>
         /// Gets or sets the client IP address resolver.
         /// </summary>
-        public IIpAddressResolver ClientIpAddressResolver { get; set; }
+        public IIpAddressResolver RequestIpAddressResolver { get; set; }
 
         /// <summary>
         /// Gets or sets the JWT bearer token options.
@@ -38,23 +38,13 @@ namespace Xigadee
         public IEnumerable<JwtBearerTokenOptions> JwtBearerTokenOptions { get; set; }
 
         /// <summary>
-        /// Gets or sets the retrieve user function.
-        /// </summary>
-        public Func<Guid, Task<(bool success, User user)>> RetrieveUser { get; set; }
-        /// <summary>
-        /// Gets or sets the retrieve user by reference function.
-        /// </summary>
-        public Func<(string type, string value), Task<(bool success, User user)>> RetrieveUserByReference { get; set; }
-        /// <summary>
-        /// Gets or sets the retrieve user security function.
-        /// </summary>
-        public Func<Guid, Task<(bool success, UserSecurity uSec)>> RetrieveUserSecurity { get; set; }
-
-        /// <summary>
         /// Gets or sets a value to only validate connections on a HTTPS secure channel.
         /// </summary>
         public bool HttpsOnly { get; set; } = false;
 
+        /// <summary>
+        /// Gets or sets the cert salt.
+        /// </summary>
         public string CertSalt { get; set; }
     }
 
