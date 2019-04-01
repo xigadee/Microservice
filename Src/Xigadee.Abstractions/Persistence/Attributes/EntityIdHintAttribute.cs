@@ -11,7 +11,6 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityIdHintAttribute"/> class.
         /// </summary>
-        /// <param name="key">The property key.</param>
         public EntityIdHintAttribute() : base((string)null)
         {
         }

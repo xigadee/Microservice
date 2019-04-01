@@ -10,6 +10,7 @@ namespace Tests.Xigadee
     public class TestUser:User
     {
         [JsonIgnore]
+        [EntityReferenceHint("username")]
         public string Username
         {
             get => Properties.GetValueOrDefault("username");

@@ -143,14 +143,17 @@ namespace Xigadee
         public int? LifetimeCriticalDays { get; }
     }
 
-    public interface ICertificateThumbprintResolver
+    public interface IUserSecurityResolver<T>
     {
-        Task<string> Resolve(HttpContext httpContext);
+        Task<T> Resolve(HttpContext httpContext);
     }
 
-    public interface IIpAddressResolver
+    public interface ICertificateThumbprintResolver:IUserSecurityResolver<string>
     {
-        IPAddress Resolve(HttpContext httpContext);
+    }
+
+    public interface IIpAddressResolver : IUserSecurityResolver<IPAddress>
+    {
     }
 
 

@@ -159,24 +159,31 @@ namespace Xigadee
         }
         #endregion
 
+        #region ValidateUserAgainstIpRange(UserSecurity uSec)
         /// <summary>
         /// This method validates the user's incoming IP address against any IP restrictions set in the user account.
         /// </summary>
         /// <param name="uSec">The user.</param>
         /// <returns>Returns true if the validation is successful, or not set in the user account.</returns>
-        protected bool ValidateUserAgainstIpRange(UserSecurity uSec)
+        protected async Task<bool> ValidateUserAgainstIpRange(UserSecurity uSec)
         {
             if (!uSec.HasIpRestrictions())
                 return true;
 
-            var clientIpAddress = Options.ClientIpAddressResolver.Resolve(Context);
+            var clientIpAddress = await Options.ClientIpAddressResolver.Resolve(Context);
 
             if (clientIpAddress == null)
                 return false;
 
             return uSec.ValidateIpRestriction(clientIpAddress);
         }
-
+        #endregion
+        #region ValidateUserAgainstClientCertificate(UserSecurity uSec)
+        /// <summary>
+        /// Validates the user against client certificate.
+        /// </summary>
+        /// <param name="uSec">The u sec.</param>
+        /// <returns></returns>
         protected async Task<bool> ValidateUserAgainstClientCertificate(UserSecurity uSec)
         {
             if (!uSec.HasClientCertificateRestrictions())
@@ -190,7 +197,8 @@ namespace Xigadee
             var hash = GenerateCertificateHash(clientCertificateThumbprint);
 
             return uSec.ValidateCertificateRestriction(hash);
-        }
+        } 
+        #endregion
 
         #region UserGenerateTicket(User user, UserSecurity uSec)
         /// <summary>
@@ -285,7 +293,7 @@ namespace Xigadee
                         //Are there any IP restrictions in place that should deny access?
                         //Are there any client certificates that need to be validated against the user?
                         //This will throw an exception on failure to pass more detail to the calling party.
-                        if (ValidateUserAgainstIpRange(rs.uSec)
+                        if (await ValidateUserAgainstIpRange(rs.uSec)
                             && await ValidateUserAgainstClientCertificate(rs.uSec))
                         {
                             var ticket = UserGenerateTicket(user, rs.uSec);

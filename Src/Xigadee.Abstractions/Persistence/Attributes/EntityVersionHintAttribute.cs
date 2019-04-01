@@ -9,9 +9,8 @@
     public class EntityVersionHintAttribute : EntityHintAttribute
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="EntityIdHintAttribute"/> class.
+        /// Initializes a new instance of the <see cref="EntityVersionHintAttribute"/> class.
         /// </summary>
-        /// <param name="key">The property key.</param>
         public EntityVersionHintAttribute() : base(null)
         {
         }
