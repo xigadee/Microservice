@@ -192,6 +192,34 @@ namespace Xigadee
 
         #region Constructor
         /// <summary>
+        /// Initializes a new instance of the <see cref="RepositoryBase{K, E}"/> class using the EntityHintHelper.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">Cannot resolve a EntityHintResolver for {typeof(E).Name}</exception>
+        protected RepositoryBase()
+        {
+            var res = EntityHintHelper.Resolve<E>();
+
+            if (res == null || !res.SupportsId)
+                throw new ArgumentOutOfRangeException($"Cannot resolve a EntityHintResolver for {typeof(E).Name}");
+
+            KeyMaker = (e) => res.Id<K>(e);
+
+            if (res.SupportsReferences)
+                _referenceMaker = (e) => res.References(e);
+            else
+                _referenceMaker = e => new List<Tuple<string, string>>();
+
+            if (res.SupportsProperties)
+                _propertiesMaker = (e) => res.Properties(e);
+            else
+                _propertiesMaker = e => new List<Tuple<string, string>>();
+
+            if (res.SupportsVersion)
+                VersionPolicy = res.VersionPolicyGet<E>();
+
+            KeyManager = RepositoryKeyManager.Resolve<K>();
+        }
+        /// <summary>
         /// Initializes a new instance of the <see cref="RepositoryBase{TKey, TEntity}"/> class.
         /// </summary>
         /// <param name="keyMaker">The key maker.</param>
@@ -211,7 +239,9 @@ namespace Xigadee
 
             _referenceMaker = referenceMaker ?? (e => new List<Tuple<string, string>>());
             _propertiesMaker = propertiesMaker ?? (e => new List<Tuple<string, string>>());
+
             VersionPolicy = versionPolicy;
+
             KeyManager = keyManager ?? RepositoryKeyManager.Resolve<K>();
         }
         #endregion

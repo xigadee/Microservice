@@ -20,21 +20,41 @@ namespace Xigadee
         /// <summary>
         /// This is the entity container.
         /// </summary>
-        protected readonly RepositoryMemoryContainer<K, E> _container;
+        protected readonly RepositoryMemoryContainer<K, E> _container = new RepositoryMemoryContainer<K, E>();
         /// <summary>
         /// This is the
         /// </summary>
-        protected readonly ConcurrentDictionary<K, E> _searchCache;
+        protected readonly ConcurrentDictionary<K, E> _searchCache = new ConcurrentDictionary<K, E>();
         /// <summary>
         /// This lock is used when modifying references.
         /// </summary>
-        protected readonly ReaderWriterLockSlim _referenceModifyLock;
+        protected readonly ReaderWriterLockSlim _referenceModifyLock = new ReaderWriterLockSlim();
         /// <summary>
         /// The supported search collection.
         /// </summary>
         protected readonly Dictionary<string, RepositoryMemorySearch<K,E>> _supportedSearches;
         #endregion
         #region Constructor        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RepositoryMemory{K, E}"/> class.
+        /// </summary>
+        /// <param name="searches">The supported searches.</param>
+        /// <param name="prePopulate">The pre-populate function.</param>
+        /// <param name="readOnly">This property specifies that the collection is read-only.</param>
+        /// <param name="sContext">This context contains the serialization components for storing the entities.</param>
+        public RepositoryMemory(
+              IEnumerable<RepositoryMemorySearch<K, E>> searches = null
+            , IEnumerable<E> prePopulate = null
+            , bool readOnly = false
+            , ServiceHandlerCollectionContext sContext = null) :base()
+        {
+            _supportedSearches = searches?.ToDictionary(s => s.Id.ToLowerInvariant(), s => s) ?? new Dictionary<string, RepositoryMemorySearch<K, E>>();
+
+            SerializationContext = sContext ?? DefaultSerializationContext();
+
+            prePopulate?.ForEach(ke => Create(ke));
+            IsReadOnly = readOnly;
+        }   
         /// <summary>
         /// Initializes a new instance of the <see cref="RepositoryMemory{K, E}"/> class.
         /// </summary>
@@ -59,11 +79,6 @@ namespace Xigadee
             )
             : base(keyMaker, referenceMaker, propertiesMaker, versionPolicy, keyManager)
         {
-            _referenceModifyLock = new ReaderWriterLockSlim();
-
-            _container = new RepositoryMemoryContainer<K, E>();
-            _searchCache = new ConcurrentDictionary<K, E>();
-
             _supportedSearches = searches?.ToDictionary(s => s.Id.ToLowerInvariant(), s => s) ?? new Dictionary<string, RepositoryMemorySearch<K, E>>();
 
             SerializationContext = sContext ?? DefaultSerializationContext();

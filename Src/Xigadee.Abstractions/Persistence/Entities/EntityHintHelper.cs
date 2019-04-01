@@ -19,9 +19,8 @@ namespace Xigadee
         /// Returns the resolver for the specified entity type.
         /// </summary>
         /// <typeparam name="E">The entity type.</typeparam>
-        /// <param name="entity">The entity.</param>
         /// <returns>Returns the resolver</returns>
-        public static EntityHintResolver Resolve<E>(E entity)
+        public static EntityHintResolver Resolve<E>()
         {
             return Resolve(typeof(E));
         }
@@ -169,10 +168,13 @@ namespace Xigadee
         /// <exception cref="ArgumentOutOfRangeException">Cannot convert version parameter to string.</exception>
         public void VersionSet(object entity)
         {
-            if (!SupportsVersion)
+            if (!SupportsVersion || !MethodInfoVersionSet.HasValue)
                 throw new NotSupportedException($"VersionSet is not supported for {EntityType.Name}");
 
-            //MethodInfoVersionSet.Value.Item2.Invoke(entity, 
+            var mi = MethodInfoVersionSet.Value.Item2;
+            //TODO: We currently only support Guid as a version parameter, so let's hard code it for now
+            mi.Invoke(entity, new object[] { Guid.NewGuid() });
+
         }
         #endregion
         #region References ...
@@ -190,12 +192,12 @@ namespace Xigadee
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <returns>An enumerable list of key value pairs.</returns>
-        public IEnumerable<KeyValuePair<string, string>> References(object entity)
+        public IEnumerable<Tuple<string, string>> References(object entity)
         {
             foreach (var info in MethodInfoReferences)
             {
                 var v = ConvertToString(entity, info.Item2);
-                yield return new KeyValuePair<string, string>(info.Item1.Key, v);
+                yield return new Tuple<string, string>(info.Item1.Key, v);
             }
         }
         #endregion
@@ -213,12 +215,12 @@ namespace Xigadee
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <returns>An enumerable list of key value pairs.</returns>
-        public IEnumerable<KeyValuePair<string, string>> Properties(object entity)
+        public IEnumerable<Tuple<string, string>> Properties(object entity)
         {
             foreach (var info in MethodInfoProperties)
             {
                 var v = ConvertToString(entity, info.Item2);
-                yield return new KeyValuePair<string, string>(info.Item1.Key, v);
+                yield return new Tuple<string, string>(info.Item1.Key, v);
             }
         } 
         #endregion
@@ -262,6 +264,7 @@ namespace Xigadee
         }
         #endregion
 
+        #region VersionPolicyGet<P>(bool supportsArchiving = false)
         /// <summary>
         /// Get the version policy for the entity.
         /// </summary>
@@ -270,8 +273,13 @@ namespace Xigadee
         /// <returns></returns>
         public VersionPolicy<P> VersionPolicyGet<P>(bool supportsArchiving = false)
         {
-            var p = new VersionPolicy<P>((e) => VersionGet(e), (v) => VersionSet(v), supportsArchiving);
+            if (!SupportsVersion)
+                return null;
+
+            var p = new VersionPolicy<P>((e) => VersionGet(e), (e) => VersionSet(e), supportsArchiving);
+
             return p;
-        }
+        } 
+        #endregion
     }
 }

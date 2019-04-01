@@ -22,6 +22,18 @@ namespace Xigadee
     /// </summary>
     /// <seealso cref="Xigadee.ApiModuleBase" />
     /// <seealso cref="Xigadee.IApiUserSecurityModule" />
+    public abstract class UserSecurityModuleBase<U> : UserSecurityModuleBase<U, UserSecurity, UserSession, UserExternalAction, UserRoles, UserAccessToken>
+        where U : User
+    {
+
+
+    }
+
+    /// <summary>
+    /// This module implements the core application security logic.
+    /// </summary>
+    /// <seealso cref="Xigadee.ApiModuleBase" />
+    /// <seealso cref="Xigadee.IApiUserSecurityModule" />
     public abstract class UserSecurityModuleBase<U,USEC,USES,UEXA,UR,UAT> : ApiModuleBase, IApiUserSecurityModule
         where U : User
         where USEC : UserSecurity
@@ -30,42 +42,58 @@ namespace Xigadee
         where UR : UserRoles
         where UAT : UserAccessToken
     {
-        protected virtual RepositoryBase<Guid, U> RepoUsers { get; set; }
+        #region Repositories
+        /// <summary>
+        /// Gets or sets the generic users repository
+        /// </summary>
+        public virtual RepositoryBase<Guid, U> RepositoryUsers { get; protected set; }
+        /// <summary>
+        /// Gets or sets the generic user security repository.
+        /// </summary>
+        public virtual RepositoryBase<Guid, USEC> RepositoryUserSecurities { get; protected set; }
+        /// <summary>
+        /// Gets or sets the generic repository user sessions.
+        /// </summary>
+        public virtual RepositoryBase<Guid, USES> RepositoryUserSessions { get; protected set; }
+        /// <summary>
+        /// Gets or sets the generic repository user external actions.
+        /// </summary>
+        public virtual RepositoryBase<Guid, UEXA> RepositoryUserExternalActions { get; protected set; }
+        /// <summary>
+        /// Gets or sets the generic repository user roles.
+        /// </summary>
+        public virtual RepositoryBase<Guid, UR> RepositoryUserRoles { get; protected set; }
+        /// <summary>
+        /// Gets or sets the generic repository user access tokens.
+        /// </summary>
+        public virtual RepositoryBase<Guid, UAT> RepositoryUserAccessTokens { get; protected set; }
+        #endregion
 
-        protected virtual RepositoryBase<Guid, USEC> RepoUserSecurities { get; set; }
-
-        protected virtual RepositoryBase<Guid, USES> RepoUserSessions { get; set; }
-
-        protected virtual RepositoryBase<Guid, UEXA> RepoUserExternalActions { get; set; }
-
-        protected virtual RepositoryBase<Guid, UR> RepoUserRoles { get; set; }
-
-        protected virtual RepositoryBase<Guid, UAT> RepoUserAccessTokens { get; set; }
-
+        #region IApiUserSecurityModule
         /// <summary>
         /// Gets the users repository
         /// </summary>
-        public virtual IRepositoryAsync<Guid, User> Users => RepoUsers as IRepositoryAsync<Guid, User>;
+        public virtual IRepositoryAsync<Guid, User> Users => RepositoryUsers as IRepositoryAsync<Guid, User>;
         /// <summary>
         /// Gets the user security repository.
         /// </summary>
-        public virtual IRepositoryAsync<Guid, UserSecurity> UserSecurities => RepoUserSecurities as IRepositoryAsync<Guid, UserSecurity>;
+        public virtual IRepositoryAsync<Guid, UserSecurity> UserSecurities => RepositoryUserSecurities as IRepositoryAsync<Guid, UserSecurity>;
         /// <summary>
         /// Gets the user security repository.
         /// </summary>
-        public virtual IRepositoryAsync<Guid, UserSession> UserSessions => RepoUserSessions as IRepositoryAsync<Guid, UserSession>;
+        public virtual IRepositoryAsync<Guid, UserSession> UserSessions => RepositoryUserSessions as IRepositoryAsync<Guid, UserSession>;
         /// <summary>
         /// Gets the user security repository.
         /// </summary>
-        public virtual IRepositoryAsync<Guid, UserRoles> UserRoles => RepoUserRoles as IRepositoryAsync<Guid, UserRoles>;
+        public virtual IRepositoryAsync<Guid, UserRoles> UserRoles => RepositoryUserRoles as IRepositoryAsync<Guid, UserRoles>;
         /// <summary>
         /// Gets the user security repository.
         /// </summary>
-        public virtual IRepositoryAsync<Guid, UserAccessToken> UserAccessTokens => RepoUserAccessTokens as IRepositoryAsync<Guid, UserAccessToken>;
+        public virtual IRepositoryAsync<Guid, UserAccessToken> UserAccessTokens => RepositoryUserAccessTokens as IRepositoryAsync<Guid, UserAccessToken>;
         /// <summary>
         /// Gets the user security repository.
         /// </summary>
-        public virtual IRepositoryAsync<Guid, UserExternalAction> UserExternalActions => RepoUserExternalActions as IRepositoryAsync<Guid, UserExternalAction>;
+        public virtual IRepositoryAsync<Guid, UserExternalAction> UserExternalActions => RepositoryUserExternalActions as IRepositoryAsync<Guid, UserExternalAction>; 
+        #endregion
     }
-
 }

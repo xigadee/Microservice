@@ -14,7 +14,7 @@ namespace Tests.Xigadee
         public string Username
         {
             get => Properties.GetValueOrDefault("username");
-            set => Properties[Username] = value;
+            set => Properties["username"] = value;
         }
     }
 }
