@@ -75,9 +75,9 @@ namespace Xigadee
                     else if (daysUntilExpiry <= (jwtBearerTokenOption.LifetimeCriticalDays ?? 0))
                         Logger?.LogCritical($"{claimsPrincipal.ExtractUserId()} bearer token due to expire within {jwtBearerTokenOption.LifetimeCriticalDays} days ({validatedToken.ValidTo:O}). Re-issue immediately");
                 }
-                catch (Exception exception)
+                catch (Exception ex)
                 {
-                    tokenValidationExceptions.Add(exception);
+                    tokenValidationExceptions.Add(ex);
 
                     if (jwtBearerTokenOption == Options.JwtBearerTokenOptions.Last())
                         throw new AggregateException("Bearer token could not be validated against any supported issuer", tokenValidationExceptions);
@@ -142,11 +142,14 @@ namespace Xigadee
             var result = ExtractAuth();
 
             //Yes, let's get the user from the scheme?
-            if (result.success)
-                switch (result.scheme.ToLowerInvariant())
+            if (result.HasValue)
+                switch (result.Value.scheme)
                 {
                     case "bearer":
-                        callingParty = await ResolveUserByJwtToken(result.token);
+                        callingParty = await ResolveUserByJwtToken(result.Value.token);
+                        break;
+                    default:
+                        //Hmm ... unsupported auth scheme passed
                         break;
                 }
             else
@@ -167,7 +170,6 @@ namespace Xigadee
         {
             return GenerateHash($"{Options.CertSalt}:{certificateThumbprint}");
         }
-
 
         #region ValidateUserAgainstIpRange(UserSecurity uSec)
         /// <summary>
@@ -207,7 +209,7 @@ namespace Xigadee
             var hash = GenerateCertificateHash(clientCertificateThumbprint);
 
             return uSec.ValidateCertificateRestriction(hash);
-        } 
+        }
         #endregion
 
         #region UserGenerateTicket(User user, UserSecurity uSec)
@@ -215,18 +217,20 @@ namespace Xigadee
         /// Generates a authentication ticket from the Users and UserSecurity objects.
         /// </summary>
         /// <param name="user">The user.</param>
-        /// <param name="uSec">The user security. If this is null, no roles will be added to the ticket.</param>
+        /// <param name="uSec">The user security.</param>
+        /// <param name="ur">The user roles. If this is null, no roles will be added to the ticket.</param>
         /// <returns>Returns the authentication ticket.</returns>
-        protected AuthenticationTicket UserGenerateTicket(User user, UserSecurity uSec)
+        protected AuthenticationTicket UserGenerateTicket(User user, UserSecurity uSec, UserRoles ur)
         {
             var identity = new ClaimsIdentity("MicroserviceAuth");
 
             identity.AddClaim(new Claim(ClaimTypes.Sid, user.Id.ToString("N")));
+            identity.AddClaim(new Claim(ClaimTypes.PrimarySid, user.Id.ToString("N")));
 
             var principal = new ClaimsPrincipal(identity);
 
-            //TODO: set roles
-            //uSec?.Roles.ForEach((c) => identity.AddClaim(new Claim(ClaimTypes.Role, c.Value)));
+            //Add the user roles.
+            ur?.Roles?.ForEach((c) => identity.AddClaim(new Claim(ClaimTypes.Role, c)));
 
             var ticket = new AuthenticationTicket(principal, "MicroserviceAuth");
 
@@ -245,8 +249,10 @@ namespace Xigadee
         /// </returns>
         protected override async Task<(AuthenticationTicket ticket, Exception ex)> ValidateAuth()
         {
+            //Check whether this is a secure request.
             if (Options.HttpsOnly && !Context.Request.IsHttps)
                 return (null, null);
+
             //AuthenticateResult result = AuthenticateResult.Fail(;
 
             User user;
@@ -277,17 +283,20 @@ namespace Xigadee
                         if (await ValidateUserAgainstIpRange(uSec)
                             && await ValidateUserAgainstClientCertificate(uSec))
                         {
-                            var ticket = UserGenerateTicket(user, uSec);
+                            var rsUr = await UserSecurityModule.UserRoles.Read(user.Id);
+
+                            var ticket = UserGenerateTicket(user, uSec, rsUr.IsSuccess?rsUr.Entity:null);
 
                             Logger?.LogDebug("Authentication success {TraceIdentifier}:{RemoteIpAddress} for {UserId}", Context.TraceIdentifier, Context.Connection.RemoteIpAddress?.ToString(), user.Id);
+
                             return (ticket, null);
                         }
                     }
-                    catch (Exception validationEx)
+                    catch (Exception vex)
                     {
-                        Logger?.LogError(validationEx, "Validate restrictions exception.");
+                        Logger?.LogError(vex, "Validate restrictions exception.");
 
-                        return (null, validationEx);
+                        return (null, vex);
                     }
             }
 

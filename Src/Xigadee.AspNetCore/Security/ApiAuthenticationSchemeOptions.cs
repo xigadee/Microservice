@@ -17,6 +17,11 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Xigadee
 {
+    public class ApiJwtAuthenticationSchemeOptions : ApiAuthenticationSchemeOptions
+    {
+
+    }
+
     /// <summary>
     /// This class contains the authentication options.
     /// </summary>
@@ -45,7 +50,7 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets a value to only validate connections on a HTTPS secure channel.
         /// </summary>
-        public bool HttpsOnly { get; set; } = false;
+        public bool HttpsOnly { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the cert salt.

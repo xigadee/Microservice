@@ -58,7 +58,7 @@ namespace Xigadee
         /// Extracts the specified scheme and token for authorization.
         /// </summary>
         /// <returns>the scheme and the token</returns>
-        protected (bool success, string scheme, string token) ExtractAuth()
+        protected (string scheme, string token)? ExtractAuth()
         {
             string authorization = Request.Headers["Authorization"];
 
@@ -66,10 +66,10 @@ namespace Xigadee
             {
                 var parts = authorization.TrimStart().Split(' ');
                 if (parts.Length > 1)
-                    return (true, parts[0], parts[1]);
+                    return (parts[0].Trim().ToLowerInvariant(), parts[1]);
             }
 
-            return (false, null, null);
+            return null;
         }
         #endregion
         #region TryExtractToken(string key, out string token)

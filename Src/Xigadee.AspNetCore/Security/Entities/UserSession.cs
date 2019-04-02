@@ -10,8 +10,12 @@ namespace Xigadee
     /// </summary>
     /// <seealso cref="Xigadee.EntityAuditableBase" />
     /// <seealso cref="Xigadee.IPropertyBag" />
-    public abstract class UserSession : UserReferenceBase
+    public class UserSession : UserReferenceBase
     {
-
+        /// <summary>
+        /// Gets or sets the source that created the session.
+        /// </summary>
+        [EntityPropertyHint("sessionsource")]
+        public string Source { get; set; }
     }
 }

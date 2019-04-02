@@ -20,16 +20,17 @@ namespace Xigadee
     /// <summary>
     /// This class is used to help set up the security.
     /// </summary>
-    public static partial class SecurityHelper
+    public static class SecurityHelperPipeline
     {
         /// <summary>
         /// Adds the default microservice authentication.
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="auth">The authentication settings.</param>
+        /// <param name="key">This is the optional key used for token validation. If this is not set, the key value from the config will be parsed.</param>
         /// <returns>Returns the service collection.</returns>
-        public static IServiceCollection AddMicroserviceAuthentication(this IServiceCollection services
-            , ConfigAuthenticationJwt auth)
+        public static IServiceCollection AddJwtAuthentication(this IServiceCollection services
+            , ConfigAuthenticationJwt auth, SecurityKey key = null)
         {
             services
                 .AddAuthentication(options =>
@@ -38,7 +39,7 @@ namespace Xigadee
                     options.DefaultAuthenticateScheme = auth.Name;
                 })
                 .AddScheme<ApiAuthenticationSchemeOptions, ApiAuthenticationHandler>(
-                    auth.Name, "authentication", options =>
+                    auth.Name, auth.DisplayName, options =>
                     {
                         //options.ClientCertificateThumbprintResolver = new ConditionalCertificateThumbprintResolver(
                         //    apimRequestIndicator,
@@ -54,7 +55,7 @@ namespace Xigadee
 
                         options.HttpsOnly = auth.HttpsOnly;
 
-                        options.JwtBearerTokenOptions = BuildJwtBearerTokenOptions(auth);
+                        options.JwtBearerTokenOptions = BuildJwtBearerTokenOptions(auth, key);
                     }
                 )
                 ;
@@ -62,25 +63,29 @@ namespace Xigadee
             return services;
         }
 
-        private static IEnumerable<JwtBearerTokenOptions> BuildJwtBearerTokenOptions(ConfigAuthenticationJwt auth)
+        private static IEnumerable<JwtBearerTokenOptions> BuildJwtBearerTokenOptions(ConfigAuthenticationJwt auth, SecurityKey key = null)
         {
+            if (key == null)
+                key = new SymmetricSecurityKey(Convert.FromBase64String(auth.Key));
+
             var options = new List<JwtBearerTokenOptions>
             {
                 new JwtBearerTokenOptions(
-                    new CustomClaimsPrincipalUserResolver(),
-                    new TokenValidationParameters
+                      new CustomClaimsPrincipalUserResolver()
+                    , new TokenValidationParameters
                     {
                         ValidateAudience = true,
                         ValidAudience = auth.Audience,
                         ValidateIssuer = true,
                         ValidIssuer = auth.Issuer,
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(new Guid(auth.Key).ToByteArray()),
+                        IssuerSigningKey = key ,
                         ValidateLifetime = auth.ValidateTokenExpiry.GetValueOrDefault(true),
                         ClockSkew = auth.GetClockSkew()
-                    },
-                    auth.LifetimeWarningDays,
-                    auth.LifetimeCriticalDays)
+                    }
+                    , auth.LifetimeWarningDays
+                    , auth.LifetimeCriticalDays
+                )
             };
 
             return options;
@@ -93,6 +98,11 @@ namespace Xigadee
     /// <seealso cref="Xigadee.IClaimsPrincipalUserReferenceResolver" />
     public class CustomClaimsPrincipalUserResolver : IClaimsPrincipalUserReferenceResolver
     {
+        /// <summary>
+        /// Resolves the sid id from the claims principal .
+        /// </summary>
+        /// <param name="claimsPrincipal">The claims principal.</param>
+        /// <returns>Returns the user id.</returns>
         public async Task<Guid?> Resolve(ClaimsPrincipal claimsPrincipal)
         {
             var sid = claimsPrincipal.Claims.FirstOrDefault(claim => claim.Type.Equals(ClaimTypes.Sid, StringComparison.InvariantCultureIgnoreCase));

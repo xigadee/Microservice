@@ -9,7 +9,7 @@ namespace Xigadee
     /// </summary>
     /// <seealso cref="Xigadee.EntityAuditableBase" />
     /// <seealso cref="Xigadee.IPropertyBag" />
-    public abstract class UserSecurity : EntitySignatureBase, IPropertyBag
+    public class UserSecurity : EntitySignatureBase, IPropertyBag
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UserSecurity"/> class.
