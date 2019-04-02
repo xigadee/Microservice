@@ -25,5 +25,25 @@ namespace Tests.Xigadee
 
             var rsr = await prov.Users.Read(user.Id);
         }
+
+        [TestMethod]
+        public async Task TestMethodHmm()
+        {
+            var prov = new UserSecurityModuleMemoryTest<TestUser>();
+
+            var user = new User();
+
+            try
+            {
+                var rs = await prov.Users.Create(user);
+            }
+            catch (Exception ex)
+            {
+
+                //Assert.ThrowsException<
+            }
+
+            //var rsr = await prov.Users.Read(user.Id);
+        }
     }
 }
