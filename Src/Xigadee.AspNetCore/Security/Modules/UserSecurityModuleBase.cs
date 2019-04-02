@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -48,6 +44,9 @@ namespace Xigadee
         /// </summary>
         protected UserSecurityModuleBase()
         {
+            //This lazy conversion allows you to use a more derived entity for User, User Security etc.
+            //but still use the same generic interface to interact with the base object definition.
+            //I will probably regret this code :(
             _lazyUsers = GetLazy<Guid, User, U>(() => RepositoryUsers);
             _lazyUserSecurities = GetLazy<Guid, UserSecurity, USEC>(() => RepositoryUserSecurities);
             _lazyUserSessions = GetLazy<Guid, UserSession, USES>(() => RepositoryUserSessions);
@@ -83,7 +82,13 @@ namespace Xigadee
         public virtual RepositoryBase<Guid, UAT> RepositoryUserAccessTokens { get; protected set; }
         #endregion
 
-        #region IApiUserSecurityModule        
+        #region Lazy conversion
+        readonly Lazy<IRepositoryAsync<Guid, User>> _lazyUsers;
+        readonly Lazy<IRepositoryAsync<Guid, UserSecurity>> _lazyUserSecurities;
+        readonly Lazy<IRepositoryAsync<Guid, UserSession>> _lazyUserSessions;
+        readonly Lazy<IRepositoryAsync<Guid, UserRoles>> _lazyUserRoles;
+        readonly Lazy<IRepositoryAsync<Guid, UserAccessToken>> _lazyUserAccessTokens;
+        readonly Lazy<IRepositoryAsync<Guid, UserExternalAction>> _lazyUserExternalActions;
         /// <summary>
         /// Gets the lazy. Enough said. A bit of magical generic plumbing due to the need to map derived entites
         /// to their base implementation.
@@ -94,7 +99,7 @@ namespace Xigadee
         /// <param name="repository">The repository.</param>
         /// <returns>The lazy initializer.</returns>
         private static Lazy<IRepositoryAsync<KL, ER>> GetLazy<KL, ER, EL>(Func<RepositoryBase<KL, EL>> repository)
-            where KL: IEquatable<KL>
+            where KL : IEquatable<KL>
             where ER : class
             where EL : ER
         {
@@ -102,39 +107,35 @@ namespace Xigadee
                 return new Lazy<IRepositoryAsync<KL, ER>>(() => repository() as IRepositoryAsync<KL, ER>);
 
             return new Lazy<IRepositoryAsync<KL, ER>>(() => new RepositoryBridge<KL, ER, EL>(repository()));
-        }
+        } 
+        #endregion
 
-        private Lazy<IRepositoryAsync<Guid, User>> _lazyUsers;
+        #region IApiUserSecurityModule        
         /// <summary>
         /// Gets the users repository
         /// </summary>
         public virtual IRepositoryAsync<Guid, User> Users => _lazyUsers.Value;
 
-        private Lazy<IRepositoryAsync<Guid, UserSecurity>> _lazyUserSecurities;
         /// <summary>
         /// Gets the user security repository.
         /// </summary>
         public virtual IRepositoryAsync<Guid, UserSecurity> UserSecurities => _lazyUserSecurities.Value;
 
-        private Lazy<IRepositoryAsync<Guid, UserSession>> _lazyUserSessions;
         /// <summary>
         /// Gets the user security repository.
         /// </summary>
         public virtual IRepositoryAsync<Guid, UserSession> UserSessions => _lazyUserSessions.Value;
 
-        private Lazy<IRepositoryAsync<Guid, UserRoles>> _lazyUserRoles;
         /// <summary>
         /// Gets the user security repository.
         /// </summary>
         public virtual IRepositoryAsync<Guid, UserRoles> UserRoles => _lazyUserRoles.Value;
 
-        private Lazy<IRepositoryAsync<Guid, UserAccessToken>> _lazyUserAccessTokens;
         /// <summary>
         /// Gets the user security repository.
         /// </summary>
         public virtual IRepositoryAsync<Guid, UserAccessToken> UserAccessTokens => _lazyUserAccessTokens.Value;
 
-        private Lazy<IRepositoryAsync<Guid, UserExternalAction>> _lazyUserExternalActions;
         /// <summary>
         /// Gets the user security repository.
         /// </summary>

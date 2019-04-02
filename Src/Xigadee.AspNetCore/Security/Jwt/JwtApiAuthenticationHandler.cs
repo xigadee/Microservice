@@ -91,10 +91,12 @@ namespace Xigadee
                         uSess = rqUs.Entity;
                 }
 
-                //So we either have nothing in the database or
+                //So we either have nothing in the database or the sid is invalid.
                 if (uSess == null)
                 {
                     uSess = new UserSession() { Source = GetType().Name };
+                    var rsC = UserSecurityModule.UserSessions.Create(uSess);
+                    sid = uSess.Id;
                 }
 
                 //if (sid.HasValue
