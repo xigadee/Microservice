@@ -49,6 +49,21 @@ namespace Xigadee
         {
             return string.Format("{0}|Entity={1}", base.ToString(), Entity);
         }
+
+        /// <summary>
+        /// This method is used to convert the entity type for derived entity support.
+        /// </summary>
+        /// <typeparam name="EB">The type of the entity.</typeparam>
+        /// <param name="conv">The conversion function. If this is not passed, then a simple 'as' is used..</param>
+        /// <returns>The converted repository holder.</returns>
+        public RepositoryHolder<K, EB> ToBase<EB>(Func<E,EB> conv = null) where EB: class
+        {
+            EB e2 = conv?.Invoke(Entity) ?? (Entity as EB);
+
+            return new RepositoryHolder<K, EB>(
+                Key, KeyReference, e2, ResponseCode, ResponseMessage, Settings)
+            { IsCacheHit = IsCacheHit, Ex = Ex, TraceId= TraceId };
+        }
     }
     #endregion
     #region RepositoryHolder<K>

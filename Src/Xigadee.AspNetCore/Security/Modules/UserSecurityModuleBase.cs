@@ -42,6 +42,20 @@ namespace Xigadee
         where UR : UserRoles
         where UAT : UserAccessToken
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserSecurityModuleBase{U, USEC, USES, UEXA, UR, UAT}"/> class.
+        /// Specifically, this sets the lazy initializers for the base interface.
+        /// </summary>
+        protected UserSecurityModuleBase()
+        {
+            _lazyUsers = GetLazy<Guid, User, U>(() => RepositoryUsers);
+            _lazyUserSecurities = GetLazy<Guid, UserSecurity, USEC>(() => RepositoryUserSecurities);
+            _lazyUserSessions = GetLazy<Guid, UserSession, USES>(() => RepositoryUserSessions);
+            _lazyUserRoles = GetLazy<Guid, UserRoles, UR>(() => RepositoryUserRoles);
+            _lazyUserAccessTokens = GetLazy<Guid, UserAccessToken, UAT>(() => RepositoryUserAccessTokens);
+            _lazyUserExternalActions = GetLazy<Guid, UserExternalAction, UEXA>(() => RepositoryUserExternalActions);
+        }
+
         #region Repositories
         /// <summary>
         /// Gets or sets the generic users repository
@@ -69,31 +83,62 @@ namespace Xigadee
         public virtual RepositoryBase<Guid, UAT> RepositoryUserAccessTokens { get; protected set; }
         #endregion
 
-        #region IApiUserSecurityModule
+        #region IApiUserSecurityModule        
+        /// <summary>
+        /// Gets the lazy. Enough said. A bit of magical generic plumbing due to the need to map derived entites
+        /// to their base implementation.
+        /// </summary>
+        /// <typeparam name="KL">The type of the l.</typeparam>
+        /// <typeparam name="ER">The type of the r.</typeparam>
+        /// <typeparam name="EL">The type of the l.</typeparam>
+        /// <param name="repository">The repository.</param>
+        /// <returns>The lazy initializer.</returns>
+        private static Lazy<IRepositoryAsync<KL, ER>> GetLazy<KL, ER, EL>(Func<RepositoryBase<KL, EL>> repository)
+            where KL: IEquatable<KL>
+            where ER : class
+            where EL : ER
+        {
+            if (typeof(ER) == typeof(EL))
+                return new Lazy<IRepositoryAsync<KL, ER>>(() => repository() as IRepositoryAsync<KL, ER>);
+
+            return new Lazy<IRepositoryAsync<KL, ER>>(() => new RepositoryBridge<KL, ER, EL>(repository()));
+        }
+
+        private Lazy<IRepositoryAsync<Guid, User>> _lazyUsers;
         /// <summary>
         /// Gets the users repository
         /// </summary>
-        public virtual IRepositoryAsync<Guid, User> Users => RepositoryUsers as IRepositoryAsync<Guid, User>;
+        public virtual IRepositoryAsync<Guid, User> Users => _lazyUsers.Value;
+
+        private Lazy<IRepositoryAsync<Guid, UserSecurity>> _lazyUserSecurities;
         /// <summary>
         /// Gets the user security repository.
         /// </summary>
-        public virtual IRepositoryAsync<Guid, UserSecurity> UserSecurities => RepositoryUserSecurities as IRepositoryAsync<Guid, UserSecurity>;
+        public virtual IRepositoryAsync<Guid, UserSecurity> UserSecurities => _lazyUserSecurities.Value;
+
+        private Lazy<IRepositoryAsync<Guid, UserSession>> _lazyUserSessions;
         /// <summary>
         /// Gets the user security repository.
         /// </summary>
-        public virtual IRepositoryAsync<Guid, UserSession> UserSessions => RepositoryUserSessions as IRepositoryAsync<Guid, UserSession>;
+        public virtual IRepositoryAsync<Guid, UserSession> UserSessions => _lazyUserSessions.Value;
+
+        private Lazy<IRepositoryAsync<Guid, UserRoles>> _lazyUserRoles;
         /// <summary>
         /// Gets the user security repository.
         /// </summary>
-        public virtual IRepositoryAsync<Guid, UserRoles> UserRoles => RepositoryUserRoles as IRepositoryAsync<Guid, UserRoles>;
+        public virtual IRepositoryAsync<Guid, UserRoles> UserRoles => _lazyUserRoles.Value;
+
+        private Lazy<IRepositoryAsync<Guid, UserAccessToken>> _lazyUserAccessTokens;
         /// <summary>
         /// Gets the user security repository.
         /// </summary>
-        public virtual IRepositoryAsync<Guid, UserAccessToken> UserAccessTokens => RepositoryUserAccessTokens as IRepositoryAsync<Guid, UserAccessToken>;
+        public virtual IRepositoryAsync<Guid, UserAccessToken> UserAccessTokens => _lazyUserAccessTokens.Value;
+
+        private Lazy<IRepositoryAsync<Guid, UserExternalAction>> _lazyUserExternalActions;
         /// <summary>
         /// Gets the user security repository.
         /// </summary>
-        public virtual IRepositoryAsync<Guid, UserExternalAction> UserExternalActions => RepositoryUserExternalActions as IRepositoryAsync<Guid, UserExternalAction>; 
+        public virtual IRepositoryAsync<Guid, UserExternalAction> UserExternalActions => _lazyUserExternalActions.Value;
         #endregion
     }
 }

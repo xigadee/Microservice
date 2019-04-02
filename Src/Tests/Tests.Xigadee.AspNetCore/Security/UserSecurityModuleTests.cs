@@ -14,13 +14,14 @@ namespace Tests.Xigadee
     [TestCategory("Unit")]
     public class UserSecurityModuleTests
     {
-        [TestMethod][Ignore]
+        [TestMethod]
         public async Task TestMethod1()
         {
             var prov = new UserSecurityModuleMemoryTest<TestUser>();
 
             var user = new TestUser() { Username = "pauls" };
-            var rs = await prov.RepositoryUsers.Create(user);
+
+            var rs = await prov.Users.Create(user);
 
             var rsr = await prov.Users.Read(user.Id);
         }
