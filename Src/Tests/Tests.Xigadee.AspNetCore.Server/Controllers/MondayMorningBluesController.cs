@@ -14,7 +14,8 @@ namespace Tests.Xigadee
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiController]
-    [Authorize()]
+    //[Authorize()]
+    [EntityControllerFeaturesSupport(EntityControllerFeatures.All)]
     public class MondayMorningBluesController : EntityController<Guid, MondayMorningBlues>
     {
         public MondayMorningBluesController(ILogger<MondayMorningBluesController> logger

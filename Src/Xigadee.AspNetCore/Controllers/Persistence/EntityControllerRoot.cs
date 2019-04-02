@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -36,36 +37,59 @@ namespace Xigadee
         /// <param name="logger">The logger.</param>
         /// <param name="repository">The underlying repository</param>
         /// <param name="keyManager">The key manager.</param>
-        protected EntityControllerRoot(ILogger logger, IRepositoryAsync<K, E> repository, RepositoryKeyManager<K> keyManager = null)
+        /// <param name="features">The supported entity features. This will override the attribute and defaults if set.</param>
+        protected EntityControllerRoot(ILogger logger, IRepositoryAsync<K, E> repository, RepositoryKeyManager<K> keyManager = null, EntityControllerFeatures? features = null)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-            _keyManager = keyManager ?? RepositoryKeyManager.Resolve<K>(); 
+            _keyManager = keyManager ?? RepositoryKeyManager.Resolve<K>();
+
+            if (features.HasValue)
+            {
+                SupportedFeatures = features.Value;
+                return;
+            }
+
+            //OK, we need to scan for the attribute.
+            var attr = GetType()
+                .GetCustomAttributes(true)
+                .OfType<EntityControllerFeaturesSupportAttribute>()
+                .FirstOrDefault();
+
+            //OK, if we have an attribute, we'll use that value, otherwise we set it to support all features.
+            SupportedFeatures = attr?.Features ?? DefaultFeatures;
         }
         #endregion
 
-        #region EntityHeadersAdd(RepositoryHolder<K, E> rs)
+        #region EntityControllerFeatures ...
         /// <summary>
-        /// Adds the entity id to the outgoing headers.
+        /// Gets the supported entity features.
         /// </summary>
-        /// <param name="rs">The repository response.</param>
-        protected virtual void EntityHeadersAdd(RepositoryHolder<K, E> rs)
+        protected EntityControllerFeatures SupportedFeatures { get; }
+
+        /// <summary>
+        /// Gets the default features setting. By default this supports all features.
+        /// </summary>
+        protected virtual EntityControllerFeatures DefaultFeatures { get; } = EntityControllerFeatures.All;
+        #endregion
+        #region EntityFeatureSupported(EntityControllerFeatures toCheck)
+        /// <summary>
+        /// Checks that the entity feature is supported. You can override this to enforce more strict security policy using the User feature.
+        /// </summary>
+        /// <param name="toCheck">The feature to check.</param>
+        /// <returns>Returns true if supported.</returns>
+        protected virtual bool EntityFeatureSupported(EntityControllerFeatures toCheck)
         {
-            var t = rs.KeyReference;
-
-            if (!string.IsNullOrEmpty(t?.Item1))
-                Response.Headers.Add("X-EntityId", t.Item1);
-
-            if (!string.IsNullOrEmpty(t?.Item2))
-                Response.Headers.Add("X-VersionId", t.Item2);
+            return (SupportedFeatures & toCheck) == toCheck;
         }
         #endregion
-        #region EntityHeadersAdd(RepositoryHolder<K, E> rs)
+
+        #region EntityHeadersAdd<KT,ET>(RepositoryHolder<KT, ET> rs)
         /// <summary>
         /// Adds the entity id to the outgoing headers.
         /// </summary>
         /// <param name="rs">The repository response.</param>
-        protected virtual void EntityHeadersAdd(RepositoryHolder<K, Tuple<K, string>> rs)
+        protected virtual void EntityHeadersAdd<KT,ET>(RepositoryHolder<KT, ET> rs)
         {
             var t = rs.KeyReference;
 
@@ -89,6 +113,9 @@ namespace Xigadee
 
             try
             {
+                if (!EntityFeatureSupported(EntityControllerFeatures.Create))
+                    return StatusCode(StatusCodes.Status405MethodNotAllowed);
+
                 if (rq == null)
                     return StatusCode(StatusCodes.Status400BadRequest);
 
@@ -118,6 +145,7 @@ namespace Xigadee
             }
         }
         #endregion
+
         #region UpdateRoot([FromBody]E rq)
         /// <summary>
         /// Updates an entity.
@@ -130,6 +158,9 @@ namespace Xigadee
 
             try
             {
+                if (!EntityFeatureSupported(EntityControllerFeatures.Update))
+                    return StatusCode(StatusCodes.Status405MethodNotAllowed);
+
                 //Do we have an entity?
                 if (rq == null)
                     return StatusCode(StatusCodes.Status400BadRequest);
@@ -175,6 +206,9 @@ namespace Xigadee
 
                 if (input.IsByKey)
                 {
+                    if (!EntityFeatureSupported(EntityControllerFeatures.Read))
+                        return StatusCode(StatusCodes.Status405MethodNotAllowed);
+
                     var keyRs = _keyManager.TryDeserialize(input.Id);
                     if (!keyRs.success)
                         return StatusCode(StatusCodes.Status400BadRequest);
@@ -183,6 +217,9 @@ namespace Xigadee
                 }
                 else if (input.IsByReference)
                 {
+                    if (!EntityFeatureSupported(EntityControllerFeatures.ReadByReference))
+                        return StatusCode(StatusCodes.Status405MethodNotAllowed);
+
                     rs = await _repository.ReadByRef(input.Reftype, input.Refvalue);
                 }
                 else
@@ -225,6 +262,9 @@ namespace Xigadee
                 RepositoryHolder<K, Tuple<K, string>> rs;
                 if (input.IsByKey)
                 {
+                    if (!EntityFeatureSupported(EntityControllerFeatures.Delete))
+                        return StatusCode(StatusCodes.Status405MethodNotAllowed);
+
                     var keyRs = _keyManager.TryDeserialize(input.Id);
                     if (!keyRs.success)
                         return StatusCode(StatusCodes.Status400BadRequest);
@@ -233,6 +273,9 @@ namespace Xigadee
                 }
                 else if (input.IsByReference)
                 {
+                    if (!EntityFeatureSupported(EntityControllerFeatures.DeleteByReference))
+                        return StatusCode(StatusCodes.Status405MethodNotAllowed);
+
                     rs = await _repository.DeleteByRef(input.Reftype, input.Refvalue);
                 }
                 else
@@ -258,6 +301,7 @@ namespace Xigadee
             }
         }
         #endregion
+
         #region VersionRoot(EntityRequestModel input)
         /// <summary>
         /// Returns headers for retrieve entity by id or ref type/value or search for entities.
@@ -274,6 +318,9 @@ namespace Xigadee
                 RepositoryHolder<K, Tuple<K, string>> rs;
                 if (input.IsByKey)
                 {
+                    if (!EntityFeatureSupported(EntityControllerFeatures.Version))
+                        return StatusCode(StatusCodes.Status405MethodNotAllowed);
+
                     var keyRs = _keyManager.TryDeserialize(input.Id);
                     if (!keyRs.success)
                         return StatusCode(StatusCodes.Status400BadRequest);
@@ -282,6 +329,9 @@ namespace Xigadee
                 }
                 else if (input.IsByReference)
                 {
+                    if (!EntityFeatureSupported(EntityControllerFeatures.VersionByReference))
+                        return StatusCode(StatusCodes.Status405MethodNotAllowed);
+
                     rs = await _repository.VersionByRef(input.Reftype, input.Refvalue);
                 }
                 else
@@ -318,6 +368,9 @@ namespace Xigadee
         {
             try
             {
+                if (!EntityFeatureSupported(EntityControllerFeatures.Search))
+                    return StatusCode(StatusCodes.Status405MethodNotAllowed);
+
                 var rs = await _repository.Search(input);
 
                 if (rs.IsSuccess)
@@ -349,6 +402,9 @@ namespace Xigadee
         {
             try
             {
+                if (!EntityFeatureSupported(EntityControllerFeatures.SearchEntity))
+                    return StatusCode(StatusCodes.Status405MethodNotAllowed);
+
                 var rs = await _repository.SearchEntity(input);
 
                 if (rs.IsSuccess)

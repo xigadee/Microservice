@@ -14,7 +14,7 @@ namespace Tests.Xigadee
     [TestCategory("Unit")]
     public class UserSecurityModuleTests
     {
-        [TestMethod]
+        [TestMethod][Ignore]
         public async Task TestMethod1()
         {
             var prov = new UserSecurityModuleMemoryTest<TestUser>();

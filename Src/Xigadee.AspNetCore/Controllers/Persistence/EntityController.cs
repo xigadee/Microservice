@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -23,7 +20,11 @@ namespace Xigadee
         /// <param name="logger">The logger.</param>
         /// <param name="repository">The underlying repository</param>
         /// <param name="keyManager">The key manager.</param>
-        public EntityController(ILogger logger, IRepositoryAsync<K, E> repository, RepositoryKeyManager<K> keyManager = null):base(logger, repository, keyManager)
+        /// <param name="features">The supported entity features. This will override the attribute and defaults if set.</param>
+        public EntityController(ILogger logger
+            , IRepositoryAsync<K, E> repository
+            , RepositoryKeyManager<K> keyManager = null
+            , EntityControllerFeatures? features = null) : base(logger, repository, keyManager, features)
         {
         }
         #endregion
@@ -94,6 +95,7 @@ namespace Xigadee
             return base.DeleteRoot(input);
         }
         #endregion
+
         #region Version
         /// <summary>
         /// Returns headers for retrieve entity by id or ref type/value or search for entities.
