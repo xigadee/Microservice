@@ -70,12 +70,21 @@ namespace Tests.Xigadee
                     policy =>
                     {
                         policy.RequireAuthenticatedUser();
-                        //policy.RequireRole("admin");
+                        policy.RequireRole("admin");
                     });
 
             })
             ;
         }
 
+        /// <summary>
+        /// Override this method to set authentication using app.UseAuthentication();
+        /// </summary>
+        /// <param name="app">The application.</param>
+        /// <exception cref="NotImplementedException"></exception>
+        protected override void ConfigureSecurity(IApplicationBuilder app)
+        {
+            app.UseAuthentication();
+        }
     }
 }

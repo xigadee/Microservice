@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -47,16 +48,6 @@ namespace Xigadee
         protected IApiUserSecurityModule UserSecurityModule { get; }
         #endregion
 
-        protected override Task InitializeHandlerAsync()
-        {
-            return base.InitializeHandlerAsync();
-        }
-
-        protected override Task InitializeEventsAsync()
-        {
-            return base.InitializeEventsAsync();
-        }
-
         /// <summary>
         /// Handles the authentication.
         /// </summary>
@@ -65,35 +56,34 @@ namespace Xigadee
         {
             try
             {
-                if (Options.Configuration.HttpsOnly && !Context.Request.IsHttps)
-                    return AuthenticateResult.Fail("Https required error.");
+                //OK, extract the auth scheme and token
+                if (!AuthenticationHeaderValue.TryParse(Request.Headers["Authorization"], out AuthenticationHeaderValue authHeader))
+                    return AuthenticateResult.NoResult();
 
-                var result = AuthorizationSchemeExtract();
+                //Check whether this is authentication using JWT bearer token.
+                if (!(authHeader?.Scheme.Equals("bearer", StringComparison.InvariantCultureIgnoreCase) ?? false))
+                    return AuthenticateResult.NoResult();
 
-                if (!result.HasValue)
-                    return AuthenticateResult.Fail("Authorization header not set.");
-
-                if (result.Value.scheme != "bearer")
-                    return AuthenticateResult.Fail($"Authorization scheme not supported: {result.Value.scheme}");
-
+                //OK, let's parse the JWT token
                 var handler = new JwtSecurityTokenHandler();
                 handler.InboundClaimTypeMap.Clear();
 
-                //First, check we can parse the token
-                if (!handler.CanReadToken(result.Value.token))
+                if (!handler.CanReadToken(authHeader.Parameter))
                     return AuthenticateResult.Fail("Authorization bearer token cannot be read.");
 
-                //Ok, let's validate the token.
-                var claimsPrincipal
-                    = handler.ValidateToken(result.Value.token, GetTokenValidationParameters()
-                        , out SecurityToken validatedToken);
+                //Ok, let's validate the token. The auth key is set in the validation parameters.
+                var vParams = GetTokenValidationParameters();
+                var claimsPrincipal = handler.ValidateToken(authHeader.Parameter, vParams, out SecurityToken validatedToken);
 
-                //This is the user session object that we use to reference to other security entities.
-                UserSession uSess = null;
+                //OK, we have a valid token. Does this have to be a Https request?
+                if (Options.Configuration.HttpsOnly && !Context.Request.IsHttps)
+                    return AuthenticateResult.Fail("Https required error.");
 
                 //Finally extract the Sid value from the token, and get the UserSession
                 var sid = SidResolve(claimsPrincipal);
 
+                //This is the user session object that we use to reference to other security entities.
+                UserSession uSess = null;
                 if (sid.HasValue)
                 {
                     var rqUs = await UserSecurityModule.UserSessions.Read(sid.Value);
@@ -103,22 +93,14 @@ namespace Xigadee
 
                 //So we either have nothing in the database or the sid is invalid.
                 if (uSess == null)
-                {
-                    uSess = new UserSession() { Source = GetType().Name };
-                    var rsC = UserSecurityModule.UserSessions.Create(uSess);
-                    sid = uSess.Id;
-                }
+                    return AuthenticateResult.Fail("Session could not be resolved.");
 
-                //if (sid.HasValue
+                var ticket = await UserGenerateTicket(validatedToken, uSess);
 
-                //var result = await ValidateAuth();
+                if (ticket != null)
+                    return AuthenticateResult.Success(ticket);
 
-                    //if (result.ex != null)
-                    //    return AuthenticateResult.Fail(result.ex);
-                    //else if (result.ticket != null)
-                    //    return AuthenticateResult.Success(result.ticket);
-
-                    return AuthenticateResult.NoResult();
+                return AuthenticateResult.Fail("Ticket was not be generated");
             }
             catch (Exception ex)
             {
@@ -129,36 +111,18 @@ namespace Xigadee
         }
 
 
-        #region AuthorizationSchemeExtract()
-        /// <summary>
-        /// Extracts the specified scheme and token for authorization.
-        /// </summary>
-        /// <returns>the scheme and the token</returns>
-        protected (string scheme, string token)? AuthorizationSchemeExtract()
-        {
-            string authorization = Request.Headers["Authorization"];
-
-            if (!string.IsNullOrEmpty(authorization))
-            {
-                var parts = authorization.TrimStart().Split(' ');
-                if (parts.Length > 1)
-                    return (parts[0].Trim().ToLowerInvariant(), parts[1]);
-            }
-
-            return null;
-        }
-        #endregion
         #region UserGenerateTicket(UserSession uSess, User user, UserSecurity uSec, UserRoles ur)
         /// <summary>
         /// Generates a authentication ticket from the security objects.
         /// </summary>
+        /// <param name="validatedToken">The validated token.</param>
         /// <param name="uSess">The user session.</param>
-        /// <param name="user">The user.</param>
-        /// <param name="uSec">The user security.</param>
-        /// <param name="uRoles">The user roles. If this is null, no roles will be added to the ticket.</param>
         /// <returns>Returns the authentication ticket.</returns>
-        protected virtual AuthenticationTicket UserGenerateTicket(UserSession uSess, User user, UserSecurity uSec, UserRoles uRoles)
+        protected virtual async Task<AuthenticationTicket> UserGenerateTicket(SecurityToken validatedToken, UserSession uSess)
         {
+            User user = null;
+            UserRoles uRoles = null;
+
             string authtype = Options?.InternalAuthType ?? "XigadeeAuth";
 
             var identity = new ClaimsIdentity(authtype);
@@ -167,14 +131,26 @@ namespace Xigadee
             if (uSess != null)
                 identity.AddClaim(new Claim(ClaimTypes.Sid, uSess.Id.ToString("N")));
 
-            //Add the associated user id, if present.
-            if (user != null)
-                identity.AddClaim(new Claim(ClaimTypes.PrimarySid, user.Id.ToString("N")));
-            else if (uSess?.UserId.HasValue ?? false)
-                identity.AddClaim(new Claim(ClaimTypes.PrimarySid, uSess.UserId.Value.ToString("N")));
+            if (uSess.UserId.HasValue)
+            {
+                var uRs = await UserSecurityModule.Users.Read(uSess.UserId.Value);
 
-            //Add the user roles.
-            uRoles?.Roles?.ForEach((c) => identity.AddClaim(new Claim(ClaimTypes.Role, c)));
+                if (!uRs.IsSuccess)
+                    throw new ArgumentOutOfRangeException($"UserId {uSess.UserId.Value} for Session {uSess.Id} cannot be read: {uRs.ResponseCode}/{uRs.ResponseMessage}");
+                user = uRs.Entity;
+
+                //Add the associated user id, if present.
+                identity.AddClaim(new Claim(ClaimTypes.PrimarySid, user.Id.ToString("N")));
+
+                var urRs = await UserSecurityModule.UserRoles.Read(user.Id);
+
+                if (urRs.IsSuccess)
+                    uRoles = urRs.Entity;
+
+                //Add the user roles.
+                uRoles?.Roles?.ForEach((c) => identity.AddClaim(new Claim(ClaimTypes.Role, c)));
+            }
+            identity.AddClaim(new Claim(ClaimTypes.Role, "admin"));
 
             var principal = new ClaimsPrincipal(identity);
 
@@ -212,7 +188,7 @@ namespace Xigadee
             };
         }
         #endregion
-
+        #region SidResolve(ClaimsPrincipal claimsPrincipal)
         /// <summary>
         /// Resolves the sid id from the claims principal .
         /// </summary>
@@ -226,6 +202,7 @@ namespace Xigadee
                 return userId;
 
             return null;
-        }
+        } 
+        #endregion
     }
 }

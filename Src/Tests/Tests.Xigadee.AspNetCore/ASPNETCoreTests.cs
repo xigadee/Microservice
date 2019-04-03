@@ -22,7 +22,7 @@ namespace Tests.Xigadee
         {
 
             // Act
-            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "api/sessionmanager/create");
+            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "api/security/createsession");
 
             var result = await _client.SendAsync(httpRequestMessage);
 
