@@ -67,8 +67,8 @@ namespace Tests.Xigadee
         {
             var policy = new AuthorizationPolicyBuilder()
                 //.AddAuthenticationSchemes("Cookie, Bearer")
-                .RequireRole("admin")
                 .RequireAuthenticatedUser()
+                .RequireRole("paul")
                 //.RequireAssertion(ctx =>
                 //{
                 //    return ctx.User.HasClaim("editor", "contents") ||

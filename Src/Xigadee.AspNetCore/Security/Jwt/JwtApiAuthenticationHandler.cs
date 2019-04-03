@@ -123,7 +123,11 @@ namespace Xigadee
             User user = null;
             UserRoles uRoles = null;
 
-            string authtype = Options?.InternalAuthType ?? "XigadeeAuth";
+            string authtype = Options?.InternalAuthType;
+
+            //This fixes the IsAuthenticated issue when an empty string can cause it to fail.
+            if (string.IsNullOrEmpty(authtype))
+                authtype = "XigadeeAuth";
 
             var identity = new ClaimsIdentity(authtype);
 

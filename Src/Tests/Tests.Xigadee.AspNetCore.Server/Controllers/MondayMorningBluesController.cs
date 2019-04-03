@@ -14,7 +14,7 @@ namespace Tests.Xigadee
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiController]
-    [Authorize(Roles = "admin")]
+    [Authorize(Policy = "adminp")]
     [EntityControllerFeaturesSupport(EntityControllerFeatures.All)]
     public class MondayMorningBluesController : EntityController<Guid, MondayMorningBlues>
     {
