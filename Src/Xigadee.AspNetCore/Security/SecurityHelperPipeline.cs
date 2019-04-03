@@ -32,30 +32,44 @@ namespace Xigadee
         public static IServiceCollection AddJwtAuthentication(this IServiceCollection services
             , ConfigAuthenticationJwt auth, SecurityKey key = null)
         {
+            //services
+            //    .AddAuthentication(options =>
+            //    {
+            //        options.DefaultScheme = auth.Name;
+            //        options.DefaultAuthenticateScheme = auth.Name;
+            //    })
+            //    .AddScheme<ApiAuthenticationSchemeOptions, ApiAuthenticationHandler>(
+            //        auth.Name, auth.DisplayName, options =>
+            //        {
+            //            //options.ClientCertificateThumbprintResolver = new ConditionalCertificateThumbprintResolver(
+            //            //    apimRequestIndicator,
+            //            //    apimMode,
+            //            //    new ApimHttpHeaderCertificateThumbprintResolver(),
+            //            //    new HttpConnectionCertificateThumbprintResolver());
+
+            //            //options.ClientIpAddressResolver = new ConditionalIpAddressResolver(
+            //            //    apimRequestIndicator,
+            //            //    apimMode,
+            //            //    new ApimHttpHeaderIpAddressResolver(),
+            //            //    new HttpConnectionIpAddressResolver());
+
+            //            options.HttpsOnly = auth.HttpsOnly;
+
+            //            options.JwtBearerTokenOptions = BuildJwtBearerTokenOptions(auth, key);
+            //        }
+            //    )
+            //    ;
+
             services
                 .AddAuthentication(options =>
                 {
                     options.DefaultScheme = auth.Name;
                     options.DefaultAuthenticateScheme = auth.Name;
                 })
-                .AddScheme<ApiAuthenticationSchemeOptions, ApiAuthenticationHandler>(
+                .AddScheme<JwtApiAuthenticationSchemeOptions, JwtApiAuthenticationHandler>(
                     auth.Name, auth.DisplayName, options =>
                     {
-                        //options.ClientCertificateThumbprintResolver = new ConditionalCertificateThumbprintResolver(
-                        //    apimRequestIndicator,
-                        //    apimMode,
-                        //    new ApimHttpHeaderCertificateThumbprintResolver(),
-                        //    new HttpConnectionCertificateThumbprintResolver());
-
-                        //options.ClientIpAddressResolver = new ConditionalIpAddressResolver(
-                        //    apimRequestIndicator,
-                        //    apimMode,
-                        //    new ApimHttpHeaderIpAddressResolver(),
-                        //    new HttpConnectionIpAddressResolver());
-
-                        options.HttpsOnly = auth.HttpsOnly;
-
-                        options.JwtBearerTokenOptions = BuildJwtBearerTokenOptions(auth, key);
+                        options.Configuration = auth;
                     }
                 )
                 ;

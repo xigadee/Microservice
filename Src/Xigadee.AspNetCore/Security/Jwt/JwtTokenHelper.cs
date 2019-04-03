@@ -90,7 +90,8 @@ namespace Xigadee
         public static string WriteToken(Guid sid, SigningCredentials creds, ConfigAuthenticationJwt Jwt, IEnumerable<Claim> extendedClaims, TimeSpan tokenExpiry)
         {
             var claims = new Claim[] { new Claim(ClaimTypes.Sid, sid.ToString("N")) };
-            if (extendedClaims == null)
+
+            if (extendedClaims != null)
                 claims = claims.Union(extendedClaims).ToArray();
 
             var token = new JwtSecurityToken(

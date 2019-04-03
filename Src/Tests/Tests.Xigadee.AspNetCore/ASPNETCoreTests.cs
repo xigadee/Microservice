@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -15,14 +16,36 @@ namespace Tests.Xigadee
     [TestCategory("ExcludeFromCI")]
     public class ASPNETCoreTests: TransportTestBase
     {
+        readonly Guid keyId = new Guid("{811EAFE5-D7E2-4FA8-8264-6BEAF5D63B8D}");
+
+        [TestMethod]
+        public async Task LoadSession()
+        {
+
+            // Act
+            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "api/sessionmanager/create");
+
+            var result = await _client.SendAsync(httpRequestMessage);
+
+            var tokenB = await result.Content.ReadAsByteArrayAsync();
+
+            var token = Encoding.UTF8.GetString(tokenB);
+
+        }
+
         [TestMethod]
         public async Task ReadEntity()
         {
             try
             {
+
+                var b64 = Convert.ToBase64String(keyId.ToByteArray());
+
                 var prov = new ApiProviderAsyncV2<Guid, MondayMorningBlues>(
                     new Uri("http://localhost/api")
                     );
+
+
 
                 prov.ClientOverride = _client;
 

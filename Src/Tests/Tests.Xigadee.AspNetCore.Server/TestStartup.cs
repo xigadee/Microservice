@@ -54,6 +54,8 @@ namespace Tests.Xigadee
             services.AddSingleton<IRepositoryAsync<Guid, MondayMorningBlues>>(_mmbClient);
             services.AddSingleton<IApiUserSecurityModule>(Context.UserSecurityModule);
 
+            services.AddSingleton(Context.SecurityJwt);
+
             services.AddJwtAuthentication(Context.SecurityJwt);
         }
 
