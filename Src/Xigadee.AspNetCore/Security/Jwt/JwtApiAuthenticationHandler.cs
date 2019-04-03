@@ -150,7 +150,6 @@ namespace Xigadee
                 //Add the user roles.
                 uRoles?.Roles?.ForEach((c) => identity.AddClaim(new Claim(ClaimTypes.Role, c)));
             }
-            //identity.AddClaim(new Claim(ClaimTypes.Role, "admin"));
 
             var principal = new ClaimsPrincipal(identity);
 

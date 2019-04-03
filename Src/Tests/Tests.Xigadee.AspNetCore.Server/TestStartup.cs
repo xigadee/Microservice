@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -64,14 +65,26 @@ namespace Tests.Xigadee
 
         protected override void ConfigureSecurityAuthorization(IServiceCollection services)
         {
+            var policy = new AuthorizationPolicyBuilder()
+                //.AddAuthenticationSchemes("Cookie, Bearer")
+                .RequireRole("admin")
+                .RequireAuthenticatedUser()
+                //.RequireAssertion(ctx =>
+                //{
+                //    return ctx.User.HasClaim("editor", "contents") ||
+                //            ctx.User.HasClaim("level", "senior");
+                //}
+                //)
+                .Build();
+
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("adminp",
-                    policy =>
-                    {
-                        policy.RequireAuthenticatedUser();
-                        policy.RequireRole("admin");
-                    });
+            options.AddPolicy("adminp", policy);
+                    //policy =>
+                    //{
+                    //    policy.RequireAuthenticatedUser();
+                    //    policy.RequireRole("admin");
+                    //});
 
             })
             ;
