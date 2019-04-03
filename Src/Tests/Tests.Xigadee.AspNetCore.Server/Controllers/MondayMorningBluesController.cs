@@ -14,7 +14,7 @@ namespace Tests.Xigadee
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiController]
-    [Authorize(Policy ="admin")]
+    [Authorize(Roles = "admin")]
     [EntityControllerFeaturesSupport(EntityControllerFeatures.All)]
     public class MondayMorningBluesController : EntityController<Guid, MondayMorningBlues>
     {
@@ -25,6 +25,9 @@ namespace Tests.Xigadee
 
         }
 
-
+        public override Task<IActionResult> Read(CombinedRequestModel input)
+        {
+            return base.Read(input);
+        }
     }
 }

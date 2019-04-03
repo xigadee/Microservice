@@ -66,7 +66,7 @@ namespace Tests.Xigadee
         {
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("admin",
+                options.AddPolicy("adminp",
                     policy =>
                     {
                         policy.RequireAuthenticatedUser();

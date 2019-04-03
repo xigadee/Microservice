@@ -81,6 +81,7 @@ namespace Xigadee
 
             ConfigureAddMvc(services);
 
+
             // Add framework services
             return services.BuildServiceProvider();
         }
