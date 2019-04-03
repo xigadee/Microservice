@@ -55,8 +55,26 @@ namespace Tests.Xigadee
             services.AddSingleton<IApiUserSecurityModule>(Context.UserSecurityModule);
 
             services.AddSingleton(Context.SecurityJwt);
+        }
 
+        protected override void ConfigureSecurityAuthentication(IServiceCollection services)
+        {
             services.AddJwtAuthentication(Context.SecurityJwt);
+        }
+
+        protected override void ConfigureSecurityAuthorization(IServiceCollection services)
+        {
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("admin",
+                    policy =>
+                    {
+                        policy.RequireAuthenticatedUser();
+                        //policy.RequireRole("admin");
+                    });
+
+            })
+            ;
         }
 
     }

@@ -10,15 +10,16 @@ namespace Xigadee
     /// This auth method provides the token for the connection.
     /// </summary>
     /// <seealso cref="Xigadee.IApiProviderAuthBase" />
-    public class JwtApiProviderAuth : IApiProviderAuthBase
+    public class JwtAuthProvider : IApiProviderAuthBase
     {
         readonly string _jwtToken;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="JwtApiProviderAuth"/> class.
+        /// Initializes a new instance of the <see cref="JwtAuthProvider"/> class.
         /// </summary>
         /// <param name="jwtToken">The JWT token to store..</param>
         /// <exception cref="ArgumentNullException">jwtToken</exception>
-        public JwtApiProviderAuth(string jwtToken)
+        public JwtAuthProvider(string jwtToken)
         {
             _jwtToken = jwtToken ?? throw new ArgumentNullException("jwtToken");
         }
@@ -37,6 +38,18 @@ namespace Xigadee
         /// <param name="rq">The response.</param>
         public void ProcessResponse(HttpResponseMessage rs)
         {
+        }
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="System.String"/> to <see cref="JwtAuthProvider"/>.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        public static explicit operator JwtAuthProvider(string token)
+        {
+            return new JwtAuthProvider(token);
         }
     }
 }

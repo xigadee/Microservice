@@ -18,8 +18,7 @@ namespace Tests.Xigadee
     {
         readonly Guid keyId = new Guid("{811EAFE5-D7E2-4FA8-8264-6BEAF5D63B8D}");
 
-        [TestMethod]
-        public async Task LoadSession()
+        public async Task<string> CreateSessionToken()
         {
 
             // Act
@@ -28,8 +27,8 @@ namespace Tests.Xigadee
             var result = await _client.SendAsync(httpRequestMessage);
 
             var tokenB = await result.Content.ReadAsByteArrayAsync();
-
-            var token = Encoding.UTF8.GetString(tokenB);
+            
+            return Encoding.UTF8.GetString(tokenB);
 
         }
 
@@ -38,11 +37,12 @@ namespace Tests.Xigadee
         {
             try
             {
+                var token = await CreateSessionToken();
 
                 var b64 = Convert.ToBase64String(keyId.ToByteArray());
 
                 var prov = new ApiProviderAsyncV2<Guid, MondayMorningBlues>(
-                    new Uri("http://localhost/api")
+                    new Uri("http://localhost/api"), authHandler: (JwtAuthProvider)token
                     );
 
 

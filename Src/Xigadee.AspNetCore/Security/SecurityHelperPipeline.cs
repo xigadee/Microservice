@@ -32,34 +32,6 @@ namespace Xigadee
         public static IServiceCollection AddJwtAuthentication(this IServiceCollection services
             , ConfigAuthenticationJwt auth, SecurityKey key = null)
         {
-            //services
-            //    .AddAuthentication(options =>
-            //    {
-            //        options.DefaultScheme = auth.Name;
-            //        options.DefaultAuthenticateScheme = auth.Name;
-            //    })
-            //    .AddScheme<ApiAuthenticationSchemeOptions, ApiAuthenticationHandler>(
-            //        auth.Name, auth.DisplayName, options =>
-            //        {
-            //            //options.ClientCertificateThumbprintResolver = new ConditionalCertificateThumbprintResolver(
-            //            //    apimRequestIndicator,
-            //            //    apimMode,
-            //            //    new ApimHttpHeaderCertificateThumbprintResolver(),
-            //            //    new HttpConnectionCertificateThumbprintResolver());
-
-            //            //options.ClientIpAddressResolver = new ConditionalIpAddressResolver(
-            //            //    apimRequestIndicator,
-            //            //    apimMode,
-            //            //    new ApimHttpHeaderIpAddressResolver(),
-            //            //    new HttpConnectionIpAddressResolver());
-
-            //            options.HttpsOnly = auth.HttpsOnly;
-
-            //            options.JwtBearerTokenOptions = BuildJwtBearerTokenOptions(auth, key);
-            //        }
-            //    )
-            //    ;
-
             services
                 .AddAuthentication(options =>
                 {
@@ -71,39 +43,11 @@ namespace Xigadee
                     {
                         options.Configuration = auth;
                     }
-                )
-                ;
+                );
 
             return services;
         }
 
-        private static IEnumerable<JwtBearerTokenOptions> BuildJwtBearerTokenOptions(ConfigAuthenticationJwt auth, SecurityKey key = null)
-        {
-            if (key == null)
-                key = new SymmetricSecurityKey(Convert.FromBase64String(auth.Key));
-
-            var options = new List<JwtBearerTokenOptions>
-            {
-                new JwtBearerTokenOptions(
-                      new CustomClaimsPrincipalUserResolver()
-                    , new TokenValidationParameters
-                    {
-                        ValidateAudience = true,
-                        ValidAudience = auth.Audience,
-                        ValidateIssuer = true,
-                        ValidIssuer = auth.Issuer,
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = key ,
-                        ValidateLifetime = auth.ValidateTokenExpiry.GetValueOrDefault(true),
-                        ClockSkew = auth.GetClockSkew()
-                    }
-                    , auth.LifetimeWarningDays
-                    , auth.LifetimeCriticalDays
-                )
-            };
-
-            return options;
-        }
     }
 
     /// <summary>

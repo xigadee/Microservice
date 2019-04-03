@@ -28,7 +28,22 @@ namespace Xigadee
         /// </summary>
         protected TransportUriMapper<K> mUriMapper;
         #endregion
+
         #region Constructor
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        public ApiProviderAsyncV2(Uri uri
+            , RepositoryKeyManager<K> keyMapper = null
+            , TransportUriMapper<K> transportUriMapper = null
+            , IEnumerable<TransportSerializer> transportOverride = null
+            , IApiProviderAuthBase authHandler = null
+            , X509Certificate clientCert = null
+            , Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> manualCertValidation = null
+        )
+            : this(uri, keyMapper, transportUriMapper, transportOverride, new[] { authHandler }, clientCert, manualCertValidation)
+        {
+        }
         /// <summary>
         /// This is the default constructor.
         /// </summary>

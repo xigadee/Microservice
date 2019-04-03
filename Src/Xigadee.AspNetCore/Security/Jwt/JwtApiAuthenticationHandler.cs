@@ -47,6 +47,16 @@ namespace Xigadee
         protected IApiUserSecurityModule UserSecurityModule { get; }
         #endregion
 
+        protected override Task InitializeHandlerAsync()
+        {
+            return base.InitializeHandlerAsync();
+        }
+
+        protected override Task InitializeEventsAsync()
+        {
+            return base.InitializeEventsAsync();
+        }
+
         /// <summary>
         /// Handles the authentication.
         /// </summary>

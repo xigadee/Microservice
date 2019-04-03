@@ -108,21 +108,17 @@ namespace Xigadee
         #endregion
         #region 4. ConfigureSecurityAuthentication(IServiceCollection services)
         /// <summary>
-        /// Configures the authentication
+        /// Configures the authentication, i.e. services.AddJwtAuthentication(Context.SecurityJwt);
         /// </summary>
         /// <param name="services">The services.</param>
-        protected virtual void ConfigureSecurityAuthentication(IServiceCollection services)
-        {
-        }
+        protected abstract void ConfigureSecurityAuthentication(IServiceCollection services);
         #endregion
         #region 5. ConfigureSecurityAuthorization(IServiceCollection services)
         /// <summary>
-        /// Configures the authorization.
+        /// Configures the authorization. i.e. services.AddAuthorization(options =>
         /// </summary>
         /// <param name="services">The services.</param>
-        protected virtual void ConfigureSecurityAuthorization(IServiceCollection services)
-        {
-        }
+        protected abstract void ConfigureSecurityAuthorization(IServiceCollection services);
         #endregion
         #region 6. ConfigureAddMvc(IServiceCollection services)
         /// <summary>
@@ -203,12 +199,10 @@ namespace Xigadee
         #endregion
         #region 4. ConfigureSecurity(IApplicationBuilder app)
         /// <summary>
-        /// Override this method to configure the UseMvc command, or to stop it being set.
+        /// Override this method to set authentication using app.UseAuthentication();
         /// </summary>
         /// <param name="app">The application.</param>
-        protected virtual void ConfigureSecurity(IApplicationBuilder app)
-        {
-        }
+        protected abstract void ConfigureSecurity(IApplicationBuilder app);
         #endregion
         #region 5. ConfigureCustomRouting(IApplicationBuilder app)
         /// <summary>
