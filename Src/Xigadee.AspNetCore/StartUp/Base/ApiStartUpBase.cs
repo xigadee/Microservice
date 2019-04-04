@@ -12,7 +12,6 @@ namespace Xigadee
     /// This class is used by all services for the application.
     /// </summary>
     /// <typeparam name="CTX">The application context type.</typeparam>
-    /// <seealso cref="https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/routing?view=aspnetcore-2.2" />
     public abstract class ApiStartupBase<CTX> : IStartup
         where CTX : ApiStartUpContext, new()
     {
@@ -28,6 +27,15 @@ namespace Xigadee
             ContextCreate();
 
             ContextInitialize();
+
+            if (Context.UseMicroservice)
+            {
+                MicroserviceCreate();
+
+                MicroserviceConfigure();
+
+                MicroserviceHostedServiceCreate();
+            }
         }
         #endregion
         #region 1. ContextCreate()
@@ -48,6 +56,30 @@ namespace Xigadee
             Context.Initialize(HostingEnvironment);
         }
         #endregion
+        #region 3. MicroserviceCreate()
+        /// <summary>
+        /// Creates and configures the Xigadee microservice pipeline.
+        /// </summary>
+        protected virtual void MicroserviceCreate()
+        {
+            Pipeline = new MicroservicePipeline();
+        }
+        #endregion
+        #region 4. MicroserviceConfigure()
+        /// <summary>
+        /// Creates and configures the Xigadee microservice pipeline.
+        /// </summary>
+        protected virtual void MicroserviceConfigure() { }
+        #endregion
+        #region 5. MicroserviceHostedServiceCreate()
+        /// <summary>
+        /// Creates and configures the Xigadee microservice pipeline.
+        /// </summary>
+        protected virtual void MicroserviceHostedServiceCreate()
+        {
+            HostedService = new MicroserviceHostedService(Pipeline);
+        }
+        #endregion
 
         #region B=>ConfigureServices(IServiceCollection services)
         /// <summary>
@@ -59,9 +91,12 @@ namespace Xigadee
         {
             ConfigureOptions(services);
 
+            ContextModulesCreate(services);
+
             ConfigureSingletons(services);
 
-            ContextModulesCreate(services);
+            if (Context.UseMicroservice)
+                ConfigureMicroserviceHostedService(services);
 
             ConfigureSecurityAuthentication(services);
 
@@ -83,7 +118,29 @@ namespace Xigadee
 
         }
         #endregion
-        #region 2. ConfigureSingletons(IServiceCollection services)
+        #region 2. ContextModulesCreate(IServiceCollection services) -> CXB ->
+        /// <summary>
+        /// Calls the context to create and register any modules and services respectively.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        protected virtual void ContextModulesCreate(IServiceCollection services)
+        {
+            Context.ModulesCreate(services);
+        }
+        #endregion
+        #region 3. ConfigureMicroserviceHostedService(IServiceCollection services)
+        /// <summary>
+        /// Configures the singletons.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        protected virtual void ConfigureMicroserviceHostedService(IServiceCollection services)
+        {
+            //Add the microservice as a hosted service.
+            if (HostedService != null)
+                services.AddSingleton<IHostedService>(HostedService);
+        }
+        #endregion
+        #region 4. ConfigureSingletons(IServiceCollection services)
         /// <summary>
         /// Configures the singletons.
         /// </summary>
@@ -96,31 +153,21 @@ namespace Xigadee
             //services.AddSingleton(Context.Identity);
         }
         #endregion
-        #region 3. ContextModulesCreate(IServiceCollection services) -> CXB ->
-        /// <summary>
-        /// Calls the context to create and register any modules and services respectively.
-        /// </summary>
-        /// <param name="services">The services.</param>
-        protected virtual void ContextModulesCreate(IServiceCollection services)
-        {
-            Context.ModulesCreate(services);
-        }
-        #endregion
-        #region 4. ConfigureSecurityAuthentication(IServiceCollection services)
+        #region 5. ConfigureSecurityAuthentication(IServiceCollection services)
         /// <summary>
         /// Configures the authentication, i.e. services.AddJwtAuthentication(Context.SecurityJwt);
         /// </summary>
         /// <param name="services">The services.</param>
         protected abstract void ConfigureSecurityAuthentication(IServiceCollection services);
         #endregion
-        #region 5. ConfigureSecurityAuthorization(IServiceCollection services)
+        #region 6. ConfigureSecurityAuthorization(IServiceCollection services)
         /// <summary>
         /// Configures the authorization. i.e. services.AddAuthorization(options =>
         /// </summary>
         /// <param name="services">The services.</param>
         protected abstract void ConfigureSecurityAuthorization(IServiceCollection services);
         #endregion
-        #region 6. ConfigureAddMvc(IServiceCollection services)
+        #region 7. ConfigureAddMvc(IServiceCollection services)
         /// <summary>
         /// Configures the add MVC service.
         /// </summary>
@@ -295,7 +342,13 @@ namespace Xigadee
         /// </summary>
         protected virtual void Bind()
         {
+            if (UseMicroservice)
+            {
+                ConfigMicroservice = new ConfigMicroservice();
 
+                if (!string.IsNullOrEmpty(BindNameConfigMicroservice))
+                    Configuration.Bind(BindNameConfigMicroservice, ConfigMicroservice);
+            }
         }
         #endregion
 
@@ -338,5 +391,23 @@ namespace Xigadee
         /// </summary>
         public virtual ILogger Logger { get; set; }
         #endregion
+
+        #region UseMicroservice
+        /// <summary>
+        /// Gets a value indicating whether the service should create an initialize a Microservice Pipeline
+        /// </summary>
+        public virtual bool UseMicroservice => true;
+        #endregion
+        #region ConfigMicroservice
+        /// <summary>
+        /// Gets or sets the microservice configuration.
+        /// </summary>
+        public virtual ConfigMicroservice ConfigMicroservice { get; set; }
+        /// <summary>
+        /// Gets the bind section for ConfigMicroservice.
+        /// </summary>
+        protected virtual string BindNameConfigMicroservice => "ConfigMicroservice";
+        #endregion
+
     }
 }

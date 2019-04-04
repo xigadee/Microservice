@@ -11,23 +11,14 @@ namespace Tests.Xigadee
     /// This class holds the application settings.
     /// </summary>
     /// <seealso cref="Xigadee.ApiMicroserviceStartUpContext" />
-    public class TestStartupContext: ApiMicroserviceStartUpContext
+    public class TestStartupContext : JwtApiMicroserviceStartUpContext
     {
-        protected override void Bind()
+        protected override IApiUserSecurityModule UserSecurityModuleCreate()
         {
-            base.Bind();
+            var usm = new UserSecurityModuleMemoryTest();
+            //Add test security accounts here.
 
-            SecurityJwt = new ConfigAuthenticationJwt();
-            Configuration.Bind("SecurityJwt", SecurityJwt);
+            return usm;
         }
-
-        /// <summary>
-        /// Gets or sets the JWT security settings.
-        /// </summary>
-        public ConfigAuthenticationJwt SecurityJwt { get; set; }
-        /// <summary>
-        /// Gets or sets the user security module that is used to manages the security entities and user logic.
-        /// </summary>
-        public IApiUserSecurityModule UserSecurityModule { get; set; } = new UserSecurityModuleMemoryTest();
     }
 }

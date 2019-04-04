@@ -16,13 +16,13 @@ namespace Tests.Xigadee
     /// This is the base application class.
     /// </summary>
     /// <seealso cref="Xigadee.ApiMicroserviceStartupBase{Tests.Xigadee.TestStartupContext}" />
-    public class TestStartup : ApiMicroserviceStartupBase<TestStartupContext>
+    public class TestStartup : JwtApiMicroserviceStartupBase<TestStartupContext>
     {
+        PersistenceClient<Guid, MondayMorningBlues> _mmbClient;
+
         public TestStartup(IHostingEnvironment env) : base(env)
         {
         }
-
-        PersistenceClient<Guid, MondayMorningBlues> _mmbClient;
 
         protected override void MicroserviceConfigure()
         {
@@ -48,21 +48,20 @@ namespace Tests.Xigadee
             var rs = _mmbClient.Create(new MondayMorningBlues() { Id = new Guid("9A2E3F6D-3B98-4C2C-BD45-74F819B5EDFC") }).Result;
         }
 
-
+        /// <summary>
+        /// Adds the MondayMorningBlues test repo to the collection..
+        /// </summary>
+        /// <param name="services">The services.</param>
         protected override void ConfigureSingletons(IServiceCollection services)
         {
-            //services.adds
+            base.ConfigureSingletons(services);
             services.AddSingleton<IRepositoryAsync<Guid, MondayMorningBlues>>(_mmbClient);
-            services.AddSingleton<IApiUserSecurityModule>(Context.UserSecurityModule);
-
-            services.AddSingleton(Context.SecurityJwt);
         }
 
-        protected override void ConfigureSecurityAuthentication(IServiceCollection services)
-        {
-            services.AddJwtAuthentication(Context.SecurityJwt);
-        }
-
+        /// <summary>
+        /// Configures the authorization policy
+        /// </summary>
+        /// <param name="services">The services.</param>
         protected override void ConfigureSecurityAuthorization(IServiceCollection services)
         {
             var policy = new AuthorizationPolicyBuilder()
@@ -79,7 +78,7 @@ namespace Tests.Xigadee
 
             services.AddAuthorization(options =>
             {
-            options.AddPolicy("adminp", policy);
+                options.AddPolicy("adminp", policy);
                     //policy =>
                     //{
                     //    policy.RequireAuthenticatedUser();
@@ -90,14 +89,5 @@ namespace Tests.Xigadee
             ;
         }
 
-        /// <summary>
-        /// Override this method to set authentication using app.UseAuthentication();
-        /// </summary>
-        /// <param name="app">The application.</param>
-        /// <exception cref="NotImplementedException"></exception>
-        protected override void ConfigureSecurity(IApplicationBuilder app)
-        {
-            app.UseAuthentication();
-        }
     }
 }
