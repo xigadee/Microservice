@@ -45,8 +45,6 @@ namespace Tests.Xigadee
                     new Uri("http://localhost/api"), authHandler: (JwtAuthProvider)token
                     );
 
-
-
                 prov.ClientOverride = _client;
 
                 var rs1 = await prov.Read(new Guid("9A2E3F6D-3B98-4C2C-BD45-74F819B5EDFC"));

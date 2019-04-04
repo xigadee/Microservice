@@ -20,9 +20,15 @@ namespace Tests.Xigadee
     {
         PersistenceClient<Guid, MondayMorningBlues> _mmbClient;
 
+        #region Constructor
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestStartup"/> class.
+        /// </summary>
+        /// <param name="env">The environment.</param>
         public TestStartup(IHostingEnvironment env) : base(env)
         {
-        }
+        } 
+        #endregion
 
         protected override void MicroserviceConfigure()
         {
@@ -89,5 +95,32 @@ namespace Tests.Xigadee
             ;
         }
 
+    }
+
+    /// <summary>
+    /// This class holds the application settings.
+    /// </summary>
+    /// <seealso cref="Xigadee.ApiMicroserviceStartUpContext" />
+    public class TestStartupContext : JwtApiMicroserviceStartUpContext
+    {
+        protected override IApiUserSecurityModule UserSecurityModuleCreate()
+        {
+            var usm = new UserSecurityModuleMemoryTest();
+            //Add test security accounts here.
+            var user = new TestUser() { Username = "paul" };
+            var rs = usm.Users.Create(user).Result;
+
+            var uSec = new UserSecurity() { Id = user.Id };
+            uSec.AuthenticationSet("","123Enter.");
+            var rs2 = usm.UserSecurities.Create(uSec).Result;
+
+            var ur = new UserRoles() { Id = user.Id };
+            ur.RoleAdd("paul");
+            var rs3 = usm.UserRoles.Create(ur).Result;
+
+            //uSec.
+
+            return usm;
+        }
     }
 }

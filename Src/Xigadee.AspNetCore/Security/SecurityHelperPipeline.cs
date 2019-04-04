@@ -1,18 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Net;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Xigadee
@@ -42,6 +32,7 @@ namespace Xigadee
                     auth.Name, auth.DisplayName, options =>
                     {
                         options.Configuration = auth;
+                        options.JwtKey = key;
                     }
                 );
 

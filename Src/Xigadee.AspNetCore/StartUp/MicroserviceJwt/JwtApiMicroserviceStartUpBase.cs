@@ -103,6 +103,18 @@ namespace Xigadee
         }
         #endregion
 
+        #region Connect(ILoggerFactory lf)
+        /// <summary>
+        /// Sets the user security module logger.
+        /// </summary>
+        /// <param name="lf">The logger factory.</param>
+        public override void Connect(ILoggerFactory lf)
+        {
+            base.Connect(lf);
+            UserSecurityModule.Logger = lf.CreateLogger<IApiUserSecurityModule>();
+        } 
+        #endregion
+
         /// <summary>
         /// Gets or sets the user security module that is used to manages the security entities and user logic.
         /// </summary>
@@ -113,6 +125,7 @@ namespace Xigadee
         /// </summary>
         /// <returns></returns>
         protected abstract IApiUserSecurityModule UserSecurityModuleCreate();
+
     }
     #endregion
 }

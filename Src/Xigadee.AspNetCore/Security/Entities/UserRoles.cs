@@ -22,4 +22,6 @@ namespace Xigadee
         public List<string> Roles { get; set; } = new List<string>();
 
     }
+
+
 }

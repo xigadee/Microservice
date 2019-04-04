@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Xigadee
@@ -32,6 +33,11 @@ namespace Xigadee
             foreach (var item in certificates)
                 Certificates.Add(item.Key, item.Value);
         }
+
+        /// <summary>
+        /// Gets or sets the authentication collection.
+        /// </summary>
+        public Dictionary<string, string> Authentication { get; set; } = new Dictionary<string, string>();
 
         /// <summary>
         /// The property bag container dictionary. This has a set of extensible properties for the user.

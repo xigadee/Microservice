@@ -93,14 +93,15 @@ namespace Xigadee
 
                 //So we either have nothing in the database or the sid is invalid.
                 if (uSess == null)
-                    return AuthenticateResult.Fail("Session could not be resolved.");
+                    return AuthenticateResult.Fail("Token is valid, but session could not be resolved.");
 
-                var ticket = await UserGenerateTicket(validatedToken, uSess);
+                //Ok, we have a valid session, let's see if this relates to a user.
+                var ticket = await SessionGenerateUserTicket(validatedToken, uSess);
 
                 if (ticket != null)
                     return AuthenticateResult.Success(ticket);
 
-                return AuthenticateResult.Fail("Ticket was not be generated");
+                return AuthenticateResult.Fail("Token is valid, but a user ticket was not be generated");
             }
             catch (Exception ex)
             {
@@ -118,42 +119,51 @@ namespace Xigadee
         /// <param name="validatedToken">The validated token.</param>
         /// <param name="uSess">The user session.</param>
         /// <returns>Returns the authentication ticket.</returns>
-        protected virtual async Task<AuthenticationTicket> UserGenerateTicket(SecurityToken validatedToken, UserSession uSess)
+        protected virtual async Task<AuthenticationTicket> SessionGenerateUserTicket(SecurityToken validatedToken, UserSession uSess)
         {
-            User user = null;
-            UserRoles uRoles = null;
-
-            string authtype = Options?.InternalAuthType;
-
             //This fixes the IsAuthenticated issue when an empty string can cause it to fail.
+            string authtype = Options?.InternalAuthType;
             if (string.IsNullOrEmpty(authtype))
-                authtype = "XigadeeAuth";
+                authtype = nameof(JwtApiAuthenticationHandler);
 
-            var identity = new ClaimsIdentity(authtype);
+            bool IsAuthenticated = false;
+            UserSecurity userSecurity = null;
+            UserRoles userRoles = null;
 
-            //Add the session id.
-            if (uSess != null)
-                identity.AddClaim(new Claim(ClaimTypes.Sid, uSess.Id.ToString("N")));
-
+            //Ok, we will add the user identifier and any claims if the account is active.
             if (uSess.UserId.HasValue)
             {
-                var uRs = await UserSecurityModule.Users.Read(uSess.UserId.Value);
+                var userId = uSess.UserId.Value;
 
-                if (!uRs.IsSuccess)
-                    throw new ArgumentOutOfRangeException($"UserId {uSess.UserId.Value} for Session {uSess.Id} cannot be read: {uRs.ResponseCode}/{uRs.ResponseMessage}");
-                user = uRs.Entity;
-
-                //Add the associated user id, if present.
-                identity.AddClaim(new Claim(ClaimTypes.PrimarySid, user.Id.ToString("N")));
-
-                var urRs = await UserSecurityModule.UserRoles.Read(user.Id);
-
-                if (urRs.IsSuccess)
-                    uRoles = urRs.Entity;
-
-                //Add the user roles.
-                uRoles?.Roles?.ForEach((c) => identity.AddClaim(new Claim(ClaimTypes.Role, c)));
+                var usecRs = await UserSecurityModule.UserSecurities.Read(userId);
+                if (usecRs.IsSuccess)
+                {
+                    userSecurity = usecRs.Entity;
+                    IsAuthenticated = userSecurity.IsActive;
+                    if (IsAuthenticated)
+                    {
+                        //OK, let's see what roles the user has assigned, if any?
+                        var urRs = await UserSecurityModule.UserRoles.Read(userId);
+                        if (urRs.IsSuccess)
+                            userRoles = urRs.Entity;
+                    }
+                    else
+                        Logger.LogWarning($"User {userId} is not active.");
+                }
+                else
+                    Logger.LogWarning($"User {userId} for Session {uSess.Id} security cannot be read: {usecRs.ResponseCode}/{usecRs.ResponseMessage}");
             }
+
+            var identity = new ClaimsIdentity(IsAuthenticated?authtype:"");
+
+            //Add the session id.
+            identity.AddClaim(new Claim(ClaimTypes.Sid, uSess.Id.ToString("N")));
+
+            if (userSecurity != null && userSecurity.IsActive)
+                //Add the associated user id, if present.
+                identity.AddClaim(new Claim(ClaimTypes.PrimarySid, userSecurity.Id.ToString("N")));
+
+            userRoles?.Roles?.ForEach((c) => identity.AddClaim(new Claim(ClaimTypes.Role, c)));
 
             var principal = new ClaimsPrincipal(identity);
 
