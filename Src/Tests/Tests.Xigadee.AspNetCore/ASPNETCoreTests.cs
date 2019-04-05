@@ -37,15 +37,15 @@ namespace Tests.Xigadee
         {
             try
             {
-                var token = await CreateSessionToken();
-
-                var b64 = Convert.ToBase64String(keyId.ToByteArray());
-
-                var prov = new ApiProviderAsyncV2<Guid, MondayMorningBlues>(
-                    new Uri("http://localhost/api"), authHandler: (JwtAuthProvider)token
+                var prov = new ApiProviderMondayMorningBlues(
+                    new Uri("http://localhost/api")
                     );
 
                 prov.ClientOverride = _client;
+
+                await prov.SessionStart();
+
+                var success = await prov.SessionLogon("paul", "123Enter.");
 
                 var rs1 = await prov.Read(new Guid("9A2E3F6D-3B98-4C2C-BD45-74F819B5EDFC"));
 
@@ -74,6 +74,12 @@ namespace Tests.Xigadee
                 var er1 = await prov.Read(Guid.NewGuid());
 
                 var ev1 = await prov.Version(Guid.NewGuid());
+
+                Assert.IsTrue(await prov.SessionLogoff());
+                Assert.IsFalse(await prov.SessionLogoff());
+
+                var rs1o = await prov.Read(new Guid("9A2E3F6D-3B98-4C2C-BD45-74F819B5EDFC"));
+                Assert.IsTrue(rs1o.ResponseCode == 401);
 
                 // Arrange
                 //var customBearerToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9zaWQiOiJhNGY4ZTc2MDQxZWY0NWJlYWEzOGIyOTA0OThiM2YyMSIsImV4cCI6MTU1OTk4NDY2NywiaXNzIjoiY29yaW50LndvcmxkcmVtaXQuY29tIiwiYXVkIjoiRGV2ZWxvcG1lbnQifQ.JXGB7b2Lb3uu_wi_H-HcDdZoKgPYfcYExNjbKeSxXPs";

@@ -14,14 +14,29 @@ namespace Xigadee
         /// </summary>
         /// <param name="claimsPrincipal">The claims.</param>
         /// <returns>Returns the user id in the claim if it can be found.</returns>
-        public static Guid? ExtractUserId(this ClaimsPrincipal claimsPrincipal)
+        public static Guid? ExtractUserSessionId(this ClaimsPrincipal claimsPrincipal)
         {
             var claim = claimsPrincipal.Extract(ClaimTypes.Sid);
 
-            if (claim == null || !Guid.TryParse(claim, out var userId))
+            if (claim == null || !Guid.TryParse(claim, out var id))
                 return null;
 
-            return userId;
+            return id;
+        }
+
+        /// <summary>
+        /// Extracts the user identifier from the claim.
+        /// </summary>
+        /// <param name="claimsPrincipal">The claims.</param>
+        /// <returns>Returns the user id in the claim if it can be found.</returns>
+        public static Guid? ExtractUserId(this ClaimsPrincipal claimsPrincipal)
+        {
+            var claim = claimsPrincipal.Extract(ClaimTypes.PrimarySid);
+
+            if (claim == null || !Guid.TryParse(claim, out var id))
+                return null;
+
+            return id;
         }
 
         /// <summary>

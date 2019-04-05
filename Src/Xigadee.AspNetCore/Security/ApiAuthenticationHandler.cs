@@ -71,9 +71,9 @@ namespace Xigadee
                     var daysUntilExpiry = validatedToken.ValidTo.Subtract(DateTime.UtcNow).TotalDays;
 
                     if (daysUntilExpiry > (jwtBearerTokenOption.LifetimeCriticalDays ?? 0) && daysUntilExpiry <= (jwtBearerTokenOption.LifetimeWarningDays ?? 0))
-                        Logger?.LogWarning($"{claimsPrincipal.ExtractUserId()} bearer token due to expire on {validatedToken.ValidTo:O}");
+                        Logger?.LogWarning($"{claimsPrincipal.ExtractUserSessionId()} bearer token due to expire on {validatedToken.ValidTo:O}");
                     else if (daysUntilExpiry <= (jwtBearerTokenOption.LifetimeCriticalDays ?? 0))
-                        Logger?.LogCritical($"{claimsPrincipal.ExtractUserId()} bearer token due to expire within {jwtBearerTokenOption.LifetimeCriticalDays} days ({validatedToken.ValidTo:O}). Re-issue immediately");
+                        Logger?.LogCritical($"{claimsPrincipal.ExtractUserSessionId()} bearer token due to expire within {jwtBearerTokenOption.LifetimeCriticalDays} days ({validatedToken.ValidTo:O}). Re-issue immediately");
                 }
                 catch (Exception ex)
                 {
@@ -89,7 +89,7 @@ namespace Xigadee
 
                 if (user == null)
                 {
-                    Logger?.LogWarning($"Unable to resolve user for {claimsPrincipal?.ExtractUserId()?.ToString() ?? claimsPrincipal?.Extract(JwtRegisteredClaimNames.Sub) }");
+                    Logger?.LogWarning($"Unable to resolve user for {claimsPrincipal?.ExtractUserSessionId()?.ToString() ?? claimsPrincipal?.Extract(JwtRegisteredClaimNames.Sub) }");
                 }
                 else
                 {

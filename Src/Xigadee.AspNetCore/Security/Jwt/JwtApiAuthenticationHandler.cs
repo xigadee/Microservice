@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Net;
 using System.Net.Http.Headers;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -19,7 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace Xigadee
 {
     /// <summary>
-    /// This module is used to validate the incoming token and assign a user ticket.
+    /// This module is used to validate the incoming token and assign a user ticket using the UserSecurityModule.
     /// </summary>
     public class JwtApiAuthenticationHandler : AuthenticationHandler<JwtApiAuthenticationSchemeOptions>
     {
@@ -41,6 +35,7 @@ namespace Xigadee
             UserSecurityModule = uSec;
         } 
         #endregion
+
         #region UserSecurityModule
         /// <summary>
         /// Gets the user security module.
@@ -48,6 +43,7 @@ namespace Xigadee
         protected IApiUserSecurityModule UserSecurityModule { get; }
         #endregion
 
+        #region HandleAuthenticateAsync()
         /// <summary>
         /// Handles the authentication.
         /// </summary>
@@ -109,9 +105,8 @@ namespace Xigadee
 
                 return AuthenticateResult.Fail(ex);
             }
-        }
-
-
+        } 
+        #endregion
         #region UserGenerateTicket(UserSession uSess, User user, UserSecurity uSec, UserRoles ur)
         /// <summary>
         /// Generates a authentication ticket from the security objects.
