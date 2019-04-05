@@ -175,7 +175,7 @@ namespace Xigadee
         protected virtual void ConfigureAddMvc(IServiceCollection services)
         {
             //services.AddMvcCore();
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_0);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
         #endregion
 
