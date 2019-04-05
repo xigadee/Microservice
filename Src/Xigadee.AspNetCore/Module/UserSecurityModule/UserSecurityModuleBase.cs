@@ -10,7 +10,6 @@ namespace Xigadee
     public abstract class UserSecurityModuleBase : UserSecurityModuleBase<User, UserSecurity, UserSession, UserExternalAction, UserRoles, UserAccessToken>
     {
 
-
     }
 
     /// <summary>
@@ -21,7 +20,6 @@ namespace Xigadee
     public abstract class UserSecurityModuleBase<U> : UserSecurityModuleBase<U, UserSecurity, UserSession, UserExternalAction, UserRoles, UserAccessToken>
         where U : User
     {
-
 
     }
 

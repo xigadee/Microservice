@@ -25,7 +25,7 @@
     <Folder Include="Command\CommandPersistence\Server\Memory\Pipeline\" />
     <Folder Include="Communication\Agent\NamedPipes\Pipeline\" />
     <Folder Include="Helper\Data\" />
-    <Folder Include="Security\" />
+    <Folder Include="Security\Interfaces\" />
   </ItemGroup>
   
 </Project>

@@ -7,24 +7,63 @@
     <RootNamespace>Xigadee</RootNamespace>
     <AssemblyName>Xigadee.Azure.Sql</AssemblyName>
   </PropertyGroup>
-
+  
   <PropertyGroup>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Xigadee.Azure.Sql.xml</DocumentationFile>
   </PropertyGroup>
- 
+  
+  <ItemGroup>
+    <None Remove="Persistence\Json\SqlTemplates\Ancillary\IdTableType.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\Ancillary\KvpTableType.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\Ancillary\Schema.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spCreate.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spDelete.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spDeleteByRef.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spRead.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spReadByRef.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spSoftDelete.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spSoftDeleteByRef.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spUpdate.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spVersion.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spVersionByRef.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\Table.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\Tables\TableHistory.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\Tables\TableProperty.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\Tables\TablePropertyKey.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\Tables\TableReference.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\Tables\TableReferenceKey.sql" />
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
   </ItemGroup>
-  
+  <ItemGroup>
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\Ancillary\Schema.sql" />
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\Ancillary\IdTableType.sql" />
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\Ancillary\KvpTableType.sql" />
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spSoftDelete.sql" />
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spSoftDeleteByRef.sql" />
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spVersion.sql" />
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spDelete.sql" />
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spVersionByRef.sql" />
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spDeleteByRef.sql" />
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spUpdate.sql" />
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spReadByRef.sql" />
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spRead.sql" />
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spCreate.sql" />
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\Tables\TableProperty.sql" />
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\Tables\TablePropertyKey.sql" />
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\Tables\TableReferenceKey.sql" />
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\Tables\TableReference.sql" />
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\Tables\TableHistory.sql" />
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\Tables\Table.sql" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Data.SqlClient" Version="4.6.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="2.1.1" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Xigadee.Abstractions\Xigadee.Abstractions.csproj" />
   </ItemGroup>
-
 </Project>
