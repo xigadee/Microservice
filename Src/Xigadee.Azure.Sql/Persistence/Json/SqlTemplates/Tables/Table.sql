@@ -5,9 +5,8 @@
     ,[VersionId] UNIQUEIDENTIFIER NULL 
 	,[DateCreated] DATETIME NOT NULL DEFAULT(GETUTCDATE())
 	,[DateUpdated] DATETIME NULL
-	,[Hash] VARCHAR(256) NULL
-	,[IsDeleted] BIT NOT NULL DEFAULT(0)
+	,[Sig] VARCHAR(256) NULL
 	,[Body] NVARCHAR(MAX)
 )
 GO
-CREATE UNIQUE INDEX[IX_{EntityName}_ExternalId] ON [{NamespaceTable}].[{EntityName}] ([ExternalId])
+CREATE UNIQUE INDEX[IX_{EntityName}_ExternalId] ON [{NamespaceTable}].[{EntityName}] ([ExternalId]) INCLUDE ([VersionId])

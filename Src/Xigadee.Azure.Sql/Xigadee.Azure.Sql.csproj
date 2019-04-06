@@ -21,9 +21,8 @@
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spDeleteByRef.sql" />
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spRead.sql" />
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spReadByRef.sql" />
-    <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spSoftDelete.sql" />
-    <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spSoftDeleteByRef.sql" />
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spUpdate.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spUpsertRP.sql" />
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spVersion.sql" />
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spVersionByRef.sql" />
     <None Remove="Persistence\Json\SqlTemplates\Table.sql" />
@@ -40,8 +39,7 @@
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Ancillary\Schema.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Ancillary\IdTableType.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Ancillary\KvpTableType.sql" />
-    <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spSoftDelete.sql" />
-    <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spSoftDeleteByRef.sql" />
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spUpsertRP.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spVersion.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spDelete.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spVersionByRef.sql" />

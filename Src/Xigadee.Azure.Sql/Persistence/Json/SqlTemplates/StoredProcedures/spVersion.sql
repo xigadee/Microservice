@@ -1,10 +1,10 @@
-﻿CREATE PROCEDURE [{NamespaceExternal}].[spRead{EntityName}]
+﻿CREATE PROCEDURE [{NamespaceExternal}].[spVersion{EntityName}]
 	@ExternalId UNIQUEIDENTIFIER
 AS
 SET NOCOUNT ON;
 	BEGIN TRY
 	
-		SELECT * 
+		SELECT [ExternalId], [VersionId]
 		FROM [{NamespaceEntity}].[{EntityName}]
 		WHERE [ExternalId] = @ExternalId
 

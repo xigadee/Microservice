@@ -1,13 +1,15 @@
-﻿CREATE PROCEDURE [{NamespaceExternal}].[spRead{EntityName}]
+﻿CREATE PROCEDURE [{NamespaceExternal}].[spVersionByRef{EntityName}]
 	@RefType VARCHAR(30),
 	@RefValue NVARCHAR(250) 
 AS
 SET NOCOUNT ON;
 	BEGIN TRY
 	
-		SELECT * 
-		FROM [{NamespaceEntity}].[{EntityName}]
-		WHERE [ExternalId] = @ExternalId
+		SELECT E.[ExternalId], E.[VersionId]
+		FROM [{NamespaceEntity}].[{EntityName}] E
+		INNER JOIN [{NamespaceEntity}].[{EntityName}Reference] R ON E.Id = R.ReferenceKeyId
+		INNER JOIN [{NamespaceEntity}].[{EntityName}ReferenceKey] RK ON R.ReferenceKeyId = CRK.Id
+		WHERE RK.[Type] = @RefType AND R.[Value] = @RefValue
 
 		IF (@@ROWCOUNT>0)
 			RETURN 200;
