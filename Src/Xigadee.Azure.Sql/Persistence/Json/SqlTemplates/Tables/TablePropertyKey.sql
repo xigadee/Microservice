@@ -1,11 +1,8 @@
-﻿CREATE TABLE[{NamespaceTable}].[{EntityName}]
+﻿CREATE TABLE [{NamespaceTable}].[{EntityName}PropertyKey]
 (
-     [Id] BIGINT NOT NULL PRIMARY KEY IDENTITY(1,1)
-	,[ExternalId] UNIQUEIDENTIFIER NOT NULL
-    ,[VersionId] UNIQUEIDENTIFIER NULL 
-	,[DateCreated] DATETIME NOT NULL DEFAULT(GETUTCDATE())
-	,[DateUpdated] DATETIME NULL
-	,[Body] NVARCHAR(MAX)
+	[Id] INT NOT NULL PRIMARY KEY IDENTITY(1,1), 
+    [Type] VARCHAR(20) NULL
 )
 GO
-CREATE UNIQUE INDEX[IX_{EntityName}_ExternalId] ON [{NamespaceTable}].[{EntityName}] ([ExternalId])
+
+CREATE UNIQUE INDEX [IX_{EntityName}PropertyKey_Type] ON [{NamespaceTable}].[{EntityName}PropertyKey] ([Type])
