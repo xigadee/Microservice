@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [{NamespaceExternal}].[spReadByRef{EntityName}]
+﻿CREATE PROCEDURE [{NamespaceExternal}].[{spReadByRef}]
 	@RefType VARCHAR(30),
 	@RefValue NVARCHAR(250) 
 AS

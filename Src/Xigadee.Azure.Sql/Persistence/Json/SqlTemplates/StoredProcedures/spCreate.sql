@@ -1,12 +1,12 @@
-﻿CREATE PROCEDURE [{NamespaceExternal}].[spCreate{EntityName}]
+﻿CREATE PROCEDURE [{NamespaceExternal}].[{spCreate}]
 	 @ExternalId UNIQUEIDENTIFIER
 	,@VersionId UNIQUEIDENTIFIER = NULL
 	,@VersionIdNew UNIQUEIDENTIFIER = NULL
 	,@Body NVARCHAR (MAX)
 	,@DateCreated DATETIME = NULL
 	,@DateUpdated DATETIME = NULL
-	,@References [{NamespaceExternal}].[KvpTableType] READONLY
-	,@Properties [{NamespaceExternal}].[KvpTableType] READONLY
+	,@References [{NamespaceExternal}].[KvpTableType] READONLY 
+	,@Properties [{NamespaceExternal}].[KvpTableType] READONLY 
 	,@Sig VARCHAR(256) = NULL
 AS
 	BEGIN TRY
@@ -35,7 +35,7 @@ AS
 	
 		-- Create references and properties
 		DECLARE @RPResponse INT;
-		EXEC @RPResponse = [{NamespaceTable}].[spUpsert{EntityName}PropertyReferences] @Id, @References, @Properties
+		EXEC @RPResponse = [{NamespaceTable}].[{spUpsertRP}] @Id, @References, @Properties
 		IF (@RPResponse = 409)
 		BEGIN
 			ROLLBACK TRAN;

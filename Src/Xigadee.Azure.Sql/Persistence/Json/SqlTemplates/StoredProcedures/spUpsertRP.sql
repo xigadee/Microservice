@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [{NamespaceTable}].[spUpsert{EntityName}PropertyReferences]
+﻿CREATE PROCEDURE [{NamespaceTable}].[{spUpsertRP}]
 	@EntityId BIGINT,
 	@References [{NamespaceExternal}].[KvpTableType] READONLY,
 	@Properties [{NamespaceExternal}].[KvpTableType] READONLY

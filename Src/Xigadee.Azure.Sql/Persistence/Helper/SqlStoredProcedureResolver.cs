@@ -56,15 +56,19 @@ namespace Xigadee
                 Enum.GetValues(typeof(RepositoryMethod))
                     .Cast<RepositoryMethod>()
                     .ToDictionary((m) => m,
-                        (m) => $"{ExternalSchema}{PreFix}{m.ToString()}{InterFix}{EntityName}{PostFix}");
+                        (m) => Name1(m.ToString()));
 
             if (overrides != null)
                 overrides.ForEach((o) => _spNames[o.method] = o.spName);
         }
+
+        string Name1(string m) => $"{PreFix}{EntityName}{InterFix}{m.ToString()}{PostFix}";
+        string Name3(string m) => $"{PreFix}{m.ToString()}{InterFix}{EntityName}{PostFix}";
+
+        public string this[RepositoryMethod o] => _spNames[o];
         /// <summary>
         /// Gets the name of the entity.
         /// </summary>
-
         public string EntityName { get; }
         /// <summary>
         /// Gets the name of the schema.
@@ -93,35 +97,35 @@ namespace Xigadee
         /// <summary>
         /// Gets the stored procedure create.
         /// </summary>
-        public virtual string StoredProcedureCreate => _spNames[RepositoryMethod.Create];
+        public virtual string StoredProcedureCreate => ExternalSchema +_spNames[RepositoryMethod.Create];
         /// <summary>
         /// Gets the stored procedure read.
         /// </summary>
-        public virtual string StoredProcedureRead => _spNames[RepositoryMethod.Read];
+        public virtual string StoredProcedureRead => ExternalSchema + _spNames[RepositoryMethod.Read];
         /// <summary>
         /// Gets the stored procedure read by reference.
         /// </summary>
-        public virtual string StoredProcedureReadByRef => _spNames[RepositoryMethod.ReadByRef];
+        public virtual string StoredProcedureReadByRef => ExternalSchema + _spNames[RepositoryMethod.ReadByRef];
         /// <summary>
         /// Gets the stored procedure update.
         /// </summary>
-        public virtual string StoredProcedureUpdate => _spNames[RepositoryMethod.Update];
+        public virtual string StoredProcedureUpdate => ExternalSchema + _spNames[RepositoryMethod.Update];
         /// <summary>
         /// Gets the stored procedure delete.
         /// </summary>
-        public virtual string StoredProcedureDelete => _spNames[RepositoryMethod.Delete];
+        public virtual string StoredProcedureDelete => ExternalSchema + _spNames[RepositoryMethod.Delete];
         /// <summary>
         /// Gets the stored procedure delete by reference.
         /// </summary>
-        public virtual string StoredProcedureDeleteByRef => _spNames[RepositoryMethod.DeleteByRef];
+        public virtual string StoredProcedureDeleteByRef => ExternalSchema + _spNames[RepositoryMethod.DeleteByRef];
         /// <summary>
         /// Gets the stored procedure version.
         /// </summary>
-        public virtual string StoredProcedureVersion => _spNames[RepositoryMethod.Version];
+        public virtual string StoredProcedureVersion => ExternalSchema + _spNames[RepositoryMethod.Version];
         /// <summary>
         /// Gets the stored procedure version by reference.
         /// </summary>
-        public virtual string StoredProcedureVersionByRef => _spNames[RepositoryMethod.VersionByRef];
+        public virtual string StoredProcedureVersionByRef => ExternalSchema + _spNames[RepositoryMethod.VersionByRef];
         /// <summary>
         /// Gets the stored procedure search.
         /// </summary>
@@ -130,5 +134,10 @@ namespace Xigadee
         /// Gets the stored procedure search entity.
         /// </summary>
         public virtual string StoredProcedureSearchEntity(string id) => $"{_spNames[RepositoryMethod.SearchEntity]}{id.Trim().ToLowerInvariant()}";
+
+        public virtual string StoredProcedureUpsertRP => ExternalSchema + StoredProcedureNameUpsertRP;
+
+        public virtual string StoredProcedureNameUpsertRP => Name1("UpsertRP");
+
     }
 }

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [{NamespaceExternal}].[spCreate{EntityName}]
+﻿CREATE PROCEDURE [{NamespaceExternal}].[{spSearchEntity}]
 	 @ExternalId UNIQUEIDENTIFIER
 	,@VersionId UNIQUEIDENTIFIER = NULL
 	,@VersionIdNew UNIQUEIDENTIFIER = NULL

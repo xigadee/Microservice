@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [{NamespaceExternal}].[spVersion{EntityName}]
+﻿CREATE PROCEDURE [{NamespaceExternal}].[{spVersion}]
 	@ExternalId UNIQUEIDENTIFIER
 AS
 SET NOCOUNT ON;

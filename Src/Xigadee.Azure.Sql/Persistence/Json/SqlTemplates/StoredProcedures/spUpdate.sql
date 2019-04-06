@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [{NamespaceExternal}].[spUpdate{EntityName}]
+﻿CREATE PROCEDURE [{NamespaceExternal}].[{spUpdate}]
 	 @ExternalId UNIQUEIDENTIFIER
 	,@VersionId UNIQUEIDENTIFIER = NULL
 	,@VersionIdNew UNIQUEIDENTIFIER = NULL
@@ -52,7 +52,7 @@ AS
 	
 		-- Create references and properties
 		DECLARE @RPResponse INT;
-		EXEC @RPResponse = [{NamespaceTable}].[spUpsert{EntityName}PropertyReferences] @Id, @References, @Properties
+		EXEC @RPResponse = [{NamespaceTable}].[{spUpsertRP}] @Id, @References, @Properties
 		IF (@RPResponse = 409)
 		BEGIN
 			ROLLBACK TRAN;

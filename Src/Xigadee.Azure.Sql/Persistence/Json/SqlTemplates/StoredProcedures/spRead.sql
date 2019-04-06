@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [{NamespaceExternal}].[spRead{EntityName}]
+﻿CREATE PROCEDURE [{NamespaceExternal}].[{spRead}]
 	@ExternalId UNIQUEIDENTIFIER
 AS
 SET NOCOUNT ON;

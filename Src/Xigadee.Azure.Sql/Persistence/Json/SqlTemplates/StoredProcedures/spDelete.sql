@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [{NamespaceExternal}].[spDelete{EntityName}]
+﻿CREATE PROCEDURE [{NamespaceExternal}].[{spDelete}]
 	@ExternalId UNIQUEIDENTIFIER
 AS
 SET NOCOUNT ON;

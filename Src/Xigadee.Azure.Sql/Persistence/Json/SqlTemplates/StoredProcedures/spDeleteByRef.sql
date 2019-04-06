@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [{NamespaceExternal}].[spDeleteByRef{EntityName}]
+﻿CREATE PROCEDURE [{NamespaceExternal}].[{spDeleteByRef}]
 	@RefType VARCHAR(30),
 	@RefValue NVARCHAR(250) 
 AS

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -58,6 +59,11 @@ namespace Xigadee
             script = script.Replace("{NamespaceTable}", _resolver.TableSchemaName);
 
             script = script.Replace("{NamespaceExternal}", _resolver.ExternalSchemaName);
+
+            //Set the stored procedure names.
+            Enum.GetValues(typeof(RepositoryMethod)).Cast<RepositoryMethod>().ForEach((m) => script = script.Replace($"{{sp{m.ToString()}}}", _resolver[m]));
+
+            script = script.Replace("{spUpsertRP}", _resolver.StoredProcedureNameUpsertRP);
 
             return script;
         }
@@ -124,9 +130,15 @@ namespace Xigadee
         public string SpRead => ProcessTemplate("StoredProcedures.spRead.sql");
         public string SpReadByRef => ProcessTemplate("StoredProcedures.spReadByRef.sql");
         public string SpUpdate => ProcessTemplate("StoredProcedures.spUpdate.sql");
-        public string SpUpsertRP => ProcessTemplate("StoredProcedures.spUpsertRP.sql");
         public string SpVersion => ProcessTemplate("StoredProcedures.spVersion.sql");
         public string SpVersionByRef => ProcessTemplate("StoredProcedures.spVersionByRef.sql");
+
+        public string SpUpsertRP => ProcessTemplate("StoredProcedures.spUpsertRP.sql");
+
+        public string SpSearch => ProcessTemplate("StoredProcedures.spSearch.sql");
+
+        public string SpSearchEntity => ProcessTemplate("StoredProcedures.spSearchEntity.sql");
+
 
 
         public string ScriptStoredProcedures(bool createoralter = false)

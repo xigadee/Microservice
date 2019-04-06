@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [{NamespaceExternal}].[spVersionByRef{EntityName}]
+﻿CREATE PROCEDURE [{NamespaceExternal}].[{spVersionByRef}]
 	@RefType VARCHAR(30),
 	@RefValue NVARCHAR(250) 
 AS
