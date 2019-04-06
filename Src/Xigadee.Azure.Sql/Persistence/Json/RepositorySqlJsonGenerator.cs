@@ -129,7 +129,7 @@ namespace Xigadee
         public string SpVersionByRef => ProcessTemplate("StoredProcedures.spVersionByRef.sql");
 
 
-        public string ScriptStoredProcedures()
+        public string ScriptStoredProcedures(bool createoralter = false)
         {
             var sb = new StringBuilder();
 
@@ -152,7 +152,10 @@ namespace Xigadee
             sb.AppendLine(SpVersionByRef);
             sb.AppendLine("GO");
 
-            return sb.ToString();
+            if (createoralter)
+                return sb.ToString().Replace("CREATE PROCEDURE", "CREATE OR ALTER PROCEDURE");
+            else
+                return sb.ToString();
         }
 
         public string ScriptEntity()

@@ -9,8 +9,8 @@ SET NOCOUNT ON;
 
 		DECLARE @Id BIGINT = (
 			SELECT E.[Id] FROM [{NamespaceTable}].[{EntityName}] E
-			INNER JOIN [{NamespaceTable}].[{EntityName}Reference] R ON E.Id = R.KeyId
-			INNER JOIN [{NamespaceTable}].[{EntityName}ReferenceKey] RK ON R.KeyId = CRK.Id
+			INNER JOIN [{NamespaceTable}].[{EntityName}Reference] R ON E.Id = R.EntityId
+			INNER JOIN [{NamespaceTable}].[{EntityName}ReferenceKey] RK ON R.KeyId = RK.Id
 			WHERE RK.[Type] = @RefType AND R.[Value] = @RefValue
 		)
 

@@ -1,4 +1,63 @@
-﻿CREATE PROCEDURE [External].[spCreateTest1]
+﻿CREATE PROCEDURE [dbo].[spUpsertTest1PropertyReferences]
+	@EntityId BIGINT,
+	@References [External].[KvpTableType] READONLY,
+	@Properties [External].[KvpTableType] READONLY
+AS
+	BEGIN TRY
+
+		--Process the reference first.
+		INSERT INTO [dbo].[Test1ReferenceKey] WITH (UPDLOCK) ([Type])
+		SELECT DISTINCT [RefType] FROM @References
+		EXCEPT
+		SELECT [Type] FROM [dbo].[Test1ReferenceKey]
+
+		--Remove old records
+		DELETE FROM [dbo].[Test1Reference] WITH (UPDLOCK)
+		WHERE [EntityId] = @EntityId
+
+		--Add the new records.
+		INSERT INTO [dbo].[Test1Reference] WITH (UPDLOCK)
+		(
+		      [EntityId]
+			, [KeyId]
+			, [Value]
+		)
+		SELECT @EntityId, K.[Id], R.RefValue
+		FROM @References AS R 
+		INNER JOIN [dbo].[Test1ReferenceKey] AS K ON R.[RefType] = K.[Type]
+	
+		--Now process the properties.
+		INSERT INTO [dbo].[Test1PropertyKey] WITH (UPDLOCK) ([Type])
+		SELECT DISTINCT [RefType] FROM @Properties
+		EXCEPT
+		SELECT [Type] FROM [dbo].[Test1PropertyKey]
+
+		--Remove old records
+		DELETE FROM [dbo].[Test1Property] WITH (UPDLOCK)
+		WHERE [EntityId] = @EntityId
+
+		--Add the new records.
+		INSERT INTO [dbo].[Test1Property] WITH (UPDLOCK)
+		(
+			  [EntityId]
+			, [KeyId]
+			, [Value]
+		)
+		SELECT @EntityId, K.[Id], P.RefValue
+		FROM @Properties AS P
+		INNER JOIN [dbo].[Test1PropertyKey] AS K ON P.[RefType] = K.[Type]
+
+		RETURN 200;
+	END TRY
+	BEGIN CATCH
+		IF (ERROR_NUMBER() = 2601)
+			RETURN 409; --Conflict - duplicate reference key to other transaction.
+		ELSE
+			THROW;
+	END CATCH
+
+GO
+CREATE PROCEDURE [External].[spCreateTest1]
 	 @ExternalId UNIQUEIDENTIFIER
 	,@VersionId UNIQUEIDENTIFIER = NULL
 	,@VersionIdNew UNIQUEIDENTIFIER = NULL
@@ -100,9 +159,9 @@ SET NOCOUNT ON;
 		BEGIN TRAN
 
 		DECLARE @Id BIGINT = (
-			SELECT E.[Id] FROM [{NamespaceTable}].[Test1] E
-			INNER JOIN [{NamespaceTable}].[Test1Reference] R ON E.Id = R.ReferenceKeyId
-			INNER JOIN [{NamespaceTable}].[Test1ReferenceKey] RK ON R.ReferenceKeyId = CRK.Id
+			SELECT E.[Id] FROM [dbo].[Test1] E
+			INNER JOIN [dbo].[Test1Reference] R ON E.Id = R.EntityId
+			INNER JOIN [dbo].[Test1ReferenceKey] RK ON R.KeyId = RK.Id
 			WHERE RK.[Type] = @RefType AND R.[Value] = @RefValue
 		)
 
@@ -140,7 +199,7 @@ SET NOCOUNT ON;
 	BEGIN TRY
 	
 		SELECT * 
-		FROM [{NamespaceTable}].[Test1]
+		FROM [dbo].[Test1]
 		WHERE [ExternalId] = @ExternalId
 
 		IF (@@ROWCOUNT>0)
@@ -163,9 +222,9 @@ SET NOCOUNT ON;
 	BEGIN TRY
 	
 		SELECT E.* 
-		FROM [{NamespaceTable}].[Test1] E
-		INNER JOIN [{NamespaceTable}].[Test1Reference] R ON E.Id = R.ReferenceKeyId
-		INNER JOIN [{NamespaceTable}].[Test1ReferenceKey] RK ON R.ReferenceKeyId = CRK.Id
+		FROM [dbo].[Test1] E
+		INNER JOIN [dbo].[Test1Reference] R ON E.Id = R.EntityId
+		INNER JOIN [dbo].[Test1ReferenceKey] RK ON R.KeyId = RK.Id
 		WHERE RK.[Type] = @RefType AND R.[Value] = @RefValue
 
 		IF (@@ROWCOUNT>0)
@@ -253,65 +312,6 @@ AS
 	END CATCH
 
 GO
-CREATE PROCEDURE [dbo].[spUpsertTest1PropertyReferences]
-	@EntityId BIGINT,
-	@References [External].[KvpTableType] READONLY,
-	@Properties [External].[KvpTableType] READONLY
-AS
-	BEGIN TRY
-
-		--Process the reference first.
-		INSERT INTO [dbo].[Test1ReferenceKey] WITH (UPDLOCK) ([Type])
-		SELECT DISTINCT [RefType] FROM @References
-		EXCEPT
-		SELECT [Type] FROM [dbo].[Test1ReferenceKey]
-
-		--Remove old records
-		DELETE FROM [dbo].[Test1Reference] WITH (UPDLOCK)
-		WHERE [EntityId] = @EntityId
-
-		--Add the new records.
-		INSERT INTO [dbo].[Test1Reference] WITH (UPDLOCK)
-		(
-		      [EntityId]
-			, [KeyId]
-			, [Value]
-		)
-		SELECT @EntityId, K.[Id], R.RefValue
-		FROM @References AS R 
-		INNER JOIN [dbo].[Test1ReferenceKey] AS K ON R.[RefType] = K.[Type]
-	
-		--Now process the properties.
-		INSERT INTO [dbo].[Test1PropertyKey] WITH (UPDLOCK) ([Type])
-		SELECT DISTINCT [RefType] FROM @Properties
-		EXCEPT
-		SELECT [Type] FROM [dbo].[Test1PropertyKey]
-
-		--Remove old records
-		DELETE FROM [dbo].[Test1Property] WITH (UPDLOCK)
-		WHERE [EntityId] = @EntityId
-
-		--Add the new records.
-		INSERT INTO [dbo].[Test1Property] WITH (UPDLOCK)
-		(
-			  [EntityId]
-			, [KeyId]
-			, [Value]
-		)
-		SELECT @EntityId, K.[Id], P.RefValue
-		FROM @Properties AS P
-		INNER JOIN [dbo].[Test1PropertyKey] AS K ON P.[RefType] = K.[Type]
-
-		RETURN 200;
-	END TRY
-	BEGIN CATCH
-		IF (ERROR_NUMBER() = 2601)
-			RETURN 409; --Conflict - duplicate reference key to other transaction.
-		ELSE
-			THROW;
-	END CATCH
-
-GO
 CREATE PROCEDURE [External].[spVersionTest1]
 	@ExternalId UNIQUEIDENTIFIER
 AS
@@ -319,7 +319,7 @@ SET NOCOUNT ON;
 	BEGIN TRY
 	
 		SELECT [ExternalId], [VersionId]
-		FROM [{NamespaceTable}].[Test1]
+		FROM [dbo].[Test1]
 		WHERE [ExternalId] = @ExternalId
 
 		IF (@@ROWCOUNT>0)
@@ -342,9 +342,9 @@ SET NOCOUNT ON;
 	BEGIN TRY
 	
 		SELECT E.[ExternalId], E.[VersionId]
-		FROM [{NamespaceTable}].[Test1] E
-		INNER JOIN [{NamespaceTable}].[Test1Reference] R ON E.Id = R.ReferenceKeyId
-		INNER JOIN [{NamespaceTable}].[Test1ReferenceKey] RK ON R.ReferenceKeyId = CRK.Id
+		FROM [dbo].[Test1] E
+		INNER JOIN [dbo].[Test1Reference] R ON E.Id = R.EntityId
+		INNER JOIN [dbo].[Test1ReferenceKey] RK ON R.KeyId = RK.Id
 		WHERE RK.[Type] = @RefType AND R.[Value] = @RefValue
 
 		IF (@@ROWCOUNT>0)

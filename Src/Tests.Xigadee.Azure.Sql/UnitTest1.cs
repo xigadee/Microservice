@@ -36,7 +36,6 @@ namespace Tests.Xigadee.Azure.Sql
             var sql8 = generator.AncillaryKvpTableType;
             var sql9 = generator.AncillaryIdTableType;
 
-
             var sp1 = generator.SpCreate;
             var sp2 = generator.SpDelete;
             var sp3 = generator.SpDeleteByRef;
@@ -47,11 +46,12 @@ namespace Tests.Xigadee.Azure.Sql
             var sp8 = generator.SpVersion;
             var sp9 = generator.SpVersionByRef;
 
-            var sps = generator.ScriptStoredProcedures();
+            var sps = generator.ScriptStoredProcedures(true);
+            var spc = generator.ScriptStoredProcedures(false);
 
             var anc = generator.ScriptAncillary();
 
-            var e = generator.ScriptEntity();
+            var scr = generator.ScriptEntity();
 
         }
     }
