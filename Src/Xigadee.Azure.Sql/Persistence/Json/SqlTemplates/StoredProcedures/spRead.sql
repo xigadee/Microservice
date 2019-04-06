@@ -5,7 +5,7 @@ SET NOCOUNT ON;
 	BEGIN TRY
 	
 		SELECT * 
-		FROM [{NamespaceEntity}].[{EntityName}]
+		FROM [{NamespaceTable}].[{EntityName}]
 		WHERE [ExternalId] = @ExternalId
 
 		IF (@@ROWCOUNT>0)

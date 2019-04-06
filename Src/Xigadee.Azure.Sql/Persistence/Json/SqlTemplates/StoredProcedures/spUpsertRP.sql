@@ -13,12 +13,12 @@ AS
 
 		--Remove old records
 		DELETE FROM [{NamespaceTable}].[{EntityName}Reference] WITH (UPDLOCK)
-		WHERE [EntityId] = @Id
+		WHERE [EntityId] = @EntityId
 
 		--Add the new records.
 		INSERT INTO [{NamespaceTable}].[{EntityName}Reference] WITH (UPDLOCK)
 		(
-				[EntityId]
+		      [EntityId]
 			, [KeyId]
 			, [Value]
 		)
@@ -34,7 +34,7 @@ AS
 
 		--Remove old records
 		DELETE FROM [{NamespaceTable}].[{EntityName}Property] WITH (UPDLOCK)
-		WHERE [EntityId] = @Id
+		WHERE [EntityId] = @EntityId
 
 		--Add the new records.
 		INSERT INTO [{NamespaceTable}].[{EntityName}Property] WITH (UPDLOCK)

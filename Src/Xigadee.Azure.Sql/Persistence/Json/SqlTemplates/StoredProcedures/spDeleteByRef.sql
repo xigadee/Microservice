@@ -8,9 +8,9 @@ SET NOCOUNT ON;
 		BEGIN TRAN
 
 		DECLARE @Id BIGINT = (
-			SELECT E.[Id] FROM [{NamespaceEntity}].[{EntityName}] E
-			INNER JOIN [{NamespaceEntity}].[{EntityName}Reference] R ON E.Id = R.ReferenceKeyId
-			INNER JOIN [{NamespaceEntity}].[{EntityName}ReferenceKey] RK ON R.ReferenceKeyId = CRK.Id
+			SELECT E.[Id] FROM [{NamespaceTable}].[{EntityName}] E
+			INNER JOIN [{NamespaceTable}].[{EntityName}Reference] R ON E.Id = R.KeyId
+			INNER JOIN [{NamespaceTable}].[{EntityName}ReferenceKey] RK ON R.KeyId = CRK.Id
 			WHERE RK.[Type] = @RefType AND R.[Value] = @RefValue
 		)
 

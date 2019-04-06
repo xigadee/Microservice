@@ -12,14 +12,28 @@ AS
 	BEGIN TRY
 		BEGIN TRAN
 
+		DECLARE @Id BIGINT
+
 		IF (@VersionId IS NOT NULL)
 		BEGIN
-			DECLARE @ExistingVersion UNIQUEIDENTIFIER = (SELECT @VersionId FROM [{NamespaceTable}].[{EntityName}] WHERE [ExternalId] = @ExternalId)
-			IF (@ExistingVersion != @VersionId)
+			DECLARE @ExistingVersion UNIQUEIDENTIFIER;
+			SELECT @Id = [Id], @VersionId = [VersionId] FROM [{NamespaceTable}].[{EntityName}] WHERE [ExternalId] = @ExternalId
+			IF (@Id IS NOT NULL AND @ExistingVersion != @VersionId)
 			BEGIN
 				ROLLBACK TRAN;
 				RETURN 409; --Conflict
 			END
+		END
+		ELSE
+		BEGIN
+			SELECT @Id = [Id] FROM [{NamespaceTable}].[{EntityName}] WHERE [ExternalId] = @ExternalId
+		END
+
+		--Check we can find the entity
+		IF (@Id IS NULL)
+		BEGIN
+			ROLLBACK TRAN;
+			RETURN 404; --Not found
 		END
 
 		-- Insert record into DB and get its identity
@@ -28,7 +42,7 @@ AS
 			, [DateUpdated] = ISNULL(@DateUpdated, GETUTCDATE())
 			, [Sig] = @Sig
 			, [Body] = @Body
-		WHERE Id = @ExternalId
+		WHERE Id = @Id
 
 		IF (@@ROWCOUNT=0)
 		BEGIN

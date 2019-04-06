@@ -133,6 +133,8 @@ namespace Xigadee
         {
             var sb = new StringBuilder();
 
+            sb.AppendLine(SpUpsertRP);
+            sb.AppendLine("GO");
             sb.AppendLine(SpCreate);
             sb.AppendLine("GO");
             sb.AppendLine(SpDelete);
@@ -144,8 +146,6 @@ namespace Xigadee
             sb.AppendLine(SpReadByRef);
             sb.AppendLine("GO");
             sb.AppendLine(SpUpdate);
-            sb.AppendLine("GO");
-            sb.AppendLine(SpUpsertRP);
             sb.AppendLine("GO");
             sb.AppendLine(SpVersion);
             sb.AppendLine("GO");

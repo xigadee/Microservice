@@ -5,7 +5,7 @@ SET NOCOUNT ON;
 	BEGIN TRY
 	
 		SELECT [ExternalId], [VersionId]
-		FROM [{NamespaceEntity}].[{EntityName}]
+		FROM [{NamespaceTable}].[{EntityName}]
 		WHERE [ExternalId] = @ExternalId
 
 		IF (@@ROWCOUNT>0)

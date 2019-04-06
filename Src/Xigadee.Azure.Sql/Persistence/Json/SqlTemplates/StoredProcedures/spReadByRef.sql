@@ -6,9 +6,9 @@ SET NOCOUNT ON;
 	BEGIN TRY
 	
 		SELECT E.* 
-		FROM [{NamespaceEntity}].[{EntityName}] E
-		INNER JOIN [{NamespaceEntity}].[{EntityName}Reference] R ON E.Id = R.ReferenceKeyId
-		INNER JOIN [{NamespaceEntity}].[{EntityName}ReferenceKey] RK ON R.ReferenceKeyId = CRK.Id
+		FROM [{NamespaceTable}].[{EntityName}] E
+		INNER JOIN [{NamespaceTable}].[{EntityName}Reference] R ON E.Id = R.KeyId
+		INNER JOIN [{NamespaceTable}].[{EntityName}ReferenceKey] RK ON R.KeyId = CRK.Id
 		WHERE RK.[Type] = @RefType AND R.[Value] = @RefValue
 
 		IF (@@ROWCOUNT>0)

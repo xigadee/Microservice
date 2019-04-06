@@ -90,7 +90,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PiO.Shared", "PiO.Shared\Pi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Xigadee.Azure.Sql", "Tests.Xigadee.Azure.Sql\Tests.Xigadee.Azure.Sql.csproj", "{494ECAD6-EEFF-41A5-8915-1A2BEB05ABE1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.Azure.EventGrid", "Xigadee.Azure.EventGrid\Xigadee.Azure.EventGrid.csproj", "{F19146DE-C401-41C7-B8F2-6D76A1310E63}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Azure.EventGrid", "Xigadee.Azure.EventGrid\Xigadee.Azure.EventGrid.csproj", "{F19146DE-C401-41C7-B8F2-6D76A1310E63}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Tests.Xigadee.Azure.Sql.Db", "Tests.Xigadee.Azure.Sql.Db\Tests.Xigadee.Azure.Sql.Db.sqlproj", "{BD4E6BE8-00E5-4F61-9B3A-0F82DFE769B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -210,6 +212,12 @@ Global
 		{F19146DE-C401-41C7-B8F2-6D76A1310E63}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F19146DE-C401-41C7-B8F2-6D76A1310E63}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F19146DE-C401-41C7-B8F2-6D76A1310E63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD4E6BE8-00E5-4F61-9B3A-0F82DFE769B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD4E6BE8-00E5-4F61-9B3A-0F82DFE769B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD4E6BE8-00E5-4F61-9B3A-0F82DFE769B4}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{BD4E6BE8-00E5-4F61-9B3A-0F82DFE769B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD4E6BE8-00E5-4F61-9B3A-0F82DFE769B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD4E6BE8-00E5-4F61-9B3A-0F82DFE769B4}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -244,9 +252,10 @@ Global
 		{334E03BE-E7B9-45EA-9AFF-1923E461BB87} = {3F79ACF7-014D-4589-919F-FF09A7938BE0}
 		{494ECAD6-EEFF-41A5-8915-1A2BEB05ABE1} = {2D95B4DF-5B82-402D-859A-92492C4DCF22}
 		{F19146DE-C401-41C7-B8F2-6D76A1310E63} = {BB74DB4E-5BF2-4CA1-8A3A-E64EBD66FD03}
+		{BD4E6BE8-00E5-4F61-9B3A-0F82DFE769B4} = {2D95B4DF-5B82-402D-859A-92492C4DCF22}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {8BF7561D-7A94-4B22-B0EB-D82D95B110DE}
 		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
+		SolutionGuid = {8BF7561D-7A94-4B22-B0EB-D82D95B110DE}
 	EndGlobalSection
 EndGlobal
