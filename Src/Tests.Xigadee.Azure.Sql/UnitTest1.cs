@@ -5,11 +5,11 @@ using Xigadee;
 namespace Tests.Xigadee.Azure.Sql
 {
     [TestClass]
-    public class SqlStuff
+    public class SqlTests
     {
-        private class Test1
+        private class Test1:EntityAuditableBase
         {
-            public Guid Id { get; set; } = Guid.NewGuid();
+
         }
 
         [TestMethod]
@@ -20,6 +20,10 @@ namespace Tests.Xigadee.Azure.Sql
 
             Assert.AreEqual(spNames.StoredProcedureCreate, "[External].spCreate_Test1");
             Assert.AreEqual(spNames.StoredProcedureSearch("default"), "mysearch1default");
+
+            var generator = new RepositorySqlJsonGenerator<Test1>(spNames);
+
+            var tableSql = generator.TableEntity;
         }
     }
 }
