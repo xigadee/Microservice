@@ -23,7 +23,36 @@ namespace Tests.Xigadee.Azure.Sql
 
             var generator = new RepositorySqlJsonGenerator<Test1>(spNames);
 
-            var tableSql = generator.TableEntity;
+            var sql1 = generator.TableEntity;
+            var sql2 = generator.TableHistory;
+            var sql3 = generator.TableProperty;
+            var sql4 = generator.TablePropertyKey;
+            var sql5 = generator.TableReference;
+            var sql6 = generator.TableReferenceKey;
+
+            var tab = generator.ScriptTable();
+
+            var sql7 = generator.AncillarySchema;
+            var sql8 = generator.AncillaryKvpTableType;
+            var sql9 = generator.AncillaryIdTableType;
+
+
+            var sp1 = generator.SpCreate;
+            var sp2 = generator.SpDelete;
+            var sp3 = generator.SpDeleteByRef;
+            var sp4 = generator.SpUpdate;
+            var sp5 = generator.SpRead;
+            var sp6 = generator.SpReadByRef;
+            var sp7 = generator.SpUpsertRP;
+            var sp8 = generator.SpVersion;
+            var sp9 = generator.SpVersionByRef;
+
+            var sps = generator.ScriptStoredProcedures();
+
+            var anc = generator.ScriptAncillary();
+
+            var e = generator.ScriptEntity();
+
         }
     }
 }

@@ -55,4 +55,3 @@ AS
 
 		RETURN 500;
 	END CATCH
-GO

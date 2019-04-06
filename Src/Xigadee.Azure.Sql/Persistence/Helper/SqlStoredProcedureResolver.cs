@@ -16,11 +16,12 @@ namespace Xigadee
         /// </summary>
         public SqlStoredProcedureResolver(string entityName = null
             , string schemaName = null
+            , string internalSchemaName = null
             , string prefix = "sp"
             , string interfix = null
             , string postfix = null
             , (RepositoryMethod method, string spName)[] overrides = null)
-            : base(entityName ?? typeof(E).Name, schemaName, prefix, interfix, postfix, overrides)
+            : base(entityName ?? typeof(E).Name, schemaName, internalSchemaName, prefix, interfix, postfix, overrides)
         {
 
         }
@@ -38,13 +39,15 @@ namespace Xigadee
         /// </summary>
         public SqlStoredProcedureResolver(string entityName
             , string schemaName = null
+            , string internalSchemaName = null
             , string prefix = "sp"
             , string interfix = null
             , string postfix = null
             , (RepositoryMethod method, string spName)[] overrides = null)
         {
             EntityName = entityName ?? "";
-            SchemaName = schemaName ?? "";
+            ExternalSchemaName = schemaName ?? "External";
+            TableSchemaName = internalSchemaName ?? "dbo";
             PreFix = prefix ?? "";
             InterFix = interfix ?? "";
             PostFix = postfix ?? "";
@@ -66,7 +69,11 @@ namespace Xigadee
         /// <summary>
         /// Gets the name of the schema.
         /// </summary>
-        public string SchemaName { get; }
+        public string ExternalSchemaName { get; }
+        /// <summary>
+        /// Gets the name of the schema.
+        /// </summary>
+        public string TableSchemaName { get; }
         /// <summary>
         /// Gets the pre fix.
         /// </summary>
@@ -82,7 +89,7 @@ namespace Xigadee
         /// <summary>
         /// Gets the external schema.
         /// </summary>
-        public virtual string ExternalSchema => string.IsNullOrEmpty(SchemaName) ? "" : $"[{SchemaName}].";
+        public virtual string ExternalSchema => string.IsNullOrEmpty(ExternalSchemaName) ? "" : $"[{ExternalSchemaName}].";
         /// <summary>
         /// Gets the stored procedure create.
         /// </summary>

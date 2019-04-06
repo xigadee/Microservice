@@ -55,4 +55,3 @@ AS
 		ELSE
 			THROW;
 	END CATCH
-GO
