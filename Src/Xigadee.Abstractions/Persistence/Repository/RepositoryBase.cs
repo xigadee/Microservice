@@ -179,17 +179,6 @@ namespace Xigadee
 
         #endregion
 
-        #region Declarations        
-        /// <summary>
-        /// The reference maker used to make the reference values from an entity.
-        /// </summary>
-        protected readonly Func<E, IEnumerable<Tuple<string, string>>> _referenceMaker;
-        /// <summary>
-        /// The properties maker is used to extract the common entity properties.
-        /// </summary>
-        protected readonly Func<E, IEnumerable<Tuple<string, string>>> _propertiesMaker;
-        #endregion
-
         #region Constructor
         /// <summary>
         /// Initializes a new instance of the <see cref="RepositoryBase{TKey, TEntity}"/> class.
@@ -217,18 +206,18 @@ namespace Xigadee
                 throw new ArgumentNullException($"{nameof(keyMaker)} cannot be null.");
 
             //References
-            _referenceMaker = referenceMaker;
-            if (_referenceMaker == null && (res?.SupportsReferences ?? false))
-                _referenceMaker = (e) => res.References(e);
+            ReferencesMaker = referenceMaker;
+            if (ReferencesMaker == null && (res?.SupportsReferences ?? false))
+                ReferencesMaker = (e) => res.References(e);
             else
-                _referenceMaker = e => new List<Tuple<string, string>>();
+                ReferencesMaker = e => new List<Tuple<string, string>>();
 
             //Properties
-            _propertiesMaker = propertiesMaker;
-            if (_propertiesMaker == null && (res?.SupportsProperties ?? false))
-                _propertiesMaker = (e) => res.Properties(e);
+            PropertiesMaker = propertiesMaker;
+            if (PropertiesMaker == null && (res?.SupportsProperties ?? false))
+                PropertiesMaker = (e) => res.Properties(e);
             else
-                _propertiesMaker = e => new List<Tuple<string, string>>();
+                PropertiesMaker = e => new List<Tuple<string, string>>();
 
             //Version maker
             VersionPolicy = versionPolicy;
@@ -264,6 +253,18 @@ namespace Xigadee
         /// Gets the key manager which is used for managing the serialization of a key to and from a string.
         /// </summary>
         public RepositoryKeyManager<K> KeyManager { get; }
+        #endregion
+        #region ReferencesMaker
+        /// <summary>
+        /// The reference maker used to make the reference values from an entity.
+        /// </summary>
+        public Func<E, IEnumerable<Tuple<string, string>>> ReferencesMaker { get; protected set; }
+        #endregion
+        #region PropertiesMaker        
+        /// <summary>
+        /// The properties maker is used to extract the common entity properties.
+        /// </summary>
+        public Func<E, IEnumerable<Tuple<string, string>>> PropertiesMaker { get; protected set; }
         #endregion
 
         #region Create
@@ -487,8 +488,9 @@ namespace Xigadee
         /// Returns the holder with the response and data.
         /// </returns>
         protected abstract Task<RepositoryHolder<K, Tuple<K, string>>> VersionByRefInternal(string refKey, string refValue, RepositorySettings options
-            , Action<RepositoryHolder<K, Tuple<K, string>>> holderAction); 
+            , Action<RepositoryHolder<K, Tuple<K, string>>> holderAction);
         #endregion
+
 
         /// <summary>
         /// Searches the entity store.

@@ -142,14 +142,14 @@ namespace Xigadee
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <returns>Returns the data table.</returns>
-        protected virtual DataTable CreateProperties(E entity) => CreateDataTable(entity, _propertiesMaker);
+        protected virtual DataTable CreateProperties(E entity) => CreateDataTable(entity, PropertiesMaker);
 
         /// <summary>
         /// Creates the references data table.
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <returns>Returns the data table.</returns>
-        protected virtual DataTable CreateReferences(E entity) => CreateDataTable(entity, _referenceMaker); 
+        protected virtual DataTable CreateReferences(E entity) => CreateDataTable(entity, ReferencesMaker); 
         #endregion
         #region CreateDataTable(E entity, Func<E, IEnumerable<Tuple<string, string>>> extractor)
         /// <summary>

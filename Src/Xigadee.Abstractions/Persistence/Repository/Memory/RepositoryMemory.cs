@@ -135,8 +135,8 @@ namespace Xigadee
                 return ResultFormat(400, () => key, () => default(E), null, options, holderAction);
 
             //We have to be careful as the caller still has a reference to the old entity and may change it.
-            var references = _referenceMaker?.Invoke(entity).ToList();
-            var properties = _propertiesMaker?.Invoke(entity).ToList();
+            var references = ReferencesMaker?.Invoke(entity).ToList();
+            var properties = PropertiesMaker?.Invoke(entity).ToList();
 
             E newEntity = default(E);
             Tuple<string, string> t = null;
@@ -218,8 +218,8 @@ namespace Xigadee
             if (IsReadOnly)
                 return ResultFormat(400, () => key, () => default(E), null, options, holderAction);
 
-            var newReferences = _referenceMaker?.Invoke(entity).ToList();
-            var newProperties = _propertiesMaker?.Invoke(entity).ToList();
+            var newReferences = ReferencesMaker?.Invoke(entity).ToList();
+            var newProperties = PropertiesMaker?.Invoke(entity).ToList();
 
             EntityContainer<K,E> newContainer = CreateEntityContainer(key, entity, newReferences, newProperties, null, KeyManager.Serialize(key));
 
