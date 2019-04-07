@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Text;
 using System.Threading.Tasks;
@@ -43,12 +45,32 @@ namespace Xigadee
 
         protected override void DbSerializeEntity(E entity, SqlCommand cmd)
         {
-            throw new NotImplementedException();
+            //cmd.Parameters.Add(new SqlParameter("@ExternalId", SqlDbType.UniqueIdentifier) { Value = entity.Id });
+            //cmd.Parameters.Add(new SqlParameter("@VersionId", SqlDbType.UniqueIdentifier) { Value = entity.VersionId });
+            //cmd.Parameters.Add(new SqlParameter("@VersionIdNew", SqlDbType.UniqueIdentifier) { Value = entity.VersionId });
+            //cmd.Parameters.Add(new SqlParameter("@DateCreated", SqlDbType.UniqueIdentifier) { Value = entity.VersionId });
+            //cmd.Parameters.Add(new SqlParameter("@DateUpdated", SqlDbType.UniqueIdentifier) { Value = entity.VersionId });
+
+            //cmd.Parameters.Add(new SqlParameter("@Body", SqlDbType.NVarChar) { Value = JsonConvert.SerializeObject(entity) });
+            //cmd.Parameters.Add(new SqlParameter("@UserIdReference", SqlDbType.UniqueIdentifier) { Value = entity.UserIdReference });
+
+            //cmd.Parameters.Add(CreateReferencesParameter(entity));
+
         }
 
-        protected override void DbSerializeKey(K key, SqlCommand cmd)
-        {
-            throw new NotImplementedException();
-        }
+        //protected SqlParameter CreateReferencesParameter(E entity)
+        //{
+        //    var data = new DataTable();
+        //    data.Columns.Add(new DataColumn("RefType", typeof(string)));
+        //    data.Columns.Add(new DataColumn("RefValue", typeof(string)));
+
+        //    foreach (var reference in _referenceMaker(entity).Where(r => !string.IsNullOrEmpty(r.Item2)))
+        //    {
+        //        data.Rows.Add(reference.Item1, reference.Item2);
+        //    }
+
+        //    return new SqlParameter("@References", SqlDbType.Structured) { TypeName = $"[{ExternalSchema}].ReferenceTableType", Value = data };
+        //}
+
     }
 }

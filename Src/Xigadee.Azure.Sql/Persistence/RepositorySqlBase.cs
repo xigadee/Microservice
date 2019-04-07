@@ -170,14 +170,27 @@ namespace Xigadee
         }
         #endregion
 
-
+        #region DbSerializeKey(K key, SqlCommand cmd)
         /// <summary>
         /// This method serializes the entity key in to the SQL command.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="cmd">The command.</param>
-        protected abstract void DbSerializeKey(K key, SqlCommand cmd);
-
+        protected virtual void DbSerializeKey(K key, SqlCommand cmd)
+        {
+            if (typeof(K) == typeof(Guid))
+                cmd.Parameters.Add("@ExternalId", SqlDbType.UniqueIdentifier).Value = key;
+            else if (typeof(K) == typeof(string))
+                cmd.Parameters.Add("@ExternalId", SqlDbType.NVarChar, 255).Value = key;
+            else if (typeof(K) == typeof(long))
+                cmd.Parameters.Add("@ExternalId", SqlDbType.BigInt).Value = key;
+            else if (typeof(K) == typeof(int))
+                cmd.Parameters.Add("@ExternalId", SqlDbType.Int).Value = key;
+            else
+                throw new NotSupportedException($"Key type '{typeof(K).Name}' is not supported automatically. Override DbSerializeKey");
+        }
+        #endregion
+        #region DbSerializeKeyReference(Tuple<string, string> key, SqlCommand cmd)
         /// <summary>
         /// This method serializes the entity key in to the SQL command.
         /// </summary>
@@ -187,7 +200,8 @@ namespace Xigadee
         {
             cmd.Parameters.Add("@RefType", SqlDbType.NVarChar, 50).Value = key.Item1;
             cmd.Parameters.Add("@RefValue", SqlDbType.NVarChar, 255).Value = key.Item2;
-        }
+        } 
+        #endregion
 
         /// <summary>
         /// This method serializes the entity in to the SqlCommand.
@@ -203,6 +217,7 @@ namespace Xigadee
         /// <param name="dataReader">Data reader</param>
         protected abstract E DbDeserializeEntity(SqlDataReader dataReader);
 
+        #region DbDeserializeVersion(SqlDataReader dataReader)
         /// <summary>
         /// This method deserializes a data reader record into a version tuple.
         /// </summary>
@@ -214,7 +229,8 @@ namespace Xigadee
             string versionId = schema?.Columns.Contains("VersionId") ?? false ? dataReader["VersionId"].ToString() : null;
 
             return new Tuple<K, string>(key, versionId);
-        }
+        } 
+        #endregion
 
         #region ExecuteSqlCommand<ET> ...
         /// <summary>

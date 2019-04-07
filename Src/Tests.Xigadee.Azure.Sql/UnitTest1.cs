@@ -12,16 +12,24 @@ namespace Tests.Xigadee.Azure.Sql
 
         }
 
+        private class Test2 : EntityAuditableBase
+        {
+
+        }
+
         [TestMethod]
         public void Verify_SqlStoredProcedureResolver()
         {
-            var spNames = new SqlStoredProcedureResolver<Test1>(schemaName:"External", interfix:"_"
+            var spNames = new SqlStoredProcedureResolver<Test1>(schemaName: "External", interfix: "_"
                 , overrides: new[] { (RepositoryMethod.Search, "mysearch1") });
+
+            var spNames2 = new SqlStoredProcedureResolver<User>(schemaName: "External", interfix: "_");
 
             //Assert.AreEqual(spNames.StoredProcedureCreate, "[External].spCreate_Test1");
             //Assert.AreEqual(spNames.StoredProcedureSearch("default"), "mysearch1default");
 
             var generator = new RepositorySqlJsonGenerator<Test1>(spNames);
+            var generator2 = new RepositorySqlJsonGenerator<User>(spNames2);
 
             var sql1 = generator.TableEntity;
             var sql2 = generator.TableHistory;
@@ -52,6 +60,8 @@ namespace Tests.Xigadee.Azure.Sql
             var anc = generator.ScriptAncillary();
 
             var scr = generator.ScriptEntity();
+
+            var scr2 = generator2.ScriptEntity();
 
         }
     }

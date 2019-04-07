@@ -9,9 +9,12 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
+    public class SignMe { }
+
     [TestClass]
     public class EntityHintsCheck
     {
+        [EntitySignatureHint(typeof(SignMe))]
         private class TestClass
         {
             [EntityIdHint]
