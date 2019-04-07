@@ -28,8 +28,8 @@ AS
 		(
 			  @ExternalId
 			, ISNULL(@VersionIdNew, NEWID())
-			, ISNULL(@DateCreated, GETUTCDATE())
 			, @UserIdAudit
+			, ISNULL(@DateCreated, GETUTCDATE())
 			, @DateUpdated
 			, @Sig
 			, @Body
