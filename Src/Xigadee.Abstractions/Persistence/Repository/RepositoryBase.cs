@@ -200,29 +200,32 @@ namespace Xigadee
 
             //Key maker
             KeyMaker = keyMaker;
-            if (KeyMaker == null && (res?.SupportsId ?? false))
-                KeyMaker = ((e) => res.Id<K>(e));
-            else
-                throw new ArgumentNullException($"{nameof(keyMaker)} cannot be null.");
+            if (KeyMaker == null)
+                if (res?.SupportsId ?? false)
+                    KeyMaker = ((e) => res.Id<K>(e));
+                else
+                    throw new ArgumentNullException($"{nameof(keyMaker)} cannot be null.");
 
             //References
             ReferencesMaker = referenceMaker;
-            if (ReferencesMaker == null && (res?.SupportsReferences ?? false))
-                ReferencesMaker = (e) => res.References(e);
-            else
-                ReferencesMaker = e => new List<Tuple<string, string>>();
+            if (ReferencesMaker == null)
+                if (res?.SupportsReferences ?? false)
+                    ReferencesMaker = (e) => res.References(e);
+                else
+                    ReferencesMaker = e => new List<Tuple<string, string>>();
 
             //Properties
             PropertiesMaker = propertiesMaker;
-            if (PropertiesMaker == null && (res?.SupportsProperties ?? false))
-                PropertiesMaker = (e) => res.Properties(e);
-            else
-                PropertiesMaker = e => new List<Tuple<string, string>>();
+            if (PropertiesMaker == null)
+                if (res?.SupportsProperties ?? false)
+                    PropertiesMaker = (e) => res.Properties(e);
+                else
+                    PropertiesMaker = e => new List<Tuple<string, string>>();
 
             //Version maker
             VersionPolicy = versionPolicy;
             if (VersionPolicy == null && (res?.SupportsVersion ?? false))
-                VersionPolicy = res.VersionPolicyGet<E>();
+                    VersionPolicy = res.VersionPolicyGet<E>();
 
             //Key Manager
             KeyManager = keyManager ?? RepositoryKeyManager.Resolve<K>();

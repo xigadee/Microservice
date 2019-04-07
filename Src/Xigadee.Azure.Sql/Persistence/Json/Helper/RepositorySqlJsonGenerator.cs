@@ -16,7 +16,7 @@ namespace Xigadee
         #region Declarations
         private SqlStoredProcedureResolver<E> _resolver;
         #endregion
-        #region Constructor.
+        #region Constructor
         /// <summary>
         /// This is the default constructor.
         /// </summary>

@@ -96,20 +96,7 @@ namespace Tests.Xigadee
                 result = await client.SendAsync(httpRq);
             }
 
-            if (result.IsSuccessStatusCode)
-            {
-                var tokenB = await result.Content.ReadAsByteArrayAsync();
-
-                var token = Encoding.UTF8.GetString(tokenB);
-
-                if (!string.IsNullOrEmpty(token))
-                {
-                    mAuthHandlers.Clear();
-                    mAuthHandlers.Add(new JwtAuthProvider(token));
-                }
-            }
-
-            return false;
+            return result?.IsSuccessStatusCode ?? false;
         }
 
         /// <summary>

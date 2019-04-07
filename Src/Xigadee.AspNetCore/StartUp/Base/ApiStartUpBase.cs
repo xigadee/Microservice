@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -342,12 +343,21 @@ namespace Xigadee
         /// </summary>
         protected virtual void Bind()
         {
+            if (!string.IsNullOrWhiteSpace(BindNameConfigApplication))
+            {
+                ConfigApplication = new ConfigApplication();
+                Configuration.Bind(BindNameConfigApplication, ConfigApplication);
+
+                ConfigApplication.Connections = Configuration.GetSection("ConnectionStrings").GetChildren().ToDictionary((e) => e.Key, (e) => e.Value);
+            }
+
             if (UseMicroservice)
             {
                 ConfigMicroservice = new ConfigMicroservice();
 
                 if (!string.IsNullOrEmpty(BindNameConfigMicroservice))
                     Configuration.Bind(BindNameConfigMicroservice, ConfigMicroservice);
+
             }
         }
         #endregion
@@ -407,6 +417,16 @@ namespace Xigadee
         /// Gets the bind section for ConfigMicroservice.
         /// </summary>
         protected virtual string BindNameConfigMicroservice => "ConfigMicroservice";
+        #endregion
+        #region ConfigApplication
+        /// <summary>
+        /// Gets or sets the microservice configuration.
+        /// </summary>
+        public virtual ConfigApplication ConfigApplication { get; set; }
+        /// <summary>
+        /// Gets the bind section for ConfigMicroservice.
+        /// </summary>
+        protected virtual string BindNameConfigApplication => "ConfigApplication";
         #endregion
 
     }

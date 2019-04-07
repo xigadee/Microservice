@@ -22,7 +22,7 @@ namespace Xigadee
         /// <summary>
         /// Initializes a new instance of the <see cref="RepositoryBridge{K, E, AE}"/> class.
         /// </summary>
-        /// <param name="repo">The repo.</param>
+        /// <param name="repo">The repository.</param>
         public RepositoryBridge(IRepositoryAsync<K, AE> repo)
         {
             Repository = repo;
