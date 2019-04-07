@@ -7,16 +7,6 @@ namespace Tests.Xigadee.Azure.Sql
     [TestClass]
     public class SqlTests
     {
-        private class Test1:EntityAuditableBase
-        {
-
-        }
-
-        private class Test2 : EntityAuditableBase
-        {
-
-        }
-
         [TestMethod]
         public void Verify_SqlStoredProcedureResolver()
         {

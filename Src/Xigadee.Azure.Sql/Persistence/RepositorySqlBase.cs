@@ -39,7 +39,7 @@ namespace Xigadee
         /// <param name="keyManager">The key manager.</param>
         /// <exception cref="ArgumentNullException">The sqlConnection cannot be null.</exception>
         protected RepositorySqlBase(string sqlConnection
-            , Func<E, K> keyMaker
+            , Func<E, K> keyMaker = null
             , ISqlStoredProcedureResolver spNamer = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             , Func<E, IEnumerable<Tuple<string, string>>> propertiesMaker = null

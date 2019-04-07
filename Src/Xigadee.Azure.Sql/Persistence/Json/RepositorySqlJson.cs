@@ -31,7 +31,7 @@ namespace Xigadee
         /// <param name="versionPolicy">The version policy.</param>
         /// <param name="keyManager">The key manager.</param>
         public RepositorySqlJson(string sqlConnection
-            , Func<E, K> keyMaker
+            , Func<E, K> keyMaker = null
             , ISqlStoredProcedureResolver spNamer = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             , Func<E, IEnumerable<Tuple<string, string>>> propertiesMaker = null

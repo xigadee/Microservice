@@ -192,34 +192,6 @@ namespace Xigadee
 
         #region Constructor
         /// <summary>
-        /// Initializes a new instance of the <see cref="RepositoryBase{K, E}"/> class using the EntityHintHelper.
-        /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">Cannot resolve a EntityHintResolver for {typeof(E).Name}</exception>
-        protected RepositoryBase()
-        {
-            var res = EntityHintHelper.Resolve<E>();
-
-            if (res == null || !res.SupportsId)
-                throw new ArgumentOutOfRangeException($"Cannot resolve a EntityHintResolver for {typeof(E).Name}");
-
-            KeyMaker = (e) => res.Id<K>(e);
-
-            if (res.SupportsReferences)
-                _referenceMaker = (e) => res.References(e);
-            else
-                _referenceMaker = e => new List<Tuple<string, string>>();
-
-            if (res.SupportsProperties)
-                _propertiesMaker = (e) => res.Properties(e);
-            else
-                _propertiesMaker = e => new List<Tuple<string, string>>();
-
-            if (res.SupportsVersion)
-                VersionPolicy = res.VersionPolicyGet<E>();
-
-            KeyManager = RepositoryKeyManager.Resolve<K>();
-        }
-        /// <summary>
         /// Initializes a new instance of the <see cref="RepositoryBase{TKey, TEntity}"/> class.
         /// </summary>
         /// <param name="keyMaker">The key maker.</param>
@@ -228,20 +200,42 @@ namespace Xigadee
         /// <param name="versionPolicy">The version policy.</param>
         /// <param name="keyManager">The key serialization manager. if this is not passed, then a default serializer will be passed using the component model.</param>
         /// <exception cref="ArgumentNullException">keyMaker</exception>
-        protected RepositoryBase(Func<E, K> keyMaker
+        protected RepositoryBase(Func<E, K> keyMaker = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             , Func<E, IEnumerable<Tuple<string, string>>> propertiesMaker = null
             , VersionPolicy<E> versionPolicy = null
             , RepositoryKeyManager<K> keyManager = null
             )
         {
-            KeyMaker = keyMaker ?? throw new ArgumentNullException(nameof(keyMaker));
+            var res = EntityHintHelper.Resolve<E>();
 
-            _referenceMaker = referenceMaker ?? (e => new List<Tuple<string, string>>());
-            _propertiesMaker = propertiesMaker ?? (e => new List<Tuple<string, string>>());
+            //Key maker
+            KeyMaker = keyMaker;
+            if (KeyMaker == null && (res?.SupportsId ?? false))
+                KeyMaker = ((e) => res.Id<K>(e));
+            else
+                throw new ArgumentNullException($"{nameof(keyMaker)} cannot be null.");
 
+            //References
+            _referenceMaker = referenceMaker;
+            if (_referenceMaker == null && (res?.SupportsReferences ?? false))
+                _referenceMaker = (e) => res.References(e);
+            else
+                _referenceMaker = e => new List<Tuple<string, string>>();
+
+            //Properties
+            _propertiesMaker = propertiesMaker;
+            if (_propertiesMaker == null && (res?.SupportsProperties ?? false))
+                _propertiesMaker = (e) => res.Properties(e);
+            else
+                _propertiesMaker = e => new List<Tuple<string, string>>();
+
+            //Version maker
             VersionPolicy = versionPolicy;
+            if (VersionPolicy == null && (res?.SupportsVersion ?? false))
+                VersionPolicy = res.VersionPolicyGet<E>();
 
+            //Key Manager
             KeyManager = keyManager ?? RepositoryKeyManager.Resolve<K>();
         }
         #endregion
