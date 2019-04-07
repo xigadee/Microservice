@@ -2,6 +2,7 @@
 	 @ExternalId UNIQUEIDENTIFIER
 	,@VersionId UNIQUEIDENTIFIER = NULL
 	,@VersionIdNew UNIQUEIDENTIFIER = NULL
+    ,@UserIdAudit UNIQUEIDENTIFIER NULL 
 	,@Body NVARCHAR (MAX)
 	,@DateCreated DATETIME = NULL
 	,@DateUpdated DATETIME = NULL
@@ -39,6 +40,7 @@ AS
 		-- Insert record into DB and get its identity
 		UPDATE [{NamespaceTable}].[{EntityName}]
 		SET   [VersionId] = @VersionIdNew
+			, [UserIdAudit] = @UserIdAudit
 			, [DateUpdated] = ISNULL(@DateUpdated, GETUTCDATE())
 			, [Sig] = @Sig
 			, [Body] = @Body

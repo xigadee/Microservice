@@ -11,6 +11,14 @@
         string EntityName { get; }
 
         /// <summary>
+        /// Gets the name of the schema.
+        /// </summary>
+        string ExternalSchemaName { get; }
+        /// <summary>
+        /// Gets the external schema.
+        /// </summary>
+        string ExternalSchema { get; }
+        /// <summary>
         /// Gets the create stored procedure name.
         /// </summary>
         string StoredProcedureCreate { get; }

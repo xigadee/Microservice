@@ -2,6 +2,7 @@
 	 @ExternalId UNIQUEIDENTIFIER
 	,@VersionId UNIQUEIDENTIFIER = NULL
 	,@VersionIdNew UNIQUEIDENTIFIER = NULL
+    ,@UserIdAudit UNIQUEIDENTIFIER NULL 
 	,@Body NVARCHAR (MAX)
 	,@DateCreated DATETIME = NULL
 	,@DateUpdated DATETIME = NULL
@@ -17,6 +18,7 @@ AS
 		(
 			  ExternalId
 			, VersionId
+			, UserIdAudit
 			, DateCreated
 			, DateUpdated
 			, Sig
@@ -27,6 +29,7 @@ AS
 			  @ExternalId
 			, ISNULL(@VersionIdNew, NEWID())
 			, ISNULL(@DateCreated, GETUTCDATE())
+			, @UserIdAudit
 			, @DateUpdated
 			, @Sig
 			, @Body
