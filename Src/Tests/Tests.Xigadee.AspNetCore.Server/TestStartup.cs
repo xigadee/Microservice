@@ -105,7 +105,9 @@ namespace Tests.Xigadee
     {
         protected override IApiUserSecurityModule UserSecurityModuleCreate()
         {
-            var usm = new UserSecurityModuleMemoryTest<TestUser>();
+            var usm = new UserSecurityModule<TestUser>()
+                .SetAsMemoryBased();
+
             //Add test security accounts here.
             var user = new TestUser() { Username = "paul" };
             var rs = usm.Users.Create(user).Result;

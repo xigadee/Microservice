@@ -17,7 +17,7 @@ namespace Tests.Xigadee
         [TestMethod]
         public async Task TestMethod1()
         {
-            var prov = new UserSecurityModuleMemoryTest<TestUser>();
+            var prov = new UserSecurityModule<TestUser>().SetAsMemoryBased();
 
             var user = new TestUser() { Username = "pauls" };
 
@@ -29,7 +29,7 @@ namespace Tests.Xigadee
         [TestMethod]
         public async Task TestMethodHmm()
         {
-            var prov = new UserSecurityModuleMemoryTest<TestUser>();
+            var prov = new UserSecurityModule<TestUser>().SetAsMemoryBased();
 
             var user = new User();
 

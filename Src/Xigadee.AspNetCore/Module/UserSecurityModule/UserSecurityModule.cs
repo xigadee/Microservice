@@ -7,7 +7,7 @@ namespace Xigadee
     /// </summary>
     /// <seealso cref="Xigadee.ApiModuleBase" />
     /// <seealso cref="Xigadee.IApiUserSecurityModule" />
-    public abstract class UserSecurityModuleBase : UserSecurityModuleBase<User, UserSecurity, UserSession, UserExternalAction, UserRoles, UserAccessToken>
+    public class UserSecurityModule : UserSecurityModule<User, UserSecurity, UserSession, UserExternalAction, UserRoles, UserAccessToken>
     {
 
     }
@@ -17,7 +17,7 @@ namespace Xigadee
     /// </summary>
     /// <seealso cref="Xigadee.ApiModuleBase" />
     /// <seealso cref="Xigadee.IApiUserSecurityModule" />
-    public abstract class UserSecurityModuleBase<U> : UserSecurityModuleBase<U, UserSecurity, UserSession, UserExternalAction, UserRoles, UserAccessToken>
+    public class UserSecurityModule<U> : UserSecurityModule<U, UserSecurity, UserSession, UserExternalAction, UserRoles, UserAccessToken>
         where U : User
     {
 
@@ -28,7 +28,7 @@ namespace Xigadee
     /// </summary>
     /// <seealso cref="Xigadee.ApiModuleBase" />
     /// <seealso cref="Xigadee.IApiUserSecurityModule" />
-    public abstract class UserSecurityModuleBase<U,USEC,USES,UEXA,UR,UAT> : ApiModuleBase, IApiUserSecurityModule
+    public class UserSecurityModule<U,USEC,USES,UEXA,UR,UAT> : ApiModuleBase, IApiUserSecurityModule
         where U : User
         where USEC : UserSecurity
         where USES : UserSession
@@ -37,10 +37,10 @@ namespace Xigadee
         where UAT : UserAccessToken
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserSecurityModuleBase{U, USEC, USES, UEXA, UR, UAT}"/> class.
+        /// Initializes a new instance of the <see cref="UserSecurityModule{U, USEC, USES, UEXA, UR, UAT}"/> class.
         /// Specifically, this sets the lazy initializers for the base interface.
         /// </summary>
-        protected UserSecurityModuleBase()
+        public UserSecurityModule()
         {
             //This lazy conversion allows you to use a more derived entity for User, User Security etc.
             //but still use the same generic interface to interact with the base object definition.
@@ -57,27 +57,27 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the generic users repository
         /// </summary>
-        public virtual RepositoryBase<Guid, U> RepositoryUsers { get; protected set; }
+        public virtual RepositoryBase<Guid, U> RepositoryUsers { get; set; }
         /// <summary>
         /// Gets or sets the generic user security repository.
         /// </summary>
-        public virtual RepositoryBase<Guid, USEC> RepositoryUserSecurities { get; protected set; }
+        public virtual RepositoryBase<Guid, USEC> RepositoryUserSecurities { get; set; }
         /// <summary>
         /// Gets or sets the generic repository user sessions.
         /// </summary>
-        public virtual RepositoryBase<Guid, USES> RepositoryUserSessions { get; protected set; }
+        public virtual RepositoryBase<Guid, USES> RepositoryUserSessions { get; set; }
         /// <summary>
         /// Gets or sets the generic repository user external actions.
         /// </summary>
-        public virtual RepositoryBase<Guid, UEXA> RepositoryUserExternalActions { get; protected set; }
+        public virtual RepositoryBase<Guid, UEXA> RepositoryUserExternalActions { get; set; }
         /// <summary>
         /// Gets or sets the generic repository user roles.
         /// </summary>
-        public virtual RepositoryBase<Guid, UR> RepositoryUserRoles { get; protected set; }
+        public virtual RepositoryBase<Guid, UR> RepositoryUserRoles { get; set; }
         /// <summary>
         /// Gets or sets the generic repository user access tokens.
         /// </summary>
-        public virtual RepositoryBase<Guid, UAT> RepositoryUserAccessTokens { get; protected set; }
+        public virtual RepositoryBase<Guid, UAT> RepositoryUserAccessTokens { get; set; }
         #endregion
 
         #region Lazy conversion
@@ -139,7 +139,5 @@ namespace Xigadee
         /// </summary>
         public virtual IRepositoryAsync<Guid, UserExternalAction> UserExternalActions => _lazyUserExternalActions.Value;
         #endregion
-
-
     }
 }
