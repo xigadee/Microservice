@@ -76,6 +76,11 @@ namespace Xigadee
 
         public string AncillaryIdTableType => ProcessTemplate("Ancillary.IdTableType.sql");
 
+        #region ScriptAncillary()
+        /// <summary>
+        /// This method returns the Ancillary SQL for the application. This is the set of helper definitions that are needed to make the stored procedures work.
+        /// </summary>
+        /// <returns></returns>
         public string ScriptAncillary()
         {
             var sb = new StringBuilder();
@@ -88,7 +93,8 @@ namespace Xigadee
             sb.AppendLine("GO");
 
             return sb.ToString();
-        }
+        } 
+        #endregion
 
         #region Tables
         public string TableEntity => ProcessTemplate("Tables.Table.sql");
@@ -104,6 +110,11 @@ namespace Xigadee
         public string TableReferenceKey => ProcessTemplate("Tables.TableReferenceKey.sql");
         #endregion
 
+        #region ScriptTable()
+        /// <summary>
+        /// This method returns the SQL scripts to create the necessary tables.
+        /// </summary>
+        /// <returns>Returns a SQL script.</returns>
         public string ScriptTable()
         {
             var sb = new StringBuilder();
@@ -122,25 +133,60 @@ namespace Xigadee
             sb.AppendLine("GO");
 
             return sb.ToString();
-        }
+        } 
+        #endregion
 
+        /// <summary>
+        /// This is the entity create stored procedure.
+        /// </summary>
         public string SpCreate => ProcessTemplate("StoredProcedures.spCreate.sql");
+        /// <summary>
+        /// This is the entity delete stored procedure.
+        /// </summary>
         public string SpDelete => ProcessTemplate("StoredProcedures.spDelete.sql");
+        /// <summary>
+        /// This is the entity delete by reference stored procedure.
+        /// </summary>
         public string SpDeleteByRef => ProcessTemplate("StoredProcedures.spDeleteByRef.sql");
+        /// <summary>
+        /// This is the entity read stored procedure.
+        /// </summary>
         public string SpRead => ProcessTemplate("StoredProcedures.spRead.sql");
+        /// <summary>
+        /// This is the entity read by reference stored procedure.
+        /// </summary>
         public string SpReadByRef => ProcessTemplate("StoredProcedures.spReadByRef.sql");
+        /// <summary>
+        /// This is the entity update stored procedure.
+        /// </summary>
         public string SpUpdate => ProcessTemplate("StoredProcedures.spUpdate.sql");
+        /// <summary>
+        /// This is the entity version check stored procedure.
+        /// </summary>
         public string SpVersion => ProcessTemplate("StoredProcedures.spVersion.sql");
+        /// <summary>
+        /// This is the entity version by reference check stored procedure.
+        /// </summary>
         public string SpVersionByRef => ProcessTemplate("StoredProcedures.spVersionByRef.sql");
-
+        /// <summary>
+        /// This is the internal reference/properties stored procedure
+        /// </summary>
         public string SpUpsertRP => ProcessTemplate("StoredProcedures.spUpsertRP.sql");
-
+        /// <summary>
+        /// This is the entity search stored procedure.
+        /// </summary>
         public string SpSearch => ProcessTemplate("StoredProcedures.spSearch.sql");
-
+        /// <summary>
+        /// This is the entity search entity stored procedure.
+        /// </summary>
         public string SpSearchEntity => ProcessTemplate("StoredProcedures.spSearchEntity.sql");
 
 
-
+        /// <summary>
+        /// This method returns all the stored procedures.
+        /// </summary>
+        /// <param name="createoralter">Specifies whether the stored procedure should be created or altered.</param>
+        /// <returns>Returns the SQL script.</returns>
         public string ScriptStoredProcedures(bool createoralter = false)
         {
             var sb = new StringBuilder();
@@ -170,6 +216,10 @@ namespace Xigadee
                 return sb.ToString();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>Returns the S</returns>
         public string ScriptEntity()
         {
             var sb = new StringBuilder();

@@ -3,7 +3,7 @@
 namespace Xigadee
 {
     /// <summary>
-    /// This helper is used to set the repository as memory backed.
+    /// This helper is used to set the repository as memory based.
     /// </summary>
     public static class UserSecurityModuleHelper
     {

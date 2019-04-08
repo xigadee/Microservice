@@ -2,6 +2,7 @@
 
 namespace Xigadee
 {
+    #region Helper classes
     /// <summary>
     /// This module implements the core application security logic.
     /// </summary>
@@ -21,7 +22,8 @@ namespace Xigadee
         where U : User
     {
 
-    }
+    } 
+    #endregion
 
     /// <summary>
     /// This module implements the core application security logic.

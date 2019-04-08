@@ -20,7 +20,7 @@ namespace Xigadee
         /// <returns>
         /// A tuple indicating whether the key was resolved and the value.
         /// </returns>
-        public Task<(bool success, string value)> Get(string key)
+        public virtual Task<(bool success, string value)> Get(string key)
         {
             return Task.FromResult((false, (string)null));
         }
@@ -32,7 +32,7 @@ namespace Xigadee
         /// <returns>
         /// Returns true if set successfully. This does nothing in this module.
         /// </returns>
-        public Task<bool> Set(string key, string value)
+        public virtual Task<bool> Set(string key, string value)
         {
             return Task.FromResult(false);
         }
