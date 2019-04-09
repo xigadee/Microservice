@@ -30,6 +30,7 @@ namespace Xigadee
     /// </summary>
     /// <seealso cref="Xigadee.ApiModuleBase" />
     /// <seealso cref="Xigadee.IApiUserSecurityModule" />
+    [RepositoriesLoad]
     public class UserSecurityModule<U,USEC,USES,UEXA,UR,UAT> : ApiModuleBase, IApiUserSecurityModule
         where U : User
         where USEC : UserSecurity
@@ -38,6 +39,7 @@ namespace Xigadee
         where UR : UserRoles
         where UAT : UserAccessToken
     {
+        #region Constructor
         /// <summary>
         /// Initializes a new instance of the <see cref="UserSecurityModule{U, USEC, USES, UEXA, UR, UAT}"/> class.
         /// Specifically, this sets the lazy initializers for the base interface.
@@ -54,32 +56,39 @@ namespace Xigadee
             _lazyUserAccessTokens = GetLazy<Guid, UserAccessToken, UAT>(() => RepositoryUserAccessTokens);
             _lazyUserExternalActions = GetLazy<Guid, UserExternalAction, UEXA>(() => RepositoryUserExternalActions);
         }
+        #endregion
 
         #region Repositories
         /// <summary>
         /// Gets or sets the generic users repository
         /// </summary>
-        public virtual RepositoryBase<Guid, U> RepositoryUsers { get; set; }
+        [RepositoryLoad]
+        public virtual IRepositoryAsync<Guid, U> RepositoryUsers { get; set; }
         /// <summary>
         /// Gets or sets the generic user security repository.
         /// </summary>
-        public virtual RepositoryBase<Guid, USEC> RepositoryUserSecurities { get; set; }
+        [RepositoryLoad]
+        public virtual IRepositoryAsync<Guid, USEC> RepositoryUserSecurities { get; set; }
         /// <summary>
         /// Gets or sets the generic repository user sessions.
         /// </summary>
-        public virtual RepositoryBase<Guid, USES> RepositoryUserSessions { get; set; }
+        [RepositoryLoad]
+        public virtual IRepositoryAsync<Guid, USES> RepositoryUserSessions { get; set; }
         /// <summary>
         /// Gets or sets the generic repository user external actions.
         /// </summary>
-        public virtual RepositoryBase<Guid, UEXA> RepositoryUserExternalActions { get; set; }
+        [RepositoryLoad]
+        public virtual IRepositoryAsync<Guid, UEXA> RepositoryUserExternalActions { get; set; }
         /// <summary>
         /// Gets or sets the generic repository user roles.
         /// </summary>
-        public virtual RepositoryBase<Guid, UR> RepositoryUserRoles { get; set; }
+        [RepositoryLoad]
+        public virtual IRepositoryAsync<Guid, UR> RepositoryUserRoles { get; set; }
         /// <summary>
         /// Gets or sets the generic repository user access tokens.
         /// </summary>
-        public virtual RepositoryBase<Guid, UAT> RepositoryUserAccessTokens { get; set; }
+        [RepositoryLoad]
+        public virtual IRepositoryAsync<Guid, UAT> RepositoryUserAccessTokens { get; set; }
         #endregion
 
         #region Lazy conversion
@@ -98,7 +107,7 @@ namespace Xigadee
         /// <typeparam name="EL">The type of the l.</typeparam>
         /// <param name="repository">The repository.</param>
         /// <returns>The lazy initializer.</returns>
-        private static Lazy<IRepositoryAsync<KL, ER>> GetLazy<KL, ER, EL>(Func<RepositoryBase<KL, EL>> repository)
+        private static Lazy<IRepositoryAsync<KL, ER>> GetLazy<KL, ER, EL>(Func<IRepositoryAsync<KL, EL>> repository)
             where KL : IEquatable<KL>
             where ER : class
             where EL : ER

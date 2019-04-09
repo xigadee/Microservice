@@ -97,12 +97,25 @@ namespace Tests.Xigadee
 
     }
 
+
     /// <summary>
     /// This class holds the application settings.
     /// </summary>
     /// <seealso cref="Xigadee.ApiMicroserviceStartUpContext" />
-    public class TestStartupContext : JwtApiMicroserviceStartUpContext
+    public class TestStartupContext : TestStartupContextBase
     {
+
+    }
+
+    /// <summary>
+    /// This class holds the application settings.
+    /// </summary>
+    /// <seealso cref="Xigadee.ApiMicroserviceStartUpContext" />
+    public class TestStartupContextBase : JwtApiMicroserviceStartUpContext
+    {
+        [SingletonRegistration(typeof((string,string)))]
+        public virtual (string, string) GetSomething() => ("hello", DateTime.UtcNow.ToString("o"));
+
         protected override IApiUserSecurityModule UserSecurityModuleCreate()
         {
             var usm = new UserSecurityModule<TestUser>()

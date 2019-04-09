@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -143,15 +145,13 @@ namespace Xigadee
         #endregion
         #region 4. ConfigureSingletons(IServiceCollection services)
         /// <summary>
-        /// Configures the singletons.
+        /// Configures the singletons from the SingletonRegistrationAttributes
         /// </summary>
         /// <param name="services">The services.</param>
         protected virtual void ConfigureSingletons(IServiceCollection services)
         {
-            //// Add the heartbeat configuration.
-            //services.AddSingleton(Context.CertificateModule);
-
-            //services.AddSingleton(Context.Identity);
+            Context.SingletonRegistrationsExtract()
+                .ForEach((a) => services.AddSingleton(a.sType, a.service));
         }
         #endregion
         #region 5. ConfigureSecurityAuthentication(IServiceCollection services)
@@ -380,7 +380,7 @@ namespace Xigadee
         public virtual void Connect(ILoggerFactory lf)
         {
             Logger = lf.CreateLogger<IApiStartupContext>();
-        } 
+        }
         #endregion
 
         #region Environment
@@ -428,6 +428,5 @@ namespace Xigadee
         /// </summary>
         protected virtual string BindNameConfigApplication => "ConfigApplication";
         #endregion
-
     }
 }

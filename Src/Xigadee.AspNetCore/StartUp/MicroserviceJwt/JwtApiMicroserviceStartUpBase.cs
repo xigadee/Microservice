@@ -45,20 +45,6 @@ namespace Xigadee
             services.AddJwtAuthentication(Context.SecurityJwt);
         }
         #endregion
-
-        #region ConfigureSingletons(IServiceCollection services)
-        /// <summary>
-        /// Adds the UserSecurityModule and JWT config singletons.
-        /// </summary>
-        /// <param name="services">The services.</param>
-        protected override void ConfigureSingletons(IServiceCollection services)
-        {
-            base.ConfigureSingletons(services);
-
-            services.AddSingleton<IApiUserSecurityModule>(Context.UserSecurityModule);
-            services.AddSingleton(Context.SecurityJwt);
-        }
-        #endregion
     }
 
     #region JwtApiMicroserviceStartUpContext
@@ -89,6 +75,7 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the JWT security settings.
         /// </summary>
+        [SingletonRegistration]
         public ConfigAuthenticationJwt SecurityJwt { get; set; } 
         #endregion
 
@@ -118,6 +105,7 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the user security module that is used to manages the security entities and user logic.
         /// </summary>
+        [SingletonRegistration(typeof(IApiUserSecurityModule))]
         public IApiUserSecurityModule UserSecurityModule { get; set; }
 
         /// <summary>

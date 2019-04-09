@@ -13,11 +13,11 @@ namespace Xigadee
         /// Initializes a new instance of the <see cref="HttpStatusOutputException"/> class.
         /// </summary>
         /// <param name="code">The http status code.</param>
-        /// <param name="level">The logging level. The default is 'Error'</param>
         /// <param name="description">The optional error description.</param>
+        /// <param name="level">The logging level. The default is 'Error'</param>
         /// <param name="ex">The optional inner exception.</param>
         /// <param name="eid">The event id. The default is default(EventId).</param>
-        public HttpStatusOutputException(int code, LogLevel level = LogLevel.Warning, string description = null, Exception ex = null, EventId eid = default(EventId)) : base(description, ex)
+        public HttpStatusOutputException(int code, string description = null, LogLevel level = LogLevel.Warning, Exception ex = null, EventId eid = default(EventId)) : base(description, ex)
         {
             StatusCode = code;
             EventId = eid;
