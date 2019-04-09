@@ -52,14 +52,14 @@ namespace Xigadee
         /// </summary>
         /// <param name="claimsPrincipal">The claims principal.</param>
         /// <returns>Returns the user id.</returns>
-        public async Task<Guid?> Resolve(ClaimsPrincipal claimsPrincipal)
+        public Task<Guid?> Resolve(ClaimsPrincipal claimsPrincipal)
         {
             var sid = claimsPrincipal.Claims.FirstOrDefault(claim => claim.Type.Equals(ClaimTypes.Sid, StringComparison.InvariantCultureIgnoreCase));
 
             if (Guid.TryParse(sid?.Value, out var userId))
-                return userId;
+                return Task.FromResult((Guid?)userId);
 
-            return null;
+            return Task.FromResult(default(Guid?));
         }
     }
 }
