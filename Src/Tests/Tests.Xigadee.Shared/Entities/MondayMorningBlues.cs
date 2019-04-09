@@ -3,7 +3,6 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    //[MediaTypeConverter(typeof(JsonTransportSerializer<MondayMorningBlues>))]
     public class MondayMorningBlues
     {
         public MondayMorningBlues()
