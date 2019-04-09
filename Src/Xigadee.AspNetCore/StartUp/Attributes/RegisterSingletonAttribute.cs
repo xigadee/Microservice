@@ -6,14 +6,14 @@ namespace Xigadee
     /// This attribute is used to specify a class that should be registered as a singleton for the application.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
-    public class SingletonRegistrationAttribute:Attribute
+    public class RegisterAsSingletonAttribute:Attribute
     {
         /// <summary>
         /// You can specify a cast type that should be registered instead of the parameter or property return type.
         /// If this method cannot cast to this type, you will get an exception during runtime.
         /// </summary>
         /// <param name="registerType">The derived type to register for the singleton. Leave this blank if you do not wish to cast.</param>
-        public SingletonRegistrationAttribute(Type registerType = null)
+        public RegisterAsSingletonAttribute(Type registerType = null)
         {
             SingletonRegistrationType = registerType;
         }
@@ -28,14 +28,14 @@ namespace Xigadee
     /// This attribute is used to specify a class that should be registered as a singleton for the application.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
-    public class StopSingletonRegistrationAttribute : Attribute
+    public class DoNotRegisterAsSingletonAttribute : Attribute
     {
         /// <summary>
         /// You can specify a cast type that should be registered instead of the parameter or property return type.
         /// If this method cannot cast to this type, you will get an exception during runtime.
         /// </summary>
         /// <param name="registerType">The derived type to register for the singleton. Leave this blank if you do not wish to cast.</param>
-        public StopSingletonRegistrationAttribute(Type registerType = null)
+        public DoNotRegisterAsSingletonAttribute(Type registerType = null)
         {
             SingletonRegistrationType = registerType;
         }

@@ -113,7 +113,7 @@ namespace Tests.Xigadee
     /// <seealso cref="Xigadee.ApiMicroserviceStartUpContext" />
     public class TestStartupContextBase : JwtApiMicroserviceStartUpContext
     {
-        [SingletonRegistration(typeof((string,string)))]
+        [RegisterAsSingleton(typeof((string,string)))]
         public virtual (string, string) GetSomething() => ("hello", DateTime.UtcNow.ToString("o"));
 
         protected override IApiUserSecurityModule UserSecurityModuleCreate()

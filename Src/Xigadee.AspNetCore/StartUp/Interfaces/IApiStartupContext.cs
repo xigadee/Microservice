@@ -43,5 +43,11 @@ namespace Xigadee
         /// Gets or sets the logger.
         /// </summary>
         ILogger Logger { get; set; }
+
+        /// <summary>
+        /// This collection contains the list of attribute directives for the context.
+        /// This can be used to process and set the repositories and the singleton registrations.
+        /// </summary>
+        ContextDirectives Directives { get; }
     }
 }

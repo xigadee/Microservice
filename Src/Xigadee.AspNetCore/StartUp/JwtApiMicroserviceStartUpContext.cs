@@ -8,45 +8,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 namespace Xigadee
 {
-    /// <summary>
-    /// This class is used by all services for the application.
-    /// </summary>
-    /// <typeparam name="CTX">The application context type.</typeparam>
-    public abstract class JwtApiMicroserviceStartupBase<CTX> : ApiStartupBase<CTX>
-        where CTX : JwtApiMicroserviceStartUpContext, new()
-    {
-        #region A=>Constructor
-        /// <summary>
-        /// Initializes a new instance of the <see cref="JwtApiMicroserviceStartupBase{CTX}"/> class.
-        /// </summary>
-        /// <param name="env">The environment.</param>
-        protected JwtApiMicroserviceStartupBase(Microsoft.AspNetCore.Hosting.IHostingEnvironment env) : base(env)
-        {
-        }
-        #endregion
-
-        #region ConfigureSecurity(IApplicationBuilder app)
-        /// <summary>
-        /// This override turns authentication on.
-        /// </summary>
-        /// <param name="app">The application.</param>
-        protected override void ConfigureSecurity(IApplicationBuilder app)
-        {
-            app.UseAuthentication();
-        }
-        #endregion
-        #region ConfigureSecurityAuthentication(IServiceCollection services)
-        /// <summary>
-        /// Configures the authentication using the Jwt token configuration.
-        /// </summary>
-        /// <param name="services">The services.</param>
-        protected override void ConfigureSecurityAuthentication(IServiceCollection services)
-        {
-            services.AddJwtAuthentication(Context.SecurityJwt);
-        }
-        #endregion
-    }
-
     #region JwtApiMicroserviceStartUpContext
     /// <summary>
     /// This is the default start up context.
@@ -75,16 +36,16 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the JWT security settings.
         /// </summary>
-        [SingletonRegistration]
-        public ConfigAuthenticationJwt SecurityJwt { get; set; } 
+        [RegisterAsSingleton]
+        public ConfigAuthenticationJwt SecurityJwt { get; set; }
         #endregion
 
-        #region CXB => ModulesCreate(IServiceCollection services)
+        #region CXB => ModulesCreateInstance(IServiceCollection services)
         /// <summary>
         /// Connects the application components and registers the relevant services.
         /// </summary>
         /// <param name="services">The services.</param>
-        public override void ModulesCreate(IServiceCollection services)
+        public override void ModulesCreateInstance(IServiceCollection services)
         {
             UserSecurityModule = UserSecurityModuleCreate();
         }
@@ -99,13 +60,14 @@ namespace Xigadee
         {
             base.Connect(lf);
             UserSecurityModule.Logger = lf.CreateLogger<IApiUserSecurityModule>();
-        } 
+        }
         #endregion
 
         /// <summary>
         /// Gets or sets the user security module that is used to manages the security entities and user logic.
         /// </summary>
-        [SingletonRegistration(typeof(IApiUserSecurityModule))]
+        [RegisterAsSingleton(typeof(IApiUserSecurityModule))]
+        [RepositoriesProcess]
         public IApiUserSecurityModule UserSecurityModule { get; set; }
 
         /// <summary>
@@ -116,4 +78,5 @@ namespace Xigadee
 
     }
     #endregion
+
 }

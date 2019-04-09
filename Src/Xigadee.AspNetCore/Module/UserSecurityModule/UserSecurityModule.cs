@@ -30,7 +30,6 @@ namespace Xigadee
     /// </summary>
     /// <seealso cref="Xigadee.ApiModuleBase" />
     /// <seealso cref="Xigadee.IApiUserSecurityModule" />
-    [RepositoriesLoad]
     public class UserSecurityModule<U,USEC,USES,UEXA,UR,UAT> : ApiModuleBase, IApiUserSecurityModule
         where U : User
         where USEC : UserSecurity
