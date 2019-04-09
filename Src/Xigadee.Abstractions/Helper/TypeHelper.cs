@@ -37,5 +37,19 @@ namespace Xigadee
 
             return types[0];
         }
+
+        public static bool IsSubclassOfRawGeneric(this Type toCheck, Type rawGenericType)
+        {
+            while (toCheck != null && toCheck != typeof(object))
+            {
+                var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
+                if (rawGenericType == cur)
+                {
+                    return true;
+                }
+                toCheck = toCheck.BaseType;
+            }
+            return false;
+        }
     }
 }

@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace Xigadee
 {
@@ -168,91 +166,5 @@ namespace Xigadee
             return coll;
         }
         #endregion
-    }
-
-    #region RepositoryDirectiveCollection
-    /// <summary>
-    /// This is the collection of module that require processing.
-    /// </summary>
-    public class RepositoryDirectiveCollection : IEnumerable<RepositoryDirective>
-    {
-        /// <summary>
-        /// This is the list of modules that require processing.
-        /// </summary>
-        public List<RepositoryDirectiveModule> Modules { get; } = new List<RepositoryDirectiveModule>();
-
-        /// <summary>
-        /// Gets a list of directives to process.
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerator<RepositoryDirective> GetEnumerator()
-        {
-            foreach (var module in Modules)
-                foreach (var directive in module.Directives)
-                    yield return directive;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-    }
-    #endregion
-    #region RepositoryDirectiveModule
-    /// <summary>
-    /// This class holds a specific module and the associated directives.
-    /// </summary>
-    public class RepositoryDirectiveModule
-    {
-        /// <summary>
-        /// This is the root module.
-        /// </summary>
-        public object Module { get; set; }
-        /// <summary>
-        /// This is the list of repository populate directives.
-        /// </summary>
-        public List<RepositoryDirective> Directives { get; } = new List<RepositoryDirective>();
-    } 
-    #endregion
-
-    /// <summary>
-    /// This is the root directive class that holds the reference to the actual property that needs to be set.
-    /// </summary>
-    public class RepositoryDirective
-    {
-        /// <summary>
-        /// This is the core 
-        /// </summary>
-        /// <param name="module">This is the module that requires the repository to be set.</param>
-        /// <param name="pInfo">This is the property info for the repository to be set.</param>
-        public RepositoryDirective(object module, PropertyInfo pInfo)
-        {
-            Module = module;
-            Property = pInfo;
-
-            if (!(pInfo.CanWrite || pInfo.CanRead))
-                throw new ArgumentOutOfRangeException($"{nameof(RepositoryDirective)}: {pInfo.Name} Cannot be read or written to.");
-
-            var returnType = pInfo.GetGetMethod().ReturnType;
-
-            bool is1 = typeof(IRepositoryAsync<,>).IsSubclassOf(returnType);
-            bool is2 = returnType.IsSubclassOf(typeof(IRepositoryAsync<,>));
-
-            //if (!returnType.IsSubclassOf(typeof(IRepositoryAsync<,>)))
-            //    throw new ArgumentOutOfRangeException($"{nameof(RepositoryDirective)}: {pInfo.Name} Cannot be read or written to.");
-
-            TypeKey = returnType.GenericTypeArguments[0];
-            TypeEntity = returnType.GenericTypeArguments[1];
-        }
-
-        /// <summary>
-        /// This is the module to be set.
-        /// </summary>
-        public object Module { get; }
-        /// <summary>
-        /// THis is the specific property.
-        /// </summary>
-        public PropertyInfo Property { get; }
-
-        public Type TypeKey { get; set; }
-
-        public Type TypeEntity { get; set; }
     }
 }
