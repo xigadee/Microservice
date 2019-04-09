@@ -235,9 +235,11 @@ namespace Xigadee
             bool is1 = typeof(IRepositoryAsync<,>).IsSubclassOf(returnType);
             bool is2 = returnType.IsSubclassOf(typeof(IRepositoryAsync<,>));
 
-            if (!returnType.IsSubclassOf(typeof(IRepositoryAsync<,>)))
-                throw new ArgumentOutOfRangeException($"{nameof(RepositoryDirective)}: {pInfo.Name} Cannot be read or written to.");
+            //if (!returnType.IsSubclassOf(typeof(IRepositoryAsync<,>)))
+            //    throw new ArgumentOutOfRangeException($"{nameof(RepositoryDirective)}: {pInfo.Name} Cannot be read or written to.");
 
+            TypeKey = returnType.GenericTypeArguments[0];
+            TypeEntity = returnType.GenericTypeArguments[1];
         }
 
         /// <summary>
