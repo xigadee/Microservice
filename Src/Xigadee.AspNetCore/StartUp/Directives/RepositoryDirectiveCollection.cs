@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace Xigadee
 {
-    #region RepositoryDirectiveCollection
     /// <summary>
     /// This is the collection of module that require processing.
     /// </summary>
@@ -27,5 +26,4 @@ namespace Xigadee
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
-    #endregion
 }

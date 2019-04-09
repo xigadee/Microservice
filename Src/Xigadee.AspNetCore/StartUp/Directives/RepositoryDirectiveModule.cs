@@ -2,7 +2,6 @@
 
 namespace Xigadee
 {
-    #region RepositoryDirectiveModule
     /// <summary>
     /// This class holds a specific module and the associated directives.
     /// </summary>
@@ -17,5 +16,4 @@ namespace Xigadee
         /// </summary>
         public List<RepositoryDirective> Directives { get; } = new List<RepositoryDirective>();
     }
-    #endregion
 }

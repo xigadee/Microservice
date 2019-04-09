@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 namespace Xigadee
 {
     /// <summary>
     /// This is the root directive class that holds the reference to the actual property that needs to be set.
     /// </summary>
+    [DebuggerDisplay("IRepositoryAsync<{TypeKey.Name},{TypeEntity.Name}>")]
     public class RepositoryDirective
     {
         #region Constructor
@@ -29,6 +31,8 @@ namespace Xigadee
 
             TypeKey = returnType.GenericTypeArguments[0];
             TypeEntity = returnType.GenericTypeArguments[1];
+
+            RepositoryType = typeof(IRepositoryAsync<,>).MakeGenericType(TypeKey, TypeEntity);
         }
         #endregion
 
@@ -44,11 +48,16 @@ namespace Xigadee
         /// <summary>
         /// This is the key type,
         /// </summary>
-        public Type TypeKey { get; set; }
+        public Type TypeKey { get; }
         /// <summary>
         /// This is the entity type.
         /// </summary>
-        public Type TypeEntity { get; set; }
+        public Type TypeEntity { get; }
+
+        /// <summary>
+        /// This is the generic repository type, IRepositoryAsync
+        /// </summary>
+        public Type RepositoryType { get; }
 
         /// <summary>
         /// This gets the repository.
