@@ -5,7 +5,7 @@ namespace Xigadee
     /// <summary>
     /// This attribute is used to specify a class that should be processed for repositories that need to be set on application startup.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class RepositoriesProcessAttribute : Attribute
     {
         /// <summary>
@@ -19,7 +19,7 @@ namespace Xigadee
     /// <summary>
     /// This attribute is used to specify a class that should not be processed for repositories that need to be set on application startup.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class StopRepositoriesProcessAttribute : Attribute
     {
         /// <summary>

@@ -31,14 +31,7 @@ namespace Xigadee
 
             ContextInitialize();
 
-            if (Context.UseMicroservice)
-            {
-                MicroserviceCreate();
 
-                MicroserviceConfigure();
-
-                MicroserviceHostedServiceCreate();
-            }
         }
         #endregion
         #region 1. ContextCreate()
@@ -59,30 +52,6 @@ namespace Xigadee
             Context.Initialize(HostingEnvironment);
         }
         #endregion
-        #region 3. MicroserviceCreate()
-        /// <summary>
-        /// Creates and configures the Xigadee microservice pipeline.
-        /// </summary>
-        protected virtual void MicroserviceCreate()
-        {
-            Pipeline = new MicroservicePipeline();
-        }
-        #endregion
-        #region 4. MicroserviceConfigure()
-        /// <summary>
-        /// Creates and configures the Xigadee microservice pipeline.
-        /// </summary>
-        protected virtual void MicroserviceConfigure() { }
-        #endregion
-        #region 5. MicroserviceHostedServiceCreate()
-        /// <summary>
-        /// Creates and configures the Xigadee microservice pipeline.
-        /// </summary>
-        protected virtual void MicroserviceHostedServiceCreate()
-        {
-            HostedService = new MicroserviceHostedService(Pipeline);
-        }
-        #endregion
 
         #region B=>ConfigureServices(IServiceCollection services)
         /// <summary>
@@ -96,10 +65,10 @@ namespace Xigadee
 
             ContextModulesCreate(services);
 
-            ConfigureSingletons(services);
-
             if (Context.UseMicroservice)
                 ConfigureMicroserviceHostedService(services);
+
+            ConfigureSingletons(services);
 
             ConfigureSecurityAuthentication(services);
 
@@ -138,9 +107,37 @@ namespace Xigadee
         /// <param name="services">The services.</param>
         protected virtual void ConfigureMicroserviceHostedService(IServiceCollection services)
         {
-            //Add the microservice as a hosted service.
-            if (HostedService != null)
-                services.AddSingleton<IHostedService>(HostedService);
+            MicroserviceCreate();
+
+            MicroserviceConfigure();
+
+            MicroserviceHostedServiceCreate();
+
+            services.AddSingleton<IHostedService>(HostedService);
+        }
+        #endregion
+        #region 3a. MicroserviceCreate()
+        /// <summary>
+        /// Creates and configures the Xigadee microservice pipeline.
+        /// </summary>
+        protected virtual void MicroserviceCreate()
+        {
+            Pipeline = new MicroservicePipeline();
+        }
+        #endregion
+        #region 3b. MicroserviceConfigure()
+        /// <summary>
+        /// Creates and configures the Xigadee microservice pipeline.
+        /// </summary>
+        protected virtual void MicroserviceConfigure() { }
+        #endregion
+        #region 3c. MicroserviceHostedServiceCreate()
+        /// <summary>
+        /// Creates and configures the Xigadee microservice pipeline.
+        /// </summary>
+        protected virtual void MicroserviceHostedServiceCreate()
+        {
+            HostedService = new MicroserviceHostedService(Pipeline);
         }
         #endregion
         #region 4. ConfigureSingletons(IServiceCollection services)

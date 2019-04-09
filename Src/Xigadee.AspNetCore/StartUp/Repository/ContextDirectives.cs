@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -15,9 +16,14 @@ namespace Xigadee
         readonly IApiStartupContext _ctx;
 
         //Filter for the attribute types that we wish to get.
-        readonly Func<CustomAttributeData, bool> attrFilterRepo = (d) =>
+        readonly Func<CustomAttributeData, bool> attrFilterRepoRoot = (d) =>
             d.AttributeType == typeof(RepositoriesProcessAttribute) ||
             d.AttributeType == typeof(StopRepositoriesProcessAttribute)
+            ;
+
+        readonly Func<CustomAttributeData, bool> attrFilterRepoClass = (d) =>
+            d.AttributeType == typeof(RepositoryLoadAttribute)
+            //|| d.AttributeType == typeof(StopRepositoriesProcessAttribute)
             ;
 
         //Filter for the attribute types that we wish to get.
@@ -34,7 +40,7 @@ namespace Xigadee
         public ContextDirectives(IApiStartupContext ctx)
         {
             _ctx = ctx;
-        } 
+        }
         #endregion
 
         #region GetAttributeData(Func<CustomAttributeData, bool> attrFilter)
@@ -44,14 +50,24 @@ namespace Xigadee
         /// <param name="attrFilter">The specific filter.</param>
         /// <returns>Returns the list of data.</returns>
         public IEnumerable<(CustomAttributeData[], MethodInfo)> GetAttributeData(Func<CustomAttributeData, bool> attrFilter)
+            => GetAttributeData(_ctx.GetType(), attrFilter);
+        #endregion
+        #region GetAttributeData(Func<CustomAttributeData, bool> attrFilter)
+        /// <summary>
+        /// This method returns the specific attribute data for property and method declarations.
+        /// </summary>
+        /// <param name="oType">The object type.</param>
+        /// <param name="attrFilter">The specific filter.</param>
+        /// <returns>Returns the list of data.</returns>
+        public static IEnumerable<(CustomAttributeData[], MethodInfo)> GetAttributeData(Type oType, Func<CustomAttributeData, bool> attrFilter)
         {
-            var resultM = _ctx.GetType()
+            var resultM = oType
                 .GetMethods(BindingFlags.Public | BindingFlags.Instance)
                 .Where((m) => m.CustomAttributes.Contains((a) => attrFilter(a)))
                 .Select((m) => (m.CustomAttributes.Where(attrFilter).ToArray(), m))
                 ;
 
-            var resultP = _ctx.GetType()
+            var resultP = oType
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where((m) => m.CustomAttributes.Contains((a) => attrFilter(a)))
                 .Select((m) => (m.CustomAttributes.Where(attrFilter).ToArray(), m.GetGetMethod()))
@@ -109,43 +125,90 @@ namespace Xigadee
         /// This method examines the context and extracts any singleton declarations.
         /// </summary>
         /// <returns>Returns the list of declarations.</returns>
-        public IEnumerable<(Type sType, object service)> RepositoryProcessExtract()
+        public RepositoryDirectiveCollection RepositoryProcessExtract()
         {
+            var coll = new RepositoryDirectiveCollection();
+
             //Filter for the attribute types that we wish to get.
-            var results = GetAttributeData(attrFilterRepo);
+            var results = GetAttributeData(attrFilterRepoRoot);
 
-            //foreach (var result in results)
-            //{
-            //    var attrs = result.Item1.ToList();
+            foreach (var result in results)
+            {
+                var attrs = result.Item1.ToList();
 
-            //    if (attrs.Contains((a) => a.AttributeType == typeof(DoNotRegisterAsSingletonAttribute)))
-            //    {
-            //        //TODO: OK, as we may have multiple attributes, with deny set for a specific registration type, 
-            //        //we need to filter out the ones registered and then adjust the collection.
-            //        continue;
-            //    }
+                //OK, if there is a stop defined then ignore this module
+                if (attrs.Contains((a) => a.AttributeType == typeof(StopRepositoriesProcessAttribute)))
+                    continue;
 
-            //    //Is the stop attribute defined, if so skip.
-            //    if (attrs.Count == 0)
-            //        continue;
+                //Ok, extract the object and we will scan that for the deeper attributes.
+                //We need to extract as we have to scan the actual object.
+                object item = result.Item2.Invoke(_ctx, new object[] { });
 
-            //    //Ok, extract the object and return the type. We may return multiple registrations for a single property.
-            //    object item = result.Item2.Invoke(_ctx, new object[] { });
+                var repos = GetAttributeData(item.GetType(), attrFilterRepoClass).ToList();
 
-            //    if (item != null)
-            //        foreach (CustomAttributeData ad in attrs)
-            //        {
-            //            //OK, we know this is a SingletonRegistrationAttribute, so we just need to get the constructor parameter
-            //            if (ad.ConstructorArguments.Count == 0 || ad.ConstructorArguments[0].Value == null)
-            //                yield return (result.Item2.ReturnType, item);
-            //            else
-            //                yield return ((Type)ad.ConstructorArguments[0].Value, item);
-            //        }
-            //}
+                if (repos.Count == 0)
+                    continue;
 
-            yield break;
+                var mod = new RepositoryDirectiveModule();
+                coll.Modules.Add(mod);
+
+                //OK, let's process each repo directive.
+            }
+
+            return coll;
         }
         #endregion
+    }
 
+    #region RepositoryDirectiveCollection
+    /// <summary>
+    /// This is the collection of module that require processing.
+    /// </summary>
+    public class RepositoryDirectiveCollection : IEnumerable<RepositoryDirective>
+    {
+        /// <summary>
+        /// This is the list of modules that require processing.
+        /// </summary>
+        public List<RepositoryDirectiveModule> Modules { get; } = new List<RepositoryDirectiveModule>();
+
+        /// <summary>
+        /// Gets a list of directives to process.
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerator<RepositoryDirective> GetEnumerator()
+        {
+            foreach (var module in Modules)
+                foreach (var directive in module.Directives)
+                    yield return directive;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+    #endregion
+    #region RepositoryDirectiveModule
+    /// <summary>
+    /// This class holds a specific module and the associated directives.
+    /// </summary>
+    public class RepositoryDirectiveModule
+    {
+        /// <summary>
+        /// This is the root module.
+        /// </summary>
+        public object Module { get; set; }
+        /// <summary>
+        /// This is the list of repository populate directives.
+        /// </summary>
+        public List<RepositoryDirective> Directives { get; } = new List<RepositoryDirective>();
+    } 
+    #endregion
+
+    /// <summary>
+    /// This is the root directive class that holds the reference to the actual property that needs to be set.
+    /// </summary>
+    public class RepositoryDirective
+    {
+        public Type TypeKey { get; set; }
+
+        public Type TypeEntity { get; set; }
     }
 }

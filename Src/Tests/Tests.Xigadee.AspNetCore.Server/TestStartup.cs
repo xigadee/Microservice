@@ -32,6 +32,8 @@ namespace Tests.Xigadee
 
         protected override void MicroserviceConfigure()
         {
+            var eOpts = Context.Directives.RepositoryProcessExtract();
+
             Pipeline
                 .AdjustPolicyTaskManagerForDebug()
                 .AddChannelIncoming("testin")
