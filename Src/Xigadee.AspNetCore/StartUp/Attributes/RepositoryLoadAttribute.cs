@@ -5,7 +5,7 @@ namespace Xigadee
     /// <summary>
     /// This attribute is used to specify a class that should be registered as a singleton for the application.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = true, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
     public class RepositoryLoadAttribute : Attribute
     {
         /// <summary>

@@ -144,15 +144,25 @@ namespace Xigadee
                 //We need to extract as we have to scan the actual object.
                 object item = result.Item2.Invoke(_ctx, new object[] { });
 
-                var repos = GetAttributeData(item.GetType(), attrFilterRepoClass).ToList();
+                var repos = item.GetType()
+                    .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                    .Where((m) => m.CustomAttributes.Contains((a) => attrFilterRepoClass(a)))
+                    .Select((pInfo) => (pInfo.CustomAttributes.Where(attrFilterRepoClass).First(), pInfo))
+                    .ToList()
+                    ;
 
                 if (repos.Count == 0)
                     continue;
 
-                var mod = new RepositoryDirectiveModule();
+                var mod = new RepositoryDirectiveModule() { Module = item };
                 coll.Modules.Add(mod);
 
                 //OK, let's process each repo directive.
+                foreach (var repoDirective in repos)
+                {
+                    var d = new RepositoryDirective(item, repoDirective.pInfo);
+                    mod.Directives.Add(d);
+                }
             }
 
             return coll;
@@ -207,6 +217,38 @@ namespace Xigadee
     /// </summary>
     public class RepositoryDirective
     {
+        /// <summary>
+        /// This is the core 
+        /// </summary>
+        /// <param name="module">This is the module that requires the repository to be set.</param>
+        /// <param name="pInfo">This is the property info for the repository to be set.</param>
+        public RepositoryDirective(object module, PropertyInfo pInfo)
+        {
+            Module = module;
+            Property = pInfo;
+
+            if (!(pInfo.CanWrite || pInfo.CanRead))
+                throw new ArgumentOutOfRangeException($"{nameof(RepositoryDirective)}: {pInfo.Name} Cannot be read or written to.");
+
+            var returnType = pInfo.GetGetMethod().ReturnType;
+
+            bool is1 = typeof(IRepositoryAsync<,>).IsSubclassOf(returnType);
+            bool is2 = returnType.IsSubclassOf(typeof(IRepositoryAsync<,>));
+
+            if (!returnType.IsSubclassOf(typeof(IRepositoryAsync<,>)))
+                throw new ArgumentOutOfRangeException($"{nameof(RepositoryDirective)}: {pInfo.Name} Cannot be read or written to.");
+
+        }
+
+        /// <summary>
+        /// This is the module to be set.
+        /// </summary>
+        public object Module { get; }
+        /// <summary>
+        /// THis is the specific property.
+        /// </summary>
+        public PropertyInfo Property { get; }
+
         public Type TypeKey { get; set; }
 
         public Type TypeEntity { get; set; }
