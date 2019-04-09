@@ -45,8 +45,9 @@ namespace Xigadee
         /// Connects the application components and registers the relevant services.
         /// </summary>
         /// <param name="services">The services.</param>
-        public override void ModulesCreateInstance(IServiceCollection services)
+        public override void ModulesCreate(IServiceCollection services)
         {
+            base.ModulesCreate(services);
             UserSecurityModule = UserSecurityModuleCreate();
         }
         #endregion

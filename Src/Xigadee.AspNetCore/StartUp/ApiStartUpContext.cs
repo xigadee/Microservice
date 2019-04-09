@@ -17,6 +17,24 @@ namespace Xigadee
     /// </summary>
     public class ApiStartUpContext : IApiStartupContext
     {
+        #region Constructor
+        /// <summary>
+        /// This is the default construct that creates the directive class.
+        /// </summary>
+        public ApiStartUpContext()
+        {
+            Directives = new ContextDirectives(this);
+        } 
+        #endregion
+        #region Directives
+        /// <summary>
+        /// This collection contains the list of repository directives for the context.
+        /// This can be used to populate the repositories and run time from a central method.
+        /// Useful when you want to set as memory backed for testing.
+        /// </summary>
+        public ContextDirectives Directives { get; }
+        #endregion
+
         #region CXA => Initialize(IHostingEnvironment env)
         /// <summary>
         /// Initializes the context.
@@ -75,18 +93,7 @@ namespace Xigadee
         /// Connects the application components and registers the relevant services.
         /// </summary>
         /// <param name="services">The services.</param>
-        public void ModulesCreate(IServiceCollection services)
-        {
-            ModulesCreateInstance(services);
-            Directives = new ContextDirectives(this);
-        }
-        #endregion
-        #region 1. ModulesCreateInstance(IServiceCollection services)
-        /// <summary>
-        /// Connects the application components and registers the relevant services.
-        /// </summary>
-        /// <param name="services">The services.</param>
-        public virtual void ModulesCreateInstance(IServiceCollection services)
+        public virtual void ModulesCreate(IServiceCollection services)
         {
         }
         #endregion
@@ -146,15 +153,6 @@ namespace Xigadee
         /// Gets the bind section for ConfigMicroservice.
         /// </summary>
         protected virtual string BindNameConfigApplication => "ConfigApplication";
-        #endregion
-
-        #region RepositoryDirectives
-        /// <summary>
-        /// This collection contains the list of repository directives for the context.
-        /// This can be used to populate the repositories and run time from a central method.
-        /// Useful when you want to set as memory backed for testing.
-        /// </summary>
-        public ContextDirectives Directives { get; protected set; }
         #endregion
     }
 }

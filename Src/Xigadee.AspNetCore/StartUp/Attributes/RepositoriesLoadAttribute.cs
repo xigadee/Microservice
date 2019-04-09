@@ -3,14 +3,13 @@
 namespace Xigadee
 {
     /// <summary>
-    /// This attribute is used to specify a class that should be registered as a singleton for the application.
+    /// This attribute is used to specify a class that should be processed for repositories that need to be set on application startup.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
     public class RepositoriesProcessAttribute : Attribute
     {
         /// <summary>
-        /// You can specify a cast type that should be registered instead of the parameter or property return type.
-        /// If this method cannot cast to this type, you will get an exception during runtime.
+        /// This is the constructor.
         /// </summary>
         public RepositoriesProcessAttribute()
         {
@@ -18,14 +17,13 @@ namespace Xigadee
     }
 
     /// <summary>
-    /// This attribute is used to specify a class that should be registered as a singleton for the application.
+    /// This attribute is used to specify a class that should not be processed for repositories that need to be set on application startup.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
     public class StopRepositoriesProcessAttribute : Attribute
     {
         /// <summary>
-        /// You can specify a cast type that should be registered instead of the parameter or property return type.
-        /// If this method cannot cast to this type, you will get an exception during runtime.
+        /// This is the constructor.
         /// </summary>
         public StopRepositoriesProcessAttribute()
         {
