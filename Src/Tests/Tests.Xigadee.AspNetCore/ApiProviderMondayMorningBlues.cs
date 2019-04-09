@@ -45,6 +45,8 @@ namespace Tests.Xigadee
                     mAuthHandlers.Clear();
                     mAuthHandlers.Add(new JwtAuthProvider(token));
                 }
+
+                return true;
             }
 
             return false;

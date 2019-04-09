@@ -61,7 +61,7 @@ namespace Xigadee
         {
             // Get the types assembly version to add to the request headers
             mAssemblyVersion = AssemblyVersionGet();
-            mAuthHandlers = authHandlers?.ToList();
+            mAuthHandlers = authHandlers?.ToList() ?? new List<IApiProviderAuthBase>();
 
             mUri = uri ?? throw new ArgumentNullException("uri");
             // Get the types assembly version to add to the request headers
@@ -351,6 +351,46 @@ namespace Xigadee
 
             return response;
         }
+        #endregion
+
+        #region EntitySerialize<ET>(ET entity)
+        /// <summary>
+        /// This method turns the entity in to binary content using
+        /// the primary transport
+        /// </summary>
+        /// <param name="entity">The entity to convert.</param>
+        /// <returns>The ByteArrayContent to transmit.</returns>
+        protected virtual ByteArrayContent EntitySerialize<ET>(ET entity)
+        {
+            if (Equals(entity, default(ET)))
+                throw new ArgumentNullException("entity");
+
+            var data = TransportSerializerDefault.GetData(entity);
+            var content = new ByteArrayContent(data);
+            content.Headers.ContentType = new MediaTypeWithQualityHeaderValue(mTransportOutDefault);
+
+            return content;
+        }
+        #endregion
+        #region EntityDeserialize<ET>(HttpResponseMessage rs, byte[] data)
+        /// <summary>
+        /// This method resolves the appropriate transport serializer from the incoming accept header.
+        /// </summary>
+        /// <param name="rs">The response</param>
+        /// <param name="data">The response content</param>
+        /// <returns>Returns true if the serializer can be resolved.</returns>
+        protected virtual ET EntityDeserialize<ET>(HttpResponseMessage rs, byte[] data)
+        {
+            string mediaType = rs.Content.Headers.ContentType.MediaType;
+
+            if (mTransportSerializers.ContainsKey(mediaType.ToLowerInvariant()))
+            {
+                var transport = mTransportSerializers[mediaType];
+                return transport.GetObject<ET>(data);
+            }
+
+            throw new TransportSerializerResolutionException(mediaType);
+        } 
         #endregion
     }
 }
